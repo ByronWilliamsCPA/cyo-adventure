@@ -13,6 +13,7 @@ from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
 import pytest
+from sqlalchemy.exc import IntegrityError
 
 from cyo_adventure.api import characters as characters_module
 from cyo_adventure.api.deps import Principal, RequestContext, Role
@@ -25,6 +26,8 @@ if TYPE_CHECKING:
 
     from httpx import AsyncClient
     from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
+    from tests.integration.conftest import Stranger
 
 
 def _create_body(profile_id: str, *, name: str = "Ember") -> dict[str, str]:
@@ -589,3 +592,54 @@ async def test_rename_character_rejects_a_sentinel_shaped_name(
         headers=auth(seed.guardian_token),
     )
     assert resp.status_code == 422, resp.text
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_mismatched_profile_and_family_pair_is_rejected_by_the_database(
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+    stranger: Stranger,
+) -> None:
+    """``fk_character_profile_family`` really rejects a mismatched pair in Postgres.
+
+    ``api/characters.py::create_character`` carries a ``#VERIFY`` comment
+    claiming "the composite FK (fk_character_profile_family) would reject a
+    mismatched pair at the database layer even if this were ever bypassed",
+    but until this test existed nothing ever attempted the insert:
+    ``tests/unit/test_character_models.py`` only inspects
+    ``Character.__table__.foreign_key_constraints``, which proves the
+    constraint is *declared*, not that Postgres *enforces* it (a typo in the
+    migration's column order, or a migration that never applied the
+    constraint at all, would still pass that unit test).
+
+    ``seed.child_profile_id`` (family A) paired with ``stranger.family_id``
+    (family C, wholly unrelated to A) is the mismatch: the composite FK
+    target is ``child_profile (family_id, id)``, so a row naming a real
+    child_profile_id but the wrong family_id has no matching row in that
+    target and must be rejected. If the constraint were missing, misnamed, or
+    built against the wrong columns, this insert would instead succeed (or
+    fail with a different, unrelated error), which is exactly what the
+    ``match="fk_character_profile_family"`` assertion below would catch.
+    """
+    async with sessions() as s:
+        s.add(
+            # is_active=False (with retired_at set to match, satisfying
+            # ck_character_not_active_and_retired): seed.child_profile_id
+            # already carries an active character (seed.character_id), and
+            # uq_character_one_active is a partial unique index that only
+            # applies where is_active is true, so an active row here would
+            # collide on THAT constraint before Postgres ever reached the FK
+            # check this test targets.
+            Character(
+                child_profile_id=seed.child_profile_id,
+                family_id=stranger.family_id,
+                name="Mismatched Pair",
+                archetype="scout",
+                look="avatar_01",
+                is_active=False,
+                retired_at=datetime.now(UTC),
+            )
+        )
+        with pytest.raises(IntegrityError, match="fk_character_profile_family"):
+            await s.flush()

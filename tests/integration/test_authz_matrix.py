@@ -1402,7 +1402,11 @@ _CROSS_FAMILY_ROUTE_KEYS: list[tuple[str, str]] = [
     # (family-A-to-stranger) test below uses -- they are covered here in the
     # forward (attacker-to-family-A) direction only, plus DELETE's own
     # explicit test in test_characters_api.py (DELETE's RouteSpec uses
-    # _random_uuid_path, so a sweep entry would 404 unconditionally).
+    # _random_uuid_path, so a sweep entry would 404 unconditionally). This
+    # list only ever authenticates as a GUARDIAN principal
+    # (seed.other_guardian_token / stranger.guardian_token below); CHILD-token
+    # cross-family coverage for GET/POST /api/v1/characters lives in
+    # _CROSS_FAMILY_CHILD_ROUTE_KEYS below, not here.
     ("GET", "/api/v1/characters"),
     ("POST", "/api/v1/characters"),
     ("PATCH", "/api/v1/characters/{character_id}"),
@@ -1495,12 +1499,22 @@ _CROSS_FAMILY_CHILD_ROUTE_KEYS: list[tuple[str, str]] = [
     ("POST", "/api/v1/completions"),
     ("GET", "/api/v1/reading-history/{profile_id}"),
     ("GET", "/api/v1/recommendations/{profile_id}"),
-    # characters.py (ADR-028): id-addressed, load-then-authorize routes (see
-    # the module docstring's documented exception). GET/POST /characters are
-    # deliberately absent here: they are profile-addressed, already covered
-    # by the forward-direction-only _CROSS_FAMILY_ROUTE_KEYS above, and the
-    # reverse test below only knows how to swap a profile_id, not a
-    # character_id, in the URL/query/body.
+    # characters.py (ADR-028): GET/POST are profile-addressed (query/body
+    # profile_id), exactly like the ratings/library/reading-state routes
+    # above, so they slot into the same generic profile_id substitution the
+    # reverse test below uses and need no special-casing. Before this fix
+    # they were absent, with a comment claiming they were "already covered by
+    # the forward-direction-only _CROSS_FAMILY_ROUTE_KEYS above" -- that was
+    # false for the CHILD role: that list is exercised only with
+    # seed.other_guardian_token / stranger.guardian_token, both GUARDIAN
+    # principals, so no test anywhere sent a CHILD token from an unrelated
+    # family at these two routes until they were added here.
+    # PATCH/activate/retire are id-addressed (load-then-authorize, see the
+    # module docstring's documented exception) and need the character_id
+    # itself swapped, not a profile_id -- the reverse test below does that
+    # swap explicitly (url.replace(seed.character_id, stranger.character_id)).
+    ("GET", "/api/v1/characters"),
+    ("POST", "/api/v1/characters"),
     ("PATCH", "/api/v1/characters/{character_id}"),
     ("POST", "/api/v1/characters/{character_id}/activate"),
     ("POST", "/api/v1/characters/{character_id}/retire"),

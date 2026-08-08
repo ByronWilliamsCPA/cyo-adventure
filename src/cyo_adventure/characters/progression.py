@@ -167,12 +167,9 @@ async def record_progression(
     # syncing the same completion concurrently cannot both read the old value
     # and both write the same new one, losing one book's progress. LEAST and
     # GREATEST over the column itself make the update commutative.
-    # #VERIFY: no test proves the concurrency property. The two tests cited
-    # above are single-request and sequential; a Python read-modify-write
-    # carrying identical LEAST/GREATEST arithmetic would still pass both of
-    # them. Proving it needs a two-connection test that interleaves two
-    # transactions against the same character row, which this suite does not
-    # have and this task did not add.
+    # #VERIFY: tests/integration/test_character_progression.py::
+    # test_two_concurrent_completions_do_not_lose_either_raise (two real,
+    # interleaved Postgres transactions against the same character row).
     result = await session.execute(
         _INSERT_COMPLETION,
         {

@@ -18,6 +18,7 @@ a real PUT save and its replay validation) so each test controls the exit
 
 from __future__ import annotations
 
+import asyncio
 import json
 from datetime import UTC, datetime
 from pathlib import Path
@@ -26,6 +27,7 @@ from typing import TYPE_CHECKING
 import pytest
 from sqlalchemy import select
 
+from cyo_adventure.characters import progression
 from cyo_adventure.db.models import (
     Character,
     CharacterAttribute,
@@ -493,3 +495,150 @@ async def test_archetype_is_never_raised_by_a_completion(
     # The writeback did run; archetype was skipped, not the whole loop.
     _, values = await _character_progress(sessions, seed.character_id)
     assert values["might"] == 1
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_two_concurrent_completions_do_not_lose_either_raise(
+    seed: Seed, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """Two devices syncing different completions concurrently lose neither raise.
+
+    This is the concurrency property ``progression.py``'s own ``#CRITICAL``
+    marker names but, until now, never had a test: "that same arithmetic is
+    computed IN the UPDATE statement rather than read-modify-written in
+    Python, so two devices syncing the same completion concurrently cannot
+    both read the old value and both write the same new one, losing one
+    book's progress." The two existing monotonicity tests
+    (``test_a_lower_exit_value_does_not_reduce_a_stat``,
+    ``test_a_stat_cannot_exceed_the_canonical_maximum``) are single-request
+    and sequential; a buggy rewrite that read ``value_int`` with a plain
+    ``SELECT``, computed ``GREATEST(current, exit_value)`` in Python, and then
+    issued an absolute ``UPDATE ... SET value_int = :computed`` would still
+    pass both of them, because neither ever has two transactions in flight at
+    once.
+
+    The technique (two ``async_sessionmaker`` sessions, an ``asyncio.Event``
+    to force overlap, ``asyncio.gather``) mirrors
+    ``test_characters_api.py::
+    test_concurrent_activations_collide_into_a_state_transition_error_not_a_500``.
+    Two DIFFERENT completions (different storybook_id, so neither's INSERT
+    into ``character_book_completion`` conflicts with the other and both
+    proceed to their attribute raise) target the SAME character's ``might``
+    stat, whose canonical range is 0..2 (see
+    ``character_vocabulary.py::_canonical("might", 0, 2)``, also exercised by
+    ``test_a_stat_cannot_exceed_the_canonical_maximum`` above): transaction A
+    raises it to the maximum, 2, and transaction B, released only once A has
+    already executed (but not committed) its writes, raises it to a smaller
+    1. Both values stay within the canonical ceiling deliberately, so the
+    ``LEAST`` half of the clamp cannot mask a broken ``GREATEST`` half by
+    capping both outcomes to the same number; A's 2 and B's 1 stay distinct
+    all the way to the final assertion.
+
+    Real Postgres blocks B's UPDATE on A's uncommitted row lock (on both the
+    ``character.books_completed`` row and the ``character_attribute`` row),
+    so B's statement necessarily evaluates ``GREATEST(value_int, 1)`` against
+    A's value at the time B's UPDATE finally executes.
+
+    Under the correct SQL-computed implementation, B blocks until A commits,
+    then reads A's already-raised 2 and computes ``GREATEST(2, 1) == 2``: the
+    smaller concurrent raise cannot regress the stat. Under a buggy rewrite
+    that read ``value_int`` with a plain ``SELECT``, computed
+    ``GREATEST(current, exit_value)`` in Python, and issued an absolute
+    ``UPDATE ... SET value_int = :computed``, B's SELECT would read ``might``
+    BEFORE A's commit (Postgres MVCC does not block a plain read on another
+    transaction's uncommitted write), compute ``GREATEST(0, 1) == 1`` in
+    Python from that stale pre-A value, and then, once A's lock releases,
+    overwrite the row with the literal 1, clobbering A's 2 down to 1. This
+    test's ``== 2`` assertion below fails outright (reads 1) under that
+    mutation, while ``books_completed`` would still read 2 regardless (that
+    increment uses the same ``column = column + 1`` pattern, which commutes
+    correctly either way), pinning the failure to the attribute raise
+    specifically rather than to the completion bookkeeping.
+    """
+    await _seed_attributes(sessions, seed.character_id, might=0, wits=0, nerve=0)
+    setback_book, setback_version = await _publish_second_book(sessions, seed)
+    await _seed_reading_state(
+        sessions, seed, var_state={"might": 2}, character_id=seed.character_id
+    )
+    async with sessions() as session:
+        session.add(
+            ReadingState(
+                child_profile_id=seed.child_profile_id,
+                storybook_id=setback_book,
+                version=setback_version,
+                current_node="n_fire",
+                var_state={"might": 1},
+                path=["n_fire"],
+                visit_set=["n_fire"],
+                save_slots={},
+                state_revision=0,
+                character_id=seed.character_id,
+                seed_var_state=None,
+            )
+        )
+        await session.commit()
+
+    session_a = sessions()
+    session_b = sessions()
+    try:
+        reading_state_a = await session_a.get(
+            ReadingState, (seed.child_profile_id, seed.storybook_id)
+        )
+        reading_state_b = await session_b.get(
+            ReadingState, (seed.child_profile_id, setback_book)
+        )
+        assert reading_state_a is not None
+        assert reading_state_b is not None
+
+        a_flushed = asyncio.Event()
+        release_a = asyncio.Event()
+
+        async def _raise_a() -> None:
+            await progression.record_progression(
+                session_a,
+                reading_state=reading_state_a,
+                character_id=seed.character_id,
+                ending_id="concurrency-a",
+                exit_var_state={"might": 2},
+            )
+            a_flushed.set()
+            await release_a.wait()
+            await session_a.commit()
+
+        async def _raise_b() -> None:
+            await a_flushed.wait()
+            await progression.record_progression(
+                session_b,
+                reading_state=reading_state_b,
+                character_id=seed.character_id,
+                ending_id="concurrency-b",
+                exit_var_state={"might": 1},
+            )
+            await session_b.commit()
+
+        async def _release_after_delay() -> None:
+            # #CRITICAL: timing: session_b's writes block at the real
+            # Postgres level (MVCC waiting on session_a's uncommitted row
+            # locks), not on a Python-level lock, so this sleep only needs to
+            # outlast the time for session_b to reach that wait.
+            # #VERIFY: a flaky failure here would mean 0.2s was too short on
+            # a slow CI runner; widen the sleep rather than removing the
+            # synchronization (mirrors the activation-collision test's own
+            # marker).
+            await asyncio.sleep(0.2)
+            release_a.set()
+
+        results = await asyncio.gather(
+            _raise_a(), _raise_b(), _release_after_delay(), return_exceptions=True
+        )
+    finally:
+        await session_a.close()
+        await session_b.close()
+
+    for result in results:
+        assert not isinstance(result, BaseException), result
+
+    books_completed, values = await _character_progress(sessions, seed.character_id)
+    assert books_completed == 2
+    assert values["might"] == 2

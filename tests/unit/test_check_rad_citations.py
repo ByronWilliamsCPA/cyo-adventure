@@ -198,6 +198,39 @@ def test_class_qualified_chain_checks_every_component(repo: Path) -> None:
     assert _findings(repo, bad) == ["tests/unit/test_widget.py::TestGhost"]
 
 
+def test_parametrize_suffix_is_swallowed_not_treated_as_a_separate_citation(
+    repo: Path,
+) -> None:
+    """A pytest parametrize suffix like ``[case1]`` is consumed by the chain match.
+
+    ``_PY_CITATION_RE`` appends ``(?:\\[[^\\]]*\\])?`` to the ``chain``
+    alternative so a citation like ``test_x[case1]`` -- pytest's own node-id
+    format for one parametrized case -- resolves against the base function
+    ``test_x``. A citation using a plain, harmless case id (``[case1]``)
+    cannot actually prove this group does anything: ``_NAME_BODY`` never
+    includes ``[``, so the chain match already stops right before the
+    bracket whether or not the optional group exists, and the base name
+    resolves correctly either way.
+
+    A case id that itself looks like a bare test name (starts with
+    ``test_``) can distinguish the two: if the optional group were removed,
+    ``finditer`` would leave the bracket's contents unconsumed and its *next*
+    scan, starting right after the swallowed chain, would find
+    ``test_case_variant`` sitting there, preceded by ``[`` -- not a
+    word/path/``::`` character, so the bare-citation alternative's negative
+    lookbehind does not exclude it -- and report it as an independent bare
+    citation. ``test_case_variant`` is not a real test anywhere in the
+    fixture repo, so that citation would be reported stale, producing a
+    finding this test's ``== []`` assertion would catch.
+    """
+    source = _write_source(
+        repo,
+        "# #VERIFY: tests/unit/test_widget.py::"
+        "test_widget_rejects_a_blank_name[test_case_variant].\n",
+    )
+    assert _findings(repo, source) == []
+
+
 # --------------------------------------------------------------------------
 # Shape 2: multi-line comma list whose continuation lines re-open with "::"
 # --------------------------------------------------------------------------
