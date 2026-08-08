@@ -15,7 +15,7 @@ source: "Fresh-look capability review session, 2026-07-16"
 
 # Capability Register
 
-> **Status**: Active | **Version**: 1.9 | **Created**: 2026-07-16 | **Updated**: 2026-08-01
+> **Status**: Active | **Version**: 1.10 | **Created**: 2026-07-16 | **Updated**: 2026-08-08
 > (v1.4: note corrections and ruling queue from the full traceability review, see
 > [traceability-review-2026-07-16.md](./traceability-review-2026-07-16.md);
 > v1.5: owner rulings applied: K18 and A16 minted, back button ratified, ADR-007
@@ -41,7 +41,13 @@ source: "Fresh-look capability review session, 2026-07-16"
 > and POV rulings change presentation and content contracts under existing IDs (K1, K2,
 > K5, K11, K13) rather than minting new ones; ADR-026 and ADR-011 section 10 are their
 > decision records. K8's illustration pilot (plan wave 4) and K23/K22 delivery will flip
-> statuses when shipped)
+> statuses when shipped;
+> v1.10 (2026-08-08): **K24** minted for the reader-facing persistent character (build once,
+> carry across every participating book), the runtime half of
+> [ADR-028](./adr/adr-028-persistent-reader-characters.md)'s K3 extension, delivered on branch
+> `feat/persistent-characters-runtime`. Partial: the runtime and CH-* proof exist but no catalog
+> book has shipped participating yet, tracked as the pathfinder pilot under
+> [UW-A46](./unscheduled-work-register.md))
 
 > **Delivery update (2026-07-17, M4b-d execution on branch
 > claude/app-capabilities-review-wm6gt3)**: the following capabilities moved to DELIVERED
@@ -150,6 +156,7 @@ initiate (K11 | G4 | A10)
 | K21 | Collect and be celebrated: an endings gallery (found endings as cards, unfound as silhouettes), finished-shelf states, and story-themed badges earned from real reading (distinct endings, distinct books, replay depth); rewards are made of story, never points or currency; family-visible within ring 1, never ranked against siblings, never crossing ring 2 | 🟡 | **Minted 2026-08-01** from owner decisions D6/D12 ([design-review-kid-appeal-2026-08-01.md](./design-review-kid-appeal-2026-08-01.md) section 8; design authority [gamification-recommendation-2026-08-01.md](./gamification-recommendation-2026-08-01.md) sections 1-2). Row wording awaits owner sign-off. **Delivered 2026-08-01** end to end: backend projection (`progress/` package, `GET /v1/me/progress`, badges 1-8/10/11) and kid UI (`EndingsGallery.tsx`, `BadgeCase.tsx`, `BookCard` ribbons, `BadgeUnlockToast` with badges_enabled suppression). Residuals: badges 9 and 12 (dependencies landed same day, trailing work), curated badge art (placeholder styling). Bounded by K14: no loss states, no leaderboards, no purchasable anything |
 | K22 | A weekly reading-days ring: "you read on N days this week" toward a per-band default goal, celebrating a filled week and doing nothing at all on an unfilled one; no consecutive-day streak, no resets, no reminders; goal capped at 6 so one free day is always guaranteed; off by default at 3-5; teen bands set their own goal within a guardian cap | 🟡 | **Minted 2026-08-01** from owner decisions D6/D16/D17 (per-band defaults table P-A, approved). Row wording awaits owner sign-off. Design authority: gamification recommendation section 2.3 (the no-loss-state rationale and the calendar-day versus reading-days evidence). **Delivered same day**: `WeeklyRing.tsx` in the kid shell, server-resolved P-A defaults (`api/progress.py::_resolve_ring_settings`, cap-6 triple-backstopped), once-per-week celebration, fail-closed on fetch errors, guardian toggles. Residual: teen self-set goal within the guardian cap (guardian-only in v1, #ASSUME-tagged both sides). Guardian per-profile controls are G19 |
 | K23 | My reading days are counted honestly and privately: active reading time captured at day grain only (nothing finer ever leaves the device), surfacing to the child as days and milestones, never minutes; guardian sees minutes per day as a literacy signal (G9); first-party only, 12-month day-grain retention default, and never used to make the app harder to put down | 🟡 | **Minted 2026-08-01** from owner decisions D12 (total active reading time added) and the plan defaults (retention). Row wording awaits owner sign-off. **Substrate delivered 2026-08-01**: reading_activity_day table (CASCADE, RLS, deletion-drill), idempotent clamped flush endpoint with server-side enforcement of the guardian pause toggle, 90s-idle visibility-gated client accumulator with offline day buckets. Residuals: 12-month retention/rollover job unbuilt (documented in the model), counsel-bundle entry pending (UW-M03). Extends S10's data classification (new child-linked behavioral category; counsel-bundle retention entry per UW-M03) and is bound by K14's no-dark-patterns exclusion, which the trust copy makes testable: "nothing in the app punishes a missed day" |
+| K24 | Build a character once, in kid terms (a look and archetype, or trained strengths in a gamebook), and have that same character remembered and carried into every other participating book, instead of starting from nothing each time | 🟡 | **Minted 2026-08-08** for the persistent-characters runtime (branch `feat/persistent-characters-runtime`), which delivers the reader-facing half of [ADR-028](./adr/adr-028-persistent-reader-characters.md)'s K3 extension (the validator-side authorization) end to end: character creation and picker UI (`frontend/src/characters/CharacterCreator.tsx`, `CharacterPicker.tsx`), server-derived binding with the seed snapshotted once at read start (`api/reading.py::_bind_active_character`, never a client-supplied `character_id`), progression written back idempotently on satisfying endings (`characters/progression.py`, keyed on the `character_book_completion` primary key), and the bound character surfaced in the reader (`Reader.tsx`). Partial because no catalog book has shipped participating yet: the CH-* proof and the runtime both exist, but until a book is promoted with a declared `accepts_character` envelope and published, no reader can exercise this. The pathfinder pilot (one participating skeleton, K18 rating comparison against a matched non-carrying skeleton as the GO/NO-GO basis) is [UW-A46](./unscheduled-work-register.md)'s remaining open item |
 
 ## G: Guardian capabilities
 
