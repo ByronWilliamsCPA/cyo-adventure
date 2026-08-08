@@ -22,8 +22,9 @@ import { back, canGoBack, choose, isEnding, start, startContinuation } from './e
 import type { ContinuationSeed } from './series'
 import type { ReadingState, Storybook } from './types'
 
-// start()/startContinuation() throw on a dangling start_node (same contract as
-// choose()/back()), but have no prior reading state to fall back on. On that
+// start()/startContinuation() throw on a dangling start_node (the same
+// throwing contract as choose(); back() is the one exception, failing closed
+// with null), but have no prior reading state to fall back on. On that
 // throw, hand back an inert placeholder ReadingState with error: true instead
 // of letting the throw escape: Reader.tsx renders the error branch before ever
 // reading `current_node` off a real node, so the placeholder is never
@@ -64,8 +65,9 @@ export interface ReaderContext {
   story: Storybook
   reading: ReadingState
   // Set when a transition could not be applied (a structurally invalid
-  // choice: a dangling target or corrupted cached state). choose()/back()
-  // throw on that by contract (shared with the Python conformance corpus),
+  // choice: a dangling target or corrupted cached state). choose() throws on
+  // that by contract (shared with the Python conformance corpus; back() is the
+  // exception, failing closed with null rather than throwing),
   // and XState's actor runtime catches an assign() throw internally and
   // permanently stops the actor rather than letting it propagate to the
   // caller of send() (there is no way to recover an actor once that
@@ -74,8 +76,8 @@ export interface ReaderContext {
   // contract (a dangling start_node), and is guarded the same way: both by
   // `reset` (RESTART) and by the initial-context factory below, via
   // safeStart().
-  // #CRITICAL: data-integrity: never let choose()/back()/start() throw
-  // escape an assign() action or the context factory; the actor would die
+  // #CRITICAL: data-integrity: never let a choose()/start()/startContinuation()
+  // throw escape an assign() action or the context factory; the actor would die
   // (or render would crash into the generic AppErrorBoundary instead of the
   // reader's own recovery screen) and even RESTART could stop working.
   // #VERIFY: machine.test.ts "recovers from a throwing transition".
@@ -86,11 +88,22 @@ export interface ReaderContext {
   // to fall back to the new-reader path and would silently replace a child's
   // carried series state with this book's declared initials.
   // #CRITICAL: data-integrity: a continuation read MUST restart as a
-  // continuation. Dropping the seed rewinds a series reader to this book's own
-  // start_node and declared variable values, which can open a gated branch the
-  // child never earned (or discard one they did), with nothing logged.
+  // continuation for as long as this machine is mounted. Dropping the seed
+  // rewinds a series reader to this book's own start_node and declared
+  // variable values, which can open a gated branch the child never earned (or
+  // discard one they did), with nothing logged.
   // #VERIFY: machine.test.ts "reader machine RESTART on a continuation read
   // (issue #460)".
+  // #EDGE: data-integrity: that guarantee is session-scoped, and deliberately
+  // so for now. The seed reaches us from router location.state (ContinueSeries
+  // navigates, ReaderRoute parses), and ReadingState records no continuation
+  // provenance, so a read re-entered in a later session (reload, deep link,
+  // library re-entry) arrives with `continuation` undefined and restarts as an
+  // ordinary new reader, exactly as it did before issue #460. Restart-within-
+  // the-session is the case #460 filed; the durable case is the still-open
+  // half of debt SL10.
+  // #VERIFY: persist the seed with saved progress (SL10 proposes IndexedDB),
+  // then assert a restart honours it after a remount with no location.state.
   continuation?: ContinuationSeed
 }
 
