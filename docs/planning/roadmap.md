@@ -98,15 +98,16 @@ expanded in place below.
 
 ### Now queue (days, before Phase 4b starts)
 
-**2026-08-08 re-audit: 4 of 5 done, 1 not done.** (Prior 2026-07-20 status: 3 done, 1 done
+**2026-08-08 re-audit: items 1 through 4 are done.** (Prior 2026-07-20 status: 3 done, 1 done
 modulo unverifiable infra secrets, 1 not done.) The change is item 2, whose only open caveat
 was that the repo cannot see whether GitHub environment secrets are populated. That is now
 settled, and by evidence rather than inspection: both scheduled tiers complete real
 email/password sign-ins against their live targets, which is impossible with absent or wrong
-secrets. Item 5 is unchanged and remains the single blocker; it is owner-gated, not
-engineering work. Note that a tier being *red* does not reopen items 2 or 3: what those items
-claim is that the harness exists and is wired, and a tier that runs, authenticates, and
-reports real assertion failures has demonstrated exactly that.
+secrets. This re-audit did not reassess item 5, which is owner-gated rather than engineering
+work; read its own row below for current status rather than inferring it from this header.
+Note that a tier being *red* does not reopen items 2 or 3: what those items claim is that the
+harness exists and is wired, and a tier that runs, authenticates, and reports real assertion
+failures has demonstrated exactly that.
 
 1. ✅ **Done.** Both PRs merged (#267, #268, folded into #270). Both review conditions
    satisfied: `capability-register.md`'s A12 entry names the admin child-PIN authority
@@ -115,18 +116,24 @@ reports real assertion failures has demonstrated exactly that.
    family-connection CRUD).
 2. ✅ **Done, and the secrets caveat is resolved.** `.github/workflows/e2e-staging.yml` exists,
    is scheduled daily, and references the three `staging` environment secrets. Re-verified
-   2026-08-08: the 2026-08-07 run signed in and completed its main tier 15 of 15, so the
-   secrets are populated. Its only red is the post-tier `device-grant-sweep`, which reports
-   that the test family still holds an active device grant. That is a known harness artifact,
-   not a product defect and not a secrets problem: a serial-block retry runs on a **new**
-   worker, so the failed first attempt never reaches its own revoke step and leaks its grant,
-   while the retried attempt passes and the tier reports green. This run shows exactly that
-   shape (test 15 failed, retried as 17-19 and passed, sweep then found the orphan).
+   2026-08-08: the 2026-08-07 run signed in and its main tier reported green, so the
+   secrets are populated. Stated precisely, the tier ran 16 tests, 15 passing and 1 flaky;
+   "15 of 15" would understate the retry. Its only red is the post-tier `device-grant-sweep`,
+   which reports that the test family still holds active device grants. That is a known
+   harness artifact, not a product defect and not a secrets problem: a serial-block retry runs
+   on a **new** worker, so the failed first attempt never reaches its own revoke step and leaks
+   its grant, while the retried attempt passes and the tier reports green. This run shows
+   exactly that shape (test 15 failed, retried as 17-19 and passed, sweep then found the
+   leak). One caveat the mechanism does not fully explain: the sweep names **three** grants
+   (`bb2ced27`, `260fcc51`, `b631c2e2`), not one, which points at accumulation across runs
+   rather than a single retry, and means the sweep is reporting a backlog that nothing clears.
 3. ✅ **Done, same caveat resolved.** `e2e-prod.yml` exists (scheduled daily, 30 min after
    staging) with a dedicated "alert on failure" step that opens/comments on an issue labeled
-   `e2e-alert`. Re-verified 2026-08-08: the `production` environment's secrets are populated
+   `e2e-alert`. Re-verified 2026-08-08: the `production-e2e` environment's secrets are populated
    and the tier authenticates against live production, evidenced by the 2026-08-07 run's 21
-   passed. Its 2 failures are a real product defect it correctly caught
+   passed. Note the environment name: the workflow deliberately does **not** use `production`,
+   which carries a required-reviewer protection rule that would park a scheduled, unattended run
+   in `waiting` indefinitely; `e2e-prod.yml` carries a `#CRITICAL` comment saying so. Its 2 failures are a real product defect it correctly caught
    ([#639](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/639) / `UW-L07`), and the
    alert path also works: the failure job is maintaining issue #623 as designed.
 4. ✅ **Done.** `validator-rules.md` has a PL-22 entry (band profile fail-closed);
@@ -372,7 +379,7 @@ The old wording stands in historical sections above; this table governs.
 | M4c: Family loops | S9, G10, G9, K12 complete, G7 real budget consent + G13 balance | 2-3 wks | ✅ Substantially delivered 2026-07-17 (PR #270); push channel closed 2026-07-28 (SSE stream, G10 now ✅); open: S9's server-scheduled digest job |
 | M4d: Connections | G17 consent, K17 surfaces, A15 enforcement guard (ADR-016 ring 2) | 2-3 wks, overlaps 4c | ✅ Substantially delivered 2026-07-17 (PR #270). Corrected 2026-08-01: this row said "Delivered" while the phase table said "Substantially delivered"; code validation settles it as the latter. Dual consent is genuinely enforced twice over (`recommendations.py:203` `_is_dual_consented`, plus a second ring-2 gate in `personalization.py`). Open: the erasure CASCADE is migrated but no test creates a `FamilyConnection` then deletes a family, and `models.py:786-789`'s `#VERIFY` points at `test_deletion_drill.py`, where the only connection lives in an *export* test; no integration or e2e test drives ring-2 dual consent over the real stack |
 | M5: Hardened family tier | Phase 5 expanded scope: purge, offline revocation, audit view, re-screen, restore drill, nightly/staging/prod test ladder green with alerting | 2-3 wks | 🟡 M4b-4d dependency satisfied as of 2026-07-17. **Revised 2026-08-01 against code**: the audit view IS built (`frontend/src/admin/AuditPage.tsx`, routed at `/admin/audit`) and safety gap **H1 is closed** (`assignments.py:285-312` raises on `book_rank > profile_rank`, with a regression test); H2 is half closed, since the human cover-approval gate exists and only the automated image classifier is missing. All three test ladders have real `schedule:` triggers. Genuinely remaining: the performance pass, backups plus restore drill, the H2 classifier, and the H1 residual (the band check is fail-open on blobs lacking band metadata) |
-| **M5.1 = R1 (full): "the web app functions properly"** | Every family-tier register row at delivered status; the five golden journeys green on the full test ladder | **~9-13 wks cumulative from start** | 🟡 Closer than scheduled: the register's K/G/A/S rows are now mostly ✅/🟡 with few ❌ remaining (see capability-register.md v1.7); the live E2E sign-off (`r1-live-e2e-checklist.md`) is still an empty, unexecuted table. **Added 2026-08-06 by owner ruling OG7** (`story-structure-improvement-plan.md` §8.1): the catalog is also reachable-empty, and `UW-G14` (promoting the 23 authored books) now carries the `R1` token as a named blocker of this row, on the argument that a library with zero reachable catalog books is not a family-tier row at delivered status, it is the core reading loop failing for any family that has not completed a custom request |
+| **M5.1 = R1 (full): "the web app functions properly"** | Every family-tier register row at delivered status; the five golden journeys green on the full test ladder | **~9-13 wks cumulative from start** | 🟡 Closer than scheduled: the register's K/G/A/S rows are now mostly ✅/🟡 with few ❌ remaining (see capability-register.md v1.7); the live E2E sign-off (`r1-live-e2e-checklist.md`) has been executed twice and stands at 10 of 38 steps ticked as of 2026-08-08, with the remaining 28 owner-gated except for the #639 fix (see the M4.1 row above for the evidence tiers). **Added 2026-08-06 by owner ruling OG7** (`story-structure-improvement-plan.md` §8.1): the catalog is also reachable-empty, and `UW-G14` (promoting the 23 authored books) now carries the `R1` token as a named blocker of this row, on the argument that a library with zero reachable catalog books is not a family-tier row at delivered status, it is the core reading loop failing for any family that has not completed a custom request |
 | M6 = R2: TestFlight iOS | Phase 6 (public auth/multi-tenancy) + Phase 8 (Capacitor shell, IAP); R2-gate debt items closed (G1 child-session scoping is already substantially closed by ADR-014; verify and mark) | 6-9 wks | 🟡 Phase 6's guardian-side substance (JIT onboarding, child-session tokens, profile picker + PIN, parental gate) is already built and tested per the 2026-07-20 audit (see PROJECT-PLAN.md Phase 6); the native iOS/Capacitor path (P6-05 remainder) and all of Phase 8 remain fully unstarted |
 | M7 = R3: Public launch | Phase 7 (ADR-018 D1-D4 executed and Accepted, G11/G12/A12/A14) + Phase 9 (catalog ops, hosted infra, A7/A8 ops levers, submission) | 5-8 wks, partial overlap with M6 | ⏸️ Counsel engagement should start now (long lead) |
 | Completion | Register fully delivered except the post-launch backlog (S12 ring-3, A11 corpus tooling) and parked no-design-element items | - | - |

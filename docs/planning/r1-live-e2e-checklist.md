@@ -1,8 +1,9 @@
 ---
 schema_type: planning
 title: "R1 Live E2E Checklist (cyo.williamshome.family)"
-description: "Manual end-to-end verification checklist for the R1 internal-web deployment, covering the full
-  kid-request, guardian-review, assign, and read journey against the production stack."
+description: "End-to-end verification checklist for the R1 internal-web deployment, covering the full
+  kid-request, guardian-review, assign, and read journey against the production stack. Steps are settled
+  either by an automated production test or by a manual pass, per the evidence tiers below."
 tags:
   - planning
   - testing
@@ -22,7 +23,14 @@ source: "Originated as Task 4.1 of the R1 gap-closure plan (merged, doc archived
 
 Run top to bottom against `https://cyo.williamshome.family` after every deploy. The PR #112 real-backend
 smoke tier (`frontend/e2e-real/`, `npm run test:e2e:real`, local-only, `--workers=1`) is the automated
-pre-deploy gate against a local stack; this checklist is the manual post-deploy verification against prod.
+pre-deploy gate against a local stack; this checklist is the post-deploy verification against prod.
+
+**A step is settled by evidence, not by who produced it.** Changed 2026-08-08: this document was
+originally manual-only, on the assumption that nothing automated ran against production. The daily
+`e2e-prod` cron changed that, so a step may now be ticked from an automated production test under the
+tier rules below, or from a manual pass. What has not changed is that every mutating step, and every
+step spending provider quota, stays manual: automation is admitted as evidence, not as authority to
+write to the real family.
 
 **Accounts** (prod seeding is manual; NEVER run `scripts/seed_dev_data.py` in prod).
 Both accounts below are real Supabase email/password logins. Role columns verified
@@ -94,8 +102,9 @@ that actually matters is what a step claims, not which account produced the evid
   real family's books, requests, or children needs the accounts in the table above,
   because the test account's family is separately seeded.
 
-Since 2026-08-05 the tier has also stopped being uniformly green: three consecutive
-runs failed on the two profile-count assertions, which is how issue
+Since 2026-08-05 the tier has also stopped being uniformly green: four consecutive
+runs failed on the two profile-count assertions (the most recent 2026-08-08 14:07 UTC,
+run `31261130564`), which is how issue
 [#639](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/639) was found. A red
 tier is doing its job here. Note the corollary for the steps it covers: a serial
 describe block aborts at its first failure, so a green *tier* is not the same as an
@@ -126,11 +135,15 @@ ran rather than a suite that passed.
 - [x] `GET /api/v1/health/live` and `/api/v1/health/ready` return 200 **with
       `content-type: application/json`**. Assert the content type, not just the status: see the defect
       below for why a bare 200 is not evidence here. **Verified 2026-08-08**, and the redeploy this step
-      was blocked on has happened: production now serves revision `631c0d8a` (v0.68.0), which carries the
-      `UW-L04` fix. The evidence is `frontend/e2e-prod/health-probe.spec.ts` on the daily cron, whose
-      three assertions have passed against live production on 2026-08-05, 2026-08-06 and 2026-08-07:
-      the canonical endpoint answers as real FastAPI JSON, the old shadowed `/health` path returns
-      exactly 404, and the `/nginx-health` control answers. Those three together are what a bare status
+      was blocked on has happened: production serves the `UW-L04` fix, and as of 2026-08-07 serves
+      revision `631c0d8a` (v0.68.0). The evidence is `frontend/e2e-prod/health-probe.spec.ts` on the
+      daily cron, whose three tests have passed against live production on 2026-08-05, 2026-08-06 and
+      2026-08-07 (runs `31014411104`, `31117078366`, `31188046612`): the canonical endpoint answers as
+      real FastAPI JSON, the old shadowed `/health` path returns exactly 404, and the `/nginx-health`
+      control answers. Note that `631c0d8a` was not committed until 2026-08-07 05:26 UTC, so the two
+      earlier passes were served by an earlier revision. That widens rather than weakens the claim: the
+      fix has been live across at least two deployed revisions, not just the current one. Those three
+      tests together are what a bare status
       check cannot give you: the 404 proves nginx's stub is gone rather than merely moved, and the
       control proves nginx is up, so a green canonical probe cannot be nginx answering for FastAPI.
       Prefer that spec over a hand-run `curl` from a workstation, which on this network resolves
@@ -196,7 +209,10 @@ ran rather than a suite that passed.
       preceding test, which failed on issue [#639](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/639).
       The create/edit half mutates the live family and stays manual regardless.
 - [ ] Sign out and back in; session resumes. **NOT RUN on 2026-08-08**, same serial-block abort as
-      above (`guardian-profiles.spec.ts:104`). Nothing suggests it is broken; it simply never executed.
+      above. Nothing suggests it is broken; it simply never executed. Note that
+      `guardian-profiles.spec.ts:104` covers only the sign-out half (it asserts the return to the login
+      screen); nothing automated asserts that signing back in resumes the session, so even a green tier
+      would leave the second half of this step manual.
 
 ## 1a. Admin sign-in and review queue access
 
@@ -205,7 +221,11 @@ Approving account: `byronawilliams@gmail.com` (sub `21985c35`, `role='guardian'`
 the Accounts section above.
 
 - [x] Admin email/password sign-in succeeds. Verified 2026-08-08 by `guardian-admin-smoke.spec.ts:67`
-      on the daily production cron: all nine surfaces render for this account, four under `/admin`
+      on the daily production cron. Note the account: that spec calls `signInAsProdTestAdmin`, so it
+      drives sub `774ea02b` (family `84b96700`), not the approving account named above. Both hold
+      `is_admin=true`, and this step asserts the admin capability rather than anything family-specific,
+      so the substitution is sound; it is called out so the "this account" below is not misread.
+      All nine surfaces render for it, four under `/admin`
       (`/admin`, `/admin/requests`, `/admin/moderation-thresholds`, `/admin/moderation-dashboard`),
       which an account without the admin capability could not reach.
 - [x] Sign-in lands on the **Guardian** console (`/guardian`); the Admin console is reachable from
@@ -215,15 +235,21 @@ the Accounts section above.
       `principal?.role === 'admin' ? ADMIN_CONSOLE_PATH : GUARDIAN_CONSOLE_PATH`, so it branches on the
       base `role` alone and `is_admin` does not affect the landing surface at all. This account is
       `role='guardian'` with `is_admin=true`, so `/guardian` is the correct and intended destination.
-      The capability surfaces as cross-links instead: `GuardianShell.tsx` renders the "Admin console"
+      The capability surfaces as cross-links instead: `GuardianShell.tsx:168` renders the "Admin console"
       link only when `principal?.isAdmin`, and `AdminShell.tsx` renders the return link only when
-      `role === 'guardian'`. Verified against live production in the same cron run, whose captured
-      guardian navigation carries the Admin console link. No defect: the old assertion would have been
-      satisfiable only by an account with `role='admin'`, and no production account has that role.
+      `role === 'guardian'`. No defect: the old assertion would have been satisfiable only by an account
+      with `role='admin'`, and no production account has that role.
+
+      **Evidence scope, stated precisely because this tick is settled from code plus a unit test rather
+      than from production.** The landing destination is settled from `LoginPage.tsx` above. The nav link
+      itself is asserted only at `GuardianShell.test.tsx:161,169` (jsdom, both the present-when-admin and
+      absent-when-not cases); no spec in `frontend/e2e-prod/` asserts the "Admin console" string, so the
+      cron run does not cover it. Closing that gap is the one piece of automatable work this step still
+      wants: an `e2e-prod` assertion that the link renders for the admin-capable account.
 
 ## 2. Guardian authoring path (intake to published book)
 
-**All 8 steps NOT RUN on 2026-08-08, for a stated reason rather than by omission.** Every step here spends live provider quota (OpenRouter generation plus the OpenAI Stage-0 classifier) and writes real content into the real family, and it needs an interactive sign-in as both `c1f33430` and `21985c35`. None of that is available to an unattended pass, and none of it is engineering work: it is an owner decision to authorize the spend and the writes. Tracked under `UW-F17`. Also re-read the Known blockers note above before starting: classifier quota exhaustion surfaces as a job that stalls at the moderation step with no error in the UI, so a hang here is a 429 in the worker logs until proven otherwise.
+**All 7 steps NOT RUN on 2026-08-08, for a stated reason rather than by omission.** Every step here spends live provider quota (OpenRouter generation plus the OpenAI Stage-0 classifier) and writes real content into the real family, and it needs an interactive sign-in as both `c1f33430` and `21985c35`. None of that is available to an unattended pass, and none of it is engineering work: it is an owner decision to authorize the spend and the writes. Tracked under `UW-F17`. Also re-read the Known blockers note above before starting: classifier quota exhaustion surfaces as a job that stalls at the moderation step with no error in the UI, so a hang here is a 429 in the worker logs until proven otherwise.
 
 - [ ] Submit a story request via Intake; job status shows "Generating..."
 - [ ] RQ worker picks up the job (worker logs show the generation; OpenRouter + classifier calls succeed)
@@ -295,13 +321,15 @@ it the first genuine third-family cross-family subject this checklist has ever h
 `POST /v1/onboarding` with no signup form, so both rows sit on the path a partially-failed or
 unattended JIT provisioning would leave behind.
 
-**A drift trap this creates, worth fixing before it bites.** `guardian-books-and-isolation.spec.ts`
-carries a comment justifying its `toHaveCount(1)` as "not 2, and certainly not 3, the sum across every
-family in the database". Both numbers in that sentence are now wrong: the real family holds 3 and the
-database-wide sum is 4. The assertion is still correct and still fails correctly, but its stated reason
-no longer distinguishes the case it was written to catch, so anyone re-deriving the expectation from
-the comment will reach a false conclusion. Assertions pinned to live production data need their
-justifying counts re-checked whenever this table moves.
+**A drift trap this creates, worth fixing before it bites.** `guardian-books-and-isolation.spec.ts:212`
+carries a comment justifying its `toHaveCount(1)`. All three numbers in it are now wrong, not just the
+two in its closing clause: it opens "The real family has 2 child profiles" (it now has 3), then reasons
+"not 2, and certainly not 3, the sum across every family in the database" (the database-wide sum is now
+4). The opening sentence matters most, because it is the first thing a reader re-deriving the
+expectation hits. The assertion itself is still correct and still fails correctly; only its stated
+reason no longer distinguishes the case it was written to catch. Assertions pinned to live production
+data need their justifying counts re-checked whenever this table moves. Tracked as `UW-L05`, alongside
+the two unexplained families that caused the drift.
 
 - [ ] A second family's guardian cannot see the first family's requests, books, or children.
       **Automated** in `frontend/e2e-prod/guardian-books-and-isolation.spec.ts`.
@@ -318,9 +346,12 @@ justifying counts re-checked whenever this table moves.
       count is genuinely zero, because `story_request` is `family_scoped` too and the same missing GUC
       empties it for every caller. So that assertion passed, on a build where cross-family scoping was
       not working at all. Only the profiles half caught it, and only because it expects a **non-zero**
-      count. #VERIFY: an emptiness assertion over a Tier 1 table needs a non-empty companion assertion
-      in the same test, over a table subject to the same policy; a rendered-heading control proves the
-      page loaded, never that the scoping mechanism ran.
+      count.
+      #ASSUME: data integrity: a rendered-page control is assumed to distinguish "scoped correctly to
+      zero rows" from "scoped to zero rows for everyone", and #639 shows it does not: both render
+      identically. #VERIFY: an emptiness assertion over a Tier 1 table needs a non-empty companion
+      assertion in the same test, over a table subject to the same policy; a rendered-heading control
+      proves the page loaded, never that the scoping mechanism ran.
 - [ ] Kid surfaces never expose guardian-only fields. The concrete contract (`api/review_surface.py`)
       is that guardian-facing responses are story-level and node-id-free: they carry `flagged_count`,
       `node_count`, and merged concern rows, and never `flagged_passages` or raw node `prose`.
@@ -458,7 +489,10 @@ Three things about it are worth carrying forward:
 - **It is a recurrence, not a novel bug.** `_device_principal` already applies the context before its
   Tier 1 reads and carries a `#CRITICAL` comment naming the identical staging outage of 2026-07-18 to
   2026-08-02. That fix was applied to the device branch only. A fix that names its own failure mode in
-  a comment but is applied to one call site is a half fix.
+  a comment but is applied to one call site is a half fix. Sharper still: two `#CRITICAL` blocks in
+  `deps.py` assert as fact the very thing the bug disproves, one of them claiming the device read is
+  "the ONLY pre-principal read" of a Tier 1 table. See `UW-L07` for the exact lines; the fix has to
+  correct those comments too.
 - **The regression test that would have caught it did not exist.**
   `tests/integration/test_rls_tier1_enforcement.py` covers the device branch and has no guardian
   equivalent exercising the real `require_principal` path as `cyo_api`.
@@ -474,11 +508,16 @@ inventory: a fourth family (`adb9e257`) appeared on 2026-08-05 carrying one guar
 profiles, and the real family gained a third child profile. Section 6's table is updated and the
 consequences for the isolation spec's justifying comment are recorded there.
 
-**Owner-gated remainder, unchanged in shape from 2026-08-04.** The 28 untouched steps need one of
-four things this pass could not supply: interactive credentials for subs `c1f33430` and `21985c35`;
-an authorized maintenance window for the single mutating Section 0 step (worker restart); funded
-OpenRouter and classifier quota plus permission to write real content into the live family
-(Sections 2 and 4); and a second physical device with a real offline transition (Section 5). None is
-blocked on engineering. Note also that Section 1's remaining steps are now blocked twice over: they
-are gated on an interactive session, and their automated read-only halves cannot execute until #639
-is fixed, because the serial describe block aborts at the failing test ahead of them.
+**Owner-gated remainder, unchanged in shape from 2026-08-04.** Of the 28 untouched steps, 26 need one
+of four things this pass could not supply, none of which is engineering work: interactive credentials
+for subs `c1f33430` and `21985c35`; an authorized maintenance window for the single mutating Section 0
+step (worker restart); funded OpenRouter and classifier quota plus permission to write real content
+into the live family (Sections 2 and 4); and a second physical device with a real offline transition
+(Section 5).
+
+**The remaining 2 are the exception, and are engineering-blocked.** Section 1's two unticked steps are
+blocked twice over: they are gated on an interactive session like the other 26, *and* their automated
+read-only halves cannot execute until #639 / `UW-L07` is fixed, because the serial describe block
+aborts at the failing test ahead of them. Section 6's cross-family step is blocked the same way and is
+explicitly marked do-not-tick above. So the honest summary is "owner-gated except for the #639 fix",
+not "owner-gated throughout".
