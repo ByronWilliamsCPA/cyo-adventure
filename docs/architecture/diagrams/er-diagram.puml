@@ -1,6 +1,6 @@
 @startuml er-diagram
 ' ============================================================
-' Entity-Relationship Diagram: all 26 ORM Tables
+' Entity-Relationship Diagram: all 29 ORM Tables
 ' CYO Adventure
 '
 ' Source file:
@@ -11,7 +11,7 @@
 ' backed by a CHECK constraint (plain Supabase CLI SQL migrations; the closed
 ' vocabulary is enforced at rest as well as at the application boundary).
 '
-' This diagram draws every table in models.py (26 total). See
+' This diagram draws every table in models.py (29 total). See
 ' docs/architecture/data-model.md for the full, authoritative column
 ' dictionary.
 ' ============================================================
@@ -211,6 +211,74 @@ note right of storybook_version
   control (covers/storage.py).
 end note
 
+entity "character" as character #D7CCC8 {
+  * id : UUID <<PK>>
+  --
+  * child_profile_id : UUID <<FK child_profile.id>>
+  * family_id : UUID <<FK child_profile.family_id>>\n[denormalized for ADR-022 family_scoped RLS]
+  name : VARCHAR(32)
+  archetype : VARCHAR(16) [scout|guardian|trickster|scholar|healer|wildheart]
+  look : VARCHAR(16) [avatar_01 .. avatar_12]
+  is_active : BOOLEAN [default true]
+  books_completed : INT [default 0]
+  retired_at : TIMESTAMPTZ NULL
+  created_at : TIMESTAMPTZ
+  updated_at : TIMESTAMPTZ
+  --
+  Composite FK fk_character_profile_family
+    (child_profile_id, family_id) -> child_profile
+    (id, family_id); ON DELETE CASCADE
+  CHECK ck_character_not_active_and_retired
+    (NOT (is_active AND retired_at IS NOT NULL))
+  CHECK ck_character_archetype (closed 6-value vocabulary)
+  CHECK ck_character_look (closed 12-value vocabulary)
+  CHECK ck_character_books_completed_non_negative (>= 0)
+  PARTIAL UNIQUE uq_character_one_active (child_profile_id)
+    WHERE is_active [any number retired, exactly one active]
+  INDEX ix_character_child_profile_id
+}
+
+entity "character_attribute" as character_attribute #D7CCC8 {
+  * character_id : UUID <<PK, FK character.id>>
+  * name : VARCHAR(16) <<PK>> [archetype|might|wits|nerve]
+  --
+  value_int : INT [archetype: 0-6; might/wits/nerve: 0-2]
+  --
+  ON DELETE CASCADE (character.id)
+  CHECK ck_character_attribute_name (closed 4-value vocabulary)
+  CHECK ck_character_attribute_value_range (per-name range,
+    see value_int; keeps a row from satisfying a range
+    that belongs to a different name)
+}
+
+entity "character_book_completion" as character_book_completion #D7CCC8 {
+  * reading_state_child_profile_id : UUID <<PK, FK reading_state.child_profile_id>>
+  * reading_state_storybook_id : VARCHAR(120) <<PK, FK reading_state.storybook_id>>
+  * character_id : UUID <<PK, FK character.id>>
+  --
+  ending_id : VARCHAR(120) [NOT part of the key; see note]
+  created_at : TIMESTAMPTZ
+  --
+  Composite FK fk_cbc_reading_state
+    (reading_state_child_profile_id, reading_state_storybook_id)
+    -> reading_state; ON DELETE CASCADE
+  character_id ON DELETE CASCADE
+  INDEX ix_character_book_completion_character_id
+    (referencing side of the character_id FK; the PK index
+    cannot serve this CASCADE since character_id trails it)
+}
+note bottom of character_book_completion
+  #CRITICAL data-integrity: this composite PK IS the
+  writeback idempotency mechanism. INSERT ... ON CONFLICT
+  DO NOTHING against it makes a replayed offline completion
+  a no-op instead of double-incrementing
+  character.books_completed.
+  ending_id is deliberately NOT part of the key: a
+  character is credited for a given storybook exactly
+  once, forever, regardless of which ending was reached
+  or how many times the book is re-read.
+end note
+
 entity "reading_state" as reading_state #E0F7FA {
   * child_profile_id : UUID <<PK, FK child_profile.id>>
   * storybook_id : VARCHAR(120) <<PK, FK storybook.id>>
@@ -227,6 +295,8 @@ entity "reading_state" as reading_state #E0F7FA {
   last_synced_at : TIMESTAMPTZ NULL
   created_at : TIMESTAMPTZ
   updated_at : TIMESTAMPTZ
+  character_id : UUID <<FK character.id, NULL>>\n[ADR-028 seed character; ON DELETE SET NULL]
+  seed_var_state : JSONB NULL [ADR-028 attribute snapshot at bind time]
 }
 
 entity "completion" as completion #DCEDC8 {
@@ -465,6 +535,11 @@ storybook ||--o{ story_request : "anchor_storybook_id\n(continuation source)"
 child_profile ||--o{ reading_state : "1 profile\nmany reading states"
 storybook ||--o{ reading_state : "1 story\nmany reader states"
 storybook_version ||--o{ reading_state : "(storybook_id, version)\ncomposite FK"
+child_profile ||--o{ character : "(child_profile_id, family_id)\ncomposite FK (ADR-028);\nON DELETE CASCADE"
+character ||--o{ character_attribute : "canonical stat values\n(archetype, might, wits, nerve)"
+character |o--o{ reading_state : "character_id\nseeds a reading session;\nNULL, ON DELETE SET NULL"
+reading_state ||--o{ character_book_completion : "(child_profile_id, storybook_id)\ncomposite FK; ON DELETE CASCADE"
+character ||--o{ character_book_completion : "character_id\ncredited books;\nON DELETE CASCADE"
 child_profile ||--o{ completion : "1 profile\nmany completions"
 child_profile ||--o{ reading_activity_day : "1 profile\none bucket per day (K23);\nCASCADE on delete"
 storybook |o--o{ story_request : "resulting_storybook_id\nstamped at publish (W0.4);\nSET NULL on delete"
@@ -500,6 +575,14 @@ note bottom of reading_state
   references storybook_version (pk).
   Prevents saving state for a version
   that does not exist.
+  ADR-028: character_id and seed_var_state
+  are both nullable; an unseeded reading
+  state (no character carried into this
+  book) is the normal case, not an error.
+  ON DELETE SET NULL, not CASCADE: deleting
+  a character must not delete the child's
+  reading progress in the books that
+  character played.
 end note
 
 note bottom of user_t
@@ -556,13 +639,20 @@ note left of family
     story_request.family_id, device_grant, kid_flag)
   - child_profile_id FKs: CASCADE (reading_state,
     completion, rating, storybook_assignment,
-    kid_flag, user.child_profile_id), EXCEPT
-    story_request.profile_id which is SET NULL
-    (the request survives, de-linked from the child)
+    kid_flag, user.child_profile_id, and character's
+    composite (child_profile_id, family_id) FK,
+    ADR-028), EXCEPT story_request.profile_id which
+    is SET NULL (the request survives, de-linked
+    from the child)
   - storybook_id FKs: CASCADE (storybook_version,
     storybook_assignment, rating, reading_state,
     kid_flag), EXCEPT story_request.anchor_storybook_id
     which is SET NULL
+  - character.id FKs: CASCADE (character_attribute,
+    character_book_completion), EXCEPT
+    reading_state.character_id which is SET NULL
+    (ADR-028: a deleted character does not take the
+    child's reading progress in its books with it)
   - user.id attribution FKs (created_by, updated_by,
     approved_by, cover_approved_by, reviewed_by,
     resolved_by, changed_by,
