@@ -46,6 +46,30 @@ describe('ARCHETYPE_ROSTER', () => {
   })
 })
 
+describe('CHARACTER_LOOKS', () => {
+  // A literal tuple (not the prior `Array.from`-generated `readonly
+  // string[]`), so `CharacterLook` narrows to these twelve string literals
+  // rather than accepting any string. Pinned by value, mirroring
+  // ARCHETYPE_ROSTER's own pin test above: a change here changes what
+  // CharacterCreator's `look` state can hold.
+  it('pins the twelve-item order backing the CharacterLook literal union', () => {
+    expect(CHARACTER_LOOKS).toEqual([
+      'avatar_01',
+      'avatar_02',
+      'avatar_03',
+      'avatar_04',
+      'avatar_05',
+      'avatar_06',
+      'avatar_07',
+      'avatar_08',
+      'avatar_09',
+      'avatar_10',
+      'avatar_11',
+      'avatar_12',
+    ])
+  })
+})
+
 describe('LOOK_LABELS', () => {
   // #VERIFY citation: characterApi.ts's LOOK_LABELS docstring. A look whose
   // label is missing degrades to a bare ordinal ("Look 7"), which names the

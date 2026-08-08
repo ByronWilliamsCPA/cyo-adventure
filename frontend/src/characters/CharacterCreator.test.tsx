@@ -1,8 +1,9 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi, type MockInstance } from 'vitest'
 
 import { CharacterCreator } from './CharacterCreator'
+import { CHARACTER_NAME_MAX_LENGTH } from './characterApi'
 
 const mockGet = vi.fn()
 const mockPost = vi.fn()
@@ -52,12 +53,32 @@ describe('CharacterCreator', () => {
     expect(onCreated).toHaveBeenCalledWith(CREATED_CHARACTER)
   })
 
+  it('bounds the input to the same constant the submit-time check enforces', () => {
+    // Regression: the input's `maxLength` used to be a second hardcoded 64,
+    // double the actual 32-character server limit, so a child could type
+    // well past what submit would accept before ever seeing an error.
+    render(<CharacterCreator profileId="p1" />)
+    expect(screen.getByLabelText("What's their name?")).toHaveAttribute(
+      'maxLength',
+      String(CHARACTER_NAME_MAX_LENGTH)
+    )
+  })
+
   it('blocks a name over 32 characters client-side and never calls the API', async () => {
+    // The DOM `maxLength` (now the same CHARACTER_NAME_MAX_LENGTH constant,
+    // see the bound-input test above) already stops a child from typing past
+    // 32 characters, so `user.type` can no longer reach this guard: the
+    // browser truncates the keystrokes before they land in state. Setting
+    // `.value` directly with fireEvent bypasses that native constraint the
+    // way a browser autofill/extension or a scripted value assignment could,
+    // proving the submit-time guard is still real defense-in-depth and not
+    // dead code now that the DOM bound matches it.
     const user = userEvent.setup()
     render(<CharacterCreator profileId="p1" />)
 
     const tooLongName = 'a'.repeat(33)
-    await user.type(screen.getByLabelText("What's their name?"), tooLongName)
+    const input = screen.getByLabelText("What's their name?")
+    fireEvent.change(input, { target: { value: tooLongName } })
     await user.click(screen.getByRole('radio', { name: /Scout/ }))
     await user.click(screen.getByRole('radio', { name: /^Look 1\b/ }))
     await user.click(screen.getByRole('button', { name: /Start my adventure/i }))
@@ -111,6 +132,29 @@ describe('CharacterCreator', () => {
     // WCAG 2.5.3: the visible label is a prefix of the accessible name, so
     // "tap Look 1" as spoken by a voice-control user still matches.
     expect(screen.getAllByRole('radio', { name: /^Look \d+, / })).toHaveLength(12)
+  })
+
+  it('focuses the name field on mount, matching ProfilePickerPage UX-K8', () => {
+    render(<CharacterCreator profileId="p1" />)
+    expect(screen.getByLabelText("What's their name?")).toHaveFocus()
+  })
+
+  it('renders no way back when onBack is not supplied (the mandatory empty-profile path)', () => {
+    render(<CharacterCreator profileId="p1" />)
+    expect(screen.queryByRole('button', { name: /never mind/i })).toBeNull()
+  })
+
+  it('calls onBack, not the API, when the back affordance is tapped', async () => {
+    const onBack = vi.fn()
+    const onCreated = vi.fn()
+    const user = userEvent.setup()
+    render(<CharacterCreator profileId="p1" onBack={onBack} onCreated={onCreated} />)
+
+    await user.click(screen.getByRole('button', { name: /never mind/i }))
+
+    expect(onBack).toHaveBeenCalledTimes(1)
+    expect(mockPost).not.toHaveBeenCalled()
+    expect(onCreated).not.toHaveBeenCalled()
   })
 
   it('points the name field at its error message while the error stands', async () => {

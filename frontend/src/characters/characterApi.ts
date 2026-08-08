@@ -37,11 +37,29 @@ export type CharacterArchetype = (typeof ARCHETYPE_ROSTER)[number]
  * `^avatar_(0[1-9]|1[0-2])$`): twelve ids, avatar_01 through avatar_12. This
  * is a distinct catalog from the profile-level named avatar ids in
  * profiles/avatars.ts (fox, owl, dragon, ...); the two must never be confused.
+ *
+ * A literal tuple (not `Array.from` with a widened `readonly string[]`
+ * annotation), mirroring ARCHETYPE_ROSTER just above: `CharacterLook` is
+ * derived from this tuple's own literal types, so an invalid look string is a
+ * compile error everywhere the type is used instead of only failing at the
+ * server on submit.
  */
-export const CHARACTER_LOOKS: readonly string[] = Array.from(
-  { length: 12 },
-  (_, index) => `avatar_${String(index + 1).padStart(2, '0')}`
-)
+export const CHARACTER_LOOKS = [
+  'avatar_01',
+  'avatar_02',
+  'avatar_03',
+  'avatar_04',
+  'avatar_05',
+  'avatar_06',
+  'avatar_07',
+  'avatar_08',
+  'avatar_09',
+  'avatar_10',
+  'avatar_11',
+  'avatar_12',
+] as const
+
+export type CharacterLook = (typeof CHARACTER_LOOKS)[number]
 
 /**
  * Placeholder swatches for the twelve `look` ids (avatar_01..avatar_12).

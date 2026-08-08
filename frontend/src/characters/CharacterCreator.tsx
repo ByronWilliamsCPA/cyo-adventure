@@ -1,5 +1,5 @@
 import { isAxiosError } from 'axios'
-import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 
 import { Button } from '@ds/components/Button'
 
@@ -15,6 +15,7 @@ import {
   LOOK_SWATCHES,
   makeCharactersApi,
   type CharacterArchetype,
+  type CharacterLook,
 } from './characterApi'
 import './characters.css'
 
@@ -25,6 +26,19 @@ export interface CharacterCreatorProps {
   /** Called once the server confirms the new character was created (and is
    * now the profile's active character). */
   onCreated?: (character: CharacterView) => void
+  /**
+   * When set, renders a "never mind" affordance that calls this instead of
+   * submitting. LibraryPage.tsx passes this when the creator was reached by
+   * tapping a book gated on `accepts_character` (see `pendingRead`), so a
+   * child who got here by accident has a way back to the shelf; it clears
+   * `pendingRead` on the caller's side, which is what un-renders this
+   * component. Left undefined for CharacterPicker.tsx's own usage (a
+   * profile with zero characters), where creating one is not optional and
+   * there is nowhere to "go back" to.
+   * #VERIFY: CharacterCreator.test.tsx "renders a way back only when onBack
+   * is supplied" / LibraryPage.test.tsx's character-gate suite.
+   */
+  onBack?: () => void
 }
 
 const ARCHETYPE_LABELS: Record<CharacterArchetype, string> = {
@@ -78,12 +92,18 @@ function lookLabel(look: string, index: number): string {
  * #VERIFY: CharacterCreator.test.tsx "surfaces the server's naming message
  * verbatim on a 422".
  */
-export function CharacterCreator({ profileId, onCreated }: CharacterCreatorProps) {
+export function CharacterCreator({ profileId, onCreated, onBack }: CharacterCreatorProps) {
   const api = useApi()
-  const charactersApi = makeCharactersApi(api)
+  // Memoized so its identity is stable across renders (matches
+  // CharacterPicker.tsx's own `useMemo(() => makeCharactersApi(api), [api])`
+  // pattern); a fresh adapter every render has no correctness cost here (this
+  // component has no effect that lists it as a dependency), but keeping the
+  // two call sites consistent means the next reader does not have to work out
+  // why one memoizes and the other does not.
+  const charactersApi = useMemo(() => makeCharactersApi(api), [api])
   const [name, setName] = useState('')
   const [archetype, setArchetype] = useState<CharacterArchetype | null>(null)
-  const [look, setLook] = useState<string | null>(null)
+  const [look, setLook] = useState<CharacterLook | null>(null)
   const [nameError, setNameError] = useState<string | null>(null)
   const [choiceError, setChoiceError] = useState<string | null>(null)
   const [submitError, setSubmitError] = useState<string | null>(null)
@@ -179,14 +199,21 @@ export function CharacterCreator({ profileId, onCreated }: CharacterCreatorProps
             leaves a child who tabs back to the field afterwards with no
             description of what is wrong, so the field also points at the
             message programmatically (and reports itself invalid) for as long
-            as the error stands. */}
+            as the error stands.
+            autoFocus (UX-K8, matching ProfilePickerPage's PIN field): this
+            form is always an interposed prompt, either from tapping a gated
+            book (LibraryPage.tsx's pendingRead) or from a freshly-created
+            profile with no character yet, so the caret should be ready
+            without a second tap, and focus landing on a properly labelled
+            field is what announces the prompt to assistive tech. */}
         <input
           id="character-name"
           className="character-creator__name-input"
           type="text"
           value={name}
-          maxLength={64}
+          maxLength={CHARACTER_NAME_MAX_LENGTH}
           autoComplete="off"
+          autoFocus
           aria-invalid={nameError !== null}
           aria-describedby={nameError ? NAME_ERROR_ID : undefined}
           onChange={(event) => {
@@ -286,6 +313,15 @@ export function CharacterCreator({ profileId, onCreated }: CharacterCreatorProps
       <Button type="submit" variant="primary" size="lg" disabled={submitting}>
         {submitting ? 'Making your character…' : 'Start my adventure'}
       </Button>
+      {/* Only rendered when this creator was reached optionally (a gated
+          book tap), never for the mandatory empty-profile creation path; see
+          the onBack prop doc above. type="button" so it never submits the
+          form it sits inside. */}
+      {onBack ? (
+        <Button type="button" variant="ghost" size="sm" disabled={submitting} onClick={onBack}>
+          Never mind, take me back
+        </Button>
+      ) : null}
     </form>
   )
 }

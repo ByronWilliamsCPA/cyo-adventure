@@ -946,6 +946,20 @@ describe('LibraryPage active-character source', () => {
     expect(characterCalls()).toHaveLength(1)
     expect(characterCalls()[0]).toEqual(['/v1/characters', { params: { profile_id: 'p1' } }])
   })
+
+  it('issues no character fetch at all in readOnly mode (guardian preview-as-child)', async () => {
+    // PreviewAsChildPage mounts LibraryPage readOnly, outside KidShell, so
+    // (before this fix) the local-fallback branch above still ran and hit
+    // GET /v1/characters even though `!readOnly && ...` means the whole
+    // character section, and this fetch's result, is never rendered.
+    routeGets()
+    renderLibraryReadOnly()
+
+    // Something else that only resolves after the initial render settles,
+    // so the assertion below is not racing the mount.
+    await screen.findByText(IN_PROGRESS.title)
+    expect(characterCalls()).toHaveLength(0)
+  })
 })
 
 /**
@@ -1030,6 +1044,25 @@ describe('LibraryPage character gate', () => {
 
     expect(await screen.findByRole('heading', { name: /make your character/i })).toBeInTheDocument()
     expect(screen.queryByText('Reader Page')).not.toBeInTheDocument()
+  })
+
+  it('a child who taps a gated book by accident can get back to the shelf', async () => {
+    // Regression: tapping a gated book used to have no way out other than
+    // browser Back, which leaves /library/:profileId entirely since
+    // pendingRead is local state, not a route.
+    const user = userEvent.setup()
+    renderWithCharacterState({ status: 'none' }, [GATED_BOOK])
+    fireEvent.click(await screen.findByRole('link', { name: /the gated quest/i }))
+    await screen.findByRole('heading', { name: /make your character/i })
+
+    await user.click(screen.getByRole('button', { name: /never mind/i }))
+
+    // Back on the shelf, not stuck in the creator and not navigated away to
+    // the read.
+    expect(await screen.findByRole('link', { name: /the gated quest/i })).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: /make your character/i })).not.toBeInTheDocument()
+    expect(screen.queryByText('Reader Page')).not.toBeInTheDocument()
+    expect(mockPost).not.toHaveBeenCalled()
   })
 
   it('goes straight to the read for accepts_character false + status none', async () => {

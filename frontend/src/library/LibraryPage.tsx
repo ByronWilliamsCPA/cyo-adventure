@@ -115,7 +115,16 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
   // be present unconditionally: a hook cannot be called conditionally.
   const kidOutlet = useKidOutletContext()
   const shellActiveCharacter = kidOutlet?.activeCharacter ?? null
-  const ownActiveCharacter = useActiveCharacter(shellActiveCharacter ? undefined : profileId)
+  // `readOnly` (guardian preview-as-child, see LibraryPageProps) also
+  // suppresses the fetch, not just the KidShell branch above: the whole
+  // character section below is gated on `!readOnly && ...` and its result is
+  // never rendered in preview mode, so issuing GET /v1/characters on every
+  // PreviewAsChildPage mount was a live network call for a value that could
+  // never be shown. `readOnly` is a prop, not state, so this cannot change
+  // the number of hooks called across renders.
+  const ownActiveCharacter = useActiveCharacter(
+    shellActiveCharacter || readOnly ? undefined : profileId
+  )
   const activeCharacter = shellActiveCharacter ?? ownActiveCharacter
   const [showCharacterPicker, setShowCharacterPicker] = useState(false)
   // Owner decision (gate-rework): a click on a gated card (needsCharacterFor
@@ -447,6 +456,14 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
     return (
       <CharacterCreator
         profileId={profileId}
+        // This creator was reached optionally (a tap on a gated book), not
+        // the mandatory empty-profile path CharacterPicker.tsx renders, so a
+        // child who got here by accident (or changed their mind) has a way
+        // back to the shelf instead of being stuck with only "make a
+        // character" and the browser Back button (which would leave
+        // /library/:profileId entirely, since pendingRead is local state,
+        // not a route).
+        onBack={() => setPendingRead(null)}
         onCreated={() => {
           activeCharacter.refresh()
           setPendingRead(null)
