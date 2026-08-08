@@ -2527,10 +2527,19 @@ export type OnboardingBody = {
  *
  * Verifiable-parental-consent payload (Phase 2 / ADR-018 D1; O-117/O-119).
  *
- * A signature-capture step layered on the Supabase/Google OAuth login that
+ * A typed-name attestation layered on the Supabase/Google OAuth login that
  * already authenticates the guardian: ``signer_name`` is a typed
- * full-legal-name attestation, standing in for the FTC's "sign and submit
- * electronically" method (312.5(b)(2)(i)). ``accepted``, ``policy_version``,
+ * full-legal-name attestation, and the OAuth session supplies the identity
+ * binding. Nothing is drawn, uploaded, or cryptographically signed.
+ *
+ * Do not describe this as an enumerated FTC consent method. It was built on
+ * the belief that it satisfied a "sign and submit electronically" method at
+ * 16 CFR 312.5(b)(2)(i); reading that provision directly on 2026-08-08 found
+ * no such method, and whether this flow is an enumerated method AT ALL is
+ * an open question with outside counsel (ADR-018 D1). The record this model
+ * captures is required under every candidate method, so it stands
+ * regardless of how that question resolves; only the strength of the
+ * verification step is in doubt. ``accepted``, ``policy_version``,
  * ``signer_name``, ``residence_country``, and ``adulthood_attested`` must
  * all be present together to actually record consent; a request that omits
  * or falsifies any of them records nothing (see
@@ -8021,6 +8030,10 @@ export type CreateAdminProfileApiV1AdminProfilesPostData = {
 };
 
 export type CreateAdminProfileApiV1AdminProfilesPostErrors = {
+    /**
+     * Domain rule violation (for example, an exhausted quota).
+     */
+    400: ErrorResponse;
     /**
      * Missing, malformed, expired, or unknown bearer token.
      */

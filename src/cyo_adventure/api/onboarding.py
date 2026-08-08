@@ -93,9 +93,13 @@ async def _record_consent(
     consent: OnboardingConsent | None,
     client_ip: str | None,
 ) -> None:
-    """Persist the guardian's VPC signature-capture consent record.
+    """Persist the guardian's VPC consent record (typed-name attestation).
 
-    Phase 2 / ADR-018 D1; O-117/O-119.
+    Phase 2 / ADR-018 D1; O-117/O-119. "Signature" here means a typed
+    full-legal-name attestation bound to an authenticated OAuth session, not
+    a drawn or cryptographic signature; whether that constitutes an
+    enumerated 16 CFR 312.5(b)(2) method is open with counsel. See
+    ``api/schemas.py::OnboardingConsent`` for the full caveat.
 
     A no-op when ``consent`` is absent, not accepted, or the user already has
     a recorded consent (idempotent: a retried onboarding call must not

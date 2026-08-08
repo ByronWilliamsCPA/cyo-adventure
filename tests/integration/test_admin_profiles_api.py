@@ -11,10 +11,13 @@ from typing import TYPE_CHECKING, cast
 
 import pytest
 
+from cyo_adventure.db.models import Family, User
+
 from .conftest import Seed, auth
 
 if TYPE_CHECKING:
     from httpx import AsyncClient
+    from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 pytestmark = [pytest.mark.integration, pytest.mark.asyncio]
 
@@ -237,6 +240,70 @@ async def test_list_admin_profiles_without_filter_records_all_sentinel(
     event = audit_resp.json()["events"][0]
     assert event["entity_id"] == "all"
     assert event["payload"]["family_id"] is None
+
+
+async def test_admin_create_requires_target_family_consent(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+) -> None:
+    """An admin cannot create a profile in a family with no consenting adult.
+
+    Phase 2 / ADR-018 D1: ``POST /admin/profiles`` is a second child-data
+    collection point alongside the guardian-facing ``POST /profiles``, and
+    16 CFR 312.5(a)(1) gates collection on consent regardless of which adult
+    performs the write. The admin's OWN consent record is irrelevant here:
+    the admin is not the child's parent, so the gate reads the target
+    family's adults.
+    """
+    _ = seed
+    async with sessions() as session:
+        family = Family(name="Unconsented Target Family")
+        session.add(family)
+        await session.flush()
+        session.add(
+            User(
+                family_id=family.id,
+                role="guardian",
+                authn_subject="unconsented-target-guardian",
+            )
+        )
+        await session.commit()
+        target_family_id = family.id
+
+    resp = await client.post(
+        _PROFILES,
+        headers=auth(seed.admin_token),
+        json={
+            "family_id": str(target_family_id),
+            "display_name": "Ungated Kid",
+            "age_band": "5-8",
+        },
+    )
+    assert resp.status_code == 400, resp.text
+    assert "consent" in resp.text.lower()
+
+
+async def test_admin_create_allowed_when_target_family_has_consented(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """The consent gate does not block a family whose guardian has consented.
+
+    The paired positive case for
+    ``test_admin_create_requires_target_family_consent``: seed's family A
+    carries a consented guardian, so the new gate must be transparent to the
+    established admin flow.
+    """
+    resp = await client.post(
+        _PROFILES,
+        headers=auth(seed.admin_token),
+        json={
+            "family_id": str(seed.family_id),
+            "display_name": "Gated OK Kid",
+            "age_band": "5-8",
+        },
+    )
+    assert resp.status_code == 201, resp.text
 
 
 async def test_reactivated_profile_reappears_in_listing(

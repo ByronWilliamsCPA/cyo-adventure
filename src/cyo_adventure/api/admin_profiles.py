@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import asyncio
 from datetime import UTC, datetime
+from typing import TYPE_CHECKING
 
 from fastapi import APIRouter
 from sqlalchemy import ColumnElement, select
@@ -24,11 +25,18 @@ from cyo_adventure.api.schemas import (
     AdminProfileView,
     error_responses,
 )
-from cyo_adventure.core.exceptions import AuthorizationError, ResourceNotFoundError
+from cyo_adventure.core.exceptions import (
+    AuthorizationError,
+    BusinessLogicError,
+    ResourceNotFoundError,
+)
 from cyo_adventure.core.pin import hash_pin
-from cyo_adventure.db.models import ChildProfile, Family
+from cyo_adventure.db.models import ChildProfile, Family, User
 from cyo_adventure.events import ADMIN_ACTOR_ROLE, Actor, EventType, record_event
 from cyo_adventure.storybook.models import AgeBand
+
+if TYPE_CHECKING:
+    import uuid
 
 router = APIRouter(
     prefix="/api/v1", tags=["admin-profiles"], responses=error_responses(401, 403)
@@ -53,6 +61,57 @@ def _require_admin(ctx: Context) -> None:
     if not ctx.principal.is_admin:
         msg = "admin role required"
         raise AuthorizationError(msg, required_permission="admin")
+
+
+async def _require_family_consent(ctx: Context, family_id: uuid.UUID) -> None:
+    """Reject an admin profile create until the TARGET family has VPC consent.
+
+    Phase 2 / ADR-018 D1. The guardian-facing twin,
+    ``api/profiles.py::_require_consent``, reads the CALLER's own consent
+    record, which is the right question there because the caller is the
+    child's parent. It is the wrong question here: an admin creating a
+    profile in another family is not that child's parent, so their own
+    consent record says nothing about whether a parent consented. This gate
+    therefore asks the question that 16 CFR 312.5(a)(1) actually poses, has
+    an adult responsible for this child consented, by reading the target
+    family's own adults.
+
+    Any non-``child`` row counts, not only ``role='guardian'``. An adult who
+    holds the ``admin`` base role can still be the parent of their own
+    family (the roles are orthogonal per ``api/schemas.py::MeView``), and a
+    gate that recognised only ``guardian`` would lock such a family out of
+    profile creation entirely while adding no protection.
+
+    Args:
+        ctx: The request context (principal + unit-of-work session).
+        family_id: The TARGET family the profile would be created in, never
+            the caller's own family.
+
+    Raises:
+        BusinessLogicError: If no adult in the target family has a recorded
+            consent (400).
+    """
+    # #CRITICAL: security: before this gate existed, POST /admin/profiles was
+    # an unguarded child-data collection point: api/profiles.py::
+    # _require_consent covered only the guardian-facing endpoint, so an admin
+    # could create a child profile in a family that had never consented.
+    # #VERIFY: tests/integration/test_admin_profiles_api.py::
+    # test_admin_create_requires_target_family_consent.
+    consented = await ctx.session.scalar(
+        select(User.id)
+        .where(
+            User.family_id == family_id,
+            User.role != "child",
+            User.consent_accepted_at.is_not(None),
+        )
+        .limit(1)
+    )
+    if consented is None:
+        msg = (
+            "the target family has no recorded verifiable parental consent "
+            "(see POST /onboarding); a child profile cannot be created for it"
+        )
+        raise BusinessLogicError(msg, rule="vpc_required")
 
 
 def _view(row: ChildProfile) -> AdminProfileView:
@@ -137,7 +196,7 @@ async def list_admin_profiles(
     return AdminProfileListView(profiles=[_view(row) for row in rows])
 
 
-@router.post("/admin/profiles", status_code=201, responses=error_responses(404))
+@router.post("/admin/profiles", status_code=201, responses=error_responses(400, 404))
 async def create_admin_profile(
     body: AdminProfileCreateBody, ctx: Context
 ) -> AdminProfileView:
@@ -153,6 +212,8 @@ async def create_admin_profile(
     Raises:
         AuthorizationError: If the caller is not an admin (403).
         ResourceNotFoundError: If the target family does not exist (404).
+        BusinessLogicError: If the target family has no recorded VPC consent
+            (400); see ``_require_family_consent``.
     """
     _require_admin(ctx)
     family_uuid = parse_uuid(body.family_id, "family_id")
@@ -160,6 +221,10 @@ async def create_admin_profile(
     if family is None:
         msg = f"family '{body.family_id}' not found"
         raise ResourceNotFoundError(msg)
+    # Ordered after the 404 deliberately: a caller naming a family that does
+    # not exist should learn that, not be told the (vacuously absent) consent
+    # record is the problem.
+    await _require_family_consent(ctx, family_uuid)
     validate_display_name(body.display_name, body.age_band.value)
     row = ChildProfile(
         family_id=family_uuid,
