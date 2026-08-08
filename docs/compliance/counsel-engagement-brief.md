@@ -29,6 +29,11 @@ internal architecture record that entered from secondary sources and were never 
 checked against the primary legal text; we are asking counsel to verify those directly rather
 than rely on our summary of them.
 
+One item is worth reading out of order. Section 1.6 poses a threshold question about whether the
+most expensive piece of what we built was legally required in the first place. It is framed as a
+sub-question of Question 1 rather than as a sixth question, but an answer to it may dispose of
+Question 1 entirely, so counsel may prefer to take it first.
+
 **The product, in plain terms.** CYO Adventure is a choose-your-own-adventure reading app for
 children, delivered as a web app and (planned) an app-store application. A parent or legal
 guardian ("guardian") creates the only account; a child never holds an account, an email
@@ -140,6 +145,75 @@ presumption-of-compliance posture, backed by the program's own audit, for a one-
 on this specific mechanism. We ask counsel to scope the opinion on Section 1.3's question with
 that in mind, for example by noting whether the opinion is durable regardless of a later Safe
 Harbor decision, or is intended to hold only until and unless such membership is obtained.
+
+### 1.6 A threshold sub-question: is a separate signature step required at all?
+
+This is not a sixth question; it is a threshold framing question that sits underneath Section 1.3
+and could dispose of it. We raise it because the company's owner asked a fair and practical
+question that we do not want to answer by assumption:
+
+> Children use many apps, including apps with open free-text chat between users, without any
+> parent ever signing anything. What puts this app in a stricter lane than those?
+
+Our working understanding of why the two situations differ, which we ask counsel to confirm or
+correct, rests on four points:
+
+1. **COPPA has two applicability lanes, and most consumer apps sit in the other one.** COPPA
+   obligations attach either to a service that is *directed to children*, or to a
+   general-audience service that has *actual knowledge* it is collecting personal information
+   from a user under 13. Most of the apps a parent observes their child using are built and
+   operated as general-audience services with a stated minimum age of 13 in their terms. When a
+   child signs up anyway by misstating an age, the operator takes the position that it has no
+   actual knowledge, and on that position no verifiable-parental-consent obligation is triggered
+   at all. The absence of a consent form in those products is therefore not evidence that consent
+   was unnecessary; it is a consequence of the audience classification those operators asserted.
+2. **We have affirmatively declared ourselves into the stricter lane, and did so deliberately.**
+   The company intends to distribute through the Apple App Store's Kids Category, which is itself
+   a declaration that the product is directed to children, and the product's entire marketing and
+   design premise is that it is for children. Section 2.2 records the corresponding internal
+   decision not to rely on any actual-knowledge defense. That decision is what closes the escape
+   route the comparison apps are using.
+3. **Even without that declaration, we would have actual knowledge, because the product requires
+   it to function.** The service matches story text to a child's reading level, which means a
+   guardian tells us each child's age band at profile creation and the system stores and acts on
+   it. We therefore hold, by design and as a functional necessity rather than as an accident,
+   precisely the fact that would defeat a general-audience posture. We do not believe we could
+   credibly adopt the comparison apps' position even if we wanted to.
+4. **Child-typed text leaves our systems for third-party processing.** A child can type a
+   free-text story "wish." That text is screened by third-party classification services before a
+   story is generated. Our understanding is that collection *combined with disclosure to a third
+   party* is the fact pattern that historically carried the highest consent obligations under the
+   FTC's rule, and is the reason the lower-assurance consent methods (the so-called "email plus"
+   approach, used for internal-use-only collection) are not available to us.
+
+**A caveat we want stated plainly rather than left implicit.** The observation that comparable
+apps do not collect a signature is an observation about industry practice, not about the law.
+Several of the largest children's-privacy enforcement actions in the United States, including
+matters against Epic Games (Fortnite), Google/YouTube, and Musical.ly (now TikTok), concerned
+operators that had been running for years in apparent conformity with the practice around them.
+We cite those matters from secondary knowledge and are not asserting their holdings or penalty
+amounts as verified; we mention them only to explain why we treat prevailing practice as weak
+evidence of what is permitted, and we would welcome correction if that framing is wrong.
+
+**The question for counsel.** We understand 16 CFR 312.5(b)(2) to set out an enumerated list of
+methods the FTC deems sufficient, sitting beneath the general standard in 312.5(b)(1) that an
+operator must use a method reasonably calculated, in light of available technology, to ensure
+that the person giving consent is the child's parent. Given that architecture:
+
+- Does the flow described in Section 1.2, **stripped of the signature-capture step**, already
+  satisfy 312.5(b)(1) on its own? The adult has authenticated through a third-party identity
+  provider with an account only they control, has affirmatively created the child's profile, and
+  has set that child's age band. If that combination is already "reasonably calculated," then the
+  signature capture is additional assurance we chose to build rather than a legal requirement,
+  and Section 1.3 becomes a question about how much belt-and-braces we want rather than about
+  compliance.
+- If it is not sufficient on its own, we would like to understand which specific element is
+  missing, so that any future change to the flow does not accidentally remove the element that
+  was doing the legal work.
+
+We ask this deliberately as an over-compliance question. Every additional step in a consent flow
+costs completed sign-ups, and we would rather learn from counsel that a step is optional than
+carry it indefinitely on an untested assumption.
 
 ## 2. Confirmation asks (lower complexity)
 
