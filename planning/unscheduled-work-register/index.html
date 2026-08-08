@@ -5212,9 +5212,9 @@ section of <a href="../roadmap/">roadmap.md</a>, created 2026-07-28 to give this
 </tr>
 <tr>
 <td>UW-G12</td>
-<td>Eight items behind prerequisites: reading telemetry, PL-25 fail-depth floor, outcome-mix floor, challenge mode and permadeath, alternate beat phrasings, per-<code>profile_id</code> ATG scoping, guardian visibility ceiling, growing small cells</td>
+<td>Eight items behind prerequisites: reading telemetry, PL-25 fail-depth floor, outcome-mix floor, challenge mode and permadeath, alternate beat phrasings, per-<code>profile_id</code> ATG scoping, guardian visibility ceiling, growing small cells. <strong>Open prerequisite: SQ-11's alternate-beats ADR</strong> (<code>story-structure-improvement-plan.md</code> §1.1, the value-critical chain), which unblocks the alternate-beat-phrasings item; the rest follow their own named prerequisites. <code>Phase</code> moved <code>post-launch</code> to <code>content</code> on 2026-08-06 by owner ruling OG7: this row lands in the Content workstream once unblocked, and <code>blocked</code> already carries the not-yet-schedulable meaning, so <code>post-launch</code> was asserting deferral twice and contradicting the plan that schedules SQ-11 first</td>
 <td>plan-v2 §5</td>
-<td>post-launch</td>
+<td>content</td>
 <td>blocked</td>
 </tr>
 <tr>
@@ -5226,9 +5226,9 @@ section of <a href="../roadmap/">roadmap.md</a>, created 2026-07-28 to give this
 </tr>
 <tr>
 <td>UW-G14</td>
-<td>23 filled stories committed to <code>main</code> are unpublished; 3 legacy-shaped fills need normalization at import. Mechanism corrected 2026-08-03: issue #347 records a production import run on 2026-07-21 landing 25 stories at <code>in_review</code>, so the open step is the separate admin promotion to <code>visibility='catalog'</code> (<code>publishing/catalog_publish.py::promote_catalog_story</code>), not the import. Live database state is unverified; checking it is step 1 of the SQ-01 runbook</td>
+<td>23 filled stories committed to <code>main</code> are unpublished; 3 legacy-shaped fills need normalization at import. Mechanism corrected 2026-08-03: issue #347 records a production import run on 2026-07-21 landing 25 stories at <code>in_review</code>, so the open step is the separate admin promotion to <code>visibility='catalog'</code> (<code>publishing/catalog_publish.py::promote_catalog_story</code>), not the import. Live database state is unverified; checking it is step 1 of the SQ-01 runbook. <strong><code>Phase</code> moved <code>content</code> to <code>R1</code> on 2026-08-06 by owner ruling OG7</strong> (<code>story-structure-improvement-plan.md</code> §8.1): a library with zero reachable catalog books is the core reading loop failing, not a catalog-growth shortfall, so this is an R1 usability gap rather than ordinary Content-workstream cadence. <strong>It also blocks the <code>M5.1</code> sign-off</strong>, whose exit definition is every family-tier register row at delivered status; that is stated here rather than in <code>Phase</code> because the register permits one token per cell. Owner ruling OG1 (same date) sets the terms: promote everything passing the #529 sweep, kid bands first, holding back <code>the-sunken-temple</code> and <code>the-harrowstone-keep</code> pending the A9 restructure, and treating all three inherited issue #347 questions (billing-defect fix confirmed, hard-block vs advisory settled, per-stage <code>fail_safe</code> direction audited) as blocking prerequisites of the runbook</td>
 <td>draft-stories-manifest</td>
-<td>content</td>
+<td>R1</td>
 <td>unscheduled</td>
 </tr>
 <tr>
@@ -6004,7 +6004,7 @@ have to re-derive them.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 7, 2026 05:16:52 UTC">August 7, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 8, 2026 18:34:55 UTC">August 8, 2026</span>
   </span>
 
     

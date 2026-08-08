@@ -3055,6 +3055,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="8. Owner decision gates">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-recorded-decisions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 Recorded decisions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -3624,6 +3641,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="8. Owner decision gates">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-recorded-decisions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 Recorded decisions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -4126,7 +4160,7 @@ shifts from authoring hours to <strong>owner review bandwidth</strong>, and the 
 <td>OG1</td>
 <td>Publish list and order for the 23 authored books already imported to <code>in_review</code> per issue #347</td>
 <td>SQ-01</td>
-<td>Promote all books that pass the #529 re-moderation sweep, kid bands first. Stated cost, accepted consciously: this ships the single-voice, no-diversity-machinery inventory as-is (analysis 2.7), on the judgment that a reachable catalog beats an empty one; the SQ-13 variant passes are the remedy, and OG1 may hold back specific look-alike pairs. Re-authoring the inventory through the parity-fixed path (SQ-04) first is the alternative, at much higher cost</td>
+<td><strong>Decision recorded 2026-08-06 (owner choice): adopted as proposed, with the look-alike pair held back and all three inherited #347 questions made blocking. Full terms in section 8.1.</strong> Original proposal: promote all books that pass the #529 re-moderation sweep, kid bands first. Stated cost, accepted consciously: this ships the single-voice, no-diversity-machinery inventory as-is (analysis 2.7), on the judgment that a reachable catalog beats an empty one; the SQ-13 variant passes are the remedy, and OG1 may hold back specific look-alike pairs. Re-authoring the inventory through the parity-fixed path (SQ-04) first is the alternative, at much higher cost</td>
 </tr>
 <tr>
 <td>OG2</td>
@@ -4168,7 +4202,102 @@ shifts from authoring hours to <strong>owner review bandwidth</strong>, and the 
 <td>OG7</td>
 <td>Phase disposition for the whole SQ program: map Stage 0-4 (and SQ-01 specifically) onto the register's closed phase vocabulary, per section 11.1</td>
 <td>Whether the register/manifest treat any SQ item as gating R1 (full)/M5.1, and whether UW-G12's <code>post-launch</code>/<code>blocked</code> cell still holds once SQ-11 unblocks it</td>
-<td>Adopt section 11.1's proposed mapping: SQ-01 to the single token <code>R1</code> as a usability gap, not <code>content</code> (the register permits one value per <code>Phase</code> cell, so the <code>M5.1</code> sign-off it blocks is stated in the Item text, not in <code>Phase</code>); SQ-16 and SQ-18 keep their already-established <code>4b</code>; SQ-19, SQ-22 and SQ-24 take no new token (SQ-19's UW-M06 is a cluster-M row with no <code>Phase</code> column, SQ-22 has no register row, and SQ-24's UW-G17 already carries <code>post-launch</code>); every other SQ item to <code>content</code>, matching the roadmap's Content workstream, which is explicitly release-rung-independent. The ruling should also resolve UW-G12's now-inconsistent <code>post-launch</code>/<code>blocked</code> cell against Stage 2's value-critical-chain priority; that register edit is out of this plan's file scope</td>
+<td><strong>Decision recorded 2026-08-06 (owner choice): section 11.1's mapping adopted in full, with one amendment: UW-G12's <code>Phase</code> flips to <code>content</code> immediately rather than waiting on SQ-11. Full terms in section 8.1; the register edits are made.</strong> Original proposal: adopt section 11.1's proposed mapping: SQ-01 to the single token <code>R1</code> as a usability gap, not <code>content</code> (the register permits one value per <code>Phase</code> cell, so the <code>M5.1</code> sign-off it blocks is stated in the Item text, not in <code>Phase</code>); SQ-16 and SQ-18 keep their already-established <code>4b</code>; SQ-19, SQ-22 and SQ-24 take no new token (SQ-19's UW-M06 is a cluster-M row with no <code>Phase</code> column, SQ-22 has no register row, and SQ-24's UW-G17 already carries <code>post-launch</code>); every other SQ item to <code>content</code>, matching the roadmap's Content workstream, which is explicitly release-rung-independent. The ruling should also resolve UW-G12's now-inconsistent <code>post-launch</code>/<code>blocked</code> cell against Stage 2's value-critical-chain priority; that register edit is out of this plan's file scope</td>
+</tr>
+</tbody>
+</table>
+<h3 id="81-recorded-decisions">8.1 Recorded decisions<a class="headerlink" href="#81-recorded-decisions" title="Permanent link">&para;</a></h3>
+<p>Gates rule one at a time; this subsection is the durable record for the ones that have been ruled.
+A gate unlisted here is either still open or ruled elsewhere; section 8's table is the index that
+settles which. OG5 is the one ruled elsewhere: <strong>GO on 2026-08-05</strong>, recorded in section 8's table
+and in <a href="../adr/adr-028-persistent-reader-characters/">ADR-028</a>, because its substance is a design
+rather than a scheduling term. OG2, OG3, OG3b, OG4 and OG6 are all still open as of this writing,
+and deliberately so: each is downstream of evidence that does not exist yet (OG2 needs a month of
+serving data, OG3 needs SQ-11's ADR to exist, OG3b needs SQ-12's run record). Ruling them early
+would be a guess, not a decision.</p>
+<p>Both rulings below were put to the repository owner as a single batched decision on 2026-08-06,
+arising from the R1-completion review session's OG1/OG7 handoff, and answered the same day.</p>
+<h4 id="og1-publish-the-23-already-authored-books">OG1: publish the 23 already-authored books<a class="headerlink" href="#og1-publish-the-23-already-authored-books" title="Permanent link">&para;</a></h4>
+<p><strong>Decision recorded 2026-08-06 (owner choice).</strong> Adopted substantially as proposed:</p>
+<ol>
+<li><strong>Publish set and order</strong>: promote every one of the 23 that passes the #529 re-moderation sweep,
+   kid bands first. The stated cost is accepted knowingly, this ships the single-voice,
+   no-diversity-machinery inventory as-is, on the judgment that a reachable catalog beats an empty
+   one. The SQ-04 re-authoring alternative is <strong>consciously rejected</strong>, not defaulted past: it is
+   the higher-quality path and it was declined on cost, with the SQ-13 variant passes standing as
+   the accepted remedy.</li>
+<li><strong>Held back</strong>: <code>the-sunken-temple</code> and <code>the-harrowstone-keep</code> stay unpromoted pending the A9
+   restructure. They are the one pair on the allowlist for being structurally near-identical, and
+   publishing both together would put the plan's own worst example of template-sameness in front of
+   a reader in week one.</li>
+<li><strong>All three inherited #347 questions are blocking prerequisites of the SQ-01 runbook</strong>, not
+   follow-ups. In order:</li>
+<li>The review-stage billing defect (a nominally-mock provider making real, billed OpenRouter
+     calls, because <code>review_provider</code>/<code>generation_provider</code> bind only their <code>CYO_ADVENTURE_</code>-prefixed
+     env names) must be confirmed fixed <strong>before</strong> a fresh sweep runs. Root-caused in #347's first
+     comment; the fix is not confirmed landed.</li>
+<li>Hard-block versus advisory must be settled, explicitly including whether a large
+     Flesch-Kincaid delta blocks.</li>
+<li>Each moderation stage's <code>fail_safe</code> direction must be audited so a <code>verdict_parse_failed</code>
+     cannot silently PASS content that should have been flagged.</li>
+</ol>
+<p>The reasoning for making all three blocking rather than only the safety-shaped two: the sweep's
+   verdicts are the <em>entire</em> gate between this inventory and a child reader. A gate whose failure
+   direction has not been audited is not evidence of safety, it is evidence of a run having
+   completed. The billing defect is included because it is the standing proof that the provider
+   binding is not doing what the configuration says it is doing, which is exactly the class of fault
+   that would also make a "mock" review stage return verdicts nobody should trust.</p>
+<p><strong>Still to happen, not closed by this ruling</strong>: the promotion run itself
+(<code>publishing/catalog_publish.py::promote_catalog_story</code>), preceded by step 1 of the SQ-01 runbook,
+verifying live database state rather than assuming the 2026-07-21 import rows survive. <code>UW-G14</code>
+flips to <code>done</code> with a Ref at that point, not before.</p>
+<h4 id="og7-phase-disposition-for-the-sq-program">OG7: phase disposition for the SQ program<a class="headerlink" href="#og7-phase-disposition-for-the-sq-program" title="Permanent link">&para;</a></h4>
+<p><strong>Decision recorded 2026-08-06 (owner choice).</strong> Section 11.1's mapping table is <strong>adopted in
+full</strong>, including all five rows the plan flagged "mild" and, among those, the two that stretch the
+<code>content</code> token (Stage 1's SQ-07 to SQ-10 and Stage 3's SQ-15/SQ-17 take <code>content</code> even though they
+are selection and measurement code rather than prose authoring). SQ-01 takes the single token <code>R1</code>,
+reversing <code>UW-G14</code>'s <code>content</code> cell, on
+the plan's own argument that a library with zero reachable catalog books is the core reading loop
+failing rather than a catalog-growth shortfall. SQ-16 and SQ-18 keep <code>4b</code>; SQ-19, SQ-22 and SQ-24
+take no new token.</p>
+<p>One of section 11.1's stated facts has since been overtaken, without changing the ruling it
+supported. The Stage 4 row justified "no new token" for SQ-22 partly on the grounds that SQ-22 had
+no register row for a <code>Phase</code> cell to sit in, and provided for the case where it gained one: "if
+OG5 rules go and the pilot becomes schedulable work with a register row, that row takes its phase
+token at that point." That is what happened. OG5 ruled GO on 2026-08-05 and <code>UW-A46</code> now carries
+the Pathfinder Phase 0 pilot at <code>Phase</code> <code>5</code>, blocked on the CH-* rules. OG7 still assigns SQ-22 no
+token of its own; the row assigned itself one on the path 11.1 anticipated.</p>
+<p><strong>One amendment to the proposal</strong>, on the UW-G12 contradiction that OG7 exists to resolve. The plan
+proposed flipping <code>UW-G12</code> from <code>post-launch</code> to <code>content</code> <em>once SQ-11 unblocks it</em>. The ruling
+flips the <code>Phase</code> cell <strong>now</strong>, leaving <code>Status</code> at <code>blocked</code>. The reasoning is the register's own
+linkage contract, which the plan quotes at section 11's preamble and
+<code>scripts/check_work_linkage.py</code> enforces: every status except <code>done</code> "still needs the phase it will
+land in once resolved." <code>Phase</code> therefore answers <em>where the work lands</em>, and <code>Status</code> separately
+answers <em>whether it can start</em>. <code>blocked</code> is already carrying the not-yet-schedulable meaning
+correctly, naming SQ-11's ADR as the open prerequisite. Leaving <code>post-launch</code> in <code>Phase</code> was a
+second, redundant assertion of deferral, and the one that contradicted this plan. Deferring the
+correction until SQ-11 lands would have kept the register contradicting its governing plan for the
+whole of Stage 2's start, which is precisely the window in which someone scheduling the work would
+read the register and reach the wrong conclusion.</p>
+<p><strong>Register edits made under this ruling</strong> (in the same change as this record):</p>
+<table>
+<thead>
+<tr>
+<th>Row</th>
+<th>Before</th>
+<th>After</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>UW-G12</code></td>
+<td><code>post-launch</code> / <code>blocked</code></td>
+<td><code>content</code> / <code>blocked</code>, with SQ-11's ADR named as the open prerequisite</td>
+</tr>
+<tr>
+<td><code>UW-G14</code></td>
+<td><code>content</code> / <code>unscheduled</code></td>
+<td><code>R1</code> / <code>unscheduled</code>, with the <code>M5.1</code> sign-off it blocks stated in the Item text</td>
 </tr>
 </tbody>
 </table>
@@ -4350,6 +4479,14 @@ it will land in once resolved, which <code>scripts/check_work_linkage.py</code> 
 "Source of truth" column names <code>roadmap.md</code>, not this plan). Gate OG7 in
 section 8 is where the owner rules on the mapping below; nothing here edits a register row or the
 manifest.</p>
+<blockquote>
+<p><strong>Ruled 2026-08-06.</strong> OG7 adopted this table in full, including both rows marked "Yes, explicit
+owner call" and all five rows carrying a "Mild" flag, two of which stretch the <code>content</code> token
+(Stage 1's SQ-07 to SQ-10 and Stage 3's SQ-15/SQ-17). One amendment: <code>UW-G12</code>'s <code>Phase</code> flips to
+<code>content</code> immediately rather than on SQ-11's landing. See section 8.1 for the reasoning and the
+register edits, which are made. The table below is preserved as written, as the argument the
+ruling accepted; the <code>Owner call?</code> column records what was <em>asked</em>, not what is still open.</p>
+</blockquote>
 <p><strong>Proposed mapping, reasoned from the actual work, not asserted by fiat:</strong></p>
 <table>
 <thead>
@@ -4449,6 +4586,9 @@ register row at all), and SQ-24's UW-G17 already carries a settled <code>post-la
 owner most needs to rule on is Stage 2: its current register cell (<code>post-launch</code>/<code>blocked</code> via UW-G12)
 contradicts this plan's own framing of it as the decisive, near-term bet, and that contradiction
 predates this plan.</p>
+<p><strong>Resolved 2026-08-06.</strong> The defaults above were accepted, so the "net answer" paragraph is now the
+actual disposition rather than a conditional one. Stage 2's contradiction is closed: <code>UW-G12</code> reads
+<code>content</code>/<code>blocked</code> from this change forward. Section 8.1 carries the ruling.</p>
 
 
 
@@ -4471,7 +4611,7 @@ predates this plan.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 7, 2026 05:16:52 UTC">August 7, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 8, 2026 18:34:55 UTC">August 8, 2026</span>
   </span>
 
     
