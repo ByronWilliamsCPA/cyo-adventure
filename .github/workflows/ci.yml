@@ -1052,18 +1052,19 @@ jobs:
           DATABASE_URL: postgresql+asyncpg://cyo_adventure:password@localhost:5432/cyo_adventure
         run: uv run python scripts/seed_dev_data.py
 
-      # #ASSUME: timing: --delay-request 1100 keeps consecutive requests from
-      # racing the unit-of-work commit, which lands after the response is sent
-      # (FastAPI yield-dependency teardown): without a delay, a create's row
-      # can be invisible to the immediately following request. It also paces
-      # the suite under the 60 req/min rate limiter wherever that middleware
-      # is enabled (it is off in this stack's ENVIRONMENT=local). The delay is
-      # a mitigation, not the fix: the durable fix is committing the
-      # unit-of-work before the response is sent (api/deps.py::get_db_session),
-      # which affects every fast client and is tracked as follow-up work.
-      # #VERIFY: every newman invocation of this collection (here and the local
-      # loop in docs/api/README.md) must carry the same delay, or fast
-      # back-to-back requests intermittently 403/404 on just-created rows.
+      # #ASSUME: timing: --delay-request 1100 originally mitigated a race
+      # against the unit-of-work commit, which used to land after the response
+      # was sent (FastAPI yield-dependency teardown), leaving a create's row
+      # invisible to the immediately following request. That race is closed:
+      # UnitOfWorkMiddleware now commits at http.response.start, before any
+      # byte reaches the client (issue #461). The delay is kept deliberately,
+      # because it also paces the suite under the 60 req/min rate limiter
+      # wherever that middleware is enabled (it is off in this stack's
+      # ENVIRONMENT=local) and gives margin on a slow runner.
+      # #VERIFY: shortening this delay is a separate change; confirm the suite
+      # is green across several runs before trusting a lower value, and keep
+      # every newman invocation of this collection (here and the local loop in
+      # docs/api/README.md) carrying whatever value is chosen.
       - name: Run newman (JUnit for Test Analytics)
         run: |
           newman run docs/api/postman-collection.json \

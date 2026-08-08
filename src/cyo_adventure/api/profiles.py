@@ -553,8 +553,10 @@ async def create_profile(body: ProfileCreateBody, ctx: Context) -> ProfileView:
         time_capture_paused=body.time_capture_paused,
     )
     ctx.session.add(row)
-    # The unit-of-work dependency commits on success; flush + refresh to read
-    # back the server-generated id and timestamp (same pattern as ratings.py).
+    # UnitOfWorkMiddleware commits on success, just before the response is sent
+    # (the dependency's teardown commit is only the fallback); flush + refresh
+    # to read back the server-generated id and timestamp (same pattern as
+    # ratings.py).
     await ctx.session.flush()
     await ctx.session.refresh(row, ["created_at"])
     return _view(row)

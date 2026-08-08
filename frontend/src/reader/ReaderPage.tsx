@@ -826,7 +826,13 @@ export function ReaderPage({
         story={story}
         initialReading={initialReading}
         characterName={characterName}
+        // Both seeds are forwarded unconditionally, unlike `initialReading`
+        // above: either is ignored for the initial state whenever saved
+        // progress exists, but each is a fact about how this read began, so a
+        // restart must honour it either way (issue #460). They are never both
+        // set for one read; see the #CRITICAL fresh-read note above.
         seed={seed}
+        continuation={continuation}
         onProgress={handleProgress}
         onComplete={handleComplete}
         profileId={profileId}

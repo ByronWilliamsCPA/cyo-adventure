@@ -1065,6 +1065,63 @@ describe('ReaderPage', () => {
     expect(await screen.findByText('Something went wrong')).toBeTruthy()
     expect(screen.queryByTestId('loading')).toBeNull()
   })
+
+  it('forwards the continuation seed to Reader so Read again restarts at the entry node, not the book start (issue #460)', async () => {
+    // Extends continuationStory's shape with a real choice path to an ending.
+    // load() seeds initialReading at n_two regardless of whether ReaderPage
+    // forwards `continuation` to Reader, so that alone cannot catch a dropped
+    // wiring line; RESTART is the discriminating moment, since it is Reader's
+    // OWN `continuation` prop (not ReaderPage's initialReading) that decides
+    // where a restart lands.
+    const continuationSeriesStory: Storybook = {
+      ...continuationStory,
+      id: 's_continuation_restart',
+      nodes: [
+        {
+          id: 'n_one',
+          body: 'chapter one starts',
+          is_ending: false,
+          choices: [{ id: 'c_go', label: 'Go', target: 'n_two' }],
+        },
+        {
+          id: 'n_two',
+          body: 'chapter two starts',
+          is_ending: false,
+          on_enter: [{ op: 'inc', var: 'courage', value: 1 }],
+          choices: [{ id: 'c_end', label: 'Finish', target: 'n_end' }],
+        },
+        { id: 'n_end', body: 'the end', is_ending: true, choices: [] },
+      ],
+    }
+    const continuation: ContinuationSeed = { entryNode: 'n_two', varState: { courage: 2 } }
+    render(
+      <MemoryRouter>
+        <ReaderPage
+          api={okApi()}
+          fetchStory={() => Promise.resolve(continuationSeriesStory)}
+          fetchServerState={() => Promise.resolve(null)}
+          continuation={continuation}
+          profileId="p_seed_restart"
+          storybookId="s_continuation_restart"
+          version={1}
+        />
+      </MemoryRouter>
+    )
+    await screen.findByTestId('reader')
+    expect(screen.getByTestId('passage-body').textContent).toContain('chapter two starts')
+
+    fireEvent.click(screen.getByTestId('choice-c_end'))
+    expect(await screen.findByTestId('ending-screen')).toBeTruthy()
+
+    fireEvent.click(screen.getByTestId('restart'))
+
+    // A restart that dropped the continuation seed here would fall back to
+    // start(): n_one and "chapter one starts", never n_two again.
+    await waitFor(() => {
+      expect(screen.getByTestId('passage-body').textContent).toContain('chapter two starts')
+    })
+    expect(screen.getByTestId('passage-body').textContent).not.toContain('chapter one starts')
+  })
 })
 
 describe('ReaderPage personalization (ADR-023 C3d)', () => {

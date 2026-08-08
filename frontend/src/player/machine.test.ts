@@ -5,7 +5,9 @@ import { fileURLToPath } from 'node:url'
 import { createActor } from 'xstate'
 import { describe, expect, it, vi } from 'vitest'
 
+import { choose, startContinuation } from './engine'
 import { readerMachine } from './machine'
+import type { ContinuationSeed } from './series'
 import type { Storybook } from './types'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
@@ -266,6 +268,182 @@ describe('reader machine error recovery', () => {
     try {
       const actor = createActor(readerMachine, { input: { story: corrupted } })
       actor.start()
+      actor.send({ type: 'RESTART' })
+      const snapshot = actor.getSnapshot()
+      expect(snapshot.status).toBe('active')
+      expect(snapshot.context.error).toBe(true)
+    } finally {
+      logSpy.mockRestore()
+    }
+  })
+})
+
+describe('reader machine RESTART on a continuation read (issue #460)', () => {
+  // Book 2 of a series: every declared initial CONTRADICTS the value the
+  // child carries in, so a restart that fell back to start() would be visible
+  // in var_state as well as in current_node.
+  const book2: Storybook = {
+    schema_version: '2.0',
+    id: 's_book2',
+    version: 1,
+    title: 'Book Two',
+    metadata: {
+      series: {
+        series_id: 's_saga',
+        book_index: 2,
+        series_entry_node: 'n_woods',
+        carries_state: true,
+      },
+    },
+    variables: [
+      { name: 'torch', type: 'bool', initial: false },
+      { name: 'coins', type: 'int', initial: 0, min: 0, max: 9 },
+    ],
+    start_node: 'n_camp',
+    nodes: [
+      {
+        id: 'n_camp',
+        body: 'the prologue a continuation read is meant to skip',
+        is_ending: false,
+        choices: [{ id: 'c_torch', label: 'Take the torch.', target: 'n_woods' }],
+      },
+      {
+        id: 'n_woods',
+        body: 'woods',
+        is_ending: false,
+        on_enter: [{ op: 'inc', var: 'coins', value: 1 }],
+        choices: [{ id: 'c_river', label: 'Cross the river.', target: 'n_river' }],
+      },
+      { id: 'n_river', body: 'river', is_ending: true, choices: [] },
+    ],
+  }
+  const seed: ContinuationSeed = { entryNode: 'n_woods', varState: { torch: true, coins: 4 } }
+  // What startContinuation produces from `seed`: declared initials overlaid
+  // with the carried pair, then n_woods's on_enter increment on top.
+  const carried = { torch: true, coins: 5 }
+
+  it('returns to the entry node with carried variables, not to start_node with declared initials', () => {
+    const actor = createActor(readerMachine, {
+      input: {
+        story: book2,
+        reading: startContinuation(book2, seed.entryNode, seed.varState),
+        continuation: seed,
+      },
+    })
+    actor.start()
+    expect(actor.getSnapshot().context.reading.var_state).toEqual(carried)
+    actor.send({ type: 'CHOOSE', choiceId: 'c_river' })
+    expect(actor.getSnapshot().value).toBe('ended')
+    actor.send({ type: 'RESTART' })
+    const { reading } = actor.getSnapshot().context
+    expect(actor.getSnapshot().value).toBe('reading')
+    expect(reading.current_node).toBe('n_woods')
+    expect(reading.path).toEqual(['n_woods'])
+    expect(reading.var_state).toEqual(carried)
+
+    // The seed is provenance, not a one-shot token: `reset` reads it without
+    // clearing it, so a second RESTART must reproduce the same continuation
+    // start rather than decaying to the new-reader path.
+    actor.send({ type: 'RESTART' })
+    const again = actor.getSnapshot().context.reading
+    expect(again.current_node).toBe('n_woods')
+    expect(again.path).toEqual(['n_woods'])
+    expect(again.var_state).toEqual(carried)
+  })
+
+  it('restarts to the continuation entry point even when the read resumed from saved progress', () => {
+    // The seed is ignored for the INITIAL state whenever saved progress exists
+    // (ReaderPage's rule), but the carried series state is a fact about the
+    // child's history, so a restart must still honour it.
+    // Built by actually taking the choice rather than by overriding
+    // current_node, so the fixture keeps the invariant the server enforces on
+    // saved progress (player/replay.py::_check_structure: current_node ===
+    // path[path.length - 1]). A hand-patched current_node is a state no save
+    // path could ever have produced.
+    const saved = choose(
+      book2,
+      startContinuation(book2, 'n_woods', { torch: true, coins: 4 }),
+      'c_river'
+    )
+    const actor = createActor(readerMachine, {
+      input: { story: book2, reading: saved, continuation: seed },
+    })
+    actor.start()
+    expect(actor.getSnapshot().context.reading.current_node).toBe('n_river')
+    actor.send({ type: 'RESTART' })
+    const { reading } = actor.getSnapshot().context
+    expect(reading.current_node).toBe('n_woods')
+    expect(reading.var_state).toEqual(carried)
+  })
+
+  it('falls back to start() when no continuation seed was supplied', () => {
+    const actor = createActor(readerMachine, { input: { story: book2 } })
+    actor.start()
+    actor.send({ type: 'RESTART' })
+    const { reading } = actor.getSnapshot().context
+    expect(reading.current_node).toBe('n_camp')
+    expect(reading.var_state).toEqual({ torch: false, coins: 0 })
+  })
+
+  it('restarts as a continuation, not as a character read, when both seeds are present', () => {
+    // ReaderPage never sets both for one read (a continuation read is
+    // deliberately not seeded from the active character), so this pins
+    // safeStart's precedence for the only case that can still reach it: both
+    // props surviving to a RESTART. The two branches are distinguishable by
+    // construction, because a character seed enters at start_node while a
+    // continuation enters at its declared entry node.
+    //
+    // Without this test nothing in the suite separates the two orderings: the
+    // whole reader suite stays green with the precedence inverted, which is
+    // why the assertion is on current_node and not only on var_state.
+    const characterSeed = { torch: false, coins: 9 }
+    const actor = createActor(readerMachine, {
+      input: {
+        story: book2,
+        reading: startContinuation(book2, seed.entryNode, seed.varState),
+        continuation: seed,
+        seed: characterSeed,
+      },
+    })
+    actor.start()
+    actor.send({ type: 'RESTART' })
+    const { reading } = actor.getSnapshot().context
+    // Continuation wins: the entry node, not book 2's own start_node.
+    expect(reading.current_node).toBe('n_woods')
+    expect(reading.var_state).toEqual(carried)
+    // And specifically NOT the character-seeded start.
+    expect(reading.current_node).not.toBe('n_camp')
+    expect(reading.var_state).not.toEqual({ torch: false, coins: 9 })
+  })
+
+  it('surfaces context.error instead of dying when the continuation restart throws', () => {
+    // startContinuation throws on the same contract as start(): an unknown
+    // entryNode falls back to start_node (engine.ts), so a dangling start_node
+    // is the one condition under which it has no node to enter.
+    //
+    // `reading` is supplied on purpose. Without it the initial-context factory
+    // calls safeStart itself and context.error is already true before RESTART
+    // is ever sent, which makes the assertion below pass whether or not
+    // `reset` has a working catch. Starting from a healthy state and asserting
+    // error is false first means only reset's own catch can flip it.
+    //
+    // What this test deliberately does NOT prove: that the continuation branch
+    // threw rather than the start() branch. startContinuation can only throw
+    // where start() would throw too, so no fixture can separate them; the two
+    // tests above are what pin the continuation branch.
+    const corruptedBook2: Storybook = { ...book2, start_node: 'n_does_not_exist' }
+    const healthy = startContinuation(book2, 'n_woods', { torch: true, coins: 4 })
+    const logSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    try {
+      const actor = createActor(readerMachine, {
+        input: {
+          story: corruptedBook2,
+          reading: healthy,
+          continuation: { entryNode: 'n_also_missing' },
+        },
+      })
+      actor.start()
+      expect(actor.getSnapshot().context.error).toBe(false)
       actor.send({ type: 'RESTART' })
       const snapshot = actor.getSnapshot()
       expect(snapshot.status).toBe('active')

@@ -3,7 +3,7 @@
 # UV uses standard PEP 621 pyproject.toml format with uv.lock for reproducible builds.
 [project]
 name = "cyo-adventure"
-version = "0.68.2"
+version = "0.68.3"
 description = "A choose-your-own-adventure reading app for kids"
 authors = [
     {name = "Byron Williams", email = "byronawilliams@gmail.com"}
@@ -355,6 +355,13 @@ known-first-party = ["cyo_adventure"]
 # generation.py, this router has no other runtime call into the uuid module
 # to keep ruff from flagging the import on its own.
 "**/api/provider_allowlist.py" = ["TC001", "TC003"]
+# The integration client fixture overrides get_db_session with a dependency that
+# takes `request: Request` so it can reuse the real request_unit_of_work. FastAPI
+# resolves that annotation string at override time via typing.get_type_hints, so
+# fastapi.Request must be a runtime import here even though it appears only in an
+# annotation, and it arrives on an import line of its own (TC002 rather than the
+# TC001 first-party cases above).
+"tests/integration/conftest.py" = ["TC002"]
 
 # Exception classes legitimately require multiple context parameters in __init__
 "**/core/exceptions.py" = ["PLR0913"]

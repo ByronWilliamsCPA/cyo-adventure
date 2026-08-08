@@ -9,6 +9,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { choose, startContinuation } from '../player/engine'
 import type { ValuesPayload } from '../player/personalization'
+import type { ContinuationSeed } from '../player/series'
 import type { ReadingState, Storybook, VarState } from '../player/types'
 import { clearChildSession, setChildSession } from '../auth/childSession'
 import type { SubmitFlagParams } from '../api/readerApi'
@@ -515,6 +516,76 @@ describe('Reader series continuation', () => {
       endedSeriesStory({ id: 'e_done', kind: 'completion', valence: 'neutral', title: 'Done' })
     )
     expect(await screen.findByTestId('continue-series')).toBeTruthy()
+  })
+})
+
+describe('Reader RESTART honors a continuation seed (issue #460)', () => {
+  // Mirrors player/machine.test.ts's own "book2" fixture for this issue: book 2
+  // of a series whose start node is a prologue a continuation read must skip,
+  // and whose continuation entry node carries an on_enter effect that makes the
+  // carried variables observably distinct from a fresh start's declared
+  // initials. The two node bodies below are the discriminating signal: if
+  // Reader ever stopped forwarding `continuation` into the machine's input,
+  // RESTART would land back on the prologue instead of the entry node.
+  const book2: Storybook = {
+    schema_version: '2.0',
+    id: 's_book2',
+    version: 1,
+    title: 'Book Two',
+    metadata: {
+      series: {
+        series_id: 's_saga',
+        book_index: 2,
+        series_entry_node: 'n_woods',
+        carries_state: true,
+      },
+    },
+    variables: [
+      { name: 'torch', type: 'bool', initial: false },
+      { name: 'coins', type: 'int', initial: 0, min: 0, max: 9 },
+    ],
+    start_node: 'n_camp',
+    nodes: [
+      {
+        id: 'n_camp',
+        body: 'the prologue a continuation read is meant to skip',
+        is_ending: false,
+        choices: [{ id: 'c_torch', label: 'Take the torch.', target: 'n_woods' }],
+      },
+      {
+        id: 'n_woods',
+        body: 'woods',
+        is_ending: false,
+        on_enter: [{ op: 'inc', var: 'coins', value: 1 }],
+        choices: [{ id: 'c_river', label: 'Cross the river.', target: 'n_river' }],
+      },
+      { id: 'n_river', body: 'river', is_ending: true, choices: [] },
+    ],
+  }
+  const seed: ContinuationSeed = { entryNode: 'n_woods', varState: { torch: true, coins: 4 } }
+
+  it('restarts to the continuation entry node with carried variables, not the book start node', () => {
+    render(
+      <MemoryRouter>
+        <Reader
+          story={book2}
+          profileId="p1"
+          continuation={seed}
+          initialReading={startContinuation(book2, seed.entryNode, seed.varState)}
+        />
+      </MemoryRouter>
+    )
+    // The continuation read opens on the entry node, never the prologue.
+    expect(screen.getByTestId('passage-body').textContent).toContain('woods')
+    fireEvent.click(screen.getByTestId('choice-c_river'))
+    expect(screen.getByTestId('ending-screen')).toBeTruthy()
+
+    fireEvent.click(screen.getByTestId('restart'))
+
+    // A restart that dropped the continuation seed would fall back to start():
+    // current_node n_camp and the prologue body, never "woods".
+    expect(screen.getByTestId('passage-body').textContent).toContain('woods')
+    expect(screen.getByTestId('passage-body').textContent).not.toContain('prologue')
   })
 })
 
