@@ -74,7 +74,6 @@
     "test_reset_e2e_real_state_kid_flag_delete_is_noop_on_fresh_seed",
     "test_reset_e2e_real_state_kid_flag_delete_is_noop_on_fresh_seed",
     "test_reset_e2e_real_state_preserves_seeded_storybooks",
-    "test_reset_e2e_real_state_truncates_reading_state",
 ]
 "src/cyo_adventure/api/admin_profiles.py" = [
     "tests/integration/test_admin_profiles_api.py::test_pin_hash_never_serialized",
