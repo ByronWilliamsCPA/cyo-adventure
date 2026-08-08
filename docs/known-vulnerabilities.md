@@ -736,6 +736,114 @@ evidence.
   [PR #597](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/597),
   [workflow run 30950314291](https://github.com/ByronWilliamsCPA/cyo-adventure/actions/runs/30950314291).
 
+## CVE-2026-68480 | linux-libc-dev | High
+
+| Field | Value |
+|-------|-------|
+| **CVE ID** | CVE-2026-68480 (AMD-SN-7061) |
+| **Package** | linux-libc-dev (Debian binary package from the `linux` kernel source package) |
+| **Affected Version** | 6.12.100-1+dhi0 (Debian 13 "trixie", DHI mirror build) |
+| **Fixed Version** | No fix on the trixie track. Trivy reports an empty Fixed Version with status `affected`; the Debian tracker records `trixie` (6.12.94-1) and `trixie-security` (6.12.101-1) as `vulnerable`, with the fix only in sid (7.1.7-1) |
+| **Severity** | High (per Trivy/Aqua feed) |
+| **CVSS Score** | Not assigned in the scan output as of 2026-08-08 |
+| **Discovered** | 2026-08-08 |
+| **Reassessment Due** | 2026-09-30 |
+| **Blocking Release** | No |
+
+### Description
+
+A defect in the x86 Safe-RET mitigation for SRSO (Speculative Return Stack
+Overflow) on affected AMD parts, reported by Trivy as "kernel: AMD-SN-7061: Safe
+RET Interrupt Vulnerability". Per the upstream commit message, an attacker who
+injects interrupts while the Safe-RET sequence is executing can neutralize that
+sequence, potentially leaking data through speculative execution; the fix
+emulates the sequence's register state on return from the interrupt so no `RET`
+is executed afterwards.
+
+**Why this is a feed refresh and not a regression introduced by PR #644.** The
+base-image digest is pinned and byte-identical on `main` and the PR head
+(`sha256:f4a77e21...`), and `linux-libc-dev` is unchanged at 6.12.100-1+dhi0,
+the build PR #547 introduced on 2026-08-02. The most recent run that actually
+executed this job, run 30973596262 on 2026-08-05, was clean. PR #644 changes
+three lockfiles and no Dockerfile, and neither package it bumps (`gitpython`,
+`nanoid`) appears anywhere in the scan output; `nanoid` is a frontend
+dependency that is not in this image at all. The same finding will therefore
+appear on any branch whose Container Security run executes.
+
+One caution specific to this repository, recorded so the next reassessment does
+not misread it: `main`'s tip shows this job as `skipped`, because
+`container-security.yml` skips on `chore(release):` tips. A green `main` is not
+evidence that the finding is absent there, which is why the discrimination test
+above rests on the last *executing* run rather than on main's check status.
+
+### Impact on This Project
+
+The same structural argument as every `linux-libc-dev` entry in this document,
+which is a statement about what the package *is* rather than a judgement about
+severity: it ships kernel UAPI headers used at compile time by userspace
+programs, contains no kernel binary, and executes no kernel code at runtime. The
+container serves a FastAPI web application under whatever kernel the Docker host
+provides. Patching or removing this package would not change which kernel
+actually runs, nor which CPU mitigations that kernel applies.
+
+Being specific rather than waving at the general rule: this defect lives in the
+kernel's CPU-mitigation path for a speculative-execution side channel. Whether
+Safe-RET is robust is decided entirely by the host kernel and the host CPU, on
+the far side of a boundary this container does not sit on either side of.
+Exploitation additionally requires the ability to inject interrupts during the
+mitigation sequence, a host-privilege primitive that no request reaching this
+FastAPI application can reach. Exposure through the application surface is nil.
+
+### Remediation Plan
+
+- [x] Confirm the CVE's status on the [Debian security tracker](https://security-tracker.debian.org/tracker/CVE-2026-68480)
+  for the `trixie` and `trixie-security` tracks before accepting it into
+  `.trivyignore`. **Done 2026-08-08**: `bullseye` (5.10.223-1) vulnerable,
+  `bullseye-security` (5.10.262-1) vulnerable, `bookworm` (6.1.176-1)
+  vulnerable, `bookworm-security` (6.1.180-1) vulnerable, `trixie` (6.12.94-1)
+  vulnerable, `trixie-security` (6.12.101-1) vulnerable, `forky` (7.1.6-1)
+  vulnerable, `sid` (7.1.7-1) fixed. This satisfies the `.trivyignore`
+  precondition that no fix be reachable on this base image's track.
+- [x] Confirm no newer base-image digest is available to bump to instead of
+  accepting the CVE. **Done 2026-08-08**: the live GHCR manifest digest for
+  `ghcr.io/byronwilliamscpa/dhi-python:3.14-debian13` is
+  `sha256:f4a77e21fb25b71ccb183a25a53a1e87db2a3c11b422941b25708c2b5f3b1b13`,
+  identical to the digest already pinned in the Dockerfile. The tag has not
+  moved, so a re-pin is not an available remedy.
+- [ ] Reassess by 2026-09-30, checking whether the sid fix (7.1.7-1) has been
+  backported to `trixie-security`. Deliberately aligned with the CVE-2026-63879
+  and CVE-2026-64561 dates above so one review pass covers all of this image's
+  open kernel-header findings, and inside the 60-day ceiling from the 2026-08-08
+  discovery.
+- [ ] Fold into [issue #535](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/535)
+  at reassessment, which already tracks the open `linux-libc-dev` set.
+
+### Why Not Fixed Yet
+
+No fix exists on the trixie track, confirmed above rather than inferred from
+Trivy's empty Fixed Version field. Even once one lands, this project cannot
+apply it directly: the package is provided by the hardened base image
+(`ghcr.io/byronwilliamscpa/dhi-python:3.14-debian13`), not by this project's
+dependency set, and the DHI runtime image ships no shell and no package manager,
+so it cannot upgrade itself. The runtime stage runs no `apt-get install`, so the
+package cannot be dropped from this repository either. The only path in is a
+base-image digest refresh from the `ByronWilliamsCPA/container-images` mirror
+pipeline, which this project consumes rather than controls, and which the digest
+check above confirms has not yet published one.
+
+Per the Release Gate Policy above, `Blocking Release | No` here is a dated
+verdict, not a standing exemption: it expires on 2026-09-30, at which point the
+process gate closes the release until the entry is reassessed against fresh
+evidence.
+
+### References
+
+- [Aqua AVD CVE-2026-68480](https://avd.aquasec.com/nvd/cve-2026-68480)
+- [Debian security tracker: CVE-2026-68480](https://security-tracker.debian.org/tracker/CVE-2026-68480)
+- Discovered by the Container Security workflow (Trivy) on
+  [PR #644](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/644),
+  [workflow run 31262431949](https://github.com/ByronWilliamsCPA/cyo-adventure/actions/runs/31262431949).
+
 ## Resolved Entries
 
 | CVE              | Package        | Resolved Date | Resolution                                             |
@@ -860,3 +968,4 @@ re-verified rather than carried forward:
 | 2026-07-30  | Byron Williams | Added 7 further linux-libc-dev kernel-header CVEs from the PR #494 Trivy run (64287/64364/64375/64434/64534/64552/64558); all High, none fixed on the trixie track (fix only in sid 7.1.5-1). Tracked in issue #505. Base advanced to 6.12.96-1+dhi0, which clears CVE-2026-53399/64600 from the prior entry. |
 | 2026-07-30  | Byron Williams | Suppressed the 7 new CVEs in .trivyignore per that file's stated scope (base-image OS-package CVEs with no upstream fix, each paired with an entry here). Resolved CVE-2026-53399/64600: removed their .trivyignore block, whose own removal condition (base ships 6.12.96-1) is met; verified fixed in trixie-security 6.12.96-1 on the Debian tracker rather than inferred from scan absence, which suppression would have masked. |
 | 2026-08-04  | Byron Williams | Added linux-libc-dev CVE-2026-64561 (KVM x86 MMU) from the PR #597 Trivy run; High, empty Fixed Version, base version unchanged at 6.12.100-1+dhi0, so a feed refresh rather than an image change (main's run 3.5h earlier was clean). Verified on the Debian tracker before accepting into .trivyignore: trixie and trixie-security both vulnerable at 6.12.100-1, fix is sid-only (7.1.6-1). Reassessment aligned to 2026-09-30 with CVE-2026-63879. |
+| 2026-08-08  | Byron Williams | Added linux-libc-dev CVE-2026-68480 (x86 SRSO Safe-RET) from the PR #644 Trivy run (run 31262431949); High, empty Fixed Version, and the run's only finding. Established it as a feed refresh rather than a PR regression by pinned-digest identity across main and head plus the last executing run (30973596262, 2026-08-05) being clean, since main's own tip shows the job `skipped` and proves nothing either way. Verified on the Debian tracker before accepting into .trivyignore: trixie (6.12.94-1) and trixie-security (6.12.101-1) both vulnerable, fix is sid-only (7.1.7-1). Confirmed the pinned GHCR digest is still the live one, so a base-image re-pin was not an available remedy. Reassessment aligned to 2026-09-30 with CVE-2026-63879 and CVE-2026-64561. |
