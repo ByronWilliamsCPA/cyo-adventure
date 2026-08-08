@@ -745,6 +745,11 @@ export function ReaderPage({
         key={readerKey}
         story={story}
         initialReading={initialReading}
+        // Forwarded unconditionally, unlike `initialReading` above: the seed is
+        // ignored for the initial state whenever saved progress exists, but the
+        // carried series state is a fact about the child's history, so a restart
+        // must honour it either way (issue #460).
+        continuation={continuation}
         onProgress={handleProgress}
         onComplete={handleComplete}
         profileId={profileId}
