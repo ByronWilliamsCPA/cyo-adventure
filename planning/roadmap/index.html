@@ -4974,7 +4974,7 @@ full v1 (Phase 4b and Phase 5) and the later release rungs (R2/R3).</p>
 <tr>
 <td>4c Family Loops (NEW 2026-07-16)</td>
 <td>✅ Substantially delivered (2026-07-28 audit)</td>
-<td>Shipped 2026-07-17 in PR #270: notification feed (<code>GET /notifications</code> + <code>NotificationBell.tsx</code>), guardian engagement visibility (<code>GET /families/me/reading-summary</code> + <code>ReadingPage.tsx</code>), kid-facing generation status, budget consent (envelopes + <code>GET /families/me/budget</code>). Push channel closed 2026-07-28: authenticated SSE (<code>GET /v1/notifications/stream</code>), <code>notificationsStream.ts</code> consumer wired into <code>NotificationBell.tsx</code> as a fallback-preserving addition to the poll (G10 flipped to ✅). Remaining gap: no server-scheduled digest job (S9 stays 🟡, narrowed to this one piece)</td>
+<td>Shipped 2026-07-17 in PR #270: notification feed (<code>GET /notifications</code> + <code>NotificationBell.tsx</code>), guardian engagement visibility (<code>GET /families/me/reading-summary</code> + <code>ReadingPage.tsx</code>), kid-facing generation status, budget consent (envelopes + <code>GET /families/me/budget</code>). Push channel closed 2026-07-28: authenticated SSE (<code>GET /api/v1/notifications/stream</code>), <code>notificationsStream.ts</code> consumer wired into <code>NotificationBell.tsx</code> as a fallback-preserving addition to the poll (G10 flipped to ✅). Remaining gap: no server-scheduled digest job (S9 stays 🟡, narrowed to this one piece)</td>
 </tr>
 <tr>
 <td>4d Connections (NEW 2026-07-16)</td>
@@ -5092,9 +5092,26 @@ failures has demonstrated exactly that.</p>
    alert path also works: the failure job is maintaining issue #623 as designed.</li>
 <li>✅ <strong>Done.</strong> <code>validator-rules.md</code> has a PL-22 entry (band profile fail-closed);
    <code>authorization-matrix.md</code> carries rows for the already-shipped admin surfaces.</li>
-<li>❌ <strong>Not done.</strong> <code>adr-018-childrens-privacy-compliance.md</code> is still <code>status: proposed</code>
-   with D1/D2/D3 each showing only a working recommendation and no counsel sign-off or
-   progress note since 2026-07-16.</li>
+<li>🟡 <strong>Owner side done 2026-08-06; blocked on external counsel.</strong> The 2026-07-20 wording of
+   this row ("Not done ... only a working recommendation and no progress note since
+   2026-07-16") is <strong>superseded and was already understating the position when written</strong>: the
+   ADR was substantively amended 2026-08-01 and again 2026-08-06. Current state, decision by
+   decision: <strong>D1</strong> mechanism chosen and <em>implemented</em> (<code>POST /api/v1/onboarding</code> consent
+   payload, <code>GuardianConsentPage.tsx</code>, gated by <code>api/profiles.py::_require_consent</code>), with one
+   named legal question outstanding; <strong>D2</strong> child-directed posture confirmed by the owner
+   2026-08-06; <strong>D3</strong> US-only confirmed 2026-07-20; <strong>D4</strong> artifact ownership confirmed (owner
+   drafts, counsel reviews), with
+   <a href="../../compliance/information-security-program/">information-security-program.md</a> published
+   and <a href="../../compliance/data-retention-policy/">data-retention-policy.md</a> drafted 2026-08-06
+   but <strong>not yet published</strong> (three data classes still await an owner ruling on their deletion
+   window, tracked at <code>UW-N07</code>), and Safe Harbor sequencing settled as counsel-first; <strong>D5</strong>
+   corpus constraint confirmed 2026-08-06. The
+   packet counsel receives is assembled at
+   <a href="../../compliance/counsel-engagement-brief/">counsel-engagement-brief.md</a>. The ADR stays
+   <code>status: proposed</code> and this row stays open because the remaining work is external: retaining
+   counsel and getting rulings. Register home: <code>UW-M03</code>. <strong>This is a long-lead item on the
+   critical path to Phase 7 and the R2/R3 rungs, and it does not block R1;</strong> every week the
+   engagement is not started is a week added to R2/R3 regardless of engineering pace.</li>
 </ol>
 <h3 id="where-every-open-register-item-lands">Where every open register item lands<a class="headerlink" href="#where-every-open-register-item-lands" title="Permanent link">&para;</a></h3>
 <table>
@@ -5795,7 +5812,7 @@ undo), bookmarks (a distinct save-slot feature) is not built at all.</strong></p
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Guardian device list/revoke view: every currently-active device grant for the
       family, with a revoke action per device (<code>GuardianShell</code> "Devices" nav item -&gt;
       <code>frontend/src/guardian/DevicesPage.tsx</code>, calling the existing family-scoped
-      <code>GET</code>/<code>DELETE /v1/device-grants</code> endpoints in <code>api/device_grants.py</code>) (G15, ADR-014's
+      <code>GET</code>/<code>DELETE /api/v1/device-grants</code> endpoints in <code>api/device_grants.py</code>) (G15, ADR-014's
       own lost-device mitigation).</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Guardian storage/download view: which books are downloaded on which device (G15
       remainder). No backend <code>offline/</code> module exists to report per-device download state;
@@ -5826,7 +5843,7 @@ This is the highest-leverage gap the capability review found after initiation it
 <h3 id="deliverables_4">Deliverables<a class="headerlink" href="#deliverables_4" title="Permanent link">&para;</a></h3>
 <p><strong>Status (2026-07-28 update): all shipped 2026-07-17 in PR #270, plus the push transport
 closed 2026-07-28. Delivery is now poll-based (client re-polls with <code>since</code>) AND
-push-based (authenticated SSE, <code>GET /v1/notifications/stream</code>, with the poll kept as a
+push-based (authenticated SSE, <code>GET /api/v1/notifications/stream</code>, with the poll kept as a
 fallback for a connection that cannot use SSE); "alert on safety" was already a real,
 code-enforced distinct tier via <code>severity</code>. The one genuine remaining gap is a
 server-scheduled digest job, which no code in this repo implements.</strong></p>
@@ -6228,7 +6245,7 @@ and Tier-2 corpora.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 8, 2026 20:13:19 UTC">August 8, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 8, 2026 20:42:54 UTC">August 8, 2026</span>
   </span>
 
     

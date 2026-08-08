@@ -3736,6 +3736,35 @@ the current architecture already accumulates child-linked data in ways that must
 before that launch. This audit assesses readiness for the public tier and flags issues that exist
 regardless of tier.</p>
 <p><strong>Headline findings (detail in Section 6):</strong></p>
+<blockquote>
+<p><strong>Currency note added 2026-08-06.</strong> This audit is dated and its findings were assessed against the
+codebase as it stood then. Two of the three Critical rows below have since been substantially
+closed, and the finding bodies in Section 6 still cite the pre-fix evidence. Anyone reading this
+audit to judge the <em>current</em> compliance posture, counsel included, should apply these corrections
+first. Re-verified against the code on 2026-08-06:</p>
+<ul>
+<li><strong>C-01 is closed on its engineering half.</strong> A consent record and a gate both exist. Consent is
+  captured by <code>POST /api/v1/onboarding</code> and persisted to paired, CHECK-enforced columns
+  (<code>db/models.py:415-417</code>); <code>api/profiles.py::_require_consent</code> (defined at line 290) gates profile
+  creation at line 511. The audit's evidence line, "no consent code in <code>src/</code>/<code>frontend/src</code>", no
+  longer holds. What remains open is the <em>legal</em> question of whether the chosen mechanism satisfies
+  16 CFR 312.5(b)(2)(i), which is exactly what ADR-018 D1 flags for counsel.</li>
+<li><strong>C-03 is closed on its guardian-facing half, not on complete erasure.</strong> The deletion endpoints
+  the finding said were absent now exist: <code>DELETE /api/v1/me/family</code> (<code>api/me.py:369</code>) and
+  <code>delete_profile</code> (<code>api/profiles.py:629-632</code>). What is <em>not</em> established is that they erase
+  everything: <code>security_event</code> is append-only with no deletion path at all (its trigger is in
+  <code>supabase/migrations/20260804070000_add_security_event_table.sql</code>), which conflicts with
+  ADR-018's hard-deletion-timeline requirement, and no end-to-end erasure drill has been run.
+  Both residuals are tracked at <code>UW-D28</code>. Read this row as "the endpoints exist", not as
+  "erasure is provably complete".</li>
+<li><strong>C-02 remains genuinely open and is not corrected here.</strong> A privacy notice has been <em>drafted</em>
+  (<a href="../privacy-notice/">privacy-notice.md</a>, <code>status: draft</code>), but it is not published and there is
+  still no route serving it to users, so both the online-notice and direct-notice obligations under
+  312.4 are unmet. Do not read the two corrections above as implying this one also moved.</li>
+</ul>
+<p>The remaining findings in this table were not re-verified on 2026-08-06 and should be treated as
+carrying their original date.</p>
+</blockquote>
 <table>
 <thead>
 <tr>
@@ -4371,7 +4400,7 @@ point-in-time engineering assessment, not legal advice or a certification of com
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 10, 2026 16:07:18 UTC">July 10, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 8, 2026 20:42:54 UTC">August 8, 2026</span>
   </span>
 
     

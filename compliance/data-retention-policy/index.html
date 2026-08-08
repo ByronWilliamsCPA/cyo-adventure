@@ -12,7 +12,7 @@
         <meta name="author" content="Byron Williams">
       
       
-        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/adr/adr-018-childrens-privacy-compliance/">
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/compliance/data-retention-policy/">
       
       
       
@@ -20,19 +20,19 @@
         
       
       
-      <link rel="icon" href="../../../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
-        <title>ADR-018: Children's-privacy compliance architecture (COPPA, GDPR-K, AADC) - CYO Adventure</title>
+        <title>Data Retention Policy - CYO Adventure</title>
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
-        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -51,9 +51,9 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
   
@@ -88,7 +88,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#adr-018-childrens-privacy-compliance-architecture-coppa-gdpr-k-aadc" class="md-skip">
+        <a href="#1-purpose-and-scope" class="md-skip">
           Skip to content
         </a>
       
@@ -102,7 +102,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -122,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              ADR-018: Children's-privacy compliance architecture (COPPA, GDPR-K, AADC)
+              Data Retention Policy
             
           </span>
         </div>
@@ -235,7 +235,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../.." class="md-tabs__link">
+      <a href="../.." class="md-tabs__link">
         
   
   
@@ -256,7 +256,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../guides/overview/" class="md-tabs__link">
+        <a href="../../guides/overview/" class="md-tabs__link">
           
   
   
@@ -278,7 +278,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../api-reference/" class="md-tabs__link">
+        <a href="../../api-reference/" class="md-tabs__link">
           
   
   
@@ -300,7 +300,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../operations/runbook/" class="md-tabs__link">
+        <a href="../../operations/runbook/" class="md-tabs__link">
           
   
   
@@ -322,7 +322,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../architecture/" class="md-tabs__link">
+        <a href="../../architecture/" class="md-tabs__link">
           
   
   
@@ -344,7 +344,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../security/assurance-spine/" class="md-tabs__link">
+        <a href="../../security/assurance-spine/" class="md-tabs__link">
           
   
   
@@ -366,7 +366,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../development/architecture/" class="md-tabs__link">
+        <a href="../../development/architecture/" class="md-tabs__link">
           
   
   
@@ -388,7 +388,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../project/roadmap/" class="md-tabs__link">
+        <a href="../../project/roadmap/" class="md-tabs__link">
           
   
   
@@ -410,7 +410,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../" class="md-tabs__link">
+        <a href="../../planning/" class="md-tabs__link">
           
   
   
@@ -432,7 +432,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../PROJECT_SETUP/" class="md-tabs__link">
+        <a href="../../PROJECT_SETUP/" class="md-tabs__link">
           
   
   
@@ -454,7 +454,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../ADRs/" class="md-tabs__link">
+        <a href="../../ADRs/" class="md-tabs__link">
           
   
   
@@ -490,7 +490,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -520,7 +520,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../.." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   
@@ -618,7 +618,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../guides/overview/" class="md-nav__link">
+      <a href="../../guides/overview/" class="md-nav__link">
         
   
   
@@ -653,7 +653,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../guides/configuration/" class="md-nav__link">
+      <a href="../../guides/configuration/" class="md-nav__link">
         
   
   
@@ -688,7 +688,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../guides/usage/" class="md-nav__link">
+      <a href="../../guides/usage/" class="md-nav__link">
         
   
   
@@ -723,7 +723,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../guides/supabase-environments/" class="md-nav__link">
+      <a href="../../guides/supabase-environments/" class="md-nav__link">
         
   
   
@@ -823,7 +823,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../api-reference/" class="md-nav__link">
+      <a href="../../api-reference/" class="md-nav__link">
         
   
   
@@ -927,7 +927,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../operations/runbook/" class="md-nav__link">
+      <a href="../../operations/runbook/" class="md-nav__link">
         
   
   
@@ -962,7 +962,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../operations/authoring-guide/" class="md-nav__link">
+      <a href="../../operations/authoring-guide/" class="md-nav__link">
         
   
   
@@ -997,7 +997,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../operations/security-events/" class="md-nav__link">
+      <a href="../../operations/security-events/" class="md-nav__link">
         
   
   
@@ -1076,7 +1076,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../architecture/" class="md-nav__link ">
+            <a href="../../architecture/" class="md-nav__link ">
               
   
   
@@ -1127,7 +1127,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/user-journeys/" class="md-nav__link">
+      <a href="../../architecture/user-journeys/" class="md-nav__link">
         
   
   
@@ -1162,7 +1162,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/system-overview/" class="md-nav__link">
+      <a href="../../architecture/system-overview/" class="md-nav__link">
         
   
   
@@ -1197,7 +1197,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/generation-pipeline/" class="md-nav__link">
+      <a href="../../architecture/generation-pipeline/" class="md-nav__link">
         
   
   
@@ -1232,7 +1232,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/validation-and-player/" class="md-nav__link">
+      <a href="../../architecture/validation-and-player/" class="md-nav__link">
         
   
   
@@ -1267,7 +1267,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/data-model/" class="md-nav__link">
+      <a href="../../architecture/data-model/" class="md-nav__link">
         
   
   
@@ -1302,7 +1302,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/deployment/" class="md-nav__link">
+      <a href="../../architecture/deployment/" class="md-nav__link">
         
   
   
@@ -1410,7 +1410,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../security/assurance-spine/" class="md-nav__link">
+      <a href="../../security/assurance-spine/" class="md-nav__link">
         
   
   
@@ -1445,7 +1445,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../security/assurance-register/" class="md-nav__link">
+      <a href="../../security/assurance-register/" class="md-nav__link">
         
   
   
@@ -1480,7 +1480,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../security/control-inheritance/" class="md-nav__link">
+      <a href="../../security/control-inheritance/" class="md-nav__link">
         
   
   
@@ -1515,7 +1515,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../security/crypto-inventory/" class="md-nav__link">
+      <a href="../../security/crypto-inventory/" class="md-nav__link">
         
   
   
@@ -1550,7 +1550,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../security/red-team-design-review-2026-07/" class="md-nav__link">
+      <a href="../../security/red-team-design-review-2026-07/" class="md-nav__link">
         
   
   
@@ -1625,7 +1625,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../api/" class="md-nav__link ">
+            <a href="../../api/" class="md-nav__link ">
               
   
   
@@ -1674,7 +1674,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../development/architecture/" class="md-nav__link">
+      <a href="../../development/architecture/" class="md-nav__link">
         
   
   
@@ -1709,7 +1709,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../development/testing/" class="md-nav__link">
+      <a href="../../development/testing/" class="md-nav__link">
         
   
   
@@ -1746,7 +1746,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../development/code-quality/" class="md-nav__link">
+      <a href="../../development/code-quality/" class="md-nav__link">
         
   
   
@@ -1781,7 +1781,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../development/contributing/" class="md-nav__link">
+      <a href="../../development/contributing/" class="md-nav__link">
         
   
   
@@ -1885,7 +1885,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../project/roadmap/" class="md-nav__link">
+      <a href="../../project/roadmap/" class="md-nav__link">
         
   
   
@@ -1920,7 +1920,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../project/changelog/" class="md-nav__link">
+      <a href="../../project/changelog/" class="md-nav__link">
         
   
   
@@ -1955,7 +1955,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../project/license/" class="md-nav__link">
+      <a href="../../project/license/" class="md-nav__link">
         
   
   
@@ -2034,7 +2034,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../" class="md-nav__link ">
+            <a href="../../planning/" class="md-nav__link ">
               
   
   
@@ -2085,7 +2085,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../project-vision/" class="md-nav__link">
+      <a href="../../planning/project-vision/" class="md-nav__link">
         
   
   
@@ -2120,7 +2120,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tech-spec/" class="md-nav__link">
+      <a href="../../planning/tech-spec/" class="md-nav__link">
         
   
   
@@ -2155,7 +2155,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../PROJECT-PLAN/" class="md-nav__link">
+      <a href="../../planning/PROJECT-PLAN/" class="md-nav__link">
         
   
   
@@ -2190,7 +2190,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../roadmap/" class="md-nav__link">
+      <a href="../../planning/roadmap/" class="md-nav__link">
         
   
   
@@ -2272,7 +2272,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../" class="md-nav__link ">
+            <a href="../../planning/adr/" class="md-nav__link ">
               
   
   
@@ -2323,7 +2323,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-001-story-format-json-storybook/" class="md-nav__link">
+      <a href="../../planning/adr/adr-001-story-format-json-storybook/" class="md-nav__link">
         
   
   
@@ -2358,7 +2358,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-002-client-pwa/" class="md-nav__link">
+      <a href="../../planning/adr/adr-002-client-pwa/" class="md-nav__link">
         
   
   
@@ -2393,7 +2393,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-003-frontier-llm-generation/" class="md-nav__link">
+      <a href="../../planning/adr/adr-003-frontier-llm-generation/" class="md-nav__link">
         
   
   
@@ -2428,7 +2428,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-004-homelab-first-deployment/" class="md-nav__link">
+      <a href="../../planning/adr/adr-004-homelab-first-deployment/" class="md-nav__link">
         
   
   
@@ -2463,7 +2463,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-005-mandatory-human-approval/" class="md-nav__link">
+      <a href="../../planning/adr/adr-005-mandatory-human-approval/" class="md-nav__link">
         
   
   
@@ -2498,7 +2498,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+      <a href="../../planning/adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
         
   
   
@@ -2533,7 +2533,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-007-raw-output-retention/" class="md-nav__link">
+      <a href="../../planning/adr/adr-007-raw-output-retention/" class="md-nav__link">
         
   
   
@@ -2568,7 +2568,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-008-public-app-store-launch/" class="md-nav__link">
+      <a href="../../planning/adr/adr-008-public-app-store-launch/" class="md-nav__link">
         
   
   
@@ -2603,7 +2603,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-009-supabase-platform/" class="md-nav__link">
+      <a href="../../planning/adr/adr-009-supabase-platform/" class="md-nav__link">
         
   
   
@@ -2638,7 +2638,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+      <a href="../../planning/adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
         
   
   
@@ -2673,7 +2673,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-011-story-scale-framework/" class="md-nav__link">
+      <a href="../../planning/adr/adr-011-story-scale-framework/" class="md-nav__link">
         
   
   
@@ -2747,7 +2747,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../research/" class="md-nav__link ">
+            <a href="../../planning/research/" class="md-nav__link ">
               
   
   
@@ -2796,7 +2796,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../story-structure-diversity-critical-analysis/" class="md-nav__link">
+      <a href="../../planning/story-structure-diversity-critical-analysis/" class="md-nav__link">
         
   
   
@@ -2831,7 +2831,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../story-structure-improvement-plan/" class="md-nav__link">
+      <a href="../../planning/story-structure-improvement-plan/" class="md-nav__link">
         
   
   
@@ -2866,7 +2866,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../story-structure-implementation-briefs/" class="md-nav__link">
+      <a href="../../planning/story-structure-implementation-briefs/" class="md-nav__link">
         
   
   
@@ -2980,7 +2980,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../PROJECT_SETUP/" class="md-nav__link">
+      <a href="../../PROJECT_SETUP/" class="md-nav__link">
         
   
   
@@ -3015,7 +3015,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../OPENSSF_COMPLIANCE/" class="md-nav__link">
+      <a href="../../OPENSSF_COMPLIANCE/" class="md-nav__link">
         
   
   
@@ -3050,7 +3050,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../PYTHON_COMPATIBILITY/" class="md-nav__link">
+      <a href="../../PYTHON_COMPATIBILITY/" class="md-nav__link">
         
   
   
@@ -3119,7 +3119,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../ADRs/" class="md-nav__link ">
+            <a href="../../ADRs/" class="md-nav__link ">
               
   
   
@@ -3170,7 +3170,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../ADRs/adr-template/" class="md-nav__link">
+      <a href="../../ADRs/adr-template/" class="md-nav__link">
         
   
   
@@ -3222,8 +3222,6 @@
   
   
   
-    
-  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -3232,10 +3230,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#tldr" class="md-nav__link">
+  <a href="#1-purpose-and-scope" class="md-nav__link">
     <span class="md-ellipsis">
       
-        TL;DR
+        1. Purpose and scope
       
     </span>
   </a>
@@ -3243,10 +3241,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#context" class="md-nav__link">
+  <a href="#2-the-retention-schedule" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Context
+        2. The retention schedule
       
     </span>
   </a>
@@ -3254,10 +3252,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#already-decided-consolidated-sources-binding" class="md-nav__link">
+  <a href="#3-deletion-on-request" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Already decided (consolidated; sources binding)
+        3. Deletion on request
       
     </span>
   </a>
@@ -3265,82 +3263,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#open-decisions-the-reason-this-adr-exists-close-with-counsel-before-accepted" class="md-nav__link">
+  <a href="#4-known-gaps-between-policy-and-implementation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Open decisions (the reason this ADR exists; close with counsel before Accepted)
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Open decisions (the reason this ADR exists; close with counsel before Accepted)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#d1-verifiable-parental-consent-vpc-mechanism" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        D1: Verifiable parental consent (VPC) mechanism
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#d2-audience-classification" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        D2: Audience classification
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#d3-launch-geography-and-gdpr-kaadc-applicability" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        D3: Launch geography and GDPR-K/AADC applicability
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#d4-public-artifacts" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        D4: Public artifacts
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#d5-ai-training-use-of-childrens-data-consent-segregation-added-2026-08-01" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        D5: AI-training use of children's data (consent segregation; added 2026-08-01)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#validation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Validation
+        4. Known gaps between policy and implementation
       
     </span>
   </a>
@@ -3348,10 +3274,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#related" class="md-nav__link">
+  <a href="#5-open-items-requiring-an-owner-or-counsel-ruling" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Related
+        5. Open items requiring an owner or counsel ruling
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-relationship-to-other-compliance-documents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Relationship to other compliance documents
       
     </span>
   </a>
@@ -3378,334 +3315,316 @@
   
 
 
-<h1 id="adr-018-childrens-privacy-compliance-architecture-coppa-gdpr-k-aadc">ADR-018: Children's-privacy compliance architecture (COPPA, GDPR-K, AADC)<a class="headerlink" href="#adr-018-childrens-privacy-compliance-architecture-coppa-gdpr-k-aadc" title="Permanent link">&para;</a></h1>
-<blockquote>
-<p><strong>Status</strong>: Proposed (2026-07-16). Becomes Accepted only after the open decisions below
-are closed with legal counsel; this matches the privacy model's standing note that these
-documents are design references, not legal advice.
-<strong>Date</strong>: 2026-07-16
-<strong>Amended</strong>: 2026-08-01 (amended-COPPA-rule compliance date has passed; new D5 on
-AI-training consent segregation; D4 gains the written Information Security Program and a
-Safe Harbor evaluation; biometric non-ingestion recorded as a boundary)
-<strong>Amended</strong>: 2026-08-06 (owner decisions recorded on D2, D4, and D5; Safe Harbor sequencing
-settled as counsel-first; D4's two rule-mandated artifacts confirmed to exist; counsel
-engagement packaged in <a href="../../../compliance/counsel-engagement-brief/">counsel-engagement-brief.md</a>).
-<strong>This does not flip the status.</strong> Every decision below is an owner choice pending counsel
-confirmation; only counsel closing D1 through D5 moves this ADR to Accepted.
-<strong>Relates to</strong>: <a href="../adr-008-public-app-store-launch/">ADR-008</a> (Kids Category posture,
-part 5), <a href="../adr-009-supabase-platform/">ADR-009</a> (processor, DPA), <a href="../adr-016-recommendation-sharing-social-boundary/">ADR-016</a>
-(contact boundary), <a href="../adr-017-ai-cover-art/">ADR-017</a> (image-leg counterparties),
-<a href="../../privacy-model/">Privacy model</a></p>
-</blockquote>
-<h2 id="tldr">TL;DR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h2>
-<p>One record for the compliance architecture of a child-directed app: what is already
-decided (guardian-only identities, no kid-context SDKs, parental gate, deletion with
-Apple revocation, data classification and retention, named processor list, no biometric
-ingestion), and the open choices that carry the legal risk: the
-verifiable-parental-consent mechanism, the audience classification, the launch geography
-(US-only first vs EU/UK in scope, which decides whether GDPR-K and the UK AADC bind at
-launch), the public artifacts, and, since the amended COPPA Rule passed its 2026-04-22
-compliance date, whether any training corpus may ever contain child-originated data (D5).</p>
-<h2 id="context">Context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h2>
-<p>COPPA (US), GDPR Article 8 with member-state ages 13-16 ("GDPR-K"), and the UK Age
-Appropriate Design Code become externally enforceable the moment the public tier ships
-(ADR-008). Today the posture is real but scattered: ADR-008 part 5 lists Kids Category
-obligations, ADR-009 defers DPA verification to P7-08, the privacy model holds the data
-classification and provider-counterparty list, and Phase 7 holds the tasks. Nothing
-records the <em>choices</em> compliance forces, so they cannot be checked off or contested. The
-register maps this territory to S10 (privacy architecture), G11 (plain-language trust
-surface), G12 (export and deletion), K14 (safe room), and A14 (compliance ops).</p>
-<p><strong>Amended 2026-08-01: the amended COPPA Rule is now current law, not an upcoming change.</strong>
-The FTC's 2025 amendments to the COPPA Rule (Federal Register doc. 2025-05904, published
-2025-04-22, effective 2025-06-23) carried a full-compliance date of 2026-04-22, which has
-passed. Nothing changes for the internal tier, but the Track 2 launch gate (ADR-008) must
-verify against the amended rule text, not the 2013 rule this ADR was originally drafted
-against. The amendments relevant here: biometric identifiers (facial templates,
-voiceprints) join the definition of personal information with no temporary-use exception;
-using or disclosing children's personal information to train AI models requires its own
-separate, unbundled verifiable parental consent (new D5 below); operators must maintain a
-written Information Security Program and a published written data-retention policy with
-hard deletion timelines (folded into D4 below). Dates and rule text above should be
-re-confirmed against the Federal Register during the counsel review that closes this ADR;
-they entered this document from secondary sources.</p>
-<h2 id="already-decided-consolidated-sources-binding">Already decided (consolidated; sources binding)<a class="headerlink" href="#already-decided-consolidated-sources-binding" title="Permanent link">&para;</a></h2>
-<ol>
-<li><strong>Children never hold third-party identities.</strong> Guardians are the only IdP accounts;
-   child sessions are backend-minted and profile-scoped (ADR-008 decision 2, ADR-014).</li>
-<li><strong>No ads ever, no third-party ad/analytics SDKs in the kid context</strong> (vision permanent
-   exclusion; ADR-008 part 5).</li>
-<li><strong>Parental gate</strong> in front of settings, purchases, generation, and external links
-   (ADR-008); the kid-to-adult boundary crossing is ADR-014's step-up.</li>
-<li><strong>Deletion</strong>: in-app account deletion erases the family and revokes Apple tokens
-   (ADR-008; Supabase admin API per ADR-009). Recommendation payloads and connections are
-   in the erasure set (ADR-016).</li>
-<li><strong>Data minimization spine</strong>: child-linked data classification, no real child PII in
-   prompts, raw-output retention with purge (ADR-007 as amended), admin-first raw-output
-   access, deletion-readiness rules (privacy model).</li>
-<li><strong>Named processor/counterparty list</strong> (privacy model): Supabase (Postgres, auth),
-   OpenRouter and downstream model providers (generation), OpenAI Moderation and Google
-   Perspective (Stage-0 classifiers over all generated prose and child-typed wishes),
-   Google Gemini and Cloudflare R2 (cover art, ADR-017), Sentry (exceptions, no child
-   reading content). Every entry still needs verified terms at P7-08.</li>
-</ol>
-<p><strong>Amended 2026-07-28: the counterparties are no longer one undifferentiated tier</strong>,
-   because they do not receive the same kind of data and were never well served by one
-   blocker covering all of them.</p>
+  <h1>Data Retention Policy</h1>
+
+<p>Status: living document. Owner: Byron Williams (byronawilliams@gmail.com). Drafted: 2026-08-06.
+Pending counsel review as an ADR-018 D4 artifact (see <code>counsel-engagement-brief.md</code> Section 3).</p>
+<p>This document is a compliance artifact, not legal advice. It states company policy and its
+current implementation status; it does not represent a legal conclusion that the policy or its
+implementation satisfies any specific statute, and every claim below should be read subject to
+the verification caveats in Section 4.</p>
+<h2 id="1-purpose-and-scope">1. Purpose and scope<a class="headerlink" href="#1-purpose-and-scope" title="Permanent link">&para;</a></h2>
+<p>This is the written data-retention policy required by two overlapping obligations. <strong>It is still a
+draft, not a published policy</strong> (<code>status: draft</code> in the front matter above), because three of the
+classes in Section 2 carry no deletion window yet and await an owner ruling. Until those land and
+the status flips to <code>published</code>, ADR-018 decision D4 is <strong>not</strong> satisfied by this document's mere
+existence; the residual is tracked at <code>UW-N07</code>. The two obligations are:</p>
 <ul>
-<li>
-<p><strong>Generation leg (OpenRouter and the endpoints it routes to): a documentation item,
-     not a gate.</strong> No registered child identifier can reach it: <code>assert_prompt_pii_safe</code>
-     hard-fails the job rather than redacting (<code>generation/pii.py:229-289</code>). <a href="../adr-023-story-personalization-slots/">ADR-023</a>
-     <em>proposes</em> to keep real values out of it permanently by resolving personalization
-     client-side at render time instead of at generation time, but that ADR is
-     <code>status: proposed</code>, its counsel sign-off is open, and no code exists for it yet, so it is
-     a design commitment rather than a shipped property; <strong>if ADR-023 is not adopted, this
-     reason lapses.</strong> Routing on the OpenRouter leg is additionally confined by a
-     platform guardrail on a dedicated, key-scoped OpenRouter workspace configured
-     2026-07-28: zero data retention required across non-frontier, Anthropic, OpenAI,
-     Google, and xAI routing, and all three data-training paths disabled (paid-trains,
-     free-trains, free-publishes-prompts). That guardrail reaches the OpenRouter route only;
-     the built and admin-selectable direct-Anthropic leg bypasses it, which ADR-003's
-     amendment records as an open item rather than a closed control. See ADR-003's 2026-07-28
-     amendment for the full state and its limits. What the generation leg still carries is a
-     coarse age band, guardian-set <code>banned_themes</code> and content-flag caps, and free-typed
-     premise text carried through verbatim, so it is <strong>identifier-free, not PII-free</strong>, and its
-     terms still belong in the P7-08 record.</p>
-<p><strong>The sub-processor set changed on 2026-07-28 and this list changes with it.</strong> Enabling
- ZDR for the frontier vendors disables their <em>first-party</em> endpoints rather than the
- model families, so generation prompts now route to those families via <strong>AWS Bedrock,
- Microsoft Azure, and Google Vertex</strong>. Those three enter scope as OpenRouter's
- sub-processors for the generation leg and belong in the P7-08 processor record; they are
- added to <code>docs/compliance/processor-dpa-checklist.md</code> accordingly. First-party Anthropic
- and OpenAI endpoints leave scope <strong>for traffic routed through OpenRouter</strong>. They do not
- leave the record: the direct-Anthropic leg is built and admin-selectable and does not go
- through OpenRouter, so the "Anthropic (direct)" row stays, and
- <code>records-of-processing-activities.md</code> continues to list it as a live recipient. Note that
- this affects the <strong>generation</strong> leg only: OpenAI Moderation on the classifier leg is a
- separate, directly-called integration and is unaffected.
-   - <strong>Classifier leg (OpenAI Moderation, Google Perspective): this is where the gate
- lives now.</strong> It receives child-typed request text at intake
- (<code>story_requests/screening.py</code>) and every node of generated prose during moderation.
- That is child-provided free text crossing to third parties, and nothing in ADR-023
- changes it. Blocker 1 is therefore <strong>narrowed onto this leg rather than closed</strong>; see
- privacy-model.md. The Perspective counterparty is separately in flux (see the Stage-0
- Perspective sunset work), which changes who is on this list but not the requirement.
-   - <strong>Cover art (Google Gemini) and storage (Cloudflare R2)</strong> are unchanged: prompts derive
- only from story metadata and no child PII reaches the image provider (ADR-017).
-7. <strong>Contact boundary</strong>: no messaging, no discovery, cross-family flows only through
-   dual-guardian-consented connections (ADR-016).
-8. <strong>No biometric ingestion (recorded 2026-08-01; pending owner confirmation like the
-   rest of this list).</strong> The amended COPPA Rule adds biometric identifiers, facial
-   templates and voiceprints included, to personal information, and the FTC declined to
-   allow even temporary security or age-verification use without prior VPC. The app is
-   out of this category entirely today: avatars are preset-only (no photo upload), and
-   there is no voice input anywhere. This is recorded as a compliance boundary rather
-   than a backlog gap: photo-derived avatars, photo personalization, and voice dictation
-   are excluded features, and a future proposal to add any of them is a revision of this
-   ADR (it would trigger maximum-protocol VPC for biometric data), not a product ticket.
-   Competitors compete on photo-personalized avatars, so this temptation will recur; the
-   boundary exists so it is contested here, deliberately, instead of in a sprint.</p>
-</li>
+<li><strong>COPPA 16 CFR 312.10</strong>, as amended by the FTC's 2025 amendments (general compliance date
+  2026-04-22): an operator must not retain a child's personal information for longer than
+  reasonably necessary to fulfill the purpose for which it was collected, and must delete it
+  using reasonable measures once that purpose has been fulfilled. The amended Rule's written-policy
+  mandate requires this to be stated, for each class of children's personal information, as a
+  named business need for retention paired with a hard deletion timeline, rather than left
+  implicit. [COUNSEL: <code>counsel-engagement-brief.md</code> Section 4 asks counsel to independently
+  confirm this mandate is a rule requirement and not merely FTC best-practice guidance; treat
+  that confirmation as still outstanding.]</li>
+<li><strong>GDPR Article 5(1)(e)</strong> (storage limitation): personal data must be kept in a form that
+  permits identification of the data subject for no longer than necessary for the purposes for
+  which it is processed. This is the parallel EU/UK obligation covering the same data where a
+  guardian's residence brings GDPR into scope.</li>
 </ul>
-<h2 id="open-decisions-the-reason-this-adr-exists-close-with-counsel-before-accepted">Open decisions (the reason this ADR exists; close with counsel before Accepted)<a class="headerlink" href="#open-decisions-the-reason-this-adr-exists-close-with-counsel-before-accepted" title="Permanent link">&para;</a></h2>
-<h3 id="d1-verifiable-parental-consent-vpc-mechanism">D1: Verifiable parental consent (VPC) mechanism<a class="headerlink" href="#d1-verifiable-parental-consent-vpc-mechanism" title="Permanent link">&para;</a></h3>
-<p>COPPA requires consent verification stronger than a tap-through; the App Store parental
-gate does not satisfy VPC on its own. FTC-recognized methods include a payment-card
-transaction, signed consent form, government-ID match, knowledge-based authentication,
-and face-match-to-ID.</p>
-<p><strong>Decision recorded 2026-07-20 (owner choice; pending counsel confirmation, not yet
-"closed" per this ADR's own Validation checklist below).</strong> The account owner ruled out a
-payment-card transaction (avoids introducing PCI scope) and a third-party ID-verification
-service (avoids a new processor and its own DPA/SCC/vendor-oversight burden). Chosen
-mechanism instead: a signature-capture step layered on the existing Supabase/Google OAuth
-login already used for guardian sign-in. Concretely, the guardian provides a
-signature-equivalent (a typed full-legal-name attestation) plus an explicit checkbox
-affirming specific consent language, a country-of-residence selection (O-117), and an
-adulthood attestation checkbox (O-119); the app logs IP address, timestamp, and the
-OAuth-authenticated account id server-side alongside it. <strong>As built, the typed name is the
-only signature-equivalent captured</strong>; a canvas-drawn signature was considered in the
-2026-07-20 framing but never implemented, and <code>GuardianConsentPage.tsx</code> has no drawing
-surface. Do not describe a drawn signature as available. This is meant
-to satisfy the "sign and submit electronically" method already on the FTC's enumerated
-list (312.5(b)(2)(i)), with the OAuth login supplying the identity binding rather than a
-separate verification step. This applies uniformly regardless of tier; the prior working
-recommendation's paid-tier/free-tier split (Apple IAP as the VPC event) is superseded,
-since the app is not currently monetized and the owner does not want VPC design coupled to
-a future payment decision.</p>
-<p><strong>Flagged for counsel</strong>: whether a typed-name attestation captured this way
-satisfies 312.5(b)(2)(i)'s "signed" requirement is the single highest-risk open question in
-this decision and should be the first thing reviewed in the drafted consent-flow copy
-(<code>docs/compliance/</code> DPIA and Privacy Notice drafts, in progress).</p>
-<p><strong>Implemented 2026-07-20.</strong> <code>POST /api/v1/onboarding</code>'s <code>consent</code> payload
-(<code>accepted</code>/<code>policy_version</code>/<code>signer_name</code>) persists onto
-<code>User.consent_accepted_at</code>/<code>consent_policy_version</code>/<code>consent_signer_name</code>/<code>consent_ip</code>
-(paired, CHECK-enforced); <code>api/profiles.py::_require_consent</code> gates
-<code>POST /api/v1/profiles</code> on it. Frontend: <code>GuardianConsentPage.tsx</code>, reached automatically via
-a new <code>AuthStatus = 'needs-consent'</code>. This is the engineering half of D1; the flagged
-counsel-review question above is unchanged by implementation and still needs an answer
-before this ADR can flip to Accepted.</p>
-<p><strong>Related, newly decided the same day, not itself part of D1</strong>: a guardian self-signup
-admin-approval gate. An uninvited guardian's own first-login JIT provisioning now starts
-<code>User.status='awaiting_approval'</code> instead of <code>active</code>; <code>api/deps.py::require_principal</code>
-already rejects every endpoint for a non-<code>active</code> status, so this alone is the enforcement
-mechanism. An admin approves (<code>-&gt; active</code>) or denies (<code>-&gt; deactivated</code>) via the existing
-<code>PATCH /admin/users/{id}</code>. This is a parallel, non-overlapping track to the admin-invite
-<code>pending</code> status already in this ADR's "already decided" list; an admin-invited guardian is
-still trusted immediately on bind, unaffected by this gate. Frontend:
-<code>GuardianAwaitingApprovalPage.tsx</code>, reached via a new <code>AuthStatus = 'awaiting-approval'</code>.</p>
-<h3 id="d2-audience-classification">D2: Audience classification<a class="headerlink" href="#d2-audience-classification" title="Permanent link">&para;</a></h3>
-<p>Kids Category listing (ADR-008) effectively declares the app child-directed, which takes
-the strictest COPPA lane and removes the "actual knowledge" defenses of mixed-audience
-apps. Decision needed: confirm child-directed as the declared posture (recommended,
-matches product reality) and record that mixed-audience arguments are unavailable.</p>
-<p><strong>Decision confirmed 2026-08-06 (owner choice; pending counsel confirmation).</strong> Child-directed
-is the declared posture. Mixed-audience "actual knowledge" defenses are recorded as
-unavailable and must not be relied on in any later design argument. This closes the gap that
-made D2 unreviewable: until an owner had actually ruled, there was no position for counsel to
-confirm, only a recommendation. Counsel's role on this item is confirmation, not selection.</p>
-<h3 id="d3-launch-geography-and-gdpr-kaadc-applicability">D3: Launch geography and GDPR-K/AADC applicability<a class="headerlink" href="#d3-launch-geography-and-gdpr-kaadc-applicability" title="Permanent link">&para;</a></h3>
-<p>If launch is US-only (App Store storefront restriction), GDPR-K and the UK AADC do not
-bind at launch and become expansion gates instead; if EU/UK storefronts are in scope, a
-DPIA, per-state consent ages (13-16), and AADC conformance (default-high privacy,
-best-interests assessment) join Phase 7. <strong>Working recommendation</strong>: launch US storefront
-only, record EU/UK as an explicit later expansion with its own compliance gate. Decision
-needed: confirm.</p>
-<p><strong>Decision confirmed 2026-07-20 (owner choice; pending counsel confirmation).</strong> No UK or
-EEA users exist today, and none are planned. US-only is confirmed as the working
-recommendation above, not merely proposed. <code>coppa-gdpr-remediation-plan.md</code> Phase 9
-(GDPR-K/AADC conformance) is shelved, not worked, pending a change in this fact; if UK/EEA
-users are ever expected, revisit this decision and Phase 9 together before that expansion
-ships, not after.</p>
-<h3 id="d4-public-artifacts">D4: Public artifacts<a class="headerlink" href="#d4-public-artifacts" title="Permanent link">&para;</a></h3>
-<p>A published privacy notice, App Store privacy nutrition labels derived from the
-data classification, a data-retention schedule, and a breach/incident-response plan
-(feeds register A5/A14). Decision needed: owner sign-off that these are Phase 7
-deliverables with P7-08 as the checkpoint, and who drafts the notice.</p>
-<p><strong>Decision confirmed 2026-08-06 (owner choice).</strong> These are Phase 7 deliverables with P7-08
-as the checkpoint. <strong>The project owner drafts every artifact; counsel reviews rather than
-drafts.</strong> That ordering is deliberate: drafting internally and sending finished text is
-cheaper than paying counsel to originate documents whose substance is already decided
-elsewhere in this repository.</p>
-<p><strong>Amended 2026-08-01, two additions.</strong></p>
+<p><strong>Scope</strong>: every system that stores personal data about a guardian, a child profile, or an
+adult account, as inventoried in <code>records-of-processing-activities.md</code> Section 3. This includes
+the FastAPI backend's PostgreSQL database (Supabase-managed), the append-only <code>pipeline_event</code>
+and <code>security_event</code> audit tables, application container logs, and the encrypted database
+backups described in <code>docs/operations/runbook.md</code> Section 6. It does not cover a third-party
+processor's own internal retention (for example Sentry's platform-level log retention); that is
+tracked as a vendor-oversight item in <code>information-security-program.md</code> Section 4, not restated
+here.</p>
+<h2 id="2-the-retention-schedule">2. The retention schedule<a class="headerlink" href="#2-the-retention-schedule" title="Permanent link">&para;</a></h2>
+<p><strong>This table governs.</strong> The first eight rows reproduce, without modification, the
+category-by-category schedule resolved 2026-07-20 in <code>coppa-gdpr-remediation-plan.md</code> Section 5
+("Resolved 2026-07-20: accepted as drafted"). The remaining rows adopt the additional categories
+that <code>docs/planning/unscheduled-work-register.md</code> row UW-N07 identifies as omitted from that
+resolved schedule.</p>
+<table>
+<thead>
+<tr>
+<th>Data class</th>
+<th>What it is</th>
+<th>Retention window</th>
+<th>Business need justifying retention</th>
+<th>Deletion mechanism / status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Active profile/reading data</td>
+<td><code>reading_state</code>, <code>completion</code>, and <code>rating</code> rows for a child profile</td>
+<td>Life of the active profile, plus <strong>90 days</strong> after deactivation before purge</td>
+<td>Grace period covers accidental deactivation/reactivation without permanent data loss</td>
+<td>Enforced. Three <code>pg_cron</code> jobs (<code>purge_stale_deactivated_profile_activity</code>, <code>_completions</code>, <code>_ratings</code>, migration <code>supabase/migrations/20260720150000_add_retention_purge_jobs.sql</code>) delete rows for any profile deactivated more than 90 days ago. The 2026-07-20 schedule expressed this as a 30-90 day range; 90 days is the committed hard deadline and the only value any job enforces, so the range is not restated here.</td>
+</tr>
+<tr>
+<td>Approved/published story requests and their stories</td>
+<td>The <code>story_request</code> row and its resulting <code>storybook</code>/<code>storybook_version</code> rows, once approved and published</td>
+<td>Life of the active account</td>
+<td>Matches the product's core value; this is delivered content the guardian and child use, not incidental collection</td>
+<td>On-demand only. Cascades away via <code>DELETE /api/v1/profiles/{profile_id}</code> (<code>src/cyo_adventure/api/profiles.py::delete_profile</code>) or <code>DELETE /api/v1/me/family</code> (<code>src/cyo_adventure/api/me.py::delete_my_family</code>); no scheduled purge job exists because deletion is guardian-triggered, not time-triggered.</td>
+</tr>
+<tr>
+<td>Blocked or declined story requests (raw <code>request_text</code>)</td>
+<td>The <code>story_request.request_text</code> column on rows with <code>status IN ('blocked', 'declined')</code></td>
+<td>30 days from decision (<code>COALESCE(reviewed_at, created_at)</code>), then the raw text is overwritten and only the redacted category/verdict remains</td>
+<td>Short window covers guardian review/appeal; raw declined text has no ongoing purpose after that</td>
+<td>Enforced. <code>pg_cron</code> job <code>purge_blocked_declined_story_request_text</code> (migration <code>20260720150000_add_retention_purge_jobs.sql</code>), daily at 03:00, overwrites <code>request_text</code> with a fixed placeholder.</td>
+</tr>
+<tr>
+<td><code>generation_job.report</code> (raw LLM output)</td>
+<td>The raw model output column on a generation job</td>
+<td>30 days, or immediately on publish, whichever comes first</td>
+<td>ADR-007's original design; the raw output has no purpose once its content is either published or discarded</td>
+<td>Enforced. <code>pg_cron</code> job scheduled in <code>supabase/migrations/20260718000000_add_report_retention_purge.sql</code>.</td>
+</tr>
+<tr>
+<td>Moderation reports</td>
+<td>Classifier verdicts, scores, and reviewer decisions recorded during safety review</td>
+<td>1-2 years</td>
+<td>Balances safety/audit value (a pattern of prior flags on a request source) against indefinite retention</td>
+<td><strong>Policy-only, not enforced.</strong> No <code>pg_cron</code> job, scheduled task, or application code was found that purges moderation-report rows on any schedule (verified by grepping <code>supabase/migrations/</code> and <code>src/cyo_adventure/</code> for <code>purge</code>/<code>retention</code>/<code>pg_cron</code>, 2026-08-06). See Section 4.</td>
+</tr>
+<tr>
+<td><code>pipeline_event</code> audit log</td>
+<td>The append-only accountability log written by <code>events/writer.py::record_event</code> (<code>db/models.py::PipelineEvent</code>)</td>
+<td>No fixed purge; retained under a documented Article 17(3)/312.10 safety-and-integrity justification</td>
+<td>Already PII-scrubbed by a closed-vocabulary allowlist contract (never free text, per <code>events/writer.py</code>), so the retention-risk profile is much lower than raw free text; the full balancing test is in <code>coppa-gdpr-remediation-plan.md</code>'s "4d artifact" section and <code>dpia.md</code> Section 2.5</td>
+<td>By design. No deletion path exists, and none is intended; this row survives a profile/family erasure request as a documented exception (see Section 3).</td>
+</tr>
+<tr>
+<td>Erasure request: response to the guardian</td>
+<td>The obligation to communicate what action was taken on an erasure request</td>
+<td>Acknowledge and respond within 1 month of the request (GDPR Article 12(3)); may be extended by up to 2 further months for complex/numerous requests, but only if the guardian is notified of the extension and the reason within the initial 1-month window</td>
+<td>This is the deadline to communicate <em>what action was taken</em>, a distinct obligation from the deletion itself</td>
+<td>Process obligation; see Section 3. No automated tracking of this clock was found in the codebase (manual/support-channel process today).</td>
+</tr>
+<tr>
+<td>Erasure request: actual purge</td>
+<td>The obligation to actually delete the data an erasure request targets</td>
+<td>Purge within 30 days of the request, well inside the Article 12(3) response window above</td>
+<td>Article 17's "without undue delay" duty; the two deadlines (respond vs. purge) are tracked separately so a fast purge doesn't imply a fast response is optional, and vice versa</td>
+<td>Enforced for the on-demand deletion paths (<code>DELETE /api/v1/profiles/{profile_id}</code>, <code>DELETE /api/v1/me/family</code>), both of which delete synchronously on request rather than on a 30-day timer, so they clear this window with margin. See Section 3.</td>
+</tr>
+<tr>
+<td>Adult account/household</td>
+<td>The <code>user</code> row and its account-level fields (email, auth identity, role, <code>residence_country</code>, <code>adulthood_attested_at</code>)</td>
+<td>Life of the active account</td>
+<td>Contract: operating the guardian's account and determining which regulatory regime applies (<code>records-of-processing-activities.md</code> row 1)</td>
+<td>Enforced. Cascades away via <code>DELETE /api/v1/me/family</code> (<code>src/cyo_adventure/api/me.py</code>); every <code>user</code> row in the family, including the caller's own, is deleted at the database level.</td>
+</tr>
+<tr>
+<td>Consent evidence</td>
+<td>The guardian's typed legal name, consent date, policy version, and IP address at consent time (<code>User.consent_accepted_at</code>/<code>consent_policy_version</code>/<code>consent_signer_name</code>/<code>consent_ip</code>), and the parallel personalization-consent and cross-family-connection-consent columns</td>
+<td><strong>Not yet set, owner ruling required</strong></td>
+<td>Proving verifiable parental consent was obtained is itself a COPPA/GDPR Article 8 accountability requirement, in tension with the guardian's own erasure right over the same fields</td>
+<td><strong>Gap.</strong> <code>DELETE /api/v1/me/family</code> deletes the <code>user</code> row outright, so consent evidence does not survive account deletion today; there is no separate evidentiary-retention path analogous to <code>pipeline_event</code>'s Article 17(3) exception. See Section 5.</td>
+</tr>
+<tr>
+<td>Product analytics</td>
+<td>Day-grain active-reading-time rows (<code>reading_activity_day</code>: <code>child_profile_id</code>, <code>activity_date</code>, <code>active_seconds</code>)</td>
+<td><strong>Not yet set, owner ruling required.</strong> A 12-month retention default has been proposed internally (migration <code>supabase/migrations/20260801040000_add_reading_activity_day.sql</code>'s header comment, citing the kid-appeal implementation plan's "Plan defaults" item 2) but has not been ruled on as accepted compliance policy the way the Section 2 rows above were on 2026-07-20</td>
+<td>Supports the reading-streak/badge feature (W3.3-W3.5); detail is proposed to roll into a running total after the window, with lifetime days-read surviving</td>
+<td><strong>Gap.</strong> The table and its cascade/RLS exist; the migration's own comment states the rollover/purge job is "explicitly OUT OF SCOPE for this migration." No purge job exists. See Section 4 and Section 5.</td>
+</tr>
+<tr>
+<td>Application logs</td>
+<td>Structured JSON log lines (stdout, <code>JSON_LOGS=true</code>), including security events (<code>client_ip</code>, <code>path</code>) per <code>docs/operations/security-events.md</code></td>
+<td><strong>Not yet set, owner ruling required.</strong> Currently size-bounded, not time-bounded</td>
+<td>Operational debugging and the real-time/alerting surface for security events</td>
+<td><strong>Gap.</strong> <code>docker-compose.prod.yml</code> sets a size-based cap (<code>max-size: 50m</code>, <code>max-file: 5</code>) on the <code>app</code>/<code>worker</code> services, but <code>docs/operations/security-events.md</code> Section 4 states plainly that this gives no time-based deletion guarantee, and that the live production host (<code>homelab-infra</code>) has not been confirmed to have an equivalent bound at all. See Section 4.</td>
+</tr>
+<tr>
+<td>Financial records</td>
+<td>Payment or billing records</td>
+<td>Not applicable today; no financial or payment data is collected. The product is pre-monetization at family-tier scale (<code>docs/planning/unscheduled-work-register.md</code> row UW-N10)</td>
+<td>None yet; no data exists to retain</td>
+<td>No mechanism needed today. A window must be ruled on by the owner and finance before any payment feature (for example the nominal card-verification step floated in <code>coppa-gdpr-remediation-plan.md</code>'s VPC options) ships. See Section 5.</td>
+</tr>
+<tr>
+<td>Backups</td>
+<td>Encrypted, tiered database dumps (<code>scripts/backup_database.py</code>, <code>.github/workflows/supabase-backup.yml</code>)</td>
+<td>Daily tier: 7 days (floor 3). Weekly tier: 28 days. Monthly tier: 180 days (floor 90). These are the script's documented GFS lifecycle defaults</td>
+<td>Disaster recovery and a tested restore path (<code>docs/operations/runbook.md</code> Section 6, <code>docs/planning/unscheduled-work-register.md</code> row UW-D27)</td>
+<td>Enforced via R2 bucket lifecycle rules that the script both writes and verifies (<code>ensure_lifecycle_rules</code>, <code>verify_backup_bucket</code>). A backup inherits the same personal data as the live database it was taken from, so a guardian's erasure request is not reflected in an already-taken backup until that backup ages out under this schedule; this consequence has not been separately ruled on. See Section 5.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note on the reading-progress row.</strong> <code>docs/planning/unscheduled-work-register.md</code> row UW-N07
+records that an external planning document proposed a different default for reading progress:
+"target 12 months' inactivity," against the resolved policy's "life of the active profile plus
+30-90 days after deactivation." <strong>The resolved policy governs until deliberately changed.</strong> The
+row above states the resolved window, not the external default; nothing in this document should
+be read as adopting the 12-month figure for reading progress.</p>
+<h2 id="3-deletion-on-request">3. Deletion on request<a class="headerlink" href="#3-deletion-on-request" title="Permanent link">&para;</a></h2>
+<p>An erasure request carries two separate clocks, tracked independently so that meeting one does
+not imply the other is optional:</p>
 <ul>
-<li><strong>Two artifacts above are now rule requirements, not best practice.</strong> The amended COPPA
-  Rule mandates (a) a <em>written</em> Information Security Program: annual risk assessment, a
-  vulnerability-testing cadence, vendor due diligence over the processors in this ADR's
-  counterparty list, and a designated compliance owner; and (b) a <em>published</em> written
-  data-retention policy naming the business need and a hard deletion timeline for each
-  class of children's data (the privacy model's data classification is the direct input).
-  Both join the D4 deliverable list by name so P7-08 can check them off individually. The
-  existing security tooling (scanner suite, dependency scanning, container scanning) is
-  most of the WISP's substance; what is missing is the written program document that names
-  it, its cadence, and its owner.</li>
+<li><strong>The response clock (GDPR Article 12(3)).</strong> The company must acknowledge the request and
+  communicate what action was taken within 1 month. This deadline may be extended by up to 2
+  further months for complex or numerous requests, but only if the guardian is notified of the
+  extension and the reason for it within the initial 1-month window. Missing this clock is a
+  failure to communicate, independent of whether the underlying deletion happened.</li>
+<li><strong>The purge clock (Article 17's "without undue delay" duty).</strong> The data itself must be purged
+  within 30 days of the request, a window that sits entirely inside the response clock above.</li>
 </ul>
-<p><strong>Status corrected 2026-08-06: both artifacts now exist, but only (a) satisfies the rule
-  today.</strong> (a) is complete and published; (b) is drafted, not yet published, and still
-  carries three data classes with no deletion window set, so D4's published-policy leg is
-  not yet met. (a) The written Information Security Program is
-  <a href="../../../compliance/information-security-program/">information-security-program.md</a>,
-  <code>status: published</code>, and it already carries all four mandated elements: the annual
-  risk-assessment cadence (section 3), the vulnerability-testing cadence tied to the
-  scanner suite and <code>SECURITY.md</code>'s severity/response table (section 3), vendor and
-  service-provider due diligence over this ADR's counterparty list (section 4), and a named
-  compliance owner (section 2). It predates this amendment, which is why the amendment
-  described it as missing. (b) The written data-retention policy is
-  <a href="../../../compliance/data-retention-policy/">data-retention-policy.md</a>, created 2026-08-06
-  and currently <code>status: draft</code>. It consolidates the per-category schedule resolved
-  2026-07-20 in <code>coppa-gdpr-remediation-plan.md</code> (which governs, and is reproduced rather
-  than re-derived) with the guardian-facing table in <code>privacy-notice.md</code> and the
-  per-activity view in <code>records-of-processing-activities.md</code>, and adopts the additional
-  categories <code>UW-N07</code> names. <strong>Three of its classes carry no window yet</strong> and are written
-  as "Not yet set, owner ruling required" rather than given an invented number: consent
-  evidence, product analytics, and application logs. The rule requires a hard deletion
-  timeline for <em>each</em> class of children's data, and product analytics and application logs
-  are both children's data, so (b) does not discharge D4 until those three rulings land and
-  the document moves to <code>status: published</code>. That residual is tracked at <code>UW-N07</code>. Both go
-  to counsel under this decision's owner-drafts/counsel-reviews split: (a) as finished work
-  for review, (b) as a draft with three named gaps.
-- <strong>Evaluate COPPA Safe Harbor membership (PRIVO, kidSAFE, ESRB Privacy Certified) as an
-  explicit Track 2 task.</strong> A Safe Harbor program would answer D1's flagged highest-risk
-  question (whether the signature-capture flow satisfies 312.5(b)(2)(i)) with a
-  presumption-of-compliance posture and ongoing external audit, instead of a one-off
-  counsel opinion, at the cost of a recurring fee and an added vendor. Decision needed:
-  whether this evaluation happens before or alongside the counsel review of D1, since a
-  yes here changes what D1's counsel question is worth.</p>
-<p><strong>Sequencing decided 2026-08-06 (owner choice): alongside, counsel first.</strong> D1 goes to
-  counsel now rather than waiting on a Safe Harbor evaluation, because counsel scheduling is
-  the long-lead item on the critical path to Phase 7 and the public rungs, and a Safe Harbor
-  evaluation is not. The evaluation proceeds in parallel as a Track 2 task. The accepted cost
-  of this ordering is that a later decision to join a program could supersede the D1 opinion,
-  so the counsel engagement flags that possibility explicitly and asks counsel to scope the
-  D1 opinion accordingly rather than assuming it is the permanent basis of compliance.</p>
-<h3 id="d5-ai-training-use-of-childrens-data-consent-segregation-added-2026-08-01">D5: AI-training use of children's data (consent segregation; added 2026-08-01)<a class="headerlink" href="#d5-ai-training-use-of-childrens-data-consent-segregation-added-2026-08-01" title="Permanent link">&para;</a></h3>
-<p>The amended COPPA Rule treats using or disclosing a child's personal information to train
-or develop AI models as non-integral to the service: it requires its own separate, opt-in
-verifiable parental consent, unbundled from the core-service consent, and refusing it
-cannot cost the child access to the core service.</p>
-<p>This intersects one live plan directly: the proposed self-labeled moderation corpus (human
-review decisions collected as future fine-tuning and evaluation data for the moderation
-reviewer, the Gate &frac34; follow-on from the 2026-08-01 datasets research). Whether the
-obligation triggers depends entirely on what the corpus contains.</p>
-<p><strong>Working position (2026-08-01, pending owner confirmation):</strong> build any training or
-evaluation corpus exclusively from adult-originated and pipeline-originated material:
-reviewer decisions, moderation findings, and generated prose that has passed the PII gate
-(<code>generation/pii.py</code>). Child-originated data, child-typed wish text from intake, and child
-behavioral signals (flags, ratings, reading state) are excluded from every training set.
-Under this constraint no child personal information is used for AI training and the
-segregated-consent obligation never triggers; the constraint costs nothing today because
-no planned corpus needs child-originated data.</p>
-<p><strong>Escape hatch, priced now while the D1 flow is fresh:</strong> if child-originated data is ever
-wanted in a training set, the D1 consent flow gains a separate opt-in toggle first, before
-any such data is collected for that purpose: a <code>policy_version</code> bump plus an independent,
-default-off checkbox whose refusal has no effect on service access. That is a small change
-against the existing <code>POST /api/v1/onboarding</code> consent payload and <code>GuardianConsentPage.tsx</code>,
-but it must precede collection, not follow it.</p>
-<p>Decision needed: owner confirms the corpus constraint as the default, or opts to build the
-segregated-consent toggle now.</p>
-<p><strong>Decision confirmed 2026-08-06 (owner choice).</strong> The corpus constraint is adopted as the
-standing default; the segregated-consent toggle is <strong>not</strong> built now. Any training or
-evaluation corpus is built exclusively from adult-originated and pipeline-originated
-material. Child-typed wish text from intake, and child behavioral signals (flags, ratings,
-reading state), are excluded from every training set. This is a standing constraint on future
-work, not a one-time assessment: a proposal that wants child-originated data in a corpus is a
-revision of this decision, and the escape hatch above (a <code>policy_version</code> bump plus an
-independent, default-off opt-in whose refusal cannot affect service access) must be built
-<strong>before</strong> any such collection begins, not after. Counsel's role on this item is a light
-confirmation that the segregated-consent obligation does not trigger under the constraint,
-not a design question.</p>
+<p>In practice, the company's two guardian-facing deletion routes, <code>DELETE /api/v1/profiles/{profile_id}</code>
+(single child profile) and <code>DELETE /api/v1/me/family</code> (entire family account), execute the
+underlying deletion synchronously at request time rather than on a scheduled timer, so both
+routes clear the 30-day purge clock with substantial margin whenever they are the mechanism used.
+The response clock is a communication obligation layered on top of that technical deletion and,
+per Section 2's table, has no automated tracking today; it depends on a manual or support-channel
+process, which is not itself a database-purge concern but is noted here because the resolved
+schedule tracks it as part of the same policy.</p>
+<p>The one documented exception to "the data itself is purged" is the <code>pipeline_event</code> audit log
+(Section 2), which survives an erasure request under a stated Article 17(3) balancing
+justification rather than by an oversight.</p>
+<h2 id="4-known-gaps-between-policy-and-implementation">4. Known gaps between policy and implementation<a class="headerlink" href="#4-known-gaps-between-policy-and-implementation" title="Permanent link">&para;</a></h2>
+<p>This section states plainly which windows in Section 2 are enforced by shipped code today, and
+which are policy-only. Every claim below was verified by grepping <code>supabase/migrations/</code> and
+<code>src/cyo_adventure/</code> for <code>pg_cron</code>, <code>purge</code>, and <code>retention</code> on 2026-08-06, and by reading the
+specific files cited.</p>
+<p><strong>Enforced by shipped code:</strong></p>
 <ul>
-<li>✅ Compliance stops being folklore spread over four documents; Phase 7 becomes the
-  implementation of this ADR and P7-08 its checklist.</li>
-<li>✅ The already-decided list above is now contestable and testable (deletion E2E,
-  egress-guard tests, SDK audit map to it).</li>
-<li>⚠️ Until D1-D3 are closed, Phase 7 cannot be scoped precisely; this ADR staying
-  Proposed is itself the tracking signal.</li>
-<li>⚠️ Counsel review is a real dependency and cost; the recommendations above are
-  design positions, not legal conclusions.</li>
+<li>Active profile/reading data purge: three <code>pg_cron</code> jobs in
+  <code>supabase/migrations/20260720150000_add_retention_purge_jobs.sql</code>.</li>
+<li>Blocked/declined <code>request_text</code> purge: <code>pg_cron</code> job in the same migration.</li>
+<li><code>generation_job.report</code> purge: <code>pg_cron</code> job in
+  <code>supabase/migrations/20260718000000_add_report_retention_purge.sql</code>.</li>
+<li><code>story_request.interpretation</code> element purge:
+  <code>supabase/migrations/20260720000000_add_story_request_interpretation.sql</code> (an additional
+  purge job not itemized as its own row in Section 2's table because it is a sub-field of the
+  blocked/declined story-request category already covered there).</li>
+<li>On-demand account/profile deletion: <code>DELETE /api/v1/profiles/{profile_id}</code>
+  (<code>src/cyo_adventure/api/profiles.py::delete_profile</code>) and <code>DELETE /api/v1/me/family</code>
+  (<code>src/cyo_adventure/api/me.py::delete_my_family</code>), both executing synchronously.</li>
+<li>Backup lifecycle: R2 bucket lifecycle rules written and verified by
+  <code>scripts/backup_database.py</code>.</li>
 </ul>
-<h2 id="validation">Validation<a class="headerlink" href="#validation" title="Permanent link">&para;</a></h2>
-<p><strong>Progress note, 2026-08-06.</strong> The owner-side prerequisites are done: D2, D3, D4, and D5 all
-carry recorded owner decisions, D1's mechanism is decided and implemented, and the packet
-counsel receives is assembled at
-<a href="../../../compliance/counsel-engagement-brief/">counsel-engagement-brief.md</a>. What remains on
-every unchecked box below is external: retaining counsel and getting rulings. No checkbox is
-ticked by internal work alone, which is why none are ticked here.</p>
-<ul class="task-list">
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> D1-D5 closed with counsel; status flipped to Accepted with the choices recorded.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Amended-rule facts (dates, biometric definition, AI-training consent, WISP and
-      retention-policy mandates) re-confirmed against the Federal Register text during
-      counsel review; they entered this ADR from secondary sources.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> P7-08 checklist maps one-to-one to the "already decided" list and the closed
-      decisions.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Deletion E2E (family erasure incl. Apple revocation) and the kid-context SDK audit
-      pass before submission.</li>
-</ul>
-<h2 id="related">Related<a class="headerlink" href="#related" title="Permanent link">&para;</a></h2>
+<p><strong>Policy-only, with no purge job:</strong></p>
 <ul>
-<li><a href="../../capability-register/">Capability register</a>: S10, G11, G12, K14, A14.</li>
-<li><a href="../../privacy-model/">Privacy model</a>: classification, counterparties, Blocker 1.</li>
-<li><a href="../../PROJECT-PLAN/">PROJECT-PLAN.md</a>: Phase 7.</li>
+<li><strong>Moderation reports</strong> (1-2 years). No <code>pg_cron</code> job, RQ scheduled task, or application-code
+  purge path exists for moderation-report rows. <code>docs/compliance/coppa-gdpr-remediation-plan.md</code>
+  Phase 4b (this document) is listed as "unblocked, not yet published" for the policy itself;
+  the corresponding purge job was never listed as a Phase 4c deliverable and does not exist.</li>
+<li><strong><code>reading_activity_day</code> product analytics</strong> (proposed 12 months). The table, RLS, and cascade
+  exist as of <code>supabase/migrations/20260801040000_add_reading_activity_day.sql</code>; that migration's
+  own header comment states the rollover/purge job is "explicitly OUT OF SCOPE for this
+  migration." No purge job exists.</li>
+<li><strong>Application logs.</strong> Container-level logs are size-bounded (<code>docker-compose.prod.yml</code>,
+  <code>max-size: 50m</code> / <code>max-file: 5</code>) but not time-bounded, and <code>docs/operations/security-events.md</code>
+  Section 4 states the production deployment orchestrator (<code>homelab-infra</code>) has not been
+  confirmed to carry an equivalent bound at all. A size cap is not a deletion timeline: a
+  low-volume log stream could retain lines well past any window this policy states.</li>
 </ul>
+<p><strong><code>security_event</code> table: verified, no retention or purge mechanism.</strong> <code>docs/planning/</code>
+<code>unscheduled-work-register.md</code> row UW-D28 asserts the <code>security_event</code> table has no retention or
+purge mechanism; this was independently verified rather than repeated on trust.
+<code>supabase/migrations/20260804070000_add_security_event_table.sql</code> implements the table with an
+append-only trigger (<code>security_event_append_only</code>) that blocks <code>UPDATE</code> and <code>DELETE</code> outright, and
+its own header comment states: "these rows have NO deletion path at all today: ADR-018 requires a
+hard deletion timeline per data class, and this table does not yet have one." That comment is
+marked <code>#CRITICAL</code>, paired with a <code>#VERIFY</code> instruction that this is "tracked as a follow-up; do
+not treat this table as satisfying ADR-018 on its own." The table carries <code>client_ip</code> (personal
+data) and <code>path</code> (which can embed a profile identifier), so this gap is a genuine ADR-018
+shortfall, not a hypothetical one, and it is not yet resolved anywhere in this repository.</p>
+<h2 id="5-open-items-requiring-an-owner-or-counsel-ruling">5. Open items requiring an owner or counsel ruling<a class="headerlink" href="#5-open-items-requiring-an-owner-or-counsel-ruling" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Consent evidence retention.</strong> <code>DELETE /api/v1/me/family</code> deletes the <code>user</code> row outright,
+  including every consent-related column. No policy states whether consent evidence should
+  survive account deletion for accountability purposes (the way <code>pipeline_event</code> does under its
+  Article 17(3) exception), or whether full deletion including consent evidence is the intended
+  behavior. Owner and counsel ruling needed; <code>docs/planning/unscheduled-work-register.md</code> row
+  UW-N07 names privacy counsel as an owner for this category.</li>
+<li><strong>Product analytics (<code>reading_activity_day</code>) retention window.</strong> A 12-month default has been
+  proposed internally but not ruled on as accepted policy. Ruling needed before a purge job is
+  built, per UW-N07 (privacy counsel and finance named as owners).</li>
+<li><strong>Application log retention window.</strong> No hard deletion timeline has been proposed for
+  container-level application logs, including the security-event log lines described in
+  <code>docs/operations/security-events.md</code>. A window needs to be set, and the production
+  <code>homelab-infra</code> log-driver configuration needs to be confirmed to actually bound retention
+  before this policy can state it is enforced.</li>
+<li><strong>Financial records retention window.</strong> No financial data is collected today, so no window is
+  needed yet, but one must be ruled on before any payment or billing feature ships (finance and
+  privacy counsel, per UW-N07).</li>
+<li><strong>Backup retention and an in-flight erasure request.</strong> A guardian's erasure request is not
+  reflected in an already-taken backup until that backup ages out under the daily/weekly/monthly
+  schedule in Section 2. Whether this residual-copy window is acceptable as-is, or needs a
+  documented exception analogous to <code>pipeline_event</code>'s, has not been separately ruled on.</li>
+<li><strong>Moderation-report purge job.</strong> The 1-2 year window is accepted policy (resolved 2026-07-20)
+  but has no enforcing purge job. This is an engineering gap to schedule, not an open policy
+  question, and is listed here so it is not lost between this document and
+  <code>coppa-gdpr-remediation-plan.md</code> Phase 4c.</li>
+<li><strong><code>security_event</code> retention.</strong> No window has been proposed at all for this table, and its
+  append-only trigger currently forecloses any deletion path. A ruling is needed both on the
+  window and on how a purge would coexist with the append-only guarantee (for example, a
+  time-boxed archival-then-delete pattern rather than a raw <code>DELETE</code>).</li>
+<li><strong>The five citations <code>counsel-engagement-brief.md</code> Section 4 asks counsel to verify against
+  the Federal Register</strong> apply to this document by extension, in particular whether the amended
+  COPPA Rule actually mandates a published written retention policy (as opposed to recommending
+  one as best practice) and whether the 2026-04-22 general compliance date is accurate. This
+  document was drafted on the assumption that the mandate is real; if counsel's independent
+  verification says otherwise, this document's own justification for existing should be revisited
+  accordingly.</li>
+</ul>
+<h2 id="6-relationship-to-other-compliance-documents">6. Relationship to other compliance documents<a class="headerlink" href="#6-relationship-to-other-compliance-documents" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Document</th>
+<th>Relationship</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../coppa-gdpr-remediation-plan/">coppa-gdpr-remediation-plan.md</a></td>
+<td>Section 5 holds the authoritative, already-resolved per-category schedule this document reproduces in Section 2 without modification; Phase 4b is the plan item this document satisfies, and Phase 4c is the purge-job work this document's Section 4 checks against.</td>
+</tr>
+<tr>
+<td><a href="../privacy-notice/">privacy-notice.md</a></td>
+<td>The guardian-facing plain-language rendering of the same retention policy ("How long we keep information"); this document is the internal, fuller-detail counterpart and must not contradict that table.</td>
+</tr>
+<tr>
+<td><a href="../records-of-processing-activities/">records-of-processing-activities.md</a></td>
+<td>Section 3's per-activity "Retention" column is the system-level view this document consolidates alongside the resolved schedule; both must stay consistent with Section 2 above.</td>
+</tr>
+<tr>
+<td><a href="../information-security-program/">information-security-program.md</a></td>
+<td>The house style this document follows (frontmatter shape, section numbering, closing cross-reference section); also the document that tracks vendor-level retention (for example Sentry's platform retention) that this document deliberately does not restate.</td>
+</tr>
+<tr>
+<td><a href="../../planning/unscheduled-work-register/">../planning/unscheduled-work-register.md</a> (row UW-N07)</td>
+<td>The row that defines this document's exact delta from the resolved schedule: which categories to adopt, and how the reading-progress disagreement was resolved.</td>
+</tr>
+<tr>
+<td><a href="../counsel-engagement-brief/">counsel-engagement-brief.md</a></td>
+<td>Section 3 lists this document as a parallel D4 deliverable for counsel to review and redline, and Section 4 lists the citations whose independent verification this document's Section 1 and Section 5 depend on.</td>
+</tr>
+<tr>
+<td><a href="../../planning/adr/adr-018-childrens-privacy-compliance/">ADR-018</a></td>
+<td>Decision D4 names this document by path as one of the two rule-mandated D4 artifacts (alongside the Information Security Program), and records its creation date.</td>
+</tr>
+</tbody>
+</table>
 
 
 
@@ -3738,7 +3657,7 @@ ticked by internal work alone, which is why none are ticked here.</p>
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 17, 2026 19:07:42 UTC">July 17, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 8, 2026 20:42:54 UTC">August 8, 2026</span>
   </span>
 
     
@@ -3815,10 +3734,10 @@ ticked by internal work alone, which is why none are ticked here.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

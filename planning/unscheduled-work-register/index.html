@@ -5803,7 +5803,7 @@ complete; each is filed as a GitHub issue.</p>
 </tr>
 <tr>
 <td>UW-M03</td>
-<td>Counsel engagement: ADR-018 D1-D4, ADR-016 ring-2 granularity, ADR-023 OD-1 and OD-5. Long lead time; the roadmap already flags that this should start now.</td>
+<td>Counsel engagement: ADR-018 D1-D5, ADR-016 ring-2 granularity, ADR-023 OD-1 and OD-5. Long lead time; the roadmap already flags that this should start now. <strong>Updated 2026-08-06: the ADR-018 leg is packaged and ready to send.</strong> Every owner-side prerequisite is closed (D2 child-directed, D4 owner-drafts/counsel-reviews plus Safe Harbor sequenced counsel-first, D5 corpus constraint, all recorded in the ADR 2026-08-06; D1 and D3 were already decided), both rule-mandated D4 artifacts exist (<a href="../../compliance/information-security-program/">information-security-program.md</a> published, <a href="../../compliance/data-retention-policy/">data-retention-policy.md</a> drafted 2026-08-06), and the packet is assembled at <a href="../../compliance/counsel-engagement-brief/">counsel-engagement-brief.md</a>. Note the row covers D1-D5 now, not D1-D4: D5 (AI-training consent segregation) was added to the ADR 2026-08-01 and this row predated it. What remains is purely external: retain counsel and get rulings. The ADR-016 and ADR-023 legs are untouched by this update and remain unpackaged.</td>
 <td>project owner</td>
 <td>decision</td>
 </tr>
@@ -5870,7 +5870,7 @@ a row's reasoning belongs there first.</p>
 </tr>
 <tr>
 <td>UW-N02</td>
-<td>Feed ADR-018's still-open VPC method decision with the external document's cited sources (FTC COPPA Rule 90 FR 16918, codified at 16 CFR Part 312, effective 2025-06-23 with a general compliance date of 2026-04-22 that has <strong>already passed</strong> as of 2026-08-05; ROSCA; Oregon ORS 646A.293-295 and 646A.570-589) and its required consent-record field list. Decision, not implementation; waits on the counsel engagement <a href="#cluster-m-external-and-owner-gated">UW-M03</a> already names.</td>
+<td>Feed ADR-018's still-open VPC method decision with the external document's cited sources (FTC COPPA Rule 90 FR 16918, codified at 16 CFR Part 312, effective 2025-06-23 with a general compliance date of 2026-04-22 that has <strong>already passed</strong> as of 2026-08-05; ROSCA; Oregon ORS 646A.293-295 and 646A.570-589) and its required consent-record field list. Decision, not implementation; waits on the counsel engagement <a href="#cluster-m-external-and-owner-gated">UW-M03</a> already names. <strong>Updated 2026-08-06: the citations above are now carried into <a href="../../compliance/counsel-engagement-brief/">counsel-engagement-brief.md</a>, which puts them to counsel marked as unverified-by-us and asks counsel to confirm them against the Federal Register text rather than relying on this repository's secondary sourcing.</strong> That is the ADR's own stated caveat, so the row's remaining work is counsel's ruling, not further internal sourcing. The consent-record field list is still worth checking against the shipped <code>consent_*</code> columns once counsel confirms which fields are required.</td>
 <td>7</td>
 <td>decision</td>
 </tr>
@@ -5900,7 +5900,7 @@ a row's reasoning belongs there first.</p>
 </tr>
 <tr>
 <td>UW-N07</td>
-<td>Reconcile the external document's planning-default retention table against the <strong>already-resolved</strong> category-by-category schedule in <code>docs/compliance/coppa-gdpr-remediation-plan.md</code> ("Resolved 2026-07-20: accepted as drafted", kept as the actual policy and cited by ADR-018), rather than drafting from scratch: adopt the categories the resolved schedule omits (adult account/household, consent evidence, product analytics, application logs, financial records, backups), and settle the one row where the two disagree, reading progress, resolved as "life of the active profile plus 30-90 days after deactivation" against the external default of "target 12 months' inactivity." The resolved policy governs until deliberately changed. Owners to rule on the newly added categories: privacy counsel and finance. Feeds the same ADR-018 gate as <code>UW-N02</code>.</td>
+<td>Reconcile the external document's planning-default retention table against the <strong>already-resolved</strong> category-by-category schedule in <code>docs/compliance/coppa-gdpr-remediation-plan.md</code> ("Resolved 2026-07-20: accepted as drafted", kept as the actual policy and cited by ADR-018), rather than drafting from scratch: adopt the categories the resolved schedule omits (adult account/household, consent evidence, product analytics, application logs, financial records, backups), and settle the one row where the two disagree, reading progress, resolved as "life of the active profile plus 30-90 days after deactivation" against the external default of "target 12 months' inactivity." The resolved policy governs until deliberately changed. Owners to rule on the newly added categories: privacy counsel and finance. Feeds the same ADR-018 gate as <code>UW-N02</code>. <strong>Updated 2026-08-06: the reconciliation is done; the rulings are not.</strong> <a href="../../compliance/data-retention-policy/">data-retention-policy.md</a> now exists as the retention artifact ADR-018 D4 requires, drafted 2026-08-06 and still <code>status: draft</code> rather than published. It reproduces the 2026-07-20 resolved schedule verbatim rather than re-deriving it, settles the reading-progress row in favour of the resolved policy ("life of the active profile plus 30-90 days after deactivation" governs over the external 12-month-inactivity default), and adds all six omitted categories. <strong>Three of the added categories carry no window and are written as "Not yet set, owner ruling required" rather than being given an invented number</strong>: consent evidence, product analytics, and application logs. Financial records is marked not-applicable today (no payment data is collected) and needs a ruling before any payment feature ships. This row stays <code>decision</code> because those rulings are the remaining work.</td>
 <td>7</td>
 <td>decision</td>
 </tr>
@@ -6010,7 +6010,7 @@ have to re-derive them.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 8, 2026 20:13:19 UTC">August 8, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 8, 2026 20:42:54 UTC">August 8, 2026</span>
   </span>
 
     
