@@ -72,7 +72,14 @@ Deliberate non-goals
 * ``tests/``, ``supabase/``, and ``frontend/e2e/`` carry ``#VERIFY`` markers
   but are outside this hook's ``files:`` scope in
   ``.pre-commit-config.yaml``, so citations in those trees are never
-  checked by this gate at all, clean run or not.
+  checked by this gate at all, clean run or not. The same staged-scope
+  limit also runs the other way: a commit that only deletes or renames a
+  test file, touching nothing under ``src/``, ``scripts/``, or
+  ``frontend/src/``, never invokes this hook at all, so every citation of
+  that file goes stale invisibly until someone happens to edit one of the
+  citing source files. This is inherent to a hook scoped to staged files,
+  not something this script can close by itself; a CI job that reruns this
+  checker with ``--all`` on every PR is the fix, not a change here.
 
 Baseline
 --------
@@ -83,13 +90,26 @@ run. Everything else does, so new and newly-broken citations are blocked from
 day one.
 
 The baseline is keyed on ``(citing file, citation text)`` and never on line
-numbers, so it does not churn when unrelated lines move.
+numbers, so it does not churn when unrelated lines move. A citation listed
+``N`` times for one file grandfathers exactly ``N`` stale *sites* of that
+citation in that file, not an unbounded number of them: a brand-new site that
+reuses an already-listed citation string is still reported once the real
+site count in that file exceeds what the baseline lists.
 
 The baseline can only shrink. A baselined citation that has since been fixed
 is reported as an error telling you to delete the row, so a fixed citation
 cannot sit in the debt list pretending to be debt. To make that check
 complete regardless of how few files a hook run was handed, every file named
 in the baseline is scanned on every run, in addition to the files given.
+
+That shrink-only guarantee holds only within a single invocation of this
+script: nothing here compares this run's baseline against a prior commit's,
+so a pull request that adds a new stale citation alongside a new row that
+grandfathers it is invisible to a normal hook run. Pass
+``--assert-no-growth BASE_REF`` to compare the working tree's baseline
+against ``BASE_REF`` (for example ``origin/main``) by total grandfathered
+site count and fail if it grew; this is meant for a CI job, not pre-commit,
+since it shells out to ``git show``.
 
 Usage
 -----
@@ -99,12 +119,16 @@ Usage
     scripts/check_rad_citations.py path/to/file.py ...   # what pre-commit does
     scripts/check_rad_citations.py --all                 # whole repo
     scripts/check_rad_citations.py --all --write-baseline
+    scripts/check_rad_citations.py --assert-no-growth origin/main  # CI only
 
 Exit codes: ``0`` clean, ``1`` findings, ``2`` usage error. Being handed no
-files and no ``--all`` is a usage error, not a pass: a gate that succeeds
-vacuously is not a gate. A run that prints only ambiguous-bare-name notes
-(see "Deliberate non-goals") and no stale or baseline-drift findings still
-exits ``0``: notes are informational and never fail the run.
+files and no ``--all``, or files that resolve to nothing scannable and a
+baseline with nothing to add, is a usage error, not a pass: a gate that
+succeeds vacuously is not a gate, and that holds however few rows the
+baseline currently carries, including zero. A run that prints only
+ambiguous-bare-name notes (see "Deliberate non-goals") and no stale or
+baseline-drift findings still exits ``0``: notes are informational and never
+fail the run.
 """
 
 from __future__ import annotations
@@ -114,9 +138,11 @@ import fnmatch
 import io
 import json
 import re
+import subprocess
 import sys
 import tokenize
 import tomllib
+from collections import Counter
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Final, cast
@@ -180,14 +206,36 @@ _NAME_BODY: Final = r"(?:[A-Za-z0-9_*]|\{[^{}]*\})"
 _PY_CITATION_RE: Final = re.compile(
     # A path ending in a test module, with or without leading directories.
     # pyproject.toml's python_files permits "test_*.py" and "*_test.py"
-    # both, so both module-naming conventions are recognised as a path.
+    # both, so both module-naming conventions are recognised as a path
+    # standing alone, "::" or no "::" after it. A path with any other
+    # basename is recognised only when it is immediately followed by
+    # "::test_" or "::Test": that is the one shape where a citation commits
+    # to a *test* living in a specific, oddly-named file, so the file half
+    # must not be silently dropped just because the basename does not look
+    # like a test module pytest would ever collect (see "no test file by
+    # that path exists" below, and the module docstring's note on this).
+    # The same "::test_"/"::Test" gate already decides, a few lines below,
+    # whether a chain is worth checking at all (a chain naming production
+    # code, such as "middleware/security.py::RateLimitMiddleware", is a
+    # documentation cross-reference, not a #VERIFY test citation, and is
+    # deliberately left unmatched here rather than misreported as a missing
+    # test file).
     r"(?P<path>(?:[A-Za-z0-9_.\-]+/)*"
-    r"(?:test_[A-Za-z0-9_]+|[A-Za-z0-9_]+_test)\.py)"
+    r"(?:(?:test_[A-Za-z0-9_]+|[A-Za-z0-9_]+_test)\.py"
+    r"|[A-Za-z0-9_.\-]+\.py(?=::(?:test_|Test))))"
     # "::name", optionally with a pytest parametrisation suffix.
     rf"|::(?P<chain>{_NAME_BODY}+)(?:\[[^\]]*\])?"
     # A bare test name not preceded by a path separator or another name char.
     rf"|(?<![A-Za-z0-9_./:])(?P<bare>test_{_NAME_BODY}*[A-Za-z0-9_}}*])"
 )
+
+# A glob or brace citation must still name a bounded family of real tests to
+# mean anything: "test_*" fnmatches every test in the repo and would
+# otherwise resolve from nothing (see Important 5 in the D-2 final review).
+# The largest genuine family cited in this repo today is 8 real tests
+# (test_to_view_*); 20 leaves headroom for a deliberately larger family
+# while still rejecting a pattern broad enough to match "everything."
+_MAX_GLOB_MATCHES: Final = 20
 
 # The basename may itself carry dots (ReaderPage.badgeToast.test.tsx), so the
 # leading run must admit them and let the anchored ".test.tsx" suffix decide
@@ -448,14 +496,29 @@ def extract_py_blocks(source: str) -> list[Block]:
         if token.type == tokenize.COMMENT:
             row, column = token.start
             payload = _COMMENT_PREFIX_RE.sub("", token.string).strip()
-            if row == previous_line + 1 and column == previous_column:
+            # A continuation normally has to sit at the same column as the
+            # line before it, so an unrelated comment at a different indent
+            # on the very next line does not get glued into the block above
+            # it. But when the previous line ends in "_", "/" or "::", the
+            # wrap is unambiguous regardless of indentation: nothing in this
+            # repo's prose ends a comment that way by accident, and a
+            # re-indent during an unrelated refactor is exactly the edit
+            # that would otherwise silently drop the "::name" half of a
+            # citation onto its own, newly-orphaned group (Important 8 in
+            # the D-2 final review).
+            reopens_at_new_indent = bool(current) and current[-1][1].endswith(
+                _TIGHT_JOIN_SUFFIXES
+            )
+            if row == previous_line + 1 and (
+                column == previous_column or reopens_at_new_indent
+            ):
                 current.append((row, payload))
             else:
                 if current:
                     groups.append(current)
                 current = [(row, payload)]
             previous_line, previous_column = row, column
-        elif token.type == tokenize.STRING and "#VERIFY" in token.string:
+        elif token.type == tokenize.STRING and _VERIFY_RE.search(token.string):
             if current:
                 groups.append(current)
                 current = []
@@ -544,21 +607,77 @@ def _is_pattern(name: str) -> bool:
     return any(character in name for character in "*{}")
 
 
+def _glob_match_count(expansion: str, universe: set[str]) -> int:
+    """Count how many real names one brace expansion's glob matches.
+
+    Args:
+        expansion: One brace expansion of a citation, possibly containing
+            ``*``.
+        universe: Every real name the citation is allowed to resolve to.
+
+    Returns:
+        The number of names in ``universe`` that ``expansion`` matches. For
+        an expansion with no ``*`` this is 1 when it is a literal member of
+        ``universe`` and 0 otherwise, matching set membership.
+    """
+    if "*" not in expansion:
+        return 1 if expansion in universe else 0
+    return sum(1 for real in universe if fnmatch.fnmatchcase(real, expansion))
+
+
 def _matches(name: str, universe: set[str]) -> bool:
     """Resolve a cited name, literally or as a glob, against real names.
+
+    A glob expansion must match at least one real name, the same as before,
+    but now also no more than ``_MAX_GLOB_MATCHES``: a pattern broad enough
+    to match everything (``test_*`` fnmatches the whole repo) proves nothing
+    about any specific test and must not resolve from nothing (Important 5
+    in the D-2 final review). Brace shorthand naming a small, deliberate
+    test family is unaffected, since real families in this repo top out at a
+    handful of members.
 
     Args:
         name: A cited test name, possibly with braces or ``*``.
         universe: Every real name the citation is allowed to resolve to.
 
     Returns:
-        ``True`` when the citation resolves.
+        ``True`` when the citation resolves to a bounded, non-empty set of
+        real names.
     """
     if not _is_pattern(name):
         return name in universe
     return all(
-        any(fnmatch.fnmatchcase(real, expansion) for real in universe)
+        0 < _glob_match_count(expansion, universe) <= _MAX_GLOB_MATCHES
         for expansion in expand_braces(name)
+    )
+
+
+def _pattern_overreach_reason(name: str, universe: set[str]) -> str | None:
+    """Explain why a glob citation matched too many real tests to mean anything.
+
+    Args:
+        name: A cited name, checked only when it is a pattern.
+        universe: Every real name the citation could match.
+
+    Returns:
+        A reason string when some expansion of ``name`` matched more real
+        tests than ``_MAX_GLOB_MATCHES``. ``None`` when ``name`` is not a
+        pattern, or every expansion stayed within the bound (including the
+        zero-match case, which is reported separately as an ordinary
+        unresolved citation).
+    """
+    if not _is_pattern(name):
+        return None
+    worst = max(
+        (_glob_match_count(expansion, universe) for expansion in expand_braces(name)),
+        default=0,
+    )
+    if worst <= _MAX_GLOB_MATCHES:
+        return None
+    return (
+        f"matches {worst} real tests, more than the {_MAX_GLOB_MATCHES} this"
+        " checker treats as a bounded test family; name the tests explicitly"
+        " or narrow the pattern"
     )
 
 
@@ -661,6 +780,23 @@ def _bare_ambiguity_note(
     )
 
 
+def _stale_name_reason(name: str, universe: set[str]) -> str:
+    """Build the reason a bare name failed to resolve.
+
+    Args:
+        name: The unresolved cited name.
+        universe: The names it was checked against.
+
+    Returns:
+        The glob-overreach reason when ``name`` is a pattern that matched
+        more than ``_MAX_GLOB_MATCHES`` real names, otherwise the generic
+        "does not exist" reason.
+    """
+    return _pattern_overreach_reason(name, universe) or (
+        "no test function or test module by that name"
+    )
+
+
 def _scan_py_block(index: RepoIndex, rel: str, block: Block) -> list[Finding]:
     """Resolve every citation in one Python ``#VERIFY`` block.
 
@@ -695,13 +831,14 @@ def _scan_py_block(index: RepoIndex, rel: str, block: Block) -> list[Finding]:
             if not chain.startswith(("test_", "Test")):
                 continue
             if current_path is None:
+                bare_universe = index.py_test_names | index.py_test_modules
                 if not _check_bare_name(index, chain):
                     findings.append(
                         Finding(
                             path=rel,
                             line=block.line,
                             citation=chain,
-                            reason="no test function or test module by that name",
+                            reason=_stale_name_reason(chain, bare_universe),
                         )
                     )
                 else:
@@ -715,22 +852,24 @@ def _scan_py_block(index: RepoIndex, rel: str, block: Block) -> list[Finding]:
             for candidate in current_files:
                 universe |= index.py_defs_by_path.get(candidate, set())
             if not _matches(chain, universe):
+                overreach = _pattern_overreach_reason(chain, universe)
                 findings.append(
                     Finding(
                         path=rel,
                         line=block.line,
                         citation=f"{current_path}::{chain}",
-                        reason=f"{current_path} defines no such test",
+                        reason=overreach or f"{current_path} defines no such test",
                     )
                 )
         elif bare is not None:
+            bare_universe = index.py_test_names | index.py_test_modules
             if not _check_bare_name(index, bare):
                 findings.append(
                     Finding(
                         path=rel,
                         line=block.line,
                         citation=bare,
-                        reason="no test function or test module by that name",
+                        reason=_stale_name_reason(bare, bare_universe),
                     )
                 )
             else:
@@ -784,7 +923,12 @@ def scan_file(index: RepoIndex, root: Path, path: Path) -> list[Finding]:
     if rel in _FIXTURE_FILES:
         return []
     source = _read(path)
-    if "#VERIFY" not in source:
+    # A plain "#VERIFY" substring check would miss the hash-less docstring
+    # form (see core/observability.py and the module docstring's note on
+    # it), so this fast pre-filter has to accept that shape too before ever
+    # tokenizing the file. _VERIFY_RE already encodes the optional "#";
+    # reuse it here rather than inventing a second, looser rule.
+    if not _VERIFY_RE.search(source):
         return []
     if path.suffix == _PY_SUFFIX:
         blocks = extract_py_blocks(source)
@@ -800,26 +944,23 @@ def scan_file(index: RepoIndex, root: Path, path: Path) -> list[Finding]:
     return findings
 
 
-def load_baseline(path: Path) -> dict[str, dict[str, list[str]]]:
-    """Read the grandfathered-citation baseline.
+def _sections_from_document(
+    document: dict[str, object],
+) -> dict[str, dict[str, list[str]]]:
+    """Validate and extract the baseline's two sections from a parsed document.
 
     Args:
-        path: Baseline file path.
+        document: A TOML document already parsed by :mod:`tomllib`, from
+            either a file on disk or a ``git show`` blob.
 
     Returns:
         ``{"python": {file: [citation, ...]}, "typescript": {...}}``. Missing
-        sections come back empty, and a missing file yields empty sections.
+        sections come back empty.
 
     Raises:
-        ValueError: If the file exists but is not shaped as expected.
+        ValueError: If the document exists but is not shaped as expected.
     """
     sections: dict[str, dict[str, list[str]]] = {"python": {}, "typescript": {}}
-    if not path.exists():
-        return sections
-    with path.open("rb") as handle:
-        # tomllib always yields a table at the top level, so the only shapes
-        # worth validating are the ones below it.
-        document = cast("dict[str, object]", tomllib.load(handle))
     for section, collected in sections.items():
         block = document.get(section)
         if block is None:
@@ -841,20 +982,53 @@ def load_baseline(path: Path) -> dict[str, dict[str, list[str]]]:
     return sections
 
 
+def load_baseline(path: Path) -> dict[str, dict[str, list[str]]]:
+    """Read the grandfathered-citation baseline.
+
+    Args:
+        path: Baseline file path.
+
+    Returns:
+        ``{"python": {file: [citation, ...]}, "typescript": {...}}``. Missing
+        sections come back empty, and a missing file yields empty sections.
+
+    Raises:
+        ValueError: If the file exists but is not shaped as expected.
+    """
+    if not path.exists():
+        return {"python": {}, "typescript": {}}
+    with path.open("rb") as handle:
+        # tomllib always yields a table at the top level, so the only shapes
+        # worth validating are the ones below it.
+        document = cast("dict[str, object]", tomllib.load(handle))
+    return _sections_from_document(document)
+
+
 def render_baseline(findings: list[Finding]) -> str:
     """Serialise findings as a baseline file.
 
+    A citation is written once per stale site, not deduplicated: a citation
+    that recurs at two sites in the same file appears twice in that file's
+    list. This is what makes the baseline's grandfathering bounded per site
+    (see :func:`run` and the module docstring); collapsing sites into a set
+    here is exactly the Important 6 defect from the D-2 final review, where
+    a brand-new site reusing an already-listed citation string landed green
+    as pre-existing debt because the row could not tell one site from four.
+
     Args:
-        findings: Every stale citation to grandfather.
+        findings: Every stale citation to grandfather, one entry per site.
 
     Returns:
         The complete TOML document.
     """
-    grouped: dict[str, dict[str, set[str]]] = {"python": {}, "typescript": {}}
+    grouped: dict[str, dict[str, list[str]]] = {"python": {}, "typescript": {}}
     for finding in findings:
         section = "python" if finding.path.endswith(_PY_SUFFIX) else "typescript"
-        grouped[section].setdefault(finding.path, set()).add(finding.citation)
-    total = sum(len(c) for s in grouped.values() for c in s.values())
+        grouped[section].setdefault(finding.path, []).append(finding.citation)
+    python_sites = sum(len(c) for c in grouped["python"].values())
+    typescript_sites = sum(len(c) for c in grouped["typescript"].values())
+    total_sites = python_sites + typescript_sites
+    total_rows = sum(len(set(c)) for s in grouped.values() for c in s.values())
     lines = [
         "# RAD #VERIFY citation baseline (debt item D-2).",
         "#",
@@ -868,7 +1042,18 @@ def render_baseline(findings: list[Finding]) -> str:
         "# longer stale so debt cannot be faked. Delete the row with the fix.",
         "#",
         "# Rows are keyed on (file, citation text), never on line numbers, so",
-        "# unrelated edits above a citation do not churn this file.",
+        "# unrelated edits above a citation do not churn this file. A citation",
+        "# listed N times for one file grandfathers exactly N stale SITES of",
+        "# that citation in that file, not an unbounded number of them: a new",
+        "# site that reuses an already-listed citation string still fails once",
+        "# the real site count in that file exceeds what is listed here.",
+        "#",
+        "# That shrink-only guarantee holds only within a single run of this",
+        "# checker: nothing here compares this file against a prior commit's,",
+        "# so a pull request that adds a new stale citation alongside a new",
+        "# row that grandfathers it is invisible to a normal hook run. Run",
+        "# scripts/check_rad_citations.py --assert-no-growth <BASE_REF> in CI",
+        "# to compare this file's total site count against a base ref.",
         "#",
         "# WHAT REACHING ZERO ROWS DOES NOT MEAN, for the team fixing this list:",
         "# the checker proves a citation names a test that EXISTS. It does not and",
@@ -882,16 +1067,21 @@ def render_baseline(findings: list[Finding]) -> str:
         '# "Deliberate non-goals" in scripts/check_rad_citations.py\'s module',
         "# docstring before treating an empty version of this file as done.",
         "#",
-        "# This baseline also only covers what the check-rad-citations pre-commit",
-        "# hook scans: src/, scripts/, frontend/src/, and this file. tests/,",
-        "# supabase/, and frontend/e2e/ carry #VERIFY markers of their own and are",
-        "# not scanned by this hook at all, so a citation going stale in any of",
-        "# those trees produces no row here and no failure anywhere.",
+        "# This file's CONTENT was generated by --write-baseline --all, which",
+        "# walks every .py/.ts/.tsx file in the repo, tests/ and frontend/e2e/",
+        "# included: zero rows for those trees means they were clean when this",
+        "# was generated, not that they are excluded from this file's scope.",
+        "# The check-rad-citations pre-commit HOOK is narrower than that: day",
+        "# to day it only ever rescans src/, scripts/, frontend/src/, and this",
+        "# file (see .pre-commit-config.yaml), so a citation going stale in",
+        "# tests/, supabase/, or frontend/e2e/ produces no new row here and no",
+        "# hook failure until someone reruns --write-baseline --all by hand.",
         "#",
         (
-            f"# Entries: {total}"
-            f" ({sum(len(c) for c in grouped['python'].values())} python,"
-            f" {sum(len(c) for c in grouped['typescript'].values())} typescript)"
+            f"# Entries: {total_rows} distinct citation(s) covering"
+            f" {total_sites} grandfathered site(s)"
+            f" ({python_sites} python site(s), {typescript_sites} typescript"
+            " site(s))"
         ),
         "",
     ]
@@ -918,18 +1108,71 @@ def _baseline_files(baseline: dict[str, dict[str, list[str]]]) -> set[str]:
     return {path for section in baseline.values() for path in section}
 
 
-def _baseline_for(baseline: dict[str, dict[str, list[str]]], rel: str) -> set[str]:
-    """Look up the grandfathered citations for one file.
+def _total_sites(baseline: dict[str, dict[str, list[str]]]) -> int:
+    """Count every grandfathered citation site in a baseline.
+
+    This counts sites, not distinct ``(file, citation)`` rows: a citation
+    listed twice for the same file counts as 2. That is the quantity
+    ``--assert-no-growth`` compares, since row count alone cannot see a new
+    site added under an already-listed citation (Important 6).
+
+    Args:
+        baseline: A loaded baseline.
+
+    Returns:
+        The total number of citation strings listed across both sections.
+    """
+    return sum(
+        len(citations)
+        for section in baseline.values()
+        for citations in section.values()
+    )
+
+
+def _baseline_for(baseline: dict[str, dict[str, list[str]]], rel: str) -> Counter[str]:
+    """Look up the grandfathered citations for one file, with site counts.
 
     Args:
         baseline: A loaded baseline.
         rel: Repo-relative path of the citing file.
 
     Returns:
-        The citations baselined for that file.
+        A count of how many sites each citation is grandfathered for in
+        that file. A citation absent from the baseline has count 0.
     """
     section = "python" if rel.endswith(_PY_SUFFIX) else "typescript"
-    return set(baseline[section].get(rel, []))
+    return Counter(baseline[section].get(rel, []))
+
+
+def _effective_targets(
+    root: Path, targets: list[Path], baseline: dict[str, dict[str, list[str]]]
+) -> tuple[list[Path], list[str]]:
+    """Union the given targets with every file the baseline mentions.
+
+    Every file named in the baseline is scanned as well as the files given,
+    so the "no longer stale" check is complete even on a two-file hook run.
+
+    Args:
+        root: Repository root.
+        targets: Files the caller asked about.
+        baseline: The loaded baseline.
+
+    Returns:
+        The full ordered list of files to scan, and the baselined paths that
+        no longer exist on disk at all.
+    """
+    ordered: list[Path] = list(targets)
+    seen = {p.resolve() for p in targets}
+    stale_baseline_files: list[str] = []
+    for rel in sorted(_baseline_files(baseline)):
+        candidate = root / rel
+        if not candidate.exists():
+            stale_baseline_files.append(rel)
+            continue
+        if candidate.resolve() not in seen:
+            ordered.append(candidate)
+            seen.add(candidate.resolve())
+    return ordered, stale_baseline_files
 
 
 def run(
@@ -940,8 +1183,16 @@ def run(
 ) -> list[Finding]:
     """Scan the given files and reconcile the results with the baseline.
 
-    Every file named in the baseline is scanned as well as the files given,
-    so the "no longer stale" check is complete even on a two-file hook run.
+    Grandfathering is per citation SITE, not per citation string: a citation
+    baselined ``N`` times for a file covers only the first ``N`` stale sites
+    of that citation encountered in that file (in scan order), so a new site
+    that reuses an already-baselined citation string is reported like any
+    other new stale citation once the real count exceeds what is baselined
+    (Important 6 in the D-2 final review). ``"note"`` findings are never
+    filtered against the baseline at all: a note names a citation that
+    resolves, so baselining it would misrepresent it as debt and would also
+    silence it on every future run once it matched a grandfathered string
+    (Minor 14).
 
     Args:
         root: Repository root.
@@ -954,19 +1205,8 @@ def run(
         the caller should fail on, plus informational ``"note"`` findings
         that should be printed but never fail the run.
     """
+    ordered, stale_baseline_files = _effective_targets(root, targets, baseline)
     scanned: dict[str, list[Finding]] = {}
-    ordered: list[Path] = list(targets)
-    seen = {p.resolve() for p in targets}
-    stale_baseline_files: list[str] = []
-    for rel in sorted(_baseline_files(baseline)):
-        candidate = root / rel
-        if not candidate.exists():
-            stale_baseline_files.append(rel)
-            continue
-        if candidate.resolve() not in seen:
-            ordered.append(candidate)
-            seen.add(candidate.resolve())
-
     for path in ordered:
         rel = path.relative_to(root).as_posix()
         scanned[rel] = scan_file(index, root, path)
@@ -974,18 +1214,28 @@ def run(
     findings: list[Finding] = []
     for rel in sorted(scanned):
         grandfathered = _baseline_for(baseline, rel)
-        actual = {f.citation for f in scanned[rel]}
-        findings.extend(f for f in scanned[rel] if f.citation not in grandfathered)
-        findings.extend(
-            Finding(
-                path=rel,
-                line=0,
-                citation=gone,
-                reason=_FIXED_ROW_REASON,
-                kind="baseline",
+        stale = [f for f in scanned[rel] if f.kind == "stale"]
+        notes = [f for f in scanned[rel] if f.kind == "note"]
+        remaining = Counter(grandfathered)
+        for finding in stale:
+            if remaining[finding.citation] > 0:
+                remaining[finding.citation] -= 1
+                continue
+            findings.append(finding)
+        actual_counts = Counter(f.citation for f in stale)
+        for citation in sorted(grandfathered):
+            excess = grandfathered[citation] - actual_counts[citation]
+            findings.extend(
+                Finding(
+                    path=rel,
+                    line=0,
+                    citation=citation,
+                    reason=_FIXED_ROW_REASON,
+                    kind="baseline",
+                )
+                for _ in range(max(0, excess))
             )
-            for gone in sorted(grandfathered - actual)
-        )
+        findings.extend(notes)
     findings.extend(
         Finding(
             path=rel, line=0, citation="*", reason=_GONE_FILE_REASON, kind="baseline"
@@ -993,6 +1243,85 @@ def run(
         for rel in stale_baseline_files
     )
     return findings
+
+
+def _assert_no_growth(root: Path, baseline_path: Path, base_ref: str) -> int:
+    """Fail when the working tree's baseline holds more sites than BASE_REF's.
+
+    Neither this script's normal run nor the pre-commit hook that invokes it
+    ever sees a prior commit's baseline, so a pull request that adds a
+    brand-new stale citation alongside a brand-new baseline row that
+    grandfathers it passes silently (Important 6/9 in the D-2 final review:
+    this is the exact mechanism that grandfathered this workstream's own
+    ``validator/character.py`` debt, caught only by a human intersecting
+    file lists by hand). This compares by total grandfathered SITE count,
+    not row count, so it also catches a new site added under an
+    already-listed citation string, which a row-count-only comparison would
+    miss entirely.
+
+    Intended for a CI job comparing a pull request's head against the
+    branch it targets; not for pre-commit, since it shells out to
+    ``git show`` rather than reading only the working tree.
+
+    Args:
+        root: Repository root, used to resolve ``baseline_path`` and as the
+            ``git -C`` directory for the ``git show`` call.
+        baseline_path: Path to the working tree's baseline file.
+        base_ref: A git ref (branch, tag, or commit) to compare against.
+
+    Returns:
+        ``0`` when the working tree's baseline is no larger than
+        ``BASE_REF``'s, ``2`` when ``BASE_REF`` or its baseline cannot be
+        read, ``1`` when it grew.
+    """
+    try:
+        rel = baseline_path.relative_to(root).as_posix()
+    except ValueError:
+        rel = baseline_path.name
+    try:
+        # #ASSUME: external resources: BASE_REF and the path both exist in
+        # this checkout's git history. #VERIFY: the except branch below
+        # surfaces a missing ref or a shallow checkout as an exit-2 usage
+        # error rather than a traceback; tests/unit/test_check_rad_citations.py
+        # covers the missing-ref and malformed-TOML cases.
+        completed = subprocess.run(  # nosec B603 B607
+            ["git", "-C", str(root), "show", f"{base_ref}:{rel}"],
+            capture_output=True,
+            check=True,
+            text=True,
+        )
+    except (OSError, subprocess.CalledProcessError) as error:
+        print(
+            f"check_rad_citations: could not read {rel!r} from {base_ref!r}: {error}",
+            file=sys.stderr,
+        )
+        return 2
+    try:
+        base_document = cast("dict[str, object]", tomllib.loads(completed.stdout))
+        base_baseline = _sections_from_document(base_document)
+    except (tomllib.TOMLDecodeError, ValueError) as error:
+        print(
+            f"check_rad_citations: {base_ref}:{rel} is not a usable baseline: {error}",
+            file=sys.stderr,
+        )
+        return 2
+    head_baseline = load_baseline(baseline_path)
+    base_total = _total_sites(base_baseline)
+    head_total = _total_sites(head_baseline)
+    if head_total > base_total:
+        print(
+            f"check_rad_citations: {rel} grew from {base_total} to {head_total}"
+            f" grandfathered citation site(s) against {base_ref}. The baseline"
+            " may only shrink; a brand-new stale citation must be fixed, not"
+            " grandfathered.",
+            file=sys.stderr,
+        )
+        return 1
+    print(
+        f"{rel}: {head_total} grandfathered site(s), no growth against"
+        f" {base_ref} ({base_total})."
+    )
+    return 0
 
 
 def _collect_targets(root: Path, paths: list[str], scan_all: bool) -> list[Path]:
@@ -1073,6 +1402,8 @@ class _Args(argparse.Namespace):
         write_baseline: Whether to rewrite the baseline.
         baseline: Path to the baseline file.
         root: Repository root.
+        assert_no_growth: A base git ref to compare the baseline against, or
+            ``None`` to run the checker normally.
     """
 
     paths: list[str]
@@ -1080,6 +1411,7 @@ class _Args(argparse.Namespace):
     write_baseline: bool
     baseline: str
     root: str
+    assert_no_growth: str | None
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -1103,6 +1435,16 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--baseline", default=str(BASELINE_PATH))
     parser.add_argument("--root", default=str(REPO_ROOT))
+    parser.add_argument(
+        "--assert-no-growth",
+        metavar="BASE_REF",
+        default=None,
+        help=(
+            "compare the baseline's total grandfathered citation sites"
+            " against BASE_REF (e.g. origin/main) via 'git show' and fail if"
+            " it grew; for a CI job, not pre-commit"
+        ),
+    )
     return parser
 
 
@@ -1121,6 +1463,9 @@ def main(argv: list[str] | None = None) -> int:
     baseline_path = Path(args.baseline)
     if not baseline_path.is_absolute():
         baseline_path = root / baseline_path
+
+    if args.assert_no_growth is not None:
+        return _assert_no_growth(root, baseline_path, args.assert_no_growth)
 
     if not args.paths and not args.scan_all:
         print(
@@ -1174,6 +1519,26 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
     targets = _collect_targets(root, args.paths, args.scan_all)
+    # The "no files and no --all" guard above only catches an empty
+    # ARGUMENT list. It does nothing when args.paths is non-empty but
+    # resolves to zero scannable files (for example, being handed only
+    # rad-citation-baseline.toml itself, which _collect_targets drops for
+    # its suffix) and the baseline is also empty, so there is nothing left
+    # to pull in either. That combination used to scan nothing and exit 0,
+    # which made "this gate can never succeed vacuously" false on exactly
+    # the day the baseline's debt list finally reaches zero rows (Important
+    # 7). Checking the same emptiness here, after the baseline files are
+    # unioned in, keeps that claim true regardless of how few rows remain.
+    ordered, _ = _effective_targets(root, targets, baseline)
+    if not ordered:
+        print(
+            "check_rad_citations: the given paths and the baseline both"
+            " resolved to zero scannable files. Pass file paths that exist,"
+            " or --all to scan the repo. This gate can never succeed"
+            " vacuously, however small the baseline gets.",
+            file=sys.stderr,
+        )
+        return 2
     results = run(root, targets, baseline, index)
     if not results:
         return 0

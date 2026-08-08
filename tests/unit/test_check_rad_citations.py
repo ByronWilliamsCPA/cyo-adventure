@@ -38,6 +38,8 @@ because nothing in the checker attempts it.
 from __future__ import annotations
 
 import importlib.util
+import shutil
+import subprocess
 import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -264,14 +266,46 @@ def test_verify_line_naming_no_test_at_all_is_skipped(repo: Path) -> None:
 # --------------------------------------------------------------------------
 
 
-def test_docstring_citation_without_a_comment_marker_is_checked(repo: Path) -> None:
-    """A citation inside a module docstring is parsed like a comment one."""
+def test_docstring_citation_with_a_hash_marker_is_checked(repo: Path) -> None:
+    """A citation inside a module docstring, hash-prefixed, is checked.
+
+    This fixture keeps the ``#`` on ``#CRITICAL``/``#VERIFY`` even though it
+    sits inside a triple-quoted string (so it is not a real Python comment
+    token); it proves docstring-embedded markers are parsed at all. It does
+    not exercise the hash-less spelling the module docstring says is also
+    supported; see ``test_docstring_citation_without_a_hash_marker_is_checked``
+    for that case (Minor 15).
+    """
     source = _write_source(
         repo,
         '"""Module summary.\n'
         "\n"
         "#CRITICAL: security: PII must never be sent.\n"
         "#VERIFY: tests/unit/test_widget.py::test_pii_is_never_sent\n"
+        "asserts every call passes send_default_pii=False.\n"
+        '"""\n',
+    )
+    assert _findings(repo, source) == [
+        "tests/unit/test_widget.py::test_pii_is_never_sent"
+    ]
+
+
+def test_docstring_citation_without_a_hash_marker_is_checked(repo: Path) -> None:
+    """A hash-less docstring block (``VERIFY:``, no ``#``) is still checked.
+
+    Minor 15: the module docstring says the leading ``#`` is optional inside
+    docstrings, "because docstring-embedded markers carry no comment
+    character at all", but the extraction gate used to test the literal
+    substring ``"#VERIFY"``, which a hash-less block never contains. Before
+    the fix this citation was skipped entirely: zero findings, exit 0,
+    despite naming a test that does not exist.
+    """
+    source = _write_source(
+        repo,
+        '"""Module summary.\n'
+        "\n"
+        "CRITICAL: security: PII must never be sent.\n"
+        "VERIFY: tests/unit/test_widget.py::test_pii_is_never_sent\n"
         "asserts every call passes send_default_pii=False.\n"
         '"""\n',
     )
@@ -509,11 +543,15 @@ def test_ambiguous_bare_name_resolution_emits_a_non_failing_note(repo: Path) -> 
     assert [(f.kind, f.citation) for f in findings] == [("note", "test_shared_case")]
 
 
-def test_ambiguous_bare_name_note_does_not_fail_the_run(repo: Path) -> None:
+def test_ambiguous_bare_name_note_does_not_fail_the_run(
+    repo: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
     """A run whose only finding is an ambiguity note still exits 0.
 
     A note is informational, never blocking; this is the exit-code half of
-    the previous test.
+    the previous test. The note text is asserted on stdout too, so the test
+    fails (rather than passing vacuously) if note generation were deleted
+    outright instead of merely kept non-blocking.
     """
     _write_source(
         repo,
@@ -528,6 +566,7 @@ def test_ambiguous_bare_name_note_does_not_fail_the_run(repo: Path) -> None:
     _write_source(repo, "# #VERIFY: test_shared_case proves it.\n", name="src/thing.py")
     path = _baseline(repo, "[python]\n[typescript]\n")
     assert _MODULE.main(["--all", "--root", str(repo), "--baseline", str(path)]) == 0
+    assert "note: test_shared_case" in capsys.readouterr().out
 
 
 # --------------------------------------------------------------------------
@@ -828,12 +867,23 @@ def test_clean_tree_exits_zero(repo: Path) -> None:
 
 
 def test_non_source_arguments_are_ignored(repo: Path) -> None:
-    """A hook run handed a README must not crash."""
+    """A hook run handed a README must not crash, and must not be scanned.
+
+    ``_collect_targets`` is asserted directly so the test fails if the
+    suffix filter is ever removed, not just if the run happens to crash;
+    a real source file is passed alongside the README so the run itself
+    has something to scan.
+    """
     readme = repo / "README.md"
     readme.write_text("# hi\n", encoding="utf-8")
+    assert _MODULE._collect_targets(repo, [str(readme)], scan_all=False) == []
+    clean = _write_source(
+        repo,
+        "# #VERIFY: tests/unit/test_widget.py::test_widget_rejects_a_blank_name.\n",
+    )
     path = _baseline(repo, "[python]\n[typescript]\n")
     exit_code = _MODULE.main(
-        [str(readme), "--root", str(repo), "--baseline", str(path)]
+        [str(readme), str(clean), "--root", str(repo), "--baseline", str(path)]
     )
     assert exit_code == 0
 
@@ -846,11 +896,21 @@ def test_missing_file_argument_is_skipped_without_crashing(repo: Path) -> None:
     ``is_file()`` guard in ``_collect_targets``, ``scan_file`` would try to
     read a path that is not there and raise ``FileNotFoundError`` instead of
     the run completing cleanly; asserting the exit code catches that
-    regardless of which layer would have crashed.
+    regardless of which layer would have crashed. A real, resolving source
+    file is passed alongside the ghost path so the run has something to
+    scan and the vacuous-target guard (Important 7) does not itself account
+    for the exit code.
     """
     ghost = repo / "src" / "ghost.py"
+    clean = _write_source(
+        repo,
+        "# #VERIFY: tests/unit/test_widget.py::test_widget_rejects_a_blank_name.\n",
+    )
+    assert _MODULE._collect_targets(repo, [str(ghost)], scan_all=False) == []
     path = _baseline(repo, "[python]\n[typescript]\n")
-    exit_code = _MODULE.main([str(ghost), "--root", str(repo), "--baseline", str(path)])
+    exit_code = _MODULE.main(
+        [str(ghost), str(clean), "--root", str(repo), "--baseline", str(path)]
+    )
     assert exit_code == 0
 
 
@@ -859,14 +919,28 @@ def test_baseline_toml_argument_is_accepted_without_being_scanned(repo: Path) ->
 
     pre-commit's ``files:`` regex for this hook matches the baseline file
     too, so an edit to it re-triggers the hook with the baseline's own path
-    as an argument. ``_collect_targets`` must accept a ``.toml`` path
-    without crashing and without treating it as a source file to scan for
-    citations; this is the scenario the module docstring calls out that the
-    old smoke test never actually exercised.
+    as an argument. ``_collect_targets`` is asserted directly to prove the
+    ``.toml`` path is dropped rather than treated as a source file to scan
+    for citations; a real source file is passed alongside it so the run
+    itself has something to scan (with an empty baseline, the vacuous-target
+    guard from Important 7 would otherwise reject the run outright, which
+    would prove nothing about the suffix filter this test targets).
     """
     baseline_path = _baseline(repo, "[python]\n[typescript]\n")
+    assert _MODULE._collect_targets(repo, [str(baseline_path)], scan_all=False) == []
+    clean = _write_source(
+        repo,
+        "# #VERIFY: tests/unit/test_widget.py::test_widget_rejects_a_blank_name.\n",
+    )
     exit_code = _MODULE.main(
-        [str(baseline_path), "--root", str(repo), "--baseline", str(baseline_path)]
+        [
+            str(baseline_path),
+            str(clean),
+            "--root",
+            str(repo),
+            "--baseline",
+            str(baseline_path),
+        ]
     )
     assert exit_code == 0
 
@@ -922,3 +996,302 @@ def test_this_test_file_is_excluded_from_scanning(repo: Path) -> None:
         name="tests/unit/test_check_rad_citations_extra.py",
     )
     assert _findings(repo, neighbour) == ["test_nothing_at_all"]
+
+
+# --------------------------------------------------------------------------
+# Important 5: a glob citation matching too many real tests proves nothing
+# --------------------------------------------------------------------------
+
+
+def test_glob_citation_matching_too_many_tests_is_stale(repo: Path) -> None:
+    """``test_*`` fnmatches nearly the whole repo and must not resolve for free.
+
+    Before the fix, ``_is_pattern`` treated any ``*``/``{}`` citation as
+    resolved the moment one real name matched, so ``test_*`` matched every
+    test in the repo and passed silently with no note either (Important 5
+    in the D-2 final review). The fixture repo needs enough matching tests
+    to exceed ``_MAX_GLOB_MATCHES`` (20); the shared ``repo`` fixture's small
+    handful of tests is not enough to exercise the bound.
+    """
+    tests_dir = repo / "tests" / "unit"
+    lines = [f"def test_extra_case_{i}() -> None:\n    pass\n\n" for i in range(25)]
+    (tests_dir / "test_bulk.py").write_text("".join(lines), encoding="utf-8")
+    source = _write_source(
+        repo,
+        "# #CRITICAL: security: totally unproven claim.\n# #VERIFY: test_*\n",
+    )
+    findings = _findings(repo, source)
+    assert len(findings) == 1
+    assert findings[0] == "test_*"
+
+
+def test_bounded_brace_glob_still_resolves_from_nothing(repo: Path) -> None:
+    """A small, deliberate glob family is not caught by the overreach bound.
+
+    ``test_dual_role_{same,foreign}_*`` matches exactly the two fixture
+    tests named for it, well under ``_MAX_GLOB_MATCHES``; the Important 5
+    fix must not turn every glob into a failure, only unbounded ones.
+    """
+    source = _write_source(
+        repo,
+        "# #VERIFY: test_dual_role_{same,foreign}_family_publish_stamps_actor\n",
+    )
+    assert _findings(repo, source) == []
+
+
+# --------------------------------------------------------------------------
+# Important 6: the baseline grandfathers a citation SITE, not a citation STRING
+# --------------------------------------------------------------------------
+
+
+def test_baseline_covers_only_as_many_sites_as_it_lists(repo: Path) -> None:
+    """A citation repeated twice in one file is grandfathered only once.
+
+    Before the fix, the baseline was keyed on ``(file, citation)``, a set:
+    one row for ``test_ghost_case`` in ``src/thing.py`` silently absorbed
+    every site sharing that string, however many there were. A brand-new
+    second site reusing an already-baselined name must still be reported
+    (Important 6 in the D-2 final review).
+    """
+    source = _write_source(
+        repo,
+        "# #VERIFY: test_ghost_case one\nX = 1\n# #VERIFY: test_ghost_case two\nY = 2\n",
+    )
+    baseline = _MODULE.load_baseline(
+        _baseline(
+            repo, '[python]\n"src/thing.py" = ["test_ghost_case"]\n[typescript]\n'
+        )
+    )
+    index = _MODULE.build_index(repo)
+    findings = _MODULE.run(repo, [source], baseline, index)
+    stale = [f for f in findings if f.kind == "stale"]
+    assert [f.citation for f in stale] == ["test_ghost_case"]
+    assert stale[0].line == 3
+
+
+def test_baseline_covering_every_real_site_stays_silent(repo: Path) -> None:
+    """A single citation with a single matching baseline row is unaffected.
+
+    Regression guard for the per-site rewrite: the common one-site case
+    must not start failing just because the reconciliation is now counted.
+    """
+    source = _write_source(repo, "# #VERIFY: test_brand_new_ghost_case\nX = 1\n")
+    baseline = _MODULE.load_baseline(
+        _baseline(
+            repo,
+            '[python]\n"src/thing.py" = ["test_brand_new_ghost_case"]\n[typescript]\n',
+        )
+    )
+    index = _MODULE.build_index(repo)
+    findings = _MODULE.run(repo, [source], baseline, index)
+    assert [f for f in findings if f.kind == "stale"] == []
+
+
+# --------------------------------------------------------------------------
+# Important 6 (CI half): --assert-no-growth compares against a prior ref
+# --------------------------------------------------------------------------
+
+
+def _init_git_repo(root: Path) -> None:
+    """Initialise a throwaway git repository for ``--assert-no-growth`` tests.
+
+    Args:
+        root: Directory to turn into a git repository.
+    """
+    git = shutil.which("git")
+    assert git is not None, "git must be on PATH to exercise --assert-no-growth"
+    env_args = ["-c", "user.email=test@example.com", "-c", "user.name=test"]
+    subprocess.run([git, *env_args, "init", "-q", str(root)], check=True)
+    subprocess.run([git, *env_args, "-C", str(root), "add", "-A"], check=True)
+    subprocess.run(
+        [git, *env_args, "-C", str(root), "commit", "-q", "-m", "snapshot"],
+        check=True,
+    )
+
+
+def test_assert_no_growth_passes_when_the_baseline_did_not_grow(
+    tmp_path: Path,
+) -> None:
+    """No growth against BASE_REF exits 0."""
+    baseline = _baseline(
+        tmp_path, '[python]\n"src/thing.py" = ["test_ghost_case"]\n[typescript]\n'
+    )
+    _init_git_repo(tmp_path)
+    assert _MODULE._assert_no_growth(tmp_path, baseline, "HEAD") == 0
+
+
+def test_assert_no_growth_fails_when_a_new_site_is_grandfathered(
+    tmp_path: Path,
+) -> None:
+    """A baseline that grew past BASE_REF's site count fails.
+
+    This is the CI-side half of Important 6: it catches a pull request that
+    adds a brand-new stale citation alongside a brand-new (or widened)
+    baseline row that grandfathers it, which no single-commit run of this
+    script, working-tree-only, can ever see.
+    """
+    baseline = _baseline(
+        tmp_path, '[python]\n"src/thing.py" = ["test_ghost_case"]\n[typescript]\n'
+    )
+    _init_git_repo(tmp_path)
+    baseline.write_text(
+        '[python]\n"src/thing.py" = ["test_ghost_case", "test_ghost_case",'
+        ' "test_other_ghost"]\n[typescript]\n',
+        encoding="utf-8",
+    )
+    assert _MODULE._assert_no_growth(tmp_path, baseline, "HEAD") == 1
+
+
+def test_assert_no_growth_reports_a_missing_ref_as_a_usage_error(
+    tmp_path: Path,
+) -> None:
+    """A ref that does not exist in history is a usage error, not a crash."""
+    baseline = _baseline(tmp_path, "[python]\n[typescript]\n")
+    _init_git_repo(tmp_path)
+    assert _MODULE._assert_no_growth(tmp_path, baseline, "not-a-real-ref") == 2
+
+
+def test_assert_no_growth_reports_a_malformed_prior_baseline_as_a_usage_error(
+    tmp_path: Path,
+) -> None:
+    """A prior commit whose baseline is not valid TOML is a usage error."""
+    baseline = _baseline(tmp_path, "not valid toml [[[\n")
+    _init_git_repo(tmp_path)
+    assert _MODULE._assert_no_growth(tmp_path, baseline, "HEAD") == 2
+
+
+# --------------------------------------------------------------------------
+# Important 7: the run must never scan zero files and still exit 0
+# --------------------------------------------------------------------------
+
+
+def test_run_scanning_nothing_at_all_is_a_usage_error(repo: Path) -> None:
+    """An empty baseline plus no scannable targets can never pass silently.
+
+    ``.pre-commit-config.yaml``'s ``files:`` regex matches
+    ``rad-citation-baseline.toml`` itself, so a commit that stages only the
+    baseline invokes this script with only the baseline's own path as an
+    argument. ``_collect_targets`` drops the ``.toml`` suffix, and once the
+    baseline reaches zero rows there is nothing left to rescan either: the
+    run would silently scan nothing and exit 0 (Important 7 in the D-2 final
+    review), which contradicts the script's own claim that it can never
+    succeed vacuously.
+    """
+    path = _baseline(repo, "[python]\n[typescript]\n")
+    exit_code = _MODULE.main([str(path), "--root", str(repo), "--baseline", str(path)])
+    assert exit_code == 2
+
+
+def test_run_with_all_flag_is_never_vacuous(repo: Path) -> None:
+    """``--all`` always finds the fixture repo's own tests, so it never trips."""
+    path = _baseline(repo, "[python]\n[typescript]\n")
+    exit_code = _MODULE.main(["--all", "--root", str(repo), "--baseline", str(path)])
+    assert exit_code == 0
+
+
+# --------------------------------------------------------------------------
+# Important 8: a citation continuation re-indented on the next line
+# --------------------------------------------------------------------------
+
+
+def test_reindented_continuation_still_carries_the_name(repo: Path) -> None:
+    """A ``path::`` continuation at a different column must not drop ``::name``.
+
+    Before the fix, comment grouping required the continuation line's
+    column to match the opening line's exactly; a continuation indented
+    differently (as an autoformatter or a copy-paste can produce) fell
+    outside the group, leaving a bare ``path::`` that resolves on the file
+    half alone while silently discarding the name (Important 8 in the D-2
+    final review).
+    """
+    source = _write_source(
+        repo,
+        "# #VERIFY: tests/unit/test_widget.py::\n"
+        "    # test_name_that_does_not_exist_at_all\n",
+    )
+    assert _findings(repo, source) == [
+        "tests/unit/test_widget.py::test_name_that_does_not_exist_at_all"
+    ]
+
+
+# --------------------------------------------------------------------------
+# Minor 14: a baselined row's ambiguity note must not re-grandfather itself
+# --------------------------------------------------------------------------
+
+
+def test_baseline_drift_survives_a_third_same_named_definition(repo: Path) -> None:
+    """A fixed-then-ambiguous citation stays reported, not silently absorbed.
+
+    Reproduced in three steps in the D-2 final review: (1) a row baselined
+    while no such test exists is clean; (2) one real ``test_ghost_case`` is
+    written, and the row correctly flags as no-longer-stale; (3) a *second*
+    ``test_ghost_case`` appears in another module, and the ambiguity note
+    this produces was, before the fix, folding back into ``actual`` and
+    silencing the baseline-drift report. This test starts from step 3
+    directly: the row must still be reported as no-longer-stale, and the
+    ambiguity note must still be visible alongside it.
+    """
+    _write_source(
+        repo, "def test_ghost_case() -> None:\n    pass\n", name="tests/unit/test_a.py"
+    )
+    _write_source(
+        repo, "def test_ghost_case() -> None:\n    pass\n", name="tests/unit/test_b.py"
+    )
+    source = _write_source(repo, "# #VERIFY: test_ghost_case proves it.\nX = 1\n")
+    baseline = _MODULE.load_baseline(
+        _baseline(
+            repo, '[python]\n"src/thing.py" = ["test_ghost_case"]\n[typescript]\n'
+        )
+    )
+    index = _MODULE.build_index(repo)
+    findings = _MODULE.run(repo, [source], baseline, index)
+    kinds = sorted((f.kind, f.citation) for f in findings)
+    assert kinds == [("baseline", "test_ghost_case"), ("note", "test_ghost_case")]
+
+
+# --------------------------------------------------------------------------
+# Minor 19: a citation naming a non-test-shaped file is checked, not dropped
+# --------------------------------------------------------------------------
+
+
+def test_citation_naming_a_nonexistent_non_test_shaped_file_is_stale(
+    repo: Path,
+) -> None:
+    """A path whose basename is not ``test_*``/``*_test`` is still validated.
+
+    Before the fix, ``foo.py::test_bar_ghost`` failed the citation regex's
+    path group outright (the basename does not look like a test module),
+    so the match fell through to a bare-name check on ``test_bar_ghost``
+    alone, discarding the file half with no note (Minor 19 in the D-2 final
+    review). ``tests/unit/foo.py`` does not exist at all here, and neither
+    does a bare ``test_bar_ghost`` anywhere, so this also fails before the
+    fix in a different way (as a bare-name miss) than after it (as a
+    missing-file citation): the assertion pins the post-fix citation text.
+    """
+    source = _write_source(repo, "# #VERIFY: tests/unit/foo.py::test_bar_ghost\n")
+    assert _findings(repo, source) == ["tests/unit/foo.py"]
+
+
+def test_citation_naming_a_real_non_test_shaped_file_does_not_leak_to_a_lookalike(
+    repo: Path,
+) -> None:
+    """A non-test-shaped file citation must not resolve via an unrelated module.
+
+    ``tests/unit/foo.py`` exists and really does define ``test_bar``, but
+    ``foo.py`` is not a name pytest would ever collect (it matches neither
+    ``test_*.py`` nor ``*_test.py``), so it is not in the repo index's test
+    paths. A second, unrelated module also defines ``test_bar``. Before the
+    fix, the path half of ``foo.py::test_bar`` was invisible to the citation
+    regex, so the citation matched as a bare ``test_bar`` and silently
+    resolved against the unrelated module instead of the file the author
+    actually named. After the fix, the path is recognised, found not to be
+    a real test file, and reported: it must not fall back to the lookalike.
+    """
+    _write_source(repo, "def test_bar() -> None:\n    pass\n", name="tests/unit/foo.py")
+    _write_source(
+        repo,
+        "def test_bar() -> None:\n    pass\n",
+        name="tests/unit/test_unrelated.py",
+    )
+    source = _write_source(repo, "# #VERIFY: tests/unit/foo.py::test_bar\n")
+    assert _findings(repo, source) == ["tests/unit/foo.py"]
