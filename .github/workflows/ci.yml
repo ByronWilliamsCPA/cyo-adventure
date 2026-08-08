@@ -734,19 +734,38 @@ jobs:
       # this guard, the PR that introduces the gate would fail its own new
       # gate.
       #
+      # `if:` restates success() because a step-level `if:` REPLACES the
+      # implicit success() rather than adding to it. Without it this step
+      # runs even after the --all step above has already failed, producing a
+      # second, unrelated-looking failure on top of the real one.
+      #
       # BASE_REF is passed through env: (not interpolated into the run:
       # string) even though github.base_ref is a branch name rather than
       # free-form untrusted text, so this step follows the same
       # inject-via-env discipline as every other step in this workflow that
       # reads a github.* context value.
       - name: The citation baseline may only shrink
-        if: github.event_name == 'pull_request'
+        if: success() && github.event_name == 'pull_request'
         env:
           BASE_REF: origin/${{ github.base_ref }}
         run: |
           set -euo pipefail
+          # #CRITICAL: external-resource: `git cat-file -e REF:PATH` exits 128
+          # for BOTH "the ref does not resolve" and "the ref resolves but has
+          # no such path", so testing only that conflates a broken checkout
+          # with an expected first-PR state and would silently disable the
+          # only defence against baseline laundering while printing a notice
+          # asserting the wrong cause. Resolve the ref FIRST, and fail hard
+          # when it does not: an unresolvable base ref is a fetch or checkout
+          # defect (see fetch-depth: 0 above), never a licence to skip.
+          # #VERIFY: tests/unit/test_ci_gate_contract.py asserts this step
+          # exists and runs `rev-parse --verify` before `cat-file -e`.
+          if ! git rev-parse --verify -q "${BASE_REF}^{commit}" >/dev/null; then
+            echo "::error::${BASE_REF} does not resolve to a commit in this checkout, so the baseline ratchet could not run at all. This is a fetch or checkout defect (this job sets fetch-depth: 0 for exactly this reason), not an absent baseline."
+            exit 1
+          fi
           if ! git cat-file -e "${BASE_REF}:rad-citation-baseline.toml" 2>/dev/null; then
-            echo "::notice::${BASE_REF} has no rad-citation-baseline.toml, so there is no prior size to compare against. Expected only on the pull request that introduces the baseline."
+            echo "::notice::${BASE_REF} resolves, but carries no rad-citation-baseline.toml, so there is no prior baseline to compare against. Expected on the pull request that introduces the baseline, and on any base branch that does not yet carry it."
             exit 0
           fi
           python3 scripts/check_rad_citations.py --assert-no-growth "${BASE_REF}"
@@ -1176,25 +1195,40 @@ jobs:
             exit 1
           fi
 
-          # #CRITICAL: data-integrity: schema-docs carries no job-level `if:`
-          # and no `needs:`, so unlike every other job in this gate it really
-          # runs on a release-automation commit. Its result must be evaluated
-          # BEFORE the release-skip branch below returns 0, or a genuine
-          # `ER Diagram Drift` failure is discarded and reported as an
-          # intentional skip.
+          # #CRITICAL: data-integrity: THREE jobs in this gate carry no
+          # job-level `if:` and no `needs:` (schema-docs, format-tree,
+          # rad-citations), so unlike the rest of the suite they really run
+          # on a release-automation commit. Every one of their results must
+          # be evaluated BEFORE the release-skip branch below returns 0, or a
+          # genuine failure is discarded and reported as an intentional skip.
+          # This is written as a list rather than as one hand-copied `if:`
+          # per job precisely so the next unconditional job added to the gate
+          # joins it by name instead of silently inheriting the hole:
+          # format-tree sat in this branch's blind spot for exactly that
+          # reason before rad-citations became the second member.
           # #VERIFY: test_ci_gate_contract.py asserts a release commit with
-          # SCHEMA_DOCS_RESULT=failure fails the gate, and asserts schema-docs
-          # still has no job-level `if:` so this branch stays necessary.
-          if [ "$RELEASE_PR" = "true" ] && [ "$SCHEMA_DOCS_RESULT" != "success" ]; then
-            {
-              echo "## CI Gate failed"
-              echo ""
-              echo "\`ER Diagram Drift\` reported \`${SCHEMA_DOCS_RESULT}\` on a"
-              echo "release-automation commit. That job runs unconditionally, so its"
-              echo "result is real here even though the rest of the suite did not run."
-            } >> "$GITHUB_STEP_SUMMARY"
-            echo "::error::ER Diagram Drift reported ${SCHEMA_DOCS_RESULT} on a release-automation commit. That job runs unconditionally, so this is a real failure, not an expected skip."
-            exit 1
+          # each of these results set to failure fails the gate, and asserts
+          # each of these jobs still has no job-level `if:` and no `needs:`
+          # so this branch stays necessary.
+          if [ "$RELEASE_PR" = "true" ]; then
+            for entry in \
+              "ER Diagram Drift:$SCHEMA_DOCS_RESULT" \
+              "Format (tree-wide):$FORMAT_TREE_RESULT" \
+              "RAD Citation Gate:$RAD_CITATIONS_RESULT"; do
+              unconditional_label="${entry%%:*}"
+              unconditional_result="${entry#*:}"
+              if [ "$unconditional_result" != "success" ]; then
+                {
+                  echo "## CI Gate failed"
+                  echo ""
+                  echo "\`${unconditional_label}\` reported \`${unconditional_result}\` on a"
+                  echo "release-automation commit. That job runs unconditionally, so its"
+                  echo "result is real here even though the rest of the suite did not run."
+                } >> "$GITHUB_STEP_SUMMARY"
+                echo "::error::${unconditional_label} reported ${unconditional_result} on a release-automation commit. That job runs unconditionally, so this is a real failure, not an expected skip."
+                exit 1
+              fi
+            done
           fi
 
           # A release-automation commit (release/v* PR, or a chore(release):
@@ -1206,10 +1240,11 @@ jobs:
             {
               echo "## CI Gate passed WITHOUT running the suite"
               echo ""
-              echo "Release-automation commit: every quality job except \`ER Diagram Drift\`"
-              echo "was intentionally skipped, so **beyond that one check this commit carries**"
-              echo "**no verification from this workflow**. The tested content is the feature"
-              echo "PR that produced it."
+              echo "Release-automation commit: every quality job except \`ER Diagram Drift\`,"
+              echo "\`Format (tree-wide)\` and \`RAD Citation Gate\` was intentionally skipped."
+              echo "Those three carry no job-level condition, so they really ran and really"
+              echo "passed. Beyond them this commit carries **no verification from this workflow**."
+              echo "The tested content is the feature PR that produced it."
               echo ""
               echo "See the scheduled scans (\`security-analysis.yml\`, \`python-compatibility.yml\`,"
               echo "\`sbom.yml\`, \`container-security.yml\`) for coverage that does not depend on"

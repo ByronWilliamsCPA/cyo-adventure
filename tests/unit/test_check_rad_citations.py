@@ -1142,6 +1142,38 @@ def test_assert_no_growth_fails_when_a_new_site_is_grandfathered(
     assert _MODULE._assert_no_growth(tmp_path, baseline, "HEAD") == 1
 
 
+def test_assert_no_growth_fails_when_a_fixed_row_pays_for_a_new_one(
+    tmp_path: Path,
+) -> None:
+    """A net-zero swap is growth, and must not launder new debt as old debt.
+
+    Two sites in, two sites out, so the totals match exactly. But one of
+    ``BASE_REF``'s rows was fixed and a brand-new stale citation in a
+    brand-new file was grandfathered in its place, which is the failure
+    mode ``--assert-no-growth`` exists to block. A total-only comparison
+    passes this, and the documented maintenance command,
+    ``--write-baseline --all``, regenerates the whole file at once and so
+    produces exactly this shape when it is run to clear a CI failure.
+    """
+    baseline = _baseline(
+        tmp_path,
+        '[python]\n"src/a.py" = ["test_gone_a", "test_gone_b"]\n[typescript]\n',
+    )
+    _init_git_repo(tmp_path)
+    baseline.write_text(
+        '[python]\n"src/a.py" = ["test_gone_a"]\n'
+        '"src/brand_new.py" = ["test_new"]\n[typescript]\n',
+        encoding="utf-8",
+    )
+    base = _MODULE.load_baseline(baseline)
+    assert _MODULE._total_sites(base) == 2, (
+        "the totals must match, or this asserts nothing a total-only"
+        " comparison would not already catch"
+    )
+
+    assert _MODULE._assert_no_growth(tmp_path, baseline, "HEAD") == 1
+
+
 def test_assert_no_growth_reports_a_missing_ref_as_a_usage_error(
     tmp_path: Path,
 ) -> None:

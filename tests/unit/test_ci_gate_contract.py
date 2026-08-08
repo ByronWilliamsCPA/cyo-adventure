@@ -578,9 +578,12 @@ class TestGateDecisions:
         assert run.passed
         assert "WITHOUT running the suite" in run.summary
         assert "no verification from this workflow" in run.summary
-        # The disclosure has to carve out the one job that did run, or it
-        # overstates the gap in the other direction.
-        assert "every quality job except `ER Diagram Drift`" in run.summary
+        # The disclosure has to carve out EVERY job that did run, or it
+        # overstates the gap in the other direction. It named only
+        # `ER Diagram Drift` while three jobs really run here, so the
+        # sentence was wrong by two.
+        assert "every quality job except `ER Diagram Drift`," in run.summary
+        assert "`Format (tree-wide)` and `RAD Citation Gate`" in run.summary
         assert "::warning::" in run.stdout
 
     def test_a_release_commit_with_a_failing_er_diagram_check_fails_the_gate(
@@ -629,6 +632,58 @@ class TestGateDecisions:
         assert not run.passed
         assert "::error::ER Diagram Drift reported skipped" in run.stdout
 
+    def test_a_release_commit_with_a_failing_rad_citation_check_fails_the_gate(
+        self, run_gate
+    ) -> None:
+        """The same hole, one job over.
+
+        ``rad-citations`` carries no ``if:`` and no ``needs:`` either, so it
+        really runs on a release-automation commit exactly like
+        ``schema-docs``. The release branch read only ``SCHEMA_DOCS_RESULT``
+        before exiting 0, so a genuine ``RAD Citation Gate`` failure was
+        discarded and reported as an intentional skip. ``format-tree`` sat in
+        the same blind spot; the fix generalises the check over all three
+        rather than adding a second hand-written special case.
+        """
+        run = run_gate(
+            EVENT_NAME="push",
+            RELEASE_PR="true",
+            CI_RESULT="skipped",
+            FRONTEND_RESULT="skipped",
+            FRONTEND_E2E_RESULT="skipped",
+            DESIGN_SYSTEM_RESULT="skipped",
+            CONTRACT_RESULT="skipped",
+            RAD_CITATIONS_RESULT="failure",
+        )
+
+        assert not run.passed
+        assert "That job runs unconditionally" in run.summary
+        assert "::error::RAD Citation Gate reported failure" in run.stdout
+
+    def test_a_release_commit_with_a_failing_format_check_fails_the_gate(
+        self, run_gate
+    ) -> None:
+        """The third unconditional job, pinned for the same reason.
+
+        ``format-tree`` had this hole before ``rad-citations`` existed. It is
+        asserted here rather than left to the generalised loop's shape,
+        because a loop that silently loses an entry looks identical to a loop
+        that never had it.
+        """
+        run = run_gate(
+            EVENT_NAME="push",
+            RELEASE_PR="true",
+            CI_RESULT="skipped",
+            FRONTEND_RESULT="skipped",
+            FRONTEND_E2E_RESULT="skipped",
+            DESIGN_SYSTEM_RESULT="skipped",
+            CONTRACT_RESULT="skipped",
+            FORMAT_TREE_RESULT="failure",
+        )
+
+        assert not run.passed
+        assert "::error::Format (tree-wide) reported failure" in run.stdout
+
     def test_schema_docs_really_does_run_on_a_release_commit(self) -> None:
         """The premise the two tests above rest on, asserted directly.
 
@@ -658,6 +713,60 @@ class TestGateDecisions:
 
         assert "if" not in format_tree
         assert "needs" not in format_tree
+
+    def test_the_rad_citation_gate_runs_in_every_context(self) -> None:
+        """``rad-citations`` is the third job that cannot skip, pinned as such.
+
+        Two separate things rest on this premise and neither states it. The
+        gate passes ``false`` as this job's skip allowance, so any skip is a
+        defect rather than a policy; and the release branch above evaluates
+        its result before exiting 0, which is only necessary while the job
+        really runs on a release commit. A job-level ``if:`` or a ``needs:``
+        added later would leave both of those reading correctly while
+        asserting something no longer true of the workflow.
+        """
+        rad_citations = JOBS["rad-citations"]
+
+        assert "if" not in rad_citations
+        assert "needs" not in rad_citations
+
+    def test_the_rad_citation_job_keeps_its_no_growth_ratchet(self) -> None:
+        """Deleting the ratchet step must not be a silent change.
+
+        ``--assert-no-growth`` is the only thing comparing this pull
+        request's baseline against the branch it targets, so it is the only
+        defence against a PR grandfathering brand-new stale citations. The
+        ``--all`` step cannot notice its absence: a laundered baseline makes
+        that step pass. Without this assertion, removing the step leaves
+        every test in the suite green.
+        """
+        steps = JOBS["rad-citations"]["steps"]
+        scripts = [str(step.get("run", "")) for step in steps]
+        ratchet = [run for run in scripts if "--assert-no-growth" in run]
+
+        assert len(ratchet) == 1, (
+            "rad-citations must run scripts/check_rad_citations.py "
+            "--assert-no-growth exactly once"
+        )
+        # The two-step guard, in order. `git cat-file -e REF:PATH` exits 128
+        # both when the ref is missing and when only the path is, so a check
+        # that tested the path alone would report a broken checkout as an
+        # expected first-PR notice and skip the ratchet entirely.
+        #
+        # Comment lines are stripped before the ordering is read: the step's
+        # own rationale comment names `git cat-file -e` while explaining why
+        # the resolve has to come first, so an ordering taken over the raw
+        # text reports the correct script as backwards.
+        commands = "\n".join(
+            line
+            for line in ratchet[0].splitlines()
+            if not line.lstrip().startswith("#")
+        )
+
+        assert "git rev-parse --verify" in commands
+        assert commands.index("git rev-parse --verify") < commands.index(
+            "git cat-file -e"
+        )
 
     def test_a_skipped_format_check_fails_the_gate(self, run_gate) -> None:
         """A skip must not read as "formatted".

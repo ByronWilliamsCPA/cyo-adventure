@@ -21,7 +21,10 @@
 # so a pull request that adds a new stale citation alongside a new
 # row that grandfathers it is invisible to a normal hook run. Run
 # scripts/check_rad_citations.py --assert-no-growth <BASE_REF> in CI
-# to compare this file's total site count against a base ref.
+# to compare this file against a base ref ROW BY ROW: every
+# (section, file, citation) key must already exist there at no
+# smaller a site count. Totals are not the comparison, because
+# fixing N rows and grandfathering N new ones nets zero.
 #
 # WHAT REACHING ZERO ROWS DOES NOT MEAN, for the team fixing this list:
 # the checker proves a citation names a test that EXISTS. It does not and
@@ -39,13 +42,18 @@
 # walks every .py/.ts/.tsx file in the repo, tests/ and frontend/e2e/
 # included: zero rows for those trees means they were clean when this
 # was generated, not that they are excluded from this file's scope.
-# The check-rad-citations pre-commit HOOK is narrower than that: day
-# to day it only ever rescans src/, scripts/, frontend/src/, and this
-# file (see .pre-commit-config.yaml), so a citation going stale in
-# tests/, supabase/, or frontend/e2e/ produces no new row here and no
-# hook failure until someone reruns --write-baseline --all by hand.
 #
-# Entries: 122 distinct citation(s) covering 137 grandfathered site(s) (137 python site(s), 0 typescript site(s))
+# WHERE THE GATE RUNS. As of d9a6a93e on this branch, the
+# rad-citations CI job runs scripts/check_rad_citations.py --all on
+# every push, pull_request and merge_group, so the authoritative gate
+# scope is the WHOLE TREE, including tests/ and frontend/e2e/. The
+# pre-commit hook stays narrower: staged files within src/, scripts/,
+# frontend/src/, plus every baselined file. The only tree genuinely
+# uncovered is supabase/ (SQL). --write-baseline is a maintenance
+# command to pair with --assert-no-growth review, never a way to
+# clear a CI failure.
+#
+# Entries: 122 (file, citation) row(s) covering 137 grandfathered site(s) (137 python site(s), 0 typescript site(s))
 
 [python]
 "scripts/check_fill_integrity.py" = [

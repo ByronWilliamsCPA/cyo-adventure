@@ -69,17 +69,28 @@ Deliberate non-goals
   the wrong one of several look-alikes and still pass. The checker prints a
   non-failing note when this happens (see ``_report``), but the note is
   informational; it does not fail the run.
-* ``tests/``, ``supabase/``, and ``frontend/e2e/`` carry ``#VERIFY`` markers
-  but are outside this hook's ``files:`` scope in
-  ``.pre-commit-config.yaml``, so citations in those trees are never
-  checked by this gate at all, clean run or not. The same staged-scope
-  limit also runs the other way: a commit that only deletes or renames a
-  test file, touching nothing under ``src/``, ``scripts/``, or
-  ``frontend/src/``, never invokes this hook at all, so every citation of
-  that file goes stale invisibly until someone happens to edit one of the
-  citing source files. This is inherent to a hook scoped to staged files,
-  not something this script can close by itself; a CI job that reruns this
-  checker with ``--all`` on every PR is the fix, not a change here.
+* ``supabase/`` (SQL) carries ``#VERIFY`` markers that nothing here reads:
+  this checker only ever parses ``.py``, ``.ts`` and ``.tsx``. That is the
+  one tree genuinely outside the gate, and closing it would mean teaching
+  this script a fourth language rather than widening a path list.
+
+Where this runs, and which scope is authoritative
+-------------------------------------------------
+
+As of ``d9a6a93e`` on this branch, the ``rad-citations`` CI job runs
+``scripts/check_rad_citations.py --all`` on every push, pull_request and
+merge_group, so the authoritative gate scope is the WHOLE TREE, including
+``tests/`` and ``frontend/e2e/``. The pre-commit hook stays narrower:
+staged files within ``src/``, ``scripts/``, ``frontend/src/``, plus every
+baselined file. The only tree genuinely uncovered is ``supabase/`` (SQL).
+``--write-baseline`` is a maintenance command to pair with
+``--assert-no-growth`` review, never a way to clear a CI failure.
+
+The two scopes cannot disagree in the failing direction: same ``main()``,
+same baseline, same whole-tree index, with CI strictly broader. CI can
+therefore fail where the hook passed, never the reverse. In particular a
+commit that only deletes or renames a test file, touching nothing the hook
+is scoped to, is invisible to the hook and still caught by CI.
 
 Baseline
 --------
@@ -107,8 +118,13 @@ script: nothing here compares this run's baseline against a prior commit's,
 so a pull request that adds a new stale citation alongside a new row that
 grandfathers it is invisible to a normal hook run. Pass
 ``--assert-no-growth BASE_REF`` to compare the working tree's baseline
-against ``BASE_REF`` (for example ``origin/main``) by total grandfathered
-site count and fail if it grew; this is meant for a CI job, not pre-commit,
+against ``BASE_REF`` (for example ``origin/main``) PER ROW: every
+``(section, file, citation)`` key must already exist in ``BASE_REF``'s
+baseline at no smaller a site count. Comparing totals instead would let a
+pull request fix ``N`` baselined rows and grandfather ``N`` brand-new stale
+ones for a net of zero, which is precisely the laundering this exists to
+stop, and precisely what ``--write-baseline --all`` produces if it is run
+to make a CI failure go away. This is meant for a CI job, not pre-commit,
 since it shells out to ``git show``.
 
 Usage
@@ -118,7 +134,7 @@ Usage
 
     scripts/check_rad_citations.py path/to/file.py ...   # what pre-commit does
     scripts/check_rad_citations.py --all                 # whole repo
-    scripts/check_rad_citations.py --all --write-baseline
+    scripts/check_rad_citations.py --all --write-baseline  # maintenance only
     scripts/check_rad_citations.py --assert-no-growth origin/main  # CI only
 
 Exit codes: ``0`` clean, ``1`` findings, ``2`` usage error. Being handed no
@@ -1053,7 +1069,10 @@ def render_baseline(findings: list[Finding]) -> str:
         "# so a pull request that adds a new stale citation alongside a new",
         "# row that grandfathers it is invisible to a normal hook run. Run",
         "# scripts/check_rad_citations.py --assert-no-growth <BASE_REF> in CI",
-        "# to compare this file's total site count against a base ref.",
+        "# to compare this file against a base ref ROW BY ROW: every",
+        "# (section, file, citation) key must already exist there at no",
+        "# smaller a site count. Totals are not the comparison, because",
+        "# fixing N rows and grandfathering N new ones nets zero.",
         "#",
         "# WHAT REACHING ZERO ROWS DOES NOT MEAN, for the team fixing this list:",
         "# the checker proves a citation names a test that EXISTS. It does not and",
@@ -1071,14 +1090,19 @@ def render_baseline(findings: list[Finding]) -> str:
         "# walks every .py/.ts/.tsx file in the repo, tests/ and frontend/e2e/",
         "# included: zero rows for those trees means they were clean when this",
         "# was generated, not that they are excluded from this file's scope.",
-        "# The check-rad-citations pre-commit HOOK is narrower than that: day",
-        "# to day it only ever rescans src/, scripts/, frontend/src/, and this",
-        "# file (see .pre-commit-config.yaml), so a citation going stale in",
-        "# tests/, supabase/, or frontend/e2e/ produces no new row here and no",
-        "# hook failure until someone reruns --write-baseline --all by hand.",
+        "#",
+        "# WHERE THE GATE RUNS. As of d9a6a93e on this branch, the",
+        "# rad-citations CI job runs scripts/check_rad_citations.py --all on",
+        "# every push, pull_request and merge_group, so the authoritative gate",
+        "# scope is the WHOLE TREE, including tests/ and frontend/e2e/. The",
+        "# pre-commit hook stays narrower: staged files within src/, scripts/,",
+        "# frontend/src/, plus every baselined file. The only tree genuinely",
+        "# uncovered is supabase/ (SQL). --write-baseline is a maintenance",
+        "# command to pair with --assert-no-growth review, never a way to",
+        "# clear a CI failure.",
         "#",
         (
-            f"# Entries: {total_rows} distinct citation(s) covering"
+            f"# Entries: {total_rows} (file, citation) row(s) covering"
             f" {total_sites} grandfathered site(s)"
             f" ({python_sites} python site(s), {typescript_sites} typescript"
             " site(s))"
@@ -1112,20 +1136,46 @@ def _total_sites(baseline: dict[str, dict[str, list[str]]]) -> int:
     """Count every grandfathered citation site in a baseline.
 
     This counts sites, not distinct ``(file, citation)`` rows: a citation
-    listed twice for the same file counts as 2. That is the quantity
-    ``--assert-no-growth`` compares, since row count alone cannot see a new
-    site added under an already-listed citation (Important 6).
+    listed twice for the same file counts as 2. ``--assert-no-growth``
+    reports this figure so a maintainer can see the direction of travel,
+    but does not decide on it: see :func:`_site_counts`.
 
     Args:
         baseline: A loaded baseline.
 
     Returns:
-        The total number of citation strings listed across both sections.
+        The total number of grandfathered citation sites listed across both
+        sections.
     """
     return sum(
         len(citations)
         for section in baseline.values()
         for citations in section.values()
+    )
+
+
+def _site_counts(
+    baseline: dict[str, dict[str, list[str]]],
+) -> Counter[tuple[str, str, str]]:
+    """Count grandfathered sites per ``(section, file, citation)`` key.
+
+    This is the quantity ``--assert-no-growth`` actually compares. A total
+    is not, because a total is a sum and sums cancel: fixing one baselined
+    row while grandfathering a brand-new one nets zero and would pass.
+
+    Args:
+        baseline: A loaded baseline.
+
+    Returns:
+        How many sites each ``(section, file, citation)`` key grandfathers.
+        A key absent from the baseline has count 0, which is what makes
+        "absent from base" and "grew against base" the same comparison.
+    """
+    return Counter(
+        (section, file_path, citation)
+        for section, files in baseline.items()
+        for file_path, citations in files.items()
+        for citation in citations
     )
 
 
@@ -1246,7 +1296,7 @@ def run(
 
 
 def _assert_no_growth(root: Path, baseline_path: Path, base_ref: str) -> int:
-    """Fail when the working tree's baseline holds more sites than BASE_REF's.
+    """Fail when any baseline row grew, or appeared, against BASE_REF's.
 
     Neither this script's normal run nor the pre-commit hook that invokes it
     ever sees a prior commit's baseline, so a pull request that adds a
@@ -1254,10 +1304,18 @@ def _assert_no_growth(root: Path, baseline_path: Path, base_ref: str) -> int:
     grandfathers it passes silently (Important 6/9 in the D-2 final review:
     this is the exact mechanism that grandfathered this workstream's own
     ``validator/character.py`` debt, caught only by a human intersecting
-    file lists by hand). This compares by total grandfathered SITE count,
-    not row count, so it also catches a new site added under an
-    already-listed citation string, which a row-count-only comparison would
-    miss entirely.
+    file lists by hand).
+
+    The comparison is per ``(section, file, citation)`` key and never a
+    total. A total is a sum, and sums cancel: a pull request that fixes
+    ``N`` baselined rows and grandfathers ``N`` brand-new stale ones nets
+    zero and would pass a total-only check, which is the same laundering
+    ``--write-baseline --all`` performs when it is run to make a CI failure
+    go away. Any key whose head count exceeds its base count fails, and
+    because a key absent from base counts 0 there, "brand new row" and
+    "widened row" are one condition rather than two. The totals are still
+    printed on both paths: a maintainer reading a failure wants the
+    direction of travel as well as the offending rows.
 
     Intended for a CI job comparing a pull request's head against the
     branch it targets; not for pre-commit, since it shells out to
@@ -1270,9 +1328,8 @@ def _assert_no_growth(root: Path, baseline_path: Path, base_ref: str) -> int:
         base_ref: A git ref (branch, tag, or commit) to compare against.
 
     Returns:
-        ``0`` when the working tree's baseline is no larger than
-        ``BASE_REF``'s, ``2`` when ``BASE_REF`` or its baseline cannot be
-        read, ``1`` when it grew.
+        ``0`` when no row grew or appeared, ``2`` when ``BASE_REF`` or its
+        baseline cannot be read, ``1`` when at least one row did.
     """
     try:
         rel = baseline_path.relative_to(root).as_posix()
@@ -1308,18 +1365,33 @@ def _assert_no_growth(root: Path, baseline_path: Path, base_ref: str) -> int:
     head_baseline = load_baseline(baseline_path)
     base_total = _total_sites(base_baseline)
     head_total = _total_sites(head_baseline)
-    if head_total > base_total:
+    base_counts = _site_counts(base_baseline)
+    head_counts = _site_counts(head_baseline)
+    grown = sorted(
+        key for key, count in head_counts.items() if count > base_counts[key]
+    )
+    if grown:
         print(
-            f"check_rad_citations: {rel} grew from {base_total} to {head_total}"
-            f" grandfathered citation site(s) against {base_ref}. The baseline"
-            " may only shrink; a brand-new stale citation must be fixed, not"
-            " grandfathered.",
+            f"check_rad_citations: {rel} grandfathers {len(grown)} row(s) that"
+            f" {base_ref} does not, or does not grandfather as often. The"
+            " baseline may only shrink, row by row; a brand-new stale citation"
+            " must be fixed, not grandfathered, and fixing an unrelated row"
+            " does not pay for it. Total site count went from"
+            f" {base_total} to {head_total}, which is not the test.",
             file=sys.stderr,
         )
+        for section, file_path, citation in grown:
+            print(
+                f"  [{section}] {file_path}: {citation!r}:"
+                f" {base_counts[(section, file_path, citation)]} site(s) in"
+                f" {base_ref}, {head_counts[(section, file_path, citation)]} here",
+                file=sys.stderr,
+            )
         return 1
     print(
-        f"{rel}: {head_total} grandfathered site(s), no growth against"
-        f" {base_ref} ({base_total})."
+        f"{rel}: {head_total} grandfathered site(s) across"
+        f" {len(head_counts)} row(s), no row grew against {base_ref}"
+        f" ({base_total} site(s) across {len(base_counts)} row(s))."
     )
     return 0
 
@@ -1420,7 +1492,19 @@ def _build_parser() -> argparse.ArgumentParser:
     Returns:
         The configured parser.
     """
-    parser = argparse.ArgumentParser(description="Check RAD #VERIFY citations.")
+    parser = argparse.ArgumentParser(
+        description="Check RAD #VERIFY citations.",
+        epilog=(
+            "This proves EXISTENCE, not discrimination. A citation that"
+            " resolves has proven only that a test by that name exists in the"
+            " file it names; nothing here says that test would fail if the"
+            " tagged assumption were violated. A non-discriminating citation"
+            " passes this gate silently, every time, so a clean run means"
+            ' "every #VERIFY name refers to a real test", never "our RAD'
+            ' claims are verified". See "Deliberate non-goals" in this'
+            " script's module docstring."
+        ),
+    )
     parser.add_argument("paths", nargs="*", help="files to check")
     parser.add_argument(
         "--all",
@@ -1440,9 +1524,9 @@ def _build_parser() -> argparse.ArgumentParser:
         metavar="BASE_REF",
         default=None,
         help=(
-            "compare the baseline's total grandfathered citation sites"
-            " against BASE_REF (e.g. origin/main) via 'git show' and fail if"
-            " it grew; for a CI job, not pre-commit"
+            "compare the baseline against BASE_REF (e.g. origin/main) via"
+            " 'git show', row by row, and fail if any (file, citation) row"
+            " grew or is new; for a CI job, not pre-commit"
         ),
     )
     return parser
