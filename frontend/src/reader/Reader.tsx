@@ -28,7 +28,7 @@ import {
 } from '../player/personalization'
 import { SATISFYING_ENDING_KINDS, seriesMeta } from '../player/series'
 import { canGoBackOneStop } from '../player/stops'
-import type { ReadingState, Storybook } from '../player/types'
+import type { ReadingState, Storybook, VarState } from '../player/types'
 import type { ReadingTimeApi } from '../offline/readingTimeSync'
 import { BackToLibrary } from './BackToLibrary'
 import { BadgeUnlockToast } from './BadgeUnlockToast'
@@ -135,6 +135,30 @@ export interface ReaderProps {
   newlyEarnedBadge?: EarnedBadgeCard | null
   /** Dismisses the badge-unlock toast (marks it seen on the caller's side). */
   onDismissBadgeToast?: () => void
+  /**
+   * The name of the persistent character (ADR-028) this reading state's
+   * `seed` was snapshotted from by the server, or null/undefined when no
+   * character is bound to this read. Forwarded straight to ReaderChrome,
+   * which renders it when present and renders nothing (no placeholder) when
+   * it is null or undefined; see ReaderPage's `deriveCharacterSeed` for why
+   * this always names the character the SEED came from, not whichever
+   * character happens to be active on the profile right now.
+   */
+  characterName?: string | null
+  /**
+   * The bound character's carried attributes (Task 5/6, ADR-028), threaded
+   * straight into the reader machine's input so RESTART and Go back
+   * (machine.ts's `reset`/`applyBack`, both keyed on `context.seed`)
+   * re-derive the same seeded start this read began with, instead of the
+   * story's declared initials (issue #460). `undefined` means "no character
+   * bound"; the caller (ReaderPage's `deriveCharacterSeed`) is responsible
+   * for converting a JSON `null` (no character) to `undefined` before it
+   * reaches this prop, since `ReaderInput.seed` is typed `VarState |
+   * undefined`, never `| null`.
+   * #VERIFY: ReaderPage.test.tsx "carries the character seed through
+   * RESTART inside the reader".
+   */
+  seed?: VarState
 }
 
 export function Reader({
@@ -156,11 +180,13 @@ export function Reader({
   progressApi,
   newlyEarnedBadge,
   onDismissBadgeToast,
+  characterName = null,
+  seed,
 }: ReaderProps) {
   const navigate = useNavigate()
   const fontScale = useReaderFontScale(profileId)
   const [snapshot, send] = useMachine(readerMachine, {
-    input: { story, reading: initialReading },
+    input: { story, reading: initialReading, seed },
   })
   const { reading, error: choiceError } = snapshot.context
   const node = story.nodes.find((n) => n.id === reading.current_node)
@@ -475,6 +501,7 @@ export function Reader({
           ? { label: 'You finished this story!', complete: true }
           : { label: readerPositionLabel(story, reading, ageBand) }
       }
+      characterName={characterName}
       back={leaveButton}
       fontControl={<TextSizeControl fontScale={fontScale} />}
       readAloud={

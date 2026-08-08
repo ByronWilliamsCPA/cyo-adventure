@@ -29,6 +29,14 @@ export interface ReaderChromeProps {
    */
   position: { label: string; complete?: boolean }
   /**
+   * The bound persistent character's name (ADR-028), or null/undefined when
+   * no character is bound to this read. Rendered as a small "Playing as"
+   * label; omitted entirely (no placeholder, no empty label) when absent,
+   * matching every other optional chrome affordance's own pattern
+   * (`readAloud`, `flag`).
+   */
+  characterName?: string | null
+  /**
    * Show the `complete` `ProgressBar`'s own numeric label text, not just its
    * fill and aria-label. Defaults to false, unchanged from the pre-W1.2
    * chrome: the finished-story bar's aria-label already announces it, and
@@ -104,6 +112,7 @@ export interface ReaderChromeProps {
  */
 export function ReaderChrome({
   position,
+  characterName = null,
   showLabel = false,
   back,
   fontControl,
@@ -294,6 +303,11 @@ export function ReaderChrome({
           {position.label}
         </p>
       )}
+      {characterName ? (
+        <p className="reader-chrome__character" data-testid="reader-character-name">
+          Playing as {characterName}
+        </p>
+      ) : null}
       {fontControl}
     </header>
   )

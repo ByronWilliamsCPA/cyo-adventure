@@ -36,18 +36,25 @@ function rowAt(node: string, revision: number): ReadingState {
 /**
  * The server-managed / View-only fields the strict PUT model (ReadingStateBody,
  * extra="forbid") rejects. They appear on ReadingStateView but not the body, so
- * a save that echoes them back 422s.
+ * a save that echoes them back 422s. Seven fields, not four: `character_id`,
+ * `character_name`, and `seed_var_state` (ADR-028 Task 6) joined the original
+ * four when the server started snapshotting a profile's active persistent
+ * character onto the reading-state row; all three are just as server-derived
+ * as the pre-existing four, and just as forbidden on the client-writable body.
  */
 const FORBIDDEN_VIEW_KEYS = [
   'child_profile_id',
   'storybook_id',
   'updated_by_device_id',
   'last_synced_at',
+  'character_id',
+  'character_name',
+  'seed_var_state',
 ] as const
 
 /**
  * A reading state as it exists AFTER a cross-device resume caches the server's
- * ReadingStateView verbatim: the engine fields plus the four View-only fields
+ * ReadingStateView verbatim: the engine fields plus the seven View-only fields
  * the strict PUT model forbids. The cast models the real (structurally unsound)
  * runtime situation where a View is handed to code typed for ReadingState.
  */
@@ -58,6 +65,9 @@ function viewShapedState(node: string, revision: number): ReadingState {
     storybook_id: 's1',
     updated_by_device_id: 'device-a',
     last_synced_at: '2026-07-21T00:00:00Z',
+    character_id: '22222222-2222-2222-2222-222222222222',
+    character_name: 'Astra',
+    seed_var_state: { has_sword: true },
   } as unknown as ReadingState
 }
 
@@ -209,6 +219,19 @@ describe('toPutPayload', () => {
     expect(payload).not.toHaveProperty('device_id')
     expect(payload).not.toHaveProperty('event_id')
     expect(payload.current_node).toBe('a')
+  })
+
+  it('never re-adds character_id or seed_var_state (ADR-028 Task 6/9): they are server-owned', () => {
+    // Named explicitly, not just covered by the FORBIDDEN_VIEW_KEYS loop
+    // above: these two are the client-supplied-binding hole Task 6 closed
+    // (a client could otherwise bind an arbitrary character to someone
+    // else's reading state, or fabricate its own seed). The next person
+    // extending SaveBody with a character-related field must see this fail,
+    // not add it by reflex.
+    const payload = toPutPayload(viewShapedState('n_mid', 3))
+    const keys = Object.keys(payload)
+    expect(keys).not.toContain('character_id')
+    expect(keys).not.toContain('seed_var_state')
   })
 })
 

@@ -49,6 +49,7 @@ import type { ValuesPayload } from '../player/personalization'
 import type { ContinuationSeed } from '../player/series'
 import type { ReadingState, Storybook } from '../player/types'
 import { BackToLibrary } from './BackToLibrary'
+import { deriveCharacterSeed } from './characterSeed'
 import { DownloadNeeded } from './DownloadNeeded'
 import { Reader } from './Reader'
 
@@ -727,6 +728,7 @@ export function ReaderPage({
     )
   }
   const { story, initialReading } = pageState
+  const { characterName, seed } = deriveCharacterSeed(initialReading)
   return (
     <>
       {saveWarning ? (
@@ -745,6 +747,8 @@ export function ReaderPage({
         key={readerKey}
         story={story}
         initialReading={initialReading}
+        characterName={characterName}
+        seed={seed}
         onProgress={handleProgress}
         onComplete={handleComplete}
         profileId={profileId}
