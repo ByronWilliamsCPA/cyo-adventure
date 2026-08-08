@@ -109,6 +109,14 @@ if TYPE_CHECKING:
 # value is a value_profile_id rather than free text or a closed enum.
 SIBLING_SLOT_TYPE = "sibling_name"
 
+# The persistent-character slot (ADR-028): the only slot_type that carries
+# NO value in this table at all. Its value is synthesized at resolve time
+# from the profile's active `character.name`; a row for this slot exists
+# only to hold the consent toggle. `ck_cpp_value_cardinality` enforces this
+# at the database level; `_shape_violations` below enforces it here so a bad
+# write is rejected as a 422 before it ever reaches that CHECK.
+CHARACTER_NAME_SLOT_TYPE = "character_name"
+
 # 21 vocative address terms, Title Case (used mid-sentence, e.g.
 # "love {KINSHIP}"), never a real adult's personal name (ADR-023 row 5).
 #
@@ -285,7 +293,7 @@ def _shape_violations(
     """Reject values whose column does not match what the slot type permits.
 
     #CRITICAL: security: without this, every other check in this module is
-    opt-in by column choice. `ck_cpp_exactly_one_value` counts NOT NULLs but
+    opt-in by column choice. `ck_cpp_value_cardinality` counts NOT NULLs but
     never binds WHICH column a given slot_type may use, so a caller picks
     which validations run simply by choosing a JSON field name:
 
@@ -301,6 +309,11 @@ def _shape_violations(
     - `value_text` or `value_enum` on the sibling slot skipped the
       sibling-in-family check, which is the same cross-family hole entered
       from the other side.
+    - `value_text`, `value_enum`, or `value_profile_id` on the character_name
+      slot would be silently ignored by every other check in this module
+      (none of them is called for a slot with no vocabulary and no profile
+      reference), leaving a caller-supplied value that the resolver never
+      reads but that would sit in the row looking authoritative.
 
     `pronoun_set` is deliberately unconstrained here: no design document
     states its shape, and the existing fixtures use free text
@@ -308,7 +321,9 @@ def _shape_violations(
     policy rather than closing a hole.
 
     #VERIFY: tests/unit/test_personalization_values.py asserts each of the
-    three rules rejects, and that a correctly-shaped value still passes.
+    three rules rejects, and that a correctly-shaped value still passes;
+    ::test_character_name_slot_with_any_value_column_rejected asserts the
+    character_name rule for all three columns.
 
     Args:
         slot_type: The slot the value is bound to.
@@ -332,6 +347,14 @@ def _shape_violations(
 
     if slot_type in CLOSED_VOCABULARIES and value_text is not None:
         reasons.append("this slot has a closed vocabulary and must use value_enum")
+
+    if slot_type == CHARACTER_NAME_SLOT_TYPE and (
+        value_text is not None or value_enum is not None or value_profile_id is not None
+    ):
+        reasons.append(
+            "character_name carries no value; its value is synthesized from "
+            "the active character"
+        )
 
     violations.extend(
         SlotViolation(slot_type, "value_shape", f"slot '{slot_type}': {reason}")
@@ -367,9 +390,11 @@ def validate_personalization_value(  # noqa: PLR0913
 
     Exactly one of `value_text`, `value_enum`, `value_profile_id` is expected
     to be non-None, mirroring `ChildProfilePersonalization`'s
-    `ck_cpp_exactly_one_value` CHECK constraint; this function does not itself
-    enforce that shape (the caller's own row/payload already guarantees it),
-    it only validates whichever value is present.
+    `ck_cpp_value_cardinality` CHECK constraint, except for
+    `CHARACTER_NAME_SLOT_TYPE`, for which that constraint (and this function)
+    expects all three to be None; this function does not itself enforce that
+    shape (the caller's own row/payload already guarantees it), it only
+    validates whichever value is present.
 
     #CRITICAL: security: the structural and denylist checks are this
     project's only defense against a personalization value forging a
@@ -451,6 +476,67 @@ def validate_personalization_value(  # noqa: PLR0913
             SlotViolation(slot_type, "sibling_outside_family", sibling_message)
         )
 
+    return violations
+
+
+def character_name_violations(name: str, age_band: AgeBand) -> list[SlotViolation]:
+    """Return every reason a synthesized character name must not be rendered.
+
+    The `character_name` slot cannot go through
+    :func:`validate_personalization_value`: its value lives in `character`,
+    not in a value column, so `_shape_violations` above rejects any attempt
+    to pass it as `value_text`. This function applies the SAME two
+    value-dependent checks that function runs over a text value, against the
+    same helpers, so the twelfth slot is gated identically to the other
+    eleven without routing a value through a shape rule built to forbid it.
+    The closed-vocabulary and sibling-in-family checks are deliberately
+    absent: neither applies to a slot with no vocabulary and no profile
+    reference.
+
+    #CRITICAL: security: a character name is UNREVIEWED CHILD FREE TEXT
+    (ADR-028 section 11), the least trustworthy of the twelve slots: the
+    author is the child rather than a guardian, and the resolved value is
+    shipped to the reader beside `SENTINEL_RE.pattern` for substitution into
+    story prose. Without these checks a child naming a character
+    `{~HERO:x~}`, `<<FILL ...>>`, or a band-denylisted term would have that
+    string rendered into a story. This is the same "only defense against a
+    personalization value forging a template token or introducing
+    band-forbidden content into rendered prose" that
+    :func:`validate_personalization_value` documents, applied to the one
+    slot that would otherwise skip it entirely.
+    #VERIFY: tests/unit/test_personalization_values.py::
+    test_character_name_violations_rejects_a_sentinel_shaped_name,
+    ::test_character_name_violations_rejects_a_control_character,
+    ::test_character_name_violations_rejects_a_band_denylisted_name,
+    ::test_character_name_violations_accepts_an_ordinary_name, and the
+    render-time omission tests in
+    tests/integration/test_personalization_api.py.
+
+    Args:
+        name: The active character's stored name.
+        age_band: The subject profile's reading age band, used to resolve the
+            band-mandatory denylist floor.
+
+    Returns:
+        A list of `SlotViolation`s (each carrying `CHARACTER_NAME_SLOT_TYPE`
+        as its `slot_id`), in the same fixed order
+        :func:`validate_personalization_value` uses: structural, then
+        denylist. Empty when the name may be rendered.
+    """
+    violations = [
+        replace(violation, slot_id=CHARACTER_NAME_SLOT_TYPE)
+        for violation in structural_value_violations(name)
+    ]
+    violations.extend(
+        SlotViolation(
+            CHARACTER_NAME_SLOT_TYPE,
+            f"forbid:{bundle_id}",
+            f"value matches a denylisted term in bundle '{bundle_id}'",
+        )
+        for bundle_id in sorted(
+            denylisted_bundles(name, band_mandatory_bundles(age_band))
+        )
+    )
     return violations
 
 

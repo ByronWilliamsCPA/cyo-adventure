@@ -12,11 +12,13 @@ import type { Storybook } from './types'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const tracesPath = path.resolve(here, '../../../schema/conformance/player_traces.json')
-const lantern = (
+const traces = (
   JSON.parse(readFileSync(tracesPath, 'utf-8')) as {
-    traces: { story: Storybook }[]
+    traces: { name: string; story: Storybook }[]
   }
-).traces[0].story
+).traces
+const lantern = traces[0].story
+const seededStory = traces.find((t) => t.name === 'seeded_might_carries_into_the_read')!.story
 
 describe('reader machine', () => {
   it('starts in the reading state at the start node', () => {
@@ -44,6 +46,24 @@ describe('reader machine', () => {
     actor.send({ type: 'RESTART' })
     expect(actor.getSnapshot().value).toBe('reading')
     expect(actor.getSnapshot().context.reading.current_node).toBe('n_entrance')
+  })
+
+  it('RESTART preserves the seed rather than fabricating declared initials', () => {
+    // #460: a continuation read restarted with start() re-derives
+    // might=0 from the declared initial, discarding the value the child
+    // actually carried in. The reader has no way back to it.
+    const actor = createActor(readerMachine, {
+      input: { story: seededStory, seed: { might: 2 } },
+    }).start()
+    actor.send({ type: 'CHOOSE', choiceId: 'c_press_on' })
+    actor.send({ type: 'RESTART' })
+    expect(actor.getSnapshot().context.reading.var_state.might).toBe(2)
+  })
+
+  it('RESTART with no seed still starts from declared initials', () => {
+    const actor = createActor(readerMachine, { input: { story: seededStory } }).start()
+    actor.send({ type: 'RESTART' })
+    expect(actor.getSnapshot().context.reading.var_state.might).toBe(0)
   })
 })
 
@@ -363,6 +383,37 @@ describe('reader machine RESTART on a continuation read (issue #460)', () => {
     const { reading } = actor.getSnapshot().context
     expect(reading.current_node).toBe('n_camp')
     expect(reading.var_state).toEqual({ torch: false, coins: 0 })
+  })
+
+  it('restarts as a continuation, not as a character read, when both seeds are present', () => {
+    // ReaderPage never sets both for one read (a continuation read is
+    // deliberately not seeded from the active character), so this pins
+    // safeStart's precedence for the only case that can still reach it: both
+    // props surviving to a RESTART. The two branches are distinguishable by
+    // construction, because a character seed enters at start_node while a
+    // continuation enters at its declared entry node.
+    //
+    // Without this test nothing in the suite separates the two orderings: the
+    // whole reader suite stays green with the precedence inverted, which is
+    // why the assertion is on current_node and not only on var_state.
+    const characterSeed = { torch: false, coins: 9 }
+    const actor = createActor(readerMachine, {
+      input: {
+        story: book2,
+        reading: startContinuation(book2, seed.entryNode, seed.varState),
+        continuation: seed,
+        seed: characterSeed,
+      },
+    })
+    actor.start()
+    actor.send({ type: 'RESTART' })
+    const { reading } = actor.getSnapshot().context
+    // Continuation wins: the entry node, not book 2's own start_node.
+    expect(reading.current_node).toBe('n_woods')
+    expect(reading.var_state).toEqual(carried)
+    // And specifically NOT the character-seeded start.
+    expect(reading.current_node).not.toBe('n_camp')
+    expect(reading.var_state).not.toEqual({ torch: false, coins: 9 })
   })
 
   it('surfaces context.error instead of dying when the continuation restart throws', () => {

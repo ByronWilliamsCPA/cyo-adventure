@@ -239,3 +239,51 @@ async def test_migrations_match_orm_models(pg_url: str) -> None:
     )
     for table in sorted(mig_snap):
         assert mig_snap[table] == orm_snap[table], f"schema drift in table {table!r}"
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_migrated_character_one_active_index_is_partial(pg_url: str) -> None:
+    """``uq_character_one_active`` must carry a WHERE predicate in the migrated DB.
+
+    I-3: ``_snapshot`` above reduces each index to ``(column_names, unique)``
+    and discards ``dialect_options``, so an index's ``WHERE`` clause never
+    enters ``test_migrations_match_orm_models``'s comparison; a migration
+    that shipped this index as a plain (non-partial) unique index would
+    still pass that test as long as both sides made the same mistake.
+    ``tests/unit/test_character_models.py::
+    test_only_one_character_per_profile_may_be_active`` asserts the
+    predicate too, but only on the ORM ``Index`` object, never against a
+    database actually built from the migration.
+
+    This queries ``pg_indexes.indexdef`` directly against a freshly migrated
+    database (``supabase/migrations/*.sql`` applied via
+    ``create_migrated_database``, not the ORM's ``create_all``), so a
+    migration that drops the ``WHERE (is_active)`` clause fails here even if
+    the ORM model still declares it correctly.
+
+    Args:
+        pg_url: Public alias for the session-scoped testcontainers Postgres
+            URL fixture (see ``tests/integration/conftest.py``).
+    """
+    mig_url = await create_migrated_database(pg_url, "parity_character_idx")
+    engine = create_async_engine(mig_url, poolclass=NullPool)
+    try:
+        async with engine.connect() as conn:
+            indexdef = (
+                await conn.execute(
+                    text(
+                        "SELECT indexdef FROM pg_indexes "
+                        "WHERE schemaname = 'public' "
+                        "AND indexname = 'uq_character_one_active'"
+                    )
+                )
+            ).scalar_one()
+    finally:
+        await engine.dispose()
+
+    assert "UNIQUE" in indexdef, f"expected a unique index, got: {indexdef!r}"
+    assert "WHERE" in indexdef, (
+        "uq_character_one_active must be a partial index (a WHERE clause); "
+        f"the migration shipped a plain unique index instead: {indexdef!r}"
+    )

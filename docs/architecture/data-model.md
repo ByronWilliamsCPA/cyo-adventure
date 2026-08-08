@@ -3,13 +3,13 @@ title: "Data Model"
 schema_type: common
 status: published
 owner: core-maintainer
-purpose: "ER diagram and description of the 26 ORM tables backing CYO Adventure."
+purpose: "ER diagram and description of the 29 ORM tables backing CYO Adventure."
 tags:
   - architecture
   - reference
 ---
 
-CYO Adventure has twenty-four PostgreSQL tables managed by SQLAlchemy 2 async ORM, with
+CYO Adventure has twenty-nine PostgreSQL tables managed by SQLAlchemy 2 async ORM, with
 schema migrations applied as plain SQL via the Supabase CLI (`supabase/migrations/`,
 ADR-012; Alembic retired). All timestamps are `TIMESTAMP WITH TIME ZONE`. Enum-like
 columns (`role`, `status`, `age_band`) are stored as strings and validated at the
@@ -22,7 +22,7 @@ application boundary, which keeps schema migrations simple and avoids enum-type 
 The PlantUML source above (`diagrams/er-diagram.puml`) is authoritative: it carries the
 full CHECK constraint list, ON DELETE semantics, and a note on pure-attribution foreign
 keys to `user.id` that are deliberately not drawn as edges. The Mermaid version below is a
-hand-maintained companion (`diagrams/er-diagram.mmd`) covering the same 26 tables and
+hand-maintained companion (`diagrams/er-diagram.mmd`) covering the same 29 tables and
 relationships, kept for inline rendering directly on GitHub without opening the SVG.
 
 ```mermaid
@@ -46,6 +46,11 @@ erDiagram
     child_profile ||--o{ reading_state : "reads"
     storybook ||--o{ reading_state : "read as"
     storybook_version ||--o{ reading_state : "pins version"
+    child_profile ||--o{ character : "owns (ADR-028)"
+    character ||--o{ character_attribute : "has canonical stats"
+    character |o--o{ reading_state : "seeds (nullable; SET NULL on delete)"
+    reading_state ||--o{ character_book_completion : "writes back completion"
+    character ||--o{ character_book_completion : "credited to"
     child_profile ||--o{ completion : "completes"
     child_profile ||--o{ reading_activity_day : "reads on days"
     storybook |o--o{ story_request : "resulting storybook"
@@ -132,8 +137,8 @@ erDiagram
 
     child_profile_personalization {
         uuid child_profile_id PK, FK "ON DELETE CASCADE"
-        varchar(32) slot_type PK "9 slot types; ck_cpp_slot_type"
-        text value_text "NULL; exactly one value column is set"
+        varchar(32) slot_type PK "12 slot types; ck_cpp_slot_type"
+        text value_text "NULL; ck_cpp_value_cardinality: character_name sets none, every other slot exactly one"
         varchar(64) value_enum "NULL"
         uuid value_profile_id FK "NULL; sibling reference, ON DELETE CASCADE"
         boolean ring1_enabled "default false; own family only"
@@ -204,6 +209,34 @@ erDiagram
         jsonb sentinel_manifest "NULL; ADR-023 derived token manifest"
     }
 
+    character {
+        uuid id PK
+        uuid child_profile_id FK "composite FK with family_id -> child_profile"
+        uuid family_id FK "denormalized for ADR-022 family_scoped RLS; composite FK with child_profile_id"
+        varchar(32) name
+        varchar(16) archetype "scout, guardian, trickster, scholar, healer, wildheart"
+        varchar(16) look "avatar_01..avatar_12"
+        boolean is_active "default true; partial UNIQUE uq_character_one_active per profile"
+        int books_completed "default 0; CHECK >= 0"
+        timestamptz retired_at "NULL; CHECK not both active and retired"
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    character_attribute {
+        uuid character_id PK, FK
+        varchar(16) name PK "archetype, might, wits, or nerve"
+        int value_int "range CHECK depends on name"
+    }
+
+    character_book_completion {
+        uuid reading_state_child_profile_id PK, FK "composite FK with reading_state_storybook_id -> reading_state"
+        varchar(120) reading_state_storybook_id PK, FK "composite FK with reading_state_child_profile_id -> reading_state"
+        uuid character_id PK, FK
+        varchar(120) ending_id "not part of the key; a book credits once regardless of ending"
+        timestamptz created_at
+    }
+
     reading_state {
         uuid child_profile_id PK, FK
         varchar(120) storybook_id PK, FK
@@ -219,6 +252,8 @@ erDiagram
         timestamptz last_synced_at "NULL"
         timestamptz created_at
         timestamptz updated_at
+        uuid character_id FK "NULL; ADR-028 seed character, SET NULL on delete"
+        jsonb seed_var_state "NULL; ADR-028 attribute snapshot at bind time"
     }
 
     completion {
@@ -508,7 +543,7 @@ One guardian-set personalization value per `(child_profile_id, slot_type)` pair
 | Column | Type | Notes |
 | -------- | ------ | ------- |
 | child_profile_id | UUID PK FK | child_profile.id; `ON DELETE CASCADE` |
-| slot_type | VARCHAR(32) PK | One of the nine closed slot types; CHECK `ck_cpp_slot_type` |
+| slot_type | VARCHAR(32) PK | One of the twelve closed slot types; CHECK `ck_cpp_slot_type` |
 | value_text | TEXT NULL | Free-text value |
 | value_enum | VARCHAR(64) NULL | Closed-vocabulary value |
 | value_profile_id | UUID FK NULL | child_profile.id when the value IS another profile (a sibling); `ON DELETE CASCADE`, indexed by `ix_cpp_value_profile_id` |
@@ -518,12 +553,15 @@ One guardian-set personalization value per `(child_profile_id, slot_type)` pair
 | updated_at | TIMESTAMPTZ | |
 
 Three CHECK constraints carry the rules the API must not be the only thing
-enforcing. `ck_cpp_exactly_one_value` requires exactly one of the three value
-columns to be set, so a row can never be ambiguous about what it holds.
-`ck_cpp_ring2_ceiling` makes `pronoun_set` and `dedication` rows structurally
-incapable of carrying `ring2_enabled = true`, which means a future API that
-skipped application-layer validation still could not widen those two slots past
-the owning family. `ck_cpp_slot_type` pins the vocabulary itself;
+enforcing. `ck_cpp_value_cardinality` (renamed from `ck_cpp_exactly_one_value`
+by ADR-028) is slot-scoped: `character_name` rows must set NONE of the three
+value columns, because that slot's value lives in `character` and is
+synthesized at resolve time, and every other slot type must set exactly one, so
+a row can never be ambiguous about what it holds. `ck_cpp_ring2_ceiling` makes
+`pronoun_set`, `dedication`, and `character_name` rows structurally incapable of
+carrying `ring2_enabled = true`, which means a future API that skipped
+application-layer validation still could not widen those three slots past the
+owning family. `ck_cpp_slot_type` pins the vocabulary itself;
 `tests/unit/test_personalization_vocab_drift.py` pins both CHECK lists against
 `PERSONALIZATION_FIELDS` so the two cannot drift apart silently.
 
@@ -656,6 +694,66 @@ column is deferred: it holds the MinIO object key once object storage is wired
 so a stored blob whose `schema_version` does not match is rejected rather than
 migrated (ADR-001).
 
+### `character`
+
+A persistent reader character owned by one child profile (ADR-028). `family_id` is
+denormalized from the owning profile so this table can carry the ADR-022 Tier 1
+`family_scoped` RLS policy, which needs the family on the row rather than via a join; the
+composite foreign key `fk_character_profile_family` on `(child_profile_id, family_id)` to
+`child_profile (id, family_id)` is what keeps that denormalized value honest. `is_active`
+and `retired_at` are two spellings of one fact and are kept agreeing by
+`ck_character_not_active_and_retired`; a partial unique index,
+`uq_character_one_active`, allows any number of retired characters per profile but
+exactly one active one.
+
+| Column | Type | Notes |
+| -------- | ------ | ------- |
+| id | UUID PK | |
+| child_profile_id | UUID FK | child_profile.id; composite FK with family_id; `ON DELETE CASCADE` |
+| family_id | UUID FK | child_profile.family_id; denormalized for RLS (ADR-022); composite FK with child_profile_id |
+| name | VARCHAR(32) | Reader-chosen display name |
+| archetype | VARCHAR(16) | One of `scout`, `guardian`, `trickster`, `scholar`, `healer`, `wildheart`; CHECK `ck_character_archetype` |
+| look | VARCHAR(16) | One of the twelve selectable avatar ids, `avatar_01`..`avatar_12`; CHECK `ck_character_look` |
+| is_active | BOOLEAN | Default true; at most one active character per profile, enforced by `uq_character_one_active` |
+| books_completed | INT | Default 0; CHECK `ck_character_books_completed_non_negative` |
+| retired_at | TIMESTAMPTZ NULL | NULL while active; CHECK `ck_character_not_active_and_retired` keeps this and `is_active` from both being true/non-NULL together |
+| created_at | TIMESTAMPTZ | |
+| updated_at | TIMESTAMPTZ | |
+
+### `character_attribute`
+
+One canonical attribute value for one character (ADR-028). `value_bool` is deliberately
+absent in v1: every canonical variable is an int, because Tier-2 conditions are a
+JSONLogic subset with no string comparison and no boolean carry need has been
+demonstrated; adding it later is additive, removing a shipped column is not.
+
+| Column | Type | Notes |
+| -------- | ------ | ------- |
+| character_id | UUID PK FK | character.id; `ON DELETE CASCADE` |
+| name | VARCHAR(16) PK | One of `archetype`, `might`, `wits`, `nerve`; CHECK `ck_character_attribute_name` |
+| value_int | INT | `archetype` ranges 0-6 (0 = not chosen, 1-6 index the archetype roster); `might`/`wits`/`nerve` each range 0-2. One combined CHECK, `ck_character_attribute_value_range`, so a row can never satisfy a range belonging to a different name |
+
+### `character_book_completion`
+
+One row per `(reading_state, character)` pair that has been written back (ADR-028). The
+composite primary key IS the writeback idempotency mechanism: a child who reaches a
+satisfying ending, goes offline, and replays the queued completion must not increment
+`character.books_completed` twice, and an application-side "have we done this already?"
+read is racy under concurrent sync. `INSERT ... ON CONFLICT DO NOTHING` against this key
+makes the second attempt a no-op in the database. `ending_id` is stored but deliberately
+NOT part of this key: a character is credited for a given storybook exactly once,
+forever, including across a re-read and across a later version of the same book, and a
+completion recorded at a different ending for a pair already credited is a no-op rather
+than a conflict.
+
+| Column | Type | Notes |
+| -------- | ------ | ------- |
+| reading_state_child_profile_id | UUID PK FK | reading_state.child_profile_id; composite FK `fk_cbc_reading_state` with reading_state_storybook_id; `ON DELETE CASCADE` |
+| reading_state_storybook_id | VARCHAR(120) PK FK | reading_state.storybook_id; composite FK `fk_cbc_reading_state` with reading_state_child_profile_id; `ON DELETE CASCADE` |
+| character_id | UUID PK FK | character.id; `ON DELETE CASCADE`; trails the composite PK, so `ix_character_book_completion_character_id` indexes it separately for the CASCADE scan |
+| ending_id | VARCHAR(120) | NOT part of the primary key; see above |
+| created_at | TIMESTAMPTZ | |
+
 ### `reading_state`
 
 Per-child, per-story reading progress. Composite primary key `(child_profile_id, storybook_id)`.
@@ -678,6 +776,8 @@ prevent saving state for a version that does not exist.
 | last_synced_at | TIMESTAMPTZ NULL | |
 | created_at | TIMESTAMPTZ | |
 | updated_at | TIMESTAMPTZ | `onupdate=func.now()` |
+| character_id | UUID FK NULL | ADR-028: character.id, the character carried into this reading session; `ON DELETE SET NULL` so deleting a character does not delete the child's reading progress in the books that character played; indexed by `ix_reading_state_character_id` since it trails no primary-key column |
+| seed_var_state | JSONB NULL | ADR-028: the character-attribute snapshot this reading state was seeded from, at bind time |
 
 ### `completion`
 

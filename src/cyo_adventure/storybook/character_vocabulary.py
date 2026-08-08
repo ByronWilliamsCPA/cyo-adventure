@@ -55,6 +55,22 @@ ARCHETYPE_CODES: Final[Mapping[str, int]] = MappingProxyType(
     {name: index for index, name in enumerate(ARCHETYPE_ROSTER, start=1)}
 )
 
+# #ASSUME: data integrity: this mapping is the ONLY place that ties
+# ``db.models.Character.archetype`` (the string column, e.g. "scout") to the
+# int code stored in the ``character_attribute`` row named "archetype"; see
+# both models' docstrings in db/models.py for the full account. No FK,
+# CHECK, or trigger enforces agreement between the two representations; it
+# holds only because ``characters/seeding.py::initial_attributes`` is the
+# sole writer of both, in the same create transaction, and no other code
+# path may update either afterward. This invariant breaks two ways: a
+# renumbered ARCHETYPE_ROSTER (the concern the earlier CRITICAL marker on
+# ARCHETYPE_ROSTER covers), or a second writer added for either
+# representation that bypasses initial_attributes.
+# #VERIFY: no test proves the cross-representation invariant directly;
+# test_archetype_codes_are_pinned_to_their_names, cited on ARCHETYPE_ROSTER
+# above, only pins the codes against renumbering, not against a future
+# writer that updates one representation without the other.
+
 
 @dataclass(frozen=True, slots=True)
 class CanonicalVariable:

@@ -1,5 +1,5 @@
 {
-  "description": "Cross-implementation player conformance: replaying the same choices through the Python and TypeScript engines must reach an identical state. visit_set is compared as a set (order-independent).",
+  "description": "Cross-implementation player conformance: replaying the same choices through the Python and TypeScript engines must reach an identical state. visit_set is compared as a set (order-independent). A trace may carry a `seed` (a VarState) to begin from start_continuation instead of start; a seed-carrying trace exercises the seeded-start path and is not equivalent to an unseeded run of the same story.",
   "schema_version": "2.0",
   "traces": [
     {
@@ -340,6 +340,86 @@
               "valence": "neutral",
               "kind": "discovery",
               "title": "Done"
+            },
+            "choices": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "seeded_might_carries_into_the_read",
+      "seed": {
+        "might": 2
+      },
+      "choices": [
+        "c_press_on"
+      ],
+      "expected": {
+        "current_node": "n_end",
+        "var_state": {
+          "might": 2
+        },
+        "visit_set": [
+          "n_end",
+          "n_start"
+        ],
+        "ending_id": "e_end"
+      },
+      "story": {
+        "schema_version": "2.0",
+        "id": "s_seeded_might",
+        "version": 1,
+        "title": "Seeded Might",
+        "metadata": {
+          "age_band": "10-13",
+          "reading_level": {
+            "scheme": "flesch_kincaid",
+            "target": 4.0,
+            "tolerance": 1.0
+          },
+          "tier": 2,
+          "themes": [],
+          "estimated_minutes": 5,
+          "ending_count": 1,
+          "content_flags": {
+            "violence": "none",
+            "scariness": "none",
+            "peril": "none"
+          },
+          "topology": "branch_and_bottleneck"
+        },
+        "variables": [
+          {
+            "name": "might",
+            "type": "int",
+            "initial": 0,
+            "min": 0,
+            "max": 2
+          }
+        ],
+        "start_node": "n_start",
+        "nodes": [
+          {
+            "id": "n_start",
+            "body": "Start here.",
+            "is_ending": false,
+            "choices": [
+              {
+                "id": "c_press_on",
+                "label": "Press on.",
+                "target": "n_end"
+              }
+            ]
+          },
+          {
+            "id": "n_end",
+            "body": "Done.",
+            "is_ending": true,
+            "ending": {
+              "id": "e_end",
+              "valence": "positive",
+              "kind": "success",
+              "title": "End"
             },
             "choices": []
           }

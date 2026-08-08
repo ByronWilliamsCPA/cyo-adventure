@@ -49,6 +49,12 @@ import type { ValuesPayload } from '../player/personalization'
 import type { ContinuationSeed } from '../player/series'
 import type { ReadingState, Storybook } from '../player/types'
 import { BackToLibrary } from './BackToLibrary'
+import {
+  NO_CHARACTER_BINDING,
+  deriveCharacterSeed,
+  type CharacterBinding,
+  type FetchActiveCharacterBinding,
+} from './characterSeed'
 import { DownloadNeeded } from './DownloadNeeded'
 import { Reader } from './Reader'
 
@@ -61,6 +67,15 @@ export interface ReaderPageProps {
   deviceId?: string
   /** Cold-cache cross-device resume. Defaults to "no server state". */
   fetchServerState?: FetchServerState
+  /**
+   * Resolves the profile's active character (ADR-028) for a FRESH read, the
+   * one case where no reading-state row exists yet to carry a server-
+   * snapshotted seed. Defaults to "no active character", which reproduces
+   * the pre-Task-9 behavior (open from the story's declared initials).
+   * See `characterSeed.ts` for why the seed is consumed from the server
+   * rather than derived here from the character's attributes.
+   */
+  fetchActiveCharacter?: FetchActiveCharacterBinding
   /** Records a completion when the reader reaches an ending. Defaults to a no-op. */
   recordCompletion?: RecordCompletion
   /** One-shot continuation seed for a fresh read (WS-G); ignored whenever any
@@ -102,6 +117,10 @@ type RecordCompletion = (body: CompletionRequest) => Promise<CompletionResult>
 // every render and forming an unbounded reload loop (~650 GETs/500ms
 // observed). A stable reference by identity is what keeps `load` stable.
 const NO_SERVER_STATE: FetchServerState = () => Promise.resolve(null)
+// Same stable-identity rule as NO_SERVER_STATE above: this sits in `load`'s
+// useCallback deps, so an inline default-parameter expression would remint it
+// every render and re-fire the mount effect in an unbounded reload loop.
+const NO_ACTIVE_CHARACTER: FetchActiveCharacterBinding = () => Promise.resolve(null)
 // #ASSUME: data-integrity: this default's resolved value is never actually
 // rendered from: a caller that omits `recordCompletion` also has no reason
 // to wire `fetchReadingHistory`/EndingsProgress, so the ending screen's
@@ -131,7 +150,17 @@ const LEAVE_SAVE_WAIT_MS = 1500
 // discriminant is a single literal, not a multi-value union.
 type PageState =
   | { phase: 'loading' }
-  | { phase: 'reading'; story: Storybook; initialReading: ReadingState | undefined }
+  | {
+      phase: 'reading'
+      story: Storybook
+      initialReading: ReadingState | undefined
+      // Resolved during load(), not at render: a fresh read has to ASK the
+      // server which character it is playing as (there is no row to read it
+      // off), and render is not allowed to await. Holding the answer in the
+      // same state member as the story keeps "which character" and "which
+      // reading state" from ever being one render out of step.
+      character: CharacterBinding
+    }
   | { phase: 'not-found' }
   | { phase: 'forbidden' }
   | { phase: 'unauthenticated' }
@@ -154,6 +183,7 @@ export function ReaderPage({
   version,
   deviceId,
   fetchServerState = NO_SERVER_STATE,
+  fetchActiveCharacter = NO_ACTIVE_CHARACTER,
   recordCompletion = NO_RECORD_COMPLETION,
   continuation,
   fetchSeriesNext,
@@ -413,8 +443,49 @@ export function ReaderPage({
         return
       }
     }
-    setPageState({ phase: 'reading', story: cached, initialReading })
-  }, [fetchStory, fetchServerState, profileId, storybookId, version, continuation])
+    // ADR-028 Task 9 / issue #460. Which surface answers "who is playing, and
+    // with what numbers" depends entirely on whether a reading-state row
+    // exists, and this is the one place that decides:
+    //
+    // - A resumed read (or one this session already continued into) HAS a
+    //   state, so the server's own snapshot on that state is authoritative
+    //   and `deriveCharacterSeed` reads it back.
+    // - A genuinely fresh read has none, and the server does not create one
+    //   until the first PUT, so there is no snapshot to read. Asking for the
+    //   profile's active character is the only way to open the book from the
+    //   bound character's numbers instead of the story's declared initials,
+    //   which is issue #460's headline defect and the client-side half the
+    //   backend's `#EDGE` marker on `put_reading_state`'s create path names.
+    //
+    // #CRITICAL: data-integrity: the fresh-read seed is only applied when
+    // `initialReading` is undefined. A WS-G series continuation has already
+    // built its own opening state from the previous book's carried variables,
+    // and layering a character seed on top would invent a client-side merge
+    // the server has no counterpart for; worse, feeding that seed to the
+    // machine would make RESTART silently drop the series carry. The two
+    // carries are deliberately not combined here.
+    // #VERIFY: ReaderPage.test.tsx "does not seed a continuation read from
+    // the active character" and "seeds a fresh read from the profile's active
+    // character".
+    let character = deriveCharacterSeed(initialReading)
+    if (initialReading === undefined) {
+      // Never rejects (the adapter maps every failure to null), but a caller
+      // supplying its own port might; either way an unresolved character just
+      // means an unseeded read, never an error screen.
+      const active = await fetchActiveCharacter(profileId).catch(() => null)
+      if (stale()) return
+      character = active ?? NO_CHARACTER_BINDING
+    }
+    setPageState({ phase: 'reading', story: cached, initialReading, character })
+  }, [
+    fetchStory,
+    fetchServerState,
+    fetchActiveCharacter,
+    profileId,
+    storybookId,
+    version,
+    continuation,
+  ])
 
   // Load on mount and whenever the load inputs change.
   useEffect(() => {
@@ -489,8 +560,16 @@ export function ReaderPage({
             { deviceId }
           )
           revisionRef.current = serverRow.state_revision
+          // The adopted row is the server's own View, so it carries the
+          // binding this read was actually recorded against; re-derive from it
+          // rather than keeping the pre-conflict binding. (Before the binding
+          // moved into page state it was recomputed at every render, so
+          // omitting this here would be a silent regression: the chrome could
+          // name one character while the machine replayed another's seed.)
           setPageState((prev) =>
-            prev.phase === 'reading' ? { ...prev, initialReading: serverRow } : prev
+            prev.phase === 'reading'
+              ? { ...prev, initialReading: serverRow, character: deriveCharacterSeed(serverRow) }
+              : prev
           )
           // Remount the Reader so its machine re-initialises from the adopted
           // server state; without this the reader keeps playing the local place.
@@ -726,7 +805,8 @@ export function ReaderPage({
       />
     )
   }
-  const { story, initialReading } = pageState
+  const { story, initialReading, character } = pageState
+  const { characterName, seed } = character
   return (
     <>
       {saveWarning ? (
@@ -745,10 +825,13 @@ export function ReaderPage({
         key={readerKey}
         story={story}
         initialReading={initialReading}
-        // Forwarded unconditionally, unlike `initialReading` above: the seed is
-        // ignored for the initial state whenever saved progress exists, but the
-        // carried series state is a fact about the child's history, so a restart
-        // must honour it either way (issue #460).
+        characterName={characterName}
+        // Both seeds are forwarded unconditionally, unlike `initialReading`
+        // above: either is ignored for the initial state whenever saved
+        // progress exists, but each is a fact about how this read began, so a
+        // restart must honour it either way (issue #460). They are never both
+        // set for one read; see the #CRITICAL fresh-read note above.
+        seed={seed}
         continuation={continuation}
         onProgress={handleProgress}
         onComplete={handleComplete}

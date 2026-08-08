@@ -666,6 +666,153 @@ export type CategoryInsightView = {
 };
 
 /**
+ * CharacterCreateBody
+ *
+ * A request to create a character for one child profile.
+ */
+export type CharacterCreateBody = {
+    /**
+     * Profile Id
+     */
+    profile_id: string;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Archetype
+     */
+    archetype: string;
+    /**
+     * Look
+     */
+    look: string;
+};
+
+/**
+ * CharacterListView
+ *
+ * All of one profile's characters, active first.
+ */
+export type CharacterListView = {
+    /**
+     * Characters
+     */
+    characters: Array<CharacterView>;
+};
+
+/**
+ * CharacterUpdateBody
+ *
+ * A partial update: name and look are re-choosable; archetype is not.
+ *
+ * Attributes, books_completed, and archetype are absent by design.
+ * Attributes and books_completed are server-derived and no principal may
+ * write them (spec section 3.4). archetype is identity, not a re-pickable
+ * preference: ``characters/progression.py``'s ``_PROGRESSION_VARIABLES``
+ * excludes it on the stated grounds that it is "set once at
+ * creation/build and never raised", and ``Character.archetype`` (the
+ * string column) has no update path that also rewrites the persisted
+ * ``character_attribute`` row holding the integer code a read binds from
+ * (``characters/seeding.py::initial_attributes``); a PATCH that touched
+ * only the column would leave the two permanently disagreeing. In all
+ * three cases ``extra="forbid"`` turns an attempt into a 422 rather than
+ * a silent drop.
+ */
+export type CharacterUpdateBody = {
+    /**
+     * Name
+     */
+    name?: string | null;
+    /**
+     * Look
+     */
+    look?: string | null;
+};
+
+/**
+ * CharacterView
+ *
+ * A character as returned to a kid or guardian.
+ *
+ * ``seed_var_state`` is the server's own answer to "what numbers would a
+ * read started by this character carry": exactly what
+ * ``reading.py::_bind_active_character`` snapshots onto a new
+ * reading-state row. It is exposed because a FRESH read has no
+ * reading-state row yet, so there is no ``ReadingStateView`` to read a
+ * seed off, and the player must still open the book from the bound
+ * character's numbers rather than the story's declared initials (ADR-028
+ * Task 9, issue #460, and the ``#EDGE`` marker on ``put_reading_state``'s
+ * create path).
+ *
+ * #CRITICAL: data integrity: this field exists so the client CONSUMES a
+ * server-derived seed instead of re-deriving one from ``attributes``. A
+ * second, client-side attribute-to-seed mapping would be free to drift
+ * from ``characters/seeding.py::character_seed``, and the two disagreeing
+ * is not a cosmetic bug: the server replays a submitted state from the
+ * stored seed (``player/replay.py::validate_reading_state``), so the
+ * first save carrying a ``choice_path`` would 422 and wedge the read
+ * permanently. Both this view and the read-start binding call
+ * ``character_seed`` on the same stored attribute rows, so there is
+ * exactly one mapping.
+ * #VERIFY: tests/integration/test_reading_character_binding.py::
+ * test_character_view_seed_matches_the_seed_a_read_start_would_bind
+ * asserts this field equals the ``seed_var_state`` the reading-state
+ * create path persists for the same character, so a change to either
+ * side alone fails.
+ */
+export type CharacterView = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Profile Id
+     */
+    profile_id: string;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Archetype
+     */
+    archetype: string;
+    /**
+     * Look
+     */
+    look: string;
+    /**
+     * Is Active
+     */
+    is_active: boolean;
+    /**
+     * Books Completed
+     */
+    books_completed: number;
+    /**
+     * Attributes
+     */
+    attributes: {
+        [key: string]: number;
+    };
+    /**
+     * Seed Var State
+     */
+    seed_var_state: {
+        [key: string]: boolean | number | string;
+    };
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * Retired At
+     */
+    retired_at: string | null;
+};
+
+/**
  * ChildEngagementItem
  *
  * One child's engagement signals for a guardian's family reading summary.
@@ -2294,6 +2441,10 @@ export type LibraryItem = {
      * Personalization Eligible
      */
     personalization_eligible?: boolean;
+    /**
+     * Accepts Character
+     */
+    accepts_character?: boolean;
 };
 
 /**
@@ -2639,16 +2790,20 @@ export type PersonalizationReceiveView = {
  * One slot's proposed value and ring flags, inside the PUT replace body.
  *
  * Exactly one of ``value_text``, ``value_enum``, ``value_profile_id`` may be
- * set, mirroring ``ChildProfilePersonalization.ck_cpp_exactly_one_value``.
- * This is a shape check only: the closed-vocabulary, structural, denylist,
- * and sibling-in-family checks (plan section 5.2) run in the route handler
- * via ``storybook.personalization_values``, not here.
+ * set, mirroring ``ChildProfilePersonalization.ck_cpp_value_cardinality``,
+ * except for ``"character_name"`` (ADR-028), for which that constraint (and
+ * this validator) requires all three to be absent: the slot's value is
+ * synthesized from the profile's active character, not stored here, so a
+ * consent row for it carries only the ring flags. This is a shape check
+ * only: the closed-vocabulary, structural, denylist, and sibling-in-family
+ * checks (plan section 5.2) run in the route handler via
+ * ``storybook.personalization_values``, not here.
  */
 export type PersonalizationSlotBody = {
     /**
      * Slot Type
      */
-    slot_type: 'protagonist_first_name' | 'pronoun_set' | 'sibling_name' | 'pet_species' | 'pet_name' | 'kinship_label' | 'favorite_color' | 'favorite_food' | 'favorite_hobby' | 'home_type' | 'dedication';
+    slot_type: 'protagonist_first_name' | 'pronoun_set' | 'sibling_name' | 'pet_species' | 'pet_name' | 'kinship_label' | 'favorite_color' | 'favorite_food' | 'favorite_hobby' | 'home_type' | 'dedication' | 'character_name';
     /**
      * Value Text
      */
@@ -3431,6 +3586,14 @@ export type ReadingStateBody = {
  * ReadingStateView
  *
  * A reading-state row returned to the client.
+ *
+ * ``character_id``, ``character_name``, and ``seed_var_state`` are
+ * server-derived (Task 6, ADR-028 spec section 7.3): the server resolves
+ * the profile's active character at read start and snapshots its
+ * attributes as the replay baseline. None of the three may be set by a
+ * client; ``ReadingStateBody`` has no such fields and is
+ * ``extra="forbid"``, so a request that tries is rejected before this
+ * view is ever built.
  */
 export type ReadingStateView = {
     /**
@@ -3481,6 +3644,20 @@ export type ReadingStateView = {
      * Last Synced At
      */
     last_synced_at: string | null;
+    /**
+     * Character Id
+     */
+    character_id: string | null;
+    /**
+     * Character Name
+     */
+    character_name: string | null;
+    /**
+     * Seed Var State
+     */
+    seed_var_state: {
+        [key: string]: boolean | number | string;
+    } | null;
 };
 
 /**
@@ -5621,6 +5798,257 @@ export type UpdateProfileApiV1ProfilesProfileIdPatchResponses = {
 };
 
 export type UpdateProfileApiV1ProfilesProfileIdPatchResponse = UpdateProfileApiV1ProfilesProfileIdPatchResponses[keyof UpdateProfileApiV1ProfilesProfileIdPatchResponses];
+
+export type ListCharactersApiV1CharactersGetData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Profile Id
+         */
+        profile_id: string;
+    };
+    url: '/api/v1/characters';
+};
+
+export type ListCharactersApiV1CharactersGetErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListCharactersApiV1CharactersGetError = ListCharactersApiV1CharactersGetErrors[keyof ListCharactersApiV1CharactersGetErrors];
+
+export type ListCharactersApiV1CharactersGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: CharacterListView;
+};
+
+export type ListCharactersApiV1CharactersGetResponse = ListCharactersApiV1CharactersGetResponses[keyof ListCharactersApiV1CharactersGetResponses];
+
+export type CreateCharacterApiV1CharactersPostData = {
+    body: CharacterCreateBody;
+    path?: never;
+    query?: never;
+    url: '/api/v1/characters';
+};
+
+export type CreateCharacterApiV1CharactersPostErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
+    /**
+     * The action conflicts with the resource's current state.
+     */
+    409: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type CreateCharacterApiV1CharactersPostError = CreateCharacterApiV1CharactersPostErrors[keyof CreateCharacterApiV1CharactersPostErrors];
+
+export type CreateCharacterApiV1CharactersPostResponses = {
+    /**
+     * Successful Response
+     */
+    201: CharacterView;
+};
+
+export type CreateCharacterApiV1CharactersPostResponse = CreateCharacterApiV1CharactersPostResponses[keyof CreateCharacterApiV1CharactersPostResponses];
+
+export type DeleteCharacterApiV1CharactersCharacterIdDeleteData = {
+    body?: never;
+    path: {
+        /**
+         * Character Id
+         */
+        character_id: string;
+    };
+    query?: never;
+    url: '/api/v1/characters/{character_id}';
+};
+
+export type DeleteCharacterApiV1CharactersCharacterIdDeleteErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type DeleteCharacterApiV1CharactersCharacterIdDeleteError = DeleteCharacterApiV1CharactersCharacterIdDeleteErrors[keyof DeleteCharacterApiV1CharactersCharacterIdDeleteErrors];
+
+export type DeleteCharacterApiV1CharactersCharacterIdDeleteResponses = {
+    /**
+     * Successful Response
+     */
+    204: void;
+};
+
+export type DeleteCharacterApiV1CharactersCharacterIdDeleteResponse = DeleteCharacterApiV1CharactersCharacterIdDeleteResponses[keyof DeleteCharacterApiV1CharactersCharacterIdDeleteResponses];
+
+export type UpdateCharacterApiV1CharactersCharacterIdPatchData = {
+    body: CharacterUpdateBody;
+    path: {
+        /**
+         * Character Id
+         */
+        character_id: string;
+    };
+    query?: never;
+    url: '/api/v1/characters/{character_id}';
+};
+
+export type UpdateCharacterApiV1CharactersCharacterIdPatchErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type UpdateCharacterApiV1CharactersCharacterIdPatchError = UpdateCharacterApiV1CharactersCharacterIdPatchErrors[keyof UpdateCharacterApiV1CharactersCharacterIdPatchErrors];
+
+export type UpdateCharacterApiV1CharactersCharacterIdPatchResponses = {
+    /**
+     * Successful Response
+     */
+    200: CharacterView;
+};
+
+export type UpdateCharacterApiV1CharactersCharacterIdPatchResponse = UpdateCharacterApiV1CharactersCharacterIdPatchResponses[keyof UpdateCharacterApiV1CharactersCharacterIdPatchResponses];
+
+export type ActivateCharacterApiV1CharactersCharacterIdActivatePostData = {
+    body?: never;
+    path: {
+        /**
+         * Character Id
+         */
+        character_id: string;
+    };
+    query?: never;
+    url: '/api/v1/characters/{character_id}/activate';
+};
+
+export type ActivateCharacterApiV1CharactersCharacterIdActivatePostErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
+    /**
+     * The action conflicts with the resource's current state.
+     */
+    409: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ActivateCharacterApiV1CharactersCharacterIdActivatePostError = ActivateCharacterApiV1CharactersCharacterIdActivatePostErrors[keyof ActivateCharacterApiV1CharactersCharacterIdActivatePostErrors];
+
+export type ActivateCharacterApiV1CharactersCharacterIdActivatePostResponses = {
+    /**
+     * Successful Response
+     */
+    200: CharacterView;
+};
+
+export type ActivateCharacterApiV1CharactersCharacterIdActivatePostResponse = ActivateCharacterApiV1CharactersCharacterIdActivatePostResponses[keyof ActivateCharacterApiV1CharactersCharacterIdActivatePostResponses];
+
+export type RetireCharacterApiV1CharactersCharacterIdRetirePostData = {
+    body?: never;
+    path: {
+        /**
+         * Character Id
+         */
+        character_id: string;
+    };
+    query?: never;
+    url: '/api/v1/characters/{character_id}/retire';
+};
+
+export type RetireCharacterApiV1CharactersCharacterIdRetirePostErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type RetireCharacterApiV1CharactersCharacterIdRetirePostError = RetireCharacterApiV1CharactersCharacterIdRetirePostErrors[keyof RetireCharacterApiV1CharactersCharacterIdRetirePostErrors];
+
+export type RetireCharacterApiV1CharactersCharacterIdRetirePostResponses = {
+    /**
+     * Successful Response
+     */
+    200: CharacterView;
+};
+
+export type RetireCharacterApiV1CharactersCharacterIdRetirePostResponse = RetireCharacterApiV1CharactersCharacterIdRetirePostResponses[keyof RetireCharacterApiV1CharactersCharacterIdRetirePostResponses];
 
 export type ListFamiliesApiV1AdminFamiliesGetData = {
     body?: never;

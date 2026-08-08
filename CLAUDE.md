@@ -501,9 +501,6 @@ assuming a design question is unanswered.
 - **Story authoring**: `.claude/skills/cyo-author/` fills a pre-authored
   Storybook skeleton (a story graph whose node bodies hold `<<FILL ...>>`
   directives) with age-band-appropriate prose, then validates and imports it.
-  Note: its `reference/skeleton-format.md` still uses a stale field name
-  (`ending.type`); the enforced schema in `storybook/models.py` uses
-  `ending.kind` / `ending.valence` (tracked in `docs/template_feedback.md`).
 
 ### Quick Start
 

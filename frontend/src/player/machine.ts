@@ -9,61 +9,93 @@
  *
  * BACK undoes the last choice by recomputing the state as if the child had
  * made every recorded choice except the last one: the engine replays the
- * recorded path from the start (never reversing effects, so on_enter effects
- * are recomputed faithfully). It is guarded to be unavailable at the start
- * node with an empty choice history, and for states the engine cannot
- * faithfully replay (continuation reads). From `ended` it returns into the
- * story, which is where trying the other path is most valuable.
+ * recorded path from the read's own start, the seeded start when this
+ * machine was given a seed (never reversing effects, so on_enter effects are
+ * recomputed faithfully). It is guarded to be unavailable at the start node
+ * with an empty choice history, and for states the engine cannot faithfully
+ * replay against that start. From `ended` it returns into the story, which
+ * is where trying the other path is most valuable.
  */
 
 import { assign, setup } from 'xstate'
 
 import { back, canGoBack, choose, isEnding, start, startContinuation } from './engine'
 import type { ContinuationSeed } from './series'
-import type { ReadingState, Storybook } from './types'
+import type { ReadingState, Storybook, VarState } from './types'
+
+// An inert placeholder ReadingState, used when start()/startContinuation()
+// throws and there is no prior reading state to fall back on. Reader.tsx
+// renders the error branch before ever reading `current_node` off a real
+// node, so the placeholder is never dereferenced.
+function emptyReading(story: Storybook): ReadingState {
+  return {
+    current_node: story.start_node,
+    var_state: {},
+    path: [],
+    visit_set: [],
+    version: story.version,
+    state_revision: 0,
+    save_slots: {},
+  }
+}
 
 // start()/startContinuation() throw on a dangling start_node (the same
 // throwing contract as choose(); back() is the one exception, failing closed
-// with null), but have no prior reading state to fall back on. On that
-// throw, hand back an inert placeholder ReadingState with error: true instead
-// of letting the throw escape: Reader.tsx renders the error branch before ever
-// reading `current_node` off a real node, so the placeholder is never
-// dereferenced.
+// with null), but have no prior reading state to fall back on. On that throw,
+// hand back emptyReading() with error: true instead of letting the throw
+// escape (see emptyReading above).
 //
-// `continuation` picks the entry point: a series continuation read resumes at
-// its declared entry node with the carried variables overlaid on this book's
-// declared initials (startContinuation re-filters both by declared type and
-// int bounds), while its absence is the ordinary new-reader path.
+// Two seeds can pick the entry point, and `continuation` wins when both are
+// present:
+//   - a WS-G series continuation (issue #460) resumes at its declared entry
+//     node with the carried variables overlaid on this book's declared
+//     initials (startContinuation re-filters both by declared type and int
+//     bounds);
+//   - an ADR-028 character seed always enters at this book's own start_node,
+//     with the character's carried stats overlaid.
+//
+// ReaderPage never supplies both for one read: a continuation read is
+// deliberately not seeded from the active character, because layering the two
+// would invent a client-side merge the server has no counterpart for (see the
+// #CRITICAL note on ReaderPage's fresh-read seed). The precedence here settles
+// only the case where both props survive to a RESTART, and it keeps that
+// RESTART faithful to how the read actually began.
+// #CRITICAL: data-integrity: a continuation read must restart as a
+// continuation, never as a character-seeded read; the latter would rewind a
+// series reader to this book's start_node and can open a gated branch the
+// child never earned.
+// #VERIFY: machine.test.ts "reader machine RESTART on a continuation read
+// (issue #460)".
 function safeStart(
   story: Storybook,
-  continuation?: ContinuationSeed
+  continuation?: ContinuationSeed,
+  seed?: VarState
 ): { reading: ReadingState; error: boolean } {
   try {
-    const reading =
-      continuation === undefined
-        ? start(story)
-        : startContinuation(story, continuation.entryNode, continuation.varState)
-    return { reading, error: false }
+    if (continuation !== undefined) {
+      return {
+        reading: startContinuation(story, continuation.entryNode, continuation.varState),
+        error: false,
+      }
+    }
+    return {
+      reading: seed === undefined ? start(story) : startContinuation(story, null, seed),
+      error: false,
+    }
   } catch (err) {
     console.error('reader: start failed', err)
-    return {
-      reading: {
-        current_node: story.start_node,
-        var_state: {},
-        path: [],
-        visit_set: [],
-        version: story.version,
-        state_revision: 0,
-        save_slots: {},
-      },
-      error: true,
-    }
+    return { reading: emptyReading(story), error: true }
   }
 }
 
 export interface ReaderContext {
   story: Storybook
   reading: ReadingState
+  // The character's carried stats, if any. Threaded into safeStart() so
+  // RESTART (and the seed-aware Go back guard/action below) re-derive the
+  // same seeded start the read began with, instead of fabricating declared
+  // initials (#460).
+  seed?: VarState
   // Set when a transition could not be applied (a structurally invalid
   // choice: a dangling target or corrupted cached state). choose() throws on
   // that by contract (shared with the Python conformance corpus; back() is the
@@ -80,7 +112,9 @@ export interface ReaderContext {
   // throw escape an assign() action or the context factory; the actor would die
   // (or render would crash into the generic AppErrorBoundary instead of the
   // reader's own recovery screen) and even RESTART could stop working.
-  // #VERIFY: machine.test.ts "recovers from a throwing transition".
+  // #VERIFY: machine.test.ts "surfaces context.error instead of dying when a
+  // choice does not exist on the node" and "surfaces context.error instead
+  // of crashing when start_node is dangling".
   error: boolean
   // The continuation provenance of this read (issue #460), retained so RESTART
   // can reproduce it. `input.reading` is a fully-formed state and says nothing
@@ -114,6 +148,12 @@ export interface ReaderInput {
   story: Storybook
   reading?: ReadingState
   /**
+   * The character's carried stats (ADR-028), when the read was seeded from the
+   * profile's active character. Retained for the same reason as
+   * `continuation`; see ReaderContext.seed.
+   */
+  seed?: VarState
+  /**
    * The continuation seed this book was opened with (WS-G), when there is one.
    * It seeds the initial state only when no `reading` is supplied, but is
    * retained either way so RESTART can reproduce a continuation read; see
@@ -143,17 +183,17 @@ export const readerMachine = setup({
       }
     }),
     applyBack: assign(({ context }) => {
-      const previous = back(context.story, context.reading)
+      const previous = back(context.story, context.reading, context.seed)
       // The canGoBack guard makes null unreachable in practice; keeping the
       // no-op branch means a raw BACK can never corrupt the reading state.
       /* v8 ignore next */
       return previous === null ? {} : { reading: previous }
     }),
-    reset: assign(({ context }) => safeStart(context.story, context.continuation)),
+    reset: assign(({ context }) => safeStart(context.story, context.continuation, context.seed)),
   },
   guards: {
     reachedEnding: ({ context }) => isEnding(context.story, context.reading),
-    canGoBack: ({ context }) => canGoBack(context.story, context.reading),
+    canGoBack: ({ context }) => canGoBack(context.story, context.reading, context.seed),
   },
 }).createMachine({
   id: 'reader',
@@ -167,11 +207,18 @@ export const readerMachine = setup({
         story: input.story,
         reading: input.reading,
         error: false,
+        seed: input.seed,
         continuation: input.continuation,
       }
     }
-    const { reading, error } = safeStart(input.story, input.continuation)
-    return { story: input.story, reading, error, continuation: input.continuation }
+    const { reading, error } = safeStart(input.story, input.continuation, input.seed)
+    return {
+      story: input.story,
+      reading,
+      error,
+      seed: input.seed,
+      continuation: input.continuation,
+    }
   },
   initial: 'reading',
   states: {

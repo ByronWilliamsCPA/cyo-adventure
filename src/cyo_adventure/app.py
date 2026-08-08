@@ -23,6 +23,7 @@ from cyo_adventure.api import (
     approval,
     assignments,
     audit,
+    characters,
     child_sessions,
     covers,
     device_grants,
@@ -391,6 +392,14 @@ _OPENAPI_TAGS: list[dict[str, str]] = [
         "description": "Guardian-managed child profiles within the caller's own family.",
     },
     {
+        "name": "characters",
+        "description": (
+            "Persistent reader characters (ADR-028): create, rename, "
+            "activate, and retire a character carrying progression across "
+            "books within one profile."
+        ),
+    },
+    {
         "name": "personalization",
         "description": (
             "Ring-1/ring-2 story personalization slot management, ring-2 "
@@ -719,6 +728,7 @@ def create_app() -> FastAPI:
     app.include_router(reading_history.router)
     app.include_router(generation.router)
     app.include_router(profiles.router)
+    app.include_router(characters.router)
     app.include_router(families.router)
     app.include_router(ratings.router)
     app.include_router(assignments.router)

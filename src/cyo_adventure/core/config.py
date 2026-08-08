@@ -969,6 +969,41 @@ class Settings(BaseSettings):
         validation_alias="CYO_ADVENTURE_SENTRY_TRACES_SAMPLE_RATE",
     )
 
+    # --- ADR-028 UW-A47: bound the run_gate worker-thread hold ---
+    # How many concurrent api/gate_limits.py::gate_limiter() holders may
+    # occupy an AnyIO worker thread at once. AnyIO's default worker pool is
+    # process-wide and shared by every run_sync caller (40 threads by
+    # default); a character-enabled book's run_gate call holds one of those
+    # threads for as long as 49.58s (see the #CRITICAL markers in
+    # api/node_edit.py and api/generation.py), and that figure is unchanged
+    # by this setting: it bounds concurrency, not per-call duration.
+    # 4 is a judgment call, not a measurement: it leaves 36 of the 40 pool
+    # threads free for every other run_sync caller in the process (including
+    # the generation worker's own gate runs) while still letting more than
+    # one guardian save an edit at the same time.
+    #
+    # The AnyIO thread pool is not the tightest constraint, though: both
+    # call sites hold a checked-out AsyncSession (a DB connection) for the
+    # entire offloaded call, and database_pool_size + database_max_overflow
+    # defaults to 15 (5 + 10), smaller than the 40-thread pool this Field's
+    # le=39 alone guards against. The real ceiling is therefore the smaller
+    # of the two pools; today that is the connection pool. le=39 stays as
+    # the static, thread-pool-relative bound; the tighter, database-relative
+    # bound is enforced by _require_gate_concurrency_within_connection_pool
+    # below, as a model_validator rather than a second literal here, because
+    # database_pool_size/database_max_overflow are themselves configurable
+    # per environment and a hardcoded number would drift from them silently.
+    # #CRITICAL: concurrency: set this at or above 40 (the AnyIO default
+    # pool size) and it bounds nothing against the thread pool, because the
+    # limiter would no longer be smaller than the pool it is meant to
+    # protect; set it at or above database_pool_size + database_max_overflow
+    # and it bounds nothing against the connection pool instead, which binds
+    # first at the current defaults (15 versus 40).
+    # #VERIFY: tests/unit/test_gate_capacity_limiter.py::test_the_gate_limiter_is_smaller_than_the_anyio_default_pool,
+    # ::test_the_gate_limiter_is_smaller_than_the_database_connection_pool,
+    # ::test_gate_max_concurrency_at_the_connection_pool_ceiling_rejected.
+    gate_max_concurrency: int = Field(default=4, ge=1, le=39)
+
     @property
     def worker_database_url_effective(self) -> str:
         """The DSN the worker engine (core/database.py::get_worker_engine) actually uses.
@@ -1356,6 +1391,60 @@ class Settings(BaseSettings):
                 "this is an intentional non-evidence run (for example catalog "
                 "seeding), which also stamps every report it produces as "
                 "reviewer_independent=false with a structural advisory finding."
+            )
+            raise ConfigurationError(msg)
+        return self
+
+    @model_validator(mode="after")
+    def _require_gate_concurrency_within_connection_pool(self) -> Settings:
+        """Fail fast if gate_max_concurrency could exhaust the DB connection pool.
+
+        ``gate_max_concurrency``'s ``le=39`` Field bound only checks it against
+        AnyIO's 40-thread worker pool, the mechanism ``api/gate_limits.py`` was
+        originally written to protect. But both ``run_gate`` call sites
+        (``api/node_edit.py::edit_node``, ``api/generation.py::validate_version``)
+        hold a checked-out ``AsyncSession`` (and therefore a DB connection) for
+        the entire ``run_sync(run_gate, ...)`` call, not just an AnyIO thread. A
+        checked-out connection is capped at ``database_pool_size +
+        database_max_overflow`` (15 by default: 5 + 10), which is smaller than
+        the 39 the thread-bound check alone would allow. A burst of concurrent
+        gate calls sized to the thread pool, not the connection pool, exhausts
+        every connection in the process and starves every other route, not just
+        these two, well before the thread pool the limiter was built for is
+        ever threatened.
+
+        This is a cross-field check (not a second ``le=`` on the Field itself)
+        because the real ceiling is derived from ``database_pool_size`` and
+        ``database_max_overflow``, both of which are themselves configurable
+        per environment; a hardcoded literal here would silently stop matching
+        the real pool the moment either of those changes. The strict ``<``
+        (not ``<=``) leaves at least one connection free for every other
+        concurrent request in the process while every gate slot is in use,
+        mirroring the existing thread-pool reasoning ("leaves 36 of the 40 pool
+        threads free").
+
+        Raises:
+            ConfigurationError: when ``gate_max_concurrency`` is not strictly
+                smaller than ``database_pool_size + database_max_overflow``.
+        """
+        # #CRITICAL: concurrency: a limiter sized to the AnyIO thread pool
+        # alone is not sufficient, because both gate call sites hold a DB
+        # session across the offloaded call; the binding constraint is
+        # whichever of the two pools (threads, connections) is smaller, and
+        # today that is the connection pool (15) versus the thread pool (40).
+        # #VERIFY: tests/unit/test_gate_capacity_limiter.py::
+        # test_the_gate_limiter_is_smaller_than_the_database_connection_pool,
+        # ::test_gate_max_concurrency_at_the_connection_pool_ceiling_rejected.
+        total_db_connections = self.database_pool_size + self.database_max_overflow
+        if self.gate_max_concurrency >= total_db_connections:
+            msg = (
+                f"gate_max_concurrency ({self.gate_max_concurrency}) must be "
+                "strictly smaller than database_pool_size + "
+                f"database_max_overflow ({total_db_connections}); both "
+                "api/node_edit.py and api/generation.py hold a checked-out DB "
+                "session for the entire run_gate call, so a limiter sized "
+                "only against the AnyIO thread pool can still exhaust the "
+                "connection pool and starve every other route in the process."
             )
             raise ConfigurationError(msg)
         return self

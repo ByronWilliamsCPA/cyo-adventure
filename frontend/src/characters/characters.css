@@ -1,0 +1,242 @@
+/* ── Character creator + picker ────────────────────────────── */
+/* Visual sibling of .picker / .picker-tile in kid/kid.css: same tile shape
+   and parchment/amber palette, since the character surfaces live inside the
+   same kid-facing chrome. */
+
+.character-creator {
+  max-width: 34rem;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4, 1rem);
+}
+
+.character-creator__heading {
+  font-family: var(--font-serif, Georgia, serif);
+  color: var(--color-ink, #2c1a0e);
+  text-align: center;
+  margin: 0;
+  font-size: var(--text-2xl, 1.875rem);
+}
+
+.character-creator__intro {
+  text-align: center;
+  color: var(--color-ink-soft, #5a4630);
+  margin: 0;
+}
+
+.character-creator__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 0.5rem);
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.character-creator__field legend {
+  font-family: var(--font-sans, 'Segoe UI', sans-serif);
+  font-weight: var(--weight-bold, 700);
+  color: var(--color-ink, #2c1a0e);
+  padding: 0;
+}
+
+.character-creator__name-input {
+  font-size: var(--text-lg, 1.25rem);
+  padding: var(--space-3, 0.75rem);
+  border-radius: var(--radius-lg, 14px);
+  border: 2px solid var(--color-parchment-deeper, #e0d5b8);
+  background: var(--color-parchment-dark, #ede6d0);
+  color: var(--color-ink, #2c1a0e);
+}
+
+.character-creator__name-input:focus-visible {
+  border-color: var(--color-amber, #e07f2e);
+  outline: 3px solid var(--color-amber-deep, #c17b2a);
+  outline-offset: 2px;
+}
+
+.character-creator__name-error,
+.character-creator__choice-error,
+.character-creator__submit-error,
+.character-picker__error {
+  color: var(--color-danger, #b3261e);
+  font-weight: var(--weight-bold, 700);
+  margin: 0;
+}
+
+.character-creator__archetype-grid,
+.character-creator__look-grid {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3, 0.75rem);
+}
+
+.character-creator__look-grid {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.character-tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2, 0.5rem);
+  padding: var(--space-4, 1rem) var(--space-2, 0.5rem);
+  border-radius: var(--radius-xl, 20px);
+  border: 2px solid var(--color-parchment-deeper, #e0d5b8);
+  background: var(--color-parchment-dark, #ede6d0);
+  color: var(--color-ink, #2c1a0e);
+  font-family: var(--font-sans, 'Segoe UI', sans-serif);
+  font-weight: var(--weight-bold, 700);
+  text-align: center;
+  cursor: pointer;
+  transition:
+    transform var(--duration-fast, 120ms) var(--easing-default, ease-in-out),
+    border-color var(--duration-fast, 120ms) var(--easing-default, ease-in-out),
+    box-shadow var(--duration-fast, 120ms) var(--easing-default, ease-in-out);
+}
+
+.character-tile input[type='radio'] {
+  /* Kept visible (not display:none) so the native radio semantics, which
+     already expose selection to assistive tech, remain visually legible
+     too, not just programmatically present. */
+  align-self: flex-end;
+}
+
+.character-tile--look {
+  padding: var(--space-3, 0.75rem) var(--space-2, 0.5rem);
+}
+
+.character-tile__swatch {
+  font-size: var(--text-2xl, 1.875rem);
+  line-height: 1;
+}
+
+/* CharacterPicker's tile avatar: same bordered-circle shape as
+   profiles/AvatarCircle so a picker tile reads as a sibling of
+   ProfilePickerPage's tiles, with the look swatch as the primary visual
+   identifier rather than name text alone. */
+.character-tile__avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 50%;
+  border: 3px solid var(--color-amber, #e07f2e);
+  background: var(--color-parchment, #f8f3e8);
+  font-size: 2.25rem;
+  line-height: 1;
+}
+
+.character-tile__name {
+  font-size: var(--text-lg, 1.25rem);
+}
+
+.character-tile__hint {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--color-ink-soft, #5a4630);
+  font-weight: var(--weight-normal, 400);
+}
+
+.character-tile__badge {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--color-amber-deep, #b45f10);
+  font-weight: var(--weight-bold, 700);
+}
+
+.character-tile--selected {
+  border-color: var(--color-amber, #e07f2e);
+  box-shadow: var(--shadow-md, 0 4px 12px rgba(44, 26, 14, 0.14));
+}
+
+/* The focus ring is the ONLY thing here that may carry focus on its own.
+   The border-color and box-shadow below are identical to
+   .character-tile--selected, so on an already-selected tile they signal
+   nothing new, and the lift is nulled under both reduce-motion rules at the
+   bottom of this file. That left a reduce-motion child with no perceptible
+   focus indicator at all on the tile they are most likely to focus first.
+   An outline is immune to both: it is drawn regardless of transform, and the
+   selected state never draws one. 3px amber-deep at a 3px offset matches the
+   design system's own focus treatment (Button.css), which uses amber-deep
+   rather than bright amber because only amber-deep clears the 3:1 non-text
+   contrast minimum on parchment. */
+.character-tile:focus-visible {
+  transform: translateY(-3px);
+  border-color: var(--color-amber, #e07f2e);
+  box-shadow: var(--shadow-md, 0 4px 12px rgba(44, 26, 14, 0.14));
+  outline: 3px solid var(--color-amber-deep, #c17b2a);
+  outline-offset: 3px;
+}
+
+@media (hover: hover) {
+  .character-tile:hover {
+    transform: translateY(-3px);
+    border-color: var(--color-amber, #e07f2e);
+  }
+}
+
+.character-picker {
+  max-width: 34rem;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4, 1rem);
+}
+
+.character-picker__heading {
+  font-family: var(--font-serif, Georgia, serif);
+  color: var(--color-ink, #2c1a0e);
+  text-align: center;
+  margin: 0;
+  font-size: var(--text-xl, 1.5rem);
+}
+
+.character-picker__grid {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3, 0.75rem);
+}
+
+/* The <li> is the grid cell; the tile button inside it has to fill that cell
+   or the tiles stop being uniform, which they were when the buttons were
+   themselves the grid children. */
+.character-picker__grid-item {
+  display: flex;
+}
+
+.character-picker__grid-item > .character-tile {
+  flex: 1;
+}
+
+.character-picker__loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .character-tile,
+  .character-tile:hover,
+  .character-tile:focus-visible {
+    transition: none;
+    transform: none;
+  }
+}
+
+[data-reduce-motion='true'] .character-tile,
+[data-reduce-motion='true'] .character-tile:hover,
+[data-reduce-motion='true'] .character-tile:focus-visible {
+  transition: none;
+  transform: none;
+}

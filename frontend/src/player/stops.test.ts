@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url'
 
 import { describe, expect, it } from 'vitest'
 
-import { choose, currentEndingId, start, visibleChoices } from './engine'
+import { choose, currentEndingId, start, startContinuation, visibleChoices } from './engine'
 import { backOneStop, canGoBackOneStop, composeStop } from './stops'
 import type { Stop, StopTerminalReason } from './stops'
 import type { ReadingState, Storybook, VarState } from './types'
@@ -118,5 +118,75 @@ describe('composeStop behaviour', () => {
     const stop = composeStop(loopCase.story, origin)
     expect(stop.terminalReason).toBe('loop')
     expect(stop.nodeIds).toEqual(['n_p', 'n_q'])
+  })
+})
+
+// A hand-written fixture (the shared conformance corpus has no seeded case,
+// and go-back-by-stop is frontend-only so nothing there mirrors it): stop 1
+// is the lone branch at n_start, stop 2 flows n_a into n_mid's branch, and
+// `might` is a declared int the seed moves off its initial.
+const seededFlowStory: Storybook = {
+  schema_version: '2.0',
+  id: 's_seeded_stop',
+  version: 1,
+  title: 'Seeded Stop',
+  metadata: {},
+  variables: [{ name: 'might', type: 'int', initial: 0, min: 0, max: 5 }],
+  start_node: 'n_start',
+  nodes: [
+    {
+      id: 'n_start',
+      body: 'A fork.',
+      is_ending: false,
+      choices: [
+        { id: 'c_a', label: 'Left', target: 'n_a' },
+        { id: 'c_b', label: 'Right', target: 'n_b' },
+      ],
+    },
+    {
+      id: 'n_a',
+      body: 'A corridor.',
+      is_ending: false,
+      choices: [{ id: 'c_go', label: 'On', target: 'n_mid' }],
+    },
+    {
+      id: 'n_mid',
+      body: 'A junction.',
+      is_ending: false,
+      choices: [
+        { id: 'c_x', label: 'Up', target: 'n_b' },
+        { id: 'c_y', label: 'Down', target: 'n_b' },
+      ],
+    },
+    {
+      id: 'n_b',
+      body: 'The end.',
+      is_ending: true,
+      choices: [],
+      ending: { id: 'e_b', valence: 'positive', kind: 'success', title: 'Done' },
+    },
+  ],
+}
+
+describe('go-back-by-stop on a seeded read (ADR-028 Task 9)', () => {
+  it('rewinds a stop on a seeded read only when the seed is forwarded', () => {
+    const seed: VarState = { might: 3 }
+    const origin = choose(seededFlowStory, startContinuation(seededFlowStory, null, seed), 'c_a')
+    const stop = composeStop(seededFlowStory, origin)
+    expect(stop.nodeIds).toEqual(['n_a', 'n_mid'])
+
+    // Forwarded: every back() call replays from the SEEDED start, reproduces
+    // the live var_state, and the rewind lands on the previous stop's
+    // terminal node.
+    expect(canGoBackOneStop(seededFlowStory, stop, seed)).toBe(true)
+    expect(backOneStop(seededFlowStory, stop, seed)?.current_node).toBe('n_start')
+
+    // Dropped: back() replays from the declared initials (might 0), which can
+    // never reproduce a live might of 3, so it fails closed. Two callers
+    // disagreeing about the seed is exactly the reader defect this parameter
+    // exists to prevent, so the two answers must be allowed to differ here
+    // and must never differ between Reader.tsx and machine.ts.
+    expect(canGoBackOneStop(seededFlowStory, stop)).toBe(false)
+    expect(backOneStop(seededFlowStory, stop)).toBeNull()
   })
 })

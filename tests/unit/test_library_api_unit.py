@@ -326,6 +326,26 @@ class TestLibraryItem:
         assert "~}" not in item.title
         assert "Explorer" in item.title
 
+    @pytest.mark.unit
+    def test_accepts_character_true_when_document_declares_it(self) -> None:
+        """ADR-028: a document with a non-null envelope reports True so the
+        frontend knows to offer the character creator for this book."""
+        blob: dict[str, object] = {
+            "title": "The Scout's Path",
+            "accepts_character": {"archetype": {"min": 0, "max": 6}},
+        }
+        item = _library_item("story-1", blob, 1)
+        assert item.accepts_character is True
+
+    @pytest.mark.unit
+    def test_accepts_character_false_when_document_omits_it(self) -> None:
+        """A pre-2.1 document (or any book that never opted in) has no
+        ``accepts_character`` key at all; the listing must report False,
+        never null, so the frontend has an unambiguous signal."""
+        blob: dict[str, object] = {"title": "The Lantern"}
+        item = _library_item("story-1", blob, 1)
+        assert item.accepts_character is False
+
     @pytest.mark.parametrize(
         ("label", "malformed_token"),
         [

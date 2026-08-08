@@ -44,6 +44,7 @@ def validate_reading_state(
     visit_set: list[str],
     choice_path: list[str] | None,
     save_slots: Mapping[str, object],
+    seed_var_state: VarState | None,
 ) -> None:
     """Validate a reading-state save against its pinned version blob.
 
@@ -56,6 +57,11 @@ def validate_reading_state(
         choice_path: The ordered choice ids taken, or ``None`` to skip replay.
         save_slots: The submitted named save-slot map. Must be empty; see
             :func:`_check_save_slots`.
+        seed_var_state: The server-held ``reading_state.seed_var_state`` this
+            read actually began from, or ``None`` for an unseeded read. Used
+            only when ``choice_path`` is given: replay begins the engine from
+            this seed, never from a client-submitted value, so a claim that
+            does not match the seed the server recorded is tampering.
 
     Raises:
         ValidationError: If the blob is corrupt at rest, the state is structurally
@@ -78,6 +84,7 @@ def validate_reading_state(
             path,
             visit_set=visit_set,
             choice_path=choice_path,
+            seed_var_state=seed_var_state,
         )
 
 
@@ -320,6 +327,7 @@ def _check_replay(
     *,
     visit_set: list[str],
     choice_path: list[str],
+    seed_var_state: VarState | None,
 ) -> None:
     """Full replay: the choice sequence must reproduce the submitted state.
 
@@ -330,12 +338,23 @@ def _check_replay(
         path: The submitted ordered node path.
         visit_set: The submitted visited-node ids.
         choice_path: The ordered choice ids to replay from ``start``.
+        seed_var_state: The server-held seed this read began from, or ``None``
+            for an unseeded read.
 
     Raises:
         ValidationError: If a choice is illegal or the replayed state differs.
     """
     engine = StoryEngine(story)
-    state = engine.start()
+    # #CRITICAL: data integrity: replay must begin from the SAME start the
+    # read did. start() ignores carried values, so replaying a seeded read
+    # from declared initials diverges immediately and rejects a legitimate
+    # save as tampered. The seed is the server's copy from
+    # reading_state.seed_var_state, never the client's, which is also what
+    # makes replay a real check on a seeded read rather than a formality.
+    # #VERIFY: tests/unit/test_replay.py::
+    # test_replay_of_a_seeded_read_starts_from_the_seed and
+    # test_replay_rejects_a_state_claiming_a_seed_it_was_not_given
+    state = engine.start_continuation(seed_var_state)
     for choice_id in choice_path:
         try:
             state = engine.choose(state, choice_id)

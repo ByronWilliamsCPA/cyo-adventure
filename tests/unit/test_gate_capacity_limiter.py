@@ -1,0 +1,204 @@
+"""The gate's thread-pool hold is bounded.
+
+Asserts the mechanism, not a duration: a timing assertion here would be
+flaky on a loaded CI runner and would pass for the wrong reason on a fast
+one.
+"""
+
+from __future__ import annotations
+
+import ast
+import inspect
+import threading
+
+import anyio
+import pydantic
+import pytest
+
+from cyo_adventure.api import generation as generation_module
+from cyo_adventure.api import node_edit as node_edit_module
+from cyo_adventure.api.gate_limits import gate_limiter
+from cyo_adventure.core.config import Settings
+from cyo_adventure.core.exceptions import ConfigurationError
+
+_GATE_CALL_MODULES = (node_edit_module, generation_module)
+
+
+def _run_gate_dispatch_calls(source: str) -> list[ast.Call]:
+    """Return every ``run_sync(run_gate, ...)`` call in a module's source.
+
+    Matches on the call shape (a call to a name ``run_sync`` whose first
+    positional argument is the name ``run_gate``) rather than on line
+    numbers, so it survives reformatting and reordering.
+    """
+    tree = ast.parse(source)
+    calls: list[ast.Call] = []
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Call):
+            continue
+        if not (isinstance(node.func, ast.Name) and node.func.id == "run_sync"):
+            continue
+        if not (
+            node.args
+            and isinstance(node.args[0], ast.Name)
+            and node.args[0].id == "run_gate"
+        ):
+            continue
+        calls.append(node)
+    return calls
+
+
+def _passes_shared_limiter(call: ast.Call) -> bool:
+    """True if ``call`` passes ``limiter=gate_limiter()``, the shared singleton.
+
+    Checks that the keyword's value is itself a call to the bare name
+    ``gate_limiter`` with no arguments, not merely present, so a call site
+    that passes some other limiter object (defeating the shared bound just
+    as thoroughly as omitting the argument) is also caught.
+    """
+    for kw in call.keywords:
+        if kw.arg != "limiter":
+            continue
+        return (
+            isinstance(kw.value, ast.Call)
+            and isinstance(kw.value.func, ast.Name)
+            and kw.value.func.id == "gate_limiter"
+            and not kw.value.args
+            and not kw.value.keywords
+        )
+    return False
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_the_gate_limiter_is_smaller_than_the_anyio_default_pool() -> None:
+    """A limiter at or above the pool size bounds nothing.
+
+    Compares against AnyIO's own live default limiter
+    (``anyio.to_thread.current_default_thread_limiter()``) rather than a
+    hand-copied literal ``40``, so a future AnyIO default change cannot
+    silently desync the two numbers. Also directly exercises
+    ``core/config.py``'s ``le=39`` bound by constructing a ``Settings`` at
+    the live pool size and expecting pydantic to reject it: the live-value
+    assertion alone reads only the compiled-in default (4), so it cannot
+    observe ``le=39`` being deleted (misconfiguration happens through the
+    environment at runtime, not by importing a different default).
+    """
+    default_pool_size = anyio.to_thread.current_default_thread_limiter().total_tokens
+    assert gate_limiter().total_tokens < default_pool_size
+    with pytest.raises(pydantic.ValidationError):
+        Settings(gate_max_concurrency=default_pool_size)
+
+
+@pytest.mark.unit
+def test_the_gate_limiter_is_smaller_than_the_database_connection_pool() -> None:
+    """The live default limiter also respects the DB connection pool ceiling.
+
+    Both ``run_gate`` call sites (api/node_edit.py, api/generation.py) hold a
+    checked-out ``AsyncSession`` for the whole offloaded gate call, so the
+    connection pool (``database_pool_size + database_max_overflow``, 15 by
+    default) is a second, independent ceiling alongside the AnyIO thread
+    pool asserted above. At the compiled-in defaults (gate_max_concurrency=4,
+    pool 5+10=15) the connection pool does not bind, so this only proves the
+    live default is compatible with it, not that the cross-field check
+    exists; test_gate_max_concurrency_at_the_connection_pool_ceiling_rejected
+    below exercises the check itself by shrinking the pool until it does
+    bind.
+    """
+    total_db_connections = (
+        Settings.model_fields["database_pool_size"].default
+        + Settings.model_fields["database_max_overflow"].default
+    )
+    assert gate_limiter().total_tokens < total_db_connections
+
+
+@pytest.mark.unit
+def test_gate_max_concurrency_at_the_connection_pool_ceiling_rejected() -> None:
+    """A limiter at or above the connection pool bounds nothing against it.
+
+    Shrinks database_pool_size/database_max_overflow down to a total smaller
+    than the AnyIO thread-pool ceiling (39), so this exercises the
+    connection-pool cross-field check in isolation: a version of
+    core/config.py that deleted
+    ``_require_gate_concurrency_within_connection_pool`` but kept the
+    unrelated ``le=39`` Field bound would still construct this Settings
+    instance without error, since gate_max_concurrency=10 is well under 39.
+    Mirrors test_the_gate_limiter_is_smaller_than_the_anyio_default_pool's
+    use of ConfigurationError rather than pydantic.ValidationError, since
+    ConfigurationError does not subclass ValueError and so is not wrapped by
+    pydantic when raised from a model_validator (see the sibling
+    _reject_dev_database_url_outside_local validator for the same pattern).
+    """
+    with pytest.raises(ConfigurationError):
+        Settings(gate_max_concurrency=10, database_pool_size=5, database_max_overflow=4)
+
+
+@pytest.mark.unit
+def test_both_gate_call_sites_share_one_limiter() -> None:
+    """Both run_gate offload sites pass the shared gate_limiter() singleton.
+
+    Two limiters of N each is a limit of 2N, which is not the limit:
+    node_edit and generation both offload run_gate, and separate limiters
+    (or no limiter at all) would let the two routes together exhaust what
+    one was sized to protect. This reads each module's own source via the
+    AST rather than asserting ``gate_limiter() is gate_limiter()``, which is
+    only a restatement of ``@lru_cache(maxsize=1)`` and observes neither
+    call site: that version stayed green with ``limiter=gate_limiter()``
+    deleted from both call sites entirely.
+    """
+    for module in _GATE_CALL_MODULES:
+        source = inspect.getsource(module)
+        calls = _run_gate_dispatch_calls(source)
+        assert calls, f"{module.__name__} no longer dispatches run_gate via run_sync"
+        for call in calls:
+            assert _passes_shared_limiter(call), (
+                f"{module.__name__}: run_sync(run_gate, ...) call at line "
+                f"{call.lineno} does not pass limiter=gate_limiter()"
+            )
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_calls_beyond_the_limit_queue_rather_than_spawn() -> None:
+    """Concurrency never exceeds the limiter's tokens.
+
+    A ``threading.Barrier`` sized to one more than the limiter's tokens is
+    the discriminator: it can only trip (release without raising
+    ``BrokenBarrierError``) if that many workers are all inside ``_work``
+    at the same instant. Under a correctly bounded limiter, no set of
+    ``total_tokens`` concurrently-running workers can ever supply the
+    ``(total_tokens + 1)``th party, so the barrier always times out and
+    ``tripped`` stays clear; this holds regardless of scheduling, so the
+    test does not rely on timing luck. Without the limiter, the tasks
+    dispatch onto AnyIO's 40-thread default pool essentially at once and
+    the barrier trips for real. The original version of this test
+    incremented and decremented a counter across two adjacent, empty
+    ``with lock`` blocks, so ``peak`` was 1 on essentially every run and
+    stayed green with the limiter argument deleted; a ``threading.Barrier``
+    with a short timeout is one of the two shapes offered for exactly this
+    failure mode.
+    """
+    limiter = gate_limiter()
+    barrier = threading.Barrier(limiter.total_tokens + 1, timeout=0.5)
+    tripped = threading.Event()
+
+    def _work() -> None:
+        try:
+            barrier.wait()
+        except threading.BrokenBarrierError:
+            return
+        tripped.set()
+
+    async def _run_bounded() -> None:
+        # anyio.to_thread.run_sync takes `limiter` as a keyword-only
+        # argument, but TaskGroup.start_soon forwards only positional
+        # arguments to the callable it schedules, so the limiter is bound
+        # here in a thin wrapper rather than passed through start_soon
+        # directly.
+        await anyio.to_thread.run_sync(_work, limiter=limiter)
+
+    async with anyio.create_task_group() as tg:
+        for _ in range(limiter.total_tokens * 3):
+            tg.start_soon(_run_bounded)
+
+    assert not tripped.is_set()

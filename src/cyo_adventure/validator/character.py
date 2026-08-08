@@ -272,8 +272,11 @@ def _check_ch2_range_equality(
         # declared consistently on both sides satisfies the equality check
         # above with zero findings.
         # #VERIFY: tests/unit/test_character_rules.py::
-        # test_ch2_rejects_a_range_wider_than_the_canonical_vocabulary and
-        # test_canonical_bounds_are_read_by_the_validator
+        # test_ch2_rejects_a_range_wider_than_the_canonical_vocabulary asserts
+        # the canonical range appears in the message, so the check provably
+        # reads CANONICAL_CHARACTER_VARIABLES and not a document value; and
+        # test_ch2_rejects_a_lower_bound_below_the_canonical_vocabulary covers
+        # the other side, since containment is two-sided.
         if not (canonical.min <= span.min and span.max <= canonical.max):
             report.add(
                 _finding(
