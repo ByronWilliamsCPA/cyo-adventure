@@ -24,6 +24,11 @@ tags:
 > **Amended**: 2026-08-01 (amended-COPPA-rule compliance date has passed; new D5 on
 > AI-training consent segregation; D4 gains the written Information Security Program and a
 > Safe Harbor evaluation; biometric non-ingestion recorded as a boundary)
+> **Amended**: 2026-08-06 (owner decisions recorded on D2, D4, and D5; Safe Harbor sequencing
+> settled as counsel-first; D4's two rule-mandated artifacts confirmed to exist; counsel
+> engagement packaged in [counsel-engagement-brief.md](../../compliance/counsel-engagement-brief.md)).
+> **This does not flip the status.** Every decision below is an owner choice pending counsel
+> confirmation; only counsel closing D1 through D5 moves this ADR to Accepted.
 > **Relates to**: [ADR-008](./adr-008-public-app-store-launch.md) (Kids Category posture,
 > part 5), [ADR-009](./adr-009-supabase-platform.md) (processor, DPA), [ADR-016](./adr-016-recommendation-sharing-social-boundary.md)
 > (contact boundary), [ADR-017](./adr-017-ai-cover-art.md) (image-leg counterparties),
@@ -158,9 +163,13 @@ payment-card transaction (avoids introducing PCI scope) and a third-party ID-ver
 service (avoids a new processor and its own DPA/SCC/vendor-oversight burden). Chosen
 mechanism instead: a signature-capture step layered on the existing Supabase/Google OAuth
 login already used for guardian sign-in. Concretely, the guardian provides a
-signature-equivalent (a canvas-drawn signature or a typed full-legal-name attestation)
-plus an explicit checkbox affirming specific consent language; the app logs IP address,
-timestamp, and the OAuth-authenticated account id server-side alongside it. This is meant
+signature-equivalent (a typed full-legal-name attestation) plus an explicit checkbox
+affirming specific consent language, a country-of-residence selection (O-117), and an
+adulthood attestation checkbox (O-119); the app logs IP address, timestamp, and the
+OAuth-authenticated account id server-side alongside it. **As built, the typed name is the
+only signature-equivalent captured**; a canvas-drawn signature was considered in the
+2026-07-20 framing but never implemented, and `GuardianConsentPage.tsx` has no drawing
+surface. Do not describe a drawn signature as available. This is meant
 to satisfy the "sign and submit electronically" method already on the FTC's enumerated
 list (312.5(b)(2)(i)), with the OAuth login supplying the identity binding rather than a
 separate verification step. This applies uniformly regardless of tier; the prior working
@@ -168,12 +177,12 @@ recommendation's paid-tier/free-tier split (Apple IAP as the VPC event) is super
 since the app is not currently monetized and the owner does not want VPC design coupled to
 a future payment decision.
 
-**Flagged for counsel**: whether a typed-name or canvas signature captured this way
+**Flagged for counsel**: whether a typed-name attestation captured this way
 satisfies 312.5(b)(2)(i)'s "signed" requirement is the single highest-risk open question in
 this decision and should be the first thing reviewed in the drafted consent-flow copy
 (`docs/compliance/` DPIA and Privacy Notice drafts, in progress).
 
-**Implemented 2026-07-20.** `POST /v1/onboarding`'s `consent` payload
+**Implemented 2026-07-20.** `POST /api/v1/onboarding`'s `consent` payload
 (`accepted`/`policy_version`/`signer_name`) persists onto
 `User.consent_accepted_at`/`consent_policy_version`/`consent_signer_name`/`consent_ip`
 (paired, CHECK-enforced); `api/profiles.py::_require_consent` gates
@@ -199,6 +208,12 @@ the strictest COPPA lane and removes the "actual knowledge" defenses of mixed-au
 apps. Decision needed: confirm child-directed as the declared posture (recommended,
 matches product reality) and record that mixed-audience arguments are unavailable.
 
+**Decision confirmed 2026-08-06 (owner choice; pending counsel confirmation).** Child-directed
+is the declared posture. Mixed-audience "actual knowledge" defenses are recorded as
+unavailable and must not be relied on in any later design argument. This closes the gap that
+made D2 unreviewable: until an owner had actually ruled, there was no position for counsel to
+confirm, only a recommendation. Counsel's role on this item is confirmation, not selection.
+
 ### D3: Launch geography and GDPR-K/AADC applicability
 
 If launch is US-only (App Store storefront restriction), GDPR-K and the UK AADC do not
@@ -222,6 +237,12 @@ data classification, a data-retention schedule, and a breach/incident-response p
 (feeds register A5/A14). Decision needed: owner sign-off that these are Phase 7
 deliverables with P7-08 as the checkpoint, and who drafts the notice.
 
+**Decision confirmed 2026-08-06 (owner choice).** These are Phase 7 deliverables with P7-08
+as the checkpoint. **The project owner drafts every artifact; counsel reviews rather than
+drafts.** That ordering is deliberate: drafting internally and sending finished text is
+cheaper than paying counsel to originate documents whose substance is already decided
+elsewhere in this repository.
+
 **Amended 2026-08-01, two additions.**
 
 - **Two artifacts above are now rule requirements, not best practice.** The amended COPPA
@@ -234,6 +255,31 @@ deliverables with P7-08 as the checkpoint, and who drafts the notice.
   existing security tooling (scanner suite, dependency scanning, container scanning) is
   most of the WISP's substance; what is missing is the written program document that names
   it, its cadence, and its owner.
+
+  **Status corrected 2026-08-06: both artifacts now exist, but only (a) satisfies the rule
+  today.** (a) is complete and published; (b) is drafted, not yet published, and still
+  carries three data classes with no deletion window set, so D4's published-policy leg is
+  not yet met. (a) The written Information Security Program is
+  [information-security-program.md](../../compliance/information-security-program.md),
+  `status: published`, and it already carries all four mandated elements: the annual
+  risk-assessment cadence (section 3), the vulnerability-testing cadence tied to the
+  scanner suite and `SECURITY.md`'s severity/response table (section 3), vendor and
+  service-provider due diligence over this ADR's counterparty list (section 4), and a named
+  compliance owner (section 2). It predates this amendment, which is why the amendment
+  described it as missing. (b) The written data-retention policy is
+  [data-retention-policy.md](../../compliance/data-retention-policy.md), created 2026-08-06
+  and currently `status: draft`. It consolidates the per-category schedule resolved
+  2026-07-20 in `coppa-gdpr-remediation-plan.md` (which governs, and is reproduced rather
+  than re-derived) with the guardian-facing table in `privacy-notice.md` and the
+  per-activity view in `records-of-processing-activities.md`, and adopts the additional
+  categories `UW-N07` names. **Three of its classes carry no window yet** and are written
+  as "Not yet set, owner ruling required" rather than given an invented number: consent
+  evidence, product analytics, and application logs. The rule requires a hard deletion
+  timeline for *each* class of children's data, and product analytics and application logs
+  are both children's data, so (b) does not discharge D4 until those three rulings land and
+  the document moves to `status: published`. That residual is tracked at `UW-N07`. Both go
+  to counsel under this decision's owner-drafts/counsel-reviews split: (a) as finished work
+  for review, (b) as a draft with three named gaps.
 - **Evaluate COPPA Safe Harbor membership (PRIVO, kidSAFE, ESRB Privacy Certified) as an
   explicit Track 2 task.** A Safe Harbor program would answer D1's flagged highest-risk
   question (whether the signature-capture flow satisfies 312.5(b)(2)(i)) with a
@@ -241,6 +287,14 @@ deliverables with P7-08 as the checkpoint, and who drafts the notice.
   counsel opinion, at the cost of a recurring fee and an added vendor. Decision needed:
   whether this evaluation happens before or alongside the counsel review of D1, since a
   yes here changes what D1's counsel question is worth.
+
+  **Sequencing decided 2026-08-06 (owner choice): alongside, counsel first.** D1 goes to
+  counsel now rather than waiting on a Safe Harbor evaluation, because counsel scheduling is
+  the long-lead item on the critical path to Phase 7 and the public rungs, and a Safe Harbor
+  evaluation is not. The evaluation proceeds in parallel as a Track 2 task. The accepted cost
+  of this ordering is that a later decision to join a program could supersede the D1 opinion,
+  so the counsel engagement flags that possibility explicitly and asks counsel to scope the
+  D1 opinion accordingly rather than assuming it is the permanent basis of compliance.
 
 ### D5: AI-training use of children's data (consent segregation; added 2026-08-01)
 
@@ -267,11 +321,23 @@ no planned corpus needs child-originated data.
 wanted in a training set, the D1 consent flow gains a separate opt-in toggle first, before
 any such data is collected for that purpose: a `policy_version` bump plus an independent,
 default-off checkbox whose refusal has no effect on service access. That is a small change
-against the existing `POST /v1/onboarding` consent payload and `GuardianConsentPage.tsx`,
+against the existing `POST /api/v1/onboarding` consent payload and `GuardianConsentPage.tsx`,
 but it must precede collection, not follow it.
 
 Decision needed: owner confirms the corpus constraint as the default, or opts to build the
 segregated-consent toggle now.
+
+**Decision confirmed 2026-08-06 (owner choice).** The corpus constraint is adopted as the
+standing default; the segregated-consent toggle is **not** built now. Any training or
+evaluation corpus is built exclusively from adult-originated and pipeline-originated
+material. Child-typed wish text from intake, and child behavioral signals (flags, ratings,
+reading state), are excluded from every training set. This is a standing constraint on future
+work, not a one-time assessment: a proposal that wants child-originated data in a corpus is a
+revision of this decision, and the escape hatch above (a `policy_version` bump plus an
+independent, default-off opt-in whose refusal cannot affect service access) must be built
+**before** any such collection begins, not after. Counsel's role on this item is a light
+confirmation that the segregated-consent obligation does not trigger under the constraint,
+not a design question.
 
 - ✅ Compliance stops being folklore spread over four documents; Phase 7 becomes the
   implementation of this ADR and P7-08 its checklist.
@@ -283,6 +349,13 @@ segregated-consent toggle now.
   design positions, not legal conclusions.
 
 ## Validation
+
+**Progress note, 2026-08-06.** The owner-side prerequisites are done: D2, D3, D4, and D5 all
+carry recorded owner decisions, D1's mechanism is decided and implemented, and the packet
+counsel receives is assembled at
+[counsel-engagement-brief.md](../../compliance/counsel-engagement-brief.md). What remains on
+every unchecked box below is external: retaining counsel and getting rulings. No checkbox is
+ticked by internal work alone, which is why none are ticked here.
 
 - [ ] D1-D5 closed with counsel; status flipped to Accepted with the choices recorded.
 - [ ] Amended-rule facts (dates, biometric definition, AI-training consent, WISP and

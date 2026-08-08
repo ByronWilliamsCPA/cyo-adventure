@@ -56,6 +56,34 @@ regardless of tier.
 
 **Headline findings (detail in Section 6):**
 
+> **Currency note added 2026-08-06.** This audit is dated and its findings were assessed against the
+> codebase as it stood then. Two of the three Critical rows below have since been substantially
+> closed, and the finding bodies in Section 6 still cite the pre-fix evidence. Anyone reading this
+> audit to judge the *current* compliance posture, counsel included, should apply these corrections
+> first. Re-verified against the code on 2026-08-06:
+>
+> - **C-01 is closed on its engineering half.** A consent record and a gate both exist. Consent is
+>   captured by `POST /api/v1/onboarding` and persisted to paired, CHECK-enforced columns
+>   (`db/models.py:415-417`); `api/profiles.py::_require_consent` (defined at line 290) gates profile
+>   creation at line 511. The audit's evidence line, "no consent code in `src/`/`frontend/src`", no
+>   longer holds. What remains open is the *legal* question of whether the chosen mechanism satisfies
+>   16 CFR 312.5(b)(2)(i), which is exactly what ADR-018 D1 flags for counsel.
+> - **C-03 is closed on its guardian-facing half, not on complete erasure.** The deletion endpoints
+>   the finding said were absent now exist: `DELETE /api/v1/me/family` (`api/me.py:369`) and
+>   `delete_profile` (`api/profiles.py:629-632`). What is *not* established is that they erase
+>   everything: `security_event` is append-only with no deletion path at all (its trigger is in
+>   `supabase/migrations/20260804070000_add_security_event_table.sql`), which conflicts with
+>   ADR-018's hard-deletion-timeline requirement, and no end-to-end erasure drill has been run.
+>   Both residuals are tracked at `UW-D28`. Read this row as "the endpoints exist", not as
+>   "erasure is provably complete".
+> - **C-02 remains genuinely open and is not corrected here.** A privacy notice has been *drafted*
+>   ([privacy-notice.md](./privacy-notice.md), `status: draft`), but it is not published and there is
+>   still no route serving it to users, so both the online-notice and direct-notice obligations under
+>   312.4 are unmet. Do not read the two corrections above as implying this one also moved.
+>
+> The remaining findings in this table were not re-verified on 2026-08-06 and should be treated as
+> carrying their original date.
+
 | ID | Finding | Severity |
 |----|---------|----------|
 | C-01 | No verifiable parental consent mechanism, and no signup flow to attach one to | Critical (at launch) |
