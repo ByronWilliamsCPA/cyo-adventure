@@ -68,8 +68,14 @@ regardless of tier.
 >   creation at line 511. The audit's evidence line, "no consent code in `src/`/`frontend/src`", no
 >   longer holds. What remains open is the *legal* question of whether the chosen mechanism satisfies
 >   16 CFR 312.5(b)(2)(i), which is exactly what ADR-018 D1 flags for counsel.
-> - **C-03 is closed.** Deletion endpoints exist: `DELETE /api/v1/me/family` (`api/me.py:369`) and
->   `delete_profile` (`api/profiles.py:629-632`).
+> - **C-03 is closed on its guardian-facing half, not on complete erasure.** The deletion endpoints
+>   the finding said were absent now exist: `DELETE /api/v1/me/family` (`api/me.py:369`) and
+>   `delete_profile` (`api/profiles.py:629-632`). What is *not* established is that they erase
+>   everything: `security_event` is append-only with no deletion path at all (its trigger is in
+>   `supabase/migrations/20260804070000_add_security_event_table.sql`), which conflicts with
+>   ADR-018's hard-deletion-timeline requirement, and no end-to-end erasure drill has been run.
+>   Both residuals are tracked at `UW-D28`. Read this row as "the endpoints exist", not as
+>   "erasure is provably complete".
 > - **C-02 remains genuinely open and is not corrected here.** A privacy notice has been *drafted*
 >   ([privacy-notice.md](./privacy-notice.md), `status: draft`), but it is not published and there is
 >   still no route serving it to users, so both the online-notice and direct-notice obligations under

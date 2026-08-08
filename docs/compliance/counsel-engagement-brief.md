@@ -83,16 +83,23 @@ built and shipped, not a design proposal:
   its own right.
 - Before that guardian can create any child profile, our application (a dedicated screen, the
   source file is `frontend/src/auth/GuardianConsentPage.tsx`) presents specific consent
-  language and asks the guardian to do one of two things: draw a signature with a mouse, finger,
-  or stylus on an on-screen canvas, or type their full legal name into a text field as an
-  attestation in lieu of a drawn signature.
-- The guardian must also check an explicit checkbox affirming that they are the child's parent or
-  legal guardian and that they agree to the privacy notice described in Section 3 below.
+  language and asks the guardian to type their full legal name into a text field as an
+  attestation in lieu of a handwritten signature. **There is no drawn-signature option.** The
+  screen offers a typed name only; it has no drawing surface, and nothing in the product captures
+  a stylus, finger, or mouse-drawn mark. Counsel should analyse a typed-name attestation and
+  nothing else.
+- Alongside the typed name, the same single form requires the guardian to select their country of
+  residence and to tick two separate checkboxes: one affirming that they are the child's parent or
+  legal guardian and agree to the privacy notice described in Section 3 below, and one attesting
+  that they are an adult. The submission is rejected outright unless all of these are present
+  together; a request missing or falsifying any of them records nothing at all rather than
+  partially persisting.
 - At the moment of submission, our backend server (the relevant code is in
-  `src/cyo_adventure/api/onboarding.py` and related modules) records, alongside the signature or
-  typed name: the guardian's IP address, a timestamp, the version number of the consent language
-  they agreed to, and the Supabase-authenticated account ID from the sign-in step above. This
-  record is persisted in our database and is not editable by the guardian afterward.
+  `src/cyo_adventure/api/onboarding.py` and related modules) records, alongside the typed name:
+  the guardian's IP address, a timestamp, the country of residence, the adulthood attestation, the
+  version number of the consent language they agreed to, and the Supabase-authenticated account ID
+  from the sign-in step above. This record is persisted in our database and is not editable by the
+  guardian afterward.
 - No guardian-created child profile, and therefore no collection of any information about a
   specific child through the guardian-facing flow, is permitted to proceed until this consent
   record exists; this is enforced in code (`src/cyo_adventure/api/profiles.py`, the
@@ -109,9 +116,13 @@ built and shipped, not a design proposal:
 
 ### 1.3 The precise question for counsel
 
-**Does a typed full legal name, or a canvas-drawn signature, captured through the flow described
-in Section 1.2 above, satisfy 16 CFR 312.5(b)(2)(i)'s requirement that a parent "sign" a consent
-form, under the electronic-signature branch of the FTC's enumerated consent methods?**
+**Does a typed full legal name, captured through the flow described in Section 1.2 above, satisfy
+16 CFR 312.5(b)(2)(i)'s requirement that a parent "sign" a consent form, under the
+electronic-signature branch of the FTC's enumerated consent methods?**
+
+We ask only about a typed name because that is the only thing the product captures. If counsel's
+view is that a typed name is insufficient but a drawn signature would suffice, please say so
+explicitly: that would be a build instruction for us, not a description of what exists today.
 
 Two related sub-questions that inform the main one:
 

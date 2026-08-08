@@ -9,9 +9,12 @@ source: R1-completion review session, 2026-08-06
 
 Written 2026-08-06. This is item 3 of a four-item R1-completion review. The other three items were
 carried as their own pull requests and register rows rather than as sibling handoff documents, so
-there is nothing to cross-read: the R1 live E2E sign-off is
-[#640](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/640) and the OG1/OG7 owner decisions
-are [#642](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/642).
+**no companion handoff document exists**. That is not the same as having nothing to check: the R1
+live E2E sign-off is [#640](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/640) and the
+OG1/OG7 owner decisions are
+[#642](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/642), and both of those, along with
+the `UW-M03`/`UW-N02`/`UW-N07` register rows, can move independently of this document. Check their
+current state before relying on any status claim below.
 
 > **Status: partly superseded by the same commit that adds this file.** This document records the
 > state at the *start* of the 2026-08-06 session and was written to drive the owner rulings that
@@ -41,10 +44,12 @@ engagement scope:
 ### D1: Verifiable parental consent mechanism: **narrow, specific question**
 
 Owner already chose the mechanism (signature-capture layered on existing Supabase/Google OAuth
-login: canvas signature or typed full-legal-name attestation, plus a checkbox, with IP/timestamp/
+login: a typed full-legal-name attestation, plus a checkbox, with IP/timestamp/
 account-id logged server-side) and it's already implemented (`POST /api/v1/onboarding`'s `consent`
-payload, `GuardianConsentPage.tsx`, gated via `api/profiles.py::_require_consent`). **The ADR itself
-names the single highest-risk open question**: whether a typed-name or canvas signature captured
+payload, `GuardianConsentPage.tsx`, gated via `api/profiles.py::_require_consent`). An earlier
+framing of this decision also mentioned a canvas-drawn signature; **that was never built**, so
+counsel must be asked about a typed name only. **The ADR itself
+names the single highest-risk open question**: whether a typed-name attestation captured
 this way satisfies COPPA Rule 312.5(b)(2)(i)'s "signed" requirement for the "sign and submit
 electronically" consent method. That's the question to put in front of counsel first, it's already
 drafted as a yes/no with supporting detail in the ADR's D1 section, not an open-ended design
@@ -68,7 +73,10 @@ counsel, it's a straightforward "confirm GDPR-K/AADC don't bind at a US-only lau
 
 ### D4: Public artifacts: **owner sign-off recorded; one artifact still a draft**
 
-Two things were needed before this became counsel-ready, and **both are now decided**:
+Three things were needed before this became counsel-ready. The first two were owner decisions and
+**both are now made**; the third is a drafting obligation the amended COPPA Rule imposes, and it is
+only partly discharged.
+
 1. Owner sign-off that the artifact list (privacy notice, App Store nutrition labels, retention
    schedule, breach/incident-response plan) are Phase 7 deliverables checked off at P7-08, and who
    drafts the notice. **Recorded 2026-08-06: Phase 7 deliverables with P7-08 as the checkpoint, and
@@ -82,17 +90,20 @@ Two things were needed before this became counsel-ready, and **both are now deci
    now and the evaluation proceeds in parallel as a Track 2 task. The accepted cost is that a later
    decision to join a program could supersede the D1 opinion, which is why the engagement flags that
    possibility to counsel explicitly and asks them to scope the D1 opinion accordingly.
-
-   **Still open under D4:** the retention policy is drafted but `status: draft`, and three data
-   classes (consent evidence, product analytics, application logs) carry no deletion window yet.
-   The rule wants a hard timeline per class, so D4 is not discharged until those rulings land and
-   the document is published. Tracked at `UW-N07`.
 3. Two artifacts the amended COPPA Rule now makes mandatory rather than best-practice: a **written**
    Information Security Program (annual risk assessment, vulnerability-testing cadence, vendor due
    diligence, a designated compliance owner) and a **published, written** data-retention policy with
-   a hard deletion timeline per data class. Most of the WISP's substance already exists as tooling
-   (the scanner suite, dependency scanning, container scanning), what's missing is the document
-   that names it, its cadence, and its owner. This can be drafted internally before counsel sees it.
+   a hard deletion timeline per data class. Both can be drafted internally before counsel sees
+   them, and both now exist, but only one is finished:
+   - The WISP is **done**. It lives at `docs/compliance/information-security-program.md` with
+     `status: published` and all four mandated elements. This handoff originally listed it as
+     still needing drafting; that is stale. Send it to counsel as finished work.
+   - The retention policy is **not done**. `docs/compliance/data-retention-policy.md` exists but
+     is `status: draft`, and three data classes (consent evidence, product analytics, application
+     logs) still carry no deletion window. The rule wants a hard timeline per class, so **D4 is
+     not discharged** until those owner rulings land and the document is published. Tracked at
+     `UW-N07`. Send it to counsel labelled as a draft, naming the three gaps, so counsel is not
+     asked to review an omission as though it were a position.
 
 ### D5: AI-training consent segregation: **owner confirmation now recorded, counsel-light**
 

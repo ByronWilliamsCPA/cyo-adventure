@@ -21,7 +21,11 @@ the verification caveats in Section 4.
 
 ## 1. Purpose and scope
 
-This is the published, written data-retention policy required by two overlapping obligations:
+This is the written data-retention policy required by two overlapping obligations. **It is still a
+draft, not a published policy** (`status: draft` in the front matter above), because three of the
+classes in Section 2 carry no deletion window yet and await an owner ruling. Until those land and
+the status flips to `published`, ADR-018 decision D4 is **not** satisfied by this document's mere
+existence; the residual is tracked at `UW-N07`. The two obligations are:
 
 - **COPPA 16 CFR 312.10**, as amended by the FTC's 2025 amendments (general compliance date
   2026-04-22): an operator must not retain a child's personal information for longer than
@@ -56,8 +60,8 @@ resolved schedule.
 
 | Data class | What it is | Retention window | Business need justifying retention | Deletion mechanism / status |
 |---|---|---|---|---|
-| Active profile/reading data | `reading_state`, `completion`, and `rating` rows for a child profile | Life of the active profile, plus 30-90 days after deactivation before purge | Grace period covers accidental deactivation/reactivation without permanent data loss | Enforced. Three `pg_cron` jobs (`purge_stale_deactivated_profile_activity`, `_completions`, `_ratings`, migration `supabase/migrations/20260720150000_add_retention_purge_jobs.sql`) delete rows for any profile deactivated more than 90 days ago. |
-| Approved/published story requests and their stories | The `story_request` row and its resulting `storybook`/`storybook_version` rows, once approved and published | Life of the active account | Matches the product's core value; this is delivered content the guardian and child use, not incidental collection | On-demand only. Cascades away via `DELETE /api/v1/profiles/{profile_id}` or `DELETE /api/v1/me/family` (`src/cyo_adventure/api/me.py::delete_my_family`); no scheduled purge job exists because deletion is guardian-triggered, not time-triggered. |
+| Active profile/reading data | `reading_state`, `completion`, and `rating` rows for a child profile | Life of the active profile, plus **90 days** after deactivation before purge | Grace period covers accidental deactivation/reactivation without permanent data loss | Enforced. Three `pg_cron` jobs (`purge_stale_deactivated_profile_activity`, `_completions`, `_ratings`, migration `supabase/migrations/20260720150000_add_retention_purge_jobs.sql`) delete rows for any profile deactivated more than 90 days ago. The 2026-07-20 schedule expressed this as a 30-90 day range; 90 days is the committed hard deadline and the only value any job enforces, so the range is not restated here. |
+| Approved/published story requests and their stories | The `story_request` row and its resulting `storybook`/`storybook_version` rows, once approved and published | Life of the active account | Matches the product's core value; this is delivered content the guardian and child use, not incidental collection | On-demand only. Cascades away via `DELETE /api/v1/profiles/{profile_id}` (`src/cyo_adventure/api/profiles.py::delete_profile`) or `DELETE /api/v1/me/family` (`src/cyo_adventure/api/me.py::delete_my_family`); no scheduled purge job exists because deletion is guardian-triggered, not time-triggered. |
 | Blocked or declined story requests (raw `request_text`) | The `story_request.request_text` column on rows with `status IN ('blocked', 'declined')` | 30 days from decision (`COALESCE(reviewed_at, created_at)`), then the raw text is overwritten and only the redacted category/verdict remains | Short window covers guardian review/appeal; raw declined text has no ongoing purpose after that | Enforced. `pg_cron` job `purge_blocked_declined_story_request_text` (migration `20260720150000_add_retention_purge_jobs.sql`), daily at 03:00, overwrites `request_text` with a fixed placeholder. |
 | `generation_job.report` (raw LLM output) | The raw model output column on a generation job | 30 days, or immediately on publish, whichever comes first | ADR-007's original design; the raw output has no purpose once its content is either published or discarded | Enforced. `pg_cron` job scheduled in `supabase/migrations/20260718000000_add_report_retention_purge.sql`. |
 | Moderation reports | Classifier verdicts, scores, and reviewer decisions recorded during safety review | 1-2 years | Balances safety/audit value (a pattern of prior flags on a request source) against indefinite retention | **Policy-only, not enforced.** No `pg_cron` job, scheduled task, or application code was found that purges moderation-report rows on any schedule (verified by grepping `supabase/migrations/` and `src/cyo_adventure/` for `purge`/`retention`/`pg_cron`, 2026-08-06). See Section 4. |
@@ -122,8 +126,9 @@ specific files cited.
   `supabase/migrations/20260720000000_add_story_request_interpretation.sql` (an additional
   purge job not itemized as its own row in Section 2's table because it is a sub-field of the
   blocked/declined story-request category already covered there).
-- On-demand account/profile deletion: `DELETE /api/v1/profiles/{profile_id}` and
-  `DELETE /api/v1/me/family` in `src/cyo_adventure/api/me.py`, both executing synchronously.
+- On-demand account/profile deletion: `DELETE /api/v1/profiles/{profile_id}`
+  (`src/cyo_adventure/api/profiles.py::delete_profile`) and `DELETE /api/v1/me/family`
+  (`src/cyo_adventure/api/me.py::delete_my_family`), both executing synchronously.
 - Backup lifecycle: R2 bucket lifecycle rules written and verified by
   `scripts/backup_database.py`.
 

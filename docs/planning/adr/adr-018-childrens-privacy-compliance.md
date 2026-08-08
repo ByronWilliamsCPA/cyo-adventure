@@ -163,9 +163,13 @@ payment-card transaction (avoids introducing PCI scope) and a third-party ID-ver
 service (avoids a new processor and its own DPA/SCC/vendor-oversight burden). Chosen
 mechanism instead: a signature-capture step layered on the existing Supabase/Google OAuth
 login already used for guardian sign-in. Concretely, the guardian provides a
-signature-equivalent (a canvas-drawn signature or a typed full-legal-name attestation)
-plus an explicit checkbox affirming specific consent language; the app logs IP address,
-timestamp, and the OAuth-authenticated account id server-side alongside it. This is meant
+signature-equivalent (a typed full-legal-name attestation) plus an explicit checkbox
+affirming specific consent language, a country-of-residence selection (O-117), and an
+adulthood attestation checkbox (O-119); the app logs IP address, timestamp, and the
+OAuth-authenticated account id server-side alongside it. **As built, the typed name is the
+only signature-equivalent captured**; a canvas-drawn signature was considered in the
+2026-07-20 framing but never implemented, and `GuardianConsentPage.tsx` has no drawing
+surface. Do not describe a drawn signature as available. This is meant
 to satisfy the "sign and submit electronically" method already on the FTC's enumerated
 list (312.5(b)(2)(i)), with the OAuth login supplying the identity binding rather than a
 separate verification step. This applies uniformly regardless of tier; the prior working
@@ -173,7 +177,7 @@ recommendation's paid-tier/free-tier split (Apple IAP as the VPC event) is super
 since the app is not currently monetized and the owner does not want VPC design coupled to
 a future payment decision.
 
-**Flagged for counsel**: whether a typed-name or canvas signature captured this way
+**Flagged for counsel**: whether a typed-name attestation captured this way
 satisfies 312.5(b)(2)(i)'s "signed" requirement is the single highest-risk open question in
 this decision and should be the first thing reviewed in the drafted consent-flow copy
 (`docs/compliance/` DPIA and Privacy Notice drafts, in progress).
