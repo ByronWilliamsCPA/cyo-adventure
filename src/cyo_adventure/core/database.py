@@ -259,8 +259,14 @@ async def apply_family_rls_context(
     ``family_id::text = current_setting('app.family_id', true)`` OR
     ``current_setting('app.is_admin', true) = 'true'``.
 
-    Called once per request from ``api/deps.py::require_principal`` after the
-    ``Principal`` resolves, on the same session the route handler then uses.
+    Called from ``api/deps.py::require_principal`` on the same session the
+    route handler then uses, always once at the end from the resolved
+    ``Principal``, and additionally earlier on the two paths that read a Tier 1
+    table before any ``Principal`` exists: the device-grant branch (from the
+    signed token claims, before the ``device_grant`` lookup) and the guardian
+    path (from the verified ``user`` row, before ``_resolve_profiles`` reads
+    ``child_profile``). Those requests call it twice; the second call is a
+    harmless re-apply.
     """
     # #CRITICAL: security: pre-cutover (app connects as the postgres owner)
     # this is a harmless no-op: it sets two GUCs no policy consults, because
@@ -268,8 +274,11 @@ async def apply_family_rls_context(
     # non-owner cyo_api role) it is load-bearing: omitting it leaves
     # app.family_id NULL and every Tier 1 read/write fails closed (zero rows /
     # rejected WITH CHECK), an outage rather than a cross-family leak. Setting
-    # it wrong (a different family's id) would be a leak, so it is derived only
-    # from the verified Principal, never from request input.
+    # it wrong (a different family's id) would be a leak, so every caller
+    # derives it from something already verified and never from request input:
+    # the resolved Principal at the end of require_principal, the verified
+    # `user` row on the guardian pre-principal path, and the signed, fully
+    # verified token claims on the device-grant one.
     # #VERIFY: tests/integration/test_rls_tier1_enforcement.py exercises the
     # unset (fail-closed) and set (per-family) paths as the cyo_api role.
     #
