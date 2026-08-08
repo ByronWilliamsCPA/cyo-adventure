@@ -223,6 +223,8 @@ the Accounts section above.
 
 ## 2. Guardian authoring path (intake to published book)
 
+**All 8 steps NOT RUN on 2026-08-08, for a stated reason rather than by omission.** Every step here spends live provider quota (OpenRouter generation plus the OpenAI Stage-0 classifier) and writes real content into the real family, and it needs an interactive sign-in as both `c1f33430` and `21985c35`. None of that is available to an unattended pass, and none of it is engineering work: it is an owner decision to authorize the spend and the writes. Tracked under `UW-F17`. Also re-read the Known blockers note above before starting: classifier quota exhaustion surfaces as a job that stalls at the moderation step with no error in the UI, so a hang here is a 429 in the worker logs until proven otherwise.
+
 - [ ] Submit a story request via Intake; job status shows "Generating..."
 - [ ] RQ worker picks up the job (worker logs show the generation; OpenRouter + classifier calls succeed)
 - [ ] Story lands in the review queue; queue orders Flagged, then Ready, then processing
@@ -234,12 +236,16 @@ the Accounts section above.
 
 ## 3. Assignment surfaces
 
+**All 3 steps NOT RUN on 2026-08-08.** They depend on Section 2 having produced a published book in the real family, so they inherit its provider-quota and interactive-session gates. The read-only halves closest to these steps *are* covered daily by `guardian-books-and-isolation.spec.ts` (the books page lists assigned books with a content-review badge each, and the assign dialog surfaces only redacted content-review tags), and both passed against live production on 2026-08-07. That is not a tick, because these steps assert the *act* of assigning in the real family, which is mutating.
+
 - [ ] Books page lists published books with content badges; assign to a child from there
 - [ ] Assign dialog shows redacted content-review tags (category/verdict/message only; no raw
       moderation payloads anywhere in guardian-facing responses)
 - [ ] "Assign more" flow from the console works
 
 ## 4. Kid request-a-story loop (the completed R1 journey)
+
+**All 8 steps NOT RUN on 2026-08-08**, same two gates as Section 2 (provider quota plus an interactive session), with one addition worth stating: several steps here are deliberately destructive of quota by design, notably submitting 5 pending requests to observe the 6th return the 409 cap message. The device-grant leg that this journey opens with *is* exercised daily against live production by `kid-device-grant.spec.ts` (authorize, open the kid library, revoke), all three green on 2026-08-07, so the mechanism is not the risk here. The untested part is the request-to-published journey itself.
 
 - [ ] From the guardian console, hand off to the kid surface; the profile picker appears and selecting a
       profile lands on that child's library
@@ -254,6 +260,8 @@ the Accounts section above.
       page, seeing the same content tags, and the book appears in the kid's library
 
 ## 5. Kid reading loop
+
+**All 5 steps NOT RUN on 2026-08-08.** These need an assigned book from Sections 2 to 4, so they carry those gates, plus one this pass cannot satisfy by any means: a **second physical device** and a **real offline transition**. Airplane mode is not simulable in a way that would make the offline step's pass meaningful, since the point is the browser's own network-loss handling and the service worker's cached state, not a mocked failure. This is the one section that stays manual permanently rather than pending automation.
 
 - [ ] Open an assigned book; reader plays through choices to an ending
 - [ ] Completion is recorded (guardian progress view reflects it)
