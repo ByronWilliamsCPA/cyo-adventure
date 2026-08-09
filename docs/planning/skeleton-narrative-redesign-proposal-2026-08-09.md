@@ -601,3 +601,100 @@ finding restated from a new angle: the inputs, not the author, dominate. The cle
 single illustration is titling. Given identical selections, Sonnet and the frontier model
 independently produced "The Unfinished Mirror" (identical) and "Footprints in the Silt" /
 "Footprints in Silt" for the same endings, with no shared context.
+
+### Prose quality: the axis that actually separates the tiers
+
+A blind rater compared all nine books author-to-author WITHIN each binding (same setting,
+same obligations, so differences are pure craft), not knowing which model wrote which.
+
+| Dimension (1-5) | Frontier | Sonnet | Haiku 4.5 |
+| --- | --- | --- | --- |
+| Sentence craft | 5 | 4 | 2 |
+| Imagery and concretion | 5 | 4 | 2 |
+| Character | 4.5 | 4 | 2 |
+| Emotional truth | 5 | 4 | 2 |
+| Voice consistency and range | 5 | 3.5 | 2.5 |
+| Age fit | 5 | 4.5 | 2.5 |
+| **Mean** | **4.9** | **4.0** | **2.2** |
+| **Ship test** | **ship as-is** | **ship with light edit** | **DO NOT PUBLISH** |
+
+The margin frontier-to-Sonnet is narrow-to-moderate; Sonnet-to-Haiku is wide, and not
+close at any node. Mean sentence length tracks the tiers exactly (frontier 13.3-16.4
+words, Sonnet 17.7-19.9, Haiku 11.1-12.5), and so does range: the frontier books read as
+three different registers (maritime-brisk, fairground-warm, river-vernacular), Sonnet as
+one good groove across three books, Haiku as one flat expository register.
+
+Haiku's disqualifying defects, none of which any existing check sees:
+
+1. **Tense instability**, including breaks inside a single paragraph in two of three books
+   ("But then the gears bound... Tom's heart sinks. But Sef takes a breath").
+2. **The puzzle does not exist.** A cipher mystery whose central mechanic is stated rather
+   than performed: "the digits spell out language", "all the clues they've gathered
+   resolve here". The frontier books do the arithmetic on the page ("Nine onto eleven
+   made twenty; round again, eight").
+3. **Narrator moral tags at nearly every ending** ("it taught them what matters more than
+   objects", "sometimes the prize is not taking something, but giving something back"),
+   the single most condescending move available at this band.
+
+### The architectural finding: obligations are declared, proved coherent, and never verified
+
+The recognition rater found a continuity defect in a Haiku book: `n_open` decodes the
+cipher outright, and `n_note`, the node whose entire purpose is that decode, then presents
+the same sentence as a fresh discovery. The "solve the cipher" branch delivers nothing.
+
+The contract explicitly forbids this. `n_open` declares
+`forbids: [inside_access, cipher_decoded, keeper_met]`. The fill violated a declared
+obligation and passed every gate, because **the NC checks run before prose exists**: they
+prove the contract's obligations are mutually coherent, and nothing afterwards proves the
+FILL honors them. Layer 1 and Layer 2 check topology, safety, reading level, and band
+profile; `check_fill_integrity` checks that structure was not mutated. No check reads a
+node's prose and asks whether it established a fact the contract forbids there.
+
+This is the highest-value result of the model-tier study, and it is not really about
+models: it is a hole in the gate that a stronger author happened to be papering over.
+Weaker authors violate semantic obligations more often, so the hole becomes load-bearing
+exactly when a cheaper model is introduced. A fill-vs-contract fact audit (does this node
+establish anything in its `forbids` set; does it establish everything in its
+`establishes` set) is the missing layer, and unlike the diversity work it needs a
+semantic judgment per node rather than a token metric, so it belongs to the automated
+review panel of section 9 rather than to the deterministic gate.
+
+### Diversity is model-independent
+
+The Haiku tier scored **2.5** on the recognition scale, identical to the frontier tier's
+2.5, with recognition landing at node 5 on one path and node 3 on the other (margin
+failed, same as the frontier run). Its rater independently named the same primary driver
+as the frontier rater did in different words: the keeper-plus-maker pair and the
+four-exit hub menu, i.e. decision grammar and fixed scene functions.
+
+**Model tier does not move sameness; it moves prose quality.** Diversity is a property of
+the skeleton and contract, prose is a property of the author, and they are close to
+orthogonal. That is a useful separation: it means the catalog work (more skeletons,
+varied branch arity) and the model-cost decision are independent choices.
+
+One caution on how quality was measured. The comparative rater (nine books side by side)
+scored Haiku 2.2 and called it a rewrite; the isolated rater (three books, no reference)
+scored the same books 3.0 and called it "one editing pass". **Absolute quality judgments
+are more forgiving than comparative ones**, which is a direct restatement of this
+project's single-reviewer problem: a reviewer holding one story approves what a
+side-by-side comparison would reject. Review surfaces should show a sibling for contrast.
+
+### Recommendation
+
+- **Sonnet is the practical floor for the fill step**, as expected. It ships with a light
+  copyedit pass: break the 25-35 word sentences at hazard nodes, cut the "not X exactly,
+  closer to Y" tic, and remove two or three narrator-names-the-emotion closers. Its one
+  systematic flaw, upward reading-level drift (mean FK 9.17, 65 of 67 advisories above
+  band), is correctable by a prompt directive and is worth adding before any Sonnet
+  production run.
+- **Haiku is not viable for the fill step today**, on prose quality and on obligation
+  violations, not on gate compliance. It is viable for cheaper roles in the same
+  pipeline: it passed integrity, safety, and topology on every book, executed a
+  tool-feedback revision round correctly, and produced the LOWEST sibling convergence of
+  any tier. Candidate Haiku roles: selection derivation, mechanical revision rounds
+  against a deterministic finding list, and first-pass triage.
+- **Mix models across sibling bindings** where a revision round is not affordable: it cuts
+  convergence roughly fourfold for free.
+- **Do not treat gate-clean as publishable.** All nine books cleared the full gate; three
+  of them should not ship. Until the fill-vs-contract audit exists, gate-clean means
+  valid, not good.
