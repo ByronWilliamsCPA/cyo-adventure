@@ -189,6 +189,91 @@ def check_bible(
     return errors, warnings
 
 
+def check_selection(
+    selection: dict[str, Any], contract: dict[str, Any], bible: dict[str, Any]
+) -> tuple[list[str], list[str]]:
+    """NC-7: validate a per-request selection vector (B-plus amendment 2).
+
+    Every assigned device must exist verbatim in the bible under its
+    category; ``kind_must_be`` constraints from the contract's invention
+    specs are honored; a device marked ``unique_within_story`` is assigned
+    to at most one node; and an ending node's ``mechanism`` must be drawn
+    from that node's contract ``mechanisms`` list (falling back to
+    ``premise.resolution_space``), with the mechanism-selection rule from
+    AL-157: locked_outcome locks kind, valence, and affect, never the
+    mechanism.
+    """
+    errors: list[str] = []
+    warnings: list[str] = []
+    contracts = cast("dict[str, dict[str, Any]]", contract.get("nodes") or {})
+    vocab = cast("dict[str, Any]", bible.get("device_vocabulary") or {})
+    by_category: dict[str, set[str]] = {
+        category: {
+            str(cast("dict[str, Any]", e).get("text"))
+            for e in cast("list[Any]", entries)
+            if isinstance(e, dict)
+        }
+        for category, entries in vocab.items()
+    }
+    category_of = {
+        "clue_channel": "clue_channels",
+        "obstacle": "obstacle_kinds",
+        "help_mode": "help_modes",
+        "container": "containers",
+    }
+    unique_seen: dict[str, str] = {}
+    for node_id, assigned in selection.items():
+        if node_id not in contracts:
+            errors.append(f"NC-7: selection names unknown node {node_id!r}")
+            continue
+        entry = contracts[node_id]
+        inventions = cast("dict[str, Any]", entry.get("invention") or {})
+        for slot_name, device in cast("dict[str, Any]", assigned).items():
+            if slot_name == "mechanism":
+                space = cast(
+                    "list[str]",
+                    entry.get("mechanisms")
+                    or cast("dict[str, Any]", contract.get("premise") or {}).get(
+                        "resolution_space"
+                    )
+                    or [],
+                )
+                if str(device) not in space:
+                    errors.append(
+                        f"NC-7: {node_id!r} mechanism {device!r} not in the "
+                        f"contract's mechanism space {space}"
+                    )
+                continue
+            spec = cast("dict[str, Any]", inventions.get(slot_name) or {})
+            if not isinstance(device, dict):
+                errors.append(f"NC-7: {node_id}.{slot_name} is not a device object")
+                continue
+            device_map = cast("dict[str, Any]", device)
+            text = str(device_map.get("text"))
+            kind = str(device_map.get("kind"))
+            category = category_of.get(slot_name)
+            if category and text not in by_category.get(category, set()):
+                errors.append(
+                    f"NC-7: {node_id}.{slot_name} device {text!r} is not in the "
+                    f"bible's {category}"
+                )
+            must_be = spec.get("kind_must_be")
+            if must_be and kind != str(must_be):
+                errors.append(
+                    f"NC-7: {node_id}.{slot_name} kind {kind!r} violates "
+                    f"kind_must_be {must_be!r}"
+                )
+            if spec.get("unique_within_story"):
+                prior = unique_seen.get(text)
+                if prior and prior != node_id:
+                    errors.append(
+                        f"NC-7: device {text!r} assigned to both {prior!r} and "
+                        f"{node_id!r} but is unique_within_story"
+                    )
+                unique_seen[text] = node_id
+    return errors, warnings
+
+
 def check_contract(
     skeleton: dict[str, Any], contract: dict[str, Any]
 ) -> tuple[list[str], list[str]]:
@@ -314,6 +399,11 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("skeleton", help="Path to the skeleton JSON.")
     parser.add_argument("--bible", default=None, help="Optional story-bible JSON.")
+    parser.add_argument(
+        "--selection",
+        default=None,
+        help="Optional selection-vector JSON (needs --bible).",
+    )
     args = parser.parse_args(argv)
     skeleton_path = Path(args.skeleton)
     contract_path = skeleton_path.with_name(
@@ -329,11 +419,19 @@ def main(argv: list[str] | None = None) -> int:
         band = str(
             cast("dict[str, Any]", skeleton.get("metadata") or {}).get("age_band", "")
         )
-        bible_errors, bible_warnings = check_bible(
-            _load(Path(args.bible)), contract, band
-        )
+        bible = _load(Path(args.bible))
+        bible_errors, bible_warnings = check_bible(bible, contract, band)
         errors.extend(bible_errors)
         warnings.extend(bible_warnings)
+        if args.selection:
+            sel_errors, sel_warnings = check_selection(
+                _load(Path(args.selection)), contract, bible
+            )
+            errors.extend(sel_errors)
+            warnings.extend(sel_warnings)
+    elif args.selection:
+        sys.stderr.write("--selection requires --bible\n")
+        return 2
     for warning in warnings:
         sys.stdout.write(f"WARNING {warning}\n")
     for error in errors:
