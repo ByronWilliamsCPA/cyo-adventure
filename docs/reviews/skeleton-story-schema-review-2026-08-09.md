@@ -636,3 +636,150 @@ next-generation checks the critiques specify, in priority order: tag-vs-beat hon
 positional fate-bias check with seeded option shuffling, sibling reachable-ending-overlap and
 k-hop funnel metrics, merge-node beat-presupposition linting, and a near-cap headroom
 warning. Lessons AL-142 through AL-150 carry these with proposed changes and register homes.
+
+---
+
+## Part 6: Same-skeleton diversity experiment (2026-08-09 follow-up)
+
+Owner question: do skeletons define story content or just routes, and how similar are stories
+generated from one skeleton? Method: the smallest catalog skeleton (`the-lost-mitten`, 11
+nodes, 16 contract slots) was bound to three maximally different themes simulating three
+family requests (raccoon kit / orange knit cap / autumn park; otter pup / yellow sunhat /
+beach; baby dragon / green scarf / clover meadow), then filled by three isolated authors with
+no shared context. All three fills passed `check_fill_integrity.py` first try. Similarity was
+measured with the project's own WS-0 instruments plus an independent qualitative evaluation.
+
+### Answer to the first question
+
+Skeletons define the story, not the routes. Every node body is a `<<FILL>>` directive whose
+`beats=` fixes the scene at sentence granularity ("a single {ITEM_COLOR} thread is caught on
+a twig pointing toward the {MEETING_PLACE}"); the theme contract's 16 slots are all nouns.
+The fill authors control register, sound-play, and sensory texture, nothing else. The pilot
+drafts in Part 5 have the same property, and the 3-5 pilot critique found its beats were
+effectively finished prose.
+
+### Quantitative result
+
+Pairwise `perceived_similarity` (PS = 0.5 leaf + 0.3 structural + 0.2 theme; repeat
+threshold 0.70): 0.602, 0.600, 0.591. All three pairs read "distinct" by the metric, but the
+decomposition shows why that is fragile: leaf similarity is 0.18-0.20 (the prose is close to
+maximally different for identical beats; body trigram Jaccard 0.026-0.029), while structural
+similarity is 1.0 by construction and theme similarity is 1.0 because binding never re-themes
+`metadata.themes` (all three books carry `['friendship', 'winter', 'problem-solving']`,
+including "winter" on the beach book). A same-skeleton pair therefore has a PS floor of 0.50
+before a word of prose exists; best-case theming and independent authorship bought 0.09-0.10
+of the 0.20 gap to the repeat line. Fill quality is not the bottleneck; slot granularity is.
+
+### Qualitative result
+
+Verdict: **one story, three costumes** (1.5 on a 5-point scale toward "three real stories").
+The invariant layer is total beyond nouns: the same three search strategies in the same order
+with near-identical labels, the same three clue mechanics (footprints, heard-it-by-the-water,
+thread-on-a-twig, with "But wait!" opening the clue in all three), the same sensory triad at
+the reconvergence, the same wobbly-tower gag, the same footwear punchline ("tumbled out and
+rolled across the floor" string-identical in two books), two of three ending titles
+string-identical. The kid test: a 4-year-old recognizes the story at the first choice menu of
+book two and calls the twist before it lands; that is tolerable and even pleasant at 3-5
+(prediction is mastery) IF framed as a series, but as three distinctly-titled books it is a
+trust problem for the paying parent ("the generator has one story"). Craft in all three fills
+was genuinely independent and good; it changes how sentences sound, not what happens.
+
+### Defects the experiment surfaced
+
+1. **Binding leaves `metadata.themes` stale**: "winter" ships on a beach book. This is
+   kid/guardian-facing metadata, it feeds the PS theme axis (pinning 0.20 of similarity),
+   and it feeds matching.
+2. **Beats encode un-slotted world facts** (snow, a cold *hand* implying a hand-worn item,
+   helpers who *chirp*), and the fill contract's reskin-the-setting rule is ambiguous: the
+   three authors resolved the same conflict three ways (imported snow into autumn; reskinned
+   snow to dew; inverted cold-hand to hot-head for a sunhat). One binding produced "fireflies
+   chirped", a world-consistency defect no gate catches.
+3. **A lexical similarity gate passes beat-identical triples** (trigram Jaccard 0.03 while
+   beat overlap is 100%). The family-scoped anti-repeat guard needs a structural signal
+   (skeleton id + beat-variant fingerprint), not prose similarity.
+4. The seed's `words=80/85` directives contradict the current 3-5 envelope (mean 28-55):
+   stale pre-recalibration targets on an MVP seed, resolved by both fillers in favor of the
+   band envelope.
+
+### What to change in the skeleton approach
+
+The skeleton layer itself (topology, validation, safety, budgets) is not the problem and
+should stay. The **beat layer must become variable**, which is exactly SQ-11/OG3 (beat
+variants), now with direct experimental evidence:
+
+1. **Variant beat pools on high-salience nodes** (minimum viable: the three clue mechanics,
+   the twist ending, the helper gag): 3-6 interchangeable beats per pooled node sharing an
+   outcome contract, drawn per binding. Moves the verdict from ~1.5 to ~2.5 ("recognizably
+   siblings, each with its own trick") at roughly 2-3x beat-authoring cost on 4 of 11 nodes,
+   with zero topology/validator/player changes.
+2. **Family-scoped variant memory** in the request-time guard: never serve the same
+   skeleton+variant fingerprint twice to one family. Cheapest single intervention; pure
+   policy; ship regardless.
+3. **Honest series framing** in the product for same-skeleton siblings (covers, titles,
+   "another Momo adventure"): converts the sameness kids tolerate into a feature and removes
+   the parent-trust failure at zero authoring cost.
+4. For true "three real stories": structurally distinct siblings via the `mutation/` engine
+   (ADR-020), which exists for exactly this, at catalog-time curation cost.
+
+Lessons AL-151..AL-153 (UW-C88..UW-C90) carry the defects and proposals.
+
+---
+
+## Part 7: The hand-authoring constraint, in detail (2026-08-09 follow-up)
+
+Owner asked to revisit the pilot finding that hand-authors cannot hit the strict bar at
+scale. Precisely what was found, and the options.
+
+### What the constraint is
+
+Both large-cell pilot drafters, working independently, concluded that no hand-author
+produces a strict-passing 140+ node skeleton in reasonable iterations, because the strict
+bar is a set of GLOBAL, mutually coupled invariants rather than local rules:
+
+- CG-2: every decision node needs an exact option count ((3,3) at 8-13), across 100+
+  decisions;
+- CG-3: a node's word budget is entangled with its successors (single-choice chains
+  compose into stops with a shared ceiling), so editing one node re-opens its neighbors;
+- the endings floor scales with node count, so adding ANY node can demand another ending,
+  which shifts PL-24's kind shares;
+- depth-qualified endings: every counted ending needs BFS depth at least a third of the
+  arc floor;
+- the in-degree cap must hold at every merge, counting parallel edges;
+- the story words mean must land in the advisory band while individual nodes are being
+  bent for CG-3;
+- PL-23's clock, the walk-outcome floor, and PL-26's density are whole-graph computations.
+
+Any local edit ripples globally: this is a constraint-satisfaction problem wearing a
+writing problem's clothes. Empirical anchors: `the-hollow-lighthouse`, a carefully
+hand-authored catalog skeleton, fails strict on 20 CG-3 findings alone; the only one-shot
+strict passes ever produced (the two large pilot drafts) came from generators that embedded
+the whole rule set; and the 15-node 3-5 pilot WAS hand-written and passed first try. The
+feasibility boundary is scale: roughly 25 nodes and below is comfortably hand-draftable,
+140+ is not.
+
+### What the constraint is NOT
+
+It does not remove human authorship of content. The pilot's working division of labor keeps
+world, beats, choice labels, per-branch strategy, and outcome design fully hand-authored as
+data; a ~100-line structural harness owns the arithmetic (node counts, stop composition,
+depths, in-degrees, clocks). It also does not interact with promotion provenance: a
+harness-assisted skeleton is still "hand-authored" for the origin-proof question (B7/UW-G16).
+Related but distinct: L2-13's 460-node ceiling is about hand-REVIEW (past it, the Layer-2
+walk is the sole correctness guarantee), and binds generator output equally.
+
+### Options, with a recommendation
+
+1. **Accept and institutionalize** (recommended default): ship the pilot harness as a
+   first-class authoring tool (UW-C80); "hand-authoring" means authoring the creative layer.
+2. **Relax the couplings** (UW-C85 calibration review): CG-2 widened to (2,3), a CG-3
+   terminal-node exemption, endings floor keyed to outcome identities. This meaningfully
+   widens the hand-feasible envelope at small/medium cells and reduces template pressure for
+   everyone, but 245-node gamebook cells remain generator territory under any plausible
+   calibration.
+3. **Live incremental linting** (editor/watch mode over `check_skeleton --strict`): reduces
+   the cost of each iteration rather than the number of coupled constraints; cheap, worth
+   having, insufficient alone at scale.
+4. **Reserve the pure-hand path for the small cells** (3-5, 5-8), where it demonstrably
+   works and where craft density matters most per node.
+
+Recommendation: 1 + 4 now, with 2 decided in the UW-C85 calibration review before wave 1.
