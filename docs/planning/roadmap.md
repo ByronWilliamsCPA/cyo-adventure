@@ -163,7 +163,8 @@ failures has demonstrated exactly that.
 
 | Register items | Phase |
 |----------------|-------|
-| K5/K8 test pins, K6 tracker, K7 TTS, G6 editor, G5 skim aids, G2 controls UI, G3 permissions, K15 feedback flag, G15 storage view | 4b |
+| K6 tracker, K7 TTS, G6 editor, G5 skim aids, G3 permissions, K15 feedback flag, G15 storage view | 4b |
+| Closed, corrected 2026-08-09 (were listed above as open, code verification found them delivered): K5/K8 test pins (`reader-go-back.spec.ts`, `admin-review-cover.spec.ts`, `BookCard.test.tsx`, all present since 2026-08-04), G2 controls UI (`ProfileFormDialog.tsx` banned-themes field + `story_requests/brief.py:122` wiring) | n/a |
 | S9 delivery infra (push transport closed 2026-07-28: authenticated SSE stream shipped; the server-scheduled digest job remains open), G9 visibility, K12 kid generation status, G7 budget consent. Closed since this table was written: G10 digest/alerts 2026-07-28 (SSE push transport shipped, register flipped to ✅), G13 interim quota balance 2026-07-29 (audit found budget enforcement and kid-facing status already shipped and tested, register flipped to ✅), and G14 multi-guardian households 2026-07-28 (guardian self-service co-parent invite shipped, register flipped to ✅) | 4c |
 | G17 consent flow, K17 recommendation surfaces, A15 enforcement guard | 4d |
 | ADR-007 purge, G8/A5 offline revocation, nightly e2e-real + S2 real conflict spec, staging golden journeys, adversarial live-model run | 5 |
@@ -292,8 +293,13 @@ register and the lessons log wholesale, without restating their contents.
 
 1. The 2026-07-20 note that open issues "remain accurately tracked" in the debt register is wrong.
    The register cites 9 issue numbers, 6 still open, against 33 open issues (`UW-D*`).
-2. Phase 4b marks `G2` controls delivered. The intake UI hardcodes empty arrays and the profile form
-   has no banned-theme field, so `G2` is partial (`UW-J15`).
+2. ~~Phase 4b marks `G2` controls delivered. The intake UI hardcodes empty arrays and the profile form
+   has no banned-theme field, so `G2` is partial (`UW-J15`).~~ **Corrected 2026-08-09: this note was
+   itself stale.** Code verification found `ProfileFormDialog.tsx` has a working banned-themes chip
+   UI (add/remove, submitted as `banned_themes`), `IntakePage.tsx` reads the profile's real
+   `banned_themes` (explicitly commented "instead of the previously hardcoded empty list"), and
+   `story_requests/brief.py:122` sets `content_nogo = list(profile.banned_themes or [])`. `G2` is
+   fully delivered; `UW-J15` should be closed, not tracked as open partial work.
 3. The 2026-07-20 note lists `admin-guardian-dual-roles-plan.md` as unstarted, unscheduled work. The
    work shipped; only three open decisions remain (`UW-K16`).
 4. The follow-up pass that the 2026-07-20 audit deferred (reconciling PRs #311, #321, #323) is still
@@ -319,8 +325,17 @@ PROJECT-PLAN.md:
 authoring lessons log's only plan linkage is one sentence inside capability row `A11`, which this
 document files under post-launch:
 
-- `AL-014` (`UW-C01`): no hand-authored skeleton can pass `check_promotion_bundle`, because the
-  lineage sidecar is unconditional. The lessons log itself calls this blocking.
+- **`AL-014` (`UW-C01`): partially closed, corrected 2026-08-09 (was listed here as a flat
+  blocker; that's stale).** `scripts/check_promotion_bundle.py` (PR #532, commit `4b6fe922`,
+  2026-08-01) now runs `check_skeleton` (gate/cell/envelope) and `check_theme_contract` for a
+  lineage-less shell and skips only the two parent-relative legs, confirmed by
+  `test_hand_authored_shell_still_runs_the_non_lineage_checks`, so a hand-authored skeleton with
+  no `.lineage.json` sidecar can, in fact, pass the CI gate today, contrary to this line's
+  original wording. **Still genuinely open**: the WS-5 anti-clone floor (`check_incell_clones`)
+  is parent-relative and cannot run without a lineage parent, so an original is not proved against
+  its in-cell siblings; that remaining piece is tracked separately as `UW-C06`. The lessons log's
+  `AL-014` row correctly stays `status: open` (the full proposed change, including the anti-clone
+  floor, is not yet complete) rather than being flipped to `applied`.
 - `AL-036` (`UW-C02`): the review surface cannot deliver the human approval ADR-005 requires at 746
   nodes. This undercuts the `A6` safety gate, so the approval attests less than the ADR claims.
 
@@ -392,8 +407,8 @@ The old wording stands in historical sections above; this table governs.
 |-----------|--------------------------------------|-----|------------------------|
 | M0-M3 | Foundations through enforced approval gate | done | ✅ Delivered |
 | M4 = **R1-alpha** | Core loop live internally, web only (Phases 0-3 + 4a; historic "R1") | done | ✅ Feature-complete 2026-07-03, live 2026-07-05 |
-| M4.1: R1-alpha sign-off | Funded provider keys; merged PRs + safety fixes redeployed; live E2E checklist executed once with a sign-off row; Now-queue items 1-4; **plus, added 2026-07-28: the ADR-021 production cutover (`UW-A03`), which the ADR itself names M4.1 as the review gate for** | ~1 wk | 🟡 Cutover done. Funded provider keys confirmed 2026-08-04; the ADR-021 production cutover (`UW-A03`) verified live 2026-08-04 (`cyo_api` holds all active production connections, `rolbypassrls=false`; see `UW-A03`/`UW-M08`); merged PRs and safety fixes redeployed (verified 2026-07-30). **Still open**: the live E2E checklist (`UW-F17`) and, as of 2026-08-08, a live P1 defect this milestone cannot sign off over. Two corrections to what this cell used to claim. The "0/38 steps, no sign-off row" was already stale when written: a PARTIAL 5-of-38 run with a sign-off row was recorded on 2026-08-04. It now stands at **10 of 38**, advanced 2026-08-08 against the deployed revision `631c0d8a` (v0.68.0), with `UW-L04` confirmed live and Section 1a's open routing question resolved. And Now-queue items 1-4 are **re-verified as of 2026-08-08** (all four done; item 2's unverifiable-secrets caveat is resolved by both scheduled tiers completing real sign-ins), so that clause is closed. What replaces them as the gate is `UW-L07` / [#639](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/639): guardian profile resolution reads a Tier 1 table before applying the RLS context, so every guardian in production sees zero profiles. It fails closed, so it is an outage of the profiles surface rather than a leak, but signing off R1-alpha while the guardian console cannot list a family's children is not defensible. The remaining 28 checklist steps stay owner-gated as before (interactive credentials, a maintenance window for the mutating worker-restart step, funded provider quota for Sections 2 and 4, and a second device for Section 5) |
-| M4b: Editor + engagement | G6, K6, K7, G5, G2 usable by a real guardian, G3, K15, G15 view, K5/K8 test pins | 3-4 wks | ✅ Substantially delivered 2026-07-17 (PR #270); open: bookmarks (not built), G15 storage/download view (device list/revoke UI shipped 2026-07-28), K5/K8 test pins |
+| M4.1: R1-alpha sign-off | Funded provider keys; merged PRs + safety fixes redeployed; live E2E checklist executed once with a sign-off row; Now-queue items 1-4; **plus, added 2026-07-28: the ADR-021 production cutover (`UW-A03`), which the ADR itself names M4.1 as the review gate for** | ~1 wk | 🟡 Cutover done. Funded provider keys confirmed 2026-08-04; the ADR-021 production cutover (`UW-A03`) verified live 2026-08-04 (`cyo_api` holds all active production connections, `rolbypassrls=false`; see `UW-A03`/`UW-M08`); merged PRs and safety fixes redeployed (verified 2026-07-30). Now-queue items 1-4 are re-verified as of 2026-08-08 (all four done). **Corrected 2026-08-09**: `UW-L07` / [#639](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/639) (guardian profile resolution reading the Tier 1 table before the RLS context was applied, so every guardian in production saw zero profiles) is **closed**: the issue was closed 2026-08-08 via PR #641 ("apply Tier 1 RLS context before guardian profile resolution"), which is merged and in the working tree (`api/deps.py:617-651`), with regression coverage in `test_rls_tier1_enforcement.py`. This is no longer a live blocker. **Still open**: only the live E2E checklist (`UW-F17`), which stands at **10 of 38** steps as of 2026-08-08. The remaining 28 checklist steps stay owner-gated (interactive credentials, a maintenance window for the mutating worker-restart step, funded provider quota for Sections 2 and 4, and a second device for Section 5) |
+| M4b: Editor + engagement | G6, K6, K7, G5, G2 usable by a real guardian, G3, K15, G15 view, K5/K8 test pins | 3-4 wks | ✅ Substantially delivered 2026-07-17 (PR #270). **Corrected 2026-08-09**: K5/K8 test pins are done, not open: `reader-go-back.spec.ts` and `admin-review-cover.spec.ts` (both added 2026-08-04) cover Go Back state-fidelity and the admin cover-generate flow, and `BookCard.test.tsx` covers the letter-tile fallback; `test-traceability-matrix.md` already records both as ✅. Open: bookmarks (not built), G15 storage/download view (device list/revoke UI shipped 2026-07-28) |
 | M4c: Family loops | S9, G10, G9, K12 complete, G7 real budget consent + G13 balance | 2-3 wks | ✅ Substantially delivered 2026-07-17 (PR #270); push channel closed 2026-07-28 (SSE stream, G10 now ✅); open: S9's server-scheduled digest job |
 | M4d: Connections | G17 consent, K17 surfaces, A15 enforcement guard (ADR-016 ring 2) | 2-3 wks, overlaps 4c | ✅ Substantially delivered 2026-07-17 (PR #270). Corrected 2026-08-01: this row said "Delivered" while the phase table said "Substantially delivered"; code validation settles it as the latter. Dual consent is genuinely enforced twice over (`recommendations.py:203` `_is_dual_consented`, plus a second ring-2 gate in `personalization.py`). Open: the erasure CASCADE is migrated but no test creates a `FamilyConnection` then deletes a family, and `models.py:786-789`'s `#VERIFY` points at `test_deletion_drill.py`, where the only connection lives in an *export* test; no integration or e2e test drives ring-2 dual consent over the real stack |
 | M5: Hardened family tier | Phase 5 expanded scope: purge, offline revocation, audit view, re-screen, restore drill, nightly/staging/prod test ladder green with alerting | 2-3 wks | 🟡 M4b-4d dependency satisfied as of 2026-07-17. **Revised 2026-08-01 against code**: the audit view IS built (`frontend/src/admin/AuditPage.tsx`, routed at `/admin/audit`) and safety gap **H1 is closed** (`assignments.py:285-312` raises on `book_rank > profile_rank`, with a regression test); H2 is half closed, since the human cover-approval gate exists and only the automated image classifier is missing. All three test ladders have real `schedule:` triggers. Genuinely remaining: the performance pass, backups plus restore drill, the H2 classifier, and the H1 residual (the band check is fail-open on blobs lacking band metadata) |
@@ -712,10 +727,14 @@ undo), bookmarks (a distinct save-slot feature) is not built at all.**
 - [ ] Guardian storage/download view: which books are downloaded on which device (G15
       remainder). No backend `offline/` module exists to report per-device download state;
       depends on K10's client-side offline architecture.
-- [ ] Test pins for the two shipped-but-unasserted surfaces: Go Back returns to the prior
-      node with intact state (K5), cover render plus letter-tile fallback and the admin
-      generate flow (K8/A16); test matrix action 7 (not independently re-verified in this
-      audit pass, status unchanged pending a dedicated test-coverage check).
+- [x] Test pins for the two previously shipped-but-unasserted surfaces: Go Back returns to
+      the prior node with intact state (K5), `frontend/src/reader/Reader.test.tsx` plus
+      dedicated e2e pin `frontend/e2e/reader-go-back.spec.ts` (added 2026-08-04); cover
+      render plus letter-tile fallback (K8), `frontend/src/library/BookCard.test.tsx`; the
+      admin generate flow (A16), `frontend/e2e/admin-review-cover.spec.ts` (added
+      2026-08-04). `test-traceability-matrix.md` records both K5 and K8 as ✅. Corrected
+      2026-08-09: this item previously read as open; it is closed and just needed the doc
+      reconciled with the 2026-08-04 test additions.
 
 ### Success Criteria
 
@@ -893,41 +912,16 @@ tiers, and the authoring log's blocking lessons, had no phase home. Full detail 
 [unscheduled work register](./unscheduled-work-register.md); the safety-bearing items are carried
 here because a gate bypass should be visible on the checklist, not only in a register.
 
-- [ ] **Three gate bypasses** (`UW-E01`, `UW-E02`, `UW-E03`): reading and completion routes bypass
-      the assignment gate; guardian blob-fetch skips the gate; repair skips the validator.
-- [ ] **`AL-036` undercuts ADR-005** (`UW-C02`): the review surface has no pagination,
-      virtualization, or per-node review state, so at 746 nodes it cannot deliver the human
-      approval the ADR requires. The approval currently attests less than it claims.
-- [ ] `AL-039` (`UW-C04`): repair and the Stage-1 fidelity gate both fail open and are
-      structurally impossible at scale; fidelity lacks an `<untrusted_passage>` fence.
-- [ ] `AL-034` (`UW-C03`): one import is ~2,986 provider round trips inside a single Postgres
-      transaction holding `FOR UPDATE`, running 40 to 100 minutes.
-- [ ] `AL-040` (`UW-C05`): `/admin/rescreen` sweeps synchronously in one request.
-- [ ] Remaining security-plan tiers (`UW-E04` to `UW-E08`): review-model allowlist, a real PII
-      detector, family cost cap on the authoring-plan path, production Postgres host-port and
-      password-default exposure, inert `allowed_content_flags`, unenforced `reading_level_cap`,
-      health-endpoint version disclosure.
-- [ ] `UW-E16`: the `_extract_subject()` dev/test auth stub is still live in `api/deps.py`, guarded
-      only by unset OIDC environment variables.
-- [ ] **ADR-022 tiered RLS scoping** (`UW-A01`, `UW-A02`) and the rest of the ADR-021 worker and
-      observability work (`UW-A04` to `UW-A07`). Gated on the M4.1 cutover below.
-- [ ] Named test-ladder actions replacing the generic line above (`UW-F*`): behavioral safety suite,
-      FK `ON DELETE` parity, generated-client drift test, mutmut kill-floor, pre-Phase-9 performance
-      testing, E2E driving the RQ worker, schema parity over policies and triggers, CORS and
-      rate-limit negative tests, and the seven traceability-matrix actions.
-- [ ] `UW-K01` **release blocker**: two `docs/known-vulnerabilities.md` entries are 68 days old with
-      reassessment 8 days overdue, past the 60-day OpenSSF release gate.
-- [ ] `UW-K18`: 98 RAD markers carry no paired `#VERIFY`, including the `generation/worker.py`
-      concurrency pair, the `db/models.py` cascade CRITICAL, the `classifiers.py` API-key placement
-      CRITICAL, and four deploy-ordering CRITICALs in `supabase/migrations/`.
-
-**Newly surfaced by the 2026-07-28 unscheduled-work sweep.** The security plan's Medium and Low
-tiers, and the authoring log's blocking lessons, had no phase home. Full detail by ID in the
-[unscheduled work register](./unscheduled-work-register.md); the safety-bearing items are carried
-here because a gate bypass should be visible on the checklist, not only in a register.
-
-- [ ] **Three gate bypasses** (`UW-E01`, `UW-E02`, `UW-E03`): reading and completion routes bypass
-      the assignment gate; guardian blob-fetch skips the gate; repair skips the validator.
+- [x] **Three gate bypasses** (`UW-E01`, `UW-E02`, `UW-E03`): closed, corrected 2026-08-09.
+      Reading/completion routes now call `_require_assignment` (`api/reading.py`, used by
+      `get_reading_state`, `put_reading_state`, `record_completion`, each with a named
+      regression test). Guardian blob-fetch's assignment gate was broadened from
+      `Role.CHILD`/`Role.DEVICE` only to every non-admin caller (`api/library.py`, documented
+      in-code as fixing a prior "M2" bug, with `test_guardian_cannot_fetch_unassigned_version`
+      renamed from `test_guardian_can_fetch_unassigned_version`). Repair output re-enters the
+      gate (`moderation/pipeline.py:730` calls `run_gate(revised)` after `attempt_repair`).
+      These were real historical bugs, already fixed with tests before this sweep was written;
+      the sweep listed them as open in error.
 - [ ] **`AL-036` undercuts ADR-005** (`UW-C02`): the review surface has no pagination,
       virtualization, or per-node review state, so at 746 nodes it cannot deliver the human
       approval the ADR requires. The approval currently attests less than it claims.
@@ -993,9 +987,11 @@ Full detail by ID in the [unscheduled work register](./unscheduled-work-register
       are still unslotted, and closing it needs a family-based plan generator first. This is the
       ADR-019 catalog migration (`UW-A29`) and the parameterize-at-promotion runbook, as one item.
 - [ ] `OQ-4` (`UW-G02`): 11 stateful Tier-2 skeletons unmigrated, plus the series-level binding design.
-- [ ] **`AL-014` blocking** (`UW-C01`): no hand-authored skeleton can pass `check_promotion_bundle`,
-      because the lineage sidecar is unconditional. This blocks hand-authored catalog growth today
-      and was previously filed only under the post-launch backlog.
+- [ ] **`AL-014`** (`UW-C01`): **partially closed, corrected 2026-08-09**: the CI gate itself no
+      longer flatly blocks a lineage-less hand-authored skeleton (PR #532); the remaining gap is
+      the WS-5 anti-clone floor not running against in-cell siblings for an original (`UW-C06`).
+      See the Phase 5 checklist entry above for detail. No longer a flat blocker on hand-authored
+      catalog growth, but not fully closed either.
 - [ ] Per-band ATG calibration (`UW-G04`): `_BAND_THRESHOLDS` is still `{}`, so the anti-template
       guard remains advisory rather than enforcing.
 - [ ] `AL-046` (`UW-C07`): the fill orchestrator is one-shot against a 32k output cap and the matcher
