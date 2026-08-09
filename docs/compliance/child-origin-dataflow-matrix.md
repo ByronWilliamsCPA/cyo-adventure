@@ -9,7 +9,7 @@ tags:
   - privacy
   - security
 component: Development-Tools
-source: "Direct review of src/cyo_adventure/api, src/cyo_adventure/db/models.py, src/cyo_adventure/events, frontend/src/offline, frontend/src/player at commit 65883a1 (2026-08-08), synthesizing docs/planning/privacy-model.md (v0.3), docs/planning/adr/adr-016, adr-017, adr-018 (amended 2026-08-01), and docs/compliance/records-of-processing-activities.md, processor-dpa-checklist.md, coppa-compliance-audit.md (commit c9dbfa9, 2026-07-10), coppa-gdpr-remediation-plan.md, gdpr-compliance-review.md"
+source: "Direct review of src/cyo_adventure/api, src/cyo_adventure/db/models.py, src/cyo_adventure/events, frontend/src/offline, frontend/src/player at commit 65883a1 (2026-08-08), synthesizing docs/planning/privacy-model.md (v0.3), docs/planning/adr/adr-016-recommendation-sharing-social-boundary.md, docs/planning/adr/adr-017-ai-cover-art.md, docs/planning/adr/adr-018-childrens-privacy-compliance.md (amended 2026-08-01), and docs/compliance/records-of-processing-activities.md, processor-dpa-checklist.md, coppa-compliance-audit.md (commit c9dbfa9, 2026-07-10), coppa-gdpr-remediation-plan.md, gdpr-compliance-review.md"
 ---
 
 > **Status**: Draft | **Version**: 1.1 | **Compiled**: 2026-08-08 | **Updated**: 2026-08-08
@@ -22,8 +22,14 @@ source: "Direct review of src/cyo_adventure/api, src/cyo_adventure/db/models.py,
 
 ## 0. Important disclaimer
 
-This is an engineering-derived record, not legal advice, consistent with the standing disclaimer
-carried by every sibling document in this directory. Several rows below cite
+This is an engineering-derived record, not legal advice, consistent with the disclaimer carried
+verbatim by this directory's audit-style documents (`coppa-compliance-audit.md`,
+`gdpr-compliance-review.md`, `coppa-gdpr-remediation-plan.md`). Not every document in this
+directory carries it: `privacy-notice.md` is drafted as guardian-facing notice text rather than an
+engineering audit, and several others (`breach-notification-runbook.md`, `dpia.md`,
+`information-security-program.md`, `processor-dpa-checklist.md`,
+`records-of-processing-activities.md`) state no legal-advice disclaimer at all. Several rows below
+cite
 `coppa-compliance-audit.md` (dated 2026-07-10), which predates the ADR-018 consent implementation
 (2026-07-20) and the D5 AI-training amendment (2026-08-01). Where a newer document supersedes an
 older finding this record says so and cites both. Two conflicts between project documents that this
