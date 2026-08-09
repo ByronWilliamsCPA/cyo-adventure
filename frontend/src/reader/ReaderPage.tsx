@@ -414,7 +414,10 @@ export function ReaderPage({
         isCachedLocally = true
       } catch {
         // Best-effort: the story is already in hand from the network, so a
-        // failure to cache it locally must not block reading it now.
+        // failure to cache it locally must not block reading it now. But it
+        // is NOT actually cached, so reportDownload below must not claim it
+        // is -- the guardian's downloads view would otherwise show a book as
+        // available offline on a device where it demonstrably is not.
       }
     }
     // G15: report this device having the book cached, whether it was

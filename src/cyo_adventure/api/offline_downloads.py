@@ -23,7 +23,7 @@ from fastapi import APIRouter
 from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 
-from cyo_adventure.api.deps import Context, authorize_profile, parse_uuid
+from cyo_adventure.api.deps import Context, Role, authorize_profile, parse_uuid
 from cyo_adventure.api.schemas import (
     DeviceDownloadReportBody,
     DeviceDownloadView,
@@ -108,7 +108,7 @@ async def report_device_download(body: DeviceDownloadReportBody, ctx: Context) -
     await ctx.session.execute(stmt)
 
 
-@router.delete("/device-downloads", status_code=204)
+@router.delete("/device-downloads", status_code=204, responses=error_responses(403))
 async def remove_device_download(
     device_id: str, storybook_id: str, ctx: Context
 ) -> None:
@@ -130,19 +130,42 @@ async def remove_device_download(
     like any other unreported removal (see ``DeviceDownload``'s
     best-effort-snapshot contract).
 
+    Profile-agnostic does not mean unauthenticated: a bare device-grant
+    principal (paired but with no child profile selected yet, ``Role.DEVICE``)
+    is rejected outright rather than silently matching no rows. Only a child,
+    guardian, or admin already inside the family may remove anything here, and
+    then only within the profile set described above.
+
     Args:
         device_id: The reporting device's persistent id (query param).
         storybook_id: The no-longer-cached book (query param).
         ctx: The request context (principal and session).
+
+    Raises:
+        AuthorizationError: If a bare device principal calls this (-> 403).
     """
+    # #CRITICAL: security: two layers, and neither subsumes the other. A
+    # Role.DEVICE principal carries a real family_id (from the device grant)
+    # but no profile_ids, and this endpoint takes no profile_id for
+    # authorize_profile to check the way the PUT above does. Every read/write
+    # path bordering this table gates on something (PUT: authorize_profile,
+    # GET: is_guardian/is_admin) and this one must too, so reject the role
+    # outright rather than leaning on the filter below, which would answer a
+    # paired-but-unselected device with a 204 that deleted nothing.
+    # #VERIFY: test_offline_downloads_api.py::test_remove_rejects_device_principal.
+    if ctx.principal.role == Role.DEVICE:
+        msg = "device principal may not remove a download record"
+        raise AuthorizationError(msg)
+
     # #CRITICAL: security: family scoping alone is not authorization here.
-    # Every principal carries a family_id, including CHILD and DEVICE, and
-    # this endpoint's only other inputs are a device_id and a storybook_id,
+    # Every principal carries a family_id, including CHILD, and this
+    # endpoint's only other inputs are a device_id and a storybook_id,
     # neither of which is secret within a family. Scoping solely on family
     # would let any child delete a sibling's download rows on any device by
-    # naming them. Constraining to the principal's own profile set is the
-    # same rule authorize_profile applies to the PUT, expressed as a filter
-    # because this endpoint is deliberately multi-row.
+    # naming them, which the role check above does not cover. Constraining to
+    # the principal's own profile set is the same rule authorize_profile
+    # applies to the PUT, expressed as a filter because this endpoint is
+    # deliberately multi-row.
     # #VERIFY: test_offline_downloads_api.py::
     # test_remove_does_not_touch_another_profiles_row_for_a_child_principal.
     rows = await ctx.session.scalars(

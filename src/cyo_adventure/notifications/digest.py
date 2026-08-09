@@ -101,14 +101,18 @@ async def run_notification_digest(session: AsyncSession, *, now: datetime) -> in
         # set the ADR-022 Tier 1 RLS context that api/deps.py::require_principal
         # normally applies. list_family_notifications' entity resolvers read
         # story_request and child_profile, both Tier 1 family_scoped for the
-        # cyo_api role this job connects as; with app.family_id unset those
-        # reads return zero rows and service.py drops the event silently
-        # (its "ctx is None" fail-safe), so every story-request notification
-        # would vanish from the digest with no error. Scoped per family rather
-        # than via an is_admin bypass: the loop needs one family at a time, so
-        # least privilege costs nothing. set_config is is_local => true, so
-        # each iteration's value holds for this transaction and the next
-        # iteration overwrites it.
+        # cyo_api role this job connects as (per notification-digest.yml, which
+        # binds it to the same RLS posture as every other write path); with
+        # app.family_id unset those reads return zero rows and service.py drops
+        # the event silently (its "ctx is None" fail-safe), so every Tier
+        # 1-backed notification kind (request_*, plan_assigned) would vanish
+        # from every digest with no exception and no log. Tier 2 kinds
+        # (kid_flag, storybook, storybook_assignment) are unaffected, which is
+        # what makes the gap present as a quiet undercount rather than an
+        # outage. Scoped per family rather than via an is_admin bypass: the
+        # loop needs one family at a time, so least privilege costs nothing.
+        # set_config is is_local => true, so each iteration's value holds for
+        # this transaction and the next iteration overwrites it.
         # #VERIFY: tests/integration/test_notification_digest_rls.py::
         # test_digest_counts_story_request_notifications_under_cyo_api.
         await apply_family_rls_context(session, family_id=family_id, is_admin=False)

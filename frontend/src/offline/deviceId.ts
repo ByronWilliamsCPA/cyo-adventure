@@ -38,11 +38,15 @@ export function getOrCreateDeviceId(): string {
   // when the object exists. Safari private browsing hands back a store with a
   // zero-byte quota whose setItem throws QuotaExceededError, and a
   // cookies-blocked profile or storage-blocking extension can throw
-  // SecurityError on plain getItem. This function is called synchronously
-  // from ReaderPage's load(), so an uncaught throw here would abort the load
-  // before it can render, stranding the reader on the loading screen.
-  // #VERIFY: deviceId.test.ts asserts a throwing localStorage still yields a
-  // stable id rather than propagating.
+  // SecurityError on plain getItem. This is called synchronously from
+  // ReaderRoute's reportDownload, itself invoked from ReaderPage's load(),
+  // which runs as a bare `void load()` in a mount effect: an uncaught throw
+  // here would abort the load before it reaches
+  // setPageState({ phase: 'reading' }), stranding the reader on the loading
+  // screen forever with no error and no retry.
+  // #VERIFY: deviceId.test.ts "still returns an id, instead of throwing, when
+  // localStorage.getItem throws" and "still returns a stable id, from the
+  // in-memory fallback, when localStorage.setItem throws".
   try {
     const existing = localStorage.getItem(STORAGE_KEY)
     if (existing) return existing

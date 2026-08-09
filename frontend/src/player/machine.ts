@@ -294,6 +294,15 @@ export const readerMachine = setup({
         // the loaded node genuinely is one.
         LOAD_BOOKMARK: { target: 'reading', actions: 'applyLoadBookmark' },
         DELETE_BOOKMARK: { actions: 'applyDeleteBookmark' },
+        // Reader.tsx renders the same BookmarksButton (with the same Save
+        // affordance) on the ending screen as on `reading`, with no
+        // state-based gating; without a handler here XState drops the event
+        // silently (no throw, no warning), so a child tapping Save on the
+        // celebration screen would see nothing happen. applySaveBookmark
+        // reads/writes only `context.reading`, which is unaffected by which
+        // state that context is viewed from, so wiring it here is exactly as
+        // safe as LOAD/DELETE already being wired above.
+        SAVE_BOOKMARK: { actions: 'applySaveBookmark' },
       },
     },
   },
