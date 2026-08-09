@@ -353,3 +353,100 @@ Already landed, do not re-schedule: PL-23/24/25/26, CG-1..4 (built, inert), RL-1
 L2-11 cause hints, `--headroom`, ADR-026 stop flow, humor/wonder variation axes, D14
 second-person voice guidance (fill-gate enforcement still missing), the 3-5/5-8 valence
 re-tag, ADR-028 runtime + CH rules.
+
+---
+
+## Part 3: Proposed rule set for newly drafted skeletons (2026-08-09 follow-up)
+
+Which *rules* should exist before drafting new skeletons? Principle: grandfather the current
+catalog, but hold every newly drafted skeleton to a stricter bar via a `strict`/new-skeleton
+mode, so quality is enforced at authoring time instead of discovered at review. Free rule IDs:
+the PL family is used through PL-26 (and the D14 plans' proposed second "PL-22" must be renamed,
+see 2.5), so new policy rules start at **PL-27**; CG is used through CG-4, CH through CH-8,
+L2 through L2-14. Catalog-level (cross-skeleton) checks do not fit the per-story gate and
+should live beside the in-cell clone audit; they are marked (cell) below.
+
+### 9.1 Escalate existing advisories to blocking, for new skeletons only
+
+These rules exist, fire on 40 of 61 current skeletons, and are ignored. For newly drafted
+skeletons run the gate in a strict mode where they block:
+
+| Rule | Today | New-skeleton mode |
+| --- | --- | --- |
+| PL-23 clock drift | advisory, 37 breaches | **moot by construction**: derive and stamp `estimated_minutes` at authoring time (`recompute_estimated_minutes` already exists); block on drift so a hand-edit cannot re-break it |
+| PL-24 kind-share ceiling + winnability floor | advisory, calibrated below the corpus | block; raise the winnability floor from absolute 3 to `max(3, ceil(0.05 * endings))` pending the B1 ruling, so a 200-ending book cannot pass with 2 wins |
+| PL-25 first-decision window, PL-26 corridor density | advisory | block |
+| PL-19 story-mean words/node | advisory, reports band membership only | block outside the advisory band **and** report distance from the cell target (story-quality finding D) |
+| CG-1..CG-4 choice grammar | built, inert | run with `enforce_grammar=True` for every new skeleton now, without waiting for the D11 `deprecated` marker; measure over rendered stops (UW-C23) |
+| L1-7 below-cell-min | warning, silently dropped | visible always (fix `load_skeleton` discarding the report, section 2.2) |
+
+### 9.2 New deterministic rules worth building (ranked)
+
+1. **PL-27 random-walk outcome floor.** Uniform-random-walk probability of a satisfying
+   (positive or neutral) ending must clear a band-scaled floor. Cheap to compute (value
+   iteration handles loop topologies; this review computed it for all 61 in seconds).
+   Suggested starting floors, to be owner-calibrated: 3-5 >= 60%, 5-8 >= 40%, 8-11 >= 25%,
+   10-13 >= 15%, teen prose >= 10%, teen gamebook >= 2%. Today's teen gamebooks sit at
+   0.0-0.3%; even a 2% floor forces the graded-setback structure the critical analysis asks
+   for without banning lethal style.
+2. **PL-28 median-walk depth floor** (AL-027/SQ-19). The median uniform-walk read must reach a
+   fraction of `min_complete` (suggest >= 50%). Kills the pass-every-rule, 5-page-median shape
+   that PL-20 cannot see. Pair with the PL-17 reshape (UW-M06) so the endings floor stops
+   rewarding shallow failure leaves.
+3. **PL-29 fail-depth floor** (the D14 proposal, renamed; PL-22 is taken). `death`/`capture`
+   terminals must sit at >= 33% of `min_complete` depth. Directly kills two-taps-to-death.
+4. **PL-30 state-observability floor for Tier-2.** Every declared variable must (a) be written
+   by some reachable effect and (b) gate at least one choice, `on_enter`, or ending; and the
+   skeleton's gated-choice density must clear a floor (suggest >= 5% of choices; the current
+   Tier-2 median is ~3%, the worst 0.9%). Complements AL-131's proposed CH rule for
+   envelope-invariant gates (a gate whose outcome is identical across the whole declared
+   envelope is dead weight and should flag).
+5. **L1-9 role vocabulary.** Close the `role=` namespace: define the canonical enum (the
+   catalog's live tokens suggest ~12-15 real roles), validate against it, and make
+   `diagram.py` color them. 62 free-form tokens today; a closed set makes beats reviewable
+   and diagrams legible.
+6. **PL-31 merge-node beat self-containment.** The route-consistency defect class
+   (`the-hollow-lighthouse`, `the-signal-in-the-static`): a node reachable from multiple
+   routes must not name a `{SLOT}` or proper-noun entity that only some inbound paths
+   introduce. Deterministic first cut: for each merge node (indegree >= 2), every slot token
+   in its beats must appear on all inbound paths or in the node itself. Heuristic, so ship as
+   WARNING; it would have caught both filed defects.
+7. **Topology classifier fix, not a new rule** (UW-C62): exempt archetype build nodes from the
+   indegree>=2 disqualifier so `sorting_hat` skeletons with a 6-way build node classify
+   correctly.
+
+### 9.3 Cell-level rules (catalog audits, promotion-time)
+
+1. **(cell) Outcome-economy spread** (SQ-21): a new tree's ending signature (win count,
+   fail-kind mix, negative share) must differ from every existing tree in its cell by a
+   minimum delta, exactly as the clone audit enforces structural distance. Prevents adding a
+   third 2-win/98%-death maze to a cell that has two.
+2. **(cell) Clone floor for hand-authored shells**: fix `check_promotion_bundle.py`'s
+   early-return on missing lineage so in-cell distance is proven for every new shell,
+   hand-authored or mutated (AL-044/UW-C06); and require the A9 allowlist to shrink, never
+   grow.
+3. **(cell) Genre/theme spread at the kid bands**: at 3-5/5-8, a new skeleton's theme tags
+   must not increase the majority-genre share of its band above a ceiling (say 60%). Today
+   the realism share is 100%; a soft cell-level rule makes the genre quota durable instead of
+   a one-time authoring push.
+
+### 9.4 Process rules (no code, effective immediately)
+
+1. New skeletons are drafted **parameterized from day 1**: contract sidecar required, slot
+   tokens present, `check_theme_contract.py` green, HERO slot declared `personalizable`.
+2. Metadata completeness: `length`, `narrative_style`, `topology`, `tier`, stamped
+   `estimated_minutes` (and `estimated_minutes_whole_world` once the D27 field exists); no
+   new MVP-style cell-less skeletons.
+3. Gate every draft with `run_story_gate.py` (warnings visible) plus grammar-enforced runs;
+   `check_skeleton.py` alone is insufficient until it surfaces the report.
+4. Decide the hand-authored promotion proof (origin sidecars, B7/UW-G16) before the first
+   rebuild PR.
+5. Stay inside the one-shot fill envelope (~32k output tokens) until SQ-03 lands, and record
+   the envelope check in the promotion PR.
+
+### 9.5 Needs an owner ruling before the corresponding rule can bite
+
+UW-M06 (PL-17 on gamebooks), B1 (teen death-ratio policy / PL-24 thresholds), UW-C64 (L2-11
+envelope awareness, blocks any stat-gated skeleton), OG3 (beat-variant ADR), B2/UW-G17
+(per-band reconvergence targets; a max-indegree advisory could land now, corpus mean max
+indegree is 7.79 against the research's 1.5), B4 (`is_secret`/rarity metadata).
