@@ -516,3 +516,88 @@ different skeletons, which is what the catalog rebuild is for. Two cheaper mitig
 remain open if same-skeleton distance is still wanted: per-fork semantics pools rotated
 at selection time (the mechanism treatment applied to decisions), and an idiom-family
 check below the 4-gram floor. Both are registered; neither blocks the rebuild.
+
+## 13. Model-tier study: which model can fill a contract? (2026-08-09)
+
+Owner question: the fill model is the dominant recurring cost in the pipeline, so the
+minimum success threshold per model tier matters. Haiku would be preferred on cost;
+Sonnet is the expected practical floor. The third pilot's inputs (hygiene-passed
+contract, three bibles, three selections, three bound skeletons) were held fixed and the
+fill step was re-run twice more, once with Haiku 4.5 and once with Sonnet, three isolated
+authors each, identical prompts. With the frontier run that is nine books from one
+skeleton: three tiers x three bindings.
+
+### First pass, before any revision
+
+| Measure | Haiku 4.5 | Sonnet | Frontier |
+| --- | --- | --- | --- |
+| Fill integrity (structure frozen, markers gone, word band) | 3/3 | 3/3 | 3/3 |
+| Full validator gate, blocked | 0/3 | 0/3 | 0/3 |
+| Safety flags | 0 | 0 | 0 |
+| Title contract compliance | clean | 1 cross-arm collision | clean |
+| Sibling shared grams per 1000 (budget 4.0) | 8.5 | 29.7 | 20.4 |
+| Menu frames shared | 0 | 0 | 0 |
+| Wall clock per book | 2-4 min | 6-7 min | 7-9 min |
+
+**Every tier clears every hard gate on the first pass.** Structure, markers, word bands,
+topology, safety: none of it separates the tiers. The deterministic floor for *validity*
+is already met at Haiku, which is the single most important result here, because it means
+the gate is doing its job independent of author strength.
+
+The tiers separate on two softer axes:
+
+- **Reading-level control (RL-13 advisories, target FK 5.5 +/- 1.5).** Sonnet 67 flagged
+  nodes, mean FK 9.17, with 65 of 67 ABOVE 7.0 and none below 4.0: a systematic upward
+  drift, writing toward adult prose for a 10-13 band. Haiku 30 flagged, mean FK 5.89,
+  scattered 17 high and 13 low: centered on target but less controlled. Frontier 35
+  flagged, mean 7.34, leaning high. Sonnet's failure mode is overwriting; Haiku's is
+  inconsistency.
+- **Convergence, and it is not monotonic in capability.** Sonnet was the MOST convergent
+  tier (29.7 per 1000), Haiku the least (8.5). Each tier converges its own way: Haiku's
+  top shared grams were near-verbatim quotations of contract strings ("they reseal the
+  vault exactly as found", the "not a punishment" framing), i.e. weak paraphrase of the
+  spec; Sonnet's were stock staging idioms ("ajar on a room stacked with", "miniature
+  version of the", "still be there tomorrow"), i.e. strong genre priors. Capability buys
+  better prose, not less sameness.
+
+### After one tool-feedback revision round
+
+Each author received its own tier's shared-gram list and rewrote only its colliding
+sentences (the same loop used in section 12).
+
+| Measure | Haiku 4.5 | Sonnet | Frontier |
+| --- | --- | --- | --- |
+| Sibling shared grams per 1000 | **0.6** | **1.3** | **1.2** |
+| Integrity / gate / titles | GREEN | GREEN | GREEN |
+
+**All three tiers pass the full battery after one round, and Haiku scores best on the
+gram metric.** Haiku executed the revision instruction correctly, though its edits skew
+toward word-swaps over image changes ("We climb the service ladder" became "We ascend
+using the service ladder"), which satisfies an n-gram check without changing the picture;
+that is a caution about relying on the metric alone, not a failure of the round.
+
+### Cross-model convergence
+
+| Triple composition | Shared grams per 1000, pre-revision | Post-revision |
+| --- | --- | --- |
+| Same model, three bindings | 8.5 / 20.4 / 29.7 (mean 19.5) | 0.6 / 1.2 / 1.3 |
+| Mixed model, three bindings (one per slot) | 3.5 / 4.7 / 6.8 (mean 5.0) | 2.2 / 3.5 / 5.5 |
+| Three models, ONE binding (identical inputs) | 14.1 / 14.7 / 27.4 | 12.0 / 12.4 / 26.1 |
+
+Read these carefully; the honest comparison is the pre-revision row, where neither
+condition has been optimized. There, **mixing models across sibling bindings cuts
+convergence about fourfold** (19.5 to 5.0 per 1000): different models default to
+different staging idioms, so assigning different fill models to sibling bindings is a
+real, nearly free diversity lever. After revision the ordering flips, because the
+revision round optimizes exactly the same-model metric it was given; the correct
+conclusion is that **revision is a stronger lever than model mixing, and model mixing is
+valuable where a revision round is not affordable** (or as a second, independent lever
+stacked on top of it).
+
+The third row is a different measurement: three models given the identical binding still
+share 12-26 grams per 1000 after revision. Same setting, same characters, same assigned
+devices produce convergent prose regardless of who writes it, which is the section 12
+finding restated from a new angle: the inputs, not the author, dominate. The clearest
+single illustration is titling. Given identical selections, Sonnet and the frontier model
+independently produced "The Unfinished Mirror" (identical) and "Footprints in the Silt" /
+"Footprints in Silt" for the same endings, with no shared context.
