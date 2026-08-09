@@ -1,7 +1,7 @@
 """Skeleton loading utilities for structurally-valid Storybook shells.
 
-A skeleton is a Storybook shell whose non-ending node bodies carry a
-``<<FILL ...>>`` directive to be replaced by prose.
+A skeleton is a Storybook shell whose node bodies (ending nodes included)
+carry a ``<<FILL ...>>`` directive to be replaced by prose.
 
 The shell is validated through the existing gate's blocking layers (structure,
 references, reachability, termination, budget) at load time, so a skeleton can
@@ -17,7 +17,10 @@ from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.validator.gate import run_gate
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
     from pathlib import Path
+
+    from cyo_adventure.validator.gate import GateResult
 
 FILL_MARKER = "<<FILL"
 
@@ -28,7 +31,15 @@ FILL_MARKER = "<<FILL"
 # globs ``*.json`` must skip these, so the set is defined once here and a future
 # sidecar type is a single edit. Ordered longest-suffix-first is unnecessary; a
 # sidecar name ends in exactly one of these.
-SIDECAR_SUFFIXES: tuple[str, ...] = (".contract.json", ".lineage.json")
+SIDECAR_SUFFIXES: tuple[str, ...] = (
+    ".contract.json",
+    ".lineage.json",
+    # Narrative obligation contract (skeleton-narrative-redesign proposal,
+    # 2026-08-09): per-node obligations for open-tier nodes. Registered ahead
+    # of the SQ-12 pilot so catalog scans never load it as a skeleton, the
+    # exact trap the SQ-11 brief flagged for variant sidecars.
+    ".narrative.json",
+)
 
 
 def is_sidecar(path: Path) -> bool:
@@ -49,11 +60,27 @@ def is_sidecar(path: Path) -> bool:
     return any(path.name.endswith(suffix) for suffix in SIDECAR_SUFFIXES)
 
 
-def load_skeleton(path: Path) -> dict[str, object]:
+def load_skeleton(
+    path: Path,
+    *,
+    enforce_grammar: bool = False,
+    report_sink: Callable[[GateResult], None] | None = None,
+) -> dict[str, object]:
     """Load a skeleton JSON file and assert it is a structurally-valid shell.
 
     Args:
         path: Path to the skeleton JSON.
+        enforce_grammar: Forwarded to :func:`run_gate` so an authoring caller
+            (``scripts/check_skeleton.py --strict``) can opt a new skeleton
+            into the CG-1..CG-4 choice-grammar checks. Defaults to ``False``
+            so every existing caller is unaffected (UW-C24).
+        report_sink: Optional callback that receives the full
+            :class:`GateResult` before any block decision is taken. Without
+            it this loader silently discarded every advisory finding (PL-19
+            story mean, PL-20 arc ceiling, PL-23..PL-26, L1-7 below-min,
+            L2-13, RL-13), so authoring tools printed ``ok`` for skeletons
+            the gate had warned about; 40 of the 61 catalog skeletons
+            carried such hidden advisories (2026-08-09 review, section 2.2).
 
     Returns:
         The decoded skeleton as a dict.
@@ -62,7 +89,9 @@ def load_skeleton(path: Path) -> dict[str, object]:
         ValidationError: If the skeleton fails the gate's blocking (L1/L2) layers.
     """
     data: dict[str, object] = json.loads(path.read_text(encoding="utf-8"))
-    result = run_gate(data)
+    result = run_gate(data, enforce_grammar=enforce_grammar)
+    if report_sink is not None:
+        report_sink(result)
     if result.blocked:
         messages = (
             "; ".join(f.message for f in result.report.errors)

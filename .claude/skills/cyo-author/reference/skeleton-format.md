@@ -18,7 +18,7 @@ The grammar is:
 
 | Attribute | Required | Description |
 |-----------|----------|-------------|
-| `role` | Yes | The node's narrative role in the story graph. One of: `setup`, `rising`, `choice`, `climax`, or an ending subtype such as `completion` or `failure`. |
+| `role` | Yes | The node's narrative role in the story graph. Common values: `setup`, `rising`, `choice`, `climax`, `completion`, `failure`; the vocabulary is currently unvalidated free-form (the catalog uses ~62 tokens) and only the four core values color diagrams. A closed set is proposed (2026-08-09 review, rule L1-9); prefer the common values above. Note `role` is NOT `ending.kind`: `failure` is a role, not a member of the `EndingKind` enum. |
 | `words` | Yes | Approximate target word count for this node's prose. Match the band's words/node target (see table below). |
 | `beats` | Yes | A short single-quoted phrase describing the narrative event that must occur in this node. The author fulfills the beat while setting up the choices listed on the node. |
 
@@ -27,18 +27,66 @@ The grammar is:
 Replace the entire `<<FILL ...>>` string (including the angle brackets) with finished prose.
 No `<<FILL` markers may remain in the output JSON.
 
+### `{SLOT}` tokens and theme contracts (ADR-019)
+
+Parameterized skeletons carry `{SLOT_NAME}` tokens on exactly three surfaces: `beats=`
+values, ending `title`s, and choice `label`s (`storybook/slotted_surfaces.py`). A `.contract.json`
+sidecar declares the slot set, per-slot denylists, and a `default_binding`; production
+binding substitutes request-derived values before fill (`generation/binding.py`,
+`scripts/bind_theme.py`). A newly drafted production skeleton is expected to be
+parameterized from day one (`scripts/parameterize_skeleton.py`, verified by
+`scripts/check_theme_contract.py`); the `legacy_lexicon` rule intentionally rejects
+re-binding the original theme's own nouns. Practical grammar note: the `beats='...'`
+value is single-quoted and the parser does not escape quotes, so avoid apostrophes inside
+beats.
+
 ---
 
 ## Per-band prose targets
 
-| Band | Words/node | Reading level (Lexile anchor) | Topology family | Fail-state policy |
-|------|-----------|-------------------------------|-----------------|-------------------|
-| 3-5 | ~75-100 | ~480-570L | Linear / Loop-and-Grow | NO death endings; outcomes must be comic or always-recover |
-| 5-8 | ~100 | ~480-570L | Near-pure tree / Loop-and-Grow | NO death endings; try-again or comic outcomes only |
-| 8-11 | ~125-150 | ~500-710L | Tree-dominant, light reconvergence | Failure and entrapment allowed; keep tone adventure-forward |
-| 10-13 | ~175 | ~490-720L | Branch-and-bottleneck (reconvergent leaves) | Horror variety and logical failure allowed |
-| 13-16 | ~225 | Middle-grade+ | Gauntlet / branch-and-bottleneck (stateful) | Resource-based failure; lethal endings allowed |
-| 16+ | ~250 | Advanced | Deep Gauntlet / branch-and-bottleneck (stateful) | Lethal, resource-based, mature themes allowed |
+Enforced source of truth: `validator/band_profile.py::words_per_node_profile` (PL-19 blocks a
+node past the hard max) and per-skeleton `reading_level` metadata (`flesch_kincaid`, RL-13).
+This table mirrors those values; a previous revision of this table carried stale ~2x-higher
+Lexile-era numbers that would hard-fail the gate at 3-5 (2026-08-09 review, section 2.1).
+
+| Band / style | Words/node mean | Advisory range | Hard max | FK target | Fail-state policy |
+|--------------|-----------------|----------------|----------|-----------|-------------------|
+| 3-5 | 40 | 28-55 | 90 | 1.0 | NO death/capture; outcomes comic or always-recover |
+| 5-8 | 70 | 50-95 | 155 | 2.5 | NO death/capture; try-again or comic outcomes only |
+| 8-11 | 100 | 70-135 | 220 | 4.5 | Failure and entrapment allowed; adventure-forward tone |
+| 10-13 | 100 | 70-135 | 220 | 5.5 | Horror variety and logical failure allowed |
+| 13-16 prose | 140 | 100-185 | 310 | 7.0 | Resource-based failure; lethal endings allowed |
+| 13-16 gamebook | 65 | 45-90 | 145 | 7.0 | Resource-based failure; lethal endings allowed |
+| 16+ prose | 175 | 125-230 | 385 | 8.0-9.0 | Lethal, resource-based, mature themes allowed |
+| 16+ gamebook | 80 | 55-110 | 175 | 8.0-9.0 | Lethal, resource-based, mature themes allowed |
+
+Do not hand-copy these numbers into a drafting brief: generate the full per-cell constraint
+set with `uv run python scripts/generate_drafting_brief.py <band> <length> <style>`, which
+reads the enforced sources live (hand-copied briefs drifted twice during the 2026-08-09
+strict pilot, AL-149).
+
+---
+
+## The strict bar for newly drafted skeletons (ruled 2026-08-09)
+
+A NEWLY DRAFTED skeleton must pass `uv run python scripts/check_skeleton.py <path> --strict
+--headroom` (the grandfathered catalog is exempt until removed). Beyond the standard gate,
+strict blocks on: any advisory from PL-19 (story mean), PL-23 (clock), PL-24 (ending mix),
+PL-25 (first decision), PL-26 (corridor density), or L1-7 (below cell min); the CG-1..CG-3
+choice grammar (`enforce_grammar=True`; options-per-decision bounds, single-choice run caps,
+and words-per-stop ceilings where a single-choice chain composes into one stop WITH the node
+it flows into); the band's random-walk satisfying-outcome floor; a per-band max in-degree cap
+on `branch_and_bottleneck`/`gauntlet`/`sorting_hat`/`time_cave` (`open_map` and
+`loop_and_grow` are exempt: hub re-entry is their design); and a depth-qualified endings
+floor (an ending counts toward the breadth floor only at BFS depth >= a third of the cell's
+arc floor). Two terms both read "satisfying" and differ: PL-20's arc floor counts
+success/completion KINDS; the walk floor counts positive-or-neutral VALENCE. Before any
+promotion PR, also run the catalog audits with the candidate placed in its target cell
+(`check_incell_clones.py`, `check_outcome_spread.py`) and expect an adversarial content
+review; a strict-clean draft is necessary, not sufficient (all three 2026-08-09 pilot drafts
+passed strict and failed review). The authoritative constants live in
+`scripts/check_skeleton.py` and `validator/band_profile.py`; the brief generator above emits
+them per cell.
 
 ---
 

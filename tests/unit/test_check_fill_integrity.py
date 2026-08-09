@@ -105,6 +105,26 @@ def test_label_rewritten_fill_passes_the_structure_check(tmp_path: Path) -> None
     assert exit_code == 0
 
 
+def test_title_rewrite_flag_permits_book_and_ending_titles(tmp_path: Path) -> None:
+    """With --allow-title-rewrite, storybook and ending titles are leaves.
+
+    Amendment 4 of the contract-hygiene pass (AL-161): an unslotted title
+    is byte-frozen across bindings and a top recognition channel, so a
+    title-contract fill rewrites both the book title and ending titles.
+    Without the flag the same fill must still fail.
+    """
+    filled = _filled()
+    filled["title"] = "The Comet Glyphs"
+    filled["nodes"][1]["ending"]["title"] = "Starlight Kept"
+    skeleton_path = _write(tmp_path, "skeleton.json", _SKELETON)
+    filled_path = _write(tmp_path, "filled.json", filled)
+    assert (
+        check_fill_integrity.main([skeleton_path, filled_path, "--allow-title-rewrite"])
+        == 0
+    )
+    assert check_fill_integrity.main([skeleton_path, filled_path]) == 1
+
+
 def test_rewritten_target_fails_the_structure_check(tmp_path: Path) -> None:
     """A fill whose choice target changes is a genuine structural violation."""
     filled = _filled()

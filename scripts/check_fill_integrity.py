@@ -70,23 +70,41 @@ def _load(path: str) -> dict[str, Any] | None:
     return data
 
 
-def _strip_leaf_fields(story: dict[str, Any]) -> dict[str, Any]:
+def _strip_leaf_fields(
+    story: dict[str, Any], *, allow_title_rewrite: bool = False
+) -> dict[str, Any]:
     """Return a deep copy of a story with body/label leaf fields removed.
 
     Args:
         story: The decoded story JSON.
+        allow_title_rewrite: Also strip the storybook ``title`` and ending
+            ``title``s from the
+            comparison. Ending titles are leaf content by the WS-0
+            labels-are-leaves decision (``structure_fingerprint`` strips
+            them), but this checker historically froze them; the
+            narrative-redesign pilots showed unslotted titles are
+            byte-identical across sibling books and a top recognition
+            channel (AL-161), so a title-contract fill may rewrite them
+            when the caller opts in.
 
     Returns:
         A copy suitable for structure-only comparison: every node ``body``
-        and every choice ``label`` removed, leaving ids, targets,
-        conditions, effects, endings, variables, and metadata.
+        and every choice ``label`` removed (and, when opted in, every
+        ending ``title``), leaving ids, targets, conditions, effects,
+        ending kind/valence, variables, and metadata.
     """
     copy: dict[str, Any] = json.loads(json.dumps(story))
+    if allow_title_rewrite:
+        copy.pop("title", None)
     nodes = copy.get("nodes")
     if isinstance(nodes, list):
         for node in nodes:
             if isinstance(node, dict):
                 node.pop("body", None)
+                if allow_title_rewrite:
+                    ending = node.get("ending")
+                    if isinstance(ending, dict):
+                        ending.pop("title", None)
                 choices = node.get("choices")
                 if isinstance(choices, list):
                     for choice in choices:
@@ -129,6 +147,14 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("skeleton", help="Path to the pristine skeleton JSON.")
     parser.add_argument("filled", help="Path to the filled story JSON.")
+    parser.add_argument(
+        "--allow-title-rewrite",
+        action="store_true",
+        help=(
+            "Permit ending titles to differ (title-contract fills; titles are "
+            "leaf content per WS-0, AL-161)."
+        ),
+    )
     args = parser.parse_args(argv)
     # #CRITICAL: data-integrity: this check is a comparison, so it is only as
     # good as the independence of its two inputs. A builder bug once wrote the
@@ -157,8 +183,14 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     failed = False
 
-    canonical_skeleton = json.dumps(_strip_leaf_fields(skeleton), sort_keys=True)
-    canonical_filled = json.dumps(_strip_leaf_fields(filled), sort_keys=True)
+    canonical_skeleton = json.dumps(
+        _strip_leaf_fields(skeleton, allow_title_rewrite=args.allow_title_rewrite),
+        sort_keys=True,
+    )
+    canonical_filled = json.dumps(
+        _strip_leaf_fields(filled, allow_title_rewrite=args.allow_title_rewrite),
+        sort_keys=True,
+    )
     if canonical_skeleton != canonical_filled:
         sys.stderr.write(
             "FAIL structure: filled story differs from skeleton outside node "
