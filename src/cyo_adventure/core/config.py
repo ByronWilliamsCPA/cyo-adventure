@@ -11,7 +11,7 @@ handles the parsing and validation.
 
 from __future__ import annotations
 
-from typing import Literal, NamedTuple
+from typing import Annotated, Literal, NamedTuple
 from urllib.parse import urlsplit
 
 from pydantic import (
@@ -21,7 +21,7 @@ from pydantic import (
     field_validator,
     model_validator,
 )
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 from cyo_adventure.core.exceptions import ConfigurationError
 from cyo_adventure.core.token_audience import TokenAudience
@@ -45,6 +45,28 @@ _SUPAVISOR_TRANSACTION_POOLER_PORT = 6543
 # CIDR uvicorn's --forwarded-allow-ips trusts, hardcoding it here is
 # intentional.
 _DEFAULT_FORWARDED_ALLOW_IPS_CIDR = "172.16.0.0/12"  # NOSONAR(S1313)
+
+# The verification methods KWS's Control Panel offers per environment, as a
+# closed set so a typo becomes a startup error rather than a silently wrong
+# claim on a consent record. Names mirror the Control Panel's own rows.
+# Availability is regional and KWS enforces it, not us: social_security_number
+# is US-and-territories only, id_scan and face_scan are worldwide EXCEPT the US
+# and its territories (and Korea), curp_number is Mexico, cpf_number is Brazil,
+# cell_phone_certification and ipin_authentication are Korea, and the two card
+# methods are worldwide except a sanctions list (debit_card additionally
+# excludes the United Kingdom). For a US family that leaves exactly three
+# options: social_security_number, credit_card, debit_card.
+KwsVerificationMethod = Literal[
+    "social_security_number",
+    "id_scan",
+    "curp_number",
+    "cpf_number",
+    "face_scan",
+    "cell_phone_certification",
+    "ipin_authentication",
+    "credit_card",
+    "debit_card",
+]
 
 
 def _check_pooler_port_requires_disabled_cache(
@@ -1076,6 +1098,80 @@ class Settings(BaseSettings):
     kws_webhook_max_skew_seconds: int = Field(
         default=300, ge=1, validation_alias="KWS_WEBHOOK_MAX_SKEW_SECONDS"
     )
+    # Which verification methods are switched on for this environment, mirrored
+    # from the Control Panel's "Verification methods" tab as a comma-separated
+    # list, e.g. KWS_ENABLED_METHODS=credit_card,debit_card.
+    #
+    # This is EVIDENCE, not a preference, and it is the reason the setting
+    # exists rather than the Control Panel being read live. The parent-verified
+    # webhook's `status` object reports only `verified` and `transactionId`,
+    # with no method, so the enabled set at the moment of verification is the
+    # only thing that bounds which method could have run. Read live, that bound
+    # evaporates the instant anyone toggles a row, retroactively, for every
+    # record ever written. Declared here, it can be copied onto each
+    # verification record and stays true afterwards.
+    #
+    # The set also has retroactive reach through AgeGraph: KWS pre-verifies a
+    # parent whose hashed email it holds only when they were verified "using a
+    # verification method enabled for the current product", so switching a
+    # method on silently converts parents verified that way elsewhere into
+    # pre-verified for us, with no new verification event on our side.
+    #
+    # #CRITICAL: data integrity: a record written while this is stale, or while
+    # it is empty, carries no bound at all on how its parent was verified, and
+    # the vendor cannot supply one after the fact.
+    # #VERIFY: tests/unit/test_config.py::TestKwsEnabledMethods::
+    # test_configured_kws_requires_declared_methods pins the empty case, and
+    # ::test_unknown_method_rejected pins the typo case.
+    kws_enabled_methods: Annotated[list[KwsVerificationMethod], NoDecode] = Field(
+        default_factory=list, validation_alias="KWS_ENABLED_METHODS"
+    )
+
+    @field_validator("kws_enabled_methods", mode="before")
+    @classmethod
+    def _split_kws_enabled_methods(cls, value: object) -> object:
+        """Accept a comma-separated env value instead of a JSON array.
+
+        ``NoDecode`` on the field suppresses pydantic-settings' default JSON
+        decoding of complex types, which would otherwise force operators to
+        write ``KWS_ENABLED_METHODS='["credit_card"]'``. The names being
+        mirrored come from a Control Panel screen, so the transcription should
+        be as close to what is on that screen as possible; a JSON array is one
+        more place for a stray quote to turn a compliance-relevant declaration
+        into a startup failure at best.
+
+        Args:
+            value: The raw field input, a string when it came from the
+                environment and a list when constructed programmatically.
+
+        Returns:
+            object: A list of trimmed names for the string case, otherwise the
+                input unchanged for Pydantic to validate as usual.
+        """
+        if isinstance(value, str):
+            return [part.strip() for part in value.split(",") if part.strip()]
+        return value
+
+    @field_validator("kws_enabled_methods")
+    @classmethod
+    def _canonicalize_kws_enabled_methods(
+        cls, methods: list[KwsVerificationMethod]
+    ) -> list[KwsVerificationMethod]:
+        """Dedupe and sort, so the declaration has one canonical form.
+
+        This value is copied onto verification records and compared across
+        them. Without canonicalisation, ``credit_card,debit_card`` and
+        ``debit_card,credit_card`` would be two different declarations of the
+        same fact, and a diff between two records would show a change where
+        none happened.
+
+        Args:
+            methods: The validated method names.
+
+        Returns:
+            list[KwsVerificationMethod]: The same names, deduped and sorted.
+        """
+        return sorted(set(methods))
 
     # --- ADR-028 UW-A47: bound the run_gate worker-thread hold ---
     # How many concurrent api/gate_limits.py::gate_limiter() holders may
@@ -1627,6 +1723,45 @@ class Settings(BaseSettings):
                 "Set all four or none; a partial set boots silently as though "
                 "the Parent Verification Service were switched off, which is "
                 "indistinguishable from a deliberate opt-out."
+            )
+            raise ConfigurationError(msg)
+        return self
+
+    @model_validator(mode="after")
+    def _require_declared_kws_methods_when_configured(self) -> Settings:
+        """Refuse a configured KWS integration that declares no enabled methods.
+
+        An empty ``kws_enabled_methods`` alongside working credentials is not a
+        harmless omission: verifications will succeed, records will be written,
+        and every one of them will carry an empty bound on how the parent was
+        verified. The vendor cannot supply that bound afterwards, because the
+        webhook never reports a method, so the omission is unrecoverable rather
+        than merely untidy. Requiring the declaration up front is the only
+        point at which the operator still has the Control Panel open in front
+        of them.
+
+        The check deliberately does not attempt to reconcile the declaration
+        against the Control Panel: there is no API to read it from, so this is
+        an asserted fact, and asserting it explicitly is the whole point.
+
+        #CRITICAL: data integrity: consent records written under an empty
+        declaration cannot be retroactively bounded to any verification method.
+        #VERIFY: tests/unit/test_config.py::TestKwsEnabledMethods::
+        test_configured_kws_requires_declared_methods and
+        ::test_unconfigured_kws_may_declare_nothing.
+
+        Raises:
+            ConfigurationError: when the KWS credentials are complete but no
+                verification method has been declared.
+        """
+        if self.kws_configured and not self.kws_enabled_methods:
+            msg = (
+                "KWS is configured but KWS_ENABLED_METHODS is empty. Mirror "
+                "the Control Panel's Verification methods tab for this "
+                "environment (e.g. 'credit_card,debit_card'): the "
+                "parent-verified webhook reports no method, so this "
+                "declaration is the only bound on how a parent was verified, "
+                "and it cannot be reconstructed after the record is written."
             )
             raise ConfigurationError(msg)
         return self

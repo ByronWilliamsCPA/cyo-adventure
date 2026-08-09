@@ -32,6 +32,19 @@ _CHILD_SECRET = "test-child-session-secret-0123456789abcd"
 # every non-local environment (see the _require_device_grant_secret_outside_local
 # validator, ADR-014). Must be distinct from _CHILD_SECRET.
 _DEVICE_SECRET = "test-device-grant-secret-0123456789abcdef"
+# The four values needed before any KWS API call can be made. Not real
+# credentials: the ids are placeholder UUIDs and the host is the documented
+# one, so a secrets scanner has nothing to match.
+_KWS_CREDS = {
+    "kws_organization_id": "00000000-0000-4000-8000-000000000001",
+    "kws_api_origin": "https://api.kidswebservices.com",
+    "kws_client_id": "00000000-0000-4000-8000-000000000002",
+    "kws_api_key": "test-kws-api-key-not-a-real-secret",
+}
+# The two methods currently switched on in the Control Panel, and the only two
+# a configured integration can be constructed with (an empty declaration is
+# refused; see _require_declared_kws_methods_when_configured).
+_KWS_METHODS = ["credit_card", "debit_card"]
 
 
 class TestSettingsDefaults:
@@ -1525,16 +1538,6 @@ class TestKwsSettings:
     configuration invariants only.
     """
 
-    # The four values needed before any KWS API call can be made. Not real
-    # credentials: the ids are RFC 4122 nil-adjacent placeholders and the host
-    # is the documented one, so a secrets scanner has nothing to match.
-    _CREDS: ClassVar[dict[str, str]] = {
-        "kws_organization_id": "00000000-0000-4000-8000-000000000001",
-        "kws_api_origin": "https://api.kidswebservices.com",
-        "kws_client_id": "00000000-0000-4000-8000-000000000002",
-        "kws_api_key": "test-kws-api-key-not-a-real-secret",
-    }
-
     @pytest.fixture(autouse=True)
     def _clear_kws_env(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """Keep a developer's own KWS_* exports out of these assertions."""
@@ -1572,10 +1575,10 @@ class TestKwsSettings:
         """All four present is the only configured state."""
         from cyo_adventure.core.config import Settings
 
-        assert Settings(**self._CREDS).kws_configured is True
+        assert Settings(kws_enabled_methods=_KWS_METHODS, **_KWS_CREDS).kws_configured
 
     @pytest.mark.unit
-    @pytest.mark.parametrize("omitted", list(_CREDS))
+    @pytest.mark.parametrize("omitted", list(_KWS_CREDS))
     def test_partial_kws_credentials_are_rejected(self, omitted: str) -> None:
         """Omitting any one of the four fails at startup, naming the gap.
 
@@ -1585,7 +1588,7 @@ class TestKwsSettings:
         from cyo_adventure.core.config import Settings
         from cyo_adventure.core.exceptions import ConfigurationError
 
-        partial = {k: v for k, v in self._CREDS.items() if k != omitted}
+        partial = {k: v for k, v in _KWS_CREDS.items() if k != omitted}
 
         with pytest.raises(ConfigurationError, match="partially configured"):
             Settings(**partial)
@@ -1600,7 +1603,7 @@ class TestKwsSettings:
         """
         from cyo_adventure.core.config import Settings
 
-        settings = Settings(**dict.fromkeys(self._CREDS, ""))
+        settings = Settings(**dict.fromkeys(_KWS_CREDS, ""))
 
         assert settings.kws_configured is False
 
@@ -1611,7 +1614,7 @@ class TestKwsSettings:
         from cyo_adventure.core.exceptions import ConfigurationError
 
         with pytest.raises(ConfigurationError, match="KWS_API_KEY"):
-            Settings(**{**self._CREDS, "kws_api_key": ""})
+            Settings(**{**_KWS_CREDS, "kws_api_key": ""})
 
     @pytest.mark.unit
     def test_production_kws_environment_rejected_from_a_local_app(self) -> None:
@@ -1620,7 +1623,12 @@ class TestKwsSettings:
         from cyo_adventure.core.exceptions import ConfigurationError
 
         with pytest.raises(ConfigurationError, match="KWS_ENVIRONMENT='production'"):
-            Settings(environment="local", kws_environment="production", **self._CREDS)
+            Settings(
+                environment="local",
+                kws_environment="production",
+                kws_enabled_methods=_KWS_METHODS,
+                **_KWS_CREDS,
+            )
 
     @pytest.mark.unit
     def test_test_kws_environment_allowed_in_a_deployed_tier(self) -> None:
@@ -1636,7 +1644,8 @@ class TestKwsSettings:
             child_session_secret=_CHILD_SECRET,
             device_grant_secret=_DEVICE_SECRET,
             allow_mock_review=True,
-            **self._CREDS,
+            kws_enabled_methods=_KWS_METHODS,
+            **_KWS_CREDS,
         )
 
         assert settings.kws_environment == "test"
@@ -1646,12 +1655,12 @@ class TestKwsSettings:
         """The API key must not surface in a repr, log line, or error message."""
         from cyo_adventure.core.config import Settings
 
-        settings = Settings(**self._CREDS)
+        settings = Settings(kws_enabled_methods=_KWS_METHODS, **_KWS_CREDS)
         api_key = settings.kws_api_key
 
         assert api_key is not None
-        assert api_key.get_secret_value() == self._CREDS["kws_api_key"]
-        assert self._CREDS["kws_api_key"] not in repr(settings)
+        assert api_key.get_secret_value() == _KWS_CREDS["kws_api_key"]
+        assert _KWS_CREDS["kws_api_key"] not in repr(settings)
 
     @pytest.mark.unit
     def test_kws_user_agent_defaults_non_empty(self) -> None:
@@ -1687,3 +1696,93 @@ class TestKwsSettings:
 
         assert settings.kws_auth_origin == "https://auth.kidswebservices.com"
         assert settings.kws_auth_origin != settings.kws_api_origin
+
+
+class TestKwsEnabledMethods:
+    """Tests for the declared KWS verification-method set.
+
+    The declaration is evidence rather than a preference: the parent-verified
+    webhook reports no method, so the enabled set at the time of verification
+    is the only bound on which method could have run, and it cannot be
+    reconstructed afterwards.
+    """
+
+    @pytest.fixture(autouse=True)
+    def _clear_kws_env(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Keep a developer's own KWS_* exports out of these assertions."""
+        for name in ("KWS_ENABLED_METHODS", "KWS_ORGANIZATION_ID", "KWS_API_ORIGIN"):
+            monkeypatch.delenv(name, raising=False)
+
+    @pytest.mark.unit
+    def test_defaults_to_empty(self) -> None:
+        """Unconfigured means nothing to declare."""
+        from cyo_adventure.core.config import Settings
+
+        assert Settings().kws_enabled_methods == []
+
+    @pytest.mark.unit
+    def test_parsed_from_a_comma_separated_env_value(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Operators mirror the Control Panel, not a JSON array.
+
+        NoDecode is what makes this work; without it pydantic-settings would
+        try to json.loads the value and fail on a bare comma-separated list.
+        """
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.setenv("KWS_ENABLED_METHODS", "credit_card, debit_card")
+
+        assert Settings().kws_enabled_methods == ["credit_card", "debit_card"]
+
+    @pytest.mark.unit
+    def test_canonicalized_by_dedupe_and_sort(self) -> None:
+        """Two spellings of the same declaration must compare equal."""
+        from cyo_adventure.core.config import Settings
+
+        one = Settings(kws_enabled_methods=["debit_card", "credit_card"])
+        two = Settings(kws_enabled_methods=["credit_card", "debit_card", "credit_card"])
+
+        assert one.kws_enabled_methods == two.kws_enabled_methods
+        assert one.kws_enabled_methods == ["credit_card", "debit_card"]
+
+    @pytest.mark.unit
+    def test_unknown_method_rejected(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """A typo is a startup error, not a silently wrong claim on a record."""
+        from pydantic import ValidationError
+
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.setenv("KWS_ENABLED_METHODS", "credit_card,creditcard")
+
+        with pytest.raises(ValidationError):
+            Settings()
+
+    @pytest.mark.unit
+    def test_configured_kws_requires_declared_methods(self) -> None:
+        """Credentials without a declaration would write unbounded records."""
+        from cyo_adventure.core.config import Settings
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        with pytest.raises(ConfigurationError, match="KWS_ENABLED_METHODS is empty"):
+            Settings(**_KWS_CREDS)
+
+    @pytest.mark.unit
+    def test_configured_kws_with_declared_methods_accepted(self) -> None:
+        """The complete, declared configuration is the one that boots."""
+        from cyo_adventure.core.config import Settings
+
+        settings = Settings(kws_enabled_methods=_KWS_METHODS, **_KWS_CREDS)
+
+        assert settings.kws_configured is True
+        assert settings.kws_enabled_methods == ["credit_card", "debit_card"]
+
+    @pytest.mark.unit
+    def test_unconfigured_kws_may_declare_nothing(self) -> None:
+        """The requirement is scoped to a configured integration, not to every boot."""
+        from cyo_adventure.core.config import Settings
+
+        settings = Settings()
+
+        assert settings.kws_configured is False
+        assert settings.kws_enabled_methods == []
