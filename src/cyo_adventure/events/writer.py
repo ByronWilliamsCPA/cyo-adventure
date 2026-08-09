@@ -115,6 +115,10 @@ _PAYLOAD_ALLOWLIST: dict[EventType, frozenset[str]] = {
     EventType.STORYBOOK_REMODERATED: frozenset(
         {"overall_verdict", "counts", "prior_reviewer_independent"}
     ),
+    # S9 digest job: a bare count of pending info-severity notifications this
+    # family had waiting; never which notifications, never any child- or
+    # story-identifying detail (D3).
+    EventType.NOTIFICATION_DIGEST_READY: frozenset({"digest_count"}),
 }
 
 

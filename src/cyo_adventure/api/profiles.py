@@ -294,8 +294,15 @@ async def _require_consent(ctx: Context) -> None:
     Phase 2 / ADR-018 D1: the concrete "block child-data collection until a
     consent record exists" gate the remediation plan calls for.
     ``api/onboarding.py::_record_consent`` is the sole writer of
-    ``User.consent_accepted_at``; this is the sole reader that turns its
-    absence into a hard stop.
+    ``User.consent_accepted_at``; this reader turns its absence into a hard
+    stop for the guardian-facing create path.
+
+    There is a second child-data collection point,
+    ``api/admin_profiles.py::create_admin_profile``, guarded by that module's
+    own ``_require_family_consent``. The two gates ask deliberately different
+    questions: this one reads the CALLER's consent (correct, because the
+    caller is the child's parent), while the admin one reads the TARGET
+    family's (correct, because the caller is not).
 
     Args:
         ctx: The request context (principal + unit-of-work session).
@@ -306,8 +313,8 @@ async def _require_consent(ctx: Context) -> None:
     """
     # #CRITICAL: security: a guardian who signed in before completing the
     # consent step (or whose client skipped it) must not be able to create a
-    # child profile by calling this endpoint directly; there is no other
-    # enforcement point for the VPC requirement.
+    # child profile by calling this endpoint directly; this is the only
+    # enforcement point on the guardian-facing path.
     # #VERIFY: tests/integration/test_profiles.py::
     # test_create_profile_requires_recorded_consent.
     user = await ctx.session.get(User, ctx.principal.user_id)

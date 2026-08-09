@@ -210,6 +210,39 @@ class TestComposeStorybookArchived:
 
 
 @pytest.mark.unit
+class TestComposeNotificationDigestReady:
+    """S9 digest job: pins the count-only, PII-free digest composition."""
+
+    def test_names_the_count_and_is_info_severity(self) -> None:
+        event = _event(EventType.NOTIFICATION_DIGEST_READY, payload={"digest_count": 3})
+        raw = registry.compose(event, _ctx())
+        assert raw is not None
+        assert raw.kind == "digest"
+        assert raw.severity == "info"
+        assert raw.title == "3 updates waiting for you"
+
+    def test_singular_count_uses_singular_noun(self) -> None:
+        event = _event(EventType.NOTIFICATION_DIGEST_READY, payload={"digest_count": 1})
+        raw = registry.compose(event, _ctx())
+        assert raw is not None
+        assert raw.title == "1 update waiting for you"
+
+    def test_missing_count_drops_the_event(self) -> None:
+        event = _event(EventType.NOTIFICATION_DIGEST_READY, payload={})
+        assert registry.compose(event, _ctx()) is None
+
+    def test_non_positive_count_drops_the_event(self) -> None:
+        event = _event(EventType.NOTIFICATION_DIGEST_READY, payload={"digest_count": 0})
+        assert registry.compose(event, _ctx()) is None
+
+    def test_malformed_count_drops_the_event_rather_than_crashing(self) -> None:
+        event = _event(
+            EventType.NOTIFICATION_DIGEST_READY, payload={"digest_count": "three"}
+        )
+        assert registry.compose(event, _ctx()) is None
+
+
+@pytest.mark.unit
 class TestComposeKidFlagged:
     """Pins the KID_FLAGGED mapping directly (composer, not the registry dict).
 

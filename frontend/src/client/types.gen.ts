@@ -1346,6 +1346,70 @@ export type DailyMinutesView = {
 };
 
 /**
+ * DeviceDownloadReportBody
+ *
+ * A client reporting it has (or still has) a book cached offline (G15).
+ *
+ * ``device_id`` is a client-generated persistent id (``localStorage``, see
+ * ``frontend/src/offline/deviceId.ts``), NOT a device-grant token id; the
+ * two are separate identities (see ``DeviceDownload``'s docstring).
+ */
+export type DeviceDownloadReportBody = {
+    /**
+     * Device Id
+     */
+    device_id: string;
+    /**
+     * Profile Id
+     */
+    profile_id: string;
+    /**
+     * Storybook Id
+     */
+    storybook_id: string;
+};
+
+/**
+ * DeviceDownloadView
+ *
+ * One row of a family's download inventory, as the guardian console sees it.
+ */
+export type DeviceDownloadView = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Device Id
+     */
+    device_id: string;
+    /**
+     * Profile Id
+     */
+    profile_id: string;
+    /**
+     * Profile Name
+     */
+    profile_name: string;
+    /**
+     * Storybook Id
+     */
+    storybook_id: string;
+    /**
+     * Storybook Title
+     */
+    storybook_title: string | null;
+    /**
+     * Downloaded At
+     */
+    downloaded_at: string;
+    /**
+     * Last Confirmed At
+     */
+    last_confirmed_at: string;
+};
+
+/**
  * DeviceGrantCreateBody
  *
  * A guardian's (or admin's) request to mint a device grant.
@@ -2678,10 +2742,19 @@ export type OnboardingBody = {
  *
  * Verifiable-parental-consent payload (Phase 2 / ADR-018 D1; O-117/O-119).
  *
- * A signature-capture step layered on the Supabase/Google OAuth login that
+ * A typed-name attestation layered on the Supabase/Google OAuth login that
  * already authenticates the guardian: ``signer_name`` is a typed
- * full-legal-name attestation, standing in for the FTC's "sign and submit
- * electronically" method (312.5(b)(2)(i)). ``accepted``, ``policy_version``,
+ * full-legal-name attestation, and the OAuth session supplies the identity
+ * binding. Nothing is drawn, uploaded, or cryptographically signed.
+ *
+ * Do not describe this as an enumerated FTC consent method. It was built on
+ * the belief that it satisfied a "sign and submit electronically" method at
+ * 16 CFR 312.5(b)(2)(i); reading that provision directly on 2026-08-08 found
+ * no such method, and whether this flow is an enumerated method AT ALL is
+ * an open question with outside counsel (ADR-018 D1). The record this model
+ * captures is required under every candidate method, so it stands
+ * regardless of how that question resolves; only the strength of the
+ * verification step is in doubt. ``accepted``, ``policy_version``,
  * ``signer_name``, ``residence_country``, and ``adulthood_attested`` must
  * all be present together to actually record consent; a request that omits
  * or falsifies any of them records nothing (see
@@ -8274,6 +8347,108 @@ export type StreamNotificationsApiV1NotificationsStreamGetResponses = {
     200: unknown;
 };
 
+export type RemoveDeviceDownloadApiV1DeviceDownloadsDeleteData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Device Id
+         */
+        device_id: string;
+        /**
+         * Storybook Id
+         */
+        storybook_id: string;
+    };
+    url: '/api/v1/device-downloads';
+};
+
+export type RemoveDeviceDownloadApiV1DeviceDownloadsDeleteErrors = {
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type RemoveDeviceDownloadApiV1DeviceDownloadsDeleteError = RemoveDeviceDownloadApiV1DeviceDownloadsDeleteErrors[keyof RemoveDeviceDownloadApiV1DeviceDownloadsDeleteErrors];
+
+export type RemoveDeviceDownloadApiV1DeviceDownloadsDeleteResponses = {
+    /**
+     * Successful Response
+     */
+    204: void;
+};
+
+export type RemoveDeviceDownloadApiV1DeviceDownloadsDeleteResponse = RemoveDeviceDownloadApiV1DeviceDownloadsDeleteResponses[keyof RemoveDeviceDownloadApiV1DeviceDownloadsDeleteResponses];
+
+export type ListDeviceDownloadsApiV1DeviceDownloadsGetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/device-downloads';
+};
+
+export type ListDeviceDownloadsApiV1DeviceDownloadsGetErrors = {
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListDeviceDownloadsApiV1DeviceDownloadsGetError = ListDeviceDownloadsApiV1DeviceDownloadsGetErrors[keyof ListDeviceDownloadsApiV1DeviceDownloadsGetErrors];
+
+export type ListDeviceDownloadsApiV1DeviceDownloadsGetResponses = {
+    /**
+     * Response List Device Downloads Api V1 Device Downloads Get
+     *
+     * Successful Response
+     */
+    200: Array<DeviceDownloadView>;
+};
+
+export type ListDeviceDownloadsApiV1DeviceDownloadsGetResponse = ListDeviceDownloadsApiV1DeviceDownloadsGetResponses[keyof ListDeviceDownloadsApiV1DeviceDownloadsGetResponses];
+
+export type ReportDeviceDownloadApiV1DeviceDownloadsPutData = {
+    body: DeviceDownloadReportBody;
+    path?: never;
+    query?: never;
+    url: '/api/v1/device-downloads';
+};
+
+export type ReportDeviceDownloadApiV1DeviceDownloadsPutErrors = {
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ReportDeviceDownloadApiV1DeviceDownloadsPutError = ReportDeviceDownloadApiV1DeviceDownloadsPutErrors[keyof ReportDeviceDownloadApiV1DeviceDownloadsPutErrors];
+
+export type ReportDeviceDownloadApiV1DeviceDownloadsPutResponses = {
+    /**
+     * Successful Response
+     */
+    204: void;
+};
+
+export type ReportDeviceDownloadApiV1DeviceDownloadsPutResponse = ReportDeviceDownloadApiV1DeviceDownloadsPutResponses[keyof ReportDeviceDownloadApiV1DeviceDownloadsPutResponses];
+
 export type ListUsersApiV1AdminUsersGetData = {
     body?: never;
     path?: never;
@@ -8449,6 +8624,10 @@ export type CreateAdminProfileApiV1AdminProfilesPostData = {
 };
 
 export type CreateAdminProfileApiV1AdminProfilesPostErrors = {
+    /**
+     * Domain rule violation (for example, an exhausted quota).
+     */
+    400: ErrorResponse;
     /**
      * Missing, malformed, expired, or unknown bearer token.
      */

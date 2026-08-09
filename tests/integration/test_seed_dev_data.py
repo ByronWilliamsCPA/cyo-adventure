@@ -49,6 +49,7 @@ _CHILD_SUBJECT = "dev-child"
 _ADMIN_SUBJECT = "dev-admin"
 _REVIEW_STORY_ID = "s_bridge_builder"
 _UNRELATED_PROFILE_ID = uuid.UUID("22222222-2222-2222-2222-222222222222")
+_CONSENTED_TARGET_FAMILY_ID = uuid.UUID("33333333-3333-3333-3333-333333333333")
 
 
 async def _library_storybook_ids(
@@ -224,6 +225,58 @@ async def test_seed_dev_data_seeds_unrelated_family_profile(
         assert unrelated_family is not None
         assert guardian_family is not None
         assert unrelated_family.id != guardian_family.id
+
+
+async def test_seed_dev_data_seeds_consented_target_family(
+    engine: AsyncEngine,
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """The seed provides a family that satisfies the admin-create consent gate.
+
+    ``api/admin_profiles.py::_require_family_consent`` reads the TARGET
+    family's adults, so ``docs/api/postman-collection.json`` needs a family it
+    can create into that is not the caller's own and that holds consent. The
+    "Newman Ops Family" the collection builds at runtime cannot serve: its only
+    adult is a pending invite. This fixture must therefore carry a consented
+    adult and, so the collection's family-filtered listing sees only what that
+    run created, no child profiles of its own.
+    """
+    await seed_dev_data(engine=engine, session_factory=sessions)
+    async with sessions() as session:
+        family = await session.scalar(
+            select(Family).where(Family.id == _CONSENTED_TARGET_FAMILY_ID)
+        )
+        assert family is not None
+
+        adults = (
+            await session.scalars(
+                select(User).where(
+                    User.family_id == _CONSENTED_TARGET_FAMILY_ID,
+                    User.role != "child",
+                )
+            )
+        ).all()
+        assert len(adults) == 1
+        # The gate's exact predicate: a non-child row with consent recorded.
+        assert adults[0].consent_accepted_at is not None
+        # ck_user_residence_adulthood_pairing: both non-null with consent.
+        assert adults[0].residence_country is not None
+        assert adults[0].adulthood_attested_at is not None
+
+        profiles = (
+            await session.scalars(
+                select(ChildProfile).where(
+                    ChildProfile.family_id == _CONSENTED_TARGET_FAMILY_ID
+                )
+            )
+        ).all()
+        assert len(profiles) == 0
+
+        guardian = await session.scalar(
+            select(User).where(User.authn_subject == _GUARDIAN_SUBJECT)
+        )
+        assert guardian is not None
+        assert guardian.family_id != _CONSENTED_TARGET_FAMILY_ID
 
 
 async def test_seed_dev_data_seeds_provider_allowlist(

@@ -7,9 +7,14 @@ import { describe, expect, it } from 'vitest'
 import {
   back,
   canGoBack,
+  canSaveBookmark,
   choose,
   currentEndingId,
+  deleteBookmark,
+  listBookmarks,
+  loadBookmark,
   replayRecordedPath,
+  saveBookmark,
   start,
   startContinuation,
   visibleChoices,
@@ -290,5 +295,98 @@ describe('back / canGoBack (go back one page via replay)', () => {
     const live = play(seededStory, ['c_press_on'], { might: 2 })
     const corrupted = { ...live, path: ['n_nowhere', ...live.path.slice(1)] }
     expect(replayRecordedPath(seededStory, corrupted, { might: 2 })).toBeNull()
+  })
+})
+
+describe('bookmarks (save/load/delete/list save-slots)', () => {
+  const lantern = corpus.traces[0].story
+
+  it('saves a snapshot of the current position under a fresh slot id', () => {
+    const state = choose(lantern, start(lantern), 'c_take_lantern')
+    const withBookmark = saveBookmark(state, 'slot-1', 'Before the fork', '2026-08-09T00:00:00Z')
+    expect(withBookmark.save_slots['slot-1']).toEqual({
+      current_node: state.current_node,
+      var_state: state.var_state,
+      visit_set: state.visit_set,
+      path: state.path,
+      label: 'Before the fork',
+      saved_at: '2026-08-09T00:00:00Z',
+    })
+    // Purity: the live position is unchanged by saving a bookmark of it.
+    expect(withBookmark.current_node).toBe(state.current_node)
+    expect(withBookmark.path).toEqual(state.path)
+  })
+
+  it('does not mutate the input state', () => {
+    const state = start(lantern)
+    saveBookmark(state, 'slot-1', 'Start', '2026-08-09T00:00:00Z')
+    expect(state.save_slots).toEqual({})
+  })
+
+  it('lists saved bookmarks newest first', () => {
+    let state = saveBookmark(start(lantern), 'slot-1', 'First', '2026-08-09T00:00:00Z')
+    state = saveBookmark(state, 'slot-2', 'Second', '2026-08-09T01:00:00Z')
+    const listed = listBookmarks(state)
+    expect(listed.map((b) => b.id)).toEqual(['slot-2', 'slot-1'])
+    expect(listed.map((b) => b.bookmark.label)).toEqual(['Second', 'First'])
+  })
+
+  it('excludes a save_slots entry that does not look like a bookmark', () => {
+    const state = { ...start(lantern), save_slots: { legacy: { some: 'future-format' } } }
+    expect(listBookmarks(state)).toEqual([])
+  })
+
+  it('deletes a bookmark by slot id', () => {
+    const state = saveBookmark(start(lantern), 'slot-1', 'First', '2026-08-09T00:00:00Z')
+    const after = deleteBookmark(state, 'slot-1')
+    expect(after.save_slots).toEqual({})
+  })
+
+  it('deleting an unknown slot id is a no-op, not an error', () => {
+    const state = start(lantern)
+    expect(() => deleteBookmark(state, 'does-not-exist')).not.toThrow()
+    expect(deleteBookmark(state, 'does-not-exist').save_slots).toEqual({})
+  })
+
+  it('loads a bookmark as the new live position, keeping save_slots intact', () => {
+    const start_ = start(lantern)
+    const afterChoice = choose(lantern, start_, 'c_take_lantern')
+    const withBookmark = saveBookmark(afterChoice, 'slot-1', 'Fork', '2026-08-09T00:00:00Z')
+    // Keep reading past the bookmark.
+    const further = {
+      ...withBookmark,
+      current_node: 'n_somewhere_else',
+      path: [...withBookmark.path, 'n_somewhere_else'],
+    }
+
+    const loaded = loadBookmark(further, 'slot-1')
+
+    expect(loaded).not.toBeNull()
+    expect(loaded?.current_node).toBe(afterChoice.current_node)
+    expect(loaded?.path).toEqual(afterChoice.path)
+    expect(loaded?.var_state).toEqual(afterChoice.var_state)
+    // save_slots (including this same bookmark) is preserved, not cleared.
+    expect(loaded?.save_slots).toEqual(further.save_slots)
+    // Server-owned fields carry over from the state loadBookmark was called on.
+    expect(loaded?.state_revision).toBe(further.state_revision)
+  })
+
+  it('returns null for an unknown slot id instead of throwing', () => {
+    const state = start(lantern)
+    expect(loadBookmark(state, 'does-not-exist')).toBeNull()
+  })
+
+  it('returns null when a save_slots entry exists but is not a well-formed bookmark', () => {
+    const state = { ...start(lantern), save_slots: { corrupt: { current_node: 'n_x' } } }
+    expect(loadBookmark(state, 'corrupt')).toBeNull()
+  })
+
+  it('caps how many bookmarks can be saved', () => {
+    let state = start(lantern)
+    for (let i = 0; i < 10; i += 1) {
+      expect(canSaveBookmark(state)).toBe(true)
+      state = saveBookmark(state, `slot-${i}`, `Spot ${i}`, '2026-08-09T00:00:00Z')
+    }
+    expect(canSaveBookmark(state)).toBe(false)
   })
 })

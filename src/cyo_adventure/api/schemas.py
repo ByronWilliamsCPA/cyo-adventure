@@ -2259,6 +2259,34 @@ class DeviceGrantListItem(BaseModel):
     created_at: datetime
 
 
+class DeviceDownloadReportBody(BaseModel):
+    """A client reporting it has (or still has) a book cached offline (G15).
+
+    ``device_id`` is a client-generated persistent id (``localStorage``, see
+    ``frontend/src/offline/deviceId.ts``), NOT a device-grant token id; the
+    two are separate identities (see ``DeviceDownload``'s docstring).
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    device_id: str = Field(min_length=1, max_length=64)
+    profile_id: str
+    storybook_id: str = Field(max_length=120)
+
+
+class DeviceDownloadView(BaseModel):
+    """One row of a family's download inventory, as the guardian console sees it."""
+
+    id: str
+    device_id: str
+    profile_id: str
+    profile_name: str
+    storybook_id: str
+    storybook_title: str | None
+    downloaded_at: datetime
+    last_confirmed_at: datetime
+
+
 # ---------------------------------------------------------------------------
 # JIT guardian onboarding (P6-03)
 # ---------------------------------------------------------------------------
@@ -2310,10 +2338,19 @@ ResidenceCountry = Annotated[str, AfterValidator(_normalize_residence_country)]
 class OnboardingConsent(BaseModel):
     """Verifiable-parental-consent payload (Phase 2 / ADR-018 D1; O-117/O-119).
 
-    A signature-capture step layered on the Supabase/Google OAuth login that
+    A typed-name attestation layered on the Supabase/Google OAuth login that
     already authenticates the guardian: ``signer_name`` is a typed
-    full-legal-name attestation, standing in for the FTC's "sign and submit
-    electronically" method (312.5(b)(2)(i)). ``accepted``, ``policy_version``,
+    full-legal-name attestation, and the OAuth session supplies the identity
+    binding. Nothing is drawn, uploaded, or cryptographically signed.
+
+    Do not describe this as an enumerated FTC consent method. It was built on
+    the belief that it satisfied a "sign and submit electronically" method at
+    16 CFR 312.5(b)(2)(i); reading that provision directly on 2026-08-08 found
+    no such method, and whether this flow is an enumerated method AT ALL is
+    an open question with outside counsel (ADR-018 D1). The record this model
+    captures is required under every candidate method, so it stands
+    regardless of how that question resolves; only the strength of the
+    verification step is in doubt. ``accepted``, ``policy_version``,
     ``signer_name``, ``residence_country``, and ``adulthood_attested`` must
     all be present together to actually record consent; a request that omits
     or falsifies any of them records nothing (see

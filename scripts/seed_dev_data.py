@@ -64,6 +64,12 @@ _DUAL_SUBJECT = "dev-dual"
 # profile. Kept in sync with UNRELATED_PROFILE_ID in that spec.
 _UNRELATED_PROFILE_ID = uuid.UUID("22222222-2222-2222-2222-222222222222")
 
+# Fixed id so docs/api/postman-collection.json can POST /admin/profiles into a
+# family that is NOT the caller's and that HAS consent, without a dynamic
+# lookup. Kept in sync with the `consented_family_id` collection variable.
+_CONSENTED_TARGET_FAMILY_ID = uuid.UUID("33333333-3333-3333-3333-333333333333")
+_CONSENTED_TARGET_SUBJECT = "dev-consented-target-guardian"
+
 # Fixed ids/titles so series-continue-real.spec.ts can locate the two books by
 # title in the library and follow the reader flow through to book 2 without a
 # dynamic lookup of story ids.
@@ -595,6 +601,49 @@ async def _seed_unrelated_family(session: AsyncSession) -> bool:
     return True
 
 
+async def _seed_consented_target_family(session: AsyncSession) -> bool:
+    """Idempotently seed a consented family that is nobody's caller family.
+
+    ``api/admin_profiles.py::_require_family_consent`` gates
+    ``POST /api/v1/admin/profiles`` on the TARGET family holding consent, so
+    the collection needs a family it can create into that satisfies the gate.
+    The "Newman Ops Family" the collection builds at runtime cannot: it is
+    created through ``POST /api/v1/admin/families`` and its only adult is a
+    ``pending`` invite, which carries no ``consent_accepted_at``. That family
+    is still used, as the negative case for the same gate.
+
+    Deliberately seeded with no child profiles, so the collection's
+    family-filtered listing sees exactly what the collection itself created.
+
+    Returns:
+        True when it inserted the family, False when it already existed.
+    """
+    exists = await session.scalar(
+        select(Family.id).where(Family.id == _CONSENTED_TARGET_FAMILY_ID)
+    )
+    if exists is not None:
+        return False
+    session.add(Family(id=_CONSENTED_TARGET_FAMILY_ID, name="Consented Target Family"))
+    await session.flush()
+    now = datetime.now(UTC)
+    session.add(
+        User(
+            family_id=_CONSENTED_TARGET_FAMILY_ID,
+            role="guardian",
+            authn_subject=_CONSENTED_TARGET_SUBJECT,
+            consent_accepted_at=now,
+            consent_policy_version="dev-seed",
+            consent_signer_name="Consented Target Guardian",
+            consent_ip="127.0.0.1",
+            # O-117/O-119: both columns must be non-null together, and only
+            # when consent_accepted_at is set (ck_user_residence_adulthood_pairing).
+            residence_country="US",
+            adulthood_attested_at=now,
+        )
+    )
+    return True
+
+
 async def _seed_provider_allowlist(session: AsyncSession) -> bool:
     """Idempotently seed the provider/model allowlist from ``DEFAULT_ALLOWLIST``.
 
@@ -693,6 +742,11 @@ async def seed_dev_data(
         # on a re-run; gating on guardian-absence would skip them forever.
         allowlist_seeded = await _seed_provider_allowlist(session)
 
+        # Same placement rationale as the two above: its own existence check,
+        # ahead of the guardian early return, so an already-seeded database
+        # gains it on a re-run rather than skipping it forever.
+        consented_target_seeded = await _seed_consented_target_family(session)
+
         existing = await session.scalar(
             select(User).where(User.authn_subject == _GUARDIAN_SUBJECT)
         )
@@ -710,12 +764,13 @@ async def seed_dev_data(
                 or series_chain_seeded
                 or allowlist_seeded
                 or dual_user_seeded
+                or consented_target_seeded
             ):
                 await session.commit()
             print(
                 "Dev data already seeded; refreshed late-added fixtures "
                 "(cross-family profile, series chain, provider allowlist, "
-                "dual-role adult) if missing."
+                "dual-role adult, consented target family) if missing."
             )
             return
 

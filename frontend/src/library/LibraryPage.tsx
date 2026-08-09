@@ -6,12 +6,14 @@ import { CharacterCreator } from '../characters/CharacterCreator'
 import { CharacterPicker } from '../characters/CharacterPicker'
 import { LOOK_SWATCHES } from '../characters/characterApi'
 import { useActiveCharacter } from '../characters/useActiveCharacter'
+import { makeRemoveDownload } from '../api/readerApi'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { logApiError } from '../hooks/logApiError'
 import { useApi } from '../hooks/useApi'
 import { useKidOutletContext } from '../kid/kidOutletContext'
 import { EMPTY_PROGRESS, makeProgressApi, type ProgressSummary } from '../kid/progressApi'
 import { Mascot } from '../kid/Mascot'
+import { getOrCreateDeviceId } from '../offline/deviceId'
 import {
   consumeDownloadEviction,
   consumeDownloadRefusal,
@@ -99,6 +101,41 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
   const libraryApi = useMemo(() => makeLibraryApi(api), [api])
   const recommendationsApi = useMemo(() => makeRecommendationsApi(api), [api])
   const progressApi = useMemo(() => makeProgressApi(api, profileId), [api, profileId])
+  // G15 storage/download view: reports a book's removal from this device's
+  // offline cache to the guardian console. The only caller today is the
+  // reconcileOfflineCache call in `load` below (the shared-content purge,
+  // offline/revocation.ts's own `reportRemoval` option); best-effort and
+  // fire-and-forget, mirroring ReaderRoute.tsx's `reportRemoval` for the
+  // reader's own eviction path.
+  const removeDownloadApi = useMemo(() => makeRemoveDownload(api), [api])
+  const reportRemoval = useCallback(
+    (storybookId: string) => {
+      // #EDGE: external resources: guard a synchronous throw here, not just a
+      // rejected promise, same reason as ReaderRoute.tsx's own reportRemoval:
+      // reconcileOfflineCache calls this synchronously from inside its purge
+      // loop, and the arguments are evaluated before .catch() is attached.
+      // Defense in depth rather than the only guard: revocation.ts wraps this
+      // callback too, so removing this try/catch does not by itself break the
+      // shelf. It exists so this call site is safe on its own terms, the way
+      // ReaderRoute's is, instead of depending on a caller's discipline.
+      // #VERIFY: the load-bearing assertion is revocation.test.ts "a
+      // synchronously-throwing reporter does not break the purge loop";
+      // LibraryPage.test.tsx "finishes the shelf load when the device-id
+      // lookup throws during a purge" covers the end-to-end containment.
+      try {
+        removeDownloadApi({
+          deviceId: getOrCreateDeviceId(),
+          storybookId,
+        }).catch((err: unknown) => {
+          // Redacted shape only, never the raw axios error; see logApiError.
+          logApiError('device-download removal report failed', err)
+        })
+      } catch (err: unknown) {
+        logApiError('device-download removal report could not be sent', err)
+      }
+    },
+    [removeDownloadApi]
+  )
   const [state, setState] = useState<LibraryState>({ status: 'loading' })
   // Task 8: which character (if any) is active for this profile, and the
   // toggle for the inline switcher below the heading. Fetched independently
@@ -302,7 +339,8 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
         // #CRITICAL note on never purging after a failed fetch.
         reconcileOfflineCache(
           id,
-          items.map((item) => item.id)
+          items.map((item) => item.id),
+          { reportRemoval }
         ).catch((err: unknown) => {
           logApiError('offline cache reconcile failed', err)
         })
@@ -369,7 +407,7 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
     return () => {
       cancelled = true
     }
-  }, [libraryApi, recommendationsApi, profileId])
+  }, [libraryApi, recommendationsApi, profileId, reportRemoval])
 
   useEffect(load, [load])
 

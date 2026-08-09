@@ -234,6 +234,32 @@ def _compose_kid_flagged(
     )
 
 
+def _compose_notification_digest_ready(
+    event: PipelineEvent, _ctx: EntityContext
+) -> RawNotification | None:
+    """Map NOTIFICATION_DIGEST_READY (S9): the periodic batched-summary job ran.
+
+    ``payload["digest_count"]`` is the only fact this event carries (never
+    which notifications; a guardian sees the real items on the ordinary
+    feed). A run that found nothing pending writes no event at all
+    (notifications/digest.py), so ``digest_count`` is always a positive int
+    here; a missing or non-positive value is treated as "nothing to show"
+    rather than trusted blindly, since this composer must not crash on a
+    malformed row from a future writer bug.
+    """
+    payload = event.payload or {}
+    count = payload.get("digest_count")
+    if not isinstance(count, int) or count <= 0:
+        return None
+    noun = "update" if count == 1 else "updates"
+    return RawNotification(
+        kind="digest",
+        title=f"{count} {noun} waiting for you",
+        body="Open your notifications to see everything that happened recently.",
+        severity="info",
+    )
+
+
 _COMPOSERS: dict[EventType, Composer] = {
     EventType.REQUEST_CREATED: _compose_request_created,
     EventType.REQUEST_APPROVED: _compose_request_approved,
@@ -242,6 +268,7 @@ _COMPOSERS: dict[EventType, Composer] = {
     EventType.RELEASED: _compose_released,
     EventType.BOOK_ASSIGNED: _compose_book_assigned,
     EventType.STORYBOOK_ARCHIVED: _compose_storybook_archived,
+    EventType.NOTIFICATION_DIGEST_READY: _compose_notification_digest_ready,
 }
 
 # #ASSUME: data-integrity: a sibling workstream is adding EventType.KID_FLAGGED
