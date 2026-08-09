@@ -186,9 +186,14 @@ cells, independent of user count.
 
 | Per-child stories/month | Total catalog required | Have today |
 | --- | --- | --- |
-| 0.5 | ~130 | 57 |
-| 1.0 | ~408 | 57 |
-| 2.0 | ~816 | 57 |
+| 0.5 | 106 | 57 |
+| 1.0 | 204 | 57 |
+| 2.0 | 408 | 57 |
+| 4.0 | 816 | 57 |
+
+(Corrected 2026-08-09: an earlier revision of this section quoted "about 130 at 0.5, 408
+at 1, 816 at 2", which was off by one rate step. The 408 and 816 figures are the 2 and 4
+per-month columns.)
 
 To keep a repeat less likely than not through a child's 10th request in one cell, that cell
 needs 19 to 36 skeletons for a single child, or 35 to 46 under today's family scoping.
@@ -196,6 +201,57 @@ needs 19 to 36 skeletons for a single child, or 35 to 46 under today's family sc
 **The number that decides everything here is per-child stories per month, and it is not
 measured in this deployment.** That is the one product metric worth instrumenting before
 committing to a catalog target.
+
+### 2b.3a Length demand is not flat, and that changes where the catalog goes
+
+Owner correction, 2026-08-09: demand concentrates on **medium length** within a band, with
+few requests for short books and few for very long ones. The sizing above assumed flat
+demand across a band's length tiers, which is wrong.
+
+**Cells are hard partitions.** `skeleton_matches_cell` treats only a NULL length as a
+wildcard, and **0 of the 58 production-eligible skeletons declare a NULL length**
+(verified by enumeration). A medium request can never be served by a short or long
+skeleton, so shortfalls are additive and surpluses are stranded capital.
+
+**The total does not move; the shortfall and its location do.** A band's requirement is one
+child's band-lifetime consumption however it splits, so peaking demand leaves the total
+essentially unchanged (106 flat versus 108 to 110 medium-weighted at 0.5/month, the delta
+being per-cell ceiling rounding). What rises is the **shortfall, by 23 to 32%** (47 flat
+versus 58 to 62 medium-weighted at 0.5/month), because a flat catalog spreads 3 to 4
+skeletons per cell against demand that is not flat.
+
+**The binding constraint moves to the medium cell in every band**, and exhaustion arrives
+about one request sooner. At 8-11 the probability a child hits a repeat by their 4th
+request rises from 0.386 (flat) to 0.647 (strongly medium-weighted). Under both
+medium-weighted regimes, **every short and long cell is at or near sufficiency at
+0.5/month while every medium cell is short by 5 to 11 skeletons.**
+
+**Build order follows directly: put the first 6 to 12 skeletons of each band's budget
+entirely into that band's medium cell.** Against an even three-way split that buys 0.8 to
+2.2 additional requests before a repeat, and an even split is never optimal in any band
+under either medium-weighted regime. Short and long only earn marginal skeletons past
+roughly the 17th to 20th request, once medium is deep enough that its hazard falls below
+theirs.
+
+Two defects surfaced alongside this, both independent of catalog size:
+
+1. **Kid auto-approve hardcodes `length=SHORT` for every band**
+   (`api/story_requests.py:508`). Adult-initiated requests require an explicit,
+   unprefilled length at both entry points, so there is no adult-path default to conflict
+   with medium demand; but auto-approved requests, the ones where nobody is choosing, are
+   steered into the thin-demand tier. **For the teen bands this is an outright bug:**
+   13-16 and 16+ have no short cell by design (ADR-011) and hold no short skeletons, so a
+   teen-band child with auto-approve enabled produces an empty candidate list and a 422
+   every time.
+2. **ADR-011's band-by-length rule is enforced nowhere in the request path.** The approve
+   body validates band against *style* only, and both length selectors render all three
+   lengths for every band, so a guardian can approve a "long" 3-5 book or a "short" 13-16
+   book and hit the same empty-cell failure much later.
+
+The teen bands are also the most expensive per unit of demand served, not the least: the
+prose/gamebook split doubles their cell count, so 13-16 needs 15 skeletons in each of
+medium/prose and medium/gamebook at 1/month, against 22 for a non-teen band's single
+medium cell.
 
 ### 2b.4 On band weighting
 
