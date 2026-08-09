@@ -413,3 +413,48 @@ is progress of the intended kind: each iteration relocates the bottleneck into a
 more checkable artifact. The contract-hygiene amendments above are cheaper than the
 B-plus set was, and the third pilot should re-run this same cell after they land, with the
 same margins plus a menu-surface margin.
+
+## 12. Third pilot: same cell after contract hygiene (2026-08-09)
+
+Re-run of the-clocktower-cipher at 10-13 with the section 11 amendment set fully applied.
+Tooling landed first: `--allow-title-rewrite` now treats the storybook title and every
+ending title as leaf content; `check_bible_diversity --contract` reports per-category
+forced-vs-free kind headroom; `check_sibling_fills` uses a length-normalized budget
+(4.0 shared grams per 1000 mean leaf words) plus a menu-frame overlap report; NC-7
+validates a per-binding `label_style` and NC-8 warns on unslotted titles. An agent then
+rewrote the contract device-abstract (five quotable set pieces became invention slots;
+`kind_must_be` reduced to the single safety-meaningful case, the trusted-escort branch;
+per-ending title contracts; five label styles) and re-authored the three bibles into the
+widened headroom.
+
+### Deterministic results
+
+- **MD moved from 0.41 to 0.90-0.92 per pair** under the same tau (0.34). The headroom
+  report shows every multi-entry category with >= 2 free kinds; the pre-hygiene report had
+  the three clue-adjacent categories at 0 free entries.
+- **Selections**: constrained-first derivation with arm rotation produced 16 devices and
+  8 mechanisms per arm, zero mechanism collisions across arms, three distinct cipher forms
+  (symbol substitution, pictogram code, clock arithmetic), NC-7 green including
+  `label_style`.
+- **Fills**: three isolated authors, first-pass integrity 3/3 with full title rewrite
+  (three book titles, 24 ending titles, zero frozen-title reuse, zero cross-arm title
+  collisions), full gate 3/3 not blocked with zero safety flags, mean 113-132 words/node.
+- **Menu frames: 0 shared across all pairs** (pilot 2: the same-book verdict landed on a
+  menu). The per-binding label styles closed the menu channel at the deterministic level.
+- **Sibling grams: first pass FAILED at 20.4/1000**, worse than pilot 2's 9.0. The trace
+  split the causes in two: (a) three residual concrete fact strings (`rooms_mapped` named
+  the spiral stair and pendulum ledge; `cipher_decoded` said "substitution" despite the
+  freed cipher-form slot; `vault_contents_known` enumerated slot-supplied contents), fixed
+  in the contract; and (b) a genuinely new channel: **same-model idiom convergence**.
+  "A door stood ajar on a room that smelled of...", "had only stepped out for tea", "the
+  climb was shorter than it looked" appear in no input file, yet all three isolated
+  authors produced them at the same beats. Device abstraction cannot prevent the sampler
+  defaulting to the same staging idiom for the same obligation.
+- **The tool-feedback loop closed the gap in one round**: each author received the
+  deterministic gram list, rewrote only their own colliding sentences in their binding's
+  voice (24-26 sentences each), and the re-run scored **1.2/1000 against the 4.0 budget**
+  (4 x2 grams remain, all generic), menu frames still 0, integrity and gate still green.
+  This is the production shape: the checker gates, the author revises, no human in the
+  loop.
+- **PS null held**: 0.541-0.551 per pair (leaf 0.083-0.094; structural and theme pinned
+  at 1.0 by design). Leaf similarity is at the noise floor for same-band prose.
