@@ -1,0 +1,155 @@
+# Experiment spec: does obligation variance break single-use? (2026-08-09)
+
+> Owner-requested after the mutation pilot refuted per-request mutation as a catalog
+> multiplier. This is the decisive test of whether a skeleton must be single-use per child.
+
+## 1. The question
+
+A child who reads two fills of one skeleton reaches the same-book verdict by node 3 or 4.
+Every intervention tried so far has failed to move that. **Is single-use inherent to a
+shared armature, or is it an artifact of the one layer we have never varied?**
+
+## 2. What is already ruled out
+
+Do not re-test these. Each was measured on this project's own protocol:
+
+| Layer varied | Result | Recognition |
+| --- | --- | --- |
+| Devices (props, clues, obstacles, safeguards) | Solved: MD 0.41 to 0.90+, all clue margins pass | Unmoved |
+| Prose (wording, labels, titles) | Solved: 20.4 to 1.2 shared grams per 1000, 0 menu frames | Unmoved |
+| Graph shape (M1/M2/M4 mutation) | Refuted: distances 0.0000 to 0.0064 against a 0.05 floor | Landed at position 3 |
+| Model tier (frontier / Sonnet / Haiku) | Moves prose quality (4.9 / 4.0 / 2.2), not sameness | 2.5 at both ends |
+
+## 3. The untested layer
+
+In every pilot, each node carried **one fixed instruction**, shared by every fill of that
+skeleton. The redesign changed the instruction's *form* (from `beats='...'` to a contract
+entry carrying `beat_hint`, `establishes`, `forbids`, `choice_semantics`, `constraints`),
+but not its *constancy*. Two fills of one skeleton were always told the same thing about
+what each scene is for.
+
+That is the remaining candidate fingerprint, and it explains the otherwise puzzling
+results: mutants read as the same book despite different graphs (they preserved 100% of
+the parent's beats), and isolated authors converged despite different devices (they shared
+the obligations).
+
+**The reason to expect this to work is that the same treatment already succeeded one level
+down.** Devices were frozen; making them a per-request draw from a pool moved MD from 0.41
+to 0.90. Ending mechanisms were frozen; making them a per-request draw passed every
+distinctness margin. The obligations themselves were never given that treatment.
+
+## 4. Design
+
+**Intervention: N complete contract variants over one unchanged skeleton graph.**
+
+Per-node independent pools are rejected: NC-1 merge closure is a whole-graph property, so
+independently drawn per-node obligations would not compose into a coherent fact graph. The
+unit of variation is therefore a **complete, individually NC-clean contract** over the same
+nodes and edges, in which nodes serve different narrative functions.
+
+A variant is only admissible if it changes what nodes are *for*, not how they are worded.
+Concretely, across variants a given node must differ in at least two of:
+`establishes`, `choice_semantics`, `affect`, and its `function` label. Rewording a
+`beat_hint` while keeping the same establishes and semantics is a paraphrase, not a
+variant, and fails review.
+
+**Arms.**
+
+| Arm | Skeleton | Contract | Binding | Source |
+| --- | --- | --- | --- | --- |
+| Control A | the-clocktower-cipher | variant 1 (shipped) | harbor observatory | `filled_H_a.json`, already measured |
+| Control B | the-clocktower-cipher | variant 1 (shipped) | carousel pavilion | `filled_H_b.json`, already measured |
+| Treatment C | the-clocktower-cipher | **variant 2 (new)** | river lock-house | new fill |
+| Treatment D | the-clocktower-cipher | **variant 3 (new)** | a fourth binding | new fill |
+
+The control pair costs nothing: it was rated in the third pilot at **recognition node 4,
+score 2.5**, under this exact protocol and rubric. The treatment pair varies binding *and*
+obligations where the control varied binding alone, so the contrast isolates the
+obligation effect.
+
+**Why this skeleton.** It is not production-eligible and sits off the ADR-011 cell matrix
+(AL-176), which disqualifies it for catalog-level conclusions. It is nonetheless the right
+choice here because it is the only skeleton with a hygiene-passed contract **and** a
+measured recognition baseline under the identical protocol. A within-subject comparison
+against a known number is far stronger at n=1 than a fresh skeleton with no anchor.
+Generalization to a production cell requires replication and is out of scope.
+
+## 5. Held fixed
+
+Skeleton graph, node ids, edges, ending kinds and valences, band (10-13), the fill protocol
+(agent authors from files), the rater rubric and its anchors, and the deterministic bench.
+
+## 6. Pre-registered margins
+
+| Outcome | Margin | Control baseline |
+| --- | --- | --- |
+| **Recognition landing (primary)** | past `n_inside` (position 5), or no landing | node 4 |
+| Five-point distinctness | > 2.5 | 2.5 |
+| NC-0..NC-8 on each new contract | clean, errors 0 | clean |
+| Fill integrity (`--allow-title-rewrite`) | exit 0 both fills | met |
+| Full validator gate | not blocked, both fills | met |
+| Sibling grams per 1000 | <= 4.0 | 1.2 |
+| Menu frames shared | 0 | 0 |
+| Prose craft (`--check`) | exit 0 both fills | met |
+
+The last four are **quality guards, not success criteria**: they exist so the experiment
+cannot buy diversity by degrading the book. A treatment arm that beats the recognition
+margin while failing a guard is a failure.
+
+## 7. Independence protocol (AL-181)
+
+The mutation pilot's sibling-gram figure was invalidated because one author wrote both
+arms. This spec fixes that:
+
+1. One agent authors contract variants 2 and 3. It must see variant 1 in order to diverge
+   from it deliberately; that is acceptable because contracts are the *intervention*, not
+   the measurement.
+2. **Two isolated fill agents**, one per treatment arm. Each sees only its own contract,
+   binding, bible, and selection. Neither sees the other arm, the other contract, or any
+   existing fill.
+3. **The rater is a separate agent, blind to the design.** It is told only that the books
+   share a skeleton lineage, and is given the same rubric and the same 2.0 / 2.5 anchors
+   used in prior runs.
+
+## 8. Model assignment, and one deliberate exception
+
+Generative work runs on Sonnet: it is this project's measured shipping floor for prose
+(blind craft 4.0, ship-with-light-edit) and the realistic production tier, so results
+transfer.
+
+**The rater does not run on Sonnet.** The 2.5 baseline was produced by a frontier rater,
+and changing rater tier would confound the one comparison the experiment exists to make.
+The rater therefore inherits the session tier. This is a deliberate exception to the
+Sonnet directive, made to preserve comparability with the anchor.
+
+## 9. Outcomes and what each means
+
+- **Recognition lands past the hub, guards green.** Single-use is not inherent. Obligation
+  variance is the lever, and the format question reopens: a skeleton becomes an N-use asset
+  at the cost of N contracts. Next step is the economics, N contracts per graph versus N
+  graphs.
+- **Recognition improves but does not clear the margin** (say node 5-6, score 3.0). Partial
+  lever. Worth combining with the Layer 1 items (relaxing CG-2, varying scene-function
+  order) before judging.
+- **Recognition unmoved at node 3-4.** Single-use is inherent to a shared armature. Stop
+  looking for a format fix; the answer is volume (catalog depth) plus possibly
+  cross-skeleton recombination, the one mechanism that cleared the anti-clone floor.
+- **Any guard fails.** The arm is void regardless of its recognition score.
+
+## 10. Known limitations, stated in advance
+
+- n=1 skeleton, one rated pair per condition, one pass. The deterministic numbers replicate;
+  the recognition number does not, by construction.
+- The control pair's rating and the treatment pair's rating are separate rater instances.
+  Inter-rater reliability on this rubric is unmeasured (`UW-C105`), so a difference of less
+  than one full position on the landing node should not be treated as signal.
+- Off-matrix skeleton, so catalog-level conclusions do not follow without replication.
+- **Not a confound here, contrary to an earlier claim:** `templates/drafting_guide.md` is
+  spliced into the *production* Stage A and Stage B prompts, but the pilot protocol has
+  agents author from contract files directly, so the guide is not in this loop. It remains a
+  confound for any experiment run through `generate_story` or `fill_skeleton`.
+
+## 11. Cost
+
+Four agent runs: one contract author, two isolated fills, one rater. Plus the deterministic
+battery, which is already scripted. No production code changes.
