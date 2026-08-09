@@ -1,7 +1,14 @@
 # Alternatives to the pre-authored skeleton (2026-08-09)
 
-> Status: proposal for testing, not a decision. Owner-requested after the third diversity
-> pilot ([skeleton-narrative-redesign-proposal-2026-08-09.md](./skeleton-narrative-redesign-proposal-2026-08-09.md),
+> **Status after measurement (2026-08-09): the program described below is NOT warranted on
+> current evidence.** The gating experiment in section 2b has been run. Sibling exposure is
+> real and in fact certain, but its drivers are a 3-per-cell catalog and a family-scoped
+> anti-repeat window, both bounded engineering fixes, rather than the skeleton architecture.
+> The alternatives are retained as a designed option set to revisit if the catalog and
+> scoping fixes fail to clear the problem, not as recommended work.
+>
+> Original status: proposal for testing, not a decision. Owner-requested after the third
+> diversity pilot ([skeleton-narrative-redesign-proposal-2026-08-09.md](./skeleton-narrative-redesign-proposal-2026-08-09.md),
 > sections 10 to 13) concluded that the residual sameness channels are the skeleton's own
 > identity. Grounded in a code survey of the current generation and validation surface;
 > file:line citations below are from that survey.
@@ -126,13 +133,96 @@ Two consequences follow immediately.
    skeleton history is likely a prerequisite for any catalog-scaling answer, and it is a
    much smaller build than any arm in section 6.**
 
-**This is the measurement that should gate the entire program**, and it costs no
-generation tokens: the per-child repeat curve under the shipping selector, the catalog size
-per cell required to push a child's first repeat past their Nth story, and the per-band
-weighting that implies. If the answer is that a child hits a repeat on their second or
-third story, the recognition finding is a product emergency and the alternatives are
-warranted. If the answer is that a bounded catalog build clears it, this document describes
-work that should not be funded.
+**This is the measurement that gates the entire program**, and it costs no generation
+tokens. It has now been run (`scripts/analyze_sibling_exposure.py`), and the answer is
+decisive.
+
+### 2b.1 Measured answer
+
+**Exposure is not merely common, it is certain.** Every populated production cell holds 3
+or 4 skeletons (verified through the shipped `candidates_for_cell`, all 6 bands, min 3,
+median 3, max 4, and 4 cells empty). A child therefore **exhausts a cell by their 4th
+request in it**, after which every further story in that cell is, with probability 1, a
+tree they have already read. A repeat becomes more likely than not at the 3rd or 4th
+request:
+
+| Cell (pool) | P(repeat by 2nd) | by 3rd | by 4th | First likely repeat |
+| --- | --- | --- | --- | --- |
+| 10-13 short (4) | 0.14 | 0.43 | 0.77 | request 4 |
+| 10-13 medium (3) | 0.20 | 0.61 | 1.00 | request 3 |
+| 3-5 short (3) | 0.20 | 0.61 | 1.00 | request 3 |
+
+Rotating across all three length cells at 10-13 (10 skeletons) buys about two extra
+requests, not an order of magnitude, and reaches certainty by request 11.
+
+### 2b.2 The scoping defect is confirmed, and it is the cheaper half of the fix
+
+**No per-child skeleton history exists anywhere in the system.** `Storybook` carries
+`family_id` and `personalization_subject_profile_id` and no other profile link
+(`db/models.py`), and the only two reads of prior `skeleton_slug`
+(`skeleton_match.py:587`, `diversity/history.py`) both filter on `Storybook.family_id`
+with a 20-row window. The per-child evidence needed already exists and is unused:
+`StoryRequest.profile_id` is indexed, and `StorybookAssignment.child_profile_id` is the
+read gate.
+
+The consequences are measurable and entirely attributable to the scoping choice, not to
+pool size. At pool 3, P(repeat by the child's 2nd request) is 0.09 for one reader, 0.19 at
+two children, and 0.29 at three; a counterfactual child-scoped history with three readers
+reproduces the single-reader curve to within noise. The shared 20-row window also hides
+**81%** of a child's own band reading in a three-child household at one story per month.
+A third leak is unmeasured: `visibility='catalog'` books from another family are readable,
+but recency filters on the owning family, so a child can read a catalog story and then be
+served a fresh fill of that same skeleton at full weight.
+
+Scoping the anti-repeat history to the requesting child recovers **25 to 30% of the
+required pool** at N=10 and N=25 for no new content.
+
+### 2b.3 Catalog sizing, and what it costs
+
+Because a skeleton is consumed once per child and reused freely across children (verified:
+no global or cross-family anti-repeat exists, and `visibility='catalog'` actively amortizes
+one fill across families), required catalog is `tenure x rate` spread across a band's
+cells, independent of user count.
+
+| Per-child stories/month | Total catalog required | Have today |
+| --- | --- | --- |
+| 0.5 | ~130 | 57 |
+| 1.0 | ~408 | 57 |
+| 2.0 | ~816 | 57 |
+
+To keep a repeat less likely than not through a child's 10th request in one cell, that cell
+needs 19 to 36 skeletons for a single child, or 35 to 46 under today's family scoping.
+
+**The number that decides everything here is per-child stories per month, and it is not
+measured in this deployment.** That is the one product metric worth instrumenting before
+committing to a catalog target.
+
+### 2b.4 On band weighting
+
+The owner's expectation was a catalog weighted toward the middle of the age range. The
+structural drivers in the code do not by themselves produce that shape: band tenure is 36
+months for every band except 3-5 (24), and cell fragmentation is *highest* in the teen
+bands, where `_STYLE_AWARE_BANDS` splits prose from gamebook into 4 cells rather than 2 or
+3. Two code facts do favor the middle: 8-11 and 10-13 overlap at ages 10 to 11, so a child
+there can be served from either band (about 19 skeletons rather than 9 or 10), a supply
+cushion no other band pair has; and the teen bands' nominal 13 skeletons are really four
+pools of 3 to 4.
+
+So middle-weighting rests entirely on per-child reading *rate* peaking in middle childhood,
+which is a product assumption no code or data in this repo expresses. If that assumption
+holds, weight the middle. The defensible general rule is to size each band proportional to
+`tenure x rate x cells`, which makes measuring the rate per band the prerequisite.
+
+### 2b.5 Verdict
+
+**Replacing the skeleton architecture is not warranted by this evidence.** The exposure is
+real and certain, but its causes are a 3-per-cell catalog and a family-scoped 20-row
+window. Both are bounded, one-time engineering costs that do not grow with the business,
+whereas the alternatives in section 6 are unbounded engineering costs that also forfeit
+personalization eligibility and the pre-LLM denylist floor (section 10). The ordered fix
+list is: scope anti-repeat history to the child, widen or drop the 20-row window, close the
+catalog-visibility leak, instrument per-child reading rate, then buy catalog against the
+measured rate.
 
 Note also that every recognition score in pilots 1 to 3 came from a rater holding two books
 at once and instructed to look for sameness. The product condition is one child, one book,
