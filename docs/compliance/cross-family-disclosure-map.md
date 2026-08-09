@@ -12,7 +12,8 @@ component: Development-Tools
 source: "Direct review of src/cyo_adventure/api/ (all routers), src/cyo_adventure/api/deps.py, src/cyo_adventure/api/personalization.py, src/cyo_adventure/db/models.py at commit d0613a87 (v0.70.0, 2026-08-09), extending docs/compliance/child-origin-dataflow-matrix.md (v2.0) to the adult-originated surfaces that document's scope excludes, and reading against docs/planning/adr/adr-016-recommendation-sharing-social-boundary.md, adr-018-childrens-privacy-compliance.md, adr-022 (RLS tiering), adr-023 (personalization)"
 ---
 
-> **Status**: Draft | **Version**: 1.0 | **Compiled**: 2026-08-09
+> **Status**: Draft | **Version**: 1.1 | **Compiled**: 2026-08-09 | **Updated**: 2026-08-09
+> (owner ruling on CFD-1 recorded in Section 2.1)
 > **Code reviewed at**: commit `d0613a87` (`chore(release): v0.70.0 (#660)`) on `main`
 > **Scope**: every FastAPI route in `src/cyo_adventure/api/` whose authorization allows a
 > caller to receive data about a child who is not in the caller's own family.
@@ -39,6 +40,11 @@ merely determine what has to be written in a privacy notice: it determines which
 consent methods are legally available to this product at all. The disclosure question is upstream of
 the vendor question.
 
+For the admin surfaces specifically that question is now answered: see the owner ruling in
+Section 2.1. Email-plus nonetheless remains unavailable on two independent grounds that the ruling
+does not touch, also set out there, so the enumeration below still has to be complete rather than
+stopping once the admin question closed.
+
 ## 2. The boundary, and the two capacities that cross it
 
 A "family boundary crossing" here means: an authenticated actor receives a field describing a
@@ -59,33 +65,56 @@ routed through it; each admin surface checks the bare `is_admin` boolean.
 consent (ADR-016's dual-guardian rule, `_is_dual_consented` at `recommendations.py:250-253`). These are
 consumer-to-consumer crossings: no operator capacity is involved.
 
-### 2.1 The load-bearing unresolved question
+### 2.1 The capacity question, and the owner's ruling
 
-Every classification in Section 3 turns on one fact the code does not fix:
+Every classification in Section 3 turns on one question:
 
 > **Is the admin capability held only by the operator's own personnel, or can it be delegated to a
 > guardian who is a customer rather than staff?**
 
-If admins are operator personnel, Section 3 is not disclosure at all; it is the operator processing
-its own data, and "support for the internal operations of the website or online service" (16 CFR
-312.2) plus the general operator-employee understanding covers it. If the admin capability is ever
-granted to a community reviewer, every row in Section 3 becomes a disclosure of a child's personal
-information to a person outside the child's family, and:
+**Owner ruling, 2026-08-09: the admin capability is internal only. An admin is the operator's own
+personnel and is never a third party.** The capability is not, and will not be, delegated to a
+guardian acting as a customer.
 
-- email-plus (312.5(b)(2)(vi)) becomes unavailable as a consent method;
-- the amended Rule's **separate consent for non-integral third-party disclosure** obligation attaches;
-- the direct notice under 312.4(c)(1) must name the category of recipient.
+Consequences, which apply to every surface in Section 3:
 
-The code's own comments state the design intent. `approval.py:108` calls the admin "the backend
-safety-review operator". `deps.py` documents the capability as cross-family by construction. But
-intent is not an invariant: nothing in the model, the migration, or the auth seam prevents
-`is_admin` from being set on an arbitrary guardian's `User` row, and `POST /api/v1/admin/users`
-(`admin_users.py:264`) is a live route for creating adults.
+- Section 3 is **not third-party disclosure**. It is the operator processing data it collected, and
+  it is covered by the operator's own processing plus "support for the internal operations of the
+  website or online service" (16 CFR 312.2) where an internal-operations characterization is needed
+  at all.
+- The amended Rule's **separate consent for non-integral third-party disclosure** obligation does
+  **not** attach on account of the admin surfaces.
+- The direct notice under 312.4(c)(1) need not name an admin recipient category, because there is
+  no external recipient here to name.
+- Section 3 places no constraint of its own on which consent methods are available, including
+  email-plus.
 
-**Recommendation (engineering):** make the intent an enforced fact before it becomes a legal
-question. The cheapest form is a settings-backed allowlist of admin-eligible subjects plus an `ADR`
-recording that admin equals operator personnel, so the answer to counsel's question is a constant
-rather than an operational policy. See Section 6, item CFD-1.
+**What the ruling does not do.** It does not make email-plus available. Email-plus under
+312.5(b)(2) is conditioned on the operator making no disclosure of children's personal information
+to third parties **at all**, and two independent grounds already foreclose it, neither of which
+involves the admin capability:
+
+1. **Third-party processors.** A child's free-text story wish reaches external classifiers and
+   model providers. The child-origin dataflow matrix establishes at least one confirmed adverse
+   case: the Google Perspective request sets no `doNotStore` field, so the content is usable for
+   the vendor's own model building, which defeats the internal-operations characterization for that
+   vendor specifically (matrix sections at lines 186-207 and 828-833; code fix tracked as issue
+   **#659**). The Anthropic direct leg sits outside the OpenRouter zero-data-retention guardrail.
+2. **Consumer-to-consumer ring-2 flows.** Section 4 discloses a child's real `display_name` to
+   another household. Another family is a third party regardless of how the admin capability is
+   staffed.
+
+So the ruling **simplifies** the analysis and removes an open architectural question; it does not
+change the consent-method conclusion. The vendor comparison stands where it stood.
+
+**What still needs to happen, and why it is now smaller.** The ruling is a statement about how the
+product is operated. The code does not yet enforce it: `Principal.is_admin` can be set on any
+guardian's `User` row, and `POST /api/v1/admin/users` (`admin_users.py:264`) is a live route for
+creating adults. The code's own comments already assume the ruling (`approval.py:108` calls the
+admin "the backend safety-review operator"), so what remains is to make an asserted operational
+fact into an enforced invariant, which is ordinary work rather than an open question. Until it is
+enforced, the ruling is a policy that a future configuration change could silently falsify, and it
+would falsify a compliance premise rather than merely a design intent. See Section 6, item CFD-1.
 
 ## 3. Operator-capacity crossings (the admin capability)
 
@@ -339,7 +368,7 @@ Recorded so a future reader does not have to re-derive the negative.
 
 | ID | Finding | Recommendation | Priority |
 | --- | --- | --- | --- |
-| **CFD-1** | The admin capability is cross-family by construction but nothing constrains who holds it. Whether Section 3 is "internal operations" or "third-party disclosure" is an operational fact, not an enforced one, and it determines whether email-plus VPC is available at all. | Record an ADR stating admin equals operator personnel; enforce it with a settings-backed allowlist checked at `POST /api/v1/admin/users` and at capability grant. Then the answer to counsel is a constant. | **Critical** |
+| **CFD-1** | **RULED 2026-08-09 (owner): the admin capability is internal only; an admin is operator personnel, never a third party.** Section 3 is therefore not third-party disclosure. The residual is that the code does not enforce the ruling: `Principal.is_admin` can be set on any guardian's `User` row, so a configuration change could silently falsify what is now a compliance premise rather than a design intent. | Record the ruling in an ADR; enforce it with a settings-backed allowlist of admin-eligible subjects, checked at `POST /api/v1/admin/users` and at any capability grant, with a test asserting a non-allowlisted subject cannot be granted `is_admin`. | **High** (was Critical; the legal question is answered, the enforcement is not built) |
 | **CFD-2** | `GET /api/v1/admin/audit` projects `payload` as an unfiltered `dict[str, object]` (`audit.py:335`) over an event log that receives child free text. Any future payload field widens the surface with no review signal. | Replace the pass-through with a per-`event_type` field allowlist; unknown keys drop rather than pass. Add a test that a novel payload key does not reach the wire. | **High** |
 | **CFD-3** | `GET /api/v1/admin/story-requests` returns child-authored free text plus `profile_id` and `age_band` across families. | Confirm the admin console actually renders `request_text` for triage; if a redacted or interpretation-only view suffices for the queue, project that and fetch full text only on explicit drill-down, so bulk listing is not bulk free-text egress. | **High** |
 | **CFD-4** | `GET /api/v1/admin/profiles` returns `reading_level_cap`, `tts_enabled`, `reduce_motion` cross-family; jointly a disability proxy. | Drop accessibility and reading-level fields from the admin list projection unless a named admin workflow needs them. | **Medium** |
@@ -349,8 +378,13 @@ Recorded so a future reader does not have to re-derive the negative.
 
 ## 7. What this document does not answer
 
-1. Whether an operator-personnel admin reading another family's child's free text is a "disclosure"
-   at all, or internal processing. (Section 2.1; the gating question.)
+1. **Resolved by owner ruling on 2026-08-09, not by this document** (Section 2.1): the admin
+   capability is internal only, so Section 3 is operator processing rather than third-party
+   disclosure. Counsel should confirm the classification holds on the facts, since the ruling
+   is a statement about who staffs the role, and the role's authority is genuinely global. The
+   question this document cannot answer is whether an operator-personnel characterization survives
+   if the operator is a sole individual who is simultaneously a customer of the product, which is
+   the actual configuration today.
 2. Whether ring-2 recommendation and personalization consent, as built, satisfies 312.5(a)(2)'s
    separate-consent-for-disclosure option, or whether it is a distinct consumer-to-consumer
    arrangement outside that framework.
