@@ -2259,6 +2259,34 @@ class DeviceGrantListItem(BaseModel):
     created_at: datetime
 
 
+class DeviceDownloadReportBody(BaseModel):
+    """A client reporting it has (or still has) a book cached offline (G15).
+
+    ``device_id`` is a client-generated persistent id (``localStorage``, see
+    ``frontend/src/offline/deviceId.ts``), NOT a device-grant token id; the
+    two are separate identities (see ``DeviceDownload``'s docstring).
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    device_id: str = Field(min_length=1, max_length=64)
+    profile_id: str
+    storybook_id: str
+
+
+class DeviceDownloadView(BaseModel):
+    """One row of a family's download inventory, as the guardian console sees it."""
+
+    id: str
+    device_id: str
+    profile_id: str
+    profile_name: str
+    storybook_id: str
+    storybook_title: str | None
+    downloaded_at: datetime
+    last_confirmed_at: datetime
+
+
 # ---------------------------------------------------------------------------
 # JIT guardian onboarding (P6-03)
 # ---------------------------------------------------------------------------

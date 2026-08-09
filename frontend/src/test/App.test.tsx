@@ -64,6 +64,10 @@ vi.mock('../api/readerApi', () => ({
   // resolve so the wired route mounts without a backend.
   makeFetchReadingHistory: () => () => Promise.resolve([]),
   makeSubmitFlag: () => () => Promise.resolve({ id: 'flag', reason: 'confusing' }),
+  // G15: ReaderRoute wires this unconditionally too; the report itself is
+  // exercised by its own suites (readerApi.test.ts, ReaderPage.test.tsx),
+  // here it just needs to resolve so the wired route mounts without a backend.
+  makeReportDownload: () => () => Promise.resolve(),
 }))
 
 const mockGet = vi.fn()

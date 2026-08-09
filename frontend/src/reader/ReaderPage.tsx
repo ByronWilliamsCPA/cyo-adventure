@@ -104,6 +104,20 @@ export interface ReaderPageProps {
    * explicit `undefined`.
    */
   ageBand?: string
+  /**
+   * Reports to the server that this device now has this book cached offline
+   * (G15 storage/download view). Takes only the storybook id: the caller
+   * (`ReaderRoute`) closes over the device id and profile id, since neither
+   * changes within one mounted reader. Best-effort, fire-and-forget from
+   * this page's perspective (this prop returns void, not a Promise this
+   * page would need to await or catch): a report failure must never block
+   * or delay reading, which is already in hand from the IndexedDB cache
+   * regardless of whether the server ever learns about it. Omitted entirely
+   * (most existing tests, and any caller with no wiring for it) means
+   * downloads are simply never reported, matching every other
+   * optional-callback prop's own pattern.
+   */
+  reportDownload?: (storybookId: string) => void
 }
 
 type FetchServerState = (profileId: string, storybookId: string) => Promise<ReadingState | null>
@@ -192,6 +206,7 @@ export function ReaderPage({
   submitFlag,
   fetchPersonalizationValues,
   ageBand,
+  reportDownload,
 }: ReaderPageProps) {
   const [pageState, setPageState] = useState<PageState>({ phase: 'loading' })
 
@@ -381,6 +396,13 @@ export function ReaderPage({
         // failure to cache it locally must not block reading it now.
       }
     }
+    // G15: report this device having the book cached, whether it was
+    // already cached (an IndexedDB hit above) or just freshly cached, so a
+    // repeat read of an already-downloaded book still advances the
+    // guardian-visible "last confirmed" signal (offline_downloads.py's
+    // upsert semantics). Fire-and-forget: reportDownload itself never
+    // returns a Promise this page would await or catch.
+    reportDownload?.(storybookId)
     let saved: ReadingState | undefined
     try {
       saved = await getReadingState(profileId, storybookId)
@@ -485,6 +507,7 @@ export function ReaderPage({
     storybookId,
     version,
     continuation,
+    reportDownload,
   ])
 
   // Load on mount and whenever the load inputs change.

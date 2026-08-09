@@ -25,6 +25,7 @@ from cyo_adventure.db.models import (
     ChildProfilePersonalization,
     Completion,
     Concept,
+    DeviceDownload,
     DeviceGrant,
     FamilyConnection,
     KidFlag,
@@ -112,6 +113,14 @@ async def _populate_child_linked_rows(
                 family_connection_id=None,
                 connected_family_label="Cousins Family",
                 covered_slot_types=["pet_name"],
+            )
+        )
+        s.add(
+            DeviceDownload(
+                family_id=seed.family_id,
+                child_profile_id=seed.child_profile_id,
+                device_id="drill-device-1",
+                storybook_id=seed.storybook_id,
             )
         )
         await s.commit()
@@ -239,6 +248,14 @@ async def test_delete_profile_removes_child_linked_rows(
                 select(User).where(User.child_profile_id == seed.child_profile_id)
             )
         ) is None
+        # G15: the offline-download record CASCADEs with the profile too.
+        assert (
+            await s.scalar(
+                select(DeviceDownload).where(
+                    DeviceDownload.child_profile_id == seed.child_profile_id
+                )
+            )
+        ) is None
         # The story request survives, de-linked rather than deleted: it is
         # family-owned content, not exclusively the child's.
         request = await s.scalar(
@@ -354,6 +371,12 @@ async def test_delete_my_family_removes_everything(
         assert (
             await s.scalar(
                 select(DeviceGrant).where(DeviceGrant.family_id == seed.family_id)
+            )
+        ) is None
+        # G15: the offline-download record CASCADEs with the family too.
+        assert (
+            await s.scalar(
+                select(DeviceDownload).where(DeviceDownload.family_id == seed.family_id)
             )
         ) is None
 

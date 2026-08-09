@@ -136,7 +136,7 @@ Source: [Project Vision](./project-vision.md) sections 1-3;
 | 3 Safety + Review | ✅ Delivered, backend (moderation #36, approval spine #34, review surface + save-state #45); guardian UI is Phase 4a |
 | 4a Library + Profiles | ✅ Delivered (C4a-1..6 merged: app shell/auth #56, profiles #60, library #68, intake #69, assign #75, guardian console #76); **R1 feature-complete** (#73 auth redirect closed 2026-07-06; remaining doc sync #52 is Track 2 hygiene, not an R1 gap) |
 | Story-lifecycle redesign (WS-A..G, post-R1) | ✅ Delivered (merged 2026-07-06 to 2026-07-10: moderation thresholds #141/#161/#162, request lifecycle #163/#164/#165/#167, provider selection + skeleton matching #170/#175, pipeline event log #168, catalog sharing #180, suggestion dashboard #176, series chaining #184/#192); see [story-lifecycle-redesign.md](./story-lifecycle-redesign.md) |
-| 4b Editor + Engagement | ✅ Substantially delivered 2026-07-17, PR #270 (verified 2026-07-20; see the audit note below). G6 node editor, K6 tracker, K7 read-aloud, G2 controls UI, G3 permissions, K15 kid flag all shipped. **Corrected 2026-08-09**: K5/K8 test pins are done, not open (`reader-go-back.spec.ts`, `admin-review-cover.spec.ts`, `BookCard.test.tsx`, all present since 2026-08-04). Still open: bookmarks (not built at all), G15 device/storage view |
+| 4b Editor + Engagement | ✅ Substantially delivered 2026-07-17, PR #270 (verified 2026-07-20; see the audit note below). G6 node editor, K6 tracker, K7 read-aloud, G2 controls UI, G3 permissions, K15 kid flag all shipped. **Corrected 2026-08-09**: K5/K8 test pins are done, not open (`reader-go-back.spec.ts`, `admin-review-cover.spec.ts`, `BookCard.test.tsx`, all present since 2026-08-04). Bookmarks and G15 device/storage view both closed 2026-08-09 (see roadmap.md's Phase 4b Deliverables for detail). Narrow remaining piece: G15's removal path is not wired into automatic client-side eviction |
 | 4c Family Loops (NEW 2026-07-16) | ✅ Delivered | S9 notification infra, G10 alerts, G9 visibility, K12 kid status, G7/G13 budget consent all shipped 2026-07-17 in PR #270 (verified 2026-07-20). The push channel closed 2026-07-29 via authenticated SSE (`api/notifications.py:351-419` resolves the principal and applies the guardian check before streaming any byte). **Closed 2026-08-09**: the server-scheduled digest job (`notifications/digest.py`, `.github/workflows/notification-digest.yml`) that kept capability S9 partial is now built; see roadmap.md's Phase 4c section for detail. **Apple readiness audit 2026-07-20, still open**: G10's `_COMPOSERS` registry (`notifications/registry.py`) alerts a guardian when their child flags a story (`KID_FLAGGED`), but `EventType.FLAG_RESOLVED` (emitted by `resolve_flag` in `api/flags.py:257-265`) has no composer - a guardian who reports content is never told how it was resolved. This narrows Guideline 1.2's "reporting mechanism" gap from "no notification at all" to "one-way notification, no resolution loop"; unrelated to the digest closure above and not addressed by it |
 | 4d Connections (NEW 2026-07-16) | ✅ Substantially delivered 2026-07-17, PR #270 (verified 2026-07-20). G17 dual-guardian consent with an enforced guard at the read path, K17 recommendation surfaces both shipped. Privacy-model erasure coverage for connections not independently re-verified |
 | 5 Hardening | 🟡 Partially delivered (post-R1; public-tier ops fold into Phase 9; 2026-07-16 replan items landed: ADR-007 purge, G8/A5 offline revocation, A13 audit-trail stamps, A4 re-screen first cut, the real-backend S2 conflict spec. Still open: performance pass, Sentry backups/restore drill, admin audit *view*, nightly e2e-real + staging golden journeys, adversarial live-model run, plus two newly surfaced safety gaps H1/G-band-bypass and H2/unmoderated-covers - see roadmap.md) |
@@ -854,9 +854,11 @@ Phase 4b and Phase 5 follow.
 **Branch**: `feat/phase-4b-editor-ux`
 **Milestone**: (post-release; no milestone number assigned)
 **Status**: ✅ Substantially delivered 2026-07-17 (PR #270), verified by the 2026-07-20 plan
-audit. Node editor, ending tracker, and read-aloud all shipped; bookmarks closed 2026-08-09;
-only the device/storage view remains genuinely open (this section previously said "Planned"
-through v2.7, unchanged for 10 days after the PR merged).
+audit. Node editor, ending tracker, and read-aloud all shipped; bookmarks and the
+device/storage view both closed 2026-08-09 (this section previously said "Planned" through
+v2.7, unchanged for 10 days after the PR merged). Narrow remaining piece: the storage
+view's removal path is not wired into automatic client-side eviction (see the roadmap's
+G15 register entry).
 
 **Objective**: Make authoring and reading pleasant beyond the minimum viable release. See
 [ADR-002](./adr/adr-002-client-pwa.md) (TTS via Web Speech API).
@@ -879,9 +881,11 @@ through v2.7, unchanged for 10 days after the PR merged).
 - [x] **Read-aloud (TTS)**: Web Speech API (`SpeechSynthesis`) via
   `frontend/src/reader/useReadAloud.ts`, per-profile `tts_enabled` toggle wired into
   `Reader.tsx` and `ProfileFormDialog.tsx`.
-- [ ] **Guardian device/storage view** (G15 remainder, not originally listed in this table
-  but tracked in roadmap.md's Phase 4b): ADR-014 device authorize/revoke exists; per-device
-  download/storage visibility does not.
+- [x] **Guardian device/storage view** (G15 remainder). Closed 2026-08-09: new
+  `device_download` table + `api/offline_downloads.py`, `offline/deviceId.ts`,
+  `ReaderPage.tsx`'s `reportDownload` prop, and a downloads section in `DevicesPage.tsx`;
+  see roadmap.md's Phase 4b Deliverables section for the full implementation and its one
+  documented scope limit (removal not wired into automatic client-side eviction).
 
 **Acceptance criteria** (from [Roadmap Phase 4b](./roadmap.md)):
 

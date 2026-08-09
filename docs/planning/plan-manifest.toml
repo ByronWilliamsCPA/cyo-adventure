@@ -314,11 +314,12 @@ name = "Editor and engagement"
 track = 1
 shipped = "yes"
 usable = "partial"
-summary = "Node editor, endings tracker, read-aloud, guardian content controls, per-child permission envelopes, kid feedback flag, bookmarks. Shipped 2026-07-17 in PR #270; bookmarks closed 2026-08-09."
+summary = "Node editor, endings tracker, read-aloud, guardian content controls, per-child permission envelopes, kid feedback flag, bookmarks, storage/download view. Shipped 2026-07-17 in PR #270; bookmarks and storage view closed 2026-08-09."
 validated = "2026-08-09"
-# One gap re-checked against code and closed 2026-08-09; the other is genuinely still open.
+# Both prior gaps closed 2026-08-09; one narrow residual noted below keeps usable at
+# "partial" rather than "yes".
 gaps = [
-  "Guardian storage and download visibility is missing; revoke exists (api/device_grants.py:243-291), download visibility does not.",
+  "G15 storage view's removal path (DELETE /v1/device-downloads) is implemented and tested but not wired into the client's automatic eviction (offline/downloadBudget.ts, offline/revocation.ts), both deliberately network-free modules by existing architecture. A book evicted that way leaves a stale row until manually reconciled.",
 ]
 # CLOSED 2026-08-09: "Bookmarks were never built at all." The backend save_slots field
 # (db/models.py's ReadingState, api/schemas.py's ReadingStateBody/ReadingStateView) already
@@ -330,6 +331,12 @@ gaps = [
 # (machine.test.ts coverage), BookmarksButton.tsx (component-tested), and the
 # ReaderPage.tsx signature fix. Capped at 10 bookmarks per story client-side (a UX ceiling,
 # not the byte budget).
+# CLOSED 2026-08-09: "Guardian storage and download visibility is missing." New
+# device_download table (Tier 1 family_scoped RLS) + api/offline_downloads.py
+# (PUT/DELETE/GET /v1/device-downloads); offline/deviceId.ts mints a persistent
+# client-generated device id (separate from device_grant.jti); ReaderPage.tsx reports
+# every read via reportDownload, wired from ReaderRoute.tsx; DevicesPage.tsx renders the
+# result grouped by device. The residual gap above is why this is not a full close.
 
 [phases."4c"]
 name = "Family loops"

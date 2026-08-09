@@ -301,3 +301,30 @@ export function makeSubmitFlag(
     }
   }
 }
+
+export interface ReportDownloadParams {
+  deviceId: string
+  profileId: string
+  storybookId: string
+}
+
+/**
+ * G15 storage/download view (backend: api/offline_downloads.py): report
+ * that this device has (or still has) a book cached offline. Best-effort by
+ * contract, matching FlagButton's own failure posture: a report failure
+ * must never block or interrupt reading, which is already in hand from the
+ * IndexedDB cache regardless of whether the server ever learns about it.
+ * Callers should not await this for anything user-visible; it exists to
+ * make the guardian console eventually consistent, not to gate the read.
+ */
+export function makeReportDownload(
+  api: AxiosInstance
+): (params: ReportDownloadParams) => Promise<void> {
+  return async (params: ReportDownloadParams): Promise<void> => {
+    await api.put('/v1/device-downloads', {
+      device_id: params.deviceId,
+      profile_id: params.profileId,
+      storybook_id: params.storybookId,
+    })
+  }
+}

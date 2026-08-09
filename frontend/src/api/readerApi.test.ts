@@ -10,6 +10,7 @@ import {
   makeFetchSeriesNext,
   makeFetchStory,
   makeRecordCompletion,
+  makeReportDownload,
   makeSyncApi,
 } from './readerApi'
 import type { SaveBody } from '../offline/sync'
@@ -229,5 +230,27 @@ describe('makeFetchSeriesNext', () => {
     const err = mockAxiosError({ isAxiosError: true, response: { status: 500 } })
     const fetchSeriesNext = makeFetchSeriesNext(axiosGetReject(err))
     await expect(fetchSeriesNext('p1', 's1')).rejects.toBe(err)
+  })
+})
+
+describe('makeReportDownload', () => {
+  it('PUTs the device, profile, and book ids to /v1/device-downloads', async () => {
+    const put = vi.fn(() => Promise.resolve({ data: undefined }))
+    const reportDownload = makeReportDownload({ put } as unknown as AxiosInstance)
+    await reportDownload({ deviceId: 'd1', profileId: 'p1', storybookId: 's1' })
+    expect(put).toHaveBeenCalledWith('/v1/device-downloads', {
+      device_id: 'd1',
+      profile_id: 'p1',
+      storybook_id: 's1',
+    })
+  })
+
+  it('propagates a failure unchanged (the caller decides how to swallow it)', async () => {
+    const err = mockAxiosError({ isAxiosError: true, response: { status: 500 } })
+    const put = vi.fn(() => Promise.reject(err))
+    const reportDownload = makeReportDownload({ put } as unknown as AxiosInstance)
+    await expect(
+      reportDownload({ deviceId: 'd1', profileId: 'p1', storybookId: 's1' })
+    ).rejects.toBe(err)
   })
 })

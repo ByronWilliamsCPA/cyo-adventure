@@ -38,6 +38,7 @@ from cyo_adventure.api import (
     moderation_thresholds,
     node_edit,
     notifications,
+    offline_downloads,
     onboarding,
     personalization,
     profiles,
@@ -386,6 +387,13 @@ _OPENAPI_TAGS: list[dict[str, str]] = [
     {
         "name": "notifications",
         "description": "The guardian notification feed projected from the pipeline event log.",
+    },
+    {
+        "name": "offline-downloads",
+        "description": (
+            "Guardian storage/download view: which books are cached offline "
+            "on which device (G15)."
+        ),
     },
     {
         "name": "profiles",
@@ -748,6 +756,7 @@ def create_app() -> FastAPI:
     app.include_router(onboarding.router)
     app.include_router(flags.router)
     app.include_router(notifications.router)
+    app.include_router(offline_downloads.router)
     app.include_router(admin_users.router)
     app.include_router(admin_profiles.router)
     app.include_router(family_connections.router)

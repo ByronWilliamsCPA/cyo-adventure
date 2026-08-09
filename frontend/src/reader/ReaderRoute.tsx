@@ -11,6 +11,7 @@ import {
   makeFetchSeriesNext,
   makeFetchStory,
   makeRecordCompletion,
+  makeReportDownload,
   makeSubmitFlag,
   makeSyncApi,
 } from '../api/readerApi'
@@ -22,6 +23,7 @@ import { getReadAloudPreference } from '../kid/readAloudPreference'
 import { useKidProfile } from '../kid/useKidProfile'
 import { useToast } from '../notifications/useToast'
 import { clearPersonalizationValues, getCachedPersonalizationValues } from '../offline/db'
+import { getOrCreateDeviceId } from '../offline/deviceId'
 import { type ReplayOutcome } from '../offline/sync'
 import { reconcilePersonalizationValues } from '../offline/revocation'
 import { parseContinuation } from '../player/series'
@@ -91,6 +93,23 @@ export function ReaderRoute() {
   const fetchSeriesNext = useMemo(() => makeFetchSeriesNext(api), [api])
   const fetchReadingHistory = useMemo(() => makeFetchReadingHistory(api), [api])
   const submitFlag = useMemo(() => makeSubmitFlag(api), [api])
+  // G15 storage/download view: fire-and-forget, so failures are swallowed
+  // here rather than left for ReaderPage to handle -- a report failure must
+  // never surface anywhere a reader would notice.
+  const reportDownloadApi = useMemo(() => makeReportDownload(api), [api])
+  const reportDownload = useCallback(
+    (storybookIdToReport: string) => {
+      if (profileId === undefined) return
+      reportDownloadApi({
+        deviceId: getOrCreateDeviceId(),
+        profileId,
+        storybookId: storybookIdToReport,
+      }).catch((err: unknown) => {
+        console.error('[reader] device-download report failed', err)
+      })
+    },
+    [profileId, reportDownloadApi]
+  )
   // ADR-023 P6. Memoized on the stable `api` identity like every port above it:
   // ReaderPage's load() depends on these by identity, so a fresh function per
   // render re-fires its mount effect in an unbounded loop (see the
@@ -299,6 +318,7 @@ export function ReaderRoute() {
         submitFlag={submitFlag}
         fetchPersonalizationValues={fetchPersonalizationValues}
         ageBand={ageBand}
+        reportDownload={reportDownload}
       />
       {replayFailedCount > 0 && (
         <div role="alert" className="replay-failed-banner">
