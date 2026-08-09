@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.69.1] - 2026-08-09
+
+### Bug Fixes
+
+- **api**: Gate admin child-profile creation on the target family's consent
+  ([#652](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/652),
+  [`ae5dde0`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/ae5dde0740447bdb1b93dd47a8e6071c47b33f6e))
+
+
 ## [0.69.0] - 2026-08-09
 
 ### Features
@@ -3285,6 +3294,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.69.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.69.0...v0.69.1
 [0.69.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.68.4...v0.69.0
 [0.68.4]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.68.3...v0.68.4
 [0.68.3]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.68.2...v0.68.3
