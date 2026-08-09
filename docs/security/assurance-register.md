@@ -111,7 +111,7 @@ discovery. This is the same treatment GDPR gets: written down before it binds.
 | **State information-security statutes** (NY SHIELD Act, Massachusetts 201 CMR 17.00) | First NY or MA resident outside the operator's household. Neither statute carries a minimum company-size or record-count threshold, unlike several comprehensive-privacy laws | O-120. Distinct from O-97's comprehensive-privacy/design-code determination and from O-61's COPPA-scoped, children-only security program: SHIELD and 201 CMR protect **all** NY/MA residents' private information |
 | **App store accountability acts** (TX SB 2420, UT, LA, AL) | Store distribution at R2/R3. Duties land on the **developer**: age rating, ingest store age and consent signals, re-trigger consent on significant change | O-98 |
 | **App store policies** (Apple Kids, Google Play Families) | Store submission | O-99 |
-| **GDPR / UK GDPR** | First EU or UK child or guardian | O-57 to O-60, O-93, O-34 |
+| **GDPR / UK GDPR** | First EU or UK child or guardian | O-57 to O-60, O-93, O-34, O-121 (Art. 8 child-consent age, added post-2026-08-02) |
 | **DSA Art. 28** | Analysed: does not engage, the service is not an Art. 3(i) online platform. Re-open if any O-118 structure changes | O-118 |
 | **EU AI Act** transparency | EU market entry; generated content disclosure | O-74 |
 | **CRA** | Placing the product on the EU market | Deferred |
@@ -337,18 +337,20 @@ First tranche of work. Each invalidates multiple rows at once.
 
 ## Register rows
 
-One hundred and seventeen items, carrying provisional `O-nn` IDs that become `SEC-nnn` when the
+One hundred and eighteen items, carrying provisional `O-nn` IDs that become `SEC-nnn` when the
 namespace lands. Three are deferred triggers (O-76, O-98, O-99), so the active count is one hundred
-and fourteen, which is **far above** the ~60 ceiling one maintainer can review meaningfully.
+and fifteen, which is **far above** the ~60 ceiling one maintainer can review meaningfully.
 Trimming is the maintainer's decision, not a silent truncation.
 
-**O-120 added post-reconciliation (compliance-verification pass, after 2026-08-02).** The
+**O-120 and O-121 added post-reconciliation (compliance-verification pass, after 2026-08-02).** The
 2026-08-02 reconciliation below fixed the count at 116/113; a subsequent compliance-verification
-pass found the state-sectoral-security family (NY SHIELD Act, Massachusetts 201 CMR 17.00, NYDFS
-Part 500, California SB-327) absent from every applicability table, a genuine gap under this
-document's own instantiation contract, and added O-120 plus the two not-applicable determinations
-(NYDFS, SB-327) in the regulatory-applicability tables above. The count is 117/114 as of that
-addition; recount before trusting either figure further, per the method below.
+pass found two gaps in the regulatory-applicability tables above and closed both. First, the state
+information-security-statute family (NY SHIELD Act, Massachusetts 201 CMR 17.00, NYDFS Part 500,
+California SB-327) was absent entirely; O-120 plus the two not-applicable determinations (NYDFS,
+SB-327) closed it. Second, GDPR Art. 8's member-state child-consent-age table had no row despite
+GDPR itself being tracked; O-121 closed it. Both are genuine gaps under this document's own
+instantiation contract. The count is 118/115 as of both additions; recount before trusting either
+figure further, per the method below.
 
 Each row carries the fifteen fields the spine's row schema requires. Where a field could not be
 derived from the row's own check, the enclosing section, or this document's audit sections, it
@@ -363,8 +365,8 @@ active", and the lifecycle section separately recorded a decision to accept "81 
 figures were wrong, and the error was load-bearing rather than cosmetic: it presented the register
 as six rows over a review ceiling it is actually fifty-three rows over, and it recorded a
 row-budget decision whose stated purpose was to prevent a budget being silently exceeded. The
-authoritative count is a count of `#### O-<digits>` headings within this section: 117 rows, IDs
-running O-01 to O-120 with O-63, O-64, and O-65 unassigned. Recount with
+authoritative count is a count of `#### O-<digits>` headings within this section: 118 rows, IDs
+running O-01 to O-121 with O-63, O-64, and O-65 unassigned. Recount with
 `grep -cE '^#### O-[0-9]+$'`. Note that O-117 and O-119 also appear as the first cell of the
 initial-build commitments table below; those are cross-references to rows defined here, not
 additional rows, and the heading-anchored pattern above deliberately excludes them.
@@ -3194,6 +3196,44 @@ posture at a trust boundary must be verified from outside that boundary.
   profile; today only kid profiles carry age data. Trivial pre-launch, requires backfill against
   live accounts afterwards
 
+#### O-121
+
+- **Category:** SP-13
+- **Framework ref:** not determined
+- **Legal ref:** GDPR Art. 8(1)-(2) (EU 2016/679, member-state consent age 13-16); UK GDPR Art. 8
+  as retained and modified by the UK Data Protection Act 2018 s.9 (UK age fixed at 13, no
+  member-state variation)
+- **Class:** MANUAL
+- **Protected property:** A per-member-state (13-16) and UK (13) child-consent-age table exists
+  and is consulted before any EU or UK child's own consent, rather than a holder-of-parental-
+  responsibility's consent, is treated as a valid legal basis for processing that child's data.
+- **Verification target:** The consent-age determination table or logic, and the point in the
+  consent flow where an EU/UK-resident child's age is checked against it before consent is
+  accepted from the child directly.
+- **Failure oracle:** An EU or UK child below their applicable Article 8 threshold has their own
+  consent treated as valid without a holder of parental responsibility's consent, or a
+  member state's specific threshold (which varies 13-16 by state) is missing or wrong in the
+  table.
+- **Negative control:** not determined
+- **Trigger:** First EU or UK child or guardian, the same trigger that attaches GDPR / UK GDPR
+  generally per the regulatory-applicability table above.
+- **Existing coverage:** none. Absent from this register entirely until this row: neither O-117
+  (country-of-residence signal) nor O-97 (jurisdiction-trigger matrix for state comprehensive-
+  privacy and minors'-design-code regimes) extends to GDPR Art. 8's member-state consent-age
+  table. O-117's country signal is a necessary input to the table this row requires but does not
+  itself supply the age-threshold determination. Low urgency while GDPR has not attached (T4:
+  US-only today, per the regulatory-applicability determination above), but recorded now rather
+  than left silently absent, consistent with how GDPR is written down before it binds elsewhere
+  in this register.
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** A per-member-state (13-16) and UK (13) child-consent-age table exists and is
+  consulted before treating any EU/UK child's own consent, rather than parental/guardian consent,
+  as a valid legal basis, in place before GDPR/UK GDPR attaches (first EU or UK child or
+  guardian)
+
 ### SP-16 Availability, Resilience, Recovery
 
 #### O-44
@@ -3477,11 +3517,12 @@ different question.
    register carried 116 rows, 113 of them active, as of the 2026-08-02 reconciliation, so the
    decision was taken against a figure 35 rows below the real one and the budget was silently
    exceeded after all, by the very entry written to prevent it. A subsequent compliance-verification
-   pass added O-120 (state information-security statutes, absent from every applicability table
-   until then), moving the count to 117 rows, 114 active. Reopened: decide whether the active count,
-   now 114, is accepted, or trim to the ~60 ceiling. This is the maintainer's call and is
-   deliberately left open rather than re-decided here; the point of recording the new addition here
-   is so the next person who reopens this item recounts rather than trusts either historical figure.
+   pass added O-120 (state information-security statutes) and O-121 (GDPR Art. 8 child-consent-age
+   table), both absent from every applicability table until then, moving the count to 118 rows, 115
+   active. Reopened: decide whether the active count, now 115, is accepted, or trim to the ~60
+   ceiling. This is the maintainer's call and is deliberately left open rather than re-decided here;
+   the point of recording each new addition here is so the next person who reopens this item
+   recounts rather than trusts any historical figure.
 7. **Promote the spine.** `assurance-spine.md` is written to be lifted into whatever global
    standards set the operator's tooling keeps, so other projects instantiate it rather than
    rediscovering it. The spine deliberately names no concrete install path, because that path is a

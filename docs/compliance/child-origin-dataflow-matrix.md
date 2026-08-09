@@ -40,10 +40,13 @@ in this matrix substantially sufficient, but found no operating mechanism that k
 current as code changes (the register's own reassessment trigger, O-70, and quarterly state-law
 refresh, O-108, are both specified and unbuilt), and found two regulatory areas absent from both
 documents at the time: GDPR Article 8's per-member-state child-consent age, and US state sectoral
-security law. The state-sectoral-security gap was closed the same day: `assurance-register.md` now
-carries O-120 and two not-applicable determinations (NYDFS Part 500, California SB-327). GDPR
-Article 8 remains unrecorded as of this update; low urgency while GDPR has not attached (US-only,
-per the register's T4 determination), but still an open item, not a closed one.
+security law. Both gaps have since been closed in `assurance-register.md`: O-120 plus two
+not-applicable determinations (NYDFS Part 500, California SB-327) for the state-sectoral-security
+family, and O-121 for GDPR Art. 8's member-state child-consent-age table, recorded now (low
+urgency while GDPR has not attached, US-only per the register's T4 determination) rather than left
+silently absent. Recording a gap is not the same as closing it operationally: every row this update
+touches still carries `Phase home: unassigned` in the register's own accounting, so "recorded" means
+the register now names what should exist, not that it exists yet.
 
 An interactive version of this record (sortable summary table, per-event cards) was also published
 as a Claude Artifact during authoring; this markdown file is the durable, versioned copy and is the
@@ -548,4 +551,4 @@ leaves the family regardless of this mechanism.
 | `docs/compliance/coppa-compliance-audit.md` | Source for the H-02 and M-04 findings central to Section 5's now-resolved conflicts, both since fixed in code; also the origin of several file:line citations reused here after re-verification against current code. |
 | `docs/compliance/coppa-gdpr-remediation-plan.md` | Source for the retention windows referenced throughout Section 3. |
 | `docs/security/assurance-spine.md` | Portable, project-agnostic 17-category control-and-obligation spine; the source of the seventeen SP categories and the regime-applicability trigger method `assurance-register.md` instantiates. |
-| `docs/security/assurance-register.md` | This project's instantiation of the spine: 117 obligation rows (O-01 to O-120) plus the regulatory-applicability determination for every spine-catalogued regime, including O-120 (state information-security statutes) added during this matrix's 2026-08-08 sufficiency verification. The broader monitoring-capability record this matrix's event-level detail feeds into. |
+| `docs/security/assurance-register.md` | This project's instantiation of the spine: 118 obligation rows (O-01 to O-121) plus the regulatory-applicability determination for every spine-catalogued regime, including O-120 (state information-security statutes) and O-121 (GDPR Art. 8 child-consent age) added during this matrix's 2026-08-08 sufficiency verification. The broader monitoring-capability record this matrix's event-level detail feeds into. |
