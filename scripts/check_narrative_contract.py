@@ -204,7 +204,10 @@ def check_selection(
     from that node's contract ``mechanisms`` list (falling back to
     ``premise.resolution_space``), with the mechanism-selection rule from
     AL-157: locked_outcome locks kind, valence, and affect, never the
-    mechanism.
+    mechanism. A reserved top-level ``label_style`` key must name one of
+    the contract's ``label_styles`` (contract-hygiene amendment 5: each
+    binding draws a distinct label voice so choice menus stop rhyming
+    across siblings).
     """
     errors: list[str] = []
     warnings: list[str] = []
@@ -226,6 +229,14 @@ def check_selection(
     }
     unique_seen: dict[str, str] = {}
     for node_id, assigned in selection.items():
+        if node_id == "label_style":
+            styles = cast("list[str]", contract.get("label_styles") or [])
+            if str(assigned) not in styles:
+                errors.append(
+                    f"NC-7: label_style {assigned!r} not in the contract's "
+                    f"label_styles {styles}"
+                )
+            continue
         if node_id not in contracts:
             errors.append(f"NC-7: selection names unknown node {node_id!r}")
             continue

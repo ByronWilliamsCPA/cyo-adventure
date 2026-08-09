@@ -7,7 +7,11 @@ from pathlib import Path
 
 import pytest
 
-from scripts.check_narrative_contract import check_bible, check_contract
+from scripts.check_narrative_contract import (
+    check_bible,
+    check_contract,
+    check_selection,
+)
 
 _SKELETON = {
     "start_node": "a",
@@ -110,6 +114,20 @@ def test_nc5_rejects_forbidden_device_kind_and_unsafe_string() -> None:
     errors, _ = check_bible(bible, contract, "3-5")
     assert any("kind 'deception'" in e for e in errors)
     assert any("forbidden token" in e for e in errors)
+
+
+@pytest.mark.unit
+def test_nc7_label_style_must_come_from_contract_list() -> None:
+    contract = {
+        "label_styles": ["plain verbs", "sensory-first"],
+        "nodes": {},
+        "facts": {},
+    }
+    bible = {"device_vocabulary": {}}
+    errors, _ = check_selection({"label_style": "plain verbs"}, contract, bible)
+    assert errors == []
+    errors, _ = check_selection({"label_style": "rhyming couplets"}, contract, bible)
+    assert any("label_style" in e for e in errors)
 
 
 @pytest.mark.unit
