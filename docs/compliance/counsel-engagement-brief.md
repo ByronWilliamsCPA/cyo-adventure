@@ -29,10 +29,21 @@ internal architecture record that entered from secondary sources and were never 
 checked against the primary legal text; we are asking counsel to verify those directly rather
 than rely on our summary of them.
 
-One item is worth reading out of order. Section 1.6 poses a threshold question about whether the
-most expensive piece of what we built was legally required in the first place. It is framed as a
-sub-question of Question 1 rather than as a sixth question, but an answer to it may dispose of
-Question 1 entirely, so counsel may prefer to take it first.
+Question 1 is not one question but four, and they are logically ordered. Section 1.0 sets out that
+order and states the first two questions in full. We ask counsel to work through them in sequence,
+because an answer to an earlier one can dispose of every question after it. In particular, the most
+expensive thing we built may not have been legally required at all, and we would rather learn that
+before paying for an opinion on whether we built it correctly.
+
+**A note on vocabulary.** This packet uses the words "processor," "Data Processing Agreement," and
+"Standard Contractual Clauses" in a few places. Those are European data-protection terms and we use
+them only because they are the vocabulary of our internal documents, which were drafted with a
+possible later European launch in mind. We do not intend them to imply that the GDPR applies to the
+launch described here; Section 2.1 asks counsel to confirm it does not. Where this packet says
+"processor," please read it as "third party or service provider that receives data from us," and
+please tell us if that loose usage obscures a distinction that matters under COPPA, which uses
+"operator," "third party," and "support for the internal operations of the Web site or online
+service" as its own terms of art.
 
 **The product, in plain terms.** CYO Adventure is a choose-your-own-adventure reading app for
 children, delivered as a web app and (planned) an app-store application. A parent or legal
@@ -55,20 +66,155 @@ alone, there is no need to trace it back into the source material.
 This is the single question we most need answered before this document set can be considered
 complete, and it is the first thing counsel should look at.
 
+### 1.0 The four parts of Question 1, and the order to take them in
+
+An earlier version of this packet asked only one thing: is our consent signature good enough? That
+framing assumed two answers it never checked, namely that consent is owed at all and that the
+cheaper consent methods are closed to us. We have since checked both and neither is as settled as
+we assumed. Question 1 is therefore posed in four parts, to be taken in order:
+
+| Part | Question | Where it is answered |
+|---|---|---|
+| **1A** | Does the child-facing service collect "personal information" from a child at all, such that verifiable parental consent is owed? | Stated in full below |
+| **1B** | For each third party that receives data from us, is that a "disclosure," an "integral" disclosure, or support for internal operations? | Stated in full below |
+| **1C** | If consent is owed, does the mechanism we built satisfy the Rule? | Section 1.3, with background in 1.1 and 1.2 |
+| **1D** | If it does not, what is the minimum compliant alternative? | Section 1.3's closing list and Section 1.5 |
+
+The order matters and is not merely tidy. A "no" at 1A disposes of everything after it. The answer
+at 1B decides whether the two cheapest methods in the Rule are available to us, which in turn
+decides whether 1C is a question about a method we must defend or a method we can simply replace.
+Section 1.6 then asks the mirror-image of 1C: whether the step we built was required even if
+consent is owed.
+
+**Question 1A. Is COPPA personal information collected from a child here at all?** We ask because
+the answer is not obvious to us and it sets the scope of everything else. Two features of the
+product bear on it:
+
+- **Almost everything we hold about a child is collected from the guardian, not from the child.** A
+  child's profile name, age band, reading-level cap, content-flag settings, text-to-speech
+  preference, and avatar are all entered by the guardian on the guardian's own authenticated
+  account. We understand the FTC's position to be that COPPA does not reach information about a
+  child that an operator collects from a parent rather than online from the child. If that is right,
+  the great majority of our child-linked data sits outside the consent obligation entirely, and the
+  obligation attaches only to the narrow set in the next bullet.
+- **The data actually originating from the child is narrow and mostly behavioral.** It is: free text
+  the child types as a story "wish"; a content flag a child can raise on something they are reading;
+  a star rating; and reading-progress state. Separately, a child's session is a backend-minted,
+  profile-scoped token; a child never holds an email address, a phone number, or a third-party
+  account. We are aware that a persistent identifier is itself personal information under
+  16 CFR 312.2, and also that 16 CFR 312.5(c)(7) excepts collecting one from the prior-consent
+  requirement where the operator collects **a persistent identifier and no other personal
+  information** and uses it **only** to support the internal operations of the service. Our reading
+  of that exception is that it does not reach us as the product stands, because the free-text wish
+  is other personal information once we hold it against a profile. We would like that confirmed,
+  because the exception matters a great deal to a product change we are considering, described
+  immediately below.
+
+**A design question that rides on 1A, and that we would like counsel to answer at the same time.**
+We are evaluating a **free tier in which a child cannot request stories at all**, reading only from
+a pre-published catalogue. Our understanding of 312.5(c)(7) is that removing story requests removes
+the only child-originated content that is plainly personal information, which would leave the tier
+collecting a session identifier and nothing else. If that is right, the free tier would sit inside
+the internal-operations exception, and would require **neither verifiable parental consent nor
+notice**. Two specific things we want tested rather than assumed:
+
+- **Does saving reading progress break the exception?** We understand "support for internal
+  operations" to cover authenticating users and personalising content, and we have seen the saving
+  of a game score or achievement level given as an example of permitted personalisation. Reading
+  position looks to us like the same kind of artifact. If it is, the free tier could still sync
+  progress across a family's devices rather than being confined to one device, which materially
+  changes the product. If it is not, we would confine the tier to on-device state.
+- **Does anything else we hold defeat it?** A child in the free tier would still have a profile
+  display name chosen by the guardian and an age band set by the guardian. On our reading those are
+  collected from the parent rather than from the child and so are not counted against the exception,
+  but that reading is doing a lot of work and we would rather have it checked than build on it.
+
+We flag that our understanding of this exception comes from a June 2023 secondary source and
+therefore describes the pre-amendment Rule. **Please confirm the exception's current scope against
+the amended text before we build against it.** This is the one place in this packet where an answer
+would change what we build rather than what we write.
+
+Our own tentative reading, which we would rather have corrected than confirmed politely, is that
+1A resolves against us: we store the child's free text against that child's profile record, which
+looks to us like "information the operator collects online from the child and combines with an
+identifier" under 312.2. If that is right, consent is owed and 1C is a live question. But we want
+the reasoning on the record, because it also tells us which specific data elements carry the
+obligation, and that scoping feeds directly into the retention policy and App Store disclosures in
+Section 3.
+
+**Question 1B. What is the legal character of each third-party recipient?** This is the question we
+most under-asked in earlier drafts, and it turns out to control the cost of the whole engagement.
+The Rule makes the two cheapest consent methods, "email plus" and "text message plus," available
+only to an operator that does not "disclose" children's personal information. Whether we disclose is
+therefore worth several thousand dollars of engineering to us, and it is a question about specific
+outbound network calls rather than about our intentions.
+
+The relevant facts, which we have verified in our own source code rather than assumed:
+
+- A child's free-text wish is sent to two third-party classification services (OpenAI's moderation
+  endpoint and Google's Perspective API) to screen it for unsafe content before a story is
+  generated.
+- Before that call is made, a local, deterministic screening step runs against the text and **hard
+  fails the request** if it matches known personal information, rather than redacting and
+  continuing. The relevant code is `src/cyo_adventure/story_requests/screening.py`, where the
+  screening step runs before the classifier call, not after it.
+- The outbound request bodies to both services carry **the text, the request parameters the vendor
+  API requires, and no identifier of any kind**. The OpenAI body also names the moderation model;
+  the Perspective body also names the language and the set of attributes we ask it to score. Those
+  are the only other fields. There is no
+  child identifier, profile identifier, session token, or account identifier in either payload. The
+  internal label our code attaches to the text never leaves our process; at this stage it is the
+  fixed string `"request"` in any case, identical for every child. The API credential in the request
+  identifies our company to the vendor, not the child.
+- The honest limit on the above: the local screening step is a best-effort match against known
+  patterns and the family's registered child names. It would catch a child typing their own
+  registered first name. It would not reliably catch a child typing a street address or another
+  person's full name that we have never seen.
+
+**The question for counsel:** given those facts, does sending unlabeled free text that has passed an
+identifier screen constitute "disclosure" of personal information within the meaning of
+16 CFR 312.2, such that "email plus" and "text message plus" are closed to us? We would also
+welcome the adjacent ruling: if these recipients are better characterised as providing support for
+our internal operations, or as recipients of a disclosure "integral" to the service the child asked
+for, please say which, because those characterisations carry different obligations and we have not
+classified our vendors against those categories at all. We have a list of every third party that
+receives data and what each receives; Section 5 previously described that list as settled and not
+worth counsel's time, which we now think was wrong, and it is available on request.
+
 ### 1.1 Background: what "verifiable parental consent" means here
 
 The Children's Online Privacy Protection Act ("COPPA," a United States federal law, 15 U.S.C.
 6501-6506, implemented by the Federal Trade Commission's rule at 16 CFR Part 312) requires an
 operator of a child-directed online service to obtain verifiable parental consent before
 collecting personal information from a child under 13. The implementing rule lists several
-methods that satisfy this requirement, including a signed consent form returned by mail, fax, or
-electronic scan; a credit-card or other online-payment-system transaction; a toll-free telephone
-call; a video conference with trained personnel; government-issued identification checked against
-a database; and, the method relevant here, having the parent "sign a consent form and return it
-to the operator via postal mail, facsimile, or electronic scan" or, in a related provision often
-read together with it, "sign and submit electronically" a form of consent (16 CFR
-312.5(b)(2)(i)). Our working understanding, to be confirmed by counsel, is that this last method
-is the one our implementation is intended to satisfy.
+methods that satisfy this requirement. We retrieved the current rule text on 2026-08-08 from the
+Cornell Legal Information Institute's copy of 16 CFR 312.5 and set out the enumerated list at
+312.5(b)(2) here so that counsel can correct us against the authoritative text if our reading of
+it is wrong: (i) a consent form signed by the parent and returned to the operator by postal mail,
+facsimile, or electronic scan; (ii) a credit card, debit card, or other online payment system,
+**used in connection with a transaction**, that provides notification of each discrete
+transaction to the primary account holder; (iii) a toll-free telephone call to trained personnel;
+(iv) a video conference with trained personnel; (v) government-issued identification checked
+against a database, deleted promptly after verification; (vi) knowledge-based authentication
+meeting stated difficulty conditions; (vii) a government photo ID compared against a camera image
+of the parent's face by facial recognition and confirmed by trained personnel, **with both the
+identification and the image deleted promptly after verification**; (viii) "email plus," available only to an
+operator that does not "disclose" children's personal information as defined in 16 CFR 312.2;
+and (ix) "text message plus," available on the same no-disclosure condition. Separately,
+16 CFR 312.5(b)(3) permits a Commission-approved safe harbor program to approve a member
+operator's use of a consent method **not** enumerated in (b)(2), where the program determines
+that the method meets the general standard in 312.5(b)(1).
+
+**A correction we are making against ourselves, and the reason this packet exists in its current
+form.** An earlier draft of this section described the method our implementation targets as
+"sign and submit electronically," presented as part of or adjacent to 312.5(b)(2)(i). We can find
+no such language in the rule. Method (i) reads to us as a description of a *return channel*: the
+parent signs a form away from the service and returns it by mail, fax, or a scanned image. If
+that reading is correct, an electronic signature captured inside our application is not within
+method (i) at all, and the question in Section 1.3 is not whether our signature is good enough
+but whether we are using an enumerated method at all. We would rather counsel begin from the
+corrected reading than from our earlier one. Confirming or rejecting this reading is the single
+most useful thing counsel can do for us.
 
 ### 1.2 What we actually built (concretely, so counsel's technical questions have an address)
 
@@ -116,36 +262,148 @@ built and shipped, not a design proposal:
 
 ### 1.3 The precise question for counsel
 
-**Does a typed full legal name, captured through the flow described in Section 1.2 above, satisfy
-16 CFR 312.5(b)(2)(i)'s requirement that a parent "sign" a consent form, under the
-electronic-signature branch of the FTC's enumerated consent methods?**
+**Is the consent flow described in Section 1.2, a typed full legal name captured inside our own
+application on top of an OAuth login, an enumerated verifiable-parental-consent method under
+16 CFR 312.5(b)(2) at all? If it is not, what is the shortest lawful route to consent for a
+product of this shape?**
 
-We ask only about a typed name because that is the only thing the product captures. If counsel's
-view is that a typed name is insufficient but a drawn signature would suffice, please say so
-explicitly: that would be a build instruction for us, not a description of what exists today.
+Please note the change of shape from our earlier framing, for the reason given in Section 1.1. We
+previously asked whether our signature was *good enough* under 312.5(b)(2)(i). On our corrected
+reading, method (i) describes a return channel for a form signed away from the service, so the
+prior question may presuppose a method that does not cover us. We would rather be told we are
+outside the enumerated list than be reassured we satisfy a branch of it that does not exist.
 
-Two related sub-questions that inform the main one:
+If counsel confirms we are outside 312.5(b)(2), the follow-on question we most need answered is
+which of these is the cheapest lawful path for a product of this shape. We previously scoped this
+list by excluding anything that implied charging money; Section 1.4 explains why we no longer think
+that exclusion was correct, so please treat all three options below as genuinely open:
+
+- **312.5(b)(3), via a Safe Harbor program.** An FTC-approved program may approve a member's use of
+  a non-enumerated method that meets the general standard in 312.5(b)(1). **We are correcting an
+  overstatement we made here in an earlier draft.** We had described this as the mechanism that
+  would make what we already built "usable," which implied that approval is a precondition to
+  relying on a non-enumerated method. We now understand that it is not: an operator may rely on an
+  unenumerated method that meets 312.5(b)(1) without any prior approval, and the approval route
+  exists to give the operator certainty rather than permission. If that is right, the accurate
+  framing of this option is **risk reduction, not authorisation**, and the question for counsel is
+  how much risk we are carrying today rather than whether we are permitted to operate at all. Given
+  the AgeCheq material above, we suspect the honest answer is "more than we assumed," which is
+  precisely why we want the distinction stated correctly rather than flatteringly.
+- **"Email plus" (viii) or "text message plus" (ix).** Both are conditioned on the operator not
+  "disclosing" children's personal information as 16 CFR 312.2 defines that term. **We have twice
+  changed our own position on whether that condition is met, and we now think it is genuinely
+  open rather than closed in either direction.** An earlier draft of this packet asserted these
+  methods were unavailable, on the reasoning that a child's free-text wish is sent to third-party
+  classification services and that this is a disclosure. We then checked what those calls actually
+  contain and found that the text crosses with no child identifier attached and only after a local
+  screening step that hard-fails on a match. Question 1B in Section 1.0 puts the verified facts and
+  the resulting question. We flag the reversal rather than quietly presenting the newer view,
+  because the reversal is itself information about how much weight to give our reading. If counsel
+  concludes we do not disclose, these are by a wide margin the cheapest routes available to us and
+  the rest of Question 1 becomes far less expensive to answer.
+- **Retrofitting an enumerated method.** If one of (i) through (vii) is the only defensible answer,
+  we would want counsel to say which, so the engineering cost is incurred once and against the
+  right target. Section 1.4 records two we weighed, with reasons: one rejection we are
+  **withdrawing** (the payment-card method) and one we are maintaining.
+
+We ask about a typed name only, because that is the only thing the product captures; there is no
+drawn signature and no other capture mechanism. If counsel's view is that a typed name fails where
+some other in-app artifact would succeed, please say so explicitly: that is a build instruction for
+us, not a description of what exists today.
+
+Two sub-questions that inform the main one either way:
 
 - Does layering this signature-capture step on top of an existing third-party OAuth login (rather
   than treating the OAuth login itself as, or requiring, a separate identity-verification step)
   change the analysis? Put differently: is the identity binding that the Google/Supabase login
   provides doing legally sufficient work here, or does the FTC's guidance expect an independent
   verification step distinct from the login that a user would perform for any other reason?
-- Does the choice between a drawn signature and a typed-name attestation matter, or are they
-  legally equivalent for this purpose given that both are logged with the same IP address,
-  timestamp, and account binding?
+- Under 312.5(b)(1)'s general reasonableness standard, does the combination we actually log (a
+  typed legal name, an adulthood attestation, a guardianship attestation, a country of residence,
+  a consent-language version, an IP address, a timestamp, and an OAuth-bound account identity)
+  amount to a method "reasonably calculated, in light of available technology," to ensure the
+  person consenting is the parent? We ask because that standard, rather than any single one of the
+  enumerated methods, may be where our implementation is best assessed. Section 1.6 asks the
+  mirror-image version of this question, whether the same flow **stripped of** the
+  signature-capture step would already satisfy 312.5(b)(1); the two together bound how much work
+  the signature step is doing.
 
-### 1.4 Why we ruled out two other FTC-recognized methods
+**Adverse authority, which we are supplying rather than waiting for counsel to find.** We are not
+asking for a favourable answer, and we would rather pay for the unfavourable one now than discover
+it later. There is a Commission decision that appears to us to be close to on-point against the
+mechanism we built, and we would rather the analysis start there than arrive there.
 
-We want counsel to know we considered, and deliberately did not choose, two other methods on the
-FTC's list, so the review can take that into account rather than default back to recommending
-them without knowing they were already weighed:
+In **January 2015 the FTC concluded its review of AgeCheq Inc.'s second proposed verifiable
+parental consent method**, a "Device-Signed Parental Consent Form," and declined to approve it. As
+we understand the decision, AgeCheq proposed that a parent register with an intermediary, complete
+a parental identity declaration, receive a code by text message, enter that code, and then digitally
+sign a certification that they owned the device. The Commission found the method was not reasonably
+calculated to ensure the person consenting was the parent, reasoning that a child could intercept
+the text-message code. It further noted that **in the 2013 Rule, digital signatures were
+specifically excluded from the enumerated VPC methods because a digital signature alone is not a
+reliable means of obtaining consent**, and that AgeCheq's device-signing step did not "add indicia
+of reliability to the digital signature."
 
-- **A payment-card transaction.** We rejected this because it would pull the application into the
-  scope of the Payment Card Industry Data Security Standard (PCI DSS), a substantial compliance
-  and engineering burden, for a service that is not currently monetized and has no near-term plan
-  to charge money. Coupling a legal-consent mechanism to a future monetization decision was judged
-  undesirable.
+**Why we think this is the hard case for us, stated plainly.** The structure of AgeCheq's method and
+the structure of ours are close analogues. Both pair a signature artifact with a second step
+intended to bind that signature to a real adult: AgeCheq used possession of a device proven by an
+SMS code, we use an authenticated Google account session. If the Commission's objection was that a
+child in the same household can defeat the binding step, that objection appears at least as strong
+against ours, since a logged-in browser session on a shared family tablet is plausibly easier for a
+child to reach than an intercepted text message. And our signature artifact is a typed name, which
+we would expect to be treated as weaker than the digital signature the Commission was addressing,
+not stronger.
+
+**This is why we are asking Section 1.3 as two questions rather than one.** The AgeCheq reasoning
+does not only bear on whether we are inside the enumerated list at 312.5(b)(2), where we already
+expect the answer to be no. It bears on the fallback: it is an application of the general
+"reasonably calculated" standard at 312.5(b)(1) to a comparable belt-and-braces method, and the
+answer was no. If that reading is right, the sub-question above about whether the Google/Supabase
+login is doing the legal work has an adverse answer already sitting on it, and our position is
+weaker than the rest of this packet assumes.
+
+**Sourcing, so counsel can weigh our account appropriately.** We have not read the Commission's
+decision. We are working from the Future of Privacy Forum's June 2023 white paper *The State of
+Play: Is Verifiable Parental Consent Fit For Purpose?*, which describes the decision and quotes the
+"indicia of reliability" language. The underlying primary documents it cites are: *FTC Concludes
+Review of AgeCheq's Second Proposed COPPA Verifiable Parental Consent Method* (January 29, 2015);
+*AgeCheq Inc.'s Application Pursuant to Section 312.12(a)...* (October 1, 2014); and, for AgeCheq's
+earlier and separately denied first application, *FTC Concludes Review of AgeCheq Inc.'s Application
+for Approval of Verifiable Parental Consent Method* (November 21, 2014). **Please read the decision
+rather than our summary of it.** We also note the FPF paper predates the 2025 amendments, so its
+account of the Rule is the 2013 Rule; the Commission's reasoning about signature reliability is
+unlikely to have reversed, but we are not in a position to assert that.
+
+One related point from the same source that cuts the other way and that we record for completeness:
+AgeCheq's **first** application was denied for lack of novelty, because it combined methods already
+on the enumerated list (a financial transaction plus a printed, signed, returned declaration form).
+If that is right, combining two enumerated methods needs no approval at all, which may be relevant
+to the retrofit option below.
+
+### 1.4 Two other FTC-recognized methods we weighed, one of which we are no longer ruling out
+
+We want counsel to know we considered two other methods on the FTC's list, so the review can take
+that into account rather than default back to recommending them without knowing they were already
+weighed. The two are not in the same posture, and the difference matters: we are **withdrawing**
+the first rejection and asking counsel to price the method afresh, and we are **maintaining** the
+second. Read the first bullet as an open option, not as a closed one:
+
+- **A payment-card transaction. We are withdrawing this rejection, and we flag the withdrawal
+  because counsel may otherwise read our earlier reasoning as still operative.** We originally
+  rejected this method on two grounds: that it would pull the application into the scope of the
+  Payment Card Industry Data Security Standard (PCI DSS), and that the service is not monetized and
+  has no near-term plan to charge money, so a consent mechanism built on payment would couple
+  compliance to a future monetization decision we had not made. We now believe the second ground was
+  simply wrong. Reading 16 CFR 312.5(b)(2)(ii) directly, the method requires a payment instrument
+  used "in connection with a transaction" that provides notification of each discrete transaction to
+  the primary account holder; we do not find a requirement that the transaction be **monetary**, and
+  our understanding is that the word "monetary" appeared in the prior version of this provision and
+  was removed by the 2025 amendments. If that is right, a zero-charge card verification satisfies
+  the method, our "we are not monetized" objection never applied, and this may be the cheapest
+  enumerated route open to us. The PCI ground is also weaker than we first stated, since a
+  hosted payment page keeps card data out of our systems. **We would like counsel's view on whether
+  this is now the shortest path to an enumerated method**, and we note that we reached the opposite
+  conclusion for a reason that no longer holds.
 - **A third-party identity-verification service** (for example, a vendor that checks a
   government-issued ID or runs a knowledge-based-authentication check). We rejected this because
   it would introduce a new data processor with its own Data Processing Agreement, Standard
@@ -165,6 +423,28 @@ presumption-of-compliance posture, backed by the program's own audit, for a one-
 on this specific mechanism. We ask counsel to scope the opinion on Section 1.3's question with
 that in mind, for example by noting whether the opinion is durable regardless of a later Safe
 Harbor decision, or is intended to hold only until and unless such membership is obtained.
+
+**One update to that framing, following the correction in Section 1.1.** This section was written
+treating Safe Harbor membership purely as a business option that might *supersede* counsel's
+opinion. If counsel concludes we sit outside the enumerated methods in 312.5(b)(2), then
+312.5(b)(3) makes a Safe Harbor program a route by which our existing implementation could be
+*approved* rather than replaced, which would make it the thing that supplies the answer rather
+than something that later overrides it. That would be a materially different and more urgent
+recommendation than the one this section anticipates, so please say so plainly if it is the
+conclusion.
+
+**A correction to that update, which narrows it.** The paragraph above still overstates the case, and
+we would rather fix it than have counsel spend time on our error. Approval under 312.5(b)(3) is not
+a precondition to using a non-enumerated method; an operator may rely on a method meeting the
+general standard at 312.5(b)(1) without seeking approval from anyone. So a Safe Harbor program does
+not "supply the answer" in the sense of making an otherwise-unusable implementation lawful. What it
+supplies is **certainty about a judgment we are currently making ourselves and carrying the risk
+of**. We understand, further, that no operator has submitted a VPC method for FTC approval since
+2015, which suggests the approval channel is little used and may be slow. The practical question we
+would like answered is therefore narrower than this section originally framed it: **is the residual
+risk of continuing to rely on our own 312.5(b)(1) judgment acceptable, or is it large enough that
+the certainty is worth buying?** The AgeCheq material in Section 1.3 is the main reason we now
+think that question has a real answer rather than an obvious one.
 
 ### 1.6 A threshold sub-question: is a separate signature step required at all?
 
@@ -203,8 +483,14 @@ correct, rests on four points:
    free-text story "wish." That text is screened by third-party classification services before a
    story is generated. Our understanding is that collection *combined with disclosure to a third
    party* is the fact pattern that historically carried the highest consent obligations under the
-   FTC's rule, and is the reason the lower-assurance consent methods (the so-called "email plus"
-   approach, used for internal-use-only collection) are not available to us.
+   FTC's rule. **Whether what we send is a "disclosure" at all is now an open question rather than
+   a settled premise**, for the reasons set out at Question 1B in Section 1.0: the text crosses
+   without any child identifier attached, and only after a local screen that hard-fails on a match.
+   An earlier draft of this packet treated the point as settled against us and drew the further
+   conclusion that "email plus" was unavailable. We have withdrawn that conclusion. Note that this
+   point is about *disclosure* and therefore about which consent methods are open to us; it is not
+   the reason we sit in the child-directed lane, which points 1 through 3 above establish
+   independently.
 
 **A caveat we want stated plainly rather than left implicit.** The observation that comparable
 apps do not collect a signature is an observation about industry practice, not about the law.
@@ -284,26 +570,66 @@ personal-information screening step. Text typed by a child (story-idea "wishes")
 content flags, a child's star ratings, and a child's reading-progress state are excluded from
 every such training or evaluation corpus, with no exception.
 
-We understand, subject to correction, that certain 2025 amendments to the FTC's COPPA Rule
-(discussed further in Section 4 below) newly require that using or disclosing a child's personal
-information to train or develop an AI model be treated as a use requiring its own separate,
-unbundled, opt-in verifiable parental consent, distinct from the consent obtained for core-service
-use, and that this separate consent obligation cannot be a condition of a child's continued access
-to the core service if refused.
+**We are correcting our own statement of the rule here, and the correction narrows it.** An earlier
+draft of this section, and the internal record behind it, stated that the 2025 amendments to the
+COPPA Rule "newly require that using or disclosing a child's personal information to train or
+develop an AI model be treated as a use requiring its own separate, unbundled, opt-in verifiable
+parental consent." We took that formulation from secondary commentary rather than from the rule
+text. Reading 16 CFR 312.5(a)(2) directly, the separate-consent obligation we find there is
+anchored to **disclosure to third parties** that is not integral to the service the child requested,
+rather than to AI training as a named category of first-party use. Our present understanding,
+which is what we ask counsel to correct, is:
 
-**Question for counsel:** given the constraint described above, please confirm our understanding
-that this separate AI-training consent obligation does not currently trigger for this company, on
-the theory that no data actually originating from a child is ever used for AI training or
-evaluation purposes under this constraint. We ask for confirmation, not a design recommendation;
-if the company ever wants to depart from this constraint in the future, we understand that would
-require building a new, separate, default-off consent mechanism before any such data collection
-begins, and we would return to counsel at that time.
+- Where an operator discloses a child's personal information to a third party and that disclosure
+  is not integral to the service, a separate verifiable parental consent is required for the
+  disclosure, and the operator may not condition the child's participation on the parent agreeing
+  to it.
+- AI training appears in the Commission's explanatory material as a **worked example** of such a
+  non-integral disclosure, rather than as a free-standing rule of its own reaching every use of
+  children's data for model development.
+- We are therefore unsure whether an operator training its **own** model, in-house, on children's
+  data it already lawfully collected, is governed by the separate-consent provision at all, or
+  instead by the general consent it obtained plus the Rule's limit on collecting more information
+  than is reasonably necessary to participate.
 
-## 3. Document review: public-facing artifacts (owner drafts, counsel reviews)
+We flag this because we suspect the more expansive formulation is now widely repeated in
+practitioner summaries, and we would rather be told plainly that the narrow reading is correct, or
+that the expansive one is, than continue to design against a rule we restated from a headline.
 
-The company has decided that it, not counsel, will produce the first draft of each public-facing
+**The limit of the constraint, stated before counsel relies on it.** The rule above governs
+corpora **this company builds and controls**. It does not, by itself, say anything about what a
+third party does with child-originated text after we send it. The classifier path described in
+Section 1.0 sends a child's free-text wish to OpenAI's moderation endpoint and Google's
+Perspective API, and we have **not** verified either vendor's retention, model-training, or
+onward-use terms for that traffic. So the honest statement is: no child-originated data enters a
+corpus we control, and whether any child-originated data enters a corpus a **vendor** controls is
+an open question we are raising rather than answering. This is tracked against the same vendor
+due-diligence obligation discussed in Section 3.
+
+**Question for counsel:** three things, in order. First, please tell us which of the two readings
+above is right, since it determines whether this is an obligation about our vendors or an
+obligation about our own model development. Second, please confirm that no
+separate-consent obligation triggers on the **first-party** leg, on the theory that no data
+originating from a child enters a training or evaluation corpus this company controls, under the
+constraint described above. Third, please tell us whether the classifier traffic described just
+above needs vendor terms confirmed before that conclusion can be relied on, and if so what the
+terms have to say. We ask for confirmation, not a design recommendation; if the company ever wants to
+depart from this constraint in the future, we understand that would require building a new,
+separate, default-off consent mechanism before any such data collection begins, and we would return
+to counsel at that time.
+
+## 3. Document review: compliance artifacts (owner drafts, counsel reviews)
+
+The company has decided that it, not counsel, will produce the first draft of each
 compliance artifact below, and that counsel's role is to review and redline each one rather than
-draft from scratch. The internal checkpoint that tracks this work is referred to internally as
+draft from scratch. **These are artifacts counsel reviews, which is not the same set as artifacts
+we publish.** The privacy notice and the data-retention policy are published. The written
+Information Security Program and the breach-notification runbook are **internal** documents:
+they are in this list because counsel should review them, not because we intend to publish them,
+and whether either should be published is itself an open owner decision rather than a settled one.
+An earlier version of this packet filed all four under a single "public-facing" heading, which
+invited publishing a description of our security controls to anyone who asked. The internal
+checkpoint that tracks this work is referred to internally as
 "P7-08"; counsel does not need to look up what that label means beyond understanding it is the
 company's own internal tracking checkpoint for this document set. Please review the following
 artifacts, in whatever order is most efficient for your process:
@@ -311,10 +637,32 @@ artifacts, in whatever order is most efficient for your process:
 | Artifact | Where it lives | Current state |
 |---|---|---|
 | Guardian-facing privacy notice | [`privacy-notice.md`](./privacy-notice.md) | Draft. Already contains a "Notes for counsel" section at the end with specific, bracketed decision points; please treat that section as the operative list of open items on this document and do not expect this brief to duplicate it. |
+| **Direct notice to the parent (16 CFR 312.4(b) and (c))** | **No such artifact exists.** The nearest thing is the consent language rendered on the consent screen described in Section 1.2 (`frontend/src/auth/GuardianConsentPage.tsx`). | **Gap we are flagging against ourselves.** See the note below this table. |
 | Data-retention policy | [`data-retention-policy.md`](./data-retention-policy.md) | Drafted separately as a parallel deliverable; expected to state, for each category of data the company collects, the business reason for keeping it and a hard deletion timeline. |
 | Written Information Security Program | [`information-security-program.md`](./information-security-program.md) | Published (the company's internal designation for "current and in force," not merely drafted). Covers the designated security-program owner, the risk-assessment cadence, and third-party vendor oversight. |
 | Breach/incident-response plan | [`breach-notification-runbook.md`](./breach-notification-runbook.md) | Published. Covers incident classification, escalation, and notification timing. |
 | App Store privacy "nutrition label" disclosures | Not yet drafted | To be derived from the data-classification inventory once the retention policy and privacy notice are finalized; no draft exists yet for counsel to review. |
+
+**On the direct-notice gap.** We had treated "the privacy notice" as one deliverable. Re-reading
+16 CFR 312.4, we now believe it describes two different things: a notice published on the service
+(subsection (d)), which is what our drafted privacy notice is, and a **direct notice to the parent**
+(subsections (b) and (c)), which is the notice an operator must actually deliver to the parent in
+connection with obtaining consent, and whose required contents the Rule sets out specifically. We
+have no artifact for the second one and no record of anyone checking the consent screen's wording
+against subsection (c)'s content list.
+
+**We are treating the two notices as distinct obligations rather than asking whether they are.**
+Subsection (d) opens with the words "In addition to the direct notice to the parent," which we read
+as settling the question on the face of the rule: the published notice is owed *on top of* the
+direct notice, not instead of it. We flag our reading so counsel can correct it if we are wrong,
+but we are not planning around the possibility that this collapses into one obligation, and we
+would rather counsel spend the time on content than on the threshold question. We are not asking
+counsel to draft the direct notice. We are asking for two things: **approval of the direct notice's
+content and of when in the flow it is delivered**, and a redline of the existing consent
+screen wording against what subsection (c) actually requires, so we can tell whether we need a new
+document or only better wording on a screen that already exists. This gap surfaced while preparing
+this packet and is not recorded in any of our earlier compliance audits, which is itself a reason to
+doubt those audits' completeness on notice obligations.
 
 Please note, when reviewing the privacy notice in particular, that it is written to mirror what
 the shipped product actually does today (what data is collected, how consent is captured, what
@@ -337,22 +685,29 @@ them, and we want to be transparent that we have not done that verification ours
 - **The citation itself.** Our internal record cites the relevant rule as: FTC COPPA Rule
   amendments, published at 90 Fed. Reg. 16918, codified at 16 CFR Part 312, with an effective date
   of 2025-06-23 (the amendments took legal effect) and a general compliance date of 2026-04-22
-  (the date by which operators were required to be in compliance). **This citation itself is
-  unverified by us and should be treated as a starting pointer for counsel's own research, not as
-  a confirmed fact.**
-- **The 2026-04-22 general compliance date** stated above, and whether that date is accurate and
-  whether it applies uniformly to every provision discussed in this packet or whether any
-  provision carried a different transition period.
+  (the date by which operators were required to be in compliance). **The citation and these three
+  dates were confirmed against the Federal Register on 2026-08-08** (document 2025-05904, published
+  2025-04-22). What remains unverified by us is the *content* of the amendments, which is what the
+  bullets below are about. Please still confirm the citation in passing, but we are no longer
+  offering it as a bare pointer.
+- **Whether the 2026-04-22 general compliance date applies uniformly** to every provision discussed
+  in this packet. Our reading of the published document is that it does **not**: 16 CFR 312.11(d)(1),
+  (d)(4), and (g) carry a different transition. Please confirm that carve-out and tell us whether
+  any other provision in this packet sits outside the general date.
 - **The claim that the amended rule's definition of "personal information" now includes biometric
   identifiers** (specifically, facial templates and voiceprints) **with no exception for temporary
   security or age-verification use.** This matters to us because the company avoids this category
   entirely today (all avatars are drawn from a preset illustration set, never a photo upload; the
   application has no voice-input feature anywhere), and we want that boundary confirmed as legally
   sound, not merely convenient.
-- **The claim that the amended rule requires its own separate, unbundled, opt-in verifiable
-  parental consent specifically for using or disclosing a child's personal information to train or
-  develop AI models**, distinct from core-service consent, and that this consent cannot be a
-  condition of service access. This is the claim underlying Section 2.3's confirmation ask above.
+- **The scope of the separate-consent obligation at 16 CFR 312.5(a)(2)**, and specifically which of
+  the two readings set out in Section 2.3 is right: whether the obligation is anchored to
+  **disclosure to a third party that is not integral to the service** (our present reading of the
+  rule text), or whether it independently reaches an operator's **first-party** use of children's
+  data to train or develop a model. Note that we are **withdrawing** the more expansive formulation
+  an earlier draft of this packet asserted, namely that the amendments "newly require" separate
+  opt-in consent for AI training as a named category. We took that from secondary commentary and we
+  do not find it in the rule text. Please tell us which reading governs rather than confirming ours.
 - **The claim that the amended rule mandates, rather than merely recommends as best practice, a
   written Information Security Program and a published written data-retention policy** with a
   hard deletion timeline per category of children's data. This is the claim underlying the two
@@ -371,23 +726,44 @@ counsel's time is well spent reviewing them. That list includes, among other ite
 never hold their own third-party accounts or identities; that there are no advertising or
 third-party analytics tools of any kind in the parts of the application a child uses; that a
 parental step-up gate sits in front of settings, purchases, generation requests, and any external
-link a child might otherwise follow; that account deletion, when a guardian requests it, erases
-the whole family's data and revokes any associated third-party sign-in tokens; and the company's
-named list of data processors (subcontracted service providers) and what each one receives. We
-list this here so counsel knows this material exists and is available on request, not because we
-expect it to be reviewed as part of this engagement. If, in the course of answering the questions
-above, anything in that settled list turns out to bear on the analysis, please flag it and we will
-revisit.
+link a child might otherwise follow; and that account deletion, when a guardian requests it, erases
+the whole family's data and revokes any associated third-party sign-in tokens. We list this here so
+counsel knows this material exists and is available on request, not because we expect it to be
+reviewed as part of this engagement. If, in the course of answering the questions above, anything in
+that settled list turns out to bear on the analysis, please flag it and we will revisit.
+
+**One item has been moved out of this section, and the reason is worth stating.** An earlier draft
+of this packet also listed here, as settled and not worth counsel's time, the company's named list
+of third parties and what each one receives. That was a mistake in scoping rather than a small
+omission. Question 1B in Section 1.0 turns on precisely how those recipients are characterised
+under the Rule, and the answer decides whether the two cheapest consent methods are available to us.
+The list is therefore in scope for this engagement, and we would rather counsel review it than take
+our word that it raises nothing. It lives in
+[`processor-dpa-checklist.md`](./processor-dpa-checklist.md) and
+[`records-of-processing-activities.md`](./records-of-processing-activities.md), both listed in
+Section 7.
 
 ## 6. Definition of done for this engagement
 
-We consider this engagement complete when all four of the following are true:
+We consider this engagement complete when all five of the following are true:
 
-- [ ] The five questions in Sections 1 through 3 above (consent-mechanism sufficiency, launch
+- [ ] The five questions in Sections 1 through 3 above (verifiable parental consent, launch
       geography, audience classification, the AI-training data-segregation constraint, and the
-      public-artifact document review) are each closed with a counsel opinion or confirmation, and
+      compliance-artifact document review) are each closed with a counsel opinion or confirmation, and
       our internal architecture record's status is updated from "proposed" to "accepted" with each
-      closed decision recorded in place.
+      closed decision recorded in place. Question 1 is closed only when all four of its parts are
+      answered: whether personal information is collected from a child at all (1A), how each
+      third-party recipient is characterised (1B), whether the mechanism we built suffices (1C),
+      and what the minimum compliant alternative is if it does not (1D).
+- [ ] The direct-notice gap identified in Section 3 is closed. This is a completion criterion of
+      the Section 3 document-review question rather than a sixth question, and it does not expand
+      the engagement past five. It is closed when **both** of the following have happened: counsel
+      has approved the direct notice's content and its delivery timing against 16 CFR 312.4(b) and
+      (c), and the resulting change has **shipped before any further consent is collected**. There
+      is no closure route that treats the published notice and the direct notice as a single
+      obligation; 16 CFR 312.4(d) requires the published notice "in addition to the direct notice
+      to the parent," so that reading is foreclosed by the rule text rather than open for counsel
+      to confirm.
 - [ ] The five factual and legal claims listed in Section 4 above have been independently
       re-confirmed against the actual Federal Register text (or counsel has told us they could not
       be located or verified as stated).

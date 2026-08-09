@@ -2607,6 +2607,8 @@ export const listAdminProfilesApiV1AdminProfilesGet = <ThrowOnError extends bool
  * Raises:
  * AuthorizationError: If the caller is not an admin (403).
  * ResourceNotFoundError: If the target family does not exist (404).
+ * BusinessLogicError: If the target family has no recorded VPC consent
+ * (400); see ``_require_family_consent``.
  */
 export const createAdminProfileApiV1AdminProfilesPost = <ThrowOnError extends boolean = false>(options: Options<CreateAdminProfileApiV1AdminProfilesPostData, ThrowOnError>): RequestResult<CreateAdminProfileApiV1AdminProfilesPostResponses, CreateAdminProfileApiV1AdminProfilesPostErrors, ThrowOnError> => (options.client ?? client).post<CreateAdminProfileApiV1AdminProfilesPostResponses, CreateAdminProfileApiV1AdminProfilesPostErrors, ThrowOnError>({
     responseType: 'json',

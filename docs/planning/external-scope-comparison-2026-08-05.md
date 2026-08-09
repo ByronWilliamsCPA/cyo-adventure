@@ -160,9 +160,16 @@ which prices the same offer shape rather than just its mechanics:
 [UW-M03](./unscheduled-work-register.md)).
 
 ADR-018 (children's-privacy compliance) is still `Proposed`, not `Accepted`, and its own text
-already flags the VPC method as the highest legal-risk open item: whether a signature-capture
-step (canvas signature or typed full-legal-name attestation) plus a checkbox satisfies COPPA
-§312.5(b)(2)(i)'s "signed" requirement. The external document does not resolve that question
+already flags the VPC method as the highest legal-risk open item. **Restated 2026-08-08**: this
+paragraph previously framed the question as whether a "canvas signature or typed full-legal-name
+attestation" plus a checkbox satisfies COPPA §312.5(b)(2)(i)'s "signed" requirement. Both halves
+were wrong. No canvas was ever built, the flow captures a typed name only; and §312.5(b)(2)(i)
+has no such requirement to satisfy, since reading the provision directly found no "sign and
+submit electronically" method there at all. The live question is broader: whether the flow is an
+enumerated §312.5(b)(2) method **at all**, and if not, whether it meets the general standard at
+§312.5(b)(1), against which there is adverse authority. See ADR-018 D1 and
+[counsel-engagement-brief.md](../compliance/counsel-engagement-brief.md) Section 1.3. The
+external document does not resolve that question
 either (it is not legal advice), but it names the specific current sources counsel will need,
 which is worth having in hand before that engagement starts rather than re-researching it then.
 

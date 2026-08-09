@@ -48,12 +48,17 @@ login: a typed full-legal-name attestation, plus a checkbox, with IP/timestamp/
 account-id logged server-side) and it's already implemented (`POST /api/v1/onboarding`'s `consent`
 payload, `GuardianConsentPage.tsx`, gated via `api/profiles.py::_require_consent`). An earlier
 framing of this decision also mentioned a canvas-drawn signature; **that was never built**, so
-counsel must be asked about a typed name only. **The ADR itself
-names the single highest-risk open question**: whether a typed-name attestation captured
-this way satisfies COPPA Rule 312.5(b)(2)(i)'s "signed" requirement for the "sign and submit
-electronically" consent method. That's the question to put in front of counsel first, it's already
-drafted as a yes/no with supporting detail in the ADR's D1 section, not an open-ended design
-question.
+counsel must be asked about a typed name only.
+
+**The question this handoff recorded has since widened, and this paragraph is the stale version.**
+It said the ask was whether a typed name satisfies COPPA Rule 312.5(b)(2)(i)'s "signed" requirement
+for the "sign and submit electronically" consent method, framed as a drafted yes/no. Reading
+16 CFR 312.5(b)(2) directly on 2026-08-08 found no such method: (i) describes a *return channel*
+for a form signed away from the service. So the live question is the broader one, whether an
+in-app typed signature is an enumerated method **at all**, with 312.5(b)(3) Safe Harbor approval
+as a possible route if it is not. It is no longer a yes/no. See
+`docs/compliance/counsel-engagement-brief.md` Sections 1.1, 1.3, and 1.5, which govern, and
+ADR-018 D1.
 
 ### D2: Audience classification: **owner decision now recorded; counsel confirms it**
 
@@ -107,23 +112,40 @@ only partly discharged.
 
 ### D5: AI-training consent segregation: **owner confirmation now recorded, counsel-light**
 
-Added 2026-08-01 in response to the amended COPPA Rule (training/developing AI models on a child's
-personal information now requires its own separate, unbundled, opt-in verifiable consent). Working
-position: build any training/eval corpus exclusively from adult-originated and pipeline-originated
-material (reviewer decisions, moderation findings, PII-gate-passed generated prose); exclude
-child-typed wish text, flags, ratings, and reading state entirely. Under this constraint the
-segregated-consent obligation never triggers, **and it costs nothing today because no planned corpus
-needs child-originated data.** **The owner confirmed this as the standing constraint on 2026-08-06**
-(it is mostly a policy decision, not a legal one), so this item goes to counsel as a confirmation
-rather than an open question. If a future corpus ever wants child-originated data, the
-ADR already prices the fallback (a `policy_version` bump plus an independent, default-off
-consent-toggle, built *before* collection, not after).
+Added 2026-08-01 in response to the amended COPPA Rule.
+
+**Corrected 2026-08-08. This section previously stated the obligation as "training or developing AI
+models on a child's personal information now requires its own separate, unbundled, opt-in
+verifiable consent." That is not what 16 CFR 312.5(a)(2) says.** The separate-consent obligation
+attaches to **disclosing** a child's personal information to third parties where the disclosure is
+not integral to the service the child requested. AI training appears in the FTC's discussion as an
+example of such a disclosure, not as a free-standing trigger. The practical difference matters here:
+training on child data inside our own systems and disclosing child data to a third party who
+trains on it are different acts under the rule, and only the second is squarely what (a)(2)
+governs. ADR-018 D5 carries the corrected statement.
+
+Working position: build any training or eval corpus exclusively from adult-originated and
+pipeline-originated material (reviewer decisions, moderation findings, PII-gate-passed generated
+prose); exclude child-typed wish text, flags, ratings, and reading state entirely. **The owner
+confirmed this as the standing constraint on 2026-08-06** (it is mostly a policy decision, not a
+legal one), so this item goes to counsel as a confirmation rather than an open question. If a
+future corpus ever wants child-originated data, the ADR already prices the fallback (a
+`policy_version` bump plus an independent, default-off consent-toggle, built *before* collection,
+not after).
+
+**One scope limit counsel should be told before relying on the constraint.** It governs corpora we
+control. It says nothing about the classifier path, which sends child free text to OpenAI's
+moderation endpoint and Google's Perspective API at request time. Whether those vendors retain that
+text, train on it, or pass it on is a question of their terms, and we have not verified those terms
+against (a)(2). That is a live gap, not a closed one; see `counsel-engagement-brief.md` Section 2.3.
 
 ## 3. What to actually hand counsel
 
 Do not send the whole ADR as a first document. Package these together for an efficient engagement:
 
-1. The ADR's D1 section (already-drafted mechanism plus the named 312.5(b)(2)(i) question).
+1. The ADR's D1 section (already-drafted mechanism plus the enumerated-method question, in the
+   widened form recorded in Section 2 above, not the narrow 312.5(b)(2)(i) yes/no this document
+   originally named).
 2. The confirmed D3 answer (US-only launch) as a one-line confirmation ask.
 3. The D4 owner decisions on Safe Harbor sequencing and artifact ownership (both recorded
    2026-08-06), plus the WISP and the retention policy. Send the WISP as finished work and the
@@ -131,11 +153,15 @@ Do not send the whole ADR as a first document. Package these together for an eff
    counsel is not asked to review a gap as though it were a position.
 4. The D5 working position as a one-paragraph policy-confirmation ask (lower legal complexity than
    D1/D4).
-5. Flag explicitly: **all dates and rule text in the ADR (the 2026-04-22 compliance date, the
-   biometric-identifier definition, the AI-training consent requirement) entered from secondary
-   sources and are marked in the ADR itself as needing re-confirmation against the Federal Register
-   during this review.** Counsel should verify these independently rather than take the ADR's word
-   for them, this is the ADR's own stated caveat, not new work invented for this handoff.
+5. Flag explicitly, **as narrowed on 2026-08-08**: the citation and the three dates are no longer
+   part of this ask. Federal Register document 2025-05904 (90 Fed. Reg. 16918), published
+   2025-04-22, effective 2025-06-23, general compliance 2026-04-22 with a carve-out deferring
+   16 CFR 312.11(d)(1), (d)(4) and (g), were all confirmed against the Federal Register on
+   2026-08-08. **What remains unverified is the substance**: the biometric-identifier definition,
+   the scope of the 312.5(a)(2) separate-consent obligation, and the content of each amendment as
+   this ADR summarises it, all of which entered from secondary sources. Counsel should read the
+   amended rule text rather than take the ADR's word for what it says. Confirming that a citation
+   resolves is not confirming what the cited text holds.
 
 ## 4. Definition of done (per the ADR's own Validation checklist)
 

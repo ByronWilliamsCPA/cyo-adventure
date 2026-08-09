@@ -78,8 +78,11 @@ Before you can create a child profile, we ask you to type your full legal name a
 box confirming that you are that child's parent or legal guardian and that you agree to this
 notice. We record your typed name, the date, the version of this notice you agreed to, and
 your IP address at the time, alongside the sign-in you already completed. [COUNSEL: this is
-the mechanism flagged in ADR-018 D1 as needing review — please confirm this satisfies COPPA
-312.5(b)(2)(i)'s "sign and submit electronically" method.]
+the mechanism flagged in ADR-018 D1 as needing review. Please advise whether it is an
+enumerated method under 16 CFR 312.5(b)(2) **at all**, and if not, whether it meets the
+general standard at 312.5(b)(1). Do not read this as asserting 312.5(b)(2)(i): an earlier
+draft cited a "sign and submit electronically" method there, and reading the provision
+directly found no such method. See counsel-engagement-brief.md Section 1.3.]
 
 ### Who we share information with
 
