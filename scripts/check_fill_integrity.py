@@ -77,7 +77,8 @@ def _strip_leaf_fields(
 
     Args:
         story: The decoded story JSON.
-        allow_title_rewrite: Also strip ending ``title``s from the
+        allow_title_rewrite: Also strip the storybook ``title`` and ending
+            ``title``s from the
             comparison. Ending titles are leaf content by the WS-0
             labels-are-leaves decision (``structure_fingerprint`` strips
             them), but this checker historically froze them; the
@@ -93,6 +94,8 @@ def _strip_leaf_fields(
         ending kind/valence, variables, and metadata.
     """
     copy: dict[str, Any] = json.loads(json.dumps(story))
+    if allow_title_rewrite:
+        copy.pop("title", None)
     nodes = copy.get("nodes")
     if isinstance(nodes, list):
         for node in nodes:
