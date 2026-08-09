@@ -245,13 +245,16 @@ def check_selection(
                     )
                 continue
             spec = cast("dict[str, Any]", inventions.get(slot_name) or {})
+            spec_category = spec.get("category")
             if not isinstance(device, dict):
                 errors.append(f"NC-7: {node_id}.{slot_name} is not a device object")
                 continue
             device_map = cast("dict[str, Any]", device)
             text = str(device_map.get("text"))
             kind = str(device_map.get("kind"))
-            category = category_of.get(slot_name)
+            category = (
+                str(spec_category) if spec_category else category_of.get(slot_name)
+            )
             if category and text not in by_category.get(category, set()):
                 errors.append(
                     f"NC-7: {node_id}.{slot_name} device {text!r} is not in the "
