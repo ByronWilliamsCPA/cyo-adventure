@@ -475,6 +475,40 @@ recommendation to the owner, not a ruling; the register rows stay open until rul
 > the bar can never regress. R3 (L2-11 envelope awareness plus the AL-131 observability
 > companion) is ruled and scheduled for implementation before the ADR-028 pilot skeleton.
 
+### Strict-bar conformance census (2026-08-09, post-ruling)
+
+`check_skeleton.py --strict --allow-mvp` over all 61 catalog skeletons: **2 pass, 59 fail**
+(`3-5/puddle-jumping-day`, `3-5/the-big-red-balloon` are the survivors). Failure drivers,
+counted per skeleton (most fail on several):
+
+| Driver | Skeletons | Note |
+| --- | --- | --- |
+| CG-2 options-per-choice bounds | 57 | the grammar was inert since landing, so nothing ever conformed |
+| CG-3 words-per-stop ceiling | 48 | same cause |
+| PL-23 clock drift | 37 | known from Part 2 |
+| PL-24 ending mix | 21 | includes the newly scaled winnability floor |
+| Random-walk outcome floor | 11 | concentrated in the teen gamebooks |
+| CG-1 choiceless-run cap | 10 | |
+| Reconvergence in-degree cap | 7 | the mega-funnels, headed by the clone pair at 31 |
+| Depth-qualified endings floor | 2 | |
+| PL-26 corridor density | 2 | |
+
+Reading the census: the dominant driver is the choice grammar, which has never been
+enforced anywhere, so the catalog predates its own bar; this is the UW-C24 flip cost made
+visible, and it grew monotonically while the family sat inert. The strict bar as ruled
+therefore implies a near-total rebuild (59 removals), which matches the owner's stated
+plan.
+
+**Removal sequencing recommendation**: do not delete the 59 in one pass. The catalog is
+live product surface (selection serves it, published books anchor to it, fixtures and the
+WS-2 bound trees reference specific slugs), so an empty cell is an outage for that cell's
+requests. Remove-on-replacement instead: rebuild cell by cell to the strict bar, land each
+replacement wave through the skeleton-promotion gate with its removals in the same PR, and
+keep every cell non-empty throughout. Retire the three MVP seeds and the three legacy
+quarantined fills in the first wave that touches their bands. Promote the strict checks
+into `validator/` (with catalog rule ids) only after the last grandfathered skeleton is
+gone.
+
 ### R1. Teen death-ratio policy (B1, sets PL-24/walk-floor thresholds)
 
 **Recommend: keep lethal gamebooks legal; regulate the experienced economy, not the census.**
