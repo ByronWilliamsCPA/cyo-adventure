@@ -1,4 +1,13 @@
-# Skeleton, Story-Requirements, and Schema Review (2026-08-09)
+---
+title: "Skeleton, Story-Requirements, and Schema Review (2026-08-09)"
+schema_type: common
+status: published
+owner: core-maintainer
+purpose: "Findings from the skeleton, story-requirements, and schema review conducted 2026-08-09, with the proposed rules and owner rulings that followed."
+tags:
+  - quality_assurance
+  - analysis
+---
 
 **Purpose**: pre-rebuild gate check. Before authoring new stories and rebuilding skeletons, verify
 that the skeleton catalog, the story requirements (budgets, validator rules), and the Storybook
