@@ -17,6 +17,7 @@ Authorization rules (docs/planning/authorization-matrix.md):
 from __future__ import annotations
 
 import uuid
+from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from enum import StrEnum
 from typing import TYPE_CHECKING, Annotated, Any
@@ -44,11 +45,18 @@ from cyo_adventure.core.exceptions import (
     ValidationError,
 )
 from cyo_adventure.db.models import ChildProfile, DeviceGrant, User
+from cyo_adventure.middleware.unit_of_work import (
+    UNIT_OF_WORK_STATE_KEY,
+    RequestUnitOfWork,
+)
+from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
-    from collections.abc import AsyncIterator, Callable
+    from collections.abc import AsyncGenerator, AsyncIterator, Callable
 
     from sqlalchemy.ext.asyncio import AsyncSession
+
+logger = get_logger(__name__)
 
 
 class Role(StrEnum):
@@ -205,27 +213,92 @@ class Principal:
         return profile_id in self.profile_ids
 
 
-async def get_db_session() -> AsyncIterator[AsyncSession]:
-    """Yield a request-scoped session, committing on success.
+@asynccontextmanager
+async def request_unit_of_work(
+    request: Request, session: AsyncSession
+) -> AsyncGenerator[AsyncSession, None]:
+    """Run one request's unit of work over ``session``.
 
-    Handlers never call ``commit`` directly (see the package CLAUDE.md); this
-    unit-of-work commits when the request succeeds and rolls back on error.
+    Publishes the unit of work on the request state so
+    :class:`~cyo_adventure.middleware.unit_of_work.UnitOfWorkMiddleware` can
+    commit it before the response is sent, and owns the two decisions the
+    middleware cannot see: rollback when the handler raised, and close when the
+    request is done.
+
+    Shared with the integration-test session override rather than duplicated
+    there, so tests exercise the real commit ordering instead of a copy that
+    can drift from it.
+
+    Args:
+        request: The request whose state carries the unit of work.
+        session: The session this request's work runs on.
 
     Yields:
         AsyncSession: The session for the request.
     """
-    # #CRITICAL: data integrity: the unit-of-work commits exactly once at request
-    # end; a handler that needs partial durability must flush, not commit.
-    # #VERIFY: handlers raise on failure so the except path rolls back.
-    session = get_session()
+    # #CRITICAL: data integrity: the unit of work commits exactly once, and by
+    # design that commit normally happens in the middleware (before the
+    # response is sent), not here. The commit below is the fallback for a
+    # request that produced no ``http.response.start`` for the middleware to
+    # intercept; ``RequestUnitOfWork`` settles once, so the two can never both
+    # take effect. A handler that needs partial durability must flush, not
+    # commit (see the package CLAUDE.md).
+    # #VERIFY: tests/unit/test_unit_of_work.py asserts commit-before-response
+    # ordering and single-commit semantics; tests/unit/test_api_deps.py
+    # asserts this generator's own commit/rollback/close contract.
+    #
+    # #ASSUME: data integrity: nothing touches this session after the commit.
+    # The commit ends the transaction, which also drops the RLS GUCs
+    # ``apply_family_rls_context`` set with ``is_local => true``. Two kinds of
+    # work can outlive a handler's return, and both are accounted for today:
+    # the SSE stream (api/notifications.py) already declines this dependency in
+    # favour of ``SessionFactory``, and Starlette runs ``BackgroundTasks``
+    # after ``http.response.start``, but the only two (api/generation.py,
+    # api/story_requests.py) enqueue by id and touch no session.
+    # #VERIFY: any future streaming handler OR background task doing database
+    # work after its response has started must open its own session via
+    # ``SessionFactory``. A read on this session would silently return zero
+    # rows once the GUCs are gone, and a write would autobegin a transaction
+    # that ``close`` discards; neither failure raises.
+    uow = RequestUnitOfWork(session)
+    setattr(request.state, UNIT_OF_WORK_STATE_KEY, uow)
     try:
         yield session
-        await session.commit()
+        if not uow.settled:
+            # Reached only when no ``http.response.start`` gave the middleware
+            # a chance to commit. Logged because the alternative failure of the
+            # two-layer handshake (middleware removed, reordered, or otherwise
+            # bypassed) also lands here, and would otherwise restore the exact
+            # post-response commit ordering of issue #461 with no error, no
+            # failing test, and no other trace.
+            logger.debug("unit_of_work_committed_in_dependency_fallback")
+        await uow.commit()
     except Exception:
-        await session.rollback()
+        await uow.rollback()
         raise
     finally:
-        await session.close()
+        await uow.close()
+
+
+async def get_db_session(request: Request) -> AsyncIterator[AsyncSession]:
+    """Yield a request-scoped session, committing before the response is sent.
+
+    Handlers never call ``commit`` directly (see the package CLAUDE.md).
+
+    HTTP routes only. FastAPI fills a ``Request`` parameter only when the
+    connection actually is one, so on a WebSocket route this dependency raises
+    ``TypeError`` for the missing argument. No WebSocket route exists today; a
+    future one needs its own session via ``SessionFactory``, since there is no
+    ``http.response.start`` for the middleware to commit against either.
+
+    Args:
+        request: The request whose state carries the unit of work.
+
+    Yields:
+        AsyncSession: The session for the request.
+    """
+    async with request_unit_of_work(request, get_session()) as session:
+        yield session
 
 
 DbSession = Annotated["AsyncSession", Depends(get_db_session)]
@@ -542,6 +615,40 @@ async def require_principal(
         if user.status != "active":
             msg = "unknown subject"
             raise AuthenticationError(msg)
+        # #CRITICAL: security: the RLS context MUST be established here, before
+        # _resolve_profiles, not only at the end of require_principal.
+        # child_profile is an ADR-022 Tier 1 family_scoped table and
+        # _resolve_profiles is a pre-principal read of one for the guardian
+        # branch; its policy predicate
+        # (family_id::text = current_setting('app.family_id', true) OR
+        # current_setting('app.is_admin', true) = 'true') is unsatisfiable
+        # while both GUCs are unset, so the query below would match zero rows
+        # for every guardian. That is exactly what production did from the
+        # 2026-08-04 cutover to the NOBYPASSRLS cyo_api role (UW-A03, verified
+        # live that day; the daily e2e-prod tier went red the next morning and
+        # stayed red): GET /api/v1/me returned a correct family_id with an
+        # always-empty profile_ids, and GET /api/v1/profiles then
+        # short-circuited to an empty list, rendering the guardian console's
+        # "No profiles yet" state for every family.
+        # Deriving from the already-verified `user` row (never from request
+        # input) is not a bypass: user.family_id and user.is_admin were just
+        # read back from the row matched by the verified authn_subject above.
+        # For a guardian without the admin capability, that lets the database
+        # enforce that the profiles query matches the account owning it. For an
+        # adult who also holds admin, app.is_admin='true' satisfies the policy's
+        # second disjunct for every row, so _resolve_profiles' own family_id
+        # filter is the only scoping left; that escape hatch is deliberate per
+        # ADR-022 and is exactly what the end-of-function call has always
+        # opened, not an artifact of moving this one earlier. Pre-cutover this
+        # call is a no-op (RLS never applies to a table's owner); post-cutover
+        # it is the one thing standing between a guardian and their own
+        # children.
+        # #VERIFY: tests/integration/test_rls_tier1_enforcement.py::
+        # test_guardian_principal_resolves_profiles_under_tier1_rls and
+        # ::test_child_profile_invisible_without_context.
+        await apply_family_rls_context(
+            session, family_id=user.family_id, is_admin=bool(user.is_admin)
+        )
         profile_ids = await _resolve_profiles(session, user)
         # #CRITICAL: security: coerce the ORM role string to the closed Role enum
         # at the auth boundary; an unmodeled DB role raises ValueError -> 500
@@ -565,18 +672,28 @@ async def require_principal(
     # app.family_id / app.is_admin GUCs from the VERIFIED principal (never from
     # request input) on the same session the route will use, so the Tier 1
     # family_scoped policies enforce per-family isolation post-cutover. Every
-    # principal branch above (guardian, admin, child, device) carries a
-    # family_id, so this one choke point covers them all. Two of the three
-    # branches resolve without needing the context this sets: guardian/admin read
-    # the "user" row just above under the Tier 2 blanket policy, and child does
-    # no database read at all. The device branch is the exception: it reads a
-    # Tier 1 table, so _device_principal applies this same context itself from
-    # its verified claim first, and this call re-applies identical values. Do not
-    # "optimize" that earlier call away; without it the device lookup matches
-    # zero rows, which is what broke staging from the 2026-07-18 cutover until
-    # 2026-08-02. A no-op pre-cutover (owner bypasses RLS); load-bearing and
-    # fail-closed after, which is why staging caught this and the
-    # owner-connected tiers did not.
+    # principal branch above carries a family_id, so this one choke point
+    # covers them all. Of the three branches, exactly two make a pre-principal
+    # Tier 1 read and so must apply this context themselves, earlier: the
+    # device-grant branch (device_grant) and the guardian case of the else
+    # branch (child_profile, via _resolve_profiles, which queries it only when
+    # user.role is GUARDIAN, so an admin-only or child row never reaches it).
+    # The child-session branch does no database read at all, and the else
+    # branch's own select(User) is Tier 2 (blanket service_rw), so neither
+    # needs it. For those two this call re-applies the same family_id.
+    # app.is_admin can differ between the two calls for a legacy
+    # (role='admin', is_admin=false) row, where __post_init__ derives True for
+    # the principal while the earlier call passed the stored False; that is
+    # harmless precisely because such a row makes no Tier 1 read in between.
+    # Do not "optimize" either earlier call away:
+    # without the device one, the device lookup matches zero rows, which is
+    # what broke staging from the 2026-07-18 cutover until 2026-08-02; without
+    # the guardian one, _resolve_profiles matches zero rows, which is
+    # what broke every guardian's profile listing in production from the
+    # 2026-08-04 cutover to the NOBYPASSRLS cyo_api role until this fix. Both
+    # are a no-op pre-cutover (the owner bypasses RLS); both are load-bearing
+    # and fail-closed after, which is why an owner-connected fixture can never
+    # reproduce either regression.
     # #VERIFY: tests/integration/test_rls_tier1_enforcement.py.
     await apply_family_rls_context(
         session, family_id=principal.family_id, is_admin=principal.is_admin
@@ -671,10 +788,15 @@ async def _device_principal(session: AsyncSession, token: str) -> Principal:
     #
     # #CRITICAL: security: the RLS context MUST be established here, before the
     # lookup, not only at the end of require_principal. device_grant is an
-    # ADR-022 Tier 1 family_scoped table and this is the ONLY pre-principal read
-    # of one; its policy predicate
-    # (family_id::text = current_setting('app.family_id', true)) is unsatisfiable
-    # while the GUC is unset, so the query below would match zero rows and EVERY
+    # ADR-022 Tier 1 family_scoped table and this is one of two pre-principal
+    # reads of one (the other is _resolve_profiles reading child_profile on the
+    # guardian path); its policy predicate
+    # (family_id::text = current_setting('app.family_id', true) OR
+    # current_setting('app.is_admin', true) = 'true') is unsatisfiable
+    # while both GUCs are unset. The is_admin disjunct is inert on this path by
+    # construction: a device token carries no admin capability, so the call
+    # below passes is_admin=False and only the family_id half can ever match.
+    # With no context at all the query below would match zero rows and EVERY
     # device request would be rejected as unverifiable. That is exactly what
     # staging did from the 2026-07-18 Tier 1 cutover until 2026-08-02; the
     # owner-connected tiers (local, e2e-real-*) never reproduced it because RLS

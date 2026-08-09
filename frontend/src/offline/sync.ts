@@ -8,7 +8,15 @@
  * with the `event_id` making replays idempotent server-side.
  */
 
-import { type QueuedWrite, dequeue, enqueueWrite, listQueue, putReadingState } from './db'
+import {
+  type QueuedWrite,
+  dequeue,
+  enqueueWrite,
+  getReadingState,
+  listQueue,
+  putReadingState,
+} from './db'
+import type { ReadingStateView } from '../client/types.gen'
 import type { ReadingState } from '../player/types'
 
 export interface SaveBody extends ReadingState {
@@ -120,6 +128,63 @@ export function toPutPayload(state: SaveBody): SaveBody {
 }
 
 /**
+ * Carries the previously-cached character-binding fields forward onto the
+ * optimistic local write that saveProgress makes before it even tries the
+ * network.
+ *
+ * `state` here is always the plain machine ReadingState: the reader engine
+ * has no server-View surface for `character_name`/`seed_var_state` (see
+ * characterSeed.ts), so it never carries them. The only place those two
+ * fields can exist locally is a previously-cached row written after a
+ * successful PUT or a cross-device resume, which is a real ReadingStateView
+ * at runtime even though it is typed ReadingState (same widening
+ * characterSeed.ts::deriveCharacterSeed uses for the same two fields).
+ *
+ * Without this, saveProgress's pre-network write replaces that cached View
+ * wholesale with the plain state. If the network call then fails offline
+ * (OfflineError, the write is queued instead) nothing overwrites the row
+ * with the server's real View again until the queued write eventually
+ * replays, so a resume in that window reads `character_name`/
+ * `seed_var_state` off the degraded row and deriveCharacterSeed (which has
+ * no other source of truth) silently opens the read unseeded.
+ *
+ * Deliberately does not invent a seed: a previous row with neither field (a
+ * read that was never character-bound) leaves `state` untouched.
+ */
+// #CRITICAL: data-integrity: an offline save must not downgrade a seeded
+// read to unseeded. `previous`'s two character fields are carried forward
+// onto the optimistic write untouched; nothing here derives or guesses a
+// seed the previous row did not already have.
+// #VERIFY: sync.test.ts "carries the previously cached character seed
+// forward into an offline save" (reverting this function collapses that
+// test: the cached row would lose character_name/seed_var_state the moment
+// the offline branch runs).
+function withCarriedCharacterSeed(
+  previous: ReadingState | undefined,
+  state: ReadingState
+): ReadingState {
+  if (previous === undefined) return state
+  const view = previous as ReadingState &
+    Partial<Pick<ReadingStateView, 'character_name' | 'seed_var_state'>>
+  if (view.character_name === undefined && view.seed_var_state === undefined) return state
+  // `state` wins per field when it already carries one of its own (today's
+  // only real call sites never do; this is defensive, not load-bearing): the
+  // cache is a fallback for a value the caller genuinely does not have, not
+  // an override of one it does.
+  const carried = state as ReadingState &
+    Partial<Pick<ReadingStateView, 'character_name' | 'seed_var_state'>>
+  const result: ReadingState &
+    Partial<Pick<ReadingStateView, 'character_name' | 'seed_var_state'>> = { ...carried }
+  if (carried.character_name === undefined && view.character_name !== undefined) {
+    result.character_name = view.character_name
+  }
+  if (carried.seed_var_state === undefined && view.seed_var_state !== undefined) {
+    result.seed_var_state = view.seed_var_state
+  }
+  return result
+}
+
+/**
  * Save reading progress. Updates the local cache, then attempts the server save:
  * returns `saved` on success, `conflict` on a 409, or `queued` if the network is
  * unavailable (the write is enqueued for later replay).
@@ -146,8 +211,18 @@ export async function saveProgress(
   opts: SaveOptions = {}
 ): Promise<SaveResult> {
   const eventId = makeId(opts)
+  let previous: ReadingState | undefined
   try {
-    await putReadingState(profileId, storybookId, state)
+    previous = await getReadingState(profileId, storybookId)
+  } catch (cause) {
+    // Best-effort only: a failed read of the previous cache row must not
+    // block the write below. Losing the carried-forward seed fields (if any
+    // existed) is preferable to treating this as LocalWriteError, which
+    // would tell the caller this step was never cached anywhere at all.
+    console.error('[reader] failed to read the previous cached reading state', { cause })
+  }
+  try {
+    await putReadingState(profileId, storybookId, withCarriedCharacterSeed(previous, state))
   } catch (cause) {
     throw new LocalWriteError('failed to write reading state to the local cache', cause)
   }

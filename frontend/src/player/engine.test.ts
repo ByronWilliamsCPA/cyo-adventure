@@ -9,6 +9,7 @@ import {
   canGoBack,
   choose,
   currentEndingId,
+  replayRecordedPath,
   start,
   startContinuation,
   visibleChoices,
@@ -20,6 +21,7 @@ const tracesPath = path.resolve(here, '../../../schema/conformance/player_traces
 
 interface Trace {
   name: string
+  seed?: VarState
   choices: string[]
   expected: {
     current_node: string
@@ -34,8 +36,17 @@ const corpus = JSON.parse(readFileSync(tracesPath, 'utf-8')) as {
   traces: Trace[]
 }
 
-function play(story: Storybook, choices: string[]): ReadingState {
-  let state = start(story)
+const seededStory = corpus.traces.find(
+  (t) => t.name === 'seeded_might_carries_into_the_read'
+)!.story
+
+function play(story: Storybook, choices: string[], seed?: VarState): ReadingState {
+  // Route an unseeded trace through plain start() rather than
+  // startContinuation(story, null, undefined): the two are equivalent today,
+  // but routing every trace through the continuation path left start()
+  // itself uncovered by the conformance corpus, the one suite whose job is
+  // to catch exactly this class of divergence between the two.
+  let state = seed === undefined ? start(story) : startContinuation(story, null, seed)
   for (const choiceId of choices) {
     state = choose(story, state, choiceId)
   }
@@ -46,7 +57,7 @@ describe('player engine cross-implementation conformance', () => {
   it.each(corpus.traces.map((t) => [t.name, t] as const))(
     'reaches the expected state for %s',
     (_name, trace) => {
-      const state = play(trace.story, trace.choices)
+      const state = play(trace.story, trace.choices, trace.seed)
       expect(state.current_node).toBe(trace.expected.current_node)
       expect(state.var_state).toEqual(trace.expected.var_state)
       expect([...state.visit_set].sort()).toEqual([...trace.expected.visit_set].sort())
@@ -264,5 +275,20 @@ describe('back / canGoBack (go back one page via replay)', () => {
     const forged = { ...state, visit_set: [...state.visit_set, 'n_exit'] }
     expect(canGoBack(lantern, forged)).toBe(false)
     expect(back(lantern, forged)).toBeNull()
+  })
+
+  it('offers Go back on a seeded read', () => {
+    // Previously replayRecordedPath returned null for any state whose
+    // path[0] was not start_node, which is every continuation read. With
+    // the seed available the replay is reproducible, so the affordance
+    // comes back.
+    const live = play(seededStory, ['c_press_on'], { might: 2 })
+    expect(replayRecordedPath(seededStory, live, { might: 2 })).not.toBeNull()
+  })
+
+  it('still fails closed when the recorded path does not start where it should', () => {
+    const live = play(seededStory, ['c_press_on'], { might: 2 })
+    const corrupted = { ...live, path: ['n_nowhere', ...live.path.slice(1)] }
+    expect(replayRecordedPath(seededStory, corrupted, { might: 2 })).toBeNull()
   })
 })

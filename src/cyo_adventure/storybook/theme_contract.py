@@ -84,6 +84,15 @@ PERSONALIZATION_FIELDS: frozenset[str] = frozenset(
         "favorite_hobby",
         "home_type",
         "dedication",
+        # ADR-028: the persistent-character's name. Permanently ring-1-only
+        # (never added to db.models._PERSONALIZATION_RING2_SLOT_TYPE_VALUES):
+        # a character name is unreviewed child free text, and the three-ring
+        # boundary (ADR-018) keeps unreviewed child free text inside ring 1
+        # only. Unlike every other member here, this slot stores no
+        # child_profile_personalization row value at all; its value is
+        # synthesized at resolve time from the profile's active `Character`
+        # row (see api/personalization.py::_active_character_name).
+        "character_name",
     }
 )
 
@@ -92,8 +101,13 @@ PERSONALIZATION_FIELDS: frozenset[str] = frozenset(
 # object, or category. A `personalizable` slot bound to one of these fields
 # must also declare `role_safety` (plan R11: a real name must never land in
 # an antagonist/mishap role), proving a per-skeleton role audit happened.
+#
+# `character_name` joins this set for the same reason as the other two:
+# nothing stops a child naming their character after themselves or a friend,
+# so it gets the same real-person handling as protagonist_first_name rather
+# than the handling of a category slot like favorite_color.
 REAL_PERSON_PERSONALIZATION_FIELDS: frozenset[str] = frozenset(
-    {"protagonist_first_name", "sibling_name"}
+    {"protagonist_first_name", "sibling_name", "character_name"}
 )
 
 

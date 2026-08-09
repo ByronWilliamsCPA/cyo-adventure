@@ -681,6 +681,95 @@ jobs:
       - name: Every file ruff formats is formatted, docs included
         run: uv tool run --no-build ruff@0.16.0 format --check .
 
+  # scripts/check_rad_citations.py was wired into .pre-commit-config.yaml
+  # (hook id check-rad-citations) but nothing ran it in CI, so the gate only
+  # fired on a machine with hooks installed and `git commit --no-verify`
+  # bypassed it completely. This job closes that: it is the only place a RAD
+  # #VERIFY citation is checked on every push and pull request regardless of
+  # local hook state.
+  rad-citations:
+    name: RAD Citation Gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Harden the runner
+        # deferral: 2026-09-18
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      # fetch-depth: 0 (full history) rather than the default shallow clone:
+      # the no-growth step below shells out to `git show BASE_REF:path`, which
+      # needs the base ref's tree to be reachable locally.
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14"
+
+      # No `uv sync` and no dependency install: the script imports only the
+      # standard library (argparse, tokenize, tomllib, subprocess, ...), so a
+      # bare python3 runs it correctly. This keeps the job to seconds and
+      # means a dependency-resolution failure elsewhere can never mask a
+      # citation failure here.
+      #
+      # `--all` scans the whole tree, which is broader than the pre-commit
+      # hook's `files:` regex (src/, scripts/, frontend/src/, and the
+      # baseline only, so tests/, supabase/, and frontend/e2e/ were never
+      # covered locally). Its ceiling: it proves a cited test EXISTS, never
+      # that the test would fail if the tagged property were removed.
+      - name: Every RAD #VERIFY citation names a test that exists
+        run: python3 scripts/check_rad_citations.py --all
+
+      # Guarded to pull_request only, and guarded again inside the step: on
+      # the PR that introduces rad-citation-baseline.toml, the base ref has
+      # no such file, and `git show BASE_REF:path` on a path absent from the
+      # base ref is an exit-2 usage error, not "baseline size zero". Without
+      # this guard, the PR that introduces the gate would fail its own new
+      # gate.
+      #
+      # `if:` restates success() because a step-level `if:` REPLACES the
+      # implicit success() rather than adding to it. Without it this step
+      # runs even after the --all step above has already failed, producing a
+      # second, unrelated-looking failure on top of the real one.
+      #
+      # BASE_REF is passed through env: (not interpolated into the run:
+      # string) even though github.base_ref is a branch name rather than
+      # free-form untrusted text, so this step follows the same
+      # inject-via-env discipline as every other step in this workflow that
+      # reads a github.* context value.
+      - name: The citation baseline may only shrink
+        if: success() && github.event_name == 'pull_request'
+        env:
+          BASE_REF: origin/${{ github.base_ref }}
+        run: |
+          set -euo pipefail
+          # #CRITICAL: external-resource: `git cat-file -e REF:PATH` exits 128
+          # for BOTH "the ref does not resolve" and "the ref resolves but has
+          # no such path", so testing only that conflates a broken checkout
+          # with an expected first-PR state and would silently disable the
+          # only defence against baseline laundering while printing a notice
+          # asserting the wrong cause. Resolve the ref FIRST, and fail hard
+          # when it does not: an unresolvable base ref is a fetch or checkout
+          # defect (see fetch-depth: 0 above), never a licence to skip.
+          # #VERIFY: tests/unit/test_ci_gate_contract.py asserts this step
+          # exists and runs `rev-parse --verify` before `cat-file -e`.
+          if ! git rev-parse --verify -q "${BASE_REF}^{commit}" >/dev/null; then
+            echo "::error::${BASE_REF} does not resolve to a commit in this checkout, so the baseline ratchet could not run at all. This is a fetch or checkout defect (this job sets fetch-depth: 0 for exactly this reason), not an absent baseline."
+            exit 1
+          fi
+          if ! git cat-file -e "${BASE_REF}:rad-citation-baseline.toml" 2>/dev/null; then
+            echo "::notice::${BASE_REF} resolves, but carries no rad-citation-baseline.toml, so there is no prior baseline to compare against. Expected on the pull request that introduces the baseline, and on any base branch that does not yet carry it."
+            exit 0
+          fi
+          python3 scripts/check_rad_citations.py --assert-no-growth "${BASE_REF}"
+
   # Uploads the backend's per-test-type coverage + JUnit to Codecov, INLINE so
   # it runs on PRs (the old workflow_run codecov.yml only ran on main). The
   # reusable `ci` job publishes coverage-{unit,integration,security}.xml and
@@ -963,18 +1052,19 @@ jobs:
           DATABASE_URL: postgresql+asyncpg://cyo_adventure:password@localhost:5432/cyo_adventure
         run: uv run python scripts/seed_dev_data.py
 
-      # #ASSUME: timing: --delay-request 1100 keeps consecutive requests from
-      # racing the unit-of-work commit, which lands after the response is sent
-      # (FastAPI yield-dependency teardown): without a delay, a create's row
-      # can be invisible to the immediately following request. It also paces
-      # the suite under the 60 req/min rate limiter wherever that middleware
-      # is enabled (it is off in this stack's ENVIRONMENT=local). The delay is
-      # a mitigation, not the fix: the durable fix is committing the
-      # unit-of-work before the response is sent (api/deps.py::get_db_session),
-      # which affects every fast client and is tracked as follow-up work.
-      # #VERIFY: every newman invocation of this collection (here and the local
-      # loop in docs/api/README.md) must carry the same delay, or fast
-      # back-to-back requests intermittently 403/404 on just-created rows.
+      # #ASSUME: timing: --delay-request 1100 originally mitigated a race
+      # against the unit-of-work commit, which used to land after the response
+      # was sent (FastAPI yield-dependency teardown), leaving a create's row
+      # invisible to the immediately following request. That race is closed:
+      # UnitOfWorkMiddleware now commits at http.response.start, before any
+      # byte reaches the client (issue #461). The delay is kept deliberately,
+      # because it also paces the suite under the 60 req/min rate limiter
+      # wherever that middleware is enabled (it is off in this stack's
+      # ENVIRONMENT=local) and gives margin on a slow runner.
+      # #VERIFY: shortening this delay is a separate change; confirm the suite
+      # is green across several runs before trusting a lower value, and keep
+      # every newman invocation of this collection (here and the local loop in
+      # docs/api/README.md) carrying whatever value is chosen.
       - name: Run newman (JUnit for Test Analytics)
         run: |
           newman run docs/api/postman-collection.json \
@@ -1013,6 +1103,7 @@ jobs:
         contract,
         schema-docs,
         format-tree,
+        rad-citations,
       ]
     if: always()
     permissions:
@@ -1049,6 +1140,7 @@ jobs:
           CONTRACT_RESULT: ${{ needs.contract.result }}
           SCHEMA_DOCS_RESULT: ${{ needs.schema-docs.result }}
           FORMAT_TREE_RESULT: ${{ needs.format-tree.result }}
+          RAD_CITATIONS_RESULT: ${{ needs.rad-citations.result }}
         run: |
           set -euo pipefail
 
@@ -1104,25 +1196,40 @@ jobs:
             exit 1
           fi
 
-          # #CRITICAL: data-integrity: schema-docs carries no job-level `if:`
-          # and no `needs:`, so unlike every other job in this gate it really
-          # runs on a release-automation commit. Its result must be evaluated
-          # BEFORE the release-skip branch below returns 0, or a genuine
-          # `ER Diagram Drift` failure is discarded and reported as an
-          # intentional skip.
+          # #CRITICAL: data-integrity: THREE jobs in this gate carry no
+          # job-level `if:` and no `needs:` (schema-docs, format-tree,
+          # rad-citations), so unlike the rest of the suite they really run
+          # on a release-automation commit. Every one of their results must
+          # be evaluated BEFORE the release-skip branch below returns 0, or a
+          # genuine failure is discarded and reported as an intentional skip.
+          # This is written as a list rather than as one hand-copied `if:`
+          # per job precisely so the next unconditional job added to the gate
+          # joins it by name instead of silently inheriting the hole:
+          # format-tree sat in this branch's blind spot for exactly that
+          # reason before rad-citations became the second member.
           # #VERIFY: test_ci_gate_contract.py asserts a release commit with
-          # SCHEMA_DOCS_RESULT=failure fails the gate, and asserts schema-docs
-          # still has no job-level `if:` so this branch stays necessary.
-          if [ "$RELEASE_PR" = "true" ] && [ "$SCHEMA_DOCS_RESULT" != "success" ]; then
-            {
-              echo "## CI Gate failed"
-              echo ""
-              echo "\`ER Diagram Drift\` reported \`${SCHEMA_DOCS_RESULT}\` on a"
-              echo "release-automation commit. That job runs unconditionally, so its"
-              echo "result is real here even though the rest of the suite did not run."
-            } >> "$GITHUB_STEP_SUMMARY"
-            echo "::error::ER Diagram Drift reported ${SCHEMA_DOCS_RESULT} on a release-automation commit. That job runs unconditionally, so this is a real failure, not an expected skip."
-            exit 1
+          # each of these results set to failure fails the gate, and asserts
+          # each of these jobs still has no job-level `if:` and no `needs:`
+          # so this branch stays necessary.
+          if [ "$RELEASE_PR" = "true" ]; then
+            for entry in \
+              "ER Diagram Drift:$SCHEMA_DOCS_RESULT" \
+              "Format (tree-wide):$FORMAT_TREE_RESULT" \
+              "RAD Citation Gate:$RAD_CITATIONS_RESULT"; do
+              unconditional_label="${entry%%:*}"
+              unconditional_result="${entry#*:}"
+              if [ "$unconditional_result" != "success" ]; then
+                {
+                  echo "## CI Gate failed"
+                  echo ""
+                  echo "\`${unconditional_label}\` reported \`${unconditional_result}\` on a"
+                  echo "release-automation commit. That job runs unconditionally, so its"
+                  echo "result is real here even though the rest of the suite did not run."
+                } >> "$GITHUB_STEP_SUMMARY"
+                echo "::error::${unconditional_label} reported ${unconditional_result} on a release-automation commit. That job runs unconditionally, so this is a real failure, not an expected skip."
+                exit 1
+              fi
+            done
           fi
 
           # A release-automation commit (release/v* PR, or a chore(release):
@@ -1134,10 +1241,11 @@ jobs:
             {
               echo "## CI Gate passed WITHOUT running the suite"
               echo ""
-              echo "Release-automation commit: every quality job except \`ER Diagram Drift\`"
-              echo "was intentionally skipped, so **beyond that one check this commit carries**"
-              echo "**no verification from this workflow**. The tested content is the feature"
-              echo "PR that produced it."
+              echo "Release-automation commit: every quality job except \`ER Diagram Drift\`,"
+              echo "\`Format (tree-wide)\` and \`RAD Citation Gate\` was intentionally skipped."
+              echo "Those three carry no job-level condition, so they really ran and really"
+              echo "passed. Beyond them this commit carries **no verification from this workflow**."
+              echo "The tested content is the feature PR that produced it."
               echo ""
               echo "See the scheduled scans (\`security-analysis.yml\`, \`python-compatibility.yml\`,"
               echo "\`sbom.yml\`, \`container-security.yml\`) for coverage that does not depend on"
@@ -1171,6 +1279,8 @@ jobs:
           # No skip allowance: this job has no job-level `if:`, so a skip here
           # can only mean an unintended condition crept in.
           check_job "Format (tree-wide)" "$FORMAT_TREE_RESULT" false
+          # Also no job-level `if:`, for the same reason as Format (tree-wide).
+          check_job "RAD Citation Gate" "$RAD_CITATIONS_RESULT" false
           check_job "Frontend (Node 22)" "$FRONTEND_RESULT" "$merge_queue_skip_ok"
           check_job "Frontend E2E (Playwright, mocked tier)" "$FRONTEND_E2E_RESULT" "$merge_queue_skip_ok"
           check_job "Design System (Node 22)" "$DESIGN_SYSTEM_RESULT" "$merge_queue_skip_ok"

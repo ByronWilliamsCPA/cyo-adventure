@@ -1,8 +1,9 @@
 import 'fake-indexeddb/auto'
 
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { IDBFactory } from 'fake-indexeddb'
-import { MemoryRouter, Route, Routes } from 'react-router'
+import { MemoryRouter, Outlet, Route, Routes } from 'react-router'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { LibraryPage } from './LibraryPage'
 import { percentComplete } from './bookCardUtils'
@@ -399,10 +400,15 @@ describe('LibraryPage', () => {
     resolveList({ data: { stories: [] } })
 
     await new Promise((resolve) => setTimeout(resolve, 0))
-    // 2, not 1: W3.2's progress fetch fires from its own parallel mount
-    // effect alongside the library list call; the point of this test (no
+    // Asserted by URL, not by total call count: W3.2's progress fetch and
+    // Task 8's active-character fetch each fire from their own parallel mount
+    // effect alongside the library list call, and the point of this test (no
     // state write survives unmount) is unaffected by which endpoints fired.
-    expect(mockGet).toHaveBeenCalledTimes(2)
+    // A raw count would break on any unrelated added or de-duplicated fetch.
+    const urls = mockGet.mock.calls.map((call) => call[0] as string)
+    expect(urls).toContain('/v1/library')
+    expect(urls).toContain('/v1/me/progress')
+    expect(urls).toContain('/v1/characters')
     expect(document.body.textContent).toBe('')
   })
 
@@ -863,6 +869,265 @@ describe('LibraryPage', () => {
       ).not.toBeInTheDocument()
       expect(localStorage.getItem('offline_download_eviction')).toBeNull()
     })
+  })
+})
+
+/**
+ * Where the active character comes from. KidShell already resolves it for
+ * the library route, so the routed kid library must reuse that lookup rather
+ * than issue a second identical GET /v1/characters on the surface most
+ * likely to be on a slow home connection. The guardian preview-as-child
+ * route has no KidShell above it, so the local fallback has to stay.
+ */
+describe('LibraryPage active-character source', () => {
+  const LUNA = {
+    id: 'char-1',
+    profile_id: 'p1',
+    name: 'Luna',
+    archetype: 'scout',
+    look: 'avatar_01',
+    is_active: true,
+    books_completed: 0,
+    attributes: {},
+    seed_var_state: {},
+    created_at: '2026-08-01T00:00:00Z',
+    retired_at: null,
+  }
+
+  function routeGets() {
+    mockGet.mockImplementation((url: string) =>
+      url === '/v1/characters'
+        ? Promise.resolve({ data: { characters: [LUNA] } })
+        : Promise.resolve({ data: { stories: [IN_PROGRESS] } })
+    )
+  }
+
+  function characterCalls() {
+    return mockGet.mock.calls.filter((call) => call[0] === '/v1/characters')
+  }
+
+  it("reuses the shell's active character instead of fetching its own", async () => {
+    routeGets()
+    render(
+      <MemoryRouter initialEntries={['/library/p1']}>
+        <Routes>
+          <Route
+            element={
+              <Outlet
+                context={{
+                  activeCharacter: {
+                    state: { status: 'ready', character: LUNA },
+                    refresh: vi.fn(),
+                  },
+                }}
+              />
+            }
+          >
+            <Route path="/library/:profileId" element={<LibraryPage />} />
+          </Route>
+        </Routes>
+      </MemoryRouter>
+    )
+
+    // The strip renders from the shell's value...
+    expect(await screen.findByText('Luna')).toBeInTheDocument()
+    // ...and the page issued no character fetch of its own to get it.
+    expect(characterCalls()).toHaveLength(0)
+  })
+
+  it('fetches its own active character when mounted outside KidShell', async () => {
+    routeGets()
+    // The guardian preview-as-child mount: no shell above, so the Outlet
+    // context is null and the local hook is the only source. Asserted
+    // through the non-readOnly render, since readOnly suppresses the strip.
+    renderLibrary()
+
+    expect(await screen.findByText('Luna')).toBeInTheDocument()
+    expect(characterCalls()).toHaveLength(1)
+    expect(characterCalls()[0]).toEqual(['/v1/characters', { params: { profile_id: 'p1' } }])
+  })
+
+  it('issues no character fetch at all in readOnly mode (guardian preview-as-child)', async () => {
+    // PreviewAsChildPage mounts LibraryPage readOnly, outside KidShell, so
+    // (before this fix) the local-fallback branch above still ran and hit
+    // GET /v1/characters even though `!readOnly && ...` means the whole
+    // character section, and this fetch's result, is never rendered.
+    routeGets()
+    renderLibraryReadOnly()
+
+    // Something else that only resolves after the initial render settles,
+    // so the assertion below is not racing the mount.
+    await screen.findByText(IN_PROGRESS.title)
+    expect(characterCalls()).toHaveLength(0)
+  })
+})
+
+/**
+ * ADR-028 / gate-rework: the character creator gates a book, not the
+ * library route (KidShell no longer gates there at all, see KidShell.test.tsx).
+ * A book shows the creator first only when it declares `accepts_character:
+ * true` AND the profile's active character status is exactly `'none'`; every
+ * other combination goes straight to the read, failing open rather than
+ * ever locking a child out of a book they are allowed to read.
+ */
+describe('LibraryPage character gate', () => {
+  const READY_CHARACTER = {
+    id: 'char-2',
+    profile_id: 'p1',
+    name: 'Rex',
+    archetype: 'guardian',
+    look: 'avatar_02',
+    is_active: true,
+    books_completed: 0,
+    attributes: {},
+    seed_var_state: {},
+    created_at: '2026-08-01T00:00:00Z',
+    retired_at: null,
+  }
+  const NEW_CHARACTER = {
+    id: 'char-3',
+    profile_id: 'p1',
+    name: 'Rex',
+    archetype: 'scout',
+    look: 'avatar_01',
+    is_active: true,
+    books_completed: 0,
+    attributes: {},
+    seed_var_state: {},
+    created_at: '2026-08-08T00:00:00Z',
+    retired_at: null,
+  }
+  const GATED_BOOK = {
+    ...NOT_STARTED,
+    id: 'sg1',
+    title: 'The Gated Quest',
+    accepts_character: true,
+  }
+  const FALSE_GATE_BOOK = {
+    ...NOT_STARTED,
+    id: 'su1',
+    title: 'The Open Trail',
+    accepts_character: false,
+  }
+  const UNDEFINED_GATE_BOOK = { ...NOT_STARTED, id: 'sn1', title: 'The Undeclared Path' }
+
+  /**
+   * Renders LibraryPage under an Outlet that hands down a fixed
+   * active-character state (mirroring the "LibraryPage active-character
+   * source" describe block above), plus a real `/read/...` route so a click
+   * that should navigate straight through can be observed landing there.
+   */
+  function renderWithCharacterState(
+    state: { status: string; character?: unknown },
+    items: unknown[]
+  ) {
+    mockGet.mockImplementation((url: string) =>
+      url === '/v1/characters'
+        ? Promise.resolve({ data: { characters: [] } })
+        : Promise.resolve({ data: { stories: items } })
+    )
+    return render(
+      <MemoryRouter initialEntries={['/library/p1']}>
+        <Routes>
+          <Route element={<Outlet context={{ activeCharacter: { state, refresh: vi.fn() } }} />}>
+            <Route path="/library/:profileId" element={<LibraryPage />} />
+            <Route path="/read/:profileId/:storybookId/:version" element={<div>Reader Page</div>} />
+          </Route>
+        </Routes>
+      </MemoryRouter>
+    )
+  }
+
+  it('shows the creator, not the read, for accepts_character true + status none', async () => {
+    renderWithCharacterState({ status: 'none' }, [GATED_BOOK])
+    fireEvent.click(await screen.findByRole('link', { name: /the gated quest/i }))
+
+    expect(await screen.findByRole('heading', { name: /make your character/i })).toBeInTheDocument()
+    expect(screen.queryByText('Reader Page')).not.toBeInTheDocument()
+  })
+
+  it('a child who taps a gated book by accident can get back to the shelf', async () => {
+    // Regression: tapping a gated book used to have no way out other than
+    // browser Back, which leaves /library/:profileId entirely since
+    // pendingRead is local state, not a route.
+    const user = userEvent.setup()
+    renderWithCharacterState({ status: 'none' }, [GATED_BOOK])
+    fireEvent.click(await screen.findByRole('link', { name: /the gated quest/i }))
+    await screen.findByRole('heading', { name: /make your character/i })
+
+    await user.click(screen.getByRole('button', { name: /never mind/i }))
+
+    // Back on the shelf, not stuck in the creator and not navigated away to
+    // the read.
+    expect(await screen.findByRole('link', { name: /the gated quest/i })).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: /make your character/i })).not.toBeInTheDocument()
+    expect(screen.queryByText('Reader Page')).not.toBeInTheDocument()
+    expect(mockPost).not.toHaveBeenCalled()
+  })
+
+  it('goes straight to the read for accepts_character false + status none', async () => {
+    renderWithCharacterState({ status: 'none' }, [FALSE_GATE_BOOK])
+    fireEvent.click(await screen.findByRole('link', { name: /the open trail/i }))
+
+    expect(await screen.findByText('Reader Page')).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: /make your character/i })).not.toBeInTheDocument()
+  })
+
+  it('goes straight to the read for accepts_character undefined + status none', async () => {
+    renderWithCharacterState({ status: 'none' }, [UNDEFINED_GATE_BOOK])
+    fireEvent.click(await screen.findByRole('link', { name: /the undeclared path/i }))
+
+    expect(await screen.findByText('Reader Page')).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: /make your character/i })).not.toBeInTheDocument()
+  })
+
+  it('goes straight to the read for accepts_character true + status ready', async () => {
+    renderWithCharacterState({ status: 'ready', character: READY_CHARACTER }, [GATED_BOOK])
+    fireEvent.click(await screen.findByRole('link', { name: /the gated quest/i }))
+
+    expect(await screen.findByText('Reader Page')).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: /make your character/i })).not.toBeInTheDocument()
+  })
+
+  it('goes straight to the read for accepts_character true + status loading (fail-open)', async () => {
+    renderWithCharacterState({ status: 'loading' }, [GATED_BOOK])
+    fireEvent.click(await screen.findByRole('link', { name: /the gated quest/i }))
+
+    expect(await screen.findByText('Reader Page')).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: /make your character/i })).not.toBeInTheDocument()
+  })
+
+  it('lands in the read the child originally chose after creating a character', async () => {
+    mockPost.mockResolvedValueOnce({ data: NEW_CHARACTER })
+    const user = userEvent.setup()
+    renderWithCharacterState({ status: 'none' }, [GATED_BOOK])
+    fireEvent.click(await screen.findByRole('link', { name: /the gated quest/i }))
+    await screen.findByRole('heading', { name: /make your character/i })
+
+    // Same interaction sequence as CharacterCreator.test.tsx's own submit
+    // test: userEvent (not fireEvent) is what actually drives these
+    // controlled radio inputs' onChange handlers.
+    await user.type(screen.getByLabelText("What's their name?"), 'Rex')
+    await user.click(screen.getByRole('radio', { name: /Scout/ }))
+    await user.click(screen.getByRole('radio', { name: /^Look 1\b/ }))
+    await user.click(screen.getByRole('button', { name: /start my adventure/i }))
+
+    // Lands on the exact read the child chose before the creator interrupted
+    // them (GATED_BOOK's own id and version), not just any read route.
+    expect(await screen.findByText('Reader Page')).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: /make your character/i })).not.toBeInTheDocument()
+  })
+
+  it('still renders and behaves as a real link for a non-gated book, which is what the e2e smoke depends on', async () => {
+    renderWithCharacterState({ status: 'none' }, [FALSE_GATE_BOOK])
+    const link = await screen.findByRole('link', { name: /the open trail/i })
+    expect(link).toHaveAttribute(
+      'href',
+      `/read/p1/${FALSE_GATE_BOOK.id}/${FALSE_GATE_BOOK.version}`
+    )
+
+    fireEvent.click(link)
+    expect(await screen.findByText('Reader Page')).toBeInTheDocument()
   })
 })
 

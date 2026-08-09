@@ -5,7 +5,9 @@ from __future__ import annotations
 import pytest
 
 from cyo_adventure.core.exceptions import ValidationError
+from cyo_adventure.player import StoryEngine
 from cyo_adventure.player.replay import validate_reading_state
+from cyo_adventure.storybook.models import Storybook
 
 
 def _meta() -> dict[str, object]:
@@ -75,6 +77,7 @@ def test_structural_floor_accepts_start_state_without_choice_path() -> None:
         visit_set=["n_start"],
         choice_path=None,
         save_slots={},
+        seed_var_state=None,
     )
     assert result is None
 
@@ -93,6 +96,7 @@ def test_unknown_current_node_rejected() -> None:
             visit_set=["n_start"],
             choice_path=None,
             save_slots={},
+            seed_var_state=None,
         )
 
 
@@ -110,6 +114,7 @@ def test_unknown_path_node_rejected() -> None:
             visit_set=["n_start"],
             choice_path=None,
             save_slots={},
+            seed_var_state=None,
         )
 
 
@@ -127,6 +132,7 @@ def test_undeclared_var_key_rejected() -> None:
             visit_set=["n_start"],
             choice_path=None,
             save_slots={},
+            seed_var_state=None,
         )
 
 
@@ -142,6 +148,7 @@ def test_out_of_bounds_int_rejected() -> None:
             visit_set=["n_start"],
             choice_path=None,
             save_slots={},
+            seed_var_state=None,
         )
 
 
@@ -155,6 +162,7 @@ def test_replay_accepts_genuine_state() -> None:
         visit_set=["n_start", "n_end"],
         choice_path=["c_go"],
         save_slots={},
+        seed_var_state=None,
     )
     assert result is None
 
@@ -174,6 +182,7 @@ def test_replay_rejects_forged_var_state() -> None:
             visit_set=["n_start", "n_end"],
             choice_path=["c_go"],
             save_slots={},
+            seed_var_state=None,
         )
 
 
@@ -191,6 +200,7 @@ def test_replay_rejects_illegal_choice_id() -> None:
             visit_set=["n_start", "n_end"],
             choice_path=["c_nope"],
             save_slots={},
+            seed_var_state=None,
         )
 
 
@@ -208,6 +218,7 @@ def test_corrupt_blob_rejected_generically() -> None:
             visit_set=["n_start"],
             choice_path=None,
             save_slots={},
+            seed_var_state=None,
         )
 
 
@@ -228,6 +239,7 @@ def test_corrupt_blob_error_does_not_leak_schema_detail() -> None:
             visit_set=["n_start"],
             choice_path=None,
             save_slots={},
+            seed_var_state=None,
         )
     detail = str(exc_info.value)
     assert (
@@ -253,6 +265,7 @@ def test_current_node_path_mismatch_rejected() -> None:
             visit_set=["n_start", "n_end"],
             choice_path=None,
             save_slots={},
+            seed_var_state=None,
         )
 
 
@@ -271,6 +284,7 @@ def test_missing_declared_variable_rejected() -> None:
             visit_set=["n_start"],
             choice_path=None,
             save_slots={},
+            seed_var_state=None,
         )
 
 
@@ -295,6 +309,7 @@ def test_unbounded_int_var_above_float64_safe_range_rejected() -> None:
             visit_set=["n_start"],
             choice_path=None,
             save_slots={},
+            seed_var_state=None,
         )
 
 
@@ -311,6 +326,7 @@ def test_unbounded_int_var_at_float64_safe_bound_accepted() -> None:
         visit_set=["n_start"],
         choice_path=None,
         save_slots={},
+        seed_var_state=None,
     )
     assert result is None
 
@@ -333,6 +349,7 @@ def test_visit_set_only_forgery_rejected() -> None:
             visit_set=["n_start", "n_end"],
             choice_path=[],
             save_slots={},
+            seed_var_state=None,
         )
 
 
@@ -374,6 +391,7 @@ def test_bool_variable_accepts_boolean_value() -> None:
         visit_set=["n_start"],
         choice_path=None,
         save_slots={},
+        seed_var_state=None,
     )
     assert result is None
 
@@ -390,6 +408,7 @@ def test_bool_variable_rejects_non_boolean_value() -> None:
             visit_set=["n_start"],
             choice_path=None,
             save_slots={},
+            seed_var_state=None,
         )
 
 
@@ -465,6 +484,129 @@ def test_replay_accepts_looping_conformance_fixture() -> None:
         visit_set=["n_start", "n_loop", "n_end"],
         choice_path=["c_advance", "c_back", "c_advance", "c_finish"],
         save_slots={},
+        seed_var_state=None,
+    )
+    assert result is None
+
+
+# ---------------------------------------------------------------------------
+# Seed-aware replay: _check_replay must begin from the server-held seed, not
+# from declared initials (see player/replay.py::_check_replay).
+# ---------------------------------------------------------------------------
+
+
+def _seeded_story_blob() -> dict[str, object]:
+    """A two-node story declaring `might` int 0..2, initial 0, one choice, one ending."""
+    return {
+        "schema_version": "2.0",
+        "id": "s_seeded",
+        "version": 1,
+        "title": "Seeded Synthetic",
+        "metadata": _meta(),
+        "variables": [
+            {"name": "might", "type": "int", "initial": 0, "min": 0, "max": 2}
+        ],
+        "start_node": "n_start",
+        "nodes": [
+            {
+                "id": "n_start",
+                "body": "Start here.",
+                "on_enter": [],
+                "choices": [
+                    {
+                        "id": "c_press_on",
+                        "label": "Press on",
+                        "target": "n_end",
+                        "effects": [],
+                    }
+                ],
+            },
+            {
+                "id": "n_end",
+                "body": "Done.",
+                "is_ending": True,
+                "ending": {
+                    "id": "e_end",
+                    "valence": "positive",
+                    "kind": "success",
+                    "title": "End",
+                },
+                "choices": [],
+            },
+        ],
+    }
+
+
+@pytest.mark.unit
+def test_replay_of_a_seeded_read_starts_from_the_seed() -> None:
+    """A seeded read replayed from declared initials reproduces nothing.
+
+    Before this change, _check_replay always called engine.start(), so a
+    read seeded with might=2 replayed as might=0. Every downstream
+    comparison then failed, and the child's legitimate save was rejected
+    as tampered.
+    """
+    blob = _seeded_story_blob()  # declares might int 0..2, initial 0
+    story = Storybook.model_validate(blob)
+    engine = StoryEngine(story)
+    state = engine.start_continuation({"might": 2})
+    state = engine.choose(state, "c_press_on")
+
+    validate_reading_state(
+        blob,
+        current_node=state.current_node,
+        var_state=dict(state.var_state),
+        path=list(state.path),
+        visit_set=sorted(state.visit_set),
+        choice_path=["c_press_on"],
+        save_slots={},
+        seed_var_state={"might": 2},
+    )  # must not raise
+
+
+@pytest.mark.unit
+def test_replay_rejects_a_state_claiming_a_seed_it_was_not_given() -> None:
+    """The seed is server-held, so a mismatched claim is the tamper case.
+
+    This is the assertion that keeps seeding from becoming a
+    client-controlled way to set arbitrary variables: replaying with the
+    seed the SERVER recorded must fail when the submitted state was
+    reached with a different one.
+    """
+    blob = _seeded_story_blob()
+    story = Storybook.model_validate(blob)
+    engine = StoryEngine(story)
+    state = engine.choose(engine.start_continuation({"might": 2}), "c_press_on")
+    # Precomputed outside the `with` block: check_pytest_raises_scope.py (S5778)
+    # allows exactly one non-safe call in a pytest.raises body, and
+    # validate_reading_state is the call under test.
+    visit_set = sorted(state.visit_set)
+
+    with pytest.raises(ValidationError, match="does not match a replay"):
+        validate_reading_state(
+            blob,
+            current_node=state.current_node,
+            var_state=dict(state.var_state),
+            path=list(state.path),
+            visit_set=visit_set,
+            choice_path=["c_press_on"],
+            save_slots={},
+            seed_var_state=None,
+        )
+
+
+@pytest.mark.unit
+def test_an_unseeded_replay_is_unchanged() -> None:
+    """The existing behaviour is the seed_var_state=None case, exactly."""
+    result = validate_reading_state(
+        _blob(),
+        current_node="n_end",
+        var_state={"courage": 2},
+        path=["n_start", "n_end"],
+        visit_set=["n_start", "n_end"],
+        choice_path=["c_go"],
+        save_slots={},
+        seed_var_state=None,
     )
     assert result is None
 
@@ -485,6 +627,7 @@ def test_empty_save_slots_accepted() -> None:
         visit_set=["n_start"],
         choice_path=None,
         save_slots={},
+        seed_var_state=None,
     )
     assert result is None
 
@@ -508,6 +651,7 @@ def test_non_empty_save_slots_rejected() -> None:
             visit_set=["n_start"],
             choice_path=None,
             save_slots={"checkpoint": {"current_node": "n_start"}},
+            seed_var_state=None,
         )
 
 
@@ -524,6 +668,7 @@ def test_save_slots_rejection_names_the_offending_slot() -> None:
             visit_set=["n_start"],
             choice_path=None,
             save_slots={"zulu": {}, "alpha": {}},
+            seed_var_state=None,
         )
     assert excinfo.value.details["field"] == "save_slots"
     # Deterministically the first key in sorted order, so the message is stable.
@@ -548,4 +693,5 @@ def test_a_forged_slot_is_refused_before_the_structural_floor_runs() -> None:
             visit_set=["does_not_exist"],
             choice_path=None,
             save_slots={"forged": {}},
+            seed_var_state=None,
         )

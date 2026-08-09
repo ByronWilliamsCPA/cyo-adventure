@@ -36,7 +36,21 @@ if TYPE_CHECKING:
 
 # A satisfying continuation ending: a win the reader carries into the next book.
 # A fail-fast negative ending does not continue the campaign, matching PL-20.
-_SATISFYING_KINDS = frozenset({EndingKind.SUCCESS, EndingKind.COMPLETION})
+#
+# Public: characters/progression.py (via api/reading.py) imports this same
+# definition to decide whether a completed book grows a persistent character's
+# stats, so the runtime consumer reuses SR-9's answer instead of adding a sixth
+# copy of it. This is not a single source of truth, and the promotion did not
+# make it one: ``validator/policy.py::_SATISFYING_KINDS`` already holds an
+# independent set with the same membership, and the offline mutation module
+# (ADR-020) holds three more: ``mutation/state_ops.py`` as ``EndingKind``
+# values, ``mutation/identity.py`` and ``mutation/operators.py`` as bare
+# strings. Unifying those five is pre-existing work and out of scope here.
+# Exported under a public name for
+# the same reason as ``MAX_ENTRY_STATES`` and ``satisfying_ending_reachable``
+# below; ``_SATISFYING_KINDS`` keeps this module's own callers unchanged.
+SATISFYING_ENDING_KINDS = frozenset({EndingKind.SUCCESS, EndingKind.COMPLETION})
+_SATISFYING_KINDS = SATISFYING_ENDING_KINDS
 
 # Bands that must run episodic (no state carry) series, per ADR-011 section 8.
 _YOUNG_BANDS = frozenset({"3-5", "5-8"})

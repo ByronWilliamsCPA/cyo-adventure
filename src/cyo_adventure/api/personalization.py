@@ -34,10 +34,10 @@ from __future__ import annotations
 
 import uuid
 from datetime import UTC, datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
 from fastapi import APIRouter, Request
-from sqlalchemy import select
+from sqlalchemy import delete, select
 
 from cyo_adventure.api.deps import (
     Context,
@@ -63,6 +63,7 @@ from cyo_adventure.core.exceptions import (
     ValidationError,
 )
 from cyo_adventure.db.models import (
+    Character,
     ChildProfile,
     ChildProfilePersonalization,
     Family,
@@ -77,7 +78,9 @@ from cyo_adventure.moderation.personalizable_slots import (
 from cyo_adventure.publishing.state_machine import Visibility
 from cyo_adventure.storybook.models import AgeBand
 from cyo_adventure.storybook.personalization_values import (
+    CHARACTER_NAME_SLOT_TYPE,
     SIBLING_SLOT_TYPE,
+    character_name_violations,
     personalization_value_for_payload,
     validate_personalization_value,
 )
@@ -137,7 +140,13 @@ router = APIRouter(
 # choice, outing risk) and dedication (addressed to the giver's own
 # household). Encoded here as an API-layer pre-check so a bad request 422s
 # cleanly instead of surfacing as a raw ck_cpp_ring2_ceiling IntegrityError.
-_RING2_EXCLUDED_SLOT_TYPES = frozenset({"pronoun_set", "dedication"})
+# ADR-028 adds character_name to this ceiling: it is a permanent ring-1-only
+# slot (unreviewed child free text, per the ADR-018 three-ring boundary), not
+# a default that could later be widened, so it belongs beside the other two
+# rather than in a separate constant.
+_RING2_EXCLUDED_SLOT_TYPES = frozenset(
+    {"pronoun_set", "dedication", CHARACTER_NAME_SLOT_TYPE}
+)
 
 _PROTAGONIST_NAME_SLOT = "protagonist_first_name"
 
@@ -260,6 +269,32 @@ async def _family_profile_ids(
         select(ChildProfile.id).where(ChildProfile.family_id == family_id)
     )
     return set(rows.all())
+
+
+async def _active_character_name(
+    session: AsyncSession, profile_id: uuid.UUID
+) -> str | None:
+    """Resolve the character_name slot's value (ADR-028), sourced off-table.
+
+    A profile has at most one active character (`uq_character_one_active`);
+    an inactive or absent character contributes nothing here, matching the
+    silent-omission render-time fallback the other eleven slots already use.
+
+    Args:
+        session: The request session.
+        profile_id: The subject profile.
+
+    Returns:
+        str | None: The active character's name, or None if the profile has
+        no active character.
+    """
+    character = await session.scalar(
+        select(Character).where(
+            Character.child_profile_id == profile_id,
+            Character.is_active.is_(True),
+        )
+    )
+    return character.name if character is not None else None
 
 
 def _slot_view(row: ChildProfilePersonalization) -> PersonalizationSlotView:
@@ -922,6 +957,44 @@ async def _ring1_values(session: AsyncSession, subject: ChildProfile) -> dict[st
         )
     )
     for row in rows:
+        if row.slot_type == CHARACTER_NAME_SLOT_TYPE:
+            # #CRITICAL: data integrity: character_name is the only slot whose value
+            # does not live in child_profile_personalization. It is synthesized
+            # here from the active character's name, so a consent row for this slot
+            # carries the toggle and nothing else, and turning the toggle off is
+            # the ONLY way to clear the slot. Blanking the name is not a clear: the
+            # child renames their character and the slot repopulates.
+            # #VERIFY: tests/integration/test_personalization_api.py::
+            # test_ring1_character_name_resolves_from_the_active_character,
+            # ::test_ring1_character_name_absent_when_the_toggle_is_off,
+            # ::test_ring1_character_name_absent_when_no_character_is_active,
+            # ::test_ring1_character_name_survives_a_rename.
+            character_name = await _active_character_name(session, subject.id)
+            if character_name is not None:
+                # #CRITICAL: security: this slot's value never passes through
+                # `personalization_value_for_payload`, because that function's
+                # shape rule forbids a `value_text` on character_name. Without
+                # the explicit call below it would therefore be the ONE slot of
+                # twelve that reaches the render payload with no structural or
+                # denylist check at all, and it is the least trustworthy of the
+                # twelve: the author is the child, not a guardian, and the
+                # payload ships beside `sentinel_pattern` for substitution into
+                # story prose. `character_name_violations` runs exactly the two
+                # value-dependent checks the other slots get; a failure takes
+                # the same silent-omission path (ADR-023's render-time fallback
+                # contract), logged through the same `_log_dropped_slot` seam.
+                # #VERIFY: tests/integration/test_personalization_api.py::
+                # test_ring1_character_name_is_dropped_when_the_name_is_unsafe,
+                # tests/unit/test_personalization_values.py::
+                # test_character_name_violations_rejects_a_sentinel_shaped_name.
+                violations = character_name_violations(
+                    character_name, AgeBand(subject.age_band)
+                )
+                if violations:
+                    _log_dropped_slot(row.slot_type, subject.id)(violations)
+                else:
+                    values[row.slot_type] = character_name
+            continue
         rendered = personalization_value_for_payload(
             row.slot_type,
             AgeBand(subject.age_band),
@@ -1373,4 +1446,76 @@ async def get_personalization_values(
         return await _resolve_ring1_view(ctx.session, subject, storybook_id)
     return await _resolve_ring2_view(
         ctx.session, subject, caller_family_id, storybook_id
+    )
+
+
+# Where each slot's VALUE lives, for purge. Every slot but one stores its
+# value in the child_profile_personalization row itself, so deleting the
+# row is the purge; character_name's value lives in `character`, and a
+# purge that only deleted rows from this table would leave the child's
+# character name in the database while reporting the slot purged.
+# #VERIFY: tests/integration/test_personalization_purge.py::
+# test_purging_character_name_clears_the_character_row
+#
+# Written out by hand, one entry per `PERSONALIZATION_FIELDS` member, rather
+# than derived from that set with a default: a derived map would give the
+# next slot added to `PERSONALIZATION_FIELDS` a purge target of
+# "personalization_row" automatically, with nobody having decided that is
+# where its value actually lives. The exhaustiveness test
+# (test_purge_targets_is_exhaustive_over_personalization_fields) makes a
+# missing or extra entry a test failure instead of a silent gap.
+PURGE_TARGETS: Final[dict[str, str]] = {
+    "protagonist_first_name": "personalization_row",
+    "pronoun_set": "personalization_row",
+    "sibling_name": "personalization_row",
+    "pet_species": "personalization_row",
+    "pet_name": "personalization_row",
+    "kinship_label": "personalization_row",
+    "favorite_color": "personalization_row",
+    "favorite_food": "personalization_row",
+    "favorite_hobby": "personalization_row",
+    "home_type": "personalization_row",
+    "dedication": "personalization_row",
+    CHARACTER_NAME_SLOT_TYPE: "character",
+}
+
+
+async def purge_profile_personalization(
+    session: AsyncSession, profile_id: uuid.UUID
+) -> None:
+    """Erase every personalization value tied to a profile, per PURGE_TARGETS.
+
+    Called from the profile deletion path (GDPR Article 17 / COPPA 312.10).
+    The FK cascades on `character` and `child_profile_personalization`
+    (both `ON DELETE CASCADE` to `child_profile.id`) already remove these
+    rows when the profile itself is deleted; this function is the explicit,
+    testable statement of that guarantee, exercised independently of the
+    profile row's own deletion so a future change to either cascade is
+    caught by a personalization-scoped test rather than only by the
+    broader deletion drill.
+
+    #CRITICAL: data integrity: `PURGE_TARGETS` names two distinct purge
+    targets ("personalization_row" and "character"); every current entry
+    is deleted here regardless of which one it names, because both target
+    tables happen to be deleted unconditionally on profile purge today. A
+    future purge target that must NOT be deleted unconditionally (e.g. one
+    shared across profiles) would need this function to branch on the
+    target value rather than delete both tables outright.
+    #VERIFY: tests/integration/test_personalization_purge.py::
+    test_purging_character_name_clears_the_character_row and
+    tests/unit/test_personalization_purge_targets.py::
+    test_purge_targets_is_exhaustive_over_personalization_fields
+
+    Args:
+        session: The request session (part of the caller's unit of work;
+            this function does not commit).
+        profile_id: The profile whose personalization values are purged.
+    """
+    await session.execute(
+        delete(ChildProfilePersonalization).where(
+            ChildProfilePersonalization.child_profile_id == profile_id
+        )
+    )
+    await session.execute(
+        delete(Character).where(Character.child_profile_id == profile_id)
     )

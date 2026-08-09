@@ -1,0 +1,183 @@
+---
+purpose: What ADR-018 (children's-privacy compliance) needs from outside counsel, narrowed to the
+  specific open questions so engaging counsel is a scoped ask rather than "review this ADR"
+component: docs/planning/adr/adr-018-childrens-privacy-compliance.md, docs/compliance/
+source: R1-completion review session, 2026-08-06
+---
+
+# Handoff: ADR-018 counsel engagement
+
+Written 2026-08-06. This is item 3 of a four-item R1-completion review. The other three items were
+carried as their own pull requests and register rows rather than as sibling handoff documents, so
+**no companion handoff document exists**. That is not the same as having nothing to check: the R1
+live E2E sign-off is [#640](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/640) and the
+OG1/OG7 owner decisions are
+[#642](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/642), and both of those, along with
+the `UW-M03`/`UW-N02`/`UW-N07` register rows, can move independently of this document. Check their
+current state before relying on any status claim below.
+
+> **Status: partly superseded by the same commit that adds this file.** This document records the
+> state at the *start* of the 2026-08-06 session and was written to drive the owner rulings that
+> session then produced. Where it says a decision is still needed on D2, D4, or D5, that ask has
+> since been answered and recorded in ADR-018; the paragraphs below are corrected inline and note
+> what changed. **ADR-018 governs wherever the two disagree.** What survives unchanged is the
+> engagement framing: what to send counsel, in what order, and why.
+
+## 1. Correction to how this was framed earlier
+
+`roadmap.md`'s Now-queue item 5 (2026-07-20 audit) says ADR-018 "is still `status: proposed` ...
+with no counsel sign-off or progress note since 2026-07-16." **That undersells how much internal
+work has actually happened since.** The ADR was substantively amended 2026-08-01: D1 (consent
+mechanism) and D3 (launch geography) both moved from "decision needed" to "decision recorded /
+confirmed (owner choice; pending counsel confirmation)," D1's engineering half is already
+implemented and merged, D4 gained two new rule-mandated artifacts, and D5 is a wholly new open
+decision the amended COPPA Rule forced. **This is not a "start from scratch" ask, it's "get a
+lawyer to bless work that is already drafted, and rule on the one item that has no working position
+yet."** Frame the engagement that way; asking for a general privacy-compliance review will cost more
+time and money than necessary.
+
+## 2. What counsel needs to look at, one item at a time
+
+The ADR has five open decisions (D1-D5). Their state differs, and that difference should shape the
+engagement scope:
+
+### D1: Verifiable parental consent mechanism: **narrow, specific question**
+
+Owner already chose the mechanism (signature-capture layered on existing Supabase/Google OAuth
+login: a typed full-legal-name attestation, plus a checkbox, with IP/timestamp/
+account-id logged server-side) and it's already implemented (`POST /api/v1/onboarding`'s `consent`
+payload, `GuardianConsentPage.tsx`, gated via `api/profiles.py::_require_consent`). An earlier
+framing of this decision also mentioned a canvas-drawn signature; **that was never built**, so
+counsel must be asked about a typed name only.
+
+**The question this handoff recorded has since widened, and this paragraph is the stale version.**
+It said the ask was whether a typed name satisfies COPPA Rule 312.5(b)(2)(i)'s "signed" requirement
+for the "sign and submit electronically" consent method, framed as a drafted yes/no. Reading
+16 CFR 312.5(b)(2) directly on 2026-08-08 found no such method: (i) describes a *return channel*
+for a form signed away from the service. So the live question is the broader one, whether an
+in-app typed signature is an enumerated method **at all**, with 312.5(b)(3) Safe Harbor approval
+as a possible route if it is not. It is no longer a yes/no. See
+`docs/compliance/counsel-engagement-brief.md` Sections 1.1, 1.3, and 1.5, which govern, and
+ADR-018 D1.
+
+### D2: Audience classification: **owner decision now recorded; counsel confirms it**
+
+When this handoff was written, D2 was the one item with no recorded owner decision, only a
+recommendation ("confirm child-directed as the declared posture, matching product reality;
+mixed-audience defenses are unavailable"), and the ask here was to get the owner to affirm it
+before sending anything to counsel. **That ask is closed:** ADR-018 D2 now records "Decision
+confirmed 2026-08-06 (owner choice; pending counsel confirmation)," child-directed as the declared
+posture with mixed-audience "actual knowledge" defenses recorded as unavailable. Counsel's role on
+this item is confirmation, not selection.
+
+### D3: Launch geography: **confirmed, low-risk counsel check**
+
+Owner confirmed US-only launch 2026-07-20 (no UK/EEA users exist or are planned; GDPR-K/AADC
+shelved as a later expansion gate, not worked now). This is the lowest-risk item to clear with
+counsel, it's a straightforward "confirm GDPR-K/AADC don't bind at a US-only launch" question.
+
+### D4: Public artifacts: **owner sign-off recorded; one artifact still a draft**
+
+Three things were needed before this became counsel-ready. The first two were owner decisions and
+**both are now made**; the third is a drafting obligation the amended COPPA Rule imposes, and it is
+only partly discharged.
+
+1. Owner sign-off that the artifact list (privacy notice, App Store nutrition labels, retention
+   schedule, breach/incident-response plan) are Phase 7 deliverables checked off at P7-08, and who
+   drafts the notice. **Recorded 2026-08-06: Phase 7 deliverables with P7-08 as the checkpoint, and
+   the project owner drafts every artifact while counsel reviews rather than drafts.**
+2. A decision on **Safe Harbor program membership** (PRIVO, kidSAFE, ESRB Privacy Certified), added
+   2026-08-01. This handoff argued for deciding it *before* sending D1 to counsel, on the reasoning
+   that a Safe Harbor program would answer D1's signature-question with a presumption-of-compliance
+   posture and ongoing external audit instead of a one-off legal opinion. **The owner decided the
+   opposite ordering on 2026-08-06: alongside, counsel first.** Counsel scheduling is the long-lead
+   item on the critical path to Phase 7 and a Safe Harbor evaluation is not, so D1 goes to counsel
+   now and the evaluation proceeds in parallel as a Track 2 task. The accepted cost is that a later
+   decision to join a program could supersede the D1 opinion, which is why the engagement flags that
+   possibility to counsel explicitly and asks them to scope the D1 opinion accordingly.
+3. Two artifacts the amended COPPA Rule now makes mandatory rather than best-practice: a **written**
+   Information Security Program (annual risk assessment, vulnerability-testing cadence, vendor due
+   diligence, a designated compliance owner) and a **published, written** data-retention policy with
+   a hard deletion timeline per data class. Both can be drafted internally before counsel sees
+   them, and both now exist, but only one is finished:
+   - The WISP is **done**. It lives at `docs/compliance/information-security-program.md` with
+     `status: published` and all four mandated elements. This handoff originally listed it as
+     still needing drafting; that is stale. Send it to counsel as finished work.
+   - The retention policy is **not done**. `docs/compliance/data-retention-policy.md` exists but
+     is `status: draft`, and three data classes (consent evidence, product analytics, application
+     logs) still carry no deletion window. The rule wants a hard timeline per class, so **D4 is
+     not discharged** until those owner rulings land and the document is published. Tracked at
+     `UW-N07`. Send it to counsel labelled as a draft, naming the three gaps, so counsel is not
+     asked to review an omission as though it were a position.
+
+### D5: AI-training consent segregation: **owner confirmation now recorded, counsel-light**
+
+Added 2026-08-01 in response to the amended COPPA Rule.
+
+**Corrected 2026-08-08. This section previously stated the obligation as "training or developing AI
+models on a child's personal information now requires its own separate, unbundled, opt-in
+verifiable consent." That is not what 16 CFR 312.5(a)(2) says.** The separate-consent obligation
+attaches to **disclosing** a child's personal information to third parties where the disclosure is
+not integral to the service the child requested. AI training appears in the FTC's discussion as an
+example of such a disclosure, not as a free-standing trigger. The practical difference matters here:
+training on child data inside our own systems and disclosing child data to a third party who
+trains on it are different acts under the rule, and only the second is squarely what (a)(2)
+governs. ADR-018 D5 carries the corrected statement.
+
+Working position: build any training or eval corpus exclusively from adult-originated and
+pipeline-originated material (reviewer decisions, moderation findings, PII-gate-passed generated
+prose); exclude child-typed wish text, flags, ratings, and reading state entirely. **The owner
+confirmed this as the standing constraint on 2026-08-06** (it is mostly a policy decision, not a
+legal one), so this item goes to counsel as a confirmation rather than an open question. If a
+future corpus ever wants child-originated data, the ADR already prices the fallback (a
+`policy_version` bump plus an independent, default-off consent-toggle, built *before* collection,
+not after).
+
+**One scope limit counsel should be told before relying on the constraint.** It governs corpora we
+control. It says nothing about the classifier path, which sends child free text to OpenAI's
+moderation endpoint and Google's Perspective API at request time. Whether those vendors retain that
+text, train on it, or pass it on is a question of their terms, and we have not verified those terms
+against (a)(2). That is a live gap, not a closed one; see `counsel-engagement-brief.md` Section 2.3.
+
+## 3. What to actually hand counsel
+
+Do not send the whole ADR as a first document. Package these together for an efficient engagement:
+
+1. The ADR's D1 section (already-drafted mechanism plus the enumerated-method question, in the
+   widened form recorded in Section 2 above, not the narrow 312.5(b)(2)(i) yes/no this document
+   originally named).
+2. The confirmed D3 answer (US-only launch) as a one-line confirmation ask.
+3. The D4 owner decisions on Safe Harbor sequencing and artifact ownership (both recorded
+   2026-08-06), plus the WISP and the retention policy. Send the WISP as finished work and the
+   retention policy as a draft, naming the three classes whose deletion window is still unset so
+   counsel is not asked to review a gap as though it were a position.
+4. The D5 working position as a one-paragraph policy-confirmation ask (lower legal complexity than
+   D1/D4).
+5. Flag explicitly, **as narrowed on 2026-08-08**: the citation and the three dates are no longer
+   part of this ask. Federal Register document 2025-05904 (90 Fed. Reg. 16918), published
+   2025-04-22, effective 2025-06-23, general compliance 2026-04-22 with a carve-out deferring
+   16 CFR 312.11(d)(1), (d)(4) and (g), were all confirmed against the Federal Register on
+   2026-08-08. **What remains unverified is the substance**: the biometric-identifier definition,
+   the scope of the 312.5(a)(2) separate-consent obligation, and the content of each amendment as
+   this ADR summarises it, all of which entered from secondary sources. Counsel should read the
+   amended rule text rather than take the ADR's word for what it says. Confirming that a citation
+   resolves is not confirming what the cited text holds.
+
+## 4. Definition of done (per the ADR's own Validation checklist)
+
+- [ ] D1-D5 closed with counsel; ADR status flipped from `Proposed` to `Accepted` with the closed
+      choices recorded in place.
+- [ ] Amended-COPPA-Rule facts re-confirmed against the actual Federal Register text.
+- [ ] The Phase 7 `P7-08` checklist maps one-to-one to the ADR's "already decided" list and the newly
+      closed decisions.
+- [ ] Deletion E2E (family erasure including Apple token revocation) and the kid-context-SDK audit
+      both pass before any public submission, these are gated on this ADR closing, not on Phase 7
+      generally.
+
+## 5. Why this matters now, not later
+
+This is a genuinely long-lead item (external counsel scheduling, review turnaround) sitting on the
+critical path to Phase 7 and the public rungs (R2/R3). It does not block R1 (full)/M5.1, the ADR is
+explicitly public-tier-facing, but every week it isn't started is a week added to the R2/R3
+timeline regardless of how fast the engineering side moves. Start the engagement in parallel with,
+not after, the rest of the R1-completion work.

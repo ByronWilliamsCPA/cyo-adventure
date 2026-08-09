@@ -614,9 +614,14 @@ labels, so no contradiction is introduced; `scripts/check_fill_integrity.py` alr
 accepts label rewrites since the labels-are-leaves change
 (`ws0-label-fingerprint-evaluation.md` section 6, item 5).
 
-Out of scope for D3: no change to `reference/skeleton-format.md` (its known stale
-`ending.type` field name is already tracked in `docs/template_feedback.md`; do not
-bundle unrelated fixes into this sprint's diff).
+Out of scope for D3: no change to `reference/skeleton-format.md` (do not bundle unrelated
+fixes into this sprint's diff). Historical note added 2026-08-08: this paragraph originally
+justified the exclusion by citing a stale `ending.type` field name in that file, tracked in
+`docs/template_feedback.md`. Both halves of that were wrong by the time anyone read them.
+The field name was corrected on `main` in `21deea08` (PR #300), which documents
+`ending.kind`/`ending.valence` and states there is no `ending.type`; and
+`docs/template_feedback.md` is gitignored and local-only, so it resolves for no reader of a
+fresh clone. See `AL-128` / `UW-C63`.
 
 ## 6. Test plan
 

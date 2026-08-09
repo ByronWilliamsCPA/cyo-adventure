@@ -96,23 +96,50 @@ is already recorded as `gdpr-compliance-review.md` finding G-13 (special-categor
 in free text) and is not resolved by this DPIA; it is a known, accepted residual risk at
 current scale, revisit before Track 2 launch.
 
-### 2.2 Verifiable parental consent method is novel, not FTC-enumerated (Medium)
+### 2.2 Verifiable parental consent method is novel, not FTC-enumerated (High)
+
+> **Severity raised from Medium to High on 2026-08-08**, and the premise below was corrected
+> the same day. Both changes follow from reading 16 CFR 312.5(b)(2) directly and from adverse
+> authority found in the Future of Privacy Forum's June 2023 VPC white paper. See ADR-018 D1.
 
 **Risk**: the VPC mechanism (a typed full-legal-name attestation layered on the guardian's
-OAuth login) is not literally one of COPPA's enumerated safe-harbor methods
-(312.5(b)(2)); it is designed to satisfy the "sign and submit electronically" method
-((b)(2)(i)) but that reading has not been confirmed by counsel. If the reading is wrong, every
-consent recorded under it is defective, which could mean every child profile created since
-launch was created without valid VPC.
+OAuth login) is not one of COPPA's enumerated methods (312.5(b)(2)). An earlier version of
+this entry said it "is designed to satisfy the 'sign and submit electronically' method
+((b)(2)(i))"; **that method does not exist**. Method (i) is a return channel: a form signed
+away from the service and returned by mail, fax, or electronic scan. The open question is
+therefore broader than originally recorded. It is not whether our signature is good enough,
+it is whether we are using an enumerated method **at all**.
 
-**Mitigation**: this is exactly the item ADR-018 D1 flags for counsel review, and the
-`privacy-notice.md` draft carries the same flag. The consent record captures enough evidence
-(typed name, timestamp, IP, policy version, tied to the already-authenticated OAuth identity)
-that if counsel requires a stronger method, the change is additive (a stronger method can be
-layered in) rather than requiring a redesign of the surrounding system.
+The fallback argument, that the flow satisfies the general standard at 312.5(b)(1), now has
+adverse authority sitting on it. In January 2015 the FTC declined to approve AgeCheq Inc.'s
+"Device-Signed Parental Consent Form," noting that the 2013 Rule **specifically excluded
+digital signatures** from the enumerated methods because a digital signature alone is not a
+reliable means of obtaining consent, and that the method failed (b)(1) because a child in the
+household could intercept the code binding the signature to an adult. Our mechanism has the
+same shape, with a weaker signature artifact (a typed name) and a binding step (an
+authenticated Google session on a shared family tablet) that is plausibly easier for a child
+to reach than an intercepted text message.
+
+If the reading is wrong, every consent recorded under it is defective, which could mean every
+child profile created since launch was created without valid VPC.
+
+**Mitigation**: this is the top item in the counsel engagement
+(`counsel-engagement-brief.md` Section 1.3), and `privacy-notice.md` carries the same flag.
+Two things limit the blast radius:
+
+- **The consent record survives a change of method.** Typed name, timestamp, IP, policy
+  version, residence country, and adulthood attestation, all tied to the authenticated OAuth
+  identity, are required under every candidate method. Only the verification step is in
+  doubt, so a stronger method layers in additively rather than forcing a redesign.
+- **A prior-approval route is not required.** Per the same FPF source, an operator may rely
+  on an unenumerated method meeting 312.5(b)(1) without FTC approval; the 312.5(b)(3) Safe
+  Harbor route buys certainty, not permission. This is risk reduction, not authorisation.
 
 **Residual risk**: High until counsel confirms or the method is strengthened. This is the
-single highest-priority open item this DPIA surfaces.
+single highest-priority open item this DPIA surfaces. Neither mitigation reaches the core
+exposure: consent cannot be obtained retroactively for collection that has already happened,
+so if counsel concludes the method is defective, re-consenting the existing population is the
+remedy and the prior collection stays defective.
 
 ### 2.3 Cross-family disclosure without adequate control (Low, resolved)
 

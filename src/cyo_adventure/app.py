@@ -23,6 +23,7 @@ from cyo_adventure.api import (
     approval,
     assignments,
     audit,
+    characters,
     child_sessions,
     covers,
     device_grants,
@@ -61,7 +62,11 @@ from cyo_adventure.core.exceptions import (
     ValidationError,
 )
 from cyo_adventure.core.observability import init_sentry
-from cyo_adventure.middleware import CorrelationMiddleware, add_security_middleware
+from cyo_adventure.middleware import (
+    CorrelationMiddleware,
+    UnitOfWorkMiddleware,
+    add_security_middleware,
+)
 from cyo_adventure.security_audit import record_security_event
 from cyo_adventure.utils.logging import get_logger, setup_logging
 
@@ -387,6 +392,14 @@ _OPENAPI_TAGS: list[dict[str, str]] = [
         "description": "Guardian-managed child profiles within the caller's own family.",
     },
     {
+        "name": "characters",
+        "description": (
+            "Persistent reader characters (ADR-028): create, rename, "
+            "activate, and retire a character carrying progression across "
+            "books within one profile."
+        ),
+    },
+    {
         "name": "personalization",
         "description": (
             "Ring-1/ring-2 story personalization slot management, ring-2 "
@@ -611,6 +624,19 @@ def create_app() -> FastAPI:
         description="Choose-your-own-adventure reader API for the family library.",
         openapi_tags=_OPENAPI_TAGS,
     )
+    # #CRITICAL: data integrity: added FIRST so it is the INNERMOST layer
+    # (Starlette applies the most-recently-added middleware first), which puts
+    # it as close to the route as an app-level middleware can get. The commit
+    # then happens after the handler returns and the body is serialized, but
+    # before the response leaves the app, closing the window in which a client
+    # could act on a 201 whose row is not yet visible to another connection
+    # (issue #461). Adding it later would only move the commit further out; it
+    # is correctness-neutral for the GZip and header layers above it, since
+    # they neither read the database nor depend on transaction state.
+    # #VERIFY: tests/unit/test_unit_of_work.py asserts the commit lands before
+    # `http.response.start`; tests/unit/test_app.py::TestUnitOfWorkMiddleware
+    # asserts it is present and innermost.
+    app.add_middleware(UnitOfWorkMiddleware)
     # #CRITICAL: security: the in-memory rate limiter (60 rpm/IP) is a public
     # deployment defense. It is disabled ONLY in ENVIRONMENT=local, where the
     # single-user dev stack and the e2e-real serial suite legitimately exceed
@@ -702,6 +728,7 @@ def create_app() -> FastAPI:
     app.include_router(reading_history.router)
     app.include_router(generation.router)
     app.include_router(profiles.router)
+    app.include_router(characters.router)
     app.include_router(families.router)
     app.include_router(ratings.router)
     app.include_router(assignments.router)

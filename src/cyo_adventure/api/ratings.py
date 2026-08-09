@@ -127,8 +127,9 @@ async def record_rating(body: RatingBody, ctx: Context) -> RatingView:
         event_type=EventType.RATED,
         payload={"value": int(body.value), "is_update": is_update},
     )
-    # The unit-of-work dependency commits on success; flush + refresh to read
-    # back server-generated timestamps without an explicit commit here.
+    # UnitOfWorkMiddleware commits on success, just before the response is sent
+    # (the dependency's teardown commit is only the fallback); flush + refresh
+    # to read back server-generated timestamps without an explicit commit here.
     await ctx.session.flush()
     await ctx.session.refresh(row, ["rated_at", "updated_at"])
     return _rating_view(row)

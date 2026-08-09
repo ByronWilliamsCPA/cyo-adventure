@@ -42,6 +42,7 @@ if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
 from cyo_adventure.api.deps import Context, authorize_family
+from cyo_adventure.api.gate_limits import gate_limiter
 from cyo_adventure.api.schemas import (
     AdminJobActionResponse,
     ConceptCreatedResponse,
@@ -646,11 +647,20 @@ async def validate_storybook_version(
     # exhaust it and stall every other offloaded call in the process,
     # including the generation worker's own gate runs. Latent today only
     # because no catalog book declares accepts_character.
+    # UW-A47: the hold is now bounded to gate_limiter()'s N concurrent calls
+    # (default 4, see core/config.py::gate_max_concurrency), shared with
+    # api/node_edit.py's edit-and-revalidate call site via
+    # api/gate_limits.py::gate_limiter(). That bounds how many callers may
+    # occupy an AnyIO worker thread for the gate at once; it does not shorten
+    # the 49.6s per-call worst case above, so a queued request still holds
+    # its HTTP connection and may time out.
     # #VERIFY: existing validate_version tests; behaviour is unchanged apart
-    # from yielding the event loop. Re-measure the worst case before the
-    # first character-enabled book ships, by timing run_gate over the
-    # longwinter-station skeleton with a might/wits/nerve 0-2 envelope.
-    result = await run_sync(run_gate, sv.blob)
+    # from yielding the event loop.
+    # tests/unit/test_gate_capacity_limiter.py pins the shared-limiter and
+    # smaller-than-the-default-pool properties. Re-measure the worst case
+    # before the first character-enabled book ships, by timing run_gate over
+    # the longwinter-station skeleton with a might/wits/nerve 0-2 envelope.
+    result = await run_sync(run_gate, sv.blob, limiter=gate_limiter())
     return ValidateResponse(
         blocked=result.blocked,
         report=result.report.to_dict(),

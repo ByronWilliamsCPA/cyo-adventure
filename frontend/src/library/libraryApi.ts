@@ -58,6 +58,20 @@ export interface LibraryItemView {
    * personalization-values fetch is still attempted for it, same as today.
    */
   personalization_eligible?: boolean
+  /**
+   * ADR-028 / gate-rework: whether this book declares a character envelope
+   * (backend: `Storybook.accepts_character is not None`, surfaced verbatim by
+   * `api/library.py::_accepts_character`). The backend schema field defaults
+   * to `False` (`api/schemas.py::LibraryItem.accepts_character`) and the
+   * generated client types it as optional only because of that default
+   * (`accepts_character?: boolean` in `client/types.gen.ts`); this hand-typed
+   * mirror keeps the same optionality on purpose. `undefined` means `false`,
+   * never "needs a character": an item cached before this field existed must
+   * degrade the same way a book that never opts in does. LibraryPage.tsx is
+   * the only reader of this field; it decides, per book, whether opening it
+   * shows CharacterCreator first.
+   */
+  accepts_character?: boolean
 }
 
 export interface RatingView {

@@ -25,6 +25,7 @@ from cyo_adventure.api.deps import (
     authorize_profile,
     parse_uuid,
 )
+from cyo_adventure.api.personalization import purge_profile_personalization
 from cyo_adventure.api.schemas import (
     ContentFlagCaps,
     ProfileCreateBody,
@@ -293,8 +294,15 @@ async def _require_consent(ctx: Context) -> None:
     Phase 2 / ADR-018 D1: the concrete "block child-data collection until a
     consent record exists" gate the remediation plan calls for.
     ``api/onboarding.py::_record_consent`` is the sole writer of
-    ``User.consent_accepted_at``; this is the sole reader that turns its
-    absence into a hard stop.
+    ``User.consent_accepted_at``; this reader turns its absence into a hard
+    stop for the guardian-facing create path.
+
+    There is a second child-data collection point,
+    ``api/admin_profiles.py::create_admin_profile``, guarded by that module's
+    own ``_require_family_consent``. The two gates ask deliberately different
+    questions: this one reads the CALLER's consent (correct, because the
+    caller is the child's parent), while the admin one reads the TARGET
+    family's (correct, because the caller is not).
 
     Args:
         ctx: The request context (principal + unit-of-work session).
@@ -305,8 +313,8 @@ async def _require_consent(ctx: Context) -> None:
     """
     # #CRITICAL: security: a guardian who signed in before completing the
     # consent step (or whose client skipped it) must not be able to create a
-    # child profile by calling this endpoint directly; there is no other
-    # enforcement point for the VPC requirement.
+    # child profile by calling this endpoint directly; this is the only
+    # enforcement point on the guardian-facing path.
     # #VERIFY: tests/integration/test_profiles.py::
     # test_create_profile_requires_recorded_consent.
     user = await ctx.session.get(User, ctx.principal.user_id)
@@ -552,8 +560,10 @@ async def create_profile(body: ProfileCreateBody, ctx: Context) -> ProfileView:
         time_capture_paused=body.time_capture_paused,
     )
     ctx.session.add(row)
-    # The unit-of-work dependency commits on success; flush + refresh to read
-    # back the server-generated id and timestamp (same pattern as ratings.py).
+    # UnitOfWorkMiddleware commits on success, just before the response is sent
+    # (the dependency's teardown commit is only the fallback); flush + refresh
+    # to read back the server-generated id and timestamp (same pattern as
+    # ratings.py).
     await ctx.session.flush()
     await ctx.session.refresh(row, ["created_at"])
     return _view(row)
@@ -640,6 +650,14 @@ async def delete_profile(profile_id: str, ctx: Context) -> None:
     since they remain family-owned content and may already have produced a
     published story.
 
+    ``purge_profile_personalization`` (ADR-028) is called explicitly before
+    the row delete: its two target tables (``child_profile_personalization``
+    and ``character``) both already cascade at the database level, so this
+    call changes nothing about what ends up erased, but it makes
+    ``PURGE_TARGETS``'s claim about where the character_name slot's value
+    lives an assertion this route actually exercises, rather than one that
+    is only true because a foreign key happens to agree with it.
+
     Unlike ``update_profile``, this deliberately checks family ownership
     (``authorize_family``) rather than ``authorize_profile``: a profile a
     guardian has already deactivated is excluded from
@@ -669,5 +687,6 @@ async def delete_profile(profile_id: str, ctx: Context) -> None:
     # test_delete_profile_removes_child_linked_rows,
     # ::test_delete_profile_rejects_cross_family_profile.
     authorize_family(ctx.principal, row.family_id)
+    await purge_profile_personalization(ctx.session, row.id)
     await ctx.session.delete(row)
     await ctx.session.flush()

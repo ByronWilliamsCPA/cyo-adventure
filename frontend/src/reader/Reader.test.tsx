@@ -7,9 +7,10 @@ import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-libra
 import { MemoryRouter } from 'react-router'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { choose } from '../player/engine'
+import { choose, startContinuation } from '../player/engine'
 import type { ValuesPayload } from '../player/personalization'
-import type { ReadingState, Storybook } from '../player/types'
+import type { ContinuationSeed } from '../player/series'
+import type { ReadingState, Storybook, VarState } from '../player/types'
 import { clearChildSession, setChildSession } from '../auth/childSession'
 import type { SubmitFlagParams } from '../api/readerApi'
 import type { KidFlagCreatedView, ReadingHistoryItem } from '../client/types.gen'
@@ -515,6 +516,76 @@ describe('Reader series continuation', () => {
       endedSeriesStory({ id: 'e_done', kind: 'completion', valence: 'neutral', title: 'Done' })
     )
     expect(await screen.findByTestId('continue-series')).toBeTruthy()
+  })
+})
+
+describe('Reader RESTART honors a continuation seed (issue #460)', () => {
+  // Mirrors player/machine.test.ts's own "book2" fixture for this issue: book 2
+  // of a series whose start node is a prologue a continuation read must skip,
+  // and whose continuation entry node carries an on_enter effect that makes the
+  // carried variables observably distinct from a fresh start's declared
+  // initials. The two node bodies below are the discriminating signal: if
+  // Reader ever stopped forwarding `continuation` into the machine's input,
+  // RESTART would land back on the prologue instead of the entry node.
+  const book2: Storybook = {
+    schema_version: '2.0',
+    id: 's_book2',
+    version: 1,
+    title: 'Book Two',
+    metadata: {
+      series: {
+        series_id: 's_saga',
+        book_index: 2,
+        series_entry_node: 'n_woods',
+        carries_state: true,
+      },
+    },
+    variables: [
+      { name: 'torch', type: 'bool', initial: false },
+      { name: 'coins', type: 'int', initial: 0, min: 0, max: 9 },
+    ],
+    start_node: 'n_camp',
+    nodes: [
+      {
+        id: 'n_camp',
+        body: 'the prologue a continuation read is meant to skip',
+        is_ending: false,
+        choices: [{ id: 'c_torch', label: 'Take the torch.', target: 'n_woods' }],
+      },
+      {
+        id: 'n_woods',
+        body: 'woods',
+        is_ending: false,
+        on_enter: [{ op: 'inc', var: 'coins', value: 1 }],
+        choices: [{ id: 'c_river', label: 'Cross the river.', target: 'n_river' }],
+      },
+      { id: 'n_river', body: 'river', is_ending: true, choices: [] },
+    ],
+  }
+  const seed: ContinuationSeed = { entryNode: 'n_woods', varState: { torch: true, coins: 4 } }
+
+  it('restarts to the continuation entry node with carried variables, not the book start node', () => {
+    render(
+      <MemoryRouter>
+        <Reader
+          story={book2}
+          profileId="p1"
+          continuation={seed}
+          initialReading={startContinuation(book2, seed.entryNode, seed.varState)}
+        />
+      </MemoryRouter>
+    )
+    // The continuation read opens on the entry node, never the prologue.
+    expect(screen.getByTestId('passage-body').textContent).toContain('woods')
+    fireEvent.click(screen.getByTestId('choice-c_river'))
+    expect(screen.getByTestId('ending-screen')).toBeTruthy()
+
+    fireEvent.click(screen.getByTestId('restart'))
+
+    // A restart that dropped the continuation seed would fall back to start():
+    // current_node n_camp and the prologue body, never "woods".
+    expect(screen.getByTestId('passage-body').textContent).toContain('woods')
+    expect(screen.getByTestId('passage-body').textContent).not.toContain('prologue')
   })
 })
 
@@ -1231,5 +1302,114 @@ describe('Reader stop-flow rendering (ADR-026, W1.1)', () => {
     // n_start+n_hall+n_gallery is one stop, so it is still page 1 even
     // though three nodes' worth of prose is on screen.
     expect(screen.getByTestId('reader-position').textContent).toBe('Page 1')
+  })
+})
+
+// A two-node-plus fixture declaring a real int variable, so a character seed
+// (ADR-028) produces a var_state the story's declared initials never could.
+// This is what makes the seed OBSERVABLE to the replay-based Go back: `back()`
+// accepts only a replay whose terminal var_state matches the live one exactly.
+const seededBackStory: Storybook = {
+  schema_version: '2.0',
+  id: 's_seeded_back',
+  version: 1,
+  title: 'Seeded Back',
+  metadata: {},
+  variables: [{ name: 'might', type: 'int', initial: 0, min: 0, max: 5 }],
+  start_node: 'n_start',
+  nodes: [
+    {
+      id: 'n_start',
+      body: 'The trailhead.',
+      is_ending: false,
+      choices: [{ id: 'c_go', label: 'Climb', target: 'n_ridge' }],
+    },
+    {
+      id: 'n_ridge',
+      body: 'The windy ridge.',
+      is_ending: false,
+      choices: [{ id: 'c_on', label: 'Keep going', target: 'n_end' }],
+    },
+    {
+      id: 'n_end',
+      body: 'Home again.',
+      is_ending: true,
+      choices: [],
+      ending: { id: 'e_home', valence: 'positive', kind: 'success', title: 'Home' },
+    },
+  ],
+}
+
+describe('Reader seeded Go back (ADR-028 Task 9, C1)', () => {
+  it('the Go back button and the BACK event agree on a seeded read', () => {
+    // The read genuinely began from the character's seed, so its live
+    // var_state (might 3) is unreachable from the story's declared initials
+    // (might 0). Both halves of Go back must therefore be computed WITH the
+    // seed: Reader.tsx's `canUndo` (what renders the button) and machine.ts's
+    // `canGoBack` guard (what lets the BACK event through).
+    const seed: VarState = { might: 3 }
+    const reading = choose(seededBackStory, startContinuation(seededBackStory, null, seed), 'c_go')
+    expect(reading.var_state.might).toBe(3)
+
+    render(
+      <MemoryRouter>
+        <Reader story={seededBackStory} initialReading={reading} seed={seed} profileId="p1" />
+      </MemoryRouter>
+    )
+    expect(screen.getByTestId('passage-body').textContent).toContain('windy ridge')
+
+    // Half one: the button must render. A seed-blind `canUndo` replays from
+    // start() (might 0), fails the exact var_state comparison, and hides it.
+    const goBack = screen.getByTestId('go-back')
+
+    // Half two: the click must actually move the reader. A present-but-inert
+    // button is precisely the shipped defect this test exists to forbid, so
+    // asserting presence alone would not discriminate; the node has to change.
+    fireEvent.click(goBack)
+    expect(screen.getByTestId('passage-body').textContent).toContain('trailhead')
+  })
+
+  it("the flowed branch's Go back button and the BACK event agree on a seeded read", () => {
+    // N1 (ADR-028 Task 9 re-review): the test above renders with no
+    // `ageBand`, so `flowedStop` is null and only `canGoBack` (the OTHER half
+    // of `canUndo`'s ternary) ever runs there. This is the only test in the
+    // tree that renders a Reader that is both flowed (an ADR-026 flowed
+    // `ageBand`) AND seeded, so it is the only one that can catch `seed`
+    // being dropped from the flowed arm (`canGoBackOneStop(story, flowedStop,
+    // seed)`) specifically.
+    //
+    // flowToBranchStory declares an int variable ("lanterns") incremented by
+    // on_enter effects on the way to the branch; seeding it to a value the
+    // UNSEEDED flow could never reach (3, versus the unseeded flow's own
+    // terminal value of 2) makes the seed observable the same way
+    // seededBackStory makes it observable above.
+    const seed: VarState = { lanterns: 3 }
+    render(
+      <MemoryRouter>
+        <Reader story={flowToBranchStory} seed={seed} ageBand="8-11" profileId="p1" />
+      </MemoryRouter>
+    )
+    // Stop 1 (n_start -> n_hall -> n_gallery, flowed silently on mount): page
+    // one, so there is nothing to undo yet.
+    expect(screen.getByTestId('passage-body').textContent).toContain('two wings')
+    expect(screen.queryByTestId('go-back')).toBeNull()
+
+    fireEvent.click(screen.getByTestId('choice-c_left'))
+    expect(screen.getByTestId('ending-screen')).toBeTruthy()
+
+    // Half one: the button must render. A seed-blind flowed `canUndo` would
+    // replay stop 1's node run from an UNSEEDED start (lanterns 0 -> 1 -> 2),
+    // which disagrees with the live, seeded terminal (lanterns 5) and fails
+    // the exact var_state comparison, hiding the button.
+    const goBack = screen.getByTestId('go-back')
+
+    // Half two: the click must actually move the reader, not just render a
+    // present-but-inert button, exactly C1's shipped defect re-shipped on
+    // this one branch alone.
+    fireEvent.click(goBack)
+    const body = screen.getByTestId('passage-body').textContent ?? ''
+    expect(body).toContain('two wings')
+    expect(screen.getByTestId('choice-c_left')).toBeTruthy()
+    expect(screen.getByTestId('choice-c_right')).toBeTruthy()
   })
 })

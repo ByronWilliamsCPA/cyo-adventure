@@ -20,18 +20,24 @@ from typing import TYPE_CHECKING
 
 import pytest
 import pytest_asyncio
+from fastapi import Request
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy import create_engine, insert, text
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.pool import NullPool
 from testcontainers.community.postgres import PostgresContainer
 
-from cyo_adventure.api.deps import get_db_session, get_session_factory
+from cyo_adventure.api.deps import (
+    get_db_session,
+    get_session_factory,
+    request_unit_of_work,
+)
 from cyo_adventure.app import app
 from cyo_adventure.core.database import Base
 from cyo_adventure.db.models import (
     CATALOG_FAMILY_ID,
     CATALOG_FAMILY_NAME,
+    Character,
     ChildProfile,
     Family,
     Storybook,
@@ -109,6 +115,7 @@ class Seed:
     other_child_profile_id: uuid.UUID
     storybook_id: str
     version: int
+    character_id: uuid.UUID
 
 
 def _seed_catalog_family_stmt() -> Insert:
@@ -313,16 +320,13 @@ async def client(
 ) -> AsyncIterator[AsyncClient]:
     """Provide an HTTP client with the DB session dependency overridden."""
 
-    async def _override() -> AsyncIterator[AsyncSession]:
-        session = sessions()
-        try:
+    # Only the SESSION is swapped, for the container engine; the unit-of-work
+    # semantics come from the same context manager production uses, so the
+    # commit still lands where UnitOfWorkMiddleware puts it (before the
+    # response is sent) rather than in a copy of the logic that can drift.
+    async def _override(request: Request) -> AsyncIterator[AsyncSession]:
+        async with request_unit_of_work(request, sessions()) as session:
             yield session
-            await session.commit()
-        except Exception:
-            await session.rollback()
-            raise
-        finally:
-            await session.close()
 
     app.dependency_overrides[get_db_session] = _override
     # A route whose database work outlives the handler call cannot use the
@@ -406,6 +410,21 @@ async def seed(sessions: async_sessionmaker[AsyncSession]) -> Seed:
         )
         await session.flush()
 
+        # ADR-028: a pre-existing character on profile_a, owned by family A,
+        # for the authz matrix's load-then-authorize routes (PATCH/activate/
+        # retire), which need a real row in the path to exercise the
+        # "disallowed role gets exactly 403" invariant rather than a 404 from
+        # a random id that never reaches the ownership check.
+        character_a = Character(
+            child_profile_id=profile_a.id,
+            family_id=fam_a.id,
+            name="Route Matrix Rowan",
+            archetype="scout",
+            look="avatar_01",
+        )
+        session.add(character_a)
+        await session.flush()
+
         story_id = str(blob["id"])
         version = int(blob["version"])
         session.add(
@@ -446,6 +465,7 @@ async def seed(sessions: async_sessionmaker[AsyncSession]) -> Seed:
             other_child_profile_id=profile_b.id,
             storybook_id=story_id,
             version=version,
+            character_id=character_a.id,
         )
 
 
@@ -499,6 +519,7 @@ class Stranger:
     guardian_token: str
     child_token: str
     child_profile_id: uuid.UUID
+    character_id: uuid.UUID
 
 
 @pytest_asyncio.fixture
@@ -536,6 +557,20 @@ async def stranger(sessions: async_sessionmaker[AsyncSession]) -> Stranger:
                 ),
             ]
         )
+
+        # ADR-028: a character on profile_c, owned by family C, so the
+        # id-addressed character routes (PATCH/activate/retire) in
+        # _CROSS_FAMILY_CHILD_ROUTE_KEYS have a real, stranger-owned
+        # character_id to substitute into the reverse-direction IDOR test
+        # (test_family_a_child_cannot_reach_stranger_family_profile).
+        character_c = Character(
+            child_profile_id=profile_c.id,
+            family_id=fam_c.id,
+            name="Stranger Character",
+            archetype="scout",
+            look="avatar_01",
+        )
+        session.add(character_c)
         await session.commit()
 
         return Stranger(
@@ -543,4 +578,5 @@ async def stranger(sessions: async_sessionmaker[AsyncSession]) -> Stranger:
             guardian_token="guardian-c",
             child_token="child-c",
             child_profile_id=profile_c.id,
+            character_id=character_c.id,
         )

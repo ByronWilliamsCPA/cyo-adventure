@@ -60,7 +60,7 @@ full v1 (Phase 4b and Phase 5) and the later release rungs (R2/R3).
 | 3 Safety + Review | ✅ Delivered (backend) | moderation pipeline (#36), publish state machine + approval/send-back + core invariant (#34), review-surface API + save-state integrity (#45); guardian console UI is Phase 4a |
 | 4a Library + Profiles | ✅ Delivered (R1 feature-complete) | app shell/auth #56, profiles #60, library #68, guardian console #76, intake #69, assign #75 (all merged 2026-07-03) |
 | 4b Editor + Engagement | ✅ Substantially delivered (2026-07-20 audit) | Shipped 2026-07-17 in PR #270: node editor (`PATCH .../nodes/{id}`), endings tracker UI, read-aloud/TTS, guardian content-controls UI (banned themes), per-child permission envelopes, kid feedback flag. Real gaps remaining: bookmarks (not built at all), guardian device/storage view (revoke exists, download visibility doesn't) |
-| 4c Family Loops (NEW 2026-07-16) | ✅ Substantially delivered (2026-07-28 audit) | Shipped 2026-07-17 in PR #270: notification feed (`GET /notifications` + `NotificationBell.tsx`), guardian engagement visibility (`GET /families/me/reading-summary` + `ReadingPage.tsx`), kid-facing generation status, budget consent (envelopes + `GET /families/me/budget`). Push channel closed 2026-07-28: authenticated SSE (`GET /v1/notifications/stream`), `notificationsStream.ts` consumer wired into `NotificationBell.tsx` as a fallback-preserving addition to the poll (G10 flipped to ✅). Remaining gap: no server-scheduled digest job (S9 stays 🟡, narrowed to this one piece) |
+| 4c Family Loops (NEW 2026-07-16) | ✅ Substantially delivered (2026-07-28 audit) | Shipped 2026-07-17 in PR #270: notification feed (`GET /notifications` + `NotificationBell.tsx`), guardian engagement visibility (`GET /families/me/reading-summary` + `ReadingPage.tsx`), kid-facing generation status, budget consent (envelopes + `GET /families/me/budget`). Push channel closed 2026-07-28: authenticated SSE (`GET /api/v1/notifications/stream`), `notificationsStream.ts` consumer wired into `NotificationBell.tsx` as a fallback-preserving addition to the poll (G10 flipped to ✅). Remaining gap: no server-scheduled digest job (S9 stays 🟡, narrowed to this one piece) |
 | 4d Connections (NEW 2026-07-16) | ✅ Substantially delivered (2026-07-20 audit) | Shipped 2026-07-17 in PR #270: dual-guardian consent flow with an enforced guard at the recommendations read path (`api/recommendations.py::_is_dual_consented()`), kid-facing recommendation chips. Privacy-model erasure coverage for connections not independently re-verified in this audit pass |
 | 5 Hardening | 🟡 Partially delivered | Redis-backed rate limiter, ADR-007 purge job, offline-copy revocation, operator runbook, and a re-screen first cut are merged (see checklist below); performance pass, Sentry backups/restore drill, admin audit view, and the nightly/staging test ladder remain open |
 
@@ -98,26 +98,66 @@ expanded in place below.
 
 ### Now queue (days, before Phase 4b starts)
 
-**2026-07-20 audit status: 3 of 5 done, 1 done modulo unverifiable infra secrets, 1 not
-done.**
+**2026-08-08 re-audit: items 1 through 4 are done.** (Prior 2026-07-20 status: 3 done, 1 done
+modulo unverifiable infra secrets, 1 not done.) The change is item 2, whose only open caveat
+was that the repo cannot see whether GitHub environment secrets are populated. That is now
+settled, and by evidence rather than inspection: both scheduled tiers complete real
+email/password sign-ins against their live targets, which is impossible with absent or wrong
+secrets. This re-audit did not reassess item 5, which is owner-gated rather than engineering
+work; read its own row below for current status rather than inferring it from this header.
+Note that a tier being *red* does not reopen items 2 or 3: what those items claim is that the
+harness exists and is wired, and a tier that runs, authenticates, and reports real assertion
+failures has demonstrated exactly that.
 
 1. ✅ **Done.** Both PRs merged (#267, #268, folded into #270). Both review conditions
    satisfied: `capability-register.md`'s A12 entry names the admin child-PIN authority
    with an explicit ADR-014 cross-reference, and `authorization-matrix.md` carries rows
    for the new admin endpoints (admin users CRUD, admin child-profile CRUD incl. PIN,
    family-connection CRUD).
-2. 🟡 **Workflow done, secrets unverifiable from the repo.** `.github/workflows/e2e-staging.yml`
-   exists, scheduled daily, and references the three `staging` environment secrets; whether
-   they are actually populated in GitHub cannot be checked from this repo.
-3. ✅ **Done.** `e2e-prod.yml` exists (scheduled daily, 30 min after staging) with a
-   dedicated "alert on failure" step that opens/comments on an issue labeled `e2e-alert`.
-   Requires a `production` GitHub Environment with its own secrets before the first
-   scheduled run can succeed (same infra-secrets caveat as item 2).
+2. ✅ **Done, and the secrets caveat is resolved.** `.github/workflows/e2e-staging.yml` exists,
+   is scheduled daily, and references the three `staging` environment secrets. Re-verified
+   2026-08-08: the 2026-08-07 run signed in and its main tier reported green, so the
+   secrets are populated. Stated precisely, the tier ran 16 tests, 15 passing and 1 flaky;
+   "15 of 15" would understate the retry. Its only red is the post-tier `device-grant-sweep`,
+   which reports that the test family still holds active device grants. That is a known
+   harness artifact, not a product defect and not a secrets problem: a serial-block retry runs
+   on a **new** worker, so the failed first attempt never reaches its own revoke step and leaks
+   its grant, while the retried attempt passes and the tier reports green. This run shows
+   exactly that shape (test 15 failed, retried as 17-19 and passed, sweep then found the
+   leak). One caveat the mechanism does not fully explain: the sweep names **three** grants
+   (`bb2ced27`, `260fcc51`, `b631c2e2`), not one, which points at accumulation across runs
+   rather than a single retry, and means the sweep is reporting a backlog that nothing clears.
+3. ✅ **Done, same caveat resolved.** `e2e-prod.yml` exists (scheduled daily, 30 min after
+   staging) with a dedicated "alert on failure" step that opens/comments on an issue labeled
+   `e2e-alert`. Re-verified 2026-08-08: the `production-e2e` environment's secrets are populated
+   and the tier authenticates against live production, evidenced by the 2026-08-07 run's 21
+   passed. Note the environment name: the workflow deliberately does **not** use `production`,
+   which carries a required-reviewer protection rule that would park a scheduled, unattended run
+   in `waiting` indefinitely; `e2e-prod.yml` carries a `#CRITICAL` comment saying so. Its 2 failures are a real product defect it correctly caught
+   ([#639](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/639) / `UW-L07`), and the
+   alert path also works: the failure job is maintaining issue #623 as designed.
 4. ✅ **Done.** `validator-rules.md` has a PL-22 entry (band profile fail-closed);
    `authorization-matrix.md` carries rows for the already-shipped admin surfaces.
-5. ❌ **Not done.** `adr-018-childrens-privacy-compliance.md` is still `status: proposed`
-   with D1/D2/D3 each showing only a working recommendation and no counsel sign-off or
-   progress note since 2026-07-16.
+5. 🟡 **Owner side done 2026-08-06; blocked on external counsel.** The 2026-07-20 wording of
+   this row ("Not done ... only a working recommendation and no progress note since
+   2026-07-16") is **superseded and was already understating the position when written**: the
+   ADR was substantively amended 2026-08-01 and again 2026-08-06. Current state, decision by
+   decision: **D1** mechanism chosen and *implemented* (`POST /api/v1/onboarding` consent
+   payload, `GuardianConsentPage.tsx`, gated by `api/profiles.py::_require_consent`), with one
+   named legal question outstanding; **D2** child-directed posture confirmed by the owner
+   2026-08-06; **D3** US-only confirmed 2026-07-20; **D4** artifact ownership confirmed (owner
+   drafts, counsel reviews), with
+   [information-security-program.md](../compliance/information-security-program.md) published
+   and [data-retention-policy.md](../compliance/data-retention-policy.md) drafted 2026-08-06
+   but **not yet published** (three data classes still await an owner ruling on their deletion
+   window, tracked at `UW-N07`), and Safe Harbor sequencing settled as counsel-first; **D5**
+   corpus constraint confirmed 2026-08-06. The
+   packet counsel receives is assembled at
+   [counsel-engagement-brief.md](../compliance/counsel-engagement-brief.md). The ADR stays
+   `status: proposed` and this row stays open because the remaining work is external: retaining
+   counsel and getting rulings. Register home: `UW-M03`. **This is a long-lead item on the
+   critical path to Phase 7 and the R2/R3 rungs, and it does not block R1;** every week the
+   engagement is not started is a week added to R2/R3 regardless of engineering pace.
 
 ### Where every open register item lands
 
@@ -127,6 +167,7 @@ done.**
 | S9 delivery infra (push transport closed 2026-07-28: authenticated SSE stream shipped; the server-scheduled digest job remains open), G9 visibility, K12 kid generation status, G7 budget consent. Closed since this table was written: G10 digest/alerts 2026-07-28 (SSE push transport shipped, register flipped to ✅), G13 interim quota balance 2026-07-29 (audit found budget enforcement and kid-facing status already shipped and tested, register flipped to ✅), and G14 multi-guardian households 2026-07-28 (guardian self-service co-parent invite shipped, register flipped to ✅) | 4c |
 | G17 consent flow, K17 recommendation surfaces, A15 enforcement guard | 4d |
 | ADR-007 purge, G8/A5 offline revocation, nightly e2e-real + S2 real conflict spec, staging golden journeys, adversarial live-model run | 5 |
+| K24 persistent character (minted 2026-08-08, v1.10): runtime delivered on branch `feat/persistent-characters-runtime` (creator/picker UI, server-derived binding and seed snapshot, idempotent progression writeback); no catalog book participates yet, so no reader can exercise it. Remaining work is the pathfinder pilot skeleton and its K18 ratings-comparison decision, tracked as [UW-A46](./unscheduled-work-register.md) | 5 |
 | ADR-018 D1-D4 execution, G11 trust surface, G12 export, A12 abuse workflow, A14 compliance reporting | 7 |
 | G13 full credits/IAP | 8 |
 | A9 curation surface, A7 ops dashboards, A8 runtime levers, A4 full catalog re-screen | 9 |
@@ -351,12 +392,12 @@ The old wording stands in historical sections above; this table governs.
 |-----------|--------------------------------------|-----|------------------------|
 | M0-M3 | Foundations through enforced approval gate | done | ✅ Delivered |
 | M4 = **R1-alpha** | Core loop live internally, web only (Phases 0-3 + 4a; historic "R1") | done | ✅ Feature-complete 2026-07-03, live 2026-07-05 |
-| M4.1: R1-alpha sign-off | Funded provider keys; merged PRs + safety fixes redeployed; live E2E checklist executed once with a sign-off row; Now-queue items 1-4; **plus, added 2026-07-28: the ADR-021 production cutover (`UW-A03`), which the ADR itself names M4.1 as the review gate for** | ~1 wk | 🟡 Cutover done. Funded provider keys confirmed 2026-08-04; the ADR-021 production cutover (`UW-A03`) verified live 2026-08-04 (`cyo_api` holds all active production connections, `rolbypassrls=false`; see `UW-A03`/`UW-M08`); merged PRs and safety fixes redeployed (verified 2026-07-30). **Still open**: the live E2E checklist (`UW-F17`, 0/38 steps, no sign-off row) and re-verification of Now-queue items 1-4, last checked 2026-07-20 |
+| M4.1: R1-alpha sign-off | Funded provider keys; merged PRs + safety fixes redeployed; live E2E checklist executed once with a sign-off row; Now-queue items 1-4; **plus, added 2026-07-28: the ADR-021 production cutover (`UW-A03`), which the ADR itself names M4.1 as the review gate for** | ~1 wk | 🟡 Cutover done. Funded provider keys confirmed 2026-08-04; the ADR-021 production cutover (`UW-A03`) verified live 2026-08-04 (`cyo_api` holds all active production connections, `rolbypassrls=false`; see `UW-A03`/`UW-M08`); merged PRs and safety fixes redeployed (verified 2026-07-30). **Still open**: the live E2E checklist (`UW-F17`) and, as of 2026-08-08, a live P1 defect this milestone cannot sign off over. Two corrections to what this cell used to claim. The "0/38 steps, no sign-off row" was already stale when written: a PARTIAL 5-of-38 run with a sign-off row was recorded on 2026-08-04. It now stands at **10 of 38**, advanced 2026-08-08 against the deployed revision `631c0d8a` (v0.68.0), with `UW-L04` confirmed live and Section 1a's open routing question resolved. And Now-queue items 1-4 are **re-verified as of 2026-08-08** (all four done; item 2's unverifiable-secrets caveat is resolved by both scheduled tiers completing real sign-ins), so that clause is closed. What replaces them as the gate is `UW-L07` / [#639](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/639): guardian profile resolution reads a Tier 1 table before applying the RLS context, so every guardian in production sees zero profiles. It fails closed, so it is an outage of the profiles surface rather than a leak, but signing off R1-alpha while the guardian console cannot list a family's children is not defensible. The remaining 28 checklist steps stay owner-gated as before (interactive credentials, a maintenance window for the mutating worker-restart step, funded provider quota for Sections 2 and 4, and a second device for Section 5) |
 | M4b: Editor + engagement | G6, K6, K7, G5, G2 usable by a real guardian, G3, K15, G15 view, K5/K8 test pins | 3-4 wks | ✅ Substantially delivered 2026-07-17 (PR #270); open: bookmarks (not built), G15 storage/download view (device list/revoke UI shipped 2026-07-28), K5/K8 test pins |
 | M4c: Family loops | S9, G10, G9, K12 complete, G7 real budget consent + G13 balance | 2-3 wks | ✅ Substantially delivered 2026-07-17 (PR #270); push channel closed 2026-07-28 (SSE stream, G10 now ✅); open: S9's server-scheduled digest job |
 | M4d: Connections | G17 consent, K17 surfaces, A15 enforcement guard (ADR-016 ring 2) | 2-3 wks, overlaps 4c | ✅ Substantially delivered 2026-07-17 (PR #270). Corrected 2026-08-01: this row said "Delivered" while the phase table said "Substantially delivered"; code validation settles it as the latter. Dual consent is genuinely enforced twice over (`recommendations.py:203` `_is_dual_consented`, plus a second ring-2 gate in `personalization.py`). Open: the erasure CASCADE is migrated but no test creates a `FamilyConnection` then deletes a family, and `models.py:786-789`'s `#VERIFY` points at `test_deletion_drill.py`, where the only connection lives in an *export* test; no integration or e2e test drives ring-2 dual consent over the real stack |
 | M5: Hardened family tier | Phase 5 expanded scope: purge, offline revocation, audit view, re-screen, restore drill, nightly/staging/prod test ladder green with alerting | 2-3 wks | 🟡 M4b-4d dependency satisfied as of 2026-07-17. **Revised 2026-08-01 against code**: the audit view IS built (`frontend/src/admin/AuditPage.tsx`, routed at `/admin/audit`) and safety gap **H1 is closed** (`assignments.py:285-312` raises on `book_rank > profile_rank`, with a regression test); H2 is half closed, since the human cover-approval gate exists and only the automated image classifier is missing. All three test ladders have real `schedule:` triggers. Genuinely remaining: the performance pass, backups plus restore drill, the H2 classifier, and the H1 residual (the band check is fail-open on blobs lacking band metadata) |
-| **M5.1 = R1 (full): "the web app functions properly"** | Every family-tier register row at delivered status; the five golden journeys green on the full test ladder | **~9-13 wks cumulative from start** | 🟡 Closer than scheduled: the register's K/G/A/S rows are now mostly ✅/🟡 with few ❌ remaining (see capability-register.md v1.7); the live E2E sign-off (`r1-live-e2e-checklist.md`) is still an empty, unexecuted table |
+| **M5.1 = R1 (full): "the web app functions properly"** | Every family-tier register row at delivered status; the five golden journeys green on the full test ladder | **~9-13 wks cumulative from start** | 🟡 Closer than scheduled: the register's K/G/A/S rows are now mostly ✅/🟡 with few ❌ remaining (see capability-register.md v1.7); the live E2E sign-off (`r1-live-e2e-checklist.md`) has been executed twice and stands at 10 of 38 steps ticked as of 2026-08-08, with the remaining 28 owner-gated except for the #639 fix (see the M4.1 row above for the evidence tiers). **Added 2026-08-06 by owner ruling OG7** (`story-structure-improvement-plan.md` §8.1): the catalog is also reachable-empty, and `UW-G14` (promoting the 23 authored books) now carries the `R1` token as a named blocker of this row, on the argument that a library with zero reachable catalog books is not a family-tier row at delivered status, it is the core reading loop failing for any family that has not completed a custom request |
 | M6 = R2: TestFlight iOS | Phase 6 (public auth/multi-tenancy) + Phase 8 (Capacitor shell, IAP); R2-gate debt items closed (G1 child-session scoping is already substantially closed by ADR-014; verify and mark) | 6-9 wks | 🟡 Phase 6's guardian-side substance (JIT onboarding, child-session tokens, profile picker + PIN, parental gate) is already built and tested per the 2026-07-20 audit (see PROJECT-PLAN.md Phase 6); the native iOS/Capacitor path (P6-05 remainder) and all of Phase 8 remain fully unstarted |
 | M7 = R3: Public launch | Phase 7 (ADR-018 D1-D4 executed and Accepted, G11/G12/A12/A14) + Phase 9 (catalog ops, hosted infra, A7/A8 ops levers, submission) | 5-8 wks, partial overlap with M6 | ⏸️ Counsel engagement should start now (long lead) |
 | Completion | Register fully delivered except the post-launch backlog (S12 ring-3, A11 corpus tooling) and parked no-design-element items | - | - |
@@ -666,7 +707,7 @@ undo), bookmarks (a distinct save-slot feature) is not built at all.**
 - [x] Guardian device list/revoke view: every currently-active device grant for the
       family, with a revoke action per device (`GuardianShell` "Devices" nav item ->
       `frontend/src/guardian/DevicesPage.tsx`, calling the existing family-scoped
-      `GET`/`DELETE /v1/device-grants` endpoints in `api/device_grants.py`) (G15, ADR-014's
+      `GET`/`DELETE /api/v1/device-grants` endpoints in `api/device_grants.py`) (G15, ADR-014's
       own lost-device mitigation).
 - [ ] Guardian storage/download view: which books are downloaded on which device (G15
       remainder). No backend `offline/` module exists to report per-device download state;
@@ -702,7 +743,7 @@ This is the highest-leverage gap the capability review found after initiation it
 
 **Status (2026-07-28 update): all shipped 2026-07-17 in PR #270, plus the push transport
 closed 2026-07-28. Delivery is now poll-based (client re-polls with `since`) AND
-push-based (authenticated SSE, `GET /v1/notifications/stream`, with the poll kept as a
+push-based (authenticated SSE, `GET /api/v1/notifications/stream`, with the poll kept as a
 fallback for a connection that cannot use SSE); "alert on safety" was already a real,
 code-enforced distinct tier via `severity`. The one genuine remaining gap is a
 server-scheduled digest job, which no code in this repo implements.**
@@ -970,6 +1011,13 @@ Full detail by ID in the [unscheduled work register](./unscheduled-work-register
       `publishing/catalog_publish.py::promote_catalog_story`, not the import. Live database state is
       unverified; checking it is step 1 of the SQ-01 runbook in
       [story-structure-implementation-briefs.md](./story-structure-implementation-briefs.md).
+      **Exception to this workstream's release-rung independence, ruled 2026-08-06 (gate OG7):**
+      `UW-G14` now carries the `R1` phase token, not `content`. It is the one item in this list that
+      gates a release rung, because it is a reachability gap rather than catalog growth. Everything
+      else here stays release-rung-independent as the Objective above describes. Publication terms
+      were set the same day by gate OG1: kid bands first, `the-sunken-temple` and
+      `the-harrowstone-keep` held back pending the `A9` restructure, and issue #347's Q1/Q2/Q3
+      closed before the #529 sweep is trusted.
 - [ ] WS-0 Phase 3 calibration, WS-1 ATG wiring, WS-5 grammar composer, WS-6 fresh-generation feed,
       and WS-8 flywheel follow-ons (`UW-G05` to `UW-G10`, `UW-A32` to `UW-A36`).
 

@@ -142,6 +142,19 @@ _REVIEW_STORY_ID = "s_bridge_builder"
 # story-request quota authored-request.spec.ts spends against.
 _GUARDIAN_AUTHN_SUBJECT = "dev-guardian"
 
+# Tables truncated together in the single statement below. Every table with a
+# foreign key onto "reading_state" (or onto another member of this set) MUST
+# be listed here: Postgres refuses to TRUNCATE a table referenced by a
+# foreign key from a table not named in the same statement
+# (FeatureNotSupportedError), and TRUNCATE does not honor ondelete="CASCADE"
+# the way DELETE does. This set is not asserted by hand; it is checked
+# against live SQLAlchemy metadata (every ForeignKeyConstraint whose
+# referenced table lands here must have its own table land here too) by
+# test_truncated_tables_cover_every_dependent_foreign_key
+# (tests/unit/test_reset_e2e_real_state.py), so a future FK onto
+# "reading_state" fails that unit test instead of only this job at e2e time.
+_TRUNCATED_TABLES = ("reading_state", "character_book_completion")
+
 # Matches generation/worker.py's f"s_{job.id}" storybook id shape (job.id is a
 # GenerationJob UUID primary key, so this is always a lowercase UUID4). Every
 # hand-authored/seeded storybook id (s_bridge_builder, s_tide_pools,
@@ -220,12 +233,21 @@ async def reset_e2e_real_state() -> None:
     _require_local_database()
     engine = get_engine()
     async with engine.begin() as conn:
-        # #ASSUME: data-integrity: TRUNCATE (not a scoped DELETE) is safe here
-        # because reading_state has no dependent rows: nothing in db/models.py
-        # declares a foreign key onto it (completion and rating key off
-        # child_profile_id/storybook_id independently, not off this table).
-        # #VERIFY: test_reset_e2e_real_state_truncates_reading_state.
-        await conn.execute(text("TRUNCATE TABLE reading_state"))
+        # #CRITICAL: data-integrity: TRUNCATE (not a scoped DELETE) is safe
+        # here only because every table with a foreign key onto reading_state
+        # is named in the SAME statement (_TRUNCATED_TABLES). Postgres
+        # refuses a TRUNCATE that omits a referencing table
+        # (FeatureNotSupportedError) rather than silently truncating past it,
+        # so the failure mode of forgetting one here is loud, not silent; the
+        # unit test below is what catches it before CI does.
+        # CharacterBookCompletion rows are truncated deliberately, not just
+        # for the FK: they key off the exact reading_state rows being wiped
+        # (composite FK onto reading_state.child_profile_id/storybook_id,
+        # ondelete="CASCADE"), and a DELETE would have cascaded them away
+        # anyway, so a TRUNCATE that also clears them is semantically
+        # equivalent, not a data-loss shortcut.
+        # #VERIFY: test_truncated_tables_cover_every_dependent_foreign_key.
+        await conn.execute(text(f"TRUNCATE TABLE {', '.join(_TRUNCATED_TABLES)}"))
         await conn.execute(
             text(
                 "UPDATE storybook_version "

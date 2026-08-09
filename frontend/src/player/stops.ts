@@ -27,7 +27,7 @@
 
 import { back, choose } from './engine'
 import { evaluate } from './evaluator'
-import type { ReadingState, Storybook, StoryNode } from './types'
+import type { ReadingState, Storybook, StoryNode, VarState } from './types'
 
 /** Why a stop's composition stopped at its terminal node (ADR-026 decision 1).
  *
@@ -161,20 +161,34 @@ export function composeStop(story: Storybook, state: ReadingState): Stop {
 // without any special-casing.
 // ---------------------------------------------------------------------------
 
+// #CRITICAL: data-integrity: `seed` must be forwarded to every `back()` call
+// below, and every caller must pass the same seed the read began with.
+// `back()` replays the recorded path from the read's OWN start
+// (`engine.ts::replayRecordedPath`: `start(story)` unseeded,
+// `startContinuation(story, null, seed)` seeded) and accepts only a replay
+// whose terminal var_state is exactly equal to the live one. Two callers
+// disagreeing about the seed therefore disagree about whether Go back is
+// possible at all, which is how ADR-028 Task 9 first shipped: the reader's
+// availability check omitted the seed while the machine's BACK guard used it,
+// so on a seeded read the button rendered and the event was swallowed.
+// #VERIFY: stops.test.ts "rewinds a stop on a seeded read only when the seed
+// is forwarded".
+
 /** Rewind from a stop's terminal state to the previous stop's terminal node,
  * via `nodeIds.length` calls to `back()`; `null` when there is no previous
  * stop (this was the first stop) or the recorded path cannot be replayed
- * (same fail-closed contract as `back()`). The input is not mutated. */
-export function backOneStop(story: Storybook, stop: Stop): ReadingState | null {
+ * from the read's own start (the seeded start when a seed is given; same
+ * fail-closed contract as `back()`). The input is not mutated. */
+export function backOneStop(story: Storybook, stop: Stop, seed?: VarState): ReadingState | null {
   let current: ReadingState | null = stop.state
   for (let i = 0; i < stop.nodeIds.length; i += 1) {
     if (current === null) return null
-    current = back(story, current)
+    current = back(story, current, seed)
   }
   return current
 }
 
-/** Whether `backOneStop` would succeed for this stop. */
-export function canGoBackOneStop(story: Storybook, stop: Stop): boolean {
-  return backOneStop(story, stop) !== null
+/** Whether `backOneStop` would succeed for this stop, under the same seed. */
+export function canGoBackOneStop(story: Storybook, stop: Stop, seed?: VarState): boolean {
+  return backOneStop(story, stop, seed) !== null
 }

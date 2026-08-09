@@ -11,7 +11,7 @@ import json
 import re
 import unicodedata
 from datetime import date, datetime
-from typing import Annotated, Literal, get_args
+from typing import Annotated, Literal
 
 from pydantic import (
     AfterValidator,
@@ -23,9 +23,14 @@ from pydantic import (
 )
 
 from cyo_adventure.api.residence_countries import ASSIGNED_RESIDENCE_COUNTRY_CODES
-from cyo_adventure.db.models import RING_GOAL_DAYS_MAX, RING_GOAL_DAYS_MIN
+from cyo_adventure.db.models import (
+    _PERSONALIZATION_RING2_SLOT_TYPE_VALUES,
+    RING_GOAL_DAYS_MAX,
+    RING_GOAL_DAYS_MIN,
+)
 from cyo_adventure.generation.concept import ConceptBrief
 from cyo_adventure.moderation.report import FindingSeverity, Source, Verdict
+from cyo_adventure.storybook.character_vocabulary import ARCHETYPE_ROSTER
 from cyo_adventure.storybook.evaluator import VarState
 from cyo_adventure.storybook.models import (
     AgeBand,
@@ -121,7 +126,16 @@ class ReadingStateBody(BaseModel):
 
 
 class ReadingStateView(BaseModel):
-    """A reading-state row returned to the client."""
+    """A reading-state row returned to the client.
+
+    ``character_id``, ``character_name``, and ``seed_var_state`` are
+    server-derived (Task 6, ADR-028 spec section 7.3): the server resolves
+    the profile's active character at read start and snapshots its
+    attributes as the replay baseline. None of the three may be set by a
+    client; ``ReadingStateBody`` has no such fields and is
+    ``extra="forbid"``, so a request that tries is rejected before this
+    view is ever built.
+    """
 
     child_profile_id: str
     storybook_id: str
@@ -134,6 +148,9 @@ class ReadingStateView(BaseModel):
     state_revision: int
     updated_by_device_id: str | None
     last_synced_at: datetime | None
+    character_id: str | None
+    character_name: str | None
+    seed_var_state: VarState | None
 
 
 class ConflictView(BaseModel):
@@ -197,6 +214,15 @@ class LibraryItem(BaseModel):
     # never breaks personalization, it only means one extra network round
     # trip for a non-personalizable book.
     personalization_eligible: bool = False
+    # ADR-028: whether this book declares a persistent-character envelope
+    # (``Storybook.accepts_character is not None``), read verbatim off the
+    # stored blob at listing time, not off a DB column. The frontend uses
+    # this to decide whether to show the character creator for this book at
+    # all; a book that never opted in must never surface one. False for any
+    # document that omits the field entirely (including every pre-2.1 book),
+    # matching the same "absent means no character" default the schema
+    # itself enforces (storybook/models.py::Storybook.accepts_character).
+    accepts_character: bool = False
 
 
 class LibraryView(BaseModel):
@@ -1556,6 +1582,154 @@ class ProfileUpdateBody(BaseModel):
     time_capture_paused: bool | None = None
 
 
+def _nfc(value: str) -> str:
+    """NFC-normalize a user-supplied personalization value.
+
+    Shared by the guardian-authored personalization value types below and by
+    ``CharacterName`` (ADR-028), whose value is a child-authored free-text
+    name that resolves into the same ``character_name`` personalization slot
+    and therefore needs the same canonical stored form.
+
+    Args:
+        value: The raw submitted string.
+
+    Returns:
+        str: The NFC-normalized string.
+    """
+    # #ASSUME: data-integrity: the denylist and distinctness matching in
+    # `validator/slots.py::_normalize` already NFC-normalizes before it
+    # compares, so this is NOT what stops a decomposed spelling from evading
+    # the denylist; that hole does not exist. What this fixes is that the
+    # value is STORED in whatever form the client sent. Two consequences,
+    # both real and both small: the 120-character structural limit is
+    # measured on the raw form, so a decomposed spelling can be rejected at a
+    # length its precomposed twin passes; and the replace route's change
+    # detection compares stored text to submitted text with `!=`, so
+    # re-saving a visually identical name from a client that normalizes
+    # differently reads as an edit and rewrites the row. Normalizing at the
+    # edge makes the stored form canonical and both problems go away. NFC is
+    # idempotent, so an already-normalized value (nearly all of them) is
+    # unchanged.
+    # #VERIFY: tests/unit/test_api_schemas_personalization.py::
+    # test_decomposed_and_precomposed_text_values_normalize_identically.
+    return unicodedata.normalize("NFC", value)
+
+
+# ---------------------------------------------------------------------------
+# Character schemas (ADR-028)
+# ---------------------------------------------------------------------------
+
+# Built from ARCHETYPE_ROSTER rather than retyped: db/models.py already keeps
+# its own SQL-CHECK copy (_CHARACTER_ARCHETYPE_NAMES) honest against the same
+# roster via tests/unit/test_character_vocab_drift.py; deriving this pattern
+# from the roster directly avoids adding a third hand-maintained copy of the
+# six names.
+_CHARACTER_ARCHETYPE_PATTERN = "^(" + "|".join(ARCHETYPE_ROSTER) + ")$"
+
+# A character's name resolves into the `character_name` personalization slot
+# and is substituted into child-facing story prose, so it is constrained the
+# same way the other real-person free-text slot values are: NFC-normalized at
+# the edge (see `_nfc`), with the structural and band-denylist checks run in
+# the route handler via `storybook.personalization_values`, exactly as
+# `protagonist_first_name` gets them from `api/personalization.py`'s PUT. The
+# checks cannot move into this type: the denylist floor depends on the owning
+# profile's age band, which no request body carries.
+# #VERIFY: tests/unit/test_api_schemas_personalization.py::
+# test_character_name_is_nfc_normalized_like_a_personalization_value;
+# tests/integration/test_characters_api.py::
+# test_create_character_rejects_a_sentinel_shaped_name.
+CharacterName = Annotated[str, Field(min_length=1, max_length=32), AfterValidator(_nfc)]
+CharacterArchetype = Annotated[str, Field(pattern=_CHARACTER_ARCHETYPE_PATTERN)]
+CharacterLook = Annotated[str, Field(pattern=r"^avatar_(0[1-9]|1[0-2])$")]
+
+
+class CharacterCreateBody(BaseModel):
+    """A request to create a character for one child profile."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    profile_id: str
+    name: CharacterName
+    archetype: CharacterArchetype
+    look: CharacterLook
+
+
+class CharacterUpdateBody(BaseModel):
+    """A partial update: name and look are re-choosable; archetype is not.
+
+    Attributes, books_completed, and archetype are absent by design.
+    Attributes and books_completed are server-derived and no principal may
+    write them (spec section 3.4). archetype is identity, not a re-pickable
+    preference: ``characters/progression.py``'s ``_PROGRESSION_VARIABLES``
+    excludes it on the stated grounds that it is "set once at
+    creation/build and never raised", and ``Character.archetype`` (the
+    string column) has no update path that also rewrites the persisted
+    ``character_attribute`` row holding the integer code a read binds from
+    (``characters/seeding.py::initial_attributes``); a PATCH that touched
+    only the column would leave the two permanently disagreeing. In all
+    three cases ``extra="forbid"`` turns an attempt into a 422 rather than
+    a silent drop.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    name: CharacterName | None = None
+    look: CharacterLook | None = None
+
+
+class CharacterView(BaseModel):
+    """A character as returned to a kid or guardian.
+
+    ``seed_var_state`` is the server's own answer to "what numbers would a
+    read started by this character carry": exactly what
+    ``reading.py::_bind_active_character`` snapshots onto a new
+    reading-state row. It is exposed because a FRESH read has no
+    reading-state row yet, so there is no ``ReadingStateView`` to read a
+    seed off, and the player must still open the book from the bound
+    character's numbers rather than the story's declared initials (ADR-028
+    Task 9, issue #460, and the ``#EDGE`` marker on ``put_reading_state``'s
+    create path).
+
+    #CRITICAL: data integrity: this field exists so the client CONSUMES a
+    server-derived seed instead of re-deriving one from ``attributes``. A
+    second, client-side attribute-to-seed mapping would be free to drift
+    from ``characters/seeding.py::character_seed``, and the two disagreeing
+    is not a cosmetic bug: the server replays a submitted state from the
+    stored seed (``player/replay.py::validate_reading_state``), so the
+    first save carrying a ``choice_path`` would 422 and wedge the read
+    permanently. Both this view and the read-start binding call
+    ``character_seed`` on the same stored attribute rows, so there is
+    exactly one mapping.
+    #VERIFY: tests/integration/test_reading_character_binding.py::
+    test_character_view_seed_matches_the_seed_a_read_start_would_bind
+    asserts this field equals the ``seed_var_state`` the reading-state
+    create path persists for the same character, so a change to either
+    side alone fails.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    id: str
+    profile_id: str
+    name: str
+    archetype: str
+    look: str
+    is_active: bool
+    books_completed: int
+    attributes: dict[str, int]
+    seed_var_state: VarState
+    created_at: datetime
+    retired_at: datetime | None
+
+
+class CharacterListView(BaseModel):
+    """All of one profile's characters, active first."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    characters: list[CharacterView]
+
+
 # ---------------------------------------------------------------------------
 # Approval schemas
 # ---------------------------------------------------------------------------
@@ -2136,10 +2310,19 @@ ResidenceCountry = Annotated[str, AfterValidator(_normalize_residence_country)]
 class OnboardingConsent(BaseModel):
     """Verifiable-parental-consent payload (Phase 2 / ADR-018 D1; O-117/O-119).
 
-    A signature-capture step layered on the Supabase/Google OAuth login that
+    A typed-name attestation layered on the Supabase/Google OAuth login that
     already authenticates the guardian: ``signer_name`` is a typed
-    full-legal-name attestation, standing in for the FTC's "sign and submit
-    electronically" method (312.5(b)(2)(i)). ``accepted``, ``policy_version``,
+    full-legal-name attestation, and the OAuth session supplies the identity
+    binding. Nothing is drawn, uploaded, or cryptographically signed.
+
+    Do not describe this as an enumerated FTC consent method. It was built on
+    the belief that it satisfied a "sign and submit electronically" method at
+    16 CFR 312.5(b)(2)(i); reading that provision directly on 2026-08-08 found
+    no such method, and whether this flow is an enumerated method AT ALL is
+    an open question with outside counsel (ADR-018 D1). The record this model
+    captures is required under every candidate method, so it stands
+    regardless of how that question resolves; only the strength of the
+    verification step is in doubt. ``accepted``, ``policy_version``,
     ``signer_name``, ``residence_country``, and ``adulthood_attested`` must
     all be present together to actually record consent; a request that omits
     or falsifies any of them records nothing (see
@@ -2673,9 +2856,30 @@ _PersonalizationSlotType = Literal[
     "favorite_hobby",
     "home_type",
     "dedication",
+    # ADR-028: the persistent-character's name. See
+    # storybook.theme_contract.PERSONALIZATION_FIELDS for the full rationale;
+    # this Literal is a hand-maintained mirror of that set, drift-guarded by
+    # tests/unit/test_personalization_vocab_drift.py.
+    "character_name",
 ]
 
-_PERSONALIZATION_SLOT_TYPE_COUNT = len(get_args(_PersonalizationSlotType))
+# The bound on `Ring2ConsentGrantBody.covered_slot_types` below. Derived from
+# the RING-2 ceiling, not from `_PersonalizationSlotType`: that list is every
+# slot type that exists, and three of them (pronoun_set, dedication, and
+# ADR-028's character_name) are permanently ring-1-only, so they can never be
+# an admissible member of a consent scope. Bounding a ring-2-only list by the
+# whole vocabulary counted members that cannot legally appear in it, and each
+# new ring-1-only slot loosened the bound further for no reason.
+#
+# Counted off `ck_cpp_ring2_ceiling`'s own literal body rather than a fourth
+# hand-written copy of the ceiling (the copy-count problem AL-123 records);
+# `tests/unit/test_personalization_vocab_drift.py` already pins that literal
+# against PERSONALIZATION_FIELDS, so this bound inherits that guard.
+# #VERIFY: tests/unit/test_api_schemas_personalization.py::
+# test_covered_slot_types_bound_is_the_ring2_ceiling_not_the_whole_vocabulary.
+_PERSONALIZATION_RING2_SLOT_TYPE_COUNT = len(
+    re.findall(r"'([^']*)'", _PERSONALIZATION_RING2_SLOT_TYPE_VALUES)
+)
 
 # The structural gate (`validator/slots.py::_charset_violations`) rejects any
 # candidate longer than this, and it is the authority: it runs on every
@@ -2684,34 +2888,6 @@ _PERSONALIZATION_SLOT_TYPE_COUNT = len(get_args(_PersonalizationSlotType))
 # rather than a slot violation two layers in. It was 200, which meant values
 # of 121 to 200 characters were accepted here only to be rejected downstream.
 _PERSONALIZATION_VALUE_MAX_LENGTH = 120
-
-
-def _nfc(value: str) -> str:
-    """NFC-normalize a guardian-supplied personalization value.
-
-    Args:
-        value: The raw submitted string.
-
-    Returns:
-        str: The NFC-normalized string.
-    """
-    # #ASSUME: data-integrity: the denylist and distinctness matching in
-    # `validator/slots.py::_normalize` already NFC-normalizes before it
-    # compares, so this is NOT what stops a decomposed spelling from evading
-    # the denylist; that hole does not exist. What this fixes is that the
-    # value is STORED in whatever form the client sent. Two consequences,
-    # both real and both small: the 120-character structural limit is
-    # measured on the raw form, so a decomposed spelling can be rejected at a
-    # length its precomposed twin passes; and the replace route's change
-    # detection compares stored text to submitted text with `!=`, so
-    # re-saving a visually identical name from a client that normalizes
-    # differently reads as an edit and rewrites the row. Normalizing at the
-    # edge makes the stored form canonical and both problems go away. NFC is
-    # idempotent, so an already-normalized value (nearly all of them) is
-    # unchanged.
-    # #VERIFY: tests/unit/test_api_schemas_personalization.py::
-    # test_decomposed_and_precomposed_text_values_normalize_identically.
-    return unicodedata.normalize("NFC", value)
 
 
 def _dedupe_slot_types(values: list[str]) -> list[str]:
@@ -2745,10 +2921,14 @@ class PersonalizationSlotBody(BaseModel):
     """One slot's proposed value and ring flags, inside the PUT replace body.
 
     Exactly one of ``value_text``, ``value_enum``, ``value_profile_id`` may be
-    set, mirroring ``ChildProfilePersonalization.ck_cpp_exactly_one_value``.
-    This is a shape check only: the closed-vocabulary, structural, denylist,
-    and sibling-in-family checks (plan section 5.2) run in the route handler
-    via ``storybook.personalization_values``, not here.
+    set, mirroring ``ChildProfilePersonalization.ck_cpp_value_cardinality``,
+    except for ``"character_name"`` (ADR-028), for which that constraint (and
+    this validator) requires all three to be absent: the slot's value is
+    synthesized from the profile's active character, not stored here, so a
+    consent row for it carries only the ring flags. This is a shape check
+    only: the closed-vocabulary, structural, denylist, and sibling-in-family
+    checks (plan section 5.2) run in the route handler via
+    ``storybook.personalization_values``, not here.
     """
 
     model_config = ConfigDict(extra="forbid")
@@ -2766,13 +2946,38 @@ class PersonalizationSlotBody(BaseModel):
 
     @model_validator(mode="after")
     def _exactly_one_value(self) -> PersonalizationSlotBody:
-        """Reject a slot body with zero or more than one value field set."""
+        """Reject a slot body whose value-field count does not match its slot.
+
+        #CRITICAL: data integrity: character_name is the one slot_type
+        that must carry NO value field; every other slot_type must carry
+        exactly one. Without this branch, a PUT body for character_name
+        either 422s unconditionally (present == 0 always fails the old
+        `!= 1` check, making the slot unusable through its own API) or, if
+        the check were simply relaxed to `<= 1`, a caller could smuggle a
+        value_text onto character_name that this schema would accept and
+        the database's `ck_cpp_value_cardinality` CHECK would then be the
+        only thing left to reject it, as a raw IntegrityError instead of a
+        clean 422.
+        #VERIFY: tests/unit/test_api_schemas_personalization.py::
+        test_character_name_slot_body_validates_with_no_value_field and
+        ::test_character_name_slot_body_with_a_value_text_is_rejected.
+        """
         present = sum(
             value is not None
             for value in (self.value_text, self.value_enum, self.value_profile_id)
         )
-        if present != 1:
-            msg = "exactly one of value_text, value_enum, value_profile_id must be set"
+        expected = 0 if self.slot_type == "character_name" else 1
+        if present != expected:
+            if expected == 0:
+                msg = (
+                    "character_name carries no value; its value is "
+                    "synthesized from the active character"
+                )
+            else:
+                msg = (
+                    "exactly one of value_text, value_enum, value_profile_id "
+                    "must be set"
+                )
             raise ValueError(msg)
         return self
 
@@ -2804,9 +3009,10 @@ class PersonalizationSlotView(BaseModel):
     value_profile_id: str | None
     ring1_enabled: bool
     ring2_enabled: bool
-    # Derived from the taxonomy ceiling (every slot type except pronoun_set
-    # and dedication), so the UI can grey out what the DB CHECK would reject
-    # anyway rather than reimplementing the ceiling list in TypeScript.
+    # Derived from the taxonomy ceiling (every slot type except pronoun_set,
+    # dedication, and character_name), so the UI can grey out what the DB
+    # CHECK would reject anyway rather than reimplementing the ceiling list
+    # in TypeScript.
     ring2_eligible: bool
 
 
@@ -2854,12 +3060,13 @@ class Ring2ConsentGrantBody(BaseModel):
     # but nothing bounded the list's LENGTH: `["dedication"] * 100_000` is
     # every-element-eligible and would have been written verbatim into the
     # consent row's JSONB column and echoed back by `GET /v1/me`. The bound is
-    # the number of slot types that exist, since covering one twice conveys
-    # nothing, and `_dedupe_slot_types` makes that bound reachable only by a
-    # genuinely distinct list.
+    # the number of RING-2 ELIGIBLE slot types, since covering one twice
+    # conveys nothing and a ring-1-only slot can never be covered at all, and
+    # `_dedupe_slot_types` makes that bound reachable only by a genuinely
+    # distinct list.
     covered_slot_types: Annotated[
         list[str],
-        Field(min_length=1, max_length=_PERSONALIZATION_SLOT_TYPE_COUNT),
+        Field(min_length=1, max_length=_PERSONALIZATION_RING2_SLOT_TYPE_COUNT),
         AfterValidator(_dedupe_slot_types),
     ]
     policy_version: Annotated[str, StringConstraints(max_length=32)]
