@@ -108,7 +108,7 @@ discovery. This is the same treatment GDPR gets: written down before it binds.
 | --- | --- | --- |
 | **State comprehensive privacy** (20 states as of Feb 2026) | First user outside the operator's household in a covered state, above any applicable threshold | O-97 jurisdiction matrix owns the determination |
 | **State minors' design codes** (CA AADC, MD, NE, VT, CT, TX SCOPE, FL HB 3, UT) | Public launch. Track enactment and litigation status separately; several are partially enjoined | O-94, O-97 |
-| **State information-security statutes** (NY SHIELD Act, Massachusetts 201 CMR 17.00) | Not residency alone: both statutes key on a defined data class (NY GBL 899-aa(1) "private information"; MA 201 CMR 17.02 "personal information"), each a name plus a specific sensitive identifier (SSN, driver's license, financial-account-with-access-code, biometric, or, for NY, a username/email combined with a password or security answer). T1 records no SSN/DL/financial-account/biometric data; T1's guardian email and auth identity is the one class that plausibly meets NY's username-plus-credential prong, an open question O-120 records rather than resolves. "First NY or MA resident outside the operator's household" is this project's own internal readiness marker, not a statutory threshold; neither statute has a company-size or record-count floor | O-120. Distinct from O-97's comprehensive-privacy/design-code determination and from O-61's COPPA-scoped, children-only security program: SHIELD and 201 CMR protect residents' private/personal information as each statute defines it, not "all" data about them |
+| **State information-security statutes** (NY SHIELD Act, Massachusetts 201 CMR 17.00) | Not residency alone: both statutes key on a defined data class (NY GBL 899-aa(1) "private information"; MA 201 CMR 17.02 "personal information"), each a name plus a specific sensitive identifier: SSN, driver's license/state-ID number, or a financial-account, credit-card, or debit-card number, **with or without** an accompanying security code, access code, PIN, or password (neither statute requires the credential; a bare card or account number combined with a name is already covered), plus biometric data, or, for NY only, a username/email combined with a password or security question and answer. T1 records no SSN/DL/financial-account/card/biometric data; T1's guardian email and auth identity is the one class that plausibly meets NY's username-plus-credential prong, an open question O-120 records rather than resolves. "First NY or MA resident outside the operator's household" is this project's own internal readiness marker, not a statutory threshold; neither statute has a company-size or record-count floor | O-120. Distinct from O-97's comprehensive-privacy/design-code determination and from O-61's COPPA-scoped, children-only security program: SHIELD and 201 CMR protect residents' private/personal information as each statute defines it, not "all" data about them |
 | **App store accountability acts** (TX SB 2420, UT, LA, AL) | Store distribution at R2/R3. Duties land on the **developer**: age rating, ingest store age and consent signals, re-trigger consent on significant change | O-98 |
 | **App store policies** (Apple Kids, Google Play Families) | Store submission | O-99 |
 | **GDPR / UK GDPR** | First EU or UK child or guardian | O-57 to O-60, O-93, O-34, O-121 (Art. 8 child-consent age, added post-2026-08-02) |
@@ -2600,39 +2600,50 @@ posture at a trust boundary must be verified from outside that boundary.
   standard "appropriate for the size and complexity of the small business, the nature and scope of
   [its] activities, and the sensitivity of the personal information [it] collects", GBL
   §899-bb(2)(c), the more favorable route if CYO Adventure qualifies), and, once a Massachusetts
-  resident whose 201 CMR-defined personal information CYO holds exists, 201 CMR 17.04's eight
-  named technical requirements, not the four this row previously listed: secure user
-  authentication protocols, access control restricting personal information to need-to-know,
-  encryption of records transmitted across public networks, encryption of data transmitted
-  wirelessly, reasonable monitoring for unauthorized access, up-to-date firewalls and OS security
-  patches, up-to-date malware protection, and employee training (201 CMR 17.04(1)-(8)). Encryption
-  of personal information stored on laptops or other portable devices is one of the eight (17.04(5));
-  a blanket "encrypt the primary database at rest" mandate is not itself one of them, and is a
-  project control choice rather than a 201 CMR requirement.
+  resident whose 201 CMR-defined personal information CYO holds exists, 201 CMR 17.04's eight named
+  technical requirements, not the four this row previously listed: secure user authentication
+  protocols, access control restricting personal information to need-to-know, encryption of records
+  transmitted across public networks, encryption of data transmitted wirelessly, reasonable
+  monitoring for unauthorized access, up-to-date firewalls and OS security patches, up-to-date
+  malware protection, and employee training (201 CMR 17.04(1)-(8)). **The statute itself qualifies
+  all eight**: 17.04's chapeau requires them "at a minimum, and to the extent technically feasible,"
+  a standard that shifts with available technology rather than a flat mandate; a control found
+  genuinely infeasible does not fail this row if a documented risk analysis and mitigation covers
+  the gap, but "infeasible" is a high bar in practice (regulators have rejected affordability/burden
+  arguments for the encryption items specifically) and is not a default to reach for. Encryption of
+  personal information stored on laptops or other portable devices is one of the eight (17.04(5)); a
+  blanket "encrypt the primary database at rest" mandate is not itself one of them, and is a project
+  control choice rather than a 201 CMR requirement.
 - **Verification target:** The written information security program document, checked specifically
   for statutorily-defined-data-class scope (not the COPPA-scoped, children-only program at O-61),
   and, once an MA resident whose covered personal information CYO holds exists, all eight 201 CMR
-  17.04 technical controls named above in the deployed system, not a generic "data is encrypted"
-  claim or a four-item subset.
+  17.04 technical controls named above in the deployed system (or a documented feasibility-based
+  risk analysis and mitigation in place of any control found genuinely infeasible), not a generic
+  "data is encrypted" claim or a four-item subset.
 - **Failure oracle:** A NY or MA resident's statutorily-defined private/personal information is
   collected with no written security program covering it, or, once an MA resident whose covered
   information CYO holds exists, the program is missing one of 201 CMR 17.04's eight named
-  requirements, or this row's evidence substitutes general at-rest database encryption for the
-  statute's actual eight-item scope.
+  requirements with no documented feasibility-based risk analysis and mitigation covering the gap,
+  or this row's evidence substitutes general at-rest database encryption for the statute's actual
+  eight-item scope.
 - **Negative control:** not determined
 - **Trigger:** Two independent gates, not one, and this row previously collapsed them. **(1) A data-class
   gate, keyed on the statutes' own defined terms, not on residency alone**: NY SHIELD attaches to
-  "private information" (GBL 899-aa(1): a name plus SSN, driver's license number, financial-account
-  number with access credentials, biometric data, or a username/email combined with a password or
+  "private information" (GBL 899-aa(1): a name plus SSN, driver's license number, a financial-account,
+  credit-card, or debit-card number, biometric data, or a username/email combined with a password or
   security question and answer); MA 201 CMR attaches to "personal information" (201 CMR 17.02: a
-  Massachusetts resident's name plus SSN, driver's license/state-ID number, or financial-account
-  number with access credentials). Per T1 above, CYO Adventure holds none of SSN, driver's license,
-  financial-account, or biometric data; the one plausible match is T1's "guardian email and auth
-  identity" against NY's username-plus-credential prong, an open question, not a resolved one, this
-  row records rather than answers. If that prong does not resolve in the affirmative, SHIELD may not
-  attach even after a NY resident is onboarded, and 201 CMR's narrower "name plus SSN/DL/financial
-  account" definition has no comparable email-plus-password prong at all, so 201 CMR may not attach
-  on CYO's current data classes regardless of residency. **(2) The residency/operating-condition
+  Massachusetts resident's name plus SSN, driver's license/state-ID number, or a financial-account,
+  credit-card, or debit-card number). **Neither statute requires an accompanying security code,
+  access code, PIN, or password for the card/account prong**; both cover the bare number combined
+  with a name (confirmed against 201 CMR 17.02's own "with or without any required security code,
+  access code, personal identification number or password" text; a prior version of this row
+  incorrectly implied an access-credential requirement for both statutes). Per T1 above, CYO
+  Adventure holds none of SSN, driver's license, financial-account/card, or biometric data; the one
+  plausible match is T1's "guardian email and auth identity" against NY's username-plus-credential
+  prong, an open question, not a resolved one, this row records rather than answers. If that prong
+  does not resolve in the affirmative, SHIELD may not attach even after a NY resident is onboarded,
+  and 201 CMR's definition has no comparable email-plus-password prong at all, so 201 CMR may not
+  attach on CYO's current data classes regardless of residency. **(2) The residency/operating-condition
   gate**, in the same sense every other state-law trigger in this register uses "household": a
   marker of this project's own current single-family operating condition, not a term either statute
   defines or exempts by. The two statutes do not attach identically once that marker clears.
@@ -2669,10 +2680,11 @@ posture at a trust boundary must be verified from outside that boundary.
   program, covers NY and MA residents' statutorily-defined private/personal information (a data
   class T1 may not currently include; see Trigger) with reasonable safeguards (SHIELD Act, GBL
   §899-bb(2)(a), or the §899-bb(2)(c) small-business standard if applicable) and 201 CMR 17.04's
-  eight specific technical requirements (secure authentication, access control, public-network and
-  wireless transmission encryption, monitoring, firewall/patching, malware protection, employee
-  training, and portable-device storage encryption; not a four-item subset and not a blanket
-  at-rest mandate), in place before the first NY or MA resident outside the operator's household,
+  eight specific technical requirements, each "at a minimum, and to the extent technically feasible"
+  per the statute's own chapeau (secure authentication, access control, public-network and wireless
+  transmission encryption, monitoring, firewall/patching, malware protection, employee training, and
+  portable-device storage encryption; not a four-item subset and not a blanket at-rest mandate), in
+  place before the first NY or MA resident outside the operator's household,
   whose data meets the applicable statute's data-class definition, is onboarded. Filed under SP-11
   rather than SP-13 because, unlike O-61 and the state minors' design codes at O-94/O-97, neither
   statute is a protected-population duty: both attach, subject to the data-class gate above, to any
@@ -3259,22 +3271,35 @@ posture at a trust boundary must be verified from outside that boundary.
 
 - **Category:** SP-13
 - **Framework ref:** not determined
-- **Legal ref:** GDPR Art. 8(1)-(2) (EU 2016/679, member-state consent age 13-16); UK GDPR Art. 8 as
-  onshored and amended by The Data Protection, Privacy and Electronic Communications (Amendments
-  etc) (EU Exit) Regulations 2019 (SI 2019/419), which rewrote the UK GDPR text itself to read "13
-  years" in place of "16 years." **Not** DPA 2018 s.9, which performed this same substitution by
-  cross-reference to GDPR from 25 May 2018 but was omitted (repealed) 31 December 2020 by that same
-  SI once the substitution was folded directly into the onshored UK GDPR text; citing s.9 as the
-  current legal basis is citing a repealed provision for a rule that is now, and independently,
-  written into UK GDPR Art. 8(1) itself (confirmed against primary legislation.gov.uk text,
-  2026-08-09). Art. 8(4) (Art. 8(2A)/(2B) in the UK GDPR's own numbering) carves out preventive or
-  counselling services offered directly to a child from Art. 8 entirely; CYO Adventure's story
-  generation and reading is not such a service, so the carve-out does not apply here, but a future
-  feature (e.g. a guardian-support or crisis-resource surface) would need this row re-examined
-  before assuming Art. 8 governs it. Art. 8 applies specifically where consent under Art. 6(1)(a) is
-  the chosen legal basis for offering an information society service directly to a child; it is not
-  a general age-gate on every legal basis GDPR recognizes (confirmed against primary text and ICO
-  guidance, 2026-08-09).
+- **Legal ref:** GDPR Art. 8(1)-(2) (EU 2016/679, member-state consent age 13-16; the EU text has
+  only three paragraphs, Art. 8(3) being a contract-law savings clause with no counselling-service
+  carve-out, confirmed against the official EUR-Lex consolidated text, 2026-08-09); UK GDPR Art. 8
+  as onshored and amended by The Data Protection, Privacy and Electronic Communications
+  (Amendments etc) (EU Exit) Regulations 2019 (SI 2019/419), which rewrote the UK GDPR text itself
+  to read "13 years" in place of "16 years" and inserted a new **Art. 8(4)**, unique to the UK
+  version and with no EU-GDPR equivalent, carving preventive or counselling services out of "the
+  reference to information society services" in Art. 8(1) entirely. **Corrected 2026-08-09**: an
+  earlier draft of this row cited this as "Art. 8(2A)/(2B) in the UK GDPR's own numbering," which
+  was not found in any source and should not be repeated; the correct UK citation is Art. 8(4)
+  itself. **Not** DPA 2018 s.9, which performed the 13-year substitution by cross-reference to GDPR
+  from 25 May 2018 but was omitted (repealed) 31 December 2020 by that same SI once the
+  substitution was folded directly into the onshored UK GDPR text. This specific point was
+  independently re-checked twice in this row's history: a fresh review pass on 2026-08-09 flagged
+  it as possibly wrong, citing ICO guidance that describes s.9 as currently "modifying Article
+  8(1)"; a direct fetch of legislation.gov.uk's own "Latest available (Revised)" page for section 9
+  (current as of 2026-08-06) confirms the omission stands: "Section 9 has been omitted (repealed)"
+  as of 31.12.2020 by SI 2019/419, Schedule 2, paragraph 12, with no operative text remaining. ICO's
+  guidance describes the substantive 13-year rule in informal, present-tense terms without being
+  precise about which provision currently codifies it; legislation.gov.uk's own status annotation on
+  the provision itself is the more authoritative source for whether s.9 specifically is in force, and
+  it is not. Citing s.9 as the current legal basis for the age rule is citing a repealed provision
+  for a rule that is now, and independently, written into UK GDPR Art. 8(1) itself. CYO Adventure's
+  story generation and reading is not a preventive or counselling service, so the Art. 8(4) carve-out
+  does not apply here, but a future feature (e.g. a guardian-support or crisis-resource surface)
+  would need this row re-examined before assuming Art. 8 governs it. Art. 8 applies specifically
+  where consent under Art. 6(1)(a) is the chosen legal basis for offering an information society
+  service directly to a child; it is not a general age-gate on every legal basis GDPR recognizes
+  (confirmed against primary text and ICO guidance, 2026-08-09).
 - **Class:** MANUAL
 - **Protected property:** A per-member-state (13-16) and UK (13) child-consent-age table exists
   and is consulted specifically in the Art. 8 pathway: before any EU or UK child's own consent,

@@ -97,7 +97,7 @@ ten rows, where it would carry no differentiating information.
 | 3 | Resuming / saving progress (incl. offline sync) | No | Behavioral / identifier | No | None | Internal only |
 | 4 | Rating a story | No | Behavioral / identifier | No | None | Internal only |
 | 5 | Flagging content | No (closed enum only) | Behavioral / identifier | No | None | Internal only |
-| 6 | Typing a story wish (child-initiated request) | **Yes**, one of two free-text fields | **Yes, potentially direct** | **Yes** | OpenAI Moderation, Google Perspective, OpenRouter / Anthropic (+ sub-processors) | **Open blocker (1b); Perspective finding confirmed adverse (C1)** |
+| 6 | Typing a story wish (child-initiated request) | **Yes**, one of two free-text fields | **Yes, potentially direct** | **Yes** | OpenAI Moderation, Google Perspective, OpenRouter (+ sub-processors) / Anthropic (direct, no sub-processors) | **Open blocker (1b); Perspective finding confirmed adverse (C1)** |
 | 7 | Reaching an ending (completion) | No | Behavioral / identifier | No | None | Internal only |
 | 8 | Active reading time (background flush) | No | Behavioral / identifier | No | None | Internal only |
 | 9 | Appearing in a cousin's feed (ring-2 recommendation, derived from #4) | No | Display name + rating, cross-household | No (CYO-to-CYO, not a vendor) | None | Consent-gated, dual-guardian |
@@ -497,8 +497,9 @@ Citations are `file:line` against the current backend/frontend tree.
      own research/model-building).
    - **Generation (only after guardian/admin approval, but built from the child's words)**: the wish
      becomes `ConceptBrief.premise`; a fictional protagonist name is substituted for any real one,
-     and the brief is re-checked against the PII guard before it reaches **OpenRouter** or
-     **Anthropic (direct)**, whose traffic can sub-route to AWS Bedrock, Azure, or Google Vertex.
+     and the brief is re-checked against the PII guard before it reaches **OpenRouter** (whose
+     traffic can sub-route to AWS Bedrock, Azure, or Google Vertex) or, on the separate
+     admin-selectable path, **Anthropic (direct)**, which has no sub-processor routing of its own.
 5. **Vendor purpose / retention / training**: see the vendor register in Section 2 for each
    destination's individual posture; they differ meaningfully (guardrailed ZDR and no-training on
    the OpenRouter route; confirmed adverse on Perspective; unconfirmed on the direct-Anthropic route
@@ -650,8 +651,18 @@ merely undercounting it.
    Event 6.
 7. **Disclosure classification**: no disclosure; the third-party recipient analysis in Event 6 and
    Section 2 does not apply here, because nothing egresses.
-8. **Consent consequence**: D1 only, same universal gate as every other event. No Article 18/21 or
-   D5 consideration applies, since there is no third-party egress point for either to gate.
+8. **Consent consequence**: **corrected 2026-08-09**: D1's universal gate applies, same as every
+   other event, plus no additional third-party-egress consent control is needed on top of it, since
+   field 4 confirms nothing egresses. That is narrower than "no Article 18/21 or D5 consideration
+   applies," which the previous version of this entry claimed and which does not follow from the
+   egress fact alone. D5 (Section 6) is not implicated *because* the working position already
+   excludes all child-originated data, including this field, from any training/evaluation corpus by
+   design, the same condition that covers Event 6, not because this event lacks egress; if that
+   working position ever changes, this field would need re-examination like any other
+   child-originated data. Article 18/21 (Section 6) is a separate question from egress entirely,
+   per that section's own correction: the restriction control does not map cleanly to either
+   article's actual preconditions as built, for any event, and GDPR has not attached in any case
+   (T4).
 
 ---
 
