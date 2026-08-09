@@ -655,11 +655,15 @@ merely undercounting it.
    other event, plus no additional third-party-egress consent control is needed on top of it, since
    field 4 confirms nothing egresses. That is narrower than "no Article 18/21 or D5 consideration
    applies," which the previous version of this entry claimed and which does not follow from the
-   egress fact alone. D5 (Section 6) is not implicated *because* the working position already
-   excludes all child-originated data, including this field, from any training/evaluation corpus by
-   design, the same condition that covers Event 6, not because this event lacks egress; if that
-   working position ever changes, this field would need re-examination like any other
-   child-originated data. Article 18/21 (Section 6) is a separate question from egress entirely,
+   egress fact alone. D5 (Section 6) is indeed a separate question from egress, but it cannot be
+   answered here by appeal to the general "no child-originated data enters a training corpus by
+   design" premise, because [D5's own entry](#d5-ai-training-consent-segregation) now records that
+   premise as contradicted for at least one vendor. What holds for this field is narrower, and rests
+   on what the code does today rather than on a design guarantee: field 4 found no path by which the
+   name reaches any vendor, so the vendor-side training exposure D5 identifies cannot arise for it,
+   and no internal training or evaluation use of `Character.name` exists. Both legs are contingent
+   facts, so adding either a vendor-bound path or an internal training use would re-implicate D5 for
+   this field. Article 18/21 (Section 6) is a separate question from egress entirely,
    per that section's own correction: the restriction control does not map cleanly to either
    article's actual preconditions as built, for any event, and GDPR has not attached in any case
    (T4).
