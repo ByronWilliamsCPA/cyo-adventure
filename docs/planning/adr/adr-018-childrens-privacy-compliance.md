@@ -886,18 +886,18 @@ itself scheduled work, and the items that wait on it say what they wait on.
   `UW-M03` (external and owner-gated). `UW-N02` carries the VPC-method decision specifically and
   `UW-N07` the retention rulings. Nothing here is blocked on further internal sourcing; the
   remaining work on those two rows is counsel's ruling.
-- **D6, the data inventory and processing map**: `UW-A48` (Phase 7, `unscheduled`). Owner-side, not
+- **D6, the data inventory and processing map**: `UW-A50` (Phase 7, `unscheduled`). Owner-side, not
   a counsel question. The mechanism is decided in D6 above (generated from the ORM models); the
   host document is the open part.
-- **D7, the security program as a continuing obligation**: `UW-A49` (Phase 7, `unscheduled`). Also
+- **D7, the security program as a continuing obligation**: `UW-A51` (Phase 7, `unscheduled`). Also
   owner-side. Carries the live instance named in D7: the three 2026-07-28 sub-processor rows are
   recorded in both registers but have not been assessed, and it carries the internal-vs-published
   ruling.
-- **D8, the internal-operations exception and a consent-free free tier**: `UW-A50` (Phase 7,
+- **D8, the internal-operations exception and a consent-free free tier**: `UW-A52` (Phase 7,
   `decision`). A gate, not an implementation row. The ADR entry is sourced from a pre-amendment
   document, so the exception's current scope has to be confirmed against the amended rule text
   before any tiering engineering starts.
-- **D9 and the wider US state-law gap**: `UW-A51` (Phase 7, `decision`). Covers the Validation
+- **D9 and the wider US state-law gap**: `UW-A53` (Phase 7, `decision`). Covers the Validation
   checkbox on state children's-privacy and age-appropriate-design statutes, which previously
   directed work nowhere. California SB 976 is the concrete instance; AB 2273 and other states are
   unscoped.
