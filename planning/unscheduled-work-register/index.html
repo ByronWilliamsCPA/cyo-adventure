@@ -4118,6 +4118,34 @@ validator treats a missing entry there as a build failure.</p>
 <td>5</td>
 <td>unscheduled</td>
 </tr>
+<tr>
+<td>UW-A50</td>
+<td><strong>ADR-018 D6: a complete data inventory and processing map.</strong> Four documents each hold part of it (<code>privacy-model.md</code>, <code>records-of-processing-activities.md</code>, <code>data-retention-policy.md</code>, <code>processor-dpa-checklist.md</code>) and nothing reconciles them with each other or with the schema. The two missing columns are the load-bearing ones: <strong>provenance</strong> (collected from the child vs from the guardian about the child) and <strong>purpose</strong> (the specific product function that needs the element). Four obligations take the map as input and none can be discharged without it: 312.4(d) published notice, 312.4(b)/&copy; direct notice, 312.10 retention, and the Rule's necessity limit. D6 decides the mechanism (<strong>generated from the ORM models</strong>; hand-maintained is not an acceptable form) and leaves the host document to the owner, with <code>records-of-processing-activities.md</code> the cheapest candidate since it is already per-activity and already lists recipients. Owner-side; not a counsel question.</td>
+<td>018</td>
+<td>7</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-A51</td>
+<td><strong>ADR-018 D7: the Information Security Program tracked as a continuing obligation rather than a completed artifact.</strong> 16 CFR 312.8 imposes a substantive, continuing duty; the 2025 amendment's addition is that it be <em>written</em>. <code>information-security-program.md</code> names an annual risk-assessment cadence, a vulnerability-testing cadence, vendor due diligence, and an owner, and nothing in this repository records that any cadence has actually run. <strong>Live instance:</strong> the 2026-07-28 ZDR change added AWS Bedrock, Microsoft Azure, and Google Vertex as OpenRouter sub-processors. Both registers were updated the same day, so the documentation leg fired correctly; what did not happen is the assessment. Each of the three <code>processor-dpa-checklist.md</code> rows still carries its own open item on its face (confirm OpenRouter's terms name and bind its sub-processors, and that ZDR routing holds at that endpoint). Also carries the internal-vs-published ruling: D7 holds the program is <strong>not</strong> a public artifact, which the counsel brief's Section 3 now reflects.</td>
+<td>018</td>
+<td>7</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-A52</td>
+<td><strong>ADR-018 D8: confirm the current scope of the internal-operations exception at 16 CFR 312.5&copy;(7) before any consent-free free-tier engineering starts.</strong> The ADR entry is sourced from a pre-amendment (June 2023) document, so the exception's post-2025 scope is unverified, and the specific unknown that decides the design is whether reading-progress sync survives inside it. This is a decision gate, not an implementation row: the tiering work it would authorise is substantial (eight tables key to <code>child_profile_id</code>, and <code>api/reading.py::_require_assignment</code> gates reads on a server-side assignment row), and none of it should begin before the scope question is answered.</td>
+<td>018</td>
+<td>7</td>
+<td>decision</td>
+</tr>
+<tr>
+<td>UW-A53</td>
+<td><strong>ADR-018 D9 and the wider US state-law gap.</strong> D3 confirms a US-only launch, which removes GDPR-K and the UK AADC but removes no US state law, and this ADR previously directed that residual nowhere. D9 makes it concrete for <strong>California SB 976</strong>, whose core provisions take effect 2027-01-01 and whose threshold question (are we a covered service at all?) is open. California's AB 2273 and every other state statute remain entirely unscoped. Owner to rule on scoping breadth before Track 2 opens intake beyond the family tier.</td>
+<td>018</td>
+<td>7</td>
+<td>decision</td>
+</tr>
 </tbody>
 </table>
 <h2 id="cluster-b-debt-register-phase-linkage">Cluster B: debt-register phase linkage<a class="headerlink" href="#cluster-b-debt-register-phase-linkage" title="Permanent link">&para;</a></h2>
@@ -6150,7 +6178,7 @@ have to re-derive them.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 8, 2026 23:59:52 UTC">August 8, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 9, 2026 13:13:06 UTC">August 9, 2026</span>
   </span>
 
     

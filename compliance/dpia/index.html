@@ -3292,10 +3292,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#22-verifiable-parental-consent-method-is-novel-not-ftc-enumerated-medium" class="md-nav__link">
+  <a href="#22-verifiable-parental-consent-method-is-novel-not-ftc-enumerated-high" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2.2 Verifiable parental consent method is novel, not FTC-enumerated (Medium)
+        2.2 Verifiable parental consent method is novel, not FTC-enumerated (High)
       
     </span>
   </a>
@@ -3486,20 +3486,47 @@ patterns (e.g., "my mom drives a red Honda and picks me up at Lincoln Elementary
 is already recorded as <code>gdpr-compliance-review.md</code> finding G-13 (special-category-data risk
 in free text) and is not resolved by this DPIA; it is a known, accepted residual risk at
 current scale, revisit before Track 2 launch.</p>
-<h3 id="22-verifiable-parental-consent-method-is-novel-not-ftc-enumerated-medium">2.2 Verifiable parental consent method is novel, not FTC-enumerated (Medium)<a class="headerlink" href="#22-verifiable-parental-consent-method-is-novel-not-ftc-enumerated-medium" title="Permanent link">&para;</a></h3>
+<h3 id="22-verifiable-parental-consent-method-is-novel-not-ftc-enumerated-high">2.2 Verifiable parental consent method is novel, not FTC-enumerated (High)<a class="headerlink" href="#22-verifiable-parental-consent-method-is-novel-not-ftc-enumerated-high" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p><strong>Severity raised from Medium to High on 2026-08-08</strong>, and the premise below was corrected
+the same day. Both changes follow from reading 16 CFR 312.5(b)(2) directly and from adverse
+authority found in the Future of Privacy Forum's June 2023 VPC white paper. See ADR-018 D1.</p>
+</blockquote>
 <p><strong>Risk</strong>: the VPC mechanism (a typed full-legal-name attestation layered on the guardian's
-OAuth login) is not literally one of COPPA's enumerated safe-harbor methods
-(312.5(b)(2)); it is designed to satisfy the "sign and submit electronically" method
-((b)(2)(i)) but that reading has not been confirmed by counsel. If the reading is wrong, every
-consent recorded under it is defective, which could mean every child profile created since
-launch was created without valid VPC.</p>
-<p><strong>Mitigation</strong>: this is exactly the item ADR-018 D1 flags for counsel review, and the
-<code>privacy-notice.md</code> draft carries the same flag. The consent record captures enough evidence
-(typed name, timestamp, IP, policy version, tied to the already-authenticated OAuth identity)
-that if counsel requires a stronger method, the change is additive (a stronger method can be
-layered in) rather than requiring a redesign of the surrounding system.</p>
+OAuth login) is not one of COPPA's enumerated methods (312.5(b)(2)). An earlier version of
+this entry said it "is designed to satisfy the 'sign and submit electronically' method
+((b)(2)(i))"; <strong>that method does not exist</strong>. Method (i) is a return channel: a form signed
+away from the service and returned by mail, fax, or electronic scan. The open question is
+therefore broader than originally recorded. It is not whether our signature is good enough,
+it is whether we are using an enumerated method <strong>at all</strong>.</p>
+<p>The fallback argument, that the flow satisfies the general standard at 312.5(b)(1), now has
+adverse authority sitting on it. In January 2015 the FTC declined to approve AgeCheq Inc.'s
+"Device-Signed Parental Consent Form," noting that the 2013 Rule <strong>specifically excluded
+digital signatures</strong> from the enumerated methods because a digital signature alone is not a
+reliable means of obtaining consent, and that the method failed (b)(1) because a child in the
+household could intercept the code binding the signature to an adult. Our mechanism has the
+same shape, with a weaker signature artifact (a typed name) and a binding step (an
+authenticated Google session on a shared family tablet) that is plausibly easier for a child
+to reach than an intercepted text message.</p>
+<p>If the reading is wrong, every consent recorded under it is defective, which could mean every
+child profile created since launch was created without valid VPC.</p>
+<p><strong>Mitigation</strong>: this is the top item in the counsel engagement
+(<code>counsel-engagement-brief.md</code> Section 1.3), and <code>privacy-notice.md</code> carries the same flag.
+Two things limit the blast radius:</p>
+<ul>
+<li><strong>The consent record survives a change of method.</strong> Typed name, timestamp, IP, policy
+  version, residence country, and adulthood attestation, all tied to the authenticated OAuth
+  identity, are required under every candidate method. Only the verification step is in
+  doubt, so a stronger method layers in additively rather than forcing a redesign.</li>
+<li><strong>A prior-approval route is not required.</strong> Per the same FPF source, an operator may rely
+  on an unenumerated method meeting 312.5(b)(1) without FTC approval; the 312.5(b)(3) Safe
+  Harbor route buys certainty, not permission. This is risk reduction, not authorisation.</li>
+</ul>
 <p><strong>Residual risk</strong>: High until counsel confirms or the method is strengthened. This is the
-single highest-priority open item this DPIA surfaces.</p>
+single highest-priority open item this DPIA surfaces. Neither mitigation reaches the core
+exposure: consent cannot be obtained retroactively for collection that has already happened,
+so if counsel concludes the method is defective, re-consenting the existing population is the
+remedy and the prior collection stays defective.</p>
 <h3 id="23-cross-family-disclosure-without-adequate-control-low-resolved">2.3 Cross-family disclosure without adequate control (Low, resolved)<a class="headerlink" href="#23-cross-family-disclosure-without-adequate-control-low-resolved" title="Permanent link">&para;</a></h3>
 <p><strong>Risk</strong>: a guardian's family's reading/rating data could be disclosed to another family
 without a proper legal basis or adequate consent.</p>
@@ -3613,7 +3640,7 @@ complete for Article 35 purposes.]</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 20, 2026 18:08:50 UTC">July 20, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 9, 2026 13:13:06 UTC">August 9, 2026</span>
   </span>
 
     

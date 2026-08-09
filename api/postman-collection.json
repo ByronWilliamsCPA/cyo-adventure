@@ -30,6 +30,12 @@
       "key": "unknown_token",
       "value": "no-such-user",
       "type": "string"
+    },
+    {
+      "key": "consented_family_id",
+      "value": "33333333-3333-3333-3333-333333333333",
+      "type": "string",
+      "description": "Family seeded by scripts/seed_dev_data.py with a consented guardian and no child profiles. POST /api/v1/admin/profiles requires the TARGET family to hold consent, which the runtime-created {{newman_family_id}} deliberately does not."
     }
   ],
   "item": [
@@ -1550,7 +1556,11 @@
                   "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
                   "var schema = {\"properties\": {\"families\": {\"items\": {\"properties\": {\"id\": {\"type\": \"string\"}, \"name\": {\"type\": \"string\"}}, \"type\": \"object\", \"required\": [\"id\", \"name\"]}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"families\"]};",
                   "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
-                  "pm.test(\"families are present and name-ordered\", function () { var body = pm.response.json(); pm.expect(body.families.length).to.be.above(0); pm.expect(body.families[0].name).to.eql(\"Dev Family\"); });"
+                  "// Assert the ordering itself rather than which family happens to sort first:",
+                  "// the seed gained a \"Consented Target Family\" for the admin-create consent",
+                  "// gate, and pinning index 0 to a seed detail makes every future fixture a",
+                  "// false failure here.",
+                  "pm.test(\"families are present and name-ordered\", function () { var body = pm.response.json(); pm.expect(body.families.length).to.be.above(0); var names = body.families.map(function (f) { return f.name; }); var sorted = names.slice().sort(); pm.expect(names, \"families are not name-ordered\").to.eql(sorted); pm.expect(names, \"the seeded dev family is missing\").to.include(\"Dev Family\"); });"
                 ],
                 "type": "text/javascript"
               }
@@ -5311,7 +5321,65 @@
           "response": []
         },
         {
-          "name": "POST admin/profiles creates a profile in the newman family",
+          "name": "POST admin/profiles into a family with no consent -> 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 400\", function () { pm.response.to.have.status(400); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names BusinessLogicError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"BusinessLogicError\"); });",
+                  "// The Newman Ops Family is created by this collection through POST",
+                  "// /api/v1/admin/families and its only adult is a pending invite, so it",
+                  "// holds no consent. 16 CFR 312.5(a)(1) gates collection on consent",
+                  "// regardless of which adult performs the write, so the admin path is",
+                  "// refused here exactly as the guardian path is."
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/profiles",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "profiles"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"family_id\": \"{{newman_family_id}}\",\n  \"display_name\": \"Unconsented Kid\",\n  \"age_band\": \"8-11\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST admin/profiles creates a profile in a consented family",
           "event": [
             {
               "listen": "test",
@@ -5320,7 +5388,7 @@
                   "pm.test(\"status is 201\", function () { pm.response.to.have.status(201); });",
                   "var schema = {\"properties\": {\"id\": {\"type\": \"string\"}, \"family_id\": {\"type\": \"string\"}, \"display_name\": {\"type\": \"string\"}, \"age_band\": {\"type\": \"string\", \"enum\": [\"3-5\", \"5-8\", \"8-11\", \"10-13\", \"13-16\", \"16+\"]}, \"reading_level_cap\": {\"type\": \"number\"}, \"avatar\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"tts_enabled\": {\"type\": \"boolean\"}, \"reduce_motion\": {\"type\": \"boolean\"}, \"has_pin\": {\"type\": \"boolean\"}, \"status\": {\"type\": \"string\", \"enum\": [\"active\", \"deactivated\"]}, \"created_at\": {\"type\": \"string\", \"format\": \"date-time\"}}, \"type\": \"object\", \"required\": [\"id\", \"family_id\", \"display_name\", \"age_band\", \"reading_level_cap\", \"avatar\", \"tts_enabled\", \"reduce_motion\", \"has_pin\", \"status\", \"created_at\"]};",
                   "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
-                  "pm.test(\"profile lands active and PIN-less in the family\", function () { var body = pm.response.json(); pm.expect(body.family_id).to.eql(pm.collectionVariables.get(\"newman_family_id\")); pm.expect(body.status).to.eql(\"active\"); pm.expect(body.has_pin).to.eql(false); pm.collectionVariables.set(\"admin_profile_id\", body.id); });"
+                  "pm.test(\"profile lands active and PIN-less in the family\", function () { var body = pm.response.json(); pm.expect(body.family_id).to.eql(pm.collectionVariables.get(\"consented_family_id\")); pm.expect(body.status).to.eql(\"active\"); pm.expect(body.has_pin).to.eql(false); pm.collectionVariables.set(\"admin_profile_id\", body.id); });"
                 ],
                 "type": "text/javascript"
               }
@@ -5353,7 +5421,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"family_id\": \"{{newman_family_id}}\",\n  \"display_name\": \"Newman Admin Kid\",\n  \"age_band\": \"8-11\"\n}",
+              "raw": "{\n  \"family_id\": \"{{consented_family_id}}\",\n  \"display_name\": \"Newman Admin Kid\",\n  \"age_band\": \"8-11\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -5524,7 +5592,7 @@
           "response": []
         },
         {
-          "name": "GET admin/profiles filtered to the newman family",
+          "name": "GET admin/profiles filtered to the consented family",
           "event": [
             {
               "listen": "test",
@@ -5533,7 +5601,7 @@
                   "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
                   "var schema = {\"properties\": {\"profiles\": {\"items\": {\"properties\": {\"id\": {\"type\": \"string\"}, \"family_id\": {\"type\": \"string\"}, \"display_name\": {\"type\": \"string\"}, \"age_band\": {\"type\": \"string\", \"enum\": [\"3-5\", \"5-8\", \"8-11\", \"10-13\", \"13-16\", \"16+\"]}, \"reading_level_cap\": {\"type\": \"number\"}, \"avatar\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"tts_enabled\": {\"type\": \"boolean\"}, \"reduce_motion\": {\"type\": \"boolean\"}, \"has_pin\": {\"type\": \"boolean\"}, \"status\": {\"type\": \"string\", \"enum\": [\"active\", \"deactivated\"]}, \"created_at\": {\"type\": \"string\", \"format\": \"date-time\"}}, \"type\": \"object\", \"required\": [\"id\", \"family_id\", \"display_name\", \"age_band\", \"reading_level_cap\", \"avatar\", \"tts_enabled\", \"reduce_motion\", \"has_pin\", \"status\", \"created_at\"]}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"profiles\"]};",
                   "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
-                  "pm.test(\"deactivated profile still listed for admins\", function () { var body = pm.response.json(); pm.expect(body.profiles.length).to.eql(1); pm.expect(body.profiles[0].id).to.eql(pm.collectionVariables.get(\"admin_profile_id\")); pm.expect(body.profiles[0].status).to.eql(\"deactivated\"); });"
+                  "pm.test(\"deactivated profile still listed for admins\", function () { var body = pm.response.json(); var created = body.profiles.find(function (p) { return p.id === pm.collectionVariables.get(\"admin_profile_id\"); }); pm.expect(created, \"the profile this run created is missing from the filtered listing\").to.not.be.undefined; pm.expect(created.status).to.eql(\"deactivated\"); body.profiles.forEach(function (p) { pm.expect(p.family_id).to.eql(pm.collectionVariables.get(\"consented_family_id\")); }); });"
                 ],
                 "type": "text/javascript"
               }
@@ -5549,7 +5617,7 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/api/v1/admin/profiles?family_id={{newman_family_id}}",
+              "raw": "{{base_url}}/api/v1/admin/profiles?family_id={{consented_family_id}}",
               "host": [
                 "{{base_url}}"
               ],
@@ -5562,7 +5630,7 @@
               "query": [
                 {
                   "key": "family_id",
-                  "value": "{{newman_family_id}}"
+                  "value": "{{consented_family_id}}"
                 }
               ]
             }

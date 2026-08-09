@@ -3404,12 +3404,16 @@ login: a typed full-legal-name attestation, plus a checkbox, with IP/timestamp/
 account-id logged server-side) and it's already implemented (<code>POST /api/v1/onboarding</code>'s <code>consent</code>
 payload, <code>GuardianConsentPage.tsx</code>, gated via <code>api/profiles.py::_require_consent</code>). An earlier
 framing of this decision also mentioned a canvas-drawn signature; <strong>that was never built</strong>, so
-counsel must be asked about a typed name only. <strong>The ADR itself
-names the single highest-risk open question</strong>: whether a typed-name attestation captured
-this way satisfies COPPA Rule 312.5(b)(2)(i)'s "signed" requirement for the "sign and submit
-electronically" consent method. That's the question to put in front of counsel first, it's already
-drafted as a yes/no with supporting detail in the ADR's D1 section, not an open-ended design
-question.</p>
+counsel must be asked about a typed name only.</p>
+<p><strong>The question this handoff recorded has since widened, and this paragraph is the stale version.</strong>
+It said the ask was whether a typed name satisfies COPPA Rule 312.5(b)(2)(i)'s "signed" requirement
+for the "sign and submit electronically" consent method, framed as a drafted yes/no. Reading
+16 CFR 312.5(b)(2) directly on 2026-08-08 found no such method: (i) describes a <em>return channel</em>
+for a form signed away from the service. So the live question is the broader one, whether an
+in-app typed signature is an enumerated method <strong>at all</strong>, with 312.5(b)(3) Safe Harbor approval
+as a possible route if it is not. It is no longer a yes/no. See
+<code>docs/compliance/counsel-engagement-brief.md</code> Sections 1.1, 1.3, and 1.5, which govern, and
+ADR-018 D1.</p>
 <h3 id="d2-audience-classification-owner-decision-now-recorded-counsel-confirms-it">D2: Audience classification: <strong>owner decision now recorded; counsel confirms it</strong><a class="headerlink" href="#d2-audience-classification-owner-decision-now-recorded-counsel-confirms-it" title="Permanent link">&para;</a></h3>
 <p>When this handoff was written, D2 was the one item with no recorded owner decision, only a
 recommendation ("confirm child-directed as the declared posture, matching product reality;
@@ -3456,21 +3460,35 @@ only partly discharged.</p>
      asked to review an omission as though it were a position.</li>
 </ol>
 <h3 id="d5-ai-training-consent-segregation-owner-confirmation-now-recorded-counsel-light">D5: AI-training consent segregation: <strong>owner confirmation now recorded, counsel-light</strong><a class="headerlink" href="#d5-ai-training-consent-segregation-owner-confirmation-now-recorded-counsel-light" title="Permanent link">&para;</a></h3>
-<p>Added 2026-08-01 in response to the amended COPPA Rule (training/developing AI models on a child's
-personal information now requires its own separate, unbundled, opt-in verifiable consent). Working
-position: build any training/eval corpus exclusively from adult-originated and pipeline-originated
-material (reviewer decisions, moderation findings, PII-gate-passed generated prose); exclude
-child-typed wish text, flags, ratings, and reading state entirely. Under this constraint the
-segregated-consent obligation never triggers, <strong>and it costs nothing today because no planned corpus
-needs child-originated data.</strong> <strong>The owner confirmed this as the standing constraint on 2026-08-06</strong>
-(it is mostly a policy decision, not a legal one), so this item goes to counsel as a confirmation
-rather than an open question. If a future corpus ever wants child-originated data, the
-ADR already prices the fallback (a <code>policy_version</code> bump plus an independent, default-off
-consent-toggle, built <em>before</em> collection, not after).</p>
+<p>Added 2026-08-01 in response to the amended COPPA Rule.</p>
+<p><strong>Corrected 2026-08-08. This section previously stated the obligation as "training or developing AI
+models on a child's personal information now requires its own separate, unbundled, opt-in
+verifiable consent." That is not what 16 CFR 312.5(a)(2) says.</strong> The separate-consent obligation
+attaches to <strong>disclosing</strong> a child's personal information to third parties where the disclosure is
+not integral to the service the child requested. AI training appears in the FTC's discussion as an
+example of such a disclosure, not as a free-standing trigger. The practical difference matters here:
+training on child data inside our own systems and disclosing child data to a third party who
+trains on it are different acts under the rule, and only the second is squarely what (a)(2)
+governs. ADR-018 D5 carries the corrected statement.</p>
+<p>Working position: build any training or eval corpus exclusively from adult-originated and
+pipeline-originated material (reviewer decisions, moderation findings, PII-gate-passed generated
+prose); exclude child-typed wish text, flags, ratings, and reading state entirely. <strong>The owner
+confirmed this as the standing constraint on 2026-08-06</strong> (it is mostly a policy decision, not a
+legal one), so this item goes to counsel as a confirmation rather than an open question. If a
+future corpus ever wants child-originated data, the ADR already prices the fallback (a
+<code>policy_version</code> bump plus an independent, default-off consent-toggle, built <em>before</em> collection,
+not after).</p>
+<p><strong>One scope limit counsel should be told before relying on the constraint.</strong> It governs corpora we
+control. It says nothing about the classifier path, which sends child free text to OpenAI's
+moderation endpoint and Google's Perspective API at request time. Whether those vendors retain that
+text, train on it, or pass it on is a question of their terms, and we have not verified those terms
+against (a)(2). That is a live gap, not a closed one; see <code>counsel-engagement-brief.md</code> Section 2.3.</p>
 <h2 id="3-what-to-actually-hand-counsel">3. What to actually hand counsel<a class="headerlink" href="#3-what-to-actually-hand-counsel" title="Permanent link">&para;</a></h2>
 <p>Do not send the whole ADR as a first document. Package these together for an efficient engagement:</p>
 <ol>
-<li>The ADR's D1 section (already-drafted mechanism plus the named 312.5(b)(2)(i) question).</li>
+<li>The ADR's D1 section (already-drafted mechanism plus the enumerated-method question, in the
+   widened form recorded in Section 2 above, not the narrow 312.5(b)(2)(i) yes/no this document
+   originally named).</li>
 <li>The confirmed D3 answer (US-only launch) as a one-line confirmation ask.</li>
 <li>The D4 owner decisions on Safe Harbor sequencing and artifact ownership (both recorded
    2026-08-06), plus the WISP and the retention policy. Send the WISP as finished work and the
@@ -3478,11 +3496,15 @@ consent-toggle, built <em>before</em> collection, not after).</p>
    counsel is not asked to review a gap as though it were a position.</li>
 <li>The D5 working position as a one-paragraph policy-confirmation ask (lower legal complexity than
    D1/D4).</li>
-<li>Flag explicitly: <strong>all dates and rule text in the ADR (the 2026-04-22 compliance date, the
-   biometric-identifier definition, the AI-training consent requirement) entered from secondary
-   sources and are marked in the ADR itself as needing re-confirmation against the Federal Register
-   during this review.</strong> Counsel should verify these independently rather than take the ADR's word
-   for them, this is the ADR's own stated caveat, not new work invented for this handoff.</li>
+<li>Flag explicitly, <strong>as narrowed on 2026-08-08</strong>: the citation and the three dates are no longer
+   part of this ask. Federal Register document 2025-05904 (90 Fed. Reg. 16918), published
+   2025-04-22, effective 2025-06-23, general compliance 2026-04-22 with a carve-out deferring
+   16 CFR 312.11(d)(1), (d)(4) and (g), were all confirmed against the Federal Register on
+   2026-08-08. <strong>What remains unverified is the substance</strong>: the biometric-identifier definition,
+   the scope of the 312.5(a)(2) separate-consent obligation, and the content of each amendment as
+   this ADR summarises it, all of which entered from secondary sources. Counsel should read the
+   amended rule text rather than take the ADR's word for what it says. Confirming that a citation
+   resolves is not confirming what the cited text holds.</li>
 </ol>
 <h2 id="4-definition-of-done-per-the-adrs-own-validation-checklist">4. Definition of done (per the ADR's own Validation checklist)<a class="headerlink" href="#4-definition-of-done-per-the-adrs-own-validation-checklist" title="Permanent link">&para;</a></h2>
 <ul class="task-list">
@@ -3523,7 +3545,7 @@ not after, the rest of the R1-completion work.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 8, 2026 20:42:54 UTC">August 8, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 9, 2026 13:13:06 UTC">August 9, 2026</span>
   </span>
 
     
