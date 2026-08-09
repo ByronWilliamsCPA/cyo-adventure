@@ -1,6 +1,6 @@
 @startuml er-diagram
 ' ============================================================
-' Entity-Relationship Diagram: all 29 ORM Tables
+' Entity-Relationship Diagram: all 30 ORM Tables
 ' CYO Adventure
 '
 ' Source file:
@@ -11,7 +11,7 @@
 ' backed by a CHECK constraint (plain Supabase CLI SQL migrations; the closed
 ' vocabulary is enforced at rest as well as at the application boundary).
 '
-' This diagram draws every table in models.py (29 total). See
+' This diagram draws every table in models.py (30 total). See
 ' docs/architecture/data-model.md for the full, authoritative column
 ' dictionary.
 ' ============================================================
@@ -494,6 +494,19 @@ entity "generation_job" as generation_job #FFEBEE {
   updated_at : TIMESTAMPTZ
 }
 
+entity "device_download" as device_download #B3E5FC {
+  * id : UUID <<PK>>
+  --
+  * family_id : UUID <<FK family.id>> [denormalized from profile]
+  * child_profile_id : UUID <<FK child_profile.id>> [composite FK\n(child_profile_id, family_id);\nON DELETE CASCADE]
+  device_id : VARCHAR(64) [client-generated persistent id]
+  * storybook_id : VARCHAR(120) <<FK storybook.id, ON DELETE CASCADE>>
+  created_at : TIMESTAMPTZ
+  updated_at : TIMESTAMPTZ [last-confirmed signal]
+  --
+  UNIQUE (device_id, child_profile_id, storybook_id)
+}
+
 entity "kid_flag" as kid_flag #FCE4EC {
   * id : UUID <<PK>>
   --
@@ -554,6 +567,9 @@ family ||--o{ kid_flag : "1 family\nhas many kid flags\n(K15)"
 child_profile ||--o{ kid_flag : "1 profile\nmany flags"
 storybook ||--o{ kid_flag : "storybook_id\n(flagged book)"
 storybook_version ||--o{ kid_flag : "(storybook_id, version)\ncomposite FK"
+family ||--o{ device_download : "1 family\nhas many download records\n(G15, denormalized from profile)"
+child_profile ||--o{ device_download : "(child_profile_id, family_id)\ncomposite FK; ON DELETE CASCADE"
+storybook ||--o{ device_download : "storybook_id\n(downloaded book);\nON DELETE CASCADE"
 child_profile ||--o{ child_profile_personalization : "child_profile_id\n1 profile\nmany slot values"
 child_profile ||--o{ child_profile_personalization : "value_profile_id\nnamed as a sibling\nin many rows"
 child_profile ||--o{ personalization_disclosure_consent : "1 profile\nmany per-connection consents"

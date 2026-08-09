@@ -3,13 +3,13 @@ title: "Data Model"
 schema_type: common
 status: published
 owner: core-maintainer
-purpose: "ER diagram and description of the 29 ORM tables backing CYO Adventure."
+purpose: "ER diagram and description of the 30 ORM tables backing CYO Adventure."
 tags:
   - architecture
   - reference
 ---
 
-CYO Adventure has twenty-nine PostgreSQL tables managed by SQLAlchemy 2 async ORM, with
+CYO Adventure has thirty PostgreSQL tables managed by SQLAlchemy 2 async ORM, with
 schema migrations applied as plain SQL via the Supabase CLI (`supabase/migrations/`,
 ADR-012; Alembic retired). All timestamps are `TIMESTAMP WITH TIME ZONE`. Enum-like
 columns (`role`, `status`, `age_band`) are stored as strings and validated at the
@@ -22,7 +22,7 @@ application boundary, which keeps schema migrations simple and avoids enum-type 
 The PlantUML source above (`diagrams/er-diagram.puml`) is authoritative: it carries the
 full CHECK constraint list, ON DELETE semantics, and a note on pure-attribution foreign
 keys to `user.id` that are deliberately not drawn as edges. The Mermaid version below is a
-hand-maintained companion (`diagrams/er-diagram.mmd`) covering the same 29 tables and
+hand-maintained companion (`diagrams/er-diagram.mmd`) covering the same 30 tables and
 relationships, kept for inline rendering directly on GitHub without opening the SVG.
 
 ```mermaid
@@ -65,6 +65,9 @@ erDiagram
     child_profile ||--o{ kid_flag : "flags"
     storybook ||--o{ kid_flag : "flagged in"
     storybook_version ||--o{ kid_flag : "pins version"
+    family ||--o{ device_download : "has download records (G15)"
+    child_profile ||--o{ device_download : "downloads on devices"
+    storybook ||--o{ device_download : "downloaded as"
     child_profile ||--o{ child_profile_personalization : "personalized by"
     child_profile ||--o{ child_profile_personalization : "named as a sibling value"
     child_profile ||--o{ personalization_disclosure_consent : "disclosed under"
@@ -436,6 +439,16 @@ erDiagram
         uuid resolved_by FK "NULL while open"
         timestamptz resolved_at "NULL while open"
         varchar(16) resolution "NULL; dismissed, archived_book, or noted"
+    }
+
+    device_download {
+        uuid id PK
+        uuid family_id FK "denormalized from profile"
+        uuid child_profile_id FK "composite FK with family_id -> child_profile; ON DELETE CASCADE"
+        varchar(64) device_id "client-generated persistent id"
+        varchar(120) storybook_id FK "ON DELETE CASCADE"
+        timestamptz created_at
+        timestamptz updated_at "last-confirmed signal"
     }
 ```
 
@@ -1072,6 +1085,31 @@ constraints enforce the closed `reason`/`resolution` vocabularies and pair
 `resolved_by`/`resolved_at` (`ck_kid_flag_resolved_pairing`, both NULL or both set). An
 index `ix_kid_flag_resolved_created (resolved_at, created_at)` backs the admin
 "open flags" queue.
+
+### `device_download`
+
+One `(device, child profile, storybook)` offline-download record (G15). Reports
+client-side IndexedDB cache state (`frontend/src/offline/db.ts`'s `storybooks` store) so
+a guardian can see which books are downloaded on which device. `device_id` is a
+client-generated persistent id (`frontend/src/offline/deviceId.ts`), a separate identity
+from `device_grant.jti` (the kid-mode device-authorization token): a guardian's own
+browser previewing the kid shelf downloads books too and has no `device_grant` of its
+own. `family_id` is denormalized from the owning profile (same reasoning as
+`character.family_id`) for the ADR-022 Tier 1 `family_scoped` RLS policy.
+
+| Column | Type | Notes |
+| -------- | ------ | ------- |
+| id | UUID PK | |
+| family_id | UUID FK | family.id; denormalized from the owning profile |
+| child_profile_id | UUID FK | child_profile.id; composite FK with family_id, ON DELETE CASCADE |
+| device_id | VARCHAR(64) | Client-generated persistent id |
+| storybook_id | VARCHAR(120) FK | storybook.id; ON DELETE CASCADE |
+| created_at | TIMESTAMPTZ | When this device first reported downloading this book |
+| updated_at | TIMESTAMPTZ | Last-confirmed signal; a repeat report advances this instead of inserting a second row |
+
+A unique constraint `uq_device_download_device_profile_book (device_id, child_profile_id,
+storybook_id)` backs the upsert-on-report behavior. Tracked at the book level, not
+per-version: the client eviction path removes every cached version of a book id at once.
 
 ## Authorization Pattern
 

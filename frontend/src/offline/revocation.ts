@@ -86,9 +86,23 @@ import {
  * #VERIFY: revocation.test.ts "drops queued writes for a revoked book
  * without calling the sync API".
  */
+export interface ReconcileOfflineCacheOptions {
+  /**
+   * Reports the shared-content purge of a book (G15 storage/download view)
+   * once each entry's local delete has actually resolved, one call per
+   * removed book id. Optional, fire-and-forget dependency injection,
+   * mirroring cacheStorybook's own `reportEviction` option (offline/db.ts):
+   * this module holds no axios/network import, so the real HTTP call is
+   * built by the caller (LibraryPage.tsx) and handed in here as a plain
+   * callback.
+   */
+  reportRemoval?: (removedStorybookId: string) => void
+}
+
 export async function reconcileOfflineCache(
   profileId: string,
-  authoritativeIds: readonly string[]
+  authoritativeIds: readonly string[],
+  options: ReconcileOfflineCacheOptions = {}
 ): Promise<void> {
   const freshIds = [...authoritativeIds]
   const freshSet = new Set(freshIds)
@@ -122,6 +136,31 @@ export async function reconcileOfflineCache(
   for (const id of cachedStoryIds) {
     if (!stillNeeded.has(id)) {
       await deleteStorybooksById(id)
+      // #ASSUME: data-integrity: reported only after the delete above has
+      // resolved without throwing; a throw there propagates out of this
+      // function before this line is ever reached, so a failed delete is
+      // never reported as a removal. Reporting a removal that did not happen
+      // would make the guardian's Downloads view wrong in the opposite
+      // direction from the gap this closes.
+      // #VERIFY: revocation.test.ts "reports each removed book after a
+      // successful shared-content purge".
+      if (options.reportRemoval) {
+        // #EDGE: external-resources: guard a synchronous throw from a
+        // caller-supplied reporter, the same defense db.ts's cacheStorybook
+        // applies around its own reportEviction call: a throw here must not
+        // abort the remaining loop iterations or the profile-scoped cleanup
+        // that already ran above.
+        // #VERIFY: revocation.test.ts "a synchronously-throwing reporter
+        // does not break the purge loop".
+        try {
+          options.reportRemoval(id)
+        } catch (error) {
+          console.error('[offline] revocation report threw synchronously', {
+            storybookId: id,
+            error,
+          })
+        }
+      }
     }
   }
 

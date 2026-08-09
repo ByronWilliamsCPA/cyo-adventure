@@ -12,7 +12,15 @@
  */
 
 import { evaluate } from './evaluator'
-import type { Choice, Effect, ReadingState, Storybook, StoryNode, VarState } from './types'
+import type {
+  Choice,
+  Effect,
+  ReadingState,
+  SavedBookmark,
+  Storybook,
+  StoryNode,
+  VarState,
+} from './types'
 
 function nodeIndex(story: Storybook): Map<string, StoryNode> {
   return new Map(story.nodes.map((node) => [node.id, node]))
@@ -359,4 +367,119 @@ export function back(story: Storybook, state: ReadingState, seed?: VarState): Re
  * recorded path is faithfully replayable from the read's own start. */
 export function canGoBack(story: Storybook, state: ReadingState, seed?: VarState): boolean {
   return back(story, state, seed) !== null
+}
+
+// ---------------------------------------------------------------------------
+// Bookmarks (save-slot feature, distinct from the Go back undo above): a
+// named snapshot of a reading position a reader chooses to save, so they can
+// keep reading past it and return later. Stored in the existing
+// `save_slots` field, which the backend has always persisted, synced across
+// devices, and byte-capped opaquely (api/schemas.py); nothing here changes
+// the wire contract, only what this client chooses to put in that bag.
+// ---------------------------------------------------------------------------
+
+const MAX_BOOKMARKS = 10
+
+/** Runtime shape guard: a save_slots value written by a future feature (or a
+ * stale format from before this one existed) must never be treated as a
+ * bookmark and crash the bookmarks UI; it is silently excluded instead. */
+function isSavedBookmark(value: unknown): value is SavedBookmark {
+  if (value === null || typeof value !== 'object') return false
+  const v = value as Record<string, unknown>
+  return (
+    typeof v.current_node === 'string' &&
+    typeof v.var_state === 'object' &&
+    v.var_state !== null &&
+    !Array.isArray(v.var_state) &&
+    Array.isArray(v.visit_set) &&
+    v.visit_set.every((id) => typeof id === 'string') &&
+    Array.isArray(v.path) &&
+    v.path.every((id) => typeof id === 'string') &&
+    typeof v.label === 'string' &&
+    typeof v.saved_at === 'string'
+  )
+}
+
+/** Every bookmark currently saved, newest first. Any `save_slots` entry that
+ * does not look like a bookmark (see `isSavedBookmark`) is silently
+ * excluded, never thrown on. */
+export function listBookmarks(state: ReadingState): Array<{ id: string; bookmark: SavedBookmark }> {
+  return Object.entries(state.save_slots)
+    .filter((entry): entry is [string, SavedBookmark] => isSavedBookmark(entry[1]))
+    .map(([id, bookmark]) => ({ id, bookmark }))
+    .sort((a, b) => b.bookmark.saved_at.localeCompare(a.bookmark.saved_at))
+}
+
+/** Whether another bookmark can be saved right now.
+ *
+ * #ASSUME: data-integrity: 10 is a client-side UX ceiling, not derived from
+ * the backend's 64,000-byte save_slots budget (a single bookmark snapshot,
+ * dominated by var_state and a short path, is far smaller than that); it
+ * exists so a reader cannot turn the bookmarks list into an unusable wall of
+ * entries, not to protect the byte cap. #VERIFY: engine.test.ts asserts
+ * canSaveBookmark goes false once the ceiling is reached.
+ */
+export function canSaveBookmark(state: ReadingState): boolean {
+  return listBookmarks(state).length < MAX_BOOKMARKS
+}
+
+/** Save the CURRENT position as a new bookmark under a fresh slot id.
+ *
+ * Pure and immutable like every other function in this module: returns a
+ * new ReadingState, never mutates `state`. `slotId`/`savedAt` are injected
+ * (crypto.randomUUID() / new Date().toISOString() at the real call site,
+ * player/machine.ts) rather than generated here, so this function stays as
+ * deterministically testable as `choose()`/`back()`.
+ */
+export function saveBookmark(
+  state: ReadingState,
+  slotId: string,
+  label: string,
+  savedAt: string
+): ReadingState {
+  const bookmark: SavedBookmark = {
+    current_node: state.current_node,
+    var_state: { ...state.var_state },
+    visit_set: [...state.visit_set],
+    path: [...state.path],
+    label,
+    saved_at: savedAt,
+  }
+  return {
+    ...state,
+    save_slots: { ...state.save_slots, [slotId]: bookmark },
+  }
+}
+
+/** Remove a bookmark. A missing/already-removed slotId is a no-op (matches
+ * `Record` delete semantics), not an error: a doubled delete tap (a slow
+ * network response racing a second tap) must never throw. */
+export function deleteBookmark(state: ReadingState, slotId: string): ReadingState {
+  const nextSlots = { ...state.save_slots }
+  delete nextSlots[slotId]
+  return { ...state, save_slots: nextSlots }
+}
+
+/** Make a saved bookmark the new LIVE position (current_node/var_state/
+ * visit_set/path), keeping save_slots (including this same bookmark)
+ * unchanged, so "jump to bookmark" does not also delete it.
+ *
+ * Returns null, never throws, when slotId does not resolve to a bookmark
+ * (deleted by another device since the list was rendered, or a corrupt
+ * save_slots value) -- the same fail-closed contract as `back()` above, for
+ * the same reason: this is driven by a tap on a list the UI already
+ * rendered from a possibly-stale snapshot.
+ */
+export function loadBookmark(state: ReadingState, slotId: string): ReadingState | null {
+  const raw = state.save_slots[slotId]
+  if (!isSavedBookmark(raw)) return null
+  return {
+    current_node: raw.current_node,
+    var_state: { ...raw.var_state },
+    visit_set: [...raw.visit_set],
+    path: [...raw.path],
+    version: state.version,
+    state_revision: state.state_revision,
+    save_slots: { ...state.save_slots },
+  }
 }

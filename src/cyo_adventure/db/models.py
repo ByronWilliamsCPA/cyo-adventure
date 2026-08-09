@@ -155,11 +155,12 @@ _PIPELINE_EVENT_TYPE_VALUES = (
     "'personalization_toggled', 'ring2_consent_granted', "
     "'ring2_consent_revoked', "
     "'storybook_archived', "
-    # Added alongside
-    # supabase/migrations/20260731000000_add_storybook_remoderated_to_pipeline_event.sql,
+    "'storybook_remoderated', "
+    # S9 digest job. Added alongside
+    # supabase/migrations/20260809100000_add_notification_digest_ready_to_pipeline_event.sql,
     # which is the newest migration to replace this CHECK and therefore carries
     # the full cumulative value list.
-    "'storybook_remoderated'"
+    "'notification_digest_ready'"
 )
 _PIPELINE_ACTOR_ROLE_VALUES = "'system', 'guardian', 'child', 'admin', 'device'"
 _PIPELINE_ENTITY_TYPE_VALUES = (
@@ -2549,6 +2550,79 @@ class DeviceGrant(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     # default keeps this trivially in schema-parity with the migration. The
     # app always provides the value, so no default is needed as a safety net.
     expires_at: Mapped[datetime] = mapped_column(_TS)
+
+
+class DeviceDownload(UUIDPrimaryKeyMixin, CreatedAtMixin, UpdatedAtMixin, Base):
+    """One (device, child profile, storybook) offline-download record (G15).
+
+    Reports client-side IndexedDB cache state (``frontend/src/offline/db.ts``'s
+    ``storybooks`` store) so a guardian can see which books are downloaded on
+    which device, closing the one remaining G15 gap (device list/revoke was
+    already delivered via ``DeviceGrant``). ``device_id`` is a NEW, separate
+    identity from ``DeviceGrant.jti``: it is a plain client-generated UUID
+    persisted in ``localStorage`` (``frontend/src/offline/deviceId.ts``), not
+    the kid-mode device-authorization token id. The two concepts do not
+    coincide: a guardian's own browser previewing the kid shelf downloads
+    books too, and has no ``DeviceGrant`` of its own, so keying this table on
+    the auth token id would silently miss it.
+
+    ``family_id`` is denormalized from the owning profile (same reasoning as
+    ``Character.family_id``: this table carries the ADR-022 Tier 1
+    ``family_scoped`` RLS policy, which needs the family on the row itself)
+    and kept honest by the same composite FK pattern.
+
+    This is a best-effort snapshot, not a strict inventory: a device that
+    goes permanently offline right after downloading, or is wiped without
+    ever coming back online, leaves a stale row behind forever (nothing ever
+    reports its removal). ``updated_at`` (inherited, "last confirmed") is the
+    guardian-visible staleness signal; nothing purges a row on a timer.
+
+    Attributes:
+        id: Surrogate primary key.
+        family_id: The owning profile's family, denormalized for RLS.
+        child_profile_id: The profile the book was downloaded for.
+        device_id: The reporting device's client-generated persistent id.
+        storybook_id: The downloaded book. Tracked at the book level, not
+            per-version: ``deleteStorybooksById`` (the client eviction path)
+            removes every cached version of an id at once, so a per-version
+            row would just always agree with the book-level one while adding
+            nothing.
+        created_at: When this device first reported downloading this book.
+        updated_at: When this device most recently confirmed still having it
+            (a fresh download of an already-reported book updates this
+            rather than inserting a second row; see the unique constraint).
+    """
+
+    __tablename__ = "device_download"
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["child_profile_id", "family_id"],
+            [_FK_CHILD_PROFILE, _FK_CHILD_PROFILE_FAMILY_ID],
+            ondelete="CASCADE",
+            name="fk_device_download_profile_family",
+        ),
+        UniqueConstraint(
+            "device_id",
+            "child_profile_id",
+            "storybook_id",
+            name="uq_device_download_device_profile_book",
+        ),
+        Index("ix_device_download_family_id", "family_id"),
+        # Both referencing FK sides are indexed; Postgres indexes only the
+        # referenced side automatically, so an unindexed one turns each
+        # cascading parent delete into a sequential scan of this table.
+        Index("ix_device_download_storybook_id", "storybook_id"),
+    )
+
+    family_id: Mapped[uuid.UUID] = mapped_column()
+    child_profile_id: Mapped[uuid.UUID] = mapped_column()
+    device_id: Mapped[str] = mapped_column(String(64))
+    # #CRITICAL: data-integrity: CASCADE (Phase 3a): a download record is
+    # child- and story-linked data, purged with either side.
+    # #VERIFY: tests/integration/test_deletion_drill.py.
+    storybook_id: Mapped[str] = mapped_column(
+        ForeignKey(_FK_STORYBOOK, ondelete="CASCADE")
+    )
 
 
 # The two closed vocabularies for KidFlag, named once for their CHECK

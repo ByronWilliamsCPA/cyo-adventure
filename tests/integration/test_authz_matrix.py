@@ -269,6 +269,18 @@ def _flag_resolve_body(_seed: Seed) -> dict[str, Any]:
     return {"resolution": "dismissed"}
 
 
+def _device_download_body(seed: Seed) -> dict[str, Any]:
+    return {
+        "device_id": "authz-matrix-device",
+        "profile_id": str(seed.child_profile_id),
+        "storybook_id": seed.storybook_id,
+    }
+
+
+def _device_download_query(seed: Seed) -> dict[str, str]:
+    return {"device_id": "authz-matrix-device", "storybook_id": seed.storybook_id}
+
+
 def _reading_time_body(_seed: Seed) -> dict[str, Any]:
     return {
         "date": datetime.now(tz=UTC).date().isoformat(),
@@ -912,6 +924,24 @@ _ROUTE_SPECS: list[RouteSpec] = [
         frozenset({Role.ADMIN}),
         path_params=_random_uuid_path("flag_id"),
         json_body=_flag_resolve_body,
+    ),
+    # -- offline_downloads.py: G15 storage/download view ----------------------
+    RouteSpec(
+        "PUT",
+        "/api/v1/device-downloads",
+        frozenset({Role.GUARDIAN, Role.CHILD}),
+        json_body=_device_download_body,
+    ),
+    RouteSpec(
+        "DELETE",
+        "/api/v1/device-downloads",
+        frozenset({Role.GUARDIAN, Role.CHILD, Role.ADMIN, Role.DEVICE}),
+        query_params=_device_download_query,
+    ),
+    RouteSpec(
+        "GET",
+        "/api/v1/device-downloads",
+        frozenset({Role.GUARDIAN, Role.ADMIN}),
     ),
     # -- notifications.py: guardian-only feed (S9/G10), same shape as
     # generation-jobs above: no path params, family-scoped via

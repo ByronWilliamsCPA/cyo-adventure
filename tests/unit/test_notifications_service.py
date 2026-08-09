@@ -219,6 +219,39 @@ class TestResolveStorybook:
 
 
 @pytest.mark.unit
+class TestResolveFamily:
+    """S9 digest job: entity_type 'family' resolves to itself."""
+
+    @pytest.mark.asyncio
+    async def test_resolves_an_existing_family_id_to_itself(self) -> None:
+        family_id = uuid.uuid4()
+        session = _SeqSession(scalars=[[family_id]])
+
+        result = await service._resolve_family(session, [str(family_id)])
+
+        assert result[str(family_id)].family_id == family_id
+
+    @pytest.mark.asyncio
+    async def test_a_deleted_family_id_resolves_to_nothing(self) -> None:
+        """Fail-closed: an id that no longer exists is dropped, not guessed."""
+        missing_id = uuid.uuid4()
+        session = _SeqSession(scalars=[[]])
+
+        result = await service._resolve_family(session, [str(missing_id)])
+
+        assert result == {}
+
+    @pytest.mark.asyncio
+    async def test_no_valid_uuids_short_circuits_without_querying(self) -> None:
+        session = _SeqSession(scalars=[])
+
+        result = await service._resolve_family(session, ["not-a-uuid"])
+
+        assert result == {}
+        assert session.scalars_calls == []
+
+
+@pytest.mark.unit
 class TestResolveStorybookVersion:
     @pytest.mark.asyncio
     async def test_splits_on_the_last_colon_and_resolves_family(self) -> None:

@@ -453,6 +453,84 @@ describe('offline download budget enforcement (W4.3, D20)', () => {
     expect(consumeDownloadRefusal()).toBe(false)
   })
 
+  it('reports a space-pressure eviction exactly once with the evicted story id', async () => {
+    const other: Storybook = { ...story, id: 's_other' }
+    mockStorageEstimate(10 * MB)
+    await cacheStorybook(other)
+    expect(await getCachedStorybook('s_other', 1)).toBeDefined()
+
+    mockStorageEstimate(250 * MB)
+    const reportEviction = vi.fn()
+    await cacheStorybook(story, { reportEviction })
+
+    expect(await getCachedStorybook('s_other', 1)).toBeUndefined()
+    expect(reportEviction).toHaveBeenCalledTimes(1)
+    expect(reportEviction).toHaveBeenCalledWith('s_other')
+  })
+
+  it('does not report when the eviction delete fails', async () => {
+    const other: Storybook = { ...story, id: 's_other' }
+    mockStorageEstimate(10 * MB)
+    await cacheStorybook(other)
+    consumeDownloadEviction()
+
+    // Non-required eviction (well under the hard cap, see the REQUIRED test
+    // below for the hard-cap variant): the write still proceeds even though
+    // the delete failed, but a failed local delete must never be reported as
+    // a removal that happened.
+    mockStorageEstimate(250 * MB)
+    const deleteSpy = vi.spyOn(IDBObjectStore.prototype, 'delete').mockImplementation(() => {
+      throw new Error('delete failed')
+    })
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const reportEviction = vi.fn()
+    try {
+      await cacheStorybook(story, { reportEviction })
+    } finally {
+      deleteSpy.mockRestore()
+      consoleError.mockRestore()
+    }
+
+    expect(reportEviction).not.toHaveBeenCalled()
+  })
+
+  // #EDGE: data-integrity: a reporter that throws synchronously must not be
+  // mistaken for the eviction itself failing. This is exercised past the
+  // HARD cap (evictionRequired: true, same setup as the "refuses the write
+  // when a REQUIRED eviction fails" test above), not the soft-cap band: a
+  // soft-cap eviction proceeds to the write regardless of what the outer
+  // catch does with a reporter throw, so it cannot tell a present guard from
+  // a missing one. Past the hard cap, a reporter throw caught by the OUTER
+  // catch (meant for a genuinely failed `deleteStorybooksById`) would wrongly
+  // call `recordDownloadRefusal()` and skip the write, even though the local
+  // eviction had already succeeded; only the inner try/catch around the
+  // reporter call (db.ts, around `options.reportEviction`) prevents that
+  // misclassification.
+  // #VERIFY: this test.
+  it('a synchronously-throwing reporter does not break a REQUIRED eviction', async () => {
+    const other: Storybook = { ...story, id: 's_other' }
+    mockStorageEstimate(10 * MB)
+    await cacheStorybook(other)
+    expect(await getCachedStorybook('s_other', 1)).toBeDefined()
+
+    // Past the hard cap WITH a candidate: the eviction is the only reason the
+    // write is allowed at all (matches the REQUIRED-eviction test above).
+    mockStorageEstimate(500 * MB - 10)
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const reportEviction = vi.fn(() => {
+      throw new Error('reporter blew up')
+    })
+    await expect(cacheStorybook(story, { reportEviction })).resolves.toBeUndefined()
+    consoleError.mockRestore()
+
+    // The eviction and the new write both still happened locally, despite
+    // the reporter throwing synchronously; the write must NOT be refused.
+    expect(await getCachedStorybook('s_other', 1)).toBeUndefined()
+    expect(await getCachedStorybook(story.id, story.version)).toBeDefined()
+    expect(consumeDownloadEviction()).toBe(true)
+    expect(consumeDownloadRefusal()).toBe(false)
+  })
+
   it('refuses the write when a REQUIRED eviction fails, rather than caching past the hard cap', async () => {
     const other: Storybook = { ...story, id: 's_other' }
     mockStorageEstimate(10 * MB)

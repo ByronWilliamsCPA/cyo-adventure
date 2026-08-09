@@ -77,3 +77,22 @@ export interface ReadingState {
   state_revision: number
   save_slots: Record<string, unknown>
 }
+
+/**
+ * One bookmark: a named snapshot of a reading position, stored as one value
+ * in `ReadingState.save_slots` (keyed by an opaque slot id). The backend
+ * treats `save_slots` as an opaque `dict[str, object]` (api/schemas.py's
+ * `ReadingStateBody`/`ReadingStateView`, byte-capped at 64KB, no shape
+ * imposed); this shape is a client-side convention only, defined and
+ * consumed entirely in `player/engine.ts`'s bookmark functions.
+ */
+export interface SavedBookmark {
+  current_node: string
+  var_state: VarState
+  visit_set: string[]
+  path: string[]
+  label: string
+  /** ISO 8601 timestamp; sorts bookmark lists newest-first as a plain string
+   * comparison, no Date parsing needed. */
+  saved_at: string
+}
