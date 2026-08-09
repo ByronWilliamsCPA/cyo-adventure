@@ -22,6 +22,7 @@ from typing import TYPE_CHECKING
 
 from sqlalchemy import select
 
+from cyo_adventure.core.database import apply_family_rls_context
 from cyo_adventure.db.models import CATALOG_FAMILY_ID, Family, PipelineEvent
 from cyo_adventure.events.models import Actor, EventType
 from cyo_adventure.events.writer import record_event
@@ -96,6 +97,19 @@ async def run_notification_digest(session: AsyncSession, *, now: datetime) -> in
     default_since = now - timedelta(hours=_DEFAULT_LOOKBACK_HOURS)
     written = 0
     for family_id in await _real_family_ids(session):
+        # #CRITICAL: security: this job connects as cyo_api (per
+        # notification-digest.yml, deliberately bound by the same RLS
+        # posture as every other write path), so the Tier 1 family_scoped
+        # policy (ADR-022) filters every child_profile/story_request row
+        # unless app.family_id is set for the family currently being read.
+        # Without this, every Tier 1-backed notification kind (request_*,
+        # plan_assigned) silently vanishes from every digest with no
+        # exception and no log; kid_flag/storybook/storybook_assignment
+        # (Tier 2) are unaffected, which is what makes the gap look like a
+        # quiet undercount rather than an outage.
+        # #VERIFY: tests/integration/test_notification_digest_rls.py::
+        # test_digest_counts_tier1_backed_notifications.
+        await apply_family_rls_context(session, family_id=family_id, is_admin=False)
         cursor = await _last_digest_at(session, family_id)
         since = cursor if cursor is not None else default_since
         items = await list_family_notifications(

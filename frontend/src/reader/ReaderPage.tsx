@@ -382,6 +382,10 @@ export function ReaderPage({
     } catch {
       cached = undefined
     }
+    // Whether the book is actually sitting in IndexedDB right now, distinct
+    // from `cached` (which also becomes truthy on a network fetch that was
+    // NOT successfully cached). Only this flag gates reportDownload below.
+    let isCached = cached !== undefined
     if (!cached) {
       try {
         cached = await fetchStory(storybookId, version)
@@ -391,9 +395,13 @@ export function ReaderPage({
       }
       try {
         await cacheStorybook(cached)
+        isCached = true
       } catch {
         // Best-effort: the story is already in hand from the network, so a
-        // failure to cache it locally must not block reading it now.
+        // failure to cache it locally must not block reading it now. But it
+        // is NOT actually cached, so reportDownload below must not claim it
+        // is -- the guardian's downloads view would otherwise show a book as
+        // available offline on a device where it demonstrably is not.
       }
     }
     // G15: report this device having the book cached, whether it was
@@ -402,7 +410,7 @@ export function ReaderPage({
     // guardian-visible "last confirmed" signal (offline_downloads.py's
     // upsert semantics). Fire-and-forget: reportDownload itself never
     // returns a Promise this page would await or catch.
-    reportDownload?.(storybookId)
+    if (isCached) reportDownload?.(storybookId)
     let saved: ReadingState | undefined
     try {
       saved = await getReadingState(profileId, storybookId)

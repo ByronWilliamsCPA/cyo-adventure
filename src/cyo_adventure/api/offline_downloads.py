@@ -23,7 +23,7 @@ from fastapi import APIRouter
 from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 
-from cyo_adventure.api.deps import Context, authorize_profile, parse_uuid
+from cyo_adventure.api.deps import Context, Role, authorize_profile, parse_uuid
 from cyo_adventure.api.schemas import (
     DeviceDownloadReportBody,
     DeviceDownloadView,
@@ -97,7 +97,7 @@ async def report_device_download(body: DeviceDownloadReportBody, ctx: Context) -
     await ctx.session.execute(stmt)
 
 
-@router.delete("/device-downloads", status_code=204)
+@router.delete("/device-downloads", status_code=204, responses=error_responses(403))
 async def remove_device_download(
     device_id: str, storybook_id: str, ctx: Context
 ) -> None:
@@ -111,11 +111,31 @@ async def remove_device_download(
     Removes every matching row in the caller's own family (there may be more
     than one, if two children on the same device both had it downloaded).
 
+    Profile-agnostic does not mean unauthenticated: a bare device-grant
+    principal (paired but with no child profile selected yet, ``Role.DEVICE``)
+    is rejected. Only a child, guardian, or admin already inside the family
+    may remove that family's download-tracking rows.
+
     Args:
         device_id: The reporting device's persistent id (query param).
         storybook_id: The no-longer-cached book (query param).
         ctx: The request context (principal and session).
+
+    Raises:
+        AuthorizationError: If a bare device principal calls this (-> 403).
     """
+    # #CRITICAL: security: a Role.DEVICE principal carries a real family_id
+    # (from the device grant) but no profile_ids, and this endpoint takes no
+    # profile_id to check against authorize_profile the way the PUT above
+    # does. Without this explicit role check, a device that has merely paired
+    # (no child has picked a profile yet) could delete any download row for
+    # the whole family; every read/write path bordering this table gates on
+    # something (PUT: authorize_profile, GET: is_guardian/is_admin) and this
+    # one must too.
+    # #VERIFY: test_offline_downloads_api.py::test_remove_rejects_device_principal.
+    if ctx.principal.role == Role.DEVICE:
+        msg = "device principal may not remove a download record"
+        raise AuthorizationError(msg)
     rows = await ctx.session.scalars(
         select(DeviceDownload).where(
             DeviceDownload.device_id == device_id,

@@ -2608,6 +2608,7 @@ class DeviceDownload(UUIDPrimaryKeyMixin, CreatedAtMixin, UpdatedAtMixin, Base):
             name="uq_device_download_device_profile_book",
         ),
         Index("ix_device_download_family_id", "family_id"),
+        Index("ix_device_download_storybook_id", "storybook_id"),
     )
 
     family_id: Mapped[uuid.UUID] = mapped_column()

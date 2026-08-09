@@ -246,6 +246,47 @@ describe('ReaderPage', () => {
     await screen.findByTestId('reader')
   })
 
+  it('reports the download once the story is freshly fetched and cached', async () => {
+    const reportDownload = vi.fn()
+    render(
+      <MemoryRouter>
+        <ReaderPage
+          api={okApi()}
+          fetchStory={() => Promise.resolve(lantern)}
+          profileId="p_report"
+          storybookId="s_lantern_cave"
+          version={1}
+          reportDownload={reportDownload}
+        />
+      </MemoryRouter>
+    )
+    await screen.findByTestId('reader')
+    expect(reportDownload).toHaveBeenCalledTimes(1)
+    expect(reportDownload).toHaveBeenCalledWith('s_lantern_cave')
+  })
+
+  it('does NOT report the download when caching the fetched story locally fails', async () => {
+    // G15/I4: reporting a download the device does not actually hold would
+    // show the guardian a book as "downloaded" on a device where the cache
+    // write demonstrably failed.
+    vi.spyOn(db, 'cacheStorybook').mockRejectedValueOnce(new Error('quota exceeded'))
+    const reportDownload = vi.fn()
+    render(
+      <MemoryRouter>
+        <ReaderPage
+          api={okApi()}
+          fetchStory={() => Promise.resolve(lantern)}
+          profileId="p_cachefail_report"
+          storybookId="s_lantern_cave"
+          version={1}
+          reportDownload={reportDownload}
+        />
+      </MemoryRouter>
+    )
+    await screen.findByTestId('reader')
+    expect(reportDownload).not.toHaveBeenCalled()
+  })
+
   it('starts fresh instead of blocking when reading the local reading-state throws', async () => {
     vi.spyOn(db, 'getReadingState').mockRejectedValueOnce(new Error('DB blocked'))
     render(
@@ -545,6 +586,44 @@ describe('ReaderPage', () => {
       expect(mirrored?.current_node).toBe('n_cave_fork')
       expect(mirrored?.state_revision).toBeGreaterThanOrEqual(5)
     })
+  })
+
+  it('saving a bookmark issues a new PUT instead of being deduped as a no-op', async () => {
+    // I5: persist()'s dedup signature includes save_slots specifically so a
+    // bookmark-only change (no move, no var_state change) is not mistaken
+    // for a repeat of the last save and silently dropped.
+    const bodies: ReadingState[] = []
+    const api: SyncApi = {
+      putReadingState: (_p, _s, body) => {
+        bodies.push(body)
+        return Promise.resolve<PutResponse>({
+          status: 200,
+          row: { ...body, state_revision: bodies.length },
+        })
+      },
+    }
+    render(
+      <MemoryRouter>
+        <ReaderPage
+          api={api}
+          fetchStory={() => Promise.resolve(lantern)}
+          profileId="p_bookmark_dedup"
+          storybookId="s_lantern_cave"
+          version={1}
+        />
+      </MemoryRouter>
+    )
+    await screen.findByTestId('reader')
+    await waitFor(() => expect(bodies).toHaveLength(1))
+    expect(bodies[0].save_slots).toEqual({})
+
+    fireEvent.click(screen.getByRole('button', { name: /bookmarks/i }))
+    fireEvent.click(screen.getByTestId('save-bookmark'))
+
+    await waitFor(() => expect(bodies).toHaveLength(2))
+    expect(Object.keys(bodies[1].save_slots)).toHaveLength(1)
+    // Only the bookmark changed; position must be untouched by saving it.
+    expect(bodies[1].current_node).toBe(bodies[0].current_node)
   })
 
   it('issues one save and no false 409 under StrictMode double-invoke (#86)', async () => {

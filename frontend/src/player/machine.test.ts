@@ -513,7 +513,14 @@ describe('reader machine bookmarks (SAVE_BOOKMARK/LOAD_BOOKMARK/DELETE_BOOKMARK)
 
     actor.send({ type: 'SAVE_BOOKMARK', label: 'The end' })
     expect(actor.getSnapshot().value).toBe('ended')
-    const slotId = Object.keys(actor.getSnapshot().context.reading.save_slots)[0]
+    // Asserted BEFORE the delete below: an unhandled SAVE_BOOKMARK (XState
+    // drops an event with no matching `on` handler silently, no throw) would
+    // otherwise leave save_slots empty here, and the delete that follows
+    // would then no-op on an undefined slotId, making the final `toEqual({})`
+    // pass regardless of whether Save actually did anything.
+    const slots = Object.keys(actor.getSnapshot().context.reading.save_slots)
+    expect(slots).toHaveLength(1)
+    const slotId = slots[0]
 
     actor.send({ type: 'DELETE_BOOKMARK', slotId })
     expect(actor.getSnapshot().value).toBe('ended')

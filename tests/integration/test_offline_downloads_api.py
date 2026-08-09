@@ -14,7 +14,7 @@ import pytest
 from sqlalchemy import select
 
 from cyo_adventure.db.models import DeviceDownload
-from tests.integration.conftest import Seed, auth
+from tests.integration.conftest import Seed, auth, mint_device_token
 
 if TYPE_CHECKING:
     from httpx import AsyncClient
@@ -186,6 +186,45 @@ async def test_remove_deletes_the_row(
             )
         )
         assert row is None
+
+
+async def test_remove_rejects_device_principal(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """A bare device-grant principal (paired, no profile picked) may not remove.
+
+    Unlike the PUT/GET siblings, DELETE takes no profile_id, so
+    authorize_profile cannot gate it; this pins the explicit Role.DEVICE
+    check that closes the gap a bare device token would otherwise walk
+    through to delete any download row in the family.
+    """
+    await client.put(
+        "/api/v1/device-downloads",
+        json={
+            "device_id": "device-1",
+            "profile_id": str(seed.child_profile_id),
+            "storybook_id": seed.storybook_id,
+        },
+        headers=auth(seed.child_token),
+    )
+    device_token = await mint_device_token(client, seed.guardian_token)
+
+    resp = await client.request(
+        "DELETE",
+        "/api/v1/device-downloads",
+        params={"device_id": "device-1", "storybook_id": seed.storybook_id},
+        headers=auth(device_token),
+    )
+    assert resp.status_code == 403, resp.text
+
+    async with sessions() as s:
+        row = await s.scalar(
+            select(DeviceDownload).where(
+                DeviceDownload.device_id == "device-1",
+                DeviceDownload.storybook_id == seed.storybook_id,
+            )
+        )
+        assert row is not None
 
 
 async def test_remove_never_touches_another_familys_row(
