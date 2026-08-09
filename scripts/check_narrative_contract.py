@@ -34,6 +34,9 @@ Checks:
   single printable line under 120 chars with no braces, directive markers,
   or em-dash; the band-mandatory denylist is applied to every leaf string.
 - NC-6: every ``open``-tier node establishes at least one fact.
+- NC-8: an ending whose skeleton title carries no slot token is byte-frozen
+  across every binding of the skeleton and is a top recognition channel
+  (AL-161); flagged as a warning until title contracts are universal.
 
 Exits 1 on any ERROR-severity finding; warnings print but do not fail.
 """
@@ -364,6 +367,17 @@ def check_contract(
                 )
         if str(entry.get("tier")) == "open" and not entry.get("establishes"):
             errors.append(f"NC-6: open node {node_id!r} establishes nothing")
+
+    # NC-8 unslotted ending titles (frozen across bindings, AL-161)
+    for node in cast("list[dict[str, Any]]", skeleton["nodes"]):
+        ending = node.get("ending")
+        if isinstance(ending, dict):
+            title = str(cast("dict[str, Any]", ending).get("title") or "")
+            if title and "{" not in title:
+                warnings.append(
+                    f"NC-8: ending {node['id']!r} title {title!r} carries no slot "
+                    f"token and will be byte-identical across every binding"
+                )
 
     # NC-3 orphan facts
     established = {

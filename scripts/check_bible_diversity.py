@@ -103,6 +103,14 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("bibles", nargs="+", help="Two or more sibling bible paths.")
     parser.add_argument("--tau", type=float, default=0.34)
+    parser.add_argument(
+        "--contract",
+        default=None,
+        help=(
+            "Narrative contract path: reports per-category kind headroom, "
+            "marking kinds frozen by kind_must_be specs (AL-160)."
+        ),
+    )
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args(argv)
     if len(args.bibles) < 2:
@@ -112,6 +120,32 @@ def main(argv: list[str] | None = None) -> int:
         path: cast("dict[str, Any]", json.loads(Path(path).read_text(encoding="utf-8")))
         for path in args.bibles
     }
+    if args.contract:
+        contract = cast(
+            "dict[str, Any]",
+            json.loads(Path(args.contract).read_text(encoding="utf-8")),
+        )
+        forced: dict[str, set[str]] = {}
+        for entry in cast("dict[str, Any]", contract.get("nodes") or {}).values():
+            for spec in cast(
+                "dict[str, Any]", cast("dict[str, Any]", entry).get("invention") or {}
+            ).values():
+                spec_map = cast("dict[str, Any]", spec)
+                category = spec_map.get("category")
+                must = spec_map.get("kind_must_be")
+                if category and must:
+                    forced.setdefault(str(category), set()).add(str(must))
+        sys.stdout.write("per-category kind headroom (forced kinds cannot diverge):\n")
+        sample = next(iter(loaded.values()))
+        for category, kinds in sorted(_kind_multisets(sample).items()):
+            frozen = sorted(forced.get(category, set()))
+            free = sum(
+                c for k, c in kinds.items() if k not in forced.get(category, set())
+            )
+            sys.stdout.write(
+                f"  {category}: {sum(kinds.values())} entries, forced kinds "
+                f"{frozen or 'none'}, free entries {free}\n"
+            )
     breaches = 0
     for (path_a, bible_a), (path_b, bible_b) in combinations(loaded.items(), 2):
         divergence = mechanic_divergence(bible_a, bible_b)
