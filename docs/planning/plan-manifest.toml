@@ -329,16 +329,27 @@ gaps = [
 name = "Family loops"
 track = 1
 shipped = "yes"
-usable = "partial"
-summary = "Notification feed, guardian engagement visibility, kid-facing generation status, budget consent. Push channel closed 2026-07-29 via authenticated SSE."
-validated = "2026-08-01"
+usable = "yes"
+summary = "Notification feed, guardian engagement visibility, kid-facing generation status, budget consent, server-scheduled digest job. Push channel closed 2026-07-29 via authenticated SSE."
+validated = "2026-08-09"
 # The SSE endpoint (api/notifications.py:351-419) resolves the principal via require_principal
 # and applies the guardian role check before streaming any byte, so the push channel is genuinely
 # authenticated. Budget consent is server-enforced, not a UI checkbox:
 # story_requests/service.py:251 enforce_family_quota returns a 409.
-gaps = [
-  "No server-scheduled digest job, which is why capability S9 stays partial. Narrower than it reads: pg_cron is already deployed and running six scheduled jobs across three migrations (all retention and purge), so the scheduling substrate exists and only the digest job itself was never written.",
-]
+gaps = []
+# CLOSED 2026-08-09: "No server-scheduled digest job, which is why capability S9 stays partial."
+# notifications/digest.py::run_notification_digest writes one batched summary event per family
+# with pending info-severity notifications since their last digest (its own cursor, sourced from
+# the family's prior digest event); scripts/run_notification_digest.py is the invocation shell;
+# .github/workflows/notification-digest.yml runs it daily via pg_cron-adjacent GitHub Actions
+# scheduling (pg_cron itself was already deployed and running six other scheduled jobs, but
+# calling into the app's own ORM/RLS-aware session from pg_cron directly is not straightforward,
+# so this reuses the scripts+scheduled-workflow pattern scripts/backup_database.py established
+# instead). In-app delivery only: no email/push provider is introduced, so a guardian who never
+# opens the app and whose SSE stream never connects still is not reached by anything external;
+# see notifications/digest.py's module docstring for this explicit scope boundary. Proven by
+# tests/integration/test_notification_digest.py (real cross-family Postgres) and
+# tests/unit/test_run_notification_digest.py (script wiring).
 # CLOSED since this phase's 2026-08-01 validation, retained here so the closure is auditable:
 #   - "Kid-facing 'it's on your shelf' indicator is a client-side title-substring guess" is
 #     CLOSED. resulting_storybook_id (db/models.py:1601) now links a request to the storybook

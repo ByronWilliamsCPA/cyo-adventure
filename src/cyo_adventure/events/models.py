@@ -127,6 +127,14 @@ class EventType(StrEnum):
     # mock-moderated one through ordinary review channels, never an
     # auto-unpublish).
     STORYBOOK_REMODERATED = "storybook_remoderated"
+    # S9 server-scheduled digest (notifications/digest.py::run_notification_digest):
+    # a periodic job, distinct from the real-time poll/SSE feed, batches each
+    # family's pending info-severity notifications since their last digest into
+    # one summary. Written by the system actor only, entity_type "family"
+    # (already in the entity_type vocabulary via FAMILY_MANAGED), entity_id the
+    # family's own id. The payload carries only a count, never which
+    # notifications; a guardian sees the real items on the ordinary feed.
+    NOTIFICATION_DIGEST_READY = "notification_digest_ready"
 
 
 SYSTEM_ACTOR_ROLE = "system"

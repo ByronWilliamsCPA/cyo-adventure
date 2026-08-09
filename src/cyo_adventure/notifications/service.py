@@ -41,6 +41,7 @@ from sqlalchemy import select, tuple_
 from cyo_adventure.db.models import (
     ChildProfile,
     Concept,
+    Family,
     GenerationJob,
     KidFlag,
     PipelineEvent,
@@ -367,6 +368,34 @@ async def _resolve_storybook_assignment(
     return result
 
 
+async def _resolve_family(
+    session: AsyncSession, ids: list[str]
+) -> dict[str, EntityContext]:
+    """Resolve ``family``-entity events (NOTIFICATION_DIGEST_READY): trivial self-lookup.
+
+    ``entity_id`` is the family's own id (str(uuid)); the family a digest
+    concerns is always itself, unlike every other resolver above which
+    reaches a child- or story-owned row and reads its ``family_id`` back.
+    Kept as a real DB lookup (not a bare ``uuid.UUID(raw)`` parse) so a
+    digest event whose family has since been deleted (a race between the
+    digest job and a guardian's own family-deletion request) resolves to
+    nothing rather than a dangling id, matching every other resolver's
+    fail-closed contract.
+    """
+    id_map = _parse_uuids(ids)
+    if not id_map:
+        return {}
+    rows = (
+        await session.scalars(select(Family.id).where(Family.id.in_(id_map.values())))
+    ).all()
+    existing = set(rows)
+    return {
+        raw: EntityContext(family_id=parsed)
+        for raw, parsed in id_map.items()
+        if parsed in existing
+    }
+
+
 async def _resolve_kid_flag(
     session: AsyncSession, ids: list[str]
 ) -> dict[str, EntityContext]:
@@ -407,7 +436,7 @@ async def _resolve_kid_flag(
 # #ASSUME: data-integrity: this is the single point mapping a pipeline_event
 # entity_type string to the resolver that knows that entity's shape and how
 # to reach its family. A candidate event whose entity_type is not one of
-# these six resolves to no EntityContext and is silently dropped in
+# these seven resolves to no EntityContext and is silently dropped in
 # list_guardian_notifications below -- see notifications/registry.py's
 # module docstring for why that is the correct, fail-safe behavior (never a
 # leak, never a crash) rather than a bug to fix reactively. "kid_flag" is the
@@ -427,6 +456,7 @@ _ENTITY_RESOLVERS: dict[str, EntityResolver] = {
     "storybook_version": _resolve_storybook_version,
     "storybook_assignment": _resolve_storybook_assignment,
     "kid_flag": _resolve_kid_flag,
+    "family": _resolve_family,
 }
 
 
@@ -507,6 +537,46 @@ def _to_item(
     )
 
 
+async def _list_notifications_for_family(
+    session: AsyncSession,
+    family_id: uuid.UUID,
+    *,
+    since: datetime | None,
+    limit: int,
+) -> list[NotificationItem]:
+    """Shared core: resolve, family-filter, and compose candidate events.
+
+    Both public entry points (the guardian-facing feed and the digest job)
+    funnel through here so the SOLE family-scoping gate exists in exactly
+    one place, per the module docstring.
+    """
+    if limit <= 0:
+        return []
+    candidates = await _fetch_candidates(session, since=since, limit=limit)
+    if not candidates:
+        return []
+    contexts = await _resolve_all_contexts(session, candidates)
+
+    items: list[NotificationItem] = []
+    for event in candidates:
+        ctx = contexts.get((event.entity_type, event.entity_id))
+        # #CRITICAL: security: an event whose entity did not resolve, or whose
+        # resolved family does not match the caller, is dropped here. This is
+        # the SOLE family-scoping gate for the entire feed; no composer and no
+        # entity resolver re-checks it.
+        # #VERIFY: tests/unit/test_notifications_service.py::
+        # test_family_scoping_negative_other_family_events_never_appear.
+        if ctx is None or ctx.family_id != family_id:
+            continue
+        raw = compose(event, ctx)
+        if raw is None:
+            continue
+        items.append(_to_item(event, ctx, raw))
+        if len(items) >= limit:
+            break
+    return items
+
+
 async def list_guardian_notifications(
     session: AsyncSession,
     principal: Principal,
@@ -536,28 +606,36 @@ async def list_guardian_notifications(
     Returns:
         list[NotificationItem]: Up to ``limit`` items, newest first.
     """
-    if limit <= 0:
-        return []
-    candidates = await _fetch_candidates(session, since=since, limit=limit)
-    if not candidates:
-        return []
-    contexts = await _resolve_all_contexts(session, candidates)
+    return await _list_notifications_for_family(
+        session, principal.family_id, since=since, limit=limit
+    )
 
-    items: list[NotificationItem] = []
-    for event in candidates:
-        ctx = contexts.get((event.entity_type, event.entity_id))
-        # #CRITICAL: security: an event whose entity did not resolve, or whose
-        # resolved family does not match the caller, is dropped here. This is
-        # the SOLE family-scoping gate for the entire feed; no composer and no
-        # entity resolver re-checks it.
-        # #VERIFY: tests/unit/test_notifications_service.py::
-        # test_family_scoping_negative_other_family_events_never_appear.
-        if ctx is None or ctx.family_id != principal.family_id:
-            continue
-        raw = compose(event, ctx)
-        if raw is None:
-            continue
-        items.append(_to_item(event, ctx, raw))
-        if len(items) >= limit:
-            break
-    return items
+
+async def list_family_notifications(
+    session: AsyncSession,
+    family_id: uuid.UUID,
+    *,
+    since: datetime | None,
+    limit: int,
+) -> list[NotificationItem]:
+    """Return one family's notification feed, newest first, by id directly.
+
+    The non-request-scoped counterpart to ``list_guardian_notifications``,
+    for callers with no authenticated ``Principal`` of their own -- today,
+    only the system-actor digest job (``notifications/digest.py``). Shares
+    the identical family-scoping gate; the only difference is where the
+    scoping id comes from.
+
+    Args:
+        session: The database session.
+        family_id: The family to scope the feed to.
+        since: Only events strictly after this timestamp, or None for no
+            lower bound.
+        limit: The maximum number of items to return; must be positive.
+
+    Returns:
+        list[NotificationItem]: Up to ``limit`` items, newest first.
+    """
+    return await _list_notifications_for_family(
+        session, family_id, since=since, limit=limit
+    )

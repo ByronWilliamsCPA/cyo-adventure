@@ -1,0 +1,155 @@
+# Scheduled S9 notification digest job (docs/planning/roadmap.md Phase 4c;
+# capability-register.md S9): runs scripts/run_notification_digest.py, which writes one
+# batched NOTIFICATION_DIGEST_READY event per family with pending info-severity
+# notifications since their last digest. Distinct from the real-time poll and SSE push
+# (neither of which is scheduled infrastructure); see notifications/digest.py's module
+# docstring for what this job does and does not cover (in-app only, no email/push
+# channel).
+#
+# -----------------------------------------------------------------------
+# Required secret on the `production` GitHub Environment (shared with
+# supabase-backup.yml's `environment: production`, but this is a distinct secret):
+# -----------------------------------------------------------------------
+#
+#   CYO_ADVENTURE_DATABASE_URL   The app's OWN runtime connection string (asyncpg DSN),
+#                                 authenticating as the least-privilege cyo_api role
+#                                 per ADR-021/ADR-022, i.e. the SAME connection the
+#                                 deployed app itself uses, not the direct/superuser
+#                                 connection supabase-backup.yml uses for pg_dump. This
+#                                 is deliberate: the digest job reads/writes through the
+#                                 app's own ORM and must be bound by the same RLS
+#                                 posture as every other write path, not exempted from
+#                                 it.
+#
+#   gh secret set CYO_ADVENTURE_DATABASE_URL --env production
+#
+# Failure alerting: mirrors supabase-backup.yml's "file/comment on a labelled
+# ci-failure issue" pattern (docs/operations/runbook.md section 7 documents the
+# convention), with a distinct issue marker so the two never collide.
+name: Notification digest
+
+on:
+  schedule:
+    # 09:00 UTC daily. No particular reason for this hour beyond spreading scheduled
+    # jobs across the day (supabase-backup.yml runs 08:00, e2e-staging.yml 13:00).
+    - cron: "0 9 * * *"
+  workflow_dispatch: {}
+
+permissions: {}
+
+concurrency:
+  # A digest write is additive and idempotent to re-run (each family's own cursor is
+  # the prior digest event's timestamp; re-running before that cursor advances just
+  # recomputes the same pending count), so unlike supabase-backup.yml's
+  # cancel-in-progress: false, there is no destructive-interleaving risk here. Still
+  # worth one group to avoid two overlapping runs double-writing the same digest.
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  digest:
+    name: Run digest pass
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production
+    permissions:
+      contents: read
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14"
+
+      - name: Install UV
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          enable-cache: true
+
+      - name: Install backend (api extra)
+        run: uv sync --extra api
+
+      - name: Run digest
+        env:
+          # Scoped to this single step: no other step in this job needs it.
+          CYO_ADVENTURE_DATABASE_URL: ${{ secrets.CYO_ADVENTURE_DATABASE_URL }}
+        run: uv run python scripts/run_notification_digest.py
+
+  alert:
+    name: Alert on failure
+    needs: digest
+    if: failure()
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      issues: write
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: File or comment on the pinned issue
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const marker = '[notification-digest]'
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
+            const today = new Date().toISOString().slice(0, 10)
+
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'ci-failure',
+              per_page: 100,
+            })
+            const existing = issues.find((issue) => issue.title.startsWith(marker))
+
+            if (existing) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                body: `Scheduled notification digest failed again on ${today}. Run: ${runUrl}`,
+              })
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `${marker} scheduled notification digest failing`,
+                labels: ['ci-failure'],
+                body: [
+                  'The scheduled `Notification digest` workflow',
+                  '(`.github/workflows/notification-digest.yml`) failed.',
+                  '',
+                  'This runs scripts/run_notification_digest.py, which writes one batched',
+                  'NOTIFICATION_DIGEST_READY event per family with pending info-severity',
+                  'notifications since their last digest (S9). A failure here means one of:',
+                  '',
+                  '- the `CYO_ADVENTURE_DATABASE_URL` secret is missing or invalid;',
+                  '- the database is unreachable;',
+                  '- a real bug in notifications/digest.py.',
+                  '',
+                  `First failing run: ${runUrl}`,
+                  `Date: ${today}`,
+                  '',
+                  'Triage: read the run log first, it prints the count written on success and',
+                  'the exception on failure. This is a soft failure: no guardian-facing data is',
+                  'lost by a missed run (the poll/SSE feed is unaffected, and the next successful',
+                  'run just covers a wider window), but a digest that silently stops running',
+                  'defeats the point of scheduling it.',
+                  '',
+                  'This issue stays open and accumulates one comment per failing run until',
+                  'someone resolves the underlying problem and closes it; the next failure',
+                  'after that opens a fresh issue.',
+                ].join('\n'),
+              })
+            }

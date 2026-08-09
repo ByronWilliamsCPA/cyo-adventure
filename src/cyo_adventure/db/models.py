@@ -155,11 +155,12 @@ _PIPELINE_EVENT_TYPE_VALUES = (
     "'personalization_toggled', 'ring2_consent_granted', "
     "'ring2_consent_revoked', "
     "'storybook_archived', "
-    # Added alongside
-    # supabase/migrations/20260731000000_add_storybook_remoderated_to_pipeline_event.sql,
+    "'storybook_remoderated', "
+    # S9 digest job. Added alongside
+    # supabase/migrations/20260809000000_add_notification_digest_ready_to_pipeline_event.sql,
     # which is the newest migration to replace this CHECK and therefore carries
     # the full cumulative value list.
-    "'storybook_remoderated'"
+    "'notification_digest_ready'"
 )
 _PIPELINE_ACTOR_ROLE_VALUES = "'system', 'guardian', 'child', 'admin', 'device'"
 _PIPELINE_ENTITY_TYPE_VALUES = (
