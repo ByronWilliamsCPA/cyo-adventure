@@ -458,3 +458,61 @@ widened headroom.
   loop.
 - **PS null held**: 0.541-0.551 per pair (leaf 0.083-0.094; structural and theme pinned
   at 1.0 by design). Leaf similarity is at the noise floor for same-band prose.
+
+### Rater results
+
+**Scene inventory: every pre-registered margin passed on every pair**, and the pilot-2
+failure mode (duplicated hint-carrier device kinds) is gone. Cipher form 3/3 distinct
+(glyph substitution vs punched-card ordinal lookup vs modular moon arithmetic); room
+carriers 11 of 12 pairwise comparisons distinct; remedies 3/3 distinct; ending mechanisms
+6/8, 6/8, 8/8 against the 5/8 floor; label voices scored 3.0 ("three coherent,
+non-interchangeable label voices, not template rewording"); menu surface distinct on all
+pairs with one marginal verb-spine parallel at the a-b hub. The device layer, which failed
+in pilot 2, is solved.
+
+**Recognition: margin failed, with real movement.** The same-book verdict moved from node
+2 (pre-hygiene) to node 4 on both rated paths, and the pair score moved 2.0 to 2.5, but
+the pre-registered bar was "past the node-5 hub or not at all". The a-c pair regressed to
+node 2 on a near-paraphrased three-plans opening. The rater's attribution matches the
+scene rater's residuals from the other side:
+
+1. **Choice-menu semantics are the book's fingerprint.** Every fork offers the same
+   options with the same meanings in the same order (decode / walk the walls / ask the
+   keeper; enter now / story first; share / keep / grab). Label styling varied the voice;
+   the contract's `choice_semantics` locks the meaning, and a 10-13 reader recognizes
+   meaning through any styling.
+2. **Scene-function identity in fixed order.** Each node performs the identical function
+   at the identical position; the rater's phrasing: "the skeleton is fine; the skeleton
+   is visible."
+3. **Idiom families survive below the 4-gram floor.** All five watched staging idioms
+   (doors ajar, stepped-out-for-tea, short climb, corkscrew stairs, service ladders)
+   reappeared in all three books in paraphrased forms the token check cannot see
+   ("corkscrewed" a-c, the "come back by daylight, and knock" closing beat 3/3, the
+   "language they were learning" thesis sentence). The revision round defeated the
+   metric more thoroughly than the phenomenon.
+4. **Beat-identical emotional payoffs.** e_hero lands the same arc in both books
+   (artifact to town authority, crowd, dead maker's machine runs again, honorary status);
+   the mechanism rotation varied the how, not the felt shape.
+
+### Verdict
+
+The contract-hygiene amendments did what they were designed to do: the device layer is
+distinct on every margin, the menu-frame and frozen-title channels are closed at the
+deterministic level, and the fill loop (gate, revise on tool feedback, re-gate) worked
+in one round with no human repair. The sameness ceiling moved again, out of the prose
+and device layers into the two things a single skeleton-plus-contract cannot vary by
+construction: the decision grammar (choice semantics, scene functions, their order) and
+the model's own staging idiom priors. Three consecutive pilots have now each relocated
+the bottleneck one layer down: beats (pilot 1), contract concreteness (pilot 2), decision
+grammar and idiom priors (pilot 3).
+
+The honest conclusion for the catalog rebuild: **sibling fills of one skeleton converge
+to "same adventure, new world", and no amount of downstream hygiene changes that,
+because the remaining channels are the skeleton's identity itself.** That reframes the
+product question rather than the tooling question: bindings of one skeleton are a
+series format (and read well as one; the recognition rater judged the formula GOOD at
+this band when framed as a series), while true different-book diversity comes from
+different skeletons, which is what the catalog rebuild is for. Two cheaper mitigations
+remain open if same-skeleton distance is still wanted: per-fork semantics pools rotated
+at selection time (the mechanism treatment applied to decisions), and an idiom-family
+check below the 4-gram floor. Both are registered; neither blocks the rebuild.
