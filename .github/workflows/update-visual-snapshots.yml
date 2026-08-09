@@ -69,6 +69,12 @@
 # library-page.png and no other baseline changed, which is the signature of a
 # single control added to a header rather than a layout shift. Review the diff
 # for the new link appearing in the library header and nothing else moving.
+#
+# Baseline bump 2026-08-09: the reader gained a persistent BookmarksButton
+# (Phase 4b bookmarks feature, Reader.tsx), so reader-page.png legitimately
+# moves. The mocked tier failed with 1056 pixels (ratio 0.01) different on
+# reader-page.png and no other baseline changed, consistent with a single new
+# control in the reader chrome rather than a layout shift.
 name: Update Visual Snapshots
 
 on:

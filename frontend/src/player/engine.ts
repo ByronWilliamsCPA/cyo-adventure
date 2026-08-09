@@ -390,6 +390,7 @@ function isSavedBookmark(value: unknown): value is SavedBookmark {
     typeof v.current_node === 'string' &&
     typeof v.var_state === 'object' &&
     v.var_state !== null &&
+    !Array.isArray(v.var_state) &&
     Array.isArray(v.visit_set) &&
     v.visit_set.every((id) => typeof id === 'string') &&
     Array.isArray(v.path) &&
@@ -415,8 +416,8 @@ export function listBookmarks(state: ReadingState): Array<{ id: string; bookmark
  * the backend's 64,000-byte save_slots budget (a single bookmark snapshot,
  * dominated by var_state and a short path, is far smaller than that); it
  * exists so a reader cannot turn the bookmarks list into an unusable wall of
- * entries, not to protect the byte cap. #VERIFY: BookmarksPanel.test.tsx
- * asserts Save is disabled at the ceiling.
+ * entries, not to protect the byte cap. #VERIFY: engine.test.ts asserts
+ * canSaveBookmark goes false once the ceiling is reached.
  */
 export function canSaveBookmark(state: ReadingState): boolean {
   return listBookmarks(state).length < MAX_BOOKMARKS

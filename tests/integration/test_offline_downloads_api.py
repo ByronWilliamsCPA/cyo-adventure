@@ -7,6 +7,7 @@ end, including cross-family scoping and the title/profile-name projection.
 
 from __future__ import annotations
 
+import asyncio
 from typing import TYPE_CHECKING
 
 import pytest
@@ -77,6 +78,45 @@ async def test_repeat_report_advances_last_confirmed_at_without_duplicating(
         ).all()
         assert len(rows) == 1
         assert rows[0].updated_at >= rows[0].created_at
+
+
+async def test_concurrent_reports_do_not_conflict(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """Two overlapping reports for the same key must not race an INSERT.
+
+    A plain read-then-insert (check for an existing row, else insert) lets
+    two concurrent requests both observe "no row yet" and both attempt the
+    INSERT, raising a UNIQUE violation on
+    ``uq_device_download_device_profile_book``. The endpoint upserts
+    atomically instead, so both requests succeed and exactly one row exists.
+    """
+    body = {
+        "device_id": "device-1",
+        "profile_id": str(seed.child_profile_id),
+        "storybook_id": seed.storybook_id,
+    }
+    responses = await asyncio.gather(
+        client.put(
+            "/api/v1/device-downloads", json=body, headers=auth(seed.child_token)
+        ),
+        client.put(
+            "/api/v1/device-downloads", json=body, headers=auth(seed.child_token)
+        ),
+    )
+    assert all(r.status_code == 204 for r in responses), [r.text for r in responses]
+
+    async with sessions() as s:
+        rows = (
+            await s.scalars(
+                select(DeviceDownload).where(
+                    DeviceDownload.device_id == "device-1",
+                    DeviceDownload.child_profile_id == seed.child_profile_id,
+                    DeviceDownload.storybook_id == seed.storybook_id,
+                )
+            )
+        ).all()
+        assert len(rows) == 1
 
 
 async def test_report_wrong_profile_is_403(client: AsyncClient, seed: Seed) -> None:

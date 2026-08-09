@@ -110,7 +110,12 @@ function groupByDevice(
     }
   }
   return [...byDevice.entries()]
-    .map(([deviceId, items]) => ({ deviceId, items }))
+    .map(([deviceId, items]) => ({
+      deviceId,
+      items: [...items].sort((a, b) =>
+        b.last_confirmed_at.localeCompare(a.last_confirmed_at)
+      ),
+    }))
     .sort((a, b) => b.items[0].last_confirmed_at.localeCompare(a.items[0].last_confirmed_at))
 }
 

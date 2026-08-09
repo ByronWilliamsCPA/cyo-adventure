@@ -2271,7 +2271,7 @@ class DeviceDownloadReportBody(BaseModel):
 
     device_id: str = Field(min_length=1, max_length=64)
     profile_id: str
-    storybook_id: str
+    storybook_id: str = Field(max_length=120)
 
 
 class DeviceDownloadView(BaseModel):

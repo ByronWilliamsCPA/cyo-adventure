@@ -21,6 +21,7 @@ from datetime import UTC, datetime
 
 from fastapi import APIRouter
 from sqlalchemy import select
+from sqlalchemy.dialects.postgresql import insert as pg_insert
 
 from cyo_adventure.api.deps import Context, authorize_profile, parse_uuid
 from cyo_adventure.api.schemas import (
@@ -76,32 +77,24 @@ async def report_device_download(body: DeviceDownloadReportBody, ctx: Context) -
         msg = "profile not found"
         raise ResourceNotFoundError(msg)
 
-    existing = await ctx.session.scalar(
-        select(DeviceDownload).where(
-            DeviceDownload.device_id == body.device_id,
-            DeviceDownload.child_profile_id == profile_uuid,
-            DeviceDownload.storybook_id == body.storybook_id,
-        )
+    # #CRITICAL: concurrency: two concurrent reports for the same
+    # (device_id, profile_id, storybook_id) key (e.g. two tabs re-confirming
+    # a cached book at once) would both observe "no existing row" under a
+    # plain read-then-insert and both attempt INSERT, raising a UNIQUE
+    # violation on uq_device_download_device_profile_book. An atomic
+    # upsert closes the race instead of merely narrowing it.
+    # #VERIFY: test_offline_downloads_api.py::test_concurrent_reports_do_not_conflict.
+    stmt = pg_insert(DeviceDownload).values(
+        family_id=profile.family_id,
+        child_profile_id=profile_uuid,
+        device_id=body.device_id,
+        storybook_id=body.storybook_id,
     )
-    if existing is not None:
-        # #ASSUME: data-integrity: SQLAlchemy's onupdate=func.now() fires only
-        # when an UPDATE is actually issued for the row; a repeat report with
-        # nothing else to change would otherwise emit no UPDATE at all and
-        # last_confirmed_at would go stale forever. Explicitly touching a
-        # column forces the UPDATE.
-        # #VERIFY: test_offline_downloads_api.py::
-        # test_repeat_report_advances_last_confirmed_at.
-        existing.updated_at = datetime.now(UTC)
-        return
-
-    ctx.session.add(
-        DeviceDownload(
-            family_id=profile.family_id,
-            child_profile_id=profile_uuid,
-            device_id=body.device_id,
-            storybook_id=body.storybook_id,
-        )
+    stmt = stmt.on_conflict_do_update(
+        constraint="uq_device_download_device_profile_book",
+        set_={"updated_at": datetime.now(UTC)},
     )
+    await ctx.session.execute(stmt)
 
 
 @router.delete("/device-downloads", status_code=204)
