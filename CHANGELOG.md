@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.70.0] - 2026-08-09
+
+### Features
+
+- Close bookmarks, S9 digest, and G15 storage-view gaps; correct stale docs
+  ([#657](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/657),
+  [`061144a`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/061144a47808f8da6165cce4ab4e1ba311eae351))
+
+
 ## [0.69.1] - 2026-08-09
 
 ### Bug Fixes
@@ -3294,6 +3303,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.70.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.69.1...v0.70.0
 [0.69.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.69.0...v0.69.1
 [0.69.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.68.4...v0.69.0
 [0.68.4]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.68.3...v0.68.4
