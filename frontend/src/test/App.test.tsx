@@ -68,6 +68,11 @@ vi.mock('../api/readerApi', () => ({
   // exercised by its own suites (readerApi.test.ts, ReaderPage.test.tsx),
   // here it just needs to resolve so the wired route mounts without a backend.
   makeReportDownload: () => () => Promise.resolve(),
+  // Eviction reporting (device-downloads DELETE): ReaderRoute and LibraryPage
+  // both wire this unconditionally too; the removal call itself is exercised
+  // by its own suites (readerApi.test.ts, db.test.ts, revocation.test.ts),
+  // here it just needs to resolve so the wired routes mount without a backend.
+  makeRemoveDownload: () => () => Promise.resolve(),
 }))
 
 const mockGet = vi.fn()

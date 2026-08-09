@@ -118,6 +118,20 @@ export interface ReaderPageProps {
    * optional-callback prop's own pattern.
    */
   reportDownload?: (storybookId: string) => void
+  /**
+   * Reports to the server that this device no longer has a book cached
+   * offline (G15 storage/download view), the mirror image of
+   * `reportDownload` above. Passed straight through to `cacheStorybook`'s
+   * own `reportEviction` option (offline/db.ts) for the one eviction this
+   * page can trigger: caching a newly-opened book that forces a
+   * same-device, space-pressure eviction of a different one. Same contract
+   * as `reportDownload`: fire-and-forget, best-effort, never awaited or
+   * caught here, and never allowed to let a report failure touch the
+   * eviction it describes. Omitted has the identical effect as
+   * `reportDownload`'s own omission: the eviction still happens locally, it
+   * is simply never reported.
+   */
+  reportRemoval?: (storybookId: string) => void
 }
 
 type FetchServerState = (profileId: string, storybookId: string) => Promise<ReadingState | null>
@@ -207,6 +221,7 @@ export function ReaderPage({
   fetchPersonalizationValues,
   ageBand,
   reportDownload,
+  reportRemoval,
 }: ReaderPageProps) {
   const [pageState, setPageState] = useState<PageState>({ phase: 'loading' })
 
@@ -377,8 +392,13 @@ export function ReaderPage({
     // network fetch below still gets a chance, instead of blocking the whole
     // story on local storage being available.
     let cached: Storybook | undefined
+    // Whether this book is genuinely in this device's local cache right now.
+    // A cache HIT proves it; a cache MISS only becomes true if the write
+    // below actually succeeds.
+    let isCachedLocally = false
     try {
       cached = await getCachedStorybook(storybookId, version)
+      isCachedLocally = cached !== undefined
     } catch {
       cached = undefined
     }
@@ -390,7 +410,8 @@ export function ReaderPage({
         return
       }
       try {
-        await cacheStorybook(cached)
+        await cacheStorybook(cached, { reportEviction: reportRemoval })
+        isCachedLocally = true
       } catch {
         // Best-effort: the story is already in hand from the network, so a
         // failure to cache it locally must not block reading it now.
@@ -402,7 +423,16 @@ export function ReaderPage({
     // guardian-visible "last confirmed" signal (offline_downloads.py's
     // upsert semantics). Fire-and-forget: reportDownload itself never
     // returns a Promise this page would await or catch.
-    reportDownload?.(storybookId)
+    // #ASSUME: data-integrity: gated on the cache write having actually
+    // succeeded. The guardian's Downloads view answers "which books are
+    // saved for offline reading, and where"; reporting unconditionally would
+    // answer it wrongly in exactly the cases the catch above exists for
+    // (quota exceeded, private browsing, blocked storage), showing a book as
+    // downloaded on a device that cannot open it offline.
+    // #VERIFY: ReaderPage.test.tsx "does not report a download when caching
+    // failed" and "reports a download once when caching the fetched story
+    // succeeds".
+    if (isCachedLocally) reportDownload?.(storybookId)
     let saved: ReadingState | undefined
     try {
       saved = await getReadingState(profileId, storybookId)
@@ -508,6 +538,7 @@ export function ReaderPage({
     version,
     continuation,
     reportDownload,
+    reportRemoval,
   ])
 
   // Load on mount and whenever the load inputs change.

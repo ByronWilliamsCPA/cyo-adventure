@@ -42,7 +42,7 @@ router = APIRouter(prefix="/api/v1", tags=["offline-downloads"])
 _ADULT_ROLE_REQUIRED = "guardian or admin role required"
 
 
-@router.put("/device-downloads", status_code=204)
+@router.put("/device-downloads", status_code=204, responses=error_responses(403, 404))
 async def report_device_download(body: DeviceDownloadReportBody, ctx: Context) -> None:
     """Report that a device has (or still has) a book cached offline.
 
@@ -64,7 +64,8 @@ async def report_device_download(body: DeviceDownloadReportBody, ctx: Context) -
 
     Raises:
         AuthorizationError: If the caller may not act on the profile (-> 403).
-        ResourceNotFoundError: If the profile does not exist (-> 404).
+        ResourceNotFoundError: If the profile or the book does not exist
+            (-> 404).
     """
     profile_uuid = parse_uuid(body.profile_id, "profile_id")
     # #CRITICAL: security: guardian may report for any family profile, a
@@ -75,6 +76,16 @@ async def report_device_download(body: DeviceDownloadReportBody, ctx: Context) -
     profile = await ctx.session.get(ChildProfile, profile_uuid)
     if profile is None:
         msg = "profile not found"
+        raise ResourceNotFoundError(msg)
+
+    # #ASSUME: data-integrity: storybook_id is a client-supplied string
+    # carrying a real FK to storybook.id. Without this check an unknown id
+    # reaches the INSERT and surfaces as an unhandled ForeignKeyViolation
+    # (app.py registers no IntegrityError handler), so the caller gets a bare
+    # 500 where the profile branch two lines above correctly gives a 404.
+    # #VERIFY: test_offline_downloads_api.py::test_report_unknown_book_is_404.
+    if await ctx.session.get(Storybook, body.storybook_id) is None:
+        msg = "storybook not found"
         raise ResourceNotFoundError(msg)
 
     # #CRITICAL: concurrency: two concurrent reports for the same
@@ -103,24 +114,43 @@ async def remove_device_download(
 ) -> None:
     """Report that a device no longer has a book cached offline.
 
-    Profile-agnostic by design: the client's own eviction paths
+    Takes no ``profile_id``, because the client's own eviction paths
     (``downloadBudget.ts``'s space-pressure eviction,
     ``revocation.ts``'s server-directed removal) operate on
     ``deleteStorybooksById``, which removes every cached version of a book
     ID for every profile on the device at once, not one profile at a time.
-    Removes every matching row in the caller's own family (there may be more
-    than one, if two children on the same device both had it downloaded).
+    Removes every matching row the caller may act on, which is more than one
+    whenever two profiles the caller controls both had it downloaded on that
+    device.
+
+    Scope is the principal's own profile set, not the whole family. A
+    guardian's set covers the family, so an adult eviction still clears every
+    profile's row as the client paths expect; a child's set covers only
+    itself, so a sibling's row survives its eviction and is left to go stale
+    like any other unreported removal (see ``DeviceDownload``'s
+    best-effort-snapshot contract).
 
     Args:
         device_id: The reporting device's persistent id (query param).
         storybook_id: The no-longer-cached book (query param).
         ctx: The request context (principal and session).
     """
+    # #CRITICAL: security: family scoping alone is not authorization here.
+    # Every principal carries a family_id, including CHILD and DEVICE, and
+    # this endpoint's only other inputs are a device_id and a storybook_id,
+    # neither of which is secret within a family. Scoping solely on family
+    # would let any child delete a sibling's download rows on any device by
+    # naming them. Constraining to the principal's own profile set is the
+    # same rule authorize_profile applies to the PUT, expressed as a filter
+    # because this endpoint is deliberately multi-row.
+    # #VERIFY: test_offline_downloads_api.py::
+    # test_remove_does_not_touch_another_profiles_row_for_a_child_principal.
     rows = await ctx.session.scalars(
         select(DeviceDownload).where(
             DeviceDownload.device_id == device_id,
             DeviceDownload.storybook_id == storybook_id,
             DeviceDownload.family_id == ctx.principal.family_id,
+            DeviceDownload.child_profile_id.in_(ctx.principal.profile_ids),
         )
     )
     for row in rows:

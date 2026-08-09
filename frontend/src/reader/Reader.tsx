@@ -560,7 +560,15 @@ export function Reader({
         <BookmarksButton
           bookmarks={bookmarks}
           positionLabel={readerPositionLabel(story, reading, ageBand)}
-          canSave={canSaveBookmark(reading)}
+          // `chrome` is shared verbatim by the reading, ending, and stuck-page
+          // branches, so this is the only place the ending screen can be told
+          // that Save does not apply there. The machine's `ended` state wires
+          // LOAD/DELETE_BOOKMARK but deliberately not SAVE_BOOKMARK, and
+          // XState drops an unmatched event without throwing, so an enabled
+          // Save button here is a button that silently does nothing.
+          saveUnavailable={
+            ended ? 'story-ended' : canSaveBookmark(reading) ? null : 'limit-reached'
+          }
           onSave={() =>
             send({ type: 'SAVE_BOOKMARK', label: readerPositionLabel(story, reading, ageBand) })
           }

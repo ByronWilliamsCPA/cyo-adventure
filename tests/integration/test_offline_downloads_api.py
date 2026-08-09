@@ -13,10 +13,12 @@ from typing import TYPE_CHECKING
 import pytest
 from sqlalchemy import select
 
-from cyo_adventure.db.models import DeviceDownload
+from cyo_adventure.db.models import ChildProfile, DeviceDownload, User
 from tests.integration.conftest import Seed, auth
 
 if TYPE_CHECKING:
+    import uuid
+
     from httpx import AsyncClient
     from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
@@ -222,6 +224,154 @@ async def test_remove_never_touches_another_familys_row(
         assert row is not None
 
 
+async def _seed_sibling_with_download(
+    sessions: async_sessionmaker[AsyncSession], seed: Seed, device_id: str
+) -> uuid.UUID:
+    """Add a second Family A profile that has the seed book on ``device_id``.
+
+    Both children share one physical device (the common tablet case), so
+    their rows differ only by ``child_profile_id``. The download row is
+    inserted directly rather than reported over HTTP because no principal in
+    this test may report for a sibling; that is the very rule under test.
+
+    Args:
+        sessions: The integration session factory.
+        seed: The seeded fixture data (supplies Family A and the book).
+        device_id: The shared device both profiles cached the book on.
+
+    Returns:
+        uuid.UUID: The sibling profile's id.
+    """
+    async with sessions() as session:
+        sibling = ChildProfile(
+            family_id=seed.family_id, display_name="Reader A2", age_band="10-13"
+        )
+        session.add(sibling)
+        await session.flush()
+        session.add(
+            User(
+                family_id=seed.family_id,
+                role="child",
+                authn_subject="child-a2",
+                child_profile_id=sibling.id,
+            )
+        )
+        session.add(
+            DeviceDownload(
+                family_id=seed.family_id,
+                child_profile_id=sibling.id,
+                device_id=device_id,
+                storybook_id=seed.storybook_id,
+            )
+        )
+        await session.commit()
+        return sibling.id
+
+
+async def test_remove_does_not_touch_another_profiles_row_for_a_child_principal(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """A child's eviction clears its own row only, not a sibling's.
+
+    Family scoping alone would not be authorization here: every principal
+    carries a ``family_id``, and the endpoint's only inputs are a
+    ``device_id`` and a ``storybook_id``, neither secret within a family. A
+    family-only WHERE clause would let any child delete a sibling's rows by
+    naming them, so the DELETE additionally constrains to the principal's own
+    profile set.
+    """
+    sibling_id = await _seed_sibling_with_download(sessions, seed, "shared-tablet")
+    await client.put(
+        "/api/v1/device-downloads",
+        json={
+            "device_id": "shared-tablet",
+            "profile_id": str(seed.child_profile_id),
+            "storybook_id": seed.storybook_id,
+        },
+        headers=auth(seed.child_token),
+    )
+
+    resp = await client.request(
+        "DELETE",
+        "/api/v1/device-downloads",
+        params={"device_id": "shared-tablet", "storybook_id": seed.storybook_id},
+        headers=auth(seed.child_token),
+    )
+    assert resp.status_code == 204, resp.text
+
+    async with sessions() as s:
+        rows = (
+            await s.scalars(
+                select(DeviceDownload).where(
+                    DeviceDownload.device_id == "shared-tablet",
+                    DeviceDownload.storybook_id == seed.storybook_id,
+                )
+            )
+        ).all()
+        assert [row.child_profile_id for row in rows] == [sibling_id]
+
+
+async def test_remove_by_a_guardian_clears_every_profile_on_the_device(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """The profile-set filter must not narrow the adult eviction path.
+
+    ``downloadBudget.ts`` and ``revocation.ts`` evict by book id for the whole
+    device at once, so an adult removal has to clear every profile's row. A
+    guardian's accessible profile set is its whole family, which is what
+    makes one WHERE clause serve both callers.
+    """
+    await _seed_sibling_with_download(sessions, seed, "shared-tablet")
+    await client.put(
+        "/api/v1/device-downloads",
+        json={
+            "device_id": "shared-tablet",
+            "profile_id": str(seed.child_profile_id),
+            "storybook_id": seed.storybook_id,
+        },
+        headers=auth(seed.child_token),
+    )
+
+    resp = await client.request(
+        "DELETE",
+        "/api/v1/device-downloads",
+        params={"device_id": "shared-tablet", "storybook_id": seed.storybook_id},
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 204, resp.text
+
+    async with sessions() as s:
+        rows = (
+            await s.scalars(
+                select(DeviceDownload).where(
+                    DeviceDownload.device_id == "shared-tablet",
+                    DeviceDownload.storybook_id == seed.storybook_id,
+                )
+            )
+        ).all()
+        assert list(rows) == []
+
+
+async def test_report_unknown_book_is_404(client: AsyncClient, seed: Seed) -> None:
+    """A bad storybook_id is a 404, not an unhandled FK violation.
+
+    ``storybook_id`` is a client-supplied string carrying a real foreign key.
+    Without an explicit existence check the INSERT raises a
+    ``ForeignKeyViolation`` that no exception handler maps, so the caller
+    gets a bare 500 where the sibling profile branch correctly gives a 404.
+    """
+    resp = await client.put(
+        "/api/v1/device-downloads",
+        json={
+            "device_id": "device-1",
+            "profile_id": str(seed.child_profile_id),
+            "storybook_id": "no-such-book",
+        },
+        headers=auth(seed.child_token),
+    )
+    assert resp.status_code == 404, resp.text
+
+
 async def test_list_returns_profile_name_and_book_title(
     client: AsyncClient, seed: Seed
 ) -> None:
@@ -245,7 +395,13 @@ async def test_list_returns_profile_name_and_book_title(
     assert item["device_id"] == "device-1"
     assert item["profile_id"] == str(seed.child_profile_id)
     assert item["storybook_id"] == seed.storybook_id
-    assert item["profile_name"]
+    # Exact values, not truthiness: the projection's whole job is joining the
+    # right profile row and the right published version's blob title. A
+    # truthy check passes on the "Unknown" fallback the endpoint substitutes
+    # when the profile join misses, which is precisely the bug this test
+    # exists to catch.
+    assert item["profile_name"] == "Reader A"
+    assert item["storybook_title"] == "The Lantern Cave"
     assert item["downloaded_at"] is not None
     assert item["last_confirmed_at"] is not None
 

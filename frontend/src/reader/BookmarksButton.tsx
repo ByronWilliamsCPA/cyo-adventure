@@ -14,13 +14,30 @@
  * with "Go here" and "Remove".
  */
 
-import { useState } from 'react'
+import { useId, useState } from 'react'
 
 import { Button } from '@ds/components/Button'
 import { Dialog } from '@ds/components/Dialog'
 
 import type { SavedBookmark } from '../player/types'
 import './reader.css'
+
+/**
+ * Why "Save this spot" is unavailable, or `null` when it is available.
+ *
+ * Deliberately not a bare `canSave` boolean: the two reasons need different
+ * copy, and conflating them is what let the ending screen offer an enabled
+ * Save button that the machine's `ended` state has no transition for (it
+ * wires LOAD/DELETE_BOOKMARK only, by design -- see `player/machine.ts`).
+ * XState drops an unmatched event silently, so the button did nothing at all
+ * and said nothing about why.
+ */
+export type SaveUnavailableReason = 'limit-reached' | 'story-ended'
+
+const SAVE_UNAVAILABLE_COPY: Record<SaveUnavailableReason, string> = {
+  'limit-reached': 'You have saved as many spots as you can. Remove one to save a new spot.',
+  'story-ended': 'You finished this story! You can save a spot while you are still reading it.',
+}
 
 export interface BookmarksButtonProps {
   bookmarks: Array<{ id: string; bookmark: SavedBookmark }>
@@ -29,7 +46,8 @@ export interface BookmarksButtonProps {
    * kid-friendly (no reading/typing required) and keeps every bookmark
    * unambiguously tied to a real position in the story. */
   positionLabel: string
-  canSave: boolean
+  /** `null` when saving is available; otherwise why it is not. */
+  saveUnavailable: SaveUnavailableReason | null
   onSave: () => void
   onLoad: (slotId: string) => void
   onDelete: (slotId: string) => void
@@ -38,12 +56,13 @@ export interface BookmarksButtonProps {
 export function BookmarksButton({
   bookmarks,
   positionLabel,
-  canSave,
+  saveUnavailable,
   onSave,
   onLoad,
   onDelete,
 }: BookmarksButtonProps) {
   const [open, setOpen] = useState(false)
+  const hintId = useId()
 
   function goHere(slotId: string) {
     onLoad(slotId)
@@ -73,16 +92,21 @@ export function BookmarksButton({
       >
         <Button
           variant="primary"
-          disabled={!canSave}
+          disabled={saveUnavailable !== null}
+          // Points the disabled button at its own explanation so a screen
+          // reader announces the reason on focus, instead of leaving the
+          // sibling paragraph as unassociated text a keyboard user may never
+          // reach.
+          aria-describedby={saveUnavailable !== null ? hintId : undefined}
           onClick={() => onSave()}
           data-testid="save-bookmark"
         >
           <span aria-hidden="true">🔖</span>
           Save this spot ({positionLabel})
         </Button>
-        {!canSave && (
-          <p className="reader-bookmarks-limit">
-            You have saved as many spots as you can. Remove one to save a new spot.
+        {saveUnavailable !== null && (
+          <p className="reader-bookmarks-limit" id={hintId}>
+            {SAVE_UNAVAILABLE_COPY[saveUnavailable]}
           </p>
         )}
         {bookmarks.length === 0 ? (
@@ -93,7 +117,11 @@ export function BookmarksButton({
               <li key={id} className="reader-bookmarks-item">
                 <span className="reader-bookmarks-item__label">{bookmark.label}</span>
                 <div className="reader-bookmarks-item__actions">
-                  <Button variant="ghost" onClick={() => goHere(id)}>
+                  <Button
+                    variant="ghost"
+                    aria-label={`Go to bookmark: ${bookmark.label}`}
+                    onClick={() => goHere(id)}
+                  >
                     Go here
                   </Button>
                   <Button

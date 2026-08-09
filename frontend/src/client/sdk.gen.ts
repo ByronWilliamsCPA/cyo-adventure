@@ -2474,13 +2474,21 @@ export const streamNotificationsApiV1NotificationsStreamGet = <ThrowOnError exte
  *
  * Report that a device no longer has a book cached offline.
  *
- * Profile-agnostic by design: the client's own eviction paths
+ * Takes no ``profile_id``, because the client's own eviction paths
  * (``downloadBudget.ts``'s space-pressure eviction,
  * ``revocation.ts``'s server-directed removal) operate on
  * ``deleteStorybooksById``, which removes every cached version of a book
  * ID for every profile on the device at once, not one profile at a time.
- * Removes every matching row in the caller's own family (there may be more
- * than one, if two children on the same device both had it downloaded).
+ * Removes every matching row the caller may act on, which is more than one
+ * whenever two profiles the caller controls both had it downloaded on that
+ * device.
+ *
+ * Scope is the principal's own profile set, not the whole family. A
+ * guardian's set covers the family, so an adult eviction still clears every
+ * profile's row as the client paths expect; a child's set covers only
+ * itself, so a sibling's row survives its eviction and is left to go stale
+ * like any other unreported removal (see ``DeviceDownload``'s
+ * best-effort-snapshot contract).
  *
  * Args:
  * device_id: The reporting device's persistent id (query param).
@@ -2545,7 +2553,8 @@ export const listDeviceDownloadsApiV1DeviceDownloadsGet = <ThrowOnError extends 
  *
  * Raises:
  * AuthorizationError: If the caller may not act on the profile (-> 403).
- * ResourceNotFoundError: If the profile does not exist (-> 404).
+ * ResourceNotFoundError: If the profile or the book does not exist
+ * (-> 404).
  */
 export const reportDeviceDownloadApiV1DeviceDownloadsPut = <ThrowOnError extends boolean = false>(options: Options<ReportDeviceDownloadApiV1DeviceDownloadsPutData, ThrowOnError>): RequestResult<ReportDeviceDownloadApiV1DeviceDownloadsPutResponses, ReportDeviceDownloadApiV1DeviceDownloadsPutErrors, ThrowOnError> => (options.client ?? client).put<ReportDeviceDownloadApiV1DeviceDownloadsPutResponses, ReportDeviceDownloadApiV1DeviceDownloadsPutErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],

@@ -4,21 +4,25 @@ import { act, fireEvent, render, screen, waitFor, within } from '@testing-librar
 import userEvent from '@testing-library/user-event'
 import { IDBFactory } from 'fake-indexeddb'
 import { MemoryRouter, Outlet, Route, Routes } from 'react-router'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { LibraryPage } from './LibraryPage'
 import { percentComplete } from './bookCardUtils'
 import { _resetDbHandle, cacheLibraryList, cacheStorybook } from '../offline/db'
+import * as deviceIdModule from '../offline/deviceId'
 import type { Storybook } from '../player/types'
 
 const mockGet = vi.fn()
 const mockPost = vi.fn()
+// `delete` carries the G15 offline-purge report (makeRemoveDownload), the
+// only verb LibraryPage issues outside the shelf fetch and rating POST.
+const mockDelete = vi.fn()
 // #ASSUME: timing dependencies: LibraryPage memoizes the api client via
 // useMemo/useCallback (mirroring the real useApi hook's stable reference
 // when config is unchanged); a mock returning a fresh object per call would
 // break that memoization and fire the load effect on every render.
 // #VERIFY: keep a single stable fakeApi reference across calls (matching
 // ProfilePickerPage.test.tsx's pattern) so LibraryPage's effect deps settle.
-const fakeApi = { get: mockGet, post: mockPost }
+const fakeApi = { get: mockGet, post: mockPost, delete: mockDelete }
 vi.mock('../hooks/useApi', () => ({
   useApi: () => fakeApi,
 }))
@@ -28,10 +32,17 @@ vi.mock('../hooks/useApi', () => ({
 // success path. The actual reconciliation logic (what gets purged) is
 // covered by offline/revocation.test.ts against the real IndexedDB cache;
 // this file only asserts the call-site wiring.
-const mockReconcile = vi.fn<(profileId: string, ids: string[]) => Promise<void>>()
+// The options argument is forwarded, not dropped: G15's `reportRemoval`
+// callback rides in it, and a mock that swallowed it could never exercise
+// LibraryPage's own side of that wiring (the callback would simply never be
+// invoked, and a test asserting on it would pass for the wrong reason).
+type ReconcileOptions = { reportRemoval?: (storybookId: string) => void }
+const mockReconcile =
+  vi.fn<(profileId: string, ids: string[], options?: ReconcileOptions) => Promise<void>>()
 mockReconcile.mockResolvedValue(undefined)
 vi.mock('../offline/revocation', () => ({
-  reconcileOfflineCache: (profileId: string, ids: string[]) => mockReconcile(profileId, ids),
+  reconcileOfflineCache: (profileId: string, ids: string[], options?: ReconcileOptions) =>
+    mockReconcile(profileId, ids, options),
 }))
 
 function renderLibrary() {
@@ -95,6 +106,7 @@ beforeEach(() => {
   mockPost.mockReset()
   globalThis.indexedDB = new IDBFactory()
   _resetDbHandle()
+  mockDelete.mockReset().mockResolvedValue({ data: undefined })
   mockReconcile.mockReset().mockResolvedValue(undefined)
   // W4.3: clear any pending download-refusal flag so one test's banner never
   // leaks into the next.
@@ -798,7 +810,13 @@ describe('LibraryPage', () => {
       mockGet.mockResolvedValue({ data: { stories: [IN_PROGRESS, NOT_STARTED] } })
       renderLibrary()
       await screen.findByRole('region', { name: /continue reading/i })
-      await waitFor(() => expect(mockReconcile).toHaveBeenCalledWith('p1', ['s1', 's3']))
+      await waitFor(() => expect(mockReconcile).toHaveBeenCalled())
+      const [calledProfileId, calledIds, calledOptions] = mockReconcile.mock.calls[0]
+      expect(calledProfileId).toBe('p1')
+      expect(calledIds).toEqual(['s1', 's3'])
+      // The G15 reporter rides along on every reconcile, so a purge always has
+      // somewhere to report to (see the offline-purge reporting suite below).
+      expect(typeof calledOptions?.reportRemoval).toBe('function')
     })
 
     it('does not reconcile the offline cache when the fetch fails', async () => {
@@ -1148,5 +1166,59 @@ describe('percentComplete', () => {
 
   it('returns 0 when progress is null', () => {
     expect(percentComplete({ ...IN_PROGRESS, progress: null })).toBe(0)
+  })
+})
+
+// G15 storage/download view: LibraryPage owns the reporting side of the
+// offline purge, handing reconcileOfflineCache a `reportRemoval` callback
+// that issues the DELETE. Its own describe block because both tests install
+// a module spy on getOrCreateDeviceId; this suite configures no global mock
+// restoration, so a leaked spy would silently follow the rest of the file.
+describe('LibraryPage offline-purge reporting (G15)', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it('reports a purged book to the guardian download view', async () => {
+    vi.spyOn(deviceIdModule, 'getOrCreateDeviceId').mockReturnValue('device-fixed')
+    mockGet.mockResolvedValue({ data: { stories: [IN_PROGRESS] } })
+    mockReconcile.mockImplementation((_profileId, _ids, options) => {
+      options?.reportRemoval?.('s9')
+      return Promise.resolve()
+    })
+
+    renderLibrary()
+    await screen.findByText('The Lantern')
+
+    await waitFor(() => {
+      expect(mockDelete).toHaveBeenCalledWith('/v1/device-downloads', {
+        params: { device_id: 'device-fixed', storybook_id: 's9' },
+      })
+    })
+  })
+
+  it('finishes the shelf load when the device-id lookup throws during a purge', async () => {
+    // Containment, end to end: a device id this browser cannot mint is a
+    // diagnostic failure, and the child must never see it. This asserts the
+    // observable outcome (shelf renders, no bogus DELETE goes out), which
+    // three layers cooperate to produce: LibraryPage's own try/catch around
+    // the whole call (getOrCreateDeviceId() is an argument expression,
+    // evaluated before .catch() is attached), revocation.ts's guard around
+    // the callback, and the .catch() on reconcileOfflineCache itself. It
+    // therefore does NOT single out any one of those; the guard inside
+    // revocation's purge loop is pinned by revocation.test.ts instead.
+    vi.spyOn(deviceIdModule, 'getOrCreateDeviceId').mockImplementation(() => {
+      throw new Error('device id unavailable')
+    })
+    mockGet.mockResolvedValue({ data: { stories: [IN_PROGRESS] } })
+    mockReconcile.mockImplementation((_profileId, _ids, options) => {
+      options?.reportRemoval?.('s9')
+      return Promise.resolve()
+    })
+
+    renderLibrary()
+
+    expect(await screen.findByText('The Lantern')).toBeInTheDocument()
+    expect(mockDelete).not.toHaveBeenCalled()
   })
 })

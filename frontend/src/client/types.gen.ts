@@ -8412,6 +8412,14 @@ export type ReportDeviceDownloadApiV1DeviceDownloadsPutData = {
 
 export type ReportDeviceDownloadApiV1DeviceDownloadsPutErrors = {
     /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
     422: HttpValidationError;

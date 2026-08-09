@@ -10,6 +10,7 @@ import {
   makeFetchSeriesNext,
   makeFetchStory,
   makeRecordCompletion,
+  makeRemoveDownload,
   makeReportDownload,
   makeSyncApi,
 } from './readerApi'
@@ -252,5 +253,23 @@ describe('makeReportDownload', () => {
     await expect(
       reportDownload({ deviceId: 'd1', profileId: 'p1', storybookId: 's1' })
     ).rejects.toBe(err)
+  })
+})
+
+describe('makeRemoveDownload', () => {
+  it('DELETEs to /v1/device-downloads with the device and book ids as query params', async () => {
+    const del = vi.fn(() => Promise.resolve({ data: undefined }))
+    const removeDownload = makeRemoveDownload({ delete: del } as unknown as AxiosInstance)
+    await removeDownload({ deviceId: 'd1', storybookId: 's1' })
+    expect(del).toHaveBeenCalledWith('/v1/device-downloads', {
+      params: { device_id: 'd1', storybook_id: 's1' },
+    })
+  })
+
+  it('propagates a failure unchanged (the caller decides how to swallow it)', async () => {
+    const err = mockAxiosError({ isAxiosError: true, response: { status: 500 } })
+    const del = vi.fn(() => Promise.reject(err))
+    const removeDownload = makeRemoveDownload({ delete: del } as unknown as AxiosInstance)
+    await expect(removeDownload({ deviceId: 'd1', storybookId: 's1' })).rejects.toBe(err)
   })
 })

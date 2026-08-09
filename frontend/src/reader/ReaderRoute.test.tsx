@@ -16,6 +16,7 @@ import {
   enqueueWrite,
   getCachedPersonalizationValues,
 } from '../offline/db'
+import * as deviceIdModule from '../offline/deviceId'
 import type { ValuesPayload } from '../player/personalization'
 import type { ReadingState, Storybook } from '../player/types'
 import { ReaderRoute } from './ReaderRoute'
@@ -796,5 +797,47 @@ describe('ReaderRoute replay success toast', () => {
     // the auto-dismiss window.
     fireEvent.click(screen.getByRole('button', { name: 'OK' }))
     expect(screen.queryByText('All caught up! Your reading is saved.')).toBeNull()
+  })
+})
+
+describe('ReaderRoute device-download reporting', () => {
+  beforeEach(() => {
+    globalThis.indexedDB = new IDBFactory()
+    _resetDbHandle()
+    mockGet.mockReset()
+    mockPut.mockReset()
+    mockPost.mockReset()
+  })
+
+  afterEach(() => {
+    cleanup()
+    vi.restoreAllMocks()
+  })
+
+  it('still loads the story when the device-id lookup throws synchronously', async () => {
+    // #VERIFY: reportDownload's arguments (including getOrCreateDeviceId())
+    // are built BEFORE reportDownloadApi's promise exists, so a synchronous
+    // throw here used to escape the try/catch that only wrapped the promise
+    // chain, reject load(), and strand the reader on its loading screen. The
+    // whole call is now inside one try/catch; the reader must still render.
+    vi.spyOn(deviceIdModule, 'getOrCreateDeviceId').mockImplementation(() => {
+      throw new Error('device id unavailable')
+    })
+    mockGet.mockImplementation((url: string) => {
+      if (url.startsWith('/v1/storybooks/')) return Promise.resolve({ data: lantern })
+      if (url.startsWith('/v1/reading-state/')) {
+        return Promise.reject(mockAxiosError({ isAxiosError: true, response: { status: 404 } }))
+      }
+      return Promise.reject(new Error(`unexpected GET ${url}`))
+    })
+
+    renderAt(`/read/p_deviceid_throw/${lantern.id}/${lantern.version}`)
+
+    await screen.findByTestId('reader')
+    // The report itself never went out: the throw happened while building
+    // its arguments, before reportDownloadApi was ever called.
+    expect(mockPut.mock.calls.some(([url]) => String(url).startsWith('/v1/device-downloads'))).toBe(
+      false
+    )
   })
 })

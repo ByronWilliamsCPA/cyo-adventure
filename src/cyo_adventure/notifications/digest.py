@@ -22,6 +22,7 @@ from typing import TYPE_CHECKING
 
 from sqlalchemy import select
 
+from cyo_adventure.core.database import apply_family_rls_context
 from cyo_adventure.db.models import CATALOG_FAMILY_ID, Family, PipelineEvent
 from cyo_adventure.events.models import Actor, EventType
 from cyo_adventure.events.writer import record_event
@@ -96,6 +97,21 @@ async def run_notification_digest(session: AsyncSession, *, now: datetime) -> in
     default_since = now - timedelta(hours=_DEFAULT_LOOKBACK_HOURS)
     written = 0
     for family_id in await _real_family_ids(session):
+        # #CRITICAL: security: this job runs with no Principal, so nothing has
+        # set the ADR-022 Tier 1 RLS context that api/deps.py::require_principal
+        # normally applies. list_family_notifications' entity resolvers read
+        # story_request and child_profile, both Tier 1 family_scoped for the
+        # cyo_api role this job connects as; with app.family_id unset those
+        # reads return zero rows and service.py drops the event silently
+        # (its "ctx is None" fail-safe), so every story-request notification
+        # would vanish from the digest with no error. Scoped per family rather
+        # than via an is_admin bypass: the loop needs one family at a time, so
+        # least privilege costs nothing. set_config is is_local => true, so
+        # each iteration's value holds for this transaction and the next
+        # iteration overwrites it.
+        # #VERIFY: tests/integration/test_notification_digest_rls.py::
+        # test_digest_counts_story_request_notifications_under_cyo_api.
+        await apply_family_rls_context(session, family_id=family_id, is_admin=False)
         cursor = await _last_digest_at(session, family_id)
         since = cursor if cursor is not None else default_since
         items = await list_family_notifications(

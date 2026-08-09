@@ -328,3 +328,37 @@ export function makeReportDownload(
     })
   }
 }
+
+export interface RemoveDownloadParams {
+  deviceId: string
+  storybookId: string
+}
+
+/**
+ * G15 storage/download view (backend: api/offline_downloads.py): report that
+ * this device no longer has a book cached offline. The mirror image of
+ * makeReportDownload above, wired to the client's own eviction paths
+ * (offline/db.ts's cacheStorybook space-pressure eviction and
+ * offline/revocation.ts's reconcileOfflineCache shared-content purge)
+ * instead of the reader's load path. Best-effort by the same contract as
+ * makeReportDownload: a failed or missing report must never block, delay, or
+ * fail the local eviction it describes, which is already final by the time
+ * this is called (the guardian console eventually catches up, not the other
+ * way around). No profile_id on the wire: the endpoint removes every row the
+ * caller may act on for this (device, storybook) pair, matching
+ * deleteStorybooksById's own device-wide (not per-profile) scope, see
+ * remove_device_download's docstring for why. Callers should not await this
+ * for anything user-visible.
+ */
+export function makeRemoveDownload(
+  api: AxiosInstance
+): (params: RemoveDownloadParams) => Promise<void> {
+  return async (params: RemoveDownloadParams): Promise<void> => {
+    await api.delete('/v1/device-downloads', {
+      params: {
+        device_id: params.deviceId,
+        storybook_id: params.storybookId,
+      },
+    })
+  }
+}

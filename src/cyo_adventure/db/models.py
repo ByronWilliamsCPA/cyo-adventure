@@ -157,7 +157,7 @@ _PIPELINE_EVENT_TYPE_VALUES = (
     "'storybook_archived', "
     "'storybook_remoderated', "
     # S9 digest job. Added alongside
-    # supabase/migrations/20260809000000_add_notification_digest_ready_to_pipeline_event.sql,
+    # supabase/migrations/20260809100000_add_notification_digest_ready_to_pipeline_event.sql,
     # which is the newest migration to replace this CHECK and therefore carries
     # the full cumulative value list.
     "'notification_digest_ready'"
@@ -2608,6 +2608,10 @@ class DeviceDownload(UUIDPrimaryKeyMixin, CreatedAtMixin, UpdatedAtMixin, Base):
             name="uq_device_download_device_profile_book",
         ),
         Index("ix_device_download_family_id", "family_id"),
+        # Both referencing FK sides are indexed; Postgres indexes only the
+        # referenced side automatically, so an unindexed one turns each
+        # cascading parent delete into a sequential scan of this table.
+        Index("ix_device_download_storybook_id", "storybook_id"),
     )
 
     family_id: Mapped[uuid.UUID] = mapped_column()

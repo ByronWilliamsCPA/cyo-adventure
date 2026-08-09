@@ -246,6 +246,47 @@ describe('ReaderPage', () => {
     await screen.findByTestId('reader')
   })
 
+  it('does not report a download when caching failed', async () => {
+    vi.spyOn(db, 'cacheStorybook').mockRejectedValueOnce(new Error('quota exceeded'))
+    const reportDownload = vi.fn()
+    render(
+      <MemoryRouter>
+        <ReaderPage
+          api={okApi()}
+          fetchStory={() => Promise.resolve(lantern)}
+          profileId="p_cachefail_report"
+          storybookId="s_lantern_cave"
+          version={1}
+          reportDownload={reportDownload}
+        />
+      </MemoryRouter>
+    )
+    await screen.findByTestId('reader')
+    // isCachedLocally only ever becomes true from a cache HIT or a cache
+    // write that actually succeeded; a rejected cacheStorybook must leave it
+    // false, so reportDownload (gated on isCachedLocally) must never fire.
+    expect(reportDownload).not.toHaveBeenCalled()
+  })
+
+  it('reports a download once when caching the fetched story succeeds', async () => {
+    const reportDownload = vi.fn()
+    render(
+      <MemoryRouter>
+        <ReaderPage
+          api={okApi()}
+          fetchStory={() => Promise.resolve(lantern)}
+          profileId="p_cacheok_report"
+          storybookId="s_lantern_cave"
+          version={1}
+          reportDownload={reportDownload}
+        />
+      </MemoryRouter>
+    )
+    await screen.findByTestId('reader')
+    expect(reportDownload).toHaveBeenCalledOnce()
+    expect(reportDownload).toHaveBeenCalledWith('s_lantern_cave')
+  })
+
   it('starts fresh instead of blocking when reading the local reading-state throws', async () => {
     vi.spyOn(db, 'getReadingState').mockRejectedValueOnce(new Error('DB blocked'))
     render(

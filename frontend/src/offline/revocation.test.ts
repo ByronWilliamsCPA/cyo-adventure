@@ -1,6 +1,6 @@
 import 'fake-indexeddb/auto'
 
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { ValuesPayload } from '../player/personalization'
 import type { ReadingState, Storybook } from '../player/types'
@@ -152,6 +152,61 @@ describe('reconcileOfflineCache', () => {
     await reconcileOfflineCache('p2', [])
 
     expect(await getCachedStorybook('s_shared', 1)).toBeUndefined()
+  })
+
+  // #ASSUME data-integrity: the caller (LibraryPage) reports an evicted book
+  // to the backend's device-downloads ledger so a guardian's storage view
+  // does not keep listing a book this device has since purged; the reporter
+  // is optional dependency injection (this module stays free of axios/network
+  // imports), so these three tests exercise the injection point directly.
+  // #VERIFY: this test (happy path), the two below (survivor + sync-throw).
+  it('reports each removed book after a successful shared-content purge', async () => {
+    await cacheStorybook(makeStory('s_a'))
+    await cacheStorybook(makeStory('s_b'))
+    await reconcileOfflineCache('p1', ['s_a', 's_b'])
+
+    const removed: string[] = []
+    await reconcileOfflineCache('p1', [], { reportRemoval: (id) => removed.push(id) })
+
+    expect(removed.sort()).toEqual(['s_a', 's_b'])
+    expect(await getCachedStorybook('s_a', 1)).toBeUndefined()
+    expect(await getCachedStorybook('s_b', 1)).toBeUndefined()
+  })
+
+  it('does not report a book that survives because a sibling profile still needs it', async () => {
+    await cacheStorybook(makeStory('s_shared'))
+    // p2 reconciled earlier and still has s_shared on its shelf.
+    await reconcileOfflineCache('p2', ['s_shared'])
+
+    const reportRemoval = vi.fn()
+    await reconcileOfflineCache('p1', [], { reportRemoval })
+
+    expect(reportRemoval).not.toHaveBeenCalled()
+    expect(await getCachedStorybook('s_shared', 1)).toBeDefined()
+  })
+
+  // #EDGE: data-integrity: a reporter that throws synchronously must not
+  // break the purge loop, since a report failure is strictly best-effort and
+  // must never leave a later book un-purged (or a device's shelf state stuck
+  // out of sync with the server ledger) just because an earlier report call
+  // misbehaved.
+  // #VERIFY: this test.
+  it('a synchronously-throwing reporter does not break the purge loop', async () => {
+    await cacheStorybook(makeStory('s_a'))
+    await cacheStorybook(makeStory('s_b'))
+    await reconcileOfflineCache('p1', ['s_a', 's_b'])
+
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const reportRemoval = vi.fn(() => {
+      throw new Error('reporter blew up')
+    })
+
+    await expect(reconcileOfflineCache('p1', [], { reportRemoval })).resolves.toBeUndefined()
+
+    consoleError.mockRestore()
+    expect(await getCachedStorybook('s_a', 1)).toBeUndefined()
+    expect(await getCachedStorybook('s_b', 1)).toBeUndefined()
+    expect(reportRemoval).toHaveBeenCalledTimes(2)
   })
 
   it('drops queued writes for a revoked book outright (never flushes them)', async () => {

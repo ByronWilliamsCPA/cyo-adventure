@@ -11,6 +11,7 @@ import {
   makeFetchSeriesNext,
   makeFetchStory,
   makeRecordCompletion,
+  makeRemoveDownload,
   makeReportDownload,
   makeSubmitFlag,
   makeSyncApi,
@@ -100,15 +101,60 @@ export function ReaderRoute() {
   const reportDownload = useCallback(
     (storybookIdToReport: string) => {
       if (profileId === undefined) return
-      reportDownloadApi({
-        deviceId: getOrCreateDeviceId(),
-        profileId,
-        storybookId: storybookIdToReport,
-      }).catch((err: unknown) => {
-        console.error('[reader] device-download report failed', err)
-      })
+      // #CRITICAL: external resources: the whole body is guarded, not just the
+      // promise. ReaderPage calls this synchronously from inside load(), and
+      // the arguments are evaluated BEFORE .catch() is attached, so a
+      // synchronous throw while building them (getOrCreateDeviceId reaching
+      // localStorage, or crypto.randomUUID in a non-secure context) would
+      // escape the promise chain entirely, reject load(), and leave the
+      // reader stuck on its loading state. Reporting is best-effort; reading
+      // is not.
+      // #VERIFY: ReaderRoute.test.tsx asserts a throwing device-id lookup
+      // still returns normally from reportDownload.
+      try {
+        reportDownloadApi({
+          deviceId: getOrCreateDeviceId(),
+          profileId,
+          storybookId: storybookIdToReport,
+        }).catch((err: unknown) => {
+          console.error('[reader] device-download report failed', err)
+        })
+      } catch (err: unknown) {
+        console.error('[reader] device-download report could not be sent', err)
+      }
     },
     [profileId, reportDownloadApi]
+  )
+  // G15 storage/download view: mirror image of reportDownload above, wired
+  // to this route's one eviction path (ReaderPage's cacheStorybook call, via
+  // its own reportEviction option, offline/db.ts). Fire-and-forget for the
+  // same reason: reporting an eviction must never touch the eviction itself,
+  // which has already happened locally by the time this runs. No profileId
+  // gate: the endpoint takes no profile_id (see makeRemoveDownload's doc
+  // block on why it is device+storybook scoped, not profile scoped).
+  const reportRemovalApi = useMemo(() => makeRemoveDownload(api), [api])
+  const reportRemoval = useCallback(
+    (storybookIdToRemove: string) => {
+      // #CRITICAL: external resources: same synchronous-throw guard as
+      // reportDownload above and for the same reason: cacheStorybook (via
+      // db.ts's reportEviction option) can call this synchronously from
+      // inside ReaderPage's load(), and the arguments are evaluated before
+      // .catch() is attached, so an uncaught throw here would escape the
+      // promise chain and reject load() instead of merely failing to report.
+      // #VERIFY: ReaderRoute.test.tsx asserts a throwing device-id lookup
+      // still returns normally from reportRemoval.
+      try {
+        reportRemovalApi({
+          deviceId: getOrCreateDeviceId(),
+          storybookId: storybookIdToRemove,
+        }).catch((err: unknown) => {
+          console.error('[reader] device-download removal report failed', err)
+        })
+      } catch (err: unknown) {
+        console.error('[reader] device-download removal report could not be sent', err)
+      }
+    },
+    [reportRemovalApi]
   )
   // ADR-023 P6. Memoized on the stable `api` identity like every port above it:
   // ReaderPage's load() depends on these by identity, so a fresh function per
@@ -319,6 +365,7 @@ export function ReaderRoute() {
         fetchPersonalizationValues={fetchPersonalizationValues}
         ageBand={ageBand}
         reportDownload={reportDownload}
+        reportRemoval={reportRemoval}
       />
       {replayFailedCount > 0 && (
         <div role="alert" className="replay-failed-banner">

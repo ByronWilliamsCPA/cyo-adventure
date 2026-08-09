@@ -41,6 +41,15 @@ CREATE TABLE IF NOT EXISTS "public"."device_download" (
 CREATE INDEX IF NOT EXISTS ix_device_download_family_id
     ON "public"."device_download" (family_id);
 
+-- Same rule, second referencing FK: storybook_id REFERENCES storybook(id) ON DELETE
+-- CASCADE above. Unpublishing or deleting a book is a routine operation here (it is how
+-- a withdrawn story leaves every shelf), so leaving this side unindexed puts a
+-- sequential scan of the whole download inventory on that path. The composite unique
+-- constraint below does not help: its leading column is device_id, and Postgres cannot
+-- use a composite index for a predicate that names only a trailing column.
+CREATE INDEX IF NOT EXISTS ix_device_download_storybook_id
+    ON "public"."device_download" (storybook_id);
+
 -- #CRITICAL: security: RLS is the ONLY gate on the PostgREST path (see
 -- 20260729000000_add_child_profile_personalization.sql's identical note); a new table
 -- that skips ENABLE ROW LEVEL SECURITY is a silent hole in the "every public table has

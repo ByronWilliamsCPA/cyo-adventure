@@ -347,7 +347,33 @@ export async function clearPersonalizationValues(): Promise<void> {
  * kid-facing banner fires, and every one logs.
  * #VERIFY: db.test.ts budget cases.
  */
-export async function cacheStorybook(story: Storybook): Promise<void> {
+export interface CacheStorybookOptions {
+  /**
+   * Reports a space-pressure eviction (G15 storage/download view) once the
+   * evicted book's local delete has actually resolved without throwing.
+   * Optional, fire-and-forget dependency injection, mirroring
+   * reconcileOfflineCache's own `reportRemoval` option (offline/revocation.ts):
+   * this module holds no axios/network import, so the real HTTP call is built
+   * by the caller (ReaderRoute.tsx's `reportRemoval`, threaded through
+   * ReaderPage's own `reportRemoval` prop) and handed in here as a plain
+   * callback.
+   *
+   * #ASSUME: data-integrity: invoked only from the SAME branch that already
+   * decides `recordDownloadEviction` fires, i.e. strictly after the evicted
+   * book's delete resolved. Reporting a removal that did not happen would
+   * make the guardian's Downloads view wrong in the opposite direction from
+   * the gap this closes: it would show a book as gone from a device that
+   * still has it.
+   * #VERIFY: db.test.ts "reports a space-pressure eviction exactly once with
+   * the evicted story id" and "does not report when the eviction delete fails".
+   */
+  reportEviction?: (evictedStorybookId: string) => void
+}
+
+export async function cacheStorybook(
+  story: Storybook,
+  options: CacheStorybookOptions = {}
+): Promise<void> {
   const db = await getDb()
   let decision: BudgetGateResult
   try {
@@ -370,6 +396,26 @@ export async function cacheStorybook(story: Storybook): Promise<void> {
     try {
       await deleteStorybooksById(decision.evictStoryId)
       recordDownloadEviction()
+      // #EDGE: external-resources: options.reportEviction is caller-supplied
+      // and this module has no network import to trust its contract from the
+      // outside (ReaderRoute.tsx's own wrapper already guards a synchronous
+      // throw at its call site, matching reportDownload's pattern), so this
+      // guards it again here, inside the SAME try this eviction ran in: a
+      // reporter that throws must not fall into the catch below and be
+      // mistaken for the eviction itself failing (which would wrongly call
+      // recordDownloadRefusal on a successful eviction).
+      // #VERIFY: db.test.ts "a synchronously-throwing reporter does not
+      // break a REQUIRED eviction".
+      if (options.reportEviction) {
+        try {
+          options.reportEviction(decision.evictStoryId)
+        } catch (error) {
+          console.error('[offline] eviction report threw synchronously', {
+            evictStoryId: decision.evictStoryId,
+            error,
+          })
+        }
+      }
     } catch (error) {
       console.error('[offline] eviction failed', {
         storyId: story.id,
