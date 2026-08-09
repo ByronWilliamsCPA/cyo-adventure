@@ -36,8 +36,8 @@ Automated verifications run report-only: they write a status and a scheduled sum
 zero. Every automated check enters at status *mechanism unproven* and leaves only once a negative
 control has tripped it.
 
-Applied to this document as it currently stands, that contract convicts it: **every one of the 116
-rows carries `Phase home: unassigned`, so by the register's own definition all 116 are open
+Applied to this document as it currently stands, that contract convicts it: **every one of the 118
+rows carries `Phase home: unassigned`, so by the register's own definition all 118 are open
 defects.** This is stated rather than left to be inferred, because a register that defines a defect
 and then quietly exhibits it everywhere is the hollow artifact SP-17 is about. It is not a reason
 to soften the definition. Nothing can be assigned a phase home until the `UW-*` linkage in
@@ -108,9 +108,10 @@ discovery. This is the same treatment GDPR gets: written down before it binds.
 | --- | --- | --- |
 | **State comprehensive privacy** (20 states as of Feb 2026) | First user outside the operator's household in a covered state, above any applicable threshold | O-97 jurisdiction matrix owns the determination |
 | **State minors' design codes** (CA AADC, MD, NE, VT, CT, TX SCOPE, FL HB 3, UT) | Public launch. Track enactment and litigation status separately; several are partially enjoined | O-94, O-97 |
+| **State information-security statutes** (NY SHIELD Act, Massachusetts 201 CMR 17.00) | Not residency alone: both statutes key on a defined data class (NY GBL 899-aa(1) "private information"; MA 201 CMR 17.02 "personal information"), each a name plus a specific sensitive identifier: SSN, driver's license/state-ID number, or a financial-account, credit-card, or debit-card number, **with or without** an accompanying security code, access code, PIN, or password (neither statute requires the credential; a bare card or account number combined with a name is already covered), plus biometric data, or, for NY only, a username/email combined with a password or security question and answer. T1 records no SSN/DL/financial-account/card/biometric data; T1's guardian email and auth identity is the one class that plausibly meets NY's username-plus-credential prong, an open question O-120 records rather than resolves. "First NY or MA resident outside the operator's household" is this project's own internal readiness marker, not a statutory threshold; neither statute has a company-size or record-count floor | O-120. Distinct from O-97's comprehensive-privacy/design-code determination and from O-61's COPPA-scoped, children-only security program: SHIELD and 201 CMR protect residents' private/personal information as each statute defines it, not "all" data about them |
 | **App store accountability acts** (TX SB 2420, UT, LA, AL) | Store distribution at R2/R3. Duties land on the **developer**: age rating, ingest store age and consent signals, re-trigger consent on significant change | O-98 |
 | **App store policies** (Apple Kids, Google Play Families) | Store submission | O-99 |
-| **GDPR / UK GDPR** | First EU or UK child or guardian | O-57 to O-60, O-93, O-34 |
+| **GDPR / UK GDPR** | First EU or UK child or guardian | O-57 to O-60, O-93, O-34, O-121 (Art. 8 child-consent age, added post-2026-08-02) |
 | **DSA Art. 28** | Analysed: does not engage, the service is not an Art. 3(i) online platform. Re-open if any O-118 structure changes | O-118 |
 | **EU AI Act** transparency | EU market entry; generated content disclosure | O-74 |
 | **CRA** | Placing the product on the EU market | Deferred |
@@ -127,8 +128,19 @@ discovery. This is the same treatment GDPR gets: written down before it binds.
 HIPAA (no PHI), GLBA (not a financial institution), SOX and SEC disclosure (not a public company),
 FCRA (no consumer reports or eligibility decisions), VPPA (no video), FedRAMP, CMMC, NIST 800-171,
 DFARS (no government contract), EAR/ITAR/OFAC (no export-controlled technology; geo-restriction
-still worth considering at public launch), NIS2, DORA, DMA, Data Act, eIDAS 2 (no trigger).
-Each carries the obvious reassessment trigger: the fact that made it N/A changing.
+still worth considering at public launch), NIS2, DORA, DMA, Data Act, eIDAS 2 (no trigger),
+**NYDFS Part 500 / 23 NYCRR 500** (not a "Covered Entity" under the regulation's own authorization
+test, 23 NYCRR 500.1: "any person operating under or required to operate under a license,
+registration, charter, certificate, permit, accreditation or similar authorization under the
+Banking Law, the Insurance Law or the Financial Services Law." This product holds none of those
+authorizations; "not a financial-services sector business" is directionally right but not the
+regulation's actual test, so cite the authorization requirement, not the sector, when this row is
+next revisited), **California SB-327** (Cal. Civil Code §§ 1798.91.04-1798.91.06; not a
+manufacturer of a physical connected/IoT device, the product is software-only).
+Each carries the obvious reassessment trigger: the fact that made it N/A changing (for NYDFS, the
+product itself becoming licensed, registered, or chartered under NY Banking, Insurance, or
+Financial Services Law, not merely "adding a DFS-licensed offering" as a feature; for SB-327,
+manufacturing or white-labeling a physical connected device).
 
 ### DSA Art. 28 and UK OSA classification
 
@@ -331,10 +343,20 @@ First tranche of work. Each invalidates multiple rows at once.
 
 ## Register rows
 
-One hundred and sixteen items, carrying provisional `O-nn` IDs that become `SEC-nnn` when the
+One hundred and eighteen items, carrying provisional `O-nn` IDs that become `SEC-nnn` when the
 namespace lands. Three are deferred triggers (O-76, O-98, O-99), so the active count is one hundred
-and thirteen, which is **far above** the ~60 ceiling one maintainer can review meaningfully.
+and fifteen, which is **far above** the ~60 ceiling one maintainer can review meaningfully.
 Trimming is the maintainer's decision, not a silent truncation.
+
+**O-120 and O-121 added post-reconciliation (compliance-verification pass, after 2026-08-02).** The
+2026-08-02 reconciliation below fixed the count at 116/113; a subsequent compliance-verification
+pass found two gaps in the regulatory-applicability tables above and closed both. First, the state
+information-security-statute family (NY SHIELD Act, Massachusetts 201 CMR 17.00, NYDFS Part 500,
+California SB-327) was absent entirely; O-120 plus the two not-applicable determinations (NYDFS,
+SB-327) closed it. Second, GDPR Art. 8's member-state child-consent-age table had no row despite
+GDPR itself being tracked; O-121 closed it. Both are genuine gaps under this document's own
+instantiation contract. The count is 118/115 as of both additions; recount before trusting either
+figure further, per the method below.
 
 Each row carries the fifteen fields the spine's row schema requires. Where a field could not be
 derived from the row's own check, the enclosing section, or this document's audit sections, it
@@ -349,8 +371,8 @@ active", and the lifecycle section separately recorded a decision to accept "81 
 figures were wrong, and the error was load-bearing rather than cosmetic: it presented the register
 as six rows over a review ceiling it is actually fifty-three rows over, and it recorded a
 row-budget decision whose stated purpose was to prevent a budget being silently exceeded. The
-authoritative count is a count of `#### O-<digits>` headings within this section: 116 rows, IDs
-running O-01 to O-119 with O-63, O-64, and O-65 unassigned. Recount with
+authoritative count is a count of `#### O-<digits>` headings within this section: 118 rows, IDs
+running O-01 to O-121 with O-63, O-64, and O-65 unassigned. Recount with
 `grep -cE '^#### O-[0-9]+$'`. Note that O-117 and O-119 also appear as the first cell of the
 initial-build commitments table below; those are cross-references to rows defined here, not
 additional rows, and the heading-anchored pattern above deliberately excludes them.
@@ -2563,6 +2585,113 @@ posture at a trust boundary must be verified from outside that boundary.
   by a suspect workflow run is rotated automatically; agent identities can be revoked within a
   written, annually tested target time
 
+#### O-120
+
+- **Category:** SP-11
+- **Framework ref:** not determined
+- **Legal ref:** NY SHIELD Act (NY General Business Law §899-bb, amending §899-aa); Massachusetts
+  201 CMR 17.00 (Standards for the Protection of Personal Information of Residents of the
+  Commonwealth, M.G.L. c. 93H)
+- **Class:** MANUAL
+- **Protected property:** A written information security program exists covering NY and MA
+  residents' statutorily-defined private/personal information (see Trigger below for the
+  data-class gate this depends on), not only children's: reasonable administrative, technical, and
+  physical safeguards (SHIELD, GBL §899-bb(2)(a); a small business may instead meet a safeguards
+  standard "appropriate for the size and complexity of the small business, the nature and scope of
+  [its] activities, and the sensitivity of the personal information [it] collects", GBL
+  §899-bb(2)(c), the more favorable route if CYO Adventure qualifies), and, once a Massachusetts
+  resident whose 201 CMR-defined personal information CYO holds exists, 201 CMR 17.04's eight named
+  technical requirements, not the four this row previously listed: secure user authentication
+  protocols, access control restricting personal information to need-to-know, encryption of records
+  transmitted across public networks, encryption of data transmitted wirelessly, reasonable
+  monitoring for unauthorized access, up-to-date firewalls and OS security patches, up-to-date
+  malware protection, and employee training (201 CMR 17.04(1)-(8)). **The statute itself qualifies
+  all eight**: 17.04's chapeau requires them "at a minimum, and to the extent technically feasible,"
+  a standard that shifts with available technology rather than a flat mandate; a control found
+  genuinely infeasible does not fail this row if a documented risk analysis and mitigation covers
+  the gap, but "infeasible" is a high bar in practice (regulators have rejected affordability/burden
+  arguments for the encryption items specifically) and is not a default to reach for. Encryption of
+  personal information stored on laptops or other portable devices is one of the eight (17.04(5)); a
+  blanket "encrypt the primary database at rest" mandate is not itself one of them, and is a project
+  control choice rather than a 201 CMR requirement.
+- **Verification target:** The written information security program document, checked specifically
+  for statutorily-defined-data-class scope (not the COPPA-scoped, children-only program at O-61),
+  and, once an MA resident whose covered personal information CYO holds exists, all eight 201 CMR
+  17.04 technical controls named above in the deployed system (or a documented feasibility-based
+  risk analysis and mitigation in place of any control found genuinely infeasible), not a generic
+  "data is encrypted" claim or a four-item subset.
+- **Failure oracle:** A NY or MA resident's statutorily-defined private/personal information is
+  collected with no written security program covering it, or, once an MA resident whose covered
+  information CYO holds exists, the program is missing one of 201 CMR 17.04's eight named
+  requirements with no documented feasibility-based risk analysis and mitigation covering the gap,
+  or this row's evidence substitutes general at-rest database encryption for the statute's actual
+  eight-item scope.
+- **Negative control:** not determined
+- **Trigger:** Two independent gates, not one, and this row previously collapsed them. **(1) A data-class
+  gate, keyed on the statutes' own defined terms, not on residency alone**: NY SHIELD attaches to
+  "private information" (GBL 899-aa(1): a name plus SSN, driver's license number, a financial-account,
+  credit-card, or debit-card number, biometric data, or a username/email combined with a password or
+  security question and answer); MA 201 CMR attaches to "personal information" (201 CMR 17.02: a
+  Massachusetts resident's name plus SSN, driver's license/state-ID number, or a financial-account,
+  credit-card, or debit-card number). **Neither statute requires an accompanying security code,
+  access code, PIN, or password for the card/account prong**; both cover the bare number combined
+  with a name (confirmed against 201 CMR 17.02's own "with or without any required security code,
+  access code, personal identification number or password" text; a prior version of this row
+  incorrectly implied an access-credential requirement for both statutes). Per T1 above, CYO
+  Adventure holds none of SSN, driver's license, financial-account/card, or biometric data; the one
+  plausible match is T1's "guardian email and auth identity" against NY's username-plus-credential
+  prong, an open question, not a resolved one, this row records rather than answers. If that prong
+  does not resolve in the affirmative, SHIELD may not attach even after a NY resident is onboarded,
+  and 201 CMR's definition has no comparable email-plus-password prong at all, so 201 CMR may not
+  attach on CYO's current data classes regardless of residency. **(2) The residency/operating-condition
+  gate**, in the same sense every other state-law trigger in this register uses "household": a
+  marker of this project's own current single-family operating condition, not a term either statute
+  defines or exempts by. The two statutes do not attach identically once that marker clears.
+  **NY SHIELD's reasonable-safeguards duty (GBL §899-bb(2)(a), not §899-bb(1)(a), which defines
+  "compliant regulated entity") has no size, revenue, or commercial-context carve-out**: it applies
+  to "any person or business that owns or licenses computerized data" including a NY resident's
+  private information, though §899-bb(2)(c)'s small-business scaled standard (see Protected property
+  above) is the more favorable outcome if it applies. **MA 201 CMR 17.00 is narrower on its face**:
+  "owns or licenses" is defined at 201 CMR 17.02 as receiving, storing, maintaining, processing, or
+  otherwise having access to personal information "in connection with the provision of goods or
+  services or in connection with employment". Rest the point on that definition rather than on the
+  Commonwealth's FAQ guidance, which says the same thing (the regulation does not reach a natural
+  person managing personal or household information outside a commercial or employment context) but
+  is informal guidance this register cannot cite to a stable, verifiable location; 17.02's own text
+  carries the substance, so the FAQ is corroboration and not the basis. Whether a single-family
+  homelab deployment already sits
+  outside 201 CMR's scope on that basis, independent of both the data-class gate and whether an MA
+  resident has ever been onboarded, is a genuinely open, more favorable question than SHIELD's and
+  has not been asked of counsel; do not assume either statute is equally deferred by the same
+  household framing, and do not assume either gate alone is sufficient without the other.
+- **Existing coverage:** none. O-61's written children's-data security program (COPPA §312.8) is
+  adjacent but does not satisfy this row on its own: SHIELD and 201 CMR protect residents' data as
+  each statute's own data-class definition scopes it (see Trigger above), not "all" data about a
+  resident and not only children's, and 201 CMR's eight specific technical mandates go beyond what
+  O-61's Check text names. A single written program could satisfy both rows if scoped and drafted
+  to cover both populations and both data-class definitions; that scoping decision has not been
+  made, and the data-class gate above should be resolved (with counsel, per T1's own open question)
+  before assuming this row is even reachable on CYO's current data.
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** A written information security program, distinct in scope from O-61's children-only
+  program, covers NY and MA residents' statutorily-defined private/personal information (a data
+  class T1 may not currently include; see Trigger) with reasonable safeguards (SHIELD Act, GBL
+  §899-bb(2)(a), or the §899-bb(2)(c) small-business standard if applicable) and 201 CMR 17.04's
+  eight specific technical requirements, each "at a minimum, and to the extent technically feasible"
+  per the statute's own chapeau (secure authentication, access control, public-network and wireless
+  transmission encryption, monitoring, firewall/patching, malware protection, employee training, and
+  portable-device storage encryption; not a four-item subset and not a blanket at-rest mandate), in
+  place before the first NY or MA resident outside the operator's household,
+  whose data meets the applicable statute's data-class definition, is onboarded. Filed under SP-11
+  rather than SP-13 because, unlike O-61 and the state minors' design codes at O-94/O-97, neither
+  statute is a protected-population duty: both attach, subject to the data-class gate above, to any
+  resident's covered information regardless of age. Whether MA 201 CMR already sits outside scope
+  for a single-family deployment independent of the household trigger is a distinct, open question
+  the Trigger field above records rather than answers
+
 ### SP-12 Data Lifecycle, Rights, Processors, Transfers
 
 #### O-31
@@ -3138,6 +3267,88 @@ posture at a trust boundary must be verified from outside that boundary.
   profile; today only kid profiles carry age data. Trivial pre-launch, requires backfill against
   live accounts afterwards
 
+#### O-121
+
+- **Category:** SP-13
+- **Framework ref:** not determined
+- **Legal ref:** GDPR Art. 8(1)-(2) (EU 2016/679, member-state consent age 13-16; the EU text has
+  only three paragraphs, Art. 8(3) being a contract-law savings clause with no counselling-service
+  carve-out, confirmed against the official EUR-Lex consolidated text, 2026-08-09); UK GDPR Art. 8
+  as onshored and amended by The Data Protection, Privacy and Electronic Communications
+  (Amendments etc) (EU Exit) Regulations 2019 (SI 2019/419), which rewrote the UK GDPR text itself
+  to read "13 years" in place of "16 years" and inserted a new **Art. 8(4)**, unique to the UK
+  version and with no EU-GDPR equivalent, carving preventive or counselling services out of "the
+  reference to information society services" in Art. 8(1) entirely. **Corrected 2026-08-09**: an
+  earlier draft of this row cited this as "Art. 8(2A)/(2B) in the UK GDPR's own numbering," which
+  was not found in any source and should not be repeated; the correct UK citation is Art. 8(4)
+  itself. **Not** DPA 2018 s.9, which performed the 13-year substitution by cross-reference to GDPR
+  from 25 May 2018 but was omitted (repealed) 31 December 2020 by that same SI once the
+  substitution was folded directly into the onshored UK GDPR text. This specific point was
+  independently re-checked twice in this row's history: a fresh review pass on 2026-08-09 flagged
+  it as possibly wrong, citing ICO guidance that describes s.9 as currently "modifying Article
+  8(1)"; a direct fetch of legislation.gov.uk's own "Latest available (Revised)" page for section 9
+  (current as of 2026-08-06) confirms the omission stands: "Section 9 has been omitted (repealed)"
+  as of 31.12.2020 by SI 2019/419, Schedule 2, paragraph 12, with no operative text remaining. ICO's
+  guidance describes the substantive 13-year rule in informal, present-tense terms without being
+  precise about which provision currently codifies it; legislation.gov.uk's own status annotation on
+  the provision itself is the more authoritative source for whether s.9 specifically is in force, and
+  it is not. Citing s.9 as the current legal basis for the age rule is citing a repealed provision
+  for a rule that is now, and independently, written into UK GDPR Art. 8(1) itself. CYO Adventure's
+  story generation and reading is not a preventive or counselling service, so the Art. 8(4) carve-out
+  does not apply here, but a future feature (e.g. a guardian-support or crisis-resource surface)
+  would need this row re-examined before assuming Art. 8 governs it. Art. 8 applies specifically
+  where consent under Art. 6(1)(a) is the chosen legal basis for offering an information society
+  service directly to a child; it is not a general age-gate on every legal basis GDPR recognizes
+  (confirmed against primary text and ICO guidance, 2026-08-09).
+- **Class:** MANUAL
+- **Protected property:** A per-member-state (13-16) and UK (13) child-consent-age table exists
+  and is consulted specifically in the Art. 8 pathway: before any EU or UK child's own consent,
+  relied on as the Art. 6(1)(a) legal basis for offering the service directly to that child, is
+  treated as valid without a holder-of-parental-responsibility's consent. Processing under a
+  different lawful basis (contract with the guardian, legitimate interest) is not gated by this
+  table; scope it to the consent pathway only, not to "all child processing."
+- **Verification target:** The consent-age determination table or logic, and the point in the
+  **consent-based** signup/onboarding flow where an EU/UK-resident child's age is checked against
+  it before the child's own consent is accepted as the Art. 6(1)(a) basis. Not a general audit of
+  every processing activity's legal basis.
+- **Failure oracle:** An EU or UK child below their applicable Article 8 threshold has their own
+  consent treated as the valid Art. 6(1)(a) basis for the service without a holder of parental
+  responsibility's consent, or a member state's specific threshold (which varies 13-16 by state)
+  is missing or wrong in the table.
+- **Negative control:** not determined
+- **Trigger:** First EU or UK child or guardian. This is reused as a convenient, consistent timing
+  anchor, the same one every other GDPR-triggered row in this register uses, not a claim that the
+  age table itself is a precondition of GDPR attaching generally. GDPR attaches on that trigger
+  regardless of legal basis; this row's table only becomes load-bearing if and when the product
+  relies on a child's own consent (Art. 6(1)(a)) rather than another lawful basis for that
+  processing.
+- **Existing coverage:** none. Absent from this register entirely until this row: neither O-117
+  (country-of-residence signal) nor O-97 (jurisdiction-trigger matrix for state comprehensive-
+  privacy and minors'-design-code regimes) extends to GDPR Art. 8's member-state consent-age
+  table. O-117's country signal is a necessary input to the table this row requires but does not
+  itself supply the age-threshold determination. Low urgency while GDPR has not attached (T4:
+  US-only today, per the regulatory-applicability determination above), but recorded now rather
+  than left silently absent, consistent with how GDPR is written down before it binds elsewhere
+  in this register. **No refresh mechanism covers this row's own volatility once built**: O-108,
+  the register's only recurring refresh commitment, is explicitly scoped to "US state privacy-law
+  applicability... against the IAPP and Bloomberg trackers" and names no EU/UK source; the
+  per-member-state ages this row's table would hold (13-16, set individually by each EU member
+  state) have no equivalent recurring check anywhere in this register. That gap is demonstrable,
+  not hypothetical: a general search for "which EU states set the Article 8 age at 13" returns
+  answers that are wrong on inspection against primary sources (e.g. misstating Ireland, whose DPC
+  sets 16, and Spain, whose LOPDGDD Art. 7(1) sets 14, not 13, for either). Building this row's
+  table from an unverified search result would import exactly that kind of error; the table's
+  source and refresh cadence need to be decided together with the build itself, not deferred to
+  whoever builds it.
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** A per-member-state (13-16) and UK (13) child-consent-age table exists and is
+  consulted before treating any EU/UK child's own consent as the Art. 6(1)(a) legal basis for
+  offering the service directly to that child (GDPR/UK GDPR Art. 8), in place before the first EU
+  or UK child or guardian is onboarded. Does not gate processing under any other lawful basis
+
 ### SP-16 Availability, Resilience, Recovery
 
 #### O-44
@@ -3418,11 +3629,15 @@ different question.
 6. **Decide the row budget, against the corrected count.** A prior entry recorded "Decided
    2026-08-02: 81 rows accepted, no trimming", on the reasoning that a budget silently exceeded is
    indistinguishable from one never considered. That reasoning holds; the number did not. The
-   register carries 116 rows, 113 of them active, so the decision was taken against a figure 35
-   rows below the real one and the budget was silently exceeded after all, by the very entry
-   written to prevent it. Reopened: decide whether 113 active rows is accepted, or trim to the ~60
-   ceiling. This is the maintainer's call and is deliberately left open rather than re-decided
-   here.
+   register carried 116 rows, 113 of them active, as of the 2026-08-02 reconciliation, so the
+   decision was taken against a figure 35 rows below the real one and the budget was silently
+   exceeded after all, by the very entry written to prevent it. A subsequent compliance-verification
+   pass added O-120 (state information-security statutes) and O-121 (GDPR Art. 8 child-consent-age
+   table), both absent from every applicability table until then, moving the count to 118 rows, 115
+   active. Reopened: decide whether the active count, now 115, is accepted, or trim to the ~60
+   ceiling. This is the maintainer's call and is deliberately left open rather than re-decided here;
+   the point of recording each new addition here is so the next person who reopens this item
+   recounts rather than trusts any historical figure.
 7. **Promote the spine.** `assurance-spine.md` is written to be lifted into whatever global
    standards set the operator's tooling keeps, so other projects instantiate it rather than
    rediscovering it. The spine deliberately names no concrete install path, because that path is a
