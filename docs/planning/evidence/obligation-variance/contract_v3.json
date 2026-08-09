@@ -1,0 +1,1344 @@
+{
+ "narrative_version": 1,
+ "skeleton_slug": "the-clocktower-cipher",
+ "age_band": "10-13",
+ "premise": {
+  "engine": "reconstruct-and-remember",
+  "dramatic_question": "Will {HEROES} piece together what became of {MAKER} and help the tower remember what it lost?",
+  "resolution_space": [
+   "the archive teaches them the tower's real history, arming a better-prepared return",
+   "a page in the archive holds a copy of the note, carried home so the translation can continue",
+   "closing time arrives mid-chapter and the keeper gently shows them out with a borrowing promise",
+   "a sober look at the crossing convinces them the cost of a slip outweighs finishing his story tonight",
+   "one friend names the risk aloud and the others agree, recognizing it as the same risk he once weighed",
+   "a slip caught in time turns the attempt into a calm, deliberate retreat",
+   "random guessing trips a protection he built, freezing the setting until a keeper resets it",
+   "the closing signal sounds before any guess lands, and the tower must empty for the night, his last setting still unfinished",
+   "the overworked mechanism raises a polite fuss that brings the keeper up to close for the night",
+   "the forced works bind fast, and nothing they carry tonight will move them",
+   "a bent linkage needs a workshop tool nobody brought, exactly the kind he kept on hand",
+   "the keeper's posted rule ends forcing attempts at nightfall, and they honor it in his memory",
+   "the workshop adopts them as its quiet caretakers, and caring for it becomes a way of keeping him close",
+   "some ongoing work in the room invites their hands, and continuing it becomes their standing project",
+   "his notes name whoever finds the room its steward, and they accept, as if he had been waiting",
+   "the recovered story is shared publicly and the settlement remembers him properly at last",
+   "the recovered story quietly restores something the settlement had lost along with him",
+   "the recovery earns the keeper's trust and a standing invitation back to the tower he loved",
+   "a pact sworn over the keepsake binds the friends as the quiet keepers of his memory",
+   "they leave everything exactly as found, keeping the story and leaving the rest",
+   "his letter asks its finders to choose, and they choose to keep his memory close instead of loud",
+   "his old safeguard announces the grab, and the keeper arrives before the door",
+   "what they carry out is exactly what springs the safeguard he built for this exact moment",
+   "second thoughts slow them just enough for the keeper's evening rounds to find them mid-return"
+  ]
+ },
+ "label_styles": [
+  "terse imperatives, three words where possible",
+  "first-person plural resolves: what we do next",
+  "sensory verb first, object second",
+  "question-forms at decisions, statements at continues",
+  "name the place or thing, let the action stay implied"
+ ],
+ "facts": {
+  "tower_forgotten": "the clocktower stands locked, treated by the settlement as a closed chapter",
+  "farewell_found": "a coded farewell note is still pinned to the door, waiting for someone to read it",
+  "friends_stand_together": "the friends stand at the discovery together, no one reading it alone",
+  "search_begun": "the friends decide to find out what really became of the maker",
+  "first_line_translated": "translating the note's first line recovers one true fact about the maker's last days",
+  "place_named": "the translated line names a specific place tied to the maker's old routine",
+  "traces_found": "two overlooked traces of the maker's routine, a low one and a high one, are found independently",
+  "keeper_remembers": "the keeper, once drawn out, is met and willing to remember out loud",
+  "memory_offered": "the keeper offers both a way in and a personal memory of the maker",
+  "departure_understood": "why the maker withdrew and hid something is understood, and the reason was kind",
+  "crossed_the_threshold": "the friends are inside, whatever led them there",
+  "maker_wings_known": "four wings of the maker's old routine are known: the climb, the study, the crossing, the depths",
+  "timeline_piece_held": "the friends hold one true piece of the maker's timeline, its source varying by room",
+  "archive_holds_them": "the study's records tempt the friends to read the whole history right there",
+  "crossing_recalls_risk": "the crossing room still carries the real risk the maker once respected",
+  "keepsake_glimpsed": "something the maker once treasured is visible across the crossing",
+  "at_the_old_clock": "the friends reach the maker's last known project: the tower's own clock",
+  "clock_riddle_live": "the clock's face poses a legible question about the maker's final, unfinished setting",
+  "clock_restored": "the mechanism is set as the maker intended, and the tower's memory runs true again",
+  "clock_seized": "forcing the setting seizes the mechanism instead of restoring it",
+  "second_note_found": "a second, smaller note is found behind the clock's face",
+  "chamber_entered": "the friends stand in the chamber the maker's last work protected",
+  "chamber_seen": "what the chamber holds is understood: the maker's letter and modest things that belong to everyone",
+  "left_with_dignity": "the friends leave intact, whatever happened; the outcome is a fact, never a disgrace",
+  "search_can_resume": "the search can pick up again another day; nothing is lost for good",
+  "set_right_with_keeper": "whatever was disturbed is restored and explained honestly to the keeper",
+  "workshop_uncovered": "the maker's living workshop is uncovered past the second note",
+  "legacy_accepted": "the friends accept care of the maker's unfinished legacy",
+  "memory_restored_publicly": "the maker's story is returned to the settlement, restoring what it had forgotten",
+  "memory_kept_privately": "the maker's story is kept as a private inheritance among the friends",
+  "kinship_formed": "the shared search forms a lasting kinship among the friends",
+  "keeper_returns": "the keeper turns up in the moment of temptation, exactly when needed"
+ },
+ "safety_envelope": {
+  "affect_ceiling": "suspense with wonder and mild urgency; tension may tighten but never tips into threat",
+  "forbid_affect": [
+   "despair",
+   "hopelessness",
+   "terror",
+   "humiliation",
+   "cruel_mockery"
+  ],
+  "forbid_facts": [
+   "anyone_injured",
+   "friends_turn_on_each_other",
+   "adult_menaces_children",
+   "theft_rewarded",
+   "gore_of_any_kind"
+  ],
+  "permitted_device_kinds": [
+   "symbol_substitution",
+   "clock_arithmetic",
+   "pictogram_code",
+   "rhythm_code",
+   "tally_cipher",
+   "hidden_key",
+   "forgotten_entrance",
+   "trusted_escort",
+   "concealed_latch",
+   "timed_opening",
+   "service_route",
+   "mechanism_operated",
+   "engraved_numbers",
+   "maker_diagram",
+   "pattern_in_mechanism",
+   "annotated_tool",
+   "calibration_scale",
+   "sorted_collection",
+   "wear_pattern",
+   "shadow_alignment",
+   "maker_relic",
+   "working_mechanism",
+   "written_record",
+   "acoustic_wonder",
+   "scale_model",
+   "light_play",
+   "resident_creature",
+   "heritage_document",
+   "handmade_keepsake",
+   "community_memory",
+   "stiff_mechanism",
+   "narrow_crossing",
+   "timed_passage",
+   "dark_passage",
+   "heavy_barrier",
+   "slick_traverse",
+   "time_pressure",
+   "sound_alarm",
+   "weight_sense",
+   "light_signal",
+   "messenger_creature",
+   "self_closing",
+   "tell_tale_mark",
+   "patience_ritual",
+   "tool_improvised",
+   "consumable_applied",
+   "mechanism_reset",
+   "knowledge_applied",
+   "shared_effort",
+   "unfinished_work",
+   "living_thing_tended",
+   "letter_waiting",
+   "tools_in_order",
+   "season_preserved",
+   "provisions_laid"
+  ],
+  "forbidden_device_kinds": [
+   "weapon",
+   "gore",
+   "cruelty",
+   "theft_rewarded",
+   "adult_menace"
+  ]
+ },
+ "world_recipe": {
+  "requires": {
+   "cipher_forms": {
+    "count": 1,
+    "kinds": [
+     "symbol_substitution",
+     "clock_arithmetic",
+     "pictogram_code",
+     "rhythm_code",
+     "tally_cipher"
+    ],
+    "note": "one cipher form per story, chosen at bind and used consistently from note to clockface to back panel"
+   },
+   "access_details": {
+    "count": 3,
+    "kinds": [
+     "hidden_key",
+     "forgotten_entrance",
+     "trusted_escort",
+     "concealed_latch",
+     "timed_opening",
+     "service_route",
+     "mechanism_operated"
+    ],
+    "note": "one concrete way in per approach branch: the note's decoded route and the building's own weak point draw freely; the keeper's branch stays person-mediated"
+   },
+   "cipher_hint_carriers": {
+    "count": 4,
+    "kinds": [
+     "engraved_numbers",
+     "maker_diagram",
+     "pattern_in_mechanism",
+     "annotated_tool",
+     "calibration_scale",
+     "sorted_collection",
+     "wear_pattern",
+     "shadow_alignment"
+    ],
+    "note": "one per exploration room, drawn freely; unique_within_story gives each book four different carriers, and each carries enough logic that any single room makes the dial attemptable"
+   },
+   "room_curiosities": {
+    "count": 4,
+    "kinds": [
+     "maker_relic",
+     "working_mechanism",
+     "written_record",
+     "acoustic_wonder",
+     "handmade_keepsake",
+     "scale_model",
+     "light_play",
+     "community_memory",
+     "resident_creature"
+    ],
+    "note": "what makes each room distinct and worth the visit beyond its hint"
+   },
+   "vault_contents": {
+    "count": 3,
+    "kinds": [
+     "heritage_document",
+     "handmade_keepsake",
+     "community_memory",
+     "written_record",
+     "maker_relic",
+     "acoustic_wonder"
+    ],
+    "note": "the vault protects knowledge, heritage, and wonder; any treasure is modest and communal, never loot"
+   },
+   "obstacle_kinds": {
+    "count": 1,
+    "kinds": [
+     "narrow_crossing",
+     "timed_passage",
+     "slick_traverse",
+     "dark_passage",
+     "heavy_barrier",
+     "stiff_mechanism"
+    ],
+    "note": "physical difficulty stays honest and non-injurious; failure costs time or access, never safety"
+   },
+   "safeguards": {
+    "count": 1,
+    "kinds": [
+     "sound_alarm",
+     "weight_sense",
+     "light_signal",
+     "messenger_creature",
+     "self_closing",
+     "tell_tale_mark"
+    ],
+    "note": "the maker's anti-taking measure; gentle and funny, it embarrasses no one and hurts no one"
+   },
+   "remedies": {
+    "count": 1,
+    "kinds": [
+     "patience_ritual",
+     "tool_improvised",
+     "consumable_applied",
+     "mechanism_reset",
+     "knowledge_applied",
+     "shared_effort"
+    ],
+    "note": "the honest way back from a jam, on the machine's own terms; care, patience, or wit, never strength"
+   },
+   "loft_signatures": {
+    "count": 1,
+    "kinds": [
+     "unfinished_work",
+     "living_thing_tended",
+     "letter_waiting",
+     "tools_in_order",
+     "season_preserved",
+     "provisions_laid"
+    ],
+    "note": "the one detail that makes the maker's hidden room feel currently alive rather than preserved"
+   }
+  },
+  "identity_roles": [
+   "HEROES",
+   "KEEPER",
+   "MAKER",
+   "CIPHER",
+   "SETTLEMENT",
+   "VAULT"
+  ],
+  "texture_roles": [
+   "THRESHOLD",
+   "ACCESS_LOW",
+   "ACCESS_HIGH",
+   "OPENER",
+   "STUDY",
+   "HAZARD",
+   "LANDMARK_FACE",
+   "TOKEN",
+   "CIPHER_TOOL",
+   "ARCHIVE",
+   "REMEDY",
+   "MACHINERY",
+   "SECRET_ROOM",
+   "KEEPSAKE",
+   "CLOSING_SIGN",
+   "MECHANISM",
+   "CRAFT"
+  ]
+ },
+ "nodes": {
+  "n_open": {
+   "tier": "open",
+   "function": "find-the-farewell",
+   "entry_state": [],
+   "establishes": [
+    "tower_forgotten",
+    "farewell_found",
+    "friends_stand_together"
+   ],
+   "forbids": [
+    "crossed_the_threshold",
+    "first_line_translated",
+    "keeper_remembers"
+   ],
+   "affect": {
+    "target": "curious ache, the pull of an unfinished goodbye",
+    "forbid": [
+     "dread",
+     "urgency"
+    ]
+   },
+   "invention": {
+    "cipher_form": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.cipher_forms",
+     "category": "cipher_forms",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the story's one cipher form; every later translation-beat renders it consistently"
+    }
+   },
+   "choice_semantics": {
+    "c_open": "read the note as what it is, someone's last word, and take it seriously together"
+   },
+   "beat_hint": "a locked, half-forgotten tower and a farewell note nobody ever finished reading."
+  },
+  "n_start": {
+   "tier": "open",
+   "function": "choose-a-trace",
+   "entry_state": [
+    "farewell_found",
+    "friends_stand_together"
+   ],
+   "establishes": [
+    "search_begun"
+   ],
+   "forbids": [
+    "first_line_translated",
+    "crossed_the_threshold"
+   ],
+   "affect": {
+    "target": "curious ache, choosing which trace of the maker to follow",
+    "forbid": [
+     "quarrel",
+     "dread"
+    ]
+   },
+   "constraints": {
+    "offers_must_be": "three genuinely different traces of the maker to follow: his words, his building, his people; no option is the smart one",
+    "must_not": "translate any of the note here; the split happens before anyone recovers a fact"
+   },
+   "choice_semantics": {
+    "c_examine": "follow the maker's own words: work the note",
+    "c_door": "follow the maker's handiwork: read the building itself",
+    "c_keeper": "follow the maker's confidant: ask who still remembers"
+   },
+   "beat_hint": "hub. the friends split on whose trace to follow first, not on whether to look."
+  },
+  "n_note": {
+   "tier": "open",
+   "function": "recover-a-fact",
+   "entry_state": [
+    "farewell_found",
+    "search_begun",
+    "friends_stand_together"
+   ],
+   "establishes": [
+    "first_line_translated",
+    "place_named"
+   ],
+   "forbids": [
+    "crossed_the_threshold"
+   ],
+   "affect": {
+    "target": "the small, grief-tinged satisfaction of learning one true thing",
+    "forbid": [
+     "frustration",
+     "dread"
+    ]
+   },
+   "invention": {
+    "access_route": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.access_details",
+     "category": "access_details",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the translated line names one concrete place: where it hides or how it works, plus a plain first step"
+    }
+   },
+   "constraints": {
+    "decode_must_be": "shown on the page in the story's one cipher form, so a reader can play along; first line only",
+    "must_not": "make the translation trivial or make the other traces look foolish for not trying it"
+   },
+   "choice_semantics": {
+    "c_note_key": "chase the named place down properly",
+    "c_note_inside": "act on the plain reading and go there directly"
+   },
+   "beat_hint": "patience with his code pays off: the first recovered fact points two ways at once."
+  },
+  "n_door": {
+   "tier": "open",
+   "function": "read-the-building",
+   "entry_state": [
+    "tower_forgotten",
+    "search_begun"
+   ],
+   "establishes": [
+    "traces_found"
+   ],
+   "forbids": [
+    "first_line_translated",
+    "crossed_the_threshold"
+   ],
+   "affect": {
+    "target": "quiet detective focus on what the building itself remembers",
+    "forbid": [
+     "danger",
+     "guilt"
+    ]
+   },
+   "invention": {
+    "access_route": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.access_details",
+     "category": "access_details",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the building's own overlooked route; using it reads as reading his habits, never as damage"
+    }
+   },
+   "constraints": {
+    "entry_must_read": "as clever reading of a neglected building's routine, not as break-in",
+    "must_not": "carry any translation knowledge; this branch has not read the note closely"
+   },
+   "choice_semantics": {
+    "c_door_force": "read the low, worn path he used often",
+    "c_door_window": "read the high, less-worn path he used rarely"
+   },
+   "beat_hint": "the building itself remembers two honest routes he used to take."
+  },
+  "n_keeper": {
+   "tier": "open",
+   "function": "draw-out-a-memory",
+   "entry_state": [
+    "search_begun",
+    "friends_stand_together"
+   ],
+   "establishes": [
+    "keeper_remembers",
+    "memory_offered"
+   ],
+   "forbids": [
+    "first_line_translated",
+    "crossed_the_threshold"
+   ],
+   "affect": {
+    "target": "gentle patience coaxing a reluctant memory into the open",
+    "forbid": [
+     "menace",
+     "condescension"
+    ]
+   },
+   "invention": {
+    "access_route": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.access_details",
+     "category": "access_details",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "kept person-mediated on purpose: this branch's whole meaning is a person's memory, not a trick",
+     "kind_must_be": "trusted_escort"
+    }
+   },
+   "constraints": {
+    "keeper_must_be": "gruff on the surface, glad underneath that someone finally asked about him; an adult who takes kids seriously",
+    "must_not": "have the keeper translate the note for them or forbid the attempt"
+   },
+   "choice_semantics": {
+    "c_keeper_enter": "take the offered way in and go now",
+    "c_keeper_story": "stay for the memory before the way in"
+   },
+   "beat_hint": "asking someone to remember is presented as a kindness; the keeper repays it with a real offer."
+  },
+  "n_keyhunt": {
+   "tier": "open",
+   "function": "confirm-the-lead",
+   "entry_state": [
+    "first_line_translated",
+    "place_named"
+   ],
+   "establishes": [
+    "timeline_piece_held"
+   ],
+   "forbids": [
+    "crossed_the_threshold"
+   ],
+   "affect": {
+    "target": "the small thrill of a hunch panning out",
+    "forbid": [
+     "frustration",
+     "dread"
+    ]
+   },
+   "constraints": {
+    "payoff_must_be": "the way in exactly where the translated line promised; the world confirms the note told the truth",
+    "must_not": "introduce a second puzzle here; this beat is confirmation, not complication"
+   },
+   "choice_semantics": {
+    "c_keyhunt_in": "use the confirmed lead and go in the way it points"
+   },
+   "beat_hint": "the recovered fact proves out in the real world; a hunch becomes trust in his handwriting."
+  },
+  "n_keeper_story": {
+   "tier": "open",
+   "function": "hear-the-departure",
+   "entry_state": [
+    "keeper_remembers",
+    "memory_offered"
+   ],
+   "establishes": [
+    "departure_understood"
+   ],
+   "forbids": [
+    "crossed_the_threshold",
+    "first_line_translated"
+   ],
+   "affect": {
+    "target": "hushed listening, sympathy for a private choice",
+    "forbid": [
+     "grief",
+     "dread"
+    ]
+   },
+   "constraints": {
+    "history_must_be": "warm and specific: the maker withdrew out of care, not fear or shame; motive stays kind while details stay secret",
+    "must_not": "reveal what the chamber holds or how the clock's setting resolves"
+   },
+   "choice_semantics": {
+    "c_story_in": "carry the understood departure inside, entering already knowing why he left"
+   },
+   "beat_hint": "background that turns later clues into recognition of a man, not luck with a machine."
+  },
+  "n_window": {
+   "tier": "open",
+   "function": "step-into-his-world",
+   "entry_state": [
+    "traces_found",
+    "search_begun"
+   ],
+   "establishes": [
+    "crossed_the_threshold"
+   ],
+   "forbids": [
+    "anyone_injured"
+   ],
+   "affect": {
+    "target": "a small thrill, then the hush of standing where he once stood",
+    "forbid": [
+     "real_peril",
+     "panic"
+    ]
+   },
+   "constraints": {
+    "climb_must_be": "exciting but visibly safe: short height, good holds, friends spotting each other",
+    "must_not": "injure anyone or play the climb as recklessness"
+   },
+   "choice_semantics": {
+    "c_window_in": "commit to the drop, cross into the maker's world"
+   },
+   "beat_hint": "the squeeze through is the fun; the landing puts them where he used to stand."
+  },
+  "n_inside": {
+   "tier": "open",
+   "function": "enter-his-world",
+   "entry_state": [
+    "farewell_found",
+    "search_begun",
+    "friends_stand_together"
+   ],
+   "establishes": [
+    "crossed_the_threshold",
+    "maker_wings_known"
+   ],
+   "forbids": [
+    "at_the_old_clock",
+    "chamber_entered"
+   ],
+   "affect": {
+    "target": "held-breath tenderness at standing where he lived and worked",
+    "forbid": [
+     "dread",
+     "claustrophobia"
+    ]
+   },
+   "merge_note": "NC-1: six parents (n_note, n_door, n_keeper, n_keyhunt, n_keeper_story, n_window) arrive by different routes carrying different pieces of his story. Presuppose only the intersection: the note exists, the search is underway, the friends are together. Do NOT reference how they got in, which trace they followed, or whether the keeper is present. Write arrival generically: they are inside, whatever led them there.",
+   "constraints": {
+    "offers_must_be": "four sensory, distinct wings matching the four rooms: height, paper, motion, depth; each stands alone",
+    "must_not": "rank the wings or hint one is the correct choice"
+   },
+   "choice_semantics": {
+    "c_inside_stairs": "follow the climb he took daily",
+    "c_inside_study": "follow the room where he thought",
+    "c_inside_pendulum": "follow the crossing he once risked",
+    "c_inside_basement": "follow the depths he built from"
+   },
+   "beat_hint": "bottleneck. inside at last; four traces of his daily life to choose from."
+  },
+  "n_stairs": {
+   "tier": "open",
+   "function": "retrace-his-daily-climb",
+   "entry_state": [
+    "crossed_the_threshold",
+    "maker_wings_known"
+   ],
+   "establishes": [
+    "timeline_piece_held"
+   ],
+   "forbids": [
+    "at_the_old_clock",
+    "chamber_entered"
+   ],
+   "affect": {
+    "target": "steady climb, the odd intimacy of matching someone's old footsteps",
+    "forbid": [
+     "exhaustion",
+     "dread"
+    ]
+   },
+   "invention": {
+    "hint_carrier": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.cipher_hint_carriers",
+     "category": "cipher_hint_carriers",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "something met on the climb that recovers a usable piece of his timeline"
+    },
+    "curiosity": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.room_curiosities",
+     "category": "room_curiosities",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "a small token of the maker's found along the stair; personal, pocketable, easily missed"
+    }
+   },
+   "constraints": {
+    "hint_must_be": "sufficient on its own to make the clock's puzzle attemptable for a reader who never read the note",
+    "must_not": "presuppose the note is already translated"
+   },
+   "choice_semantics": {
+    "c_stairs_face": "carry the recovered piece up to the clock"
+   },
+   "beat_hint": "the spine of the tower, worn by a routine that is starting to feel familiar."
+  },
+  "n_study": {
+   "tier": "open",
+   "function": "read-his-working-room",
+   "entry_state": [
+    "crossed_the_threshold",
+    "maker_wings_known"
+   ],
+   "establishes": [
+    "timeline_piece_held",
+    "archive_holds_them"
+   ],
+   "forbids": [
+    "at_the_old_clock",
+    "chamber_entered"
+   ],
+   "affect": {
+    "target": "the deep pull of a room that still feels lived-in",
+    "forbid": [
+     "boredom",
+     "dread"
+    ]
+   },
+   "invention": {
+    "hint_carrier": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.cipher_hint_carriers",
+     "category": "cipher_hint_carriers",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "whatever in the maker's own room recovers the most direct piece of his timeline"
+    },
+    "curiosity": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.room_curiosities",
+     "category": "room_curiosities",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the archive whose pull is genuine: something browsable enough to fill an evening; staying is a real temptation"
+    }
+   },
+   "constraints": {
+    "temptation_must_be": "honest: the archive really is fascinating, and choosing it is a legitimate reader identity, not a mistake",
+    "must_not": "frame staying to read as laziness or failure"
+   },
+   "choice_semantics": {
+    "c_study_face": "take what the room recovered and press on to the clock",
+    "c_study_logs": "let the records hold you: choose his past over the present puzzle"
+   },
+   "beat_hint": "his working room explains a piece of the timeline and, just as loudly, invites them to stay."
+  },
+  "n_pendulum": {
+   "tier": "open",
+   "function": "retrace-his-risk",
+   "entry_state": [
+    "crossed_the_threshold",
+    "maker_wings_known"
+   ],
+   "establishes": [
+    "timeline_piece_held",
+    "crossing_recalls_risk",
+    "keepsake_glimpsed"
+   ],
+   "forbids": [
+    "anyone_injured",
+    "at_the_old_clock"
+   ],
+   "affect": {
+    "target": "focused suspense, respect for a risk he once took too",
+    "forbid": [
+     "terror",
+     "recklessness_glorified"
+    ]
+   },
+   "invention": {
+    "hint_carrier": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.cipher_hint_carriers",
+     "category": "cipher_hint_carriers",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "something about the moving works, legible from a safe spot, that recovers a piece of his timeline"
+    },
+    "obstacle": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.obstacle_kinds",
+     "category": "obstacle_kinds",
+     "assigned_at": "bind",
+     "note": "a traversal with real, legible, survivable risk, the same one he must once have weighed"
+    }
+   },
+   "constraints": {
+    "peril_must_be": "mild and legible: the worst case is a bruise and a long walk home, never mutilation",
+    "must_not": "punish the reader for either crossing or declining; both are respectable"
+   },
+   "choice_semantics": {
+    "c_pendulum_oil": "cross with the same care he must have, and claim what he left there",
+    "c_pendulum_giveup": "judge the risk honestly and decline it, as he might have understood"
+   },
+   "beat_hint": "the room of moving works holds the one risk he clearly respected, and something he left past it."
+  },
+  "n_basement": {
+   "tier": "open",
+   "function": "find-his-foundations",
+   "entry_state": [
+    "crossed_the_threshold",
+    "maker_wings_known"
+   ],
+   "establishes": [
+    "timeline_piece_held"
+   ],
+   "forbids": [
+    "at_the_old_clock",
+    "chamber_entered"
+   ],
+   "affect": {
+    "target": "dim-lit awe at the roots he built everything else on",
+    "forbid": [
+     "dread",
+     "claustrophobia"
+    ]
+   },
+   "invention": {
+    "hint_carrier": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.cipher_hint_carriers",
+     "category": "cipher_hint_carriers",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "something down among the machine's roots that recovers a piece of his timeline from below"
+    },
+    "curiosity": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.room_curiosities",
+     "category": "room_curiosities",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "what makes the deepest room a spectacle worth the dark; the straight way up is the room's parting gift"
+    }
+   },
+   "constraints": {
+    "darkness_must_be": "atmosphere, not threat; the basement is dim and strange, never menacing",
+    "must_not": "presuppose the note is already translated"
+   },
+   "choice_semantics": {
+    "c_basement_face": "carry the recovered piece straight up to the clock"
+   },
+   "beat_hint": "the machine's roots hold their own piece of his timeline, and a way runs straight up to the clock."
+  },
+  "n_clockface": {
+   "tier": "open",
+   "function": "face-his-last-setting",
+   "entry_state": [
+    "crossed_the_threshold",
+    "timeline_piece_held"
+   ],
+   "establishes": [
+    "at_the_old_clock",
+    "clock_riddle_live"
+   ],
+   "forbids": [
+    "chamber_entered",
+    "clock_restored"
+   ],
+   "affect": {
+    "target": "peak suspense; the whole search narrows to the setting he never finished",
+    "forbid": [
+     "despair",
+     "panic"
+    ]
+   },
+   "merge_note": "NC-1: four parents (n_stairs, n_study, n_pendulum, n_basement), each of which supplied timeline_piece_held by a DIFFERENT trace. Presuppose timeline_piece_held generically: the friends have a working sense of his last days, source unnamed. Do NOT presuppose which room, which trace, or any carried object. The clock itself must restate the puzzle: its own markings echo the cipher form, so the correct-setting choice is honest on every path.",
+   "constraints": {
+    "puzzle_must_be": "self-teaching at the clock: the markings rhyme with the piece of timeline the reader carries, so finishing his setting feels earned",
+    "stakes_must_be": "clear before choosing: finishing carefully, forcing, searching, and guessing are visibly different bets",
+    "must_not": "reference any carried object or any room's device; the clock's own markings and controls carry the whole beat"
+   },
+   "choice_semantics": {
+    "c_face_correct": "finish the setting the way his notes suggest, deliberately",
+    "c_face_jam": "force the setting rather than reason it through",
+    "c_face_panel": "distrust the obvious setting, search behind the face for another answer",
+    "c_face_random": "gamble: try a random setting and hope it lands"
+   },
+   "beat_hint": "bottleneck. everything narrows to the clock and his unfinished setting; four ways to meet it."
+  },
+  "n_setcorrect": {
+   "tier": "open",
+   "function": "complete-his-work",
+   "entry_state": [
+    "at_the_old_clock",
+    "clock_riddle_live",
+    "timeline_piece_held"
+   ],
+   "establishes": [
+    "clock_restored"
+   ],
+   "forbids": [
+    "clock_seized"
+   ],
+   "affect": {
+    "target": "triumphant release, tinged with the honor of finishing someone else's work",
+    "forbid": [
+     "anticlimax"
+    ]
+   },
+   "constraints": {
+    "solution_must_be": "shown, not skipped: the setting follows the timeline logic the reader carries, in the story's one cipher form",
+    "must_not": "presuppose the note branch or any specific room; the reasoning works from the generic hint plus the clock's own markings"
+   },
+   "choice_semantics": {
+    "c_correct_vault": "step through into what his finished work reveals"
+   },
+   "beat_hint": "the setting finishes his work; the tower's memory runs true again after decades."
+  },
+  "n_setjam": {
+   "tier": "open",
+   "function": "disturb-his-work",
+   "entry_state": [
+    "at_the_old_clock",
+    "clock_riddle_live"
+   ],
+   "establishes": [
+    "clock_seized"
+   ],
+   "forbids": [
+    "anyone_injured",
+    "clock_restored"
+   ],
+   "affect": {
+    "target": "wince of having forced something delicate, then resolve to set it right",
+    "forbid": [
+     "despair",
+     "blame"
+    ]
+   },
+   "invention": {
+    "remedy": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.remedies",
+     "category": "remedies",
+     "assigned_at": "bind",
+     "note": "the machine's own honest way back from the jam, supplied entirely by the bible"
+    }
+   },
+   "constraints": {
+    "remedy_must_be": "workable at the scene on every path, presupposing nothing carried from any other room",
+    "jam_must_read": "as his mechanism protecting itself, a fair consequence of forcing, not a punishment of the friends",
+    "must_not": "shame whoever forced the setting"
+   },
+   "choice_semantics": {
+    "c_jam_oil": "work the problem: find the honest way back and try again more carefully",
+    "c_jam_stuck": "accept the mechanism has won tonight"
+   },
+   "beat_hint": "force meets a mechanism that protects itself; setting it right must be earned, not forced."
+  },
+  "n_backpanel": {
+   "tier": "open",
+   "function": "find-a-second-note",
+   "entry_state": [
+    "at_the_old_clock",
+    "clock_riddle_live"
+   ],
+   "establishes": [
+    "second_note_found"
+   ],
+   "forbids": [
+    "clock_seized",
+    "chamber_entered"
+   ],
+   "affect": {
+    "target": "sly delight at a second message hidden in plain sight",
+    "forbid": [
+     "dread"
+    ]
+   },
+   "constraints": {
+    "panel_cipher_must_be": "the same cipher form as the story's note, smaller and quicker; solving it uses the timeline piece carried, never the full translation",
+    "must_not": "make this route feel like cheating; he built it on purpose for careful searchers"
+   },
+   "choice_semantics": {
+    "c_panel_vault": "follow the second note toward what everyone came for",
+    "c_panel_secret": "follow the second note the other way, toward a room no one mentioned"
+   },
+   "beat_hint": "behind the clock's face, he left a second, smaller note and two directions to follow it."
+  },
+  "n_vault": {
+   "tier": "open",
+   "function": "pose-what-to-do-with-memory",
+   "entry_state": [
+    "at_the_old_clock",
+    "timeline_piece_held"
+   ],
+   "establishes": [
+    "chamber_entered",
+    "chamber_seen"
+   ],
+   "forbids": [
+    "anyone_injured"
+   ],
+   "affect": {
+    "target": "awed quiet; the search is answered, and now a question of what memory deserves",
+    "forbid": [
+     "greed_glamorized",
+     "dread"
+    ]
+   },
+   "merge_note": "NC-1: three parents (n_setcorrect, n_setjam, n_backpanel) opened the way by different means. Presuppose only that they stand past the clock with a working sense of his last days; write the chamber's opening as already behind them without re-describing which route yielded it.",
+   "invention": {
+    "contents": {
+     "pick": 3,
+     "from": "bible.device_vocabulary.vault_contents",
+     "category": "vault_contents",
+     "assigned_at": "bind",
+     "note": "his letter, the keepsake, and a modest heritage treasure; the letter's voice is kind and asks nothing"
+    }
+   },
+   "constraints": {
+    "contents_must_be": "knowledge, heritage, and wonder; the treasure is modest and clearly the settlement's, which is what makes the grab choice legible as wrong",
+    "choice_must_be": "a genuine three-way question of character with no narrator's thumb on the scale before the outcome"
+   },
+   "choice_semantics": {
+    "c_vault_share": "restore the memory publicly: bring the letter back to the settlement",
+    "c_vault_keep": "keep the memory privately: let it belong to the friends who found it",
+    "c_vault_grab": "treat the memory as loot and take the treasure for yourselves"
+   },
+   "beat_hint": "bottleneck. his story is answered; now a choice of what memory the friends owe the settlement."
+  },
+  "n_end_library": {
+   "tier": "locked_outcome",
+   "function": "payoff-staying-with-him",
+   "entry_state": [
+    "crossed_the_threshold",
+    "archive_holds_them"
+   ],
+   "establishes": [
+    "left_with_dignity",
+    "search_can_resume"
+   ],
+   "forbids": [
+    "shame",
+    "regret_dominant"
+   ],
+   "affect": {
+    "target": "contented absorption; a day spent with his records instead of his puzzle",
+    "forbid": [
+     "despair",
+     "mockery"
+    ]
+   },
+   "mechanisms": [
+    "the archive teaches them the tower's real history, arming a better-prepared return",
+    "a page in the archive holds a copy of the note, carried home so the translation can continue",
+    "closing time arrives mid-chapter and the keeper gently shows them out with a borrowing promise"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "ending_must_read": "as a different kind of win: they chose his history over the clock and the choice is honored; the search waits, richer for what they now know"
+   },
+   "beat_hint": "the readers' ending; clever, warm, and openly unfinished."
+  },
+  "n_end_giveup": {
+   "tier": "locked_outcome",
+   "function": "payoff-honoring-his-caution",
+   "entry_state": [
+    "crossing_recalls_risk",
+    "keepsake_glimpsed"
+   ],
+   "establishes": [
+    "left_with_dignity",
+    "search_can_resume"
+   ],
+   "forbids": [
+    "cowardice_implied",
+    "mockery"
+   ],
+   "affect": {
+    "target": "sober relief, understanding his old caution firsthand",
+    "forbid": [
+     "despair",
+     "shame"
+    ]
+   },
+   "mechanisms": [
+    "a sober look at the crossing convinces them the cost of a slip outweighs finishing his story tonight",
+    "one friend names the risk aloud and the others agree, recognizing it as the same risk he once weighed",
+    "a slip caught in time turns the attempt into a calm, deliberate retreat"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "ending_must_read": "as judgment, not fear: knowing when not to is a skill he'd have recognized; the search stays open"
+   },
+   "beat_hint": "the setback that is also wisdom; nobody laughs, and the search stays open."
+  },
+  "n_end_timeout": {
+   "tier": "locked_outcome",
+   "function": "payoff-running-out-of-time",
+   "entry_state": [
+    "at_the_old_clock",
+    "clock_riddle_live"
+   ],
+   "establishes": [
+    "left_with_dignity",
+    "search_can_resume"
+   ],
+   "forbids": [
+    "humiliation",
+    "permanent_damage"
+   ],
+   "affect": {
+    "target": "rueful lesson: some answers cannot be rushed, especially his",
+    "forbid": [
+     "despair",
+     "punishing_tone"
+    ]
+   },
+   "mechanisms": [
+    "random guessing trips a protection he built, freezing the setting until a keeper resets it",
+    "the closing signal sounds before any guess lands, and the tower must empty for the night, his last setting still unfinished",
+    "the overworked mechanism raises a polite fuss that brings the keeper up to close for the night"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "ending_must_read": "as the fair cost of guessing at a thing built for thinking; the lesson is theirs to use next time"
+   },
+   "beat_hint": "chance loses to his design; the tower closes politely around the gamble."
+  },
+  "n_end_stuck": {
+   "tier": "locked_outcome",
+   "function": "payoff-regrouping-for-him",
+   "entry_state": [
+    "clock_seized"
+   ],
+   "establishes": [
+    "left_with_dignity",
+    "search_can_resume"
+   ],
+   "forbids": [
+    "blame",
+    "permanent_damage"
+   ],
+   "affect": {
+    "target": "determined resolve to treat his work more carefully next time",
+    "forbid": [
+     "despair",
+     "defeat_as_identity"
+    ]
+   },
+   "mechanisms": [
+    "the forced works bind fast, and nothing they carry tonight will move them",
+    "a bent linkage needs a workshop tool nobody brought, exactly the kind he kept on hand",
+    "the keeper's posted rule ends forcing attempts at nightfall, and they honor it in his memory"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "ending_must_read": "as a pause, not a verdict: the friends leave already planning the return with the right care"
+   },
+   "beat_hint": "the mechanism wins the night; the friends win the plan to return more carefully."
+  },
+  "n_end_secret": {
+   "tier": "locked_outcome",
+   "function": "payoff-finding-his-living-room",
+   "entry_state": [
+    "second_note_found"
+   ],
+   "establishes": [
+    "workshop_uncovered",
+    "legacy_accepted",
+    "kinship_formed"
+   ],
+   "forbids": [
+    "exploitation_of_find"
+   ],
+   "affect": {
+    "target": "hushed wonder settling into a sense of inheritance",
+    "forbid": [
+     "greed",
+     "anticlimax"
+    ]
+   },
+   "invention": {
+    "loft_signature": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.loft_signatures",
+     "category": "loft_signatures",
+     "assigned_at": "bind",
+     "note": "the one detail that makes his space feel currently alive and mid-thought rather than preserved"
+    }
+   },
+   "mechanisms": [
+    "the workshop adopts them as its quiet caretakers, and caring for it becomes a way of keeping him close",
+    "some ongoing work in the room invites their hands, and continuing it becomes their standing project",
+    "his notes name whoever finds the room its steward, and they accept, as if he had been waiting"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "room_must_be": "a working room alive with his presence; the reward is responsibility and access, never possession"
+   },
+   "beat_hint": "the sideways ending: not the chamber, but his living workshop, and a role in keeping it."
+  },
+  "n_end_hero": {
+   "tier": "locked_outcome",
+   "function": "payoff-restoring-memory",
+   "entry_state": [
+    "chamber_entered",
+    "chamber_seen"
+   ],
+   "establishes": [
+    "memory_restored_publicly",
+    "clock_restored",
+    "departure_understood",
+    "kinship_formed"
+   ],
+   "forbids": [
+    "reward_as_riches"
+   ],
+   "affect": {
+    "target": "quiet fullness; the settlement remembers him again because of them",
+    "forbid": [
+     "gloating",
+     "anticlimax"
+    ]
+   },
+   "mechanisms": [
+    "the recovered story is shared publicly and the settlement remembers him properly at last",
+    "the recovered story quietly restores something the settlement had lost along with him",
+    "the recovery earns the keeper's trust and a standing invitation back to the tower he loved"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "restoration_must_be": "concrete and communal: the recovered story gives the settlement back its memory of him, and the clock runs true as the visible sign of it"
+   },
+   "beat_hint": "the main triumphant ending; his story finally returned, decades late, by the right hands."
+  },
+  "n_end_keepsake": {
+   "tier": "locked_outcome",
+   "function": "payoff-a-private-inheritance",
+   "entry_state": [
+    "chamber_entered",
+    "chamber_seen"
+   ],
+   "establishes": [
+    "memory_kept_privately",
+    "kinship_formed"
+   ],
+   "forbids": [
+    "selfishness_implied"
+   ],
+   "affect": {
+    "target": "warm quiet closeness, holding his memory just among themselves",
+    "forbid": [
+     "guilt",
+     "anticlimax"
+    ]
+   },
+   "mechanisms": [
+    "a pact sworn over the keepsake binds the friends as the quiet keepers of his memory",
+    "they leave everything exactly as found, keeping the story and leaving the rest",
+    "his letter asks its finders to choose, and they choose to keep his memory close instead of loud"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "keeping_must_read": "as guardianship, not hoarding: nothing leaves the chamber that belongs to the settlement; what the friends keep is the memory, and each other"
+   },
+   "beat_hint": "the private happy ending; some memories are for keeping close, and keepers are what they became."
+  },
+  "n_end_caught": {
+   "tier": "locked_outcome",
+   "function": "payoff-mistaking-memory-for-loot",
+   "entry_state": [
+    "chamber_entered",
+    "chamber_seen"
+   ],
+   "establishes": [
+    "set_right_with_keeper",
+    "keeper_returns",
+    "left_with_dignity",
+    "search_can_resume"
+   ],
+   "forbids": [
+    "humiliation",
+    "punishment_beyond_returning",
+    "theft_rewarded"
+   ],
+   "affect": {
+    "target": "comic sheepishness at mistaking his memory for treasure, then relief at being gently corrected",
+    "forbid": [
+     "menace",
+     "despair",
+     "shaming"
+    ]
+   },
+   "invention": {
+    "safeguard": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.safeguards",
+     "category": "safeguards",
+     "assigned_at": "bind",
+     "note": "he anticipated this exact impulse; whatever form it takes, the safeguard is gentle, funny, and impossible to be hurt by"
+    }
+   },
+   "mechanisms": [
+    "his old safeguard announces the grab, and the keeper arrives before the door",
+    "what they carry out is exactly what springs the safeguard he built for this exact moment",
+    "second thoughts slow them just enough for the keeper's evening rounds to find them mid-return"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "correction_must_be": "fair and complete without cruelty: everything goes back, the keeper is firm but kind, and the friends leave lighter for having been caught",
+    "must_not": "threaten, lecture at length, or bar the friends from the tower forever"
+   },
+   "beat_hint": "the grab meets his old sense of humor; a gentle giveaway, a keeper, and a putting-right that costs only blushes."
+  }
+ }
+}
