@@ -2643,9 +2643,12 @@ posture at a trust boundary must be verified from outside that boundary.
   above) is the more favorable outcome if it applies. **MA 201 CMR 17.00 is narrower on its face**:
   "owns or licenses" is defined at 201 CMR 17.02 as receiving, storing, maintaining, processing, or
   otherwise having access to personal information "in connection with the provision of goods or
-  services or in connection with employment", and the Commonwealth's own FAQ guidance states the
-  regulation does not reach a natural person managing personal or household information outside
-  that commercial or employment context. Whether a single-family homelab deployment already sits
+  services or in connection with employment". Rest the point on that definition rather than on the
+  Commonwealth's FAQ guidance, which says the same thing (the regulation does not reach a natural
+  person managing personal or household information outside a commercial or employment context) but
+  is informal guidance this register cannot cite to a stable, verifiable location; 17.02's own text
+  carries the substance, so the FAQ is corroboration and not the basis. Whether a single-family
+  homelab deployment already sits
   outside 201 CMR's scope on that basis, independent of both the data-class gate and whether an MA
   resident has ever been onboarded, is a genuinely open, more favorable question than SHIELD's and
   has not been asked of counsel; do not assume either statute is equally deferred by the same

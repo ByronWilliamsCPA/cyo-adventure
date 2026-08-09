@@ -24,16 +24,18 @@ source: "Direct review of src/cyo_adventure/api, src/cyo_adventure/db/models.py,
 
 ## 0. Important disclaimer
 
-This is an engineering-derived record, not legal advice, consistent with the disclaimer carried
-verbatim by this directory's audit-style documents (`coppa-compliance-audit.md`,
-`gdpr-compliance-review.md`, `coppa-gdpr-remediation-plan.md`). Not every document in this
-directory carries it: `privacy-notice.md` is drafted as guardian-facing notice text rather than an
-engineering audit, and several others (`breach-notification-runbook.md`, `dpia.md`,
-`information-security-program.md`, `processor-dpa-checklist.md`,
-`records-of-processing-activities.md`) state no legal-advice disclaimer at all. As of this update
-this directory also holds `counsel-engagement-brief.md` and `data-retention-policy.md` (added by
-PR #643, merged after this matrix's original authoring and pulled in below); both are drafted as
-formal artifacts for the standing counsel-engagement item and are not surveyed field-by-field here.
+This is an engineering-derived record, not legal advice. The survey below is stated exhaustively
+because a partial one invites the reader to generalize from it. Of the eleven sibling documents in
+this directory, **four** state a comparable disclaimer in their own words: `coppa-compliance-audit.md`,
+`gdpr-compliance-review.md`, `coppa-gdpr-remediation-plan.md`, and `data-retention-policy.md` (the
+last added by PR #643). Their wordings differ materially, so what is shared is the posture and not a
+sentence; an earlier revision of this paragraph said the disclaimer was carried "verbatim", which is
+not the case. The remaining **seven** carry none, for two distinct reasons. `privacy-notice.md` and
+`dpia.md` are drafted as counsel-review deliverables, guardian-facing notice text and an Art. 35
+assessment respectively, and carry a DRAFT status caveat in place of a disclaimer.
+`breach-notification-runbook.md`, `counsel-engagement-brief.md` (added by PR #643),
+`information-security-program.md`, `processor-dpa-checklist.md`, and
+`records-of-processing-activities.md` state neither.
 Several rows below cite `coppa-compliance-audit.md` (dated 2026-07-10), which predates the ADR-018
 consent implementation (2026-07-20) and the D5 AI-training amendment (2026-08-01). Where a newer
 document supersedes an older finding this record says so and cites both. Two conflicts between
@@ -85,7 +87,7 @@ disclosure requiring separate consent), which does not collapse to a single "Yes
 it can differ by vendor and has not been fully determined for several of them. Every row in this
 table, including every "No" / "None" row, is Supabase-hosted on the public tier; that is a single
 fact true of the whole matrix, stated once in [Section 4](#4-cross-cutting-notes) and in the
-[Supabase vendor entry](#supabase-auth--primary-postgres-public-tier) rather than repeated on all
+[Supabase vendor entry](#supabase-auth-and-primary-postgres-public-tier) rather than repeated on all
 ten rows, where it would carry no differentiating information.
 
 | # | Event | Child free text? | COPPA PI | Reaches a third party? | Vendors touched | Status |
@@ -195,12 +197,15 @@ repeated per event in Section 3.
   and 312.4(c)(1)/(d)'s notice content, not merely a service-provider call. Under GDPR, storing
   content "for future research" for Google's own purposes is inconsistent with acting solely as a
   processor on CYO's documented instructions.
-- **Code fix is out of scope for this document** (set `doNotStore: true` in the request body) and
-  is tracked separately from this PR; this entry's job is to describe current behavior accurately,
-  not to resolve it. See [D5](#d5-ai-training-consent-segregation) and Event 6's consent-consequence
-  field, both of which this finding directly contradicts as previously written.
-- **Status**: confirmed adverse default (no `doNotStore`); DPA coverage separately unconfirmed;
-  COPPA PI on the wish leg.
+- **Code fix is out of scope for this document** (set `doNotStore: true` in the request body) and is
+  tracked as **issue #659**, which also asks for a unit test asserting the flag is present in the
+  posted request body (asserting on the response would prove nothing about what was sent) and a RAD
+  marker at the call site, so a later refactor cannot drop the field as apparent noise. This entry's
+  job is to describe current behavior accurately, not to resolve it. See
+  [D5](#d5-ai-training-consent-segregation) and Event 6's consent-consequence field, both of which
+  this finding directly contradicts as previously written.
+- **Status**: confirmed adverse default (no `doNotStore`), tracked as #659; DPA coverage separately
+  unconfirmed; COPPA PI on the wish leg.
 
 ### OpenRouter (+ AWS Bedrock / Azure / Vertex sub-processors), generation leg (routed)
 
@@ -298,7 +303,7 @@ repeated per event in Section 3.
   built from a child's own wish (Event 6); this register does not claim either vendor is the direct
   recipient of any child-originated event's payload, only that they sit downstream of one.
 
-### Supabase, auth + primary Postgres (public tier)
+### Supabase, auth and primary Postgres (public tier)
 
 - **Purpose**: identity provider for guardians (children never hold a Supabase identity) and, on
   the public tier, host of the Postgres database every "internal only" row in Section 3 actually
@@ -808,8 +813,12 @@ data is excluded from any training/evaluation corpus by design, so the obligatio
 that premise directly for one vendor: the classifier request sets no `doNotStore` field, and
 Google's own Perspective documentation states stored comments are used "for future research and
 community model building purposes," precisely the outcome D5's working position assumed did not
-happen. The code-level fix (setting `doNotStore: true`) is tracked separately from this document;
-this entry's job is to stop asserting a training-exclusion premise the code does not implement.
+happen. The code-level fix (setting `doNotStore: true`) is tracked as **issue #659**; this entry's
+job is to stop asserting a training-exclusion premise the code does not implement. Note the scope
+limit when reasoning about remedies: 312.5(a)(2)'s consent-segregation right runs to **disclosures
+to third parties**, so it is the right hook for the Perspective leg but is not a general opt-out of
+an operator's own internal training, which is governed instead by the 312.2 internal-operations
+proviso and, prospectively, GDPR Art. 6.
 
 ### ADR-016: Dual-guardian connection consent
 
