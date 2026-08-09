@@ -563,3 +563,76 @@ target to after the naive-user session (UW-M02) answers whether children detect
 reconvergence on replay; that is the only measurement that can justify a blocking number.
 Retire or populate `BandProfile.reconvergence_ceiling` as part of the same amendment; a
 declared-but-unset field that only the mutation engine reads misleads (AL-082).
+
+---
+
+## Part 5: Strict-bar drafting pilot with adversarial review (2026-08-09 follow-up)
+
+Owner-directed pilot: three cells, one attempted strict-compliant draft each, then an
+independent adversarial critique of every draft. Purpose: prove or refute that the ruled bar
+is drafttable, and harvest lessons before the rebuild wave. Drafts and generators live in the
+session scratchpad (`strict-pilot/`); they are pilot evidence, not catalog candidates, and all
+three were rejected on review (below), so none is committed.
+
+### Results
+
+| Cell | Draft | Gate result | Adversarial verdict |
+| --- | --- | --- | --- |
+| 3-5 / short / prose (time_cave, space theme) | "The Baby Star Goes Home", 15 nodes, 4 endings | strict PASS, first checker run, walk 100% | **REJECT** |
+| 10-13 / medium / prose (branch_and_bottleneck) | "The Storm Courier's Run", 184 nodes, 64 endings | strict PASS, zero findings any severity, walk 38.2% | **REJECT** |
+| 13-16 / medium / gamebook (gauntlet) | "The Window on Cerridane Spire", 251 nodes, 67 endings | strict PASS, zero findings, walk 25.6%, P(win) 0.5%, all deaths telegraphed | **REJECT** |
+
+Two headline facts coexist and are both load-bearing:
+
+1. **The ruled bar is drafttable, including the hardest cell.** The teen gamebook landed the
+   "few wins but fair" economy the rulings demand (25.6% satisfying, 0.5% outright wins,
+   deaths behind telegraphed recklessness), and the outcome-spread and clone audits both pass
+   it with real margin against its cell-mates. The drafters' shared method: replicate the
+   strict rule set inside a small structural generator and author beats as data; both
+   large-cell drafters independently concluded a hand-author cannot hold the coupled global
+   constraints at 180+ nodes, so the rebuild should ship that harness as a first-class
+   authoring aid rather than expect ad-hoc copies.
+2. **Strict-clean does not mean approvable.** All three drafts passed with zero findings; all
+   three failed adversarial review on defects the gate cannot see.
+
+### Convergent defect classes (found independently in 2-3 drafts each)
+
+1. **Label laundering.** The outcome gates read kind/valence tags, not outcomes. The 3-5
+   draft's four endings narrate one identical scene under four tag combinations; the 10-13
+   draft tags mission success neutral and failures discovery; the 13-16 draft has 16
+   everyone-survives rescues tagged negative-setback and 12 abandonments tagged neutral. The
+   headline economies that passed PL-24, the walk floor, and the spread audit are tag
+   artifacts in all three.
+2. **Choice-position fate bias.** In the 10-13 draft the third option leads to an ending 77%
+   of the time (position 1: never); in the 13-16 draft always-pick-option-1 walks straight to
+   the best ending with zero risk. Generators order options safe-first unless forced not to;
+   a pattern-spotting reader solves the book without reading it.
+3. **Funnel laundering and consequence-free choices.** Staged merges satisfy the in-degree
+   cap's letter while collapsing 98 ancestors into one node; 25 decision nodes in the 10-13
+   draft have sibling choices with byte-identical reachable-ending sets; the 13-16 draft's 8
+   soft decisions are 24 flavor-only choices. The cap constrains the diagram, not the
+   experience.
+4. **Merge-node beat contradictions at scale.** 8 hard upstream-vs-beat contradictions in
+   each large draft (endings narrating scenes from choices the reader declined, characters
+   known only on other routes, gear appearing from nowhere, a beat hedging "whichever
+   stranger you trusted" because the generator knew its parents disagreed). This is the
+   known beat-consistency defect class (`the-hollow-lighthouse`) reproduced systematically
+   by generation.
+5. **Quota-shaped design.** The endings-fraction floor makes terminal leaves the cheapest
+   padding (64 endings against a floor of 28); terminal-discovery endings punish the genre's
+   core verb on a coin-flip; composed stops emitted at 148-150 of the 150-word cap leave
+   zero fill headroom; a declared storm-clock premise has no structural clock, so merged
+   paths break the timeline arithmetically.
+
+### What this ruling means for the rebuild workflow
+
+The drafting loop for wave 1 must be: generated brief from `band_profile.py` (the pilot's own
+briefs drifted from code twice), structural harness draft, `check_skeleton.py --strict`, the
+catalog audits run with the candidate placed in its target cell (`check_incell_clones.py`,
+`check_outcome_spread.py`), and a mandatory adversarial critique stage before any promotion
+PR. Strict must additionally gate parameterization (a slotless `production_eligible` shell
+currently exits 0 and would take the legacy free-text fill path in matching). The
+next-generation checks the critiques specify, in priority order: tag-vs-beat honesty audit,
+positional fate-bias check with seeded option shuffling, sibling reachable-ending-overlap and
+k-hop funnel metrics, merge-node beat-presupposition linting, and a near-cap headroom
+warning. Lessons AL-142 through AL-150 carry these with proposed changes and register homes.

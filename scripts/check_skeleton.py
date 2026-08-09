@@ -46,6 +46,7 @@ import networkx as nx
 
 from cyo_adventure.core.exceptions import ProjectBaseError
 from cyo_adventure.generation.skeleton import FILL_MARKER, load_skeleton
+from cyo_adventure.mutation.identity import recompute_estimated_minutes
 from cyo_adventure.validator.band_profile import (
     breadth_scaled_floors,
     is_offered_cell,
@@ -552,6 +553,16 @@ def main(argv: list[str] | None = None) -> int:
         sys.stdout.write(
             f"walk: P(satisfying ending, uniform reader) {p_satisfying:.1%} "
             f"({floor_note})\n"
+        )
+        # Always print the derived clock: PL-23 only reveals it inside a
+        # failure message, so a wrong-but-within-tolerance declaration never
+        # surfaces the number and every miss costs an iteration (strict-pilot
+        # friction, both large-cell drafters, 2026-08-09).
+        derived_clock = recompute_estimated_minutes(skeleton)
+        sys.stdout.write(
+            f"clock: declared estimated_minutes "
+            f"{metadata.get('estimated_minutes')} vs derived {derived_clock} "
+            f"(PL-23 tolerance 25%)\n"
         )
         if args.strict and floor is not None and p_satisfying < floor:
             failed |= _fail(
