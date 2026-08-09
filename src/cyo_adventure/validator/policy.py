@@ -33,6 +33,7 @@ anchored on Adams, Beckelhymer and Marr, Journal of Humanistic Mathematics 9(2),
 from __future__ import annotations
 
 import heapq
+import math
 import re
 
 import networkx as nx
@@ -635,13 +636,16 @@ _ENDING_KIND_SHARE_CEILING = 0.60
 # denominator is inflated by failure leaves on purpose. So a share floor would
 # flag an entire style and signal nothing.
 #
-# Prose keeps a share floor. Gamebooks get an ABSOLUTE floor on distinct winnable
-# endings instead, which catches the real defect (a large branching book with one
-# or no way to win) without punishing the style. Every catalog gamebook currently
-# has 5, so the floor is set below that and the rule is exercised by unit test
-# rather than by the corpus.
+# Prose keeps a share floor. Gamebooks get a floor on distinct winnable endings
+# instead, which catches the real defect (a large branching book with one or no
+# way to win) without punishing the style. Ruled 2026-08-09 (review Part 4, R1):
+# the floor scales as max(3, ceil(5% of endings)), so a 200-ending book cannot
+# clear it with the same 2-3 wins that satisfy a 30-ending one; the original
+# absolute floor of 3 had been calibrated below the whole corpus and was
+# exercised only by unit test.
 _POSITIVE_VALENCE_SHARE_FLOOR_PROSE = 0.10
 _POSITIVE_ENDING_COUNT_FLOOR_GAMEBOOK = 3
+_POSITIVE_ENDING_SHARE_FLOOR_GAMEBOOK = 0.05
 
 
 def _words_on_shortest_satisfying_path(story: Storybook) -> int | None:
@@ -768,7 +772,11 @@ def _check_ending_mix(story: Storybook, report: ValidationReport) -> None:
         if node.ending is not None and node.ending.valence is Valence.POSITIVE
     )
     if story.metadata.narrative_style is NarrativeStyle.GAMEBOOK:
-        if positive < _POSITIVE_ENDING_COUNT_FLOOR_GAMEBOOK:
+        gamebook_floor = max(
+            _POSITIVE_ENDING_COUNT_FLOOR_GAMEBOOK,
+            math.ceil(_POSITIVE_ENDING_SHARE_FLOOR_GAMEBOOK * total),
+        )
+        if positive < gamebook_floor:
             report.add(
                 ValidationFinding(
                     rule_id="PL-24",
@@ -777,8 +785,10 @@ def _check_ending_mix(story: Storybook, report: ValidationReport) -> None:
                     message=(
                         f"PL-24 mix: only {positive} positive-valence ending(s) in "
                         f"{total} in story '{story.id}', below the gamebook floor of "
-                        f"{_POSITIVE_ENDING_COUNT_FLOOR_GAMEBOOK} distinct winnable "
-                        f"endings (advisory only)"
+                        f"{gamebook_floor} distinct winnable endings "
+                        f"(max of {_POSITIVE_ENDING_COUNT_FLOOR_GAMEBOOK} and "
+                        f"{_POSITIVE_ENDING_SHARE_FLOOR_GAMEBOOK:.0%} of endings; "
+                        f"advisory only)"
                     ),
                 )
             )

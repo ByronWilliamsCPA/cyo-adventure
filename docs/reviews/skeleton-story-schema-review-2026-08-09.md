@@ -458,6 +458,23 @@ indegree is 7.79 against the research's 1.5), B4 (`is_secret`/rarity metadata).
 Requested recommendations on the four decisions that shape the rebuild. Each is a
 recommendation to the owner, not a ruling; the register rows stay open until ruled.
 
+> **RULED 2026-08-09 (owner)**: R1, R2, and R3 are accepted as written below. R4 is accepted
+> with one amendment: the reconvergence constraint is a **hard gate**, not an advisory. The
+> owner's stated plan is to remove all non-conforming skeletons and build a new catalog set;
+> a robust, high-quality skeleton set is the long-term priority. Implementation status:
+> R1's walk floors are ratified in `check_skeleton.py --strict`, PL-24's winnability floor
+> now scales as `max(3, ceil(5% of endings))` in `validator/policy.py`, and the cell-level
+> outcome-spread audit exists as `scripts/check_outcome_spread.py` (3 breaches at tau 0.10
+> in the current catalog, headed by the clone pair at distance 0.0000). R2's depth-qualified
+> endings floor and R4's topology-aware max in-degree cap are hard failures in
+> `check_skeleton.py --strict` (caps 4/4/6/6/8/8 by band on `branch_and_bottleneck`,
+> `gauntlet`, `sorting_hat`, `time_cave`; `open_map` and `loop_and_grow` are exempt because
+> hub re-entry is those topologies working as designed, with catalog hub medians of 9 and 5).
+> The strict checks stay out of the production gate until the grandfathered catalog is
+> removed, at which point they should be promoted into `validator/` with proper rule ids so
+> the bar can never regress. R3 (L2-11 envelope awareness plus the AL-131 observability
+> companion) is ruled and scheduled for implementation before the ADR-028 pilot skeleton.
+
 ### R1. Teen death-ratio policy (B1, sets PL-24/walk-floor thresholds)
 
 **Recommend: keep lethal gamebooks legal; regulate the experienced economy, not the census.**

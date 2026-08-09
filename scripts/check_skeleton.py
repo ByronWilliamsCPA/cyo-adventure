@@ -18,12 +18,17 @@ section 2.2).
 3): the grandfathered catalog keeps the default behavior, but a new shell
 must also (a) carry no advisory from the escalation set (PL-19 story mean,
 PL-23 clock, PL-24 ending mix, PL-25 first decision, PL-26 corridor density,
-L1-7 below cell min), (b) pass the CG-1..CG-4 choice grammar
-(``enforce_grammar=True``), and (c) clear the band's random-walk outcome
-floor: the probability that a uniform random reader reaches a satisfying
-(positive- or neutral-valence) ending. The floors are authoring-time policy
-pending owner calibration; they are deliberately NOT part of the production
-gate, so no rule id is claimed in the validator catalog.
+L1-7 below cell min), (b) pass the CG-1..CG-3 choice grammar
+(``enforce_grammar=True``; CG-4 needs filled prose), (c) clear the band's
+random-walk outcome floor: the probability that a uniform random reader
+reaches a satisfying (positive- or neutral-valence) ending, (d) respect the
+per-band max in-degree hard cap on tree-like topologies (reconvergence,
+ruled blocking 2026-08-09), and (e) meet the breadth-scaled endings floor
+counting only depth-qualified endings (at least a third of the arc floor
+deep). All five are authoring-time policy, ruled 2026-08-09 (review Part 4);
+they are deliberately NOT part of the production gate until the
+grandfathered catalog is removed, so no rule id is claimed in the validator
+catalog yet.
 
 Exits 1 on a gate block, any brief mismatch, or (with ``--strict``) any
 escalated advisory or a walk-floor breach.
@@ -32,6 +37,7 @@ escalated advisory or a walk-floor breach.
 from __future__ import annotations
 
 import argparse
+import math
 import sys
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, cast
@@ -79,7 +85,8 @@ STRICT_BLOCKING_WARNINGS: frozenset[str] = frozenset(
 # 2026-08-09 review measured the current catalog at medians of 100% (3-5),
 # 71% (5-8), 43% (8-11), 29% (10-13), 0.3% (13-16) and 1.2% (16+); the teen
 # gamebook floor of 2% forces a graded-setback economy without banning the
-# lethal style. Pending owner calibration (review Part 3, section 9.2 item 1).
+# lethal style. RULED 2026-08-09 (owner accepted review Part 4 R1): these
+# values are the ratified floors for the rebuilt catalog.
 _WALK_FLOORS: dict[str, float] = {
     "3-5": 0.60,
     "5-8": 0.40,
@@ -88,6 +95,36 @@ _WALK_FLOORS: dict[str, float] = {
 }
 _TEEN_WALK_FLOORS: dict[str, float] = {"prose": 0.10, "gamebook": 0.02}
 _TEEN_BANDS: frozenset[str] = frozenset({"13-16", "16+"})
+
+# Reconvergence hard gate (RULED 2026-08-09: owner upgraded review Part 4 R4
+# from advisory to blocking for the rebuilt catalog). Caps the maximum node
+# in-degree, per band, for the tree-like topologies where a mega-funnel means
+# corridors collapsing into one node (the removed clone pair funnelled 31
+# branches into a single bottleneck). Topology-aware on the data, not as a
+# concession: ``open_map`` hubs and ``loop_and_grow`` loops are re-entered by
+# design (catalog medians 9 and 5, one legitimate hub at in-degree 126), so a
+# blanket cap would ban two topology families outright. The exempt topologies
+# get their reconvergence constraint from the per-path experience metrics
+# (SQ-15) instead.
+_RECONVERGENCE_CAPPED_TOPOLOGIES: frozenset[str] = frozenset(
+    {"branch_and_bottleneck", "gauntlet", "sorting_hat", "time_cave"}
+)
+_MAX_INDEGREE_CAPS: dict[str, int] = {
+    "3-5": 4,
+    "5-8": 4,
+    "8-11": 6,
+    "10-13": 6,
+    "13-16": 8,
+    "16+": 8,
+}
+
+# Depth-qualified endings floor (RULED 2026-08-09, review Part 4 R2): under
+# --strict, an ending counts toward the breadth-scaled endings floor only if
+# its shortest depth from the start is at least this fraction of the cell's
+# ``min_complete`` arc floor. Kills the shallow-failure-leaf incentive the
+# AL-026 evidence exposed (a 746-node book satisfied its floor with 7 endings
+# within two taps of the start) while preserving the breadth incentive.
+_ENDING_DEPTH_QUALIFICATION_FRACTION = 1 / 3
 
 
 def _headroom(story: dict[str, Any], metadata: dict[str, Any]) -> str:
@@ -253,6 +290,90 @@ def satisfying_walk_probability(story: dict[str, Any]) -> float:
     return prob[start]
 
 
+def max_indegree(story: dict[str, Any]) -> int:
+    """Return the highest node in-degree over all choice edges.
+
+    Parallel edges count separately: two choices on one node targeting the
+    same successor contribute 2, because each is a corridor funnelling in.
+
+    Args:
+        story: The decoded skeleton dict.
+
+    Returns:
+        int: The maximum in-degree, 0 for a story with no choices.
+    """
+    counts: dict[str, int] = {}
+    nodes_raw = story.get("nodes")
+    for node in cast("list[Any]", nodes_raw if isinstance(nodes_raw, list) else []):
+        if not isinstance(node, dict):
+            continue
+        for choice in cast("list[Any]", node.get("choices") or []):
+            if isinstance(choice, dict):
+                target = str(choice.get("target"))
+                counts[target] = counts.get(target, 0) + 1
+    return max(counts.values(), default=0)
+
+
+def indegree_cap(band: str, topology: str | None) -> int | None:
+    """Return the reconvergence hard cap for a cell, or None when exempt.
+
+    Args:
+        band: The skeleton's ``age_band``.
+        topology: Its declared topology; hub topologies (``open_map``,
+            ``loop_and_grow``) are exempt because re-entry is their design.
+
+    Returns:
+        int | None: The cap, or None for an exempt topology or unknown band.
+    """
+    if topology not in _RECONVERGENCE_CAPPED_TOPOLOGIES:
+        return None
+    return _MAX_INDEGREE_CAPS.get(band)
+
+
+def depth_qualified_endings(story: dict[str, Any], min_depth: int) -> tuple[int, int]:
+    """Return (qualified, total) ending counts at or past a BFS depth.
+
+    Depth is the shortest hop count from the start node; an ending shallower
+    than ``min_depth`` is reachable too early to count as real breadth
+    (review Part 4 R2).
+
+    Args:
+        story: The decoded skeleton dict (gate-passed).
+        min_depth: The qualification threshold in hops.
+
+    Returns:
+        tuple[int, int]: Qualified ending count, then total ending count.
+    """
+    nodes_raw = story.get("nodes")
+    nodes: dict[str, dict[str, Any]] = {
+        str(n.get("id")): n
+        for n in cast("list[Any]", nodes_raw if isinstance(nodes_raw, list) else [])
+        if isinstance(n, dict)
+    }
+    start = str(story.get("start_node"))
+    depth: dict[str, int] = {start: 0} if start in nodes else {}
+    frontier = [start] if start in nodes else []
+    while frontier:
+        next_frontier: list[str] = []
+        for node_id in frontier:
+            for choice in cast("list[Any]", nodes[node_id].get("choices") or []):
+                if not isinstance(choice, dict):
+                    continue
+                target = str(choice.get("target"))
+                if target in nodes and target not in depth:
+                    depth[target] = depth[node_id] + 1
+                    next_frontier.append(target)
+        frontier = next_frontier
+    total = 0
+    qualified = 0
+    for node_id, node in nodes.items():
+        if isinstance(node.get("ending"), dict):
+            total += 1
+            if depth.get(node_id, 0) >= min_depth:
+                qualified += 1
+    return qualified, total
+
+
 def walk_floor(band: str, style: str | None) -> float | None:
     """Return the strict-mode random-walk outcome floor for a cell.
 
@@ -343,8 +464,9 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help=(
             "New-skeleton bar: fail on any escalated advisory (PL-19/23/24/25/26, "
-            "L1-7 below cell min), enforce the CG-1..CG-4 choice grammar, and "
-            "require the band's random-walk satisfying-outcome floor."
+            "L1-7 below cell min), enforce the CG-1..CG-3 choice grammar, and "
+            "require the random-walk outcome floor, the reconvergence in-degree "
+            "cap, and the depth-qualified endings floor."
         ),
     )
     args = parser.parse_args(argv)
@@ -438,6 +560,47 @@ def main(argv: list[str] | None = None) -> int:
                 f"the {floor:.0%} floor for ({band}, {style or 'prose'}); add "
                 f"graded setbacks or reconverge failure corridors"
             )
+        topology_raw = metadata.get("topology")
+        topology = str(topology_raw) if isinstance(topology_raw, str) else None
+        cap = indegree_cap(band, topology)
+        observed = max_indegree(skeleton)
+        if cap is not None:
+            sys.stdout.write(
+                f"reconvergence: max in-degree {observed} "
+                f"(hard cap {cap} for {band} {topology})\n"
+            )
+            if args.strict and observed > cap:
+                failed |= _fail(
+                    f"strict reconvergence: max in-degree {observed} exceeds "
+                    f"the hard cap {cap} for ({band}, {topology}); a funnel "
+                    f"this wide collapses corridors into one node (ruled "
+                    f"2026-08-09, review Part 4 R4 upgraded to blocking)"
+                )
+        else:
+            sys.stdout.write(
+                f"reconvergence: max in-degree {observed} "
+                f"(exempt topology {topology}: hub re-entry is by design)\n"
+            )
+        length_raw = metadata.get("length")
+        if args.strict and isinstance(length_raw, str):
+            arc_floor = min_complete_floor(band, length_raw, style or "prose")
+            if arc_floor is not None:
+                min_depth = math.ceil(arc_floor * _ENDING_DEPTH_QUALIFICATION_FRACTION)
+                qualified, total_endings = depth_qualified_endings(skeleton, min_depth)
+                ending_floor, _ = breadth_scaled_floors(node_count, style or "prose")
+                sys.stdout.write(
+                    f"endings depth-qualified: {qualified} of {total_endings} at "
+                    f"depth >= {min_depth} against floor {ending_floor}\n"
+                )
+                if qualified < ending_floor:
+                    failed |= _fail(
+                        f"strict endings floor: only {qualified} of "
+                        f"{total_endings} endings sit at depth >= {min_depth} "
+                        f"(33% of the {arc_floor}-node arc floor), below the "
+                        f"breadth-scaled floor of {ending_floor}; shallow "
+                        f"failure leaves do not count as breadth (ruled "
+                        f"2026-08-09, review Part 4 R2)"
+                    )
     if args.headroom:
         sys.stdout.write(_headroom(skeleton, metadata))
     if not failed:

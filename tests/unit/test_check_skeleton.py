@@ -185,3 +185,61 @@ def test_walk_floor_is_style_scaled_at_the_teen_bands() -> None:
     assert check_skeleton.walk_floor("16+", None) == pytest.approx(0.10)
     assert check_skeleton.walk_floor("3-5", None) == pytest.approx(0.60)
     assert check_skeleton.walk_floor("nonsense", None) is None
+
+
+# ---------------------------------------------------------------------------
+# Reconvergence hard cap + depth-qualified endings (ruled 2026-08-09, Part 4)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+def test_max_indegree_counts_parallel_edges_separately() -> None:
+    story = _walk_story(
+        [
+            {
+                "id": "a",
+                "choices": [{"target": "b"}, {"target": "b"}, {"target": "c"}],
+            },
+            _walk_ending("b", "positive"),
+            _walk_ending("c", "positive"),
+        ]
+    )
+    assert check_skeleton.max_indegree(story) == 2
+
+
+@pytest.mark.unit
+def test_indegree_cap_exempts_hub_topologies() -> None:
+    """open_map and loop_and_grow re-enter hubs by design; capping them would
+    ban both topology families (catalog hub medians 9 and 5)."""
+    assert check_skeleton.indegree_cap("8-11", "open_map") is None
+    assert check_skeleton.indegree_cap("3-5", "loop_and_grow") is None
+    assert check_skeleton.indegree_cap("3-5", "time_cave") == 4
+    assert check_skeleton.indegree_cap("13-16", "branch_and_bottleneck") == 8
+    assert check_skeleton.indegree_cap("nonsense", "gauntlet") is None
+
+
+@pytest.mark.unit
+def test_strict_reconvergence_cap_blocks_when_exceeded(
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A funnel past the band cap fails --strict on a capped topology."""
+    monkeypatch.setitem(check_skeleton._MAX_INDEGREE_CAPS, "8-11", 0)
+    assert check_skeleton.main([str(_DEMO_SHELL), "--allow-mvp", "--strict"]) == 1
+    assert "strict reconvergence" in capsys.readouterr().err
+
+
+@pytest.mark.unit
+def test_depth_qualified_endings_excludes_shallow_leaves() -> None:
+    """An ending two taps from the start is not breadth (AL-026 evidence)."""
+    story = _walk_story(
+        [
+            _walk_choice_node("a", ["shallow", "b"]),
+            _walk_ending("shallow", "negative"),
+            _walk_choice_node("b", ["c"]),
+            _walk_choice_node("c", ["deep"]),
+            _walk_ending("deep", "positive"),
+        ]
+    )
+    assert check_skeleton.depth_qualified_endings(story, 3) == (1, 2)
+    assert check_skeleton.depth_qualified_endings(story, 1) == (2, 2)
