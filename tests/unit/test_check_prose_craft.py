@@ -363,3 +363,20 @@ def test_main_reports_but_exits_zero_without_check(tmp_path: Path) -> None:
 @pytest.mark.unit
 def test_main_returns_two_for_an_unreadable_file(tmp_path: Path) -> None:
     assert main([str(tmp_path / "missing.json"), "--check"]) == 2
+
+
+@pytest.mark.unit
+def test_moral_tags_with_a_zero_tail_scans_nothing() -> None:
+    """A tail of 0 must scan an empty window, not slice [-0:] into the whole body."""
+    story = {
+        "nodes": [
+            {
+                "id": "e1",
+                "is_ending": True,
+                "ending": {"kind": "completion", "valence": "positive"},
+                "body": "They walked home. It taught them what matters more than gold.",
+            }
+        ]
+    }
+    assert moral_tags(story, tail_sentences=0) == []
+    assert moral_tags(story, tail_sentences=4)

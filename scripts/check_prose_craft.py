@@ -269,7 +269,7 @@ _LEFT_SINGLE = "\u2018"
 _RIGHT_SINGLE = "\u2019"
 
 _DOUBLE_QUOTED = re.compile(
-    f'["{_LEFT_DOUBLE}][^"{_LEFT_DOUBLE}{_RIGHT_DOUBLE}]*["{_RIGHT_DOUBLE}]'
+    f'["{_LEFT_DOUBLE}][^"{_LEFT_DOUBLE}{_RIGHT_DOUBLE}]{{0,400}}["{_RIGHT_DOUBLE}]'
 )
 _SINGLE_QUOTED = re.compile(
     f"(?<![A-Za-z])['{_LEFT_SINGLE}]"
@@ -538,7 +538,10 @@ def moral_tags(story: dict[str, Any], *, tail_sentences: int = 4) -> list[MoralH
             continue
         node_id = str(node.get("id", "?"))
         body = strip_quoted(str(node.get("body", "")))
-        for sentence in _sentences(body)[-tail_sentences:]:
+        # A tail of 0 would slice [-0:], i.e. the WHOLE body, and a negative
+        # value inverts the window; both silently widen the scan.
+        tail = _sentences(body)[-tail_sentences:] if tail_sentences > 0 else []
+        for sentence in tail:
             for pattern, name in _MORAL_COMPILED:
                 if pattern.search(sentence):
                     hits.append(MoralHit(node_id, name, sentence))

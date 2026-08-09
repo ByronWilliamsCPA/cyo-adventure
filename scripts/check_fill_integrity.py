@@ -151,7 +151,8 @@ def main(argv: list[str] | None = None) -> int:
         "--allow-title-rewrite",
         action="store_true",
         help=(
-            "Permit ending titles to differ (title-contract fills; titles are "
+            "Permit the storybook title and ending titles to differ "
+            "(title-contract fills; titles are "
             "leaf content per WS-0, AL-161)."
         ),
     )

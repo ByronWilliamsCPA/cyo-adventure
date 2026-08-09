@@ -67,13 +67,21 @@ def outcome_signature(story: dict[str, Any]) -> tuple[float, ...] | None:
         ending = node.get("ending")
         if not isinstance(ending, dict):
             continue
-        total += 1
         kind = str(ending.get("kind"))
         valence = str(ending.get("valence"))
-        if kind in kinds:
-            kinds[kind] += 1
-        if valence in valences:
-            valences[valence] += 1
+        if kind not in kinds or valence not in valences:
+            # Counting an unrecognized value in `total` without a bucket makes
+            # the shares sum to less than 1.0, pulling the signature toward the
+            # origin and understating every distance, which produces false
+            # passes in --check. Surface it instead of absorbing it.
+            msg = (
+                f"unknown ending kind/valence {kind!r}/{valence!r} in node "
+                f"{node.get('id')!r}"
+            )
+            raise ValueError(msg)
+        total += 1
+        kinds[kind] += 1
+        valences[valence] += 1
     if total == 0:
         return None
     return tuple(kinds[k] / total for k in _KINDS) + tuple(
@@ -108,14 +116,19 @@ def _load_cells() -> dict[tuple[str, str, str], list[tuple[str, tuple[float, ...
             continue
         story = cast("dict[str, Any]", json.loads(path.read_text(encoding="utf-8")))
         metadata = cast("dict[str, Any]", story.get("metadata") or {})
+        band = metadata.get("age_band")
         length = metadata.get("length")
         style = metadata.get("narrative_style")
-        if not isinstance(length, str) or not isinstance(style, str):
+        if (
+            not isinstance(band, str)
+            or not isinstance(length, str)
+            or not isinstance(style, str)
+        ):
             continue  # MVP seed: declares no cell, audits nothing
         signature = outcome_signature(story)
         if signature is None:
             continue
-        cell = (str(metadata.get("age_band")), length, style)
+        cell = (band, length, style)
         cells.setdefault(cell, []).append((path.stem, signature))
     return cells
 

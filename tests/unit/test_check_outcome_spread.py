@@ -55,3 +55,15 @@ def test_signature_distance_flags_same_economy_shapes() -> None:
 @pytest.mark.unit
 def test_outcome_signature_none_for_endingless_story() -> None:
     assert spread.outcome_signature({"nodes": [{"id": "a", "choices": []}]}) is None
+
+
+@pytest.mark.unit
+def test_outcome_signature_rejects_an_unknown_ending_kind() -> None:
+    """An unrecognized kind must surface, not silently understate the shares."""
+    story = {
+        "nodes": [
+            {"id": "n1", "ending": {"kind": "sucess", "valence": "positive"}},
+        ]
+    }
+    with pytest.raises(ValueError, match="unknown ending kind/valence"):
+        spread.outcome_signature(story)

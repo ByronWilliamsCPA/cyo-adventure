@@ -34,7 +34,11 @@ from itertools import combinations
 from pathlib import Path
 from typing import Any, cast
 
-_WORD_RE = re.compile(r"[a-z']+")
+_WORD_RE = re.compile(r"[\w']+", re.UNICODE)
+
+# Above this token Jaccard, two same-kind entries read as one device with a
+# different noun (the AL-158 noun-swap failure).
+_NOUN_SWAP_JACCARD = 0.5
 
 
 def _kind_multisets(bible: dict[str, Any]) -> dict[str, Counter[str]]:
@@ -52,7 +56,10 @@ def _kind_multisets(bible: dict[str, Any]) -> dict[str, Counter[str]]:
 def _jaccard_multiset(a: Counter[str], b: Counter[str]) -> float:
     union = sum((a | b).values())
     if union == 0:
-        return 0.0
+        # Two empty multisets are identical, not disjoint. Returning 0.0 here
+        # credited 1.0 of divergence for a category with no content, which
+        # inflated MD and could mask a real breach below tau.
+        return 1.0
     return sum((a & b).values()) / union
 
 
@@ -93,7 +100,7 @@ def near_noun_swaps(
                 if not tokens_a or not tokens_b:
                     continue
                 jaccard = len(tokens_a & tokens_b) / len(tokens_a | tokens_b)
-                if jaccard > 0.5:
+                if jaccard > _NOUN_SWAP_JACCARD:
                     swaps.append((category, str(ea.get("text")), str(eb.get("text"))))
     return swaps
 

@@ -787,6 +787,9 @@ def parse_length_demand(raw: str) -> dict[str, float]:
     except ValueError as error:
         msg = f"length demand weights must be numbers, got {raw!r}"
         raise argparse.ArgumentTypeError(msg) from error
+    if not all(math.isfinite(weight) for weight in weights):
+        msg = f"length demand weights must be finite: {raw!r}"
+        raise argparse.ArgumentTypeError(msg)
     if any(weight < 0 for weight in weights) or sum(weights) <= 0:
         msg = f"length demand weights must be non-negative and not all zero: {raw!r}"
         raise argparse.ArgumentTypeError(msg)
@@ -2156,7 +2159,9 @@ def main(argv: list[str] | None = None) -> int:
     budget_trials = cast("int", args.budget_trials)
 
     if trials < 1 or requests < 1 or counterfactual_trials < 1:
-        sys.stderr.write("error: --trials/--requests must be at least 1\n")
+        sys.stderr.write(
+            "error: --trials/--requests/--counterfactual-trials must be at least 1\n"
+        )
         return 2
     if demand_trials < 1 or demand_requests < 1 or budget_trials < 1:
         sys.stderr.write(
