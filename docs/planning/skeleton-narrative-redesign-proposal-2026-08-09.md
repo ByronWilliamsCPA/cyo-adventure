@@ -328,3 +328,88 @@ Re-run the same three-arm protocol once amendments 1-3 exist; the pre-registered
 stay the same, and arm B-plus must pass what arm B failed. Measured gaps to close in that
 rerun: two-rater fidelity agreement (this pilot used single raters) and the RL-13 FK drift
 at 3-5 observed in all arms including control.
+
+---
+
+## 11. Higher-difficulty pilot: the-clocktower-cipher at 10-13 (2026-08-09)
+
+Owner-directed second pilot after the B-plus amendments landed: the amendments were built
+(`check_bible_diversity.py` with MD and near-noun-swap detection; NC-7 selection validation
+with per-request ending mechanisms; `check_sibling_fills.py` shared-gram detection), then
+exercised end to end on a 26-node, 8-ending, mixed-valence 10-13 mystery with a 6-way and a
+4-way merge. The pipeline was fully agentic: an agent authored the 31-fact narrative
+contract (first-run NC pass, zero warnings, including an elegant per-room re-establishment
+of the cipher hint that makes the 4-way merge honest on every path); an agent authored three
+themes (harbor observatory, carousel pavilion, river lock-house) through bind_theme, NC, and
+the MD gate, all first-run green at MD 0.410 per pair; selections rotated a distinct
+mechanism per ending per binding; three isolated fills all passed integrity and the full
+gate first try with zero safety flags at 3.1-3.2k words each.
+
+### What held up
+
+- **Coherence, safety, cost, and checkability scale.** First-pass integrity 3/3, no
+  blocking findings, no safety flags, advisory profile equal to the band's norm, at 2.4x
+  the node count and a recognition-capable band. The agent-authored contract and the
+  agent-authored themes both passed their gates without human repair.
+- **Amendment 1 worked where it could bite**: the cipher FORM, the one device category with
+  full kind freedom, scored 3/3 distinct across all pairs (phonetic substitution vs ordinal
+  lookup vs modular arithmetic), the pilot's standout.
+- **Amendment 2 worked**: the per-request ending-mechanism margin (>= 5 of 8 different)
+  passed for all three pairs (5/8, 7/8, 6/8), and the recognition rater independently
+  reported the mechanism variation at e_hero/e_timeout/e_secret as the pair's genuinely
+  felt differences.
+- **Amendment 3 worked as an instrument**: the sibling-gram check surfaced the exact
+  verbatim leaks the raters then confirmed.
+
+### What failed, and why
+
+The clue-analog distinctness margin failed for all pairs (1/3), and the recognition score
+came in at 2.0 (verdict at node 2), below the 3-5 pilot's 2.5. The causes are one layer
+deeper than the first pilot's, and they are all the same shape: **the obligation contract is
+itself a shared prompt across every fill of a skeleton, and anything concrete in it becomes
+the new frozen armature.**
+
+1. **Scene devices frozen in contract prose**: the room hint-carriers, the seize-then-
+   lubricate remedy, the comic noise-trap safeguard, and the preserved-workshop loft were
+   effectively written INTO constraints and forced kinds, so all three books share a single
+   scene-device inventory under rotated props (carriers 0-2 of 4 different per pair; remedy
+   and loft identical in all three).
+2. **Contract-forced kinds consume the MD budget invisibly**: the theme agent measured that
+   `kind_must_be` specs freeze most category multisets, leaving MD headroom of ~0.07 over
+   the tau; MD passed while the frozen-kind categories stayed frozen.
+3. **Contract vocabulary seeds convergent imagery and sentences**: "stepped out for tea
+   thirty years ago" verbatim in two books, "Knowing when not to is a skill" in all three,
+   ten-plus cross-book phrase templates, cedar smells and ledges recurring; isolated
+   authors given the same contract text converge on its phrasing.
+4. **The reader surfaces the contract cannot vary are the strongest recognition channels at
+   this band**: same-order same-function choice menus landed the same-book verdict at node
+   2, and five of eight ending titles are unslotted and therefore byte-identical across
+   books.
+5. **The gram budget does not scale**: 95 shared 4-grams at 3.1k words against a budget
+   calibrated at 500 words; the check needs length normalization.
+
+### The next amendment set (contract hygiene)
+
+1. Obligation strings must be device-abstract: every recurring set-piece (remedy,
+   safeguard, cache type, loft furnishing) becomes an invention slot drawing from a bible
+   category with real kind freedom; constraints and hints may not name concrete devices or
+   imagery. A review rule now; the sibling-gram check catches leakage downstream.
+2. `check_bible_diversity` reports per-category forced-vs-free kind headroom so authors and
+   generators see where diversity is actually possible; world recipes minimize
+   `kind_must_be` to what safety genuinely requires.
+3. All ending titles generated under the title contract (none unslotted); selection-time
+   check that a title's named props sit on the path that reaches it.
+4. A label-surface diversity directive (menus may not share verb frames across sibling
+   fills) plus the length-normalized sibling-gram check wired into the fill loop.
+5. Band-scaled diversity budgets: recognition capability rises with age; the distinctness
+   margins and gram budgets must tighten with band, not stay constant.
+
+### Verdict
+
+The architecture survives the harder cell: safety, coherence, first-pass yield, agentic
+authoring, and the two amended mechanisms all held or passed. The sameness ceiling has
+moved from the beat layer (pilot 1) into the contract's own concreteness (pilot 2), which
+is progress of the intended kind: each iteration relocates the bottleneck into a smaller,
+more checkable artifact. The contract-hygiene amendments above are cheaper than the
+B-plus set was, and the third pilot should re-run this same cell after they land, with the
+same margins plus a menu-surface margin.
