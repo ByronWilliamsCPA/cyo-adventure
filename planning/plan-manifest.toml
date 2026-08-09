@@ -314,31 +314,55 @@ name = "Editor and engagement"
 track = 1
 shipped = "yes"
 usable = "partial"
-summary = "Node editor, endings tracker, read-aloud, guardian content controls, per-child permission envelopes, kid feedback flag. Shipped 2026-07-17 in PR #270."
-validated = "2026-08-01"
-# Both gaps re-checked against code and both are genuinely still open, which is worth stating
-# because most of the other phases' gap lists were not. All six deliverables were located;
-# read-aloud in particular is real (Web Speech API in frontend/src/reader/useReadAloud.ts),
-# not a UI affordance, and is gated by the per-profile tts_enabled flag.
+summary = "Node editor, endings tracker, read-aloud, guardian content controls, per-child permission envelopes, kid feedback flag, bookmarks, storage/download view. Shipped 2026-07-17 in PR #270; bookmarks and storage view closed 2026-08-09."
+validated = "2026-08-09"
+# Both prior gaps closed 2026-08-09; one narrow residual noted below keeps usable at
+# "partial" rather than "yes".
 gaps = [
-  "Bookmarks were never built at all. Confirmed: the only bookmark hits in source, tests and migrations are incidental comments about BROWSER bookmarks in deep-link handling.",
-  "Guardian storage and download visibility is missing; revoke exists (api/device_grants.py:243-291), download visibility does not.",
+  "G15 storage view's removal path (DELETE /v1/device-downloads) is implemented and tested but not wired into the client's automatic eviction (offline/downloadBudget.ts, offline/revocation.ts), both deliberately network-free modules by existing architecture. A book evicted that way leaves a stale row until manually reconciled.",
 ]
+# CLOSED 2026-08-09: "Bookmarks were never built at all." The backend save_slots field
+# (db/models.py's ReadingState, api/schemas.py's ReadingStateBody/ReadingStateView) already
+# persisted, byte-capped (64KB), and multi-device-synced an opaque save-slot bag, with
+# ReaderPage.tsx's own #EDGE comment already anticipating this exact change ("if save slots
+# become live, add them [to the save-dedup signature]"). Built: player/engine.ts's
+# saveBookmark/loadBookmark/deleteBookmark/listBookmarks (pure functions, engine.test.ts
+# coverage), player/machine.ts's SAVE_BOOKMARK/LOAD_BOOKMARK/DELETE_BOOKMARK events
+# (machine.test.ts coverage), BookmarksButton.tsx (component-tested), and the
+# ReaderPage.tsx signature fix. Capped at 10 bookmarks per story client-side (a UX ceiling,
+# not the byte budget).
+# CLOSED 2026-08-09: "Guardian storage and download visibility is missing." New
+# device_download table (Tier 1 family_scoped RLS) + api/offline_downloads.py
+# (PUT/DELETE/GET /v1/device-downloads); offline/deviceId.ts mints a persistent
+# client-generated device id (separate from device_grant.jti); ReaderPage.tsx reports
+# every read via reportDownload, wired from ReaderRoute.tsx; DevicesPage.tsx renders the
+# result grouped by device. The residual gap above is why this is not a full close.
 
 [phases."4c"]
 name = "Family loops"
 track = 1
 shipped = "yes"
-usable = "partial"
-summary = "Notification feed, guardian engagement visibility, kid-facing generation status, budget consent. Push channel closed 2026-07-29 via authenticated SSE."
-validated = "2026-08-01"
+usable = "yes"
+summary = "Notification feed, guardian engagement visibility, kid-facing generation status, budget consent, server-scheduled digest job. Push channel closed 2026-07-29 via authenticated SSE."
+validated = "2026-08-09"
 # The SSE endpoint (api/notifications.py:351-419) resolves the principal via require_principal
 # and applies the guardian role check before streaming any byte, so the push channel is genuinely
 # authenticated. Budget consent is server-enforced, not a UI checkbox:
 # story_requests/service.py:251 enforce_family_quota returns a 409.
-gaps = [
-  "No server-scheduled digest job, which is why capability S9 stays partial. Narrower than it reads: pg_cron is already deployed and running six scheduled jobs across three migrations (all retention and purge), so the scheduling substrate exists and only the digest job itself was never written.",
-]
+gaps = []
+# CLOSED 2026-08-09: "No server-scheduled digest job, which is why capability S9 stays partial."
+# notifications/digest.py::run_notification_digest writes one batched summary event per family
+# with pending info-severity notifications since their last digest (its own cursor, sourced from
+# the family's prior digest event); scripts/run_notification_digest.py is the invocation shell;
+# .github/workflows/notification-digest.yml runs it daily via pg_cron-adjacent GitHub Actions
+# scheduling (pg_cron itself was already deployed and running six other scheduled jobs, but
+# calling into the app's own ORM/RLS-aware session from pg_cron directly is not straightforward,
+# so this reuses the scripts+scheduled-workflow pattern scripts/backup_database.py established
+# instead). In-app delivery only: no email/push provider is introduced, so a guardian who never
+# opens the app and whose SSE stream never connects still is not reached by anything external;
+# see notifications/digest.py's module docstring for this explicit scope boundary. Proven by
+# tests/integration/test_notification_digest.py (real cross-family Postgres) and
+# tests/unit/test_run_notification_digest.py (script wiring).
 # CLOSED since this phase's 2026-08-01 validation, retained here so the closure is auditable:
 #   - "Kid-facing 'it's on your shelf' indicator is a client-side title-substring guess" is
 #     CLOSED. resulting_storybook_id (db/models.py:1601) now links a request to the storybook

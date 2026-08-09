@@ -1665,6 +1665,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#device_download" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        device_download
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3955,6 +3966,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#device_download" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        device_download
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -4004,7 +4026,7 @@
 
   <h1>Data Model</h1>
 
-<p>CYO Adventure has twenty-nine PostgreSQL tables managed by SQLAlchemy 2 async ORM, with
+<p>CYO Adventure has thirty PostgreSQL tables managed by SQLAlchemy 2 async ORM, with
 schema migrations applied as plain SQL via the Supabase CLI (<code>supabase/migrations/</code>,
 ADR-012; Alembic retired). All timestamps are <code>TIMESTAMP WITH TIME ZONE</code>. Enum-like
 columns (<code>role</code>, <code>status</code>, <code>age_band</code>) are stored as strings and validated at the
@@ -4014,7 +4036,7 @@ application boundary, which keeps schema migrations simple and avoids enum-type 
 <p>The PlantUML source above (<code>diagrams/er-diagram.puml</code>) is authoritative: it carries the
 full CHECK constraint list, ON DELETE semantics, and a note on pure-attribution foreign
 keys to <code>user.id</code> that are deliberately not drawn as edges. The Mermaid version below is a
-hand-maintained companion (<code>diagrams/er-diagram.mmd</code>) covering the same 29 tables and
+hand-maintained companion (<code>diagrams/er-diagram.mmd</code>) covering the same 30 tables and
 relationships, kept for inline rendering directly on GitHub without opening the SVG.</p>
 <pre class="mermaid"><code>erDiagram
     family ||--o{ user : "has users"
@@ -4055,6 +4077,9 @@ relationships, kept for inline rendering directly on GitHub without opening the 
     child_profile ||--o{ kid_flag : "flags"
     storybook ||--o{ kid_flag : "flagged in"
     storybook_version ||--o{ kid_flag : "pins version"
+    family ||--o{ device_download : "has download records (G15)"
+    child_profile ||--o{ device_download : "downloads on devices"
+    storybook ||--o{ device_download : "downloaded as"
     child_profile ||--o{ child_profile_personalization : "personalized by"
     child_profile ||--o{ child_profile_personalization : "named as a sibling value"
     child_profile ||--o{ personalization_disclosure_consent : "disclosed under"
@@ -4426,6 +4451,16 @@ relationships, kept for inline rendering directly on GitHub without opening the 
         uuid resolved_by FK "NULL while open"
         timestamptz resolved_at "NULL while open"
         varchar(16) resolution "NULL; dismissed, archived_book, or noted"
+    }
+
+    device_download {
+        uuid id PK
+        uuid family_id FK "denormalized from profile"
+        uuid child_profile_id FK "composite FK with family_id -&gt; child_profile; ON DELETE CASCADE"
+        varchar(64) device_id "client-generated persistent id"
+        varchar(120) storybook_id FK "ON DELETE CASCADE"
+        timestamptz created_at
+        timestamptz updated_at "last-confirmed signal"
     }</code></pre>
 <h2 id="table-reference">Table Reference<a class="headerlink" href="#table-reference" title="Permanent link">&para;</a></h2>
 <h3 id="family"><code>family</code><a class="headerlink" href="#family" title="Permanent link">&para;</a></h3>
@@ -6242,6 +6277,64 @@ constraints enforce the closed <code>reason</code>/<code>resolution</code> vocab
 <code>resolved_by</code>/<code>resolved_at</code> (<code>ck_kid_flag_resolved_pairing</code>, both NULL or both set). An
 index <code>ix_kid_flag_resolved_created (resolved_at, created_at)</code> backs the admin
 "open flags" queue.</p>
+<h3 id="device_download"><code>device_download</code><a class="headerlink" href="#device_download" title="Permanent link">&para;</a></h3>
+<p>One <code>(device, child profile, storybook)</code> offline-download record (G15). Reports
+client-side IndexedDB cache state (<code>frontend/src/offline/db.ts</code>'s <code>storybooks</code> store) so
+a guardian can see which books are downloaded on which device. <code>device_id</code> is a
+client-generated persistent id (<code>frontend/src/offline/deviceId.ts</code>), a separate identity
+from <code>device_grant.jti</code> (the kid-mode device-authorization token): a guardian's own
+browser previewing the kid shelf downloads books too and has no <code>device_grant</code> of its
+own. <code>family_id</code> is denormalized from the owning profile (same reasoning as
+<code>character.family_id</code>) for the ADR-022 Tier 1 <code>family_scoped</code> RLS policy.</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>UUID PK</td>
+<td></td>
+</tr>
+<tr>
+<td>family_id</td>
+<td>UUID FK</td>
+<td>family.id; denormalized from the owning profile</td>
+</tr>
+<tr>
+<td>child_profile_id</td>
+<td>UUID FK</td>
+<td>child_profile.id; composite FK with family_id, ON DELETE CASCADE</td>
+</tr>
+<tr>
+<td>device_id</td>
+<td>VARCHAR(64)</td>
+<td>Client-generated persistent id</td>
+</tr>
+<tr>
+<td>storybook_id</td>
+<td>VARCHAR(120) FK</td>
+<td>storybook.id; ON DELETE CASCADE</td>
+</tr>
+<tr>
+<td>created_at</td>
+<td>TIMESTAMPTZ</td>
+<td>When this device first reported downloading this book</td>
+</tr>
+<tr>
+<td>updated_at</td>
+<td>TIMESTAMPTZ</td>
+<td>Last-confirmed signal; a repeat report advances this instead of inserting a second row</td>
+</tr>
+</tbody>
+</table>
+<p>A unique constraint <code>uq_device_download_device_profile_book (device_id, child_profile_id,
+storybook_id)</code> backs the upsert-on-report behavior. Tracked at the book level, not
+per-version: the client eviction path removes every cached version of a book id at once.</p>
 <h2 id="authorization-pattern">Authorization Pattern<a class="headerlink" href="#authorization-pattern" title="Permanent link">&para;</a></h2>
 <p>Family ownership is checked on every resource. The <code>Principal</code> in <code>api/deps.py</code> carries
 <code>family_id</code> and <code>profile_ids</code>. Every endpoint calls <code>authorize_family()</code> and/or
@@ -6285,7 +6378,7 @@ primary authorization boundary; RLS is defense-in-depth beneath it, not a replac
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 8, 2026 23:59:52 UTC">August 8, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 9, 2026 15:35:42 UTC">August 9, 2026</span>
   </span>
 
     

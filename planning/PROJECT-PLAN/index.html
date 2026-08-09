@@ -3495,11 +3495,11 @@ PR #314. Follow-on enabler refinements from the original ADR-011 work are tracke
 </tr>
 <tr>
 <td>4b Editor + Engagement</td>
-<td>✅ Substantially delivered 2026-07-17, PR #270 (verified 2026-07-20; see the audit note below). G6 node editor, K6 tracker, K7 read-aloud, G2 controls UI, G3 permissions, K15 kid flag all shipped. Still open: bookmarks (not built at all), G15 device/storage view, K5/K8 test pins</td>
+<td>✅ Substantially delivered 2026-07-17, PR #270 (verified 2026-07-20; see the audit note below). G6 node editor, K6 tracker, K7 read-aloud, G2 controls UI, G3 permissions, K15 kid flag all shipped. <strong>Corrected 2026-08-09</strong>: K5/K8 test pins are done, not open (<code>reader-go-back.spec.ts</code>, <code>admin-review-cover.spec.ts</code>, <code>BookCard.test.tsx</code>, all present since 2026-08-04). Bookmarks and G15 device/storage view both closed 2026-08-09 (see roadmap.md's Phase 4b Deliverables for detail). Narrow remaining piece: G15's removal path is not wired into automatic client-side eviction</td>
 </tr>
 <tr>
 <td>4c Family Loops (NEW 2026-07-16)</td>
-<td>✅ Substantially delivered 2026-07-17, PR #270 (verified 2026-07-20). S9 notification infra, G10 alerts, G9 visibility, K12 kid status, G7/G13 budget consent all shipped. The push channel closed 2026-07-29 via authenticated SSE (<code>api/notifications.py:351-419</code> resolves the principal and applies the guardian check before streaming any byte), so the one remaining gap is the server-scheduled digest job, which is what keeps capability S9 partial. <strong>Apple readiness audit 2026-07-20</strong>: G10's <code>_COMPOSERS</code> registry (<code>notifications/registry.py</code>) alerts a guardian when their child flags a story (<code>KID_FLAGGED</code>), but <code>EventType.FLAG_RESOLVED</code> (emitted by <code>resolve_flag</code> in <code>api/flags.py:257-265</code>) has no composer - a guardian who reports content is never told how it was resolved. This narrows Guideline 1.2's "reporting mechanism" gap from "no notification at all" to "one-way notification, no resolution loop"</td>
+<td>✅ Delivered</td>
 </tr>
 <tr>
 <td>4d Connections (NEW 2026-07-16)</td>
@@ -3624,14 +3624,22 @@ document:</p>
 <li><strong>Two blocking items were parked in the post-launch backlog</strong>, because the authoring lessons log's
    only plan linkage is a sentence inside capability row <code>A11</code>: <code>AL-014</code> (no hand-authored skeleton
    can pass <code>check_promotion_bundle</code>) and <code>AL-036</code> (the review surface cannot deliver the human
-   approval ADR-005 requires at 746 nodes, so the approval attests less than the ADR claims).</li>
+   approval ADR-005 requires at 746 nodes, so the approval attests less than the ADR claims).
+   <strong><code>AL-014</code> corrected 2026-08-09</strong>: partially closed by PR #532 (2026-08-01); the CI gate no
+   longer flatly blocks a lineage-less hand-authored skeleton; the remaining gap is the WS-5
+   anti-clone floor not covering an original against its in-cell siblings (<code>UW-C06</code>). See
+   roadmap.md's Phase 5 checklist for detail. <code>AL-036</code> is unaffected by this correction and stays
+   open as described.</li>
 <li><strong>A release blocker is live</strong>: two <code>docs/known-vulnerabilities.md</code> entries are 68 days old with
    reassessment 8 days overdue, past the 60-day OpenSSF release gate (<code>UW-K01</code>).</li>
 <li><strong>Three corrections to claims made above</strong>: the 2026-07-20 assertion that open issues remain
-   accurately tracked in the debt register is false; Phase 4b's <code>G2</code>-delivered claim is partial (the
-   intake UI hardcodes empty arrays); and <code>admin-guardian-dual-roles-plan.md</code>, listed as unstarted,
-   in fact shipped. The #311/#321/#323 reconciliation that the 2026-07-20 audit deferred is still
-   outstanding, now behind a further ~20 releases (v0.20.0 through v0.40.1).</li>
+   accurately tracked in the debt register is false; <del>Phase 4b's <code>G2</code>-delivered claim is partial
+   (the intake UI hardcodes empty arrays)</del> <strong>re-corrected 2026-08-09: this correction was itself
+   stale.</strong> Code verification found <code>ProfileFormDialog.tsx</code> has a working banned-themes UI and
+   <code>story_requests/brief.py:122</code> wires it through; <code>G2</code> is fully delivered. And
+   <code>admin-guardian-dual-roles-plan.md</code>, listed as unstarted, in fact shipped. The #311/#321/#323
+   reconciliation that the 2026-07-20 audit deferred is still outstanding, now behind a further
+   ~20 releases (v0.20.0 through v0.40.1).</li>
 </ol>
 <p>This sweep deliberately rescheduled nothing and closed nothing. It establishes where work lives, not
 when it happens; sequencing the register against the phase estimates is the next pass.</p>
@@ -4495,9 +4503,11 @@ Phase 4b and Phase 5 follow.</p>
 <p><strong>Branch</strong>: <code>feat/phase-4b-editor-ux</code>
 <strong>Milestone</strong>: (post-release; no milestone number assigned)
 <strong>Status</strong>: ✅ Substantially delivered 2026-07-17 (PR #270), verified by the 2026-07-20 plan
-audit. Node editor, ending tracker, and read-aloud all shipped; only bookmarks and the
-device/storage view remain genuinely open (this section previously said "Planned" through
-v2.7, unchanged for 10 days after the PR merged).</p>
+audit. Node editor, ending tracker, and read-aloud all shipped; bookmarks and the
+device/storage view both closed 2026-08-09 (this section previously said "Planned" through
+v2.7, unchanged for 10 days after the PR merged). Narrow remaining piece: the storage
+view's removal path is not wired into automatic client-side eviction (see the roadmap's
+G15 register entry).</p>
 <p><strong>Objective</strong>: Make authoring and reading pleasant beyond the minimum viable release. See
 <a href="../adr/adr-002-client-pwa/">ADR-002</a> (TTS via Web Speech API).</p>
 <p><strong>Deliverables</strong> (traced to <a href="../roadmap/">Roadmap Phase 4b</a>):</p>
@@ -4510,14 +4520,19 @@ v2.7, unchanged for 10 days after the PR merged).</p>
   independently confirmed and may remain open.</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> <strong>Ending tracker</strong>: "N of M endings found" display using the <code>completion</code> table;
   <code>frontend/src/reader/EndingsProgress.tsx</code>, wired into <code>Reader.tsx</code>.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <strong>Bookmarks</strong>: save-slot UI. Confirmed NOT built as of 2026-07-20 (distinct from K5's
-  "Go back" undo, which is shipped).</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> <strong>Bookmarks</strong>: save-slot UI (distinct from K5's "Go back" undo, which is shipped).
+  Closed 2026-08-09: the backend <code>save_slots</code> field already existed end to end (persisted,
+  byte-capped, synced) with nothing writing to it; see roadmap.md's Phase 4b Deliverables
+  section for the full client-side implementation (<code>player/engine.ts</code>, <code>player/machine.ts</code>,
+  <code>BookmarksButton.tsx</code>).</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> <strong>Read-aloud (TTS)</strong>: Web Speech API (<code>SpeechSynthesis</code>) via
   <code>frontend/src/reader/useReadAloud.ts</code>, per-profile <code>tts_enabled</code> toggle wired into
   <code>Reader.tsx</code> and <code>ProfileFormDialog.tsx</code>.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <strong>Guardian device/storage view</strong> (G15 remainder, not originally listed in this table
-  but tracked in roadmap.md's Phase 4b): ADR-014 device authorize/revoke exists; per-device
-  download/storage visibility does not.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> <strong>Guardian device/storage view</strong> (G15 remainder). Closed 2026-08-09: new
+  <code>device_download</code> table + <code>api/offline_downloads.py</code>, <code>offline/deviceId.ts</code>,
+  <code>ReaderPage.tsx</code>'s <code>reportDownload</code> prop, and a downloads section in <code>DevicesPage.tsx</code>;
+  see roadmap.md's Phase 4b Deliverables section for the full implementation and its one
+  documented scope limit (removal not wired into automatic client-side eviction).</li>
 </ul>
 <p><strong>Acceptance criteria</strong> (from <a href="../roadmap/">Roadmap Phase 4b</a>):</p>
 <ul>
@@ -5936,7 +5951,7 @@ sign-off and pre-submission (P9-10)
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 2, 2026 18:01:05 UTC">August 2, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 9, 2026 15:35:42 UTC">August 9, 2026</span>
   </span>
 
     
