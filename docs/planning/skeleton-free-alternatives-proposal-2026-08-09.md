@@ -35,7 +35,7 @@ Three things have since changed, and each weakens a premise of that decision.
 
 `generate_story` (`generation/orchestrator.py:635`) is a live, shipped, skeleton-free
 pipeline: **Stage A structure, Stage B prose, Stage C bounded repair**, reading no
-skeleton and no file. `generation/worker.py:2313-2326` routes to it whenever a job carries
+skeleton. `generation/worker.py:2313-2326` routes to it whenever a job carries
 no `skeleton_slug`, and a storybook with `skeleton_slug = NULL` is a first-class database
 row (`db/models.py:1399`). The import path does not care where a graph came from
 (`generation/import_story.py:110`).
@@ -66,6 +66,20 @@ it?"** The survey answers that precisely, and the answers are smaller than expec
    `words=N` inside each FILL directive, which is what PL-19, PL-23, and CG-3 read before
    prose exists. A generated graph has none, so the word envelope, the estimated-minutes
    clock, and the arc floors all become post-hoc rather than plannable.
+6. **The shared armature is not removed by removing the skeleton.** `generation/prompts.py:317`
+   and `:354` splice the full 407-line `templates/drafting_guide.md` into BOTH Stage A and
+   Stage B on every call. That guide prescribes a fan-out-then-converge default and carries
+   a per-band choice-grammar table fixing options-per-choice (three, at 10-13). Pilot 2's
+   verdict was that "the obligation contract is itself a shared prompt across every fill,
+   and anything concrete in it becomes the new frozen armature"; the drafting guide is a
+   larger and more concrete shared prompt than any contract, and it mandates by table the
+   very decision grammar the raters named as the recognition driver. **Every arm below still
+   runs through these prompts, so none of them removes the channel that failed the margin.**
+7. **The differentiation machinery is skeleton-only.** `story_requests/authoring_plan.py`
+   builds the anti-repetition directive (axis selection, prior titles, prior theme tags)
+   inside the `skeleton_fill` branch; `generate_story` takes no differentiation parameter at
+   all. The control arm receives anti-repetition help the treatment arms do not, which is an
+   arm-level confound in any diversity comparison.
 
 **This makes the cheapest and highest-value experiment obvious, and it is not on the
 original list**: run the existing `generate_story` path and score it on the full pilot
@@ -73,15 +87,87 @@ bench plus the strict bar. Either it is far closer than believed, or we get an e
 itemized defect list for a fraction of the cost of building anything. That experiment is
 now step 1 in section 8.
 
+## 2b. The exposure question, and why it may retire this program
+
+Owner correction, 2026-08-09: **the unit of exposure is the child, not the family.**
+Recognition is a property of one reader's memory. Two children in the same household can
+each read a story built from the same skeleton, once each, and neither experiences a
+repeat. Any measurement or selector logic scoped to the family is measuring the wrong
+thing.
+
+That correction produces the economic asymmetry this whole program should be judged
+against:
+
+> **A skeleton is consumable within a child and reusable across children.**
+
+If unique content is effectively one run per skeleton per reader, then the catalog must be
+large enough to serve **one child's lifetime consumption inside a band**, and it does not
+have to grow with the number of children. Catalog size therefore scales with per-reader
+demand, which is bounded by tenure (a child sits in 10-13 for roughly three years) and
+reading rate, rather than with business growth. **That makes "build more skeletons" a
+bounded, one-time capital cost, and it competes directly with replacing the architecture,
+which is an unbounded engineering cost that also forfeits the personalization and
+denylist properties recorded in section 10.**
+
+Two consequences follow immediately.
+
+1. **The catalog needs heavy weighting toward the middle bands.** Required skeletons per
+   band is a function of tenure in that band and reading rate inside it. The middle of the
+   age range carries both the longest independent-reading tenure and the highest volume,
+   so a flat per-band catalog is the wrong shape. The current catalog is roughly flat, and
+   the production cells at 10-13 hold three to four candidates each.
+2. **Family-scoped history is an architectural mismatch, not just a measurement one.** The
+   anti-repetition machinery reads `load_family_history` (`diversity/history.py`), which is
+   family-scoped with a window of 20 and carries only a theme signature, no skeleton
+   identity. If that is the only history the selector sees, then a household with K
+   children burns the recency window K times faster, degrading protection for each child,
+   while simultaneously penalizing skeletons a given child has never read, wasting catalog
+   that child could still consume. Both failure modes point the same way: **per-reader
+   skeleton history is likely a prerequisite for any catalog-scaling answer, and it is a
+   much smaller build than any arm in section 6.**
+
+**This is the measurement that should gate the entire program**, and it costs no
+generation tokens: the per-child repeat curve under the shipping selector, the catalog size
+per cell required to push a child's first repeat past their Nth story, and the per-band
+weighting that implies. If the answer is that a child hits a repeat on their second or
+third story, the recognition finding is a product emergency and the alternatives are
+warranted. If the answer is that a bounded catalog build clears it, this document describes
+work that should not be funded.
+
+Note also that every recognition score in pilots 1 to 3 came from a rater holding two books
+at once and instructed to look for sameness. The product condition is one child, one book,
+days apart, with no reference copy. Section 13 of the companion document already measured
+that comparative judgments are systematically harsher than isolated ones, and applied that
+caution to craft but never to recognition, where it bites harder because recognition is
+definitionally comparative. The measured landing nodes are therefore an upper bound on the
+defect as experienced.
+
 ## 3. What the skeleton actually buys
 
-The skeleton does **not** guarantee validity. The gate does, and the gate is fully
-skeleton-agnostic: `run_gate` (`validator/gate.py:86`) accepts raw decoded story JSON, no
-slug, no path, no lineage, no provenance; it performs no filesystem I/O; and no rule
-family reachable from it has a skeleton dependency. `validator/policy.py:71` records the
-avoidance deliberately, keeping the validator from importing the generation layer. The
-skeleton-coupled checkers (`validator/slots.py`, `sentinel_integrity.py`, `theme_leak.py`)
-are not called by the gate at all; they belong to the theme-binding path.
+The skeleton does **not** guarantee validity. The gate does. The gate is agnostic to
+story *provenance*: `run_gate` (`validator/gate.py:86`) accepts raw decoded story JSON, no
+slug, no path, no lineage; it performs no filesystem I/O; and the skeleton-coupled checkers
+(`validator/slots.py`, `sentinel_integrity.py`, `theme_leak.py`) are not called by it.
+
+It is **not**, however, agnostic to skeleton *format*, and an earlier draft of this
+document overstated that. `validator/policy.py:67-74`, `choice_grammar.py:81-86`, and
+`reading_level.py:51-56` each carry a local copy of the `<<FILL ... words=N>>` grammar:
+PL-19 and PL-23 read a skeleton's *declared* word target where they read a generated
+story's *actual* words, and RL-13 skips FILL bodies outright. The comment at
+`policy.py:71` documents an avoided *import*, not an avoided dependency. Gate strictness is
+also caller-parameterized: `enforce_grammar` defaults to False and `worker.py:2326` calls
+`generate_story` without overriding it, so **generated stories never run CG-1 through
+CG-4** while the skeleton promotion path opts in. Two of the gate's knobs are set
+differently for the two paths being compared, so "the gate guarantees validity" cannot
+carry the full weight of a cross-path comparison.
+
+One invariant listed below is weaker than it appears: `validator/safety.py:41` is a
+Phase-2 stub returning an empty report unconditionally, so SAFE-14 cannot produce a
+finding and every "zero safety flags" result in pilots 1 to 3 and the model-tier study
+carries no information. The real deterministic pre-LLM denylist floor on untrusted
+brief-derived material is `validator/slots.py`, whose only caller is the theme-binding
+path, which means it runs for skeleton fills only. A skeleton-free story has no pre-LLM
+denylist gate, only the post-hoc moderation pipeline.
 
 What the skeleton actually provides is threefold:
 
@@ -134,9 +220,13 @@ add per-node word targets at construction; add a Stage A-to-Stage B fidelity dif
 same assurance the skeleton path gets, using Stage A's own output as the reference, which
 costs nothing because the artifact already exists).
 
-**What it fixes.** Sibling recognition entirely, since no two stories share an armature.
-It is by far the smallest change in the set, and it reuses a pipeline that is already
-wired, tested, and routed in production.
+**What it fixes.** Unknown, and an earlier draft of this document was wrong to claim it
+fixes sibling recognition entirely. Removing the skeleton moves the shared authoring prior
+into `drafting_guide.md` (gap 6), which prescribes the same decision grammar the pilots
+identified. It reuses a pipeline already wired and routed in production, but on the
+diversity axis it is the largest change in the set rather than the smallest, because it
+must also build a differentiation path, a fidelity reference, per-node word targets, and a
+structural target distribution.
 
 **What it risks.** We have observed convergence at every layer we have measured, so
 **expect Stage A to have its own structural priors**: three generated graphs may rhyme the
@@ -296,7 +386,7 @@ node plus the five-point score.
 | Outcome | Margin | Current skeleton path |
 | --- | --- | --- |
 | First-pass gate not blocked | 3/3 | 3/3 (met) |
-| Strict bar (walk floors, indegree caps, depth-qualified endings) | pass | pass by construction |
+| Strict bar (walk floors, indegree caps, depth-qualified endings) | see note | **2 of 61 catalog skeletons pass; 0 of 11 at 10-13** |
 | Blind craft mean | >= 4.0 (the shipping bar) | 4.9 frontier, 4.0 Sonnet |
 | Recognition landing | past the hub node, or no landing | FAILED twice (node 2, node 4) |
 | Sibling grams per 1000 | <= 4.0 after at most one revision round | 1.2 (met) |
@@ -307,14 +397,50 @@ Recognition is the margin that matters: it is the only one the current approach 
 an alternative that matches everywhere else while still failing recognition has bought
 nothing.
 
+**Two margin rows are known defective and must be rebuilt before use.** The strict-bar row
+cannot be a pass/fail margin when the shipped catalog meets it 2 times in 61 (measured
+2026-08-09 across all bands, 0 of 11 at 10-13). That bar gates *newly drafted* skeletons
+only; the catalog is grandfathered (`scripts/check_skeleton.py:63-66`). Promoting it to a
+blocking library rule would retire 97% of the catalog, which is a product decision, not a
+scoring prerequisite. Separately, "safety flags" must be struck from the bench entirely
+(SAFE-14 is a stub, see section 3), and the "portability = passes at Sonnet" row conflicts
+with this project's own conclusion that gate-clean is not publishable.
+
+**The baseline anchors are also weaker than stated.** Every number in the right-hand column
+comes from pilots run on `the-clocktower-cipher`, which is the catalog's single
+`(10-13, None, None)` row, is not production-eligible, and is therefore never served to a
+child by `skeleton_match`. Because it declares no length and no narrative style it is not
+scale-classified, so it is held to band-level budgets rather than the ADR-011 cell budgets
+every production 10-13 skeleton faces. Re-baseline on a production-eligible 10-13 skeleton
+before pre-registering anything.
+
 **Design**: same request brief across arms, three stories per arm, band 10-13 (where
 readers are sharpest and the current approach is weakest), raters blind to arm.
 
 ## 9. Recommended sequence, cheapest information first
 
-1. **Score the existing `generate_story` path** on the full bench plus the strict bar.
-   Costs almost nothing, uses shipped code, and either shortcuts the entire program or
-   produces the exact defect list that scopes A1.
+0. **Compute per-child sibling exposure and the catalog sizing curve** (section 2b). Zero
+   generation cost, and it can retire the program outright: if a bounded catalog build
+   keeps a child's first repeat beyond their realistic consumption inside a band, no arm
+   here is warranted.
+0b. **Two-rater reliability on the nine books already in hand.** Also zero generation cost.
+   The same arm already produced a node-2 verdict on one pair and a node-4 verdict on
+   another, so within-arm spread currently equals the effect size the bake-off is trying to
+   detect. Until inter-rater agreement is known, the primary endpoint is unmeasurable and
+   every downstream comparison is noise.
+0c. **The ceiling control: two fills of two different production-eligible 10-13
+   skeletons.** If two entirely different hand-authored skeletons still land recognition at
+   or before the hub, then the endpoint is measuring band, rater priors, and the drafting
+   guide rather than structure, and no arm can pass the margin by construction.
+0d. **The drafting-guide ablation.** Strip the per-band choice-grammar table and the
+   fan-out-then-converge section from `drafting_guide.md`, re-run three fills of the pilot
+   inputs, re-rate recognition. Three fills, no new code. If recognition moves, the driver
+   lives in the prompt and A1, A2, A4, A5, and A6 all inherit it unchanged, invalidating
+   five arms at once. If it does not move, the structural framing is vindicated.
+1. **Score the existing `generate_story` path** on the full bench. Note that this is
+   confounded until 0d resolves (shared drafting guide) and until the differentiation gap
+   (gap 7) is closed, so its result is not interpretable in the direction this document
+   wants without those.
 2. **A0b, the arity diagnostic.** Smallest new experiment; makes every other result
    interpretable.
 3. **Promote the strict-bar fitness functions to library code** and give them rule ids.
