@@ -100,11 +100,14 @@ jobs:
           # checks rather than two, and because --diff-filter=AM includes added
           # files, a brand-new hand-authored skeleton was skipped by
           # construction. Only sidecars are dropped, and only because the
-          # prover reaches them through their shell.
+          # prover reaches them through their shell. Keep this list in sync
+          # with SIDECAR_SUFFIXES in generation/skeleton.py: a sidecar suffix
+          # missing here is handed to the prover as if it were a shell, which
+          # is how .narrative.json first failed this job.
           : > changed-skeletons.txt
           while IFS= read -r f; do
             case "$f" in
-              *.contract.json|*.lineage.json) continue ;;
+              *.contract.json|*.lineage.json|*.narrative.json) continue ;;
               *.json) echo "$f" >> changed-skeletons.txt ;;
             esac
           done < changed-all.txt
