@@ -358,6 +358,52 @@ async def test_delete_my_family_removes_everything(
         ) is None
 
 
+async def test_delete_my_family_cascades_family_connection(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+) -> None:
+    """Deleting a family removes every ``FamilyConnection`` row touching it,
+    from either FK side (ADR-016; ``db/models.py``'s ``FamilyConnection``
+    docstring names both ``family_id`` and ``connected_family_id`` as
+    CASCADE, "if either family is deleted, the edge is meaningless").
+
+    ``test_export_includes_personalization_and_disclosure_consent_data``
+    constructs a live ``FamilyConnection`` but only exercises the export
+    surface; ``test_personalization_consent_tombstone.py`` proves a
+    connection's own direct deletion tombstones dependent consent rows. No
+    existing test drove a *family* deletion with a live connection through
+    the real stack, which is the gap this test closes: one connection where
+    the deleted family is the viewer (``family_id``) and one where it is the
+    sharer (``connected_family_id``), so both CASCADE legs are proven.
+    """
+    async with sessions() as s:
+        other_profile = await s.get(ChildProfile, seed.other_child_profile_id)
+        assert other_profile is not None
+        other_family_id = other_profile.family_id
+
+        viewer_side = FamilyConnection(
+            family_id=seed.family_id, connected_family_id=other_family_id
+        )
+        sharer_side = FamilyConnection(
+            family_id=other_family_id, connected_family_id=seed.family_id
+        )
+        s.add_all([viewer_side, sharer_side])
+        await s.commit()
+        viewer_side_id = viewer_side.id
+        sharer_side_id = sharer_side.id
+
+    resp = await client.delete("/api/v1/me/family", headers=auth(seed.guardian_token))
+    assert resp.status_code == 204, resp.text
+
+    async with sessions() as s:
+        assert (await s.get(FamilyConnection, viewer_side_id)) is None
+        assert (await s.get(FamilyConnection, sharer_side_id)) is None
+        # The other family is untouched: only its incoming/outgoing
+        # connection to the deleted family is gone, not the family itself.
+        assert (await s.get(ChildProfile, seed.other_child_profile_id)) is not None
+
+
 async def test_delete_my_family_rejects_non_guardian(
     client: AsyncClient, seed: Seed
 ) -> None:
