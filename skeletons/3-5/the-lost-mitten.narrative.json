@@ -32,14 +32,24 @@
   },
   "safety_envelope": {
     "affect_ceiling": "curious",
-    "forbid_affect": ["dread", "urgency", "grief", "shame"],
-    "forbid_facts": ["hero_alone_and_afraid", "adult_disapproves", "item_destroyed"],
+    "forbid_affect": [
+      "dread",
+      "urgency",
+      "grief",
+      "shame"
+    ],
+    "forbid_facts": [
+      "hero_alone_and_afraid",
+      "adult_disapproves",
+      "item_destroyed"
+    ],
     "permitted_device_kinds": [
       "sensory_trace",
       "testimony",
       "disturbance",
       "container",
-      "shared_effort"
+      "shared_effort",
+      "out_of_reach"
     ],
     "forbidden_device_kinds": [
       "deception",
@@ -50,12 +60,35 @@
   },
   "world_recipe": {
     "requires": {
-      "clue_channels": {"count": 3, "unique_within_story": true, "max_words": 10},
-      "obstacle_kinds": {"count": 1, "kinds": ["out_of_reach"]},
-      "help_modes": {"count": 1, "kinds": ["shared_effort"]},
-      "containers": {"count": 1, "note": "something the hero carries or wears home"}
+      "clue_channels": {
+        "count": 3,
+        "unique_within_story": true,
+        "max_words": 10
+      },
+      "obstacle_kinds": {
+        "count": 1,
+        "kinds": [
+          "out_of_reach"
+        ]
+      },
+      "help_modes": {
+        "count": 1,
+        "kinds": [
+          "shared_effort"
+        ]
+      },
+      "containers": {
+        "count": 1,
+        "note": "something the hero carries or wears home"
+      }
     },
-    "identity_roles": ["HERO", "FRIEND", "CAREGIVER", "LOST_ITEM", "MEETING_PLACE"],
+    "identity_roles": [
+      "HERO",
+      "FRIEND",
+      "CAREGIVER",
+      "LOST_ITEM",
+      "MEETING_PLACE"
+    ],
     "texture_roles": [
       "PLAY_PLACE",
       "LANDMARK_A",
@@ -71,9 +104,22 @@
       "function": "introduce-stakes",
       "reentrant": true,
       "entry_state": [],
-      "establishes": ["item_missing", "hero_discomfort", "search_intent"],
-      "forbids": ["item_sighted", "lead:MEETING_PLACE"],
-      "affect": {"target": "warm, then a small comic dismay", "forbid": ["dread", "urgency"]},
+      "establishes": [
+        "item_missing",
+        "hero_discomfort",
+        "search_intent"
+      ],
+      "forbids": [
+        "item_sighted",
+        "lead:MEETING_PLACE"
+      ],
+      "affect": {
+        "target": "warm, then a small comic dismay",
+        "forbid": [
+          "dread",
+          "urgency"
+        ]
+      },
       "invention": {
         "loss_moment": {
           "pick": 1,
@@ -94,10 +140,25 @@
       "move": "search.empty_but_directional",
       "function": "plant-clue",
       "reentrant": true,
-      "entry_state": ["item_missing", "search_intent"],
-      "establishes": ["cleared:LANDMARK_A", "lead:MEETING_PLACE"],
-      "forbids": ["item_sighted", "item_recovered"],
-      "affect": {"target": "curious", "forbid": ["dread", "frustration"]},
+      "entry_state": [
+        "item_missing",
+        "search_intent"
+      ],
+      "establishes": [
+        "cleared:LANDMARK_A",
+        "lead:MEETING_PLACE"
+      ],
+      "forbids": [
+        "item_sighted",
+        "item_recovered"
+      ],
+      "affect": {
+        "target": "curious",
+        "forbid": [
+          "dread",
+          "frustration"
+        ]
+      },
       "invention": {
         "clue_channel": {
           "pick": 1,
@@ -122,10 +183,24 @@
       "move": "search.empty_but_directional",
       "function": "plant-clue",
       "reentrant": true,
-      "entry_state": ["item_missing", "search_intent"],
-      "establishes": ["cleared:FRIEND", "lead:MEETING_PLACE"],
-      "forbids": ["item_sighted", "item_recovered"],
-      "affect": {"target": "friendly curiosity", "forbid": ["dread"]},
+      "entry_state": [
+        "item_missing",
+        "search_intent"
+      ],
+      "establishes": [
+        "cleared:FRIEND",
+        "lead:MEETING_PLACE"
+      ],
+      "forbids": [
+        "item_sighted",
+        "item_recovered"
+      ],
+      "affect": {
+        "target": "friendly curiosity",
+        "forbid": [
+          "dread"
+        ]
+      },
       "invention": {
         "clue_channel": {
           "pick": 1,
@@ -147,10 +222,25 @@
       "move": "search.empty_but_directional",
       "function": "plant-clue",
       "reentrant": true,
-      "entry_state": ["item_missing", "search_intent"],
-      "establishes": ["cleared:LANDMARK_B", "lead:MEETING_PLACE"],
-      "forbids": ["item_sighted", "item_recovered"],
-      "affect": {"target": "curious", "forbid": ["dread", "frustration"]},
+      "entry_state": [
+        "item_missing",
+        "search_intent"
+      ],
+      "establishes": [
+        "cleared:LANDMARK_B",
+        "lead:MEETING_PLACE"
+      ],
+      "forbids": [
+        "item_sighted",
+        "item_recovered"
+      ],
+      "affect": {
+        "target": "curious",
+        "forbid": [
+          "dread",
+          "frustration"
+        ]
+      },
       "invention": {
         "clue_channel": {
           "pick": 1,
@@ -169,10 +259,26 @@
     "n_creek": {
       "tier": "open",
       "function": "converge-and-offer",
-      "entry_state": ["item_missing", "search_intent", "lead:MEETING_PLACE"],
-      "establishes": ["glimpse:ITEM_COLOR", "helpers_alerted"],
-      "forbids": ["item_recovered", "item_sighted"],
-      "affect": {"target": "bright anticipation", "forbid": ["dread", "urgency"]},
+      "entry_state": [
+        "item_missing",
+        "search_intent",
+        "lead:MEETING_PLACE"
+      ],
+      "establishes": [
+        "glimpse:ITEM_COLOR",
+        "helpers_alerted"
+      ],
+      "forbids": [
+        "item_recovered",
+        "item_sighted"
+      ],
+      "affect": {
+        "target": "bright anticipation",
+        "forbid": [
+          "dread",
+          "urgency"
+        ]
+      },
       "constraints": {
         "glimpse_must_be": "a color-matched sign only, never confirmably the item itself; the surprise ending depends on this ambiguity",
         "offers": "three concrete, sensory offers matching the three choices; each offer stands alone"
@@ -188,10 +294,24 @@
     "n_birds": {
       "tier": "open",
       "function": "raise-obstacle",
-      "entry_state": ["glimpse:ITEM_COLOR", "helpers_alerted"],
-      "establishes": ["item_sighted", "item_out_of_reach"],
-      "forbids": ["item_recovered"],
-      "affect": {"target": "delighted so-close", "forbid": ["frustration", "dread"]},
+      "entry_state": [
+        "glimpse:ITEM_COLOR",
+        "helpers_alerted"
+      ],
+      "establishes": [
+        "item_sighted",
+        "item_out_of_reach"
+      ],
+      "forbids": [
+        "item_recovered"
+      ],
+      "affect": {
+        "target": "delighted so-close",
+        "forbid": [
+          "frustration",
+          "dread"
+        ]
+      },
       "invention": {
         "obstacle": {
           "pick": 1,
@@ -208,10 +328,23 @@
     "n_help": {
       "tier": "open",
       "function": "raise-camaraderie",
-      "entry_state": ["item_sighted", "item_out_of_reach"],
-      "establishes": ["helpers_group_effort"],
-      "forbids": ["item_recovered"],
-      "affect": {"target": "giggly teamwork", "forbid": ["strain", "danger"]},
+      "entry_state": [
+        "item_sighted",
+        "item_out_of_reach"
+      ],
+      "establishes": [
+        "helpers_group_effort"
+      ],
+      "forbids": [
+        "item_recovered"
+      ],
+      "affect": {
+        "target": "giggly teamwork",
+        "forbid": [
+          "strain",
+          "danger"
+        ]
+      },
       "invention": {
         "help_mode": {
           "pick": 1,
@@ -227,10 +360,24 @@
     "n_cocoa": {
       "tier": "open",
       "function": "turn-homeward",
-      "entry_state": ["item_missing", "search_intent"],
-      "establishes": ["home_comfort"],
-      "forbids": ["item_recovered", "adult_disapproves"],
-      "affect": {"target": "cozy welcome", "forbid": ["shame", "scolding"]},
+      "entry_state": [
+        "item_missing",
+        "search_intent"
+      ],
+      "establishes": [
+        "home_comfort"
+      ],
+      "forbids": [
+        "item_recovered",
+        "adult_disapproves"
+      ],
+      "affect": {
+        "target": "cozy welcome",
+        "forbid": [
+          "shame",
+          "scolding"
+        ]
+      },
       "invention": {
         "container": {
           "pick": 1,
@@ -247,29 +394,70 @@
     "n_found": {
       "tier": "locked_outcome",
       "function": "payoff",
-      "entry_state": ["glimpse:ITEM_COLOR"],
-      "establishes": ["item_sighted", "item_recovered"],
-      "forbids": ["item_out_of_reach", "helpers_group_effort"],
-      "affect": {"target": "quiet satisfaction", "forbid": ["anticlimax"]},
+      "entry_state": [
+        "glimpse:ITEM_COLOR"
+      ],
+      "establishes": [
+        "item_sighted",
+        "item_recovered"
+      ],
+      "forbids": [
+        "item_out_of_reach",
+        "helpers_group_effort"
+      ],
+      "affect": {
+        "target": "quiet satisfaction",
+        "forbid": [
+          "anticlimax"
+        ]
+      },
       "merge_note": "NC-1: parents are n_creek (ambiguous glimpse) and n_birds (sighted, was out of reach, hero chose to reach alone). Write the recovery on what both guarantee: the item is now seen and takeable by the hero alone. Do not presuppose ground level or reaching up.",
       "beat_hint": "the hero completes the recovery alone; both hands warm; cozy solo win."
     },
     "n_together": {
       "tier": "locked_outcome",
       "function": "payoff",
-      "entry_state": ["item_sighted", "helpers_group_effort"],
-      "establishes": ["item_recovered", "friendship_payoff"],
-      "forbids": ["anyone_hurt"],
-      "affect": {"target": "shared triumph", "forbid": ["anticlimax"]},
+      "entry_state": [
+        "item_sighted",
+        "helpers_group_effort"
+      ],
+      "establishes": [
+        "item_recovered",
+        "friendship_payoff"
+      ],
+      "forbids": [
+        "anyone_hurt"
+      ],
+      "affect": {
+        "target": "shared triumph",
+        "forbid": [
+          "anticlimax"
+        ]
+      },
       "beat_hint": "the cooperative reach succeeds; the celebration belongs to everyone."
     },
     "n_surprise": {
       "tier": "locked_outcome",
       "function": "payoff",
-      "entry_state": ["home_comfort"],
-      "establishes": ["reveal:never_lost", "item_recovered", "shared:HOME_TREAT"],
-      "forbids": ["hero_at_fault", "anyone_scolded"],
-      "affect": {"target": "comic warmth", "forbid": ["embarrassment", "anticlimax"]},
+      "entry_state": [
+        "home_comfort"
+      ],
+      "establishes": [
+        "reveal:never_lost",
+        "item_recovered",
+        "shared:HOME_TREAT"
+      ],
+      "forbids": [
+        "hero_at_fault",
+        "anyone_scolded"
+      ],
+      "affect": {
+        "target": "comic warmth",
+        "forbid": [
+          "embarrassment",
+          "anticlimax"
+        ]
+      },
       "constraints": {
         "reveal_must_not": "retroactively claim the color-matched sign at the meeting place was the item; that sign stays its own small mystery or is gently explained as something else"
       },
