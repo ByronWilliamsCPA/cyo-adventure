@@ -77,6 +77,7 @@ from fastapi import APIRouter
 from sqlalchemy import func, select
 
 from cyo_adventure.api.deps import Context, authorize_family
+from cyo_adventure.api.gate_limits import gate_limiter
 from cyo_adventure.api.review_surface import build_review_surface
 from cyo_adventure.api.schemas import NodeEditBody, ReviewSurfaceView
 from cyo_adventure.core.config import settings
@@ -543,18 +544,21 @@ async def edit_node(
     # Calling this inline in an async handler would stall the whole event
     # loop for that window, blocking every other in-flight request including
     # a child mid-read (AL-035); anyio.to_thread keeps the loop responsive.
-    # It does not bound the hold: run_sync dispatches to anyio's fixed-size
-    # worker pool (40 threads by default), so enough concurrent edits on a
-    # character-enabled large book exhaust the pool and stall every other
-    # offloaded call in the process, the generation worker's own gate runs
-    # included. Latent today only because no catalog book declares
-    # accepts_character.
+    # UW-A47: the hold is now bounded to gate_limiter()'s N concurrent calls
+    # (default 4, see core/config.py::gate_max_concurrency), shared with
+    # api/generation.py's validate_version call site via
+    # api/gate_limits.py::gate_limiter(). That bounds how many callers may
+    # occupy an AnyIO worker thread for the gate at once; it does not shorten
+    # the 49.58s per-call worst case above, so a queued request still holds
+    # its HTTP connection and may time out. Latent today only because no
+    # catalog book declares accepts_character.
     # #VERIFY: the handler's existing tests still pass; the gate is pure and
-    # holds no session, so running it off-loop is safe. Re-measure the worst
-    # case before the first character-enabled book ships, by timing run_gate
-    # over the longwinter-station skeleton with a might/wits/nerve 0-2
-    # envelope; cap concurrency on this route if the figure has grown.
-    gate_result = await run_sync(run_gate, new_blob)
+    # holds no session, so running it off-loop is safe.
+    # tests/unit/test_gate_capacity_limiter.py pins the shared-limiter and
+    # smaller-than-the-default-pool properties. Re-measure the worst case
+    # before the first character-enabled book ships, by timing run_gate over
+    # the longwinter-station skeleton with a might/wits/nerve 0-2 envelope.
+    gate_result = await run_sync(run_gate, new_blob, limiter=gate_limiter())
     if gate_result.blocked:
         msg = "edited passage failed the validation gate"
         raise ValidationError(

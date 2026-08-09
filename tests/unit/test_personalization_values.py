@@ -12,8 +12,10 @@ import uuid
 
 from cyo_adventure.storybook.models import AgeBand
 from cyo_adventure.storybook.personalization_values import (
+    CHARACTER_NAME_SLOT_TYPE,
     CLOSED_VOCABULARIES,
     SIBLING_SLOT_TYPE,
+    character_name_violations,
     personalization_value_for_payload,
     validate_personalization_value,
 )
@@ -141,7 +143,7 @@ def test_personalization_value_for_payload_valid_value_returned() -> None:
 def test_value_profile_id_on_non_sibling_slot_rejected() -> None:
     """A profile reference on a non-sibling slot is a shape violation.
 
-    The hole this closes: `ck_cpp_exactly_one_value` counts NOT NULLs but
+    The hole this closes: `ck_cpp_value_cardinality` counts NOT NULLs but
     never binds which column a slot_type may use, and every other check in
     the module reads only text/enum or is gated on the sibling slot type.
     A row with only `value_profile_id` set on `pet_name` therefore ran zero
@@ -320,6 +322,80 @@ def test_dedication_enum_accepts_a_member_of_its_seeded_vocabulary() -> None:
     )
 
     assert violations == []
+
+
+def test_character_name_slot_with_any_value_column_rejected() -> None:
+    """`character_name` carries no value in any of the three value columns.
+
+    Its value is synthesized at resolve time from the child's active
+    character, so a row that carries one anyway is mis-shaped: no other check
+    in this module reads it (the slot has no vocabulary and no profile
+    reference), and the resolver never looks at it, so it would sit in the
+    row looking authoritative while influencing nothing.
+    """
+    for kwargs in (
+        {"value_text": "Zephyr"},
+        {"value_enum": "Zephyr"},
+        {"value_profile_id": uuid.uuid4()},
+    ):
+        violations = validate_personalization_value(
+            CHARACTER_NAME_SLOT_TYPE,
+            AgeBand.BAND_8_11,
+            **kwargs,  # pyright: ignore[reportArgumentType]
+        )
+
+        assert any(v.rule == "value_shape" for v in violations), kwargs
+
+
+def test_character_name_violations_rejects_a_sentinel_shaped_name() -> None:
+    """A child-authored name shaped like a sentinel token must never render.
+
+    The resolved payload ships the character name beside `SENTINEL_RE.pattern`
+    for substitution into story prose, so a name carrying the sentinel's own
+    braces is a template-forgery vector.
+    """
+    violations = character_name_violations("{~HERO:friend~}", AgeBand.BAND_5_8)
+
+    assert any(v.rule == "charset" for v in violations)
+    assert all(v.slot_id == CHARACTER_NAME_SLOT_TYPE for v in violations)
+
+
+def test_character_name_violations_rejects_a_control_character() -> None:
+    """A name carrying a control character is rejected by the structural guard."""
+    violations = character_name_violations("Ro\x07sa", AgeBand.BAND_5_8)
+
+    assert any(v.rule == "single_line" for v in violations)
+    assert all(v.slot_id == CHARACTER_NAME_SLOT_TYPE for v in violations)
+
+
+def test_character_name_violations_rejects_a_band_denylisted_name() -> None:
+    """A name matching the band-mandatory denylist floor is rejected.
+
+    The denylist is band-scoped, so the check needs the subject profile's age
+    band rather than a global list.
+    """
+    violations = character_name_violations("Captain Sword", AgeBand.BAND_5_8)
+
+    assert any(v.rule == "forbid:weapon" for v in violations)
+    assert all(v.slot_id == CHARACTER_NAME_SLOT_TYPE for v in violations)
+
+
+def test_character_name_violations_message_never_contains_the_name() -> None:
+    """A rejection message names the rule, never the child-authored name.
+
+    `SlotViolation.message` reaches structured logs, which have no erasure
+    path; a child's own free text must not land there.
+    """
+    name = "Captain Sword"
+    violations = character_name_violations(name, AgeBand.BAND_5_8)
+
+    assert violations
+    assert all(name not in v.message for v in violations)
+
+
+def test_character_name_violations_accepts_an_ordinary_name() -> None:
+    """An ordinary child-authored name raises no violation and renders."""
+    assert character_name_violations("Biscuit", AgeBand.BAND_5_8) == []
 
 
 def test_dedication_enum_non_member_is_rejected() -> None:

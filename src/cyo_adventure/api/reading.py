@@ -36,12 +36,16 @@ from cyo_adventure.api.schemas import (
     error_responses,
 )
 from cyo_adventure.api.sentinel_log import strip_and_log
+from cyo_adventure.characters.progression import record_progression
+from cyo_adventure.characters.seeding import character_seed
 from cyo_adventure.core.exceptions import (
     AuthorizationError,
     ResourceNotFoundError,
     ValidationError,
 )
 from cyo_adventure.db.models import (
+    Character,
+    CharacterAttribute,
     Completion,
     ReadingState,
     Series,
@@ -52,9 +56,14 @@ from cyo_adventure.db.models import (
 from cyo_adventure.player.replay import validate_reading_state
 from cyo_adventure.publishing.state_machine import Visibility
 from cyo_adventure.utils.logging import get_logger
+from cyo_adventure.validator.series import SATISFYING_ENDING_KINDS
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
+
+    from sqlalchemy.ext.asyncio import AsyncSession
+
+    from cyo_adventure.storybook.evaluator import VarState
 
 _logger = get_logger(__name__)
 
@@ -74,8 +83,30 @@ def _parse_uuid(raw: str, field: str) -> uuid.UUID:
         raise ValidationError(msg, field=field, value=raw) from exc
 
 
-def _view(row: ReadingState) -> ReadingStateView:
-    """Build the response view from a reading-state row."""
+async def _view(session: AsyncSession, row: ReadingState) -> ReadingStateView:
+    """Build the response view from a reading-state row.
+
+    ``character_name`` is looked up live rather than stored, because
+    Character rows are never deleted on retirement (only marked
+    ``is_active=False``); a live lookup by the row's persisted
+    ``character_id`` therefore still resolves a retired character's name
+    correctly, which is the right answer to "whose adventure is this".
+    """
+    # #ASSUME: external resources: this helper reaches the database now, so it
+    # needs a live session and every call site must await it. The name is read
+    # live rather than snapshotted because Character rows are only marked
+    # is_active=False on retirement, never deleted, so the lookup still
+    # resolves for a read whose bound character has since been retired.
+    # #VERIFY: tests/integration/test_reading_character_binding.py::
+    # test_starting_a_read_binds_the_active_character_and_seeds_its_state
+    # asserts the active character's name comes back, and
+    # test_a_read_in_progress_keeps_its_recorded_seed asserts the same name
+    # still resolves after that character is retired mid-book.
+    character_name: str | None = None
+    if row.character_id is not None:
+        character_name = await session.scalar(
+            select(Character.name).where(Character.id == row.character_id)
+        )
     return ReadingStateView(
         child_profile_id=str(row.child_profile_id),
         storybook_id=row.storybook_id,
@@ -88,13 +119,127 @@ def _view(row: ReadingState) -> ReadingStateView:
         state_revision=row.state_revision,
         updated_by_device_id=row.updated_by_device_id,
         last_synced_at=row.last_synced_at,
+        character_id=str(row.character_id) if row.character_id is not None else None,
+        character_name=character_name,
+        seed_var_state=dict(row.seed_var_state)
+        if row.seed_var_state is not None
+        else None,
     )
 
 
-def _conflict(row: ReadingState, detail: str) -> JSONResponse:
+async def _conflict(
+    session: AsyncSession, row: ReadingState, detail: str
+) -> JSONResponse:
     """Build a 409 conflict response carrying the current row."""
-    body = ConflictView(detail=detail, current_row=_view(row))
+    body = ConflictView(detail=detail, current_row=await _view(session, row))
     return JSONResponse(status_code=409, content=body.model_dump(mode="json"))
+
+
+async def _attributes_of(
+    session: AsyncSession, character_id: uuid.UUID
+) -> dict[str, int]:
+    """Return the stored attribute rows for one character as a flat dict.
+
+    Mirrors ``characters.py::_attributes_of`` exactly, duplicated rather than
+    imported: that name is module-private (leading underscore) and this
+    package's convention is a small explained duplicate over widening
+    another module's public surface for one call site (see
+    ``personalization.py::_is_active`` mirroring
+    ``family_connections.py::_is_active``).
+
+    Args:
+        session: The request session.
+        character_id: The character whose attributes are read.
+
+    Returns:
+        dict[str, int]: Attribute name to value; empty if none are stored.
+    """
+    # #ASSUME: data integrity: the seed is exactly the attribute rows persisted
+    # for this character, with no defaulting or synthesis here. A character
+    # with no stored rows therefore carries an empty seed, which
+    # StoryEngine.start_continuation treats as "no carry" and falls back to the
+    # story's declared initials rather than zeroing anything.
+    # #VERIFY: tests/integration/test_reading_character_binding.py::
+    # test_starting_a_read_binds_the_active_character_and_seeds_its_state
+    # asserts the persisted seed equals the exact attribute rows written for
+    # the bound character.
+    rows = await session.scalars(
+        select(CharacterAttribute).where(
+            CharacterAttribute.character_id == character_id
+        )
+    )
+    return {row.name: row.value_int for row in rows.all()}
+
+
+async def _resolve_active_character(
+    session: AsyncSession, profile_id: uuid.UUID
+) -> Character | None:
+    """Return the profile's active character row, or ``None`` if it has none.
+
+    The one query this whole feature rests on: it takes ``profile_id`` from
+    the caller, never from a request body, so its result cannot be steered
+    by anything the client sent.
+    """
+    # #CRITICAL: security: profile_id is the AUTHENTICATED profile taken from
+    # the route path, never a request-body field. If a client could steer this
+    # query it could bind another profile's character, and because the seed
+    # becomes the replay baseline, seeding would become an arbitrary-variable-
+    # write primitive that replay validation would then bless. The marker lives
+    # here, on the resolver, and not only at the call site, so an edit that
+    # widens this signature to accept a caller-supplied id sees it.
+    # #VERIFY: tests/integration/test_reading_character_binding.py::
+    # test_a_client_supplied_character_id_is_rejected
+    #
+    # #CRITICAL: data integrity: scalar() with no LIMIT and no ORDER BY is
+    # safe ONLY because db/models.py declares the partial unique index
+    # uq_character_one_active on child_profile_id WHERE is_active, so at most
+    # one row can ever match. The safety lives in the schema, not in this
+    # query: relax that index and this call site silently picks an arbitrary
+    # character, with nothing raising anywhere.
+    # #VERIFY: tests/unit/test_character_models.py::
+    # test_only_one_character_per_profile_may_be_active proves the declared
+    # index is unique and partial; tests/integration/test_schema_parity.py::
+    # test_migrated_character_one_active_index_is_partial proves the migrated
+    # database carries it as a partial index too.
+    return await session.scalar(
+        select(Character).where(
+            Character.child_profile_id == profile_id,
+            Character.is_active.is_(True),
+        )
+    )
+
+
+async def _bind_active_character(
+    session: AsyncSession, profile_id: uuid.UUID
+) -> tuple[uuid.UUID | None, VarState | None]:
+    """Resolve the profile's active character and seed a read start from it.
+
+    Returns:
+        tuple[uuid.UUID | None, VarState | None]: The character's id and its
+            seed. The seed half is ``None`` whenever there is nothing to
+            carry, both when the profile has no active character and in the
+            (API-unreachable) case of an active character with no stored
+            attribute rows; an unseeded read is the normal case, not an error.
+    """
+    # #ASSUME: data integrity: a profile with no active character seeds
+    # nothing and both halves of the return are None together. An unseeded
+    # read is the normal case, not an error, so this must never raise and must
+    # never substitute a synthesized default seed for the missing character.
+    # #VERIFY: tests/integration/test_reading_character_binding.py::
+    # test_starting_a_read_with_no_active_character_is_unseeded asserts both
+    # the response fields and the persisted columns are NULL.
+    character = await _resolve_active_character(session, profile_id)
+    if character is None:
+        return None, None
+    attributes = await _attributes_of(session, character.id)
+    # `or None` collapses the empty seed to NULL rather than persisting `{}`.
+    # A character with zero attribute rows is unreachable through the API
+    # (create always writes the four canonical rows via initial_attributes),
+    # and downstream behaviour is identical either way because `if carried:`
+    # is falsy for both, but `{}` would be a third persisted shape that the
+    # "both halves are None together" contract above does not describe, and it
+    # would surface as `seed_var_state: {}` on the wire instead of `null`.
+    return character.id, (character_seed(attributes) or None)
 
 
 async def _load_readable_storybook(
@@ -263,6 +408,7 @@ async def _validate_against_pinned_version(
     book: Storybook,
     *,
     require_current: bool,
+    seed_var_state: VarState | None,
 ) -> None:
     """Load the pinned story version and validate the save against it.
 
@@ -278,6 +424,9 @@ async def _validate_against_pinned_version(
             version than the currently published one (a since-superseded
             republish), so re-checking current/published/approved on every
             update would break that supported scenario.
+        seed_var_state: The server-held seed the persisted row began from, or
+            ``None`` for an unseeded read (see ``put_reading_state`` for how
+            each call site sources this).
 
     Raises:
         ResourceNotFoundError: If ``body.version`` has no persisted version
@@ -314,6 +463,7 @@ async def _validate_against_pinned_version(
         visit_set=body.visit_set,
         choice_path=body.choice_path,
         save_slots=body.save_slots,
+        seed_var_state=seed_var_state,
     )
 
 
@@ -358,7 +508,7 @@ async def get_reading_state(
     if row is None:
         msg = f"no reading state for profile '{profile_id}' on '{storybook_id}'"
         raise ResourceNotFoundError(msg)
-    return _view(row)
+    return await _view(ctx.session, row)
 
 
 @router.get("/series-next/{profile_id}/{storybook_id}")
@@ -538,33 +688,161 @@ async def put_reading_state(
         # M1: the create path establishes a NEW pin; require the current,
         # published, approved version so a first save cannot pin to a
         # superseded or never-approved version (require_current=True).
-        await _validate_against_pinned_version(ctx, body, book, require_current=True)
-        return _create_reading_state(ctx, parsed, storybook_id, body)
+        #
+        # #CRITICAL: security: the bound character is resolved from the
+        # AUTHENTICATED profile, never from the request. A client-supplied
+        # character_id would let one profile seed a read with another's
+        # numbers, and because the seed becomes the replay baseline, it would
+        # promote seeding into an arbitrary-variable-write primitive that
+        # replay validation would then bless.
+        # #VERIFY: tests/integration/test_reading_character_binding.py::
+        # test_a_client_supplied_character_id_is_rejected
+        #
+        # #CRITICAL: data integrity: the seed is snapshotted into
+        # reading_state.seed_var_state at read start and never recomputed.
+        # Recomputing on save would let a mid-book retirement or a writeback
+        # from another book rewrite the baseline this read is validated
+        # against, invalidating a save the child legitimately holds.
+        # #VERIFY: same module, test_a_read_in_progress_keeps_its_recorded_seed
+        #
+        # #EDGE: data integrity: a first save that omits choice_path is checked
+        # only against the structural floor, so it can persist a var_state the
+        # bound seed could never have produced. Nothing here can tell the
+        # difference: the divergence is detectable only with a replay proof,
+        # which is exactly what choice_path supplies. Every later save that
+        # DOES carry a choice_path replays from the stored seed, disagrees, and
+        # 422s, so the read wedges permanently. Accepted deliberately rather
+        # than fixed server-side: today's client
+        # (frontend/src/offline/sync.ts::toPutPayload) sends no choice_path at
+        # all, so an equality check here would 422 legitimate saves the moment
+        # a story mutates a seeded variable.
+        #
+        # STATUS (Task 9 landed): the client-side remedy this marker asked for
+        # is now in place for an ONLINE fresh read. CharacterView.seed_var_state
+        # exposes the server-computed seed before any row exists, and
+        # frontend/src/reader/ReaderPage.tsx opens a fresh read from it via
+        # startContinuation() instead of the story's declared initials. Two
+        # narrow residuals keep this marker open rather than closing it:
+        #   1. A fresh read that cannot reach the network, OR IS SERVED A
+        #      CACHED characters response (the frontend service worker's
+        #      catch-all /v1/* rule is NetworkFirst with a 5s timeout over a
+        #      7-day cache: vite.config.ts; a body cached before this deploy
+        #      has no seed_var_state at all), still opens from declared
+        #      initials, and its queued first save can persist a var_state
+        #      the bound seed could not have produced.
+        #   2. The active character can change between the client's seed fetch
+        #      and this create path's own _bind_active_character call (a
+        #      guardian or a second tab switching characters in that window),
+        #      so the two can disagree even online. The row then carries the
+        #      NEW character's seed over a var_state actually produced from
+        #      the OLD character's seed; nothing 422s at save time (residual 1
+        #      applies here too: no choice_path to replay against), but on the
+        #      read's next resume `canGoBack` fails closed against that
+        #      mismatched seed, so Go back silently disappears for the rest of
+        #      that read, and RESTART reopens from the new character's
+        #      numbers. Not a wedge and not a defect Task 9 introduced, but
+        #      worse than "latent" undersells it.
+        # Both are latent, not live, for exactly the reason above: the client
+        # sends no choice_path. Anything that starts sending one must close
+        # them first (cache the active character's seed alongside the offline
+        # story blob, and echo the seed the client actually started from so
+        # this path can reject a mismatch rather than record a different one).
+        # #VERIFY: nothing proves the wedge today, and nothing can while the
+        # client omits choice_path; do not read a green suite as evidence the
+        # condition is closed. The nearest real evidence is the complementary
+        # case, tests/integration/test_reading_character_binding.py::
+        # test_a_first_save_carrying_a_choice_path_replays_from_the_bound_seed,
+        # which proves the seed IS enforced on this create path whenever a
+        # choice_path is present. The client half is pinned by
+        # tests/integration/test_reading_character_binding.py::
+        # test_character_view_seed_matches_the_seed_a_read_start_would_bind
+        # (one mapping, both sides) and frontend/src/reader/ReaderPage.test.tsx
+        # "seeds a fresh read from the profile's active character".
+        character_id, seed_var_state = await _bind_active_character(ctx.session, parsed)
+        await _validate_against_pinned_version(
+            ctx, body, book, require_current=True, seed_var_state=seed_var_state
+        )
+        return await _create_reading_state(
+            ctx,
+            parsed,
+            storybook_id,
+            body,
+            character_id=character_id,
+            seed_var_state=seed_var_state,
+        )
     # Idempotent replay: the same event was already applied; return current row.
     if body.event_id is not None and row.last_event_id == body.event_id:
-        return _view(row)
+        return await _view(ctx.session, row)
     # A stale-session version mismatch is a concurrency conflict, not a lookup
     # failure: it must 409 even when body.version has no persisted version row
     # (the client is out of date, not malformed), so this check runs before
     # version validation below.
     if body.version != row.version:
-        return _conflict(row, "reading_state version mismatch")
+        return await _conflict(ctx.session, row, "reading_state version mismatch")
     if body.state_revision != row.state_revision:
-        return _conflict(row, "reading_state revision mismatch")
+        return await _conflict(ctx.session, row, "reading_state revision mismatch")
     # M1: an update to an ALREADY-established row may legitimately continue
     # against an older, since-superseded version the row is pinned to,
     # so this path does not re-require the current/published/approved
     # version (require_current=False); only structural/replay validation
     # runs.
-    await _validate_against_pinned_version(ctx, body, book, require_current=False)
+    # #CRITICAL: data integrity: row is already loaded above (the FOR UPDATE
+    # select), so pass its persisted seed_var_state rather than None: a
+    # character-seeded read must replay from the seed the server recorded on
+    # creation, not from declared initials (see replay.py::_check_replay).
+    # #VERIFY: tests/unit/test_reading_api_unit.py::
+    # TestPutReadingState::test_update_path_forwards_the_row_seed_not_none
+    # proves this call site forwards row.seed_var_state specifically (an
+    # asymmetric body that is accepted under None but rejected under the
+    # row's seed); tests/unit/test_replay.py::
+    # test_replay_of_a_seeded_read_starts_from_the_seed and
+    # test_replay_rejects_a_state_claiming_a_seed_it_was_not_given cover the
+    # underlying seeded-replay behaviour this call site threads through.
+    #
+    # #CRITICAL: data integrity: this branch must FORWARD the stored
+    # reading_state.seed_var_state column and must never re-derive the seed
+    # from the profile's currently-active character. Recomputing is the
+    # natural-looking implementation and it rewrites history mid-book: a
+    # retirement, or a writeback from another book, would move the baseline a
+    # read in progress is validated against and reject a save the child
+    # legitimately holds. The create branch above cannot express this rule,
+    # since there is nothing yet to recompute from; this is the branch where
+    # "never recomputed" is a live constraint.
+    # #VERIFY: tests/integration/test_reading_character_binding.py::
+    # test_a_read_in_progress_keeps_its_recorded_seed retires the bound
+    # character mid-book and then saves from the original seed, expecting 200,
+    # which a recomputing implementation would 422; tests/unit/
+    # test_reading_api_unit.py::TestPutReadingState::
+    # test_update_path_forwards_the_row_seed_not_none pins the forwarding of
+    # row.seed_var_state specifically.
+    await _validate_against_pinned_version(
+        ctx, body, book, require_current=False, seed_var_state=row.seed_var_state
+    )
     _apply_body(row, body)
-    return _view(row)
+    return await _view(ctx.session, row)
 
 
-def _create_reading_state(
-    ctx: Context, profile_id: uuid.UUID, storybook_id: str, body: ReadingStateBody
+async def _create_reading_state(
+    ctx: Context,
+    profile_id: uuid.UUID,
+    storybook_id: str,
+    body: ReadingStateBody,
+    *,
+    character_id: uuid.UUID | None,
+    seed_var_state: VarState | None,
 ) -> ReadingStateView:
     """Create the first reading-state row for a profile/story pair.
+
+    Args:
+        ctx: The request context (principal + session).
+        profile_id: The child profile starting the read.
+        storybook_id: The story being started.
+        body: The save payload.
+        character_id: The bound active character's id, or ``None`` if the
+            profile has none (resolved server-side; see
+            ``_bind_active_character``).
+        seed_var_state: The seed derived from that character's attributes,
+            or ``None`` for an unseeded read.
 
     Raises:
         ValidationError: If the first save does not start at ``state_revision`` 0;
@@ -582,10 +860,15 @@ def _create_reading_state(
         storybook_id=storybook_id,
         version=body.version,
         current_node=body.current_node,
+        character_id=character_id,
+        seed_var_state=seed_var_state,
     )
     _apply_body(row, body)
     ctx.session.add(row)
-    return _view(row)
+    # Ordering dependency: _view() queries when a character is bound, which
+    # autoflushes this pending INSERT, so the row must already be fully
+    # populated by _apply_body and added before the view runs.
+    return await _view(ctx.session, row)
 
 
 def _apply_body(row: ReadingState, body: ReadingStateBody) -> None:
@@ -615,6 +898,65 @@ def _version_ending_ids(blob: Mapping[str, object]) -> set[str]:
         if isinstance(ending, dict) and isinstance(ending.get("id"), str):
             found.add(ending["id"])
     return found
+
+
+def _ending_kind(blob: Mapping[str, object], ending_id: str) -> str | None:
+    """Return the declared ``kind`` of one ending in a stored Storybook blob.
+
+    Args:
+        blob: The pinned version's stored Storybook content blob.
+        ending_id: The ending to look up.
+
+    Returns:
+        str | None: The ending's ``kind`` string (e.g. ``"success"``), or
+        ``None`` if the ending id is not declared or the blob is malformed.
+    """
+    nodes = blob.get("nodes")
+    if not isinstance(nodes, list):
+        return None
+    for node in nodes:
+        if not isinstance(node, dict) or node.get("is_ending") is not True:
+            continue
+        ending = node.get("ending")
+        if isinstance(ending, dict) and ending.get("id") == ending_id:
+            kind = ending.get("kind")
+            return kind if isinstance(kind, str) else None
+    return None
+
+
+def _ending_is_satisfying(blob: Mapping[str, object], ending_id: str) -> bool:
+    """Whether ``ending_id`` is a satisfying ending, per CH-4's own definition.
+
+    # #CRITICAL: security: ``kind`` is read from ``blob``, the SERVER's pinned
+    # version content (``version_row.blob``, already loaded by
+    # ``record_completion`` to validate the ending id), never from the
+    # completion request body. ``CompletionBody`` has no kind/valence/
+    # "satisfying" field for a client to assert in the first place, so a
+    # child cannot claim a win for a book they did not finish: doing so would
+    # turn character progression into a self-service API, farming stats
+    # across the whole library without ever reaching a real satisfying
+    # ending.
+    # #VERIFY: tests/unit/test_reading_api_unit.py::
+    # TestCompletionBodyContract::
+    # test_a_completion_body_carrying_an_extra_field_is_rejected pins the
+    # "no such field for a client to assert" half (extra="forbid"), and
+    # tests/integration/test_character_progression.py::
+    # test_a_satisfying_ending_raises_a_stat_and_counts_the_book and
+    # test_an_unsatisfying_ending_writes_nothing pin that the server blob's
+    # kind is what actually decides.
+
+    Args:
+        blob: The pinned version's stored Storybook content blob.
+        ending_id: The ending reached, already validated to belong to this
+            version by the caller.
+
+    Returns:
+        bool: True when the ending's declared kind is one of
+        ``SATISFYING_ENDING_KINDS`` (SR-9's own definition, reused here
+        rather than duplicated; see ``validator/series.py``).
+    """
+    kind = _ending_kind(blob, ending_id)
+    return kind is not None and kind in SATISFYING_ENDING_KINDS
 
 
 def _completion_ending_count(
@@ -767,6 +1109,41 @@ async def record_completion(
         # which runs on the same (uncommitted) transaction.
         await ctx.session.flush()
         await ctx.session.refresh(row, ["found_at"])
+    # Attempted on EVERY call, not gated on `is_new`: the offline queue can
+    # replay this exact completion after a crash between the Completion
+    # insert above and this writeback, and `record_progression` is its own
+    # idempotent unit (see its module docstring), so re-attempting it here is
+    # always safe and is what makes a partial-crash recovery possible at all.
+    reading_state_row = await ctx.session.get(ReadingState, (parsed, body.storybook_id))
+    if (
+        reading_state_row is not None
+        and reading_state_row.character_id is not None
+        and _ending_is_satisfying(version_row.blob, body.ending_id)
+    ):
+        # #EDGE: data integrity: exit_var_state below is
+        # reading_state_row.var_state, which is only as trustworthy as replay
+        # validation, and replay only runs when a save carries a
+        # choice_path; today's frontend (frontend/src/offline/sync.ts::
+        # toPutPayload) sends none, so a client can already persist a
+        # var_state no legitimate play could reach (see the #CRITICAL marker
+        # above _create_reading_state's choice_path handling). This
+        # writeback turns that pre-existing per-read weakness into a
+        # durable, cross-book one instead of adding a new hole: the raise in
+        # record_progression is monotone and capped at
+        # CANONICAL_CHARACTER_VARIABLES[name].max, so the worst case is a
+        # child maxing their own character's stats, never a value beyond the
+        # vocabulary ceiling and never another profile's character.
+        # #VERIFY: no test in this suite proves this boundary; closing it is
+        # a hard prerequisite tracked as UW-C72 in unscheduled-work-register.md
+        # (the player deriving its starting var_state from seed_var_state, per
+        # the choice_path note above), not attempted here.
+        await record_progression(
+            ctx.session,
+            reading_state=reading_state_row,
+            character_id=reading_state_row.character_id,
+            ending_id=body.ending_id,
+            exit_var_state=reading_state_row.var_state,
+        )
     found = await _distinct_endings_found(ctx, parsed, body.storybook_id, body.version)
     total = _completion_ending_count(version_row.blob, body.storybook_id, body.version)
     return _completion_recorded_view(row, is_new=is_new, found=found, total=total)
@@ -824,8 +1201,9 @@ def _completion_recorded_view(
     # the gate; a hand-edited or restored row is not). Widen total to the
     # count actually observed and log, so the ending screen reads "3 of 3"
     # rather than "3 of 2" and the bad version is findable.
-    # #VERIFY: tests/unit/test_completions_api.py::
-    # test_recorded_view_widens_a_understated_ending_total.
+    # #VERIFY: tests/unit/test_reading_api_unit.py::
+    # TestCompletionRecordedViewBoundary::
+    # test_recorded_view_widens_an_understated_ending_total.
     if found > total:
         _logger.warning(
             "completion_ending_total_understated",

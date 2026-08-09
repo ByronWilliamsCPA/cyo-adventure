@@ -25,6 +25,7 @@ from cyo_adventure.api.deps import (
     authorize_profile,
     parse_uuid,
 )
+from cyo_adventure.api.personalization import purge_profile_personalization
 from cyo_adventure.api.schemas import (
     ContentFlagCaps,
     ProfileCreateBody,
@@ -559,8 +560,10 @@ async def create_profile(body: ProfileCreateBody, ctx: Context) -> ProfileView:
         time_capture_paused=body.time_capture_paused,
     )
     ctx.session.add(row)
-    # The unit-of-work dependency commits on success; flush + refresh to read
-    # back the server-generated id and timestamp (same pattern as ratings.py).
+    # UnitOfWorkMiddleware commits on success, just before the response is sent
+    # (the dependency's teardown commit is only the fallback); flush + refresh
+    # to read back the server-generated id and timestamp (same pattern as
+    # ratings.py).
     await ctx.session.flush()
     await ctx.session.refresh(row, ["created_at"])
     return _view(row)
@@ -647,6 +650,14 @@ async def delete_profile(profile_id: str, ctx: Context) -> None:
     since they remain family-owned content and may already have produced a
     published story.
 
+    ``purge_profile_personalization`` (ADR-028) is called explicitly before
+    the row delete: its two target tables (``child_profile_personalization``
+    and ``character``) both already cascade at the database level, so this
+    call changes nothing about what ends up erased, but it makes
+    ``PURGE_TARGETS``'s claim about where the character_name slot's value
+    lives an assertion this route actually exercises, rather than one that
+    is only true because a foreign key happens to agree with it.
+
     Unlike ``update_profile``, this deliberately checks family ownership
     (``authorize_family``) rather than ``authorize_profile``: a profile a
     guardian has already deactivated is excluded from
@@ -676,5 +687,6 @@ async def delete_profile(profile_id: str, ctx: Context) -> None:
     # test_delete_profile_removes_child_linked_rows,
     # ::test_delete_profile_rejects_cross_family_profile.
     authorize_family(ctx.principal, row.family_id)
+    await purge_profile_personalization(ctx.session, row.id)
     await ctx.session.delete(row)
     await ctx.session.flush()

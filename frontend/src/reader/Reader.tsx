@@ -26,9 +26,9 @@ import {
   stripSentinels,
   type ValuesPayload,
 } from '../player/personalization'
-import { SATISFYING_ENDING_KINDS, seriesMeta } from '../player/series'
+import { SATISFYING_ENDING_KINDS, seriesMeta, type ContinuationSeed } from '../player/series'
 import { canGoBackOneStop } from '../player/stops'
-import type { ReadingState, Storybook } from '../player/types'
+import type { ReadingState, Storybook, VarState } from '../player/types'
 import type { ReadingTimeApi } from '../offline/readingTimeSync'
 import { BackToLibrary } from './BackToLibrary'
 import { BadgeUnlockToast } from './BadgeUnlockToast'
@@ -49,6 +49,13 @@ import './reader.css'
 export interface ReaderProps {
   story: Storybook
   initialReading?: ReadingState
+  /**
+   * The continuation seed this book was opened with (WS-G), forwarded to the
+   * machine so "Read again" restarts the continuation rather than the book's
+   * own start node (issue #460). Omitted (most callers, and any non-series
+   * book) is the ordinary new-reader restart.
+   */
+  continuation?: ContinuationSeed
   onProgress?: (reading: ReadingState) => void
   /** Called once with the ending id when the reader reaches an ending. */
   onComplete?: (endingId: string) => void
@@ -135,11 +142,46 @@ export interface ReaderProps {
   newlyEarnedBadge?: EarnedBadgeCard | null
   /** Dismisses the badge-unlock toast (marks it seen on the caller's side). */
   onDismissBadgeToast?: () => void
+  /**
+   * The name of the persistent character (ADR-028) this reading state's
+   * `seed` was snapshotted from by the server, or null/undefined when no
+   * character is bound to this read. Forwarded straight to ReaderChrome,
+   * which renders it when present and renders nothing (no placeholder) when
+   * it is null or undefined; see ReaderPage's `deriveCharacterSeed` for why
+   * this always names the character the SEED came from, not whichever
+   * character happens to be active on the profile right now.
+   */
+  characterName?: string | null
+  /**
+   * The bound character's carried attributes (Task 5/6, ADR-028), threaded
+   * straight into the reader machine's input so RESTART and Go back
+   * (machine.ts's `reset`/`applyBack`, both keyed on `context.seed`)
+   * re-derive the same seeded start this read began with, instead of the
+   * story's declared initials (issue #460). `undefined` means "no character
+   * bound"; the caller (ReaderPage's `deriveCharacterSeed`) is responsible
+   * for converting a JSON `null` (no character) to `undefined` before it
+   * reaches this prop, since `ReaderInput.seed` is typed `VarState |
+   * undefined`, never `| null`.
+   *
+   * #ASSUME: data-integrity: this prop is already `undefined` (not `null`)
+   * when no character is bound, because the only production caller routes
+   * every value through `characterSeed.ts::deriveCharacterSeed`, which does
+   * the `?? undefined` conversion once at the boundary. A `null` arriving
+   * here would type-check nowhere but would, if forced through, flip
+   * `safeStart`'s `seed === undefined` branch and silently change which of
+   * `start()`/`startContinuation()` every RESTART and Go back calls.
+   * #VERIFY: ReaderPage.test.tsx "converts a null seed_var_state to
+   * undefined at the boundary" pins the conversion; ReaderPage.test.tsx
+   * "carries the character seed through RESTART inside the reader" pins the
+   * rendered consequence of a seed that does arrive.
+   */
+  seed?: VarState
 }
 
 export function Reader({
   story,
   initialReading,
+  continuation,
   onProgress,
   onComplete,
   profileId,
@@ -156,11 +198,13 @@ export function Reader({
   progressApi,
   newlyEarnedBadge,
   onDismissBadgeToast,
+  characterName = null,
+  seed,
 }: ReaderProps) {
   const navigate = useNavigate()
   const fontScale = useReaderFontScale(profileId)
   const [snapshot, send] = useMachine(readerMachine, {
-    input: { story, reading: initialReading },
+    input: { story, reading: initialReading, seed, continuation },
   })
   const { reading, error: choiceError } = snapshot.context
   const node = story.nodes.find((n) => n.id === reading.current_node)
@@ -417,9 +461,29 @@ export function Reader({
   // machine event this integration must not add (see useFlowedStop.ts).
   // #VERIFY: Reader.test.tsx "go back at a flowed band rewinds the whole
   // stop, landing on the previous stop's terminal choice, not mid-flow".
+  //
+  // #CRITICAL: data-integrity: this availability check and the machine's BACK
+  // guard (machine.ts: `canGoBack(context.story, context.reading,
+  // context.seed)`) MUST be computed from the same seed. `back()` replays the
+  // recorded path from the read's own start and accepts only an exact
+  // var_state match, so a seed-blind availability check disagrees with the
+  // seed-aware guard on every seeded read: the button renders and the BACK
+  // event is silently swallowed (a dead control on the kid surface), or the
+  // inverse hides a button that would have worked. Passing `seed` on BOTH
+  // branches is what keeps the two in lock-step; a future branch added here
+  // must pass it too.
+  // #VERIFY: Reader.test.tsx "the Go back button and the BACK event agree on a
+  // seeded read" pins the non-flowed branch (no `ageBand`, so `flowedStop` is
+  // null there); "the flowed branch's Go back button and the BACK event agree
+  // on a seeded read" pins the flowed branch above by rendering a Reader that
+  // is both flowed AND seeded. stops.test.ts "rewinds a stop on a seeded read
+  // only when the seed is forwarded" only proves stops.ts forwards the
+  // parameter it is given; it cannot observe whether this call site passes
+  // one at all, so it does not pin the flowed branch by itself.
   const canUndo = useMemo(
-    () => (flowedStop ? canGoBackOneStop(story, flowedStop) : canGoBack(story, reading)),
-    [story, reading, flowedStop]
+    () =>
+      flowedStop ? canGoBackOneStop(story, flowedStop, seed) : canGoBack(story, reading, seed),
+    [story, reading, flowedStop, seed]
   )
   const goBackSteps = flowedStop ? flowedStop.nodeIds.length : 1
   // Labelled "Go back a page" (not bare "Go back"): on the ending screen it
@@ -475,6 +539,7 @@ export function Reader({
           ? { label: 'You finished this story!', complete: true }
           : { label: readerPositionLabel(story, reading, ageBand) }
       }
+      characterName={characterName}
       back={leaveButton}
       fontControl={<TextSizeControl fontScale={fontScale} />}
       readAloud={

@@ -61,8 +61,11 @@ _MIGRATIONS_DIR = Path(__file__).parents[2] / "supabase" / "migrations"
 # The ring-1-only fields (real-name-adjacent but not itself a real name, or
 # structurally incapable of a ring-2 "shared with connected families" grant):
 # pronoun_set is a grammatical choice, not an identity a family shares
-# outward, and dedication names the book's giver, not its reader.
-_RING1_ONLY_FIELDS = frozenset({"pronoun_set", "dedication"})
+# outward, dedication names the book's giver, not its reader, and
+# character_name (ADR-028) is a permanent ceiling, not a default: it is
+# unreviewed child free text, and the three-ring boundary (ADR-018) keeps
+# unreviewed child free text inside ring 1 only.
+_RING1_ONLY_FIELDS = frozenset({"pronoun_set", "dedication", "character_name"})
 
 # AL-068/UW-C20: every `PERSONALIZATION_FIELDS` member must resolve to
 # EITHER a `CLOSED_VOCABULARIES` entry OR a name in this set, which records
@@ -76,6 +79,16 @@ _RING1_ONLY_FIELDS = frozenset({"pronoun_set", "dedication"})
 _FREE_TEXT_OR_REFERENCE_EXEMPT_FIELDS = frozenset(
     {"protagonist_first_name", "pet_name", "pronoun_set", SIBLING_SLOT_TYPE}
 )
+
+# ADR-028: character_name carries NO value in this table at all (its value
+# is synthesized from the active Character's name), so it is neither a
+# CLOSED_VOCABULARIES candidate nor a free-text/reference slot in the sense
+# `_FREE_TEXT_OR_REFERENCE_EXEMPT_FIELDS` records; it is exempt from having
+# a vocabulary for a different reason (there is no value to constrain the
+# shape of) and gets its own, separately documented set rather than being
+# folded into that one, so a reader of either set sees a single reason, not
+# two unrelated reasons sharing one name.
+_NO_VALUE_EXEMPT_FIELDS = frozenset({"character_name"})
 
 
 def _executable_ddl(path: Path) -> str:
@@ -133,6 +146,47 @@ def _newest_slot_type_check_migration() -> Path:
         )
         raise AssertionError(message)
     return candidates[-1]
+
+
+def _split_favorite_migration() -> Path:
+    """Locate the migration that split the flat `favorite` slot (Task D6).
+
+    Resolved by content, not filename, for the same reason
+    `_newest_slot_type_check_migration` above is resolved dynamically: a
+    hardcoded name would go stale the moment the file is renamed. But this
+    helper deliberately does NOT reuse that one. Two tests below assert
+    facts specific to the D6 event (that it swept
+    `personalization_disclosure_consent` and removed the literal
+    `'favorite'` element), and pointing them at "whichever migration is
+    newest" was a latent bug that this migration exposed: it happened to
+    return the D6 migration only because, at the time those tests were
+    written, D6 was ALSO the newest migration touching the `slot_type`
+    CHECK. The persistent-characters migration (ADR-028) is newer still and
+    touches that same CHECK to add `character_name`, a purely additive
+    change with nothing to sweep in the consent table: the added slot type
+    was never grantable before this migration, so no existing consent
+    record could already reference it. There never was a general "the
+    newest slot_type migration always touches the consent table" rule;
+    only this one historical event was ever being pinned.
+
+    Returns:
+        Path: The migration file that removed `'favorite'` from
+        `personalization_disclosure_consent.covered_slot_types`.
+
+    Raises:
+        AssertionError: If no migration matches, or more than one does.
+    """
+    candidates = [
+        path
+        for path in _MIGRATIONS_DIR.glob("*.sql")
+        if "- 'favorite'" in _executable_ddl(path)
+    ]
+    assert len(candidates) == 1, (
+        "expected exactly one migration containing the `covered_slot_types "
+        f"- 'favorite'` consent-scope removal (Task D6), found {len(candidates)}: "
+        f"{candidates}"
+    )
+    return candidates[0]
 
 
 def _parse_sql_string_list(fragment: str) -> set[str]:
@@ -213,12 +267,53 @@ def test_orm_ring2_ceiling_check_matches_personalization_fields_minus_ring1_only
     )
 
 
-def test_orm_exactly_one_value_constraint_present() -> None:
-    """ck_cpp_exactly_one_value exists, mirroring the migration's named CHECK."""
-    sqltext = _orm_check_sqltext("ck_cpp_exactly_one_value")
+def test_orm_value_cardinality_constraint_present() -> None:
+    """ck_cpp_value_cardinality exists, mirroring the migration's named CHECK.
+
+    Renamed from ck_cpp_exactly_one_value (ADR-028): character_name is the
+    one slot_type whose row must carry NONE of the three value columns, so
+    the constraint is no longer "exactly one" for every row and the old name
+    would misdescribe it.
+    """
+    sqltext = _orm_check_sqltext("ck_cpp_value_cardinality")
     assert "value_text" in sqltext
     assert "value_enum" in sqltext
     assert "value_profile_id" in sqltext
+    assert "character_name" in sqltext
+
+
+def test_orm_has_no_stale_exactly_one_value_constraint_name() -> None:
+    """The ORM's __table_args__ never carries the pre-rename constraint name.
+
+    Complementary to the presence test above, and the reason it exists at
+    all: `test_schema_parity.py` compares CHECK constraints by deparsed
+    `sqltext` only, never by `conname` (see this module's docstring), so a
+    stray second CheckConstraint left behind under the old name would be
+    invisible to that gate and to the presence test, which only proves the
+    NEW name exists, not that the OLD one is gone.
+    """
+    names = {
+        constraint.name
+        for constraint in ChildProfilePersonalization.__table_args__
+        if isinstance(constraint, CheckConstraint)
+    }
+    assert "ck_cpp_exactly_one_value" not in names
+    assert "ck_cpp_value_cardinality" in names
+
+
+def test_migration_renames_value_cardinality_constraint() -> None:
+    """The migration adds the new constraint name and never re-adds the old one.
+
+    The other migration-side tests in this module compare CHECK bodies only
+    (`_migration_slot_type_lists` parses `slot_type IN (...)` fragments, not
+    constraint names), so the ck_cpp_exactly_one_value -> ck_cpp_value_cardinality
+    rename (ADR-028) is invisible to them, and to
+    `tests/integration/test_schema_parity.py`, which is also sqltext-only.
+    This is the one place that rename is checked directly.
+    """
+    ddl = _executable_ddl(_newest_slot_type_check_migration())
+    assert 'ADD CONSTRAINT "ck_cpp_value_cardinality"' in ddl
+    assert 'ADD CONSTRAINT "ck_cpp_exactly_one_value"' not in ddl
 
 
 # ---------------------------------------------------------------------------
@@ -242,11 +337,12 @@ def test_every_personalization_field_has_a_vocabulary_or_an_exemption() -> None:
         set(PERSONALIZATION_FIELDS)
         - set(CLOSED_VOCABULARIES)
         - _FREE_TEXT_OR_REFERENCE_EXEMPT_FIELDS
+        - _NO_VALUE_EXEMPT_FIELDS
     )
     assert uncovered == set(), (
         f"slot type(s) {sorted(uncovered)} are in PERSONALIZATION_FIELDS with "
         "neither a CLOSED_VOCABULARIES entry nor a "
-        "_FREE_TEXT_OR_REFERENCE_EXEMPT_FIELDS exemption"
+        "_FREE_TEXT_OR_REFERENCE_EXEMPT_FIELDS or _NO_VALUE_EXEMPT_FIELDS exemption"
     )
 
 
@@ -286,6 +382,8 @@ def test_exempt_fields_carry_no_vocabulary_entry() -> None:
     disagree about which check governs it.
     """
     assert _FREE_TEXT_OR_REFERENCE_EXEMPT_FIELDS.isdisjoint(CLOSED_VOCABULARIES)
+    assert _NO_VALUE_EXEMPT_FIELDS.isdisjoint(CLOSED_VOCABULARIES)
+    assert _NO_VALUE_EXEMPT_FIELDS.isdisjoint(_FREE_TEXT_OR_REFERENCE_EXEMPT_FIELDS)
 
 
 # ---------------------------------------------------------------------------
@@ -342,10 +440,14 @@ def test_split_migration_sweeps_the_consent_scope_too() -> None:
     rewriting a single 'favorite' grant into favorite_color + favorite_food +
     favorite_hobby would widen a ring-2 sharing scope to three distinct facts
     the guardian was never shown.
+
+    Resolved via `_split_favorite_migration`, not `_newest_slot_type_check_
+    migration`: this is a fact about one historical migration, not about
+    whichever migration is newest today. See that helper's docstring.
     """
-    ddl = _executable_ddl(_newest_slot_type_check_migration())
+    ddl = _executable_ddl(_split_favorite_migration())
     assert "personalization_disclosure_consent" in ddl, (
-        "the newest slot_type migration does not touch "
+        "the D6 split migration does not touch "
         "personalization_disclosure_consent.covered_slot_types, the second "
         "(unconstrained) store of this same vocabulary"
     )
@@ -380,6 +482,10 @@ def test_split_migration_only_names_tables_that_a_migration_creates() -> None:
     #VERIFY: a real schema check runs in the `Validate migration chain` and
     `Playwright (real-backend PR smoke)` CI jobs, which apply every migration
     against a live Postgres.
+
+    Resolved via `_split_favorite_migration`, not `_newest_slot_type_check_
+    migration`, for the same reason as the guard above: this test is about
+    the D6 event by name, not about whichever migration is newest today.
     """
     migrations = sorted(_MIGRATIONS_DIR.glob("*.sql"))
     created: set[str] = set()
@@ -393,7 +499,7 @@ def test_split_migration_only_names_tables_that_a_migration_creates() -> None:
         )
     assert created, "no CREATE TABLE statements found; the parser is broken"
 
-    ddl = _executable_ddl(_newest_slot_type_check_migration())
+    ddl = _executable_ddl(_split_favorite_migration())
     referenced = set(re.findall(r'"public"\."(\w+)"', ddl))
     unknown = referenced - created
     assert not unknown, (

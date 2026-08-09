@@ -20,9 +20,11 @@ from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
 import pytest
+from sqlalchemy import select
 
 from cyo_adventure.api import personalization as personalization_api
 from cyo_adventure.db.models import (
+    Character,
     ChildProfile,
     ChildProfilePersonalization,
     Family,
@@ -1959,3 +1961,252 @@ async def test_update_profile_rejects_denylisted_display_name(
         headers=auth(seed.guardian_token),
     )
     assert resp.status_code == 422, resp.text
+
+
+# ---------------------------------------------------------------------------
+# character_name: the twelfth slot, synthesized at resolve time (ADR-028)
+# ---------------------------------------------------------------------------
+
+
+async def _character_name_fixture(
+    sessions: async_sessionmaker[AsyncSession],
+    *,
+    label: str,
+    guardian_subject: str,
+    character_name: str | None,
+    ring1_enabled: bool = True,
+    age_band: str = "10-13",
+) -> str:
+    """Seed a family whose subject profile has the character_name slot toggled.
+
+    Args:
+        sessions: The integration session factory.
+        label: A unique label so concurrent fixtures do not collide.
+        guardian_subject: The guardian's authn_subject, which is also the
+            bearer token the test uses.
+        character_name: The active character's name, or None to seed no
+            character at all.
+        ring1_enabled: Whether the character_name consent row is toggled on.
+        age_band: The subject profile's band, which selects the denylist floor.
+
+    Returns:
+        str: The storybook id to resolve values for.
+    """
+    async with sessions() as session:
+        fam = Family(name=f"{label} Family")
+        session.add(fam)
+        await session.flush()
+        subject = ChildProfile(
+            family_id=fam.id, display_name=f"{label} Reader", age_band=age_band
+        )
+        session.add(subject)
+        await session.flush()
+        if character_name is not None:
+            session.add(
+                Character(
+                    child_profile_id=subject.id,
+                    family_id=fam.id,
+                    name=character_name,
+                    archetype="scout",
+                    look="avatar_02",
+                )
+            )
+        session.add_all(
+            [
+                ChildProfilePersonalization(
+                    child_profile_id=subject.id,
+                    slot_type="character_name",
+                    ring1_enabled=ring1_enabled,
+                ),
+                # A second, always-valid slot. Without it a payload with no
+                # character_name would be the universal empty view (ring None)
+                # and every assertion below would pass vacuously.
+                ChildProfilePersonalization(
+                    child_profile_id=subject.id,
+                    slot_type="pet_name",
+                    value_text="Waffles",
+                    ring1_enabled=True,
+                ),
+            ]
+        )
+        await _guardian(session, fam.id, guardian_subject)
+        await session.flush()
+        book = await _storybook(session, fam.id, subject.id)
+        await session.commit()
+        return book.id
+
+
+async def test_ring1_character_name_resolves_from_the_active_character(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """The toggle is on and a character is active: its name renders.
+
+    The value is synthesized here, not read from a value column: the
+    consent row for this slot carries the toggle and nothing else.
+    """
+    book_id = await _character_name_fixture(
+        sessions,
+        label="CharName On",
+        guardian_subject="charname-on-guardian",
+        character_name="Ember",
+    )
+
+    resp = await client.get(
+        f"/api/v1/storybooks/{book_id}/personalization-values",
+        headers=auth("charname-on-guardian"),
+    )
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+    assert body["ring"] == 1
+    assert body["values"]["character_name"] == "Ember"
+    assert body["values"]["pet_name"] == "Waffles"
+
+
+async def test_ring1_character_name_absent_when_the_toggle_is_off(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """Turning the toggle off is the only way to clear this slot.
+
+    Blanking the name is not a clear: the child renames their character and
+    the slot repopulates. So the toggle must be load-bearing even though an
+    active character still exists.
+    """
+    book_id = await _character_name_fixture(
+        sessions,
+        label="CharName Off",
+        guardian_subject="charname-off-guardian",
+        character_name="Ember",
+        ring1_enabled=False,
+    )
+
+    resp = await client.get(
+        f"/api/v1/storybooks/{book_id}/personalization-values",
+        headers=auth("charname-off-guardian"),
+    )
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+    assert body["values"]["pet_name"] == "Waffles"
+    assert "character_name" not in body["values"]
+
+
+async def test_ring1_character_name_absent_when_no_character_is_active(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """Toggle on but no active character: the slot is omitted, not an error.
+
+    A profile can hold the consent row before the child has ever made a
+    character, and a retired-only profile is the same state.
+    """
+    book_id = await _character_name_fixture(
+        sessions,
+        label="CharName None",
+        guardian_subject="charname-none-guardian",
+        character_name=None,
+    )
+
+    resp = await client.get(
+        f"/api/v1/storybooks/{book_id}/personalization-values",
+        headers=auth("charname-none-guardian"),
+    )
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+    assert body["values"]["pet_name"] == "Waffles"
+    assert "character_name" not in body["values"]
+
+
+async def test_ring1_character_name_survives_a_rename(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """Renaming the character changes the resolved value; nothing is cached.
+
+    The slot has no stored value, so a rename must be visible on the very
+    next resolve without touching the consent row.
+    """
+    book_id = await _character_name_fixture(
+        sessions,
+        label="CharName Rename",
+        guardian_subject="charname-rename-guardian",
+        # A name unique to this test: the lookup below is by name, and the
+        # other fixtures in this section seed their own characters.
+        character_name="EmberBeforeRename",
+    )
+
+    first = await client.get(
+        f"/api/v1/storybooks/{book_id}/personalization-values",
+        headers=auth("charname-rename-guardian"),
+    )
+    assert first.json()["values"]["character_name"] == "EmberBeforeRename"
+
+    async with sessions() as session:
+        row = await session.scalar(
+            select(Character).where(Character.name == "EmberBeforeRename")
+        )
+        assert row is not None
+        row.name = "Cinder"
+        await session.commit()
+
+    second = await client.get(
+        f"/api/v1/storybooks/{book_id}/personalization-values",
+        headers=auth("charname-rename-guardian"),
+    )
+    assert second.status_code == 200, second.text
+    assert second.json()["values"]["character_name"] == "Cinder"
+
+
+@pytest.mark.parametrize(
+    ("unsafe_name", "age_band"),
+    [
+        ("{~HERO:friend~}", "10-13"),
+        ("Ro\x07sa", "10-13"),
+        ("Captain Sword", "5-8"),
+    ],
+    ids=["sentinel_shaped", "control_character", "band_denylisted"],
+)
+async def test_ring1_character_name_is_dropped_when_the_name_is_unsafe(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    unsafe_name: str,
+    age_band: str,
+) -> None:
+    """An unsafe character name is omitted from the payload, never rendered.
+
+    #CRITICAL: security: this slot's value never passes through
+    `personalization_value_for_payload` (that function's shape rule forbids a
+    `value_text` on character_name), so without the resolver's explicit
+    `character_name_violations` call it would be the one slot of twelve
+    reaching the render payload with no structural or denylist check at all,
+    and it is the least trustworthy of the twelve: the author is the child,
+    and the payload ships beside `sentinel_pattern` for substitution into
+    story prose.
+
+    The rows are written directly through the ORM rather than through
+    `POST /v1/characters`, deliberately: the API-level gate
+    (`tests/integration/test_characters_api.py::
+    test_create_character_rejects_a_sentinel_shaped_name`) now refuses these
+    names, so a name that predates that gate, or one written by any other
+    path, is exactly the case this render-time check exists for. Two
+    independent layers, each tested against its own entry point.
+    """
+    label = f"CharName Unsafe {age_band}"
+    subject_token = f"charname-unsafe-{age_band}-{len(unsafe_name)}-guardian"
+    book_id = await _character_name_fixture(
+        sessions,
+        label=label,
+        guardian_subject=subject_token,
+        character_name=unsafe_name,
+        age_band=age_band,
+    )
+
+    resp = await client.get(
+        f"/api/v1/storybooks/{book_id}/personalization-values",
+        headers=auth(subject_token),
+    )
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+    # The companion slot proves the request resolved at all, so the absence
+    # below is a dropped slot rather than a collapsed payload.
+    assert body["values"]["pet_name"] == "Waffles"
+    assert "character_name" not in body["values"], (
+        f"an unsafe character name reached a ring-1 payload: {unsafe_name!r}"
+    )
+    assert unsafe_name not in resp.text

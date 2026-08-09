@@ -70,8 +70,11 @@
 '   src/cyo_adventure/middleware/correlation.py (CorrelationMiddleware; added
 '     LAST in app.py so Starlette makes it the OUTERMOST layer, running first
 '     on the request path)
-'   src/cyo_adventure/middleware/security.py (OWASP headers, SSRF; added first,
-'     so it ends up innermost of the three)
+'   src/cyo_adventure/middleware/security.py (OWASP headers, SSRF; added second,
+'     so it sits between the unit-of-work and gzip layers)
+'   src/cyo_adventure/middleware/unit_of_work.py (UnitOfWorkMiddleware; added
+'     FIRST so it is the INNERMOST layer, committing the request's unit of work
+'     at http.response.start, before any byte reaches the client, issue #461)
 '   src/cyo_adventure/core/config.py         (Pydantic Settings)
 '   src/cyo_adventure/core/database.py       (async engine, Base, get_session)
 '   src/cyo_adventure/core/exceptions.py     (exception hierarchy)
@@ -96,16 +99,17 @@ skinparam component {
 
 package "FastAPI Application\nsrc/cyo_adventure/app.py" #E8F5E9 {
 
-  package "Middleware Stack\n(registration order: security -> gzip -> correlation;\nexecution order is the reverse, correlation outermost)" #CCEECC {
-    component "SecurityMiddleware\nmiddleware/security.py\nOWASP headers, HSTS,\nCSP, SSRF protection\nregistered 1st (innermost)" as sec_mw #CCEECC
-    component "GZipMiddleware\n(Starlette stdlib)\nminimum_size=1024\ncompresslevel=6\nregistered 2nd" as gzip_mw #CCEECC
+  package "Middleware Stack\n(registration order: unit-of-work -> security -> gzip -> correlation;\nexecution order is the reverse, correlation outermost)" #CCEECC {
+    component "UnitOfWorkMiddleware\nmiddleware/unit_of_work.py\nCommits the request's unit of\nwork at http.response.start\nregistered 1st (innermost), #461" as uow_mw #CCEECC
+    component "SecurityMiddleware\nmiddleware/security.py\nOWASP headers, HSTS,\nCSP, SSRF protection\nregistered 2nd" as sec_mw #CCEECC
+    component "GZipMiddleware\n(Starlette stdlib)\nminimum_size=1024\ncompresslevel=6\nregistered 3rd" as gzip_mw #CCEECC
     component "CorrelationMiddleware\nmiddleware/correlation.py\nAttaches X-Correlation-ID;\nregistered LAST so it is\nOUTERMOST (runs first)" as corr_mw #CCEECC
   }
 
   package "Dependencies\napi/deps.py" #DCEDC8 {
     component "Auth Seam\n_extract_subject()\n[local: token-as-subject]\n[non-local: Supabase OIDC JWT,\nADR-009]" as auth_seam #DCEDC8
     component "Principal\nsubject, user_id, role,\nfamily_id, profile_ids, is_admin\nauthorize_profile() / authorize_family()\n(module-level, take a principal)" as principal #DCEDC8
-    component "DbSession\nasync unit-of-work\ncommit on success,\nrollback on exception" as db_session_dep #DCEDC8
+    component "DbSession\nasync unit-of-work\nrollback on exception here;\ncommit in UnitOfWorkMiddleware" as db_session_dep #DCEDC8
     component "RequestContext\nContext = principal + session\nDependency-injected into\nevery route handler" as ctx #DCEDC8
   }
 
@@ -196,7 +200,8 @@ database "Supabase Postgres\n[Managed DB, ADR-009 decision 2]\nAsync SQLAlchemy 
 ' --- Relationships ---
 corr_mw --> sec_mw : "request chain\n(outermost runs first)"
 sec_mw --> gzip_mw : "request chain"
-gzip_mw --> auth_seam : "request chain"
+gzip_mw --> uow_mw : "request chain"
+uow_mw --> auth_seam : "request chain\n(innermost; commits before\nthe response is sent)"
 auth_seam --> principal
 db_session_dep --> database
 principal --> ctx

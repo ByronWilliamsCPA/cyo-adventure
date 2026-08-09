@@ -113,6 +113,47 @@ def make_clean_moderation_report() -> dict[str, object]:
 
 
 # ============================================================================
+# Process-Global Singleton Resets
+# ============================================================================
+
+
+@pytest.fixture(autouse=True)
+def _reset_gate_limiter() -> Iterator[None]:
+    """Drop the memoized gate capacity limiter around every test.
+
+    ``api/gate_limits.py::gate_limiter`` is an ``lru_cache(maxsize=1)``
+    singleton, which is what the production process wants: one bound over one
+    AnyIO worker pool. The object it caches is an ``anyio.CapacityLimiter``
+    adapter that lazily creates its backend limiter on first acquire and then
+    keeps it forever, so the cached limiter is effectively bound to whichever
+    event loop touched it first.
+
+    A server runs one loop for its lifetime, so that binding is inert there.
+    A test run is the case where it is not: each ``pytest-asyncio`` test gets
+    a fresh loop, so without this reset a token left borrowed by a cancelled
+    or timed-out acquire would persist into later tests, holding capacity on
+    behalf of a task from a loop that no longer exists. That is an
+    order-dependent flake, invisible until it strikes, which is why the reset
+    is unconditional and autouse rather than opt-in from the one module that
+    exercises the limiter today.
+
+    Clearing on both sides is deliberate: the pre-test clear protects this
+    test from its predecessors, and the post-test clear stops a limiter bound
+    to this test's loop from outliving it.
+
+    Yields:
+        None: after the memoized limiter has been dropped.
+    """
+    from cyo_adventure.api.gate_limits import gate_limiter
+
+    gate_limiter.cache_clear()
+    try:
+        yield
+    finally:
+        gate_limiter.cache_clear()
+
+
+# ============================================================================
 # Logging Fixtures
 # ============================================================================
 

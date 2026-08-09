@@ -41,12 +41,26 @@ admin capability) additionally pins that a dual-role principal passes the
 UNION of the guardian and admin gates (see
 ``test_dual_role_token_passes_guardian_and_admin_gates``).
 
-Every one of these gates runs *before* any database row is loaded (confirmed
-by reading each handler), so a caller outside ``allowed_roles`` always gets
-an exact 403, never a 404-before-403 ambiguity. No ``(403, 404)`` exception
-list is needed in this codebase; that is itself the audited invariant this
-suite pins (see the module-level assertion in
+Every one of these gates whose authorization check is a cheap pre-check
+(``is_admin``/``is_guardian``, or an ownership check against an id already in
+hand) runs *before* any database row is loaded, so a caller outside
+``allowed_roles`` gets an exact 403, never a 404-before-403 ambiguity. No
+``(403, 404)`` exception list is needed for those routes; that is the
+audited invariant this suite pins (see the module-level assertion in
 ``test_protected_endpoint_role_matrix``).
+
+Three routes are the documented exception: ``characters.py``'s
+``update_character``, ``activate_character``, and ``retire_character``
+(``PATCH``/``POST .../activate``/``POST .../retire`` on
+``/api/v1/characters/{character_id}``) load the row *before* calling
+``authorize_profile``, because the id in the path is the character, not the
+profile the ownership check needs -- there is no cheap pre-check available
+(see the ``RouteSpec`` comment above the three character entries below for
+why a real, seed-owned character id is required). For these three, a
+disallowed role can legitimately see a 404 as well as a 403, which is why
+they need their own cross-family IDOR coverage rather than relying on the
+role-gate-before-load invariant above: see ``_CROSS_FAMILY_ROUTE_KEYS`` and
+``_CROSS_FAMILY_CHILD_ROUTE_KEYS`` below.
 
 Validator-legal requests
 -------------------------
@@ -343,6 +357,27 @@ def _profile_create_body(_seed: Seed) -> dict[str, Any]:
 
 
 def _profile_update_body(_seed: Seed) -> dict[str, Any]:
+    return {}
+
+
+def _character_list_query(seed: Seed) -> dict[str, str]:
+    return {"profile_id": str(seed.child_profile_id)}
+
+
+def _character_create_body(seed: Seed) -> dict[str, Any]:
+    return {
+        "profile_id": str(seed.child_profile_id),
+        "name": "Authz Matrix Character",
+        "archetype": "scout",
+        "look": "avatar_03",
+    }
+
+
+def _character_path(seed: Seed) -> dict[str, str]:
+    return {"character_id": str(seed.character_id)}
+
+
+def _character_update_body(_seed: Seed) -> dict[str, Any]:
     return {}
 
 
@@ -740,6 +775,55 @@ _ROUTE_SPECS: list[RouteSpec] = [
         "/api/v1/profiles/{profile_id}",
         frozenset({Role.GUARDIAN}),
         path_params=_child_profile_path,
+    ),
+    # -- characters.py: ownership-scoped (authorize_profile), ADR-028.
+    # GET/create/update/activate/retire carry no role gate at all -- a child
+    # may manage their own characters exactly like a guardian can -- so
+    # ADMIN legitimately 403s via the empty profile_ids an admin principal
+    # resolves to, not via any role check in the handler. Only DELETE is
+    # guardian-only (_require_guardian): irreversible progression loss.
+    RouteSpec(
+        "GET",
+        "/api/v1/characters",
+        frozenset({Role.GUARDIAN, Role.CHILD}),
+        query_params=_character_list_query,
+    ),
+    RouteSpec(
+        "POST",
+        "/api/v1/characters",
+        frozenset({Role.GUARDIAN, Role.CHILD}),
+        json_body=_character_create_body,
+    ),
+    RouteSpec(
+        "PATCH",
+        "/api/v1/characters/{character_id}",
+        frozenset({Role.GUARDIAN, Role.CHILD}),
+        # A character the caller owns: load-then-authorize has no cheap
+        # pre-check, so a disallowed role's request must reach a REAL row
+        # to 403 rather than 404 first (see RouteSpec's own docs above).
+        path_params=_character_path,
+        json_body=_character_update_body,
+    ),
+    RouteSpec(
+        "POST",
+        "/api/v1/characters/{character_id}/activate",
+        frozenset({Role.GUARDIAN, Role.CHILD}),
+        path_params=_character_path,
+    ),
+    RouteSpec(
+        "POST",
+        "/api/v1/characters/{character_id}/retire",
+        frozenset({Role.GUARDIAN, Role.CHILD}),
+        path_params=_character_path,
+    ),
+    # _require_guardian runs first with no I/O, so a disallowed role legitimately
+    # 403s before any row lookup; a random id is safe here (mirrors
+    # delete_profile's own DELETE entry above).
+    RouteSpec(
+        "DELETE",
+        "/api/v1/characters/{character_id}",
+        frozenset({Role.GUARDIAN}),
+        path_params=_random_uuid_path("character_id"),
     ),
     # -- personalization.py: ring-1/ring-2 CRUD, guardian-only
     # (_require_guardian rejects admin-only too, same shape as profiles.py) --
@@ -1309,6 +1393,25 @@ _CROSS_FAMILY_ROUTE_KEYS: list[tuple[str, str]] = [
     ("PUT", "/api/v1/profiles/{profile_id}/personalization"),
     ("POST", "/api/v1/profiles/{profile_id}/ring2-consent"),
     ("DELETE", "/api/v1/profiles/{profile_id}/ring2-consent/{connection_id}"),
+    # characters.py (ADR-028): the five non-DELETE routes. GET/POST are
+    # profile-addressed (query/body profile_id); PATCH/activate/retire are
+    # id-addressed (load-then-authorize, see the module docstring's
+    # documented exception and the RouteSpec comment above the character
+    # entries) and need the character_id itself swapped, not a profile_id, so
+    # they cannot go through the generic profile_id substitution the reverse
+    # (family-A-to-stranger) test below uses -- they are covered here in the
+    # forward (attacker-to-family-A) direction only, plus DELETE's own
+    # explicit test in test_characters_api.py (DELETE's RouteSpec uses
+    # _random_uuid_path, so a sweep entry would 404 unconditionally). This
+    # list only ever authenticates as a GUARDIAN principal
+    # (seed.other_guardian_token / stranger.guardian_token below); CHILD-token
+    # cross-family coverage for GET/POST /api/v1/characters lives in
+    # _CROSS_FAMILY_CHILD_ROUTE_KEYS below, not here.
+    ("GET", "/api/v1/characters"),
+    ("POST", "/api/v1/characters"),
+    ("PATCH", "/api/v1/characters/{character_id}"),
+    ("POST", "/api/v1/characters/{character_id}/activate"),
+    ("POST", "/api/v1/characters/{character_id}/retire"),
 ]
 
 # GET /storybooks/{id}/personalization-values is deliberately NOT in the list
@@ -1396,6 +1499,25 @@ _CROSS_FAMILY_CHILD_ROUTE_KEYS: list[tuple[str, str]] = [
     ("POST", "/api/v1/completions"),
     ("GET", "/api/v1/reading-history/{profile_id}"),
     ("GET", "/api/v1/recommendations/{profile_id}"),
+    # characters.py (ADR-028): GET/POST are profile-addressed (query/body
+    # profile_id), exactly like the ratings/library/reading-state routes
+    # above, so they slot into the same generic profile_id substitution the
+    # reverse test below uses and need no special-casing. Before this fix
+    # they were absent, with a comment claiming they were "already covered by
+    # the forward-direction-only _CROSS_FAMILY_ROUTE_KEYS above" -- that was
+    # false for the CHILD role: that list is exercised only with
+    # seed.other_guardian_token / stranger.guardian_token, both GUARDIAN
+    # principals, so no test anywhere sent a CHILD token from an unrelated
+    # family at these two routes until they were added here.
+    # PATCH/activate/retire are id-addressed (load-then-authorize, see the
+    # module docstring's documented exception) and need the character_id
+    # itself swapped, not a profile_id -- the reverse test below does that
+    # swap explicitly (url.replace(seed.character_id, stranger.character_id)).
+    ("GET", "/api/v1/characters"),
+    ("POST", "/api/v1/characters"),
+    ("PATCH", "/api/v1/characters/{character_id}"),
+    ("POST", "/api/v1/characters/{character_id}/activate"),
+    ("POST", "/api/v1/characters/{character_id}/retire"),
 ]
 
 # Every key referenced above must actually be a child-eligible route in
@@ -1521,10 +1643,18 @@ async def test_family_a_child_cannot_reach_stranger_family_profile(
     completions -- only ``profile_id`` is swapped to family C's -- so a pass
     here proves the ownership check keys on the profile id itself, not merely
     on "is this the caller's own storybook".
+
+    The three id-addressed character routes in
+    ``_CROSS_FAMILY_CHILD_ROUTE_KEYS`` address by ``character_id``, not
+    ``profile_id``, so the ``child_profile_id`` swap above does nothing for
+    them; the ``character_id`` swap below is what turns those three cases
+    into an attempt against family C's character rather than a same-family,
+    own-resource request that would otherwise return 200.
     """
     spec = ROUTE_TABLE[(method, path_template)]
     url, query, body = spec.resolve(seed)
     url = url.replace(str(seed.child_profile_id), str(stranger.child_profile_id))
+    url = url.replace(str(seed.character_id), str(stranger.character_id))
     if "profile_id" in query:
         query = {**query, "profile_id": str(stranger.child_profile_id)}
     if body and "profile_id" in body:

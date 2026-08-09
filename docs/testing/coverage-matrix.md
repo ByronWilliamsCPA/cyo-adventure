@@ -504,6 +504,57 @@ detail when a storybook has more than one version).
 - Component: `frontend/src/kid/ProfilePickerPage.test.tsx` (incl. PIN gate), `frontend/src/kid/KidNav.test.tsx`, `frontend/src/kid/KidShell.test.tsx`, `frontend/src/kid/childSessionApi.test.ts`, `frontend/src/kid/storyStatusApi.test.ts` (W1.4 "new story!" pill adapter: normal, malformed, and error responses all degrade to no pills), `frontend/src/profiles/AvatarCircle.test.tsx`, `frontend/src/profiles/profilesApi.test.ts`
 - Integration: `frontend/src/test/App.test.tsx`
 
+## Kid: persistent character (ADR-028: first-run creation, switching, seeded read)
+
+The once-per-profile character a child makes on their first library visit, keeps
+across every book, and can switch between afterwards. The character's
+`seed_var_state` is computed server-side and threaded into the reader as the
+read's starting variables; the client never derives a seed of its own.
+
+- Component: `frontend/src/characters/CharacterCreator.test.tsx` (the first-run
+  form: the happy-path create call and its exact request body, the literal
+  six-item archetype roster in backend wire order, the three input guards
+  (missing name including whitespace-only, missing role, missing look) each
+  refusing before any API call, the client-side 32-character bound, the server's
+  422 naming-violation message surfaced verbatim rather than replaced, both
+  directions of the non-422 failure fork (401/403 says ask a grown-up, 500 and a
+  transport failure offer a retry), the per-look accessible name carrying the
+  color rather than the emoji's platform-chosen announcement, the name field's
+  `aria-invalid`/`aria-describedby` association appearing and clearing with the
+  error, and no state write after an unmount mid-submit),
+  `frontend/src/characters/CharacterPicker.test.tsx` (the switcher: the active
+  tile reads pressed and the others do not, choosing another calls activate and
+  flips the selection in place with no reload, an empty profile falls through to
+  the creator rather than an empty grid, the tiles are a plain `aria-pressed`
+  list and NOT an ARIA radiogroup (which would promise arrow-key navigation this
+  component does not implement), the 401/403 "find your grown-up" state offering
+  no retry, the load-failure state whose "Try again" re-issues the GET, and an
+  activate rejection that shows the retry message and leaves the tile enabled
+  rather than stuck busy), `frontend/src/characters/characterApi.test.ts` (the
+  `/v1/characters` adapter's request shape for all six routes, plus the two
+  drift guards on the shared catalogs: the archetype roster order is the
+  backend's stored numeric code, and every look id has both a swatch and a
+  distinct spoken label), `frontend/src/characters/useActiveCharacter.test.ts`
+  (which character is active, and the discrimination that matters most: an
+  unparseable or wrong-shaped response resolves to `'error'`, never to `'none'`,
+  because the first-run gate treats `'none'` as "safe to show the creator"),
+  `frontend/src/kid/KidShell.test.tsx` (the first-run gate itself, mounted
+  through the shell: `'none'` shows the creator AND withholds the library
+  Outlet, `'ready'` renders the Outlet, and `'loading'`/`'error'` also render it,
+  pinning the deliberate fail-safe; plus the single per-route lookup handed down
+  through the Outlet context),
+  `frontend/src/library/LibraryPage.test.tsx` (the active-character strip's two
+  sources: it reuses the shell's resolved lookup with no fetch of its own, and
+  falls back to fetching one when mounted outside KidShell, as the guardian
+  preview-as-child route does), `frontend/src/reader/characterSeed.test.ts` (the
+  read's starting variables: the seed is read off the server-computed
+  `seed_var_state`, never derived client-side, and every lookup failure opens
+  the read unseeded rather than blocking it)
+- **Gap**: no E2E tier at any level. No catalog book declares a character
+  envelope yet (deliberate, per ADR-028), so no seeded read exists to drive
+  end-to-end; the creation and switching flows themselves are E2E-testable today
+  and are not yet covered.
+
 ## Kid: browse library
 
 - E2E-mocked: `frontend/e2e/library.spec.ts`, `frontend/e2e/naive-user/naive-kid-misuse.spec.ts`, `frontend/e2e/story-requests-kid.spec.ts`

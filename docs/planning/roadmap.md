@@ -167,6 +167,7 @@ failures has demonstrated exactly that.
 | S9 delivery infra (push transport closed 2026-07-28: authenticated SSE stream shipped; the server-scheduled digest job remains open), G9 visibility, K12 kid generation status, G7 budget consent. Closed since this table was written: G10 digest/alerts 2026-07-28 (SSE push transport shipped, register flipped to ✅), G13 interim quota balance 2026-07-29 (audit found budget enforcement and kid-facing status already shipped and tested, register flipped to ✅), and G14 multi-guardian households 2026-07-28 (guardian self-service co-parent invite shipped, register flipped to ✅) | 4c |
 | G17 consent flow, K17 recommendation surfaces, A15 enforcement guard | 4d |
 | ADR-007 purge, G8/A5 offline revocation, nightly e2e-real + S2 real conflict spec, staging golden journeys, adversarial live-model run | 5 |
+| K24 persistent character (minted 2026-08-08, v1.10): runtime delivered on branch `feat/persistent-characters-runtime` (creator/picker UI, server-derived binding and seed snapshot, idempotent progression writeback); no catalog book participates yet, so no reader can exercise it. Remaining work is the pathfinder pilot skeleton and its K18 ratings-comparison decision, tracked as [UW-A46](./unscheduled-work-register.md) | 5 |
 | ADR-018 D1-D4 execution, G11 trust surface, G12 export, A12 abuse workflow, A14 compliance reporting | 7 |
 | G13 full credits/IAP | 8 |
 | A9 curation surface, A7 ops dashboards, A8 runtime levers, A4 full catalog re-screen | 9 |

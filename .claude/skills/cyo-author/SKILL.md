@@ -71,6 +71,20 @@ Invoke when given a skeleton file under `skeletons/<band>/<slug>.json` (or any
    import, so the resume path (`resume_manual_fill`) re-renders the same bound skeleton
    for its Stage 1 fidelity check instead of comparing against raw `{SLOT}` tokens.
 
+2d. **Check for a character envelope (`accepts_character`).** If the skeleton's `accepts_character`
+   field is present (even as `{}`), the CH-1 through CH-8 validator rules (ADR-028) have already
+   proven this skeleton safe across every state a seeded reader's persistent character can arrive
+   in; your job is to write prose consistent with that proof, not to re-derive it. Read
+   `.claude/skills/cyo-author/reference/skeleton-format.md`'s "Character envelope" section before
+   filling a participating skeleton for the first time: it covers when a skeleton opts in, why
+   `archetype` and the stat variables (`might`/`wits`/`nerve`) never appear in the same envelope,
+   what the archetype build node is and why its own choices must stay gated on `archetype == 0`
+   (a returning reader with an already-built character must be routed past the build node, never
+   through it), and what the envelope costs at gate time. Two rules bite hardest during a fill:
+   never widen or narrow a canonical variable's declared `min`/`max` (CH-2 requires exact equality
+   with the envelope), and never route every path through the build node unconditionally (the
+   returning-reader break is a runtime defect, not just a validator finding).
+
 3. **Fill each `<<FILL role=... words=... beats='...'>>` body** with prose that:
 
    - matches the band's word target and reading level (keep vocabulary/sentence length

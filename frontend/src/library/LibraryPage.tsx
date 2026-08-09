@@ -1,10 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Link, useParams } from 'react-router'
+import { Link, useNavigate, useParams } from 'react-router'
 import { Button } from '@ds/components/Button'
 import { EmptyState } from '@ds/components/EmptyState'
+import { CharacterCreator } from '../characters/CharacterCreator'
+import { CharacterPicker } from '../characters/CharacterPicker'
+import { LOOK_SWATCHES } from '../characters/characterApi'
+import { useActiveCharacter } from '../characters/useActiveCharacter'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { logApiError } from '../hooks/logApiError'
 import { useApi } from '../hooks/useApi'
+import { useKidOutletContext } from '../kid/kidOutletContext'
 import { EMPTY_PROGRESS, makeProgressApi, type ProgressSummary } from '../kid/progressApi'
 import { Mascot } from '../kid/Mascot'
 import {
@@ -89,11 +94,54 @@ export interface LibraryPageProps {
  */
 export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
   const { profileId } = useParams()
+  const navigate = useNavigate()
   const api = useApi()
   const libraryApi = useMemo(() => makeLibraryApi(api), [api])
   const recommendationsApi = useMemo(() => makeRecommendationsApi(api), [api])
   const progressApi = useMemo(() => makeProgressApi(api, profileId), [api, profileId])
   const [state, setState] = useState<LibraryState>({ status: 'loading' })
+  // Task 8: which character (if any) is active for this profile, and the
+  // toggle for the inline switcher below the heading. Fetched independently
+  // of the shelf itself, the same best-effort-sibling shape as `progress`
+  // above: this widget renders nothing unless the fetch resolves to
+  // 'ready', so it can never gate or delay the shelf.
+  //
+  // KidShell already resolves this for the library route and hands it down
+  // through the Outlet, so the routed kid library reuses that one lookup
+  // instead of issuing a duplicate GET /v1/characters. The local hook below
+  // stays for the mounts that have no KidShell above them (the guardian
+  // preview-as-child route), and is passed `undefined` when the shell
+  // supplied one, which makes it fetch nothing at all. Both branches must
+  // be present unconditionally: a hook cannot be called conditionally.
+  const kidOutlet = useKidOutletContext()
+  const shellActiveCharacter = kidOutlet?.activeCharacter ?? null
+  // `readOnly` (guardian preview-as-child, see LibraryPageProps) also
+  // suppresses the fetch, not just the KidShell branch above: the whole
+  // character section below is gated on `!readOnly && ...` and its result is
+  // never rendered in preview mode, so issuing GET /v1/characters on every
+  // PreviewAsChildPage mount was a live network call for a value that could
+  // never be shown. `readOnly` is a prop, not state, so this cannot change
+  // the number of hooks called across renders.
+  const ownActiveCharacter = useActiveCharacter(
+    shellActiveCharacter || readOnly ? undefined : profileId
+  )
+  const activeCharacter = shellActiveCharacter ?? ownActiveCharacter
+  const [showCharacterPicker, setShowCharacterPicker] = useState(false)
+  // Owner decision (gate-rework): a click on a gated card (needsCharacterFor
+  // below) parks its read target here instead of navigating immediately, so
+  // the creator can be shown in the card's place and the child still lands
+  // in the read they chose once one exists. Replaces an earlier design where
+  // KidShell gated the whole library route on "this profile has no
+  // character yet", which hard-gated every kid with no skip affordance even
+  // though zero catalog books could use one.
+  const [pendingRead, setPendingRead] = useState<{
+    to: string
+    state?: { personalizationEligible: boolean }
+  } | null>(null)
+  const handleNeedsCharacter = useCallback(
+    (to: string, state?: { personalizationEligible: boolean }) => setPendingRead({ to, state }),
+    []
+  )
   // W3.2: the Endings Gallery / "Every path walked!" data source, fetched
   // independently of the shelf (best-effort, like history/recommendations):
   // a failed or slow fetch degrades to no ribbon and no gallery button,
@@ -393,6 +441,37 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
   )
 
   if (!profileId) return null
+  // Rendered ahead of every load-state branch below, and regardless of
+  // `state.status`, so a background refetch flipping back to 'loading' (the
+  // 'online' reconnect effect above, or a manual retry) can never yank the
+  // creator out from under a child mid-form.
+  // #ASSUME: timing dependencies: `activeCharacter.refresh()` and
+  // `navigate()` both fire from `onCreated` without waiting on each other;
+  // the read target was already fixed when the gate first triggered, so
+  // refresh's result is not needed to decide where to go next.
+  // #VERIFY: LibraryPage.test.tsx "LibraryPage character gate" suite, "lands
+  // in the read the child originally chose after creating a character".
+  if (pendingRead) {
+    const target = pendingRead
+    return (
+      <CharacterCreator
+        profileId={profileId}
+        // This creator was reached optionally (a tap on a gated book), not
+        // the mandatory empty-profile path CharacterPicker.tsx renders, so a
+        // child who got here by accident (or changed their mind) has a way
+        // back to the shelf instead of being stuck with only "make a
+        // character" and the browser Back button (which would leave
+        // /library/:profileId entirely, since pendingRead is local state,
+        // not a route).
+        onBack={() => setPendingRead(null)}
+        onCreated={() => {
+          activeCharacter.refresh()
+          setPendingRead(null)
+          void navigate(target.to, { state: target.state })
+        }}
+      />
+    )
+  }
   if (state.status === 'loading') {
     // Branded, kid-facing loading state (Pip + short reassurance), matching
     // the reader's "Opening your story…" pattern so every wait on the kid
@@ -469,6 +548,19 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
   const offlineDownloaded = state.status === 'offline' ? state.downloaded : null
   const isDownloaded = (item: LibraryItemView): boolean =>
     offlineDownloaded === null || offlineDownloaded.has(item.id)
+  // ADR-028 / gate-rework: the positive signal only. `accepts_character`
+  // undefined or false, or an active-character status other than exactly
+  // 'none' ('loading', 'error', 'unauthenticated', 'forbidden', 'ready'),
+  // all skip the gate and go straight to the read. Failing open on every
+  // unknown character status is deliberate: the backend already treats an
+  // unseeded read as normal (`_bind_active_character` returns `(None,
+  // None)`), so the worst case is a read without a character, never a child
+  // locked out of a book they are allowed to read.
+  // #ASSUME: data integrity: `item.accepts_character === true` is the only
+  // positive signal; `undefined` reads as `false`, never as "needs one".
+  // #VERIFY: LibraryPage.test.tsx "LibraryPage character gate" suite.
+  const needsCharacterFor = (item: LibraryItemView): boolean =>
+    item.accepts_character === true && activeCharacter.state.status === 'none'
   // K6/K17 decorations only exist on a live (ready) fetch; an offline shelf has
   // neither history nor recommendations, so both degrade to no badges.
   const history = state.status === 'ready' ? state.history : []
@@ -526,6 +618,39 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
   return (
     <div className="library">
       <h1 className="library__heading">My Books</h1>
+      {/* Suppressed under readOnly (guardian preview-as-child): a guardian
+          previewing a child's shelf can look but never switch or create that
+          child's character, mirroring RequestStory's own suppression above. */}
+      {!readOnly && activeCharacter.state.status === 'ready' ? (
+        <section className="library__character" aria-label="Your character">
+          <p className="library__character-current">
+            {/* Decorative: the visible "Playing as <name>" text already
+                carries the accessible name, so the swatch is never
+                announced twice by assistive tech. */}
+            <span className="library__character-avatar" aria-hidden="true">
+              {LOOK_SWATCHES[activeCharacter.state.character.look]}
+            </span>
+            Playing as <strong>{activeCharacter.state.character.name}</strong>
+          </p>
+          <Button
+            variant="ghost"
+            size="sm"
+            aria-expanded={showCharacterPicker}
+            onClick={() => setShowCharacterPicker((open) => !open)}
+          >
+            {showCharacterPicker ? 'Hide characters' : 'Switch character'}
+          </Button>
+          {showCharacterPicker ? (
+            <CharacterPicker
+              profileId={profileId}
+              onActiveCharacterChange={() => {
+                activeCharacter.refresh()
+                setShowCharacterPicker(false)
+              }}
+            />
+          ) : null}
+        </section>
+      ) : null}
       {offline ? (
         <p className="library__offline-banner" role="status">
           No internet. These books are ready to read.
@@ -563,6 +688,8 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
             recommendation={recommendationFor(hero)}
             everyPathWalked={everyPathWalkedFor(hero)}
             onOpenGallery={setGalleryStorybookId}
+            needsCharacter={needsCharacterFor(hero)}
+            onNeedsCharacter={handleNeedsCharacter}
           />
         </section>
       ) : null}
@@ -589,6 +716,8 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
                   recommendation={recommendationFor(item)}
                   everyPathWalked={everyPathWalkedFor(item)}
                   onOpenGallery={setGalleryStorybookId}
+                  needsCharacter={needsCharacterFor(item)}
+                  onNeedsCharacter={handleNeedsCharacter}
                 />
               </li>
             ))}

@@ -501,9 +501,6 @@ assuming a design question is unanswered.
 - **Story authoring**: `.claude/skills/cyo-author/` fills a pre-authored
   Storybook skeleton (a story graph whose node bodies hold `<<FILL ...>>`
   directives) with age-band-appropriate prose, then validates and imports it.
-  Note: its `reference/skeleton-format.md` still uses a stale field name
-  (`ending.type`); the enforced schema in `storybook/models.py` uses
-  `ending.kind` / `ending.valence` (tracked in `docs/template_feedback.md`).
 
 ### Quick Start
 
@@ -612,7 +609,8 @@ FastAPI backend (src/cyo_adventure/)
                       device_grants, onboarding, admin_users, admin_profiles,
                       family_connections)
    - core/           config.py, database.py (async SQLAlchemy), exceptions.py
-   - middleware/     correlation.py, security.py (OWASP headers)
+   - middleware/     correlation.py, security.py (OWASP headers),
+                      unit_of_work.py (commits the request UoW pre-response)
    - db/             SQLAlchemy ORM models (stories, profiles, families, requests,
                       ratings, moderation reports, events)
    - storybook/      Storybook/Node/Choice/Ending domain model + condition evaluator
@@ -693,7 +691,7 @@ src/cyo_adventure/
 │                            # family_connections; support modules (not routers):
 │                            # schemas, deps, review_surface
 ├── core/                    # config.py, database.py, exceptions.py
-├── middleware/              # security.py, correlation.py
+├── middleware/              # security.py, correlation.py, unit_of_work.py
 ├── db/                      # SQLAlchemy ORM models.py (domain: stories, profiles,
 │                            # families, requests, ratings, moderation, events)
 ├── storybook/               # Storybook/Node/Choice/Ending models, condition

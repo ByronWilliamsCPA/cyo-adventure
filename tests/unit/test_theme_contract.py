@@ -203,12 +203,19 @@ def test_personalization_fields_vocabulary_is_closed():
                 "favorite_hobby",
                 "home_type",
                 "dedication",
+                # ADR-028: the persistent-character's name, the twelfth slot.
+                # See storybook.theme_contract.PERSONALIZATION_FIELDS's own
+                # comment for the full rationale; this test is a second,
+                # hand-maintained mirror of that set, drift-guarded the same
+                # way tests/unit/test_personalization_vocab_drift.py mirrors
+                # the DB-side copies.
+                "character_name",
             }
         )
         == PERSONALIZATION_FIELDS
     )
     assert (
-        frozenset({"protagonist_first_name", "sibling_name"})
+        frozenset({"protagonist_first_name", "sibling_name", "character_name"})
         == REAL_PERSON_PERSONALIZATION_FIELDS
     )
     # Every real-person field must itself be a member of the full vocabulary.

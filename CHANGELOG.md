@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.69.0] - 2026-08-09
+
+### Features
+
+- **characters**: Carry a reader's character across books at runtime
+  ([#649](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/649),
+  [`c2b272c`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/c2b272cd1aabda0e0544348a78d7a008da94a943))
+
+
+## [0.68.4] - 2026-08-08
+
+### Bug Fixes
+
+- **api**: Commit the request unit of work before the response is sent
+  ([#647](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/647),
+  [`92f091e`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/92f091ea6a22d5c542e1c6d4ed8af90c80ea9612))
+
+
+## [0.68.3] - 2026-08-08
+
+### Bug Fixes
+
+- **player**: Restart a continuation read as a continuation
+  ([#648](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/648),
+  [`afc7ee1`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/afc7ee10a96ef005c22abd9a897b8096bdb97fb8))
+
+
 ## [0.68.2] - 2026-08-08
 
 ### Bug Fixes
@@ -3258,6 +3285,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.69.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.68.4...v0.69.0
+[0.68.4]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.68.3...v0.68.4
+[0.68.3]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.68.2...v0.68.3
 [0.68.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.68.1...v0.68.2
 [0.68.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.68.0...v0.68.1
 [0.68.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.67.0...v0.68.0

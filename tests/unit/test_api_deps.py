@@ -9,14 +9,24 @@ from unittest.mock import patch
 
 import jwt
 import pytest
+from starlette.requests import Request
 
 from cyo_adventure.api import deps
 from cyo_adventure.api.deps import Principal
 from cyo_adventure.core.config import Settings
 from cyo_adventure.core.exceptions import AuthenticationError
+from cyo_adventure.middleware.unit_of_work import (
+    UNIT_OF_WORK_STATE_KEY,
+    RequestUnitOfWork,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
+
+
+def _http_request() -> Request:
+    """Build a bare HTTP request whose ``state`` the dependency can publish to."""
+    return Request({"type": "http", "method": "GET", "path": "/", "headers": []})
 
 
 class _FakeSession:
@@ -123,14 +133,21 @@ async def test_get_db_session_commits_on_success(
     """The unit-of-work commits and closes when the request body succeeds."""
     fake = _FakeSession()
     monkeypatch.setattr(deps, "get_session", lambda: fake)
-    agen = deps.get_db_session()
+    request = _http_request()
+    agen = deps.get_db_session(request)
     session = await agen.__anext__()
     assert session is fake
+    # The unit of work must be reachable from the request state, or
+    # UnitOfWorkMiddleware has nothing to commit before the response is sent.
+    uow = getattr(request.state, UNIT_OF_WORK_STATE_KEY)
+    assert isinstance(uow, RequestUnitOfWork)
+    assert not uow.settled
     with pytest.raises(StopAsyncIteration):
         await agen.__anext__()
     assert fake.committed
     assert fake.closed
     assert not fake.rolled_back
+    assert uow.settled
 
 
 @pytest.mark.unit
@@ -147,13 +164,43 @@ async def test_get_db_session_rolls_back_on_error(
     """The unit-of-work rolls back and closes when the request body raises."""
     fake = _FakeSession()
     monkeypatch.setattr(deps, "get_session", lambda: fake)
-    agen = deps.get_db_session()
+    request = _http_request()
+    agen = deps.get_db_session(request)
     await agen.__anext__()
     boom = ValueError("boom")
     with pytest.raises(ValueError, match="boom"):
         await agen.athrow(boom)
     assert fake.rolled_back
     assert fake.closed
+    assert not fake.committed
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+# mutation_deselect: same athrow-through-the-trampoline limitation as the test
+# above; the rollback branch this asserts on is unreachable under mutation
+# instrumentation, and stays covered by every normal run.
+@pytest.mark.mutation_deselect
+async def test_get_db_session_rollback_beats_a_later_commit(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A rolled-back unit of work ignores a commit attempt from the middleware.
+
+    The two halves settle one object, so an exception that rolls back inside the
+    dependency must leave the middleware's later commit a no-op rather than
+    committing a session whose work was already abandoned.
+    """
+    fake = _FakeSession()
+    monkeypatch.setattr(deps, "get_session", lambda: fake)
+    request = _http_request()
+    agen = deps.get_db_session(request)
+    await agen.__anext__()
+    uow = getattr(request.state, UNIT_OF_WORK_STATE_KEY)
+    boom = ValueError("boom")
+    with pytest.raises(ValueError, match="boom"):
+        await agen.athrow(boom)
+    await uow.commit()
+    assert fake.rolled_back
     assert not fake.committed
 
 

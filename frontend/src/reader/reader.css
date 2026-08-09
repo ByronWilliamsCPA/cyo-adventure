@@ -57,6 +57,18 @@
   font-size: var(--text-sm);
 }
 
+/* ADR-028 Task 9: the bound persistent character's name. Sits beside the
+   position pill, not the position text itself, so a screen reader still
+   announces the plain "Page N" position as its own distinct node. */
+.reader-chrome__character {
+  flex: 0 1 auto;
+  margin: 0;
+  color: var(--color-ink-secondary, var(--color-ink));
+  font-family: var(--font-sans);
+  font-style: italic;
+  font-size: var(--text-sm);
+}
+
 /* UX-K2: A / A+ / A++ text-size picker in the reader top bar. */
 .reader-textsize {
   display: inline-flex;

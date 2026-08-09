@@ -1,0 +1,667 @@
+"""Persistent character CRUD (ADR-028): create, rename, activate, retire.
+
+A character carries progression across books within one profile: a chosen
+archetype and three stats (might/wits/nerve), stored as ``character_attribute``
+rows and surfaced here as a flat ``attributes`` dict (see
+``characters/seeding.py``). At most one character per profile may be active
+(the ``uq_character_one_active`` partial unique index); creating a second
+character, or explicitly activating a retired one, retires whichever
+character was active before, in the same transaction as the activation.
+"""
+
+from __future__ import annotations
+
+from datetime import UTC, datetime
+from typing import TYPE_CHECKING
+
+from fastapi import APIRouter
+from sqlalchemy import func, select
+from sqlalchemy.exc import IntegrityError
+
+from cyo_adventure.api.deps import (
+    Context,
+    Principal,
+    authorize_profile,
+    parse_uuid,
+)
+from cyo_adventure.api.schemas import (
+    CharacterCreateBody,
+    CharacterListView,
+    CharacterUpdateBody,
+    CharacterView,
+    error_responses,
+)
+from cyo_adventure.characters.seeding import character_seed, initial_attributes
+from cyo_adventure.core.exceptions import (
+    AuthorizationError,
+    ResourceNotFoundError,
+    StateTransitionError,
+    ValidationError,
+)
+from cyo_adventure.db.integrity import is_character_one_active_conflict
+from cyo_adventure.db.models import Character, CharacterAttribute, ChildProfile
+from cyo_adventure.storybook.models import AgeBand
+from cyo_adventure.storybook.personalization_values import character_name_violations
+
+if TYPE_CHECKING:
+    import uuid
+    from collections.abc import Sequence
+
+    from sqlalchemy.ext.asyncio import AsyncSession
+
+router = APIRouter(
+    prefix="/api/v1", tags=["characters"], responses=error_responses(401, 403)
+)
+
+# The most characters one profile may hold, active and retired together.
+#
+# This is an abuse and runaway-retry ceiling, NOT a product limit on how many
+# characters a child may have. Creating a character retires the incumbent and
+# inserts another, so without this nothing bounds a profile's row count: the
+# only other limit is the global 60 req/min per-IP RateLimitMiddleware, which
+# permits roughly 86,400 creates per profile per day from one client, and
+# api/remoderate.py already records in this repository that an IP rate limit
+# "does nothing to bound" a per-resource total. A stuck client retry loop
+# reaches the same unbounded state with no adversary at all.
+#
+# 50 is chosen far above anything a real reader produces (a character is
+# designed to persist across many books, so a child accumulates a handful,
+# not dozens) and far below the point where the unpaginated GET /characters
+# response or its attribute fan-in becomes expensive. Raising it is a product
+# decision; removing it re-opens the unbounded growth.
+MAX_CHARACTERS_PER_PROFILE = 50
+
+
+def _require_guardian(principal: Principal) -> None:
+    """Reject principals that may not permanently delete a character.
+
+    Args:
+        principal: The authenticated caller.
+
+    Raises:
+        AuthorizationError: If the caller does not hold the guardian role.
+    """
+    # #CRITICAL: security: only a guardian may permanently erase a character
+    # (irreversible progression loss); a child may create, rename, and switch
+    # between characters, but never delete one outright.
+    # #VERIFY: tests/integration/test_characters_api.py::
+    # test_kid_cannot_delete_character, ::test_guardian_can_delete_character.
+    if not principal.is_guardian:
+        msg = "guardian role required"
+        raise AuthorizationError(msg)
+
+
+def _reject_unsafe_character_name(name: str, age_band: str) -> None:
+    """Reject a character name that must never reach rendered story prose.
+
+    #CRITICAL: security: a character name is the personalization slot with
+    the least trustworthy author (the child, not a guardian) and it is
+    substituted into child-facing prose at read time via the
+    ``character_name`` slot (ADR-028 section 11). ``CharacterName``'s own
+    length bound and NFC normalization do not stop a name that forges a
+    ``{SLOT}`` token, a ``<<FILL ...>>`` directive, an untrusted-input
+    fence, an embedded control character, or a band-denylisted term. The
+    resolver in ``api/personalization.py`` runs the identical check and
+    silently omits the slot, so a name that slipped past this one is never
+    rendered; this call is the write-time half, so the child learns at the
+    moment of naming rather than losing their character's name from a story
+    with no explanation.
+    #VERIFY: tests/integration/test_characters_api.py::
+    test_create_character_rejects_a_sentinel_shaped_name,
+    ::test_create_character_rejects_a_control_character_in_the_name,
+    ::test_create_character_rejects_a_band_denylisted_name,
+    ::test_rename_character_rejects_a_sentinel_shaped_name.
+
+    Args:
+        name: The submitted character name.
+        age_band: The owning profile's reading age band, which selects the
+            band-mandatory denylist floor.
+
+    Raises:
+        ValidationError: If any structural or denylist rule rejects the name.
+    """
+    violations = character_name_violations(name, AgeBand(age_band))
+    if violations:
+        # `value=` is deliberately omitted, matching the personalization PUT
+        # route: violation messages name the slot and the rule, never the
+        # candidate, so echoing the name back would be the only place the
+        # child's own free text entered an error payload.
+        msg = "; ".join(violation.message for violation in violations)
+        raise ValidationError(msg, field="name")
+
+
+async def _attributes_of(
+    session: AsyncSession, character_id: uuid.UUID
+) -> dict[str, int]:
+    """Return the stored attribute rows for one character as a flat dict.
+
+    Args:
+        session: The request session.
+        character_id: The character whose attributes are read.
+
+    Returns:
+        dict[str, int]: Attribute name to value; empty if none are stored.
+    """
+    rows = await session.scalars(
+        select(CharacterAttribute).where(
+            CharacterAttribute.character_id == character_id
+        )
+    )
+    return {row.name: row.value_int for row in rows.all()}
+
+
+async def _attributes_for(
+    session: AsyncSession, character_ids: Sequence[uuid.UUID]
+) -> dict[uuid.UUID, dict[str, int]]:
+    """Return the attribute rows for several characters in one round trip.
+
+    The batched counterpart to ``_attributes_of``, for the list route: one
+    query per listed character turns a single GET into 1+N round trips, and
+    the list is unpaginated.
+
+    Args:
+        session: The request session.
+        character_ids: The characters whose attributes are read. An empty
+            sequence issues no query at all: ``IN ()`` is a query whose answer
+            is already known.
+
+    Returns:
+        dict[uuid.UUID, dict[str, int]]: Character id to that character's
+        attribute dict. A character with no stored attribute rows is absent
+        from the mapping entirely rather than mapped to an empty dict, so
+        callers must supply their own default.
+    """
+    if not character_ids:
+        return {}
+    rows = await session.scalars(
+        select(CharacterAttribute).where(
+            CharacterAttribute.character_id.in_(character_ids)
+        )
+    )
+    grouped: dict[uuid.UUID, dict[str, int]] = {}
+    for row in rows.all():
+        grouped.setdefault(row.character_id, {})[row.name] = row.value_int
+    return grouped
+
+
+async def _reject_when_at_character_cap(
+    session: AsyncSession, profile_id: uuid.UUID
+) -> None:
+    """Refuse another character once a profile's row count reaches the ceiling.
+
+    This is a check-then-act, unlocked race, not a strict guarantee; see the
+    #ASSUME marker below for the accepted, bounded overshoot.
+
+    Args:
+        session: The request session.
+        profile_id: The already-authorized profile the character would join.
+
+    Raises:
+        StateTransitionError: If the profile already holds
+            ``MAX_CHARACTERS_PER_PROFILE`` characters, active and retired
+            together, at the moment this check runs (HTTP 409).
+    """
+    # #CRITICAL: security: this is the ONLY bound on a profile's character row
+    # count; see MAX_CHARACTERS_PER_PROFILE's comment for why the per-IP rate
+    # limiter is not one. The count is a SELECT count(*), never a load of the
+    # rows, so the check itself cannot become the cost it exists to prevent,
+    # and it counts retired characters too: retiring is the cheap half of the
+    # create path, so a cap over active rows alone would bound nothing.
+    # #VERIFY: tests/integration/test_characters_api.py::
+    # test_creating_past_the_per_profile_character_cap_is_a_409.
+    #
+    # #ASSUME: concurrency: this check-then-act is unlocked, like every other
+    # per-resource cap in this codebase (count_active_jobs_for_family in
+    # api/generation.py, the open-flag count in api/flags.py,
+    # count_pending_for_profile in story_requests/service.py): two concurrent
+    # creates can both read total=49 and both insert, landing the profile at
+    # 51 rather than the ceiling of 50. Bounded, not unbounded: N concurrent
+    # requests overshoot by at most N-1 rows, and the per-IP rate limiter
+    # still caps how large N can practically get. The cap is an abuse and
+    # runaway-retry throttle (see MAX_CHARACTERS_PER_PROFILE's comment), not
+    # a correctness invariant anything downstream depends on being exact, so
+    # this off-by-one is accepted rather than fixed, matching its three
+    # siblings above.
+    # #VERIFY: no test proves the bound is race-free, and saying so is the
+    # honest answer -- a strict guarantee would need either a trigger-backed
+    # row-count constraint (a new trigger on a live table, out of scope for a
+    # fix pass: lock risk disproportionate to a soft abuse ceiling) or a
+    # per-profile advisory lock (which would serialize character creation
+    # across every guardian and child in a family for a limit "chosen far
+    # above anything a real reader produces"). What IS pinned is the
+    # sequential case: tests/integration/test_characters_api.py::
+    # test_creating_past_the_per_profile_character_cap_is_a_409 proves the
+    # 409 fires for one request at a time.
+    total = await session.scalar(
+        select(func.count())
+        .select_from(Character)
+        .where(Character.child_profile_id == profile_id)
+    )
+    if (total or 0) >= MAX_CHARACTERS_PER_PROFILE:
+        # The message names only the caller's own profile's situation and the
+        # ceiling, never another family's data, and it says what to do next:
+        # a delete frees a slot, and an existing character can be activated
+        # instead of a new one being created.
+        msg = (
+            f"profile '{profile_id}' already holds the maximum of "
+            f"{MAX_CHARACTERS_PER_PROFILE} characters; delete an old character "
+            "to free a slot, or activate an existing one instead of creating "
+            "another"
+        )
+        raise StateTransitionError(msg)
+
+
+def _view(row: Character, attributes: dict[str, int]) -> CharacterView:
+    """Build the response view from a Character row and its attribute dict.
+
+    Args:
+        row: The ORM row.
+        attributes: The character's stored attributes (name to value).
+
+    Returns:
+        CharacterView: The wire-safe view.
+    """
+    # #CRITICAL: data integrity: the seed is computed here by the SAME
+    # character_seed() the read-start binding uses
+    # (reading.py::_bind_active_character), never by a second mapping. The
+    # client opens a fresh read from this value (ADR-028 Task 9), and the
+    # server later replays that read against the seed it recorded, so two
+    # mappings that drift would 422 the first save carrying a choice_path
+    # and wedge the read. See CharacterView's own docstring.
+    # #VERIFY: tests/integration/test_reading_character_binding.py::
+    # test_character_view_seed_matches_the_seed_a_read_start_would_bind.
+    return CharacterView(
+        id=str(row.id),
+        profile_id=str(row.child_profile_id),
+        name=row.name,
+        archetype=row.archetype,
+        look=row.look,
+        is_active=row.is_active,
+        books_completed=row.books_completed,
+        attributes=attributes,
+        seed_var_state=character_seed(attributes),
+        created_at=row.created_at,
+        retired_at=row.retired_at,
+    )
+
+
+async def _load_character(session: AsyncSession, character_id: uuid.UUID) -> Character:
+    """Load a Character row by id or raise 404.
+
+    Args:
+        session: The request session.
+        character_id: The character to load.
+
+    Returns:
+        Character: The loaded row.
+
+    Raises:
+        ResourceNotFoundError: If no character with this id exists.
+    """
+    row = await session.get(Character, character_id)
+    if row is None:
+        msg = f"character '{character_id}' not found"
+        raise ResourceNotFoundError(msg)
+    return row
+
+
+async def _retire_active_character(
+    session: AsyncSession,
+    profile_id: uuid.UUID,
+    *,
+    exclude_id: uuid.UUID | None = None,
+) -> None:
+    """Retire the profile's currently active character, if any.
+
+    Args:
+        session: The request session (unit-of-work; not committed here).
+        profile_id: The profile whose active character is retired.
+        exclude_id: A character id to skip (the one being activated), so
+            re-activating the already-active character is a no-op rather than
+            retiring and re-activating itself.
+    """
+    # #CRITICAL: concurrency: this read-then-update is always followed, in the
+    # SAME request, by the caller inserting or activating the replacement --
+    # both statements share the request's session and its single commit (see
+    # api/deps.py::get_db_session). The partial unique index
+    # uq_character_one_active is checked per-statement, so the retiring
+    # UPDATE below must be flushed before the replacement is marked active, or
+    # Postgres rejects the activation and leaves the profile with a retired
+    # incumbent and no active character: a worse state than the one it
+    # started in. That ordering says nothing about real concurrent requests:
+    # two overlapping activate-or-create calls for the same profile can both
+    # run this SELECT and both see zero active incumbents (each transaction's
+    # write is invisible to the other until commit), so both proceed to mark
+    # their own row active. Postgres then serializes the second flush behind
+    # the first's uncommitted uq_character_one_active entry and rejects it
+    # with an IntegrityError once the first commits; the caller (below in
+    # this module) catches that and raises StateTransitionError, an HTTP 409,
+    # rather than letting it surface as an unhandled 500.
+    # #VERIFY: tests/integration/test_characters_api.py::
+    # test_creating_a_second_character_retires_the_incumbent_atomically,
+    # ::test_activating_a_replacement_retires_the_incumbent_atomically,
+    # ::test_concurrent_activations_collide_into_a_state_transition_error_not_a_500.
+    stmt = select(Character).where(
+        Character.child_profile_id == profile_id, Character.is_active.is_(True)
+    )
+    if exclude_id is not None:
+        stmt = stmt.where(Character.id != exclude_id)
+    incumbent = await session.scalar(stmt)
+    if incumbent is not None:
+        incumbent.is_active = False
+        incumbent.retired_at = datetime.now(UTC)
+        await session.flush()
+
+
+@router.get("/characters")
+async def list_characters(profile_id: str, ctx: Context) -> CharacterListView:
+    """List one profile's characters, active first.
+
+    Args:
+        profile_id: The child profile whose characters are requested (query).
+        ctx: The request context (principal + unit-of-work session).
+
+    Returns:
+        CharacterListView: The profile's characters, active before retired,
+        then most-recently-created first within each group.
+
+    Raises:
+        ValidationError: If profile_id is not a UUID.
+        AuthorizationError: If the profile is not the caller's.
+    """
+    # #CRITICAL: security: a caller may only list characters for a profile it
+    # owns (guardian: own family; child: own profile).
+    # #VERIFY: authorize_profile raises AuthorizationError -> 403.
+    parsed = parse_uuid(profile_id, "profile_id")
+    authorize_profile(ctx.principal, parsed)
+    rows = await ctx.session.scalars(
+        select(Character)
+        .where(Character.child_profile_id == parsed)
+        .order_by(Character.is_active.desc(), Character.created_at.desc())
+    )
+    characters = rows.all()
+    # One batched attribute query for the whole page, not one per row: the
+    # ordering above is what the response promises, and it is unaffected by
+    # how the attributes are fetched.
+    attributes = await _attributes_for(ctx.session, [row.id for row in characters])
+    views = [_view(row, attributes.get(row.id, {})) for row in characters]
+    return CharacterListView(characters=views)
+
+
+@router.post("/characters", status_code=201, responses=error_responses(404, 409))
+async def create_character(body: CharacterCreateBody, ctx: Context) -> CharacterView:
+    """Create a character for a child profile, activating it.
+
+    Creating a new character while one is already active retires the
+    incumbent in the same transaction: a profile has at most one active
+    character at any time.
+
+    Args:
+        body: The new character's fields.
+        ctx: The request context (principal + unit-of-work session).
+
+    Returns:
+        CharacterView: The stored, active character with zeroed stats.
+
+    Raises:
+        ValidationError: If profile_id is not a UUID, or the name fails the
+            structural or band-denylist check (see
+            ``_reject_unsafe_character_name``).
+        AuthorizationError: If the profile is not the caller's.
+        ResourceNotFoundError: If the profile row does not exist.
+        StateTransitionError: If a concurrent request already activated a
+            character for this profile between the retire check above and
+            this insert's flush (HTTP 409).
+    """
+    # #CRITICAL: security: a caller may only create a character for a profile
+    # it owns; family_id is never taken from the request (see below).
+    # #VERIFY: tests/integration/test_characters_api.py::
+    # test_kid_cannot_create_character_for_sibling_profile,
+    # ::test_guardian_cannot_create_character_for_another_familys_profile.
+    profile_id = parse_uuid(body.profile_id, "profile_id")
+    authorize_profile(ctx.principal, profile_id)
+    profile = await ctx.session.get(ChildProfile, profile_id)
+    if profile is None:
+        msg = f"profile '{body.profile_id}' not found"
+        raise ResourceNotFoundError(msg)
+    _reject_unsafe_character_name(body.name, profile.age_band)
+    # The per-profile ceiling. Deliberately documented here and in
+    # _reject_when_at_character_cap rather than in this handler's DOCSTRING:
+    # FastAPI publishes a route docstring as the operation's OpenAPI
+    # `description`, and @hey-api/openapi-ts copies that description verbatim
+    # into the committed frontend/src/client/sdk.gen.ts JSDoc, so editing the
+    # prose above would fail the `contract` drift job without changing a
+    # single byte of the actual wire contract. The extra 409 this raises is
+    # already declared in the route decorator's error_responses(404, 409).
+    await _reject_when_at_character_cap(ctx.session, profile_id)
+    # #CRITICAL: concurrency: see _retire_active_character's docstring; the
+    # retire and this insert share the same session/transaction.
+    await _retire_active_character(ctx.session, profile_id)
+    # #ASSUME: data integrity: family_id is sourced from the loaded
+    # ChildProfile row, never from the request body -- CharacterCreateBody has
+    # no family_id field at all, so extra=forbid also rejects a client attempt
+    # to supply one. A client-supplied family_id would defeat the Tier 1 RLS
+    # policy that keys on this column.
+    # #VERIFY: the composite FK (fk_character_profile_family) would reject a
+    # mismatched pair at the database layer even if this were ever bypassed.
+    row = Character(
+        child_profile_id=profile_id,
+        family_id=profile.family_id,
+        name=body.name,
+        archetype=body.archetype,
+        look=body.look,
+    )
+    ctx.session.add(row)
+    # #CRITICAL: data integrity: only the uq_character_one_active race is
+    # translated to the "already has an active character" 409; every other
+    # IntegrityError this flush could raise (ck_character_archetype,
+    # ck_character_look, ck_character_not_active_and_retired,
+    # fk_character_profile_family) is a real defect, not a benign race, and
+    # must propagate as itself rather than be relabeled as a state conflict
+    # that misdirects debugging.
+    # #VERIFY: tests/unit/test_characters_integrity.py::
+    # test_create_character_translates_only_the_one_active_race,
+    # ::test_create_character_propagates_other_integrity_errors.
+    try:
+        await ctx.session.flush()
+    except IntegrityError as exc:
+        if not is_character_one_active_conflict(exc):
+            raise
+        msg = f"profile '{profile_id}' already has an active character"
+        raise StateTransitionError(msg) from exc
+    await ctx.session.refresh(row, ["created_at"])
+    attributes = initial_attributes(body.archetype)
+    ctx.session.add_all(
+        [
+            CharacterAttribute(character_id=row.id, name=name, value_int=value)
+            for name, value in attributes.items()
+        ]
+    )
+    await ctx.session.flush()
+    return _view(row, attributes)
+
+
+@router.patch("/characters/{character_id}", responses=error_responses(404))
+async def update_character(
+    character_id: str, body: CharacterUpdateBody, ctx: Context
+) -> CharacterView:
+    """Rename or re-choose a character's look.
+
+    Args:
+        character_id: The character to update.
+        body: The fields to change; omitted fields are untouched. Attributes,
+            books_completed, and archetype are absent from the body by design
+            (see ``CharacterUpdateBody``'s docstring) and cannot be set here.
+        ctx: The request context (principal + unit-of-work session).
+
+    Returns:
+        CharacterView: The updated character.
+
+    Raises:
+        ValidationError: If character_id is not a UUID, or a submitted name
+            fails the structural or band-denylist check (see
+            ``_reject_unsafe_character_name``).
+        ResourceNotFoundError: If no character with this id exists, or its
+            owning profile row has gone missing.
+        AuthorizationError: If the character's profile is not the caller's.
+    """
+    parsed = parse_uuid(character_id, "character_id")
+    row = await _load_character(ctx.session, parsed)
+    # #CRITICAL: security: load-then-authorize: the character's OWN profile,
+    # never a client-supplied one, is what gates this write.
+    # #VERIFY: tests/integration/test_authz_matrix.py's ROUTE_TABLE entry for
+    # ("PATCH", "/api/v1/characters/{character_id}"), which is now a member of
+    # both _CROSS_FAMILY_ROUTE_KEYS
+    # (tests/integration/test_authz_matrix.py::test_cross_family_guardian_is_rejected,
+    # ::test_cross_family_guardian_from_stranger_family_is_rejected) and
+    # _CROSS_FAMILY_CHILD_ROUTE_KEYS (test_cross_family_child_from_stranger_family_is_rejected,
+    # ::test_family_a_child_cannot_reach_stranger_family_profile).
+    authorize_profile(ctx.principal, row.child_profile_id)
+    if body.name is not None:
+        # The band comes from the character's OWN profile, loaded here rather
+        # than taken from the request, for the same reason the authorization
+        # above does: a client-supplied band would let a caller pick the
+        # emptiest denylist floor.
+        profile = await ctx.session.get(ChildProfile, row.child_profile_id)
+        if profile is None:
+            msg = f"profile '{row.child_profile_id}' not found"
+            raise ResourceNotFoundError(msg)
+        _reject_unsafe_character_name(body.name, profile.age_band)
+        row.name = body.name
+    if body.look is not None:
+        row.look = body.look
+    await ctx.session.flush()
+    attributes = await _attributes_of(ctx.session, row.id)
+    return _view(row, attributes)
+
+
+@router.post("/characters/{character_id}/activate", responses=error_responses(404, 409))
+async def activate_character(character_id: str, ctx: Context) -> CharacterView:
+    """Make a retired character active again, retiring whichever is active now.
+
+    Args:
+        character_id: The character to activate.
+        ctx: The request context (principal + unit-of-work session).
+
+    Returns:
+        CharacterView: The now-active character.
+
+    Raises:
+        ValidationError: If character_id is not a UUID.
+        ResourceNotFoundError: If no character with this id exists.
+        AuthorizationError: If the character's profile is not the caller's.
+        StateTransitionError: If a concurrent request already activated a
+            different character for this profile between the retire check
+            below and this activation's flush (HTTP 409).
+    """
+    parsed = parse_uuid(character_id, "character_id")
+    row = await _load_character(ctx.session, parsed)
+    authorize_profile(ctx.principal, row.child_profile_id)
+    # #CRITICAL: concurrency: retiring the incumbent and activating the
+    # replacement must be one transaction. The partial unique index
+    # uq_character_one_active makes a two-statement version fail loudly
+    # rather than corrupt, but it fails on the ACTIVATE, leaving the child
+    # with a retired incumbent and no active character: a worse state than
+    # the one they started in. Both statements share this request's
+    # session, which commits once. Two genuinely CONCURRENT activate requests
+    # for different characters on the same profile are a distinct risk this
+    # single-transaction ordering does not cover: each request's own
+    # _retire_active_character can run before the other's activation commits,
+    # so both see no incumbent and both proceed. Postgres then serializes the
+    # second flush behind the first's uncommitted uq_character_one_active
+    # entry and rejects it with an IntegrityError once the first commits,
+    # which is caught below and re-raised as StateTransitionError (HTTP 409)
+    # rather than surfacing as an unhandled 500.
+    # #VERIFY: tests/integration/test_characters_api.py::
+    # test_activating_a_replacement_retires_the_incumbent_atomically,
+    # ::test_concurrent_activations_collide_into_a_state_transition_error_not_a_500.
+    # #ASSUME: data integrity: profile_id is captured now, before the flush
+    # that can fail, rather than read off `row` inside the except block
+    # below. A failed flush's rollback restores the pre-flush snapshot and
+    # expires row's attributes, so `row.child_profile_id` after that point is
+    # a lazy-load against a session already left DEACTIVE by the failure;
+    # that load raises PendingRollbackError, pre-empting the
+    # StateTransitionError this handler means to raise before it is even
+    # constructed.
+    # #VERIFY: tests/integration/test_characters_api.py::
+    # test_concurrent_activations_collide_into_a_state_transition_error_not_a_500
+    # pins this: it failed with PendingRollbackError, not
+    # StateTransitionError, until this local variable was introduced.
+    profile_id = row.child_profile_id
+    await _retire_active_character(ctx.session, profile_id, exclude_id=row.id)
+    row.is_active = True
+    row.retired_at = None
+    # #CRITICAL: data integrity: mirrors create_character's flush guard --
+    # only the uq_character_one_active race becomes the "already has an
+    # active character" 409; any other IntegrityError propagates unchanged
+    # rather than being relabeled as a state conflict it is not.
+    # #VERIFY: tests/unit/test_characters_integrity.py::
+    # test_activate_character_translates_only_the_one_active_race,
+    # ::test_activate_character_propagates_other_integrity_errors.
+    try:
+        await ctx.session.flush()
+    except IntegrityError as exc:
+        if not is_character_one_active_conflict(exc):
+            raise
+        msg = f"profile '{profile_id}' already has an active character"
+        raise StateTransitionError(msg) from exc
+    attributes = await _attributes_of(ctx.session, row.id)
+    return _view(row, attributes)
+
+
+@router.post("/characters/{character_id}/retire", responses=error_responses(404))
+async def retire_character(character_id: str, ctx: Context) -> CharacterView:
+    """Retire a character, leaving the profile with no active character.
+
+    Idempotent: retiring an already-retired character is a no-op rather than
+    overwriting its existing ``retired_at``.
+
+    Args:
+        character_id: The character to retire.
+        ctx: The request context (principal + unit-of-work session).
+
+    Returns:
+        CharacterView: The character, now inactive.
+
+    Raises:
+        ValidationError: If character_id is not a UUID.
+        ResourceNotFoundError: If no character with this id exists.
+        AuthorizationError: If the character's profile is not the caller's.
+    """
+    parsed = parse_uuid(character_id, "character_id")
+    row = await _load_character(ctx.session, parsed)
+    authorize_profile(ctx.principal, row.child_profile_id)
+    # #ASSUME: data integrity: retiring the only active character leaves the
+    # profile with zero active characters; this is legal, not an error, and no
+    # replacement is chosen automatically.
+    # #VERIFY: tests/integration/test_characters_api.py::
+    # test_retiring_the_only_active_character_leaves_none_active.
+    if row.is_active:
+        row.is_active = False
+        row.retired_at = datetime.now(UTC)
+        await ctx.session.flush()
+    attributes = await _attributes_of(ctx.session, row.id)
+    return _view(row, attributes)
+
+
+@router.delete(
+    "/characters/{character_id}", status_code=204, responses=error_responses(404)
+)
+async def delete_character(character_id: str, ctx: Context) -> None:
+    """Permanently erase a character and its progression.
+
+    Args:
+        character_id: The character to delete.
+        ctx: The request context (principal + unit-of-work session).
+
+    Raises:
+        AuthorizationError: If the caller is not a guardian, or the
+            character's profile is not the caller's.
+        ResourceNotFoundError: If no character with this id exists.
+    """
+    _require_guardian(ctx.principal)
+    parsed = parse_uuid(character_id, "character_id")
+    row = await _load_character(ctx.session, parsed)
+    authorize_profile(ctx.principal, row.child_profile_id)
+    await ctx.session.delete(row)
+    await ctx.session.flush()

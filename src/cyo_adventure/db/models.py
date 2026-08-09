@@ -45,6 +45,12 @@ _TS = DateTime(timezone=True)
 _FK_FAMILY = "family.id"
 _FK_USER = "user.id"
 _FK_CHILD_PROFILE = "child_profile.id"
+# ADR-028: the second column of the composite FK target on Character
+# (child_profile_id, family_id) -> (child_profile.id, child_profile.family_id).
+# Named alongside _FK_CHILD_PROFILE rather than inlined as a literal, matching
+# the two-named-constants convention ReadingState/Completion use for their
+# own composite ForeignKeyConstraint targets.
+_FK_CHILD_PROFILE_FAMILY_ID = "child_profile.family_id"
 _FK_STORYBOOK = "storybook.id"
 _FK_CONCEPT = "concept.id"
 _FK_SERIES = "series.id"
@@ -240,7 +246,7 @@ _USER_STATUS_VALUES = (
 _PERSONALIZATION_SLOT_TYPE_VALUES = (
     "'protagonist_first_name', 'pronoun_set', 'sibling_name', 'pet_species', "
     "'pet_name', 'kinship_label', 'favorite_color', 'favorite_food', "
-    "'favorite_hobby', 'home_type', 'dedication'"
+    "'favorite_hobby', 'home_type', 'dedication', 'character_name'"
 )
 _PERSONALIZATION_RING2_SLOT_TYPE_VALUES = (
     "'protagonist_first_name', 'sibling_name', 'pet_species', 'pet_name', "
@@ -633,6 +639,14 @@ class ChildProfile(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
             "deactivated_at",
             postgresql_where=text("deactivated_at IS NOT NULL"),
         ),
+        # ADR-028: backs Character.fk_character_profile_family, the composite
+        # FK that keeps a character's denormalized family_id honest against
+        # its owning profile's actual family.
+        UniqueConstraint(
+            "family_id",
+            "id",
+            name="uq_child_profile_family_id_id",
+        ),
     )
 
     # #CRITICAL: data-integrity: CASCADE (Phase 3a, GDPR/COPPA erasure): a
@@ -762,10 +776,12 @@ class ChildProfilePersonalization(CreatedAtMixin, UpdatedAtMixin, Base):
     values (mirrored from ``storybook.theme_contract.PERSONALIZATION_FIELDS``)
     to exactly one of three value shapes (free text, a closed enum choice, or
     a reference to another profile, e.g. a sibling), never more than one at a
-    time. ``ring1_enabled``/``ring2_enabled`` are per-slot consent flags: ring
-    1 permits the value into this family's own stories, ring 2 additionally
-    permits it into stories shared with connected families
-    (``FamilyConnection``).
+    time, EXCEPT ``character_name`` (ADR-028), whose row carries none of the
+    three: its value lives in ``Character.name`` and is synthesized at
+    resolve time, so its consent row is a bare toggle. ``ring1_enabled``/
+    ``ring2_enabled`` are per-slot consent flags: ring 1 permits the value
+    into this family's own stories, ring 2 additionally permits it into
+    stories shared with connected families (``FamilyConnection``).
 
     #CRITICAL: security: ``ck_cpp_ring2_ceiling`` is a DB CHECK, not just API
     validation, so ``pronoun_set`` and ``dedication`` rows are structurally
@@ -781,10 +797,29 @@ class ChildProfilePersonalization(CreatedAtMixin, UpdatedAtMixin, Base):
             f"slot_type IN ({_PERSONALIZATION_SLOT_TYPE_VALUES})",
             name="ck_cpp_slot_type",
         ),
+        # Renamed from ck_cpp_exactly_one_value: character_name (ADR-028) is
+        # the one slot_type whose value lives outside this table entirely
+        # (synthesized at resolve time from the active Character's name), so
+        # its row must carry NONE of the three value columns rather than
+        # exactly one. The other eleven slot types keep the original
+        # exactly-one rule unchanged.
+        # #CRITICAL: data integrity: this is a real design collision, not a
+        # relaxation. Storing the character's name a second time in
+        # value_text would make a second, driftable copy of the same fact;
+        # the CASE keeps character_name structurally incapable of carrying
+        # any value at all.
+        # #VERIFY: tests/unit/test_personalization_vocab_drift.py::
+        # test_orm_value_cardinality_constraint_present (the ORM text) and
+        # tests/integration/test_personalization_purge.py::
+        # test_character_name_row_carrying_a_value_is_rejected_by_the_database
+        # (the CHECK actually executing against Postgres).
         CheckConstraint(
-            "(value_text IS NOT NULL)::int + (value_enum IS NOT NULL)::int "
-            "+ (value_profile_id IS NOT NULL)::int = 1",
-            name="ck_cpp_exactly_one_value",
+            "CASE WHEN slot_type = 'character_name' "
+            "THEN (value_text IS NULL AND value_enum IS NULL "
+            "AND value_profile_id IS NULL) "
+            "ELSE ((value_text IS NOT NULL)::int + (value_enum IS NOT NULL)::int "
+            "+ (value_profile_id IS NOT NULL)::int = 1) END",
+            name="ck_cpp_value_cardinality",
         ),
         CheckConstraint(
             f"NOT ring2_enabled OR slot_type IN "
@@ -817,6 +852,225 @@ class ChildProfilePersonalization(CreatedAtMixin, UpdatedAtMixin, Base):
     ring2_enabled: Mapped[bool] = mapped_column(
         server_default=text("false"), default=False
     )
+
+
+# The canonical character attribute vocabulary, mirrored from
+# storybook.character_vocabulary.CANONICAL_CHARACTER_VARIABLES (the
+# application-layer source of truth) rather than imported, to keep this
+# module's import surface unchanged. Kept in sync by
+# tests/unit/test_character_vocab_drift.py, which is the same guard
+# _PERSONALIZATION_SLOT_TYPE_VALUES relies on.
+_CHARACTER_ATTRIBUTE_NAMES = "'archetype', 'might', 'wits', 'nerve'"
+
+# Per-name ranges. archetype is 0-6 (0 = not chosen, 1-6 index
+# ARCHETYPE_ROSTER); the three stats are 0-2. Expressed as one constraint
+# rather than four so a row can never satisfy a range belonging to a
+# different name.
+_CHARACTER_ATTRIBUTE_VALUE_RANGE = (
+    "(name = 'archetype' AND value_int BETWEEN 0 AND 6) "
+    "OR (name IN ('might', 'wits', 'nerve') AND value_int BETWEEN 0 AND 2)"
+)
+
+# The six archetype names, mirrored from
+# storybook.character_vocabulary.ARCHETYPE_ROSTER (the application-layer
+# source of truth) rather than imported, for the same import-surface reason
+# as _CHARACTER_ATTRIBUTE_NAMES above. Order does not matter here (unlike
+# ARCHETYPE_ROSTER's own ordering, which is a wire-format code assignment);
+# this constant only bounds set membership for the CHECK constraint. Kept in
+# sync by tests/unit/test_character_vocab_drift.py.
+_CHARACTER_ARCHETYPE_NAMES = (
+    "'scout', 'guardian', 'trickster', 'scholar', 'healer', 'wildheart'"
+)
+
+# The twelve selectable avatar look ids (avatar_01 through avatar_12).
+# Hand-maintained rather than imported for the same reason as the two
+# constants above; kept in sync by tests/unit/test_character_vocab_drift.py.
+_CHARACTER_LOOK_IDS = (
+    "'avatar_01', 'avatar_02', 'avatar_03', 'avatar_04', "
+    "'avatar_05', 'avatar_06', 'avatar_07', 'avatar_08', "
+    "'avatar_09', 'avatar_10', 'avatar_11', 'avatar_12'"
+)
+
+
+class Character(UUIDPrimaryKeyMixin, CreatedAtMixin, UpdatedAtMixin, Base):
+    """A persistent reader character owned by one child profile (ADR-028).
+
+    ``family_id`` is denormalized from the owning profile so this table can
+    carry the ADR-022 Tier 1 ``family_scoped`` RLS policy, which needs the
+    family on the row rather than via a join. The composite foreign key to
+    ``child_profile (family_id, id)`` is what keeps the denormalized value
+    honest.
+
+    ``is_active`` and ``retired_at`` are two spellings of one fact and are
+    kept agreeing by a CHECK; a partial unique index allows any number of
+    retired characters per profile but exactly one active.
+
+    #ASSUME: data integrity: ``archetype`` (this string column, e.g.
+    ``"scout"``) and the ``CharacterAttribute`` row named ``"archetype"``
+    (an int code, e.g. ``1``, keyed by position in
+    ``storybook/character_vocabulary.py::ARCHETYPE_ROSTER`` via
+    ``ARCHETYPE_CODES``) are two independent representations of the same
+    fact, and nothing in the schema ties them together: no CHECK, trigger,
+    or FK compares this column against ``character_attribute``. The
+    invariant holds today purely at the application layer, by construction:
+    ``characters/seeding.py::initial_attributes`` writes both from the same
+    ``archetype`` argument in the same ``create_character`` transaction
+    (``api/characters.py``), ``CharacterUpdateBody`` has no ``archetype``
+    field so a PATCH can never change this column, and
+    ``characters/progression.py::_PROGRESSION_VARIABLES`` explicitly
+    excludes ``ARCHETYPE_VARIABLE_NAME`` so book-completion writes can never
+    touch the attribute row either. A future writer that adds any other path
+    to either representation (a new PATCH field, a progression variable, a
+    direct ORM update) can silently desync them; nothing downstream of the
+    write would notice. Deliberately not closing this with a new DB-level
+    trigger or CHECK in this fix pass: a trigger on a live table carries
+    lock risk disproportionate to reinforcing an invariant two independent,
+    already-reviewed write-path restrictions already hold.
+    #VERIFY: no test proves the cross-representation invariant from the
+    schema's side, and saying so is the honest answer; the write-path
+    restrictions above are covered by
+    tests/integration/test_characters_api.py::
+    test_patch_with_archetype_is_rejected_not_silently_dropped (PATCH never
+    accepts archetype) and
+    tests/integration/test_character_progression.py::
+    test_archetype_is_never_raised_by_a_completion (a book completion never
+    touches the attribute row), but neither test would catch a NEW writer
+    that bypassed both.
+    """
+
+    __tablename__ = "character"
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["child_profile_id", "family_id"],
+            [_FK_CHILD_PROFILE, _FK_CHILD_PROFILE_FAMILY_ID],
+            ondelete="CASCADE",
+            name="fk_character_profile_family",
+        ),
+        CheckConstraint(
+            "NOT (is_active AND retired_at IS NOT NULL)",
+            name="ck_character_not_active_and_retired",
+        ),
+        CheckConstraint(
+            f"archetype IN ({_CHARACTER_ARCHETYPE_NAMES})",
+            name="ck_character_archetype",
+        ),
+        CheckConstraint(
+            f"look IN ({_CHARACTER_LOOK_IDS})",
+            name="ck_character_look",
+        ),
+        CheckConstraint(
+            "books_completed >= 0",
+            name="ck_character_books_completed_non_negative",
+        ),
+        Index(
+            "uq_character_one_active",
+            "child_profile_id",
+            unique=True,
+            postgresql_where=text("is_active"),
+        ),
+        Index("ix_character_child_profile_id", "child_profile_id"),
+    )
+
+    child_profile_id: Mapped[uuid.UUID] = mapped_column()
+    family_id: Mapped[uuid.UUID] = mapped_column()
+    name: Mapped[str] = mapped_column(String(32))
+    archetype: Mapped[str] = mapped_column(String(16))
+    look: Mapped[str] = mapped_column(String(16))
+    is_active: Mapped[bool] = mapped_column(server_default=text("true"), default=True)
+    books_completed: Mapped[int] = mapped_column(server_default=text("0"), default=0)
+    retired_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
+
+
+class CharacterAttribute(Base):
+    """One canonical attribute value for one character (ADR-028).
+
+    ``value_bool`` is deliberately absent in v1: every canonical variable is
+    an int, because Tier-2 conditions are a JSONLogic subset with no string
+    comparison and no boolean carry need has been demonstrated. Adding it
+    later is additive; removing a shipped column is not.
+
+    #ASSUME: data integrity: the row with ``name == "archetype"`` on this
+    table stores the SAME fact as ``Character.archetype`` above, just coded
+    as an int (``storybook/character_vocabulary.py::ARCHETYPE_CODES``, 1-6
+    by roster position) instead of a string, because Tier-2 conditions can
+    only compare ints. See ``Character.archetype``'s docstring for the full
+    account of why nothing in the schema enforces the two agreeing, and
+    which application-layer restrictions hold the invariant instead.
+    #VERIFY: same citations as ``Character.archetype``; no schema-level test
+    exists for this table either.
+    """
+
+    __tablename__ = "character_attribute"
+    __table_args__ = (
+        CheckConstraint(
+            f"name IN ({_CHARACTER_ATTRIBUTE_NAMES})",
+            name="ck_character_attribute_name",
+        ),
+        CheckConstraint(
+            _CHARACTER_ATTRIBUTE_VALUE_RANGE,
+            name="ck_character_attribute_value_range",
+        ),
+    )
+
+    character_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("character.id", ondelete="CASCADE"), primary_key=True
+    )
+    name: Mapped[str] = mapped_column(String(16), primary_key=True)
+    value_int: Mapped[int] = mapped_column()
+
+
+class CharacterBookCompletion(CreatedAtMixin, Base):
+    """One row per (reading_state, character) that has been written back.
+
+    #CRITICAL: data integrity: this composite primary key IS the writeback
+    idempotency mechanism. A child who reaches a satisfying ending, goes
+    offline, and replays the queued completion must not increment
+    books_completed twice, and an application-side "have we done this
+    already?" read is racy under concurrent sync. INSERT ... ON CONFLICT DO
+    NOTHING against this key makes the second attempt a no-op in the
+    database.
+    #VERIFY: the schema-level mechanism (this primary key shape) is pinned
+    today by tests/unit/test_character_models.py::
+    test_completion_pk_is_what_makes_writeback_idempotent. The behavioral
+    no-double-increment case is covered by
+    tests/integration/test_character_progression.py::
+    test_a_replayed_completion_does_not_increment_twice.
+
+    ``ending_id`` is stored but deliberately NOT part of this key: a
+    character can be credited for a given storybook exactly once, forever,
+    including across a re-read and across a later version of the same book,
+    and a completion recorded at a different ending for a pair already
+    credited is a no-op rather than a conflict. See
+    characters/progression.py's module docstring for the full rationale.
+    """
+
+    __tablename__ = "character_book_completion"
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["reading_state_child_profile_id", "reading_state_storybook_id"],
+            ["reading_state.child_profile_id", "reading_state.storybook_id"],
+            ondelete="CASCADE",
+            name="fk_cbc_reading_state",
+        ),
+        # character_id is the trailing column of the composite primary key
+        # above, so the PK index cannot serve a CASCADE delete from
+        # character (a scan for that column needs it leading). Postgres
+        # never indexes the referencing side of a foreign key automatically
+        # (see ix_character_child_profile_id's comment for the same rule).
+        Index(
+            "ix_character_book_completion_character_id",
+            "character_id",
+        ),
+    )
+
+    reading_state_child_profile_id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    reading_state_storybook_id: Mapped[str] = mapped_column(
+        String(120), primary_key=True
+    )
+    character_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("character.id", ondelete="CASCADE"), primary_key=True
+    )
+    ending_id: Mapped[str] = mapped_column(String(120))
 
 
 class FamilyConnection(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
@@ -1243,6 +1497,13 @@ class ReadingState(CreatedAtMixin, UpdatedAtMixin, Base):
             [_FK_STORYBOOK_VERSION_STORYBOOK_ID, _FK_STORYBOOK_VERSION_VERSION],
             ondelete="CASCADE",
         ),
+        # ADR-028: character_id has no index of its own (unlike storybook_id
+        # and child_profile_id above, which are covered by the primary key);
+        # a character deletion (SET NULL below) would otherwise sequentially
+        # scan this table. Postgres never indexes the referencing side of a
+        # foreign key automatically (see ix_character_child_profile_id's
+        # comment for the same rule).
+        Index("ix_reading_state_character_id", "character_id"),
     )
 
     # #CRITICAL: data-integrity: CASCADE both FKs (Phase 3a): reading state is
@@ -1265,6 +1526,16 @@ class ReadingState(CreatedAtMixin, UpdatedAtMixin, Base):
     last_event_id: Mapped[str | None] = mapped_column(String(64), default=None)
     updated_by_device_id: Mapped[str | None] = mapped_column(String(64), default=None)
     last_synced_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
+    # ADR-028: the persistent character bound to this reading session, and
+    # the character-attribute snapshot it was seeded from. Both nullable: an
+    # unseeded reading state (no character carried into this book) is the
+    # normal case, not an error. SET NULL, not CASCADE: deleting a character
+    # must not delete the child's reading progress in the books that
+    # character played.
+    character_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("character.id", ondelete="SET NULL"), default=None
+    )
+    seed_var_state: Mapped[VarState | None] = mapped_column(JSONB, default=None)
 
 
 class Completion(Base):

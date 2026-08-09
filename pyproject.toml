@@ -3,7 +3,7 @@
 # UV uses standard PEP 621 pyproject.toml format with uv.lock for reproducible builds.
 [project]
 name = "cyo-adventure"
-version = "0.68.2"
+version = "0.69.0"
 description = "A choose-your-own-adventure reading app for kids"
 authors = [
     {name = "Byron Williams", email = "byronawilliams@gmail.com"}
@@ -355,6 +355,13 @@ known-first-party = ["cyo_adventure"]
 # generation.py, this router has no other runtime call into the uuid module
 # to keep ruff from flagging the import on its own.
 "**/api/provider_allowlist.py" = ["TC001", "TC003"]
+# The integration client fixture overrides get_db_session with a dependency that
+# takes `request: Request` so it can reuse the real request_unit_of_work. FastAPI
+# resolves that annotation string at override time via typing.get_type_hints, so
+# fastapi.Request must be a runtime import here even though it appears only in an
+# annotation, and it arrives on an import line of its own (TC002 rather than the
+# TC001 first-party cases above).
+"tests/integration/conftest.py" = ["TC002"]
 
 # Exception classes legitimately require multiple context parameters in __init__
 "**/core/exceptions.py" = ["PLR0913"]
@@ -419,6 +426,14 @@ known-first-party = ["cyo_adventure"]
 # keyword-only with a None default); each is a distinct concern and a config
 # object would obscure which fields are row identity vs. profile overlay.
 "**/api/library.py" = ["PLR0913"]
+
+# _validate_against_pinned_version carries ctx and book (identity/context),
+# body (the save payload), and the mandatory keyword-only require_current and
+# seed_var_state (two independent per-call-site decisions: which version-
+# currency check applies, and what seed replay must begin from). A config
+# object would obscure which of the two call sites (create vs. update) is
+# choosing what.
+"**/api/reading.py" = ["PLR0913"]
 
 # The combined Stage 1 fidelity gate carries original and filled (the two
 # documents being compared) plus the mandatory keyword-only
@@ -504,6 +519,15 @@ known-first-party = ["cyo_adventure"]
 # site actually has, mirroring events/writer.py::record_event's identical
 # rationale.
 "**/cyo_adventure/security_audit.py" = ["PLR0913"]
+
+# record_progression carries session plus the four keyword-only fields
+# needed to raise a persistent character's stats and record a book
+# completion (reading_state, character_id, ending_id, exit_var_state); each
+# is a distinct concern (transaction, identity, the ending reached, the
+# values to raise stats to) with no sensible default. A config object would
+# obscure which fields the caller (api/reading.py::record_completion) must
+# supply explicitly.
+"**/characters/progression.py" = ["PLR0913"]
 
 # Test files (relaxed rules for test code)
 "tests/**/*.py" = [

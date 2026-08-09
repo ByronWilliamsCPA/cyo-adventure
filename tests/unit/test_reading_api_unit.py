@@ -409,18 +409,23 @@ class TestParseUuid:
 
 class TestView:
     @pytest.mark.unit
-    def test_view_maps_all_fields(self) -> None:
+    @pytest.mark.asyncio
+    async def test_view_maps_all_fields(self) -> None:
         """_view() maps every ReadingState attribute to ReadingStateView."""
         profile_id = uuid.uuid4()
         row = _state_row(
             profile_id, "s", version=2, current_node="ch3", state_revision=7
         )
-        v = _view(row)
+        session = _FakeSession()
+        v = await _view(session, row)
         assert v.child_profile_id == str(profile_id)
         assert v.storybook_id == "s"
         assert v.version == 2
         assert v.current_node == "ch3"
         assert v.state_revision == 7
+        assert v.character_id is None
+        assert v.character_name is None
+        assert v.seed_var_state is None
 
 
 # ---------------------------------------------------------------------------
@@ -430,21 +435,25 @@ class TestView:
 
 class TestConflict:
     @pytest.mark.unit
-    def test_conflict_response_has_409_status(self) -> None:
+    @pytest.mark.asyncio
+    async def test_conflict_response_has_409_status(self) -> None:
         """_conflict() produces a JSONResponse with status 409."""
         profile_id = uuid.uuid4()
         row = _state_row(profile_id, "s")
-        response = _conflict(row, "revision mismatch")
+        session = _FakeSession()
+        response = await _conflict(session, row, "revision mismatch")
         assert response.status_code == 409
 
     @pytest.mark.unit
-    def test_conflict_response_body_contains_detail(self) -> None:
+    @pytest.mark.asyncio
+    async def test_conflict_response_body_contains_detail(self) -> None:
         """The 409 response body includes the provided detail string."""
         import json
 
         profile_id = uuid.uuid4()
         row = _state_row(profile_id, "s")
-        response = _conflict(row, "version mismatch")
+        session = _FakeSession()
+        response = await _conflict(session, row, "version mismatch")
         body = json.loads(response.body)
         assert body["detail"] == "version mismatch"
         assert "current_row" in body
@@ -653,9 +662,11 @@ class TestPutReadingState:
             str(profile_id), "story-1", _body(state_revision=0), ctx
         )
 
-        # Two scalar() calls now: the M1 assignment lookup, then the locked
-        # read-modify-write read this test is about.
-        assert len(session.scalar_calls) == 2
+        # Three scalar() calls now: the M1 assignment lookup, the locked
+        # read-modify-write read this test is about, then the create path's
+        # active-character binding lookup (Task 6; the fake session's seeded
+        # scalar_result of None means "no character" for that third call).
+        assert len(session.scalar_calls) == 3
         stmt = cast("Select[Any]", session.scalar_calls[1])
         # The row scope lives in the WHERE clause; the SELECT column list names
         # every column, so checking the full statement would not catch a dropped
@@ -1114,6 +1125,53 @@ class TestPutReadingState:
         ):
             await put_reading_state(profile_id_str, "s_syn", body, ctx)
 
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_update_path_forwards_the_row_seed_not_none(self) -> None:
+        """The update path must pass row.seed_var_state, not None, to replay.
+
+        Every other put_reading_state test in this class takes the create
+        path (scalar_result=None), so none of them observes this call site's
+        seed_var_state=row.seed_var_state argument (api/reading.py). The body
+        below is constructed to be asymmetric: it replays correctly (and
+        would be ACCEPTED) if the seed were None, but the existing row
+        carries seed_var_state={"courage": 3}, so the same body must be
+        REJECTED once c_go's +2 effect is applied on top of the real seed
+        (3 + 2 = 5, not the submitted 2). A test that passed either way
+        (i.e. that would also pass if reading.py forwarded None) would prove
+        nothing about which value was threaded through; this one only
+        passes if the row's seed reaches validate_reading_state.
+        """
+        family_id = uuid.uuid4()
+        profile_id = uuid.uuid4()
+        book = _published_book("s_syn", family_id)
+        version = _approved_version("s_syn", 1, _story_blob())
+        existing = _state_row(profile_id, "s_syn", current_node="n_start")
+        existing.seed_var_state = {"courage": 3}
+        session = _FakeSession(
+            get_map={
+                (Storybook, "s_syn"): book,
+                (StorybookVersion, ("s_syn", 1)): version,
+            },
+            scalar_result=existing,
+        )
+        ctx = _ctx(_child_principal(family_id, profile_id), session)
+        body = ReadingStateBody(
+            version=1,
+            current_node="n_end",
+            var_state={"courage": 2},  # correct only if seed_var_state=None
+            path=["n_start", "n_end"],
+            visit_set=["n_start", "n_end"],
+            choice_path=["c_go"],
+            state_revision=3,  # matches _state_row's default
+        )
+        profile_id_str = str(profile_id)
+        with pytest.raises(
+            ValidationError,
+            match=r"submitted reading state does not match a replay of choice_path",
+        ):
+            await put_reading_state(profile_id_str, "s_syn", body, ctx)
+
 
 # ---------------------------------------------------------------------------
 # record_completion
@@ -1333,6 +1391,54 @@ class TestRecordCompletion:
             AuthorizationError, match=r"profile is not accessible to this principal"
         ):
             await record_completion(body, ctx)
+
+
+# ---------------------------------------------------------------------------
+# CompletionBody contract
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+class TestCompletionBodyContract:
+    """The request body a client may send when claiming an ending.
+
+    ``api/reading.py::_ending_is_satisfying``'s ``#CRITICAL`` marker rests on
+    this: character progression is decided from the SERVER's pinned version
+    blob because the request body has no field that could say otherwise. That
+    holds only while ``CompletionBody`` both lacks such a field and refuses
+    unknown ones, so both halves are pinned here rather than left to the
+    model definition being read carefully.
+    """
+
+    def test_a_completion_body_carrying_an_extra_field_is_rejected(self) -> None:
+        """extra="forbid": an invented field is a 422, not a silently dropped one."""
+        payload = {
+            "profile_id": str(uuid.uuid4()),
+            "storybook_id": "story-1",
+            "version": 1,
+            "ending_id": "end-happy",
+            # A client asserting its own ending kind. If this were merely
+            # ignored instead of rejected, the field could later be wired up
+            # by accident without any test noticing.
+            "kind": "success",
+        }
+        # Validated from a dict, not constructed with a keyword, so the
+        # deliberately-invalid field needs no type-checker suppression.
+        with pytest.raises(PydanticValidationError, match="Extra inputs are not"):
+            CompletionBody.model_validate(payload)
+        del payload["kind"]
+        assert CompletionBody.model_validate(payload).ending_id == "end-happy"
+
+    def test_the_body_declares_no_ending_kind_or_var_state_field(self) -> None:
+        """The rejection above only matters while no such field is declared."""
+        declared = set(CompletionBody.model_fields)
+        assert declared == {
+            "profile_id",
+            "storybook_id",
+            "version",
+            "ending_id",
+            "event_id",
+        }
 
 
 # ---------------------------------------------------------------------------

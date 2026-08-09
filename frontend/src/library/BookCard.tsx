@@ -59,6 +59,25 @@ export interface BookCardProps {
    * button rendered) when the caller has no gallery wired yet, mirroring
    * `onContinue`'s own optional pattern. */
   onOpenGallery?: (storybookId: string) => void
+  /**
+   * ADR-028 / gate-rework: true when opening this book must show
+   * CharacterCreator first (LibraryPage.tsx owns the actual condition:
+   * `item.accepts_character === true` and the profile's active character
+   * status is exactly `'none'`; this prop is only the resolved boolean, so
+   * BookCard never has to know about character state itself). False for
+   * every other combination, including `accepts_character` undefined.
+   */
+  needsCharacter?: boolean
+  /**
+   * Called instead of navigating when `needsCharacter` is true. The card
+   * still renders as a real `<Link>` either way (never a `<button>`): the
+   * e2e smoke discovers books with `getByRole('link', { name })`, and a
+   * gated book failing to render as a link would break that the same way an
+   * ungated one would. The click is intercepted with `preventDefault`
+   * instead, so LibraryPage can show the creator first and continue into
+   * `readTo` itself once one exists.
+   */
+  onNeedsCharacter?: (readTo: string, readState?: { personalizationEligible: boolean }) => void
 }
 
 export function BookCard({
@@ -74,6 +93,8 @@ export function BookCard({
   ratable = true,
   everyPathWalked = false,
   onOpenGallery,
+  needsCharacter = false,
+  onNeedsCharacter,
 }: BookCardProps) {
   const readTo = `/read/${profileId}/${item.id}/${item.version}`
   // ADR-023 Task D8 (closes Stage C open question 2): thread the library's
@@ -165,7 +186,19 @@ export function BookCard({
           <span className="book-card__offline-note">Preview only</span>
         </div>
       ) : downloaded ? (
-        <Link className="book-card__link" to={readTo} state={readState}>
+        <Link
+          className="book-card__link"
+          to={readTo}
+          state={readState}
+          onClick={
+            needsCharacter
+              ? (event) => {
+                  event.preventDefault()
+                  onNeedsCharacter?.(readTo, readState)
+                }
+              : undefined
+          }
+        >
           {inner}
         </Link>
       ) : (

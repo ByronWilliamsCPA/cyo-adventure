@@ -56,7 +56,8 @@ src/cyo_adventure/
 │   └── worker.py           # RQ worker entry point
 ├── middleware/
 │   ├── correlation.py      # CorrelationMiddleware (must be first)
-│   └── security.py         # OWASP headers, HSTS, SSRF protection
+│   ├── security.py         # OWASP headers, HSTS, SSRF protection
+│   └── unit_of_work.py     # Commits the request UoW before the response (#461)
 ├── player/
 │   ├── engine.py           # StoryEngine: Runtime Semantics v1 (pure)
 │   └── state.py            # ReadingState dataclass
