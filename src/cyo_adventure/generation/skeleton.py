@@ -31,7 +31,15 @@ FILL_MARKER = "<<FILL"
 # globs ``*.json`` must skip these, so the set is defined once here and a future
 # sidecar type is a single edit. Ordered longest-suffix-first is unnecessary; a
 # sidecar name ends in exactly one of these.
-SIDECAR_SUFFIXES: tuple[str, ...] = (".contract.json", ".lineage.json")
+SIDECAR_SUFFIXES: tuple[str, ...] = (
+    ".contract.json",
+    ".lineage.json",
+    # Narrative obligation contract (skeleton-narrative-redesign proposal,
+    # 2026-08-09): per-node obligations for open-tier nodes. Registered ahead
+    # of the SQ-12 pilot so catalog scans never load it as a skeleton, the
+    # exact trap the SQ-11 brief flagged for variant sidecars.
+    ".narrative.json",
+)
 
 
 def is_sidecar(path: Path) -> bool:
