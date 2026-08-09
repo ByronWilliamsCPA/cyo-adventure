@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.69.0] - 2026-08-09
+
+### Features
+
+- **characters**: Carry a reader's character across books at runtime
+  ([#649](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/649),
+  [`c2b272c`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/c2b272cd1aabda0e0544348a78d7a008da94a943))
+
+
 ## [0.68.4] - 2026-08-08
 
 ### Bug Fixes
@@ -3276,6 +3285,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.69.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.68.4...v0.69.0
 [0.68.4]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.68.3...v0.68.4
 [0.68.3]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.68.2...v0.68.3
 [0.68.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.68.1...v0.68.2
