@@ -1,0 +1,1177 @@
+{
+  "narrative_version": 1,
+  "skeleton_slug": "the-clocktower-cipher",
+  "age_band": "10-13",
+  "premise": {
+    "engine": "decode-and-discover",
+    "dramatic_question": "Will {HEROES} crack the {CIPHER} and learn what the clocktower has been protecting?",
+    "resolution_space": [
+      "the archive teaches them the tower's history, arming a better-prepared return",
+      "a page in the archive holds a copy of the cipher, carried home to study",
+      "closing time arrives mid-chapter and the keeper gently shows them out with a borrowing promise",
+      "a sober look at the ledge convinces them the crossing is not worth the fall",
+      "one friend names the risk aloud and the others agree without argument",
+      "a slip caught in time turns the attempt into a calm, deliberate retreat",
+      "random spinning trips a safety lock that freezes the hands until a keeper resets them",
+      "the closing signal sounds before any guess lands, and the tower must empty for the night",
+      "the overworked mechanism chimes a polite alarm that calls the keeper to close up",
+      "the forced gears seize dry and no strength on hand will move them",
+      "a bent linkage needs a workshop tool nobody brought",
+      "the keeper's posted rule ends forcing attempts at nightfall, and they honor it",
+      "the workshop adopts them as its quiet caretakers by the care they show it",
+      "a half-finished piece invites their hands, and finishing it becomes their standing project",
+      "the maker's notes name whoever finds the room its steward, and they accept",
+      "the finding is shared publicly and celebrated by the settlement",
+      "the finding quietly restores something the settlement lost",
+      "the finding earns the keeper's trust and a standing invitation to the tower",
+      "a pact sworn over the keepsake binds the friends as the secret's guardians",
+      "they reseal the vault exactly as found, keeping the knowledge and leaving the rest",
+      "the maker's letter asks its finders to choose, and they choose quiet keeping",
+      "a harmless bell trap announces the grab and the keeper arrives before the door",
+      "the bag's weight springs the maker's jingling safeguard on the stairs",
+      "second thoughts slow them just enough for the keeper's evening rounds to find them mid-return"
+    ]
+  },
+  "facts": {
+    "tower_locked": "the clocktower's main door is locked against entry",
+    "cipher_seen": "a coded note is pinned to the door and the friends have seen it",
+    "friends_together": "the friends are in this together; nobody faces the tower alone",
+    "quest_committed": "the friends have committed to cracking the tower's secret",
+    "cipher_decoded": "the note's substitution cipher is broken; its first line has been read plainly",
+    "key_location_known": "the decoded line points to a specific hiding place for a key",
+    "side_routes_found": "a stiff side door and a high window have been found as possible ways in",
+    "keeper_met": "the keeper has been met and reads as gruff but kind, an ally not a threat",
+    "keeper_offer": "the keeper has offered both a way in and knowledge about the cipher's maker",
+    "maker_history_known": "the maker hid something in the tower decades ago, for reasons that were kind",
+    "inside_access": "the friends are inside the tower, however they got in",
+    "rooms_mapped": "four ways onward are known: the spiral stair, the study, the pendulum ledge, the basement",
+    "cipher_hint": "the reader carries enough working grasp of the cipher's logic to make an honest attempt at the clockface, however this path supplied it",
+    "archive_tempting": "the study's old archive exerts a real pull worth lingering for",
+    "hazard_present": "the pendulum ledge is a genuine, visible risk that deserves respect",
+    "lubricant_spotted": "an oil can sits visible at the far end of the ledge; seeing it is not having it",
+    "at_clockface": "the friends stand at the great clockface with the hands within reach",
+    "face_puzzle_live": "the face's own markings make the setting puzzle legible: what to set, and that a wrong setting has consequences",
+    "mechanism_true": "the tower's mechanism runs as its maker intended",
+    "gears_jammed": "forcing the hands has jammed the gear train; it will not move as things stand",
+    "panel_found": "a second, smaller cipher panel is discovered behind the clockface",
+    "vault_entered": "the friends are inside the vault space the tower protects",
+    "vault_contents_known": "the maker's letter, a keepsake, and a modest heritage treasure have been seen",
+    "dignity_kept": "the friends leave with self-respect intact; the outcome is a consequence, never a humiliation",
+    "return_open": "the tower can be tried again; nothing is lost for good",
+    "amends_made": "what was taken is put back and the moment is squared honestly with the keeper",
+    "secret_room_found": "the maker's hidden workshop has been found beyond the panel",
+    "stewardship_taken": "the friends take on quiet responsibility for what they found",
+    "secret_shared": "the decoded message is brought to the settlement and does public good",
+    "secret_kept": "the maker's secret stays deliberately private among the friends",
+    "friendship_bond": "the shared secret deepens the friendship into something durable"
+  },
+  "safety_envelope": {
+    "affect_ceiling": "suspense with wonder and mild urgency; tension may tighten but never tips into threat",
+    "forbid_affect": [
+      "despair",
+      "hopelessness",
+      "terror",
+      "humiliation",
+      "cruel_mockery"
+    ],
+    "forbid_facts": [
+      "anyone_injured",
+      "friends_turn_on_each_other",
+      "adult_menaces_children",
+      "theft_rewarded",
+      "gore_of_any_kind"
+    ],
+    "permitted_device_kinds": [
+      "symbol_substitution",
+      "clock_arithmetic",
+      "pictogram_code",
+      "hidden_key",
+      "forgotten_entrance",
+      "trusted_escort",
+      "engraved_numbers",
+      "maker_diagram",
+      "pattern_in_mechanism",
+      "annotated_tool",
+      "maker_relic",
+      "working_mechanism",
+      "written_record",
+      "acoustic_wonder",
+      "heritage_document",
+      "handmade_keepsake",
+      "community_memory",
+      "stiff_mechanism",
+      "narrow_crossing",
+      "time_pressure",
+      "harmless_alarm"
+    ],
+    "forbidden_device_kinds": [
+      "weapon",
+      "gore",
+      "cruelty",
+      "theft_rewarded",
+      "adult_menace"
+    ]
+  },
+  "world_recipe": {
+    "requires": {
+      "cipher_forms": {
+        "count": 1,
+        "kinds": [
+          "symbol_substitution",
+          "clock_arithmetic",
+          "pictogram_code"
+        ],
+        "note": "one cipher form per story, chosen at bind and used consistently from note to clockface to back panel"
+      },
+      "access_details": {
+        "count": 3,
+        "kinds": [
+          "hidden_key",
+          "forgotten_entrance",
+          "trusted_escort"
+        ],
+        "note": "one concrete way in per approach branch: the note's decoded route, the building's own weak point, the keeper's escort"
+      },
+      "cipher_hint_carriers": {
+        "count": 4,
+        "kinds": [
+          "engraved_numbers",
+          "maker_diagram",
+          "pattern_in_mechanism",
+          "annotated_tool"
+        ],
+        "note": "one per exploration room; each carries enough cipher logic that any single room makes the clockface attemptable"
+      },
+      "room_curiosities": {
+        "count": 4,
+        "kinds": [
+          "maker_relic",
+          "working_mechanism",
+          "written_record",
+          "acoustic_wonder"
+        ],
+        "note": "what makes each room distinct and worth the visit beyond its hint"
+      },
+      "vault_contents": {
+        "count": 3,
+        "kinds": [
+          "heritage_document",
+          "handmade_keepsake",
+          "community_memory"
+        ],
+        "note": "the vault protects knowledge, heritage, and wonder; any treasure is modest and communal, never loot"
+      },
+      "obstacle_kinds": {
+        "count": 2,
+        "kinds": [
+          "narrow_crossing",
+          "stiff_mechanism"
+        ],
+        "note": "physical difficulty stays honest and non-injurious; failure costs time or access, never safety"
+      },
+      "safeguards": {
+        "count": 1,
+        "kinds": [
+          "harmless_alarm"
+        ],
+        "note": "the maker's anti-theft measure; comic and harmless, it embarrasses no one and hurts no one"
+      }
+    },
+    "identity_roles": [
+      "HEROES",
+      "KEEPER",
+      "MAKER",
+      "CIPHER",
+      "SETTLEMENT",
+      "VAULT"
+    ],
+    "texture_roles": [
+      "THRESHOLD",
+      "ACCESS_LOW",
+      "ACCESS_HIGH",
+      "KEY",
+      "STUDY",
+      "HAZARD",
+      "LANDMARK_FACE",
+      "TOKEN",
+      "CIPHER_TOOL",
+      "ARCHIVE",
+      "LUBRICANT",
+      "MACHINERY",
+      "SECRET_ROOM",
+      "KEEPSAKE",
+      "CLOSING_SIGN",
+      "MECHANISM",
+      "CRAFT"
+    ]
+  },
+  "nodes": {
+    "n_open": {
+      "tier": "open",
+      "function": "introduce-mystery",
+      "entry_state": [],
+      "establishes": [
+        "tower_locked",
+        "cipher_seen",
+        "friends_together"
+      ],
+      "forbids": [
+        "inside_access",
+        "cipher_decoded",
+        "keeper_met"
+      ],
+      "affect": {
+        "target": "wonder with a prickle of mystery",
+        "forbid": [
+          "dread",
+          "urgency"
+        ]
+      },
+      "invention": {
+        "cipher_form": {
+          "pick": 1,
+          "from": "bible.device_vocabulary.cipher_forms",
+          "category": "cipher_forms",
+          "unique_within_story": true,
+          "assigned_at": "bind",
+          "note": "the story's one cipher form; every later cipher beat renders this same form consistently"
+        }
+      },
+      "choice_semantics": {
+        "c_open": "lean in together and take the mystery seriously"
+      },
+      "beat_hint": "a locked door, a coded note, and friends who cannot walk away from either."
+    },
+    "n_start": {
+      "tier": "open",
+      "function": "offer-approaches",
+      "entry_state": [
+        "tower_locked",
+        "cipher_seen",
+        "friends_together"
+      ],
+      "establishes": [
+        "quest_committed"
+      ],
+      "forbids": [
+        "cipher_decoded",
+        "inside_access"
+      ],
+      "affect": {
+        "target": "eager deliberation among equals",
+        "forbid": [
+          "quarrel",
+          "dread"
+        ]
+      },
+      "constraints": {
+        "offers_must_be": "three genuinely different theories of the problem: read it, outflank it, ask about it; no option is the smart one",
+        "must_not": "decode any of the note here; the split happens before anyone cracks anything"
+      },
+      "choice_semantics": {
+        "c_examine": "treat the note itself as the way in: solve the cipher",
+        "c_door": "treat the building as the way in: find a physical route",
+        "c_keeper": "treat people as the way in: seek the one who knows the tower"
+      },
+      "beat_hint": "hub. the friends split on method, not on goal."
+    },
+    "n_note": {
+      "tier": "open",
+      "function": "reward-decoding",
+      "entry_state": [
+        "cipher_seen",
+        "quest_committed",
+        "friends_together"
+      ],
+      "establishes": [
+        "cipher_decoded",
+        "key_location_known"
+      ],
+      "forbids": [
+        "inside_access"
+      ],
+      "affect": {
+        "target": "the click of a puzzle giving way",
+        "forbid": [
+          "frustration",
+          "dread"
+        ]
+      },
+      "invention": {
+        "access_route": {
+          "pick": 1,
+          "from": "bible.device_vocabulary.access_details",
+          "category": "access_details",
+          "kind_must_be": "hidden_key",
+          "unique_within_story": true,
+          "assigned_at": "bind",
+          "note": "the decoded line names both a key hiding place and a plain ground-level way to try"
+        }
+      },
+      "constraints": {
+        "decode_must_be": "shown on the page in the story's one cipher form, so a reader can play along; first line only, the rest stays coded",
+        "must_not": "make the cipher trivial or make the other branches look foolish for not decoding"
+      },
+      "choice_semantics": {
+        "c_note_key": "trust the decoded clue fully and hunt the key it names",
+        "c_note_inside": "skip the key and try the ground-level way the note mentions"
+      },
+      "beat_hint": "patience with the code pays off: the first decoded line points two ways at once."
+    },
+    "n_door": {
+      "tier": "open",
+      "function": "scout-routes",
+      "entry_state": [
+        "tower_locked",
+        "quest_committed"
+      ],
+      "establishes": [
+        "side_routes_found"
+      ],
+      "forbids": [
+        "cipher_decoded",
+        "inside_access"
+      ],
+      "affect": {
+        "target": "practical resourcefulness with mild tension",
+        "forbid": [
+          "danger",
+          "guilt"
+        ]
+      },
+      "invention": {
+        "access_route": {
+          "pick": 1,
+          "from": "bible.device_vocabulary.access_details",
+          "category": "access_details",
+          "kind_must_be": "forgotten_entrance",
+          "unique_within_story": true,
+          "assigned_at": "bind"
+        }
+      },
+      "constraints": {
+        "entry_must_read": "as clever use of a neglected building, not as break-in; the tower is the settlement's own and the friends mean it no harm",
+        "must_not": "carry any cipher knowledge; this branch has not read the note closely"
+      },
+      "choice_semantics": {
+        "c_door_force": "take the direct, effortful route through the stiff side door",
+        "c_door_window": "take the adventurous, climbing route to the high window"
+      },
+      "beat_hint": "the building itself offers two honest ways past its lock."
+    },
+    "n_keeper": {
+      "tier": "open",
+      "function": "gain-ally",
+      "entry_state": [
+        "quest_committed",
+        "friends_together"
+      ],
+      "establishes": [
+        "keeper_met",
+        "keeper_offer"
+      ],
+      "forbids": [
+        "cipher_decoded",
+        "inside_access"
+      ],
+      "affect": {
+        "target": "wary respect warming into trust",
+        "forbid": [
+          "menace",
+          "condescension"
+        ]
+      },
+      "invention": {
+        "access_route": {
+          "pick": 1,
+          "from": "bible.device_vocabulary.access_details",
+          "category": "access_details",
+          "kind_must_be": "trusted_escort",
+          "unique_within_story": true,
+          "assigned_at": "bind"
+        }
+      },
+      "constraints": {
+        "keeper_must_be": "gruff on the surface, glad underneath that someone finally cares about the tower; an adult who takes kids seriously",
+        "must_not": "have the keeper solve the cipher for them or forbid the attempt"
+      },
+      "choice_semantics": {
+        "c_keeper_enter": "accept the offered way in and go now",
+        "c_keeper_story": "trade speed for understanding and ask about the maker first"
+      },
+      "beat_hint": "asking for help is presented as a strength; the keeper honors it with a real offer."
+    },
+    "n_keyhunt": {
+      "tier": "open",
+      "function": "verify-cipher",
+      "entry_state": [
+        "cipher_decoded",
+        "key_location_known"
+      ],
+      "establishes": [
+        "cipher_hint"
+      ],
+      "forbids": [
+        "inside_access"
+      ],
+      "affect": {
+        "target": "treasure-hunt delight, proof the code tells truth",
+        "forbid": [
+          "frustration",
+          "dread"
+        ]
+      },
+      "constraints": {
+        "payoff_must_be": "the key exactly where the decoded line promised; the world confirms the cipher, deepening the friends' fluency with it",
+        "must_not": "introduce a second puzzle here; this beat is confirmation, not complication"
+      },
+      "choice_semantics": {
+        "c_keyhunt_in": "use the earned key on the front door and walk in the proper way"
+      },
+      "beat_hint": "the decoded clue proves out in brick and iron; trust in the cipher becomes fluency with it."
+    },
+    "n_keeper_story": {
+      "tier": "open",
+      "function": "deepen-history",
+      "entry_state": [
+        "keeper_met",
+        "keeper_offer"
+      ],
+      "establishes": [
+        "maker_history_known"
+      ],
+      "forbids": [
+        "inside_access",
+        "cipher_decoded"
+      ],
+      "affect": {
+        "target": "hushed listening, wonder about the past",
+        "forbid": [
+          "grief",
+          "dread"
+        ]
+      },
+      "constraints": {
+        "history_must_be": "warm and specific: the maker hid something out of care for the settlement, not fear or shame; motive stays kind even while details stay secret",
+        "must_not": "reveal what the vault holds or how the cipher decodes"
+      },
+      "choice_semantics": {
+        "c_story_in": "carry the maker's story inside as context, entering with the keeper's blessing"
+      },
+      "beat_hint": "background that will make later clues feel like recognition instead of luck."
+    },
+    "n_window": {
+      "tier": "open",
+      "function": "earn-entry",
+      "entry_state": [
+        "side_routes_found",
+        "quest_committed"
+      ],
+      "establishes": [
+        "inside_access"
+      ],
+      "forbids": [
+        "anyone_injured"
+      ],
+      "affect": {
+        "target": "a small controlled thrill, then the hush of arrival",
+        "forbid": [
+          "real_peril",
+          "panic"
+        ]
+      },
+      "constraints": {
+        "climb_must_be": "exciting but visibly safe: short height, good holds, friends spotting each other; the drop inside lands soft and sure",
+        "must_not": "injure anyone or play the climb as recklessness"
+      },
+      "choice_semantics": {
+        "c_window_in": "commit to the drop and arrive inside the tower"
+      },
+      "beat_hint": "the squeeze through is the fun; the landing makes them insiders."
+    },
+    "n_inside": {
+      "tier": "open",
+      "function": "converge-and-map",
+      "entry_state": [
+        "cipher_seen",
+        "quest_committed",
+        "friends_together"
+      ],
+      "establishes": [
+        "inside_access",
+        "rooms_mapped"
+      ],
+      "forbids": [
+        "at_clockface",
+        "vault_entered"
+      ],
+      "affect": {
+        "target": "held-breath wonder at the tower's interior",
+        "forbid": [
+          "dread",
+          "claustrophobia"
+        ]
+      },
+      "merge_note": "NC-1: six parents (n_note, n_door, n_keeper, n_keyhunt, n_keeper_story, n_window) arrive by different routes carrying different knowledge. Presuppose only the intersection: the note exists, the friends are committed and together. Do NOT reference how they got in, whether a key or keeper or window was involved, whether the cipher is decoded, or whether the keeper is present. Write arrival generically: they are inside, the door question is behind them, the tower opens up.",
+      "constraints": {
+        "offers_must_be": "four sensory, distinct invitations matching the four rooms: height, paper, motion, depth; each stands alone",
+        "must_not": "rank the rooms or hint one is the correct choice"
+      },
+      "choice_semantics": {
+        "c_inside_stairs": "go up: follow the tower's spine toward the face",
+        "c_inside_study": "go into the paper: the maker's own room",
+        "c_inside_pendulum": "go along the motion: the ledge past the swinging works",
+        "c_inside_basement": "go down: the roots of the machine"
+      },
+      "beat_hint": "bottleneck. inside at last; the tower offers height, paper, motion, and depth."
+    },
+    "n_stairs": {
+      "tier": "open",
+      "function": "supply-hint-by-ascent",
+      "entry_state": [
+        "inside_access",
+        "rooms_mapped"
+      ],
+      "establishes": [
+        "cipher_hint"
+      ],
+      "forbids": [
+        "at_clockface",
+        "vault_entered"
+      ],
+      "affect": {
+        "target": "steady climb, curiosity rewarded en route",
+        "forbid": [
+          "exhaustion",
+          "dread"
+        ]
+      },
+      "invention": {
+        "hint_carrier": {
+          "pick": 1,
+          "from": "bible.device_vocabulary.cipher_hint_carriers",
+          "category": "cipher_hint_carriers",
+          "unique_within_story": true,
+          "assigned_at": "bind",
+          "note": "something on or under the stair, found with the loose-step token, that teaches a usable piece of the cipher's logic"
+        },
+        "curiosity": {
+          "pick": 1,
+          "from": "bible.device_vocabulary.room_curiosities",
+          "category": "room_curiosities",
+          "unique_within_story": true,
+          "assigned_at": "bind",
+          "note": "the loose step's pocketable token; personal, small, the maker's touch"
+        }
+      },
+      "constraints": {
+        "hint_must_be": "sufficient on its own to make the clockface attemptable for a reader who never read the note branch",
+        "must_not": "presuppose the cipher is already decoded"
+      },
+      "choice_semantics": {
+        "c_stairs_face": "keep climbing to the face itself"
+      },
+      "beat_hint": "the spine of the tower; a loose step gives up a token, and the way up teaches a piece of the code."
+    },
+    "n_study": {
+      "tier": "open",
+      "function": "supply-hint-by-scholarship",
+      "entry_state": [
+        "inside_access",
+        "rooms_mapped"
+      ],
+      "establishes": [
+        "cipher_hint",
+        "archive_tempting"
+      ],
+      "forbids": [
+        "at_clockface",
+        "vault_entered"
+      ],
+      "affect": {
+        "target": "the deep pull of someone else's working room",
+        "forbid": [
+          "boredom",
+          "dread"
+        ]
+      },
+      "invention": {
+        "hint_carrier": {
+          "pick": 1,
+          "from": "bible.device_vocabulary.cipher_hint_carriers",
+          "category": "cipher_hint_carriers",
+          "kind_must_be": "annotated_tool",
+          "unique_within_story": true,
+          "assigned_at": "bind",
+          "note": "the maker's own tool that explains the code; the study's hint is the richest of the four but not required"
+        },
+        "curiosity": {
+          "pick": 1,
+          "from": "bible.device_vocabulary.room_curiosities",
+          "category": "room_curiosities",
+          "kind_must_be": "written_record",
+          "unique_within_story": true,
+          "assigned_at": "bind",
+          "note": "the archive whose pull is genuine; staying is a real temptation, not a trap"
+        }
+      },
+      "constraints": {
+        "temptation_must_be": "honest: the archive really is fascinating, and choosing it is a legitimate reader identity, not a mistake",
+        "must_not": "frame staying to read as laziness or failure"
+      },
+      "choice_semantics": {
+        "c_study_face": "take the maker's tool and press on to the face",
+        "c_study_logs": "let the archive win; the mystery of the past over the puzzle of the present"
+      },
+      "beat_hint": "the maker's room explains the code and, just as loudly, invites them to stay forever."
+    },
+    "n_pendulum": {
+      "tier": "open",
+      "function": "supply-hint-by-nerve",
+      "entry_state": [
+        "inside_access",
+        "rooms_mapped"
+      ],
+      "establishes": [
+        "cipher_hint",
+        "hazard_present",
+        "lubricant_spotted"
+      ],
+      "forbids": [
+        "anyone_injured",
+        "at_clockface"
+      ],
+      "affect": {
+        "target": "focused suspense, respect for real risk",
+        "forbid": [
+          "terror",
+          "recklessness_glorified"
+        ]
+      },
+      "invention": {
+        "hint_carrier": {
+          "pick": 1,
+          "from": "bible.device_vocabulary.cipher_hint_carriers",
+          "category": "cipher_hint_carriers",
+          "kind_must_be": "pattern_in_mechanism",
+          "unique_within_story": true,
+          "assigned_at": "bind",
+          "note": "the swinging works themselves display a rhythm or marking that teaches a piece of the cipher"
+        },
+        "obstacle": {
+          "pick": 1,
+          "from": "bible.device_vocabulary.obstacle_kinds",
+          "category": "obstacle_kinds",
+          "kind_must_be": "narrow_crossing",
+          "assigned_at": "bind"
+        }
+      },
+      "constraints": {
+        "peril_must_be": "mild and legible: the danger is a fall onto hard floor and a long walk home, never mutilation; the crossing rewards care, not daring",
+        "must_not": "punish the reader for either crossing or declining; both are respectable"
+      },
+      "choice_semantics": {
+        "c_pendulum_oil": "cross with care and take the oil can at the far end",
+        "c_pendulum_giveup": "judge the risk honestly and decline it"
+      },
+      "beat_hint": "the ledge past the swinging works: the tower's one real dare, with the oil can waiting beyond it."
+    },
+    "n_basement": {
+      "tier": "open",
+      "function": "supply-hint-by-depth",
+      "entry_state": [
+        "inside_access",
+        "rooms_mapped"
+      ],
+      "establishes": [
+        "cipher_hint"
+      ],
+      "forbids": [
+        "at_clockface",
+        "vault_entered"
+      ],
+      "affect": {
+        "target": "dim-lit awe at the machine's roots",
+        "forbid": [
+          "dread",
+          "claustrophobia"
+        ]
+      },
+      "invention": {
+        "hint_carrier": {
+          "pick": 1,
+          "from": "bible.device_vocabulary.cipher_hint_carriers",
+          "category": "cipher_hint_carriers",
+          "kind_must_be": "engraved_numbers",
+          "unique_within_story": true,
+          "assigned_at": "bind",
+          "note": "markings on the great gears or their housing that teach a piece of the cipher from below"
+        },
+        "curiosity": {
+          "pick": 1,
+          "from": "bible.device_vocabulary.room_curiosities",
+          "category": "room_curiosities",
+          "kind_must_be": "working_mechanism",
+          "unique_within_story": true,
+          "assigned_at": "bind",
+          "note": "the machinery itself as spectacle; the service ladder is the room's gift"
+        }
+      },
+      "constraints": {
+        "darkness_must_be": "atmosphere, not threat; the basement is dim and strange, never menacing",
+        "must_not": "presuppose the cipher is already decoded"
+      },
+      "choice_semantics": {
+        "c_basement_face": "ride the machine's own spine: the service ladder straight up to the face"
+      },
+      "beat_hint": "the roots of the machine; the gears wear their maker's markings, and a ladder runs straight to the sky."
+    },
+    "n_clockface": {
+      "tier": "open",
+      "function": "pose-central-puzzle",
+      "entry_state": [
+        "inside_access",
+        "cipher_hint"
+      ],
+      "establishes": [
+        "at_clockface",
+        "face_puzzle_live"
+      ],
+      "forbids": [
+        "vault_entered",
+        "mechanism_true"
+      ],
+      "affect": {
+        "target": "peak suspense; the whole mystery narrowed to two hands and a dial",
+        "forbid": [
+          "despair",
+          "panic"
+        ]
+      },
+      "merge_note": "NC-1: four parents (n_stairs, n_study, n_pendulum, n_basement), each of which supplied cipher_hint by a DIFFERENT carrier, and only the note branch ever fully decoded the note. Presuppose cipher_hint generically: the friends have a working grasp of the code's logic, source unnamed. Do NOT presuppose the decoded note, the study's tool, the oil can, or any specific room. The face itself must restate the puzzle: its own markings echo the cipher form, so what must be set is legible from this node alone and the correct-setting choice is honest on every path.",
+      "constraints": {
+        "puzzle_must_be": "self-teaching at the face: the markings on the dial rhyme with the hint the reader carries, so choosing the correct setting feels earned, not lucky",
+        "stakes_must_be": "clear before choosing: careful setting, forcing, searching, and guessing are visibly different bets",
+        "must_not": "reference the oil can or any carried object; hands and markings only"
+      },
+      "choice_semantics": {
+        "c_face_correct": "apply the cipher's logic and set the hands deliberately",
+        "c_face_jam": "trust muscle over logic and force the hands",
+        "c_face_panel": "distrust the obvious puzzle and search behind the face instead",
+        "c_face_random": "gamble: spin the hands and hope the tower is forgiving"
+      },
+      "beat_hint": "bottleneck. the face is the lock, the cipher is the key, and four temperaments read the same dial four ways."
+    },
+    "n_setcorrect": {
+      "tier": "open",
+      "function": "reward-mastery",
+      "entry_state": [
+        "at_clockface",
+        "face_puzzle_live",
+        "cipher_hint"
+      ],
+      "establishes": [
+        "mechanism_true"
+      ],
+      "forbids": [
+        "gears_jammed"
+      ],
+      "affect": {
+        "target": "triumphant click-by-click release of tension",
+        "forbid": [
+          "anticlimax"
+        ]
+      },
+      "constraints": {
+        "solution_must_be": "shown, not skipped: the setting follows the cipher logic the reader carries, in the story's one cipher form",
+        "must_not": "presuppose the note branch or any specific room; the reasoning works from the generic hint plus the face's own markings"
+      },
+      "choice_semantics": {
+        "c_correct_vault": "step through the opened panel into what the tower protects"
+      },
+      "beat_hint": "the hands find the maker's hour; the tower answers with gears and a sliding panel."
+    },
+    "n_setjam": {
+      "tier": "open",
+      "function": "consequence-with-recovery",
+      "entry_state": [
+        "at_clockface",
+        "face_puzzle_live"
+      ],
+      "establishes": [
+        "gears_jammed"
+      ],
+      "forbids": [
+        "anyone_injured",
+        "mechanism_true"
+      ],
+      "affect": {
+        "target": "wince of consequence, then problem-solving resolve",
+        "forbid": [
+          "despair",
+          "blame"
+        ]
+      },
+      "invention": {
+        "obstacle": {
+          "pick": 1,
+          "from": "bible.device_vocabulary.obstacle_kinds",
+          "category": "obstacle_kinds",
+          "kind_must_be": "stiff_mechanism",
+          "assigned_at": "bind"
+        }
+      },
+      "constraints": {
+        "lubricant_must_be": "available at the scene on every path: write the oil option so it works whether the can was carried from the ledge or found here at a maintenance shelf by the face; never presuppose the pendulum crossing",
+        "jam_must_read": "as the machine protecting itself, a fair consequence of forcing, not a punishment of the friends",
+        "must_not": "shame whoever forced the hands"
+      },
+      "choice_semantics": {
+        "c_jam_oil": "work the problem: oil the gears free and earn a second chance",
+        "c_jam_stuck": "accept the machine has won tonight"
+      },
+      "beat_hint": "force meets a machine that defends itself; oil is the honest way back."
+    },
+    "n_backpanel": {
+      "tier": "open",
+      "function": "reward-lateral-thinking",
+      "entry_state": [
+        "at_clockface",
+        "face_puzzle_live"
+      ],
+      "establishes": [
+        "panel_found"
+      ],
+      "forbids": [
+        "gears_jammed",
+        "vault_entered"
+      ],
+      "affect": {
+        "target": "sly delight at outflanking the obvious puzzle",
+        "forbid": [
+          "dread"
+        ]
+      },
+      "constraints": {
+        "panel_cipher_must_be": "the same cipher form as the story's note, smaller and quicker; solving it uses the hint the reader carries, never the full decoded note",
+        "must_not": "make this route feel like cheating; the maker built it on purpose for careful searchers"
+      },
+      "choice_semantics": {
+        "c_panel_vault": "solve the small panel toward the vault everyone seeks",
+        "c_panel_secret": "follow the panel the other way, into a room nobody mentioned"
+      },
+      "beat_hint": "behind the face, the maker left a second, smaller lock and two directions to open it."
+    },
+    "n_vault": {
+      "tier": "open",
+      "function": "pose-moral-choice",
+      "entry_state": [
+        "at_clockface",
+        "cipher_hint"
+      ],
+      "establishes": [
+        "vault_entered",
+        "vault_contents_known"
+      ],
+      "forbids": [
+        "anyone_injured"
+      ],
+      "affect": {
+        "target": "awed quiet; the mystery answered, a question of character opened",
+        "forbid": [
+          "greed_glamorized",
+          "dread"
+        ]
+      },
+      "merge_note": "NC-1: three parents (n_setcorrect, n_setjam, n_backpanel) opened the way by different means: true setting, freed jam, solved panel. Presuppose only that they stand at the face with the cipher's logic in hand; write the vault's opening as already behind them without re-describing which mechanism yielded. No gear, oil, or panel callbacks.",
+      "invention": {
+        "contents": {
+          "pick": 3,
+          "from": "bible.device_vocabulary.vault_contents",
+          "category": "vault_contents",
+          "assigned_at": "bind",
+          "note": "the maker's letter, the keepsake, and a modest heritage treasure; the letter's voice is kind and asks nothing"
+        }
+      },
+      "constraints": {
+        "contents_must_be": "knowledge, heritage, and wonder; the treasure is modest and clearly the settlement's, which is what makes the grab choice legible as wrong",
+        "choice_must_be": "a genuine three-way question of character with no narrator's thumb on the scale before the outcome"
+      },
+      "choice_semantics": {
+        "c_vault_share": "give the secret to everyone: decode the letter for the settlement",
+        "c_vault_keep": "guard the secret: let it belong to the friends alone",
+        "c_vault_grab": "take the treasure for yourselves and run"
+      },
+      "beat_hint": "bottleneck. what the tower protected, and the choice of what the friends now protect."
+    },
+    "n_end_library": {
+      "tier": "locked_outcome",
+      "function": "payoff-discovery",
+      "entry_state": [
+        "inside_access",
+        "archive_tempting"
+      ],
+      "establishes": [
+        "dignity_kept",
+        "return_open"
+      ],
+      "forbids": [
+        "shame",
+        "regret_dominant"
+      ],
+      "affect": {
+        "target": "contented absorption; a day well lost to reading",
+        "forbid": [
+          "despair",
+          "mockery"
+        ]
+      },
+      "mechanisms": [
+        "the archive teaches them the tower's history, arming a better-prepared return",
+        "a page in the archive holds a copy of the cipher, carried home to study",
+        "closing time arrives mid-chapter and the keeper gently shows them out with a borrowing promise"
+      ],
+      "constraints": {
+        "ending_must_read": "as a different kind of win: they chose knowledge over the clock and the choice is honored; the mystery waits, richer for what they now know"
+      },
+      "beat_hint": "the readers' ending; clever, warm, and openly unfinished."
+    },
+    "n_end_giveup": {
+      "tier": "locked_outcome",
+      "function": "payoff-prudence",
+      "entry_state": [
+        "hazard_present",
+        "lubricant_spotted"
+      ],
+      "establishes": [
+        "dignity_kept",
+        "return_open"
+      ],
+      "forbids": [
+        "cowardice_implied",
+        "mockery"
+      ],
+      "affect": {
+        "target": "sober, self-respecting relief",
+        "forbid": [
+          "despair",
+          "shame"
+        ]
+      },
+      "mechanisms": [
+        "a sober look at the ledge convinces them the crossing is not worth the fall",
+        "one friend names the risk aloud and the others agree without argument",
+        "a slip caught in time turns the attempt into a calm, deliberate retreat"
+      ],
+      "constraints": {
+        "ending_must_read": "as judgment, not fear: knowing when not to is a skill; the tower keeps its secret for now and the friends keep their bones and their respect"
+      },
+      "beat_hint": "the setback that is also wisdom; nobody laughs, and the door stays open."
+    },
+    "n_end_timeout": {
+      "tier": "locked_outcome",
+      "function": "payoff-consequence",
+      "entry_state": [
+        "at_clockface",
+        "face_puzzle_live"
+      ],
+      "establishes": [
+        "dignity_kept",
+        "return_open"
+      ],
+      "forbids": [
+        "humiliation",
+        "permanent_damage"
+      ],
+      "affect": {
+        "target": "rueful lesson landing with a grin",
+        "forbid": [
+          "despair",
+          "punishing_tone"
+        ]
+      },
+      "mechanisms": [
+        "random spinning trips a safety lock that freezes the hands until a keeper resets them",
+        "the closing signal sounds before any guess lands, and the tower must empty for the night",
+        "the overworked mechanism chimes a polite alarm that calls the keeper to close up"
+      ],
+      "constraints": {
+        "ending_must_read": "as the fair cost of guessing at a thing built for thinking; the tower is unhurt, the friends are unhurt, and the lesson is theirs to use next time"
+      },
+      "beat_hint": "chance loses to design; the tower closes politely around the gamble."
+    },
+    "n_end_stuck": {
+      "tier": "locked_outcome",
+      "function": "payoff-consequence",
+      "entry_state": [
+        "gears_jammed"
+      ],
+      "establishes": [
+        "dignity_kept",
+        "return_open"
+      ],
+      "forbids": [
+        "blame",
+        "permanent_damage"
+      ],
+      "affect": {
+        "target": "determined regrouping; tomorrow is a plan, not a wish",
+        "forbid": [
+          "despair",
+          "defeat_as_identity"
+        ]
+      },
+      "mechanisms": [
+        "the forced gears seize dry and no strength on hand will move them",
+        "a bent linkage needs a workshop tool nobody brought",
+        "the keeper's posted rule ends forcing attempts at nightfall, and they honor it"
+      ],
+      "constraints": {
+        "ending_must_read": "as a pause, not a verdict: the friends leave already planning the return with the right tools; the jam is fixable and no one is at fault for trying"
+      },
+      "beat_hint": "the machine wins the night; the friends win the plan."
+    },
+    "n_end_secret": {
+      "tier": "locked_outcome",
+      "function": "payoff-wonder",
+      "entry_state": [
+        "panel_found"
+      ],
+      "establishes": [
+        "secret_room_found",
+        "stewardship_taken",
+        "friendship_bond"
+      ],
+      "forbids": [
+        "exploitation_of_find"
+      ],
+      "affect": {
+        "target": "hushed wonder settling into belonging",
+        "forbid": [
+          "greed",
+          "anticlimax"
+        ]
+      },
+      "mechanisms": [
+        "the workshop adopts them as its quiet caretakers by the care they show it",
+        "a half-finished piece invites their hands, and finishing it becomes their standing project",
+        "the maker's notes name whoever finds the room its steward, and they accept"
+      ],
+      "constraints": {
+        "room_must_be": "a wonder of half-finished craft, alive with the maker's presence; the reward is responsibility and access, never possession"
+      },
+      "beat_hint": "the sideways ending: not the vault, but a living room of the maker's craft, and a role in it."
+    },
+    "n_end_hero": {
+      "tier": "locked_outcome",
+      "function": "payoff-completion",
+      "entry_state": [
+        "vault_entered",
+        "vault_contents_known"
+      ],
+      "establishes": [
+        "secret_shared",
+        "mechanism_true",
+        "maker_history_known",
+        "friendship_bond"
+      ],
+      "forbids": [
+        "reward_as_riches"
+      ],
+      "affect": {
+        "target": "quiet heroism; a settlement made whole and friends who know what they did",
+        "forbid": [
+          "gloating",
+          "anticlimax"
+        ]
+      },
+      "mechanisms": [
+        "the finding is shared publicly and celebrated by the settlement",
+        "the finding quietly restores something the settlement lost",
+        "the finding earns the keeper's trust and a standing invitation to the tower"
+      ],
+      "constraints": {
+        "restoration_must_be": "concrete and communal: the decoded message gives the settlement back something real, and the tower's mechanism runs true again as the visible sign of it"
+      },
+      "beat_hint": "the main triumphant ending; the maker's gift finally delivered, decades late, by the right hands."
+    },
+    "n_end_keepsake": {
+      "tier": "locked_outcome",
+      "function": "payoff-intimacy",
+      "entry_state": [
+        "vault_entered",
+        "vault_contents_known"
+      ],
+      "establishes": [
+        "secret_kept",
+        "friendship_bond"
+      ],
+      "forbids": [
+        "selfishness_implied"
+      ],
+      "affect": {
+        "target": "warm conspiratorial closeness",
+        "forbid": [
+          "guilt",
+          "anticlimax"
+        ]
+      },
+      "mechanisms": [
+        "a pact sworn over the keepsake binds the friends as the secret's guardians",
+        "they reseal the vault exactly as found, keeping the knowledge and leaving the rest",
+        "the maker's letter asks its finders to choose, and they choose quiet keeping"
+      ],
+      "constraints": {
+        "keeping_must_read": "as guardianship, not hoarding: nothing leaves the vault that belongs to the settlement; what the friends keep is the knowing, and each other"
+      },
+      "beat_hint": "the private happy ending; some secrets are for keeping, and keepers are what they became."
+    },
+    "n_end_caught": {
+      "tier": "locked_outcome",
+      "function": "payoff-comic-correction",
+      "entry_state": [
+        "vault_entered",
+        "vault_contents_known"
+      ],
+      "establishes": [
+        "amends_made",
+        "keeper_met",
+        "dignity_kept",
+        "return_open"
+      ],
+      "forbids": [
+        "humiliation",
+        "punishment_beyond_returning",
+        "theft_rewarded"
+      ],
+      "affect": {
+        "target": "comic sheepishness resolving into relief and fairness",
+        "forbid": [
+          "menace",
+          "despair",
+          "shaming"
+        ]
+      },
+      "invention": {
+        "safeguard": {
+          "pick": 1,
+          "from": "bible.device_vocabulary.safeguards",
+          "category": "safeguards",
+          "kind_must_be": "harmless_alarm",
+          "assigned_at": "bind",
+          "note": "the maker anticipated this exact impulse; the trap is funny, gentle, and impossible to be hurt by"
+        }
+      },
+      "mechanisms": [
+        "a harmless bell trap announces the grab and the keeper arrives before the door",
+        "the bag's weight springs the maker's jingling safeguard on the stairs",
+        "second thoughts slow them just enough for the keeper's evening rounds to find them mid-return"
+      ],
+      "constraints": {
+        "correction_must_be": "fair and complete without cruelty: everything goes back, the keeper is firm but kind, and the friends leave lighter for having been caught; the maker's joke lands on the impulse, not the kids",
+        "must_not": "threaten, lecture at length, or bar the friends from the tower forever"
+      },
+      "beat_hint": "the grab meets the maker's sense of humor; bells, a keeper, and a putting-right that costs only blushes."
+    }
+  }
+}
