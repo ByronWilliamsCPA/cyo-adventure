@@ -625,3 +625,105 @@ Two costs are larger than they first appear and belong in any decision:
 Finally, the catalog remains the right answer for one case the alternatives do not serve:
 a deliberately marketed series, where a shared armature is a feature the reader is buying
 on purpose rather than a defect discovered on night two.
+
+## 11. Recommended path for maximum story diversity (2026-08-09)
+
+Synthesis of the three diversity pilots, the model-tier study, the adversarial review, and
+the exposure analysis. This supersedes section 9's sequence, which was written before the
+exposure measurement.
+
+### 11.1 The two factors
+
+Reader-experienced diversity is a product of two independent probabilities:
+
+> P(this book feels fresh) = 1 - P(the child gets a repeat armature) x P(they recognize it
+> given they got one)
+
+Today both terms run to approximately 1. A child exhausts a cell by their 4th request, so
+a repeat armature is certain; and when they get one, recognition lands at node 2 to 4 even
+with every device margin passing. Pilots 1 to 3 varied devices and prose, which the raters
+established is not the driver, so neither term moved. **A path that only deepens the
+catalog leaves the second term at 1; a path that only varies the armature leaves the first
+term at 1. The recommended path attacks both, ordered by cost.**
+
+### 11.2 Layer 0: scoping (near-free, do first)
+
+Scope anti-repeat history and weighting to the requesting child rather than the family
+(`UW-C108`). Family scoping alone triples the second-request repeat rate at three children
+(0.287 versus 0.089), and a child-scoped counterfactual reproduces the single-reader curve
+to within noise. The data is already indexed. This also recovers 25 to 30% of the required
+catalog for no new content. Widen or drop the 20-row window and close the
+`visibility='catalog'` recency leak at the same time.
+
+### 11.3 Layer 1: stop mandating the fingerprint (a rule change, not a build)
+
+Both raters named choice-menu semantics as the single strongest recognition channel: the
+same options, with the same meanings, in the same order, at every fork. **That sameness is
+currently required by the validator.** `choice_grammar.py:120` sets options-per-choice to
+the point constraints `(3, 3)` at 8-11 and 10-13 and `(2, 2)` at 3-5, so menus cannot
+differ in shape at exactly the bands where readers are sharpest. `templates/drafting_guide.md`
+then prescribes the same constants to the model and is spliced into every generation stage,
+which is why removing the skeleton does not remove the armature.
+
+Three cheap moves, none of which authors any content:
+
+1. Relax CG-2 from point constraints to ranges (for example `(2, 4)` at 10-13), making menu
+   shape a per-story variable rather than a constant. ADR-011 owns the constants, so this
+   is an ADR amendment with a cognitive-load rationale to re-argue, not a silent change.
+2. Parameterize the drafting guide's structural advice per request instead of shipping one
+   fixed grammar to every call, so the shared prompt stops being a fixed armature.
+3. Vary scene-function assignment and order across bindings of one skeleton, which attacks
+   the "identical function at identical position" finding directly and is the cheapest
+   answer to "the skeleton is visible".
+
+### 11.4 Layer 2: catalog depth against the demand curve (bounded capital)
+
+Author against measured demand rather than filling cells evenly: the first 6 to 12
+skeletons of each band's budget go entirely to its medium cell (section 2b.3a). Cells are
+hard partitions, so this is the only spend that reaches the binding constraint.
+
+### 11.5 Layer 3: mutation as a catalog multiplier (highest potential, one experiment away)
+
+**This is the largest unexploited lever in the system, and the machinery already exists.**
+`mutation/` ships five registered operators (M1 sibling-subtree swap, M2 ending remap,
+M3 prune/graft, M4 vary-decisions, M5 state variation), an acceptance ladder, and
+calibrated anti-clone floors. It is used today only offline, to grow the catalog.
+
+Applied per request to a matched skeleton, mutation **multiplies** the effective armature
+pool rather than adding to it: if one parent yields k accepted mutants that clear the
+anti-clone floors, a 3-skeleton cell becomes a 3k-armature cell. At k=5 that moves a
+child's first likely repeat from request 3 or 4 to beyond request 10, which is the same
+outcome as authoring 12 to 15 new skeletons per cell, for a fraction of the cost. Nothing
+else in the analysis offers a multiplier.
+
+**The open question, and it is decidable with one cheap experiment.** M1 and M2 are
+shape-preserving by design (M1 "preserves every aggregate shape feature"), so a mutant may
+be structurally distinct by the committed floors and still read as the same book. Only M4,
+particularly its `reconvergence` variant, changes global shape. So the experiment is: fill
+two mutants of the same parent and run the recognition protocol on the pair. If they read
+as different books, mutation is the highest-leverage path available. If they read as the
+same book, the floors are measuring something readers do not perceive, which is itself the
+finding, and it also invalidates using `structural_distance` as a diversity gate, since
+that metric is order-blind and cannot see the position-identity channel the raters named.
+
+Note that this experiment is cheap (two fills plus one rater pass), it reuses the existing
+protocol, and it is the single highest-information test remaining in this document.
+
+### 11.6 What not to do
+
+Replacing the skeleton architecture (sections 5 to 7) is not warranted. The exposure
+analysis showed the driver is catalog depth and history scoping, both bounded one-time
+costs, and none of the alternatives removes the drafting-guide armature or the CG-2
+mandate that Layer 1 addresses for free.
+
+### 11.7 Quality guards as diversity rises
+
+More variety means more surface for defects, so two protections should land alongside:
+the fill-vs-contract fact audit (`UW-C103`), since nothing today verifies that prose honors
+the obligations the contract declares; and the prose-craft detectors, kept advisory until
+validated out of sample (`UW-C107`).
+
+### 11.8 The two numbers that gate all of it
+
+Per-child stories per month, and the real length distribution within a band. Both are
+unmeasured, and every catalog target above is a function of them.
