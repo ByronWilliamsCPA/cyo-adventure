@@ -3363,7 +3363,7 @@
 
 <h1 id="capability-register">Capability Register<a class="headerlink" href="#capability-register" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Status</strong>: Active | <strong>Version</strong>: 1.9 | <strong>Created</strong>: 2026-07-16 | <strong>Updated</strong>: 2026-08-01
+<p><strong>Status</strong>: Active | <strong>Version</strong>: 1.10 | <strong>Created</strong>: 2026-07-16 | <strong>Updated</strong>: 2026-08-08
 (v1.4: note corrections and ruling queue from the full traceability review, see
 <a href="../traceability-review-2026-07-16/">traceability-review-2026-07-16.md</a>;
 v1.5: owner rulings applied: K18 and A16 minted, back button ratified, ADR-007
@@ -3389,7 +3389,13 @@ surfaced), G9 and S10 (K23 extensions). Rendered-stop flow, the choice grammar, 
 and POV rulings change presentation and content contracts under existing IDs (K1, K2,
 K5, K11, K13) rather than minting new ones; ADR-026 and ADR-011 section 10 are their
 decision records. K8's illustration pilot (plan wave 4) and K23/K22 delivery will flip
-statuses when shipped)</p>
+statuses when shipped;
+v1.10 (2026-08-08): <strong>K24</strong> minted for the reader-facing persistent character (build once,
+carry across every participating book), the runtime half of
+<a href="../adr/adr-028-persistent-reader-characters/">ADR-028</a>'s K3 extension, delivered on branch
+<code>feat/persistent-characters-runtime</code>. Partial: the runtime and CH-* proof exist but no catalog
+book has shipped participating yet, tracked as the pathfinder pilot under
+<a href="../unscheduled-work-register/">UW-A46</a>)</p>
 <p><strong>Delivery update (2026-07-17, M4b-d execution on branch
 claude/app-capabilities-review-wm6gt3)</strong>: the following capabilities moved to DELIVERED
 (code, tests, and E2E where noted; commits 5fd1de7 through 6f729d5): K5 (Go Back pinned),
@@ -3610,6 +3616,12 @@ vision doc (v1.2):</p>
 <td>My reading days are counted honestly and privately: active reading time captured at day grain only (nothing finer ever leaves the device), surfacing to the child as days and milestones, never minutes; guardian sees minutes per day as a literacy signal (G9); first-party only, 12-month day-grain retention default, and never used to make the app harder to put down</td>
 <td>🟡</td>
 <td><strong>Minted 2026-08-01</strong> from owner decisions D12 (total active reading time added) and the plan defaults (retention). Row wording awaits owner sign-off. <strong>Substrate delivered 2026-08-01</strong>: reading_activity_day table (CASCADE, RLS, deletion-drill), idempotent clamped flush endpoint with server-side enforcement of the guardian pause toggle, 90s-idle visibility-gated client accumulator with offline day buckets. Residuals: 12-month retention/rollover job unbuilt (documented in the model), counsel-bundle entry pending (UW-M03). Extends S10's data classification (new child-linked behavioral category; counsel-bundle retention entry per UW-M03) and is bound by K14's no-dark-patterns exclusion, which the trust copy makes testable: "nothing in the app punishes a missed day"</td>
+</tr>
+<tr>
+<td>K24</td>
+<td>Build a character once, in kid terms (a look and archetype, or trained strengths in a gamebook), and have that same character remembered and carried into every other participating book, instead of starting from nothing each time</td>
+<td>🟡</td>
+<td><strong>Minted 2026-08-08</strong> for the persistent-characters runtime (branch <code>feat/persistent-characters-runtime</code>), which delivers the reader-facing half of <a href="../adr/adr-028-persistent-reader-characters/">ADR-028</a>'s K3 extension (the validator-side authorization) end to end: character creation and picker UI (<code>frontend/src/characters/CharacterCreator.tsx</code>, <code>CharacterPicker.tsx</code>), server-derived binding with the seed snapshotted once at read start (<code>api/reading.py::_bind_active_character</code>, never a client-supplied <code>character_id</code>), progression written back idempotently on satisfying endings (<code>characters/progression.py</code>, keyed on the <code>character_book_completion</code> primary key), and the bound character surfaced in the reader (<code>Reader.tsx</code>). Partial because no catalog book has shipped participating yet: the CH-* proof and the runtime both exist, but until a book is promoted with a declared <code>accepts_character</code> envelope and published, no reader can exercise this. The pathfinder pilot (one participating skeleton, K18 rating comparison against a matched non-carrying skeleton as the GO/NO-GO basis) is <a href="../unscheduled-work-register/">UW-A46</a>'s remaining open item</td>
 </tr>
 </tbody>
 </table>
@@ -4050,7 +4062,7 @@ Added 2026-07-25 by the ADR-023 authorship pass:</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 7, 2026 05:16:52 UTC">August 7, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 8, 2026 23:59:52 UTC">August 8, 2026</span>
   </span>
 
     

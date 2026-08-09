@@ -3263,6 +3263,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#character-envelope-accepts_character" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Character envelope (accepts_character)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#data-dictionary" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4044,12 +4055,74 @@ backend (Anthropic, OpenRouter, Modal, or Ollama) fills the chosen skeleton's
 allowlist (<code>generation/allowlist.py</code>, workstream WS-C PR #170) and
 <code>generation/provider.py::build_provider</code>. Which skeleton is picked and which provider
 fills it are independent decisions within the same authoring plan.</p>
+<h2 id="character-envelope-accepts_character">Character envelope (<code>accepts_character</code>)<a class="headerlink" href="#character-envelope-accepts_character" title="Permanent link">&para;</a></h2>
+<p>A skeleton may opt into the persistent reader character introduced by
+<a href="../../planning/adr/adr-028-persistent-reader-characters/">ADR-028</a> by declaring an <code>accepts_character</code>
+field: a mapping from canonical variable name to the inclusive range the skeleton proves
+itself safe across. A character is a seeded <code>VarState</code>, carried into the book by the existing
+name-match seeding path; omitting the field means the book accepts no character at all.</p>
+<p><strong>Zero catalog skeletons declare an envelope today.</strong> <code>grep -rl accepts_character skeletons/</code>
+returns nothing: every rule described below is implemented, tested, and unreached, so no reader
+can currently be bound to a character through a catalog book. Two pilots were drafted during the
+ADR-028 workstream and both were withdrawn on 2026-08-08 (see <code>UW-A46</code>, <code>AL-129</code>, <code>AL-131</code>). Read
+this section as the contract a future participating skeleton must meet, not as a description of
+anything in the catalog now.</p>
+<p>The canonical vocabulary is four variables: <code>archetype</code> (0-6, declared by prose cells) and
+<code>might</code>/<code>wits</code>/<code>nerve</code> (0-2 each, declared by gamebook cells). <code>archetype</code> and the stats never
+appear in the same envelope: in a mechanics-driven gamebook the stat spread already is the
+archetype, so <code>archetype</code> carries identity only in prose cells that have no stats to infer it
+from. A participating prose skeleton keeps an in-story build node, gated behind a bypass node,
+that sets <code>archetype</code> from its initial <code>0</code> ("not yet chosen") to 1-6 for a first-time reader,
+while a returning reader arrives already carrying a value and is routed past it.</p>
+<p>The <code>CH-1</code> through <code>CH-8</code> rules (<code>validator/character.py</code>) prove a declared envelope safe
+before publication: vocabulary and range checks that need no state-space walk (<code>CH-1</code>, <code>CH-2</code>,
+<code>CH-5</code>, <code>CH-6</code>, <code>CH-7</code>), three rules that re-walk Layer 2 once per envelope entry state to
+prove no dead branch, no new per-state defect, and a satisfying ending remains reachable
+(<code>CH-3a</code>, <code>CH-3b</code>, <code>CH-4</code>), and a build-node cost pre-flight (<code>CH-8</code>) that rejects a skeleton
+too large to host the archetype build node's six-way branching before the walk cap would. Full
+rule definitions live in <a href="../../planning/validator-rules/"><code>docs/planning/validator-rules.md</code></a>;
+authoring guidance for declaring an envelope, the archetype/stats split, and the build node
+idiom lives in <code>.claude/skills/cyo-author/reference/skeleton-format.md</code>.</p>
+<p><strong>Gate-time cost is mechanism-driven, not fixed.</strong> Because <code>CH-3a</code>/<code>CH-3b</code>/<code>CH-4</code> re-walk the
+story once per entry state, cost scales with how many states the envelope admits: 7 for an
+<code>archetype</code>-only envelope, 3 x 3 x 3 = 27 for the canonical three-stat envelope. Measured on
+<code>skeletons/16+/the-longwinter-station.json</code> (248 nodes, 51,241 base configurations), the gate
+took 0.77s with no envelope and 49.58s with the canonical 27-state envelope, a roughly 64x
+multiplier (<code>docs/planning/unscheduled-work-register.md</code> rows UW-A47 and UW-A48). This does not
+change what <code>CH-5</code>'s 64-state cap admits; it changes how long an admissible skeleton takes to
+gate.</p>
+<p>The unit that makes this predictable is the <strong>config-walk</strong>: base configurations multiplied by the
+envelope's entry states. The skeleton's own declared-initial walk is counted separately, not folded
+into that multiplier, because it runs whether or not an envelope is declared. Cost runs at roughly
+<strong>3.5e-5 seconds per config-walk</strong> on large graphs, measured across skeletons spanning three orders
+of magnitude of walk count, and the anchor point is <code>the-longwinter-station</code>: 51,241 base
+configurations x 27 envelope states = 1,383,507 config-walks at 48.8s of envelope-attributable
+time, with the remaining 0.77s of the 49.58s whole-gate run being that baseline walk.</p>
+<p><strong>No per-run gate budget exists.</strong> An earlier revision of this section compared the anchor against a
+"~12s gate budget"; no such budget was ever set, in the roadmap, in CI config, or in any ADR, so the
+comparison has been removed rather than replaced with another number. The measured 49.58s whole-gate
+run on this skeleton (<code>UW-A47</code>, <code>UW-A48</code>) is the reference point authors should size against, and
+the authoring-facing arithmetic that follows from it, including the per-envelope table, is in
+<code>.claude/skills/cyo-author/reference/skeleton-format.md</code>.</p>
+<p><strong>The stat-gate wall (<code>L2-11</code>).</strong> A skeleton declaring a <code>might</code>/<code>wits</code>/<code>nerve</code> envelope cannot gate
+a choice condition directly on a stat threshold. <code>validator/layer2.py::_check_dead_branches</code> walks
+only the skeleton's single declared-initial baseline configuration with no <code>accepts_character</code>
+awareness, so a <code>might &gt;= 2</code> branch is unconditionally unreachable in baseline whenever the declared
+initial sits below the threshold, and <code>L2-11</code> blocks publication before any CH-* rule runs. <code>CH-3a</code>'s
+union-quantified walk does not suppress it, because <code>L2-11</code> is raised on the baseline walk
+independently. The archetype build-node idiom does not transfer, since a stat book deliberately has
+no in-story mutating node. The authoring workaround (an auxiliary non-canonical <code>resolve</code> boolean,
+reset by an unconditioned choice immediately before the gate and XOR-combined with the stat
+threshold) is documented in <code>.claude/skills/cyo-author/reference/skeleton-format.md</code>, and it carries
+a real cost rather than a cosmetic one: because a free player choice must be able to flip the
+outcome, <strong>the reader cannot perceive the stat deciding anything</strong>, which is why a 13-16 pilot built
+on the pattern was withdrawn in 2026-08. Making <code>_check_dead_branches</code> envelope-aware would remove
+the need for the workaround; that is an open validator question tracked as <code>UW-C64</code>.</p>
 <h2 id="data-dictionary">Data dictionary<a class="headerlink" href="#data-dictionary" title="Permanent link">&para;</a></h2>
 <p>Sourced from <code>src/cyo_adventure/storybook/models.py</code> (the enforced schema), with one
 exception: node <code>role</code> is a FILL-directive convention read by
 <code>generation/diagram.py</code>, not a field the structural gate enforces. Where
-<code>.claude/skills/cyo-author/reference/skeleton-format.md</code> disagrees, the model wins;
-see template feedback for the doc-correction follow-up.</p>
+<code>.claude/skills/cyo-author/reference/skeleton-format.md</code> disagrees, the model wins.</p>
 <table>
 <thead>
 <tr>
@@ -4169,7 +4242,7 @@ see template feedback for the doc-correction follow-up.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 6, 2026 23:55:16 UTC">August 6, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 8, 2026 23:59:52 UTC">August 8, 2026</span>
   </span>
 
     

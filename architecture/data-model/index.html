@@ -1468,6 +1468,39 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#character" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        character
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#character_attribute" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        character_attribute
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#character_book_completion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        character_book_completion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#reading_state" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3725,6 +3758,39 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#character" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        character
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#character_attribute" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        character_attribute
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#character_book_completion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        character_book_completion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#reading_state" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3938,7 +4004,7 @@
 
   <h1>Data Model</h1>
 
-<p>CYO Adventure has twenty-four PostgreSQL tables managed by SQLAlchemy 2 async ORM, with
+<p>CYO Adventure has twenty-nine PostgreSQL tables managed by SQLAlchemy 2 async ORM, with
 schema migrations applied as plain SQL via the Supabase CLI (<code>supabase/migrations/</code>,
 ADR-012; Alembic retired). All timestamps are <code>TIMESTAMP WITH TIME ZONE</code>. Enum-like
 columns (<code>role</code>, <code>status</code>, <code>age_band</code>) are stored as strings and validated at the
@@ -3948,7 +4014,7 @@ application boundary, which keeps schema migrations simple and avoids enum-type 
 <p>The PlantUML source above (<code>diagrams/er-diagram.puml</code>) is authoritative: it carries the
 full CHECK constraint list, ON DELETE semantics, and a note on pure-attribution foreign
 keys to <code>user.id</code> that are deliberately not drawn as edges. The Mermaid version below is a
-hand-maintained companion (<code>diagrams/er-diagram.mmd</code>) covering the same 26 tables and
+hand-maintained companion (<code>diagrams/er-diagram.mmd</code>) covering the same 29 tables and
 relationships, kept for inline rendering directly on GitHub without opening the SVG.</p>
 <pre class="mermaid"><code>erDiagram
     family ||--o{ user : "has users"
@@ -3970,6 +4036,11 @@ relationships, kept for inline rendering directly on GitHub without opening the 
     child_profile ||--o{ reading_state : "reads"
     storybook ||--o{ reading_state : "read as"
     storybook_version ||--o{ reading_state : "pins version"
+    child_profile ||--o{ character : "owns (ADR-028)"
+    character ||--o{ character_attribute : "has canonical stats"
+    character |o--o{ reading_state : "seeds (nullable; SET NULL on delete)"
+    reading_state ||--o{ character_book_completion : "writes back completion"
+    character ||--o{ character_book_completion : "credited to"
     child_profile ||--o{ completion : "completes"
     child_profile ||--o{ reading_activity_day : "reads on days"
     storybook |o--o{ story_request : "resulting storybook"
@@ -4056,8 +4127,8 @@ relationships, kept for inline rendering directly on GitHub without opening the 
 
     child_profile_personalization {
         uuid child_profile_id PK, FK "ON DELETE CASCADE"
-        varchar(32) slot_type PK "9 slot types; ck_cpp_slot_type"
-        text value_text "NULL; exactly one value column is set"
+        varchar(32) slot_type PK "12 slot types; ck_cpp_slot_type"
+        text value_text "NULL; ck_cpp_value_cardinality: character_name sets none, every other slot exactly one"
         varchar(64) value_enum "NULL"
         uuid value_profile_id FK "NULL; sibling reference, ON DELETE CASCADE"
         boolean ring1_enabled "default false; own family only"
@@ -4128,6 +4199,34 @@ relationships, kept for inline rendering directly on GitHub without opening the 
         jsonb sentinel_manifest "NULL; ADR-023 derived token manifest"
     }
 
+    character {
+        uuid id PK
+        uuid child_profile_id FK "composite FK with family_id -&gt; child_profile"
+        uuid family_id FK "denormalized for ADR-022 family_scoped RLS; composite FK with child_profile_id"
+        varchar(32) name
+        varchar(16) archetype "scout, guardian, trickster, scholar, healer, wildheart"
+        varchar(16) look "avatar_01..avatar_12"
+        boolean is_active "default true; partial UNIQUE uq_character_one_active per profile"
+        int books_completed "default 0; CHECK &gt;= 0"
+        timestamptz retired_at "NULL; CHECK not both active and retired"
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    character_attribute {
+        uuid character_id PK, FK
+        varchar(16) name PK "archetype, might, wits, or nerve"
+        int value_int "range CHECK depends on name"
+    }
+
+    character_book_completion {
+        uuid reading_state_child_profile_id PK, FK "composite FK with reading_state_storybook_id -&gt; reading_state"
+        varchar(120) reading_state_storybook_id PK, FK "composite FK with reading_state_child_profile_id -&gt; reading_state"
+        uuid character_id PK, FK
+        varchar(120) ending_id "not part of the key; a book credits once regardless of ending"
+        timestamptz created_at
+    }
+
     reading_state {
         uuid child_profile_id PK, FK
         varchar(120) storybook_id PK, FK
@@ -4143,6 +4242,8 @@ relationships, kept for inline rendering directly on GitHub without opening the 
         timestamptz last_synced_at "NULL"
         timestamptz created_at
         timestamptz updated_at
+        uuid character_id FK "NULL; ADR-028 seed character, SET NULL on delete"
+        jsonb seed_var_state "NULL; ADR-028 attribute snapshot at bind time"
     }
 
     completion {
@@ -4656,7 +4757,7 @@ the active-viewer lookup.</p>
 <tr>
 <td>slot_type</td>
 <td>VARCHAR(32) PK</td>
-<td>One of the nine closed slot types; CHECK <code>ck_cpp_slot_type</code></td>
+<td>One of the twelve closed slot types; CHECK <code>ck_cpp_slot_type</code></td>
 </tr>
 <tr>
 <td>value_text</td>
@@ -4696,12 +4797,15 @@ the active-viewer lookup.</p>
 </tbody>
 </table>
 <p>Three CHECK constraints carry the rules the API must not be the only thing
-enforcing. <code>ck_cpp_exactly_one_value</code> requires exactly one of the three value
-columns to be set, so a row can never be ambiguous about what it holds.
-<code>ck_cpp_ring2_ceiling</code> makes <code>pronoun_set</code> and <code>dedication</code> rows structurally
-incapable of carrying <code>ring2_enabled = true</code>, which means a future API that
-skipped application-layer validation still could not widen those two slots past
-the owning family. <code>ck_cpp_slot_type</code> pins the vocabulary itself;
+enforcing. <code>ck_cpp_value_cardinality</code> (renamed from <code>ck_cpp_exactly_one_value</code>
+by ADR-028) is slot-scoped: <code>character_name</code> rows must set NONE of the three
+value columns, because that slot's value lives in <code>character</code> and is
+synthesized at resolve time, and every other slot type must set exactly one, so
+a row can never be ambiguous about what it holds. <code>ck_cpp_ring2_ceiling</code> makes
+<code>pronoun_set</code>, <code>dedication</code>, and <code>character_name</code> rows structurally incapable of
+carrying <code>ring2_enabled = true</code>, which means a future API that skipped
+application-layer validation still could not widen those three slots past the
+owning family. <code>ck_cpp_slot_type</code> pins the vocabulary itself;
 <code>tests/unit/test_personalization_vocab_drift.py</code> pins both CHECK lists against
 <code>PERSONALIZATION_FIELDS</code> so the two cannot drift apart silently.</p>
 <p>Both foreign keys CASCADE: a personalization value is child-linked data and is
@@ -5046,6 +5150,160 @@ column is deferred: it holds the MinIO object key once object storage is wired
 <code>2.0</code> and validated on read with a reject-on-mismatch check; there is no upcaster,
 so a stored blob whose <code>schema_version</code> does not match is rejected rather than
 migrated (ADR-001).</p>
+<h3 id="character"><code>character</code><a class="headerlink" href="#character" title="Permanent link">&para;</a></h3>
+<p>A persistent reader character owned by one child profile (ADR-028). <code>family_id</code> is
+denormalized from the owning profile so this table can carry the ADR-022 Tier 1
+<code>family_scoped</code> RLS policy, which needs the family on the row rather than via a join; the
+composite foreign key <code>fk_character_profile_family</code> on <code>(child_profile_id, family_id)</code> to
+<code>child_profile (id, family_id)</code> is what keeps that denormalized value honest. <code>is_active</code>
+and <code>retired_at</code> are two spellings of one fact and are kept agreeing by
+<code>ck_character_not_active_and_retired</code>; a partial unique index,
+<code>uq_character_one_active</code>, allows any number of retired characters per profile but
+exactly one active one.</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>UUID PK</td>
+<td></td>
+</tr>
+<tr>
+<td>child_profile_id</td>
+<td>UUID FK</td>
+<td>child_profile.id; composite FK with family_id; <code>ON DELETE CASCADE</code></td>
+</tr>
+<tr>
+<td>family_id</td>
+<td>UUID FK</td>
+<td>child_profile.family_id; denormalized for RLS (ADR-022); composite FK with child_profile_id</td>
+</tr>
+<tr>
+<td>name</td>
+<td>VARCHAR(32)</td>
+<td>Reader-chosen display name</td>
+</tr>
+<tr>
+<td>archetype</td>
+<td>VARCHAR(16)</td>
+<td>One of <code>scout</code>, <code>guardian</code>, <code>trickster</code>, <code>scholar</code>, <code>healer</code>, <code>wildheart</code>; CHECK <code>ck_character_archetype</code></td>
+</tr>
+<tr>
+<td>look</td>
+<td>VARCHAR(16)</td>
+<td>One of the twelve selectable avatar ids, <code>avatar_01</code>..<code>avatar_12</code>; CHECK <code>ck_character_look</code></td>
+</tr>
+<tr>
+<td>is_active</td>
+<td>BOOLEAN</td>
+<td>Default true; at most one active character per profile, enforced by <code>uq_character_one_active</code></td>
+</tr>
+<tr>
+<td>books_completed</td>
+<td>INT</td>
+<td>Default 0; CHECK <code>ck_character_books_completed_non_negative</code></td>
+</tr>
+<tr>
+<td>retired_at</td>
+<td>TIMESTAMPTZ NULL</td>
+<td>NULL while active; CHECK <code>ck_character_not_active_and_retired</code> keeps this and <code>is_active</code> from both being true/non-NULL together</td>
+</tr>
+<tr>
+<td>created_at</td>
+<td>TIMESTAMPTZ</td>
+<td></td>
+</tr>
+<tr>
+<td>updated_at</td>
+<td>TIMESTAMPTZ</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="character_attribute"><code>character_attribute</code><a class="headerlink" href="#character_attribute" title="Permanent link">&para;</a></h3>
+<p>One canonical attribute value for one character (ADR-028). <code>value_bool</code> is deliberately
+absent in v1: every canonical variable is an int, because Tier-2 conditions are a
+JSONLogic subset with no string comparison and no boolean carry need has been
+demonstrated; adding it later is additive, removing a shipped column is not.</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>character_id</td>
+<td>UUID PK FK</td>
+<td>character.id; <code>ON DELETE CASCADE</code></td>
+</tr>
+<tr>
+<td>name</td>
+<td>VARCHAR(16) PK</td>
+<td>One of <code>archetype</code>, <code>might</code>, <code>wits</code>, <code>nerve</code>; CHECK <code>ck_character_attribute_name</code></td>
+</tr>
+<tr>
+<td>value_int</td>
+<td>INT</td>
+<td><code>archetype</code> ranges 0-6 (0 = not chosen, 1-6 index the archetype roster); <code>might</code>/<code>wits</code>/<code>nerve</code> each range 0-2. One combined CHECK, <code>ck_character_attribute_value_range</code>, so a row can never satisfy a range belonging to a different name</td>
+</tr>
+</tbody>
+</table>
+<h3 id="character_book_completion"><code>character_book_completion</code><a class="headerlink" href="#character_book_completion" title="Permanent link">&para;</a></h3>
+<p>One row per <code>(reading_state, character)</code> pair that has been written back (ADR-028). The
+composite primary key IS the writeback idempotency mechanism: a child who reaches a
+satisfying ending, goes offline, and replays the queued completion must not increment
+<code>character.books_completed</code> twice, and an application-side "have we done this already?"
+read is racy under concurrent sync. <code>INSERT ... ON CONFLICT DO NOTHING</code> against this key
+makes the second attempt a no-op in the database. <code>ending_id</code> is stored but deliberately
+NOT part of this key: a character is credited for a given storybook exactly once,
+forever, including across a re-read and across a later version of the same book, and a
+completion recorded at a different ending for a pair already credited is a no-op rather
+than a conflict.</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>reading_state_child_profile_id</td>
+<td>UUID PK FK</td>
+<td>reading_state.child_profile_id; composite FK <code>fk_cbc_reading_state</code> with reading_state_storybook_id; <code>ON DELETE CASCADE</code></td>
+</tr>
+<tr>
+<td>reading_state_storybook_id</td>
+<td>VARCHAR(120) PK FK</td>
+<td>reading_state.storybook_id; composite FK <code>fk_cbc_reading_state</code> with reading_state_child_profile_id; <code>ON DELETE CASCADE</code></td>
+</tr>
+<tr>
+<td>character_id</td>
+<td>UUID PK FK</td>
+<td>character.id; <code>ON DELETE CASCADE</code>; trails the composite PK, so <code>ix_character_book_completion_character_id</code> indexes it separately for the CASCADE scan</td>
+</tr>
+<tr>
+<td>ending_id</td>
+<td>VARCHAR(120)</td>
+<td>NOT part of the primary key; see above</td>
+</tr>
+<tr>
+<td>created_at</td>
+<td>TIMESTAMPTZ</td>
+<td></td>
+</tr>
+</tbody>
+</table>
 <h3 id="reading_state"><code>reading_state</code><a class="headerlink" href="#reading_state" title="Permanent link">&para;</a></h3>
 <p>Per-child, per-story reading progress. Composite primary key <code>(child_profile_id, storybook_id)</code>.
 A composite foreign key <code>(storybook_id, version)</code> references <code>storybook_version</code> to
@@ -5128,6 +5386,16 @@ prevent saving state for a version that does not exist.</p>
 <td>updated_at</td>
 <td>TIMESTAMPTZ</td>
 <td><code>onupdate=func.now()</code></td>
+</tr>
+<tr>
+<td>character_id</td>
+<td>UUID FK NULL</td>
+<td>ADR-028: character.id, the character carried into this reading session; <code>ON DELETE SET NULL</code> so deleting a character does not delete the child's reading progress in the books that character played; indexed by <code>ix_reading_state_character_id</code> since it trails no primary-key column</td>
+</tr>
+<tr>
+<td>seed_var_state</td>
+<td>JSONB NULL</td>
+<td>ADR-028: the character-attribute snapshot this reading state was seeded from, at bind time</td>
 </tr>
 </tbody>
 </table>
@@ -6017,7 +6285,7 @@ primary authorization boundary; RLS is defense-in-depth beneath it, not a replac
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 4, 2026 20:02:02 UTC">August 4, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 8, 2026 23:59:52 UTC">August 8, 2026</span>
   </span>
 
     

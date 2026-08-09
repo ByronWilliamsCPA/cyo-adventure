@@ -3760,11 +3760,27 @@ whose section 8 defines a four-phase gated path exiting Phase 0 on a recorded AD
 </tr>
 <tr>
 <td>D12</td>
-<td>Promote an 8-11 skeleton to Tier 2 for the prose pilot, rather than piloting prose at 10-13</td>
+<td>Promote an 8-11 skeleton to Tier 2 for the prose pilot, rather than piloting prose at 10-13. <strong>WITHDRAWN 2026-08-08</strong>, see the note below</td>
 <td>Owner choice, post-round-2</td>
 </tr>
 </tbody>
 </table>
+<blockquote>
+<p><strong>D12 withdrawn on 2026-08-08.</strong> The decision is kept in this table because the record of what was
+decided is the point; it is not kept because it is still in force. <code>the-storm-chasers-club</code> was
+promoted 8-11 Tier 1 -&gt; Tier 2 on branch <code>feat/persistent-characters-runtime</code> and the promotion was
+then <strong>reverted in <code>e16b4db4</code></strong>, so the book is the Tier 1 book it always was and
+<code>git diff 4fc65e5b..HEAD -- skeletons/</code> is empty. The mechanism, recorded as <code>AL-131</code>: the
+promoted envelope passed all eight CH-* rules while being behaviourally inert. Its single
+archetype-gated choice sat behind an only-inbound edge whose own effect set the value the gate
+tested, so the condition was unconditionally true across all seven entry states, and its six
+archetype-setting choices were ungated with no bypass, which
+<code>.claude/skills/cyo-author/reference/skeleton-format.md</code> forbids. The 13-16 stat pilot was
+withdrawn the same day for an independent reason (<code>AL-129</code>). Both withdrawals leave
+<code>UW-A46</code> open; the CH-observability gap they exposed is <code>UW-C73</code>. Everything below that
+assumes D12 is live, in particular step 8a and the round-2 disposition that escalated it, carries
+the same withdrawal.</p>
+</blockquote>
 <p>This spec incorporates <strong>two</strong> adversarial review passes (<code>senior-architecture-reviewer</code>; round 1
 on the draft, verdict <em>material rework needed</em>; round 2 on this spec, verdict <em>needs revision</em>).
 Every finding was independently verified against code before being folded in. <strong>Section 10 records
@@ -4271,6 +4287,18 @@ immutable character variable is a constant within a walk, and a constant adds no
 unchanged.</strong> The cost is catalog-time wall-clock: roughly 27x the single-book walk, worst case
 about 12s per participating book. Catalog validation is not on the request path, so this is
 acceptable; it is recorded as a CI budget item in section 8.</p>
+<blockquote>
+<p><strong>Correction, 2026-08-08: do not quote the 12.15s figure or treat 12s as a budget.</strong> The 12.15s
+above timed the 27 envelope walks in isolation, not a gate run, and it is an estimate of a
+per-book CI delta rather than a limit anyone set. The number that should be quoted is the
+whole-gate one, measured later on the same skeleton: <code>run_gate</code> on
+<code>skeletons/16+/the-longwinter-station.json</code> takes <strong>0.77s with no envelope and 49.58s with the
+canonical 27-state envelope</strong> (<code>UW-A47</code>, <code>UW-A48</code>), and ADR-028's "Measured cost" section deleted
+the 12.15s quote in favour of it. <strong>No per-run gate budget has ever been set</strong> for this project,
+so a downstream doc that read "roughly 12s" here and turned it into "the budget" was inventing
+one; that mistake happened, in <code>skeleton-format.md</code> and <code>story-skeletons.md</code>, and both were
+corrected on 2026-08-08. Section 8's "CI budget" bullet inherits this correction.</p>
+</blockquote>
 <p><strong>Scope of this result, precisely.</strong> It holds for a variable that is <em>seeded and never set in-book</em>,
 which is every gamebook stat. It does <strong>not</strong> hold for a prose book's <code>archetype</code>, because the build
 node sets it and a mutable variable does multiply the walk. Section 4.3.2 measures that case
@@ -4719,7 +4747,12 @@ tuning.</p>
 <li><strong>RLS.</strong> <code>character</code> and <code>character_attribute</code> are ADR-022 Tier 1 <code>family_scoped</code>. Reads happen
   after the principal is built, avoiding the pre-principal chicken-and-egg that bit <code>device_grant</code>.</li>
 <li><strong>CI budget.</strong> Catalog validation gains roughly 12s per participating book. Record the measured
-  delta; if it exceeds the CI budget, the section 5.4 lever is the response.</li>
+  delta; if it exceeds the CI budget, the section 5.4 lever is the response.
+  <strong>Corrected 2026-08-08</strong>: there is no CI budget to exceed, because none was ever set, and the
+  12s estimate has been superseded by the measured whole-gate figure (0.77s with no envelope,
+  49.58s with the canonical 27-state one). See the correction note in section 4.5. Section 5.4's
+  lever is still the right response to a gate run that is too slow; what is missing is any
+  threshold that defines "too slow", and setting one is an owner decision nobody has taken.</li>
 </ul>
 <hr />
 <h2 id="9-prerequisites-and-build-order">9. Prerequisites and build order<a class="headerlink" href="#9-prerequisites-and-build-order" title="Permanent link">&para;</a></h2>
@@ -4761,14 +4794,27 @@ field, so the field's minor bump and that validator rule land together.</p>
 </span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>6   both engines: seed persistence + seed-aware replay; closes #460
 </span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>7   frontend: creator, picker, reader seed wiring
 </span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>8a  promote 8-11/the-storm-chasers-club Tier 1 -&gt; Tier 2 (see below)
-</span><span id="__span-6-13"><a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a>8b  pilot skeletons: one 13-16 medium gamebook; the promoted 8-11 prose book
-</span><span id="__span-6-14"><a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>9   progression writeback (server-side, idempotent)
-</span><span id="__span-6-15"><a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a>10  authoring docs + cyo-author idiom
-</span><span id="__span-6-16"><a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a>--  restore Wyrmreach fixtures, then land the _l2_error_signatures choice_id fix (5.3)
+</span><span id="__span-6-13"><a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a>    [WITHDRAWN 2026-08-08: done, then reverted in e16b4db4; see the note under
+</span><span id="__span-6-14"><a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>     &quot;Why step 8a exists&quot;]
+</span><span id="__span-6-15"><a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a>8b  pilot skeletons: one 13-16 medium gamebook; the promoted 8-11 prose book
+</span><span id="__span-6-16"><a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a>9   progression writeback (server-side, idempotent)
+</span><span id="__span-6-17"><a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a>10  authoring docs + cyo-author idiom
+</span><span id="__span-6-18"><a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a>--  restore Wyrmreach fixtures, then land the _l2_error_signatures choice_id fix (5.3)
 </span></code></pre></div>
 <p><strong>Step 3 must re-quantify before it writes.</strong> <code>CH-3</code> as originally specified rejects every
 participating book; the split in section 5.1 is a prerequisite of the module, not a later
 refinement.</p>
+<blockquote>
+<p><strong>Step 8a withdrawn on 2026-08-08.</strong> It was executed and then reverted in <code>e16b4db4</code>, so
+<code>the-storm-chasers-club</code> is Tier 1 and no catalog skeleton declares <code>accepts_character</code>. The
+reasoning below explains why the step was scheduled and why this book was the recommendation; it
+is retained as the record of a decision that was made and then unmade, not as live direction. The
+reason it was unmade is not in this reasoning at all: the promoted book's archetype gate turned
+out to be a tautology that every CH-* rule passes, because the CH family proves an envelope is
+declared and survivable and never that it is observable (<code>AL-131</code>, <code>UW-C73</code>). Do not re-execute
+step 8a from this section. <code>UW-A46</code> carries whether a pilot is worth authoring at all, and that
+question now depends on the <code>L2-11</code> envelope-awareness decision in <code>UW-C64</code>.</p>
+</blockquote>
 <p><strong>Why step 8a exists (D12).</strong> All nine 8-11 skeletons declare zero variables, consistent with Tier 1,
 and <code>L1-6</code> forbids a Tier-1 book from declaring any
 (<code>layer1.py:478-490</code>); tier is <code>metadata.tier</code>.
@@ -4939,7 +4985,7 @@ round 2 can check the reconciliation rather than re-derive it.</p>
 </tr>
 <tr>
 <td>No Tier-2 8-11 book exists (<code>L1-6</code> forbids Tier-1 variables), so the 8-11 prose pilot is unscheduled work</td>
-<td><strong>Accepted, escalated, and decided (D12)</strong>: promote <code>8-11/the-storm-chasers-club</code> to Tier 2 as step 8a. Piloting prose at <code>the-glass-comet</code> was the alternative and was declined, because it would have tested the prose case at a band D3 did not name</td>
+<td><strong>Accepted, escalated, and decided (D12)</strong>: promote <code>8-11/the-storm-chasers-club</code> to Tier 2 as step 8a. Piloting prose at <code>the-glass-comet</code> was the alternative and was declined, because it would have tested the prose case at a band D3 did not name. <strong>D12 and step 8a were withdrawn on 2026-08-08</strong>: the promotion landed and was reverted in <code>e16b4db4</code> after review found its archetype gate tautological and its build choices ungated (<code>AL-131</code>, <code>UW-C73</code>), so the finding this row dispositions is once again open and <code>UW-A46</code> stays open with it</td>
 </tr>
 <tr>
 <td>The <code>choice_id</code> signature change can only add findings, but the Wyrmreach fixtures are missing and <code>validate_series</code> runs on the approve path</td>
@@ -5055,7 +5101,7 @@ ADR's implementation notes and in <code>AL-101</code>/<code>UW-C34</code>.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 7, 2026 05:16:52 UTC">August 7, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 8, 2026 23:59:52 UTC">August 8, 2026</span>
   </span>
 
     

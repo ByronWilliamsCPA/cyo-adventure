@@ -3448,8 +3448,14 @@ section 1.
 changed and which of its findings measurement falsified.
 <strong>Depends on</strong>: <a href="../adr-025-additive-storybook-schema-versioning/">ADR-025</a>. <code>accepts_character</code>
 cannot exist while the parser demands exact <code>"2.0"</code> and every model sets <code>extra="forbid"</code>.
-<strong>Amends</strong>: <a href="../adr-023-story-personalization-slots/">ADR-023</a>, by the in-place amendment dated
-2026-08-06 in that document, which adds the <code>character_name</code> slot.
+<strong>Amends</strong>: <a href="../adr-023-story-personalization-slots/">ADR-023</a>, by its <strong>section 11, "Amendment
+(2026-08-07): the <code>character_name</code> slot"</strong>, which adds the <code>character_name</code> slot as a twelfth
+entry in that ADR's closed taxonomy. That section is the authority. ADR-023 also carries an
+earlier "Amendment (2026-08-06)" block on the same slot, appended after its body and therefore
+sitting later in the file; it was <strong>superseded on 2026-08-07</strong> and contradicts the shipped shape
+on three points (the slot sets no value column, <code>ck_cpp_slot_type</code> and
+<code>ck_cpp_value_cardinality</code> both changed, and the toggle is the only clear). Do not implement
+from it.
 <strong>Cross-sign</strong>: both player engines and the conformance corpus, once seeding becomes a runtime path.</p>
 </blockquote>
 <h2 id="tldr">TL;DR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h2>
@@ -3627,8 +3633,18 @@ recorded OD-5: as an explicit posture rather than an unstated assumption.</p>
 <h3 id="measured-cost">Measured cost<a class="headerlink" href="#measured-cost" title="Permanent link">&para;</a></h3>
 <p>An immutable character variable is a <strong>constant within a walk</strong>, and a constant adds no distinct
 <code>ConfigKey</code>s. Measured on the worst book in the catalog, <code>the-longwinter-station</code>: 51,241 configurations at
-baseline, and <strong>51,241 in every one of the 27 envelope states</strong>, min equal to max, 12.15s for all 27 walks.
+baseline, and <strong>51,241 in every one of the 27 envelope states</strong>, min equal to max.
 The envelope multiplies the number of walks, not the size of each. <strong>The 100,000 cap is untouched.</strong></p>
+<p>Wall-clock is a separate question from the cap, and only one figure should be quoted for it: the
+whole-gate one. On that same skeleton (<code>skeletons/16+/the-longwinter-station.json</code>, 248 nodes,
+51,241 base configurations, the canonical 27-state <code>might</code>/<code>wits</code>/<code>nerve</code> envelope), <code>run_gate</code>
+takes <strong>0.77s with no envelope declared and 49.58s with it</strong>, a roughly 64x multiplier. That is the
+number a guardian-reachable route actually holds, and it is the measurement both
+<a href="../../unscheduled-work-register/">UW-A47</a> (bounded gate concurrency, shipped) and
+<a href="../../unscheduled-work-register/">UW-A48</a> (memoise the per-entry-state walk, open) rest on. Per
+config-walk the constant is ~3.5e-5 s, stable across three books of very different sizes; the
+authoring-facing arithmetic that follows from it is written out in
+<code>.claude/skills/cyo-author/reference/skeleton-format.md</code>.</p>
 <p>That result holds only for a variable seeded and never set in-book, which is every gamebook stat. It does
 <strong>not</strong> hold for a prose book's <code>archetype</code>, because the build node sets it:</p>
 <table>
@@ -3657,8 +3673,8 @@ The envelope multiplies the number of walks, not the size of each. <strong>The 1
 </tr>
 </tbody>
 </table>
-<p>A book whose base closure exceeds roughly 100,000 / 6 = <strong>16,600 configurations cannot host a six-way build
-node at all</strong>. <code>CH-8</code> enforces this as a pre-flight check rather than letting authors discover it as an
+<p>A book whose base closure exceeds 100,000 // 6 = <strong>16,666 configurations cannot host a six-way build
+node at all</strong> (the exact threshold <code>validator/character.py</code> enforces). <code>CH-8</code> enforces this as a pre-flight check rather than letting authors discover it as an
 opaque <code>L2-12</code>.</p>
 <h3 id="technical-debt-accepted">Technical debt accepted<a class="headerlink" href="#technical-debt-accepted" title="Permanent link">&para;</a></h3>
 <p><code>_l2_error_signatures</code> in <code>validator/series.py</code> keys on <code>rule_id|node_id</code>, so two distinct dead branches on
@@ -3680,7 +3696,12 @@ block approval of an already-published series at runtime.</p>
 (<code>player/engine.py</code>; <code>frontend/src/player/engine.ts</code> mirrors it). <code>envelope_states</code> enumerates the
 <strong>envelope</strong>. Those are two different objects, and CH-2's equality is the only thing forcing them to be
 the same set. The clamp target and the walked set coincide by construction, not by coincidence.</p>
-<p>Eight conditions hold the guarantee up. It fails silently without any one of them.</p>
+<p>Fourteen conditions hold the guarantee up. It fails silently without any one of them. The first eight are
+validator-side, proven once at gate time against a skeleton document. The persistent-characters runtime
+(branch <code>feat/persistent-characters-runtime</code>) adds six more that hold at read time, once a character stops
+being only a validated envelope and starts being an actual seed a real read binds to: the walk proves every
+<em>declared</em> state safe, and rows 9-14 are what keep a real reader's actual entry state inside that proven set
+rather than letting a runtime shortcut manufacture one the walk never saw.</p>
 <table>
 <thead>
 <tr>
@@ -3730,33 +3751,120 @@ the same set. The clamp target and the walked set coincide by construction, not 
 <td>CH-3b's per-state signature includes the finding <strong>message</strong></td>
 <td>The message embeds the variable state; without it two dead ends on one node at two different states collapse into a single signature, and a genuinely new per-state defect is suppressed as an already-known baseline.</td>
 </tr>
+<tr>
+<td>9</td>
+<td>The binding is <strong>server-derived</strong>; no request model accepts <code>character_id</code> (<code>api/schemas.py</code>; resolved by <code>_bind_active_character</code> in <code>api/reading.py</code>)</td>
+<td>If a client could name the character to bind, a request could seed a read with a character CH-* never proved belongs to that reader, walked envelope or not; the guarantee is about the reader who owns this read, not about some character somewhere that happens to validate.</td>
+</tr>
+<tr>
+<td>10</td>
+<td>The seed is <strong>snapshotted at read start and never recomputed</strong> (<code>api/reading.py</code>: <code>_bind_active_character</code> computes the seed once, into <code>reading_state.seed_var_state</code>, at row creation)</td>
+<td>A seed recomputed from the character's live attributes on every read would let a state proven walked at bind time become an unwalked one later, if the character's attributes changed in between (for example, a concurrent completion in another book writing back new stats); the walk says nothing about a seed it never saw.</td>
+</tr>
+<tr>
+<td>11</td>
+<td><strong>Whenever replay runs</strong>, it validates against the <strong>stored</strong> seed, because <code>validate_reading_state</code>'s <code>seed_var_state</code> parameter (<code>player/replay.py</code>) is <strong>required</strong>, with no default, so no call site can omit it. The guarantee is conditional, and the condition is load-bearing: replay runs only on a save that carries a <code>choice_path</code>, and the shipped web client never sends one (<code>frontend/src/offline/sync.ts::toPutPayload</code> builds the PUT body field by field and omits it), so on every save today's client makes, this row is closing a channel nothing currently walks through</td>
+<td>An omittable parameter lets a call site silently fall back to an unseeded replay even for a seeded read, reopening the exact tampering channel the parameter exists to close: a client submitting a <code>choice_path</code> that replays cleanly from a forged declared-initial state instead of the real, server-held seed. The row stays at full strength despite being unexercised, because the API accepts <code>choice_path</code> from <strong>any</strong> client, not only the shipped one, and because the offline queue, a native client, or a future replay-based conflict resolution would each start sending one without touching this parameter. Read it as a guarantee about what happens if replay runs, never as evidence that the replay baseline is enforced on real traffic; it is not, and the accepted residual below is the direct consequence.</td>
+</tr>
+<tr>
+<td>12</td>
+<td>Writeback idempotency is the <code>character_book_completion</code> <strong>primary key</strong> (<code>db/models.py::CharacterBookCompletion</code>), enforced by <code>INSERT ... ON CONFLICT DO NOTHING</code>, not an application-level check</td>
+<td>A "have we recorded this already?" read-then-write in application code is racy under concurrent offline-sync retries; double-crediting a satisfying-ending completion is a data-integrity failure the walked-state guarantee has no opinion on, but the reader-facing progression feature depends on exactly as much.</td>
+</tr>
+<tr>
+<td>13</td>
+<td>The attribute update is computed <strong>in-statement</strong> with <code>LEAST</code>/<code>GREATEST</code> (<code>characters/progression.py</code>: <code>SET value_int = LEAST(:canonical_max, GREATEST(value_int, :exit_value))</code>)</td>
+<td>Computing the new value in Python (read, clamp, write) is a read-modify-write race across concurrent completions from different devices or books: one writer's update can be lost, and neither the monotonic floor nor the vocabulary ceiling is enforced against the value actually committed, silently producing an attribute CH-2's canonical range was never proved to admit.</td>
+</tr>
+<tr>
+<td>14</td>
+<td><code>character.family_id</code> is backed by a <strong>composite FK</strong> (<code>fk_character_profile_family</code> on <code>(child_profile_id, family_id)</code>) to <code>child_profile (id, family_id)</code> (<code>db/models.py::Character</code>), which is what makes the Tier 1 <code>family_scoped</code> RLS policy (ADR-022) sound</td>
+<td><code>family_id</code> is denormalized onto the row so the policy can read it without a join. Without the composite FK tying it to the same profile's own <code>family_id</code>, an insert or update could set a character's <code>family_id</code> inconsistent with its owning profile's real family, and the RLS policy would then scope access by a value that is claimed rather than proven, defeating the isolation ADR-022 exists to give this table.</td>
+</tr>
 </tbody>
 </table>
+<h4 id="accepted-residual-the-bound-seed-can-disagree-with-the-seed-the-client-opened-from-and-nothing-reports-it">Accepted residual: the bound seed can disagree with the seed the client opened from, and nothing reports it<a class="headerlink" href="#accepted-residual-the-bound-seed-can-disagree-with-the-seed-the-client-opened-from-and-nothing-reports-it" title="Permanent link">&para;</a></h4>
+<p>Rows 9 to 14 are conditions, not a claim that the chain is currently airtight end to end. One gap is
+known, measured, and accepted rather than fixed, and it belongs here beside the table rather than in
+a follow-on footnote, because it is what row 11's conditional wording is pointing at.</p>
+<p>The active character can change between the client's seed fetch and this branch's own
+<code>_bind_active_character</code> call on the create path: a guardian or a second tab switches the active
+character in that window. The row is then created carrying character B's seed while the <code>var_state</code>
+the client sends was produced from character A's. <strong>Nothing rejects it</strong>, for exactly row 11's
+reason: rejection would require a replay proof, replay needs a <code>choice_path</code>, and the shipped client
+sends none. A first save that omits <code>choice_path</code> is checked only against the structural floor, so it
+can persist a <code>var_state</code> the bound seed could never have produced.</p>
+<p>The consequence is user-visible, not merely theoretical. On the read's next resume, <code>canGoBack</code> fails
+closed against the mismatched seed, so <strong>Go back silently disappears for the rest of that read</strong>, and
+RESTART reopens from the new character's numbers. A related residual covers a fresh read that cannot
+reach the network or is served a service-worker-cached <code>characters</code> response with no <code>seed_var_state</code>
+at all: it still opens from declared initials.</p>
+<p><strong>This residual has a home</strong>: <a href="../../unscheduled-work-register/">UW-A49</a>, Phase 5. It is tracked
+rather than merely narrated, per <code>adr/README.md</code>'s rule that every consequent of an Accepted ADR
+carries a register row, an issue, or a phase before merge. That row names the three candidate
+fixes and the trigger that forces the decision (anything that starts sending <code>choice_path</code>).</p>
+<p><code>api/reading.py</code> carries the full <code>#EDGE</code> marker, including its own judgement that calling this
+"latent" undersells it, and that marker is the authority. Two things follow for anyone extending this
+design. Anything that starts sending <code>choice_path</code> (a native client, the offline queue, replay-based
+conflict resolution) converts this residual from a degraded Go-back button into a permanently wedged
+read, because every later save then replays from the stored seed, disagrees, and 422s. And rows 10
+and 11 should be read as protecting the seed <strong>once bound</strong>, never as proving the bound seed is the
+one the reader's client actually started from.</p>
 <p>CH-2 also requires the declared range to lie inside the canonical vocabulary range. That check is <strong>not</strong>
-one of the eight, and recording why matters, because it reads like one. A book declaring <code>archetype: 0..3</code>
+one of the fourteen, and recording why matters, because it reads like one. A book declaring <code>archetype: 0..3</code>
 walks exactly <code>0..3</code>, and a reader carrying <code>5</code> is clamped to <code>3</code>, so the reader lands in a proven state
 either way; narrowing is safe by the same mechanism row 1 already guarantees. Containment earns its place
 on two other grounds. It restores CH-8's precondition, since CH-8 derives arity from
 <code>len(ARCHETYPE_ROSTER)</code> rather than from the document, and a wider-than-canonical declaration would
 silently under-measure the real configuration count. And it keeps the proven state space inside the
-vocabulary, which the unbuilt character writer path assumes when it projects a walked value back onto a
+vocabulary, which the character writer path assumes when it projects a walked value back onto a
 persistent character.</p>
 <h2 id="follow-on-work">Follow-on work<a class="headerlink" href="#follow-on-work" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>The character CRUD/API surface, the seed projection, and the <code>character_name</code> personalization slot are
-  unbuilt.</strong> This ADR authorizes the vocabulary, the <code>accepts_character</code> envelope, and the CH-* validator
-  proof; it does not build the database row, the seed projection into <code>VarState</code>, or the ADR-023 amendment's
-  <code>character_name</code> slot, all of which are scheduled as later work in the same authoring plan that
-  implements the CH-* rules. Given a register home: <a href="../../unscheduled-work-register/">UW-A46</a>, Phase 5.</li>
-<li><strong>The <code>_l2_error_signatures</code> tightening named above in "Technical debt accepted" is intentionally left
+<li><strong>Written and passing its tests on an unmerged branch, with one accepted residual.</strong> The character
+  CRUD/API surface, the seed projection into <code>VarState</code>, the read-time binding and replay conditions
+  (rows 9-11 above), the progression writeback (rows 12-13), the <code>character.family_id</code> composite FK
+  (row 14), and the ADR-023 amendment's <code>character_name</code> personalization slot are all written on branch
+  <code>feat/persistent-characters-runtime</code>; the character creator and picker UI, and the reader-surfaced
+  bound character, are the frontend half of the same branch. Two qualifications are part of the status
+  rather than caveats on it. The branch is <strong>unmerged and unpushed</strong>, so nothing here is on <code>main</code> and
+  no citation above proves anything yet. And the chain ships with the <strong>accepted residual</strong> recorded
+  under "Integrity posture" above: the bound seed can disagree with the seed the client opened from,
+  and the mismatch degrades Go back for the rest of that read instead of being reported. That
+  residual is scheduled as <a href="../../unscheduled-work-register/">UW-A49</a> (Phase 5), which also records
+  the trigger that escalates it from a degraded button to a permanently wedged read.
+  <a href="../../unscheduled-work-register/">UW-A46</a> does <strong>not</strong> cover any of this work and is not closed by
+  this branch; see the next bullet for what that row actually tracks.</li>
+<li><strong>Still unbuilt, and what <code>UW-A46</code> tracks</strong>: the pathfinder pilot skeleton itself, a real
+  <code>accepts_character</code> book in a 13-16 gamebook cell plus the empirical A/B measurement against a matched
+  non-carrying skeleton. A 13-16 stat-envelope pilot was drafted during this workstream and <strong>withdrawn
+  on 2026-08-08</strong> rather than shipped: with <code>_check_dead_branches</code> envelope-blind, every stat gate had to
+  be faked through the workaround in <code>AL-129</code>, which leaves the reader unable to perceive the choices the
+  stats were supposed to drive. <a href="../../unscheduled-work-register/">UW-A46</a> therefore stays open, and
+  whether the pilot is worth authoring at all turns on the <code>L2-11</code> question that
+  <a href="../../unscheduled-work-register/">UW-C64</a> now carries.</li>
+</ul>
+<p>A second pilot was withdrawn the same day. <code>the-storm-chasers-club</code> (8-11, archetype envelope 0-6) was
+  promoted to Tier 2 on this branch and the promotion was <strong>withdrawn on 2026-08-08</strong> after review, so the
+  book reverts to the Tier 1 book it already was. Its envelope passed all eight CH-* rules while doing
+  nothing a reader could perceive: the one archetype-gated choice sat behind an only-inbound edge whose
+  effect set the very value the gate tested, making the condition unconditionally true for all seven entry
+  states, and its six archetype-setting choices were ungated with no bypass, which this branch's own
+  <code>skeleton-format.md</code> forbids. See <code>AL-131</code>. <strong>The consequence for this ADR is that the runtime ships with
+  zero participating catalog books.</strong> Everything in the bullet above is enforced, tested, and unreached: no
+  skeleton in the catalog declares <code>accepts_character</code>, so no reader can yet be bound to a character. That
+  is deliberate, and it is the same posture PR <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/pull/636">#636</a>
+  shipped the static half under.
+- <strong>The <code>_l2_error_signatures</code> tightening named above in "Technical debt accepted" is intentionally left
   without its own register row here.</strong> It is gated behind restoring the four skipped Wyrmreach trilogy
   fixtures, a precondition not yet met, and this plan's own bookkeeping step (register homes for work
   discovered while landing the CH-* rules) runs after those rules ship, when the interaction is concretely
-  known rather than anticipated.</li>
-</ul>
+  known rather than anticipated.</p>
 <h2 id="related">Related<a class="headerlink" href="#related" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="../adr-023-story-personalization-slots/">ADR-023</a>, amended 2026-08-06 for the <code>character_name</code> slot</li>
+<li><a href="../adr-023-story-personalization-slots/">ADR-023</a>, amended for the <code>character_name</code> slot by its
+  section 11 dated 2026-08-07 (the authority); its earlier 2026-08-06 block on the same slot is
+  superseded</li>
 <li><a href="../adr-025-additive-storybook-schema-versioning/">ADR-025</a>, the hard prerequisite</li>
 <li><a href="../../pathfinder-structure-exploration/">pathfinder-structure-exploration.md</a>, SQ-22 / OG5</li>
 <li><a href="../../capability-register/">capability-register.md</a>, K3 and K18</li>
@@ -3783,7 +3891,7 @@ persistent character.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 7, 2026 05:16:52 UTC">August 7, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 8, 2026 23:59:52 UTC">August 8, 2026</span>
   </span>
 
     

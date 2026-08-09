@@ -3414,6 +3414,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#11-amendment-2026-08-07-the-character_name-slot-adr-028-persistent-characters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Amendment (2026-08-07): the character_name slot (ADR-028 persistent characters)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3642,10 +3653,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#amendment-2026-08-06-the-character_name-personalization-slot" class="md-nav__link">
+  <a href="#amendment-2026-08-06-the-character_name-personalization-slot-superseded-2026-08-07" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Amendment (2026-08-06): the character_name personalization slot
+        Amendment (2026-08-06): the character_name personalization slot [SUPERSEDED 2026-08-07]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#follow-on-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Follow-on work
       
     </span>
   </a>
@@ -4253,6 +4275,45 @@ is part of what they are approving. That is different from a <strong>kid-facing<
 unresolved marker is a straightforward visual defect and must never appear. The rule is therefore
 not "sentinels are always safe to display" but "sentinels degrade safely to correct prose
 everywhere, and are shown deliberately in review and never in the reader".</p>
+<h3 id="11-amendment-2026-08-07-the-character_name-slot-adr-028-persistent-characters">11. Amendment (2026-08-07): the <code>character_name</code> slot (ADR-028 persistent characters)<a class="headerlink" href="#11-amendment-2026-08-07-the-character_name-slot-adr-028-persistent-characters" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p><strong>This section is the authority on <code>character_name</code>.</strong> It supersedes the earlier
+"Amendment (2026-08-06): the <code>character_name</code> personalization slot" section near the end of this
+document, which describes a shape the implementation did not take. ADR-028's <code>**Amends**</code> header
+points here.</p>
+</blockquote>
+<p>ADR-028 introduces persistent reader characters (the <code>character</code> table). This amendment adds a
+twelfth entry, <code>character_name</code>, to the closed taxonomy in section 7, with a structural property
+none of the other eleven share.</p>
+<ul>
+<li><strong>Slot</strong>: <code>character_name</code>, the persistent character's chosen name.</li>
+<li><strong>Ring ceiling</strong>: ring 1 only, permanently, not a default open to a future ring-2 raise the way
+  rows 3 and 4b were. A character name is unreviewed child free text (see the next bullet), and
+  the three-ring boundary (ADR-018) keeps unreviewed child free text inside ring 1 only,
+  categorically.</li>
+<li><strong><code>REAL_PERSON_PERSONALIZATION_FIELDS</code> membership</strong>: included, alongside the protagonist first
+  name and the sibling name, because nothing stops a child naming a character after themselves or
+  a real person.</li>
+<li><strong>Guardian toggle</strong>: defaults off, like every other slot in this ADR. Enabling it never widens
+  ring reach, since there is no ring-2 path for this slot to widen into.</li>
+<li><strong>Validation</strong>: at set time, <code>PersonalizationSlotBody</code> and the database's
+  <code>ck_cpp_value_cardinality</code> CHECK reject any value field on this slot type; at render time, an
+  absent active character resolves to silent omission, the same generic-default fallback every
+  other slot already uses, never a placeholder.</li>
+<li><strong>The property that sets it apart, and its three consequences.</strong> Every other slot's value lives
+  in the <code>child_profile_personalization</code> row itself; this slot's value is synthesized at render
+  time from the profile's active <code>character.name</code>, so its row carries only the consent toggle.
+  Three consequences follow directly.</li>
+<li>Turning the toggle off is the only way to clear the slot; blanking the character's name is
+     not a clear, since the child can simply rename their character and the slot repopulates.</li>
+<li>Purging a profile's personalization must delete from <code>character</code> as well as from
+     <code>child_profile_personalization</code>, or the purge silently leaves the child's chosen name in the
+     database while reporting the slot purged (<code>PURGE_TARGETS</code>,
+     <code>purge_profile_personalization()</code>, <code>src/cyo_adventure/api/personalization.py</code>).</li>
+<li>The exactly-one-value constraint (formerly <code>ck_cpp_exactly_one_value</code>, renamed
+     <code>ck_cpp_value_cardinality</code>) had to become slot-scoped rather than a flat count of one, because
+     this is the first slot type for which zero values is the correct shape, not a defect.</li>
+</ul>
 <h2 id="options-considered">Options Considered<a class="headerlink" href="#options-considered" title="Permanent link">&para;</a></h2>
 <h3 id="option-1-client-side-render-time-substitution-over-stored-sentinels">Option 1: Client-side render-time substitution over stored sentinels ✓<a class="headerlink" href="#option-1-client-side-render-time-substitution-over-stored-sentinels" title="Permanent link">&para;</a></h3>
 <p>Chosen. The server holds and serves one generic artifact; the client resolves a small values
@@ -4725,7 +4786,29 @@ out of.</p>
   exists. <strong>Fixed in this same change</strong>, since the table was already being edited to add ADR-023;
   the row records Accepted / 2026-07-20, matching that file's own status line.</li>
 </ul>
-<h2 id="amendment-2026-08-06-the-character_name-personalization-slot">Amendment (2026-08-06): the <code>character_name</code> personalization slot<a class="headerlink" href="#amendment-2026-08-06-the-character_name-personalization-slot" title="Permanent link">&para;</a></h2>
+<h2 id="amendment-2026-08-06-the-character_name-personalization-slot-superseded-2026-08-07">Amendment (2026-08-06): the <code>character_name</code> personalization slot [SUPERSEDED 2026-08-07]<a class="headerlink" href="#amendment-2026-08-06-the-character_name-personalization-slot-superseded-2026-08-07" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p><strong>Superseded on 2026-08-07 by section 11, "Amendment (2026-08-07): the <code>character_name</code> slot",
+above.</strong>
+Kept for the record; do not implement from it. It sits later in this file than the amendment that
+replaces it purely because it was appended after the body, which is exactly why this banner is
+here. Three of its claims were falsified once the slot was actually built, and section 11 is the
+authority on all three:</p>
+<ul>
+<li><strong>Shape.</strong> This section calls the slot "free text" alongside <code>pet_name</code>. It is not: the
+  <code>character_name</code> row carries <strong>no</strong> value column at all, and
+  <code>ck_cpp_value_cardinality</code> rejects any value field set on this slot type. The value is
+  synthesized at render time from the active <code>character.name</code>.</li>
+<li><strong>DB CHECK impact.</strong> This section says "no DB CHECK migration on <code>slot_type</code>, no change to
+  three-shape validation". Both happened: <code>ck_cpp_slot_type</code> moved to a closed 12-value
+  vocabulary, and the old flat <code>ck_cpp_exactly_one_value</code> had to be renamed and made
+  slot-scoped as <code>ck_cpp_value_cardinality</code>, because this is the first slot for which zero
+  values is the correct shape.</li>
+<li><strong>Clearing semantics.</strong> This section says the guardian "can clear it". Turning the toggle off
+  is the <em>only</em> way to clear it; blanking the character's name is not a clear, since the child
+  can rename the character and the slot repopulates.</li>
+</ul>
+</blockquote>
 <p><a href="../adr-028-persistent-reader-characters/">ADR-028</a> adds a persistent reader character. Its name must be
 able to render in prose, which needs a personalization slot. Personalization is keyed
 <code>(child_profile_id, slot_type)</code> with one value per child forever, which does not fit a per-character mutable
@@ -4787,6 +4870,35 @@ prose, so it is an enum column with no compliance surface. Prose rendering of ap
 amendment.</p>
 <p><strong>Not implemented by this amendment.</strong> The slot ships with the character API, not with the validator work in
 ADR-028 steps 2 and 3. This section records the ruling so the implementation has an authority to cite.</p>
+<h2 id="follow-on-work">Follow-on work<a class="headerlink" href="#follow-on-work" title="Permanent link">&para;</a></h2>
+<p>Required by <code>adr/README.md</code> for any ADR materially amended after 2026-07-28. Section 11's
+<code>character_name</code> amendment (2026-08-07) is such an amendment, and this section is where its
+consequents get a home. Every item cites a register row or a phase; nothing here is left as
+"future work".</p>
+<ul>
+<li><strong>Set-time validation on the slot's source column is ordered wrong</strong>:
+  <a href="../../unscheduled-work-register/">UW-C69</a> (Phase 5). <code>CharacterName</code> (<code>api/schemas.py</code>) applies
+  its <code>max_length=32</code> bound <strong>before</strong> <code>AfterValidator(_nfc)</code> normalizes, while
+  <code>db/models.py</code>'s <code>name</code> column is <code>VARCHAR(32)</code>. Because NFC can change a codepoint count, an
+  input that clears the bound can still overflow the column, surfacing as a database error rather
+  than the 422 that section 11's "Validation" bullet promises. This is the one open defect the
+  amendment itself creates.</li>
+<li><strong>The amendment's other three clauses are implemented, not follow-ons.</strong> Recorded here so a
+  future reader does not re-open them: the ring-1 ceiling and the <code>REAL_PERSON_*</code> membership are
+  enforced in <code>storybook/theme_contract.py</code> and the <code>ck_cpp_ring2_ceiling</code> CHECK; the zero-value
+  shape is enforced by <code>PersonalizationSlotBody</code> and <code>ck_cpp_value_cardinality</code>; and the purge
+  coupling (consequence 2) is <code>PURGE_TARGETS[character_name] = "character"</code> plus
+  <code>purge_profile_personalization()</code> in <code>api/personalization.py</code>, covered by
+  <code>tests/integration/test_personalization_purge.py</code> and
+  <code>tests/unit/test_personalization_purge_targets.py</code>.</li>
+<li><strong>Prose rendering of a character's appearance is out of scope, not deferred work.</strong> The
+  2026-08-06 block already ruled <code>look</code> is an avatar enum with no prose substitution and therefore
+  no compliance surface. Adding one would be a new amendment with its own decision, so it gets no
+  register row here; recording the boundary is what stops it drifting into an untracked assumption.</li>
+<li><strong>Standing, not new</strong>: the OD-5 reassessment in "Review Schedule" above re-opens at every
+  deployment-phase boundary, and <a href="../../unscheduled-work-register/">UW-H03</a> carries the <code>G2</code> counsel
+  gate. Neither is created by the 2026-08-07 amendment; both still govern it.</li>
+</ul>
 <h2 id="related">Related<a class="headerlink" href="#related" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="../../story-personalization-implementation-plan/">Implementation plan</a>: phasing, guard points,
@@ -4846,7 +4958,7 @@ ADR-028 steps 2 and 3. This section records the ruling so the implementation has
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 7, 2026 05:16:52 UTC">August 7, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 8, 2026 23:59:52 UTC">August 8, 2026</span>
   </span>
 
     
