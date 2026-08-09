@@ -453,3 +453,70 @@ describe('reader machine RESTART on a continuation read (issue #460)', () => {
     }
   })
 })
+
+describe('reader machine bookmarks (SAVE_BOOKMARK/LOAD_BOOKMARK/DELETE_BOOKMARK)', () => {
+  it('SAVE_BOOKMARK adds a slot without changing the live position', () => {
+    const actor = createActor(readerMachine, { input: { story: lantern } })
+    actor.start()
+    actor.send({ type: 'CHOOSE', choiceId: 'c_take_lantern' })
+    const before = actor.getSnapshot().context.reading
+    actor.send({ type: 'SAVE_BOOKMARK', label: 'At the fork' })
+    const after = actor.getSnapshot().context.reading
+    expect(after.current_node).toBe(before.current_node)
+    expect(Object.keys(after.save_slots)).toHaveLength(1)
+    const saved = Object.values(after.save_slots)[0] as { label: string; current_node: string }
+    expect(saved.label).toBe('At the fork')
+    expect(saved.current_node).toBe(before.current_node)
+  })
+
+  it('LOAD_BOOKMARK moves the live position back to a saved spot', () => {
+    const actor = createActor(readerMachine, { input: { story: lantern } })
+    actor.start()
+    actor.send({ type: 'CHOOSE', choiceId: 'c_take_lantern' })
+    actor.send({ type: 'SAVE_BOOKMARK', label: 'At the fork' })
+    const slotId = Object.keys(actor.getSnapshot().context.reading.save_slots)[0]
+    actor.send({ type: 'CHOOSE', choiceId: 'c_bright_tunnel' })
+    expect(actor.getSnapshot().value).toBe('ended')
+
+    actor.send({ type: 'LOAD_BOOKMARK', slotId })
+
+    expect(actor.getSnapshot().value).toBe('reading')
+    expect(actor.getSnapshot().context.reading.current_node).toBe('n_cave_fork')
+    // The bookmark itself survives being loaded from.
+    expect(Object.keys(actor.getSnapshot().context.reading.save_slots)).toContain(slotId)
+  })
+
+  it('LOAD_BOOKMARK with an unknown slot id is a no-op', () => {
+    const actor = createActor(readerMachine, { input: { story: lantern } })
+    actor.start()
+    actor.send({ type: 'CHOOSE', choiceId: 'c_take_lantern' })
+    const before = actor.getSnapshot().context.reading
+    actor.send({ type: 'LOAD_BOOKMARK', slotId: 'does-not-exist' })
+    expect(actor.getSnapshot().context.reading).toEqual(before)
+  })
+
+  it('DELETE_BOOKMARK removes a saved slot', () => {
+    const actor = createActor(readerMachine, { input: { story: lantern } })
+    actor.start()
+    actor.send({ type: 'SAVE_BOOKMARK', label: 'Start' })
+    const slotId = Object.keys(actor.getSnapshot().context.reading.save_slots)[0]
+    actor.send({ type: 'DELETE_BOOKMARK', slotId })
+    expect(actor.getSnapshot().context.reading.save_slots).toEqual({})
+  })
+
+  it('SAVE_BOOKMARK and DELETE_BOOKMARK also work from the ended state', () => {
+    const actor = createActor(readerMachine, { input: { story: lantern } })
+    actor.start()
+    actor.send({ type: 'CHOOSE', choiceId: 'c_ignore_lantern' })
+    actor.send({ type: 'CHOOSE', choiceId: 'c_bright_tunnel' })
+    expect(actor.getSnapshot().value).toBe('ended')
+
+    actor.send({ type: 'SAVE_BOOKMARK', label: 'The end' })
+    expect(actor.getSnapshot().value).toBe('ended')
+    const slotId = Object.keys(actor.getSnapshot().context.reading.save_slots)[0]
+
+    actor.send({ type: 'DELETE_BOOKMARK', slotId })
+    expect(actor.getSnapshot().value).toBe('ended')
+    expect(actor.getSnapshot().context.reading.save_slots).toEqual({})
+  })
+})

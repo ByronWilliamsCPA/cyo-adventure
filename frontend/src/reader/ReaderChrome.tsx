@@ -83,6 +83,13 @@ export interface ReaderChromeProps {
    */
   flag?: ReactNode
   /**
+   * Bookmarks affordance (Phase 4b). Same optional-ReactNode shape as
+   * `flag`, for the same reason: `Reader.tsx` (via `BookmarksButton`) owns
+   * its own open/save/load/delete state, and ReaderChrome only needs a slot
+   * to render it in.
+   */
+  bookmarks?: ReactNode
+  /**
    * Profile id for per-profile sound-mute persistence (W4.2). Optional and
    * not threaded through by any caller today: `Reader.tsx` does not pass it
    * (out of scope for this change; see `soundPreference.ts`'s doc comment).
@@ -118,6 +125,7 @@ export function ReaderChrome({
   fontControl,
   readAloud,
   flag,
+  bookmarks,
   profileId,
 }: ReaderChromeProps) {
   const online = useOnlineStatus()
@@ -263,6 +271,7 @@ export function ReaderChrome({
   return (
     <header className="reader-chrome" ref={headerRef}>
       {back}
+      {bookmarks}
       {flag}
       <button
         type="button"

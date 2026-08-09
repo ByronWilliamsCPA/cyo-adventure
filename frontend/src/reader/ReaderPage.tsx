@@ -513,9 +513,12 @@ export function ReaderPage({
         var_state: reading.var_state,
         path: reading.path,
         visit_set: reading.visit_set,
+        // save_slots is now live (bookmarks, player/engine.ts's
+        // saveBookmark/deleteBookmark/loadBookmark): included here so a
+        // slot-only change (save or delete a bookmark with no other player
+        // state change) is not skipped as a duplicate of the last save.
+        save_slots: reading.save_slots,
       })
-      // #EDGE: data-integrity: save_slots is excluded from the signature because the engine never mutates it today; if save slots become live, add them here or a slot-only change would be skipped as a duplicate.
-      // #VERIFY: player/engine.ts save_slots handling before enabling slots.
       // #EDGE: data-integrity: JSON.stringify key order follows insertion order; two
       // distinct-but-equal states rebuilt with different key order would miss the dedup
       // (a harmless extra save), never falsely skip a real content change.

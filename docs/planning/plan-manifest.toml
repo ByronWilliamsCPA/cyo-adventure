@@ -314,16 +314,22 @@ name = "Editor and engagement"
 track = 1
 shipped = "yes"
 usable = "partial"
-summary = "Node editor, endings tracker, read-aloud, guardian content controls, per-child permission envelopes, kid feedback flag. Shipped 2026-07-17 in PR #270."
-validated = "2026-08-01"
-# Both gaps re-checked against code and both are genuinely still open, which is worth stating
-# because most of the other phases' gap lists were not. All six deliverables were located;
-# read-aloud in particular is real (Web Speech API in frontend/src/reader/useReadAloud.ts),
-# not a UI affordance, and is gated by the per-profile tts_enabled flag.
+summary = "Node editor, endings tracker, read-aloud, guardian content controls, per-child permission envelopes, kid feedback flag, bookmarks. Shipped 2026-07-17 in PR #270; bookmarks closed 2026-08-09."
+validated = "2026-08-09"
+# One gap re-checked against code and closed 2026-08-09; the other is genuinely still open.
 gaps = [
-  "Bookmarks were never built at all. Confirmed: the only bookmark hits in source, tests and migrations are incidental comments about BROWSER bookmarks in deep-link handling.",
   "Guardian storage and download visibility is missing; revoke exists (api/device_grants.py:243-291), download visibility does not.",
 ]
+# CLOSED 2026-08-09: "Bookmarks were never built at all." The backend save_slots field
+# (db/models.py's ReadingState, api/schemas.py's ReadingStateBody/ReadingStateView) already
+# persisted, byte-capped (64KB), and multi-device-synced an opaque save-slot bag, with
+# ReaderPage.tsx's own #EDGE comment already anticipating this exact change ("if save slots
+# become live, add them [to the save-dedup signature]"). Built: player/engine.ts's
+# saveBookmark/loadBookmark/deleteBookmark/listBookmarks (pure functions, engine.test.ts
+# coverage), player/machine.ts's SAVE_BOOKMARK/LOAD_BOOKMARK/DELETE_BOOKMARK events
+# (machine.test.ts coverage), BookmarksButton.tsx (component-tested), and the
+# ReaderPage.tsx signature fix. Capped at 10 bookmarks per story client-side (a UX ceiling,
+# not the byte budget).
 
 [phases."4c"]
 name = "Family loops"

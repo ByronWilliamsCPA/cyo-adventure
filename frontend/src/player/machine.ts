@@ -19,7 +19,17 @@
 
 import { assign, setup } from 'xstate'
 
-import { back, canGoBack, choose, isEnding, start, startContinuation } from './engine'
+import {
+  back,
+  canGoBack,
+  choose,
+  deleteBookmark,
+  isEnding,
+  loadBookmark,
+  saveBookmark,
+  start,
+  startContinuation,
+} from './engine'
 import type { ContinuationSeed } from './series'
 import type { ReadingState, Storybook, VarState } from './types'
 
@@ -142,7 +152,12 @@ export interface ReaderContext {
 }
 
 export type ReaderEvent =
-  { type: 'CHOOSE'; choiceId: string } | { type: 'BACK' } | { type: 'RESTART' }
+  | { type: 'CHOOSE'; choiceId: string }
+  | { type: 'BACK' }
+  | { type: 'RESTART' }
+  | { type: 'SAVE_BOOKMARK'; label: string }
+  | { type: 'LOAD_BOOKMARK'; slotId: string }
+  | { type: 'DELETE_BOOKMARK'; slotId: string }
 
 export interface ReaderInput {
   story: Storybook
@@ -190,6 +205,33 @@ export const readerMachine = setup({
       return previous === null ? {} : { reading: previous }
     }),
     reset: assign(({ context }) => safeStart(context.story, context.continuation, context.seed)),
+    applySaveBookmark: assign(({ context, event }) => {
+      /* v8 ignore next */
+      if (event.type !== 'SAVE_BOOKMARK') return {}
+      return {
+        reading: saveBookmark(
+          context.reading,
+          crypto.randomUUID(),
+          event.label,
+          new Date().toISOString()
+        ),
+      }
+    }),
+    applyLoadBookmark: assign(({ context, event }) => {
+      /* v8 ignore next */
+      if (event.type !== 'LOAD_BOOKMARK') return {}
+      const next = loadBookmark(context.reading, event.slotId)
+      // A stale/already-removed slot id (rendered from a since-changed list,
+      // or a cross-device race) is a no-op, never a crash -- the same
+      // fail-closed contract as applyBack above.
+      /* v8 ignore next */
+      return next === null ? {} : { reading: next }
+    }),
+    applyDeleteBookmark: assign(({ context, event }) => {
+      /* v8 ignore next */
+      if (event.type !== 'DELETE_BOOKMARK') return {}
+      return { reading: deleteBookmark(context.reading, event.slotId) }
+    }),
   },
   guards: {
     reachedEnding: ({ context }) => isEnding(context.story, context.reading),
@@ -228,6 +270,13 @@ export const readerMachine = setup({
         CHOOSE: { actions: 'applyChoice' },
         BACK: { guard: 'canGoBack', actions: 'applyBack' },
         RESTART: { target: 'reading', actions: 'reset', reenter: true },
+        SAVE_BOOKMARK: { actions: 'applySaveBookmark' },
+        // No target: stays in `reading` when the loaded position is not an
+        // ending (the common case); the `always` transient transition above
+        // re-evaluates on every context change and promotes to `ended` on
+        // its own if the loaded bookmark happens to sit on an ending node.
+        LOAD_BOOKMARK: { actions: 'applyLoadBookmark' },
+        DELETE_BOOKMARK: { actions: 'applyDeleteBookmark' },
       },
     },
     ended: {
@@ -237,6 +286,14 @@ export const readerMachine = setup({
         // back in `reading`.
         BACK: { target: 'reading', guard: 'canGoBack', actions: 'applyBack' },
         RESTART: { target: 'reading', actions: 'reset' },
+        // Mirrors RESTART's own target here: a bookmark is virtually never
+        // saved sitting on an ending node (the UI has no reason to offer
+        // Save there), but targeting `reading` unconditionally is exactly
+        // as safe as RESTART's identical unconditional target, and the
+        // `reading` state's own `always` guard promotes back to `ended` if
+        // the loaded node genuinely is one.
+        LOAD_BOOKMARK: { target: 'reading', actions: 'applyLoadBookmark' },
+        DELETE_BOOKMARK: { actions: 'applyDeleteBookmark' },
       },
     },
   },

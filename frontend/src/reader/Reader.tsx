@@ -18,7 +18,13 @@ import { useMachine } from '@xstate/react'
 import type { CompletionOutcome, SeriesNextBookInfo, SubmitFlagParams } from '../api/readerApi'
 import type { KidFlagCreatedView, ReadingHistoryItem } from '../client/types.gen'
 import type { EarnedBadgeCard, ProgressApi } from '../kid/progressApi'
-import { canGoBack, currentEndingId, visibleChoices } from '../player/engine'
+import {
+  canGoBack,
+  canSaveBookmark,
+  currentEndingId,
+  listBookmarks,
+  visibleChoices,
+} from '../player/engine'
 import { Mascot } from '../kid/Mascot'
 import { readerMachine } from '../player/machine'
 import {
@@ -32,6 +38,7 @@ import type { ReadingState, Storybook, VarState } from '../player/types'
 import type { ReadingTimeApi } from '../offline/readingTimeSync'
 import { BackToLibrary } from './BackToLibrary'
 import { BadgeUnlockToast } from './BadgeUnlockToast'
+import { BookmarksButton } from './BookmarksButton'
 import { ContinueSeries } from './ContinueSeries'
 import { DedicationOverlay } from './DedicationOverlay'
 import { EndingsGalleryButton } from './EndingsGalleryButton'
@@ -532,6 +539,8 @@ export function Reader({
   // already folds in both the profile's tts_enabled flag and browser
   // support, so omitting the prop when it's false keeps ReaderChrome from
   // rendering a dead button.
+  const bookmarks = useMemo(() => listBookmarks(reading), [reading])
+
   const chrome = (
     <ReaderChrome
       position={
@@ -546,6 +555,18 @@ export function Reader({
         !choiceError && readAloud.available
           ? { speaking: readAloud.speaking, onToggle: handleToggleSpeak }
           : undefined
+      }
+      bookmarks={
+        <BookmarksButton
+          bookmarks={bookmarks}
+          positionLabel={readerPositionLabel(story, reading, ageBand)}
+          canSave={canSaveBookmark(reading)}
+          onSave={() =>
+            send({ type: 'SAVE_BOOKMARK', label: readerPositionLabel(story, reading, ageBand) })
+          }
+          onLoad={(slotId) => send({ type: 'LOAD_BOOKMARK', slotId })}
+          onDelete={(slotId) => send({ type: 'DELETE_BOOKMARK', slotId })}
+        />
       }
       flag={
         submitFlag ? (

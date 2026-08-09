@@ -854,9 +854,9 @@ Phase 4b and Phase 5 follow.
 **Branch**: `feat/phase-4b-editor-ux`
 **Milestone**: (post-release; no milestone number assigned)
 **Status**: ✅ Substantially delivered 2026-07-17 (PR #270), verified by the 2026-07-20 plan
-audit. Node editor, ending tracker, and read-aloud all shipped; only bookmarks and the
-device/storage view remain genuinely open (this section previously said "Planned" through
-v2.7, unchanged for 10 days after the PR merged).
+audit. Node editor, ending tracker, and read-aloud all shipped; bookmarks closed 2026-08-09;
+only the device/storage view remains genuinely open (this section previously said "Planned"
+through v2.7, unchanged for 10 days after the PR merged).
 
 **Objective**: Make authoring and reading pleasant beyond the minimum viable release. See
 [ADR-002](./adr/adr-002-client-pwa.md) (TTS via Web Speech API).
@@ -871,8 +871,11 @@ v2.7, unchanged for 10 days after the PR merged).
   independently confirmed and may remain open.
 - [x] **Ending tracker**: "N of M endings found" display using the `completion` table;
   `frontend/src/reader/EndingsProgress.tsx`, wired into `Reader.tsx`.
-- [ ] **Bookmarks**: save-slot UI. Confirmed NOT built as of 2026-07-20 (distinct from K5's
-  "Go back" undo, which is shipped).
+- [x] **Bookmarks**: save-slot UI (distinct from K5's "Go back" undo, which is shipped).
+  Closed 2026-08-09: the backend `save_slots` field already existed end to end (persisted,
+  byte-capped, synced) with nothing writing to it; see roadmap.md's Phase 4b Deliverables
+  section for the full client-side implementation (`player/engine.ts`, `player/machine.ts`,
+  `BookmarksButton.tsx`).
 - [x] **Read-aloud (TTS)**: Web Speech API (`SpeechSynthesis`) via
   `frontend/src/reader/useReadAloud.ts`, per-profile `tts_enabled` toggle wired into
   `Reader.tsx` and `ProfileFormDialog.tsx`.
