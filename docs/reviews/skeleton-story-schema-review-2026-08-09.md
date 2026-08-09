@@ -248,3 +248,108 @@ skeleton rebuild either fixes for free or trips over:
 6. Get rulings on the blockers that shape new skeleton design: UW-C64 stat gates, UW-M06
    PL-17 gamebooks, OG2/OG3/OG3b/OG4/OG6. (3.7-3.9)
 7. Correct `story-skeletons.md` prose and move live counts inside the generated region. (2.7)
+
+---
+
+## Part 2: Quality improvements for the skeleton rebuild (2026-08-09 follow-up)
+
+Follow-up question: beyond the correctness fixes above, what should change to make the skeletons
+*better*? Three probes inform this: a full-gate run in warning-visible mode over all 61 skeletons
+(surfacing the advisories `check_skeleton.py` hides), direct structural analysis of the catalog,
+and an audit of the quality-focused design docs (kid appeal, reader-path engagement, benchmark
+comparison, pathfinder, critical analysis) for recommended-but-unbuilt changes.
+
+## 6. New quantitative findings (this review)
+
+- **40 of 61 skeletons carry at least one hidden gate advisory**: 37 PL-23 clock drifts
+  (declared `estimated_minutes` off by 30-125% from the derived fastest-finish clock), 25 PL-24
+  ending-mix breaches (7 gamebooks below the 3-distinct-winnable-endings floor), 4 L2-13
+  past-hand-authoring-ceiling flags, 2 PL-26 corridor-density flags.
+- **A random reader at the teen bands essentially cannot win.** Uniform-random-walk win
+  probability (positive-valence ending), by band median: 3-5 100%, 5-8 71%, 8-11 43%,
+  10-13 29%, 13-16 **0.3%**, 16+ **1.2%**. Twelve teen gamebooks sit at or below 0.1%;
+  negative-valence ending share runs 78-98% (`the-pale-road`: 147 of 150 endings negative).
+  Caveats: the walk ignores Tier-2 condition gating (informed readers do better) and counts
+  neutral endings as non-wins; gamebook lethality is a declared style. But the spread across
+  trees in the same cell is near zero, which is the actual defect (see 7.2).
+- **Tier-2 state is largely cosmetic.** Of 14 stateful skeletons, most gate under 5% of choices
+  on any variable; the 551-node pair gates 7 of 802 choices (0.9%). Zero variables exist at
+  3-5, 5-8, and 8-11. Zero skeletons declare `accepts_character` (the ADR-028 runtime shipped
+  with no content behind it).
+- **Corridor structure dominates**: 69% of non-ending nodes catalog-wide have exactly one
+  choice; 35 of 61 skeletons are over 60% single-choice. ADR-026's stop flow masks this at
+  8-11+, but 3-5/5-8 render discrete pages, and the CG rules that would police it are inert.
+- **Kid bands have zero genre variety**: all 13 skeletons at 3-5/5-8 are domestic/nature
+  realism (baking, mittens, puddles, teddy bears); no dragons, space, dinosaurs, pirates,
+  comedy, or gentle-spooky anywhere under 8-11.
+- Positive movement not yet reflected in the docs: the ending-valence re-tag (kid-appeal W0.2)
+  went further than the plan ledger says: 3-5 and 5-8 now carry **zero** negative endings
+  (from 9 and 18); 8-11 is half done (35 remain, 15 of them in
+  `the-guild-of-junior-inventors`).
+
+## 7. Ranked quality recommendations
+
+Ordered by expected reader-facing impact. Register/plan IDs given where they exist; items
+marked (decision) need an owner ruling first.
+
+1. **Genre-quota the kid-band rebuild wave** (design review §2.1, SQ-23, UW-G13): 4-6
+   speculative/adventure/comedy skeletons per kid band before any other catalog growth.
+   Authoring only, no schema change, largest felt-variety gain available.
+2. **Vary the outcome economy across trees within each gamebook cell** (SQ-21): one 2-win
+   gauntlet, one 5-6-win graded-setback tree, one capture-dominant shape per cell, so the
+   fail-kind mix (the variable that keys satisfying-path mass) differs between the trees a
+   reader alternates across. Finish the 8-11 valence re-tag; fold the teen bands into the
+   AL-052 triage. (decision: B1 teen death-ratio policy; PL-24's thresholds were deliberately
+   calibrated not to flag the current corpus, so the rule exists but the policy question is
+   unruled.)
+3. **Make state observable.** Raise gated-choice density in rebuilt Tier-2 skeletons so
+   declared variables visibly shape the read (target well above the current 1-5%), and pilot
+   one ADR-028 `accepts_character` skeleton at 13-16 medium gamebook (SQ-22 ruled GO).
+   Hard blocker first: UW-C64 (L2-11 walks only the declared-initial baseline, so stat-gated
+   choices block; status `decision`).
+4. **Alternate beat variants** (SQ-11..SQ-14, UW-G12): 2-3 interchangeable beat variants per
+   node under a shared outcome contract, selected per fill. This is the frozen-armature fix
+   and the prerequisite for ever making the anti-template guard blocking. Needs the SQ-11 ADR
+   (gate OG3, unruled).
+5. **Constrain the typical path, not just the fastest one** (AL-027, SQ-19): a median-walk
+   advisory per cell, plus the PL-17 reshape so the endings floor stops rewarding shallow
+   terminal failure leaves (UW-M06, decision). The Wyrmreach book-3 evidence: converting 45
+   shallow failure leaves to pass-throughs moved the median read from 5 to 20 pages.
+6. **Arm the choice grammar for new skeletons** (UW-C24, blocked on the D11 `deprecated`
+   marker; amend D11 with a two-compliant-trees floor per SQ-17 before arming). Run
+   grammar-enforced gates locally on every rebuilt skeleton now, so nothing new grandfathers
+   in; measure §10 compliance over rendered stops, never nodes (UW-C23).
+7. **Honest clocks and celebration metadata**: add the ruled-but-unbuilt
+   `estimated_minutes_whole_world` field (D27/AL-022) and fix the 37 PL-23 clock drifts during
+   the rebuild; decide B4 (ending rarity / `is_secret` metadata) so the shipped endings
+   gallery has something to celebrate, and B5 (a whitelisted `visited(node_id)` predicate) for
+   honest hub/open-map design.
+8. **Authoring-path parity quick wins** (SQ-04..06, A15/A16): pass `exclude=` and per-job
+   seeding to `select_axis` (today a rejected fill re-runs the same axis), make PL-19 report
+   distance-from-target instead of band membership, vary the cover-art style clause by band
+   (16+ gamebooks currently get "warm, whimsical children's book art"), and surface gate
+   warnings in the authoring loop (section 2.2).
+9. **Measurement before trust** (SQ-15): add per-path experience metrics (decision cadence
+   over stops, corridor ratio, outcome-mix entropy over sampled walks, median-walk depth,
+   agency density) to `structure_features` and wire them into selection; current metrics are
+   graph-layer and position-blind, and the diversity dashboard peaks under uniform rotation,
+   exactly the failure mode it should detect.
+10. **Process gates that shape the rebuild itself**: decide the hand-authored promotion proof
+    (origin sidecars, B7/UW-G16) before the first rebuild PR; respect the one-shot fill
+    envelope until SQ-03 (act-scoped fill) lands; scaffold-interaction affordance at 3-5
+    (predict/point/answer beats, needs an ADR-025 minor) instead of forcing plot choices the
+    research says hurt pre-readers.
+
+## 8. Sequencing traps (repeated across three docs; keep them)
+
+1. Do not flip the anti-template guard to blocking before beat variants exist; the
+   differentiation directive and the depict-this-exact-beat fidelity contract are opposed
+   instructions, and blocking first yields retry loops, not diversity.
+2. Do not grow the catalog under the current single-model, single-prompt batch process as the
+   primary diversity fix; it deepens family resemblance and multiplies slotting/variant debt.
+3. Do not read graph-level metrics as reader experience until SQ-15 lands.
+
+Already landed, do not re-schedule: PL-23/24/25/26, CG-1..4 (built, inert), RL-13 FILL-skip,
+L2-11 cause hints, `--headroom`, ADR-026 stop flow, humor/wonder variation axes, D14
+second-person voice guidance (fill-gate enforcement still missing), the 3-5/5-8 valence
+re-tag, ADR-028 runtime + CH rules.
