@@ -2,7 +2,7 @@
 
 Usage:
     uv run python scripts/check_sibling_fills.py <filled.json> <filled.json>...
-        [--max-shared N] [--check]
+        [--max-shared-per-1000 N] [--check]
 
 B-plus amendment 3 (AL-156/UW-C93): the first pilot's raters found the
 dominant residual recognition leaks are ritual phrases repeated across
@@ -14,9 +14,12 @@ sibling-scoped n-gram check can.
 Deterministic: normalizes bodies plus choice labels (lowercase, punctuation
 stripped), extracts word 4-grams, drops grams made entirely of function
 words, and reports every gram appearing in two or more sibling fills.
-With ``--check``, exits 1 when the count of distinct shared grams exceeds
-``--max-shared`` (default 8; the first pilot's control arm shares 40+,
-its free arm 15+, and genuinely independent texts stay in single digits).
+With ``--check``, exits 1 when the count of distinct shared grams per 1000
+mean leaf words exceeds ``--max-shared-per-1000`` (default 4.0). The budget
+is length-normalized because a fixed count cannot serve both an 11-node and
+a 26-node fill (AL-159). Calibration: the first pilot's obligation arm
+scores 2.8 per 1000, its control arm 25, its free arm 12.6, and the
+clocktower pilot 9.0.
 """
 
 from __future__ import annotations

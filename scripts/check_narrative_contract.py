@@ -151,12 +151,26 @@ def _bible_string_errors(text: str) -> list[str]:
 def check_bible(
     bible: dict[str, Any], contract: dict[str, Any], band: str
 ) -> tuple[list[str], list[str]]:
-    """Return (errors, warnings) for a story bible against the contract."""
+    """Return (errors, warnings) for a story bible against the contract.
+
+    An unknown or absent ``band`` is reported as an NC-5 error rather than
+    raising: the band comes from the skeleton's ``metadata.age_band``, and a
+    malformed skeleton must fail the check with a message rather than crash
+    the CLI with a bare ``ValueError``.
+    """
     errors: list[str] = []
     warnings: list[str] = []
     envelope = cast("dict[str, Any]", contract.get("safety_envelope") or {})
     permitted = set(cast("list[str]", envelope.get("permitted_device_kinds") or []))
-    bundles = band_mandatory_bundles(AgeBand(band))
+    try:
+        age_band = AgeBand(band)
+    except ValueError:
+        known = sorted(member.value for member in AgeBand)
+        return (
+            [f"NC-5 bible: unknown age band {band!r}; expected one of {known}"],
+            warnings,
+        )
+    bundles = band_mandatory_bundles(age_band)
 
     def _walk_strings(value: object, path: str) -> None:
         if isinstance(value, str):

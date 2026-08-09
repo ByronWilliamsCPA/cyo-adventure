@@ -1,4 +1,4 @@
-"""Unit tests for the age-policy gate layer (PL-15..PL-18)."""
+"""Unit tests for the age-policy gate layer (PL-15 through PL-26)."""
 
 from __future__ import annotations
 

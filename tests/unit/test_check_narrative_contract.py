@@ -139,3 +139,11 @@ def test_the_pilot_contract_is_coherent() -> None:
     )
     errors, _ = check_contract(skeleton, contract)
     assert errors == []
+
+
+@pytest.mark.unit
+def test_nc5_unknown_age_band_is_an_error_not_a_crash() -> None:
+    """A malformed skeleton band fails the check instead of raising."""
+    contract = {"safety_envelope": {"permitted_device_kinds": []}, "nodes": {}}
+    errors, _ = check_bible({"device_vocabulary": {}}, contract, "not-a-band")
+    assert any("unknown age band" in e for e in errors)
