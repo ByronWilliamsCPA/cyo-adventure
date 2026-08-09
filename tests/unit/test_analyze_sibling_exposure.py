@@ -6,8 +6,13 @@ is checked against closed-form values the shipped weighting implies, under a
 fixed seed, so a change to either the weight formula or the simulation's history
 reconstruction breaks a test rather than silently moving the exposure estimate.
 
-Closed forms used below, for a family's SECOND request into a cell of size ``M``
-after one prior pick (weights from ``skeleton_match._weight`` and
+The exposure event is PER CHILD, so the sibling tests below are the load-bearing
+ones: they pin that a single reader makes the family and child history scopes
+identical, that a correctly-scoped selector is indifferent to sibling count, and
+that the shipped family-scoped selector is not.
+
+Closed forms used below, for a single reader's SECOND request into a cell of
+size ``M`` after one prior pick (weights from ``skeleton_match._weight`` and
 ``_blended_weight``):
 
 - distinct-theme: the used slug weighs ``1 / 2`` and each of the ``M - 1``
@@ -25,13 +30,20 @@ import random
 import pytest
 
 from scripts.analyze_sibling_exposure import (
+    SCOPE_CHILD,
+    SCOPE_FAMILY,
     ExposureCurve,
+    band_profiles,
+    band_tenure_months,
     find_cell,
     iter_cells,
+    lifetime_stories,
     main,
     pad_pool,
+    required_per_cell,
     required_pool_size,
     simulate_exposure,
+    window_coverage,
 )
 
 _SEED = 20260809
@@ -140,6 +152,106 @@ def test_invalid_simulation_inputs_are_rejected(
 
 
 @pytest.mark.unit
+def test_an_unknown_history_scope_is_rejected() -> None:
+    """Only the two named scopes are simulatable."""
+    with pytest.raises(ValueError, match=r"unknown history scope"):
+        simulate_exposure(
+            ["a", "b"],
+            trials=10,
+            requests=2,
+            rng=random.Random(_SEED),
+            scope="household",
+        )
+
+
+@pytest.mark.unit
+def test_one_child_makes_the_two_scopes_identical() -> None:
+    """With a single reader, family history IS that child's history.
+
+    This is the control for the sibling comparison below: any difference the
+    report shows between the scopes must come from siblings, not from the
+    simulation treating the two code paths differently.
+    """
+    family = simulate_exposure(
+        ["a", "b", "c"],
+        trials=2000,
+        requests=4,
+        rng=random.Random(_SEED),
+        scope=SCOPE_FAMILY,
+        children=1,
+    )
+    child = simulate_exposure(
+        ["a", "b", "c"],
+        trials=2000,
+        requests=4,
+        rng=random.Random(_SEED),
+        scope=SCOPE_CHILD,
+        children=1,
+    )
+
+    assert family.repeat_probability == child.repeat_probability
+    assert family.expected_distinct == child.expected_distinct
+
+
+@pytest.mark.unit
+def test_child_scoped_history_is_insensitive_to_sibling_count() -> None:
+    """Under child scope, a sibling's reading does not touch this child's curve.
+
+    The economic asymmetry in one assertion: a skeleton is reusable across
+    readers, so adding readers costs a correctly-scoped selector nothing.
+    """
+    alone = simulate_exposure(
+        ["a", "b", "c"],
+        trials=8000,
+        requests=3,
+        rng=random.Random(_SEED),
+        scope=SCOPE_CHILD,
+        children=1,
+    )
+    crowded = simulate_exposure(
+        ["a", "b", "c"],
+        trials=8000,
+        requests=3,
+        rng=random.Random(_SEED),
+        scope=SCOPE_CHILD,
+        children=3,
+    )
+
+    assert crowded.repeat_probability[1] == pytest.approx(
+        alone.repeat_probability[1], abs=0.02
+    )
+
+
+@pytest.mark.unit
+def test_family_scoped_history_degrades_with_more_siblings() -> None:
+    """Under the shipped family scope, a sibling raises this child's repeat rate.
+
+    The shared twenty-row window is spent on whoever requested last, so a
+    child's own anti-repeat protection is diluted by their siblings.
+    """
+    alone = simulate_exposure(
+        ["a", "b", "c"],
+        trials=8000,
+        requests=3,
+        rng=random.Random(_SEED),
+        similar_reuse=True,
+        scope=SCOPE_FAMILY,
+        children=1,
+    )
+    crowded = simulate_exposure(
+        ["a", "b", "c"],
+        trials=8000,
+        requests=3,
+        rng=random.Random(_SEED),
+        similar_reuse=True,
+        scope=SCOPE_FAMILY,
+        children=3,
+    )
+
+    assert crowded.repeat_probability[1] > alone.repeat_probability[1]
+
+
+@pytest.mark.unit
 def test_pad_pool_extends_without_touching_the_real_slugs() -> None:
     """Synthetic candidates are appended; the real ones keep their order."""
     padded = pad_pool(["a", "b"], 5)
@@ -193,12 +305,85 @@ def test_cells_come_from_the_real_catalog() -> None:
 
 
 @pytest.mark.unit
+@pytest.mark.parametrize(
+    ("band", "expected"),
+    [("3-5", 24), ("5-8", 36), ("8-11", 36), ("10-13", 36), ("16+", 36)],
+)
+def test_band_tenure_comes_from_the_band_label(band: str, expected: int) -> None:
+    """Tenure is derived from AgeBand, not from an invented product number."""
+    assert band_tenure_months(band) == expected
+
+
+@pytest.mark.unit
+def test_lifetime_stories_rounds_a_partial_story_up() -> None:
+    """A partial story is still a request that some skeleton has to serve."""
+    assert lifetime_stories(0.5, 24) == 12
+    assert lifetime_stories(0.5, 25) == 13
+    assert lifetime_stories(2.0, 36) == 72
+
+
+@pytest.mark.unit
+def test_required_per_cell_splits_demand_across_cells() -> None:
+    """Demand spread over C cells still needs ceil(lifetime/C) in EACH cell."""
+    assert required_per_cell(36, 3) == 12
+    assert required_per_cell(37, 3) == 13
+    assert required_per_cell(36, 0) == 36
+
+
+@pytest.mark.unit
+def test_window_coverage_falls_with_every_extra_sibling() -> None:
+    """The shared twenty-row window is spent K times faster by K readers."""
+    solo = window_coverage(1, 1.0, 36)
+    pair = window_coverage(2, 1.0, 36)
+    trio = window_coverage(3, 1.0, 36)
+
+    assert solo == pytest.approx(20 / 36)
+    assert pair == pytest.approx(10 / 36)
+    assert trio == pytest.approx(20 / 3 / 36)
+    assert solo > pair > trio
+
+
+@pytest.mark.unit
+def test_window_coverage_saturates_at_one() -> None:
+    """A child whose whole band fits in the window is fully covered."""
+    assert window_coverage(1, 0.5, 24) == 1.0
+    assert window_coverage(1, 0.0, 24) == 1.0
+
+
+@pytest.mark.unit
+def test_band_profiles_cover_every_band_with_real_counts() -> None:
+    """Band profiles read the real catalog through the real cell matching."""
+    profiles = band_profiles()
+
+    assert len(profiles) == 6
+    assert {profile.band for profile in profiles} >= {"3-5", "10-13", "16+"}
+    for profile in profiles:
+        assert profile.skeletons == sum(
+            len(cell.slugs) for cell in profile.populated_cells
+        )
+        assert all(cell.slugs for cell in profile.populated_cells)
+        assert not any(cell.slugs for cell in profile.empty_cells)
+
+
+@pytest.mark.unit
 def test_main_runs_the_pool_section(capsys: pytest.CaptureFixture[str]) -> None:
     """The CLI's pool section runs clean against the committed catalog."""
     exit_code = main(["--section", "pools"])
 
     assert exit_code == 0
     assert "per-cell candidate pools" in capsys.readouterr().out
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize("section", ["bands", "sizing"])
+def test_main_runs_the_catalog_sizing_sections(
+    section: str, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """The band and sizing sections need no simulation and must stay cheap."""
+    exit_code = main(["--section", section])
+
+    assert exit_code == 0
+    assert "10-13" in capsys.readouterr().out
 
 
 @pytest.mark.unit
