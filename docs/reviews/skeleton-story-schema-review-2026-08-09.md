@@ -450,3 +450,65 @@ UW-M06 (PL-17 on gamebooks), B1 (teen death-ratio policy / PL-24 thresholds), UW
 envelope awareness, blocks any stat-gated skeleton), OG3 (beat-variant ADR), B2/UW-G17
 (per-band reconvergence targets; a max-indegree advisory could land now, corpus mean max
 indegree is 7.79 against the research's 1.5), B4 (`is_secret`/rarity metadata).
+
+---
+
+## Part 4: Recommendations on the four open rulings (2026-08-09 follow-up)
+
+Requested recommendations on the four decisions that shape the rebuild. Each is a
+recommendation to the owner, not a ruling; the register rows stay open until ruled.
+
+### R1. Teen death-ratio policy (B1, sets PL-24/walk-floor thresholds)
+
+**Recommend: keep lethal gamebooks legal; regulate the experienced economy, not the census.**
+A raw death-count ceiling would ban the genre (real gamebooks are death-heavy and the
+corpus was authored to that style). Instead adopt three complementary constraints: (a) the
+random-walk satisfying-outcome floor at 2% for teen gamebooks (now live in
+`check_skeleton.py --strict`, pending this calibration ruling); (b) PL-24's winnability
+floor scaled to `max(3, 5% of endings)` instead of the absolute 3 that the corpus was
+calibrated to clear; (c) the cell-level outcome-spread audit (9.3.1), so each gamebook cell
+holds at least one graded-setback tree alongside the punishing ones. Rationale: the defect
+the data shows is not "too many deaths" but "every tree in the cell has the same 2-wins
+shape and a random reader wins with p < 0.003"; the walk floor and the spread rule target
+exactly that while leaving a deliberately brutal tree legal in a cell that also offers
+mercy. Pair with the fail-depth floor (9.2.3) so the deaths that remain are earned.
+
+### R2. PL-17 endings floor on gamebooks (UW-M06)
+
+**Recommend: keep PL-17 for gamebooks, but count only depth-qualified endings.** Do not
+exempt gamebooks (the floor protects real breadth), and do not keep the current form (the
+AL-026 evidence shows it actively rewards minting shallow terminal failure leaves: the
+746-node book satisfied its floor with 7 endings within two taps of the start). Change the
+floor's counting rule: an ending counts toward PL-17 only if its depth is at least the
+fail-depth floor (33% of `min_complete`, the same threshold as 9.2.3). This preserves the
+breadth incentive, deletes the shallow-leaf incentive, and needs no new threshold. Existing
+catalog books that lean on shallow leaves are grandfathered the same way as every other
+strict-mode rule.
+
+### R3. L2-11 envelope awareness (UW-C64, blocks stat-gated skeletons)
+
+**Recommend: rule now, implement before the ADR-028 pilot skeleton.** Make
+`_check_dead_branches` walk the declared `accepts_character` entry states in addition to
+the declared-initial baseline, and flag a branch dead only when it is dead under EVERY
+admissible entry state; cost is bounded because CH-8 already caps the configuration space
+and `validator/character.py` already performs the per-state walk this needs. Add the
+AL-131 companion at the same time: a gate whose truth is invariant across the whole
+declared envelope is dead weight and should flag (this is the observability rule the
+withdrawn pilots both needed). Without this ruling the SQ-22 GO is unexecutable: no
+stat-envelope skeleton can gate a choice on a stat without a blocking L2-11, so the pilot
+would be forced into the XOR workaround that AL-129 documents as the wrong shape.
+
+### R4. Per-band reconvergence targets (B2/UW-G17)
+
+**Recommend: advisory now, no hard gate; amend ADR-011 only after measured data.** The
+research anchor is contested (the corpus refutes the JHM leaf-reconvergence model: 54 of
+61 skeletons have every ending at indegree 1, and reconvergence concentrates at internal
+bottlenecks), so a magnitude gate would be calibrated against a model the catalog does not
+follow. Land two cheap things now: a per-band max-indegree WARNING (suggest flag above 4
+at 3-5/5-8, above 6 at 8-11/10-13, above 8 at the teen bands; corpus mean max indegree is
+7.79) so extreme funnels surface during drafting, and `reconvergence_ratio` plus agency
+density in the SQ-15 per-path metrics so selection can see the felt effect. Defer the real
+target to after the naive-user session (UW-M02) answers whether children detect
+reconvergence on replay; that is the only measurement that can justify a blocking number.
+Retire or populate `BandProfile.reconvergence_ceiling` as part of the same amendment; a
+declared-but-unset field that only the mutation engine reads misleads (AL-082).
