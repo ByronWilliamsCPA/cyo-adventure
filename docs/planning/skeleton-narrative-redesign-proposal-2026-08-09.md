@@ -205,3 +205,54 @@ budgets where B does not, the dial is at B and that is the pre-registered result
 4. An ADR should record: scene diversity is a request-time program (this design); structural
    diversity remains catalog-time (ADR-020); and the PS metric change with its
    re-baselining.
+
+---
+
+## 9. Addendum (2026-08-09, owner steer): the automation end-state
+
+Owner framing: the single human reviewer is the structural constraint the project exists to
+overcome, and the question is whether this proposal is STILL overly prescriptive given LLM
+capability, provided automated review holds the line.
+
+Assessment: yes, in one specific place. The proposal treats the graph as a curated,
+human-promoted asset and loosens only the scene layer. That rested on GS1 ("free generation
+fails on budgets"), and the strict pilot made GS1 obsolete in a precise way: GS1 was a
+ZERO-SHOT failure. With the deterministic gate in the drafting loop, LLM agents one-shot
+passed 184- and 251-node skeletons with zero findings in the hardest cells. Tool-in-the-loop
+agentic generation holds global invariants that zero-shot generation cannot; the structure
+floor is therefore set by the automated review surface, not by LLM capability. The pilot's
+adversarial critics were also LLMs, and their findings are largely convertible into
+deterministic checks (UW-C81..C83), so the review side automates the same way.
+
+**End-state**: the skeleton becomes a generated, verified artifact. The fixed layer shrinks
+to what encodes child-development policy rather than story content: cell contracts (budgets,
+grammar, outcome economy, walk floors, safety floors), the deterministic gate suite (strict,
+audits, NC-1..4, the consequence and honesty checks), closed vocabularies (device kinds,
+fact grammar, move library), and ADR-005's approval points. Graphs, obligations, bibles, and
+prose are all drafted by authoring agents and proven by the pipeline: generated brief,
+architect agent with the structural harness, strict gate plus in-cell audits, an AUTOMATED
+adversarial panel (the pilot's critic rubrics productionized), then promotion. This also
+dissolves the last diversity ceiling: the PS structural 0.30 moves only with different
+graphs, and agentic generation makes new graphs cheap, turning each cell from three frozen
+trees into a growing population (the ADR-020 flywheel with authoring agents in the mutation
+engine's role).
+
+**The human bottleneck, decomposed**: guardian approval is per-family and distributed by
+construction (a feature, not a bottleneck). The singleton admin's role shrinks from catching
+to sampling: one promotion decision per generated skeleton, spot audits at a rate tuned to
+measured automated-panel precision, moderation escalations only. Promotion criterion for the
+panel itself: its approve/reject decisions must agree with human spot-checks at an
+owner-set rate before the human steps back.
+
+**The one non-negotiable prerequisite**: SAFE-14's device floors and the band-mandatory
+denylist land as BLOCKING gate content before graphs go agentic. Generated structure plus
+generated scenes means provenance-based safety is fully gone; the floor must live entirely
+in the validator, which the evidence analysis showed is where it always really was.
+
+**Sequencing consequence**: the staged plan in section 7 is unchanged as the path; this
+addendum changes the declared destination. Stage 2's "migrate the pipeline, not the catalog"
+now reads: the rebuild waves are executed by authoring agents through the full automated
+gauntlet, the automated adversarial panel is built during stage 1 (it is the pilot's critic
+prompts plus the pre-registered rubrics), and the move library plus NC checks are the
+architect agent's guardrails rather than aids to a human author. The catalog rebuild and the
+automation end-state become the same program.
