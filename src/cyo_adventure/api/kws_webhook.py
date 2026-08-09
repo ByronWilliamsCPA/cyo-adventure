@@ -40,7 +40,11 @@ from typing import Annotated
 from fastapi import APIRouter, Header, Request
 from pydantic import BaseModel, ConfigDict, Field
 
-from cyo_adventure.consent import FreshnessWindow, verify_webhook_signature
+from cyo_adventure.consent import (
+    FreshnessWindow,
+    require_non_production_kws_environment,
+    verify_webhook_signature,
+)
 from cyo_adventure.core.config import settings
 from cyo_adventure.core.exceptions import (
     AuthenticationError,
@@ -179,30 +183,6 @@ def _require_receiver_configured() -> str:
     return secret.get_secret_value()
 
 
-def _reject_production_until_persistence_exists() -> None:
-    """Refuse production deliveries while this receiver only logs.
-
-    #CRITICAL: data integrity: a production delivery reaching a receiver with
-    no persistence is a real parent's verification discarded, and KWS will not
-    replay it on request. Enforcing the restriction in code rather than in a
-    comment is what keeps "we will add persistence before pointing it at
-    production" from being a promise nobody re-reads.
-    #VERIFY: tests/unit/test_kws_webhook.py::
-    test_production_environment_refuses_to_process.
-
-    Raises:
-        ConfigurationError: When ``kws_environment`` is ``"production"``.
-    """
-    if settings.kws_environment == "production":
-        msg = (
-            "This receiver records no verification yet, so it must not be "
-            "pointed at the production KWS environment: a real delivery would "
-            "be acknowledged and lost. Remove this guard in the change that "
-            "adds the verification record."
-        )
-        raise ConfigurationError(msg)
-
-
 @router.post(
     "/webhooks/kws/parent-verified",
     include_in_schema=False,
@@ -246,7 +226,7 @@ async def receive_parent_verified(
             JSON object.
     """
     secret = _require_receiver_configured()
-    _reject_production_until_persistence_exists()
+    require_non_production_kws_environment(action="accept a parent-verified delivery")
 
     body = await request.body()
     if len(body) > _MAX_BODY_BYTES:

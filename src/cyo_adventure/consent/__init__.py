@@ -11,6 +11,19 @@ and the adult-verification signal from KWS is corroborating evidence alongside
 them, never a replacement for them.
 """
 
+from cyo_adventure.consent.external_payload import (
+    MAX_EXTERNAL_PAYLOAD_CHARS,
+    VerificationCorrelation,
+    mint_correlation,
+    parse_correlation,
+    serialize_correlation,
+)
+from cyo_adventure.consent.guards import require_non_production_kws_environment
+from cyo_adventure.consent.kws_client import (
+    KwsClient,
+    VerificationEmailRequest,
+    VerificationEmailResult,
+)
 from cyo_adventure.consent.kws_signature import (
     FreshnessWindow,
     ParsedSignatureHeader,
@@ -20,9 +33,18 @@ from cyo_adventure.consent.kws_signature import (
 )
 
 __all__ = [
+    "MAX_EXTERNAL_PAYLOAD_CHARS",
     "FreshnessWindow",
+    "KwsClient",
     "ParsedSignatureHeader",
+    "VerificationCorrelation",
+    "VerificationEmailRequest",
+    "VerificationEmailResult",
+    "mint_correlation",
+    "parse_correlation",
     "parse_signature_header",
+    "require_non_production_kws_environment",
+    "serialize_correlation",
     "verify_redirect_signature",
     "verify_webhook_signature",
 ]
