@@ -36,10 +36,8 @@ import httpx
 
 from cyo_adventure.consent.external_payload import (
     VerificationCorrelation,
-    mint_correlation,
     serialize_correlation,
 )
-from cyo_adventure.consent.guards import require_non_production_kws_environment
 from cyo_adventure.core.config import settings
 from cyo_adventure.core.exceptions import (
     ConfigurationError,
@@ -129,8 +127,11 @@ class VerificationEmailResult:
     """What the caller needs in order to recognise the result later.
 
     Attributes:
-        correlation: The token minted for this attempt. The caller persists it
-            against the guardian; the return legs quote it back.
+        correlation: The token this attempt was sent under, echoed back so a
+            caller that discarded its own copy still has it. The token is
+            MINTED BY THE CALLER, not here: it is the primary key of the
+            ``kws_verification`` row, and that row must exist before this call
+            goes out (see ``consent/service.py``).
     """
 
     correlation: VerificationCorrelation
@@ -277,7 +278,10 @@ class KwsClient:
         self._auth_lock: Final = asyncio.Lock()
 
     async def send_verification_email(
-        self, request: VerificationEmailRequest
+        self,
+        request: VerificationEmailRequest,
+        *,
+        correlation: VerificationCorrelation,
     ) -> VerificationEmailResult:
         """Ask KWS to email a parent and begin verifying they are an adult.
 
@@ -288,22 +292,25 @@ class KwsClient:
 
         Args:
             request: The parent's email, the child's location, the language.
+            correlation: The attempt token to send as ``externalPayload``.
+                Required rather than minted here, because it is the primary key
+                of the ``kws_verification`` row and that row must be written
+                before this call goes out; a client that minted its own would
+                make an unrecorded send the default and the recorded one an
+                option (see ``consent/service.py``).
 
         Returns:
-            VerificationEmailResult: The correlation token minted for this
-                attempt, which the caller must persist to recognise the result.
+            VerificationEmailResult: The correlation this attempt was sent
+                under, echoed back for callers that discarded their copy.
 
         Raises:
-            ConfigurationError: When the integration is unconfigured, or when
-                pointed at the production environment before persistence exists.
+            ConfigurationError: When the integration is unconfigured.
             ValidationError: When the request would be rejected by KWS.
             ExternalServiceError: When KWS rejects or fails the call.
         """
-        require_non_production_kws_environment(action="start a parent verification")
         api_origin, credentials = _require_configured()
         _validate(request)
 
-        correlation = mint_correlation()
         body = {
             "email": request.email.strip(),
             "location": request.location,

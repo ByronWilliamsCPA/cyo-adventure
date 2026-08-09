@@ -18,7 +18,6 @@ from cyo_adventure.consent.external_payload import (
     parse_correlation,
     serialize_correlation,
 )
-from cyo_adventure.consent.guards import require_non_production_kws_environment
 from cyo_adventure.consent.kws_client import (
     KwsClient,
     VerificationEmailRequest,
@@ -31,20 +30,29 @@ from cyo_adventure.consent.kws_signature import (
     verify_redirect_signature,
     verify_webhook_signature,
 )
+from cyo_adventure.consent.service import (
+    ParentVerifiedOutcome,
+    VerificationStartRequest,
+    record_parent_verified,
+    start_parent_verification,
+)
 
 __all__ = [
     "MAX_EXTERNAL_PAYLOAD_CHARS",
     "FreshnessWindow",
     "KwsClient",
+    "ParentVerifiedOutcome",
     "ParsedSignatureHeader",
     "VerificationCorrelation",
     "VerificationEmailRequest",
     "VerificationEmailResult",
+    "VerificationStartRequest",
     "mint_correlation",
     "parse_correlation",
     "parse_signature_header",
-    "require_non_production_kws_environment",
+    "record_parent_verified",
     "serialize_correlation",
+    "start_parent_verification",
     "verify_redirect_signature",
     "verify_webhook_signature",
 ]

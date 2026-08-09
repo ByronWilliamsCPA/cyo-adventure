@@ -1,9 +1,15 @@
 """Tests for the KWS ``parent-verified`` webhook receiver.
 
-Three properties matter more than the happy path and are pinned individually:
+Four properties matter more than the happy path and are pinned individually:
 an unauthenticated caller cannot get past the signature check, an
 authenticated delivery that is not ours is answered terminally rather than
-retried forever, and the parent's email address never reaches a log line.
+retried forever, a delivery that IS ours resolves its verification row, and the
+parent's email address never reaches a log line.
+
+The session is the shared ``mock_async_session`` double, not a database: what
+this module tests is the route's routing and its acknowledgement, and what
+happens to the row is pinned against the service seam in
+``test_kws_verification_service.py``.
 """
 
 from __future__ import annotations
@@ -11,6 +17,8 @@ from __future__ import annotations
 import hmac
 import json
 import time
+import uuid
+from datetime import UTC, datetime
 from hashlib import sha256
 from typing import TYPE_CHECKING, Any
 from unittest.mock import patch
@@ -19,17 +27,28 @@ import pytest
 from fastapi.testclient import TestClient
 from pydantic import SecretStr
 
+from cyo_adventure.api.deps import get_db_session
 from cyo_adventure.app import create_app
+from cyo_adventure.consent import VerificationCorrelation, serialize_correlation
 from cyo_adventure.core.config import settings
+from cyo_adventure.db.models import KwsVerification
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator
+    from collections.abc import AsyncIterator, Iterator
+    from unittest.mock import AsyncMock
+
+    from sqlalchemy.ext.asyncio import AsyncSession
 
 _SECRET = "test-webhook-secret-not-a-real-credential"
 _ORG = "00000000-0000-4000-8000-000000000001"
 _PRODUCT = "00000000-0000-4000-8000-000000000009"
 _PARENT_EMAIL = "parent.under.test@example.com"
 _URL = "/api/v1/webhooks/kws/parent-verified"
+_USER_ID = uuid.UUID("00000000-0000-4000-8000-00000000000a")
+# The attempt the default body quotes back, and the id the default seeded row
+# is written under. A delivery is only ours because these two agree.
+_ATTEMPT_ID = uuid.UUID("00000000-0000-4000-8000-0000000000c0")
+_EXTERNAL_PAYLOAD = serialize_correlation(VerificationCorrelation(_ATTEMPT_ID))
 
 
 def _body(
@@ -37,21 +56,40 @@ def _body(
     name: str = "parent-verified",
     org_id: str = _ORG,
     product_id: str = _PRODUCT,
+    external_payload: str | None = _EXTERNAL_PAYLOAD,
 ) -> bytes:
     """A delivery body shaped exactly like Epic's documented example."""
+    payload: dict[str, Any] = {
+        "parentEmail": _PARENT_EMAIL,
+        "status": {"verified": True, "transactionId": "tx-1"},
+    }
+    if external_payload is not None:
+        payload["externalPayload"] = external_payload
     return json.dumps(
         {
             "name": name,
             "time": "2026-08-09T12:00:00Z",
             "orgId": org_id,
             "productId": product_id,
-            "payload": {
-                "parentEmail": _PARENT_EMAIL,
-                "externalPayload": "corr-1",
-                "status": {"verified": True, "transactionId": "tx-1"},
-            },
+            "payload": payload,
         }
     ).encode()
+
+
+def _sent_row(**overrides: Any) -> KwsVerification:
+    """An unresolved verification row, as the send leg would have written it."""
+    values: dict[str, Any] = {
+        "id": _ATTEMPT_ID,
+        "user_id": _USER_ID,
+        "kws_environment": "test",
+        "status": "sent",
+        "requested_at": datetime.now(UTC),
+        "resolved_at": None,
+        "transaction_id": None,
+        "enabled_methods": ["credit_card"],
+    }
+    values.update(overrides)
+    return KwsVerification(**values)
 
 
 def _headers(
@@ -83,10 +121,38 @@ def _configured(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(settings, "kws_webhook_max_skew_seconds", 300)
 
 
+def _seeded_row(mock_async_session: AsyncMock) -> KwsVerification:
+    """Return the row the ``client`` fixture seeded the session double with.
+
+    Args:
+        mock_async_session: The session double.
+
+    Returns:
+        KwsVerification: The seeded row, so a test can assert what the route
+            did to it rather than only what it answered.
+    """
+    row = mock_async_session.get.return_value
+    assert isinstance(row, KwsVerification)
+    return row
+
+
 @pytest.fixture
-def client() -> Iterator[TestClient]:
-    """A test client over the real app, so the exception handlers are wired."""
-    with TestClient(create_app(), raise_server_exceptions=False) as test_client:
+def client(mock_async_session: AsyncMock) -> Iterator[TestClient]:
+    """A test client over the real app, so the exception handlers are wired.
+
+    Only the session dependency is overridden, and it is seeded with the
+    attempt the default body quotes back. The route now resolves a verification
+    row, and a unit test must not reach a database (tests/CLAUDE.md), so the
+    double stands in for the request unit of work.
+    """
+
+    async def _override() -> AsyncIterator[AsyncSession]:
+        yield mock_async_session
+
+    mock_async_session.get.return_value = _sent_row()
+    app = create_app()
+    app.dependency_overrides[get_db_session] = _override
+    with TestClient(app, raise_server_exceptions=False) as test_client:
         yield test_client
 
 
@@ -277,23 +343,118 @@ class TestRefusalToRun:
 
         assert response.status_code == 400
 
-    @pytest.mark.unit
-    @pytest.mark.usefixtures("_configured")
-    def test_production_environment_refuses_to_process(
-        self, client: TestClient, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
-        """A receiver that records nothing must not be pointed at production.
 
-        The refusal is the mechanism that keeps "persistence first" from being
-        a promise nobody re-reads, so it is tested rather than trusted. This
-        test is expected to be DELETED by the change that adds the record.
-        """
-        monkeypatch.setattr(settings, "kws_environment", "production")
+@pytest.mark.usefixtures("_configured")
+class TestAttribution:
+    """Turning an authenticated delivery into a resolved verification row."""
+
+    @pytest.mark.unit
+    def test_our_attempt_is_resolved(
+        self, client: TestClient, mock_async_session: AsyncMock
+    ) -> None:
+        """The delivery this receiver exists for: a row moves to verified."""
         body = _body()
 
         response = client.post(_URL, content=body, headers=_headers(body))
 
-        assert response.status_code == 400
+        assert response.json() == {"handled": True}
+        row = _seeded_row(mock_async_session)
+        assert row.status == "verified"
+        assert row.transaction_id == "tx-1"
+
+    @pytest.mark.unit
+    def test_unknown_attempt_id_not_handled(
+        self, client: TestClient, mock_async_session: AsyncMock
+    ) -> None:
+        """No row for the id: a replay after erasure, or a foreign delivery.
+
+        200 rather than an error, deliberately. A non-2xx would buy a retry
+        loop against a decision that cannot change, and there is nothing here
+        for a later attempt to find.
+        """
+        mock_async_session.get.return_value = None
+        body = _body()
+
+        response = client.post(_URL, content=body, headers=_headers(body))
+
+        assert response.status_code == 200
+        assert response.json() == {"handled": False}
+
+    @pytest.mark.unit
+    def test_missing_external_payload_not_handled(
+        self, client: TestClient, mock_async_session: AsyncMock
+    ) -> None:
+        """With no correlation there is nothing to attribute the delivery to."""
+        body = _body(external_payload=None)
+
+        response = client.post(_URL, content=body, headers=_headers(body))
+
+        assert response.status_code == 200
+        assert response.json() == {"handled": False}
+        assert mock_async_session.get.await_count == 0
+
+    @pytest.mark.unit
+    def test_malformed_external_payload_not_handled(
+        self, client: TestClient, mock_async_session: AsyncMock
+    ) -> None:
+        """An echoed payload is untrusted input, parsed in full, not guessed at.
+
+        It never reaches a lookup: a body that is not our correlation cannot
+        become one on a retry either.
+        """
+        body = _body(external_payload="corr-1")
+
+        response = client.post(_URL, content=body, headers=_headers(body))
+
+        assert response.status_code == 200
+        assert response.json() == {"handled": False}
+        assert mock_async_session.get.await_count == 0
+
+    @pytest.mark.unit
+    def test_a_row_from_the_other_environment_is_not_handled(
+        self, client: TestClient, mock_async_session: AsyncMock
+    ) -> None:
+        """A Test delivery must never resolve a production row, or vice versa."""
+        mock_async_session.get.return_value = _sent_row(kws_environment="production")
+        body = _body()
+
+        response = client.post(_URL, content=body, headers=_headers(body))
+
+        assert response.json() == {"handled": False}
+        assert _seeded_row(mock_async_session).status == "sent"
+
+    @pytest.mark.unit
+    def test_a_replayed_delivery_is_handled_without_rewriting(
+        self, client: TestClient, mock_async_session: AsyncMock
+    ) -> None:
+        """KWS retries deliveries; the second one must change nothing.
+
+        Answered handled=True because the delivery IS ours and is already
+        recorded; handled=False would invite a retry of work already done.
+        """
+        resolved_at = datetime(2026, 8, 9, 12, 0, tzinfo=UTC)
+        mock_async_session.get.return_value = _sent_row(
+            status="verified", resolved_at=resolved_at, transaction_id="tx-first"
+        )
+        body = _body()
+
+        response = client.post(_URL, content=body, headers=_headers(body))
+
+        assert response.json() == {"handled": True}
+        row = _seeded_row(mock_async_session)
+        assert row.transaction_id == "tx-first"
+        assert row.resolved_at == resolved_at
+
+    @pytest.mark.unit
+    def test_the_handler_never_commits_the_unit_of_work(
+        self, client: TestClient, mock_async_session: AsyncMock
+    ) -> None:
+        """``UnitOfWorkMiddleware`` owns the commit, not the route."""
+        body = _body()
+
+        client.post(_URL, content=body, headers=_headers(body))
+
+        assert mock_async_session.commit.await_count == 0
 
 
 @pytest.mark.usefixtures("_configured")

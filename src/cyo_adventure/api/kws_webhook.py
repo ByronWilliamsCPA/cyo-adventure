@@ -13,36 +13,40 @@ and the generated axios client is committed with a CI drift check, so putting
 a machine-to-machine webhook in the schema would churn ``frontend/src/client/``
 for an endpoint no browser will ever hit.
 
-What this does NOT do yet
--------------------------
-It does not persist a verification record. Attribution requires the send leg
-(``send-email``), which is what mints the ``externalPayload`` correlation blob
-that ties a delivery back to a specific guardian; designing the record before
-that exists would mean designing it around ``parentEmail``, the one field we
-least want as a join key. Until then this receiver is an INSTRUMENT: it proves
-the signature scheme against the real service and answers the open question
-that no documentation settles, namely whether ``parent-verified`` fires at all
-on the pre-verified (AgeGraph) path.
+What a delivery is worth, and what it is not
+--------------------------------------------
+A delivery resolves the ``kws_verification`` row whose id the send leg minted
+and handed out as ``externalPayload`` (``consent/service.py``). That row is
+adult-verification evidence, corroborating the 16 CFR 312.5 consent record on
+``User.consent_*``, never a replacement for it: KWS establishes that an adult
+is an adult, and Epic's own documentation disclaims the consent and direct
+notice legs entirely.
 
-Because an instrument that silently discards real consent evidence would be
-worse than no instrument, the production guard below is a mechanism rather
-than a promise: this route refuses to process a delivery while
-``kws_environment`` is ``"production"``, and that refusal is removed by the
-commit that adds persistence, not before.
+Everything this route declines to treat as an error
+---------------------------------------------------
+An unrecognised event name, another organization's delivery, a missing or
+malformed ``externalPayload``, and an attempt id we hold no row for are all
+answered ``200`` with ``handled=False``. None of them can become ours on a
+later attempt, so a non-2xx would only buy a retry loop against a decision that
+cannot change. A signature failure is the opposite and is answered ``401``,
+because that one IS about whether to believe the delivery at all.
 """
 
 from __future__ import annotations
 
 import json
 import time
-from typing import Annotated
+from typing import TYPE_CHECKING, Annotated
 
 from fastapi import APIRouter, Header, Request
 from pydantic import BaseModel, ConfigDict, Field
 
+from cyo_adventure.api.deps import DbSession
 from cyo_adventure.consent import (
     FreshnessWindow,
-    require_non_production_kws_environment,
+    ParentVerifiedOutcome,
+    parse_correlation,
+    record_parent_verified,
     verify_webhook_signature,
 )
 from cyo_adventure.core.config import settings
@@ -52,6 +56,9 @@ from cyo_adventure.core.exceptions import (
     ValidationError,
 )
 from cyo_adventure.utils.logging import get_logger
+
+if TYPE_CHECKING:
+    import uuid
 
 logger = get_logger(__name__)
 
@@ -190,6 +197,7 @@ def _require_receiver_configured() -> str:
 )
 async def receive_parent_verified(
     request: Request,
+    session: DbSession,
     x_kws_signature: Annotated[str, Header()] = "",
 ) -> ParentVerifiedAck:
     """Authenticate and record a KWS ``parent-verified`` delivery.
@@ -212,6 +220,10 @@ async def receive_parent_verified(
 
     Args:
         request: The inbound request, read for its raw body.
+        session: The request unit of work the verification row is resolved on.
+            This handler never commits it; ``UnitOfWorkMiddleware`` does, before
+            the acknowledgement reaches KWS, so a 200 is never sent for a
+            resolution that has not landed.
         x_kws_signature: The signature header, defaulted to empty so a missing
             header is a signature failure rather than a 422 shape error.
 
@@ -226,7 +238,6 @@ async def receive_parent_verified(
             JSON object.
     """
     secret = _require_receiver_configured()
-    require_non_production_kws_environment(action="accept a parent-verified delivery")
 
     body = await request.body()
     if len(body) > _MAX_BODY_BYTES:
@@ -276,10 +287,9 @@ async def receive_parent_verified(
         )
         return ParentVerifiedAck(handled=False)
 
-    # No parent email, and no externalPayload contents: the first is the most
-    # sensitive field in the delivery and the second is our own correlation
-    # blob, which is only meaningful once the send leg mints it. Its presence
-    # is worth knowing; its value is not.
+    # No parent email: it is the most sensitive field in the delivery, it is
+    # never a join key here, and the attempt id below identifies the attempt
+    # without identifying a person.
     logger.info(
         "kws_parent_verified",
         verified=event.payload.status.verified,
@@ -290,7 +300,60 @@ async def receive_parent_verified(
         enabled_methods=settings.kws_enabled_methods,
         event_time=event.time,
     )
-    return ParentVerifiedAck(handled=True)
+
+    attempt_id = _attempt_id(event)
+    if attempt_id is None:
+        return ParentVerifiedAck(handled=False)
+
+    handled = await record_parent_verified(
+        session,
+        ParentVerifiedOutcome(
+            attempt_id=attempt_id,
+            verified=event.payload.status.verified,
+            transaction_id=event.payload.status.transaction_id,
+        ),
+    )
+    return ParentVerifiedAck(handled=handled)
+
+
+def _attempt_id(event: _VerificationEvent) -> uuid.UUID | None:
+    """Read our own attempt id out of the delivery's ``externalPayload``.
+
+    #CRITICAL: security: ``externalPayload`` is third-party-echoed, untrusted
+    input, and it is parsed in full rather than trusted because we minted its
+    ancestor. A missing or malformed one is a routing outcome (``handled=
+    False``), not a 4xx: both are terminal, and answering non-2xx would put KWS
+    into a retry loop over a body that cannot improve. The parsed id is still
+    only a lookup key; the row it finds is what decides whether an attempt is
+    real.
+    #VERIFY: tests/unit/test_kws_webhook.py::
+    test_missing_external_payload_not_handled and
+    ::test_malformed_external_payload_not_handled.
+
+    Args:
+        event: The parsed delivery envelope.
+
+    Returns:
+        uuid.UUID | None: The attempt id, or None when the delivery carries no
+            payload we can read.
+    """
+    raw = event.payload.external_payload
+    if raw is None:
+        logger.warning(
+            "kws_webhook_without_external_payload",
+            kws_environment=settings.kws_environment,
+        )
+        return None
+    try:
+        return parse_correlation(raw).attempt_id
+    except ValidationError:
+        # The value itself is never logged: it is ours, it is opaque, and an
+        # unparsable one is as likely to be an attacker's guess as a bug.
+        logger.warning(
+            "kws_webhook_unreadable_external_payload",
+            kws_environment=settings.kws_environment,
+        )
+        return None
 
 
 def _product_matches(event: _VerificationEvent) -> bool:

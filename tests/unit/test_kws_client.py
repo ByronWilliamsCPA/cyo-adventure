@@ -18,7 +18,11 @@ import httpx
 import pytest
 from pydantic import SecretStr
 
-from cyo_adventure.consent import KwsClient, VerificationEmailRequest
+from cyo_adventure.consent import (
+    KwsClient,
+    VerificationEmailRequest,
+    mint_correlation,
+)
 from cyo_adventure.core.config import settings
 from cyo_adventure.core.exceptions import (
     ConfigurationError,
@@ -36,6 +40,13 @@ _SEND_URL = f"{_API_ORIGIN}/v1/verifications/send-email"
 _TOKEN_URL = f"{_AUTH_ORIGIN}/auth/realms/kws/protocol/openid-connect/token"
 
 _REQUEST = VerificationEmailRequest(email=_PARENT_EMAIL, location="US", language="en")
+# One attempt token, reused across these tests the way _REQUEST is. The client
+# no longer mints its own: the token is the primary key of the kws_verification
+# row and must exist before the send goes out, so the caller supplies it. Hoisted
+# to module scope rather than called inline because a mint_correlation() inside a
+# pytest.raises body would be a second call in the block
+# (scripts/check_pytest_raises_scope.py).
+_CORRELATION = mint_correlation()
 
 
 @pytest.fixture
@@ -172,7 +183,9 @@ class TestRequestShape:
         """Every field KWS documents as required is present and correct."""
         recorder = _Recorder([_OK])
 
-        result = await _client(recorder).send_verification_email(_REQUEST)
+        result = await _client(recorder).send_verification_email(
+            _REQUEST, correlation=_CORRELATION
+        )
 
         body = _body_of(recorder.send_requests[0])
         assert body["email"] == _PARENT_EMAIL
@@ -195,7 +208,9 @@ class TestRequestShape:
         """
         recorder = _Recorder([_OK])
 
-        await _client(recorder).send_verification_email(_REQUEST)
+        await _client(recorder).send_verification_email(
+            _REQUEST, correlation=_CORRELATION
+        )
 
         assert _body_of(recorder.send_requests[0])["userContext"] == "parent"
 
@@ -209,7 +224,9 @@ class TestRequestShape:
         """
         recorder = _Recorder([_OK])
 
-        await _client(recorder).send_verification_email(_REQUEST)
+        await _client(recorder).send_verification_email(
+            _REQUEST, correlation=_CORRELATION
+        )
 
         assert recorder.send_requests[0].headers["user-agent"] == "cyo-adventure-test"
 
@@ -223,7 +240,9 @@ class TestRequestShape:
         """
         recorder = _Recorder([_OK])
 
-        await _client(recorder).send_verification_email(_REQUEST)
+        await _client(recorder).send_verification_email(
+            _REQUEST, correlation=_CORRELATION
+        )
 
         assert str(recorder.requests[0].url) == _TOKEN_URL
         assert str(recorder.send_requests[0].url) == _SEND_URL
@@ -234,7 +253,9 @@ class TestRequestShape:
         """The documented grant, with the API key as the Basic password."""
         recorder = _Recorder([_OK])
 
-        await _client(recorder).send_verification_email(_REQUEST)
+        await _client(recorder).send_verification_email(
+            _REQUEST, correlation=_CORRELATION
+        )
 
         token_request = recorder.requests[0]
         assert token_request.headers["authorization"].startswith("Basic ")
@@ -247,7 +268,9 @@ class TestRequestShape:
         """The token minted on the auth host is what authorizes the API call."""
         recorder = _Recorder([_OK])
 
-        await _client(recorder).send_verification_email(_REQUEST)
+        await _client(recorder).send_verification_email(
+            _REQUEST, correlation=_CORRELATION
+        )
 
         assert recorder.send_requests[0].headers["authorization"] == f"Bearer {_TOKEN}"
 
@@ -267,8 +290,8 @@ class TestTokenHandling:
         recorder = _Recorder([_OK])
         client = _client(recorder)
 
-        await client.send_verification_email(_REQUEST)
-        await client.send_verification_email(_REQUEST)
+        await client.send_verification_email(_REQUEST, correlation=_CORRELATION)
+        await client.send_verification_email(_REQUEST, correlation=_CORRELATION)
 
         assert recorder.token_calls == 1
 
@@ -292,7 +315,10 @@ class TestTokenHandling:
         client = KwsClient(httpx.AsyncClient(transport=_SuspendingTransport(recorder)))
 
         await asyncio.gather(
-            *(client.send_verification_email(_REQUEST) for _ in range(5))
+            *(
+                client.send_verification_email(_REQUEST, correlation=_CORRELATION)
+                for _ in range(5)
+            )
         )
 
         assert recorder.token_calls == 1
@@ -303,7 +329,9 @@ class TestTokenHandling:
         """KWS token lifetimes vary, so a 401 means expiry, not bad credentials."""
         recorder = _Recorder([401, _OK])
 
-        await _client(recorder).send_verification_email(_REQUEST)
+        await _client(recorder).send_verification_email(
+            _REQUEST, correlation=_CORRELATION
+        )
 
         assert recorder.token_calls == 2
         assert len(recorder.send_requests) == 2
@@ -321,7 +349,7 @@ class TestTokenHandling:
         client = _client(recorder)
 
         with pytest.raises(ExternalServiceError):
-            await client.send_verification_email(_REQUEST)
+            await client.send_verification_email(_REQUEST, correlation=_CORRELATION)
 
         assert recorder.token_calls == 2
 
@@ -337,7 +365,7 @@ class TestTokenHandling:
         client = KwsClient(httpx.AsyncClient(transport=httpx.MockTransport(handle)))
 
         with pytest.raises(ExternalServiceError):
-            await client.send_verification_email(_REQUEST)
+            await client.send_verification_email(_REQUEST, correlation=_CORRELATION)
 
     @pytest.mark.unit
     @pytest.mark.asyncio
@@ -352,7 +380,7 @@ class TestTokenHandling:
         client = KwsClient(httpx.AsyncClient(transport=httpx.MockTransport(handle)))
 
         with pytest.raises(ExternalServiceError):
-            await client.send_verification_email(_REQUEST)
+            await client.send_verification_email(_REQUEST, correlation=_CORRELATION)
 
     @pytest.mark.unit
     @pytest.mark.asyncio
@@ -372,8 +400,8 @@ class TestTokenHandling:
             return httpx.Response(200, json={})
 
         client = KwsClient(httpx.AsyncClient(transport=httpx.MockTransport(handle)))
-        await client.send_verification_email(_REQUEST)
-        await client.send_verification_email(_REQUEST)
+        await client.send_verification_email(_REQUEST, correlation=_CORRELATION)
+        await client.send_verification_email(_REQUEST, correlation=_CORRELATION)
 
         assert calls["token"] == 1
 
@@ -389,7 +417,9 @@ class TestRetryPolicy:
         recorder = _Recorder([503, _OK])
 
         with patch("cyo_adventure.consent.kws_client._BACKOFF_BASE_SECONDS", 0):
-            await _client(recorder).send_verification_email(_REQUEST)
+            await _client(recorder).send_verification_email(
+                _REQUEST, correlation=_CORRELATION
+            )
 
         assert len(recorder.send_requests) == 2
 
@@ -404,7 +434,7 @@ class TestRetryPolicy:
             patch("cyo_adventure.consent.kws_client._BACKOFF_BASE_SECONDS", 0),
             pytest.raises(ExternalServiceError),
         ):
-            await client.send_verification_email(_REQUEST)
+            await client.send_verification_email(_REQUEST, correlation=_CORRELATION)
 
         assert len(recorder.send_requests) == 3
 
@@ -423,7 +453,7 @@ class TestRetryPolicy:
         client = _client(recorder)
 
         with pytest.raises(ExternalServiceError) as caught:
-            await client.send_verification_email(_REQUEST)
+            await client.send_verification_email(_REQUEST, correlation=_CORRELATION)
 
         assert len(recorder.send_requests) == 1
         assert caught.value.error_code == "KWS_RATE_LIMITED"
@@ -437,7 +467,7 @@ class TestRetryPolicy:
         client = _client(recorder)
 
         with pytest.raises(ExternalServiceError):
-            await client.send_verification_email(_REQUEST)
+            await client.send_verification_email(_REQUEST, correlation=_CORRELATION)
 
         assert len(recorder.send_requests) == 1
 
@@ -462,7 +492,7 @@ class TestRetryPolicy:
             patch("cyo_adventure.consent.kws_client._BACKOFF_BASE_SECONDS", 0),
             pytest.raises(ExternalServiceError),
         ):
-            await client.send_verification_email(_REQUEST)
+            await client.send_verification_email(_REQUEST, correlation=_CORRELATION)
 
         assert attempts["count"] == 3
 
@@ -510,7 +540,7 @@ class TestValidation:
         client = _client(recorder)
 
         with pytest.raises(ValidationError):
-            await client.send_verification_email(request)
+            await client.send_verification_email(request, correlation=_CORRELATION)
 
         assert recorder.send_requests == []
 
@@ -522,7 +552,9 @@ class TestValidation:
         recorder = _Recorder([_OK])
         request = VerificationEmailRequest(email=_PARENT_EMAIL, location=location)
 
-        await _client(recorder).send_verification_email(request)
+        await _client(recorder).send_verification_email(
+            request, correlation=_CORRELATION
+        )
 
         assert _body_of(recorder.send_requests[0])["location"] == location
 
@@ -539,35 +571,13 @@ class TestValidation:
         client = _client(_Recorder([_OK]))
 
         with pytest.raises(ValidationError) as caught:
-            await client.send_verification_email(request)
+            await client.send_verification_email(request, correlation=_CORRELATION)
 
         assert "not-an-email" not in json.dumps(caught.value.to_dict())
 
 
 class TestRefusalToRun:
     """Configurations the send leg declines to serve."""
-
-    @pytest.mark.unit
-    @pytest.mark.asyncio
-    @pytest.mark.usefixtures("_configured")
-    async def test_production_environment_refuses_to_send(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
-        """Emailing a real parent from a system that records nothing is worse.
-
-        It spends a stranger's time and card details on an experiment whose
-        result we cannot keep. Expected to be DELETED by the change that adds
-        the verification record.
-        """
-        monkeypatch.setattr(settings, "kws_environment", "production")
-        recorder = _Recorder([_OK])
-
-        client = _client(recorder)
-
-        with pytest.raises(ConfigurationError):
-            await client.send_verification_email(_REQUEST)
-
-        assert recorder.requests == []
 
     @pytest.mark.unit
     @pytest.mark.asyncio
@@ -585,7 +595,7 @@ class TestRefusalToRun:
         client = _client(recorder)
 
         with pytest.raises(ConfigurationError):
-            await client.send_verification_email(_REQUEST)
+            await client.send_verification_email(_REQUEST, correlation=_CORRELATION)
 
         assert recorder.requests == []
 
@@ -601,7 +611,9 @@ class TestDisclosure:
         recorder = _Recorder([_OK])
 
         with patch("cyo_adventure.consent.kws_client.logger") as mock_logger:
-            result = await _client(recorder).send_verification_email(_REQUEST)
+            result = await _client(recorder).send_verification_email(
+                _REQUEST, correlation=_CORRELATION
+            )
 
         rendered = _rendered(mock_logger)
         assert _PARENT_EMAIL not in rendered
@@ -619,7 +631,7 @@ class TestDisclosure:
             patch("cyo_adventure.consent.kws_client.logger") as mock_logger,
             pytest.raises(ExternalServiceError) as caught,
         ):
-            await client.send_verification_email(_REQUEST)
+            await client.send_verification_email(_REQUEST, correlation=_CORRELATION)
 
         assert _API_KEY not in _rendered(mock_logger)
         assert _API_KEY not in json.dumps(caught.value.to_dict())
