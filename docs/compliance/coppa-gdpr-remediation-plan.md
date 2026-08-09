@@ -199,7 +199,12 @@ decision is final, per the "we draft, counsel reviews" model adopted this round.
   is the only signature-equivalent; a canvas-drawn signature was considered in the 2026-07-20
   framing and never implemented.** The card-verification rejection was **withdrawn on
   2026-08-08** (16 CFR 312.5(b)(2)(ii) requires no *monetary* transaction, so the "we are not
-  monetized" objection was never valid); the third-party ID vendor remains ruled out. The
+  monetized" objection was never valid). Withdrawing the rejection is not the same as
+  establishing that the method is available to us: the word *monetary* was struck, but "in
+  connection with a transaction" survives verbatim, as does the requirement that the card
+  "provides notification of each discrete transaction to the primary account holder." Whether a
+  zero-charge authorization is a transaction that triggers that notification is the open
+  question, and it is counsel's to answer. The third-party ID vendor remains ruled out. The
   question for counsel is no longer "does a typed signature count as signed" but whether this
   is an enumerated 312.5(b)(2) method **at all**, and it carries adverse authority (FTC
   v. AgeCheq, January 2015). See ADR-018 D1 and `counsel-engagement-brief.md` Section 1.3.
@@ -691,10 +696,16 @@ marked **(no default)** genuinely need your input.
   COPPA 312.5 or GDPR Article 8(2). Options, since a payment-card transaction isn't available
   without a paid tier:
    - **A nominal, non-charging card-verification step** (e.g., a Stripe `SetupIntent`-style $0
-     authorization, not an actual charge) at registration. This satisfies COPPA's enumerated
-     "payment card" method without requiring you to sell anything or build billing; it only
-     needs card-present verification, not a transaction amount. Cheapest to build of the strong
-     options, and doesn't force a monetization decision you haven't made yet.
+     authorization, not an actual charge) at registration. **Corrected 2026-08-08: the original
+     text here said this "satisfies COPPA's enumerated 'payment card' method" and "only needs
+     card-present verification, not a transaction amount." That overstated it in both halves.**
+     The amended rule struck *monetary* from 312.5(b)(2)(ii), which removes the
+     no-paid-tier objection, but it left "in connection with a transaction" and the requirement
+     that the card "provides notification of each discrete transaction to the primary account
+     holder" untouched. A $0 authorization that generates no cardholder notification therefore
+     has an unanswered question at its centre, not a settled answer. Still the cheapest of the
+     strong options to build, and it still does not force a monetization decision; whether it is
+     an enumerated method is for counsel (ADR-018 D1, `counsel-engagement-brief.md` Section 1.4).
    - **A third-party VPC vendor** (e.g., Persona, Yoti, Privo, k-ID, SuperAwesome, ID.me) doing
      ID verification or knowledge-based authentication as a service. Higher cost and integration
      effort, but several of these are purpose-built for child-directed apps and explicitly cover

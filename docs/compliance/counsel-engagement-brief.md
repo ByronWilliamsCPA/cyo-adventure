@@ -158,7 +158,10 @@ The relevant facts, which we have verified in our own source code rather than as
   fails the request** if it matches known personal information, rather than redacting and
   continuing. The relevant code is `src/cyo_adventure/story_requests/screening.py`, where the
   screening step runs before the classifier call, not after it.
-- The outbound request bodies to both services carry **the text and nothing else**. There is no
+- The outbound request bodies to both services carry **the text, the request parameters the vendor
+  API requires, and no identifier of any kind**. The OpenAI body also names the moderation model;
+  the Perspective body also names the language and the set of attributes we ask it to score. Those
+  are the only other fields. There is no
   child identifier, profile identifier, session token, or account identifier in either payload. The
   internal label our code attaches to the text never leaves our process; at this stage it is the
   fixed string `"request"` in any case, identical for every child. The API credential in the request
@@ -188,13 +191,14 @@ methods that satisfy this requirement. We retrieved the current rule text on 202
 Cornell Legal Information Institute's copy of 16 CFR 312.5 and set out the enumerated list at
 312.5(b)(2) here so that counsel can correct us against the authoritative text if our reading of
 it is wrong: (i) a consent form signed by the parent and returned to the operator by postal mail,
-facsimile, or electronic scan; (ii) a credit card, debit card, or other online payment system
-transaction that provides notification of each discrete transaction to the primary account
-holder; (iii) a toll-free telephone call to trained personnel; (iv) a video conference with
-trained personnel; (v) government-issued identification checked against a database, deleted
-promptly after verification; (vi) knowledge-based authentication meeting stated difficulty
-conditions; (vii) a government photo ID compared against a camera image of the parent's face by
-facial recognition and confirmed by trained personnel; (viii) "email plus," available only to an
+facsimile, or electronic scan; (ii) a credit card, debit card, or other online payment system,
+**used in connection with a transaction**, that provides notification of each discrete
+transaction to the primary account holder; (iii) a toll-free telephone call to trained personnel;
+(iv) a video conference with trained personnel; (v) government-issued identification checked
+against a database, deleted promptly after verification; (vi) knowledge-based authentication
+meeting stated difficulty conditions; (vii) a government photo ID compared against a camera image
+of the parent's face by facial recognition and confirmed by trained personnel, **with both the
+identification and the image deleted promptly after verification**; (viii) "email plus," available only to an
 operator that does not "disclose" children's personal information as defined in 16 CFR 312.2;
 and (ix) "text message plus," available on the same no-disclosure condition. Separately,
 16 CFR 312.5(b)(3) permits a Commission-approved safe harbor program to approve a member
@@ -299,7 +303,8 @@ that exclusion was correct, so please treat all three options below as genuinely
   the rest of Question 1 becomes far less expensive to answer.
 - **Retrofitting an enumerated method.** If one of (i) through (vii) is the only defensible answer,
   we would want counsel to say which, so the engineering cost is incurred once and against the
-  right target. Section 1.4 records two we already weighed and rejected, with reasons.
+  right target. Section 1.4 records two we weighed, with reasons: one rejection we are
+  **withdrawing** (the payment-card method) and one we are maintaining.
 
 We ask about a typed name only, because that is the only thing the product captures; there is no
 drawn signature and no other capture mechanism. If counsel's view is that a typed name fails where
@@ -375,11 +380,13 @@ on the enumerated list (a financial transaction plus a printed, signed, returned
 If that is right, combining two enumerated methods needs no approval at all, which may be relevant
 to the retrofit option below.
 
-### 1.4 Why we ruled out two other FTC-recognized methods
+### 1.4 Two other FTC-recognized methods we weighed, one of which we are no longer ruling out
 
-We want counsel to know we considered, and deliberately did not choose, two other methods on the
-FTC's list, so the review can take that into account rather than default back to recommending
-them without knowing they were already weighed:
+We want counsel to know we considered two other methods on the FTC's list, so the review can take
+that into account rather than default back to recommending them without knowing they were already
+weighed. The two are not in the same posture, and the difference matters: we are **withdrawing**
+the first rejection and asking counsel to price the method afresh, and we are **maintaining** the
+second. Read the first bullet as an open option, not as a closed one:
 
 - **A payment-card transaction. We are withdrawing this rejection, and we flag the withdrawal
   because counsel may otherwise read our earlier reasoning as still operative.** We originally
@@ -589,21 +596,40 @@ We flag this because we suspect the more expansive formulation is now widely rep
 practitioner summaries, and we would rather be told plainly that the narrow reading is correct, or
 that the expansive one is, than continue to design against a rule we restated from a headline.
 
-**Question for counsel:** two things, in order. First, please tell us which of the two readings
+**The limit of the constraint, stated before counsel relies on it.** The rule above governs
+corpora **this company builds and controls**. It does not, by itself, say anything about what a
+third party does with child-originated text after we send it. The classifier path described in
+Section 1.0 sends a child's free-text wish to OpenAI's moderation endpoint and Google's
+Perspective API, and we have **not** verified either vendor's retention, model-training, or
+onward-use terms for that traffic. So the honest statement is: no child-originated data enters a
+corpus we control, and whether any child-originated data enters a corpus a **vendor** controls is
+an open question we are raising rather than answering. This is tracked against the same vendor
+due-diligence obligation discussed in Section 3.
+
+**Question for counsel:** three things, in order. First, please tell us which of the two readings
 above is right, since it determines whether this is an obligation about our vendors or an
-obligation about our own model development. Second, and on either reading, please confirm that no
-separate-consent obligation currently triggers for this company, on the theory that no data
-originating from a child is used for AI training or evaluation at all under the constraint
-described above. We ask for confirmation, not a design recommendation; if the company ever wants to
+obligation about our own model development. Second, please confirm that no
+separate-consent obligation triggers on the **first-party** leg, on the theory that no data
+originating from a child enters a training or evaluation corpus this company controls, under the
+constraint described above. Third, please tell us whether the classifier traffic described just
+above needs vendor terms confirmed before that conclusion can be relied on, and if so what the
+terms have to say. We ask for confirmation, not a design recommendation; if the company ever wants to
 depart from this constraint in the future, we understand that would require building a new,
 separate, default-off consent mechanism before any such data collection begins, and we would return
 to counsel at that time.
 
-## 3. Document review: public-facing artifacts (owner drafts, counsel reviews)
+## 3. Document review: compliance artifacts (owner drafts, counsel reviews)
 
-The company has decided that it, not counsel, will produce the first draft of each public-facing
+The company has decided that it, not counsel, will produce the first draft of each
 compliance artifact below, and that counsel's role is to review and redline each one rather than
-draft from scratch. The internal checkpoint that tracks this work is referred to internally as
+draft from scratch. **These are artifacts counsel reviews, which is not the same set as artifacts
+we publish.** The privacy notice and the data-retention policy are published. The written
+Information Security Program and the breach-notification runbook are **internal** documents:
+they are in this list because counsel should review them, not because we intend to publish them,
+and whether either should be published is itself an open owner decision rather than a settled one.
+An earlier version of this packet filed all four under a single "public-facing" heading, which
+invited publishing a description of our security controls to anyone who asked. The internal
+checkpoint that tracks this work is referred to internally as
 "P7-08"; counsel does not need to look up what that label means beyond understanding it is the
 company's own internal tracking checkpoint for this document set. Please review the following
 artifacts, in whatever order is most efficient for your process:
@@ -623,9 +649,16 @@ artifacts, in whatever order is most efficient for your process:
 (subsections (b) and (c)), which is the notice an operator must actually deliver to the parent in
 connection with obtaining consent, and whose required contents the Rule sets out specifically. We
 have no artifact for the second one and no record of anyone checking the consent screen's wording
-against subsection (c)'s content list. We are not asking counsel to draft it. We are asking for two
-things: confirmation that the two notices are in fact distinct obligations and that we have not
-misread a single obligation as two, and, if they are distinct, a redline of the existing consent
+against subsection (c)'s content list.
+
+**We are treating the two notices as distinct obligations rather than asking whether they are.**
+Subsection (d) opens with the words "In addition to the direct notice to the parent," which we read
+as settling the question on the face of the rule: the published notice is owed *on top of* the
+direct notice, not instead of it. We flag our reading so counsel can correct it if we are wrong,
+but we are not planning around the possibility that this collapses into one obligation, and we
+would rather counsel spend the time on content than on the threshold question. We are not asking
+counsel to draft the direct notice. We are asking for two things: **approval of the direct notice's
+content and of when in the flow it is delivered**, and a redline of the existing consent
 screen wording against what subsection (c) actually requires, so we can tell whether we need a new
 document or only better wording on a screen that already exists. This gap surfaced while preparing
 this packet and is not recorded in any of our earlier compliance audits, which is itself a reason to
@@ -652,22 +685,29 @@ them, and we want to be transparent that we have not done that verification ours
 - **The citation itself.** Our internal record cites the relevant rule as: FTC COPPA Rule
   amendments, published at 90 Fed. Reg. 16918, codified at 16 CFR Part 312, with an effective date
   of 2025-06-23 (the amendments took legal effect) and a general compliance date of 2026-04-22
-  (the date by which operators were required to be in compliance). **This citation itself is
-  unverified by us and should be treated as a starting pointer for counsel's own research, not as
-  a confirmed fact.**
-- **The 2026-04-22 general compliance date** stated above, and whether that date is accurate and
-  whether it applies uniformly to every provision discussed in this packet or whether any
-  provision carried a different transition period.
+  (the date by which operators were required to be in compliance). **The citation and these three
+  dates were confirmed against the Federal Register on 2026-08-08** (document 2025-05904, published
+  2025-04-22). What remains unverified by us is the *content* of the amendments, which is what the
+  bullets below are about. Please still confirm the citation in passing, but we are no longer
+  offering it as a bare pointer.
+- **Whether the 2026-04-22 general compliance date applies uniformly** to every provision discussed
+  in this packet. Our reading of the published document is that it does **not**: 16 CFR 312.11(d)(1),
+  (d)(4), and (g) carry a different transition. Please confirm that carve-out and tell us whether
+  any other provision in this packet sits outside the general date.
 - **The claim that the amended rule's definition of "personal information" now includes biometric
   identifiers** (specifically, facial templates and voiceprints) **with no exception for temporary
   security or age-verification use.** This matters to us because the company avoids this category
   entirely today (all avatars are drawn from a preset illustration set, never a photo upload; the
   application has no voice-input feature anywhere), and we want that boundary confirmed as legally
   sound, not merely convenient.
-- **The claim that the amended rule requires its own separate, unbundled, opt-in verifiable
-  parental consent specifically for using or disclosing a child's personal information to train or
-  develop AI models**, distinct from core-service consent, and that this consent cannot be a
-  condition of service access. This is the claim underlying Section 2.3's confirmation ask above.
+- **The scope of the separate-consent obligation at 16 CFR 312.5(a)(2)**, and specifically which of
+  the two readings set out in Section 2.3 is right: whether the obligation is anchored to
+  **disclosure to a third party that is not integral to the service** (our present reading of the
+  rule text), or whether it independently reaches an operator's **first-party** use of children's
+  data to train or develop a model. Note that we are **withdrawing** the more expansive formulation
+  an earlier draft of this packet asserted, namely that the amendments "newly require" separate
+  opt-in consent for AI training as a named category. We took that from secondary commentary and we
+  do not find it in the rule text. Please tell us which reading governs rather than confirming ours.
 - **The claim that the amended rule mandates, rather than merely recommends as best practice, a
   written Information Security Program and a published written data-retention policy** with a
   hard deletion timeline per category of children's data. This is the claim underlying the two
@@ -705,20 +745,25 @@ Section 7.
 
 ## 6. Definition of done for this engagement
 
-We consider this engagement complete when all four of the following are true:
+We consider this engagement complete when all five of the following are true:
 
 - [ ] The five questions in Sections 1 through 3 above (verifiable parental consent, launch
       geography, audience classification, the AI-training data-segregation constraint, and the
-      public-artifact document review) are each closed with a counsel opinion or confirmation, and
+      compliance-artifact document review) are each closed with a counsel opinion or confirmation, and
       our internal architecture record's status is updated from "proposed" to "accepted" with each
       closed decision recorded in place. Question 1 is closed only when all four of its parts are
       answered: whether personal information is collected from a child at all (1A), how each
       third-party recipient is characterised (1B), whether the mechanism we built suffices (1C),
       and what the minimum compliant alternative is if it does not (1D).
-- [ ] The direct-notice gap identified in Section 3 is closed: either counsel confirms the
-      published privacy notice and the direct notice to the parent are one obligation rather than
-      two, or the consent-screen wording has been redlined against 16 CFR 312.4(c) and the
-      resulting change shipped.
+- [ ] The direct-notice gap identified in Section 3 is closed. This is a completion criterion of
+      the Section 3 document-review question rather than a sixth question, and it does not expand
+      the engagement past five. It is closed when **both** of the following have happened: counsel
+      has approved the direct notice's content and its delivery timing against 16 CFR 312.4(b) and
+      (c), and the resulting change has **shipped before any further consent is collected**. There
+      is no closure route that treats the published notice and the direct notice as a single
+      obligation; 16 CFR 312.4(d) requires the published notice "in addition to the direct notice
+      to the parent," so that reading is foreclosed by the rule text rather than open for counsel
+      to confirm.
 - [ ] The five factual and legal claims listed in Section 4 above have been independently
       re-confirmed against the actual Federal Register text (or counsel has told us they could not
       be located or verified as stated).
