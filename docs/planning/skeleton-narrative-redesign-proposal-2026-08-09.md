@@ -256,3 +256,75 @@ gauntlet, the automated adversarial panel is built during stage 1 (it is the pil
 prompts plus the pre-registered rubrics), and the move library plus NC checks are the
 architect agent's guardrails rather than aids to a human author. The catalog rebuild and the
 automation end-state become the same program.
+
+---
+
+## 10. Pilot results (2026-08-09, executed same day)
+
+The section-6 pilot ran end to end: the narrative contract for `the-lost-mitten` (committed,
+NC-checked), three validated bibles, seeded device selections, and six new fills (three arm
+B, three arm C) by isolated authors against the three control fills. All nine fills pass
+`check_fill_integrity` first try; all pass the full gate with no blocking findings, no
+safety flags, and advisory counts at or below control. The NC layer caught two real errors
+before any prose existed (a contract omission and a homograph denylist hit on "wound around
+a bough"), and the selection-vector fingerprint separates arm B's fills while collapsing the
+beat-identical control to one fingerprint, proving the family-guard key discriminates.
+
+### Scores
+
+| Measure | A (control) | B (obligations+bible) | C (free) |
+| --- | --- | --- | --- |
+| PS mean (pre-registered null: barely moves) | 0.597 | 0.562 | 0.560 |
+| Recognition node (kid test) | node 2 | node 6 (past hub, margin met on rated pair) | node 7 |
+| One-story-to-three scale (control 1.5) | 1.5 | 2.5 | 3.0 |
+| Twist called at the setup node? | yes, confidently | yes (retcon unpredicted) | no |
+| Clue-device distinctness (pairwise, 0-3) | 0 | 2 (a-c pair FAILED at 1/3) | 3 |
+| Twist-mechanism distinctness | 0 | 0 (mechanism locked) | 2 |
+| Label distinctness | 0 | 2 (best) | 1 (regressed to template, 3 verbatim collisions with control) |
+
+Arm B **failed both pre-registered distinctness margins**; arm C passed both. But the causes
+are precisely attributable, and neither says "abandon obligations":
+
+1. **B's clue failure is a bible-input failure, not a format failure**: bibles a and c were
+   authored with near-identical device kinds (flattened grass vs parted clover; yarn strand
+   vs wool wisp), so the a-c pair collapsed to noun-swap. The fix is the proposal's own
+   Mechanic Divergence metric applied AT BIBLE GENERATION across bindings, with a wider
+   device-kind taxonomy to draw from.
+2. **B's twist failure is by construction**: `locked_outcome` pinned the reveal mechanism
+   (never-lost-in-carried-container), so all three twists shared it. The contract's own
+   `premise.resolution_space` already lists three mechanisms; the fix is selecting the
+   ending MECHANISM per request from the resolution space (a selection-vector entry) while
+   the tier keeps kind/valence/affect locked. Arm C demonstrated the value: its one
+   mechanism-changed twist (third-party recovery) was the only unpredicted twist in the
+   pilot.
+3. **C's win carries the disqualifier the proposal predicted**: the three free authors
+   independently converged on a shared attractor set (false-clue retcon 3/3, nudge-and-catch
+   retrieval 3/3, cozy-container "napping" reveal 3/3, near-verbatim "boing boing" 2/3),
+   regressed the label surface to the control's template including three verbatim label
+   collisions, and held safety by prompt alone. Free invention diversifies pairwise while
+   converging on attractors, is unsteerable per family, and offers nothing deterministic to
+   check. Pairwise margins cannot see attractor convergence; a sibling-convergence check
+   (device appearing in 2+ sibling fills) must complement them.
+4. **Residual recognition leaks are ritual phrases** in labels and dialogue ("Team time",
+   "One, two, three, reach it together", "boing boing"): a checkable n-gram-overlap class
+   against sibling fills, not a format problem.
+
+### Ruling recommendation
+
+The dial lands at **B-plus**: obligations + bible for coherence, safety, steerability, and
+checkability (every one of which the pilot confirmed: first-pass fidelity, zero safety
+findings, NC catching errors pre-prose, discriminating fingerprints), amended with the
+freedom C proved valuable, delivered through validated machinery rather than trust:
+
+1. Bible generation enforces cross-binding device-kind diversity (MD at bind time, wider
+   taxonomy per device category).
+2. Ending mechanism selected per request from the contract's `resolution_space`;
+   `locked_outcome` locks kind/valence/affect only.
+3. A sibling-convergence check and a ritual-phrase n-gram check join the drafting-loop
+   audits (complementing, not replacing, the pairwise margins).
+4. Everything else in the proposal stands as piloted.
+
+Re-run the same three-arm protocol once amendments 1-3 exist; the pre-registered margins
+stay the same, and arm B-plus must pass what arm B failed. Measured gaps to close in that
+rerun: two-rater fidelity agreement (this pilot used single raters) and the RL-13 FK drift
+at 3-5 observed in all arms including control.
