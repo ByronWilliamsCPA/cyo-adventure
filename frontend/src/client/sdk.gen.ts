@@ -2482,10 +2482,18 @@ export const streamNotificationsApiV1NotificationsStreamGet = <ThrowOnError exte
  * Removes every matching row in the caller's own family (there may be more
  * than one, if two children on the same device both had it downloaded).
  *
+ * Profile-agnostic does not mean unauthenticated: a bare device-grant
+ * principal (paired but with no child profile selected yet, ``Role.DEVICE``)
+ * is rejected. Only a child, guardian, or admin already inside the family
+ * may remove that family's download-tracking rows.
+ *
  * Args:
  * device_id: The reporting device's persistent id (query param).
  * storybook_id: The no-longer-cached book (query param).
  * ctx: The request context (principal and session).
+ *
+ * Raises:
+ * AuthorizationError: If a bare device principal calls this (-> 403).
  */
 export const removeDeviceDownloadApiV1DeviceDownloadsDelete = <ThrowOnError extends boolean = false>(options: Options<RemoveDeviceDownloadApiV1DeviceDownloadsDeleteData, ThrowOnError>): RequestResult<RemoveDeviceDownloadApiV1DeviceDownloadsDeleteResponses, RemoveDeviceDownloadApiV1DeviceDownloadsDeleteErrors, ThrowOnError> => (options.client ?? client).delete<RemoveDeviceDownloadApiV1DeviceDownloadsDeleteResponses, RemoveDeviceDownloadApiV1DeviceDownloadsDeleteErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],

@@ -8356,6 +8356,10 @@ export type RemoveDeviceDownloadApiV1DeviceDownloadsDeleteData = {
 
 export type RemoveDeviceDownloadApiV1DeviceDownloadsDeleteErrors = {
     /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
      * Validation Error
      */
     422: HttpValidationError;
