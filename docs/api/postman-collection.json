@@ -1556,7 +1556,11 @@
                   "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
                   "var schema = {\"properties\": {\"families\": {\"items\": {\"properties\": {\"id\": {\"type\": \"string\"}, \"name\": {\"type\": \"string\"}}, \"type\": \"object\", \"required\": [\"id\", \"name\"]}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"families\"]};",
                   "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
-                  "pm.test(\"families are present and name-ordered\", function () { var body = pm.response.json(); pm.expect(body.families.length).to.be.above(0); pm.expect(body.families[0].name).to.eql(\"Dev Family\"); });"
+                  "// Assert the ordering itself rather than which family happens to sort first:",
+                  "// the seed gained a \"Consented Target Family\" for the admin-create consent",
+                  "// gate, and pinning index 0 to a seed detail makes every future fixture a",
+                  "// false failure here.",
+                  "pm.test(\"families are present and name-ordered\", function () { var body = pm.response.json(); pm.expect(body.families.length).to.be.above(0); var names = body.families.map(function (f) { return f.name; }); var sorted = names.slice().sort(); pm.expect(names, \"families are not name-ordered\").to.eql(sorted); pm.expect(names, \"the seeded dev family is missing\").to.include(\"Dev Family\"); });"
                 ],
                 "type": "text/javascript"
               }
