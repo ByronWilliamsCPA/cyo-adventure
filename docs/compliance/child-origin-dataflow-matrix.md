@@ -63,10 +63,16 @@ one to keep current.
 ## 1. Quick reference
 
 Nine child-originated events, scanned for the three questions that matter first: does the child
-type free text, does the data leave CYO's infrastructure, and is anything about it still an open
-compliance item.
+type free text, does the data reach an independent-use third party, and is anything about it still
+an open compliance item. The infra and vendor columns below track disclosure to an independent-use
+recipient (a party that processes the data for its own purpose, like a classifier or a model
+provider), not CYO's own infrastructure processors. Every row in this table, including
+every "No" / "None" row, is Supabase-hosted on the public tier; that is a single fact true of the
+whole matrix, stated once in [Section 4](#4-cross-cutting-notes) and in the
+[Supabase vendor entry](#supabase-auth--primary-postgres-public-tier) rather than repeated on all
+nine rows, where it would carry no differentiating information.
 
-| # | Event | Child free text? | COPPA PI | Leaves CYO infra? | Vendors touched | Status |
+| # | Event | Child free text? | COPPA PI | Leaves CYO infra to an independent-use recipient? | Vendors touched | Status |
 | --- | ------- | ------------------- | ---------- | -------------------- | ------------------ | -------- |
 | 1 | Starting a kid session (profile pick / device pickup) | No | Behavioral / identifier | No | None | Internal only |
 | 2 | Choosing a branch (in-story choice) | No | Behavioral / identifier | No | None | Internal only |
@@ -177,7 +183,11 @@ event matrix in Section 3 can reference it by name instead of repeating it. "DPA
 - **Retention**: life of the account/record, per this project's own retention table (Section 4).
 - **Training permitted**: N/A, infrastructure processor, not a model vendor.
 - **Status**: processor of record for everything this matrix calls "internal only"; DPA not
-  executed.
+  executed. Deliberately **not** repeated in each event's "Third-party recipients" field in
+  Section 3: it is a constant fact true of every row on the public tier, not a differentiating one,
+  and listing it nine times would not tell a reader anything Section 1's scope note and this entry
+  do not already say once. Treat every "Third-party recipients: none" in Section 3 as "no
+  independent-use recipient"; Supabase is implied throughout, not omitted.
 
 ### Sentry, error telemetry (cross-cutting, not event-specific)
 
@@ -199,8 +209,10 @@ event matrix in Section 3 can reference it by name instead of repeating it. "DPA
 ## 3. Event-by-event matrix
 
 The full ten-field trace for each event: what the child sends, what gets attached to it, where it
-lands, who outside CYO ever sees it, and what a consent decision actually controls. Citations are
-`file:line` against the current backend/frontend tree.
+lands, who outside CYO ever sees it, and what a consent decision actually controls. As in Section 1,
+"Third-party recipients" here means independent-use recipients; Supabase hosts every row as CYO's
+own infrastructure processor and is covered once in Section 2 and Section 4, not repeated per event.
+Citations are `file:line` against the current backend/frontend tree.
 
 ### Event 1: Starting a kid session
 

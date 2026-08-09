@@ -2588,25 +2588,45 @@ posture at a trust boundary must be verified from outside that boundary.
   Commonwealth, M.G.L. c. 93H)
 - **Class:** MANUAL
 - **Protected property:** A written information security program exists covering **all** NY and MA
-  residents' private information, not only children's, implementing reasonable administrative,
-  technical, and physical safeguards (SHIELD) and 201 CMR 17.00's more prescriptive technical
-  requirements (encryption of personal information in transit and at rest, unique authentication
-  credentials, access controls) once a Massachusetts resident exists.
+  residents' private information, not only children's: reasonable administrative, technical, and
+  physical safeguards (SHIELD, GBL §899-bb(2), no itemized technical mandate in the statute itself)
+  and, once a Massachusetts resident exists, 201 CMR 17.00's specific technical requirements, which
+  are narrower than "encrypt everything": encryption of records containing personal information
+  transmitted across public networks, encryption of data transmitted wirelessly, and encryption of
+  personal information stored on laptops or other portable devices (201 CMR 17.04(3), (5)), plus
+  unique authentication credentials and access controls (201 CMR 17.04(1)-(2)). Broader at-rest
+  encryption (e.g. of the primary database) is good practice but is a project control choice, not
+  itself a 201 CMR mandate; do not conflate the two when verifying this row.
 - **Verification target:** The written information security program document, checked specifically
   for all-resident scope (not the COPPA-scoped, children-only program at O-61), and, once a
-  Massachusetts resident exists, the 201 CMR 17.00 technical controls (encryption of PI in transit
-  and at rest, unique credentials, access control) in the deployed system.
+  Massachusetts resident exists, the specific 201 CMR 17.00 technical controls named above
+  (public-network and wireless transmission encryption, portable-device storage encryption, unique
+  credentials, access control) in the deployed system, not a generic "data is encrypted" claim.
 - **Failure oracle:** A NY or MA resident's private information is collected with no written
   security program covering it, or, once a Massachusetts resident exists, the program does not
-  implement 201 CMR 17.00's named technical requirements.
+  implement one of 201 CMR 17.00's four named technical requirements, or this row's evidence
+  substitutes general at-rest database encryption for the statute's actual (narrower) scope.
 - **Negative control:** not determined
-- **Trigger:** First NY or MA resident outside the operator's household. Neither statute carries a
-  minimum company-size or record-count threshold, unlike several comprehensive-privacy laws;
-  attachment is not deferrable by scale the way some other state regimes are.
+- **Trigger:** First NY or MA resident outside the operator's household, in the same sense every
+  other state-law trigger in this register uses "household": a marker of this project's own current
+  single-family operating condition, not a term either statute defines or exempts by. The two
+  statutes do not attach identically once that marker clears, and the difference is worth recording
+  rather than flattening into one line. **NY SHIELD has no such carve-out at all**: it applies to
+  "any person or business that owns or licenses computerized data" including a NY resident's
+  private information, with no minimum size, revenue, or commercial-context threshold (GBL
+  §899-bb(1)(a); confirmed against primary and secondary sources 2026-08-09). **MA 201 CMR 17.00 is
+  narrower on its face**: it applies to a person who owns or licenses personal information "in
+  connection with the provision of goods or services or in connection with employment" (201 CMR
+  17.01(2)), and the Commonwealth's own FAQ guidance states it does not reach a natural person
+  managing personal or household information outside that commercial or employment context. Whether
+  a single-family homelab deployment already sits outside 201 CMR's scope on that basis, independent
+  of whether an MA resident has ever been onboarded, is a genuinely open, more favorable question
+  than SHIELD's and has not been asked of counsel; do not assume either statute is equally deferred
+  by the same household framing.
 - **Existing coverage:** none. O-61's written children's-data security program (COPPA §312.8) is
   adjacent but does not satisfy this row on its own: SHIELD and 201 CMR protect all NY/MA
   residents' private information, not only children's, and 201 CMR's specific technical mandates
-  (encryption, unique credentials) go beyond what O-61's Check text names. A single written
+  (the four items named above) go beyond what O-61's Check text names. A single written
   program could satisfy both rows if scoped and drafted to cover both populations; that scoping
   decision has not been made.
 - **Phase home:** unassigned
@@ -2615,11 +2635,14 @@ posture at a trust boundary must be verified from outside that boundary.
 - **Status:** mechanism unproven
 - **Check:** A written information security program, distinct in scope from O-61's children-only
   program, covers all NY and MA residents' private information with reasonable safeguards (SHIELD
-  Act) and 201 CMR 17.00's specific technical requirements (encryption of PI in transit and at
-  rest, unique authentication credentials, access controls), in place before the first NY or MA
+  Act, GBL §899-bb(2)) and 201 CMR 17.00's four specific technical requirements (public-network and
+  wireless transmission encryption, portable-device storage encryption, unique authentication
+  credentials, access controls; not a blanket at-rest mandate), in place before the first NY or MA
   resident outside the operator's household is onboarded. Filed under SP-11 rather than SP-13
   because, unlike O-61 and the state minors' design codes at O-94/O-97, neither statute is a
-  protected-population duty: both attach to any resident's private information regardless of age
+  protected-population duty: both attach to any resident's private information regardless of age.
+  Whether MA 201 CMR already sits outside scope for a single-family deployment independent of this
+  trigger is a distinct, open question the Trigger field above records rather than answers
 
 ### SP-12 Data Lifecycle, Rights, Processors, Transfers
 
@@ -3202,21 +3225,32 @@ posture at a trust boundary must be verified from outside that boundary.
 - **Framework ref:** not determined
 - **Legal ref:** GDPR Art. 8(1)-(2) (EU 2016/679, member-state consent age 13-16); UK GDPR Art. 8
   as retained and modified by the UK Data Protection Act 2018 s.9 (UK age fixed at 13, no
-  member-state variation)
+  member-state variation). Art. 8 applies specifically where consent under Art. 6(1)(a) is the
+  chosen legal basis for offering an information society service directly to a child; it is not a
+  general age-gate on every legal basis GDPR recognizes (confirmed against primary text and ICO
+  guidance, 2026-08-09).
 - **Class:** MANUAL
 - **Protected property:** A per-member-state (13-16) and UK (13) child-consent-age table exists
-  and is consulted before any EU or UK child's own consent, rather than a holder-of-parental-
-  responsibility's consent, is treated as a valid legal basis for processing that child's data.
+  and is consulted specifically in the Art. 8 pathway: before any EU or UK child's own consent,
+  relied on as the Art. 6(1)(a) legal basis for offering the service directly to that child, is
+  treated as valid without a holder-of-parental-responsibility's consent. Processing under a
+  different lawful basis (contract with the guardian, legitimate interest) is not gated by this
+  table; scope it to the consent pathway only, not to "all child processing."
 - **Verification target:** The consent-age determination table or logic, and the point in the
-  consent flow where an EU/UK-resident child's age is checked against it before consent is
-  accepted from the child directly.
+  **consent-based** signup/onboarding flow where an EU/UK-resident child's age is checked against
+  it before the child's own consent is accepted as the Art. 6(1)(a) basis. Not a general audit of
+  every processing activity's legal basis.
 - **Failure oracle:** An EU or UK child below their applicable Article 8 threshold has their own
-  consent treated as valid without a holder of parental responsibility's consent, or a
-  member state's specific threshold (which varies 13-16 by state) is missing or wrong in the
-  table.
+  consent treated as the valid Art. 6(1)(a) basis for the service without a holder of parental
+  responsibility's consent, or a member state's specific threshold (which varies 13-16 by state)
+  is missing or wrong in the table.
 - **Negative control:** not determined
-- **Trigger:** First EU or UK child or guardian, the same trigger that attaches GDPR / UK GDPR
-  generally per the regulatory-applicability table above.
+- **Trigger:** First EU or UK child or guardian. This is reused as a convenient, consistent timing
+  anchor, the same one every other GDPR-triggered row in this register uses, not a claim that the
+  age table itself is a precondition of GDPR attaching generally. GDPR attaches on that trigger
+  regardless of legal basis; this row's table only becomes load-bearing if and when the product
+  relies on a child's own consent (Art. 6(1)(a)) rather than another lawful basis for that
+  processing.
 - **Existing coverage:** none. Absent from this register entirely until this row: neither O-117
   (country-of-residence signal) nor O-97 (jurisdiction-trigger matrix for state comprehensive-
   privacy and minors'-design-code regimes) extends to GDPR Art. 8's member-state consent-age
@@ -3230,9 +3264,9 @@ posture at a trust boundary must be verified from outside that boundary.
 - **Last verified:** not verified
 - **Status:** mechanism unproven
 - **Check:** A per-member-state (13-16) and UK (13) child-consent-age table exists and is
-  consulted before treating any EU/UK child's own consent, rather than parental/guardian consent,
-  as a valid legal basis, in place before GDPR/UK GDPR attaches (first EU or UK child or
-  guardian)
+  consulted before treating any EU/UK child's own consent as the Art. 6(1)(a) legal basis for
+  offering the service directly to that child (GDPR/UK GDPR Art. 8), in place before the first EU
+  or UK child or guardian is onboarded. Does not gate processing under any other lawful basis
 
 ### SP-16 Availability, Resilience, Recovery
 
