@@ -53,10 +53,9 @@ it?"** The survey answers that precisely, and the answers are smaller than expec
 
 1. **It is validated by a much weaker bar than skeletons are.** The strict bar this session
    built (satisfying-walk floors, max-indegree caps, depth-qualified endings) lives in
-   `scripts/check_skeleton.py:230-393` on the open, unmerged PR #661; it is not on `main`.
-   On #661 it is `--strict`-only, and it carries no rule id in the validator catalog. **It
-   never runs on generated stories.** Skeletons are held to a standard generated stories are
-   not.
+   `scripts/check_skeleton.py:230-401`, merged to `main` as `4e1a08bc` (2026-08-10). It is
+   `--strict`-only, and it carries no rule id in the validator catalog. **It never runs on
+   generated stories.** Skeletons are held to a standard generated stories are not.
 2. **Structural targets are bounds, not distributions.** `band_profile.py` gives min/max
    envelopes; the only midpoint anyone picks is `story_requests/brief.py:207`
    (`node_count = round((min_nodes + max_nodes) / 2)`), a one-line heuristic feeding a
@@ -137,8 +136,8 @@ Two consequences follow immediately.
    and it is a much smaller build than any arm in section 6.**
 
 **This is the measurement that gates the entire program**, and it costs no generation
-tokens. It has now been run (`scripts/analyze_sibling_exposure.py`, an unmerged script
-delivered by the open PR #661), and the answer is decisive.
+tokens. It has now been run (`scripts/analyze_sibling_exposure.py`, merged to `main` as
+`4e1a08bc`), and the answer is decisive.
 
 ### 2b.1 Measured answer
 
@@ -327,20 +326,18 @@ document overstated that. `validator/policy.py:67-74`, `choice_grammar.py:81-86`
 PL-19 and PL-23 read a skeleton's *declared* word target where they read a generated
 story's *actual* words, and RL-13 skips FILL bodies outright. The comment at
 `policy.py:71` documents an avoided *import*, not an avoided dependency. Gate strictness is
-also caller-parameterized: `enforce_grammar` defaults to False, and on `main` today no
-caller anywhere in `src/` or `scripts/` passes `enforce_grammar=True`, so **neither
-generated stories nor the skeleton promotion path runs CG-1 through CG-4**; `worker.py:2326`
-calling `generate_story` without overriding it is one instance of a default that holds
-everywhere. The open, unmerged PR #661 changes only the skeleton side of this: its
-`scripts/check_skeleton.py:478` passes `enforce_grammar=bool(args.strict)`, so CG-1 through
-CG-4 run against a skeleton only when `--strict` is passed explicitly, not as an inherent
-part of promotion. This weakens the comparison originally drawn here: on `main` as it
-stands, the gate's knobs are not, in fact, set differently for the two paths, since neither
-path enforces choice grammar; the asymmetry this section describes exists only once #661
-merges, and even then only when a promoter remembers to pass `--strict`. "The gate
-guarantees validity" still cannot carry the full weight of a cross-path comparison, but the
-reason today is that grammar enforcement is opt-in and currently unexercised on both sides,
-not that one side already opts in and the other does not.
+also caller-parameterized: `enforce_grammar` defaults to False, and no caller anywhere in
+`src/` passes `enforce_grammar=True`, so **generated stories never run CG-1 through CG-4**;
+`worker.py:2326` calling `generate_story` without overriding it is one instance of a default
+that holds across the whole runtime path. `4e1a08bc` (merged to `main` 2026-08-10) changed
+only the skeleton side of this: `scripts/check_skeleton.py:504` passes
+`enforce_grammar=bool(args.strict)`, so CG-1 through CG-4 run against a skeleton only when
+`--strict` is passed explicitly, not as an inherent part of promotion. This weakens the
+comparison originally drawn here: the asymmetry is opt-in, present only when a promoter
+remembers to pass `--strict`, and absent by default on both sides. "The gate guarantees
+validity" still cannot carry the full weight of a cross-path comparison, but the reason is
+that grammar enforcement is opt-in rather than that one path enforces it unconditionally
+and the other does not.
 
 One invariant listed below is weaker than it appears: `validator/safety.py:41` is a
 Phase-2 stub returning an empty report unconditionally, so SAFE-14 cannot produce a
@@ -553,9 +550,9 @@ Divergence.
 **Structural variety**: `diversity/structure.py` already provides `structure_fingerprint`,
 `structure_features`, and `structural_distance` as public library code. This corrects an
 earlier draft of this document, which claimed a new instrument was required; it is not,
-though the strict-bar fitness functions in `scripts/check_skeleton.py` on the open, unmerged
-PR #661 (gap 3 in section 2) do need promoting to library code before they can score
-generated graphs.
+though the strict-bar fitness functions in `scripts/check_skeleton.py` (merged to `main` as
+`4e1a08bc`; gap 1 in section 2) do need promoting from script to library code before they
+can score generated graphs.
 
 **Rater-based** (blind, comparative, using rubrics already written): the six-dimension
 craft rubric with a ship verdict; scene-inventory device distinctness; recognition landing
@@ -568,7 +565,7 @@ node plus the five-point score.
 | Outcome | Margin | Current skeleton path |
 | --- | --- | --- |
 | First-pass gate not blocked | 3/3 | 3/3 (met) |
-| Strict bar (walk/indegree/depth floors; PR #661) | see note | **2 of 61 catalog skeletons pass; 0 of 11 at 10-13** |
+| Strict bar (walk/indegree/depth floors; `4e1a08bc`) | see note | **2 of 61 catalog skeletons pass; 0 of 11 at 10-13** |
 | Blind craft mean | >= 4.0 (the shipping bar) | 4.9 frontier, 4.0 Sonnet |
 | Recognition landing | past the hub node, or no landing | FAILED twice (node 2, node 4) |
 | Sibling grams per 1000 | <= 4.0 after at most one revision round | 1.2 (met) |
@@ -581,14 +578,14 @@ nothing.
 
 **Two margin rows are known defective and must be rebuilt before use.** The strict-bar row
 cannot be a pass/fail margin when the shipped catalog meets it 2 times in 61 (measured
-2026-08-09 across all bands, 0 of 11 at 10-13, using the strict-bar tooling from the open,
-unmerged PR #661 run against the catalog that is actually on `main`). On #661, that bar
-gates *newly drafted* skeletons only when `--strict` is passed; the catalog is grandfathered
-(`scripts/check_skeleton.py:62-68`). Promoting it to a blocking library rule would retire
-97% of the catalog, which is a product decision, not a scoring prerequisite. Separately,
-"safety flags" must be struck from the bench entirely (SAFE-14 is a stub, see section 3),
-and the "portability = passes at Sonnet" row conflicts with this project's own conclusion
-that gate-clean is not publishable.
+2026-08-09 across all bands, 0 of 11 at 10-13, using the strict-bar tooling now on `main` as
+`4e1a08bc`, run against the shipped catalog; re-verified against merged `main` 2026-08-10,
+unchanged). That bar gates *newly drafted* skeletons only when `--strict` is passed; the
+catalog is grandfathered (`scripts/check_skeleton.py:62-68`). Promoting it to a blocking
+library rule would retire 97% of the catalog, which is a product decision, not a scoring
+prerequisite. Separately, "safety flags" must be struck from the bench entirely (SAFE-14 is
+a stub, see section 3), and the "portability = passes at Sonnet" row conflicts with this
+project's own conclusion that gate-clean is not publishable.
 
 **The baseline anchors are also weaker than stated.** Every number in the right-hand column
 comes from pilots run on `the-clocktower-cipher`, which is the catalog's single

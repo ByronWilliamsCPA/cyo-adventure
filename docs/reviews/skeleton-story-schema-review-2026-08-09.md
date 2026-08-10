@@ -223,9 +223,11 @@ skeleton rebuild either fixes for free or trips over:
   covers the same finding at status `decision`: two rows, two statuses, one issue.
 - Five lessons-log rows (AL-074, AL-102, AL-107, AL-111, AL-116) have unescaped pipes that
   break column alignment for any naive parser; `check_lessons_log.py` does not detect this.
-- A cluster of ~10 AL rows (AL-105/107/108/109/112/128/129/132/133/135) describe fixes that
-  exist only on the unmerged `feat/persistent-characters*` branches; they are correctly `open`,
-  but their prose reads as done.
+- A cluster of ~10 AL rows (AL-105/107/108/109/112/128/129/132/133/135) describe fixes on the
+  `feat/persistent-characters*` branches. Those branches merged to `main` as PR #636
+  (`4fc65e5b`, 2026-08-07) and PR #649 (`c2b272cd`, 2026-08-08), so both the rows' `open`
+  status and the "unmerged" wording in their `Ref` columns are stale; each should flip to
+  `applied` against its squash SHA.
 - `api/schemas.py` still derives `VISIT_SET_MAX_LENGTH` from a hardcoded
   `_MAX_REAL_SKELETON_NODES = 505` while the catalog holds larger skeletons and nothing tests
   the constant against the catalog (AL-024).
@@ -278,12 +280,16 @@ comparison, pathfinder, critical analysis) for recommended-but-unbuilt changes.
   metric.** Uniform-random-walk win probability (**positive-valence ending only**; this is
   not the metric the strict walk floor enforces, see the reconciliation below), by band
   median: 3-5 100%, 5-8 63.1%, 8-11 43.2%, 10-13 29.0%, 13-16 **0.16%**, 16+ **0.66%**.
-  (Re-measured over all 61 catalog skeletons at PR #661's head, 736d6a46, on 2026-08-09:
-  3-5, 8-11, and 10-13 reproduce the figures previously reported here; 5-8, 13-16, and 16+
-  do not, previously reported as 71%, 0.3%, and 1.2%, each higher than re-measurement; the
-  discrepancy is unexplained and the earlier derivation is not recorded.) Thirteen of the
-  14 teen gamebooks (8 at 13-16, 6 at 16+) sit at or below 0.1% on this metric;
-  negative-valence ending share runs 78-98% **across the teen gamebooks specifically**
+  (Re-measured over all 61 catalog skeletons, re-verified against merged `main` at
+  `4e1a08bc` on 2026-08-10: 3-5, 8-11, and 10-13 reproduce the figures previously reported
+  here; 5-8, 13-16, and 16+ do not, previously reported as 71%, 0.3%, and 1.2%, each higher
+  than re-measurement. The cause is now known and is not a measurement error: the original
+  band work was done in a local working directory and never committed, so only the numbers
+  reached this document while the producing script and its inputs were left behind, leaving
+  nothing to re-derive the earlier figures from. The six medians above are the re-measured
+  ones and are the figures to use; committing a producer for them is tracked as `UW-C124`
+  and `AL-186`.) Thirteen of the 14 teen gamebooks (8 at 13-16, 6 at 16+) sit at or below 0.1%
+  on this metric; negative-valence ending share runs 78-98% **across the teen gamebooks specifically**
   (`the-pale-road`: 147 of 150 endings negative). That band is not a teen-wide figure:
   teen prose runs 8-70% on the same measure, so the lethality is a property of the
   declared gamebook style rather than of the teen bands.
@@ -486,7 +492,7 @@ recommendation to the owner, not a ruling; the register rows stay open until rul
 > with one amendment: the reconvergence constraint is a **hard gate**, not an advisory. The
 > owner's stated plan is to remove all non-conforming skeletons and build a new catalog set;
 > a robust, high-quality skeleton set is the long-term priority. Implementation status (all
-> delivered on the open, unmerged PR #661; nothing below has landed on `main`): R1's walk
+> delivered on PR #661, merged to `main` as `4e1a08bc` on 2026-08-10): R1's walk
 > floors are ratified in `check_skeleton.py --strict`, PL-24's winnability floor now scales
 > as `max(3, ceil(5% of endings))` in `validator/policy.py`, and the cell-level
 > outcome-spread audit exists as `scripts/check_outcome_spread.py` (3 breaches at tau 0.10
@@ -502,8 +508,8 @@ recommendation to the owner, not a ruling; the register rows stay open until rul
 
 ### Strict-bar conformance census (2026-08-09, post-ruling)
 
-`check_skeleton.py --strict --allow-mvp`, run at PR #661's head (736d6a46, unmerged), over
-all 61 catalog skeletons: **2 pass, 59 fail** (`3-5/puddle-jumping-day`,
+`check_skeleton.py --strict --allow-mvp`, re-verified against merged `main` at `4e1a08bc` on
+2026-08-10, over all 61 catalog skeletons: **2 pass, 59 fail** (`3-5/puddle-jumping-day`,
 `3-5/the-big-red-balloon` are the survivors). Failure drivers, counted per skeleton (most
 fail on several):
 
@@ -547,7 +553,7 @@ gone.
 A raw death-count ceiling would ban the genre (real gamebooks are death-heavy and the
 corpus was authored to that style). Instead adopt three complementary constraints: (a) the
 random-walk satisfying-outcome floor at 2% for teen gamebooks (live in `check_skeleton.py
---strict` on the open PR #661, not yet on `main`, pending this calibration ruling); (b)
+--strict` on `main` as of `4e1a08bc`, pending this calibration ruling); (b)
 PL-24's winnability floor scaled to `max(3, 5% of endings)` instead of the absolute 3 that
 the corpus was calibrated to clear; (c) the cell-level outcome-spread audit (9.3.1), so
 each gamebook cell holds at least one graded-setback tree alongside the punishing ones.
@@ -661,10 +667,10 @@ Two headline facts coexist and are both load-bearing:
 
 The drafting loop for wave 1 must be: generated brief from `band_profile.py` (the pilot's own
 briefs drifted from code twice), structural harness draft, `check_skeleton.py --strict`
-(PR #661), the catalog audits run with the candidate placed in its target cell
-(`check_incell_clones.py`, `check_outcome_spread.py`, the latter also PR #661-only), and a
-mandatory adversarial critique stage before any promotion PR. Strict must additionally
-gate parameterization (a slotless `production_eligible` shell currently exits 0 and would
+(PR #661, merged as `4e1a08bc`), the catalog audits run with the candidate placed in its
+target cell (`check_incell_clones.py`, `check_outcome_spread.py`, the latter added by
+PR #661), and a mandatory adversarial critique stage before any promotion PR. Strict must
+additionally gate parameterization (a slotless `production_eligible` shell currently exits 0 and would
 take the legacy free-text fill path in matching). The
 next-generation checks the critiques specify, in priority order: tag-vs-beat honesty audit,
 positional fate-bias check with seeded option shuffling, sibling reachable-ending-overlap and
@@ -854,11 +860,11 @@ experiment:
 
 Items 1-3, 5-9 change what compliant skeletons look like and should be ruled before rebuild
 wave 1; items 4, 10-12 are documentation or post-wave recalibration. Also implemented on
-the open, unmerged PR #661 (the hand-authoring recommendations, re-scoped for LLM authoring
-per the owner's steer): `scripts/generate_drafting_brief.py` emits the full per-cell
-constraint set from the enforced sources (AL-153 applied; hand-copied briefs drifted twice
-during the pilot), and PR #661 also fixes `skeleton-format.md` to carry the corrected word
-table (see 2.1), the strict-bar section, and the `{SLOT}`/contract grammar (see 2.3); none
-of this has landed on `main`. The pure-hand drafting path receives no further tooling
+PR #661, merged to `main` as `4e1a08bc` on 2026-08-10 (the hand-authoring recommendations,
+re-scoped for LLM authoring per the owner's steer): `scripts/generate_drafting_brief.py`
+emits the full per-cell constraint set from the enforced sources (AL-153 applied; hand-copied
+briefs drifted twice during the pilot), and PR #661 also fixes `skeleton-format.md` to carry
+the corrected word table (see 2.1), the strict-bar section, and the `{SLOT}`/contract grammar
+(see 2.3). The pure-hand drafting path receives no further tooling
 investment; the strict-bar reference and brief generator serve the LLM authoring agents
 that are the catalog's actual production path.
