@@ -72,6 +72,15 @@
   margin: var(--space-3, 0.75rem) 0;
 }
 
+/*
+  The wrapper carries tabindex so a keyboard user can scroll it, which means it
+  can receive focus and therefore must show that it has.
+*/
+.legal__table-wrap:focus-visible {
+  outline: 2px solid var(--color-ink, #2c1a0e);
+  outline-offset: 2px;
+}
+
 .legal__table {
   width: 100%;
   min-width: 32rem;
@@ -84,7 +93,10 @@
   padding: 0.5rem 0.75rem;
   text-align: left;
   vertical-align: top;
-  border-bottom: 1px solid var(--color-border, rgba(44, 26, 14, 0.15));
+  /* --color-border-soft, not --color-border: only the former is defined in the
+     design system's tokens.css, so the latter silently fell through to its
+     fallback in both themes and the dark-mode value never applied. */
+  border-bottom: 1px solid var(--color-border-soft, rgba(44, 26, 14, 0.15));
 }
 
 .legal__table th {

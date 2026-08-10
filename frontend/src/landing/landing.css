@@ -170,7 +170,19 @@
   text-decoration: underline;
 }
 
-.landing__footer-link:hover,
+.landing__footer-link:hover {
+  color: var(--color-ink, #2c1a0e);
+}
+
+/*
+  Focus gets its own rule rather than sharing the hover one. A colour shift
+  alone is not a focus indicator: it fails WCAG 2.4.11 on its own, and these
+  two links are the entire keyboard path to the privacy policy from the
+  landing page.
+*/
 .landing__footer-link:focus-visible {
   color: var(--color-ink, #2c1a0e);
+  outline: 2px solid var(--color-ink, #2c1a0e);
+  outline-offset: 3px;
+  border-radius: 2px;
 }

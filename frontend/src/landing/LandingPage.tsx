@@ -151,6 +151,14 @@ export function LandingPage() {
           not only by anyone holding the direct URL: a policy reachable only
           through a third party's consent screen is not published in any sense
           a parent would recognise. */}
+      {/* Deliberately INSIDE <main>, accepting that a <footer> descended from
+          <main> maps to `generic` rather than the `contentinfo` landmark.
+          Moving it out is the textbook fix and is wrong here: `.landing` is a
+          flex-centred hero with `min-height: 100vh` and the page background on
+          it, so a sibling footer would land a full viewport down and outside
+          the gradient. The links stay reachable by landmark navigation through
+          the labelled <nav> below, which is the affordance that actually
+          carries a screen-reader user to them. */}
       <footer className="landing__footer">
         <nav aria-label="About this app">
           <Link className="landing__footer-link" to={PRIVACY_PATH}>
