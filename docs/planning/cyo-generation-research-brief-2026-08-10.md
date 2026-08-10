@@ -949,6 +949,37 @@ The stake observation was not something we had proposed and is now a candidate l
 right: in the control pair, forcing a mechanism is a free retry in both books, and in the treatment
 it costs something. That is a property of the consequence graph rather than of the choice.
 
+### 13.4 The instrument was then tested against a pair we knew was bad
+
+The round discarded in 12 was not thrown away. Its contaminated book, sharing fourteen of
+twenty-four props with the base book, is the closest thing we have to a known-bad answer, so we
+kept it as a negative control and rated it with the same six questions.
+
+| Question | Contaminated pair | Clean pair |
+| --- | --- | --- |
+| Same kinds of actions | 5, 5 | 5, 4 |
+| Same tradeoffs | 5, 5 | 4, 4 |
+| Different consequences *(high good)* | 2, 2 | 3, 3 |
+| Repeated sequence | 5, 5 | 5, 5 |
+| Meaningful and informed *(high good)* | 3, 4 | 4, 5 |
+| **Solution transfer** *(high bad)* | **5, 5** | **2, 2** |
+| Forced comparison | **more similar**, high confidence both | less similar |
+
+Both raters chose the contaminated pair, in opposite orders, and both independently found the
+verbatim sentence the shared binding had produced in both books, and noticed that the two puzzles
+reduce to the same arithmetic and land on the same answer. One summarised it better than we could:
+"A child who read alpha does not solve delta's puzzle; they recognise it."
+
+We report this because a reader is entitled to ask whether the six questions measure anything. On
+the one case where the answer is known in advance, they separate it by three points on the item
+that matters, unanimously. That is the evidence the 13.1 result rests on.
+
+It also settles the fate of two questions. **"Same kinds of actions" and "repeated sequence" have
+now saturated in three consecutive runs**, scoring 5 for every pair, because every book sits on one
+graph. Both raters warned, unprompted and in nearly the same words, that an evaluator scoring on
+fork shape alone would report a null result and be wrong. Anyone reusing this instrument should
+drop both from the score and keep them only as a description of the condition.
+
 ## 14. The main finding: our measurement instrument ranks the pairs backwards
 
 We had built a deterministic decision-overlap score on top of blind human annotation, precisely to

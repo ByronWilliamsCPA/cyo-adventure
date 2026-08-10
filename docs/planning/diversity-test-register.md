@@ -64,7 +64,7 @@ omits what readers respond to**, and each needs re-specifying rather than re-sch
 | D-3b | Same vocabulary over contract **plus binding** | Is the inversion a vocabulary problem or a layer problem? The contracts describe `n_clockface` as "answer the test on its own terms" and "fit the piece the way the diagram shows", which Rule 2 correctly calls one decision; the mechanic readers responded to lives in the binding (`clock_arithmetic`, `rhythm_code`, `pictogram_code`). | Identical annotation pass with each plan's bound devices attached. | 1 to 2 annotators over 3 plans | Ordering still inverts with the binding visible, which would mean the discriminating property is not in the plan at all and only the filled prose carries it. Did not fire. | **done, POSITIVE, 1 annotator** |
 | D-3c | Confirm D-3b with a second blind annotator | Is D-3b reproducible, and does it survive a subset fixed in advance? | Second independent annotator, same three bundles, same brief. Analysis pre-registered below before the labels exist. | 1 annotator over 3 plans | The second annotator's `reasoning_kind` does not separate the pairs in the readers' direction over the pre-registered fork subset. Did not fire, but the margin nearly vanished. | **done, PARTIAL** |
 | D-4 | Solution-transfer metric | Is the item that actually discriminated computable from a plan, rather than only ratable by a reader? | Formalise "these two puzzles resolve by the same operation to the same answer" against the three existing contracts, and check it reproduces the raters' Q6 ordering (4,4 against 3,3). | deterministic, no model | It cannot reproduce the known ordering on the pair we have already rated. | queued |
-| D-5 | Rate the discarded contaminated arm as a negative control | Does the six-question instrument correctly detect a pair we know is contaminated? | The 14-of-24 shared-prop binding is preserved. Feed `filled_V5b` to fresh blind raters and confirm it scores worse than `filled_V5c` on Q6. | 2 raters | The instrument cannot separate a known-contaminated pair from a clean one, which would invalidate every rating taken with it. | queued |
+| D-5 | Rate the discarded contaminated arm as a negative control | Does the six-question instrument correctly detect a pair we know is contaminated? | The 14-of-24 shared-prop binding is preserved. Feed `filled_V5b` to fresh blind raters and confirm it scores worse than `filled_V5c` on Q6. | 2 raters | Did not fire. Both raters, opposite orders, scored the contaminated pair Q6 = 5 and the clean pair Q6 = 2, and both chose the contaminated pair as more similar at high confidence. A three-point gap on the item that matters. | **done, PASS** |
 
 ### D-3b result, and the pre-registration D-3c must satisfy
 
@@ -135,6 +135,39 @@ in whichever direction the sharpening is written, and the direction that rescues
 the one a motivated author would choose. Any such rule must therefore be treated as a *reliability*
 fix and must not be reported as re-confirming the hypothesis on these same three plans, which would
 be circular. Re-testing validity requires artifacts this vocabulary has never seen, which is D-2.
+
+### D-5 result: the instrument detects a pair we know is bad
+
+The contaminated arm was kept precisely so the instrument could be tested against a known answer.
+Both raters read it blind, in opposite orders, against the same base book.
+
+| Question | Contaminated pair | Clean pair |
+| --- | --- | --- |
+| Same kinds of actions | 5, 5 | 5, 4 |
+| Same tradeoffs | 5, 5 | 4, 4 |
+| Different consequences *(high good)* | 2, 2 | 3, 3 |
+| Repeated sequence | 5, 5 | 5, 5 |
+| Meaningful and informed *(high good)* | 3, 4 | 4, 5 |
+| **Solution transfer** *(high bad)* | **5, 5** | **2, 2** |
+| Forced comparison | **more similar**, high confidence both | less similar |
+
+Both raters independently found the verbatim reuse the binding had caused, quoting the identical
+remedy sentence from both books and noting that the two puzzles reduce to the same arithmetic and
+land on the same answer. One put it exactly right: "A child who read alpha does not solve delta's
+puzzle; they recognise it."
+
+**This validates the ratings behind the headline result.** An instrument that could not separate a
+pair sharing 14 of 24 props from a clean one would have made every earlier rating uninterpretable.
+It separates them by three points on Q6, unanimously.
+
+**Q4 saturated for the third consecutive run** (5, 5 against 5, 5), and Q1 nearly so. Both raters
+warned, unprompted and in the same terms, that an evaluator scoring on fork shape alone would
+report a null and be wrong. Q1 and Q4 should be retired from the scored instrument and kept only as
+a description of the condition.
+
+One rater noted a mismatch that strengthens rather than weakens the result: the contaminated book
+and the clean book share a framing the base book does not, so the contaminated pair had the *less*
+similar opening premise and still won on decision repetition.
 
 ## B. Architectures that do not depend on the broken instrument
 
