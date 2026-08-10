@@ -687,6 +687,65 @@ automatically independent-per-book, but this result says it *can* be made so che
 each book's decisional stratum from the **structural stratum alone and never from a sibling book**.
 That is implementable and it is now the specific mechanism the re-specification should name.
 
+### M-4 rating round 1: both raters agree in direction, and the round is confounded twice
+
+Two blind raters, opposite presentation orders, judging the base against the free-failure control
+and against the stake-priced arm.
+
+| Question | control pair (both free) | **costly pair** |
+| --- | --- | --- |
+| Q1 same kinds of action | 5, 5 | 4, 5 |
+| Q2 same tradeoffs | 5, 4 | 3, 4 |
+| Q3 different consequences *(high good)* | 2, 3 | 3, 2 |
+| Q4 sequence repeats | 5, 5 | 5, 5 |
+| Q5 meaningful and informed *(high good)* | 4, 4 | 4, 4 |
+| **Q6 solution transfer** *(high bad)* | **4, 5** | **3, 4** |
+| Forced comparison | **more repetitive**, both raters, medium confidence | less repetitive |
+
+**Both raters, reading in opposite orders, ranked the control pair as the more decision-repetitive
+one.** That is M-4's hypothesis in the predicted direction, with a consistent one-point Q6 gap. Q4
+saturated at 5 for a fourth consecutive round.
+
+**The round is not clean, and both confounds favour the observed result.**
+
+1. **The arm's `label_style` encoded the treatment.** Its contract offered "name the cost before the
+   reward" among its styles, the author took it, and **35 of 35 labels begin with the word
+   "Spend"** against comparison books using ordinary styles. Rater 1 called it "the single most
+   distinctive authorial signature among the three texts" and both raters cited it in the forced
+   comparison (`AL-225`). This is my design error: a treatment contract should never supply style
+   options that name the treatment.
+2. **Blinding leaked provenance.** The two older books carry `"id": "sk_clocktower_cipher"` and the
+   arm carries `"id": "d6"`. Rater 2 found it unaided, called it "the single most concrete signal in
+   the whole set", and noted it traces two of the three to one origin. That is `AL-207` a second
+   time, and my blinding renamed files while leaving the provenance inside them (`AL-226`).
+
+Per the discipline in `AL-191` the round is **rebuilt, not caveated**: the arm is being re-filled
+with a neutral label style matched to the comparison books, and the blinding will normalise every
+non-prose field. `scripts/check_label_template.py` was written so the first confound cannot recur
+silently; it scores the spoiled arm at 1.000 first-word concentration against 0.057 and 0.171 for
+the comparison books.
+
+**The direction is worth stating even so.** Two raters, opposite orders, agreed, and their reasoning
+cites the fiction-level stakes as well as the label tic: the closing bell that "tolls nine, and not
+one minute after", and the satchel that "plainly cannot hold everything in this room". The re-run
+decides whether that survives without the tic.
+
+### Two defects the raters found that no guard did
+
+Both are in artifacts that have passed every battery in this programme, and both were found by
+readers rather than by tooling.
+
+- **A control book's choice label contradicts its own destination.** "Call the risk not worth it"
+  resolves, in the other two books, as declining the crossing; in this one the text has the
+  character attempt it and slip. A child picking the cautious option gets a near-fall anyway. This
+  book has served as a control in three rating rounds (`AL-227`).
+- **Fact-graph closure held in the contract and was violated by the prose.** The arm's merge node
+  names clues from two of the four rooms when a reader visits exactly one. The contract passed a
+  closure walk under two independent implementations; nothing checks the prose for the same
+  property. `check_fill_fidelity.py` asks whether a node *delivered* its obligations, and nothing
+  asks whether a node *assumed* more than its `entry_state` guarantees (`AL-228`). This is the
+  mirror image of Q-5's finding and is invisible to the whole battery.
+
 ### The confound check corrected me: near-total independence is more than the job needs
 
 Before using the new contract as an M-4 arm, its similarity to the base was compared against the
