@@ -63,6 +63,42 @@ shared wording, rather than remove it) against two alternatives, with the predic
 fixed in advance. If D-6's `verbatim` condition does not converge, constraint B is misdiagnosed and
 section 2 should be discarded rather than defended.
 
+### 2.1 D-6 reported, and it corrects section 2 rather than confirming it
+
+D-6 has since run. Constraint B survives: holding graph, bindings, model and isolation constant and
+changing only whether two arms read one contract or two moves convergence from 2.9 to 16.9 shared
+four-grams per 1000, against a budget of 4.0. Sharing a plan does make books converge.
+
+**But the stratification above is necessary and demonstrably not sufficient, and the reason is that
+section 2 put the leak in the wrong place.** Tracing shared grams to the contract field they draw
+on, `choice_semantics` accounts for well under half; the `premise` carries as much or more, and
+roughly a quarter of shared grams trace to no contract field at all and are same-model idiom
+(`AL-207`). Flattening the shared wording bought a 33 percent reduction and left the result at
+roughly three times budget.
+
+Three corrections follow, and they should be read as amendments to the table in section 2 rather
+than as footnotes to it:
+
+1. **The `premise` belongs in the decisional stratum, not the structural one.** It looks structural,
+   it is the story's dramatic question, and section 2 tacitly left it shared. D-6 says that is the
+   single largest traceable channel. A structural stratum that is genuinely wordless holds topology,
+   fact *names*, typed slots and categories, and no prose at all, the premise included.
+2. **No wording intervention reaches the idiom floor.** Two books written by one model from one
+   situation converge on "let out a breath" and "for a long moment" whatever the plan says. This is
+   a floor on the whole approach, not a defect of any architecture below, and it sets a limit on
+   what the shared-gram guard can ever be asked to certify.
+3. **Section 2 claimed the dilemma "dissolves". It does not; it narrows.** Stratifying removes the
+   part of constraint B that comes from shared wording, which is most of the traceable part and
+   about two thirds of the total. What remains is a shared *situation* producing shared idiom, and
+   nothing in this document addresses that. The honest claim is that stratification is a necessary
+   first move whose sufficiency is now measured and inadequate.
+
+The re-specifications in sections 3 to 5 are unaffected in substance: each is still unblocked, and
+each still wants the same contract field. What changes is the guard they must pass. **Any of them
+that reuses one structural stratum across books must run the shared-gram check across the whole
+generated set, and must expect to fail it on the first attempt.** That check is the one that stopped
+D-2, no proposal we received includes it, and D-6 shows it is not a formality.
+
 ## 3. R2-1b, the decision-program compiler
 
 **As proposed.** Define a minimal DecisionProgram schema, compile 20 candidate decision maps without

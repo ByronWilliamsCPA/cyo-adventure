@@ -64,7 +64,7 @@ omits what readers respond to**, and each needs re-specifying rather than re-sch
 | D-3b | Same vocabulary over contract **plus binding** | Is the inversion a vocabulary problem or a layer problem? The contracts describe `n_clockface` as "answer the test on its own terms" and "fit the piece the way the diagram shows", which Rule 2 correctly calls one decision; the mechanic readers responded to lives in the binding (`clock_arithmetic`, `rhythm_code`, `pictogram_code`). | Identical annotation pass with each plan's bound devices attached. | 1 to 2 annotators over 3 plans | Ordering still inverts with the binding visible, which would mean the discriminating property is not in the plan at all and only the filled prose carries it. Did not fire. | **done, POSITIVE, 1 annotator** |
 | D-3c | Confirm D-3b with a second blind annotator | Is D-3b reproducible, and does it survive a subset fixed in advance? | Second independent annotator, same three bundles, same brief. Analysis pre-registered below before the labels exist. | 1 annotator over 3 plans | The second annotator's `reasoning_kind` does not separate the pairs in the readers' direction over the pre-registered fork subset. Did not fire, but the margin nearly vanished. | **done, PARTIAL** |
 | D-4 | Solution-transfer metric | Is the item that actually discriminated computable from a plan, rather than only ratable by a reader? | Formalise "these two puzzles resolve by the same operation to the same answer" against the three existing contracts, and check it reproduces the raters' Q6 ordering (4,4 against 3,3). Scored against **three** rated pairs rather than the one the row asked for, since D-5 supplied a second ordering. | deterministic, no model | Did not fire. Reproduces all three orderings strictly, and does so on the tier that uses no taxonomy. | **done, POSITIVE but narrow** |
-| D-6 | Which repair unblocks D-2 | `AL-208` says D-2 converged because its arms shared one contract. That is a diagnosis nothing has tested, and three candidate repairs were proposed with no way to choose between them. | One contract, two bindings held constant, three conditions (`verbatim`, `neutral`, `diverge`), six independent 26-node fills. Outcome is the guard battery itself, so no rater is needed. | 6 fills, 0 raters | `verbatim` lands near the pilot's 1.8 to 2.7 per 1000, which would mean contract sharing is not the cause and `AL-208` misdiagnosed D-2. Or all three conditions converge alike, which would mean no cheap repair exists. | **running** |
+| D-6 | Which repair unblocks D-2 | `AL-208` says D-2 converged because its arms shared one contract. That is a diagnosis nothing has tested, and three candidate repairs were proposed with no way to choose between them. | One contract, two bindings held constant, three conditions (`verbatim`, `neutral`, `diverge`), six independent 26-node fills. Outcome is the guard battery itself, so no rater is needed. | 6 fills, 0 raters | First falsifier did not fire: `verbatim` reaches 16.9 per 1000 against the pilot's 2.9, so contract sharing is confirmed as a cause. **Second falsifier substantially fired**: the best repair reaches 11.4, still roughly 3x budget and 4x the pilot. | **done, MIXED: diagnosis confirmed, neither tested repair sufficient** |
 | D-5 | Rate the discarded contaminated arm as a negative control | Does the six-question instrument correctly detect a pair we know is contaminated? | The 14-of-24 shared-prop binding is preserved. Feed `filled_V5b` to fresh blind raters and confirm it scores worse than `filled_V5c` on Q6. | 2 raters | Did not fire. Both raters, opposite orders, scored the contaminated pair Q6 = 5 and the clean pair Q6 = 2, and both chose the contaminated pair as more similar at high confidence. A three-point gap on the item that matters. **Re-run independently 2026-08-10 because the original result was not produced here: two fresh raters in opposite orders reproduced it exactly, Q6 = 5 for the contaminated pair against 2 for the clean one, both choosing the contaminated pair at high confidence.** The instrument detects a known-bad pair, so the ratings in section 13 stand. | **done, PASS, replicated** |
 
 ### D-4 result: solution transfer is computable from a plan, but only its taxonomy-free half
@@ -191,6 +191,61 @@ at 26 nodes; `neutral` and `diverge` land materially below `verbatim`.
 cause and `AL-208` misdiagnosed D-2, which would most likely mean the convergence was a scale
 effect. If all three conditions converge alike, no cheap repair exists and every reusable-plan
 architecture inherits the problem.
+
+### D-6 result: the diagnosis is right, the cheap repairs are not enough, and the leak is not where we said
+
+Six books authored, all six structurally clean (26 nodes, 2,722 to 2,865 words, no directive left,
+no em-dash). Measured on **bodies only**, for a reason given below.
+
+| Condition | Shared 4-grams per 1000 | Against budget 4.0 |
+| --- | --- | --- |
+| `verbatim`, one contract as written | **16.9** | 4.2x |
+| `neutral`, wording flattened | **11.4** | 2.9x |
+| `diverge`, told not to reuse the wording | **12.9** | 3.2x |
+| pilot, **different** contracts, same graph, same bindings | **2.9** | passes |
+
+**The first falsifier did not fire, so `AL-208` is confirmed as a cause.** Holding the graph, the
+two bindings, the model and the isolation constant and changing only whether the arms read one
+contract or two moves convergence from 2.9 to 16.9, a factor of 5.8.
+
+**The second falsifier substantially fired, and this is the operative result.** The best repair
+lands at 11.4, a 33 percent reduction that is still roughly three times budget and four times the
+pilot. **Neither tested repair unblocks D-2.** `neutral` and `diverge` are within noise of each
+other at n=1 per condition, and their ordering flips depending on whether labels are counted, so no
+claim is made about which is better; the claim is that neither is enough.
+
+**A confound was checked and eliminated rather than assumed away.** The pilot's shells shipped
+pre-written choice labels, 13 of 35 identical between its two arms, while D-6's authors wrote every
+label from scratch. That is a second difference between the two setups and it could have carried
+the whole effect. It does not: **labels contribute zero shared 4-grams in every condition,
+including the pilot**, so the entire signal lives in the bodies, which were authored from scratch
+everywhere. Hence bodies-only above. (That labels do not converge here at all is itself a mismatch
+with D-2's 41 to 51 identical menus, and is unexplained; the two candidates are scale and how
+orthogonal the arms' `label_style` values happen to be.)
+
+**Where the leak actually is, which is not where `AL-208` put it.** Tracing each shared gram to the
+contract field whose vocabulary it draws on:
+
+| Condition | shared | traces to `choice_semantics` | to `beat_hint` | to `premise` | to none of them |
+| --- | --- | --- | --- | --- | --- |
+| `verbatim` | 47 | 18 | 19 | **23** | 11 |
+| `neutral` | 33 | 10 | 12 | **17** | 8 |
+| `diverge` | 36 | 10 | 10 | **13** | 12 |
+
+These categories overlap heavily, since premise vocabulary is largely just this story's subject
+matter, so the attribution is indicative and not a partition. But the shape is clear and it
+contradicts the diagnosis: **`choice_semantics` is not the main channel.** Roughly a quarter of
+shared grams trace to no contract field at all and are same-model idiom (`AL-207`), which no
+wording intervention touches, and the premise, which every condition shared by construction,
+carries as much as either field a repair addressed.
+
+**What that does to the repair list.** `AL-208` named three repairs and D-6 tested the two that
+only touch `choice_semantics`. Both fall well short, and now we know why: they repair one of at
+least four channels. The third repair, generating the decisional stratum per book, remains
+untested, is the one [the architecture re-specification](./architecture-respecification-2026-08-10.md)
+proposes, and **D-6 predicts it will also fall short of budget on its own**, because the shared
+premise and the idiom floor survive it. Getting under budget looks likely to need the premise
+varied per book as well, which is a much larger claim about what a reusable plan can hold.
 
 **The obvious construction of `neutral` was tried first and is unusable, which is a result in its
 own right.** Deriving each branch's semantics mechanically from the fact graph, as the facts its

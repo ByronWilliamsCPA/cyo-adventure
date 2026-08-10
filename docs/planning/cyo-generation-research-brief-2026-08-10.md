@@ -1285,6 +1285,51 @@ the other direction. **The fact graph does not contain the decision**, so nothin
 can neutralise the wording while preserving the choice, and the flattening has to be authored under
 a stated rule instead. The rule is what is on trial.
 
+### 16g.1 The result: our diagnosis was right and our repairs were aimed at the wrong thing
+
+| Condition | Shared four-grams per 1000 | Against a budget of 4 |
+| --- | --- | --- |
+| one contract, wording as written | **16.9** | 4.2x |
+| one contract, wording flattened | **11.4** | 2.9x |
+| one contract, authors told to diverge from it | **12.9** | 3.2x |
+| **different** contracts, same graph, same bindings | **2.9** | passes |
+
+**16d is confirmed.** Changing only whether two arms read one contract or two, with graph, bindings,
+model and isolation all held constant, moves convergence by a factor of 5.8.
+
+**And neither repair is enough.** The best lands at 11.4, a third off, still around three times
+budget. We report the two repairs as indistinguishable from each other: at one book pair per
+condition their ordering flips depending on whether choice labels are counted, so the finding is
+that neither suffices, not that one beats the other.
+
+We checked the confound before believing any of this. Our pilot's shells shipped draft choice labels
+and our new books wrote every label from scratch, which is a second difference that could have
+carried the whole effect. It did not: **labels contribute zero shared four-grams in every condition,
+including the pilot.** The entire signal is in the bodies, which were written from scratch
+throughout, so the comparison is clean. We note without explaining it that this contradicts 16d,
+where 41 to 51 of 131 choice menus were identical; scale and how orthogonal the arms' house styles
+happened to be are both candidates.
+
+**The part that changes what we would build.** Tracing each shared gram to the contract field whose
+vocabulary it draws on, `choice_semantics` is well under half. The **premise** carries as much or
+more, and about a quarter of shared grams trace to no contract field at all and are simply what one
+model writes twice: "let out a breath", "for a long moment". The categories overlap, so treat this
+as indicative rather than as a partition, but the shape is not subtle.
+
+So the leak has at least four channels and both our repairs addressed one. Three consequences we
+would rather state than discover later:
+
+1. A "reusable plan" that shares the dramatic question is already sharing the largest traceable
+   channel. If a plan is to be reused, its premise has to vary per book, which is a much stronger
+   constraint than it sounds and may not leave much that is reusable.
+2. **There is an idiom floor no plan-level intervention reaches.** Two books written by one model
+   from one situation converge on stock phrasing whatever the plan says. This bounds what a
+   shared-language guard can ever certify, and it is a property of the generator rather than of any
+   architecture.
+3. The third repair we named in 16d, generating the plan's decisional content per book, is still
+   untested, and **we now predict it will also fall short on its own**, because the premise and the
+   idiom floor survive it.
+
 ## 17. Corrections to Part I
 
 - **5.3's "untested cell" has been tested**, and the result is not the simple one either reading
