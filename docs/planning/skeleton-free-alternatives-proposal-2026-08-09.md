@@ -696,7 +696,65 @@ child's first likely repeat from request 3 or 4 to beyond request 10, which is t
 outcome as authoring 12 to 15 new skeletons per cell, for a fraction of the cost. Nothing
 else in the analysis offers a multiplier.
 
-**The open question, and it is decidable with one cheap experiment.** M1 and M2 are
+### 11.5.1 Result: the multiplier does not exist (2026-08-09)
+
+The experiment was run on `the-midnight-museum` (10-13 short prose,
+production-eligible, Tier 1). Three accepted mutants, all `accepted/held`:
+
+| Mutant | Chain | Structural distance from parent |
+| --- | --- | --- |
+| S | M1 sibling-subtree swap | **0.0000** |
+| D | M4 insert-decision, reconvergence variant | **0.0038** |
+| X | M3 graft from another skeleton, then M4, then M2 | **0.0726** |
+
+The committed anti-clone floor is `TAU_CELL = 0.05`. Hand-authored same-cell
+sibling pairs sit at a median of **0.390**, two orders of magnitude above every
+bounded mutant.
+
+**Verdict: mutation is not a catalog multiplier.** Shape-preserving operators
+are perceptually null by construction (M1 scored exactly 0.0000 on all five swap
+pairs tried, including cross-act swaps), and the shape-changing operator reached
+only 0.0038, still below the floor. A maximum-length chain using only the
+parent's own material reached 0.0064. Applicability was not the constraint:
+M4 had 2,201 eligible sites.
+
+**Why**, and this is the general lesson: **every mutant preserves 100% of the
+parent's `<<FILL>>` beat directives** (95 of 95 nodes, 95 of 95 beats in all
+three mutants). Mutation moves the graph; recognition is driven by scene content
+and decision semantics, which live in the beats. Moving edges around authored
+content cannot change what the reader recognizes.
+
+A rater pass on two fills of mutants S and D (different bindings, the production
+configuration) landed the same-book verdict at **reading position 3, scoring
+2.0**, with the structural difference not visible until position 8, five
+positions after recognition. The deterministic bench agreed: 70.4 shared grams
+per 1000 and perceived similarity 0.9970.
+
+**One finding points somewhere real.** Mutant X was the only one to clear the
+floor, and it did so by grafting 32 nodes from a *different* catalog skeleton.
+That is recombination across two parents, not multiplication of one. Cross-
+skeleton hybridization may be a genuine lever, but it is a different claim,
+untested here, and it scales with pairs of existing skeletons rather than
+replacing the need for them.
+
+**`structural_distance` was vindicated on this evidence**, contrary to the
+hypothesis in section 11.5: `TAU_CELL` rejected exactly the mutants the reader
+rejected, and its ordering matched the reader's. Its order-blindness did not
+bite because no mutant approached the threshold. That is not a general
+exoneration.
+
+**Caveats.** One parent, one rated pair, one pass, and the rating was
+author-scored rather than blind (this environment could not spawn an isolated
+rater). The distance and beat-preservation numbers are deterministic and will
+replicate on any parent; the recognition number is n=1. This parent also sits at
+14 decisions on its longest path, which constrained M4's reconvergence targets;
+an `open_map` or `sorting_hat` parent may give it more room.
+
+**Consequence for the recommended path: Layer 3 is withdrawn.** Layers 0, 1, and
+2 stand, and Layer 2 (catalog depth) becomes more important rather than less,
+because there is no cheap structural substitute for authoring.
+
+**The original open question, retained for the record.** M1 and M2 are
 shape-preserving by design (M1 "preserves every aggregate shape feature"), so a mutant may
 be structurally distinct by the committed floors and still read as the same book. Only M4,
 particularly its `reconvergence` variant, changes global shape. So the experiment is: fill
