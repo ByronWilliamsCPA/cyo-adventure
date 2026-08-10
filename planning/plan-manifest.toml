@@ -150,7 +150,12 @@ source = "docs/planning/unscheduled-work-register.md"
 # checker never discovers the new cluster's table, so its rows are never validated and the run
 # still exits 0 with a lower cluster count. `test_cluster_heading_re_covers_every_manifest_uw_cluster`
 # in `tests/unit/test_check_work_linkage.py` fails when the two drift apart.
-pattern = "^UW-(?P<cluster>[A-N])\\d{2}$"
+# Digits widened 2 -> 2-3 on 2026-08-09: Cluster C crossed 99 in a single change. It stood at
+# UW-C79 before the 2026-08-09 work, PR #661 took it to UW-C83, and this batch appends 40 more to
+# reach UW-C123, because the authoring-lessons linkage cluster grows one row per open lesson and the
+# skeleton/diversity review contributed those 40 at once. Three digits admit UW-C100..C999, a range
+# description rather than a row reference; existing two-digit ids remain valid.
+pattern = "^UW-(?P<cluster>[A-N])\\d{2,3}$"
 
 [namespaces.debt]
 prefix = "debt"

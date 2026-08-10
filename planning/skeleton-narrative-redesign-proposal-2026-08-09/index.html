@@ -1,0 +1,4546 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A choose-your-own-adventure reading app for kids">
+      
+      
+        <meta name="author" content="Byron Williams">
+      
+      
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/skeleton-narrative-redesign-proposal-2026-08-09/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Skeleton Narrative Redesign: obligation skeletons with a locked spine and a per-request story bible - CYO Adventure</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config",""),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#skeleton-narrative-redesign-obligation-skeletons-with-a-locked-spine-and-a-per-request-story-bible" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            CYO Adventure
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Skeleton Narrative Redesign: obligation skeletons with a locked spine and a per-request story bible
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../guides/overview/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  User Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api-reference/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../operations/runbook/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Operations
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../security/assurance-spine/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Security
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../development/architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../project/roadmap/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Project
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Planning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../PROJECT_SETUP/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Supplementary Docs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../ADRs/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    CYO Adventure
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/usage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/supabase-environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supabase environments
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Operations
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/runbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator Runbook
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/authoring-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authoring Guide
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/security-events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security Event Catalog
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../architecture/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/user-journeys/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Journeys
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/system-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/generation-pipeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Generation Pipeline
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/validation-and-player/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation and Player
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/data-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Model
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/assurance-spine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assurance Spine
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/assurance-register/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assurance Register
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/control-inheritance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Control Inheritance Map
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/crypto-inventory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cryptographic Inventory
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/red-team-design-review-2026-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Red Team Design Review
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../api/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/code-quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code Quality
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/license/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    License
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planning
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Planning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../project-vision/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Vision
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tech-spec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tech Specification
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROJECT-PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Plan
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../adr/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADRs
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9_6" id="__nav_9_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ADRs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-001-story-format-json-storybook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-002-client-pwa/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-002
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-003-frontier-llm-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-003
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-004-homelab-first-deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-004
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-005-mandatory-human-approval/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-005
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-006
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-007-raw-output-retention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-008-public-app-store-launch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-008
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-009-supabase-platform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-009
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-010
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-011-story-scale-framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-011
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../research/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Story Structure Diversity
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9_7" id="__nav_9_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Story Structure Diversity
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../story-structure-diversity-critical-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Critical Analysis
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../story-structure-improvement-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Improvement Plan
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../story-structure-implementation-briefs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation Briefs
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supplementary Docs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Supplementary Docs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PROJECT_SETUP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Setup
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPENSSF_COMPLIANCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenSSF Compliance
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PYTHON_COMPATIBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python Compatibility
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../ADRs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_11" id="__nav_11_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ADRs/adr-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR Template
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-the-finding-that-licenses-the-change" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. The finding that licenses the change
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-the-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. The design
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-what-this-fixes-by-construction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. What this fixes by construction
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-fidelity-safety-and-coherence-under-the-new-contract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Fidelity, safety, and coherence under the new contract
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-hard-prerequisites-found-in-the-pipeline-do-these-before-any-format-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Hard prerequisites found in the pipeline (do these before any format work)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-the-pilot-re-specifies-sq-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. The pilot (re-specifies SQ-12)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-staged-sequence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Staged sequence
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-open-decisions-for-the-owner" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Open decisions for the owner
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-addendum-2026-08-09-owner-steer-the-automation-end-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Addendum (2026-08-09, owner steer): the automation end-state
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-pilot-results-2026-08-09-executed-same-day" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Pilot results (2026-08-09, executed same day)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Pilot results (2026-08-09, executed same day)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scores" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scores
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ruling-recommendation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ruling recommendation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-higher-difficulty-pilot-the-clocktower-cipher-at-10-13-2026-08-09" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Higher-difficulty pilot: the-clocktower-cipher at 10-13 (2026-08-09)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="11. Higher-difficulty pilot: the-clocktower-cipher at 10-13 (2026-08-09)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-held-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What held up
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-failed-and-why" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What failed, and why
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-next-amendment-set-contract-hygiene" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The next amendment set (contract hygiene)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verdict" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verdict
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-third-pilot-same-cell-after-contract-hygiene-2026-08-09" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Third pilot: same cell after contract hygiene (2026-08-09)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="12. Third pilot: same cell after contract hygiene (2026-08-09)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deterministic-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deterministic results
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rater-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rater results
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verdict_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verdict
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-model-tier-study-which-model-can-fill-a-contract-2026-08-09" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. Model-tier study: which model can fill a contract? (2026-08-09)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="13. Model-tier study: which model can fill a contract? (2026-08-09)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#first-pass-before-any-revision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        First pass, before any revision
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#after-one-tool-feedback-revision-round" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        After one tool-feedback revision round
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cross-model-convergence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cross-model convergence
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prose-quality-the-axis-that-actually-separates-the-tiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prose quality: the axis that actually separates the tiers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-architectural-finding-obligations-are-declared-proved-coherent-and-never-verified" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The architectural finding: obligations are declared, proved coherent, and never verified
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#diversity-is-model-independent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Diversity is model-independent
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recommendation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommendation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="skeleton-narrative-redesign-obligation-skeletons-with-a-locked-spine-and-a-per-request-story-bible">Skeleton Narrative Redesign: obligation skeletons with a locked spine and a per-request story bible<a class="headerlink" href="#skeleton-narrative-redesign-obligation-skeletons-with-a-locked-spine-and-a-per-request-story-bible" title="Permanent link">&para;</a></h1>
+<p><strong>Status</strong>: proposal, awaiting owner ruling
+<strong>Date</strong>: 2026-08-09
+<strong>Owner directive</strong>: "revise the approach so that the skeletons still provide enough structure
+for an llm to generate the story but are less prescriptive on the mechanics and story so we
+have greater story diversity. The skeletons should help build unique content not prohibit it."
+Goal restated by the owner the same day: high-quality LLM-generated stories; few hand-authored.
+<strong>Inputs</strong>: three independent deep analyses (format design, pipeline consequences, evidence and
+calibration) over the 2026-08-09 review (Parts 5-7), the same-skeleton diversity experiment,
+and the live code. This document is the synthesis; the analyses' full detail lives in the
+session transcript and the review doc.</p>
+<hr />
+<h2 id="1-the-finding-that-licenses-the-change">1. The finding that licenses the change<a class="headerlink" href="#1-the-finding-that-licenses-the-change" title="Permanent link">&para;</a></h2>
+<p>The reasons beats were pinned at sentence level mostly never held. Audited against the live
+gate: <strong>no blocking validator rule reads a beat's semantic content</strong>. Young-band safety lives
+in <code>band_profile.py</code> ending-kind prohibitions, content-flag ceilings, and the band-mandatory
+denylist union; the WS-2 design says it in as many words: "the floor is in the validator, not
+the data". SAFE-14 is an empty stub. RL-13 skips FILL bodies. Beats even CAUSED a theme-leak
+class (un-slotted world facts: snow, item anatomy, "fireflies chirped"). Of nine historical
+justifications, two survive: the fidelity gate needs some target, and one human reviews
+everything. Both are addressed below.</p>
+<p>Meanwhile the measured cost of pinning is severe and inversely proportional to age band: the
+beat-to-prose prescription ratio is 0.83 at 3-5 (the skeleton writes four fifths of a toddler
+book in outline), 0.40 catalog-wide, and the strict pilot pushed it above 1.0. The most
+templated surfaces are the most reader-visible: choice labels are 2x more identical across
+fills than prose (0.463 vs 0.228 unigram similarity) and two of three ending titles are
+byte-identical because they carry no slot. Real series do the inverse: Maisy, CYOA, and
+Fighting Fantasy fix the frame (format, cast register, scale constants, ending counts) and
+vary scene, device, and outcome content per volume.</p>
+<h2 id="2-the-design">2. The design<a class="headerlink" href="#2-the-design" title="Permanent link">&para;</a></h2>
+<p><strong>Per-node tiers</strong> on the FILL directive, with <code>open</code> as the default for new skeletons:</p>
+<table>
+<thead>
+<tr>
+<th>Tier</th>
+<th>Semantics</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>locked</code></td>
+<td>today's verbatim beat, byte-compatible</td>
+<td>safety-critical scenes; the one image a skeleton's identity depends on</td>
+</tr>
+<tr>
+<td><code>locked_outcome</code></td>
+<td>outcome propositions locked, scene open</td>
+<td>endings (highest repeat-salience, lowest drift tolerance)</td>
+</tr>
+<tr>
+<td><code>pool</code></td>
+<td>authored variant beats under one outcome contract (SQ-11)</td>
+<td>nodes wanting authored craft without a single frozen image</td>
+</tr>
+<tr>
+<td><code>open</code></td>
+<td>node carries OBLIGATIONS, not scenes</td>
+<td>everything else</td>
+</tr>
+</tbody>
+</table>
+<p>An <code>open</code> node's contract (in a <code>.narrative.json</code> sidecar) declares: narrative <code>function</code>
+(introduce-stakes, plant-clue, raise-cost, payoff), <code>entry_state</code> and <code>establishes</code>/<code>forbids</code>
+fact sets, an affect envelope (target affect, forbidden affects), choice action-semantics,
+and an <code>invention</code> spec naming what the fill may invent and from where. Choice labels become
+<code>intent</code> declarations (the semantic of the decision, not a verb-frame template); ending
+titles are generated under a title contract.</p>
+<p><strong>The story bible</strong>: a small (~40-string) per-request artifact generated at bind time from
+the family's request: world, cast with affordance tables, prop affordances, a device
+vocabulary (clue channels, obstacle kinds, help modes, containers), motifs, prohibitions.
+It is the sole source of concrete world material for <code>open</code> nodes, selected once, seeded,
+and <code>unique_within_story</code>. Crucially it is <strong>slot-shaped and contract-validated</strong>: every
+leaf string passes the existing <code>validate_slot_bindings</code> machinery (charset, length,
+denylist bundles, band-mandatory floor, legacy-lexicon leak), so the untrusted-brief
+crossing keeps its deterministic gate. The theme contract is not deleted but promoted: slots
+become identity/texture roles constraining bible generation; <code>default_binding</code> survives as a
+derived view.</p>
+<p><strong>The shared move library</strong>: catalog-wide named narrative moves with type signatures
+("search.empty_but_directional": consumes/establishes/forbids/invents), authored once
+(~20-30 moves cover the catalog), referenced by skeletons. This amortizes obligation
+authoring below today's per-beat cost and gives the family-scoped guard a cross-skeleton
+repetition signal, which is where a reader with three trees per cell actually lives.</p>
+<p><strong>What stays exactly as it is</strong> (the GS1 lesson: free generation fails on countable global
+invariants): topology, targets, budgets, depth, <code>min_complete</code>, ending kind/valence/count,
+content flags, the band-mandatory denylist, reading-level targets, human approval (ADR-005),
+and the strict bar. <code>words=N</code> becomes a range (<code>words=lo-hi</code>); the point target is already
+dead letter (the seed's 80/85 vs the band's 28-55 envelope was overridden by every filler).
+Structural diversity remains a catalog-time problem (ADR-020 <code>mutation/</code>); this change is a
+scene-layer program and the ADR must say so to keep the two from being conflated.</p>
+<p><strong>Why not variant pools as the destination</strong>: k authored variants buy k costumes at k times
+the authoring cost, exhaust per family, multiply the merge-contradiction surface, and keep
+prescription in the skeleton. Pools survive as a tier, not as the program.</p>
+<h2 id="3-what-this-fixes-by-construction">3. What this fixes by construction<a class="headerlink" href="#3-what-this-fixes-by-construction" title="Permanent link">&para;</a></h2>
+<ul>
+<li>"Fireflies chirped" and the snow/dew/hot-head divergence become impossible: authored text
+  asserts nothing about bible-chosen entities; affordance tables are the only source.</li>
+<li>Merge-node contradictions (8 per large pilot draft, the <code>hollow-lighthouse</code> class) become
+  a deterministic set-containment check: <code>entry_state(n)</code> must be contained in the
+  intersection over parents of <code>entry_state + establishes</code> (NC-1), plus dead-beat, orphan-
+  fact, and reentrant-news checks (NC-2..4). Nothing can check this class today.</li>
+<li>The ATG contradiction dissolves: "differentiate wholesale" vs "depict this exact beat"
+  stops being an unsatisfiable pair because the depiction target is gone; the escalation
+  ladder selects (excludes served mechanics for this family) rather than only instructs.</li>
+<li>The clue and the reveal can interlock per request (the current format hard-codes the
+  punchline to footwear forever), which is mechanics-level divergence inside an identical,
+  validated graph.</li>
+</ul>
+<h2 id="4-fidelity-safety-and-coherence-under-the-new-contract">4. Fidelity, safety, and coherence under the new contract<a class="headerlink" href="#4-fidelity-safety-and-coherence-under-the-new-contract" title="Permanent link">&para;</a></h2>
+<p><strong>Fidelity</strong> becomes three layers, deterministic first: (a) obligation checks with no LLM:
+<code>must_mention</code> slot coverage (promote the existing <code>_slot_ids_with_body_coverage</code> warning to
+a per-node obligation), <code>forbid_devices</code> via the existing <code>denylisted_bundles</code> machinery on
+filled prose, outcome enums checkable against effects/conditions at Tier-2; (b) structural
+fidelity unchanged (<code>check_fill_integrity</code>, fingerprint equality); &copy; the LLM judge
+re-anchored per obligation, returning attributable <code>{node, unmet, invented}</code> findings so
+repair is targeted, failing CLOSED on the deterministic half (today's judge fails open on
+malformed output and repairs against a target the repairer is never shown). The deterministic
+surface must widen exactly as much as the depiction target loosens.</p>
+<p><strong>Safety</strong>: the envelope moves from "beats are pre-sanctioned by provenance" to typed,
+checkable fields: per-node <code>forbid_devices</code> and per-skeleton device kind allowlists become
+SAFE-14's first real content, BLOCKING at the gate ahead of moderation; the band-mandatory
+floor is applied to filled prose at 3-5/5-8 first (measure false positives on the committed
+fills before extending up; the theme-leak 1,771-hits precedent is the caution). Moderation
+call count is flat (every node is already screened); what shifts is hit rate, and with
+exactly one bounded repair, review load lands on the single human approver. That transfer is
+the honest core cost of the program and the reason the deterministic layers above are
+prerequisites, not follow-ups.</p>
+<p><strong>Coherence</strong>: per-merge-node entry-invariant lists give the coherence stage per-node
+targets; promote coherence review to per-node above an in-degree threshold (data already
+computed). The Part 5 mandatory adversarial critique stays mandatory; it is now the only
+stage that reads intent semantics.</p>
+<h2 id="5-hard-prerequisites-found-in-the-pipeline-do-these-before-any-format-work">5. Hard prerequisites found in the pipeline (do these before any format work)<a class="headerlink" href="#5-hard-prerequisites-found-in-the-pipeline-do-these-before-any-format-work" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>The silent fail-open cascade</strong>: every consumer of the FILL directive skips on regex
+   non-match (<code>binding</code>, <code>fidelity</code>, <code>fidelity_review</code>, <code>slotted_surfaces</code>, plus three
+   private regex copies in <code>mutation/</code> and <code>parameterize_skeleton.py</code>). A format change the
+   regex does not match silently disables slot substitution, fidelity, theme-leak scanning,
+   and slot-set equality at once, with zero findings. Fix: total parse (unparseable
+   <code>&lt;&lt;FILL</code> body is a blocking L1 finding), a lockstep test over every consumer, collapse
+   the private copies onto <code>slotted_surfaces.py</code>.</li>
+<li><strong>The theme axis</strong>: <code>metadata.themes</code> is unbindable BY DESIGN (binding's
+   fingerprint-unchanged post-condition; metadata is not stripped from the fingerprint).
+   Fix via a bindable-metadata allowlist checked outside the fingerprint (no digest
+   rotation), not via stripping (which rotates every stored manifest). This one fix moves
+   the same-skeleton PS floor from 0.50 to 0.30, worth more than any prose improvement
+   measured so far. Refines AL-156's proposed change.</li>
+<li><strong>Variant/selection fingerprint persistence</strong>: <code>storybook_version</code> has no variant
+   column and the family guard cannot be expressed with persisted data. One nullable
+   <code>variant_fingerprint</code> column, stamped at fill, carried on <code>HistoryEntry</code>, consumed as a
+   third term in <code>_blended_weight</code>. Cheapest single diversity intervention available.</li>
+<li><strong>Fill feasibility</strong>: 27 of 58 production skeletons already exceed the 32k one-shot
+   output cap (worse than AL-046's framing); every repair is a full re-emission; selection
+   has no token predicate. Land the feasibility predicate, and design the act-scoped fill
+   loop JOINTLY with the story bible: the bible is exactly the cross-act continuity carrier
+   the act-scoped loop needs. One design, two consumers.</li>
+<li><strong>Metric honesty, pre-registered</strong>: PS cannot see this program (the beat layer is ~0.06
+   of PS; the 0.30 same-tree structural term is a constant). Replace the same-tree constant
+   with beat-path/selection similarity, add the deterministic Mechanic Divergence metric
+   over selection vectors and bibles, and re-baseline the diversity panel, BEFORE the pilot,
+   so success is measured by an instrument that can register it.</li>
+</ol>
+<p>Storage ruling folded in from the analyses: narrative contracts and variants live in
+SIDECARS (registered in <code>SIDECAR_SUFFIXES</code>), never node fields (fingerprint rotation) and
+never bare metadata (same); if reproducibility requires a schema change, scope it to one
+top-level provenance field with a <code>FIELD_MINORS</code> entry per ADR-025.</p>
+<h2 id="6-the-pilot-re-specifies-sq-12">6. The pilot (re-specifies SQ-12)<a class="headerlink" href="#6-the-pilot-re-specifies-sq-12" title="Permanent link">&para;</a></h2>
+<p><code>the-lost-mitten</code>, three arms on the SAME three bindings with isolated authors: A = control
+(the three existing fills), B = obligation contracts (<code>open</code> tier), C = maximally free
+(role + words range + choice intents only). Six new fills total. Pre-registered margins:
+arm B shows a different device on at least 2 of 3 clue nodes for all pairs and a different
+twist mechanism on at least 2 of 3 pairs; the recognition index (rerun of the Part 6
+protocol; control = recognition at node 1) must move past the reconvergence node; scale
+score at least 2.5 vs control's 1.5. Pre-registered null: PS barely moves (proving the
+metric gap on purpose). Promotion criteria, all required: distinctness margins met; zero
+band-scope violations (single breach halts); first-try gate pass and repair count not worse
+than control; two-rater fidelity agreement at least 90% and not below control (the direct
+test of the snow/dew ambiguity risk); zero label-laundering across all endings; and the
+existing SQ-12 falsification clause. Arm C locates the far end of the dial: if it breaks
+budgets where B does not, the dial is at B and that is the pre-registered result.</p>
+<h2 id="7-staged-sequence">7. Staged sequence<a class="headerlink" href="#7-staged-sequence" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Ship regardless, now</strong>: prerequisites 1-3 and 5 above; free the two slotless frozen
+   ending titles; the reentrancy fix (nodes with descendant back-edges get a derived
+   <code>reentrant</code> flag and a reentry contract in the fill prompt: the shipped seed re-renders
+   its loss-discovery beat on every loop today); honest series framing for same-skeleton
+   siblings; family-scoped variant memory.</li>
+<li><strong>Pilot</strong> (section 6) with the deterministic fidelity layer (must_mention,
+   forbid_devices in SAFE-14) and NC-1..4 prototyped on the pilot skeleton.</li>
+<li>On pass: tier machinery + narrative contract schema + bible generation co-designed with
+   act-scoped fill; migrate the PIPELINE, not the catalog (sidecar-presence dispatch, the
+   ADR-019 pattern); new and rebuilt skeletons opt in.</li>
+<li>Move library extracted from the first ten migrations; rollout rides the ruled
+   remove-on-replacement rebuild waves, 3-5/5-8 first (highest prescription ratio, smallest
+   trees), teen gamebooks last.</li>
+<li>Then and only then: re-calibrate leaf thresholds and arm the ATG (the recorded
+   sequencing trap: loosen, measure, arm; never arm first).</li>
+</ol>
+<h2 id="8-open-decisions-for-the-owner">8. Open decisions for the owner<a class="headerlink" href="#8-open-decisions-for-the-owner" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Adopt the tiered obligation format as the target (this proposal), with pools as a tier
+   rather than the program. The alternative sequencing (pools first as a full stage) costs
+   more authoring and defers the diversity mechanism; the pilot's arm structure answers the
+   dial question empirically either way.</li>
+<li>The UW-C89 calibration rulings (review Part 8) interact: <code>words=lo-hi</code> ranges and the
+   CG-3 posture should be ruled with this proposal so the new format is calibrated once.</li>
+<li>Accept the review-load transfer: deterministic checks widen, but the single human
+   approver sees more flagged inventions at first. The pilot measures review minutes per
+   book; a budget for that number is an owner call.</li>
+<li>An ADR should record: scene diversity is a request-time program (this design); structural
+   diversity remains catalog-time (ADR-020); and the PS metric change with its
+   re-baselining.</li>
+</ol>
+<hr />
+<h2 id="9-addendum-2026-08-09-owner-steer-the-automation-end-state">9. Addendum (2026-08-09, owner steer): the automation end-state<a class="headerlink" href="#9-addendum-2026-08-09-owner-steer-the-automation-end-state" title="Permanent link">&para;</a></h2>
+<p>Owner framing: the single human reviewer is the structural constraint the project exists to
+overcome, and the question is whether this proposal is STILL overly prescriptive given LLM
+capability, provided automated review holds the line.</p>
+<p>Assessment: yes, in one specific place. The proposal treats the graph as a curated,
+human-promoted asset and loosens only the scene layer. That rested on GS1 ("free generation
+fails on budgets"), and the strict pilot made GS1 obsolete in a precise way: GS1 was a
+ZERO-SHOT failure. With the deterministic gate in the drafting loop, LLM agents one-shot
+passed 184- and 251-node skeletons with zero findings in the hardest cells. Tool-in-the-loop
+agentic generation holds global invariants that zero-shot generation cannot; the structure
+floor is therefore set by the automated review surface, not by LLM capability. The pilot's
+adversarial critics were also LLMs, and their findings are largely convertible into
+deterministic checks (UW-C85..C83), so the review side automates the same way.</p>
+<p><strong>End-state</strong>: the skeleton becomes a generated, verified artifact. The fixed layer shrinks
+to what encodes child-development policy rather than story content: cell contracts (budgets,
+grammar, outcome economy, walk floors, safety floors), the deterministic gate suite (strict,
+audits, NC-1..4, the consequence and honesty checks), closed vocabularies (device kinds,
+fact grammar, move library), and ADR-005's approval points. Graphs, obligations, bibles, and
+prose are all drafted by authoring agents and proven by the pipeline: generated brief,
+architect agent with the structural harness, strict gate plus in-cell audits, an AUTOMATED
+adversarial panel (the pilot's critic rubrics productionized), then promotion. This also
+dissolves the last diversity ceiling: the PS structural 0.30 moves only with different
+graphs, and agentic generation makes new graphs cheap, turning each cell from three frozen
+trees into a growing population (the ADR-020 flywheel with authoring agents in the mutation
+engine's role).</p>
+<p><strong>The human bottleneck, decomposed</strong>: guardian approval is per-family and distributed by
+construction (a feature, not a bottleneck). The singleton admin's role shrinks from catching
+to sampling: one promotion decision per generated skeleton, spot audits at a rate tuned to
+measured automated-panel precision, moderation escalations only. Promotion criterion for the
+panel itself: its approve/reject decisions must agree with human spot-checks at an
+owner-set rate before the human steps back.</p>
+<p><strong>The one non-negotiable prerequisite</strong>: SAFE-14's device floors and the band-mandatory
+denylist land as BLOCKING gate content before graphs go agentic. Generated structure plus
+generated scenes means provenance-based safety is fully gone; the floor must live entirely
+in the validator, which the evidence analysis showed is where it always really was.</p>
+<p><strong>Sequencing consequence</strong>: the staged plan in section 7 is unchanged as the path; this
+addendum changes the declared destination. Stage 2's "migrate the pipeline, not the catalog"
+now reads: the rebuild waves are executed by authoring agents through the full automated
+gauntlet, the automated adversarial panel is built during stage 1 (it is the pilot's critic
+prompts plus the pre-registered rubrics), and the move library plus NC checks are the
+architect agent's guardrails rather than aids to a human author. The catalog rebuild and the
+automation end-state become the same program.</p>
+<hr />
+<h2 id="10-pilot-results-2026-08-09-executed-same-day">10. Pilot results (2026-08-09, executed same day)<a class="headerlink" href="#10-pilot-results-2026-08-09-executed-same-day" title="Permanent link">&para;</a></h2>
+<p>The section-6 pilot ran end to end: the narrative contract for <code>the-lost-mitten</code> (committed,
+NC-checked), three validated bibles, seeded device selections, and six new fills (three arm
+B, three arm C) by isolated authors against the three control fills. All nine fills pass
+<code>check_fill_integrity</code> first try; all pass the full gate with no blocking findings, no
+safety flags, and advisory counts at or below control. The NC layer caught two real errors
+before any prose existed (a contract omission and a homograph denylist hit on "wound around
+a bough"), and the selection-vector fingerprint separates arm B's fills while collapsing the
+beat-identical control to one fingerprint, proving the family-guard key discriminates.</p>
+<h3 id="scores">Scores<a class="headerlink" href="#scores" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Measure</th>
+<th>A (control)</th>
+<th>B (obligations+bible)</th>
+<th>C (free)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PS mean (pre-registered null: barely moves)</td>
+<td>0.597</td>
+<td>0.562</td>
+<td>0.560</td>
+</tr>
+<tr>
+<td>Recognition node (kid test)</td>
+<td>node 2</td>
+<td>node 6 (past hub, margin met on rated pair)</td>
+<td>node 7</td>
+</tr>
+<tr>
+<td>One-story-to-three scale (control 1.5)</td>
+<td>1.5</td>
+<td>2.5</td>
+<td>3.0</td>
+</tr>
+<tr>
+<td>Twist called at the setup node?</td>
+<td>yes, confidently</td>
+<td>yes (retcon unpredicted)</td>
+<td>no</td>
+</tr>
+<tr>
+<td>Clue-device distinctness (pairwise, 0-3)</td>
+<td>0</td>
+<td>2 (a-c pair FAILED at &#8531;)</td>
+<td>3</td>
+</tr>
+<tr>
+<td>Twist-mechanism distinctness</td>
+<td>0</td>
+<td>0 (mechanism locked)</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Label distinctness</td>
+<td>0</td>
+<td>2 (best)</td>
+<td>1 (regressed to template, 3 verbatim collisions with control)</td>
+</tr>
+</tbody>
+</table>
+<p>Arm B <strong>failed both pre-registered distinctness margins</strong>; arm C passed both. But the causes
+are precisely attributable, and neither says "abandon obligations":</p>
+<ol>
+<li><strong>B's clue failure is a bible-input failure, not a format failure</strong>: bibles a and c were
+   authored with near-identical device kinds (flattened grass vs parted clover; yarn strand
+   vs wool wisp), so the a-c pair collapsed to noun-swap. The fix is the proposal's own
+   Mechanic Divergence metric applied AT BIBLE GENERATION across bindings, with a wider
+   device-kind taxonomy to draw from.</li>
+<li><strong>B's twist failure is by construction</strong>: <code>locked_outcome</code> pinned the reveal mechanism
+   (never-lost-in-carried-container), so all three twists shared it. The contract's own
+   <code>premise.resolution_space</code> already lists three mechanisms; the fix is selecting the
+   ending MECHANISM per request from the resolution space (a selection-vector entry) while
+   the tier keeps kind/valence/affect locked. Arm C demonstrated the value: its one
+   mechanism-changed twist (third-party recovery) was the only unpredicted twist in the
+   pilot.</li>
+<li><strong>C's win carries the disqualifier the proposal predicted</strong>: the three free authors
+   independently converged on a shared attractor set (false-clue retcon 3/3, nudge-and-catch
+   retrieval 3/3, cozy-container "napping" reveal 3/3, near-verbatim "boing boing" &#8532;),
+   regressed the label surface to the control's template including three verbatim label
+   collisions, and held safety by prompt alone. Free invention diversifies pairwise while
+   converging on attractors, is unsteerable per family, and offers nothing deterministic to
+   check. Pairwise margins cannot see attractor convergence; a sibling-convergence check
+   (device appearing in 2+ sibling fills) must complement them.</li>
+<li><strong>Residual recognition leaks are ritual phrases</strong> in labels and dialogue ("Team time",
+   "One, two, three, reach it together", "boing boing"): a checkable n-gram-overlap class
+   against sibling fills, not a format problem.</li>
+</ol>
+<h3 id="ruling-recommendation">Ruling recommendation<a class="headerlink" href="#ruling-recommendation" title="Permanent link">&para;</a></h3>
+<p>The dial lands at <strong>B-plus</strong>: obligations + bible for coherence, safety, steerability, and
+checkability (every one of which the pilot confirmed: first-pass fidelity, zero safety
+findings, NC catching errors pre-prose, discriminating fingerprints), amended with the
+freedom C proved valuable, delivered through validated machinery rather than trust:</p>
+<ol>
+<li>Bible generation enforces cross-binding device-kind diversity (MD at bind time, wider
+   taxonomy per device category).</li>
+<li>Ending mechanism selected per request from the contract's <code>resolution_space</code>;
+   <code>locked_outcome</code> locks kind/valence/affect only.</li>
+<li>A sibling-convergence check and a ritual-phrase n-gram check join the drafting-loop
+   audits (complementing, not replacing, the pairwise margins).</li>
+<li>Everything else in the proposal stands as piloted.</li>
+</ol>
+<p>Re-run the same three-arm protocol once amendments 1-3 exist; the pre-registered margins
+stay the same, and arm B-plus must pass what arm B failed. Measured gaps to close in that
+rerun: two-rater fidelity agreement (this pilot used single raters) and the RL-13 FK drift
+at 3-5 observed in all arms including control.</p>
+<hr />
+<h2 id="11-higher-difficulty-pilot-the-clocktower-cipher-at-10-13-2026-08-09">11. Higher-difficulty pilot: the-clocktower-cipher at 10-13 (2026-08-09)<a class="headerlink" href="#11-higher-difficulty-pilot-the-clocktower-cipher-at-10-13-2026-08-09" title="Permanent link">&para;</a></h2>
+<p>Owner-directed second pilot after the B-plus amendments landed: the amendments were built
+(<code>check_bible_diversity.py</code> with MD and near-noun-swap detection; NC-7 selection validation
+with per-request ending mechanisms; <code>check_sibling_fills.py</code> shared-gram detection), then
+exercised end to end on a 26-node, 8-ending, mixed-valence 10-13 mystery with a 6-way and a
+4-way merge. The pipeline was fully agentic: an agent authored the 31-fact narrative
+contract (first-run NC pass, zero warnings, including an elegant per-room re-establishment
+of the cipher hint that makes the 4-way merge honest on every path); an agent authored three
+themes (harbor observatory, carousel pavilion, river lock-house) through bind_theme, NC, and
+the MD gate, all first-run green at MD 0.410 per pair; selections rotated a distinct
+mechanism per ending per binding; three isolated fills all passed integrity and the full
+gate first try with zero safety flags at 3.1-3.2k words each.</p>
+<h3 id="what-held-up">What held up<a class="headerlink" href="#what-held-up" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Coherence, safety, cost, and checkability scale.</strong> First-pass integrity 3/3, no
+  blocking findings, no safety flags, advisory profile equal to the band's norm, at 2.4x
+  the node count and a recognition-capable band. The agent-authored contract and the
+  agent-authored themes both passed their gates without human repair.</li>
+<li><strong>Amendment 1 worked where it could bite</strong>: the cipher FORM, the one device category with
+  full kind freedom, scored 3/3 distinct across all pairs (phonetic substitution vs ordinal
+  lookup vs modular arithmetic), the pilot's standout.</li>
+<li><strong>Amendment 2 worked</strong>: the per-request ending-mechanism margin (&gt;= 5 of 8 different)
+  passed for all three pairs (&#8541;, &#8542;, 6/8), and the recognition rater independently
+  reported the mechanism variation at e_hero/e_timeout/e_secret as the pair's genuinely
+  felt differences.</li>
+<li><strong>Amendment 3 worked as an instrument</strong>: the sibling-gram check surfaced the exact
+  verbatim leaks the raters then confirmed.</li>
+</ul>
+<h3 id="what-failed-and-why">What failed, and why<a class="headerlink" href="#what-failed-and-why" title="Permanent link">&para;</a></h3>
+<p>The clue-analog distinctness margin failed for all pairs (&#8531;), and the recognition score
+came in at 2.0 (verdict at node 2), below the 3-5 pilot's 2.5. The causes are one layer
+deeper than the first pilot's, and they are all the same shape: <strong>the obligation contract is
+itself a shared prompt across every fill of a skeleton, and anything concrete in it becomes
+the new frozen armature.</strong></p>
+<ol>
+<li><strong>Scene devices frozen in contract prose</strong>: the room hint-carriers, the seize-then-
+   lubricate remedy, the comic noise-trap safeguard, and the preserved-workshop loft were
+   effectively written INTO constraints and forced kinds, so all three books share a single
+   scene-device inventory under rotated props (carriers 0-2 of 4 different per pair; remedy
+   and loft identical in all three).</li>
+<li><strong>Contract-forced kinds consume the MD budget invisibly</strong>: the theme agent measured that
+   <code>kind_must_be</code> specs freeze most category multisets, leaving MD headroom of ~0.07 over
+   the tau; MD passed while the frozen-kind categories stayed frozen.</li>
+<li><strong>Contract vocabulary seeds convergent imagery and sentences</strong>: "stepped out for tea
+   thirty years ago" verbatim in two books, "Knowing when not to is a skill" in all three,
+   ten-plus cross-book phrase templates, cedar smells and ledges recurring; isolated
+   authors given the same contract text converge on its phrasing.</li>
+<li><strong>The reader surfaces the contract cannot vary are the strongest recognition channels at
+   this band</strong>: same-order same-function choice menus landed the same-book verdict at node
+   2, and five of eight ending titles are unslotted and therefore byte-identical across
+   books.</li>
+<li><strong>The gram budget does not scale</strong>: 95 shared 4-grams at 3.1k words against a budget
+   calibrated at 500 words; the check needs length normalization.</li>
+</ol>
+<h3 id="the-next-amendment-set-contract-hygiene">The next amendment set (contract hygiene)<a class="headerlink" href="#the-next-amendment-set-contract-hygiene" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Obligation strings must be device-abstract: every recurring set-piece (remedy,
+   safeguard, cache type, loft furnishing) becomes an invention slot drawing from a bible
+   category with real kind freedom; constraints and hints may not name concrete devices or
+   imagery. A review rule now; the sibling-gram check catches leakage downstream.</li>
+<li><code>check_bible_diversity</code> reports per-category forced-vs-free kind headroom so authors and
+   generators see where diversity is actually possible; world recipes minimize
+   <code>kind_must_be</code> to what safety genuinely requires.</li>
+<li>All ending titles generated under the title contract (none unslotted); selection-time
+   check that a title's named props sit on the path that reaches it.</li>
+<li>A label-surface diversity directive (menus may not share verb frames across sibling
+   fills) plus the length-normalized sibling-gram check wired into the fill loop.</li>
+<li>Band-scaled diversity budgets: recognition capability rises with age; the distinctness
+   margins and gram budgets must tighten with band, not stay constant.</li>
+</ol>
+<h3 id="verdict">Verdict<a class="headerlink" href="#verdict" title="Permanent link">&para;</a></h3>
+<p>The architecture survives the harder cell: safety, coherence, first-pass yield, agentic
+authoring, and the two amended mechanisms all held or passed. The sameness ceiling has
+moved from the beat layer (pilot 1) into the contract's own concreteness (pilot 2), which
+is progress of the intended kind: each iteration relocates the bottleneck into a smaller,
+more checkable artifact. The contract-hygiene amendments above are cheaper than the
+B-plus set was, and the third pilot should re-run this same cell after they land, with the
+same margins plus a menu-surface margin.</p>
+<h2 id="12-third-pilot-same-cell-after-contract-hygiene-2026-08-09">12. Third pilot: same cell after contract hygiene (2026-08-09)<a class="headerlink" href="#12-third-pilot-same-cell-after-contract-hygiene-2026-08-09" title="Permanent link">&para;</a></h2>
+<p>Re-run of the-clocktower-cipher at 10-13 with the section 11 amendment set fully applied.
+Tooling landed first: <code>--allow-title-rewrite</code> now treats the storybook title and every
+ending title as leaf content; <code>check_bible_diversity --contract</code> reports per-category
+forced-vs-free kind headroom; <code>check_sibling_fills</code> uses a length-normalized budget
+(4.0 shared grams per 1000 mean leaf words) plus a menu-frame overlap report; NC-7
+validates a per-binding <code>label_style</code> and NC-8 warns on unslotted titles. An agent then
+rewrote the contract device-abstract (five quotable set pieces became invention slots;
+<code>kind_must_be</code> reduced to the single safety-meaningful case, the trusted-escort branch;
+per-ending title contracts; five label styles) and re-authored the three bibles into the
+widened headroom.</p>
+<h3 id="deterministic-results">Deterministic results<a class="headerlink" href="#deterministic-results" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>MD moved from 0.41 to 0.90-0.92 per pair</strong> under the same tau (0.34). The headroom
+  report shows every multi-entry category with &gt;= 2 free kinds; the pre-hygiene report had
+  the three clue-adjacent categories at 0 free entries.</li>
+<li><strong>Selections</strong>: constrained-first derivation with arm rotation produced 16 devices and
+  8 mechanisms per arm, zero mechanism collisions across arms, three distinct cipher forms
+  (symbol substitution, pictogram code, clock arithmetic), NC-7 green including
+  <code>label_style</code>.</li>
+<li><strong>Fills</strong>: three isolated authors, first-pass integrity 3/3 with full title rewrite
+  (three book titles, 24 ending titles, zero frozen-title reuse, zero cross-arm title
+  collisions), full gate 3/3 not blocked with zero safety flags, mean 113-132 words/node.</li>
+<li><strong>Menu frames: 0 shared across all pairs</strong> (pilot 2: the same-book verdict landed on a
+  menu). The per-binding label styles closed the menu channel at the deterministic level.</li>
+<li><strong>Sibling grams: first pass FAILED at 20.4/1000</strong>, worse than pilot 2's 9.0. The trace
+  split the causes in two: (a) three residual concrete fact strings (<code>rooms_mapped</code> named
+  the spiral stair and pendulum ledge; <code>cipher_decoded</code> said "substitution" despite the
+  freed cipher-form slot; <code>vault_contents_known</code> enumerated slot-supplied contents), fixed
+  in the contract; and (b) a genuinely new channel: <strong>same-model idiom convergence</strong>.
+  "A door stood ajar on a room that smelled of...", "had only stepped out for tea", "the
+  climb was shorter than it looked" appear in no input file, yet all three isolated
+  authors produced them at the same beats. Device abstraction cannot prevent the sampler
+  defaulting to the same staging idiom for the same obligation.</li>
+<li><strong>The tool-feedback loop closed the gap in one round</strong>: each author received the
+  deterministic gram list, rewrote only their own colliding sentences in their binding's
+  voice (24-26 sentences each), and the re-run scored <strong>1.2/1000 against the 4.0 budget</strong>
+  (4 x2 grams remain, all generic), menu frames still 0, integrity and gate still green.
+  This is the production shape: the checker gates, the author revises, no human in the
+  loop.</li>
+<li><strong>PS null held</strong>: 0.541-0.551 per pair (leaf 0.083-0.094; structural and theme pinned
+  at 1.0 by design). Leaf similarity is at the noise floor for same-band prose.</li>
+</ul>
+<h3 id="rater-results">Rater results<a class="headerlink" href="#rater-results" title="Permanent link">&para;</a></h3>
+<p><strong>Scene inventory: every pre-registered margin passed on every pair</strong>, and the pilot-2
+failure mode (duplicated hint-carrier device kinds) is gone. Cipher form 3/3 distinct
+(glyph substitution vs punched-card ordinal lookup vs modular moon arithmetic); room
+carriers 11 of 12 pairwise comparisons distinct; remedies 3/3 distinct; ending mechanisms
+6/8, 6/8, 8/8 against the &#8541; floor; label voices scored 3.0 ("three coherent,
+non-interchangeable label voices, not template rewording"); menu surface distinct on all
+pairs with one marginal verb-spine parallel at the a-b hub. The device layer, which failed
+in pilot 2, is solved.</p>
+<p><strong>Recognition: margin failed, with real movement.</strong> The same-book verdict moved from node
+2 (pre-hygiene) to node 4 on both rated paths, and the pair score moved 2.0 to 2.5, but
+the pre-registered bar was "past the node-5 hub or not at all". The a-c pair regressed to
+node 2 on a near-paraphrased three-plans opening. The rater's attribution matches the
+scene rater's residuals from the other side:</p>
+<ol>
+<li><strong>Choice-menu semantics are the book's fingerprint.</strong> Every fork offers the same
+   options with the same meanings in the same order (decode / walk the walls / ask the
+   keeper; enter now / story first; share / keep / grab). Label styling varied the voice;
+   the contract's <code>choice_semantics</code> locks the meaning, and a 10-13 reader recognizes
+   meaning through any styling.</li>
+<li><strong>Scene-function identity in fixed order.</strong> Each node performs the identical function
+   at the identical position; the rater's phrasing: "the skeleton is fine; the skeleton
+   is visible."</li>
+<li><strong>Idiom families survive below the 4-gram floor.</strong> All five watched staging idioms
+   (doors ajar, stepped-out-for-tea, short climb, corkscrew stairs, service ladders)
+   reappeared in all three books in paraphrased forms the token check cannot see
+   ("corkscrewed" a-c, the "come back by daylight, and knock" closing beat 3/3, the
+   "language they were learning" thesis sentence). The revision round defeated the
+   metric more thoroughly than the phenomenon.</li>
+<li><strong>Beat-identical emotional payoffs.</strong> e_hero lands the same arc in both books
+   (artifact to town authority, crowd, dead maker's machine runs again, honorary status);
+   the mechanism rotation varied the how, not the felt shape.</li>
+</ol>
+<h3 id="verdict_1">Verdict<a class="headerlink" href="#verdict_1" title="Permanent link">&para;</a></h3>
+<p>The contract-hygiene amendments did what they were designed to do: the device layer is
+distinct on every margin, the menu-frame and frozen-title channels are closed at the
+deterministic level, and the fill loop (gate, revise on tool feedback, re-gate) worked
+in one round with no human repair. The sameness ceiling moved again, out of the prose
+and device layers into the two things a single skeleton-plus-contract cannot vary by
+construction: the decision grammar (choice semantics, scene functions, their order) and
+the model's own staging idiom priors. Three consecutive pilots have now each relocated
+the bottleneck one layer down: beats (pilot 1), contract concreteness (pilot 2), decision
+grammar and idiom priors (pilot 3).</p>
+<p>The honest conclusion for the catalog rebuild: <strong>sibling fills of one skeleton converge
+to "same adventure, new world", and no amount of downstream hygiene changes that,
+because the remaining channels are the skeleton's identity itself.</strong> That reframes the
+product question rather than the tooling question: bindings of one skeleton are a
+series format (and read well as one; the recognition rater judged the formula GOOD at
+this band when framed as a series), while true different-book diversity comes from
+different skeletons, which is what the catalog rebuild is for. Two cheaper mitigations
+remain open if same-skeleton distance is still wanted: per-fork semantics pools rotated
+at selection time (the mechanism treatment applied to decisions), and an idiom-family
+check below the 4-gram floor. Both are registered; neither blocks the rebuild.</p>
+<h2 id="13-model-tier-study-which-model-can-fill-a-contract-2026-08-09">13. Model-tier study: which model can fill a contract? (2026-08-09)<a class="headerlink" href="#13-model-tier-study-which-model-can-fill-a-contract-2026-08-09" title="Permanent link">&para;</a></h2>
+<p>Owner question: the fill model is the dominant recurring cost in the pipeline, so the
+minimum success threshold per model tier matters. Haiku would be preferred on cost;
+Sonnet is the expected practical floor. The third pilot's inputs (hygiene-passed
+contract, three bibles, three selections, three bound skeletons) were held fixed and the
+fill step was re-run twice more, once with Haiku 4.5 and once with Sonnet, three isolated
+authors each, identical prompts. With the frontier run that is nine books from one
+skeleton: three tiers x three bindings.</p>
+<h3 id="first-pass-before-any-revision">First pass, before any revision<a class="headerlink" href="#first-pass-before-any-revision" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Measure</th>
+<th>Haiku 4.5</th>
+<th>Sonnet</th>
+<th>Frontier</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Fill integrity (structure frozen, markers gone, word band)</td>
+<td>3/3</td>
+<td>3/3</td>
+<td>3/3</td>
+</tr>
+<tr>
+<td>Full validator gate, blocked</td>
+<td>0/3</td>
+<td>0/3</td>
+<td>0/3</td>
+</tr>
+<tr>
+<td>Safety flags</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Title contract compliance</td>
+<td>clean</td>
+<td>1 cross-arm collision</td>
+<td>clean</td>
+</tr>
+<tr>
+<td>Sibling shared grams per 1000 (budget 4.0)</td>
+<td>8.5</td>
+<td>29.7</td>
+<td>20.4</td>
+</tr>
+<tr>
+<td>Menu frames shared</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Wall clock per book</td>
+<td>2-4 min</td>
+<td>6-7 min</td>
+<td>7-9 min</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Every tier clears every hard gate on the first pass.</strong> Structure, markers, word bands,
+topology, safety: none of it separates the tiers. The deterministic floor for <em>validity</em>
+is already met at Haiku, which is the single most important result here, because it means
+the gate is doing its job independent of author strength.</p>
+<p>The tiers separate on two softer axes:</p>
+<ul>
+<li><strong>Reading-level control (RL-13 advisories, target FK 5.5 &plusmn; 1.5).</strong> Sonnet 67 flagged
+  nodes, mean FK 9.17, with 65 of 67 ABOVE 7.0 and none below 4.0: a systematic upward
+  drift, writing toward adult prose for a 10-13 band. Haiku 30 flagged, mean FK 5.89,
+  scattered 17 high and 13 low: centered on target but less controlled. Frontier 35
+  flagged, mean 7.34, leaning high. Sonnet's failure mode is overwriting; Haiku's is
+  inconsistency.</li>
+<li><strong>Convergence, and it is not monotonic in capability.</strong> Sonnet was the MOST convergent
+  tier (29.7 per 1000), Haiku the least (8.5). Each tier converges its own way: Haiku's
+  top shared grams were near-verbatim quotations of contract strings ("they reseal the
+  vault exactly as found", the "not a punishment" framing), i.e. weak paraphrase of the
+  spec; Sonnet's were stock staging idioms ("ajar on a room stacked with", "miniature
+  version of the", "still be there tomorrow"), i.e. strong genre priors. Capability buys
+  better prose, not less sameness.</li>
+</ul>
+<h3 id="after-one-tool-feedback-revision-round">After one tool-feedback revision round<a class="headerlink" href="#after-one-tool-feedback-revision-round" title="Permanent link">&para;</a></h3>
+<p>Each author received its own tier's shared-gram list and rewrote only its colliding
+sentences (the same loop used in section 12).</p>
+<table>
+<thead>
+<tr>
+<th>Measure</th>
+<th>Haiku 4.5</th>
+<th>Sonnet</th>
+<th>Frontier</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sibling shared grams per 1000</td>
+<td><strong>0.6</strong></td>
+<td><strong>1.3</strong></td>
+<td><strong>1.2</strong></td>
+</tr>
+<tr>
+<td>Integrity / gate / titles</td>
+<td>GREEN</td>
+<td>GREEN</td>
+<td>GREEN</td>
+</tr>
+</tbody>
+</table>
+<p><strong>All three tiers pass the full battery after one round, and Haiku scores best on the
+gram metric.</strong> Haiku executed the revision instruction correctly, though its edits skew
+toward word-swaps over image changes ("We climb the service ladder" became "We ascend
+using the service ladder"), which satisfies an n-gram check without changing the picture;
+that is a caution about relying on the metric alone, not a failure of the round.</p>
+<h3 id="cross-model-convergence">Cross-model convergence<a class="headerlink" href="#cross-model-convergence" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Triple composition</th>
+<th>Shared grams per 1000, pre-revision</th>
+<th>Post-revision</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Same model, three bindings</td>
+<td>8.5 / 20.4 / 29.7 (mean 19.5)</td>
+<td>0.6 / 1.2 / 1.3</td>
+</tr>
+<tr>
+<td>Mixed model, three bindings (one per slot)</td>
+<td>3.5 / 4.7 / 6.8 (mean 5.0)</td>
+<td>2.2 / 3.5 / 5.5</td>
+</tr>
+<tr>
+<td>Three models, ONE binding (identical inputs)</td>
+<td>14.1 / 14.7 / 27.4</td>
+<td>12.0 / 12.4 / 26.1</td>
+</tr>
+</tbody>
+</table>
+<p>Read these carefully; the honest comparison is the pre-revision row, where neither
+condition has been optimized. There, <strong>mixing models across sibling bindings cuts
+convergence about fourfold</strong> (19.5 to 5.0 per 1000): different models default to
+different staging idioms, so assigning different fill models to sibling bindings is a
+real, nearly free diversity lever. After revision the ordering flips, because the
+revision round optimizes exactly the same-model metric it was given; the correct
+conclusion is that <strong>revision is a stronger lever than model mixing, and model mixing is
+valuable where a revision round is not affordable</strong> (or as a second, independent lever
+stacked on top of it).</p>
+<p>The third row is a different measurement: three models given the identical binding still
+share 12-26 grams per 1000 after revision. Same setting, same characters, same assigned
+devices produce convergent prose regardless of who writes it, which is the section 12
+finding restated from a new angle: the inputs, not the author, dominate. The clearest
+single illustration is titling. Given identical selections, Sonnet and the frontier model
+independently produced "The Unfinished Mirror" (identical) and "Footprints in the Silt" /
+"Footprints in Silt" for the same endings, with no shared context.</p>
+<h3 id="prose-quality-the-axis-that-actually-separates-the-tiers">Prose quality: the axis that actually separates the tiers<a class="headerlink" href="#prose-quality-the-axis-that-actually-separates-the-tiers" title="Permanent link">&para;</a></h3>
+<p>A blind rater compared all nine books author-to-author WITHIN each binding (same setting,
+same obligations, so differences are pure craft), not knowing which model wrote which.</p>
+<table>
+<thead>
+<tr>
+<th>Dimension (1-5)</th>
+<th>Frontier</th>
+<th>Sonnet</th>
+<th>Haiku 4.5</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sentence craft</td>
+<td>5</td>
+<td>4</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Imagery and concretion</td>
+<td>5</td>
+<td>4</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Character</td>
+<td>4.5</td>
+<td>4</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Emotional truth</td>
+<td>5</td>
+<td>4</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Voice consistency and range</td>
+<td>5</td>
+<td>3.5</td>
+<td>2.5</td>
+</tr>
+<tr>
+<td>Age fit</td>
+<td>5</td>
+<td>4.5</td>
+<td>2.5</td>
+</tr>
+<tr>
+<td><strong>Mean</strong></td>
+<td><strong>4.9</strong></td>
+<td><strong>4.0</strong></td>
+<td><strong>2.2</strong></td>
+</tr>
+<tr>
+<td><strong>Ship test</strong></td>
+<td><strong>ship as-is</strong></td>
+<td><strong>ship with light edit</strong></td>
+<td><strong>DO NOT PUBLISH</strong></td>
+</tr>
+</tbody>
+</table>
+<p>The margin frontier-to-Sonnet is narrow-to-moderate; Sonnet-to-Haiku is wide, and not
+close at any node. Mean sentence length tracks the tiers exactly (frontier 13.3-16.4
+words, Sonnet 17.7-19.9, Haiku 11.1-12.5), and so does range: the frontier books read as
+three different registers (maritime-brisk, fairground-warm, river-vernacular), Sonnet as
+one good groove across three books, Haiku as one flat expository register.</p>
+<p>Haiku's disqualifying defects, none of which any existing check sees:</p>
+<ol>
+<li><strong>Tense instability</strong>, including breaks inside a single paragraph in two of three books
+   ("But then the gears bound... Tom's heart sinks. But Sef takes a breath").</li>
+<li><strong>The puzzle does not exist.</strong> A cipher mystery whose central mechanic is stated rather
+   than performed: "the digits spell out language", "all the clues they've gathered
+   resolve here". The frontier books do the arithmetic on the page ("Nine onto eleven
+   made twenty; round again, eight").</li>
+<li><strong>Narrator moral tags at nearly every ending</strong> ("it taught them what matters more than
+   objects", "sometimes the prize is not taking something, but giving something back"),
+   the single most condescending move available at this band.</li>
+</ol>
+<h3 id="the-architectural-finding-obligations-are-declared-proved-coherent-and-never-verified">The architectural finding: obligations are declared, proved coherent, and never verified<a class="headerlink" href="#the-architectural-finding-obligations-are-declared-proved-coherent-and-never-verified" title="Permanent link">&para;</a></h3>
+<p>The recognition rater found a continuity defect in a Haiku book: <code>n_open</code> decodes the
+cipher outright, and <code>n_note</code>, the node whose entire purpose is that decode, then presents
+the same sentence as a fresh discovery. The "solve the cipher" branch delivers nothing.</p>
+<p>The contract explicitly forbids this. <code>n_open</code> declares
+<code>forbids: [inside_access, cipher_decoded, keeper_met]</code>. The fill violated a declared
+obligation and passed every gate, because <strong>the NC checks run before prose exists</strong>: they
+prove the contract's obligations are mutually coherent, and nothing afterwards proves the
+FILL honors them. Layer 1 and Layer 2 check topology, safety, reading level, and band
+profile; <code>check_fill_integrity</code> checks that structure was not mutated. No check reads a
+node's prose and asks whether it established a fact the contract forbids there.</p>
+<p>This is the highest-value result of the model-tier study, and it is not really about
+models: it is a hole in the gate that a stronger author happened to be papering over.
+Weaker authors violate semantic obligations more often, so the hole becomes load-bearing
+exactly when a cheaper model is introduced. A fill-vs-contract fact audit (does this node
+establish anything in its <code>forbids</code> set; does it establish everything in its
+<code>establishes</code> set) is the missing layer, and unlike the diversity work it needs a
+semantic judgment per node rather than a token metric, so it belongs to the automated
+review panel of section 9 rather than to the deterministic gate.</p>
+<h3 id="diversity-is-model-independent">Diversity is model-independent<a class="headerlink" href="#diversity-is-model-independent" title="Permanent link">&para;</a></h3>
+<p>The Haiku tier scored <strong>2.5</strong> on the recognition scale, identical to the frontier tier's
+2.5, with recognition landing at node 5 on one path and node 3 on the other (margin
+failed, same as the frontier run). Its rater independently named the same primary driver
+as the frontier rater did in different words: the keeper-plus-maker pair and the
+four-exit hub menu, i.e. decision grammar and fixed scene functions.</p>
+<p><strong>Model tier does not move sameness; it moves prose quality.</strong> Diversity is a property of
+the skeleton and contract, prose is a property of the author, and they are close to
+orthogonal. That is a useful separation: it means the catalog work (more skeletons,
+varied branch arity) and the model-cost decision are independent choices.</p>
+<p>One caution on how quality was measured. The comparative rater (nine books side by side)
+scored Haiku 2.2 and called it a rewrite; the isolated rater (three books, no reference)
+scored the same books 3.0 and called it "one editing pass". <strong>Absolute quality judgments
+are more forgiving than comparative ones</strong>, which is a direct restatement of this
+project's single-reviewer problem: a reviewer holding one story approves what a
+side-by-side comparison would reject. Review surfaces should show a sibling for contrast.</p>
+<h3 id="recommendation">Recommendation<a class="headerlink" href="#recommendation" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Sonnet is the practical floor for the fill step</strong>, as expected. It ships with a light
+  copyedit pass: break the 25-35 word sentences at hazard nodes, cut the "not X exactly,
+  closer to Y" tic, and remove two or three narrator-names-the-emotion closers. Its one
+  systematic flaw, upward reading-level drift (mean FK 9.17, 65 of 67 advisories above
+  band), is correctable by a prompt directive and is worth adding before any Sonnet
+  production run.</li>
+<li><strong>Haiku is not viable for the fill step today</strong>, on prose quality and on obligation
+  violations, not on gate compliance. It is viable for cheaper roles in the same
+  pipeline: it passed integrity, safety, and topology on every book, executed a
+  tool-feedback revision round correctly, and produced the LOWEST sibling convergence of
+  any tier. Candidate Haiku roles: selection derivation, mechanical revision rounds
+  against a deterministic finding list, and first-pass triage.</li>
+<li><strong>Mix models across sibling bindings</strong> where a revision round is not affordable: it cuts
+  convergence roughly fourfold for free.</li>
+<li><strong>Do not treat gate-clean as publishable.</strong> All nine books cleared the full gate; three
+  of them should not ship. Until the fill-vs-contract audit exists, gate-clean means
+  valid, not good.</li>
+</ul>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 10, 2026 01:33:57 UTC">August 10, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 10, 2026 01:33:57 UTC">August 10, 2026</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025 Byron Williams
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/williaby" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
