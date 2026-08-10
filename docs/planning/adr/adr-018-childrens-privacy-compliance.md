@@ -295,6 +295,19 @@ the Safe Harbor evaluation in D4, and the KWS vendor path below, which reaches a
 at (b)(2)(ii) without our building card handling. Questions 1A and 1B remain live counsel asks, so
 D1 is narrowed, not closed.
 
+**Rule text re-verified 2026-08-09, and every correction above survives.** The 2026-08-08 readings
+were taken once; they have now been checked again against the current text via eCFR's renderer API
+(the section's HTML page is bot-blocked and redirects, so a future check should use the API
+endpoint, not the page). The amended Rule's full compliance date, 2026-04-22, has passed, so this
+text binds. Confirmed: (b)(2)(i) still reads "postal mail, facsimile, or electronic scan" with no
+in-app signature method; (b)(2)(ii) reads "in connection with a transaction" with *monetary* gone,
+and retains the verbatim second limb requiring the card "provide notification of each discrete
+transaction to the primary account holder". Newly established: the list runs (i) through **(ix)**,
+and (ix) is a **text-message method** paired with (viii) email-plus, both conditioned on an operator
+that does not "disclose" **as defined at § 312.2**, whose internal-operations carve-out is a closed
+enumerated list with a no-other-purpose limb. Full analysis and what it means for the vendor
+characterisation is at assurance-register row O-122.
+
 **The payment-card rejection above is withdrawn (2026-08-08), and the reason it was made no longer
 exists.** The 2026-07-20 decision ruled out a payment-card transaction partly on PCI scope and
 partly because the app is not monetized, treating a payment-based consent method as something that

@@ -735,6 +735,19 @@ marked **(no default)** genuinely need your input.
      external LLM/moderation/image providers (even with the screening controls in Phase 1),
      relying on email-plus alone is the option most likely to need a harder look from counsel
      before you'd want to depend on it.
+     **Made precise 2026-08-09 against the current rule text.** Two corrections to the sentence
+     above. First, there is a **sibling method at (b)(2)(ix), text-message-plus**, on the same
+     condition, so this is a pair of routes rather than one. Second, "used only for internal
+     purposes" is not the test the rule states. Both methods are conditioned on an operator that
+     does not "disclose" **as defined at § 312.2**, and that definition excludes release to a
+     provider of "support for the internal operations", a phrase § 312.2 then defines with a
+     **closed list**: maintain or analyze functioning; network communications; authenticate users
+     or personalize content; contextual advertising or frequency capping; protect security or
+     integrity; ensure legal or regulatory compliance; fulfil a child's request per
+     § 312.5(c)(3) and (4). Plus a second limb: no use "for any other purpose". Our generation and
+     moderation calls read plausibly onto that list, so the harder limb is the second one, and it
+     is closed by executing the DPAs in `processor-dpa-checklist.md` rather than by redesigning
+     anything. See assurance-register row O-122 for the full verification note.
    - **A signed consent form** (upload or e-sign at registration): lowest engineering cost, no
      vendor dependency, but the highest guardian friction of the four.
    None of the four above was chosen; see the resolution note at the top of this item and

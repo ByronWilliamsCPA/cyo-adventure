@@ -3391,15 +3391,47 @@ posture at a trust boundary must be verified from outside that boundary.
   "email plus" (312.5(b)(2)(viii)) and its neighbour (ix), require no disclosure of the child's
   information to third parties, and a child's free-text story wish reaches third-party classifiers.
   **Corrected 2026-08-09: that is a conditional bar, not a foreclosure, and an earlier draft of
-  this row overstated it.** COPPA's definition of "disclosure" at 312.2 excludes release to a person
-  "who provides support for the internal operations" and does not use the information for any other
-  purpose. Whether the generation, moderation, and cover-art vendors sit inside that exclusion is
-  precisely **Question 1B**, which is a live counsel ask. Two limbs have to hold, not one: the
-  purposes must fall within 312.2's enumerated internal-operations list, **and** each recipient must
-  not use or disclose for any other purpose, which is what `processor-dpa-checklist.md` tracks and
-  currently records as unexecuted for several vendors (OpenRouter's ZDR coverage of downstream model
-  providers, the Anthropic terms tier, Google Perspective's Cloud DPA coverage). Until both hold,
-  email-plus is unavailable; it is not permanently unavailable.
+  this row overstated it.**
+
+  **Verified against the current rule text on 2026-08-09** via eCFR's renderer API, after the
+  section's HTML page proved bot-blocked. The amended Rule was published 90 FR (April 22, 2025),
+  effective 2025-06-23, with full compliance required by 2026-04-22, a date that has now passed, so
+  the text below binds. Four findings, three confirming what this register already said and one
+  changing it:
+
+  - **(b)(2)(i) reads "postal mail, facsimile, or electronic scan."** There is still no "sign and
+    submit electronically" method. The 2026-08-08 finding survives contact with current text.
+  - **(b)(2)(ii) reads "in connection with a transaction", not "monetary transaction"**, confirming
+    the payment-card withdrawal was right. The second limb is verbatim: the card or payment system
+    must "provide notification of each discrete transaction to the primary account holder". A
+    zero-charge authorisation generating no cardholder notification is therefore an open question
+    about the *method*, not a quibble, which is why Gate 1's Q2 is load-bearing.
+  - **The list runs (i) through (ix), and (ix) is a text-message method**, the sibling of (viii)
+    email-plus. This register's lettering was correct, and "text plus" is a real route, not a
+    colloquialism.
+  - **The condition on (viii) and (ix) is narrower than "we only use data internally."** The rule
+    conditions both on an operator that does not "disclose" **as that term is defined at § 312.2**.
+    That definition carves out release to "a person who provides support for the internal
+    operations", and § 312.2 then defines *that* phrase with a **closed enumerated list**: maintain
+    or analyze functioning; perform network communications; authenticate users or personalize
+    content; serve contextual advertising or cap frequency; protect security or integrity; ensure
+    legal or regulatory compliance; and fulfil a child's request per § 312.5(c)(3) and (4). It
+    carries a second limb of its own: the information "cannot be used or disclosed to contact a
+    specific individual ... to amass a profile ... or for any other purpose", which the "Third
+    party" definition restates.
+
+  **What that means for this project, and it is not what the earlier draft implied.** The *purpose*
+  limb is the easier one: story generation from a child's typed wish reads plausibly as
+  "personalize content" or "fulfil a child's request", and moderation reads plausibly as "protect
+  security or integrity" and "ensure legal or regulatory compliance". The binding constraint is the
+  *second* limb, that no recipient use the data for any other purpose, and that is an **execution
+  problem rather than an interpretive one**: it is closed by paperwork, not by architecture.
+  `processor-dpa-checklist.md` records it as open on exactly the vendors that would matter
+  (OpenRouter's Zero Data Retention coverage of the downstream model providers it routes to, which
+  Anthropic terms tier this account sits on, and whether Google Perspective specifically falls under
+  the Cloud DPA). Question 1B remains the live counsel ask on the characterisation; the DPAs are the
+  owner-side work that has to land regardless of how 1B is answered. Until both limbs hold,
+  email-plus and text-plus are unavailable; neither is permanently unavailable.
 - **Acceptance record (2026-08-09).** The owner ruled that the approach as built meets the
   requirement and withdrew parts 1C and 1D from the counsel engagement
   (`docs/compliance/counsel-engagement-brief.md` Sections 1.0, 1.3, 6). Recording the three things
