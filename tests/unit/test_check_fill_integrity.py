@@ -133,3 +133,32 @@ def test_rewritten_target_fails_the_structure_check(tmp_path: Path) -> None:
     filled_path = _write(tmp_path, "filled.json", filled)
     exit_code = check_fill_integrity.main([skeleton_path, filled_path])
     assert exit_code == 1
+
+
+def test_check_fill_integrity_rejects_same_file(tmp_path: Path) -> None:
+    """Comparing a file against itself is a degenerate, always-passing input.
+
+    AL-016: a builder bug once wrote the prose story to both the skeleton
+    and filled paths, and the structural comparison then compared a file
+    with itself and passed, making the verification vacuous. The checker
+    must refuse this input outright rather than report a meaningless
+    success.
+    """
+    skeleton_path = _write(tmp_path, "skeleton.json", _SKELETON)
+    exit_code = check_fill_integrity.main([skeleton_path, skeleton_path])
+    assert exit_code == 1
+
+
+def test_check_fill_integrity_rejects_a_skeleton_with_no_markers(
+    tmp_path: Path,
+) -> None:
+    """A ``skeleton`` argument with no ``<<FILL`` directive is not a skeleton.
+
+    Comparing two already-filled stories cannot detect a failed fill, so the
+    checker must refuse this input rather than run the structural comparison
+    against a skeleton that carries no markers to check.
+    """
+    skeleton_path = _write(tmp_path, "skeleton.json", _filled())
+    filled_path = _write(tmp_path, "filled.json", _filled())
+    exit_code = check_fill_integrity.main([skeleton_path, filled_path])
+    assert exit_code == 1

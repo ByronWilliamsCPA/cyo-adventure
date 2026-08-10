@@ -53,13 +53,9 @@
 # command to pair with --assert-no-growth review, never a way to
 # clear a CI failure.
 #
-# Entries: 121 (file, citation) row(s) covering 136 grandfathered site(s) (136 python site(s), 0 typescript site(s))
+# Entries: 119 (file, citation) row(s) covering 134 grandfathered site(s) (134 python site(s), 0 typescript site(s))
 
 [python]
-"scripts/check_fill_integrity.py" = [
-    "test_check_fill_integrity_rejects_a_skeleton_with_no_markers",
-    "test_check_fill_integrity_rejects_same_file",
-]
 "scripts/mutate_skeleton.py" = [
     "test_mutate_skeleton_cli.py",
 ]
