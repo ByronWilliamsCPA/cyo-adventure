@@ -402,6 +402,7 @@ substantially the same work under different headings. Do not triple-book.
 | UW-C153 | `AL-219` Six unaided skeleton-free graphs were 6 of 6 structurally clean and 0 of 6 gate-clean, with every blocking finding violating a constraint the brief never stated. Put band budgets, opening floor and ending schema into the generation brief and re-run before concluding anything about model capability. | now | unscheduled |
 | UW-C154 | `AL-220` Six stories sharing no plan sit at the idiom floor on average yet converge on one premise, so removing a shared plan does not vary the premise. Point R1-3's repulsion term at the premise as well as the bound solution chain, since neither sharing less nor instructing achieves it. | now | unscheduled |
 | UW-C155 | `AL-221` A contract briefed with hard, itemised wording-independence came back at 126.7 shared 4-grams per 1000 with its reference despite a different world and zero fact-name overlap. Enforce independence by withholding the reference and supplying a written schema, and note that R1-3's fresh-contract-per-book is not the same as independent-per-book. | now | unscheduled |
+| UW-C156 | `AL-222` Withholding the reference contract cut cross-contract 4-gram sharing from 126.7 to 1.0 per 1000, where instructing divergence achieved nothing; the premise converged under both. Generate each book's decisional stratum from the structural stratum alone and never from a sibling, and give the premise its own repulsion mechanism. | now | unscheduled |
 
 ## Cluster D: untracked GitHub issues
 

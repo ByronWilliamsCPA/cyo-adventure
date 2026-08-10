@@ -99,6 +99,36 @@ than as footnotes to it:
    nothing in this document addresses that. The honest claim is that stratification is a necessary
    first move whose sufficiency is now measured and inadequate.
 
+### 2.2 The mechanism, now measured: generate from the structure, never from a sibling
+
+Section 2 says the decisional stratum must be generated per book and does not say how to stop each
+generation converging on the last. That gap has since been closed by measurement, and the answer is
+blunt.
+
+Two contracts were authored for the same 26-node graph under the same requirement, differing in one
+variable: whether the author could see an existing contract for that graph.
+
+| | Shared 4-grams per 1000 with the existing contract |
+| --- | --- |
+| reference shown, plus an itemised instruction to diverge from it | **126.7** |
+| **reference withheld**, format supplied as a written schema | **1.0** |
+
+**A 127-fold reduction from a single change to what the author was shown**, with both artifacts
+structurally sound on the same independent checks. Instructing divergence is close to useless here,
+and it is the intervention every proposal reaches for first, including two of the five below.
+
+So the mechanism is: **generate each book's decisional stratum from the structural stratum alone,
+and never from a sibling book.** The structural stratum is wordless by section 2.1's amendment, so
+there is nothing there to converge on. This is implementable, cheap, and it is the concrete form of
+`AL-208`'s untested third repair.
+
+**It does not touch the premise, and that is now measured too.** The author who never saw the
+reference independently chose a clock tower, against a reference set in a clocktower. Wording as
+independent as anything in this programme; the same setting. Withholding closes the wording channel
+completely and the premise channel not at all, which means section 2.1's point 1 needs a mechanism
+of its own rather than the same one. A repulsion term over premises is the obvious candidate and is
+where R1-3 should point.
+
 The re-specifications in sections 3 to 5 are unaffected in substance: each is still unblocked, and
 each still wants the same contract field. What changes is the guard they must pass. **Any of them
 that reuses one structural stratum across books must run the shared-gram check across the whole

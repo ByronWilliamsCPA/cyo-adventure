@@ -1426,6 +1426,43 @@ If you are proposing a repulsion mechanism, the premise is a target it must incl
 **Limits, fixed before we looked.** Six graphs, one model, 27 to 35 nodes against a catalog median
 of 149. This is the easy end and licenses nothing about production scale.
 
+## 16j. How to get an independently worded plan: do not show the author another one
+
+16d left a question we could not answer: if a plan must be generated per book, what stops each
+generation converging on the last? We now have a clean answer, from a comparison that fell out of
+building an unrelated arm.
+
+Two plans were authored for the same graph under the same requirement, differing in one variable:
+whether the author could see an existing plan for that graph. The first was shown it and told, as a
+hard and itemised experimental constraint, not to reuse its wording.
+
+| | Shared four-grams per 1000 with the existing plan |
+| --- | --- |
+| shown it, and instructed to diverge | **126.7** |
+| **not shown it**, format given as a written schema | **1.0** |
+
+**A 127-fold reduction from one change to what the author was shown.** Both plans are structurally
+sound on identical independent checks, and the second's author found and fixed two real closure
+defects of its own.
+
+The first attempt is worth dwelling on, because it looked like a success. It had a different world,
+a different slug, and **zero shared fact names**: every marker of independence that an instruction
+can be checked against was satisfied. Its `beat_hint` fields shared 260 four-grams per 1000 with
+their source. **Instructing divergence buys the appearance of independence and not the substance**,
+and it is the first intervention most proposals reach for.
+
+**The premise converged anyway, and this is the useful part.** The author who never saw the reference
+independently chose a **clock tower**, against a reference set in a clocktower. Its wording is as
+independent as anything we have measured; its setting is the same. Read alongside 16i, where six
+authors sharing no plan all wrote "children find a thing left by an older person", the conclusion is
+that these are two separate channels needing two separate mechanisms: **withholding closes the
+wording channel completely and does nothing whatsoever to the premise.**
+
+For anyone proposing an architecture: generating a plan per book is sufficient for wording
+independence *if the generator is shown the structure and never a sibling plan*, and it is not
+sufficient for premise independence under any arrangement we have found. The premise needs something
+that actively pushes candidates apart.
+
 ## 17. Corrections to Part I
 
 - **5.3's "untested cell" has been tested**, and the result is not the simple one either reading
