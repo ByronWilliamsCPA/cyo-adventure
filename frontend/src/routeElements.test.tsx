@@ -13,9 +13,11 @@ import {
   GuardianReviewDetailPage,
   NotFoundPage,
   PrivacyPage,
+  PrivacyPolicyPage,
   ProviderAllowlistPage,
   RouteError,
   RouteFallback,
+  SupportPage,
   UserManagementPage,
 } from './routeElements'
 import { routes } from './router'
@@ -46,6 +48,12 @@ vi.mock('./guardian/GuardianReviewDetailPage', () => ({
 }))
 vi.mock('./guardian/PrivacyPage', () => ({
   PrivacyPage: () => <div>PrivacyPage loaded</div>,
+}))
+vi.mock('./legal/PrivacyPolicyPage', () => ({
+  PrivacyPolicyPage: () => <div>PrivacyPolicyPage loaded</div>,
+}))
+vi.mock('./legal/SupportPage', () => ({
+  SupportPage: () => <div>SupportPage loaded</div>,
 }))
 
 describe('NotFoundPage', () => {
@@ -197,6 +205,16 @@ describe('lazy page loaders', () => {
     // two uncovered functions held this file at 69.01% against the 70%
     // per-file gate once #473's DevicesPage entry grew the denominator.
     ['GuardianReviewDetailPage', GuardianReviewDetailPage],
+    // The two PUBLIC legal surfaces, and the fourth and fifth instance of the
+    // same pattern. Neither is reached by any router-navigation test: nothing
+    // in the app links to /privacy or /support except the landing footer, and
+    // the page tests in legal/ render the components directly rather than
+    // through these lazy wrappers. Without these entries their two loader
+    // thunks are uncovered functions in this file, which is the shape that
+    // failed the 70% per-file gate three times already (PrivacyPage,
+    // DevicesPage on PR #473, GuardianReviewDetailPage).
+    ['PrivacyPolicyPage', PrivacyPolicyPage],
+    ['SupportPage', SupportPage],
   ] as const
 
   it.each(cases)('resolves the %s loader to the named export', async (name, LazyPage) => {
