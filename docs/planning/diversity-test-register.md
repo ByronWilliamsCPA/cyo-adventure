@@ -52,6 +52,15 @@ against shape-matching distinction that both raters named lives in the binding. 
 and M-3 are not merely blocked on a metric, they are specified to plan at a layer that provably
 omits what readers respond to**, and each needs re-specifying rather than re-scheduling.
 
+**That re-specification is now done, and it changes this section.** All five architecture rows in
+section C have been re-specified in
+[the architecture re-specification](./architecture-respecification-2026-08-10.md). **None turns out
+to be blocked on repairing the signature vocabulary.** Four are unblocked by swapping their
+objective or their layer; M-3 is blocked on a contract schema field, which is smaller and far
+better defined. The framing above, that six rows wait on an instrument, is superseded: they waited
+on a re-specification, and what replaces the broken instrument for these purposes is D-4 tier 1
+plus the shared-gram guard, both deterministic and both already built.
+
 ---
 
 ## A. Instrument and replication work (do first)
@@ -59,7 +68,7 @@ omits what readers respond to**, and each needs re-specifying rather than re-sch
 | ID | Test | Question it settles | Method | Cost | Falsifier | Status |
 | --- | --- | --- | --- | --- | --- | --- |
 | D-1 | Separate the treatment's **three** bundled changes | Was the 2026-08-10 effect from the different kind of act, from the stake economics, or from the four rooms yielding distinct components? Raters cited act-kind at one fork and stakes at two, so the original two-way framing understated the confound. | Three arms on the same graph, each restoring one change to the control's setting while holding the other two. Rate each against the same base book with the six-question instrument. | 3 fills, 2 raters | Restoring any single change collapses the effect, which would name that change as the whole lever rather than one of three. | queued |
-| D-2 | Replicate on a production-eligible graph | Does any of this survive off a 26-node outlier? The catalog median is 151 nodes and the pilot graph is not production-eligible. | Repeat the winning arm on a production-scale 10-13 skeleton, same protocol, same instrument. **Blocked on an artifact nobody noticed was missing: see below.** | **badly underestimated, see below** | The effect vanishes or inverts at production scale. | **running, at rating prep**: contract authored and independently verified (101 nodes, 39 forks, 0 closure violations); three bindings verified at 0.000 collision with only the 6 designed shared-world props; three fills complete and structurally clean (10.2k to 10.6k words each); cast renamed and titles separated. **HALTED AT THE GUARD BATTERY, not rated.** See below. |
+| D-2 | Replicate on a production-eligible graph | Does any of this survive off a 26-node outlier? The catalog median is 151 nodes and the pilot graph is not production-eligible. | Repeat the winning arm on a production-scale 10-13 skeleton, same protocol, same instrument. **Blocked on an artifact nobody noticed was missing: see below.** | **badly underestimated, see below** | The effect vanishes or inverts at production scale. | **running, at rating prep**: contract authored and independently verified (101 nodes, 39 forks, 0 closure violations); three bindings verified at 0.000 collision with only the 6 designed shared-world props; three fills complete and structurally clean (10.2k to 10.6k words each); cast renamed and titles separated. **HALTED AT THE GUARD BATTERY, not rated.** D-6 has since supplied the way forward and priced it: neither cheap repair suffices, so resuming D-2 needs the decisional stratum generated per book **and** the premise varied across arms. See below. |
 | D-3 | DecisionSignature v2 over the contracts | Can a richer vocabulary agree with readers instead of inverting them? | Added `reasoning_kind` (compute, match, recall, infer, perceive, negotiate, exert) and `stake` (nothing, time, resource, access, standing, permanent) plus the three `AL-193` gaps, and re-annotated the three plans blind. | 2 annotators over 3 plans | Hit its own falsifier: still ranks the treatment pair as the more repetitive one. Annotator A 0 of 6 fields agreeing with readers, annotator B 1 of 6. `reasoning_kind` inverts under both (0.929 against 1.000, and 0.857 against 0.964). Not a reliability failure: kappa between the two annotators is 0.77 to 0.81 on `reasoning_kind` and 0.72 on `stake`, both clear of the floor. The new fields are labellable and do not discriminate. | **done, NEGATIVE** |
 | D-3b | Same vocabulary over contract **plus binding** | Is the inversion a vocabulary problem or a layer problem? The contracts describe `n_clockface` as "answer the test on its own terms" and "fit the piece the way the diagram shows", which Rule 2 correctly calls one decision; the mechanic readers responded to lives in the binding (`clock_arithmetic`, `rhythm_code`, `pictogram_code`). | Identical annotation pass with each plan's bound devices attached. | 1 to 2 annotators over 3 plans | Ordering still inverts with the binding visible, which would mean the discriminating property is not in the plan at all and only the filled prose carries it. Did not fire. | **done, POSITIVE, 1 annotator** |
 | D-3c | Confirm D-3b with a second blind annotator | Is D-3b reproducible, and does it survive a subset fixed in advance? | Second independent annotator, same three bundles, same brief. Analysis pre-registered below before the labels exist. | 1 annotator over 3 plans | The second annotator's `reasoning_kind` does not separate the pairs in the readers' direction over the pre-registered fork subset. Did not fire, but the margin nearly vanished. | **done, PARTIAL** |
@@ -238,6 +247,52 @@ contradicts the diagnosis: **`choice_semantics` is not the main channel.** Rough
 shared grams trace to no contract field at all and are same-model idiom (`AL-207`), which no
 wording intervention touches, and the premise, which every condition shared by construction,
 carries as much as either field a repair addressed.
+
+### D-6 addendum: the generator's idiom floor, measured, and the budget is above it
+
+The attribution above says roughly a quarter of shared grams trace to no contract field and are
+same-model idiom. That invites a worry big enough to check directly: **if the floor is near the
+budget, the guard is asking for something no generator can deliver and every architecture is
+doomed on a technicality.** So the floor was measured, on book pairs sharing nothing but the model
+and the age band, different graph, different contract, different world:
+
+| Pair | Shared 4-grams per 1000 |
+| --- | --- |
+| clocktower/river against midnight-frequency/radio | 2.9 |
+| clocktower/foundry against midnight-frequency/radio | 5.0 |
+| clocktower/river against midnight-frequency, world 2 | 1.9 |
+| **mean floor** | **3.3** |
+
+Everything measured in this programme, on one scale:
+
+| | per 1000 |
+| --- | --- |
+| generator idiom floor (nothing shared but the model) | **3.3** |
+| **budget** | **4.0** |
+| pilot pair, different contracts, same graph, same bindings | 2.9 |
+| D-6 `neutral`, one contract, wording flattened | 11.4 |
+| D-6 `diverge`, one contract, divergence instructed | 12.9 |
+| D-6 `verbatim`, one contract as written | 16.9 |
+| D-2 pair, one contract, 101 nodes | 50.1 |
+
+Three things follow, and the first is a correction.
+
+1. **The budget is above the floor, so it is reachable.** 4.0 against 3.3 is tight but real, and
+   the worry is retired. Nothing said elsewhere in this programme should be read as implying the
+   guard is unachievable.
+2. **The pilot design already achieves the floor.** At 2.9 against a floor of 3.3, two books written
+   from independently worded contracts over the same graph with the same bindings are
+   indistinguishable from two books that share nothing at all. **One contract per book is not merely
+   better, it is a solved problem**, and the only question is whether reuse can be bought back
+   without giving that up.
+3. **The repairs are nowhere near the floor.** 11.4 is 3.5 times it, so D-6's negative result is not
+   a story about hitting an unavoidable limit. There is a factor of three of headroom that flattening
+   the wording did not touch, which is consistent with the attribution finding that the repairs
+   addressed one channel of at least four.
+
+The floor also corroborates the attribution independently: a quarter of `verbatim`'s 16.9 is 4.2 per
+1000, against a directly measured 3.3. Two different methods agreeing on the size of the
+unreachable component is the strongest thing in this section.
 
 **What that does to the repair list.** `AL-208` named three repairs and D-6 tested the two that
 only touch `choice_semantics`. Both fall well short, and now we know why: they repair one of at

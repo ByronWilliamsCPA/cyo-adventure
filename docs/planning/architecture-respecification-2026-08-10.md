@@ -83,10 +83,16 @@ than as footnotes to it:
    it is the story's dramatic question, and section 2 tacitly left it shared. D-6 says that is the
    single largest traceable channel. A structural stratum that is genuinely wordless holds topology,
    fact *names*, typed slots and categories, and no prose at all, the premise included.
-2. **No wording intervention reaches the idiom floor.** Two books written by one model from one
-   situation converge on "let out a breath" and "for a long moment" whatever the plan says. This is
-   a floor on the whole approach, not a defect of any architecture below, and it sets a limit on
-   what the shared-gram guard can ever be asked to certify.
+2. **There is an idiom floor no wording intervention reaches, and it has since been measured at
+   3.3 shared four-grams per 1000**, on book pairs sharing nothing but the model and the age band.
+   Two books written by one model from one situation converge on "let out a breath" and "for a long
+   moment" whatever the plan says. **The budget is 4.0, so the floor is below it and the guard is
+   achievable**; an earlier draft of this point implied the floor might make the budget unreachable
+   and that was wrong. What the floor actually establishes is the opposite and more useful thing:
+   the pilot's one-contract-per-book design already sits at 2.9, indistinguishable from books that
+   share nothing, so **not converging is a solved problem** and the entire question is whether reuse
+   can be bought back without giving it up. D-6's repairs sit at 3.5 times the floor, so they failed
+   with a factor of three of headroom still unclaimed.
 3. **Section 2 claimed the dilemma "dissolves". It does not; it narrows.** Stratifying removes the
    part of constraint B that comes from shared wording, which is most of the traceable part and
    about two thirds of the total. What remains is a shared *situation* producing shared idiom, and

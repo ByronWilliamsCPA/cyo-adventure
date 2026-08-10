@@ -397,6 +397,7 @@ substantially the same work under different headings. Do not triple-book.
 | UW-C148 | `AL-214` Contract sharing confirmed as a cause: 2.9 to 16.9 shared 4-grams per 1000 with only that variable changed. Neither wording repair suffices, both landing near three times budget. Stop proposing wording-level repairs as sufficient and test per-book generation of the decisional stratum. | now | unscheduled |
 | UW-C149 | `AL-215` The leak has at least four channels and `choice_semantics` is not the main one; `premise` carries as much or more and a quarter is unreachable same-model idiom. Move `premise` into the per-book stratum and measure the idiom floor before setting a shared-gram budget for any reusable-plan architecture. | now | unscheduled |
 | UW-C150 | `AL-216` A cross-experiment baseline differed from its treatment in two ways, not one, because the authoring tasks differed as well as the artifacts. Diff authoring tasks before comparing against a historical baseline, and partition the measure to isolate a confound rather than caveating it. | now | unscheduled |
+| UW-C151 | `AL-217` The shared-gram budget of 4.0 was never validated against the generator's floor, measured here at 3.3 per 1000 on books sharing nothing but the model. The budget is reachable, the pilot design already sits at the floor, and D-6's repairs failed with headroom rather than against a limit. Record the floor beside the budget and re-measure on any model change. | now | unscheduled |
 
 ## Cluster D: untracked GitHub issues
 

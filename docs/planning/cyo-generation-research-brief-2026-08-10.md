@@ -1322,10 +1322,16 @@ would rather state than discover later:
 1. A "reusable plan" that shares the dramatic question is already sharing the largest traceable
    channel. If a plan is to be reused, its premise has to vary per book, which is a much stronger
    constraint than it sounds and may not leave much that is reusable.
-2. **There is an idiom floor no plan-level intervention reaches.** Two books written by one model
-   from one situation converge on stock phrasing whatever the plan says. This bounds what a
-   shared-language guard can ever certify, and it is a property of the generator rather than of any
-   architecture.
+2. **There is an idiom floor no plan-level intervention reaches, and we measured it: 3.3 shared
+   four-grams per 1000**, on book pairs sharing nothing but the model and the age band. Two books
+   written by one model from one situation converge on stock phrasing whatever the plan says. We
+   checked this because the obvious worry was that the floor sits at our budget of 4.0, in which
+   case every architecture fails on a technicality. It does not: the floor is below the budget, so
+   the guard is achievable. The more useful thing the floor establishes is that our pilot's
+   one-contract-per-book design already scores 2.9, statistically indistinguishable from books
+   sharing nothing at all. **Not converging is a solved problem.** The whole question is whether
+   reuse can be bought back without giving that up, and our repairs failed at 3.5 times the floor
+   with a factor of three of headroom unclaimed.
 3. The third repair we named in 16d, generating the plan's decisional content per book, is still
    untested, and **we now predict it will also fall short on its own**, because the premise and the
    idiom floor survive it.
