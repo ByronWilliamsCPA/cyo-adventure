@@ -103,6 +103,45 @@ forks over the pilot (39 against 11), which is enough to answer whether an effec
 forks dilutes at scale, at roughly two-thirds the authoring cost. If the effect survives at 101 a
 further test at 149-plus is warranted; that tradeoff is recorded rather than hidden.
 
+### D-2 design, pre-registered 2026-08-10 before any binding or fill exists
+
+The contract is authored and independently verified: 101 nodes, 39 forks, 18 endings, 122 facts,
+zero fact-closure violations under a second implementation of the closure check, zero em-dashes,
+and `choice_semantics` written at the reference's device-agnostic altitude throughout.
+
+Three books over that one contract, mirroring the pilot exactly:
+
+| Book | World | Bound code form | Reasoning kind of its code chain | Role |
+| --- | --- | --- | --- | --- |
+| P | world 1 | `number_group_code` | COMPUTE, derive a value by rule | base |
+| Q | **world 2** | `letter_grid` | COMPUTE, derive coordinates by rule | **control** |
+| R | **world 1**, same as P | `pictogram_code` | MATCH, recognise a correspondence | **treatment** |
+
+`rhythm_code` is deliberately excluded from all three. It is the exact case two annotators split on
+in D-3c, and using it here would import an unresolved vocabulary boundary into a test meant to
+settle something else.
+
+As in the pilot, the treatment shares the base book's world while the control changes world
+wholesale, so the comparison is again biased against the treatment.
+
+**The prediction, fixed now:** raters will judge the P/Q pair MORE decision-repetitive than the P/R
+pair, and the `reasoning_kind` measure over the code chain will order them the same way. If the
+effect is real and survives a fourfold increase in forks, both hold. If it is an artifact of an
+eleven-fork graph, the rating ordering will collapse or reverse.
+
+**What would falsify it, stated in advance:**
+
+1. Raters do not order the pairs P/Q more repetitive than P/R, or split.
+2. The ordering holds for raters but the `reasoning_kind` chain measure does not reproduce it,
+   which would mean the measure worked on the pilot by luck.
+3. The measure reproduces it but only on a fork subset chosen after the fact. The chain is defined
+   in advance by the contract's own `code_forms` note, which names its nodes: `n_start`, `n_decode`,
+   `wt_gate`, `cn_marquee`, `hb_shed`, `lb_green`, `bh_wind`, `f_answer_script`, `e_win_signoff`.
+
+**Guards before any rating**, unchanged from the pilot: device collision 0.000 between all three
+bindings, fill integrity, full validator gate, prose craft, zero em-dashes, distinct titles. A
+round that fails a guard is rebuilt, not caveated.
+
 ### D-3b result, and the pre-registration D-3c must satisfy
 
 Attaching each plan's binding flips the field the test was built around. Over all 28 fork options,

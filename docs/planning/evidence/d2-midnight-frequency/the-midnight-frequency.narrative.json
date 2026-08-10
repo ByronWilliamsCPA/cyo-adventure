@@ -1,0 +1,4381 @@
+{
+ "narrative_version": 1,
+ "skeleton_slug": "the-midnight-frequency",
+ "age_band": "10-13",
+ "premise": {
+  "engine": "decode-and-gather-before-dawn",
+  "dramatic_question": "Will {HERO} and {COMPANION} follow {ANCESTOR}'s {BROADCAST} all the way to {GOAL} before {DEADLINE}, and decide what becomes of it once they are standing in the room?",
+  "resolution_space": [
+   "frost on the high way turns a climb into a hand on a jacket and a ride home with the hunt intact",
+   "a weak floor gives, an arm catches, and the two of them name the risk honestly on the way out",
+   "an old reel is threaded instead of hunted, and one shared showing is worth the rest of the night",
+   "an unfit shortcut on the water swamps in a boot's depth and buys nothing but wet socks and a rule remembered",
+   "cocoa and an adult's stories outlast the clock, and the club comes alive in the telling instead of in a cache",
+   "an untried handle wakes the night noise-maker, and the children stand still and answer for themselves",
+   "a loose slope walks out from under them and the long way up is still there tomorrow",
+   "an overreach at the destination's window is hauled back by a sibling, and nobody breaks into what is theirs anyway",
+   "one caption too many at the wall, and the sign-off happens while they are still reading, heard but unanswered",
+   "the last broadcast is witnessed from the steps through the door, unopened and entirely enough",
+   "an answer spoken into the pause draws old voices back out of the static, one check-in at a time",
+   "an answer spoken, a name signed under the elder's own, and the tape closed with family at both ends",
+   "the club's closing words read exactly as written, and the watch ends precisely as it was built to end",
+   "the closing words read, then one promise added, and the machine wound for one more year",
+   "hands shaken over a wound spring, and the station has keepers again",
+   "a plan built out of diagrams and uncrossed names turns finders into a properly trained crew",
+   "a phone call before the end, and three generations standing in front of the desk for the last groups",
+   "five new groups recorded in the children's own voices, and the hunt handed to the town's next finders"
+  ]
+ },
+ "label_styles": [
+  "imperative and verb-first: what we do next, said out loud",
+  "name the place you are going to, let the reason stay implied",
+  "one trailing adverb where the choice has a mood: quietly, first, anyway",
+  "short sentences closed with a full stop, never a question mark",
+  "physical verbs for physical legs, quiet verbs for the choices about people"
+ ],
+ "facts": {
+  "broadcast_live": "the inherited receiver has woken by itself and a recorded voice is reading number groups into the night; it is running now and it will not run forever",
+  "voice_is_ancestor": "the children know the recorded voice belongs to their own late elder",
+  "groups_copied": "the night's number groups have been written down by hand and can be worked on away from the set",
+  "companion_along": "the older sibling is awake, convinced, and travelling with the hero for the whole night",
+  "logbook_in_hand": "the elder's worn operating logbook, holding her key and her margin notes, is with the children",
+  "guardian_permission": "the parent knows what is happening, has said yes, and has set the night's plain safety rules",
+  "deadline_known": "the hour the broadcast ends is named and the countdown to it is running",
+  "code_broken": "the elder's key has been applied and the groups read as plain words",
+  "five_sites_named": "five specific places in town are known to be the night's stops, each with its own short coded hint",
+  "refrain_known": "the broadcast's closing refrain, which ends by naming the place to come home to, is known by heart",
+  "bearing_east": "the direction-finder points steadily to one place east of town from anywhere the children stand",
+  "out_in_the_town": "the children are out in the sleeping town on their bikes, inside the parent's rules, with the receiver along",
+  "hub_anchor": "the central meeting point is known, safe, and reachable from every site, so no leg of the night is one-way",
+  "marker_recognized": "the elder's personal waypoint mark is recognized as the same mark that recurs across the town and in her logbook",
+  "club_is_real": "the elder's night club is confirmed as a real group of ordinary townspeople she belonged to, not a family legend",
+  "ancestor_memory_shared": "at least one first-hand memory of the elder's own life with her club has been handed to the children",
+  "trail_is_deliberate": "the night's clues are confirmed as the elder's own deliberate handiwork, prepared and left for a finder",
+  "ancestor_presence_felt": "the children feel the elder's past presence in the place they are standing, without anything supernatural happening",
+  "wt_site_reached": "the first site is reached and its shape is legible from outside",
+  "wt_inside_fence": "the children are inside the first site's boundary, standing under its structure",
+  "wt_hint_read": "the first site's hint is decoded: the answer waits at reach height, and one of several identical supports is the one that differs",
+  "wt_high_route_tested": "the high way at the first site has been looked at honestly and offers nothing the hint asked for",
+  "wt_legs_examined": "the identical supports are under examination and the children accept that one of them must be tellable from the rest",
+  "wt_leg_found": "the one support that differs is identified, and the small fixture on it sits within reach",
+  "wt_card_read": "the fixture held the elder's own card, sending the search on to the site's indoor store and its shelf",
+  "wt_shelf_targeted": "the children know which container on the store's shelf is the one to reach for",
+  "wt_store_room_entered": "the site's unlocked workaday store is open to them, with its shelf of containers and its wall of old crew records",
+  "wt_cache_open": "the first site's hidden cache container is found on the shelf and opened",
+  "wt_token_taken": "the first site's keepsake token and its note are in the hero's pocket",
+  "cn_site_reached": "the second site is reached and shown to be shut, dark, and out of use",
+  "cn_hint_read": "the second site's hint is decoded: it names one exact place to sit and says the prize lives where the light lives",
+  "cn_inside": "the children are inside the second site by its always-open side way, with a hall and an upstairs room offered",
+  "cn_hall_open": "the site's main hall is open to them, holding both the place the hint names and a raised area with the club's old sound gear",
+  "cn_seat_found": "the exact place the hint named is found, and its small fitting is conspicuously better kept than everything around it",
+  "cn_fitting_loose": "the fitting's fastenings are meant to be turned by hand and have been turned many times before",
+  "cn_redirect_read": "the second site sends the children onward and upward: what they want is not here but where the light comes from",
+  "cn_weak_floor_seen": "the raised area's weak footing is visible, and so is the safe way around it",
+  "cn_booth_landing": "the upstairs room's door is reached, standing ajar, with a way to look in beside it",
+  "cn_odd_tin_spotted": "one container in the upstairs room's rack stands out of line as if waiting to be noticed",
+  "cn_booth_entered": "the children are in the upstairs room among its machinery and its labelled containers, one of them in the elder's own hand",
+  "cn_reel_ready": "the room's machine stands loaded and ready, as if someone always meant for one more showing",
+  "cn_token_taken": "the second site's keepsake token and its note are in the hero's pocket",
+  "hb_site_reached": "the working waterfront is reached; the site stands out along the front and one window nearby is lit at this hour",
+  "hb_shed_approached": "the children have come up the front to the site's own doors, with the lit window a little farther on",
+  "hb_locked_and_watched": "the site is properly locked, an adult is plainly awake close by, and a shortcut sits at hand that is visibly unfit to use",
+  "hb_no_way_in_alone": "the site cannot be opened by the children alone, and forcing it is off the table",
+  "hb_target_seen": "the one retired object at the back of the site is picked out as the thing worth reaching",
+  "hb_keeper_met": "the waterfront's night-watch adult has been met, is friendly, and is himself copying tonight's broadcast",
+  "hb_keeper_ally": "the night-watch adult recognizes the elder's work, takes the children seriously, and is on their side",
+  "hb_key_offered": "the adult offers the children the way in himself rather than sending them away",
+  "hb_key_in_hand": "the way into the site has been given by an adult, not taken",
+  "hb_inside_shed": "the children are inside the site among its retired equipment",
+  "hb_hint_read": "the third site's hint is decoded: the one retired sounding object is what remembers",
+  "hb_cache_located": "something small and man-made is fixed inside the retired object's works where nothing like it belongs",
+  "hb_token_taken": "the third site's keepsake token and its note are in the hero's pocket",
+  "lb_site_reached": "the fourth site is reached, dark but for one lamp, and treated as a quick errand rather than an expedition",
+  "lb_hint_read": "the fourth site's hint is decoded: it names the room, names the record by its year, and warns about the noise-maker over the door",
+  "lb_door_choice_seen": "both facts about the after-hours door are plain at once: the noise-maker above it, and the key the town has always left nearby",
+  "lb_entered_properly": "the children are inside by the key that was left to be used, with the noise-maker undisturbed",
+  "lb_hall_crossed": "the site's main room is crossed by moonlight, with the target room ahead and one lit table on the way",
+  "lb_founding_year_known": "the year the club was founded is known to the children as a plain number",
+  "lb_maproom_open": "the cabinet of year-labelled records stands open to them, one of which is the right one",
+  "lb_drawer_identified": "the right record is singled out from all the others by the elder's own small mark",
+  "lb_map_seen": "a drawing has been seen that puts all five sites on one page with lines converging on a single spot east of town",
+  "lb_token_taken": "the fourth site's keepsake token and its note are in the hero's pocket",
+  "bh_site_reached": "the fifth site's foot is reached, with the long safe way up and the loose shortcut both visible from the same spot",
+  "bh_ascending": "the children are climbing the safe way with the town dropping away below them",
+  "bh_hint_read": "the fifth site's hint is decoded: it names the singing wires and the third of the anchorages",
+  "bh_summit_reached": "the top is reached, the fenced installation is plainly off limits and left alone, and the anchorages stand outside the fence in the open",
+  "bh_anchors_pointed": "the wires themselves are read as pointers, sloping down to the anchorages",
+  "bh_third_anchor_found": "the third anchorage is identified, standing a little apart with a small landmark beside it",
+  "bh_fastener_found": "one fastening among a weathered set is found to be maintained, marked, and turnable by hand",
+  "bh_cache_open": "a dry cavity built into the anchorage itself is open, with a sealed container inside",
+  "bh_token_taken": "the fifth site's keepsake token and its note are in the hero's pocket",
+  "goal_located": "the place the bearing has pointed to all night is fixed as one specific lit spot east of town",
+  "goal_found": "the source of the broadcast is found: a small lit building east of town, with the same voice audible from inside it as from the set",
+  "goal_named": "a sign on the building confirms it is the place the refrain names and the club's own home",
+  "entry_problem": "the building is locked, its lit window is out of honest reach, and the voice reads on inside without anyone to open the door",
+  "machine_alone_inside": "the broadcast is machinery keeping a decades-long appointment by itself, with no person in the room and a clock running down to the end",
+  "key_hunt_narrowed": "the search for a way in is narrowed to the two places a radio person would actually leave a key",
+  "keybox_singled_out": "one of those places is singled out as the one thing here that has been recently and deliberately cared for",
+  "key_found": "a key has been found, wrapped and labelled for whoever was still listening",
+  "door_open_lawfully": "the door is open, unlocked with the key its builder left, and nothing has been forced or broken",
+  "station_seen": "the room is seen for what it is: a working station, swept and maintained, running the broadcast off its own machinery under a timer",
+  "room_offers_seen": "the room's three offers are plain at once: the club's wall of records, the elder's open logbook, and the running station with its timer",
+  "logbook_on_desk": "the logbook lies open on the station desk, within reach of the microphone",
+  "whole_story_known": "why the elder built the station and the hunt is now known: the club scattered, and she wanted the town to keep one more net in it",
+  "dawn_near": "the sky in the window has begun to change and the end of the broadcast is minutes away",
+  "ancestor_permission": "the elder's last written entry names the three right things a finder may do and asks them to sign",
+  "contacts_listed": "the logbook's last page carries the old members' names and numbers, a few of them not crossed through",
+  "choice_is_theirs": "what becomes of the station is the children's to settle, and it must be settled before the broadcast ends",
+  "mic_available": "the station can be spoken into as well as listened to, and it will record what is said",
+  "speaking_live": "the station is recording the children as well as playing, and a pause is open for a reply",
+  "script_available": "the club's own closing words are here in the room, laid out to be read aloud",
+  "signoff_ready": "the closing words, ending in a five-word phrase, are in hand and ready to be spoken",
+  "answer_given": "the children's own voices are on the elder's tape, alongside hers",
+  "keeping_is_possible": "the station is documented plainly enough that children could keep it running",
+  "timer_wound": "the station is wound to wake again at the same hour a year from now",
+  "key_returned": "the key is put back where the next listener will find it",
+  "apprenticeship_planned": "a real plan exists to learn the station properly, with named people who could teach it",
+  "sharing_routes_open": "two ways to give the station away are open at once: bring family into the room now, or use its own voice to hand the hunt onward",
+  "family_gathered": "the family is together in the room before the broadcast ends",
+  "new_hunt_recorded": "a new hunt in the children's own voices is recorded onto the elder's tape for the town's next finders",
+  "dignity_kept": "the children leave with their self-respect intact; an outcome is a consequence, never a humiliation",
+  "return_open": "nothing is lost for good; the night can be tried again",
+  "deadline_spent": "the night's window has closed with the broadcast finished",
+  "watch_completed": "the station's long watch is carried through to its proper end rather than broken off",
+  "station_future_settled": "what becomes of the station has been decided by the children and acted on",
+  "honesty_kept": "the children own what they did to the adult it concerns rather than slipping away from it",
+  "wonder_shared": "the two children have shared one whole moment of wonder together rather than only collecting",
+  "legacy_carried_on": "the elder's work continues in other hands after tonight",
+  "anyone_injured": "someone is actually hurt, beyond a scrape or a soaking that stops nothing",
+  "gore_of_any_kind": "injury is shown in bodily detail",
+  "humiliation_inflicted": "a character is made small, laughed at, or shamed by the story or by another character",
+  "blame_between_siblings": "the two children turn on each other or hold the night's setback against one another",
+  "adult_menaces_children": "an adult in the story is a threat to the children rather than a help to them",
+  "break_in_rewarded": "forcing, damaging, or sneaking past a way in is treated as the clever winning move",
+  "property_damaged": "something in the town is broken, taken, or left worse than it was found",
+  "child_alone_at_night": "a child is left alone in the dark with nobody who knows where they are",
+  "grief_overwhelms": "the elder's death is dwelt on as raw loss rather than carried as an inheritance",
+  "theft_rewarded": "taking what belongs to someone else pays off",
+  "deadline_as_disaster": "the closing hour is played as catastrophe rather than as a bounded, survivable cost"
+ },
+ "safety_envelope": {
+  "affect_ceiling": "night-time wonder with mild, bounded suspense; the dark is company, not threat, and urgency may tighten but never tips into fear for anyone's safety",
+  "forbid_affect": [
+   "despair",
+   "hopelessness",
+   "terror",
+   "humiliation",
+   "cruel_mockery",
+   "raw_grief"
+  ],
+  "forbid_facts": [
+   "anyone_injured",
+   "gore_of_any_kind",
+   "adult_menaces_children",
+   "blame_between_siblings",
+   "break_in_rewarded",
+   "theft_rewarded",
+   "property_damaged",
+   "child_alone_at_night",
+   "grief_overwhelms"
+  ],
+  "permitted_device_kinds": [
+   "symbol_substitution",
+   "letter_grid",
+   "number_group_code",
+   "tally_cipher",
+   "pictogram_code",
+   "rhythm_code",
+   "scratched_shape",
+   "inked_symbol",
+   "painted_glyph",
+   "stamped_figure",
+   "chalked_sign",
+   "waterworks_landmark",
+   "shuttered_playhouse",
+   "working_waterfront",
+   "civic_archive",
+   "hilltop_installation",
+   "disused_railway_building",
+   "hinged_fitting",
+   "sealed_tin",
+   "swaged_capsule",
+   "taped_capsule",
+   "cast_cavity",
+   "mislabelled_container",
+   "stamped_tag",
+   "engraved_token",
+   "punched_disc",
+   "cast_medallion",
+   "handwritten_slip",
+   "drawn_card",
+   "photograph_caption",
+   "annotated_chart",
+   "display_card",
+   "old_logsheets",
+   "film_reel",
+   "frozen_climb",
+   "weak_floor",
+   "unfit_boat",
+   "night_alarm",
+   "loose_slope",
+   "painted_shut_window",
+   "resonant_note",
+   "wind_music",
+   "distant_bell",
+   "night_view",
+   "lamp_left_burning",
+   "night_watch_adult",
+   "roused_caretaker",
+   "weatherproof_box",
+   "hidden_nail",
+   "under_lintel",
+   "clockwork_timer",
+   "tape_machine",
+   "direction_finder",
+   "hand_crank",
+   "maintenance_folder"
+  ],
+  "forbidden_device_kinds": [
+   "weapon",
+   "gore",
+   "cruelty",
+   "theft_rewarded",
+   "adult_menace",
+   "lethal_hazard",
+   "toxic_substance"
+  ]
+ },
+ "world_recipe": {
+  "requires": {
+   "code_forms": {
+    "count": 1,
+    "kinds": [
+     "symbol_substitution",
+     "letter_grid",
+     "number_group_code",
+     "tally_cipher",
+     "pictogram_code",
+     "rhythm_code"
+    ],
+    "note": "BOUND ONCE, USED THROUGHOUT. One code form per story, chosen at bind and rendered the same way every time it appears: the groups copied at n_start, the key applied at n_decode, each site's own hint group at wt_gate, cn_marquee, hb_shed, lb_green and bh_wind, and the five-word closing phrase read at f_answer_script and spoken at e_win_signoff. A reader who learns it in the kitchen can follow it at every site and recognize it at the end."
+   },
+   "waypoint_marks": {
+    "count": 1,
+    "kinds": [
+     "scratched_shape",
+     "inked_symbol",
+     "painted_glyph",
+     "stamped_figure",
+     "chalked_sign"
+    ],
+    "note": "BOUND ONCE, USED THROUGHOUT. The elder's personal waypoint mark, one per story, rendered the same wherever it recurs: the logbook margins, wt_marks, cn_horns, hb_doors, hb_cage, hb_pad, lb_maproom, lb_hunt, bh_plate, bh_pillar. It is the reader's proof of a single hand behind the whole night."
+   },
+   "site_landmarks": {
+    "count": 5,
+    "kinds": [
+     "waterworks_landmark",
+     "shuttered_playhouse",
+     "working_waterfront",
+     "civic_archive",
+     "hilltop_installation"
+    ],
+    "note": "one per branch off the hub, drawn freely but unique within the story; each must be somewhere a town kid can reach by bike at night, look around inside, and leave from safely"
+   },
+   "destination_building": {
+    "count": 1,
+    "kinds": [
+     "disused_railway_building",
+     "civic_archive",
+     "waterworks_landmark"
+    ],
+    "note": "the small building east of town the bearing points to all night; small, warm, and plainly kept up by one person"
+   },
+   "cache_containers": {
+    "count": 5,
+    "kinds": [
+     "hinged_fitting",
+     "sealed_tin",
+     "swaged_capsule",
+     "taped_capsule",
+     "cast_cavity",
+     "mislabelled_container"
+    ],
+    "note": "one hiding place per site, unique within the story; every one is inert, dry and safe to open, and each is hidden by wit rather than by lock"
+   },
+   "keepsake_tokens": {
+    "count": 5,
+    "kinds": [
+     "stamped_tag",
+     "engraved_token",
+     "punched_disc",
+     "cast_medallion"
+    ],
+    "note": "one per site cache; each carries a single word, and the five words in site order assemble the closing phrase read at the end. They are keepsakes, never valuables"
+   },
+   "memory_slips": {
+    "count": 5,
+    "kinds": [
+     "handwritten_slip",
+     "drawn_card",
+     "photograph_caption",
+     "annotated_chart"
+    ],
+    "note": "one per site cache; each hands over one first-hand memory of the elder among her club and closes with the story's refrain, so any single site teaches who she was"
+   },
+   "club_relics": {
+    "count": 4,
+    "kinds": [
+     "photograph_caption",
+     "display_card",
+     "old_logsheets",
+     "film_reel",
+     "annotated_chart"
+    ],
+    "note": "the incidental proofs, scattered across the sites and the destination, that the club was a real community of working people: one at wt_photo, one at hb_pad, one at lb_table, one at fin_wall"
+   },
+   "retreat_obstacles": {
+    "count": 6,
+    "kinds": [
+     "frozen_climb",
+     "weak_floor",
+     "unfit_boat",
+     "night_alarm",
+     "loose_slope",
+     "painted_shut_window"
+    ],
+    "note": "one per site plus one at the destination, unique within the story; each must be visibly retreatable and cost only time, dignity, a scrape or a soaking, never safety"
+   },
+   "night_keepers": {
+    "count": 2,
+    "kinds": [
+     "night_watch_adult",
+     "roused_caretaker"
+    ],
+    "note": "the two named adults who belong to their own sites: kind, firm about the rules, glad to be asked, and never the reason the night goes wrong"
+   },
+   "wonder_details": {
+    "count": 5,
+    "kinds": [
+     "resonant_note",
+     "wind_music",
+     "distant_bell",
+     "night_view",
+     "lamp_left_burning"
+    ],
+    "note": "one sensory marvel per site, drawn freely; the thing a reader remembers about that place after the clue is solved"
+   },
+   "key_hiding_places": {
+    "count": 1,
+    "kinds": [
+     "weatherproof_box",
+     "hidden_nail",
+     "under_lintel"
+    ],
+    "note": "where the destination's key waits; it must read as left for a finder, so entering is inheritance and never breaking in"
+   },
+   "station_workings": {
+    "count": 4,
+    "kinds": [
+     "clockwork_timer",
+     "tape_machine",
+     "direction_finder",
+     "hand_crank",
+     "maintenance_folder"
+    ],
+    "note": "the machinery that makes the broadcast run itself and makes keeping it possible; every piece must be understandable by a twelve-year-old in one look"
+   }
+  },
+  "identity_roles": [
+   "HERO",
+   "COMPANION",
+   "GUARDIAN",
+   "ANCESTOR",
+   "FAMILY_NAME",
+   "CLUB_NAME",
+   "MEMBER_TERM",
+   "CALLSIGN",
+   "GOAL",
+   "STORY_MOTIF"
+  ],
+  "texture_roles": [
+   "THRESHOLD",
+   "ENTRANCE",
+   "OPENING_MOMENT",
+   "DEADLINE",
+   "DEADLINE_SIGN",
+   "TONE_MOTIF",
+   "DEVICE",
+   "BROADCAST",
+   "GUIDE_LOG",
+   "CIPHER",
+   "ANTENNA",
+   "MARKER",
+   "SITE_LURE",
+   "SITE_APPROACH",
+   "SITE_GATE",
+   "SITE_FIND",
+   "SITE_TAG",
+   "SITE_KEEPER",
+   "FIN_KEYBOX",
+   "FIN_GATE1"
+  ]
+ },
+ "nodes": {
+  "n_start": {
+   "tier": "open",
+   "function": "introduce-mystery",
+   "entry_state": [],
+   "establishes": [
+    "broadcast_live",
+    "voice_is_ancestor",
+    "groups_copied"
+   ],
+   "forbids": [
+    "code_broken",
+    "companion_along",
+    "out_in_the_town",
+    "grief_overwhelms"
+   ],
+   "affect": {
+    "target": "hair-raising wonder at a familiar voice arriving from nowhere",
+    "forbid": [
+     "dread",
+     "grief",
+     "urgency"
+    ]
+   },
+   "invention": {
+    "code_form": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.code_forms",
+     "category": "code_forms",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the story's one code form; every later coded beat renders this same form, so the reader can learn it here and use it all night"
+    },
+    "receiver": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.station_workings",
+     "category": "station_workings",
+     "assigned_at": "bind",
+     "note": "the inherited set that wakes itself; benign, hand-sized, and plainly old"
+    }
+   },
+   "constraints": {
+    "opening_must_be": "the voice arriving unasked into an ordinary bedroom: recognizable, calm, and clearly recorded long ago, so the mystery is who set this up and why, not whether anyone is in danger",
+    "must_not": "let the dead elder read as a ghost, a haunting, or a distress call; and do not decode anything here"
+   },
+   "choice_semantics": {
+    "c_start_teo": "refuse to face this alone; fetch the one person who will believe it"
+   },
+   "beat_hint": "a set that switches itself on, a voice that should not be there, and a pencil moving fast."
+  },
+  "n_teo": {
+   "tier": "open",
+   "function": "assemble-the-team",
+   "entry_state": [
+    "broadcast_live",
+    "voice_is_ancestor",
+    "groups_copied"
+   ],
+   "establishes": [
+    "companion_along",
+    "logbook_in_hand",
+    "guardian_permission",
+    "deadline_known"
+   ],
+   "forbids": [
+    "code_broken",
+    "out_in_the_town",
+    "child_alone_at_night",
+    "adult_menaces_children"
+   ],
+   "affect": {
+    "target": "conspiratorial waking-up, then a parent's steadying yes",
+    "forbid": [
+     "quarrel",
+     "dread",
+     "grief"
+    ]
+   },
+   "constraints": {
+    "adults_must_be": "on the children's side: the parent recognizes the elder's book, feels it, and answers with rules rather than a refusal",
+    "must_not": "have any adult forbid the night, and do not let the children sneak out; permission is what makes the rest safe to enjoy"
+   },
+   "choice_semantics": {
+    "c_teo_decode": "take the mystery to the table and treat it as a solvable problem"
+   },
+   "beat_hint": "a sibling recruited, a notebook found, and a grown-up who says yes with conditions."
+  },
+  "n_decode": {
+   "tier": "open",
+   "function": "convert-mystery-to-map",
+   "entry_state": [
+    "broadcast_live",
+    "voice_is_ancestor",
+    "deadline_known",
+    "companion_along",
+    "logbook_in_hand",
+    "guardian_permission"
+   ],
+   "establishes": [
+    "code_broken",
+    "five_sites_named",
+    "refrain_known",
+    "bearing_east"
+   ],
+   "forbids": [
+    "out_in_the_town",
+    "goal_found",
+    "trail_is_deliberate"
+   ],
+   "affect": {
+    "target": "the click of a code giving way, five times over",
+    "forbid": [
+     "frustration",
+     "dread"
+    ]
+   },
+   "constraints": {
+    "decode_must_be": "shown on the page in the story's one code form so a reader can play along, and it must yield exactly five named places plus a closing refrain that names where to come home to",
+    "bearing_must_be": "independent of the five places: a direction that holds from anywhere, so a reader can see there is a sixth thing out there before any site is visited",
+    "must_not": "name what waits at any site, or reveal that the elder built this trail on purpose; that is a discovery for later"
+   },
+   "choice_semantics": {
+    "c_decode_ride": "stop planning and start moving while the clock still allows it"
+   },
+   "beat_hint": "the kitchen table turns a wall of numbers into five destinations, a refrain, and one stubborn direction."
+  },
+  "n_hub": {
+   "tier": "open",
+   "function": "offer-open-map",
+   "entry_state": [
+    "broadcast_live",
+    "voice_is_ancestor",
+    "deadline_known",
+    "companion_along",
+    "logbook_in_hand",
+    "guardian_permission",
+    "code_broken",
+    "five_sites_named",
+    "refrain_known",
+    "bearing_east"
+   ],
+   "establishes": [
+    "out_in_the_town",
+    "hub_anchor"
+   ],
+   "forbids": [
+    "goal_found",
+    "child_alone_at_night",
+    "deadline_as_disaster"
+   ],
+   "affect": {
+    "target": "the enormous private freedom of a sleeping town at night",
+    "forbid": [
+     "dread",
+     "loneliness",
+     "panic"
+    ]
+   },
+   "merge_note": "NC-1 / REVISIT: entered from the setup and again from every site's final beat, in any order and any number of times. Presuppose only the setup and the decode: the broadcast is running, the code is broken, five places are named, the bearing pulls east, the clock is running, the two of them are together under their parent's rules. Do NOT reference which sites have been visited, how many keepsakes are in a pocket, how much of the night is gone, or whether this is a first arrival or a fourth return. Write the square as a place that reads identically every time.",
+   "constraints": {
+    "offers_must_be": "six standing invitations that never expire: five different characters of place plus the standing option of abandoning collection and going straight to the source; no option is marked as the correct one and none is closed off by an earlier visit",
+    "must_not": "count the night down, rank the sites, or imply that skipping the sites is cheating; the reader who goes straight east must still get a whole story"
+   },
+   "choice_semantics": {
+    "c_hub_tower": "take the site that is outdoors and structural, where the search is physical and low",
+    "c_hub_cinema": "take the site that is indoors, shut up and dark, full of the club's old performances",
+    "c_hub_harbor": "take the site where somebody is awake, and where getting in means asking",
+    "c_hub_library": "take the quick errand: a public building, a paper record, and a rule worth respecting",
+    "c_hub_mast": "take the long uphill site with the widest view and the least shelter",
+    "c_hub_nest": "stop collecting and follow the direction that has never wavered, straight to the source"
+   },
+   "beat_hint": "hub. five spokes, one steady bearing, and a night that can be spent any way at all."
+  },
+  "wt_lane": {
+   "tier": "open",
+   "function": "approach-site",
+   "entry_state": [
+    "out_in_the_town",
+    "five_sites_named",
+    "code_broken",
+    "deadline_known",
+    "companion_along"
+   ],
+   "establishes": [
+    "wt_site_reached"
+   ],
+   "forbids": [
+    "anyone_injured",
+    "break_in_rewarded"
+   ],
+   "affect": {
+    "target": "the pleasure of arriving somewhere ordinary made strange by the hour",
+    "forbid": [
+     "dread",
+     "urgency"
+    ]
+   },
+   "merge_note": "REVISIT: the only parent is the hub, but the hub can send them here at any point in the night. Write the approach so it reads the same as a first stop or a fourth; no reference to earlier sites or to time already spent. The reader may also come back through here after this site has already given up its keepsake, so the scene must never assert that the place is still unsearched.",
+   "invention": {
+    "landmark": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.site_landmarks",
+     "category": "site_landmarks",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the first site: a working structure that stands over the town and carries the town's name on it"
+    }
+   },
+   "constraints": {
+    "approach_must_be": "sensory and short, sizing the site up from outside before anything is touched",
+    "must_not": "decode this site's hint yet, or imply anyone is watching them"
+   },
+   "choice_semantics": {
+    "c_wt_lane_on": "close the distance and commit to searching this place"
+   },
+   "beat_hint": "the site rises out of the dark ahead, ordinary by day and enormous by night."
+  },
+  "wt_gap": {
+   "tier": "open",
+   "function": "cross-boundary",
+   "entry_state": [
+    "wt_site_reached",
+    "companion_along"
+   ],
+   "establishes": [
+    "wt_inside_fence"
+   ],
+   "forbids": [
+    "property_damaged",
+    "break_in_rewarded",
+    "anyone_injured"
+   ],
+   "affect": {
+    "target": "small thrill of a boundary crossed that everyone in town has crossed",
+    "forbid": [
+     "guilt",
+     "dread"
+    ]
+   },
+   "constraints": {
+    "crossing_must_be": "an opening the town's kids have always used, taken without breaking anything and without pretending it is heroic",
+    "must_not": "cut, force, or damage anything, or frame the crossing as trespass worth hiding"
+   },
+   "choice_semantics": {
+    "c_wt_gap_lot": "get under the structure itself and start work"
+   },
+   "beat_hint": "through the gap everyone knows, and the site becomes a place they are standing inside."
+  },
+  "wt_gate": {
+   "tier": "open",
+   "function": "pose-site-puzzle",
+   "entry_state": [
+    "wt_inside_fence",
+    "code_broken",
+    "logbook_in_hand"
+   ],
+   "establishes": [
+    "wt_hint_read"
+   ],
+   "forbids": [
+    "property_damaged",
+    "break_in_rewarded"
+   ],
+   "affect": {
+    "target": "puzzle appetite; three honest ways to read one short instruction",
+    "forbid": [
+     "frustration",
+     "dread"
+    ]
+   },
+   "constraints": {
+    "offers_must_be": "three genuinely different readings of the same decoded instruction: search indoors, search the identical supports, or distrust the instruction and go high; the instruction itself must plainly say low, so the high option is a temperament and not a trap",
+    "must_not": "signal which offer is correct, or make the high option look stupid before it is tried"
+   },
+   "choice_semantics": {
+    "c_wt_gate_shed": "read the clue as pointing indoors and search the site's workaday store",
+    "c_wt_gate_legs": "take the instruction at its word and start on the identical supports",
+    "c_wt_gate_ladder": "distrust the plain reading and size up the hard, high way instead"
+   },
+   "beat_hint": "the site's own hint comes apart into three words worth arguing about."
+  },
+  "wt_ladder": {
+   "tier": "open",
+   "function": "test-the-tempting-wrong-reading",
+   "entry_state": [
+    "wt_hint_read",
+    "wt_inside_fence"
+   ],
+   "establishes": [
+    "wt_high_route_tested"
+   ],
+   "forbids": [
+    "anyone_injured",
+    "break_in_rewarded"
+   ],
+   "affect": {
+    "target": "honest temptation weighed against a clear instruction",
+    "forbid": [
+     "recklessness_glorified",
+     "shame"
+    ]
+   },
+   "invention": {
+    "obstacle": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.retreat_obstacles",
+     "category": "retreat_obstacles",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the first site's retreatable obstacle: cold, slick, and locked, so the reason not to climb is visible before anyone climbs"
+    }
+   },
+   "constraints": {
+    "offers_must_be": "a straight temperament fork: obey the written instruction, or back your own nerve against it; the instruction must be quoted here so that disobeying it is informed rather than ignorant",
+    "risk_must_be": "legible from the ground: the reader can see why this is a bad idea and still understand why someone would want to",
+    "must_not": "hide the instruction that says the answer is low, and do not let the high way hold anything worth having"
+   },
+   "choice_semantics": {
+    "c_wt_ladder_climb": "override the plain instruction and take the high, physical way anyway",
+    "c_wt_ladder_legs": "believe the instruction and bring the search back down to reach height"
+   },
+   "beat_hint": "the dare and the clue disagree, and only one of them was written by someone who knew."
+  },
+  "wt_legs": {
+   "tier": "open",
+   "function": "narrow-the-search",
+   "entry_state": [
+    "wt_hint_read",
+    "wt_inside_fence"
+   ],
+   "establishes": [
+    "wt_legs_examined"
+   ],
+   "forbids": [
+    "property_damaged"
+   ],
+   "affect": {
+    "target": "methodical curiosity: several identical things and one that must differ",
+    "forbid": [
+     "boredom",
+     "dread"
+    ]
+   },
+   "merge_note": "NC-1: two parents, one arriving straight from the site's puzzle beat and one doubling back from the high way. Presuppose only that the hint is read and the supports are in front of them. Do NOT reference the high way, any earlier attempt, or any decision reversed.",
+   "constraints": {
+    "offers_must_be": "two different senses applied to the same row of identical things: one that listens, one that looks; both are competent and both work",
+    "must_not": "make either sense the clever one, or reveal which of the supports is the one before the reader picks a method"
+   },
+   "choice_semantics": {
+    "c_wt_legs_tap": "find the odd one out by sound",
+    "c_wt_legs_marks": "find the odd one out by sight"
+   },
+   "beat_hint": "several identical things, one instruction, and two honest ways to tell them apart."
+  },
+  "wt_tap": {
+   "tier": "open",
+   "function": "reward-method",
+   "entry_state": [
+    "wt_legs_examined"
+   ],
+   "establishes": [
+    "wt_leg_found"
+   ],
+   "forbids": [
+    "property_damaged"
+   ],
+   "affect": {
+    "target": "the delight of a hunch answered out loud",
+    "forbid": [
+     "frustration",
+     "dread"
+    ]
+   },
+   "invention": {
+    "wonder_detail": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.wonder_details",
+     "category": "wonder_details",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the first site's sensory marvel: the sound the marked support gives back"
+    }
+   },
+   "constraints": {
+    "payoff_must_be": "immediate and physical: the odd one answers differently, and what makes it different is fixed to it at reach height, exactly as the instruction promised",
+    "must_not": "open the find here; this beat locates, it does not reveal"
+   },
+   "choice_semantics": {
+    "c_wt_tap_box": "open what the sound gave away"
+   },
+   "beat_hint": "five dead notes and one that answers back."
+  },
+  "wt_marks": {
+   "tier": "open",
+   "function": "reward-method",
+   "entry_state": [
+    "wt_legs_examined",
+    "logbook_in_hand"
+   ],
+   "establishes": [
+    "wt_leg_found",
+    "marker_recognized"
+   ],
+   "forbids": [
+    "property_damaged"
+   ],
+   "affect": {
+    "target": "recognition: a mark seen before, met again in the wild",
+    "forbid": [
+     "frustration",
+     "dread"
+    ]
+   },
+   "invention": {
+    "waypoint_mark": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.waypoint_marks",
+     "category": "waypoint_marks",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the story's one waypoint mark, met here in the world for the first time and matched to the margins of the book they carry"
+    }
+   },
+   "constraints": {
+    "payoff_must_be": "recognition rather than luck: the mark on the odd support matches the one in the book they have carried all night",
+    "must_not": "open the find here, and do not explain the mark's meaning; matching it is the whole beat"
+   },
+   "choice_semantics": {
+    "c_wt_marks_box": "open what the mark singled out"
+   },
+   "beat_hint": "a torch beam catches a small deliberate mark, and the search is over."
+  },
+  "wt_box": {
+   "tier": "open",
+   "function": "redirect-the-search",
+   "entry_state": [
+    "wt_leg_found"
+   ],
+   "establishes": [
+    "wt_card_read",
+    "trail_is_deliberate"
+   ],
+   "forbids": [
+    "theft_rewarded",
+    "property_damaged"
+   ],
+   "affect": {
+    "target": "the lift of finding a message written to whoever got this far",
+    "forbid": [
+     "anticlimax",
+     "dread"
+    ]
+   },
+   "merge_note": "NC-1: two parents, one that found the support by sound and one that found it by mark. Presuppose only that the right support is identified and its fixture is open. Do NOT reference ringing, marks, or which method got them here.",
+   "invention": {
+    "cache_container": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.cache_containers",
+     "category": "cache_containers",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the fixture on the marked support: ordinary maintenance hardware repurposed as a letterbox"
+    },
+    "memory_carrier": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.memory_slips",
+     "category": "memory_slips",
+     "assigned_at": "bind",
+     "note": "the elder's hand-drawn pointer onward, addressed to the finder rather than to nobody"
+    }
+   },
+   "constraints": {
+    "offers_must_be": "act on the pointer now against squeezing it for more first; the second must add real insight and cost nothing but a beat",
+    "find_must_be": "a pointer, not a prize: the elder's own hand sending them from the outdoor search to an indoor one, and the first plain proof that a person set all this up",
+    "must_not": "hand over any keepsake here, and do not explain the indoor destination fully; the drawing withholds enough to be worth studying"
+   },
+   "choice_semantics": {
+    "c_wt_box_shed": "act on the pointer at once and go where it sends you",
+    "c_wt_box_card": "slow down and squeeze the pointer for everything it can tell you first"
+   },
+   "beat_hint": "the fixture holds junk and one deliberate message, and the site turns inside out."
+  },
+  "wt_card": {
+   "tier": "open",
+   "function": "reward-close-reading",
+   "entry_state": [
+    "wt_card_read",
+    "trail_is_deliberate"
+   ],
+   "establishes": [
+    "wt_shelf_targeted",
+    "club_is_real"
+   ],
+   "forbids": [
+    "property_damaged"
+   ],
+   "affect": {
+    "target": "two heads over one small drawing, working it out together",
+    "forbid": [
+     "condescension",
+     "boredom"
+    ]
+   },
+   "constraints": {
+    "reasoning_must_be": "shared and legible: the older sibling reasons out loud from the drawing to why this site would hold anything at all, and the reader can follow every step",
+    "must_not": "make the reader who skipped this beat worse off than the reader who took it; this is depth, not a required key"
+   },
+   "choice_semantics": {
+    "c_wt_card_shed": "carry the sharpened reading indoors and collect"
+   },
+   "beat_hint": "the drawing gives up one shaded detail and a reason the whole site makes sense."
+  },
+  "wt_shed": {
+   "tier": "open",
+   "function": "offer-indoor-search",
+   "entry_state": [
+    "wt_hint_read",
+    "wt_inside_fence"
+   ],
+   "establishes": [
+    "wt_store_room_entered"
+   ],
+   "forbids": [
+    "property_damaged",
+    "break_in_rewarded"
+   ],
+   "affect": {
+    "target": "the coziness of a small dusty room full of somebody's work",
+    "forbid": [
+     "dread",
+     "claustrophobia"
+    ]
+   },
+   "merge_note": "NC-1: three parents, one arriving cold from the site's puzzle beat, one sent here by a found pointer, one arriving with the pointer already studied. Presuppose only the decoded hint and being on site. Do NOT reference the pointer, any drawing, any support, or anything carried; the room must read the same walked into blind.",
+   "invention": {
+    "club_relic": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.club_relics",
+     "category": "club_relics",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the first site's proof that the club existed: an old crew record on the wall, decades out of date and never taken down"
+    }
+   },
+   "constraints": {
+    "room_must_be": "unlocked, ordinary and safe: nothing here is forced, nothing is dangerous, and the two offers are both plainly searchable",
+    "offers_must_be": "one offer that goes straight at the likely hiding place and one that goes at the room's human history; the second must loop back rather than dead-end",
+    "must_not": "presuppose that anyone knows which container matters"
+   },
+   "choice_semantics": {
+    "c_wt_shed_cans": "go straight at the likeliest hiding place",
+    "c_wt_shed_photo": "let curiosity about the people here come first"
+   },
+   "beat_hint": "a store room nobody has cleaned out, offering a shelf to search and a past to look at."
+  },
+  "wt_photo": {
+   "tier": "open",
+   "function": "reward-curiosity",
+   "entry_state": [
+    "wt_store_room_entered"
+   ],
+   "establishes": [
+    "club_is_real",
+    "wt_shelf_targeted",
+    "ancestor_presence_felt"
+   ],
+   "forbids": [
+    "grief_overwhelms"
+   ],
+   "affect": {
+    "target": "the jolt of finding your own grandmother young and laughing",
+    "forbid": [
+     "grief",
+     "melancholy_dominant"
+    ]
+   },
+   "invention": {
+    "club_relic": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.club_relics",
+     "category": "club_relics",
+     "assigned_at": "bind",
+     "note": "the record that names the club by name and shows the elder inside it as a young person"
+    }
+   },
+   "constraints": {
+    "discovery_must_be": "warm rather than sad: she is alive in it, mid-laugh, at work with other people, and something on it points helpfully back toward the search",
+    "must_not": "turn the moment into mourning, and do not make this beat necessary for finding the cache"
+   },
+   "choice_semantics": {
+    "c_wt_photo_cans": "follow the old pointer back to the search"
+   },
+   "beat_hint": "a crew record on a wall turns a legend into a young woman with a brush in her hand."
+  },
+  "wt_cans": {
+   "tier": "open",
+   "function": "locate-cache",
+   "entry_state": [
+    "wt_store_room_entered"
+   ],
+   "establishes": [
+    "wt_cache_open",
+    "trail_is_deliberate"
+   ],
+   "forbids": [
+    "property_damaged"
+   ],
+   "affect": {
+    "target": "the weightless surprise of a container that is far too light",
+    "forbid": [
+     "dread",
+     "anticlimax"
+    ]
+   },
+   "merge_note": "NC-1: two parents, one searching the shelf directly and one arriving from the room's human history. Presuppose only being in the room. Do NOT reference the record on the wall, any pointer, or any earlier beat of this site.",
+   "invention": {
+    "cache_container": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.cache_containers",
+     "category": "cache_containers",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the hiding place on the shelf: something labelled by hand to look like the dullest object in the room"
+    }
+   },
+   "constraints": {
+    "reveal_must_be": "sensory before it is informational: the wrongness of the weight comes first, the contents after",
+    "must_not": "damage or empty anything else in the room, and do not reveal the keepsake's word yet"
+   },
+   "choice_semantics": {
+    "c_wt_cans_open": "open what was hidden in plain sight"
+   },
+   "beat_hint": "one hand-lettered container among the ordinary ones lifts like it is full of air."
+  },
+  "wt_cache": {
+   "tier": "open",
+   "function": "deliver-site-payoff",
+   "entry_state": [
+    "wt_cache_open",
+    "trail_is_deliberate",
+    "refrain_known"
+   ],
+   "establishes": [
+    "wt_token_taken",
+    "ancestor_memory_shared",
+    "club_is_real"
+   ],
+   "forbids": [
+    "theft_rewarded",
+    "deadline_as_disaster"
+   ],
+   "affect": {
+    "target": "warm private triumph, and a voice from the past speaking straight to them",
+    "forbid": [
+     "greed",
+     "grief",
+     "anticlimax"
+    ]
+   },
+   "invention": {
+    "keepsake_token": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.keepsake_tokens",
+     "category": "keepsake_tokens",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the first site's token, carrying the first word of the closing phrase; a keepsake with no value to anyone but a finder"
+    },
+    "memory_slip": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.memory_slips",
+     "category": "memory_slips",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "one first-hand memory of the elder among her club at this place, closing with the story's refrain"
+    }
+   },
+   "constraints": {
+    "payoff_must_be": "a keepsake plus a memory plus the refrain, in that order, so any single site teaches who she was and where the night ends",
+    "offers_must_be": "two live options that stay live all night: bank this and go back for more, or break off collecting and follow the bearing; neither is framed as the correct one",
+    "must_not": "count how many sites are done, name the other sites, or imply the collection must be completed"
+   },
+   "choice_semantics": {
+    "c_wt_cache_hub": "bank this find and keep the night open for more",
+    "c_wt_cache_nest": "stop collecting and go where the whole night has been pointing"
+   },
+   "beat_hint": "a word, a memory, and the refrain again; the site is spent and the night is not."
+  },
+  "e_wt_climb": {
+   "tier": "locked_outcome",
+   "function": "payoff-prudence",
+   "entry_state": [
+    "wt_hint_read",
+    "wt_high_route_tested",
+    "companion_along"
+   ],
+   "establishes": [
+    "dignity_kept",
+    "return_open"
+   ],
+   "forbids": [
+    "anyone_injured",
+    "humiliation_inflicted",
+    "blame_between_siblings"
+   ],
+   "affect": {
+    "target": "the shake of a near miss settling into rueful good sense",
+    "forbid": [
+     "terror",
+     "shame",
+     "despair"
+    ]
+   },
+   "ending": {
+    "valence": "negative",
+    "kind": "setback"
+   },
+   "mechanisms": [
+    "a foot skids on the cold and a sibling's hand is already there, so the attempt ends two moves in",
+    "the instruction they ignored turns out to have been written by someone who never asked anyone to climb",
+    "the pair sit until their hearts slow, take honest stock, and call the night on their own terms"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "ending_must_read": "as a lesson taken with dignity: the risk was real, the catch was instant, the cost is a sting and some pride, and the hunt is postponed rather than lost",
+    "must_not": "injure anyone, blame anyone, or let the older sibling lecture; and do not close the site off for good"
+   },
+   "beat_hint": "the dare answers in one skid, and the ride home is under a paling sky with the hunt still whole."
+  },
+  "cn_marquee": {
+   "tier": "open",
+   "function": "approach-site",
+   "entry_state": [
+    "out_in_the_town",
+    "five_sites_named",
+    "code_broken",
+    "deadline_known",
+    "companion_along",
+    "logbook_in_hand"
+   ],
+   "establishes": [
+    "cn_site_reached",
+    "cn_hint_read"
+   ],
+   "forbids": [
+    "anyone_injured",
+    "break_in_rewarded"
+   ],
+   "affect": {
+    "target": "silver, empty streets and the sadness of a shut-up place made interesting",
+    "forbid": [
+     "dread",
+     "urgency"
+    ]
+   },
+   "merge_note": "REVISIT: the only parent is the hub, which can send them here at any point in the night. Write the arrival so it reads the same first or last; no reference to other sites or to time already spent. The reader may also come back through here after this site has already given up its keepsake, so the scene must never assert that the place is still unsearched.",
+   "invention": {
+    "landmark": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.site_landmarks",
+     "category": "site_landmarks",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the second site: a shut-up place of performance, still holding its last advertised night on the front"
+    }
+   },
+   "constraints": {
+    "hint_must_be": "decoded here in the story's one code form, naming one exact seat and one riddling phrase about where the prize lives; the riddle is solvable but not yet obvious",
+    "way_in_must_be": "already known to the elder and noted in the book they carry, so the entrance is inherited knowledge rather than a break-in",
+    "must_not": "force, break, or climb anything to get in"
+   },
+   "choice_semantics": {
+    "c_cn_marquee_alley": "use the way in the book already knew about"
+   },
+   "beat_hint": "a dead frontage on an empty street, and a note in an old book that says try the side."
+  },
+  "cn_alley": {
+   "tier": "open",
+   "function": "enter-and-branch",
+   "entry_state": [
+    "cn_site_reached",
+    "cn_hint_read"
+   ],
+   "establishes": [
+    "cn_inside"
+   ],
+   "forbids": [
+    "property_damaged",
+    "break_in_rewarded",
+    "anyone_injured"
+   ],
+   "affect": {
+    "target": "held breath in a big dark room that is asleep rather than abandoned",
+    "forbid": [
+     "terror",
+     "claustrophobia"
+    ]
+   },
+   "constraints": {
+    "offers_must_be": "two directions with different appetites: the big public space where the hint's seat waits, and the small private room upstairs where the riddle's answer probably lives; both eventually connect",
+    "must_not": "make the upstairs shortcut feel like skipping the story, or the downstairs route feel like the long way round"
+   },
+   "choice_semantics": {
+    "c_cn_alley_stalls": "take the public space and follow the hint's plain instruction",
+    "c_cn_alley_stairs": "back your reading of the riddle and go straight upstairs"
+   },
+   "beat_hint": "inside on dust and velvet, with a hall one way and a stair the other."
+  },
+  "cn_stalls": {
+   "tier": "open",
+   "function": "offer-two-searches",
+   "entry_state": [
+    "cn_inside",
+    "cn_hint_read"
+   ],
+   "establishes": [
+    "cn_hall_open"
+   ],
+   "forbids": [
+    "anyone_injured"
+   ],
+   "affect": {
+    "target": "the strangeness of an audience-shaped room with no audience",
+    "forbid": [
+     "dread",
+     "melancholy_dominant"
+    ]
+   },
+   "constraints": {
+    "offers_must_be": "the hint's own instruction on one side and the club's old equipment on the other; the second is a detour with its own reward and its own honest risk",
+    "must_not": "hide that the second way has a physical obstacle; it must be visible before it is chosen"
+   },
+   "choice_semantics": {
+    "c_cn_stalls_rowj": "do exactly what the hint told you to do",
+    "c_cn_stalls_stage": "leave the instruction for a minute and go look at the club's old machinery"
+   },
+   "beat_hint": "sheeted rows like a sleeping crowd, and up front the shapes of something the club once used."
+  },
+  "cn_rowj": {
+   "tier": "open",
+   "function": "confirm-target",
+   "entry_state": [
+    "cn_hall_open",
+    "cn_hint_read"
+   ],
+   "establishes": [
+    "cn_seat_found"
+   ],
+   "forbids": [
+    "property_damaged"
+   ],
+   "affect": {
+    "target": "counting your way to an exact spot and finding it kept",
+    "forbid": [
+     "boredom",
+     "dread"
+    ]
+   },
+   "constraints": {
+    "offers_must_be": "the same object approached from two sides, one awkward and hidden, one loud and open; both reach the same discovery",
+    "confirmation_must_be": "unmistakable and small: everything here is uniformly neglected except this one thing, which somebody has gone on caring for",
+    "must_not": "reveal what is behind it yet"
+   },
+   "choice_semantics": {
+    "c_cn_rowj_under": "get underneath and search it from behind",
+    "c_cn_rowj_tip": "open it up and search it from the front"
+   },
+   "beat_hint": "the exact seat the hint named, wearing one small fitting polished past its years."
+  },
+  "cn_under": {
+   "tier": "open",
+   "function": "reward-method",
+   "entry_state": [
+    "cn_seat_found"
+   ],
+   "establishes": [
+    "cn_fitting_loose"
+   ],
+   "forbids": [
+    "property_damaged"
+   ],
+   "affect": {
+    "target": "grubby hands-on archaeology rewarded by a detail nobody else would find",
+    "forbid": [
+     "disgust",
+     "dread"
+    ]
+   },
+   "constraints": {
+    "discovery_must_be": "tactile: the fastenings give under fingers because they have been undone a hundred times before",
+    "must_not": "require a tool nobody is carrying"
+   },
+   "choice_semantics": {
+    "c_cn_under_plate": "undo what somebody clearly meant to be undone"
+   },
+   "beat_hint": "under the seat, past the gum and the springs, fingers find fastenings meant for fingers."
+  },
+  "cn_tip": {
+   "tier": "open",
+   "function": "reward-method",
+   "entry_state": [
+    "cn_seat_found"
+   ],
+   "establishes": [
+    "cn_fitting_loose"
+   ],
+   "forbids": [
+    "property_damaged"
+   ],
+   "affect": {
+    "target": "one loud sound in a silent building, then the small find that follows it",
+    "forbid": [
+     "terror",
+     "panic"
+    ]
+   },
+   "constraints": {
+    "discovery_must_be": "visual and close up: nothing is taped underneath, but the fitting itself sits proud and rocks under a fingertip",
+    "must_not": "let the noise summon anyone or turn into a scare; the building is genuinely empty"
+   },
+   "choice_semantics": {
+    "c_cn_tip_plate": "undo what somebody clearly meant to be undone"
+   },
+   "beat_hint": "the seat drops with a clap that rolls round the empty hall, and the answer is on top, not underneath."
+  },
+  "cn_plate": {
+   "tier": "open",
+   "function": "redirect-the-search",
+   "entry_state": [
+    "cn_fitting_loose",
+    "cn_hint_read"
+   ],
+   "establishes": [
+    "cn_redirect_read",
+    "trail_is_deliberate"
+   ],
+   "forbids": [
+    "theft_rewarded",
+    "property_damaged"
+   ],
+   "affect": {
+    "target": "the click of a riddle re-reading itself correctly",
+    "forbid": [
+     "frustration",
+     "anticlimax"
+    ]
+   },
+   "merge_note": "NC-1: two parents, one reaching the fitting from underneath and one from the front. Presuppose only that the fitting is off and the hollow behind it is open. Do NOT reference kneeling, the sound of the seat, or which way round they got there.",
+   "invention": {
+    "cache_container": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.cache_containers",
+     "category": "cache_containers",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the hollow cut behind the kept fitting: shallow, dry, and obviously carved by hand"
+    }
+   },
+   "constraints": {
+    "redirect_must_be": "a fair re-reading of the site's own hint: the riddle's phrase was literal all along and points at the one place in the building everybody spends the evening facing away from",
+    "must_not": "hand over any keepsake here, or make the reader feel foolish for having read the riddle the other way"
+   },
+   "choice_semantics": {
+    "c_cn_plate_stairs": "act on the corrected reading and go where the riddle actually pointed"
+   },
+   "beat_hint": "behind the kept fitting, a note that says you are in the right building and the wrong room."
+  },
+  "cn_stage": {
+   "tier": "open",
+   "function": "present-honest-risk",
+   "entry_state": [
+    "cn_hall_open"
+   ],
+   "establishes": [
+    "cn_weak_floor_seen"
+   ],
+   "forbids": [
+    "anyone_injured"
+   ],
+   "affect": {
+    "target": "focused caution; a floor that talks back under one foot",
+    "forbid": [
+     "terror",
+     "recklessness_glorified"
+    ]
+   },
+   "invention": {
+    "obstacle": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.retreat_obstacles",
+     "category": "retreat_obstacles",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the second site's retreatable obstacle: rotten footing with a solid way around it in plain sight"
+    }
+   },
+   "constraints": {
+    "offers_must_be": "patience along the sound edge against speed straight across; the safe way must be visible and only slightly slower, so hurrying is a choice and not a necessity",
+    "must_not": "hide the weakness before the choice, or make the careful route boring"
+   },
+   "choice_semantics": {
+    "c_cn_stage_edge": "take the slow way that the structure can carry",
+    "c_cn_stage_rush": "trust speed and nerve over the evidence underfoot"
+   },
+   "beat_hint": "the floor groans once under a toe, and the crossing becomes a decision."
+  },
+  "cn_horns": {
+   "tier": "open",
+   "function": "reward-detour",
+   "entry_state": [
+    "cn_weak_floor_seen"
+   ],
+   "establishes": [
+    "cn_redirect_read",
+    "marker_recognized",
+    "club_is_real"
+   ],
+   "forbids": [
+    "anyone_injured",
+    "property_damaged"
+   ],
+   "affect": {
+    "target": "awe at big old equipment built to fill a room with sound",
+    "forbid": [
+     "dread",
+     "anticlimax"
+    ]
+   },
+   "invention": {
+    "wonder_detail": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.wonder_details",
+     "category": "wonder_details",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the second site's marvel: the club's old sound equipment, mouths full of dark, still standing where it was left"
+    }
+   },
+   "constraints": {
+    "reward_must_be": "the elder's mark plus a plain sentence that sends them onward, so the detour pays exactly what the seat route pays and nobody is behind for having taken it",
+    "must_not": "make the equipment work, and do not reveal any keepsake here"
+   },
+   "choice_semantics": {
+    "c_cn_horns_stairs": "take the pointer chalked here and head for the room it names"
+   },
+   "beat_hint": "the club's old thunder-machines, and on one of them a mark and a sentence pointing upstairs."
+  },
+  "cn_boothstairs": {
+   "tier": "open",
+   "function": "converge-on-room",
+   "entry_state": [
+    "cn_inside"
+   ],
+   "establishes": [
+    "cn_booth_landing"
+   ],
+   "forbids": [
+    "property_damaged"
+   ],
+   "affect": {
+    "target": "the pull of a door standing ajar on the dark",
+    "forbid": [
+     "terror",
+     "dread"
+    ]
+   },
+   "merge_note": "NC-1: three parents, one arriving straight from the entrance, one sent up by a note behind a fitting, one sent up by a mark on old equipment. Presuppose only that they are inside the building and heading up. Do NOT reference the hall, the seat, the equipment, or any pointer; write the landing as it would read on a first, blind approach.",
+   "constraints": {
+    "offers_must_be": "go in, or look before going in; both must be reasonable, and looking first must cost nothing but a beat",
+    "must_not": "put anything frightening behind the door; the room is inert and it is waiting"
+   },
+   "choice_semantics": {
+    "c_cn_stairs_in": "go straight in",
+    "c_cn_stairs_port": "look before you enter"
+   },
+   "beat_hint": "a private stair, a door left ajar, and a way to look in beside it."
+  },
+  "cn_port": {
+   "tier": "open",
+   "function": "reward-caution",
+   "entry_state": [
+    "cn_booth_landing"
+   ],
+   "establishes": [
+    "cn_odd_tin_spotted"
+   ],
+   "forbids": [
+    "property_damaged"
+   ],
+   "affect": {
+    "target": "the pleasure of spotting the one wrong thing in a tidy room",
+    "forbid": [
+     "dread",
+     "boredom"
+    ]
+   },
+   "constraints": {
+    "reward_must_be": "one specific target picked out through glass before entering, so caution buys information rather than time",
+    "must_not": "make entering without looking a mistake"
+   },
+   "choice_semantics": {
+    "c_cn_port_in": "go in for the one thing that stands out of line"
+   },
+   "beat_hint": "through the glass, a rack in neat rows and one container facing the wrong way."
+  },
+  "cn_booth": {
+   "tier": "open",
+   "function": "pose-site-temptation",
+   "entry_state": [
+    "cn_booth_landing",
+    "cn_hint_read"
+   ],
+   "establishes": [
+    "cn_booth_entered",
+    "cn_reel_ready",
+    "trail_is_deliberate"
+   ],
+   "forbids": [
+    "theft_rewarded",
+    "property_damaged"
+   ],
+   "affect": {
+    "target": "cold oil, old dust, and a machine that has been left ready on purpose",
+    "forbid": [
+     "dread",
+     "anticlimax"
+    ]
+   },
+   "merge_note": "NC-1: two parents, one entering blind and one entering having already spotted the odd container. Presuppose only being in the room with its rack and its machine. Do NOT reference the window, the glass, or any earlier spotting.",
+   "invention": {
+    "cache_container": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.cache_containers",
+     "category": "cache_containers",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the second site's hiding place: a labelled container in the room's own rack, hand-inked by the elder"
+    },
+    "club_relic": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.club_relics",
+     "category": "club_relics",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "what the machine is loaded with; the club's own recording of a night it once put on here"
+    }
+   },
+   "constraints": {
+    "offers_must_be": "a genuine fork of appetite: open the container and keep hunting, or run what the room was left ready to run and spend the night on one shared experience instead; both are respectable and one of them ends the story",
+    "must_not": "warn the reader off the machine or mark either choice as the correct one"
+   },
+   "choice_semantics": {
+    "c_cn_booth_open": "take the find and keep the hunt going",
+    "c_cn_booth_thread": "give up the hunt for one thing you can only see here, tonight"
+   },
+   "beat_hint": "a labelled container in her handwriting, and beside it a machine somebody left loaded for one more showing."
+  },
+  "cn_cache": {
+   "tier": "open",
+   "function": "deliver-site-payoff",
+   "entry_state": [
+    "cn_booth_entered",
+    "trail_is_deliberate",
+    "refrain_known"
+   ],
+   "establishes": [
+    "cn_token_taken",
+    "ancestor_memory_shared",
+    "club_is_real"
+   ],
+   "forbids": [
+    "theft_rewarded",
+    "deadline_as_disaster"
+   ],
+   "affect": {
+    "target": "delighted recognition of a grandmother who could do something wonderful",
+    "forbid": [
+     "greed",
+     "grief",
+     "anticlimax"
+    ]
+   },
+   "invention": {
+    "keepsake_token": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.keepsake_tokens",
+     "category": "keepsake_tokens",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the second site's token, carrying the second word of the closing phrase"
+    },
+    "memory_slip": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.memory_slips",
+     "category": "memory_slips",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "one first-hand memory of the elder performing with her club in this building, closing with the story's refrain"
+    }
+   },
+   "constraints": {
+    "payoff_must_be": "a keepsake plus a memory plus the refrain; the memory must show the elder doing something in front of other people and being good at it",
+    "offers_must_be": "bank it and continue, or break off collecting and follow the bearing; both stay live and neither is preferred",
+    "must_not": "count sites, name the other sites, or imply the collection must be completed"
+   },
+   "choice_semantics": {
+    "c_cn_cache_hub": "bank this find and keep the night open for more",
+    "c_cn_cache_nest": "stop collecting and go where the whole night has been pointing"
+   },
+   "beat_hint": "no film, a word, and a memory of a hall full of people believing a storm made out of a voice."
+  },
+  "e_cn_boards": {
+   "tier": "locked_outcome",
+   "function": "payoff-prudence",
+   "entry_state": [
+    "cn_weak_floor_seen",
+    "companion_along"
+   ],
+   "establishes": [
+    "dignity_kept",
+    "return_open"
+   ],
+   "forbids": [
+    "anyone_injured",
+    "gore_of_any_kind",
+    "blame_between_siblings"
+   ],
+   "affect": {
+    "target": "a fright that lands after the catch, then level-headed stock-taking",
+    "forbid": [
+     "terror",
+     "despair",
+     "shame"
+    ]
+   },
+   "ending": {
+    "valence": "negative",
+    "kind": "setback"
+   },
+   "mechanisms": [
+    "the weak footing gives, a leg goes through, and a sibling has both arms before the fear catches up",
+    "the damage is a scrape and a ruined sock, and the careful crawl back out takes longer than the crossing would have",
+    "the pair name the rule out loud on the way home: no prize is worth this in an empty building at night"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "ending_must_read": "as a scare survived and correctly interpreted; they leave the building the way they found it and go home limping-proud with the hunt paused, not lost",
+    "must_not": "injure anyone seriously, show blood, or have either child blame the other"
+   },
+   "beat_hint": "the floor keeps its promise, the catch is instant, and the night ends on an honest sentence."
+  },
+  "e_cn_reel": {
+   "tier": "locked_outcome",
+   "function": "payoff-wonder",
+   "entry_state": [
+    "cn_booth_entered",
+    "cn_reel_ready",
+    "companion_along"
+   ],
+   "establishes": [
+    "wonder_shared",
+    "club_is_real",
+    "ancestor_memory_shared",
+    "dignity_kept",
+    "return_open",
+    "deadline_spent"
+   ],
+   "forbids": [
+    "humiliation_inflicted",
+    "property_damaged"
+   ],
+   "affect": {
+    "target": "absorbed delight, then the quiet of a room after something ends",
+    "forbid": [
+     "regret_dominant",
+     "grief",
+     "mockery"
+    ]
+   },
+   "ending": {
+    "valence": "neutral",
+    "kind": "discovery"
+   },
+   "mechanisms": [
+    "the loaded machine runs and gives them the club's own night back, audience and all",
+    "the elder's performance survives on the recording and fills the empty room exactly as it once did",
+    "the two of them sit down in the hall itself and stay until it finishes and the window goes gray"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "ending_must_read": "as a real and chosen win of a different kind: they traded the rest of the hunt for one irreplaceable hour, and the story honors the trade without a word of regret",
+    "must_not": "punish the choice, hint at what they missed, or leave the building damaged; the hunt simply waits"
+   },
+   "beat_hint": "the machine wakes, the room fills, and the night is spent on the best possible thing."
+  },
+  "hb_road": {
+   "tier": "open",
+   "function": "approach-site",
+   "entry_state": [
+    "out_in_the_town",
+    "five_sites_named",
+    "code_broken",
+    "deadline_known",
+    "companion_along"
+   ],
+   "establishes": [
+    "hb_site_reached"
+   ],
+   "forbids": [
+    "anyone_injured",
+    "break_in_rewarded"
+   ],
+   "affect": {
+    "target": "the slow breathing calm of working water at night",
+    "forbid": [
+     "dread",
+     "urgency"
+    ]
+   },
+   "merge_note": "REVISIT: the only parent is the hub, which can send them here at any point in the night. Write the arrival so it reads the same first or last; no reference to other sites or to time already spent. The reader may also come back through here after this site has already given up its keepsake, so the scene must never assert that the place is still unsearched.",
+   "invention": {
+    "landmark": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.site_landmarks",
+     "category": "site_landmarks",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the third site: a working waterfront store for retired equipment, with one lit window nearby"
+    },
+    "wonder_detail": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.wonder_details",
+     "category": "wonder_details",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the third site's marvel: the patient far-off sound the whole town falls asleep to"
+    }
+   },
+   "constraints": {
+    "arrival_must_be": "atmospheric and reassuring, and it must plant one lit window: somebody is awake out here, and that is a comfort rather than a problem",
+    "must_not": "make the water read as dangerous, or introduce the adult yet"
+   },
+   "choice_semantics": {
+    "c_hb_road_wall": "commit to the long open walk out to the site"
+   },
+   "beat_hint": "masts ticking, black water breathing, and one yellow window a long way along."
+  },
+  "hb_wall": {
+   "tier": "open",
+   "function": "build-approach",
+   "entry_state": [
+    "hb_site_reached"
+   ],
+   "establishes": [
+    "hb_shed_approached"
+   ],
+   "forbids": [
+    "anyone_injured",
+    "break_in_rewarded"
+   ],
+   "affect": {
+    "target": "companionable smallness under a wide dark sky",
+    "forbid": [
+     "dread",
+     "loneliness"
+    ]
+   },
+   "constraints": {
+    "walk_must_be": "long, lamp-lit in patches, and never threatening; the dark gaps are atmosphere and nothing is in them",
+    "must_not": "manufacture peril from the water, and do not let either child get separated"
+   },
+   "choice_semantics": {
+    "c_hb_wall_quay": "close on the site itself"
+   },
+   "beat_hint": "pools of lamplight with long dark gaps between, and a patient sound out in the channel."
+  },
+  "hb_quay": {
+   "tier": "open",
+   "function": "pose-site-problem",
+   "entry_state": [
+    "hb_shed_approached"
+   ],
+   "establishes": [
+    "hb_locked_and_watched"
+   ],
+   "forbids": [
+    "property_damaged",
+    "break_in_rewarded"
+   ],
+   "affect": {
+    "target": "a shut door, a lit window, and a bad idea sitting there being available",
+    "forbid": [
+     "dread",
+     "guilt"
+    ]
+   },
+   "invention": {
+    "obstacle": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.retreat_obstacles",
+     "category": "retreat_obstacles",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the third site's retreatable obstacle: a shortcut that is visibly unfit for use before anyone uses it"
+    }
+   },
+   "constraints": {
+    "offers_must_be": "three postures toward one locked place: ask a person, examine the barrier, or take the shortcut nobody should take; the shortcut's unfitness must be visible in the same breath it is offered",
+    "must_not": "make asking for help look like defeat, and do not let the barrier be openable by force"
+   },
+   "choice_semantics": {
+    "c_hb_quay_office": "ask the awake adult for help",
+    "c_hb_quay_doors": "study the barrier before asking anyone",
+    "c_hb_quay_dinghy": "take the shortcut that gets you in without asking"
+   },
+   "beat_hint": "a serious lock, a lit window down the way, and a shortcut sitting low in the water."
+  },
+  "hb_doors": {
+   "tier": "open",
+   "function": "rule-out-the-obvious",
+   "entry_state": [
+    "hb_locked_and_watched"
+   ],
+   "establishes": [
+    "hb_no_way_in_alone",
+    "marker_recognized"
+   ],
+   "forbids": [
+    "property_damaged",
+    "break_in_rewarded"
+   ],
+   "affect": {
+    "target": "practical inspection ending in an honest dead end and one thrill",
+    "forbid": [
+     "frustration",
+     "guilt"
+    ]
+   },
+   "constraints": {
+    "offers_must_be": "look before you ask, or accept the answer and go and ask; neither costs the other anything that matters",
+    "barrier_must_be": "genuinely solid, so that asking becomes the obvious rather than the humble option, while the elder's mark on it confirms they are in the right place",
+    "must_not": "provide a gap anybody could squeeze through, or allow prying, cutting, or damage of any kind"
+   },
+   "choice_semantics": {
+    "c_hb_doors_peek": "get a look at what is inside before committing to anything",
+    "c_hb_doors_office": "accept that this needs a person and go ask"
+   },
+   "beat_hint": "the barrier holds, but among its faded markings sits one small mark that is not official."
+  },
+  "hb_peek": {
+   "tier": "open",
+   "function": "reward-curiosity",
+   "entry_state": [
+    "hb_no_way_in_alone"
+   ],
+   "establishes": [
+    "hb_target_seen"
+   ],
+   "forbids": [
+    "property_damaged"
+   ],
+   "affect": {
+    "target": "torchlight on sleeping giants, and one of them different from the rest",
+    "forbid": [
+     "dread",
+     "terror"
+    ]
+   },
+   "constraints": {
+    "sighting_must_be": "partial and tantalizing: enough to fix which single object inside matters, not enough to solve anything",
+    "must_not": "let anyone reach or touch anything inside from out here"
+   },
+   "choice_semantics": {
+    "c_hb_peek_office": "having seen what you want, go and ask for the way in"
+   },
+   "beat_hint": "a herd of retired equipment asleep in the dark, and one old thing at the back catching the beam."
+  },
+  "hb_office": {
+   "tier": "open",
+   "function": "meet-ally",
+   "entry_state": [
+    "hb_locked_and_watched",
+    "code_broken"
+   ],
+   "establishes": [
+    "hb_keeper_met"
+   ],
+   "forbids": [
+    "adult_menaces_children",
+    "break_in_rewarded"
+   ],
+   "affect": {
+    "target": "warm surprise: the adult is glad to be interrupted",
+    "forbid": [
+     "menace",
+     "condescension",
+     "suspicion"
+    ]
+   },
+   "merge_note": "NC-1 / REVISIT: three parents, one arriving straight from the site, one from an inspection of the barrier, one from a look inside. Presuppose only that the place is locked and this adult is awake. Do NOT reference the barrier, the mark, or anything glimpsed inside; and write the greeting so it reads the same on a first knock of the night or a later one.",
+   "invention": {
+    "night_keeper": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.night_keepers",
+     "category": "night_keepers",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the third site's named adult: on watch, unhurried, and already copying tonight's broadcast for his own reasons"
+    }
+   },
+   "constraints": {
+    "adult_must_be": "kind, unsurprised by children at his door, and secretly a participant: his own copy of tonight's groups is in plain sight before anyone asks him anything",
+    "offers_must_be": "lead with your own work, or ask about his; both open him up and neither is a trick",
+    "must_not": "have him question their permission, threaten to call anyone, or solve the site for them"
+   },
+   "choice_semantics": {
+    "c_hb_office_show": "show him what you have worked out and let it speak for you",
+    "c_hb_office_pad": "notice what he is doing and ask him about himself first"
+   },
+   "beat_hint": "a kettle, a weather radio, and a pad of tonight's numbers in a neat old-fashioned hand."
+  },
+  "hb_show": {
+   "tier": "open",
+   "function": "earn-help-by-work",
+   "entry_state": [
+    "hb_keeper_met",
+    "code_broken",
+    "logbook_in_hand"
+   ],
+   "establishes": [
+    "hb_keeper_ally",
+    "hb_key_offered",
+    "club_is_real"
+   ],
+   "forbids": [
+    "adult_menaces_children"
+   ],
+   "affect": {
+    "target": "an adult going very still, then treating them as colleagues",
+    "forbid": [
+     "condescension",
+     "menace"
+    ]
+   },
+   "constraints": {
+    "recognition_must_be": "of the elder's own system, so the children's work is what earns the help; he was the youngest of her club and says so",
+    "must_not": "have him abandon his post, do the work for them, or hand over anything that belongs to someone else"
+   },
+   "choice_semantics": {
+    "c_hb_show_key": "accept the help that has been offered"
+   },
+   "beat_hint": "the decoded page lands on the counter and an adult recognizes a dead woman's handwriting."
+  },
+  "hb_pad": {
+   "tier": "open",
+   "function": "earn-help-by-interest",
+   "entry_state": [
+    "hb_keeper_met"
+   ],
+   "establishes": [
+    "hb_keeper_ally",
+    "hb_key_offered",
+    "club_is_real",
+    "ancestor_memory_shared",
+    "marker_recognized"
+   ],
+   "forbids": [
+    "adult_menaces_children",
+    "grief_overwhelms"
+   ],
+   "affect": {
+    "target": "an old habit explained with quiet pride",
+    "forbid": [
+     "condescension",
+     "grief"
+    ]
+   },
+   "invention": {
+    "club_relic": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.club_relics",
+     "category": "club_relics",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the third site's proof of the club: his own kept sheets from decades of listening, the elder's mark doodled in a margin"
+    }
+   },
+   "constraints": {
+    "history_must_be": "specific and communal: the club was the night shift of a working town, and the elder was the best of them; the mark in his margins ties his sheets to the book the children carry",
+    "must_not": "turn into a lecture or a eulogy; he offers the way in before he is asked"
+   },
+   "choice_semantics": {
+    "c_hb_pad_key": "accept the help he offers before you have to ask"
+   },
+   "beat_hint": "older sheets under tonight's, in the same hand but younger, and a mark the children already know."
+  },
+  "hb_key": {
+   "tier": "open",
+   "function": "offer-warmth-or-work",
+   "entry_state": [
+    "hb_keeper_ally",
+    "hb_key_offered",
+    "club_is_real"
+   ],
+   "establishes": [
+    "hb_key_in_hand"
+   ],
+   "forbids": [
+    "theft_rewarded",
+    "break_in_rewarded"
+   ],
+   "affect": {
+    "target": "the warmth of being trusted, with a clock still running outside",
+    "forbid": [
+     "menace",
+     "urgency_panic"
+    ]
+   },
+   "merge_note": "NC-1: two parents, one where the children's own work earned the offer and one where his history did. Presuppose only that he is an ally and the way in has been offered. Do NOT reference the decoded page, his old sheets, or which conversation happened.",
+   "constraints": {
+    "offers_must_be": "a real fork between the errand and the person: go and use what he gave, or stay and let him talk; staying must be a whole ending and must not read as failure",
+    "must_not": "have him push them either way, or make the clock into a threat"
+   },
+   "choice_semantics": {
+    "c_hb_key_shed": "take the trust and go do the thing you came for",
+    "c_hb_key_stories": "let the errand wait and stay with the person who remembers"
+   },
+   "beat_hint": "a way in, warm from an adult's hand, and a kettle that has just boiled."
+  },
+  "hb_shed": {
+   "tier": "open",
+   "function": "pose-site-puzzle",
+   "entry_state": [
+    "hb_key_in_hand",
+    "code_broken"
+   ],
+   "establishes": [
+    "hb_inside_shed",
+    "hb_hint_read"
+   ],
+   "forbids": [
+    "break_in_rewarded",
+    "property_damaged"
+   ],
+   "affect": {
+    "target": "iron, salt and tar, and a herd of retired things looming in a torch beam",
+    "forbid": [
+     "dread",
+     "terror"
+    ]
+   },
+   "constraints": {
+    "hint_must_be": "decoded here in the story's one code form and must point at exactly one retired object among many, on the grounds that it is the one that remembers",
+    "offers_must_be": "two ways at the same object, one that uses it as it was meant to be used and one that reads its surfaces",
+    "must_not": "damage anything stored here, and do not let the object be heavy, sharp, or unstable"
+   },
+   "choice_semantics": {
+    "c_hb_shed_ring": "use the old thing the way it was built to be used",
+    "c_hb_shed_cage": "read the old thing's surfaces for what somebody added to it"
+   },
+   "beat_hint": "inside among the retired giants, and the hint names the one that still remembers."
+  },
+  "hb_bell": {
+   "tier": "open",
+   "function": "reward-method",
+   "entry_state": [
+    "hb_inside_shed",
+    "hb_hint_read"
+   ],
+   "establishes": [
+    "hb_cache_located"
+   ],
+   "forbids": [
+    "property_damaged"
+   ],
+   "affect": {
+    "target": "one enormous round note filling a shed, and something rattling inside it",
+    "forbid": [
+     "terror",
+     "panic"
+    ]
+   },
+   "constraints": {
+    "sound_must_be": "gentle and enormous at once, a note the children make on purpose and softly; the discovery is hidden inside the sound",
+    "must_not": "wake anyone, summon anyone, or break anything"
+   },
+   "choice_semantics": {
+    "c_hb_bell_capsule": "take the thing the sound gave away"
+   },
+   "beat_hint": "one soft ring, the whole shed humming along, and inside the note a rattle that does not belong."
+  },
+  "hb_cage": {
+   "tier": "open",
+   "function": "reward-method",
+   "entry_state": [
+    "hb_inside_shed",
+    "hb_hint_read"
+   ],
+   "establishes": [
+    "hb_cache_located",
+    "marker_recognized"
+   ],
+   "forbids": [
+    "property_damaged"
+   ],
+   "affect": {
+    "target": "fingertips finding fresher paint under fifty years of weather",
+    "forbid": [
+     "dread",
+     "boredom"
+    ]
+   },
+   "constraints": {
+    "discovery_must_be": "the elder's mark plus a plain direction, so reading the surfaces pays exactly what using the object pays",
+    "must_not": "require climbing into or under anything unstable"
+   },
+   "choice_semantics": {
+    "c_hb_cage_capsule": "take the thing the mark pointed to"
+   },
+   "beat_hint": "newer paint under the torch resolves into a mark and an arrow pointing up into the dark."
+  },
+  "hb_cache": {
+   "tier": "open",
+   "function": "deliver-site-payoff",
+   "entry_state": [
+    "hb_cache_located",
+    "refrain_known"
+   ],
+   "establishes": [
+    "hb_token_taken",
+    "ancestor_memory_shared",
+    "trail_is_deliberate",
+    "club_is_real"
+   ],
+   "forbids": [
+    "theft_rewarded",
+    "deadline_as_disaster"
+   ],
+   "affect": {
+    "target": "a memory about not letting anyone feel alone, landing in a dark shed",
+    "forbid": [
+     "greed",
+     "grief",
+     "anticlimax"
+    ]
+   },
+   "merge_note": "NC-1: two parents, one that found the hiding place by sound and one by mark. Presuppose only that the small container is off and opening. Do NOT reference ringing, arrows, or which method got them here.",
+   "invention": {
+    "cache_container": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.cache_containers",
+     "category": "cache_containers",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the third site's hiding place: a small sealed cylinder worked into the retired object's own moving parts"
+    },
+    "keepsake_token": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.keepsake_tokens",
+     "category": "keepsake_tokens",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the third site's token, carrying the third word of the closing phrase"
+    },
+    "memory_slip": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.memory_slips",
+     "category": "memory_slips",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "one first-hand memory of the club answering the dark for people who could not see them, closing with the story's refrain"
+    }
+   },
+   "constraints": {
+    "payoff_must_be": "a keepsake plus a memory plus the refrain; this site's memory is the story's thesis stated warmly, that a voice finds you when you cannot see anything",
+    "offers_must_be": "bank it and continue, or break off collecting and follow the bearing; both stay live and neither is preferred",
+    "must_not": "count sites, name the other sites, or imply the collection must be completed"
+   },
+   "choice_semantics": {
+    "c_hb_cache_hub": "bank this find and keep the night open for more",
+    "c_hb_cache_nest": "stop collecting and go where the whole night has been pointing"
+   },
+   "beat_hint": "a word, and a memory of people ringing answers into the fog so nobody at sea felt alone."
+  },
+  "e_hb_dinghy": {
+   "tier": "locked_outcome",
+   "function": "payoff-consequence",
+   "entry_state": [
+    "hb_locked_and_watched",
+    "companion_along"
+   ],
+   "establishes": [
+    "dignity_kept",
+    "return_open"
+   ],
+   "forbids": [
+    "anyone_injured",
+    "humiliation_inflicted",
+    "blame_between_siblings"
+   ],
+   "affect": {
+    "target": "comic indignity, cold feet, and a rule remembered too late",
+    "forbid": [
+     "terror",
+     "despair",
+     "shame"
+    ]
+   },
+   "ending": {
+    "valence": "negative",
+    "kind": "setback"
+   },
+   "mechanisms": [
+    "the shortcut proves unfit within a few feet of the steps and takes on water in a boot's depth",
+    "the retreat is immediate, undignified and completely safe, ending with two children standing dripping on the steps",
+    "a rule written in the elder's own margins says exactly this, and gets quoted on the way home"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "ending_must_read": "as funny and self-correcting: nothing worse than wet socks and warm embarrassment, the site untouched, the night given up for a drier one",
+    "must_not": "put anyone in deep water, out of their depth, or out of reach of the shore"
+   },
+   "beat_hint": "two pulls out, ankle-deep, and back in a hurry with the far sound still clanking, unbothered."
+  },
+  "e_hb_stories": {
+   "tier": "locked_outcome",
+   "function": "payoff-company",
+   "entry_state": [
+    "hb_keeper_ally",
+    "hb_key_in_hand",
+    "club_is_real"
+   ],
+   "establishes": [
+    "ancestor_memory_shared",
+    "wonder_shared",
+    "dignity_kept",
+    "return_open",
+    "deadline_spent"
+   ],
+   "forbids": [
+    "adult_menaces_children",
+    "humiliation_inflicted"
+   ],
+   "affect": {
+    "target": "cocoa, an old man's best stories, and the sky going pearl outside",
+    "forbid": [
+     "regret_dominant",
+     "grief",
+     "mockery"
+    ]
+   },
+   "ending": {
+    "valence": "neutral",
+    "kind": "discovery"
+   },
+   "mechanisms": [
+    "the stories run long and the club comes alive in the telling instead of in a container",
+    "the relief arrives with the gulls and the window is spent without the site ever being opened",
+    "the adult shakes both their hands like colleagues and promises to be listening next time"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "ending_must_read": "as a trade made knowingly and worth it: they spent the night's window on a person who was there, and the club is more real to them than any keepsake would have made it",
+    "must_not": "frame the unopened site as failure, and do not have the adult apologize for keeping them"
+   },
+   "beat_hint": "the kettle, the stories, the day relief at the door, and two children treated as colleagues."
+  },
+  "lb_green": {
+   "tier": "open",
+   "function": "approach-site",
+   "entry_state": [
+    "out_in_the_town",
+    "five_sites_named",
+    "code_broken",
+    "deadline_known",
+    "companion_along"
+   ],
+   "establishes": [
+    "lb_site_reached",
+    "lb_hint_read"
+   ],
+   "forbids": [
+    "anyone_injured",
+    "break_in_rewarded"
+   ],
+   "affect": {
+    "target": "brisk errand energy under a single porch lamp",
+    "forbid": [
+     "dread",
+     "urgency"
+    ]
+   },
+   "merge_note": "REVISIT: the only parent is the hub, which can send them here at any point in the night. Write the arrival so it reads the same first or last; no reference to other sites or to time already spent. The reader may also come back through here after this site has already given up its keepsake, so the scene must never assert that the place is still unsearched.",
+   "invention": {
+    "landmark": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.site_landmarks",
+     "category": "site_landmarks",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the fourth site: a public building that keeps the town's paper record, shut for the night but not sealed"
+    },
+    "wonder_detail": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.wonder_details",
+     "category": "wonder_details",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the fourth site's marvel: one lamp deliberately left burning inside a dark public room"
+    }
+   },
+   "constraints": {
+    "hint_must_be": "decoded here in the story's one code form and must do three jobs at once: name the room, name the record by a year rather than a title, and warn about the noise-maker on the door",
+    "must_not": "let the warning read as danger; the worst case here is noise and an embarrassed conversation"
+   },
+   "choice_semantics": {
+    "c_lb_green_porch": "treat this as a quick errand and go straight to the door"
+   },
+   "beat_hint": "a dark public building, one lit porch, and a hint that includes its own warning."
+  },
+  "lb_porch": {
+   "tier": "open",
+   "function": "pose-rule-choice",
+   "entry_state": [
+    "lb_site_reached",
+    "lb_hint_read"
+   ],
+   "establishes": [
+    "lb_door_choice_seen"
+   ],
+   "forbids": [
+    "property_damaged",
+    "break_in_rewarded"
+   ],
+   "affect": {
+    "target": "the small suspense of a door with a condition attached",
+    "forbid": [
+     "dread",
+     "guilt"
+    ]
+   },
+   "invention": {
+    "obstacle": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.retreat_obstacles",
+     "category": "retreat_obstacles",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the fourth site's retreatable obstacle: a noise-maker over the door that punishes impatience with embarrassment and nothing else"
+    },
+    "key_place": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.key_hiding_places",
+     "category": "key_hiding_places",
+     "assigned_at": "bind",
+     "note": "the after-hours key the town has always left here; common knowledge, not a secret, so using it is not a break-in"
+    }
+   },
+   "constraints": {
+    "offers_must_be": "patience against impatience, with both consequences visible in advance: the warning is right there above the door and the key is where every family in town knows it is",
+    "must_not": "hide the warning, and do not frame using the known key as sneaking"
+   },
+   "choice_semantics": {
+    "c_lb_porch_owl": "do the patient thing the hint told you to do",
+    "c_lb_porch_handle": "skip the condition and just try the door"
+   },
+   "beat_hint": "a service door, a warning over it, and a key that half the town's grandmothers know about."
+  },
+  "lb_key": {
+   "tier": "open",
+   "function": "reward-patience",
+   "entry_state": [
+    "lb_door_choice_seen"
+   ],
+   "establishes": [
+    "lb_entered_properly"
+   ],
+   "forbids": [
+    "break_in_rewarded",
+    "property_damaged"
+   ],
+   "affect": {
+    "target": "the satisfaction of a lock that opens because you did it properly",
+    "forbid": [
+     "guilt",
+     "dread"
+    ]
+   },
+   "constraints": {
+    "entry_must_read": "as inherited local knowledge used correctly: nothing forced, nothing triggered, and the noise-maker left in peace",
+    "must_not": "have anyone hide, run, or feel like a burglar"
+   },
+   "choice_semantics": {
+    "c_lb_key_hall": "go in quietly and get on with the errand"
+   },
+   "beat_hint": "the key is where it has always been, and the lock turns as if it was expecting them."
+  },
+  "lb_hall": {
+   "tier": "open",
+   "function": "offer-errand-or-detour",
+   "entry_state": [
+    "lb_entered_properly",
+    "lb_hint_read"
+   ],
+   "establishes": [
+    "lb_hall_crossed"
+   ],
+   "forbids": [
+    "property_damaged"
+   ],
+   "affect": {
+    "target": "moonlight, floor wax, and the particular hush of a room full of books at night",
+    "forbid": [
+     "dread",
+     "terror"
+    ]
+   },
+   "constraints": {
+    "offers_must_be": "the errand against the detour, with the detour clearly optional and clearly interesting; the lit table must look like an invitation rather than a trap",
+    "must_not": "put anyone in the building with them, or make the detour cost the errand"
+   },
+   "choice_semantics": {
+    "c_lb_hall_maproom": "keep the errand tight and go straight to the target",
+    "c_lb_hall_table": "let one lit thing on the way pull you off course"
+   },
+   "beat_hint": "silver tables, dark stacks, the target room at the far end, and one lamp left on partway."
+  },
+  "lb_table": {
+   "tier": "open",
+   "function": "reward-detour",
+   "entry_state": [
+    "lb_hall_crossed"
+   ],
+   "establishes": [
+    "club_is_real",
+    "lb_founding_year_known"
+   ],
+   "forbids": [
+    "property_damaged"
+   ],
+   "affect": {
+    "target": "the luck of a building seeming to hand you exactly what you needed",
+    "forbid": [
+     "boredom",
+     "dread"
+    ]
+   },
+   "invention": {
+    "club_relic": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.club_relics",
+     "category": "club_relics",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the fourth site's proof of the club: a half-built public display that names the club and dates it"
+    }
+   },
+   "constraints": {
+    "reward_must_be": "the founding year handed over in passing, which is exactly the number the site's hint refers to without stating; the detour informs but is never required",
+    "must_not": "make the reader who skipped this beat unable to solve the room; the record can also be found by working through the years"
+   },
+   "choice_semantics": {
+    "c_lb_table_maproom": "take the number you just learned and finish the errand"
+   },
+   "beat_hint": "a display half pinned to its card gives up a date and a photograph of a dozen night-shift faces."
+  },
+  "lb_maproom": {
+   "tier": "open",
+   "function": "offer-two-searches",
+   "entry_state": [
+    "lb_hall_crossed",
+    "lb_hint_read"
+   ],
+   "establishes": [
+    "lb_maproom_open",
+    "marker_recognized"
+   ],
+   "forbids": [
+    "property_damaged"
+   ],
+   "affect": {
+    "target": "a wall of identical labelled records and one small human mark on it",
+    "forbid": [
+     "boredom",
+     "frustration"
+    ]
+   },
+   "merge_note": "NC-1: two parents, one arriving straight and one arriving having learned the founding year at the display. Presuppose only the decoded hint and being in the room. Do NOT reference the display, the photograph, or any number learned on the way; the room must be solvable by a reader who came straight here.",
+   "constraints": {
+    "offers_must_be": "trust the elder's mark, or work the years methodically; both reach the same record and neither is slower in any way that matters",
+    "must_not": "require the founding year to be already known; the mark is the reader's other route in"
+   },
+   "choice_semantics": {
+    "c_lb_maproom_diamond": "trust the personal mark over the filing system",
+    "c_lb_maproom_hunt": "work the filing system honestly until it gives"
+   },
+   "beat_hint": "a cabinet of years, the whole town on paper a hundred times over, and one label somebody inked by hand."
+  },
+  "lb_hunt": {
+   "tier": "open",
+   "function": "reward-method",
+   "entry_state": [
+    "lb_maproom_open"
+   ],
+   "establishes": [
+    "lb_drawer_identified",
+    "marker_recognized"
+   ],
+   "forbids": [
+    "property_damaged"
+   ],
+   "affect": {
+    "target": "the rhythm of a patient search ending in a snag of light",
+    "forbid": [
+     "boredom",
+     "frustration"
+    ]
+   },
+   "constraints": {
+    "search_must_be": "shown as pleasant rather than tedious, and it must end on the same mark the other route trusts, so both methods agree",
+    "must_not": "disturb or misfile anything"
+   },
+   "choice_semantics": {
+    "c_lb_hunt_drawer": "open the one the search settled on"
+   },
+   "beat_hint": "record after record slides past under the torch until the beam snags on a hand-inked mark."
+  },
+  "lb_drawer": {
+   "tier": "open",
+   "function": "deliver-site-payoff",
+   "entry_state": [
+    "lb_maproom_open",
+    "refrain_known",
+    "bearing_east"
+   ],
+   "establishes": [
+    "lb_token_taken",
+    "lb_map_seen",
+    "ancestor_memory_shared",
+    "trail_is_deliberate",
+    "club_is_real"
+   ],
+   "forbids": [
+    "theft_rewarded",
+    "property_damaged"
+   ],
+   "affect": {
+    "target": "the whole night suddenly visible on one sheet of old paper",
+    "forbid": [
+     "greed",
+     "grief",
+     "anticlimax"
+    ]
+   },
+   "merge_note": "NC-1: two parents, one trusting the mark directly and one arriving from a methodical search. Presuppose only that the right record is open in front of them. Do NOT reference which route found it, or anything learned at the display table.",
+   "invention": {
+    "cache_container": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.cache_containers",
+     "category": "cache_containers",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the fourth site's hiding place: a small capsule fixed inside the record's own housing where only the person who filed it would put it"
+    },
+    "keepsake_token": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.keepsake_tokens",
+     "category": "keepsake_tokens",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the fourth site's token, carrying the fourth word of the closing phrase"
+    },
+    "memory_slip": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.memory_slips",
+     "category": "memory_slips",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "one first-hand memory of the night the club was founded and the town divided into listening posts, closing with the story's refrain"
+    }
+   },
+   "constraints": {
+    "offers_must_be": "bank this find and keep the night open, or break off collecting and follow the convergence; both stay live and neither is preferred",
+    "payoff_must_be": "a keepsake, a memory, and one extra gift unique to this site: the five places drawn on one page with lines converging east, which confirms on paper what the direction-finder has hummed all night",
+    "map_must_not": "spoil what is at the convergence; it marks the spot and stops",
+    "must_not": "count sites, remove anything from the building, or leave the record disturbed"
+   },
+   "choice_semantics": {
+    "c_lb_drawer_hub": "bank this find and keep the night open for more",
+    "c_lb_drawer_nest": "stop collecting and go where the paper and the needle both point"
+   },
+   "beat_hint": "the town in fine ink, five circles, and every pencil line running to one spot east of everything."
+  },
+  "e_lb_alarm": {
+   "tier": "locked_outcome",
+   "function": "payoff-comic-correction",
+   "entry_state": [
+    "lb_door_choice_seen",
+    "guardian_permission"
+   ],
+   "establishes": [
+    "honesty_kept",
+    "dignity_kept",
+    "return_open"
+   ],
+   "forbids": [
+    "adult_menaces_children",
+    "humiliation_inflicted",
+    "anyone_injured"
+   ],
+   "affect": {
+    "target": "comic mortification resolving into fair, kindly treatment",
+    "forbid": [
+     "terror",
+     "shaming",
+     "despair"
+    ]
+   },
+   "ending": {
+    "valence": "negative",
+    "kind": "setback"
+   },
+   "mechanisms": [
+    "impatience wakes the noise-maker the hint warned about and a light comes on across the way",
+    "the children stand still and wait to be found instead of running, which is what makes the rest go well",
+    "the roused adult is firm about the rule and generous about the reason, and sets terms rather than punishment"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "correction_must_be": "fair and complete without cruelty: an invitation to come back properly, in daylight, with her, and an instruction to tell their own parent themselves",
+    "must_not": "involve police, threats, bans, or lengthy lecturing, and must not have the children lie or run"
+   },
+   "beat_hint": "one impatient handle, a tin thunderstorm overhead, and an adult in slippers who is kinder than her alarm."
+  },
+  "bh_path": {
+   "tier": "open",
+   "function": "pose-route-choice",
+   "entry_state": [
+    "out_in_the_town",
+    "five_sites_named",
+    "code_broken",
+    "deadline_known",
+    "companion_along"
+   ],
+   "establishes": [
+    "bh_site_reached"
+   ],
+   "forbids": [
+    "anyone_injured",
+    "break_in_rewarded"
+   ],
+   "affect": {
+    "target": "the pull of height, with a slow red pulse overhead",
+    "forbid": [
+     "dread",
+     "urgency"
+    ]
+   },
+   "merge_note": "REVISIT: the only parent is the hub, which can send them here at any point in the night. Write the foot of the hill so it reads the same first or last; no reference to other sites or to time already spent. The reader may also come back through here after this site has already given up its keepsake, so the scene must never assert that the place is still unsearched.",
+   "invention": {
+    "landmark": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.site_landmarks",
+     "category": "site_landmarks",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the fifth site: a hilltop installation above the town, fenced and off limits, with unfenced ground around it"
+    },
+    "obstacle": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.retreat_obstacles",
+     "category": "retreat_obstacles",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the fifth site's retreatable obstacle: a shortcut of loose ground that gives way rather than drops"
+    }
+   },
+   "constraints": {
+    "offers_must_be": "the long patient way against the shortcut that older kids brag about, with the difference in cost visible from the bottom",
+    "must_not": "put a fall from height anywhere in this site, and do not glamorize the shortcut"
+   },
+   "choice_semantics": {
+    "c_bh_path_switch": "take the long way that always works",
+    "c_bh_path_scree": "buy time with the shortcut everyone talks about"
+   },
+   "beat_hint": "the foot of the hill offers patience or bravado, and only one of them is a route."
+  },
+  "bh_climb": {
+   "tier": "open",
+   "function": "earn-height",
+   "entry_state": [
+    "bh_site_reached",
+    "companion_along"
+   ],
+   "establishes": [
+    "bh_ascending"
+   ],
+   "forbids": [
+    "anyone_injured"
+   ],
+   "affect": {
+    "target": "honest effort with the whole town turning into lights below",
+    "forbid": [
+     "exhaustion",
+     "dread"
+    ]
+   },
+   "constraints": {
+    "climb_must_be": "work that is worth it: breath, pushing, walking the steep parts, with the view improving as payment",
+    "must_not": "manufacture peril; the only cost here is effort"
+   },
+   "choice_semantics": {
+    "c_bh_climb_wind": "keep going up into the weather"
+   },
+   "beat_hint": "switchbacks through gorse, the town dropping away, and a slow red pulse getting nearer."
+  },
+  "bh_wind": {
+   "tier": "open",
+   "function": "pose-site-puzzle",
+   "entry_state": [
+    "bh_ascending",
+    "code_broken"
+   ],
+   "establishes": [
+    "bh_hint_read"
+   ],
+   "forbids": [
+    "property_damaged"
+   ],
+   "affect": {
+    "target": "the shock of hearing a hillside make music",
+    "forbid": [
+     "dread",
+     "terror"
+    ]
+   },
+   "invention": {
+    "wonder_detail": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.wonder_details",
+     "category": "wonder_details",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the fifth site's marvel: the sound the night wind makes in the installation's rigging"
+    }
+   },
+   "constraints": {
+    "hint_must_be": "decoded here in the story's one code form and must name the singing part of the site and a numbered one among several identical fixtures",
+    "must_not": "require entering anything fenced or marked off"
+   },
+   "choice_semantics": {
+    "c_bh_wind_summit": "follow the sound to its source"
+   },
+   "beat_hint": "the wind takes over at the shoulder of the hill and the wires start to sing."
+  },
+  "bh_summit": {
+   "tier": "open",
+   "function": "respect-the-boundary",
+   "entry_state": [
+    "bh_hint_read"
+   ],
+   "establishes": [
+    "bh_summit_reached"
+   ],
+   "forbids": [
+    "break_in_rewarded",
+    "property_damaged",
+    "anyone_injured"
+   ],
+   "affect": {
+    "target": "standing beside something huge and humming that is not theirs to touch",
+    "forbid": [
+     "dread",
+     "recklessness_glorified"
+    ]
+   },
+   "constraints": {
+    "boundary_must_be": "absolute and uncontested: what is fenced stays fenced, and the puzzle deliberately lives outside the fence, so obeying the sign is also the solution",
+    "offers_must_be": "get on with the search, or stay a moment for the place itself; the second must pay in feeling rather than in information the first lacks",
+    "must_not": "let anyone climb, enter, or touch the fenced installation"
+   },
+   "choice_semantics": {
+    "c_bh_summit_anchors": "get on with the search out in the open ground",
+    "c_bh_summit_listen": "stop and take the place in before working"
+   },
+   "beat_hint": "the fence is honored, and everything the hint named is outside it anyway."
+  },
+  "bh_listen": {
+   "tier": "open",
+   "function": "reward-stillness",
+   "entry_state": [
+    "bh_summit_reached"
+   ],
+   "establishes": [
+    "bh_anchors_pointed",
+    "ancestor_presence_felt"
+   ],
+   "forbids": [
+    "grief_overwhelms"
+   ],
+   "affect": {
+    "target": "a whole hilltop heard as one instrument, and a certainty nobody needs to say",
+    "forbid": [
+     "grief",
+     "melancholy_dominant"
+    ]
+   },
+   "constraints": {
+    "stillness_must_be": "rewarded twice: with the sound itself, and with the realization that the rigging points to what they are looking for",
+    "must_not": "state the elder's presence as fact or make it supernatural; the children simply both know she stood here"
+   },
+   "choice_semantics": {
+    "c_bh_listen_anchors": "let the place point you at the thing you came for"
+   },
+   "beat_hint": "every wire its own note, the chord turning with the gusts, and all of it sloping downhill like strings."
+  },
+  "bh_anchors": {
+   "tier": "open",
+   "function": "narrow-the-search",
+   "entry_state": [
+    "bh_summit_reached",
+    "bh_hint_read"
+   ],
+   "establishes": [
+    "bh_third_anchor_found"
+   ],
+   "forbids": [
+    "property_damaged"
+   ],
+   "affect": {
+    "target": "concrete shoulders in the bracken and a number that finally matters",
+    "forbid": [
+     "dread",
+     "boredom"
+    ]
+   },
+   "merge_note": "NC-1: two parents, one coming straight down to work and one having stayed to listen first. Presuppose only the decoded hint and being at the top. Do NOT reference the sound, the chord, or any moment of stillness.",
+   "constraints": {
+    "offers_must_be": "search the fixture itself or search the landmark beside it; both arrive at the same thing and neither is the clever one",
+    "must_not": "require tools, force, or climbing"
+   },
+   "choice_semantics": {
+    "c_bh_anchors_plate": "search the thing the hint named",
+    "c_bh_anchors_pillar": "search what somebody put next to it"
+   },
+   "beat_hint": "three anchorages in the bracken, and the one the hint named stands slightly apart."
+  },
+  "bh_plate": {
+   "tier": "open",
+   "function": "reward-method",
+   "entry_state": [
+    "bh_third_anchor_found"
+   ],
+   "establishes": [
+    "bh_fastener_found",
+    "marker_recognized"
+   ],
+   "forbids": [
+    "property_damaged"
+   ],
+   "affect": {
+    "target": "the small shock of finding one thing maintained among many neglected ones",
+    "forbid": [
+     "boredom",
+     "dread"
+    ]
+   },
+   "constraints": {
+    "discovery_must_be": "physical proof of upkeep: one fastening among a weathered set is clean, marked, and turns by hand because somebody has kept it turning",
+    "must_not": "loosen anything structural or imply the installation is weakened"
+   },
+   "choice_semantics": {
+    "c_bh_plate_hollow": "open what somebody has been maintaining for decades"
+   },
+   "beat_hint": "a ring of weathered fastenings, and one of them greased, marked, and willing to turn."
+  },
+  "bh_pillar": {
+   "tier": "open",
+   "function": "reward-method",
+   "entry_state": [
+    "bh_third_anchor_found"
+   ],
+   "establishes": [
+    "bh_fastener_found",
+    "marker_recognized"
+   ],
+   "forbids": [
+    "property_damaged"
+   ],
+   "affect": {
+    "target": "an official marker with somebody's private additions scratched around it",
+    "forbid": [
+     "boredom",
+     "dread"
+    ]
+   },
+   "constraints": {
+    "discovery_must_be": "the elder's marks added around an official one, with a scratched line pointing at exactly the fastening that matters",
+    "must_not": "deface anything further or require the children to add marks of their own"
+   },
+   "choice_semantics": {
+    "c_bh_pillar_hollow": "follow the private marks to the thing they point at"
+   },
+   "beat_hint": "an official landmark ringed with somebody's small unofficial marks, and one line pointing."
+  },
+  "bh_hollow": {
+   "tier": "open",
+   "function": "reveal-craft",
+   "entry_state": [
+    "bh_fastener_found"
+   ],
+   "establishes": [
+    "bh_cache_open",
+    "trail_is_deliberate"
+   ],
+   "forbids": [
+    "theft_rewarded"
+   ],
+   "affect": {
+    "target": "awe at a hiding place built to outlast everyone who knew about it",
+    "forbid": [
+     "dread",
+     "anticlimax"
+    ]
+   },
+   "merge_note": "NC-1: two parents, one reaching the fastening from the fixture and one from the landmark beside it. Presuppose only that the fastening is turning. Do NOT reference marks, arrows, or which clue led here.",
+   "invention": {
+    "cache_container": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.cache_containers",
+     "category": "cache_containers",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the fifth site's hiding place: a dry cavity formed into the structure when it was built, holding a sealed container"
+    }
+   },
+   "constraints": {
+    "reveal_must_be": "evidence of long planning: this cavity was made when the thing was made, which means the elder was thinking about a finder decades ago",
+    "must_not": "damage the structure or leave anything unable to be closed again"
+   },
+   "choice_semantics": {
+    "c_bh_hollow_open": "open what was built to be found one day"
+   },
+   "beat_hint": "the fastening draws a cover with it, and behind it a dry space cast into the structure itself."
+  },
+  "bh_cache": {
+   "tier": "open",
+   "function": "deliver-site-payoff",
+   "entry_state": [
+    "bh_cache_open",
+    "refrain_known"
+   ],
+   "establishes": [
+    "bh_token_taken",
+    "ancestor_memory_shared",
+    "club_is_real"
+   ],
+   "forbids": [
+    "theft_rewarded",
+    "deadline_as_disaster"
+   ],
+   "affect": {
+    "target": "a small town talking to the whole turning world, remembered from the top of a hill",
+    "forbid": [
+     "greed",
+     "grief",
+     "anticlimax"
+    ]
+   },
+   "invention": {
+    "keepsake_token": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.keepsake_tokens",
+     "category": "keepsake_tokens",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the fifth site's token, carrying the fifth word of the closing phrase"
+    },
+    "memory_slip": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.memory_slips",
+     "category": "memory_slips",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "one first-hand memory of the night the club heard the far side of the world from this hill, closing with the story's refrain"
+    }
+   },
+   "constraints": {
+    "payoff_must_be": "a keepsake plus a memory plus the refrain, with this site's memory the widest of the five: distance, reach, and a small place that is not small at all",
+    "must_not": "count sites or name the other sites"
+   },
+   "choice_semantics": {
+    "c_bh_cache_view": "stand up and look at what this height is actually for"
+   },
+   "beat_hint": "a word, and a memory of one hill hearing ships, mountains and the far side of the world."
+  },
+  "bh_view": {
+   "tier": "open",
+   "function": "convert-height-to-knowledge",
+   "entry_state": [
+    "bh_token_taken",
+    "bearing_east"
+   ],
+   "establishes": [
+    "goal_located"
+   ],
+   "forbids": [
+    "goal_found"
+   ],
+   "affect": {
+    "target": "the direction stops being an abstraction and becomes one lit window",
+    "forbid": [
+     "dread",
+     "anticlimax"
+    ]
+   },
+   "constraints": {
+    "offers_must_be": "come back down with what you know, or spend the rest of the night on the light you can now see; both must stay fully live",
+    "reveal_must_be": "earned by height alone: from up here the direction resolves into one specific small light out past the edge of town, which nobody could have seen from the streets",
+    "must_not": "identify what the light is, or make the reader who never climbed this hill worse off; the direction has been available all night"
+   },
+   "choice_semantics": {
+    "c_bh_view_hub": "come back down with what you know and keep the night open",
+    "c_bh_view_nest": "go straight for the light you can now see"
+   },
+   "beat_hint": "the whole town below with its lamps going out, and one small amber window where the needle points."
+  },
+  "e_bh_scree": {
+   "tier": "locked_outcome",
+   "function": "payoff-consequence",
+   "entry_state": [
+    "bh_site_reached",
+    "companion_along"
+   ],
+   "establishes": [
+    "dignity_kept",
+    "return_open"
+   ],
+   "forbids": [
+    "anyone_injured",
+    "gore_of_any_kind",
+    "blame_between_siblings"
+   ],
+   "affect": {
+    "target": "a slide rather than a fall, ending in skinned palms and honest arithmetic",
+    "forbid": [
+     "terror",
+     "despair",
+     "shame"
+    ]
+   },
+   "ending": {
+    "valence": "negative",
+    "kind": "setback"
+   },
+   "mechanisms": [
+    "the loose ground walks out from under them and delivers them back to the bottom sitting down hard",
+    "the first aid comes out of a bag they were sensible enough to bring, and the damage is skin",
+    "the arithmetic is done out loud: the hill is not going anywhere, and skin only grows back so fast"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "ending_must_read": "as a slide, never a fall: no height, no broken anything, and the retreat is a decision the two of them make together and feel fine about",
+    "must_not": "have either child blame the other, and do not close the site off for good"
+   },
+   "beat_hint": "the shortcut moves, the hill wins, and the long way up will still be there tomorrow."
+  },
+  "fin_bearing": {
+   "tier": "open",
+   "function": "converge-on-source",
+   "entry_state": [
+    "out_in_the_town",
+    "bearing_east",
+    "broadcast_live",
+    "deadline_known",
+    "companion_along",
+    "refrain_known"
+   ],
+   "establishes": [
+    "goal_found"
+   ],
+   "forbids": [
+    "door_open_lawfully",
+    "station_seen"
+   ],
+   "affect": {
+    "target": "the skin-prickle of hearing the same voice arrive from two directions at once",
+    "forbid": [
+     "dread",
+     "terror"
+    ]
+   },
+   "merge_note": "NC-1 / REVISIT: six parents. The hub sends readers here with nothing collected at all, and each of the five sites sends them here directly. Presuppose ONLY the setup and the decode: the broadcast, the bearing, the clock, the two of them together. Do NOT reference any keepsake, any word collected, any site visited, how many were visited, or how much of the night has gone. A reader who came straight east from the square must lose nothing.",
+   "invention": {
+    "destination": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.destination_building",
+     "category": "destination_building",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the small building the bearing has pointed to all night: out of use for its original purpose, one window lit, an aerial running from it to something living"
+    }
+   },
+   "constraints": {
+    "arrival_must_be": "sensory proof before explanation: the signal arrives from the air and from ahead at the same time, a half beat apart, so the reader knows the source is here before anyone says it",
+    "must_not": "reference any site or keepsake, count the night down, or reveal anything about the room inside"
+   },
+   "choice_semantics": {
+    "c_finb_rails": "close the last distance to the thing that has been calling all night"
+   },
+   "beat_hint": "the night in stereo with itself, and one lit upper window down the old line."
+  },
+  "fin_gate": {
+   "tier": "open",
+   "function": "pose-entry-problem",
+   "entry_state": [
+    "goal_found",
+    "refrain_known"
+   ],
+   "establishes": [
+    "goal_named",
+    "entry_problem"
+   ],
+   "forbids": [
+    "door_open_lawfully",
+    "break_in_rewarded"
+   ],
+   "affect": {
+    "target": "arriving at the right place and finding it shut, with the voice going on inside",
+    "forbid": [
+     "despair",
+     "panic"
+    ]
+   },
+   "merge_note": "REVISIT: a single parent, but that parent is reachable from six directions and at any point in the night. Keep this beat visit-neutral: it must read the same whether the reader arrived with five keepsakes or none.",
+   "constraints": {
+    "confirmation_must_be": "immediate and unmistakable: a sign on the building names the place the refrain has named all night and dates it to the club, so there is no doubt they are right",
+    "offers_must_be": "three postures toward a locked door: solve it like a radio person, force the reach, or stop and listen first; the third must be a whole way to spend the ending and not a delay",
+    "must_not": "let the door be openable by force, and do not let the lit window be safely reachable"
+   },
+   "choice_semantics": {
+    "c_fing_key": "think like the person who built this and work out where they would leave a way in",
+    "c_fing_window": "take the physical shortcut and reach for the light",
+    "c_fing_listen": "stop at the door and listen before doing anything at all"
+   },
+   "beat_hint": "the right building, the right name on the sign, an old lock, and the voice reading on inside."
+  },
+  "fin_door_listen": {
+   "tier": "open",
+   "function": "reveal-the-machine",
+   "entry_state": [
+    "entry_problem",
+    "broadcast_live"
+   ],
+   "establishes": [
+    "machine_alone_inside"
+   ],
+   "forbids": [
+    "door_open_lawfully"
+   ],
+   "affect": {
+    "target": "tenderness at machinery keeping an appointment with nobody in the room",
+    "forbid": [
+     "terror",
+     "grief"
+    ]
+   },
+   "constraints": {
+    "revelation_must_be": "that nobody is in there: relays, moving tape, and a clock, which resolves the last trace of fear and replaces it with wonder and a deadline",
+    "offers_must_be": "go in, or make witnessing from out here the whole ending; the second must be presented as sufficient, not as giving up",
+    "must_not": "suggest a person is inside, or make staying outside read as cowardice"
+   },
+   "choice_semantics": {
+    "c_finl_search": "having understood what is in there, go and find the honest way in",
+    "c_finl_stay": "decide that witnessing this is enough, and stay where you are"
+   },
+   "beat_hint": "through the door: relays, tape, and a clock, all keeping a decades-long appointment alone."
+  },
+  "fin_search": {
+   "tier": "open",
+   "function": "solve-entry",
+   "entry_state": [
+    "entry_problem"
+   ],
+   "establishes": [
+    "key_hunt_narrowed"
+   ],
+   "forbids": [
+    "break_in_rewarded",
+    "property_damaged"
+   ],
+   "affect": {
+    "target": "thinking your way in by thinking like the builder",
+    "forbid": [
+     "frustration",
+     "guilt"
+    ]
+   },
+   "merge_note": "NC-1: two parents, one coming straight from the door and one after listening through it. Presuppose only that the way in is unsolved. Do NOT reference the sound of the machinery or anything learned through the door.",
+   "invention": {
+    "key_place": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.key_hiding_places",
+     "category": "key_hiding_places",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "where the key actually waits: somewhere a radio person tending an aerial would pass every time, and weatherproofed with obvious recent care"
+    }
+   },
+   "constraints": {
+    "offers_must_be": "back the character read, or check the ordinary place first; both are competent and both reach the way in",
+    "reasoning_must_be": "in character: the question is not where would a key be but where would a radio person put one, which narrows it to two honest candidates",
+    "must_not": "allow any forcing, and do not make the wrong candidate a punishment"
+   },
+   "choice_semantics": {
+    "c_fins_wrenbox": "back the guess about the kind of person who lived here",
+    "c_fins_lintel": "check the ordinary place first"
+   },
+   "beat_hint": "two places a radio person would leave a key, and only one of them has been looked after."
+  },
+  "fin_lintel": {
+   "tier": "open",
+   "function": "eliminate-and-redirect",
+   "entry_state": [
+    "key_hunt_narrowed"
+   ],
+   "establishes": [
+    "keybox_singled_out"
+   ],
+   "forbids": [
+    "key_found"
+   ],
+   "affect": {
+    "target": "a dead end with a joke in it, and a better idea from a slightly higher vantage",
+    "forbid": [
+     "frustration",
+     "despair"
+    ]
+   },
+   "constraints": {
+    "elimination_must_be": "quick, funny, and productive: nothing is there, but from that spot the other candidate is visibly newer-kept than the building around it",
+    "must_not": "waste the reader's time or make this route strictly worse than the other"
+   },
+   "choice_semantics": {
+    "c_flin_box": "abandon the ordinary guess for the cared-for one"
+   },
+   "beat_hint": "paint layers and one spider, and from up there the other hiding place looks suspiciously well kept."
+  },
+  "fin_wrenbox": {
+   "tier": "open",
+   "function": "reward-entry-reasoning",
+   "entry_state": [
+    "key_hunt_narrowed"
+   ],
+   "establishes": [
+    "key_found",
+    "trail_is_deliberate"
+   ],
+   "forbids": [
+    "break_in_rewarded"
+   ],
+   "affect": {
+    "target": "the enormous quiet gift of a key left for whoever came",
+    "forbid": [
+     "greed",
+     "anticlimax"
+    ]
+   },
+   "merge_note": "NC-1: two parents, one guessing right first and one arriving after eliminating the other candidate. Presuppose only that they are opening the right hiding place. Do NOT reference the eliminated candidate or any earlier guess.",
+   "constraints": {
+    "find_must_be": "wrapped, labelled, and addressed to a stranger: whoever is still listening, which makes the entry an inheritance rather than a break-in",
+    "must_not": "name the children in the label, or make the key hard to use"
+   },
+   "choice_semantics": {
+    "c_finw_door": "use the invitation you have just been handed"
+   },
+   "beat_hint": "a drawer slides out of the weather like a matchbox, and inside is a key with a message on it."
+  },
+  "fin_door": {
+   "tier": "open",
+   "function": "cross-threshold",
+   "entry_state": [
+    "key_found",
+    "entry_problem"
+   ],
+   "establishes": [
+    "door_open_lawfully"
+   ],
+   "forbids": [
+    "break_in_rewarded",
+    "property_damaged"
+   ],
+   "affect": {
+    "target": "the click of a lock kept oiled by someone who wanted this to happen",
+    "forbid": [
+     "dread",
+     "guilt"
+    ]
+   },
+   "constraints": {
+    "entry_must_read": "as being let in rather than getting in: the lock is maintained, the key fits, and the voice becomes suddenly close and clear",
+    "must_not": "force anything, and do not describe the room yet"
+   },
+   "choice_semantics": {
+    "c_find_in": "accept the invitation and go in"
+   },
+   "beat_hint": "the key turns easily, the door swings on warm light, and the voice is suddenly in the room with them."
+  },
+  "fin_threshold": {
+   "tier": "open",
+   "function": "reveal-the-station",
+   "entry_state": [
+    "door_open_lawfully",
+    "broadcast_live"
+   ],
+   "establishes": [
+    "station_seen"
+   ],
+   "forbids": [
+    "choice_is_theirs"
+   ],
+   "affect": {
+    "target": "hushed awe at a room that has been waiting rather than rotting",
+    "forbid": [
+     "dread",
+     "grief"
+    ]
+   },
+   "invention": {
+    "station_workings": {
+     "pick": 3,
+     "from": "bible.device_vocabulary.station_workings",
+     "category": "station_workings",
+     "assigned_at": "bind",
+     "note": "the machinery that has been running the broadcast unattended: the thing that turns, the thing that counts, and the thing that keeps time; all legible to a twelve-year-old at a glance"
+    }
+   },
+   "constraints": {
+    "room_must_be": "maintained, not abandoned: swept floor, folded covers, everything working, which tells the reader that somebody planned every part of tonight",
+    "must_not": "explain anything yet, or let anyone touch the machinery from the doorway"
+   },
+   "choice_semantics": {
+    "c_fint_in": "stop looking from the doorway and enter the room properly"
+   },
+   "beat_hint": "from the threshold: a working station, glowing and turning, in a room that has been kept."
+  },
+  "fin_inside": {
+   "tier": "open",
+   "function": "offer-three-ways-in",
+   "entry_state": [
+    "station_seen"
+   ],
+   "establishes": [
+    "room_offers_seen",
+    "logbook_on_desk",
+    "dawn_near"
+   ],
+   "forbids": [
+    "choice_is_theirs"
+   ],
+   "affect": {
+    "target": "three pulls at once in a small warm room with a clock running",
+    "forbid": [
+     "panic",
+     "dread"
+    ]
+   },
+   "merge_note": "REVISIT-NEUTRAL: a single parent, but the night behind this room varies from five sites to none. Write the room's welcome so it presupposes nothing about what has been collected or seen; the room greets whoever arrives.",
+   "constraints": {
+    "offers_must_be": "three genuinely different appetites: the people, the writing, and the machine; each must be a complete way to understand the room and none is required",
+    "must_not": "reference keepsakes, sites, or how the reader got here, and do not let the clock read as threat"
+   },
+   "choice_semantics": {
+    "c_fini_wall": "go at it through the people who made it",
+    "c_fini_log": "go at it through what she wrote down",
+    "c_fini_rack": "skip the explanations and go at the machine itself"
+   },
+   "beat_hint": "bottleneck. a wall of faces, an open book, and a machine counting down, all in one small warm room."
+  },
+  "fin_wall": {
+   "tier": "open",
+   "function": "explain-the-why",
+   "entry_state": [
+    "room_offers_seen"
+   ],
+   "establishes": [
+    "whole_story_known",
+    "club_is_real",
+    "ancestor_memory_shared",
+    "ancestor_presence_felt"
+   ],
+   "forbids": [
+    "grief_overwhelms"
+   ],
+   "affect": {
+    "target": "the whole story landing at once, warm and a little too late to read all of",
+    "forbid": [
+     "grief",
+     "despair"
+    ]
+   },
+   "merge_note": "NC-1 / PATH-UNIVERSAL RECAP: this is the story's explanation beat and it must work for a reader who visited five sites and for one who visited none. Recap ONLY what is universal: the broadcast, the bearing, the countdown, and what this wall itself shows. Do NOT recall any site, any keepsake, any word, or anything an earlier room revealed.",
+   "invention": {
+    "club_relic": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.club_relics",
+     "category": "club_relics",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the destination's proof of the club: the wall of the club itself, ending in one plain typed card that states why the station exists"
+    }
+   },
+   "constraints": {
+    "explanation_must_be": "complete and self-contained on this wall: the club scattered when the work that made it went, and the elder built the station and the hunt so the town would keep one more net in it",
+    "offers_must_be": "keep reading, or turn to the machine while there is still time; the cost of reading on must be visible in the window before the choice",
+    "must_not": "recap any site or keepsake, and do not turn the elder's death into the subject"
+   },
+   "choice_semantics": {
+    "c_fwall_linger": "keep reading, and let the reading cost you the moment",
+    "c_fwall_turn": "break off the reading while the clock still allows an answer"
+   },
+   "beat_hint": "faces in headphones and paper hats, her among them, and one card that explains everything."
+  },
+  "fin_log": {
+   "tier": "open",
+   "function": "receive-permission",
+   "entry_state": [
+    "room_offers_seen",
+    "logbook_on_desk"
+   ],
+   "establishes": [
+    "ancestor_permission",
+    "contacts_listed",
+    "ancestor_memory_shared"
+   ],
+   "forbids": [
+    "grief_overwhelms"
+   ],
+   "affect": {
+    "target": "being addressed directly, by name-shaped affection, from years ago",
+    "forbid": [
+     "grief",
+     "despair"
+    ]
+   },
+   "constraints": {
+    "permission_must_be": "explicit and threefold: the elder names three things a finder may rightly do and says any of them is right, which removes fear of choosing wrongly without removing the weight of choosing",
+    "must_not": "rank the three, promise a reward for any of them, or require the reader to have collected anything"
+   },
+   "choice_semantics": {
+    "c_finlog_rack": "take her permission over to the machine and use it"
+   },
+   "beat_hint": "her last entry is addressed to whoever is reading it, and it hands over the decision on purpose."
+  },
+  "fin_rack": {
+   "tier": "open",
+   "function": "pose-central-choice",
+   "entry_state": [
+    "station_seen",
+    "room_offers_seen",
+    "dawn_near"
+   ],
+   "establishes": [
+    "choice_is_theirs",
+    "mic_available"
+   ],
+   "forbids": [
+    "station_future_settled"
+   ],
+   "affect": {
+    "target": "peak quiet suspense: a spring nearly run down and three good futures",
+    "forbid": [
+     "panic",
+     "despair"
+    ]
+   },
+   "merge_note": "NC-1 / PATH-UNIVERSAL RECAP: three parents, one arriving straight from the room, one from the wall, one from the book. Presuppose only the room and the running clock. Recap ONLY the universal facts: the broadcast, the eastward bearing, the countdown nearly spent. Do NOT presuppose her written permission, the wall's explanation, any site, or any keepsake; the machine itself must make all three futures legible from this node alone.",
+   "constraints": {
+    "offers_must_be": "three futures of equal dignity: answer her, keep the station running, or give it away to the town; the machine's own labelling must make all three visible without anyone having read anything else",
+    "must_not": "mark one as correct, invent a fourth, or let the deadline read as catastrophe rather than a boundary"
+   },
+   "choice_semantics": {
+    "c_finr_answer": "speak back to the voice while there is still a pause to speak into",
+    "c_finr_keep": "make sure the thing does not stop when tonight stops",
+    "c_finr_share": "give it away to the people it was made out of"
+   },
+   "beat_hint": "bottleneck. a spring near its last notch, a microphone waiting, and three right answers."
+  },
+  "fin_answer": {
+   "tier": "open",
+   "function": "open-the-channel",
+   "entry_state": [
+    "choice_is_theirs",
+    "mic_available"
+   ],
+   "establishes": [
+    "speaking_live",
+    "script_available"
+   ],
+   "forbids": [
+    "answer_given"
+   ],
+   "affect": {
+    "target": "a held breath at an open channel, with a pause opening like a door",
+    "forbid": [
+     "panic",
+     "stage_fright_played_for_laughs"
+    ]
+   },
+   "constraints": {
+    "channel_must_be": "two-way by design: the station was built to record what is said back, which is the last proof that she expected somebody",
+    "offers_must_be": "your own words against her words; both are brave, and the scripted one must not read as a cop-out",
+    "must_not": "make speaking difficult or embarrassing, and do not have anyone else hear it yet"
+   },
+   "choice_semantics": {
+    "c_fina_own": "say something that is yours",
+    "c_fina_script": "say the thing she wrote to be said"
+   },
+   "beat_hint": "the switch goes over, the tape starts taking as well as giving, and a pause opens."
+  },
+  "f_answer_own": {
+   "tier": "open",
+   "function": "commit-own-voice",
+   "entry_state": [
+    "speaking_live"
+   ],
+   "establishes": [
+    "answer_given"
+   ],
+   "forbids": [
+    "humiliation_inflicted"
+   ],
+   "affect": {
+    "target": "plain courage: a name said out loud into a room that has been waiting for one",
+    "forbid": [
+     "embarrassment",
+     "grief"
+    ]
+   },
+   "constraints": {
+    "speech_must_be": "simple and unpolished: who she is, whose grandchild she is, and that the town is still listening; the power is in the plainness",
+    "offers_must_be": "wait to see whether anything answers, or close the night properly by hand; neither is safer than the other",
+    "must_not": "give her a speech, and do not have anyone coach her"
+   },
+   "choice_semantics": {
+    "c_fao_listen": "having spoken, wait and find out whether anyone is out there",
+    "c_fao_sign": "having spoken, put your name to it and let the watch finish"
+   },
+   "beat_hint": "her voice goes onto the same tape as her grandmother's, and the two of them are in the archive together."
+  },
+  "f_answer_script": {
+   "tier": "open",
+   "function": "commit-inherited-words",
+   "entry_state": [
+    "speaking_live",
+    "script_available"
+   ],
+   "establishes": [
+    "signoff_ready"
+   ],
+   "forbids": [
+    "humiliation_inflicted"
+   ],
+   "affect": {
+    "target": "the weight of saying somebody else's words correctly",
+    "forbid": [
+     "embarrassment",
+     "grief"
+    ]
+   },
+   "merge_note": "PATH-UNIVERSAL: the closing phrase must be fully legible from the framed words in this room. A reader who collected all five keepsakes gets recognition; a reader who collected none gets a phrase that still lands as the night's last sentence. Do NOT require any keepsake, and do NOT count how many were found.",
+   "constraints": {
+    "script_must_be": "the club's own closing form, ending in the five-word phrase, printed here in full so it reads complete to any reader",
+    "recognition_must_be": "a bonus and never a requirement: for a reader carrying words, the line assembles; for a reader carrying none, it is simply the club's beautiful goodnight",
+    "offers_must_be": "read it exactly as she wrote it, or read it and add something of their own; both honor her",
+    "must_not": "state or imply how many keepsakes the reader has"
+   },
+   "choice_semantics": {
+    "c_fas_written": "let her have the last word, exactly as she wrote it",
+    "c_fas_promise": "say her words and then add one of your own before the machine closes"
+   },
+   "beat_hint": "the club's old closing, ending in five words, and a spring easing toward its final notch."
+  },
+  "fin_keep": {
+   "tier": "open",
+   "function": "open-continuation",
+   "entry_state": [
+    "choice_is_theirs",
+    "station_seen"
+   ],
+   "establishes": [
+    "keeping_is_possible"
+   ],
+   "forbids": [
+    "station_future_settled"
+   ],
+   "affect": {
+    "target": "the discovery that this was all left deliberately teachable",
+    "forbid": [
+     "overwhelm",
+     "despair"
+    ]
+   },
+   "invention": {
+    "documentation": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.station_workings",
+     "category": "station_workings",
+     "assigned_at": "bind",
+     "note": "the elder's own instructions, kept simple on purpose: proof that she meant a beginner to be able to take this on"
+    }
+   },
+   "constraints": {
+    "documentation_must_be": "simple on purpose and visibly written for a beginner, so keeping the station is plausible for two children rather than a fantasy",
+    "offers_must_be": "keep it running now with your hands, or commit to learning it properly over time; the first is immediate and modest, the second is slow and ambitious",
+    "must_not": "require money, adults, or equipment they do not have"
+   },
+   "choice_semantics": {
+    "c_fink_wind": "make sure it happens again, in the simplest possible way",
+    "c_fink_learn": "aim higher than survival and learn the whole thing properly"
+   },
+   "beat_hint": "a folder of her own diagrams, kept simple on purpose, because she meant somebody to learn them."
+  },
+  "f_keep_wind": {
+   "tier": "open",
+   "function": "act-of-continuation",
+   "entry_state": [
+    "keeping_is_possible"
+   ],
+   "establishes": [
+    "timer_wound",
+    "key_returned",
+    "station_future_settled"
+   ],
+   "forbids": [
+    "property_damaged"
+   ],
+   "affect": {
+    "target": "the deep satisfaction of two people winding something up together",
+    "forbid": [
+     "anticlimax",
+     "grief"
+    ]
+   },
+   "constraints": {
+    "act_must_be": "physical, shared and correct: they follow her diagram, wind until the spring sits firm, reset the machine, and put the key back where the next finder will look",
+    "must_not": "break, improvise dangerously, or leave the room worse than they found it"
+   },
+   "choice_semantics": {
+    "c_fkw_end": "make it a promise between the two of you"
+   },
+   "beat_hint": "the crank, the diagram, the spring going firm, and the key going back where keys belong."
+  },
+  "f_keep_learn": {
+   "tier": "open",
+   "function": "act-of-apprenticeship",
+   "entry_state": [
+    "keeping_is_possible",
+    "logbook_on_desk",
+    "companion_along"
+   ],
+   "establishes": [
+    "apprenticeship_planned",
+    "station_future_settled"
+   ],
+   "forbids": [
+    "adult_menaces_children"
+   ],
+   "affect": {
+    "target": "a plan building itself between two people who suddenly have a project",
+    "forbid": [
+     "overwhelm",
+     "anticlimax"
+    ]
+   },
+   "constraints": {
+    "plan_must_be": "concrete and copied down from what is in this room: the settings, the diagrams, and the few names in the book on the desk that are not crossed through",
+    "must_not": "presuppose anything learned at any site, and do not have adults appear in the room to approve it"
+   },
+   "choice_semantics": {
+    "c_fkl_end": "start the long version of this tonight"
+   },
+   "beat_hint": "settings, diagrams and a handful of uncrossed names copied down, and a plan that outgrows the night."
+  },
+  "fin_share": {
+   "tier": "open",
+   "function": "open-giving-away",
+   "entry_state": [
+    "choice_is_theirs",
+    "logbook_on_desk",
+    "guardian_permission"
+   ],
+   "establishes": [
+    "sharing_routes_open"
+   ],
+   "forbids": [
+    "station_future_settled"
+   ],
+   "affect": {
+    "target": "the generous impulse arriving with minutes on the clock",
+    "forbid": [
+     "panic",
+     "grief"
+    ]
+   },
+   "constraints": {
+    "premise_must_be": "that the station was made out of people, so giving it away is not losing it; both roads must be doable in the minutes remaining",
+    "offers_must_be": "reach for the family who are alive right now, or reach for the town's next children through the machine itself",
+    "must_not": "make either road require permission they do not have, or leave the room unattended"
+   },
+   "choice_semantics": {
+    "c_fsh_family": "bring the people who are still here into the room before it ends",
+    "c_fsh_hunt": "use the machine's own voice to hand the whole thing to whoever comes next"
+   },
+   "beat_hint": "a page of old telephone numbers, a charged phone, and two ways to give something away."
+  },
+  "f_share_family": {
+   "tier": "open",
+   "function": "gather-the-living",
+   "entry_state": [
+    "sharing_routes_open",
+    "guardian_permission"
+   ],
+   "establishes": [
+    "family_gathered",
+    "station_future_settled"
+   ],
+   "forbids": [
+    "adult_menaces_children",
+    "grief_overwhelms"
+   ],
+   "affect": {
+    "target": "an adult's hand over her mouth in a room full of her mother's handwriting",
+    "forbid": [
+     "raw_grief",
+     "reproach"
+    ]
+   },
+   "constraints": {
+    "arrival_must_be": "fast, glad and unscolding: the parent was awake anyway, comes at once, and her feeling is recognition rather than grief",
+    "must_not": "have the parent tell them off, take over, or make the moment about rules"
+   },
+   "choice_semantics": {
+    "c_fsf_end": "stand together for the end of it"
+   },
+   "beat_hint": "headlights up the lane in minutes, and three people fitting in front of one desk exactly."
+  },
+  "f_share_hunt": {
+   "tier": "open",
+   "function": "hand-it-forward",
+   "entry_state": [
+    "sharing_routes_open",
+    "mic_available"
+   ],
+   "establishes": [
+    "new_hunt_recorded",
+    "station_future_settled"
+   ],
+   "forbids": [
+    "property_damaged"
+   ],
+   "affect": {
+    "target": "fierce whispered invention with a deadline pressing",
+    "forbid": [
+     "panic",
+     "carelessness"
+    ]
+   },
+   "constraints": {
+    "invention_must_be": "theirs and fast: five new places worth finding, chosen in whispers, recorded in their own voices with a promise that the station will call again",
+    "must_not": "reuse the five places from tonight, or require any keepsake to have been collected"
+   },
+   "choice_semantics": {
+    "c_fshu_end": "put your names to it as the people who make the hunts now"
+   },
+   "beat_hint": "five new groups in two young voices, recorded next to hers, winding the future onto the same reel."
+  },
+  "e_fin_window": {
+   "tier": "locked_outcome",
+   "function": "payoff-prudence",
+   "entry_state": [
+    "entry_problem",
+    "companion_along"
+   ],
+   "establishes": [
+    "dignity_kept",
+    "return_open"
+   ],
+   "forbids": [
+    "anyone_injured",
+    "break_in_rewarded",
+    "humiliation_inflicted"
+   ],
+   "affect": {
+    "target": "a scare, a catch, and an obvious truth said out loud on the steps",
+    "forbid": [
+     "terror",
+     "despair",
+     "shame"
+    ]
+   },
+   "ending": {
+    "valence": "negative",
+    "kind": "setback"
+   },
+   "mechanisms": [
+    "the reach is longer than it looked and the way in was sealed years ago in any case",
+    "a slip and a sibling's grip end the attempt before it becomes anything worse than a barked shin",
+    "the pair name the obvious on the steps: nobody breaks into a place that belongs to their own family"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "ending_must_read": "as the right lesson at the right door: the building is unharmed, the light is still on above them, and they leave to come back with better ideas and daylight",
+    "must_not": "injure anyone, involve a fall from height, or leave the building damaged"
+   },
+   "beat_hint": "the overreach, the catch, and the amber window still glowing over two sensible children going home."
+  },
+  "e_fin_late": {
+   "tier": "locked_outcome",
+   "function": "payoff-bittersweet",
+   "entry_state": [
+    "whole_story_known",
+    "dawn_near",
+    "station_seen"
+   ],
+   "establishes": [
+    "deadline_spent",
+    "watch_completed",
+    "dignity_kept",
+    "return_open",
+    "key_returned"
+   ],
+   "forbids": [
+    "humiliation_inflicted",
+    "deadline_as_disaster"
+   ],
+   "affect": {
+    "target": "the ache of missing a moment by minutes, softened by having been in the room for it",
+    "forbid": [
+     "despair",
+     "self_reproach",
+     "grief"
+    ]
+   },
+   "ending": {
+    "valence": "negative",
+    "kind": "setback"
+   },
+   "mechanisms": [
+    "one caption too many, and the sign-off begins while they are still at the wall",
+    "the machine finishes on time exactly as promised and the reels wind down before they reach the desk",
+    "they lock up softly, leave the key for the next listener, and walk home planning how to tell it"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "ending_must_read": "as a real loss that is not a disaster: they missed the chance to answer, but they were in the right room and heard her say goodnight, which is most of it",
+    "must_not": "have either child blame the other or themselves at length, and do not damage or disturb the station"
+   },
+   "beat_hint": "the numbers stop while they are still reading, and the goodnight happens six feet away."
+  },
+  "e_fin_listen": {
+   "tier": "locked_outcome",
+   "function": "payoff-witness",
+   "entry_state": [
+    "machine_alone_inside",
+    "entry_problem",
+    "companion_along"
+   ],
+   "establishes": [
+    "deadline_spent",
+    "watch_completed",
+    "wonder_shared",
+    "dignity_kept",
+    "return_open"
+   ],
+   "forbids": [
+    "break_in_rewarded",
+    "humiliation_inflicted"
+   ],
+   "affect": {
+    "target": "shoulder-to-shoulder stillness while something long finishes properly",
+    "forbid": [
+     "regret_dominant",
+     "grief",
+     "despair"
+    ]
+   },
+   "ending": {
+    "valence": "positive",
+    "kind": "discovery"
+   },
+   "mechanisms": [
+    "the last broadcast plays out through the door and they let it, without opening anything",
+    "the goodnight arrives on time in the voice they know best, heard through weathered wood with the first birds starting",
+    "the question of the key is deliberately saved for daylight and for their parent"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "ending_must_read": "as a chosen and complete way to receive the night: some doors you open and some watches you simply witness, and the choice is honored without a hint of what was missed",
+    "must_not": "frame the unopened door as failure, or have anything be lost by not entering"
+   },
+   "beat_hint": "two of them on wooden stairs, a goodnight through the door, and a light clicking off behind them."
+  },
+  "e_win_net": {
+   "tier": "locked_outcome",
+   "function": "payoff-community",
+   "entry_state": [
+    "answer_given",
+    "speaking_live",
+    "dawn_near"
+   ],
+   "establishes": [
+    "legacy_carried_on",
+    "club_is_real",
+    "watch_completed",
+    "station_future_settled"
+   ],
+   "forbids": [
+    "humiliation_inflicted"
+   ],
+   "affect": {
+    "target": "goosebumps as voices surface one by one out of the static",
+    "forbid": [
+     "anticlimax",
+     "grief"
+    ]
+   },
+   "ending": {
+    "valence": "positive",
+    "kind": "success"
+   },
+   "mechanisms": [
+    "the hiss holds, and then old members answer one at a time, having heard the final night go out",
+    "the answers come from near and then farther, so the town's edges keep widening",
+    "the hero takes the check-ins the way her grandmother must have, name by name, while the window fills with light"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "ending_must_read": "as the story's largest answer: the network was never closed, it was waiting for somebody at this desk, and a child's plain sentence was enough to reopen it",
+    "must_not": "require any keepsake, and do not let any answering voice be a stranger with bad intent"
+   },
+   "beat_hint": "callsigns coming up out of the static like lights coming on across a whole coast."
+  },
+  "e_win_answer": {
+   "tier": "locked_outcome",
+   "function": "payoff-completion",
+   "entry_state": [
+    "answer_given",
+    "logbook_on_desk",
+    "dawn_near"
+   ],
+   "establishes": [
+    "watch_completed",
+    "station_future_settled",
+    "dignity_kept",
+    "deadline_spent"
+   ],
+   "forbids": [
+    "grief_overwhelms"
+   ],
+   "affect": {
+    "target": "quiet completion: a name written under a name",
+    "forbid": [
+     "anticlimax",
+     "despair"
+    ]
+   },
+   "ending": {
+    "valence": "positive",
+    "kind": "success"
+   },
+   "mechanisms": [
+    "she signs the book beneath the elder's last entry, grandchild under grandmother",
+    "the machine reads its last group, says its goodnight, and stops with her answer safely inside the archive",
+    "she carries the key and the whole story home to breakfast through the birdsong"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "ending_must_read": "as the watch finished complete: the last voice on the tape belongs to the family again, and nothing is left hanging",
+    "must_not": "require any keepsake or any earlier room"
+   },
+   "beat_hint": "two signatures in one book, and a machine that stops with the right voice last."
+  },
+  "e_win_signoff": {
+   "tier": "locked_outcome",
+   "function": "payoff-fidelity",
+   "entry_state": [
+    "signoff_ready",
+    "speaking_live",
+    "dawn_near"
+   ],
+   "establishes": [
+    "watch_completed",
+    "station_future_settled",
+    "dignity_kept",
+    "deadline_spent"
+   ],
+   "forbids": [
+    "humiliation_inflicted"
+   ],
+   "affect": {
+    "target": "steadiness under weight; somebody else's words carried correctly to the end",
+    "forbid": [
+     "anticlimax",
+     "grief"
+    ]
+   },
+   "ending": {
+    "valence": "positive",
+    "kind": "completion"
+   },
+   "mechanisms": [
+    "the closing form is read exactly as written and the machine closes on the beat it was built to close on",
+    "the five words land as the night's last sentence, whether or not the reader has been collecting them",
+    "the key goes back, the book is signed, and the quiet afterward is treated as part of the gift"
+   ],
+   "title_contract": {
+    "from": [
+     "assembled_phrase"
+    ],
+    "words_max": 5,
+    "must_be": "the story's five collected words in site order, which is also the phrase read aloud in this scene"
+   },
+   "constraints": {
+    "ending_must_read": "as fidelity rewarded: the station ends its watch precisely as its builder designed, closed in a family voice",
+    "must_not": "state how many keepsakes the reader collected, or make the phrase depend on having collected any"
+   },
+   "beat_hint": "the club's closing read straight through, the spring tripping on cue, and the glow banking like embers."
+  },
+  "e_win_encore": {
+   "tier": "locked_outcome",
+   "function": "payoff-continuation",
+   "entry_state": [
+    "signoff_ready",
+    "speaking_live",
+    "dawn_near"
+   ],
+   "establishes": [
+    "timer_wound",
+    "legacy_carried_on",
+    "station_future_settled",
+    "watch_completed"
+   ],
+   "forbids": [
+    "property_damaged"
+   ],
+   "affect": {
+    "target": "a secret the size of a year, carried home in a pocket",
+    "forbid": [
+     "anticlimax",
+     "grief"
+    ]
+   },
+   "ending": {
+    "valence": "positive",
+    "kind": "success"
+   },
+   "mechanisms": [
+    "the closing is read as written and then one line of their own is added before the machine can close",
+    "the promise is made true immediately by winding the machine for another year",
+    "they walk home already keeping a secret with a date on it"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "ending_must_read": "as respect plus initiative: her words first, then one sentence of theirs, then the physical act that makes the sentence true",
+    "must_not": "overwrite or erase anything of hers, or require any keepsake"
+   },
+   "beat_hint": "her closing, one added promise, and a spring wound firm to keep it."
+  },
+  "e_win_keepers": {
+   "tier": "locked_outcome",
+   "function": "payoff-stewardship",
+   "entry_state": [
+    "timer_wound",
+    "key_returned",
+    "station_future_settled"
+   ],
+   "establishes": [
+    "legacy_carried_on",
+    "watch_completed"
+   ],
+   "forbids": [
+    "theft_rewarded"
+   ],
+   "affect": {
+    "target": "belonging: a room that is now partly theirs to look after",
+    "forbid": [
+     "greed",
+     "anticlimax"
+    ]
+   },
+   "ending": {
+    "valence": "positive",
+    "kind": "success"
+   },
+   "mechanisms": [
+    "the care they showed the room makes them its keepers, agreed on with a handshake",
+    "the year that follows is quiet visits, dusting, winding, and learning the room by heart",
+    "when the station next wakes the town, two more voices are on the tape welcoming the next finder"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "ending_must_read": "as responsibility taken gladly: the reward is a duty and a key, never ownership of anything",
+    "must_not": "give them anything to sell, keep, or win"
+   },
+   "beat_hint": "hands shaken in amber light, and a year of quiet nights spent keeping something running."
+  },
+  "e_win_apprentice": {
+   "tier": "locked_outcome",
+   "function": "payoff-mastery",
+   "entry_state": [
+    "apprenticeship_planned",
+    "station_future_settled"
+   ],
+   "establishes": [
+    "legacy_carried_on",
+    "club_is_real",
+    "watch_completed"
+   ],
+   "forbids": [
+    "adult_menaces_children"
+   ],
+   "affect": {
+    "target": "long-horizon pride: months of Saturdays turning into competence",
+    "forbid": [
+     "anticlimax",
+     "overwhelm"
+    ]
+   },
+   "ending": {
+    "valence": "positive",
+    "kind": "completion"
+   },
+   "mechanisms": [
+    "the plan becomes real: proper qualifications framed on the wall beneath the elder's photographs",
+    "the last uncrossed names of the old club take on two students over cocoa",
+    "the station is not merely kept alive but understood, valve by valve, by people who can fix it"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "ending_must_read": "as the slowest and most durable of the wins: the children become the crew, taught by the surviving members rather than by luck",
+    "must_not": "skip the work, or have adults simply hand them a status they did not earn"
+   },
+   "beat_hint": "two new qualifications on the wall, two names in the book, and old members teaching code over cocoa."
+  },
+  "e_win_family": {
+   "tier": "locked_outcome",
+   "function": "payoff-family",
+   "entry_state": [
+    "family_gathered",
+    "dawn_near"
+   ],
+   "establishes": [
+    "watch_completed",
+    "ancestor_memory_shared",
+    "deadline_spent"
+   ],
+   "forbids": [
+    "grief_overwhelms",
+    "adult_menaces_children"
+   ],
+   "affect": {
+    "target": "three people standing very still while something ends in a voice they all know",
+    "forbid": [
+     "raw_grief",
+     "anticlimax"
+    ]
+   },
+   "ending": {
+    "valence": "positive",
+    "kind": "completion"
+   },
+   "mechanisms": [
+    "the parent arrives in time and the three of them stand together for the last groups",
+    "nobody needs to say anything, and the goodnight is in the voice all three of them know best",
+    "the parent signs the book beneath her children's names and they leave together into the light"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "ending_must_read": "as an inheritance handed over while it could still be heard: grief is present and entirely bearable because all three are in the room",
+    "must_not": "have the parent scold, take over, or turn the moment into rules"
+   },
+   "beat_hint": "three hands, one last set of groups, and a family handed its inheritance in time."
+  },
+  "e_win_passiton": {
+   "tier": "locked_outcome",
+   "function": "payoff-tradition",
+   "entry_state": [
+    "new_hunt_recorded",
+    "station_future_settled"
+   ],
+   "establishes": [
+    "legacy_carried_on",
+    "watch_completed"
+   ],
+   "forbids": [
+    "theft_rewarded"
+   ],
+   "affect": {
+    "target": "the joy of a thing outgrowing the family that started it",
+    "forbid": [
+     "anticlimax",
+     "grief"
+    ]
+   },
+   "ending": {
+    "valence": "positive",
+    "kind": "success"
+   },
+   "mechanisms": [
+    "a year later other children's windows light up around town for the same reason",
+    "the new sites are built through a summer of family workdays and borrowed ladders",
+    "the elder's voice opens the broadcast and the hero's closes it, a living voice at each end of the night"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "ending_must_read": "as a memorial becoming a tradition: the hunt now belongs to the town's children and the family are its makers rather than its owners",
+    "must_not": "reuse tonight's five places, or require any keepsake to have been collected"
+   },
+   "beat_hint": "a year on, five new places, other kids awake at midnight, and two voices bracketing the night."
+  }
+ }
+}
