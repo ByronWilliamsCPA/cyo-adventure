@@ -253,13 +253,14 @@ async def receive_parent_verified(
         reason = "body_too_large"
         raise _reject(reason)
 
+    received_at = int(time.time())
     try:
-        verify_webhook_signature(
+        verified_header = verify_webhook_signature(
             header=x_kws_signature,
             body=body,
             secret=secret,
             window=FreshnessWindow(
-                now=int(time.time()),
+                now=received_at,
                 max_skew_seconds=settings.kws_webhook_max_skew_seconds,
             ),
         )
@@ -282,6 +283,19 @@ async def receive_parent_verified(
             if key not in {"reason", "kws_environment"} and isinstance(value, int)
         }
         raise _reject(str(reason), diagnostics) from exc
+
+    # Logged on the ACCEPTED path, which is the only place a unit change is
+    # cheap to notice. Once the verifier tolerates both units, a sender that
+    # switches stops producing any rejection at all, so the rejection log can
+    # no longer be the alarm; this line is what makes the switch visible while
+    # deliveries are still succeeding, rather than after something else breaks.
+    logger.info(
+        "kws_webhook_verified",
+        timestamp_unit=verified_header.unit,
+        delivery_age_seconds=received_at - verified_header.epoch_seconds,
+        signature_count=len(verified_header.signatures),
+        kws_environment=settings.kws_environment,
+    )
 
     try:
         decoded: object = json.loads(body)

@@ -27,7 +27,8 @@ no second check downstream, and a verification that gets past here becomes
 evidence of parental consent.
 #VERIFY: tests/unit/test_kws_signature.py covers a known-answer vector, both
 tamper directions (body and timestamp), rotation via multiple ``v1=``, stale
-and future timestamps, and every malformed-header shape.
+and future timestamps, millisecond and second units including the observed
+production-shaped value, and every malformed-header shape.
 """
 
 from __future__ import annotations
@@ -50,6 +51,26 @@ _SIGNATURE_PREFIX = "v1="
 # request. 16 is far above any legitimate rotation and far below anything that
 # costs measurable CPU.
 _MAX_HEADER_COMPONENTS = 16
+
+# Plausible ranges for the `t=` value under each unit, used to decide which unit
+# a delivery is speaking. Both bands cover 2001 to 2286 in their own unit, and
+# they are separated by a factor of 1000, so no clock error, replay, or hostile
+# choice puts a value in the wrong one: reading a seconds-value as milliseconds
+# lands in 1970, and a milliseconds-value as seconds lands in the year 58600.
+#
+# Epic's documentation does not state the unit. A Test delivery on 2026-08-10
+# settled it by observation: `t=1786390879601`, received 0.52 seconds later.
+# That is milliseconds. Seconds is still accepted rather than rejected, because
+# the cost of being wrong is asymmetric. A verifier hard-coded to milliseconds
+# that meets a seconds-emitting sender rejects EVERY delivery, and the visible
+# symptom is silence: parents verify successfully at KWS, no consent is ever
+# recorded, and nothing in any log we can read says so. Accepting both costs one
+# comparison and is not attacker-controllable, since `t=` is inside the signed
+# string and cannot be moved between bands without breaking the MAC.
+_EPOCH_SECONDS_MIN = 1_000_000_000
+_EPOCH_SECONDS_MAX = 10_000_000_000
+_EPOCH_MILLIS_MIN = _EPOCH_SECONDS_MIN * 1000
+_EPOCH_MILLIS_MAX = _EPOCH_SECONDS_MAX * 1000
 
 
 class FreshnessWindow(NamedTuple):
@@ -74,17 +95,44 @@ class FreshnessWindow(NamedTuple):
 
 @dataclass(frozen=True, slots=True)
 class ParsedSignatureHeader:
-    """The two fields carried by an ``x-kws-signature`` header.
+    """The fields carried by an ``x-kws-signature`` header.
 
     Attributes:
-        timestamp: The ``t=`` component, epoch seconds, as an int.
+        timestamp: The ``t=`` component as an int, in WHATEVER unit the sender
+            used. Deliberately not normalised: see ``epoch_seconds`` for the
+            comparable value and ``raw_timestamp`` for the signable one.
+        raw_timestamp: The ``t=`` component as the exact characters received.
+            This, not ``timestamp``, is what goes into the signed string. The
+            two round-trip identically for a canonical integer, but the moment
+            this module started reinterpreting the value's unit, reconstructing
+            the signed material from the parsed int became a way for a future
+            normalisation to silently change what we hash and break every
+            signature at once.
         signatures: Every ``v1=`` component, lowercased, in header order. More
             than one is normal: it is how KWS keeps a secret rotation from
             breaking in-flight deliveries.
+        unit: Which unit ``timestamp`` was found to be in, ``"s"`` or ``"ms"``.
+            Carried so the caller can log it: a sender that changes units is a
+            wire-format change we want to see in telemetry the day it happens,
+            not the day consent stops being recorded.
     """
 
     timestamp: int
+    raw_timestamp: str
     signatures: tuple[str, ...]
+    unit: str
+
+    @property
+    def epoch_seconds(self) -> int:
+        """The timestamp in epoch seconds, whichever unit arrived.
+
+        Returns:
+            int: Epoch seconds, truncated. Sub-second precision is discarded on
+                purpose: the freshness window is measured in minutes, so
+                rounding cannot change a verdict, and an int keeps the
+                diagnostics channel integer-typed end to end.
+        """
+        return self.timestamp // 1000 if self.unit == "ms" else self.timestamp
 
 
 def _fail(reason: str, **diagnostics: int) -> AuthenticationError:
@@ -160,15 +208,45 @@ def parse_signature_header(header: str) -> ParsedSignatureHeader:
         reason = "missing_signature_component"
         raise _fail(reason)
 
+    raw_timestamp = timestamps[0]
     try:
-        timestamp = int(timestamps[0])
+        timestamp = int(raw_timestamp)
     except ValueError as exc:
         reason = "non_integer_timestamp"
         raise _fail(reason) from exc
 
+    unit = _timestamp_unit(timestamp)
+    if unit is None:
+        # Neither band. This is not a stale delivery and not a clock problem;
+        # it is a value that cannot be a date at all, so it is rejected here as
+        # malformed rather than being handed to the freshness check, which
+        # would report it as skew and send the reader looking at NTP.
+        reason = "implausible_timestamp"
+        raise _fail(reason, signature_timestamp=timestamp)
+
     return ParsedSignatureHeader(
-        timestamp=timestamp, signatures=tuple(s.lower() for s in signatures)
+        timestamp=timestamp,
+        raw_timestamp=raw_timestamp,
+        signatures=tuple(s.lower() for s in signatures),
+        unit=unit,
     )
+
+
+def _timestamp_unit(timestamp: int) -> str | None:
+    """Classify a ``t=`` value as seconds or milliseconds by magnitude.
+
+    Args:
+        timestamp: The parsed ``t=`` value.
+
+    Returns:
+        str | None: ``"s"``, ``"ms"``, or None when the value falls in neither
+            plausible band and cannot be a date in either unit.
+    """
+    if _EPOCH_SECONDS_MIN <= timestamp < _EPOCH_SECONDS_MAX:
+        return "s"
+    if _EPOCH_MILLIS_MIN <= timestamp < _EPOCH_MILLIS_MAX:
+        return "ms"
+    return None
 
 
 def _matches_any(*, expected: str, candidates: tuple[str, ...]) -> bool:
@@ -208,6 +286,12 @@ def verify_webhook_signature(
        verifying the MAC alone leaves any captured delivery replayable
        forever, and a replayed consent event is indistinguishable from a real
        one once written.
+    3. That freshness check is done in a UNIT, not in raw integers. KWS sends
+       ``t=`` in milliseconds, which Epic's documentation does not say
+       anywhere; comparing it to a seconds clock rejects every genuine
+       delivery, and the symptom is a verification that succeeds at the vendor
+       and silently records nothing here. Both units are accepted; see
+       ``_timestamp_unit``.
 
     Args:
         header: The raw ``x-kws-signature`` header value.
@@ -232,24 +316,29 @@ def verify_webhook_signature(
     # Freshness first, so a replay of an otherwise-valid capture is rejected
     # without spending an HMAC on it.
     #
-    # The measurements travel with the reason because the label alone cannot
-    # separate three very different faults, and a KWS Test run on 2026-08-10
-    # cost real time to exactly this ambiguity. A skew of a few seconds is our
-    # clock drifting; minutes to hours is a genuine replay or a queued
-    # redelivery; a value near 1.8e12 is a sender emitting MILLISECONDS where
-    # this compares seconds, which is a wire-format change, not a stale
-    # delivery, and needs a code fix rather than an NTP fix. Signed, not
-    # absolute: the direction distinguishes a delivery from the past from one
-    # from the future.
-    if abs(window.now - parsed.timestamp) > window.max_skew_seconds:
+    # Compared in seconds against `epoch_seconds`, never against the raw value:
+    # KWS sends milliseconds, and comparing those to a seconds clock rejected
+    # every genuine delivery on 2026-08-10 while reporting a 56,000-year skew.
+    #
+    # The measurements still travel with the reason, because the label alone
+    # cannot separate the faults that remain. A skew of a few seconds is our
+    # clock drifting and needs NTP; minutes to hours is a real replay or a
+    # queued redelivery and needs investigating. Signed, not absolute: the
+    # direction distinguishes a delivery from the past from one from the
+    # future. The raw value rides along so a unit change is still visible here
+    # even though it can no longer reach this branch.
+    skew = window.now - parsed.epoch_seconds
+    if abs(skew) > window.max_skew_seconds:
         reason = "timestamp_outside_window"
         raise _fail(
             reason,
             signature_timestamp=parsed.timestamp,
-            skew_seconds=window.now - parsed.timestamp,
+            skew_seconds=skew,
         )
 
-    signed = f"{parsed.timestamp}.".encode() + body
+    # The verbatim token, never `parsed.timestamp`. KWS signed the characters it
+    # sent; anything we reconstruct is a guess that happens to agree.
+    signed = f"{parsed.raw_timestamp}.".encode() + body
     expected = hmac.new(secret.encode(), signed, sha256).hexdigest()
     if not _matches_any(expected=expected, candidates=parsed.signatures):
         reason = "no_matching_signature"
