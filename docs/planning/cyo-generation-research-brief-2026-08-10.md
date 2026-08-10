@@ -459,10 +459,10 @@ We first read this as "recognition tracks graph topology, therefore variety requ
 graphs." That reading is **too strong, and probably wrong.**
 
 What is fixed in our architecture is not only the shape. Each node also carries a **scene
-identity**: node 3 is not an abstract vertex, it is *the note-decoding scene*. An edge to
-"node 3" carries no information a reader can perceive; an edge to "the scene where you
-decode the note" is the entire fingerprint. Our skeletons bind both, and we had been
-attributing to the first what belongs to the second.
+identity**: a vertex is not an abstract position, it is *the note-decoding scene*. An edge
+pointing to an abstract vertex carries no information a reader can perceive; an edge pointing
+to "the scene where you decode the note" is the entire fingerprint. Our skeletons bind both,
+and we had been attributing to the first what belongs to the second.
 
 The strongest evidence against the topology reading is our own S8. Mutation **changed the
 graph** and recognition barely moved, and the mutants retained **100% of the parent's
@@ -693,138 +693,144 @@ any of these; extend, combine, or dismiss them.
 
 All entries verified against a primary source.
 
-**Interactive narrative and choice structure**
+### Interactive narrative and choice structure
 
-1. Ashwell, S. K. (2015). *Standard Patterns in Choice-Based Games*. These Heterogenous
+- **[1]** Ashwell, S. K. (2015). *Standard Patterns in Choice-Based Games*. These Heterogenous
    Tasks, 26 January 2015. Defines eight topologies: Time Cave, Gauntlet, Branch and
    Bottleneck, Quest, Open Map, Sorting Hat, Floating Modules, Loop and Grow.
-2. Mawhorter, P., Mateas, M., Wardrip-Fruin, N., & Jhala, A. (2014). Towards a Theory of
+- **[2]** Mawhorter, P., Mateas, M., Wardrip-Fruin, N., & Jhala, A. (2014). Towards a Theory of
    Choice Poetics. *Foundations of Digital Games (FDG)*, paper 19.
-3. Riedl, M. O., & Bulitko, V. (2013). Interactive Narrative: An Intelligent Systems
+- **[3]** Riedl, M. O., & Bulitko, V. (2013). Interactive Narrative: An Intelligent Systems
    Approach. *AI Magazine*, 34(1), 67-77.
-4. Riedl, M. O., & Young, R. M. (2010). Narrative Planning: Balancing Plot and Character.
+- **[4]** Riedl, M. O., & Young, R. M. (2010). Narrative Planning: Balancing Plot and Character.
    *JAIR*, 39, 217-267.
-5. Murray, J. H. (1997). *Hamlet on the Holodeck: The Future of Narrative in Cyberspace*.
+- **[5]** Murray, J. H. (1997). *Hamlet on the Holodeck: The Future of Narrative in Cyberspace*.
    Free Press.
-6. Ryan, M.-L. (2006). *Avatars of Story*. University of Minnesota Press.
+- **[6]** Ryan, M.-L. (2006). *Avatars of Story*. University of Minnesota Press.
 
-**Story generation with language models (linear)**
+### Story generation with language models (linear)
 
-7. Fan, A., Lewis, M., & Dauphin, Y. N. (2018). Hierarchical Neural Story Generation. *ACL*.
-8. Rashkin, H., Celikyilmaz, A., Choi, Y., & Gao, J. (2020). PlotMachines:
+- **[7]** Fan, A., Lewis, M., & Dauphin, Y. N. (2018). Hierarchical Neural Story Generation. *ACL*.
+- **[8]** Rashkin, H., Celikyilmaz, A., Choi, Y., & Gao, J. (2020). PlotMachines:
    Outline-Conditioned Generation with Dynamic Plot State Tracking. *EMNLP*.
-9. Yang, K., Tian, Y., Peng, N., & Klein, D. (2022). Re3: Generating Longer Stories With
+- **[9]** Yang, K., Tian, Y., Peng, N., & Klein, D. (2022). Re3: Generating Longer Stories With
    Recursive Reprompting and Revision. *EMNLP*.
-10. Yang, K., Klein, D., Peng, N., & Tian, Y. (2023). DOC: Improving Long Story Coherence
-    With Detailed Outline Control. *ACL*.
-11. Mirowski, P., Mathewson, K. W., Pittman, J., & Evans, R. (2023). Co-Writing Screenplays
-    and Theatre Scripts with Language Models: Evaluation by Industry Professionals. *CHI*.
-12. Tian, Y., Huang, T., Liu, M., Jiang, D., Spangher, A., Chen, M., May, J., & Peng, N.
-    (2024). Are Large Language Models Capable of Generating Human-Level Narratives? *EMNLP*.
+- **[10]** Yang, K., Klein, D., Peng, N., & Tian, Y. (2023). DOC: Improving Long Story Coherence
+  With Detailed Outline Control. *ACL*.
+- **[11]** Mirowski, P., Mathewson, K. W., Pittman, J., & Evans, R. (2023). Co-Writing Screenplays
+  and Theatre Scripts with Language Models: Evaluation by Industry Professionals. *CHI*.
+- **[12]** Tian, Y., Huang, T., Liu, M., Jiang, D., Spangher, A., Chen, M., May, J., & Peng, N.
+  (2024). Are Large Language Models Capable of Generating Human-Level Narratives? *EMNLP*.
 
-**Branching and choice-based narrative generation**
+### Branching and choice-based narrative generation
 
-13. Mateas, M., Mawhorter, P., & Wardrip-Fruin, N. (2015). Intentionally Generating Choices
-    in Interactive Narratives. *ICCC*, 292-299.
-14. Harmon, S., & Rutman, S. (2023). Prompt Engineering for Narrative Choice Generation.
-    *ICIDS*, Springer LNCS.
-15. Tikhonov, A. (2024). Branching Narratives: Character Decision Points Detection. *Games
-    and NLP workshop, LREC-COLING*.
-16. Wu, Z., Kumyol, S., Wong, S. Y., Hu, X., Tong, X., & Braud, T. (2025). Orchid: A Creative
-    Approach for Authoring LLM-Driven Interactive Narratives. *Creativity & Cognition*,
-    774-791.
+- **[13]** Mateas, M., Mawhorter, P., & Wardrip-Fruin, N. (2015). Intentionally Generating Choices
+  in Interactive Narratives. *ICCC*, 292-299.
+- **[14]** Harmon, S., & Rutman, S. (2023). Prompt Engineering for Narrative Choice Generation.
+  *ICIDS*, Springer LNCS.
+- **[15]** Tikhonov, A. (2024). Branching Narratives: Character Decision Points Detection. *Games
+  and NLP workshop, LREC-COLING*.
+- **[16]** Wu, Z., Kumyol, S., Wong, S. Y., Hu, X., Tong, X., & Braud, T. (2025). Orchid: A Creative
+  Approach for Authoring LLM-Driven Interactive Narratives. *Creativity & Cognition*,
+  774-791.
 
-**Planning, compositionality, self-correction**
+### Planning, compositionality, self-correction
 
-17. Valmeekam, K., Marquez, M., Olmo, A., Sreedharan, S., & Kambhampati, S. (2023).
-    PlanBench: An Extensible Benchmark for Evaluating Large Language Models on Planning and
-    Reasoning about Change. *NeurIPS Datasets & Benchmarks*.
-18. Kambhampati, S. (2024). Can large language models reason and plan? *Annals of the New
-    York Academy of Sciences*, 1534(1), 15-18.
-19. Dziri, N., et al. (2023). Faith and Fate: Limits of Transformers on Compositionality.
-    *NeurIPS* (Spotlight).
-20. Zhang, M., Press, O., Merrill, W., Liu, A., & Smith, N. A. (2024). How Language Model
-    Hallucinations Can Snowball. *ICML*.
-21. Huang, J., Chen, X., Mishra, S., Zheng, H. S., Yu, A. W., Song, X., & Zhou, D. (2024).
-    Large Language Models Cannot Self-Correct Reasoning Yet. *ICLR*.
-22. Stechly, K., Valmeekam, K., & Kambhampati, S. (2025). On the Self-Verification
-    Limitations of Large Language Models on Reasoning and Planning Tasks. *ICLR* (arXiv
-    2402.08115, 2024).
-23. Gou, Z., Shao, Z., Gong, Y., Shen, Y., Yang, Y., Duan, N., & Chen, W. (2024). CRITIC:
-    Large Language Models Can Self-Correct with Tool-Interactive Critiquing. *ICLR*.
+- **[17]** Valmeekam, K., Marquez, M., Olmo, A., Sreedharan, S., & Kambhampati, S. (2023).
+  PlanBench: An Extensible Benchmark for Evaluating Large Language Models on Planning and
+  Reasoning about Change. *NeurIPS Datasets & Benchmarks*.
+- **[18]** Kambhampati, S. (2024). Can large language models reason and plan? *Annals of the New
+  York Academy of Sciences*, 1534(1), 15-18.
+- **[19]** Dziri, N., et al. (2023). Faith and Fate: Limits of Transformers on Compositionality.
+  *NeurIPS* (Spotlight).
+- **[20]** Zhang, M., Press, O., Merrill, W., Liu, A., & Smith, N. A. (2024). How Language Model
+  Hallucinations Can Snowball. *ICML*.
+- **[21]** Huang, J., Chen, X., Mishra, S., Zheng, H. S., Yu, A. W., Song, X., & Zhou, D. (2024).
+  Large Language Models Cannot Self-Correct Reasoning Yet. *ICLR*.
+- **[22]** Stechly, K., Valmeekam, K., & Kambhampati, S. (2025). On the Self-Verification
+  Limitations of Large Language Models on Reasoning and Planning Tasks. *ICLR* (arXiv
+  2402.08115, 2024).
+- **[23]** Gou, Z., Shao, Z., Gong, Y., Shen, Y., Yang, Y., Duan, N., & Chen, W. (2024). CRITIC:
+  Large Language Models Can Self-Correct with Tool-Interactive Critiquing. *ICLR*.
 
-**Long context**
+### Long context
 
-24. Liu, N. F., Lin, K., Hewitt, J., Paranjape, A., Bevilacqua, M., Petroni, F., & Liang, P.
-    (2024). Lost in the Middle: How Language Models Use Long Contexts. *TACL*, 12.
-25. Hsieh, C.-P., et al. (2024). RULER: What's the Real Context Size of Your Long-Context
-    Language Models? *COLM*.
-26. Karpinska, M., Thai, K., Lo, K., Goyal, T., & Iyyer, M. (2024). One Thousand and One
-    Pairs: A "novel" challenge for long-context language models. *EMNLP*.
-27. Chang, Y., Lo, K., Goyal, T., & Iyyer, M. (2024). BooookScore: A systematic exploration
-    of book-length summarization in the era of LLMs. *ICLR* (Oral).
+- **[24]** Liu, N. F., Lin, K., Hewitt, J., Paranjape, A., Bevilacqua, M., Petroni, F., & Liang, P.
+  (2024). Lost in the Middle: How Language Models Use Long Contexts. *TACL*, 12.
+- **[25]** Hsieh, C.-P., et al. (2024). RULER: What's the Real Context Size of Your Long-Context
+  Language Models? *COLM*.
+- **[26]** Karpinska, M., Thai, K., Lo, K., Goyal, T., & Iyyer, M. (2024). One Thousand and One
+  Pairs: A "novel" challenge for long-context language models. *EMNLP*.
+- **[27]** Chang, Y., Lo, K., Goyal, T., & Iyyer, M. (2024). BooookScore: A systematic exploration
+  of book-length summarization in the era of LLMs. *ICLR* (Oral).
 
-**Diversity and homogenization**
+### Diversity and homogenization
 
-28. Holtzman, A., Buys, J., Du, L., Forbes, M., & Choi, Y. (2020). The Curious Case of Neural
-    Text Degeneration. *ICLR*.
-29. Li, J., Galley, M., Brockett, C., Gao, J., & Dolan, B. (2016). A Diversity-Promoting
-    Objective Function for Neural Conversation Models. *NAACL-HLT*, 110-119. Origin of
-    distinct-n.
-30. Kirk, R., Mediratta, I., Nalmpantis, C., Luketina, J., Hambro, E., Grefenstette, E., &
-    Raileanu, R. (2024). Understanding the Effects of RLHF on LLM Generalisation and
-    Diversity. *ICLR*.
-31. Padmakumar, V., & He, H. (2024). Does Writing with Language Models Reduce Content
-    Diversity? *ICLR*.
-32. Doshi, A. R., & Hauser, O. P. (2024). Generative AI enhances individual creativity but
-    reduces the collective diversity of novel content. *Science Advances*, 10(28).
-33. Anderson, B. R., Shah, J. H., & Kreminski, M. (2024). Homogenization Effects of Large
-    Language Models on Human Creative Ideation. *Creativity & Cognition*, 413-425.
-34. Chakrabarty, T., Laban, P., Agarwal, D., Muresan, S., & Wu, C.-S. (2024). Art or
-    Artifice? Large Language Models and the False Promise of Creativity. *CHI*.
-35. Tevet, G., & Berant, J. (2021). Evaluating the Evaluation of Diversity in Natural
-    Language Generation. *EACL*, 326-346.
+- **[28]** Holtzman, A., Buys, J., Du, L., Forbes, M., & Choi, Y. (2020). The Curious Case of Neural
+  Text Degeneration. *ICLR*.
+- **[29]** Li, J., Galley, M., Brockett, C., Gao, J., & Dolan, B. (2016). A Diversity-Promoting
+  Objective Function for Neural Conversation Models. *NAACL-HLT*, 110-119. Origin of
+  distinct-n.
+- **[30]** Kirk, R., Mediratta, I., Nalmpantis, C., Luketina, J., Hambro, E., Grefenstette, E., &
+  Raileanu, R. (2024). Understanding the Effects of RLHF on LLM Generalisation and
+  Diversity. *ICLR*.
+- **[31]** Padmakumar, V., & He, H. (2024). Does Writing with Language Models Reduce Content
+  Diversity? *ICLR*.
+- **[32]** Doshi, A. R., & Hauser, O. P. (2024). Generative AI enhances individual creativity but
+  reduces the collective diversity of novel content. *Science Advances*, 10(28).
+- **[33]** Anderson, B. R., Shah, J. H., & Kreminski, M. (2024). Homogenization Effects of Large
+  Language Models on Human Creative Ideation. *Creativity & Cognition*, 413-425.
+- **[34]** Chakrabarty, T., Laban, P., Agarwal, D., Muresan, S., & Wu, C.-S. (2024). Art or
+  Artifice? Large Language Models and the False Promise of Creativity. *CHI*.
+- **[35]** Tevet, G., & Berant, J. (2021). Evaluating the Evaluation of Diversity in Natural
+  Language Generation. *EACL*, 326-346.
 
-**Model-based evaluation**
+### Model-based evaluation
 
-36. Zheng, L., Chiang, W.-L., Sheng, Y., et al. (2023). Judging LLM-as-a-Judge with MT-Bench
-    and Chatbot Arena. *NeurIPS Datasets & Benchmarks*.
-37. Panickssery, A., Bowman, S. R., & Feng, S. (2024). LLM Evaluators Recognize and Favor
-    Their Own Generations. *NeurIPS*.
+- **[36]** Zheng, L., Chiang, W.-L., Sheng, Y., et al. (2023). Judging LLM-as-a-Judge with MT-Bench
+  and Chatbot Arena. *NeurIPS Datasets & Benchmarks*.
+- **[37]** Panickssery, A., Bowman, S. R., & Feng, S. (2024). LLM Evaluators Recognize and Favor
+  Their Own Generations. *NeurIPS*.
 
-**Constrained generation**
+### Constrained generation
 
-38. Tam, Z. R., Wu, C.-K., Tsai, Y.-L., Lin, C.-Y., Lee, H.-Y., & Chen, Y.-N. (2024). Let Me
-    Speak Freely? A Study On The Impact Of Format Restrictions On Large Language Model
-    Performance. *EMNLP Industry Track*, 1218-1236.
-39. Park, K., Wang, J., Berg-Kirkpatrick, T., Polikarpova, N., & D'Antoni, L. (2024).
-    Grammar-Aligned Decoding. *NeurIPS*.
-40. Willard, B. T., & Louf, R. (2023). Efficient Guided Generation for Large Language Models.
-    arXiv:2307.09702. Preprint, not peer reviewed; implemented as Outlines.
+- **[38]** Tam, Z. R., Wu, C.-K., Tsai, Y.-L., Lin, C.-Y., Lee, H.-Y., & Chen, Y.-N. (2024). Let Me
+  Speak Freely? A Study On The Impact Of Format Restrictions On Large Language Model
+  Performance. *EMNLP Industry Track*, 1218-1236.
+- **[39]** Park, K., Wang, J., Berg-Kirkpatrick, T., Polikarpova, N., & D'Antoni, L. (2024).
+  Grammar-Aligned Decoding. *NeurIPS*.
+- **[40]** Willard, B. T., & Louf, R. (2023). Efficient Guided Generation for Large Language Models.
+  arXiv:2307.09702. Preprint, not peer reviewed; implemented as Outlines.
 
-**Reader psychology, children's reading, and formula**
+### Reader psychology, children's reading, and formula
 
-41. Patall, E. A., Cooper, H., & Robinson, J. C. (2008). The effects of choice on intrinsic
-    motivation and related outcomes: A meta-analysis of research findings. *Psychological
-    Bulletin*, 134(2), 270-300.
-42. Deci, E. L., & Ryan, R. M. (2000). The "what" and "why" of goal pursuits: Human needs and
-    the self-determination of behavior. *Psychological Inquiry*, 11(4), 227-268.
-43. Berlyne, D. E. (1970). Novelty, complexity, and hedonic value. *Perception &
-    Psychophysics*, 8(5), 279-286.
-44. Zajonc, R. B. (1968). Attitudinal effects of mere exposure. *JPSP*, 9(2, Pt. 2), 1-27.
-45. Nell, V. (1988). *Lost in a Book: The Psychology of Reading for Pleasure*. Yale
-    University Press.
-46. Cawelti, J. G. (1976). *Adventure, Mystery, and Romance: Formula Stories as Art and
-    Popular Culture*. University of Chicago Press.
-47. Radway, J. A. (1984). *Reading the Romance: Women, Patriarchy, and Popular Literature*.
-    University of North Carolina Press.
-48. Ross, C. S. (1995). "If they read Nancy Drew, so what?": Series book readers talk back.
-    *Library & Information Science Research*, 17(3), 201-236.
-49. Gannon, S. R. One More Time: Approaches to Repetition in Children's Literature.
-    *Children's Literature Association Quarterly*.
-50. Merga, M. K. (2017). What would make children read for pleasure more frequently?
-    *English in Education*.
-51. Loh, C. E., et al. (2022). What Do Children Want to Read? *Journal of Library
-    Administration*.
-52. Scholastic. *Kids & Family Reading Report*, 8th edition (2024). 93% of children agree
-    "my favorite books are the ones I have picked out myself."
+- **[41]** Patall, E. A., Cooper, H., & Robinson, J. C. (2008). The effects of choice on intrinsic
+  motivation and related outcomes: A meta-analysis of research findings. *Psychological
+  Bulletin*, 134(2), 270-300.
+- **[42]** Deci, E. L., & Ryan, R. M. (2000). The "what" and "why" of goal pursuits: Human needs and
+  the self-determination of behavior. *Psychological Inquiry*, 11(4), 227-268.
+- **[43]** Berlyne, D. E. (1970). Novelty, complexity, and hedonic value. *Perception &
+  Psychophysics*, 8(5), 279-286.
+- **[44]** Zajonc, R. B. (1968). Attitudinal effects of mere exposure. *JPSP*, 9(2, Pt. 2), 1-27.
+- **[45]** Nell, V. (1988). *Lost in a Book: The Psychology of Reading for Pleasure*. Yale
+  University Press.
+- **[46]** Cawelti, J. G. (1976). *Adventure, Mystery, and Romance: Formula Stories as Art and
+  Popular Culture*. University of Chicago Press.
+- **[47]** Radway, J. A. (1984). *Reading the Romance: Women, Patriarchy, and Popular Literature*.
+  University of North Carolina Press.
+- **[48]** Ross, C. S. (1995). "If they read Nancy Drew, so what?": Series book readers talk back.
+  *Library & Information Science Research*, 17(3), 201-236.
+- **[49]** Gannon, S. R. (1987). One More Time: Approaches to Repetition in Children's
+   Literature. *Children's Literature Association Quarterly*, 12(1), 2-5.
+   <https://muse.jhu.edu/article/248501>
+- **[50]** Merga, M. K. (2017). What would make children read for pleasure more frequently?
+   *English in Education*, 51(2), 207-223. DOI 10.1111/eie.12143
+- **[51]** Loh, C. E., Gan, S., & Mounsey, S. (2022). What do children want to read? A case
+   study of how one primary school library supported reading for pleasure. *Journal of
+   Library Administration*, 62(7), 931-945. DOI 10.1080/01930826.2022.2117955
+- **[52]** Scholastic (2024). *Kids & Family Reading Report*, 8th edition, released August
+   2024; survey fielded by Fluent Research, December 2022 to January 2023, n = 1,724 parents
+   and children. <https://www.scholastic.com/readingreport>. The 93% figure ("my favorite
+   books are the ones I have picked out myself") appears in Scholastic's editorial coverage
+   of the 8th edition rather than on its Key Findings page; the 5th edition (2015) reported
+   91% for the same item.
