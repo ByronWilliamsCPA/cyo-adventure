@@ -1481,6 +1481,46 @@ wording independence provided no generation sees a sibling plan, near-total inde
 the job needs, and **nothing we have found is sufficient for premise independence**. The premise needs
 something that actively pushes candidates apart.
 
+## 16k. Stake economics, the option our own raters invented, does not survive a clean test
+
+Both raters in our original run cited, unprompted, something none of our proposals had named: not
+*what* the goal is but whether failure costs anything. Our treatment's world imposed a closing clock,
+a carrying limit and damage that persists; the control's did not. We built the test.
+
+**Round one looked like a clean positive.** Two blind raters, opposite orders, both ranked the
+free-failure pair as more decision-repetitive, with a consistent one-point gap on the
+solution-transfer question. We had a result.
+
+**It was our own contamination, twice over, and our raters found both.** The treatment contract
+offered "name the cost before the reward" among its label styles, its author took it, and 35 of 35
+choice labels began with the word "Spend". One rater called it "the single most distinctive
+authorial signature among the three texts". Separately, our blinding renamed the files and left the
+provenance inside them: two books carried the same internal `id` and the third did not, which the
+second rater found unaided and called "the single most concrete signal in the whole set".
+
+**Rebuilt with both removed, the effect disappears.** The arm was re-filled with the neutral label
+style its comparison books use, and all three were blinded by a tool that rebuilds each book from
+only what a child sees. Two fresh raters, opposite orders: **they disagree about which pair is more
+repetitive, both call it close, and solution transfer ties at 5 and 5.** One volunteers that a
+reader weighting the evidence differently "could reasonably call it a tie".
+
+So our own most promising in-house option returns a null. We report it because the confounded version
+would have been publishable with a footnote, and because it is the sharpest demonstration we have of
+why we terminate a contaminated round rather than caveat it.
+
+**One tension we could not design around, stated so you can weigh the null.** The option requires
+"same goal, differing only in whether failure is free", which forces the treatment arm to share the
+base book's premise while the *control* arm has a different one. 16d found the premise to be the
+largest single channel of similarity, so the treatment was handicapped on exactly that axis, and
+both raters noticed the shared framing. The null may understate the effect. Removing the handicap
+means abandoning the option's defining requirement.
+
+**What did survive is narrow and worth keeping.** Both raters credited exactly one thing: permanent
+damage. Forcing the mechanism "snapped for good" and the repair "would always show", against a
+control where the same act jams reversibly. That is one node in twenty-six, which is about the size
+of the effect the scores show. If stake economics is worth anything, our evidence says it is the
+irreversibility rather than the clock or the carrying limit.
+
 ## 17. Corrections to Part I
 
 - **5.3's "untested cell" has been tested**, and the result is not the simple one either reading

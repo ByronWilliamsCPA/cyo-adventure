@@ -730,6 +730,50 @@ cites the fiction-level stakes as well as the label tic: the closing bell that "
 one minute after", and the satchel that "plainly cannot hold everything in this room". The re-run
 decides whether that survives without the tic.
 
+### M-4 round 2, the clean round: the effect does not survive removing the confounds
+
+Same three books, the arm re-filled with a neutral label style, all three blinded through
+`scripts/blind_books.py` so no skeleton id, node id or choice id reaches a rater. Two fresh raters,
+opposite orders.
+
+| Question | control pair (both free) | **costly pair** |
+| --- | --- | --- |
+| Q1 same kinds of action | 4, 4 | 4, 5 |
+| Q2 same tradeoffs | 5, 4 | 5, 5 |
+| Q3 different consequences *(high good)* | 2, 2 | 3, 2 |
+| Q4 sequence repeats | 5, 5 | 5, 5 |
+| Q5 meaningful and informed *(high good)* | 3, 2 | 3, 2 |
+| **Q6 solution transfer** *(high bad)* | **5, 5** | **5, 5** |
+| Forced comparison | rater 1: **more repetitive** | rater 2: **more repetitive** |
+
+**The two raters disagree, and both call it close.** Rater 1 puts the control pair marginally ahead
+at low-to-medium confidence ("it is close"); rater 2 puts the costly pair marginally ahead at medium
+confidence and volunteers that "a different rater weighting those two data points differently could
+reasonably call it a tie". **Q6 ties at 5, 5 under both.**
+
+**M-4's own falsifier fires: "the two books rate as repetitive as each other."** Pricing failure, on
+its own and at one book per condition, does not produce a detectable reduction in perceived decision
+repetition.
+
+**Round 1's agreement was the confounds.** That round had both raters agreeing with a one-point Q6
+gap; removing a label template and a provenance leak removed the effect. This is the clearest
+demonstration in the programme of why `AL-191`'s rebuild-do-not-caveat rule earns its keep: the
+caveated version of round 1 would have been reported as a positive result with a footnote.
+
+**A design tension in M-4 that this exposes, and that I cannot resolve with these artifacts.** M-4
+requires "same goal, differing only in whether failure is free", so the treatment arm shares the
+base's premise engine (`prove-and-earn`) while the *control* arm has a different one
+(`reconstruct-and-remember`). Both raters noticed: rater 1 records that the "this puzzle exists to
+test worthy people" framing "matches delta almost verbatim in zeta but not in epsilon". So the
+treatment arm was handicapped, sharing with the base exactly the channel D-6 measured as largest.
+**The null may therefore understate the effect**, and removing the handicap means abandoning M-4's
+defining requirement, which would make it a different test.
+
+**What the raters did credit the treatment with** is narrow and real: the persistent-damage
+mechanic. Both cite it, and only it, as a genuine divergence. Rater 1: forcing "snapped for good"
+and the splice "would always show", against a control where the jam is "fully-recoverable". That is
+one node out of twenty-six, which is roughly the size of the effect the scores show.
+
 ### Two defects the raters found that no guard did
 
 Both are in artifacts that have passed every battery in this programme, and both were found by
@@ -836,7 +880,7 @@ and until `AL-213` is addressed it is a hand job of roughly 1.7KB per node.
 
 | ID | Test | Source | Thesis | Cheapest experiment (proposer's) | Falsifier | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| M-4 | Stake economics | in-house, from rater testimony | Not *what* the goal is but whether failure costs anything. The treatment's goal imposed a live global constraint, a closing clock and a carrying limit and damage that persists, which re-prices every fork; the control's goal change did not. Both raters cited this unprompted, one noting that forcing is a free do-over in both control books and has a price in the treatment. | Two books, same graph, non-colliding bindings, same goal, differing only in whether failure is free. Existing rig. | The two books rate as repetitive as each other, meaning a reader does not price failure into how a choice feels. | **blocked on a repairable contract defect; two method results landed on the way.** The stake-priced contract is authored and structurally verified but declares **no `invention` slots**, so there is nothing to bind and the fill would have no controlled props. That is my brief's fault (it made `invention` optional) and needs one repair pass. The fill-and-rate half then follows. See the two findings above. |
+| M-4 | Stake economics | in-house, from rater testimony | Not *what* the goal is but whether failure costs anything. The treatment's goal imposed a live global constraint, a closing clock and a carrying limit and damage that persists, which re-prices every fork; the control's goal change did not. Both raters cited this unprompted, one noting that forcing is a free do-over in both control books and has a price in the treatment. | Two books, same graph, non-colliding bindings, same goal, differing only in whether failure is free. Existing rig. | The two books rate as repetitive as each other, meaning a reader does not price failure into how a choice feels. | **done, NEGATIVE on the clean round.** Round 1 (confounded by a label template and a provenance leak) had both raters agreeing the control pair was more repetitive. Round 2, with both confounds removed, splits the raters and ties Q6 at 5,5, so M-4's own falsifier fires. Caveat recorded: M-4's "same goal" requirement forces the treatment arm to share the base's premise engine while the control does not, which handicaps it. |
 | M-2 | World-graph tours | in-house | A graph is a *world*, not a book; a book is a validated subgraph tour. The catalog already holds graphs at 677, 551 and 250 nodes. | Take the largest 10-13 graph, cut two disjoint tours by hand, fill both, rate. Tests coherence as much as diversity. | **Structurally confirmed for 18 of 21 large graphs, without a single fill**: they are linear-with-decorations, not worlds, so no two disjoint tours exist to cut. Three graphs survive, one of them in-band. See below. | **partially done, DETERMINISTIC PRE-TEST; the fill-and-rate half is unblocked on exactly 3 named graphs** |
 | Q-2 | Cross-skeleton recombination | framework Q2 | Subtree grafting is the only mechanism that has ever cleared the anti-clone floor, and has never been evaluated for reader-perceived distinctness or coherence cost. | Graft subtrees between two catalog graphs, fill, rate for distinctness and for coherence damage. | Grafts read as incoherent, or as no more distinct than a plain sibling pair. | **blocked, and now on a named thing**: grafting needs narrative contracts for both source graphs, and 2 of 61 skeletons have one (`AL-213`, Q-1 below). Not exposed to D-6. Unblocked the moment contract coverage moves. |
 | Q-3 | How close is the skeleton-free path | framework Q3, brief 5.3 | Named the cheapest outstanding experiment before this programme started, and never run. **D-6 promotes it: a skeleton-free graph shares no plan by construction, so it is the only queued row that structurally cannot hit the convergence wall.** | Six graphs generated from scratch by isolated authors, format reference only, no skeleton and no validator in the loop. Score deterministically against the structural rules and the project gate. Analysis pre-registered below before the artifacts exist. | 6 generations, 0 raters | Did not fire. **6 of 6 structurally clean.** All six are nonetheless blocked by the project gate, and every blocking finding violates a constraint that was never stated to the author. | **done, POSITIVE on the pre-registered primary; see the split below** |
