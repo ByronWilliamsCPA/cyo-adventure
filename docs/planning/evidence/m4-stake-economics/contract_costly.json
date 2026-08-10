@@ -1,0 +1,1395 @@
+{
+ "narrative_version": 1,
+ "skeleton_slug": "the-bellhollow-curfew",
+ "age_band": "10-13",
+ "premise": {
+  "engine": "prove-and-earn",
+  "dramatic_question": "Can {HEROES} answer the {ARTISAN}'s dare and earn what the {CODE} was built to guard before the {TOWN}'s curfew bell claims the night, without spending more than they can afford to lose along the way?",
+  "resolution_space": [
+   "the archive's pull wins the hour, and losing themselves in someone else's puzzle turns out to be worth the time it costs",
+   "a copied page from the archive goes into the satchel in place of anything else, carried home to study at a slower pace",
+   "the closing bell finds them still reading, and the caretaker walks them out with the book held for next time",
+   "a clear-eyed look at the catwalk convinces them the crossing would cost more tonight than it could ever prove",
+   "one friend says the real risk out loud and nobody argues, and saying it counts as passing a quieter test",
+   "backing off the rail with time still left on the clock reads as exactly the sound choice it is",
+   "a guess is still a guess, and the closing bell beats it to the punch",
+   "the last of the night burns on a gamble that never had good odds to begin with",
+   "the safeguard catches the wild guess and the bridge locks tight until the caretaker resets it herself",
+   "the lever stays snapped tonight, and no amount of trying makes tonight the night it un-snaps",
+   "there is a right tool for what broke, and it is not in anyone's satchel",
+   "the posted curfew ends the attempt before the honest fix can be finished properly",
+   "the loft takes them in as its quiet keepers, a reward for a dare nobody warned them they were taking",
+   "unfinished work on the bench asks for their hands, and finishing it becomes their standing job",
+   "the puppet-maker's own notes name whoever finds the loft its keeper, and they accept the appointment",
+   "the clearing is announced and the town turns out to celebrate the dare finally answered",
+   "the decoded letter quietly gives the town back something it had missed",
+   "the caretaker's trust opens wide, and the playhouse door stays open to them from now on",
+   "a promise made over the keepsake binds the friends as the dare's quiet graduates",
+   "everything goes back exactly where it stood, and only the answer leaves with them",
+   "the maker's letter leaves the choosing to its finders, and they choose to keep the passing close",
+   "the safeguard reads overfilled hands for what they are, and the caretaker is there before the door is",
+   "what they try to carry past the satchel's limit is exactly what the dare was built to catch",
+   "second thoughts slow the reach just enough for the caretaker's own rounds to catch them turning back, honest after all"
+  ]
+ },
+ "label_styles": [
+  "short verbs first, object trailing",
+  "we-voice at decisions: what we spend next",
+  "name the cost before the reward",
+  "questions mark forks, statements mark the road between them",
+  "let the object speak, keep the actor implied"
+ ],
+ "facts": {
+  "house_shuttered": "the old playhouse stands shuttered tight, and the shuttering reads like a dare left on purpose",
+  "dare_chalked": "a dare in chalk is scrawled across the stage door, plainly meant for whoever stops to read it",
+  "trio_pledged": "the three friends pledge to answer the dare side by side, no one wandering off alone",
+  "curfew_looms": "a fixed closing hour is posted right beside the chalk, and whatever hour tonight burns will not come back",
+  "dare_taken_up": "the friends have chosen to take the chalked dare seriously, clock and all",
+  "marginalia_earned": "working the playbill's marginalia line by line earns proof that patience pays here",
+  "passage_named": "the earned marginalia names one exact way backstage, plus the toll of reaching it",
+  "grit_proven": "a stuck side door, worked loose by their own hands alone, proves grit needed no one's help",
+  "caretaker_measured_them": "the caretaker has watched the friends and reads as brisk but fair, weighing more than warning",
+  "caretaker_offer_earned": "satisfied, the caretaker offers both a way in and what she remembers of the puppet-maker",
+  "artisan_purpose_learned": "the friends now know the puppet-maker built these dares out of care, to find a certain kind of finder",
+  "past_the_stage_door": "the friends stand backstage, however the door came open for them",
+  "satchel_committed": "the one satchel they carry is already holding what it took to get this far, with little room left",
+  "something_shelved": "getting this far meant leaving something else on the shelf by the door, and it is staying there tonight",
+  "four_wings_open": "four backstage wings stand open: a rigging loft, a playbill archive, a high catwalk, and the understage",
+  "code_sense_earned": "the friends carry a working sense of the code, earned in whichever wing they chose",
+  "hour_running_short": "enough of the night is spent that the closing hour is now close enough to plan around",
+  "archive_tempts_them": "the playbill archive poses its own quiet dare: linger for it, or press on toward the bridge",
+  "catwalk_dares_them": "the high catwalk is the playhouse's sharpest test of nerve",
+  "keepsake_glimpsed": "something set aside for whoever clears the catwalk waits in plain sight at its far end",
+  "at_the_control_bridge": "the friends stand at the control bridge, the playhouse's last examiner",
+  "bridge_test_live": "the bridge's own levers state their test plainly: what to set, and that forcing one costs something real",
+  "test_answered_true": "the friends answered the control bridge on the puppet-maker's own terms",
+  "lever_snapped": "forcing a lever snaps something that no amount of tonight's time will mend",
+  "second_dare_found": "a second, smaller dare is found behind the control bridge's own panel",
+  "workshop_entered": "the friends stand inside what the control bridge was guarding",
+  "workshop_seen": "what the bridge guarded is seen plainly: the puppet-maker's letter and a few modest, shared things",
+  "steadiness_kept": "the friends leave steady, whatever happened; the outcome reads as a result, never a shaming",
+  "dare_stands_open": "the playhouse's dare can be tried again, but only on another night, never this one",
+  "ledger_set_right": "whatever was moved or broken is named honestly to the caretaker and squared away",
+  "loft_found_alive": "the puppet-maker's living loft is found past the second dare",
+  "keeping_earned": "the friends earn an ongoing part in keeping the loft going",
+  "clearing_made_known": "the friends' clearing of the dare is shared with the town",
+  "clearing_kept_close": "the friends' clearing of the dare stays a private matter among them",
+  "bond_forged": "the shared dare forges a lasting bond between the friends",
+  "caretaker_arrives_in_time": "the caretaker turns up right at the moment of temptation, whether the friends notice her yet or not",
+  "someone_hurt": "a friend is actually hurt attempting any part of the dare, not just startled or out of breath",
+  "shame": "the ending reads as shameful to any of the friends rather than simply a different result",
+  "lingering_regret": "regret dominates the ending instead of sitting alongside something worth keeping",
+  "cowardice_implied": "declining a test is framed as weakness rather than as a passed test of judgment",
+  "mockery": "any friend is mocked, by another friend or by an adult, for how the night went",
+  "humiliation": "the ending embarrasses a friend in front of others as part of its cost",
+  "punishing_tone": "the narration scolds the friends rather than simply naming what tonight cost",
+  "blame_assigned": "one friend is singled out and blamed for what went wrong",
+  "exploiting_the_find": "the friends treat the hidden loft as something to strip rather than something to keep",
+  "reward_as_riches": "the ending's reward is cash value or loot rather than trust, craft, or belonging",
+  "selfishness_implied": "keeping the passing quiet is framed as selfish rather than as a private kind of pride",
+  "punishment_beyond_returning": "the friends face a consequence heavier than simply returning what they reached for",
+  "reward_for_grabbing": "grabbing more than the satchel was built to hold pays off instead of getting caught",
+  "adult_menaces_a_child": "any adult threatens or intimidates a child in the story",
+  "cruelty_played_for_laughs": "cruelty toward any character is framed as funny",
+  "gore_of_any_kind": "the story includes graphic injury or gore"
+ },
+ "safety_envelope": {
+  "affect_ceiling": "suspense with wonder; tension is allowed to pull tighter as the hour runs down, but it never tips into real threat",
+  "forbid_affect": [
+   "despair",
+   "hopelessness",
+   "terror",
+   "humiliation",
+   "cruel_mockery",
+   "shame_as_punishment"
+  ],
+  "forbid_facts": [
+   "someone_hurt",
+   "adult_menaces_a_child",
+   "cruelty_played_for_laughs",
+   "reward_for_grabbing",
+   "gore_of_any_kind"
+  ],
+  "permitted_device_kinds": [
+   "shadow_glyphs",
+   "knot_notation",
+   "bell_toll_code",
+   "ribbon_semaphore",
+   "marginal_notation",
+   "loose_side_door",
+   "prop_crate_tunnel",
+   "escort_by_caretaker",
+   "roof_skylight",
+   "backstage_key_niche",
+   "orchestra_pit_hatch",
+   "rigging_diagram",
+   "rehearsal_ledger",
+   "paint_wear_mark",
+   "spool_tally",
+   "prompter_script",
+   "joint_pattern",
+   "unfinished_marionette",
+   "music_box_still_wound",
+   "faded_backdrop",
+   "resident_moth",
+   "painted_understudy",
+   "hand_carved_mask",
+   "makers_letter",
+   "signature_marionette",
+   "town_program",
+   "carved_token",
+   "tuning_fork_relic",
+   "narrow_catwalk",
+   "swinging_counterweights",
+   "slick_boards",
+   "dim_understage",
+   "loose_planking",
+   "bell_trip",
+   "chalk_tell",
+   "creaking_board",
+   "counterweight_chime",
+   "rope_splice",
+   "patience_reknot",
+   "borrowed_tool",
+   "shared_effort_lift",
+   "unfinished_marionette_mid_string",
+   "letter_left_open",
+   "tools_laid_in_order",
+   "workbench_still_warm",
+   "tool_left_on_shelf",
+   "second_lantern_declined",
+   "spare_rope_declined",
+   "spare_pages_declined",
+   "time_pressure",
+   "closing_bell",
+   "single_satchel",
+   "snapped_part",
+   "honest_fix"
+  ],
+  "forbidden_device_kinds": [
+   "weapon",
+   "graphic_harm",
+   "cruelty",
+   "theft_rewarded",
+   "adult_menace"
+  ]
+ },
+ "world_recipe": {
+  "requires": {
+   "code_forms": {
+    "count": 1,
+    "kinds": [
+     "shadow_glyphs",
+     "knot_notation",
+     "bell_toll_code",
+     "ribbon_semaphore",
+     "marginal_notation"
+    ],
+    "note": "one code form per story, chosen at bind and used consistently from marginalia to control bridge to panel"
+   },
+   "entry_methods": {
+    "count": 3,
+    "kinds": [
+     "loose_side_door",
+     "prop_crate_tunnel",
+     "escort_by_caretaker",
+     "roof_skylight",
+     "backstage_key_niche",
+     "orchestra_pit_hatch"
+    ],
+    "note": "one concrete way backstage per approach branch; the marginalia's decoded passage and the house's own weak point draw freely, the caretaker's branch stays person-mediated"
+   },
+   "wing_clue_carriers": {
+    "count": 4,
+    "kinds": [
+     "rigging_diagram",
+     "rehearsal_ledger",
+     "paint_wear_mark",
+     "spool_tally",
+     "prompter_script",
+     "joint_pattern"
+    ],
+    "note": "one per backstage wing, drawn freely; unique_within_story gives each book four different carriers, each sufficient on its own to make the control bridge attemptable"
+   },
+   "wing_wonders": {
+    "count": 4,
+    "kinds": [
+     "unfinished_marionette",
+     "music_box_still_wound",
+     "faded_backdrop",
+     "resident_moth",
+     "painted_understudy",
+     "hand_carved_mask"
+    ],
+    "note": "what makes each wing distinct and worth the visit beyond its clue"
+   },
+   "workshop_contents": {
+    "count": 3,
+    "kinds": [
+     "makers_letter",
+     "signature_marionette",
+     "town_program",
+     "carved_token",
+     "tuning_fork_relic"
+    ],
+    "note": "the workshop protects craft, memory, and wonder; anything of value is modest and communal, never loot"
+   },
+   "obstacle_kinds": {
+    "count": 1,
+    "kinds": [
+     "narrow_catwalk",
+     "swinging_counterweights",
+     "slick_boards",
+     "dim_understage",
+     "loose_planking"
+    ],
+    "note": "physical difficulty stays honest and non-injurious; a slip costs time or standing, never safety"
+   },
+   "safeguard_kinds": {
+    "count": 1,
+    "kinds": [
+     "bell_trip",
+     "chalk_tell",
+     "creaking_board",
+     "counterweight_chime"
+    ],
+    "note": "the maker's own anti-grabbing measure; gentle and a little funny, embarrasses no one and hurts no one"
+   },
+   "remedy_kinds": {
+    "count": 1,
+    "kinds": [
+     "rope_splice",
+     "patience_reknot",
+     "borrowed_tool",
+     "shared_effort_lift"
+    ],
+    "note": "the honest way partway back from a snapped lever, on the machine's own terms; the fix holds, but the snap itself stays true"
+   },
+   "loft_signatures": {
+    "count": 1,
+    "kinds": [
+     "unfinished_marionette_mid_string",
+     "letter_left_open",
+     "tools_laid_in_order",
+     "workbench_still_warm"
+    ],
+    "note": "the one detail that makes the puppet-maker's loft feel currently lived-in rather than preserved"
+   },
+   "carry_costs": {
+    "count": 1,
+    "kinds": [
+     "tool_left_on_shelf",
+     "second_lantern_declined",
+     "spare_rope_declined",
+     "spare_pages_declined"
+    ],
+    "note": "the concrete thing the satchel's one free slot could not also hold; naming it makes the carrying limit real rather than abstract"
+   }
+  },
+  "identity_roles": [
+   "HEROES",
+   "CARETAKER",
+   "ARTISAN",
+   "CODE",
+   "TOWN",
+   "WORKSHOP"
+  ],
+  "texture_roles": [
+   "STAGE_DOOR",
+   "ENTRY_LOW",
+   "ENTRY_HIGH",
+   "OPENER",
+   "ARCHIVE_ROOM",
+   "CATWALK",
+   "BRIDGE_FACE",
+   "KEEPSAKE",
+   "CODE_TOOL",
+   "MARGINALIA",
+   "FIX",
+   "MACHINERY",
+   "HIDDEN_LOFT",
+   "TOKEN",
+   "CURFEW_SIGN",
+   "LEVER",
+   "CRAFT"
+  ]
+ },
+ "nodes": {
+  "n_open": {
+   "tier": "open",
+   "function": "pose-the-dare",
+   "entry_state": [],
+   "establishes": [
+    "house_shuttered",
+    "dare_chalked",
+    "trio_pledged",
+    "curfew_looms"
+   ],
+   "forbids": [
+    "past_the_stage_door",
+    "marginalia_earned",
+    "caretaker_measured_them"
+   ],
+   "affect": {
+    "target": "quiet nerve, the thrill of being dared",
+    "forbid": [
+     "dread",
+     "urgency"
+    ]
+   },
+   "invention": {
+    "code_form": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.code_forms",
+     "category": "code_forms",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the story's one code form; every later dare-beat renders it consistently"
+    }
+   },
+   "choice_semantics": {
+    "c_open": "accept that the chalk is an invitation with a closing hour already stamped on it, and take it together"
+   },
+   "beat_hint": "the shuttered playhouse poses its dare and posts its curfew in the same breath, and the friends accept both as one."
+  },
+  "n_start": {
+   "tier": "open",
+   "function": "offer-virtues",
+   "entry_state": [
+    "dare_chalked",
+    "trio_pledged",
+    "curfew_looms"
+   ],
+   "establishes": [
+    "dare_taken_up"
+   ],
+   "forbids": [
+    "marginalia_earned",
+    "past_the_stage_door"
+   ],
+   "affect": {
+    "target": "quiet resolve, sizing up which opening move is worth the minutes",
+    "forbid": [
+     "quarrel",
+     "dread"
+    ]
+   },
+   "constraints": {
+    "offers_must_be": "three genuinely different virtues to lead with: patience, self-reliance, humility; no option is free of cost",
+    "must_not": "resolve any test here; the split happens before anyone earns anything"
+   },
+   "choice_semantics": {
+    "c_examine": "lead with patience: spend real time on the marginalia, time the curfew will remember",
+    "c_door": "lead with self-reliance: spend your own hands on the stuck door instead of the clock",
+    "c_keeper": "lead with humility: spend your pride asking the caretaker, and let her judge you for it"
+   },
+   "beat_hint": "three ways to spend the opening minutes, patience, grit, or asking, and whichever they spend, the hour keeps moving."
+  },
+  "n_note": {
+   "tier": "open",
+   "function": "reward-patience",
+   "entry_state": [
+    "dare_taken_up",
+    "dare_chalked",
+    "trio_pledged"
+   ],
+   "establishes": [
+    "marginalia_earned",
+    "passage_named",
+    "satchel_committed",
+    "something_shelved"
+   ],
+   "forbids": [
+    "past_the_stage_door"
+   ],
+   "affect": {
+    "target": "the settle of proof that patience was worth what it cost",
+    "forbid": [
+     "frustration",
+     "dread"
+    ]
+   },
+   "invention": {
+    "access_route": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.entry_methods",
+     "category": "entry_methods",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the proven marginalia names one concrete way backstage, plus a plain first step"
+    },
+    "shelved_item": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.carry_costs",
+     "category": "carry_costs",
+     "assigned_at": "bind",
+     "note": "the specific thing the satchel's one free slot could not also hold on this branch"
+    }
+   },
+   "constraints": {
+    "decode_must_be": "shown on the page in the story's one code form, so a reader can play along; first line only",
+    "must_not": "make patience free or make the other virtues look foolish for not trying it"
+   },
+   "choice_semantics": {
+    "c_note_key": "honor the marginalia fully: go hunt exactly where it points, spending time to be certain",
+    "c_note_inside": "trust the marginalia's plainest reading and act on it now, spending certainty for speed"
+   },
+   "beat_hint": "working the marginalia slowly turns patience into proof, and even proof still asks them to leave something behind before it opens a way in."
+  },
+  "n_door": {
+   "tier": "open",
+   "function": "prove-self-reliance",
+   "entry_state": [
+    "house_shuttered",
+    "dare_taken_up"
+   ],
+   "establishes": [
+    "grit_proven",
+    "satchel_committed",
+    "something_shelved"
+   ],
+   "forbids": [
+    "marginalia_earned",
+    "past_the_stage_door"
+   ],
+   "affect": {
+    "target": "stubborn pride in finding a way that costs effort instead of time",
+    "forbid": [
+     "danger",
+     "guilt"
+    ]
+   },
+   "invention": {
+    "access_route": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.entry_methods",
+     "category": "entry_methods",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the building's own overlooked way backstage; using it reads as self-reliance, never as damage",
+     "kind_must_be": "loose_side_door"
+    },
+    "shelved_item": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.carry_costs",
+     "category": "carry_costs",
+     "assigned_at": "bind",
+     "note": "the specific thing left behind so the satchel could carry what this branch needed instead"
+    }
+   },
+   "constraints": {
+    "entry_must_read": "as clever, independent use of a neglected building, not as break-in",
+    "must_not": "carry any code knowledge; this branch has not read the marginalia closely"
+   },
+   "choice_semantics": {
+    "c_door_force": "prove it the costly way: put a shoulder into the stuck door and pay in scraped knuckles and spent time, not marginalia",
+    "c_door_window": "prove it the bold way: climb for the high window and pay in nerve instead of knowledge"
+   },
+   "beat_hint": "solving the house's own stuck door without anyone's help is real, but it spends time the marginalia's shortcut would have saved."
+  },
+  "n_keeper": {
+   "tier": "open",
+   "function": "earn-the-caretakers-trust",
+   "entry_state": [
+    "dare_taken_up",
+    "trio_pledged"
+   ],
+   "establishes": [
+    "caretaker_measured_them",
+    "caretaker_offer_earned",
+    "satchel_committed",
+    "something_shelved"
+   ],
+   "forbids": [
+    "marginalia_earned",
+    "past_the_stage_door"
+   ],
+   "affect": {
+    "target": "the nerve of being sized up, then the relief of clearing it",
+    "forbid": [
+     "menace",
+     "condescension"
+    ]
+   },
+   "invention": {
+    "access_route": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.entry_methods",
+     "category": "entry_methods",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "kept person-mediated on purpose: this branch's whole meaning is passing a person's judgment, not a trick",
+     "kind_must_be": "escort_by_caretaker"
+    },
+    "shelved_item": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.carry_costs",
+     "category": "carry_costs",
+     "assigned_at": "bind",
+     "note": "what the friends set aside to make room for whatever the caretaker hands them"
+    }
+   },
+   "constraints": {
+    "caretaker_must_be": "brisk on the surface, glad underneath that someone finally asked; an adult who takes kids seriously",
+    "must_not": "have the caretaker solve the dare for them or forbid the attempt"
+   },
+   "choice_semantics": {
+    "c_keeper_enter": "take the earned offer and go now, spending none of the night on her story",
+    "c_keeper_story": "spend the earned trust on the puppet-maker's story instead of the head start it could have bought"
+   },
+   "beat_hint": "an adult is quietly weighing how they ask for help, and a real offer is the passing mark, if they're willing to spend the time to collect it."
+  },
+  "n_keyhunt": {
+   "tier": "open",
+   "function": "confirm-the-proof",
+   "entry_state": [
+    "marginalia_earned",
+    "passage_named"
+   ],
+   "establishes": [
+    "code_sense_earned"
+   ],
+   "forbids": [
+    "past_the_stage_door"
+   ],
+   "affect": {
+    "target": "satisfaction of a proof that checks out in the real world",
+    "forbid": [
+     "frustration",
+     "dread"
+    ]
+   },
+   "constraints": {
+    "payoff_must_be": "the way backstage exactly where the marginalia promised; the world confirms the toll was fair",
+    "must_not": "introduce a second puzzle here; this beat is confirmation, not complication"
+   },
+   "choice_semantics": {
+    "c_keyhunt_in": "spend the last of the errand's minutes confirming the marginalia was right, then go in the way it named"
+   },
+   "beat_hint": "the world checks the patient friends' work, and confirming it costs the last of the errand's spare minutes."
+  },
+  "n_keeper_story": {
+   "tier": "open",
+   "function": "learn-the-dares-purpose",
+   "entry_state": [
+    "caretaker_measured_them",
+    "caretaker_offer_earned"
+   ],
+   "establishes": [
+    "artisan_purpose_learned"
+   ],
+   "forbids": [
+    "past_the_stage_door",
+    "marginalia_earned"
+   ],
+   "affect": {
+    "target": "hushed listening, respect replacing suspicion",
+    "forbid": [
+     "grief",
+     "dread"
+    ]
+   },
+   "constraints": {
+    "history_must_be": "warm and specific: the puppet-maker tested people out of care, not cruelty; motive stays kind while details stay secret",
+    "must_not": "reveal what the workshop holds or how the control bridge resolves"
+   },
+   "choice_semantics": {
+    "c_story_in": "carry the earned understanding inside, knowing the story's minutes are already gone from tonight's total"
+   },
+   "beat_hint": "earned trust buys the friends an explanation of the dare's purpose, paid for entirely in time."
+  },
+  "n_window": {
+   "tier": "open",
+   "function": "earn-entry-by-nerve",
+   "entry_state": [
+    "grit_proven",
+    "dare_taken_up"
+   ],
+   "establishes": [
+    "past_the_stage_door"
+   ],
+   "forbids": [
+    "someone_hurt"
+   ],
+   "affect": {
+    "target": "a dare answered, then the hush of having proven it, minutes now gone for good",
+    "forbid": [
+     "real_peril",
+     "panic"
+    ]
+   },
+   "constraints": {
+    "climb_must_be": "exciting but visibly safe: short height, good holds, friends spotting each other",
+    "must_not": "injure anyone or play the climb as recklessness"
+   },
+   "choice_semantics": {
+    "c_window_in": "commit to the sill and the drop, proving the grit claimed, on time that doesn't come back"
+   },
+   "beat_hint": "a physical dare stands between grit claimed and grit proven, and clearing it spends the last of what patience would have saved."
+  },
+  "n_inside": {
+   "tier": "open",
+   "function": "stand-past-the-door",
+   "entry_state": [
+    "dare_taken_up",
+    "curfew_looms",
+    "satchel_committed",
+    "something_shelved"
+   ],
+   "establishes": [
+    "past_the_stage_door",
+    "four_wings_open"
+   ],
+   "forbids": [
+    "at_the_control_bridge",
+    "workshop_entered"
+   ],
+   "affect": {
+    "target": "held-breath resolve: the real dare begins now, and so does the real spending of it",
+    "forbid": [
+     "dread",
+     "claustrophobia"
+    ]
+   },
+   "constraints": {
+    "offers_must_be": "four sensory, distinct wings matching four tests: height, paper, motion, depth; each stands alone",
+    "must_not": "rank the wings or hint one is the correct one"
+   },
+   "merge_note": "Six parents (n_note, n_door, n_keeper, n_keyhunt, n_keeper_story, n_window) arrive by different routes carrying different proofs. Presuppose only the intersection: the dare exists, the friends took it up, the closing hour looms, and the one satchel is already committed with something left on the shelf outside. Do NOT reference how they got in, which virtue they led with, or whether the caretaker is present. Write arrival generically: they are backstage, the real dare begins, and the clock keeps running.",
+   "choice_semantics": {
+    "c_inside_stairs": "choose the rigging loft: spend stamina and time climbing for proof of endurance",
+    "c_inside_study": "choose the playbill archive: spend time reading for proof of scholarship, knowing the archive is built to tempt you into spending more than you meant to",
+    "c_inside_pendulum": "choose the high catwalk: spend nerve, and maybe standing, against the sharpest test in the house",
+    "c_inside_basement": "choose the understage: spend composure in the dark for proof of steadiness"
+   },
+   "beat_hint": "four wings wait, four ways to spend what's left of the night, and none of them is free."
+  },
+  "n_stairs": {
+   "tier": "open",
+   "function": "pass-the-endurance-test",
+   "entry_state": [
+    "past_the_stage_door",
+    "four_wings_open"
+   ],
+   "establishes": [
+    "code_sense_earned",
+    "hour_running_short"
+   ],
+   "forbids": [
+    "at_the_control_bridge",
+    "workshop_entered"
+   ],
+   "affect": {
+    "target": "the burn of effort turning into quiet pride, minutes spent and no longer theirs",
+    "forbid": [
+     "exhaustion",
+     "dread"
+    ]
+   },
+   "invention": {
+    "hint_carrier": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.wing_clue_carriers",
+     "category": "wing_clue_carriers",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "something met on the climb that teaches a usable piece of the bridge's code"
+    },
+    "wonder": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.wing_wonders",
+     "category": "wing_wonders",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "a small trace of the puppet-maker found along the stair; personal, pocketable, easily missed"
+    }
+   },
+   "constraints": {
+    "hint_must_be": "sufficient on its own to make the control bridge attemptable for a reader who never read the marginalia",
+    "must_not": "presuppose the marginalia's test is already passed"
+   },
+   "choice_semantics": {
+    "c_stairs_face": "carry the earned proof up to the bridge, the climb's minutes already spent"
+   },
+   "beat_hint": "the climb itself is the test here, and finishing it earns the next piece of proof at the price of the clearest minutes they had."
+  },
+  "n_study": {
+   "tier": "open",
+   "function": "pass-the-scholarship-test",
+   "entry_state": [
+    "past_the_stage_door",
+    "four_wings_open"
+   ],
+   "establishes": [
+    "code_sense_earned",
+    "archive_tempts_them",
+    "hour_running_short"
+   ],
+   "forbids": [
+    "at_the_control_bridge",
+    "workshop_entered"
+   ],
+   "affect": {
+    "target": "the pull of a test that rewards staying as much as leaving, if they can afford to stay",
+    "forbid": [
+     "boredom",
+     "dread"
+    ]
+   },
+   "invention": {
+    "hint_carrier": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.wing_clue_carriers",
+     "category": "wing_clue_carriers",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "whatever in the maker's own binder teaches the code most directly; the archive's hint runs richest of the four"
+    },
+    "wonder": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.wing_wonders",
+     "category": "wing_wonders",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the archive whose pull is genuine: something browsable enough to fill the rest of the night; staying is a legitimate answer"
+    }
+   },
+   "constraints": {
+    "temptation_must_be": "honest: the archive really is fascinating, and choosing it is a legitimate reader identity, not a failure",
+    "must_not": "frame staying to read as laziness or failure"
+   },
+   "choice_semantics": {
+    "c_study_face": "take the earned proof and press on to the bridge before the archive can cost more than it already has",
+    "c_study_logs": "let the archive win the argument: spend the rest of tonight's hour on it instead of the bridge"
+   },
+   "beat_hint": "the room grades curiosity, and passing well here means knowing when its pull has already cost enough."
+  },
+  "n_pendulum": {
+   "tier": "open",
+   "function": "pass-the-nerve-test",
+   "entry_state": [
+    "past_the_stage_door",
+    "four_wings_open"
+   ],
+   "establishes": [
+    "code_sense_earned",
+    "catwalk_dares_them",
+    "keepsake_glimpsed",
+    "hour_running_short"
+   ],
+   "forbids": [
+    "someone_hurt",
+    "at_the_control_bridge"
+   ],
+   "affect": {
+    "target": "focused suspense: this is the wing that asks the most, and knows it",
+    "forbid": [
+     "terror",
+     "recklessness_glorified"
+    ]
+   },
+   "invention": {
+    "hint_carrier": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.wing_clue_carriers",
+     "category": "wing_clue_carriers",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "something about the counterweights, legible from a safe spot, that teaches a piece of the bridge's code"
+    },
+    "obstacle": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.obstacle_kinds",
+     "category": "obstacle_kinds",
+     "assigned_at": "bind",
+     "note": "a crossing with real, legible, survivable risk; the far side holds something worth the daring"
+    }
+   },
+   "constraints": {
+    "peril_must_be": "mild and legible: the worst case is a wobble and a long walk back, not a fall; the crossing rewards care, not daring",
+    "must_not": "punish the reader for either crossing or declining; both are respectable answers to the test"
+   },
+   "choice_semantics": {
+    "c_pendulum_oil": "cross with care and claim the set-aside keepsake, spending nerve and a little more time for a reward the other wings don't offer",
+    "c_pendulum_giveup": "judge the crossing honestly and decline it, keeping the time and the nerve, and going without the keepsake"
+   },
+   "beat_hint": "of the four wings this one asks the most, and the reward it dangles is real, but so is the toll of reaching for it."
+  },
+  "n_basement": {
+   "tier": "open",
+   "function": "pass-the-steadiness-test",
+   "entry_state": [
+    "past_the_stage_door",
+    "four_wings_open"
+   ],
+   "establishes": [
+    "code_sense_earned",
+    "hour_running_short"
+   ],
+   "forbids": [
+    "at_the_control_bridge",
+    "workshop_entered"
+   ],
+   "affect": {
+    "target": "dim-lit calm, steadiness rewarded in the dark, minutes ticking past unseen",
+    "forbid": [
+     "dread",
+     "claustrophobia"
+    ]
+   },
+   "invention": {
+    "hint_carrier": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.wing_clue_carriers",
+     "category": "wing_clue_carriers",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "something down among the machinery's roots that teaches a piece of the bridge's code from below"
+    },
+    "wonder": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.wing_wonders",
+     "category": "wing_wonders",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "what makes the deepest wing a spectacle worth the dark; the straight way up is its parting gift"
+    }
+   },
+   "constraints": {
+    "darkness_must_be": "atmosphere, not threat; the understage is dim and strange, never menacing",
+    "must_not": "presuppose the marginalia's test is already passed"
+   },
+   "choice_semantics": {
+    "c_basement_face": "carry the earned proof straight up to the bridge, the dark wing's minutes now spent"
+   },
+   "beat_hint": "in the understage the test is composure, not cleverness, and staying steady still costs its share of the night."
+  },
+  "n_clockface": {
+   "tier": "open",
+   "function": "face-the-final-test",
+   "entry_state": [
+    "code_sense_earned",
+    "hour_running_short"
+   ],
+   "establishes": [
+    "at_the_control_bridge",
+    "bridge_test_live"
+   ],
+   "forbids": [
+    "workshop_entered",
+    "test_answered_true"
+   ],
+   "affect": {
+    "target": "peak suspense; every earlier wing narrows to this one bridge, with the bell close behind it",
+    "forbid": [
+     "despair",
+     "panic"
+    ]
+   },
+   "constraints": {
+    "puzzle_must_be": "self-teaching at the bridge: the levers rhyme with the code the reader carries, so answering feels earned, not lucky",
+    "stakes_must_be": "clear before choosing: answering, forcing, searching, and guessing are visibly different bets against the same closing hour",
+    "must_not": "reference any carried object or any wing's device; the bridge's own levers and markings carry the whole beat"
+   },
+   "merge_note": "Four parents (n_stairs, n_study, n_pendulum, n_basement), each of which supplied code_sense_earned and hour_running_short by a DIFFERENT wing. Presuppose both generically: the friends have a working sense of the code and know the night is short, source unnamed. Do NOT presuppose which wing was taken, any object carried from any wing, or any specific room. The bridge itself must restate its test: its levers rhyme with the code form, so the correct-setting choice is honest on every path.",
+   "choice_semantics": {
+    "c_face_correct": "answer the bridge on its own terms, setting each lever deliberately, spending focus instead of force",
+    "c_face_jam": "muscle the levers instead of answering them, betting force will beat the puzzle the minutes couldn't",
+    "c_face_panel": "distrust the bridge and go looking for a way around it, spending the last of the hour on a search instead of an answer",
+    "c_face_random": "gamble on the bridge: guess and hope the closing bell is slower than you are"
+   },
+   "beat_hint": "four wings funnel into one last examiner, and how each friend spends these final minutes decides what tonight actually costs."
+  },
+  "n_setcorrect": {
+   "tier": "open",
+   "function": "pass-the-final-test",
+   "entry_state": [
+    "at_the_control_bridge",
+    "bridge_test_live",
+    "code_sense_earned"
+   ],
+   "establishes": [
+    "test_answered_true"
+   ],
+   "forbids": [
+    "lever_snapped"
+   ],
+   "affect": {
+    "target": "triumphant release: the bridge recognizes them, and nothing about it had to break",
+    "forbid": [
+     "anticlimax"
+    ]
+   },
+   "constraints": {
+    "solution_must_be": "shown, not skipped: the setting follows the code the reader carries, in the story's one code form",
+    "must_not": "presuppose the marginalia branch or any specific wing; the reasoning works from the generic hint plus the bridge's own markings"
+   },
+   "choice_semantics": {
+    "c_correct_vault": "step through into what the bridge was guarding, the answer paid for in attention, not damage"
+   },
+   "beat_hint": "the answer is graded on the spot, and getting it right is the one way through that costs nothing but care."
+  },
+  "n_setjam": {
+   "tier": "open",
+   "function": "fail-the-test-honestly",
+   "entry_state": [
+    "at_the_control_bridge",
+    "bridge_test_live"
+   ],
+   "establishes": [
+    "lever_snapped"
+   ],
+   "forbids": [
+    "someone_hurt",
+    "test_answered_true"
+   ],
+   "affect": {
+    "target": "wince of a lever that truly broke, then resolve to make it right on another night",
+    "forbid": [
+     "despair",
+     "blame"
+    ]
+   },
+   "invention": {
+    "remedy": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.remedy_kinds",
+     "category": "remedy_kinds",
+     "assigned_at": "bind",
+     "note": "the machine's own honest way partway back from the jam, supplied entirely by the bible; it steadies the bridge but does not un-snap what snapped"
+    }
+   },
+   "constraints": {
+    "remedy_must_be": "workable at the scene on every path, presupposing nothing carried from any other wing, and honest about what it can and cannot undo",
+    "jam_must_read": "as the bridge protecting itself, a fair and lasting consequence of forcing it, not a punishment of the friends",
+    "must_not": "shame whoever forced the setting, or pretend the break didn't happen"
+   },
+   "choice_semantics": {
+    "c_jam_oil": "work the honest fix and retake the bridge properly, knowing the splice will always show and the lever will stick a little from tonight on",
+    "c_jam_stuck": "accept the bridge got the better of them tonight, the snapped lever staying snapped past this visit"
+   },
+   "beat_hint": "muscling the levers breaks something real, and even the honest fix can't make tonight not have happened."
+  },
+  "n_backpanel": {
+   "tier": "open",
+   "function": "find-the-hidden-test",
+   "entry_state": [
+    "at_the_control_bridge",
+    "bridge_test_live"
+   ],
+   "establishes": [
+    "second_dare_found"
+   ],
+   "forbids": [
+    "lever_snapped",
+    "workshop_entered"
+   ],
+   "affect": {
+    "target": "sly delight at finding a dare within the dare, worth the minutes it costs",
+    "forbid": [
+     "dread"
+    ]
+   },
+   "constraints": {
+    "panel_code_must_be": "the same code form as the story's marginalia, smaller and quicker; solving it uses the hint carried, never the full proof",
+    "must_not": "make this route feel like cheating; the puppet-maker built it on purpose for careful searchers"
+   },
+   "choice_semantics": {
+    "c_panel_vault": "solve the smaller dare toward what everyone came for, spending the last patience the night has left",
+    "c_panel_secret": "follow the smaller dare the other way, toward a room no one mentioned, spending the visit on curiosity instead of the prize"
+   },
+   "beat_hint": "careful searchers find the bridge had a second, quieter question waiting, and answering it still spends something."
+  },
+  "n_vault": {
+   "tier": "open",
+   "function": "pose-the-dares-verdict",
+   "entry_state": [
+    "at_the_control_bridge",
+    "bridge_test_live",
+    "hour_running_short"
+   ],
+   "establishes": [
+    "workshop_entered",
+    "workshop_seen"
+   ],
+   "forbids": [
+    "someone_hurt"
+   ],
+   "affect": {
+    "target": "awed quiet; the dare is answered, and now a verdict about what carrying it out means",
+    "forbid": [
+     "greed_glamorized",
+     "dread"
+    ]
+   },
+   "invention": {
+    "contents": {
+     "pick": 3,
+     "from": "bible.device_vocabulary.workshop_contents",
+     "category": "workshop_contents",
+     "assigned_at": "bind",
+     "note": "the puppet-maker's letter, a keepsake, and a modest town treasure; the letter's voice is kind and asks nothing"
+    }
+   },
+   "constraints": {
+    "contents_must_be": "craft, memory, and wonder; the treasure is modest and clearly the town's, which is what makes the grab choice legible as a failed test",
+    "choice_must_be": "a genuine three-way question of character, weighed against a satchel that plainly cannot hold everything"
+   },
+   "merge_note": "Three parents (n_setcorrect, n_setjam, n_backpanel) opened the way by different means. Presuppose only that the friends stand past the bridge with a working sense of the code and a night that has nearly run out; write the workshop's opening as already behind them without re-describing which of the three routes got them there.",
+   "choice_semantics": {
+    "c_vault_share": "let the answer go public: carry the letter back to the town, spending privacy for a truth worth telling",
+    "c_vault_keep": "let the answer stay private: spend nothing more, and let the passing belong only to the three of them",
+    "c_vault_grab": "reach for more than the satchel was ever built to hold, treating a dare answered as a haul instead"
+   },
+   "beat_hint": "answering the bridge was never the last question; what to carry out, and what the satchel can actually hold, is."
+  },
+  "n_end_library": {
+   "tier": "locked_outcome",
+   "function": "payoff-choosing-depth",
+   "entry_state": [
+    "past_the_stage_door",
+    "archive_tempts_them"
+   ],
+   "establishes": [
+    "steadiness_kept",
+    "dare_stands_open"
+   ],
+   "forbids": [
+    "shame",
+    "lingering_regret"
+   ],
+   "affect": {
+    "target": "contented absorption; choosing depth over the clock was its own kind of passing",
+    "forbid": [
+     "despair",
+     "mockery"
+    ]
+   },
+   "constraints": {
+    "ending_must_read": "as a different kind of pass: they spent the night on depth instead of the bridge, and the spending is honored; the dare waits, richer for what they now know"
+   },
+   "mechanisms": [
+    "the archive's pull wins the hour, and losing themselves in someone else's puzzle turns out to be worth the time it costs",
+    "a copied page from the archive goes into the satchel in place of anything else, carried home to study at a slower pace",
+    "the closing bell finds them still reading, and the caretaker walks them out with the book held for next time"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "beat_hint": "the archive wins this round, and staying to read counts as a legitimate way to spend the night, not a retreat."
+  },
+  "n_end_giveup": {
+   "tier": "locked_outcome",
+   "function": "payoff-declining-a-test",
+   "entry_state": [
+    "catwalk_dares_them",
+    "keepsake_glimpsed"
+   ],
+   "establishes": [
+    "steadiness_kept",
+    "dare_stands_open"
+   ],
+   "forbids": [
+    "cowardice_implied",
+    "mockery"
+   ],
+   "affect": {
+    "target": "sober pride in judging a crossing correctly by not spending everything on it",
+    "forbid": [
+     "despair",
+     "shame"
+    ]
+   },
+   "constraints": {
+    "ending_must_read": "as judgment, not fear: reading a cost correctly and declining to pay it is itself a passed test"
+   },
+   "mechanisms": [
+    "a clear-eyed look at the catwalk convinces them the crossing would cost more tonight than it could ever prove",
+    "one friend says the real risk out loud and nobody argues, and saying it counts as passing a quieter test",
+    "backing off the rail with time still left on the clock reads as exactly the sound choice it is"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "beat_hint": "reading the crossing's price correctly and keeping their nerve for later is graded as a pass, not a failure."
+  },
+  "n_end_timeout": {
+   "tier": "locked_outcome",
+   "function": "payoff-failing-honestly",
+   "entry_state": [
+    "at_the_control_bridge",
+    "bridge_test_live"
+   ],
+   "establishes": [
+    "steadiness_kept",
+    "dare_stands_open"
+   ],
+   "forbids": [
+    "humiliation",
+    "punishing_tone"
+   ],
+   "affect": {
+    "target": "rueful acceptance that a guess was never going to outrun the bell",
+    "forbid": [
+     "despair",
+     "punishing_tone"
+    ]
+   },
+   "constraints": {
+    "ending_must_read": "as the fair cost of gambling with the last of a night that was always going to run out; the lesson is theirs to spend better next time"
+   },
+   "mechanisms": [
+    "a guess is still a guess, and the closing bell beats it to the punch",
+    "the last of the night burns on a gamble that never had good odds to begin with",
+    "the safeguard catches the wild guess and the bridge locks tight until the caretaker resets it herself"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "beat_hint": "a guess was never going to satisfy a bridge built to reward reasoning, and the clock made sure of it."
+  },
+  "n_end_stuck": {
+   "tier": "locked_outcome",
+   "function": "payoff-a-real-break",
+   "entry_state": [
+    "lever_snapped"
+   ],
+   "establishes": [
+    "steadiness_kept",
+    "dare_stands_open",
+    "ledger_set_right"
+   ],
+   "forbids": [
+    "blame_assigned",
+    "humiliation"
+   ],
+   "affect": {
+    "target": "determined resolve, carried alongside a break that is honestly still a break",
+    "forbid": [
+     "despair",
+     "defeat_as_identity"
+    ]
+   },
+   "constraints": {
+    "ending_must_read": "as a real cost honestly named, not a shaming: the friends tell the caretaker exactly what broke, and the bridge waits, genuinely worse off than it was, until it is properly mended on another night"
+   },
+   "mechanisms": [
+    "the lever stays snapped tonight, and no amount of trying makes tonight the night it un-snaps",
+    "there is a right tool for what broke, and it is not in anyone's satchel",
+    "the posted curfew ends the attempt before the honest fix can be finished properly"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "beat_hint": "tonight's forcing left something truly broken behind, and the friends leave owning that honestly instead of pretending it reset."
+  },
+  "n_end_secret": {
+   "tier": "locked_outcome",
+   "function": "payoff-the-hidden-tests-reward",
+   "entry_state": [
+    "second_dare_found"
+   ],
+   "establishes": [
+    "loft_found_alive",
+    "keeping_earned",
+    "bond_forged"
+   ],
+   "forbids": [
+    "exploiting_the_find"
+   ],
+   "affect": {
+    "target": "hushed wonder at a dare that rewards curiosity as much as nerve",
+    "forbid": [
+     "greed",
+     "anticlimax"
+    ]
+   },
+   "invention": {
+    "loft_signature": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.loft_signatures",
+     "category": "loft_signatures",
+     "assigned_at": "bind",
+     "note": "the one detail that makes the puppet-maker's loft feel currently lived-in and mid-thought rather than preserved"
+    }
+   },
+   "constraints": {
+    "room_must_be": "a working loft alive with the puppet-maker's presence; the reward is responsibility and access, never possession"
+   },
+   "mechanisms": [
+    "the loft takes them in as its quiet keepers, a reward for a dare nobody warned them they were taking",
+    "unfinished work on the bench asks for their hands, and finishing it becomes their standing job",
+    "the puppet-maker's own notes name whoever finds the loft its keeper, and they accept the appointment"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "beat_hint": "the hidden question's real reward turns out to be a standing role, not an answer."
+  },
+  "n_end_hero": {
+   "tier": "locked_outcome",
+   "function": "payoff-going-public",
+   "entry_state": [
+    "workshop_entered",
+    "workshop_seen"
+   ],
+   "establishes": [
+    "clearing_made_known",
+    "bond_forged"
+   ],
+   "forbids": [
+    "reward_as_riches"
+   ],
+   "affect": {
+    "target": "quiet pride; the answered dare recognized by the whole town",
+    "forbid": [
+     "gloating",
+     "anticlimax"
+    ]
+   },
+   "constraints": {
+    "restoration_must_be": "concrete and communal: the decoded letter gives the town back something real, and the answered dare is publicly honored"
+   },
+   "mechanisms": [
+    "the clearing is announced and the town turns out to celebrate the dare finally answered",
+    "the decoded letter quietly gives the town back something it had missed",
+    "the caretaker's trust opens wide, and the playhouse door stays open to them from now on"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "beat_hint": "the friends' answer becomes public record, and the whole town is better for what it cost them to earn it."
+  },
+  "n_end_keepsake": {
+   "tier": "locked_outcome",
+   "function": "payoff-a-private-verdict",
+   "entry_state": [
+    "workshop_entered",
+    "workshop_seen"
+   ],
+   "establishes": [
+    "clearing_kept_close",
+    "bond_forged"
+   ],
+   "forbids": [
+    "selfishness_implied"
+   ],
+   "affect": {
+    "target": "warm quiet pride, kept just among themselves",
+    "forbid": [
+     "guilt",
+     "anticlimax"
+    ]
+   },
+   "constraints": {
+    "keeping_must_read": "as guardianship, not hoarding: nothing leaves the workshop that belongs to the town; what the friends keep is the answer, and each other"
+   },
+   "mechanisms": [
+    "a promise made over the keepsake binds the friends as the dare's quiet graduates",
+    "everything goes back exactly where it stood, and only the answer leaves with them",
+    "the maker's letter leaves the choosing to its finders, and they choose to keep the passing close"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "beat_hint": "some answers are worth more kept quiet, shared only among the friends who paid for them."
+  },
+  "n_end_caught": {
+   "tier": "locked_outcome",
+   "function": "payoff-failing-the-real-test",
+   "entry_state": [
+    "workshop_entered",
+    "workshop_seen"
+   ],
+   "establishes": [
+    "ledger_set_right",
+    "caretaker_arrives_in_time",
+    "steadiness_kept",
+    "dare_stands_open"
+   ],
+   "forbids": [
+    "humiliation",
+    "punishment_beyond_returning",
+    "reward_for_grabbing"
+   ],
+   "affect": {
+    "target": "comic sheepishness at failing the one test that mattered most",
+    "forbid": [
+     "menace",
+     "despair",
+     "shaming"
+    ]
+   },
+   "invention": {
+    "safeguard": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.safeguard_kinds",
+     "category": "safeguard_kinds",
+     "assigned_at": "bind",
+     "note": "the puppet-maker anticipated this exact impulse; whatever form it takes, the safeguard is gentle, a little funny, and impossible to be hurt by"
+    }
+   },
+   "constraints": {
+    "correction_must_be": "fair and complete without cruelty: everything goes back, the caretaker is firm but kind, and the friends leave lighter for having failed the last test kindly",
+    "must_not": "threaten, lecture at length, or bar the friends from the playhouse forever"
+   },
+   "mechanisms": [
+    "the safeguard reads overfilled hands for what they are, and the caretaker is there before the door is",
+    "what they try to carry past the satchel's limit is exactly what the dare was built to catch",
+    "second thoughts slow the reach just enough for the caretaker's own rounds to catch them turning back, honest after all"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "beat_hint": "the real final test was never the bridge, and reaching for more than the satchel allows is the answer that fails it."
+  }
+ }
+}

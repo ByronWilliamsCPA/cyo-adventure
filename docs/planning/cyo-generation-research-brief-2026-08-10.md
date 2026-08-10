@@ -1336,6 +1336,46 @@ would rather state than discover later:
    untested, and **we now predict it will also fall short on its own**, because the premise and the
    idiom floor survive it.
 
+## 16h. Our own "graphs are worlds" proposal, mostly refuted from the graphs alone
+
+One of our in-house options held that a large graph is not a book but a *world*, and a book is a
+validated tour through part of it. We hold graphs at 677, 551 and 250 nodes, so the appeal was
+obvious: cut two disjoint tours, get two books, pay nothing for a new graph. We had filed this as
+needing a fill and a rating to settle. Most of it is decidable from the graphs, for free.
+
+**The first measurement was wrong in an instructive way.** Maximum node-disjoint start-to-ending
+paths returns **1 for all 21 of our graphs over 200 nodes**, which reads as a flat refutation. It is
+not: the single cut node is the world's **hub** in every case, sitting three to five nodes in. A hub
+is what a hub-and-spoke world is supposed to have, and two tours of one world would both cross the
+town square. Strict node-disjointness was simply the wrong requirement, and we nearly published the
+wrong conclusion from it.
+
+**The right test partitions the spokes**, taking the connected components of what remains once the
+hub is removed:
+
+| | Spoke sizes, regions containing endings |
+| --- | --- |
+| the-skyrail-heist, 246 nodes, **10-13** | **83, 82, 77** |
+| the-year-of-four-banners, 212 nodes | 83, 70, 56 |
+| the-tricameral-city, 240 nodes | 100, 73, 64 |
+| the-tenfold-siege, 677 nodes | **656**, 3, 3, 3, 3, 3 |
+| *(17 others)* | same shape: one giant region, remainder 1 to 4 nodes |
+
+**Eighteen of twenty-one put nearly every node in a single region after the hub**, with the rest
+being short early-exit endings. There is no second region from which to cut a tour, so the proposal's
+own falsifier is confirmed for those graphs on structure alone: they were authored as long stories
+with decorations, not as worlds. Scale does not rescue it, and the largest graph is the worst
+offender.
+
+**Three are genuinely world-shaped**, and one of them is in the band we study. So the option is
+neither dead nor open: its scope is three named graphs rather than "the largest ones", and until now
+nobody could have said which graph the proposal meant.
+
+We include this because it generalises past our catalog. **If you are proposing an architecture that
+tours a large graph, the graph has to have been authored as a world**, and a graph authored as a
+branching story will not become one by being large. That is a property worth checking before
+building on it, and it costs a dominator computation.
+
 ## 17. Corrections to Part I
 
 - **5.3's "untested cell" has been tested**, and the result is not the simple one either reading

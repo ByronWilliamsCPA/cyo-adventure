@@ -1,0 +1,300 @@
+{
+ "schema_version": "2.0",
+ "id": "graph_C",
+ "version": 1,
+ "title": "The Bell Beneath Pike's Cove",
+ "metadata": {
+  "age_band": "10-13",
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 5.5,
+   "tolerance": 1.5
+  },
+  "tier": 1,
+  "themes": [
+   "mystery",
+   "friendship",
+   "coastal history",
+   "courage"
+  ],
+  "estimated_minutes": 20,
+  "ending_count": 9,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "mild",
+   "peril": "mild"
+  },
+  "topology": "branch_and_bottleneck",
+  "production_eligible": false
+ },
+ "variables": [],
+ "start_node": "n_start",
+ "nodes": [
+  {
+   "id": "n_start",
+   "body": "The ferry leaves you at the end of the dock, salt wind tugging at your jacket, and there she is: Grandma Nell, waving from beside her bicycle cart. Pike's Cove is smaller than you remembered, just a curve of gray shingled houses hugging the harbor, with the old lighthouse standing dark on the point. Grandma says the light hasn't worked in thirty years, not since the night the bell went silent. Over dinner she mentions three things worth doing before breakfast tomorrow: poke around the tide pools, find her old journal in the attic, or say hello to Theo, the harbor master's grandson, who knows every rumor in town.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_tidepools", "label": "Go poke around the tide pools before breakfast", "target": "n_tidepools"},
+    {"id": "c_theo", "label": "Head down to the dock to find Theo", "target": "n_theo"},
+    {"id": "c_journal", "label": "Climb into the attic to look for Grandma Nell's journal", "target": "n_journal"}
+   ]
+  },
+  {
+   "id": "n_tidepools",
+   "body": "The tide is out, leaving glassy pools scattered across the rocks like a broken mirror. Crabs skitter sideways as you crouch to peer into the clearest pool, and something catches the morning light: a brass key, green with age, wedged between two barnacled stones. You work it loose. It's heavier than it looks, and stamped into the head is a tiny anchor, half worn away. It doesn't look like it fits any door you've seen in town, but Grandma Nell might recognize the mark, or maybe it's worth following the shoreline toward the sea caves at the base of the point to see what else the tide left behind.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_key_cave", "label": "Pocket the key and follow the shore toward the sea caves", "target": "n_cave_entrance"},
+    {"id": "c_key_grandma", "label": "Bring the key straight to Grandma Nell", "target": "n_grandma"}
+   ]
+  },
+  {
+   "id": "n_theo",
+   "body": "You find Theo mending a lobster trap on the dock, sun-browned and squinting against the glare. When you ask about the lighthouse, his whole face changes. He tells you the story his grandfather never got tired of telling: that a bronze bell once hung in the tower, and on stormy nights it rang on its own, warning ships away from the reef, until the night it didn't, and a schooner ran aground. Nobody ever found the bell afterward. Theo says there are old harbor records in the town hall that might explain what really happened, or you could go with him out to the reef itself while the tide is low enough to reach it safely.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_theo_records", "label": "Ask to see the old harbor records at town hall", "target": "n_records"},
+    {"id": "c_theo_reef", "label": "Go with Theo out to the reef at low tide", "target": "n_reef"}
+   ]
+  },
+  {
+   "id": "n_journal",
+   "body": "Grandma Nell's attic smells like cedar and dust, and it takes you twenty minutes of sneezing to find the journal, a slim book with a cracked leather cover tucked behind a box of Christmas ornaments. The handwriting is spidery and faded, but one page stops you cold: a rough sketch of the lighthouse with a dotted line running from the cellar to a spot marked only with an X near the cliffs. Beside it, in careful letters: the old stairs still stand, if you know where to look. You could go search for that hidden passage yourself, or bring the journal downstairs and ask Grandma Nell what she knows about it.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_journal_passage", "label": "Go search for the hidden passage yourself", "target": "n_passage"},
+    {"id": "c_journal_grandma", "label": "Bring the journal down to ask Grandma Nell about it", "target": "n_grandma"}
+   ]
+  },
+  {
+   "id": "n_grandma",
+   "body": "Grandma Nell turns the item over in her hands and goes quiet for a moment before she smiles. She tells you the bell was never lost at sea, not really; when the light failed, the town blamed the bell for not warning them in time, so someone hid it away rather than melt it down in anger. She never learned where. What she does know is that the lighthouse cellar connects to the old sea caves beneath the point, a secret from back when smugglers used the coast. You could head for the lighthouse itself, its door rusted shut but not locked, or follow the shoreline to where the caves open at low tide.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_grandma_lighthouse", "label": "Head for the lighthouse", "target": "n_lighthouse_entry"},
+    {"id": "c_grandma_cave", "label": "Follow the shore to the sea caves", "target": "n_cave_entrance"}
+   ]
+  },
+  {
+   "id": "n_records",
+   "body": "The town hall archive room is cramped and smells of old paper, but the clerk, an old friend of Theo's grandfather, digs out a ledger from 1962 without much convincing. Between shipping manifests and harbor fees, one entry stands out: a payment to a mason for sealing the lighthouse cellar door, dated three weeks after the wreck. No explanation is given for why. Theo taps the page thoughtfully. There's a whole shelf of older maps in the back room that might show what the cellar connected to, or the two of you could just walk straight out to the lighthouse and see the sealed door for yourselves.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_records_archive", "label": "Look through the old maps in the back room", "target": "n_archive"},
+    {"id": "c_records_lighthouse", "label": "Walk straight out to the lighthouse", "target": "n_lighthouse_entry"}
+   ]
+  },
+  {
+   "id": "n_reef",
+   "body": "The reef only shows itself for an hour or so at the lowest tides, a ridge of black rock stretching out from the point like a crooked finger. Theo leads the way, hopping between drier stones, and you spot it before he does: something metal, wedged in a crevice below the waterline, catching the light every time a wave pulls back. It could be nothing, an old anchor chain, a bit of hull plating. Or it could be worth wading out for a closer look before the tide turns and swallows the reef again. Theo glances at the sky, weighing whether it's worth the risk today.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_reef_wade", "label": "Wade out for a closer look", "target": "n_reef_wade"},
+    {"id": "c_reef_retreat", "label": "Decide it's too risky and head back to shore", "target": "n_shore_retreat"}
+   ]
+  },
+  {
+   "id": "n_passage",
+   "body": "Behind a curtain of ivy at the base of the cliff, exactly where the journal's sketch promised, you find a stairway cut into the rock, worn smooth by feet long gone. Cool, damp air drifts up from below, carrying the smell of salt and old stone. It's the kind of dark that swallows flashlight beams before they get far. Part of you wants to march right down and see where it leads. The more sensible part remembers that Theo lives five minutes away and has a much better flashlight than you do, not to mention someone who'd know if you didn't come back up.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_passage_alone", "label": "Start down the stairs alone", "target": "n_stairway_alone"},
+    {"id": "c_passage_theo", "label": "Go get Theo first", "target": "n_theo_join"}
+   ]
+  },
+  {
+   "id": "n_cave_entrance",
+   "body": "The sea cave mouth gapes low and dark at the base of the cliff, half filled with green water even at low tide. Barnacles crust the entrance like old scar tissue, and somewhere inside, water drips in a slow, steady rhythm you can hear from here. It looks passable if you're careful, ducking under the lip of rock where the ceiling is lowest. It also looks like exactly the kind of place a grownup would want to know about before you went poking around inside. You could duck in now while the tide is low, or jog back to town first and bring someone along.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_cave_enter", "label": "Duck into the cave now, while the tide is low", "target": "n_cave_inside"},
+    {"id": "c_cave_adult", "label": "Go back to town and bring an adult along", "target": "n_tell_adult"}
+   ]
+  },
+  {
+   "id": "n_lighthouse_entry",
+   "body": "Up close, the lighthouse is bigger and lonelier than it looks from the harbor, its white paint peeling to gray, gulls nesting in the gaps of the gallery railing. The main door is rusted nearly shut, but when you lean your shoulder into it, it groans open just enough to slip through. Inside, spiral stairs wind up into shadow, and somewhere far above, a heavier door probably leads out to the lamp room where the great lens used to turn. You could climb straight up to see the view for yourself, or take a slower look around the base first, in case something's been left behind down here.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_light_inside", "label": "Look around the base of the tower first", "target": "n_lighthouse_inside"},
+    {"id": "c_light_lamp", "label": "Climb straight up to the lamp room", "target": "n_lamp_room"}
+   ]
+  },
+  {
+   "id": "n_archive",
+   "body": "The back room of the archive is stacked with rolled maps nobody has touched in decades. Theo finds it first: a hand-drawn survey of the point from before the lighthouse was even built, showing a cave system snaking under the cliffs and connecting, according to a faint penciled note, straight to the lighthouse cellar. It matches everything Grandma Nell said. You could take this map straight to the cave entrance and see if it's accurate, or bring it to the historical society down the street first, since they've been trying to document the old smuggling tunnels for years and would probably want to see this immediately.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_archive_cave", "label": "Take the map straight to the cave", "target": "n_cave_entrance"},
+    {"id": "c_archive_society", "label": "Bring the map to the historical society first", "target": "n_end_society"}
+   ]
+  },
+  {
+   "id": "n_reef_wade",
+   "body": "You wade out carefully, cold water climbing past your ankles, and work the metal object loose from the crevice with both hands. It comes free in a shower of small crabs and sand: a curved fragment of bronze, green with age, part of a rim that once belonged to something much bigger. Theo's eyes go wide. It's a piece of the bell, he's almost certain of it. The tide is starting to turn, water sliding higher around your shins with every wave. You could wade back to shore now with your find, or spend a few more careful minutes searching the crevice for anything else before the reef disappears underwater.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_wade_home", "label": "Wade back to shore with the fragment", "target": "n_end_fragment"},
+    {"id": "c_wade_deeper", "label": "Search a little longer before the tide turns", "target": "n_reef_deeper"}
+   ]
+  },
+  {
+   "id": "n_shore_retreat",
+   "body": "You decide the reef isn't worth the risk today, not with the tide already creeping back in, and Theo doesn't argue. You pick your way back to the rocks above the waterline just as a wave sloshes over the spot where you'd been standing. It's a little disappointing, but Grandma Nell always says the sea will still be there tomorrow. Theo brightens and suggests the lighthouse instead, since nobody's stopped you from poking around there, and its rusted door has been daring the whole town to open it for thirty years. The two of you head up the point together, already trading theories about what you might find.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_retreat_lighthouse", "label": "Head up to the lighthouse with Theo instead", "target": "n_lighthouse_entry"}
+   ]
+  },
+  {
+   "id": "n_stairway_alone",
+   "body": "You take a breath and start down the stairs alone, one hand trailing the cold, damp wall. Your phone light bounces off wet stone, and the steps curve out of sight below you. Twelve steps down, the stairway opens into a narrow passage, and you can hear, faint and far off, the sound of the sea. It would be so easy to keep going and see where it leads. It would also be the kind of decision Grandma Nell would want to know about first, especially since nobody else even knows you found this staircase. You pause at the bottom step, weighing both options.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_stair_press", "label": "Keep going and see where the passage leads", "target": "n_tunnel"},
+    {"id": "c_stair_back", "label": "Turn back and get help first", "target": "n_tell_adult"}
+   ]
+  },
+  {
+   "id": "n_theo_join",
+   "body": "You run the five minutes to Theo's house and drag him back to the cliff, both of you a little out of breath and grinning at the discovery. Theo's flashlight is twice as bright as your phone, and having someone beside you makes the dark stairway feel more like an adventure than a risk. You leave a note on Grandma Nell's kitchen table, just in case, the way Theo insists any sensible explorer would. Together you duck under the ivy and start down the worn stone steps, your two flashlight beams crossing and uncrossing on the damp walls as the passage narrows ahead of you.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_join_continue", "label": "Head down into the passage together", "target": "n_tunnel"}
+   ]
+  },
+  {
+   "id": "n_tell_adult",
+   "body": "You climb back up to town and find Grandma Nell weeding her garden, and she listens to the whole story with her trowel forgotten in one hand. She doesn't scold you, but she does fetch her own flashlight, a proper long one, and her rubber boots, muttering about how her own grandmother used to say those caves weren't meant for one person alone. Theo tags along too once you swing by the dock. With two flashlights and an adult who actually knows the tide tables, the passage feels a lot less mysterious and a lot more like a proper expedition as you head down together.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_adult_enter", "label": "Head down together, properly equipped this time", "target": "n_tunnel"}
+   ]
+  },
+  {
+   "id": "n_cave_inside",
+   "body": "Inside, the cave opens up higher than you expected, ceiling lost in shadow, walls slick and glistening. Your light catches something carved into the stone near shoulder height: a ring of small symbols, anchors and waves and one shape that looks almost like a bell. They match, you realize, a pattern worked into the lighthouse's old iron gate. Whoever carved these knew both places were connected. Deeper in, the passage narrows and slopes upward, clearly heading toward the point. You could press on and follow it, or take a rubbing of the symbols with paper and pencil from your bag and head back to show someone properly.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_cave_deeper", "label": "Follow the passage deeper toward the point", "target": "n_tunnel"},
+    {"id": "c_cave_rubbing", "label": "Take a rubbing of the symbols and head back", "target": "n_end_rubbing"}
+   ]
+  },
+  {
+   "id": "n_reef_deeper",
+   "body": "You crouch back down, running your fingers along the crevice for anything else the sea might have left behind. Your hand brushes something else, smaller, maybe another fragment, but the water is climbing fast now, sloshing cold over your knees, and the reef rocks that were dry ten minutes ago are slick and disappearing one by one. Theo calls your name, pointing at the widening channel of water now cutting you off from shore. You have just enough time to make a choice: grab for whatever's wedged in the crevice, or leave it and get back across the reef while it's still crossable.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_deeper_fragment", "label": "Grab for it before the water gets too high", "target": "n_end_fragment"},
+    {"id": "c_deeper_retreat", "label": "Leave it and get back across the reef now", "target": "n_end_lowtide"}
+   ]
+  },
+  {
+   "id": "n_lighthouse_inside",
+   "body": "The base of the lighthouse is one round room, empty except for a rusted stove and a low shelf built into the curved wall. On the shelf, wrapped in a stiff old oilcloth, you find a logbook, its pages swollen with damp but still readable. The last entry is dated the night of the wreck, in handwriting that grows shakier line by line. You could sit right down and read it properly, or tuck it under your arm and climb the spiral stairs to the lamp room instead, where the light would be much better and the view might help everything make more sense.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_inside_logbook", "label": "Sit down and read the logbook", "target": "n_logbook"},
+    {"id": "c_inside_lamp", "label": "Climb up to the lamp room instead", "target": "n_lamp_room"}
+   ]
+  },
+  {
+   "id": "n_lamp_room",
+   "body": "The lamp room is a glass-walled circle at the very top of the tower, the old lens still sitting in its brass frame, dusty but intact, throwing rainbows across the floor wherever sunlight catches it. From up here you can see the whole cove: the harbor, the reef, and, if you squint, the dark mouth of the sea cave at the base of the cliffs. It's easy to see why ships once trusted this light. Part of the lens mechanism looks like it might still turn, if someone were brave enough to try it. Or you could just sit on the cold floor for a while and enjoy the view.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_lamp_lens", "label": "Try turning the old lens mechanism", "target": "n_lens_repair"},
+    {"id": "c_lamp_view", "label": "Sit and enjoy the view instead", "target": "n_end_view"}
+   ]
+  },
+  {
+   "id": "n_logbook",
+   "body": "You settle onto the dusty floor and read by the light coming through the doorway. The keeper's last entries describe the bell ringing wildly during a storm three nights running, and how, on the fourth night, exhausted, he silenced it himself so he could finally sleep, not realizing the storm that night would be the bad one. He wrote that he moved the bell down through a hidden door in the cellar so he'd never have to look at it again, and sealed the door behind him. Guilt seeps through every line. The last page mentions the door was hidden behind the old coal bin, easy to miss unless you knew to look.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_logbook_basement", "label": "Go find the hidden basement door", "target": "n_basement_door"}
+   ]
+  },
+  {
+   "id": "n_basement_door",
+   "body": "Back down at the base of the tower, you shove the old coal bin aside, and sure enough, a low wooden door is set into the stone behind it, its hinges orange with rust. It isn't locked, just stuck, swollen shut from decades of damp sea air. You brace your foot against the wall and pull until it finally gives way with a groan, revealing a dark passage sloping downward, cool air rushing up to meet you. Somewhere beyond it, you're almost certain, is the same tunnel system the cave and the old maps described. There's only one sensible direction from here, and that's down.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_basement_tunnel", "label": "Head down into the passage", "target": "n_tunnel"}
+   ]
+  },
+  {
+   "id": "n_lens_repair",
+   "body": "You examine the lens mechanism the way Theo's grandfather once showed him: a hand crank, stiff with rust, connected to gears that turn the whole lamp assembly. It takes both of you leaning your full weight on the crank, but slowly, with a groan that echoes off the glass walls, the mechanism gives and starts to turn. Dust sifts down like snow. It isn't wired for electricity anymore, but the old works still move, still could catch a lamp's light and throw it out over the water the way they did for a hundred years before anyone in town was born. You grin at each other, both a little amazed it actually worked.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_lens_fix", "label": "Lean into the crank with everything you've got", "target": "n_end_beacon"}
+   ]
+  },
+  {
+   "id": "n_tunnel",
+   "body": "The tunnel opens into a round chamber carved from the rock, and there, hanging from a wooden beam that has somehow survived thirty years of damp, is the bell. It's bigger than you imagined, green with age but whole, an anchor and a ring of small symbols cast into its side, matching everything you've seen today. Sunlight filters down through a crack far overhead, catching the bronze and making it glow faintly. Nobody has stood here in decades. You could reach up and ring it, just once, to hear what the whole town used to hear, carefully map the chamber to bring back to the historical society, or decide the crumbling ceiling looks too risky and head back the way you came.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_tunnel_bell", "label": "Reach up and ring the bell", "target": "n_end_bell"},
+    {"id": "c_tunnel_map", "label": "Carefully map the chamber to bring back", "target": "n_end_map"},
+    {"id": "c_tunnel_collapse", "label": "Decide the ceiling looks too risky and head back", "target": "n_end_collapse"}
+   ]
+  },
+  {
+   "id": "n_end_society",
+   "body": "The historical society director nearly drops her coffee when you unroll the survey map on her desk. Within the hour she's called two professors and the town's oldest lobsterman, and by evening half of Pike's Cove has crowded into the little museum to hear about tunnels nobody remembered existed. Grandma Nell squeezes your shoulder, beaming. The society votes on the spot to fund a proper survey of the caves, with you and Theo credited as the ones who found the map. It isn't the bell itself, not yet, but it's the beginning of finding it properly, with ropes and lights and people who know what they're doing. That feels like exactly the right way to start.",
+   "is_ending": true,
+   "ending": {"id": "e_society", "valence": "positive", "kind": "success", "title": "The Map That Started It All"}
+  },
+  {
+   "id": "n_end_fragment",
+   "body": "You carry the bronze fragment back across the reef just ahead of the rising water, cold and dripping and grinning the whole way. Grandma Nell recognizes the pattern on it instantly and calls the museum curator before you've even changed out of your wet shoes. By the weekend, your fragment sits in a little glass case with a card that reads Found by two young explorers of Pike's Cove, and half the town stops by to see it. Theo is already talking about going back at the next good low tide to search for more. It isn't the whole bell, but it's real, and it's proof the story was true all along.",
+   "is_ending": true,
+   "ending": {"id": "e_fragment", "valence": "positive", "kind": "success", "title": "A Piece of the Story"}
+  },
+  {
+   "id": "n_end_lowtide",
+   "body": "You let the crevice go and scramble for shore, Theo just ahead of you, both of you splashing through water that's already knee-deep by the time you reach the rocks. Whatever was wedged down there will have to wait for another tide. It's a little frustrating, dripping and empty-handed on the dry rocks, but Theo points out that the reef isn't going anywhere, and neither is whatever you almost found. You spend the walk back planning exactly when the next good low tide will be, and Grandma Nell, hearing the story over dinner, says that knowing when to turn back is half of being a good explorer.",
+   "is_ending": true,
+   "ending": {"id": "e_lowtide", "valence": "neutral", "kind": "setback", "title": "The Tide Wins This Round"}
+  },
+  {
+   "id": "n_end_rubbing",
+   "body": "You press paper against the carved symbols and rub gently with a pencil until the whole pattern appears, crisp and clear, ready to carry back into the daylight. At the museum, an elderly researcher studies your rubbing for a long moment before telling you it matches a smuggler's mark from over a century ago, older than the lighthouse itself. Nobody had documented it before. Your rubbing goes into the museum's permanent collection with your name on a small typed card beside it. Theo can't stop grinning about it for a week. You didn't ring any bells or find any treasure, but you found something nobody else had, and that turns out to be its own kind of discovery.",
+   "is_ending": true,
+   "ending": {"id": "e_rubbing", "valence": "positive", "kind": "discovery", "title": "What the Stone Remembered"}
+  },
+  {
+   "id": "n_end_view",
+   "body": "You decide the lens can wait for someone who actually knows what they're doing with a hundred-year-old machine, and settle onto the floor instead, watching the whole cove spread out below like a picture. Boats bob in the harbor, gulls wheel past the glass at eye level, and somewhere down there Grandma Nell is probably wondering where you've gotten to. You stay until the light starts turning gold over the water, then climb back down, already planning to bring a sketchbook next time. Some mysteries, you decide, don't need solving today. This one will still be waiting at the top of the stairs whenever you're ready to come back.",
+   "is_ending": true,
+   "ending": {"id": "e_view", "valence": "neutral", "kind": "discovery", "title": "The View From the Top"}
+  },
+  {
+   "id": "n_end_beacon",
+   "body": "The mechanism catches, and the great lens begins to turn, slow and grinding at first, then smoother, throwing broken rainbows around the glass room as it spins. From the harbor, someone spots the movement and shouts, and by the time you climb down, half the town is gathered at the base of the tower, staring up in disbelief. Theo's grandfather, the old keeper, has to sit down on a rock, wiping his eyes. That night, for the first time in thirty years, a lamp burns in the tower window, and the whole cove turns out to watch it glow. You and Theo did that, together, with nothing but rusty gears and a lot of stubbornness.",
+   "is_ending": true,
+   "ending": {"id": "e_beacon", "valence": "positive", "kind": "completion", "title": "The Light Comes Back On"}
+  },
+  {
+   "id": "n_end_bell",
+   "body": "You reach up and give the bell the gentlest push you can manage. It swings, slow and heavy, and rings out a single deep note that rolls through the chamber and up through the crack in the ceiling, out into the ordinary afternoon above. A moment later, faint and startled, you hear voices from the cliff top; someone in town heard it too, for the first time in thirty years. By evening, half of Pike's Cove has gathered at the cave mouth with ropes and lanterns, and Theo's grandfather is crying and laughing at once. The bell rings for the whole town again that night, and every night after, once they build a proper way down to it.",
+   "is_ending": true,
+   "ending": {"id": "e_bell", "valence": "positive", "kind": "completion", "title": "One Ring, Thirty Years Late"}
+  },
+  {
+   "id": "n_end_map",
+   "body": "You spend a careful twenty minutes sketching the chamber, the tunnel's turns, the crack of daylight overhead, everything you'll need to bring the historical society back here properly. It feels strange leaving the bell behind after coming this far, but Theo agrees it's the right call; a chamber this old deserves ropes, proper lights, and people who know how to keep both it and you safe. Your sketch, rough as it is, turns out to be exactly what the society needed to secure a grant for a real excavation. Six months later, you and Theo are invited to watch, from a safe distance, as the bell is finally lifted into the daylight for good.",
+   "is_ending": true,
+   "ending": {"id": "e_map", "valence": "positive", "kind": "success", "title": "Measure Twice, Ring Once"}
+  },
+  {
+   "id": "n_end_collapse",
+   "body": "You take one last look at the bell, glowing faintly in its shaft of sunlight, and decide the crumbling ceiling above it has the final word. Loose stone dusts down every few minutes, and this feels like exactly the kind of place grownups mean when they talk about being sensible. You and Theo back carefully out the way you came, marking the turns so you could find it again. Grandma Nell, when you tell her, looks more relieved than disappointed, and promises to get someone with real climbing gear out there before anyone goes back. The bell waited thirty years already, she points out. It can wait a few more weeks to be brought up properly and safely.",
+   "is_ending": true,
+   "ending": {"id": "e_collapse", "valence": "neutral", "kind": "setback", "title": "Knowing When to Turn Back"}
+  }
+ ]
+}
