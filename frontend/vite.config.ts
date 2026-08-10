@@ -3,6 +3,8 @@ import react from '@vitejs/plugin-react-swc'
 import { VitePWA } from 'vite-plugin-pwa'
 import { defineConfig } from 'vitest/config'
 
+import { NAVIGATE_FALLBACK_DENYLIST } from './src/pwa/navigateFallbackDenylist'
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
@@ -50,6 +52,10 @@ export default defineConfig({
         // #VERIFY: when adding a new bundled asset format, extend this
         // pattern and confirm the asset renders with the network disabled.
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webp}'],
+        // Paths the backend renders as real pages on this same origin, which
+        // the SPA navigation fallback would otherwise swallow. The reasoning,
+        // and the incident that produced it, live with the patterns.
+        navigateFallbackDenylist: [...NAVIGATE_FALLBACK_DENYLIST],
         // Story version blobs are immutable: cache-first, long-lived.
         // Other API GETs: network-first with a cache fallback, so reads the
         // client has fetched before survive a flaky network. This is a
