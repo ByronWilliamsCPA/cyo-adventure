@@ -3,7 +3,7 @@ title: "Data Model"
 schema_type: common
 status: published
 owner: core-maintainer
-purpose: "ER diagram and description of the 30 ORM tables backing CYO Adventure."
+purpose: "ER diagram and description of the 31 ORM tables backing CYO Adventure."
 tags:
   - architecture
   - reference
@@ -22,7 +22,7 @@ application boundary, which keeps schema migrations simple and avoids enum-type 
 The PlantUML source above (`diagrams/er-diagram.puml`) is authoritative: it carries the
 full CHECK constraint list, ON DELETE semantics, and a note on pure-attribution foreign
 keys to `user.id` that are deliberately not drawn as edges. The Mermaid version below is a
-hand-maintained companion (`diagrams/er-diagram.mmd`) covering the same 30 tables and
+hand-maintained companion (`diagrams/er-diagram.mmd`) covering the same 31 tables and
 relationships, kept for inline rendering directly on GitHub without opening the SVG.
 
 ```mermaid
@@ -466,6 +466,10 @@ erDiagram
 
 ## Table Reference
 
+Twenty-nine of the 31 tables are described below. `reading_activity_day` and
+`security_event` appear in both ER diagrams but have no section yet; that is known drift,
+not a claim that they are undocumented by design.
+
 ### `family`
 
 The ownership root. Every other entity is scoped to a family. Family ownership is
@@ -504,6 +508,44 @@ one adult can be a guardian, an admin, or both.
 | consent_ip | VARCHAR(64) NULL | Evidentiary record of the consenting request's client IP; never queried or joined on |
 | residence_country | VARCHAR(2) NULL | O-117 jurisdiction signal; ISO 3166-1 alpha-2, guardian-selected at consent. Membership in the assigned-code set is enforced in the API layer; the DB CHECK enforces two-letter syntax only |
 | adulthood_attested_at | TIMESTAMPTZ NULL | O-119 self-declared adulthood attestation timestamp; records when the guardian ticked the box, not any identity evidence. Paired with `residence_country` (both NULL or both set, and only alongside a recorded consent) |
+
+### `kws_verification`
+
+One Kids Web Services parent-verification attempt, from send to resolution (ADR-018 D1).
+Scope matters here, because the name invites a wrong reading: KWS establishes that an
+adult is an adult, so a `verified` row is corroborating evidence *beside* the 16 CFR
+312.5 consent record on `user.consent_*`, never a replacement for it. The row is written
+by `consent/service.py::start_parent_verification` and committed on its own session
+**before** the outbound send, and resolved later by
+`consent/service.py::record_parent_verified` when the authenticated `parent-verified`
+webhook quotes our `externalPayload` back. The redirect the parent's browser makes never
+writes here: its HMAC covers no timestamp and no nonce, so it is replayable by
+construction.
+
+| Column | Type | Notes |
+| -------- | ------ | ------- |
+| id | UUID PK | IS the correlation, not a surrogate key. No server or ORM default: the value handed to KWS in `externalPayload` and the value a delivery is looked up by must be the same value, so a caller that forgets to supply it gets a NOT NULL failure rather than a second, unmatchable id |
+| user_id | UUID FK | user.id; ON DELETE CASCADE (an attempt is personal data about the guardian who started it), indexed |
+| kws_environment | VARCHAR(16) | `test` or `production`, CHECK-constrained at rest. The KWS API reports nothing that identifies which environment answered, so this column is the only thing separating a sandbox attempt from evidence about a real parent |
+| status | VARCHAR(16) | `sent` (default), `verified`, or `failed`; CHECK-constrained at rest |
+| requested_at | TIMESTAMPTZ | Send time, `server_default now()` |
+| resolved_at | TIMESTAMPTZ NULL | NULL while `sent`; a CHECK enforces `(status = 'sent') = (resolved_at IS NULL)` so a "still waiting" filter can never disagree with the timestamp |
+| transaction_id | VARCHAR(128) NULL | KWS's opaque id, NULL until a delivery reports one |
+| enabled_methods | JSONB | `settings.kws_enabled_methods` as it stood at send time, copied not referenced |
+
+There is deliberately **no `parent_email` column, and none may be added under any name**.
+Keeping the parent's address out of this table is the entire reason the opaque
+per-attempt correlation exists (`consent/external_payload.py`); a column here would
+reintroduce the most sensitive field in the delivery as the table's natural key, and it
+would not survive a guardian changing their address either.
+`tests/unit/test_kws_verification_model.py::test_the_table_has_no_email_column` is the
+guard.
+
+`enabled_methods` is a snapshot rather than a live read for a compliance reason: the
+`parent-verified` event reports no verification method at all, so the set enabled at send
+time is the only bound that will ever exist on how a given parent was verified, and the
+vendor cannot supply one afterwards. Read live, that bound would evaporate retroactively
+whenever an operator changed the setting.
 
 ### `child_profile`
 

@@ -10,11 +10,17 @@
 '   src/cyo_adventure/api/reading.py   (child reading endpoints)
 '   src/cyo_adventure/api/device_grants.py (mint/list/revoke a device grant)
 '   src/cyo_adventure/core/device_grant.py (HS256 token, aud cyo-device-grant, 90d)
-'   src/cyo_adventure/db/models.py     (Storybook + GenerationJob lifecycles)
+'   src/cyo_adventure/db/models.py     (Storybook + GenerationJob lifecycles;
+'     KwsVerification)
+'   src/cyo_adventure/consent/          (ADR-018 D1: KWS parent verification;
+'     kws_client.py sends, api/kws_webhook.py is the only leg that writes
+'     consent state, api/kws_redirect.py is display-only)
 '   docs/planning/adr/adr-005-mandatory-human-approval.md (amended: global-admin approver)
 '   docs/planning/adr/adr-003-frontier-llm-generation.md
 '   docs/planning/adr/adr-009-supabase-platform.md (Supabase OIDC replaces Authentik;
 '     decision 2 = Supabase Postgres as the operational database)
+'   docs/planning/adr/adr-018-childrens-privacy-compliance.md (D1: verifiable
+'     parental consent; the KWS evaluation, still open)
 '   docs/planning/adr/adr-014-device-authorized-kid-access.md (third token type:
 '     the device grant; single kid-to-adult step-up boundary)
 '   docs/planning/r1-deferred-debt-register.md (Task 1.7: Supabase Postgres cutover;
@@ -56,6 +62,7 @@ rectangle "Ollama\n[Local fallback LLM]\nSelf-hosted, homelab" as ollama #FFEBEE
 rectangle "Supabase (OIDC)\n[Managed auth platform, ADR-009]\nGuardian + admin sign-in (Apple/Google)" as supabase_auth #E0F7FA
 rectangle "Supabase Postgres\n[Managed operational database,\nADR-009 decision 2]\nSession pooler :5432 (session mode)\nMetadata and reading state" as postgres #E0F7FA
 rectangle "Redis + RQ\n[Job queue]\nAsync generation jobs" as redis #E0E0E0
+rectangle "Kids Web Services (Epic)\n[Verifiable parental consent, ADR-018 D1]\nEvaluation only: wired on staging against\nthe KWS *Test* environment, nothing in production" as kws #FCE4EC
 
 ' --- Relationships ---
 child --> pwa : "Reads stories,\nchooses paths"
@@ -68,6 +75,9 @@ backend ..> ollama : "LLM completions\n(local fallback)"
 backend --> supabase_auth : "OIDC token validation\n(JWKS, ADR-009)"
 backend --> postgres : "Async SQLAlchemy 2\nsession pooler :5432"
 backend --> redis : "Enqueue generation jobs"
+backend ..> kws : "OAuth2 send-email\n(parent verification, ADR-018 D1)"
+kws ..> backend : "parent-verified webhook\n(the ONLY leg that writes consent state)"
+guardian ..> kws : "Completes Epic's hosted flow\n(card check, or AgeGraph inheritance)"
 
 note bottom of pwa
   Generated API client in
@@ -97,6 +107,19 @@ note bottom of backend
   - Storybook: draft -> in_review ->
     needs_revision | published | archived
   ("approved" is an action, not a resting state)
+end note
+
+note right of kws
+  Three legs, three trust properties. The
+  parent's browser also returns to us with an
+  HMAC'd redirect, which carries no timestamp
+  and no nonce and is therefore replayable by
+  construction: that leg renders a result page
+  and writes NOTHING. Detail:
+  seq-kws-verification.puml.
+  KWS is not a chosen mechanism yet (ADR-018 D1
+  is open); a verification against Epic's Test
+  environment is not a valid VPC.
 end note
 
 note right of supabase_auth

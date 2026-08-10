@@ -1,0 +1,162 @@
+@startuml seq-kws-verification
+' ============================================================
+' Sequence Diagram: KWS Parent Verification (ADR-018, D1)
+' Three legs with THREE DIFFERENT trust properties. The whole
+' point of this diagram is that they are not interchangeable:
+'   - SEND      us -> KWS. OAuth2 client-credentials over HTTP
+'               Basic against a Keycloak realm. Outbound only.
+'   - REDIRECT  parent's browser -> us. HMAC over
+'               "status:external_payload", which carries NO
+'               timestamp and NO nonce, so it is replayable BY
+'               CONSTRUCTION. Therefore DISPLAY-ONLY.
+'   - WEBHOOK   KWS -> us. Stripe-style t=/v1= over the RAW
+'               body with a bounded clock skew. The ONLY leg
+'               that writes consent state.
+'
+' Source files:
+'   src/cyo_adventure/consent/service.py       (start_parent_verification,
+'                                                record_parent_verified)
+'   src/cyo_adventure/consent/kws_client.py     (token mint + send-email;
+'                                                _TOKEN_PATH is a Keycloak
+'                                                realm, _SEND_EMAIL_PATH is
+'                                                the service API: two DISTINCT
+'                                                hosts)
+'   src/cyo_adventure/consent/external_payload.py (mint/serialize/parse the
+'                                                correlation; 250-char cap
+'                                                enforced before the request
+'                                                is built)
+'   src/cyo_adventure/api/kws_webhook.py        (POST /api/v1/webhooks/kws/
+'                                                parent-verified)
+'   src/cyo_adventure/api/kws_redirect.py       (GET /api/v1/consent/kws/return)
+'   src/cyo_adventure/core/config.py            (kws_* settings, the
+'                                                all-or-none credential
+'                                                validator, and the
+'                                                declared-methods validator)
+'   src/cyo_adventure/db/models.py              (KwsVerification)
+'   supabase/migrations/20260809130000_add_kws_verification.sql
+'   docs/planning/adr/adr-018-childrens-privacy-compliance.md (D1)
+' ============================================================
+
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+skinparam sequenceMessageAlign center
+
+actor "Parent / Guardian" as parent
+participant "Guardian console\n(frontend)" as console
+participant "consent/service.py\nstart_parent_verification" as service
+database "kws_verification\n(id IS the correlation,\nenabled_methods snapshot)" as db
+participant "consent/kws_client.py\nOAuth2 client-credentials" as client
+participant "KWS auth realm\nauth.kidswebservices.com\n(Keycloak)" as kws_auth
+participant "KWS service API\n/v1/verifications/send-email" as kws_api
+
+' ========== Leg 1: SEND ==========
+note over parent,kws_api: SEND (us -> KWS) - the row is committed BEFORE the email is requested
+
+parent -> console : "start parent verification"
+console -> service : "start_parent_verification(user_id, email)"
+service -> service : "correlation = mint_correlation()\n(the row id IS the correlation;\nno DB default, caller supplies it)"
+service -> db : "INSERT kws_verification\n(status='sent', requested_at,\n kws_environment,\n enabled_methods=list(settings...))"
+note right of db
+  **#CRITICAL data integrity.** This INSERT is
+  COMMITTED, on its OWN session, BEFORE the
+  outbound call. Sending first can put a real
+  email in front of a real parent with no row
+  for the webhook to match, and KWS will not
+  replay a delivery on request, so that attempt
+  is unattributable FOREVER.
+  Merely flushing into the caller's unit of work
+  reintroduces the hole by a longer route: the
+  very error the ordering exists to survive
+  rolls the row back.
+  The reverse failure (a ``sent`` row for an
+  email that never went) is cheap and self-heals.
+end note
+db --> service : "committed"
+service -> client : "send_verification_email(\n  parent_email, externalPayload=id)"
+client -> kws_auth : "POST /auth/realms/kws/protocol/\nopenid-connect/token\n[HTTP Basic: client_id + api_key]"
+kws_auth --> client : "access_token (bounded lifetime)"
+client -> kws_api : "POST /v1/verifications/send-email\n{parentEmail, externalPayload}\n[Bearer; User-Agent REQUIRED]"
+note right of client
+  Vendor constraints, learned empirically:
+  * a missing ``User-Agent`` is a 403
+    "Request blocked", not a 400
+  * rate limit is **10 requests/hour per unique
+    parent email**, in Test and production alike
+  * ``externalPayload`` caps at 250 chars
+end note
+kws_api --> client : "202 accepted"
+client --> service : "ok"
+service --> console : "VerificationCorrelation(attempt_id)"
+kws_api -> parent : "verification email"
+
+' ========== Leg 2: REDIRECT (display only) ==========
+note over parent,kws_api: REDIRECT return (parent's browser -> us) - DISPLAY ONLY, writes NOTHING
+
+participant "api/kws_redirect.py\nGET /api/v1/consent/kws/return" as redirect
+
+parent -> kws_api : "completes Epic's hosted flow\n(card check, or AgeGraph hit)"
+kws_api -> parent : "302 to our return URL\n?status=..&externalPayload=..&signature=.."
+parent -> redirect : "GET /api/v1/consent/kws/return"
+redirect -> redirect : "HMAC(KWS_VERIFICATION_SECRET,\n f\"{status}:{external_payload}\")\ncompare_digest"
+alt "secret unset"
+  redirect -> parent : "400 ConfigurationError\n(refuses to render a result from\nan unverifiable redirect)"
+else "signature absent or wrong"
+  redirect -> parent : "400 'We could not confirm this link'\n(same page for wrong key, wrong\nsignature, and missing signature)"
+else "signature valid"
+  redirect -> parent : "200 result page\n(Cache-Control: no-store)"
+end
+note over redirect
+  **Why this leg may never write consent state.**
+  The signed message carries no timestamp and no
+  nonce, so a URL a parent once received replays
+  forever. A consent record creatable by replaying
+  an old link would not be a consent record.
+  This route therefore renders and returns; the
+  webhook below is what makes it true.
+end note
+
+' ========== Leg 3: WEBHOOK (the only writer) ==========
+note over parent,kws_api: WEBHOOK (KWS -> us) - the ONLY leg that writes consent state
+
+participant "api/kws_webhook.py\nPOST /api/v1/webhooks/kws/\nparent-verified" as webhook
+participant "consent/service.py\nrecord_parent_verified" as resolve
+
+kws_api -> webhook : "POST parent-verified\n{orgId, productId, externalPayload, ...}\n[t=..,v1=.. over the RAW body]"
+webhook -> webhook : "HMAC(KWS_WEBHOOK_SECRET, raw body)\n+ bounded clock skew\n(KWS_WEBHOOK_MAX_SKEW_SECONDS)"
+alt "secret unset, or signature/skew fails"
+  webhook --> kws_api : "400 ConfigurationError\nor 401 AuthenticationError\n(unset does NOT mean trust unsigned)"
+else "signature valid"
+  webhook -> webhook : "_is_for_us(): orgId matches, and\nproductId matches OR is not yet pinned\n(vacuously true until a first delivery\nreveals the id)"
+  webhook -> resolve : "record_parent_verified(outcome)"
+  resolve -> db : "SELECT ... FOR UPDATE\nby attempt_id, then set\nstatus='verified'|'failed',\nresolved_at, transaction_id"
+  db --> resolve : "resolved"
+  resolve --> webhook : "ok"
+  webhook --> kws_api : "200"
+end
+
+note over webhook,db
+  **The callback does not report WHICH method ran**
+  (ADR-018 D1). Combined with the AgeGraph branch,
+  which verifies a parent by inheritance from another
+  KWS-enabled service, we cannot evidence HOW a given
+  parent was verified. That is why the row stores
+  ``enabled_methods`` as a snapshot taken at SEND time
+  rather than a live read: the operator's own versioned
+  configuration is the compliance evidence, and it must
+  not mutate under a past verification.
+end note
+
+legend bottom
+  Three legs, three trust properties (ADR-018 D1):
+  |= Leg |= Direction |= Authenticated by |= Replayable? |= May write consent state |
+  | Send | us -> KWS | OAuth2 client-credentials (HTTP Basic -> Bearer) | n/a (outbound) | creates the ``sent`` row, before the call |
+  | Redirect return | parent's browser -> us | HMAC over "status:external_payload" | **YES, by construction** (no timestamp, no nonce) | **never** |
+  | Webhook | KWS -> us | Stripe-style t=/v1= over the raw body, bounded skew | no (skew-bounded) | **yes, the only one** |
+  ----
+  Environment partition: every row stores its own ``kws_environment``. KWS reports nothing that
+  would let it be re-derived later, and the app's guard against production credentials fires only
+  when ENVIRONMENT == "local", which no deployed tier is. A Test verification is not a valid VPC.
+endlegend
+
+@enduml

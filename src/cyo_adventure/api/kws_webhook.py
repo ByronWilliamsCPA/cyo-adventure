@@ -59,6 +59,7 @@ from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
     import uuid
+    from collections.abc import Mapping
 
 logger = get_logger(__name__)
 
@@ -133,7 +134,9 @@ class _VerificationEvent(BaseModel):
     payload: _VerificationPayload = Field(default_factory=_VerificationPayload)
 
 
-def _reject(reason: str) -> AuthenticationError:
+def _reject(
+    reason: str, diagnostics: Mapping[str, int] | None = None
+) -> AuthenticationError:
     """Log why a delivery was refused and return the error the caller sees.
 
     The split matters. ``consent/kws_signature.py`` raises with the
@@ -152,6 +155,11 @@ def _reject(reason: str) -> AuthenticationError:
 
     Args:
         reason: The log-safe discriminator, never sent to the caller.
+        diagnostics: Extra integer measurements from the verifier, logged
+            beside ``reason``. Same destination and same secrecy as ``reason``:
+            telemetry only. ``consent/kws_signature.py`` constrains these to
+            ``int`` at the raising end, so nothing string-shaped can be routed
+            here by a later edit.
 
     Returns:
         AuthenticationError: The opaque error to raise, with no ``details``.
@@ -160,6 +168,7 @@ def _reject(reason: str) -> AuthenticationError:
         "kws_webhook_rejected",
         reason=reason,
         kws_environment=settings.kws_environment,
+        **dict(diagnostics or {}),
     )
     return AuthenticationError("KWS signature verification failed")
 
@@ -258,8 +267,21 @@ async def receive_parent_verified(
         # Re-raised, not propagated: the verifier's exception carries the
         # discriminator in `details`, and the app handler puts `details` in the
         # response body. `_reject` keeps it in telemetry and off the wire.
-        reason = (exc.details or {}).get("reason") or "unspecified"
-        raise _reject(str(reason)) from exc
+        # Typed `object`, not the mapping's own `Any`: the whole point of the
+        # block below is to interrogate these values' types, which a value the
+        # checker already believes could be anything cannot support.
+        details: Mapping[str, object] = exc.details or {}
+        reason = details.get("reason") or "unspecified"
+        # Everything else the verifier measured, filtered to ints so a future
+        # detail of any other shape cannot ride this path into the log, and
+        # with the two keys `_reject` sets itself excluded so a collision
+        # raises no TypeError at the logging call.
+        diagnostics = {
+            key: value
+            for key, value in details.items()
+            if key not in {"reason", "kws_environment"} and isinstance(value, int)
+        }
+        raise _reject(str(reason), diagnostics) from exc
 
     try:
         decoded: object = json.loads(body)

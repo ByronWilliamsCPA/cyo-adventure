@@ -265,6 +265,59 @@ class TestVerifyWebhookSignature:
             )
 
     @pytest.mark.unit
+    # The third offset turns `_NOW` seconds into `_NOW` MILLISECONDS, which is
+    # the shape a unit mismatch actually takes on the wire rather than an
+    # arbitrary large number.
+    @pytest.mark.parametrize("offset", [-301, 301, _NOW * 1000 - _NOW])
+    def test_window_rejection_measures_the_skew_it_rejected(self, offset: int) -> None:
+        """The reason label alone cannot separate three different faults.
+
+        A few seconds of skew is our own clock drifting, minutes to hours is a
+        replay or a queued redelivery, and a value near 1.8e12 is a sender
+        emitting milliseconds where this compares seconds. Those need an NTP
+        fix, an investigation, and a code change respectively, so shipping only
+        ``timestamp_outside_window`` forces a guess. The third parameter is
+        that millisecond case, which is the hypothesis a KWS Test delivery
+        raised on 2026-08-10 and which this measurement exists to settle.
+        """
+        timestamp = _NOW + offset
+        header = _header(timestamp=timestamp)
+
+        with pytest.raises(AuthenticationError) as exc_info:
+            verify_webhook_signature(
+                header=header, body=_BODY, secret=_SECRET, window=_WINDOW
+            )
+
+        details = exc_info.value.details or {}
+        assert details["reason"] == "timestamp_outside_window"
+        assert details["signature_timestamp"] == timestamp
+        # Signed, not absolute: a delivery from the past and one from the
+        # future are different faults, and only the sign tells them apart.
+        assert details["skew_seconds"] == -offset
+
+    @pytest.mark.unit
+    def test_window_diagnostics_are_integers_only(self) -> None:
+        """The channel must stay unable to carry a header, digest, or secret.
+
+        ``_fail`` types its extra fields ``int`` so nothing string-shaped can
+        be routed into telemetry by a later edit, and ``api/kws_webhook.py``
+        filters on the same property before logging. Both halves are cheap to
+        weaken by accident, so the invariant is pinned here rather than left to
+        the annotation, which no runtime check enforces.
+        """
+        header = _header(timestamp=_NOW + 100_000)
+
+        with pytest.raises(AuthenticationError) as exc_info:
+            verify_webhook_signature(
+                header=header, body=_BODY, secret=_SECRET, window=_WINDOW
+            )
+
+        details = exc_info.value.details or {}
+        extras = {key: value for key, value in details.items() if key != "reason"}
+        assert extras
+        assert all(isinstance(value, int) for value in extras.values())
+
+    @pytest.mark.unit
     @pytest.mark.parametrize("offset", [-300, 0, 300])
     def test_timestamp_at_the_window_edge_accepted(self, offset: int) -> None:
         """The window is inclusive, so a delivery exactly at the edge is valid."""

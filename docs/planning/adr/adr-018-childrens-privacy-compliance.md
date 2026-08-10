@@ -40,8 +40,33 @@ tags:
 > exception at 312.5(c)(7) as a route to a consent-free free tier; new D9 scoping California
 > SB 976, whose core provisions take effect 2027-01-01 and whose VPC framework incorporates
 > COPPA's approved-method list, so D1's answer propagates into state law.
+> **Amended**: 2026-08-09. D1 gains the engineering half of the KWS evaluation: the integration is
+> built and deployed to staging against the KWS **Test** environment, with nothing wired in
+> production. It records the two mechanisms that now enforce D1's "configuration is the evidence"
+> constraint, why only the webhook leg may write consent state, why the Test/Production partition
+> has no runtime backstop, and the three questions the Test environment exists to answer.
+> **This chooses nothing**: KWS versus a direct Stripe integration is still open, and the accepted
+> risks are unchanged.
+> **Amended**: 2026-08-09, later the same day. **Owner ruling on D1's enumerated-method
+> question.** The owner reviewed the corrected framing and the AgeCheq adverse authority and
+> ruled the shipped typed-name mechanism adequate, withdrawing brief Questions 1C and 1D from
+> the counsel engagement. Nothing in D1's analysis is retracted; the risk is reassigned, not
+> reduced. It is carried as an accepted exception at assurance-register row O-122, expiring at
+> R2. Questions 1A and 1B remain live counsel asks, so D1 is narrowed, not closed.
+> **Amended**: 2026-08-10. **Owner ruling that KWS card or debit verification is the sole VPC
+> method, and that no parent is verified until it is active.** This supersedes the 2026-08-09
+> acceptance rather than editing it: a risk decided to be eliminated before first real use is
+> scheduled remediation, not a carried exception, so O-122 moves off `accepted exception` while the
+> dated acceptance record is preserved. The typed-name attestation is **retained as consent
+> content** and retired only from the verification role. Two consequences: the § 312.2 "disclose"
+> analysis leaves the VPC critical path, since 312.5(b)(2)(ii) carries no no-disclosure condition;
+> and Gate 1's Q2 becomes the viability gate rather than a retirement opportunity, because the
+> ruling removed the fallback behind it. Question 1A survives for the installed base only, and that
+> population is not yet established.
 > **This does not flip the status.** Every decision below is an owner choice pending counsel
-> confirmation; only counsel closing D1 through D5 moves this ADR to Accepted. **D6 and D7 are
+> confirmation; only counsel closing D1 through D5 moves this ADR to Accepted. D1's remaining
+> counsel content is Questions 1A and 1B; its enumerated-method half is now an owner-accepted
+> risk rather than a pending answer. **D6 and D7 are
 > owner-side obligations rather than counsel questions**, and are deliberately excluded from the
 > counsel engagement. **D8 rides on Question 1A as a sub-question** rather than becoming a sixth.
 > The engagement stays scoped at five questions.
@@ -257,6 +282,42 @@ operator has submitted a VPC method for FTC approval since 2015. The accurate fr
 reduction, not authorisation**, and the live question is how much risk the current flow carries,
 which the AgeCheq material above suggests is more than previously assumed.
 
+**Owner ruling, 2026-08-09: risk accepted, question withdrawn from counsel.** Having read the
+corrected rule-text framing and the AgeCheq adverse authority above, the owner ruled that the
+mechanism as built meets the requirement, and withdrew brief Questions 1C and 1D from the counsel
+engagement. Three things this ruling is not:
+
+- **It is not a retraction.** Every paragraph above stands as written, including the finding that
+  312.5(b)(2)(i) has no in-app-signature method and that AgeCheq reaches the 312.5(b)(1) fallback
+  rather than only the enumerated list. Editing the analysis to agree with the decision would
+  falsify the record of what was known on the date the decision was made.
+- **It is not a reduction in the risk.** An acceptance reassigns who carries a risk; it does not
+  shrink it. `dpia.md` keeps this item at residual risk **High** for exactly that reason, and the
+  withdrawal removes the route by which the risk would have been resolved, not the risk itself.
+- **It is not a gap in the gate.** `api/profiles.py::_require_consent` and
+  `api/admin_profiles.py::_require_family_consent` are unchanged, so no child profile can be
+  created without a consent record. What is accepted is the *quality* of that consent evidence,
+  never its *absence*.
+
+Recorded as an accepted exception at `docs/security/assurance-register.md` row **O-122**, with
+compensating controls and an expiry at R2. Two routes could retire it early rather than defend it:
+the Safe Harbor evaluation in D4, and the KWS vendor path below, which reaches an enumerated method
+at (b)(2)(ii) without our building card handling. Questions 1A and 1B remain live counsel asks, so
+D1 is narrowed, not closed.
+
+**Rule text re-verified 2026-08-09, and every correction above survives.** The 2026-08-08 readings
+were taken once; they have now been checked again against the current text via eCFR's renderer API
+(the section's HTML page is bot-blocked and redirects, so a future check should use the API
+endpoint, not the page). The amended Rule's full compliance date, 2026-04-22, has passed, so this
+text binds. Confirmed: (b)(2)(i) still reads "postal mail, facsimile, or electronic scan" with no
+in-app signature method; (b)(2)(ii) reads "in connection with a transaction" with *monetary* gone,
+and retains the verbatim second limb requiring the card "provide notification of each discrete
+transaction to the primary account holder". Newly established: the list runs (i) through **(ix)**,
+and (ix) is a **text-message method** paired with (viii) email-plus, both conditioned on an operator
+that does not "disclose" **as defined at § 312.2**, whose internal-operations carve-out is a closed
+enumerated list with a no-other-purpose limb. Full analysis and what it means for the vendor
+characterisation is at assurance-register row O-122.
+
 **The payment-card rejection above is withdrawn (2026-08-08), and the reason it was made no longer
 exists.** The 2026-07-20 decision ruled out a payment-card transaction partly on PCI scope and
 partly because the app is not monetized, treating a payment-based consent method as something that
@@ -343,11 +404,15 @@ its inline citations resolve to internal search-tool tokens rather than URLs, so
 traces to a page and it is treated as a lead rather than authority. The AgeGraph finding above
 does not depend on it: it comes from the owner's own screenshots of the portal.
 
-**Flagged for counsel**: whether a typed-name attestation captured inside our own application
-is an enumerated 312.5(b)(2) method **at all** is the single highest-risk open question in
-this decision, and it is a broader question than the "is our signature good enough" one this
-ADR originally posed. It should be the first thing reviewed in the drafted consent-flow copy
-(`docs/compliance/` DPIA and Privacy Notice drafts, in progress).
+**~~Flagged for counsel~~, withdrawn 2026-08-09; now an accepted exception**: whether a
+typed-name attestation captured inside our own application is an enumerated 312.5(b)(2) method
+**at all** was the single highest-risk open question in this decision, and it is a broader
+question than the "is our signature good enough" one this ADR originally posed. The owner ruled
+the mechanism adequate and withdrew it from the engagement (see the Owner ruling above); it is
+carried at assurance-register row O-122 rather than answered. **It remains the highest-risk item
+in this decision after the ruling as it was before it**, which is what an acceptance means. The
+DPIA and Privacy Notice drafts still go to counsel on their own merits, and the Privacy Notice
+paragraph describing this flow must not acquire a claim about which method applies.
 
 **Implemented 2026-07-20.** `POST /api/v1/onboarding`'s `consent` payload
 (`accepted`/`policy_version`/`signer_name`) persists onto
@@ -355,8 +420,10 @@ ADR originally posed. It should be the first thing reviewed in the drafted conse
 (paired, CHECK-enforced); `api/profiles.py::_require_consent` gates
 `POST /api/v1/profiles` on it. Frontend: `GuardianConsentPage.tsx`, reached automatically via
 a new `AuthStatus = 'needs-consent'`. This is the engineering half of D1; the flagged
-counsel-review question above is unchanged by implementation and still needs an answer
-before this ADR can flip to Accepted.
+counsel-review question above is unchanged by implementation. **Superseded 2026-08-09**: that
+question no longer needs an answer before this ADR can flip to Accepted, because it was
+withdrawn from the engagement and accepted as a risk (O-122). What still gates Accepted is
+counsel closing Questions 1A and 1B, plus D2 through D5.
 
 **Gate hole found and closed 2026-08-08.** The implementation above covered only the
 guardian-facing create path. `POST /api/v1/admin/profiles`
@@ -385,6 +452,147 @@ mechanism. An admin approves (`-> active`) or denies (`-> deactivated`) via the 
 `pending` status already in this ADR's "already decided" list; an admin-invited guardian is
 still trusted immediately on bind, unaffected by this gate. Frontend:
 `GuardianAwaitingApprovalPage.tsx`, reached via a new `AuthStatus = 'awaiting-approval'`.
+
+**Built and deployed to staging 2026-08-09, against the KWS *Test* environment. This gathers
+evidence for D1; it does not close it.** Everything above was decided from vendor documentation
+and portal text. The owner's direction was to determine the vendor's actual behaviour empirically
+rather than wait on Epic, so the integration now exists and runs: `consent/kws_client.py` (the
+send leg, OAuth2 client-credentials), `consent/service.py`
+(`start_parent_verification` / `record_parent_verified`), `api/kws_webhook.py` (the
+`parent-verified` delivery), `api/kws_redirect.py` (the parent's browser returning from Epic's
+hosted flow), and a `kws_verification` table (migration `20260809130000`). **Nothing is wired in
+production**: `services/cyo-adventure/docker-compose.yml` in homelab-infra carries no `KWS_*`
+variables, so the integration is off there by configuration rather than by code.
+
+*What this does not settle.* It does not choose the route. KWS versus a direct Stripe integration
+remains open exactly as recorded above; building against Test is what makes that comparison
+decidable on observed behaviour instead of on documentation. It does not touch the flagged
+counsel question (withdrawn and accepted later the same day, see the Owner ruling above; a
+Test-environment verification would not have satisfied it in any case), and it converts neither
+accepted risk into a mitigated one.
+
+**The "configuration is the evidence" constraint now has a mechanism rather than an intention.**
+The consent-record paragraph above requires the stored method to be the vendor and the flow,
+accompanied by a snapshot of the method configuration in force at that moment. Two things now
+enforce that:
+
+- `kws_verification.enabled_methods` stores `settings.kws_enabled_methods` **as it stood at send
+  time**, never a live read, so a later configuration change cannot retroactively rewrite what a
+  past verification claims about itself.
+- The application **refuses to start** when KWS credentials are present and
+  `KWS_ENABLED_METHODS` is empty
+  (`core/config.py::_require_declared_kws_methods_when_configured`). Because the callback reports
+  no method, that declaration is the only bound on how a parent was verified, so an operator
+  cannot silently run the integration without one. This is not hypothetical: it refused to boot
+  the staging stack on first activation, which is a control behaving as intended rather than a
+  defect.
+
+**Only one of the three legs writes consent state, and the asymmetry is structural.** The
+`parent-verified` webhook is signed Stripe-style (`t=` / `v1=`) over the raw body with a bounded
+clock skew, and it alone resolves a `kws_verification` row. The redirect return is signed over
+`f"{status}:{external_payload}"`, which carries **no timestamp and no nonce and is therefore
+replayable by construction**, so that route is display-only and writes nothing. A consent record
+that could be created by replaying a URL a parent once received would not be a consent record.
+
+**The Test/Production partition is recorded per verification and has no runtime backstop.** Each
+row stores its own `kws_environment`, because KWS reports nothing that would let the environment
+be re-derived afterwards. The application's guard against production KWS credentials fires only
+when its own `ENVIRONMENT` is `local`, and every deployed tier declares `production`, so **no
+deployed environment can catch a misconfiguration here**. A verification performed against Epic's
+Test environment is not a valid VPC, so Test credentials must never be present in the production
+stack. This is an operational control resting on the operator, not an enforced one.
+
+*Live state, 2026-08-09.* Both routes answer on staging. The webhook leg verifies signatures
+(an unsigned request is rejected `401`); the redirect leg awaits its Control Panel secret.
+
+**Owner ruling, 2026-08-10: KWS card or debit verification is the sole VPC method, and no parent is
+verified until it is active.** No guardian will be verified through the typed-name path; the product
+waits for KWS rather than relying on an attestation whose enumerated status is unresolved. Three
+consequences, and one boundary that must not be lost:
+
+- **The typed-name attestation is retained, in a different role.** It is the record of *what the
+  parent agreed to*, which 312.5(a)(1) and 312.4 require independently of the verification method.
+  16 CFR 312.5(b)(2) establishes that the consenting person is a parent; it does not capture the
+  agreement itself. Retiring the attestation as the enumerated method is correct; deleting the
+  capture would create a different gap and must not follow from this ruling.
+- **The § 312.2 "disclose" analysis leaves the VPC critical path.** Its closed internal-operations
+  list conditions only (viii) and (ix). 312.5(b)(2)(ii) carries no no-disclosure condition, so a
+  card-only route does not turn on whether a child's free-text story wish reaching a third-party
+  classifier is disclosure. Brief Question 1B stays live on the processor and GDPR track for its own
+  reasons, and the unexecuted DPAs in `processor-dpa-checklist.md` remain scheduled work, but
+  neither gates consent any longer.
+- **O-122 stops being a carried acceptance.** A risk the owner has decided to eliminate before first
+  real use is scheduled remediation, not an accepted exception. The 2026-08-09 acceptance record is
+  preserved rather than edited, because it was true on its date; the status moves forward from it.
+- **Question 1A survives for the installed base only.** Any child profile already created behind the
+  typed-name gate was collected under a mechanism this ruling declines to rely on going forward.
+  Whether that set is non-empty, and whether every member of it is the owner's own family, is **not
+  yet established** and is a precondition for treating 1A as closed rather than narrowed.
+
+Two things must be true in code before this ruling is a control rather than an intention, and
+neither is true today: the consent gates still read `user.consent_*` and nothing else, so the
+typed-name path remains fully reachable in production; and nothing refuses a `kws_environment =
+'test'` row, so a staging-era verification could satisfy a production consent decision. The second
+is register row O-123, which this ruling promotes from follow-on work to a precondition of the gate
+change itself.
+
+**The vendor independently confirms the boundary, 2026-08-10.** Epic's own PV Service documentation
+states that the service "has not been designed to obtain consent from verified parents or guardians
+or to address direct notice requirements when required by applicable law (such as COPPA)", and that
+it is "usually used in combination with an internal consent management solution". That is Epic
+drawing the same line the first bullet above draws: KWS answers *is this person an adult holding a
+payment instrument*, and the record of *what was agreed to* is ours to keep. It removes the residual
+worry that retaining the typed-name capture after retiring it as the enumerated method was
+belt-and-braces; on the vendor's own account, dropping it would leave the direct-notice and
+agreement record with no owner at all.
+
+The same page names a separate **Consent Management Service**, available through Epic's Technical
+Account Manager rather than self-serve. This ADR has not evaluated it and does not adopt it. It is
+recorded here because it is a route the D1 analysis never considered, and because the decision
+whether to build the consent record ourselves or take Epic's is a real fork that should be taken
+knowingly rather than by default. Nothing about it blocks the Test-environment questions below, and
+it should not be allowed to delay them: it bears on how consent content is stored, not on whether
+the card method satisfies 312.5(b)(2)(ii).
+
+**What the Test environment exists to answer.** Four questions, held with stable identifiers in the
+[KWS Test-environment runbook](../../operations/kws-test-runbook.md), which is the operational
+source of truth for running them and now carries the run order this ruling implies:
+
+1. **Q1: does `parent-verified` fire at all on the pre-verified AgeGraph path?** If it does not, an
+   inherited verification produces no delivery and therefore no consent record, which would
+   restate accepted risk (a) from "verified under a method we did not choose" into "no record
+   was created at all". That is a materially worse finding than the one the owner accepted.
+   Epic's documentation (read 2026-08-10) raises the prior that the answer is bad without settling
+   it: it describes the pre-verified parent as one who "doesn't receive a verification request",
+   documents `parent-verified` only under the first-time flow's success branch, and notes that the
+   confirmation email on that path carries an intentional random delay of up to two hours. The run
+   must therefore distinguish *no delivery* from *a delivery deferred by hours*; the two have very
+   different consequences and a short observation window cannot tell them apart.
+2. **Q2: does the card method capture-and-refund, or authorise only, and is the cardholder
+   notified?** This bears directly on the 312.5(b)(2)(ii) mapping recorded above, whose second limb
+   requires notification "of each discrete transaction to the primary account holder".
+   **Run this first.** The ruling above removed the fallback, so Q2 is no longer the question that
+   could retire an accepted exception; it is the question that decides whether the sole chosen
+   method is available at all.
+3. **Q3: is the webhook signature carried in a header or in the query string?** The API reference and
+   the Control Panel copy disagree; `api/kws_webhook.py` records the open question as an
+   `#ASSUME` marker rather than resolving it silently. It needs no run of its own, being answered by
+   capturing the raw request on the Q2 delivery.
+4. **Q4: what shape is the redirect's `status` value actually in? ANSWERED 2026-08-10, no run
+   needed.** Epic's API pages give the return URL verbatim: `status` is a URL-encoded JSON object,
+   `{"verified":true,"transactionId":"<id>","errorCode":null}`, with `externalPayload` and
+   `signature` as separate query parameters. `api/kws_redirect.py::_reports_verified` already read
+   that shape first, so the implementation needed no change; the `#ASSUME` behind it did, and was
+   downgraded to an `#EDGE` on the bare-token fallback alone. Documentation is the better evidence
+   here than a run would have been, because the published contract covers the `errorCode` and
+   unverified branches that a single successful redirect would never exercise, and it spent none of
+   the ten-per-hour send budget.
+
+Q1 and Q2 require addresses with opposite histories and cannot share one, since an address Epic has
+already verified inherits through AgeGraph and runs no method at all. Both are blocked, as of
+2026-08-10, on publishing branding to the Test environment in the Developer Portal: until that is
+done `send-email` answers `400 ERR_INVALID_REQUEST` naming the unpublished branding, and no
+verification email is sent. That is an operator action in Epic's portal, not a code change.
 
 ### D2: Audience classification
 
