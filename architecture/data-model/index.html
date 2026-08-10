@@ -4073,6 +4073,7 @@ relationships, kept for inline rendering directly on GitHub without opening the 
     concept ||--o{ generation_job : "attempts"
     concept |o--o| story_request : "created on approval"
     user ||--o{ device_grant : "mints"
+    user ||--o{ kws_verification : "attempts"
     family ||--o{ kid_flag : "has flags"
     child_profile ||--o{ kid_flag : "flags"
     storybook ||--o{ kid_flag : "flagged in"
@@ -4111,6 +4112,17 @@ relationships, kept for inline rendering directly on GitHub without opening the 
         varchar(64) consent_ip "NULL; evidentiary only"
         varchar(2) residence_country "NULL; ISO 3166-1 alpha-2; O-117 jurisdiction signal"
         timestamptz adulthood_attested_at "NULL; O-119 self-declared adult attestation"
+    }
+
+    kws_verification {
+        uuid id PK "IS the correlation; no default, caller supplies"
+        uuid user_id FK "ON DELETE CASCADE"
+        varchar(16) kws_environment "test or production"
+        varchar(16) status "sent, verified, or failed"
+        timestamptz requested_at
+        timestamptz resolved_at "NULL while sent"
+        varchar(128) transaction_id "NULL; KWS's opaque id"
+        jsonb enabled_methods "snapshot at send time, never a live read"
     }
 
     child_profile {
@@ -6378,7 +6390,7 @@ primary authorization boundary; RLS is defense-in-depth beneath it, not a replac
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 9, 2026 15:35:42 UTC">August 9, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 10, 2026 01:50:28 UTC">August 10, 2026</span>
   </span>
 
     
