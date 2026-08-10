@@ -687,7 +687,7 @@ term at 1. The recommended path attacks both, ordered by cost.**
 ### 11.2 Layer 0: scoping (near-free, do first)
 
 Scope anti-repeat history and weighting to the requesting child rather than the family
-(`UW-C108`). Family scoping alone triples the second-request repeat rate at three children
+(`UW-C112`). Family scoping alone triples the second-request repeat rate at three children
 (0.287 versus 0.089), and a child-scoped counterfactual reproduces the single-reader curve
 to within noise. The data is already indexed. This also recovers 25 to 30% of the required
 catalog for no new content. Widen or drop the 20-row window and close the
@@ -801,7 +801,7 @@ exoneration.
 author-scored rather than blind (this environment could not spawn an isolated
 rater). **The 70.4-shared-grams-per-1000 figure cited above cannot serve as
 independent corroboration and the claim that it "will replicate on any parent"
-is wrong.** Per `AL-181` and `UW-C116` (both added by this PR), sibling-convergence
+is wrong.** Per `AL-185` and `UW-C120` (both added by this PR), sibling-convergence
 measurements are invalid when one author writes both arms of a comparison, because
 the number measures the author's de-convergence effort rather than the condition
 under test: the same author who filled mutants S and D produced 302 shared grams
@@ -854,9 +854,9 @@ mandate that Layer 1 addresses for free.
 ### 11.7 Quality guards as diversity rises
 
 More variety means more surface for defects, so two protections should land alongside:
-the fill-vs-contract fact audit (`UW-C103`), since nothing today verifies that prose honors
+the fill-vs-contract fact audit (`UW-C107`), since nothing today verifies that prose honors
 the obligations the contract declares; and the prose-craft detectors, kept advisory until
-validated out of sample (`UW-C107`).
+validated out of sample (`UW-C111`).
 
 ### 11.8 The two numbers that gate all of it
 

@@ -1,4 +1,6 @@
-"""Unit tests for the age-policy gate layer (PL-15..PL-18)."""
+"""Unit tests for the age-policy gate layer (PL-15 through PL-26)."""
+
+from __future__ import annotations
 
 import random
 import time
@@ -1665,3 +1667,46 @@ def test_fewest_decision_shortest_path_matches_brute_force_oracle():
     assert not mismatches, (
         f"{len(mismatches)} DP/brute-force mismatch(es): {mismatches[:5]}"
     )
+
+
+def test_pl24_gamebook_floor_scales_with_ending_count() -> None:
+    """The floor is max(3, ceil(5% of endings)), ruled 2026-08-09 (R1).
+
+    A 100-ending gamebook cannot clear the floor with 4 wins (floor 5); with
+    5 wins it is silent. The pre-ruling absolute floor of 3 let a 200-ending
+    book pass with the same 2-3 wins that satisfy a 30-ending one.
+    """
+    kinds: list[tuple[EndingKind, Valence]] = [
+        (EndingKind.DEATH, Valence.NEGATIVE)
+    ] * 96
+    kinds += [(EndingKind.SUCCESS, Valence.POSITIVE)] * 4
+    report = validate_policy(_mix_story(kinds=kinds, style=NarrativeStyle.GAMEBOOK))
+    winnable = [f for f in report.findings if "positive-valence ending(s)" in f.message]
+    assert len(winnable) == 1, "4 wins in 100 endings is below the scaled floor of 5"
+    assert "below the gamebook floor of 5" in winnable[0].message
+
+    kinds = [(EndingKind.DEATH, Valence.NEGATIVE)] * 95
+    kinds += [(EndingKind.SUCCESS, Valence.POSITIVE)] * 5
+    report = validate_policy(_mix_story(kinds=kinds, style=NarrativeStyle.GAMEBOOK))
+    assert not [f for f in report.findings if "positive-valence ending(s)" in f.message]
+
+
+def test_pl24_gamebook_floor_rounds_up_not_down() -> None:
+    """The 5% floor uses ``math.ceil``, not truncation or nearest-rounding.
+
+    At total=61, 5% is 3.05: ``ceil`` yields a floor of 4 while ``int`` and
+    ``round`` both yield 3. Combined with the ``max(3, ...)`` absolute floor,
+    3 wins in 61 endings only trips the warning under ``ceil``; a truncating
+    or nearest-rounding implementation would consider 3 wins sufficient and
+    stay silent.
+    """
+    kinds: list[tuple[EndingKind, Valence]] = [
+        (EndingKind.DEATH, Valence.NEGATIVE)
+    ] * 58
+    kinds += [(EndingKind.SUCCESS, Valence.POSITIVE)] * 3
+    report = validate_policy(_mix_story(kinds=kinds, style=NarrativeStyle.GAMEBOOK))
+    winnable = [f for f in report.findings if "positive-valence ending(s)" in f.message]
+    assert len(winnable) == 1, (
+        "3 wins in 61 endings is below the ceil-scaled floor of 4"
+    )
+    assert "below the gamebook floor of 4" in winnable[0].message

@@ -105,11 +105,60 @@ def test_label_rewritten_fill_passes_the_structure_check(tmp_path: Path) -> None
     assert exit_code == 0
 
 
+def test_title_rewrite_flag_permits_book_and_ending_titles(tmp_path: Path) -> None:
+    """With --allow-title-rewrite, storybook and ending titles are leaves.
+
+    Amendment 4 of the contract-hygiene pass (AL-161): an unslotted title
+    is byte-frozen across bindings and a top recognition channel, so a
+    title-contract fill rewrites both the book title and ending titles.
+    Without the flag the same fill must still fail.
+    """
+    filled = _filled()
+    filled["title"] = "The Comet Glyphs"
+    filled["nodes"][1]["ending"]["title"] = "Starlight Kept"
+    skeleton_path = _write(tmp_path, "skeleton.json", _SKELETON)
+    filled_path = _write(tmp_path, "filled.json", filled)
+    assert (
+        check_fill_integrity.main([skeleton_path, filled_path, "--allow-title-rewrite"])
+        == 0
+    )
+    assert check_fill_integrity.main([skeleton_path, filled_path]) == 1
+
+
 def test_rewritten_target_fails_the_structure_check(tmp_path: Path) -> None:
     """A fill whose choice target changes is a genuine structural violation."""
     filled = _filled()
     filled["nodes"][0]["choices"][0]["target"] = "n1"
     skeleton_path = _write(tmp_path, "skeleton.json", _SKELETON)
     filled_path = _write(tmp_path, "filled.json", filled)
+    exit_code = check_fill_integrity.main([skeleton_path, filled_path])
+    assert exit_code == 1
+
+
+def test_check_fill_integrity_rejects_same_file(tmp_path: Path) -> None:
+    """Comparing a file against itself is a degenerate, always-passing input.
+
+    AL-016: a builder bug once wrote the prose story to both the skeleton
+    and filled paths, and the structural comparison then compared a file
+    with itself and passed, making the verification vacuous. The checker
+    must refuse this input outright rather than report a meaningless
+    success.
+    """
+    skeleton_path = _write(tmp_path, "skeleton.json", _SKELETON)
+    exit_code = check_fill_integrity.main([skeleton_path, skeleton_path])
+    assert exit_code == 1
+
+
+def test_check_fill_integrity_rejects_a_skeleton_with_no_markers(
+    tmp_path: Path,
+) -> None:
+    """A ``skeleton`` argument with no ``<<FILL`` directive is not a skeleton.
+
+    Comparing two already-filled stories cannot detect a failed fill, so the
+    checker must refuse this input rather than run the structural comparison
+    against a skeleton that carries no markers to check.
+    """
+    skeleton_path = _write(tmp_path, "skeleton.json", _filled())
+    filled_path = _write(tmp_path, "filled.json", _filled())
     exit_code = check_fill_integrity.main([skeleton_path, filled_path])
     assert exit_code == 1

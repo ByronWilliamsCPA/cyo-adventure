@@ -669,7 +669,7 @@ take the legacy free-text fill path in matching). The
 next-generation checks the critiques specify, in priority order: tag-vs-beat honesty audit,
 positional fate-bias check with seeded option shuffling, sibling reachable-ending-overlap and
 k-hop funnel metrics, merge-node beat-presupposition linting, and a near-cap headroom
-warning. Lessons AL-142 through AL-150 carry these with proposed changes and register homes.
+warning. Lessons AL-146 through AL-154 carry these with proposed changes and register homes.
 
 ---
 
@@ -756,12 +756,12 @@ variants), now with direct experimental evidence:
    PR (2026-08-09) tested bounded per-request mutation of one parent skeleton and withdrew
    it as a diversity lever: it preserved 100% of the parent's beat directives, structural
    distances landed 0.0000-0.0064 against the 0.05 floor, and a reader reached the
-   same-book verdict at position 3 (AL-179/UW-C115; full result in
+   same-book verdict at position 3 (AL-183/UW-C119; full result in
    `docs/planning/skeleton-free-alternatives-proposal-2026-08-09.md` section 11.5). The
    withdrawal is specific to per-request mutation as a diversity lever; cross-skeleton
    recombination remains an open question and is not ruled out by this result.
 
-Lessons AL-151..AL-153 (UW-C88..UW-C90) carry the defects and proposals.
+Lessons AL-155..AL-157 (UW-C92..UW-C94) carry the defects and proposals.
 
 ---
 
@@ -810,8 +810,8 @@ walk is the sole correctness guarantee), and binds generator output equally.
 ### Options, with a recommendation
 
 1. **Accept and institutionalize** (recommended default): ship the pilot harness as a
-   first-class authoring tool (UW-C80); "hand-authoring" means authoring the creative layer.
-2. **Relax the couplings** (UW-C85 calibration review): CG-2 widened to (2,3), a CG-3
+   first-class authoring tool (UW-C84); "hand-authoring" means authoring the creative layer.
+2. **Relax the couplings** (UW-C89 calibration review): CG-2 widened to (2,3), a CG-3
    terminal-node exemption, endings floor keyed to outcome identities. This meaningfully
    widens the hand-feasible envelope at small/medium cells and reduces template pressure for
    everyone, but 245-node gamebook cells remain generator territory under any plausible
@@ -822,19 +822,19 @@ walk is the sole correctness guarantee), and binds generator output equally.
 4. **Reserve the pure-hand path for the small cells** (3-5, 5-8), where it demonstrably
    works and where craft density matters most per node.
 
-Recommendation: 1 + 4 now, with 2 decided in the UW-C85 calibration review before wave 1.
+Recommendation: 1 + 4 now, with 2 decided in the UW-C89 calibration review before wave 1.
 
 ---
 
-## Part 8: UW-C85 calibration review, expanded scope (2026-08-09 follow-up)
+## Part 8: UW-C89 calibration review, expanded scope (2026-08-09 follow-up)
 
 Owner directed implementation of the hand-authoring recommendations and asked whether other
-adjustments belong in the UW-C85 calibration revision. Framing principle for every item,
+adjustments belong in the UW-C89 calibration revision. Framing principle for every item,
 per the owner's steer that the goal is high-quality LLM-GENERATED stories with few
 hand-authored ones: a constraint earns its place by improving the reader's experience, not
 by being satisfiable; a constraint that merely forces authoring-agent contortions (harness
 tricks, padding, tag gymnastics) without a reader-visible payoff is a defect. The original
-six UW-C85 items plus six additions surfaced by the pilot, the critiques, and the diversity
+six UW-C89 items plus six additions surfaced by the pilot, the critiques, and the diversity
 experiment:
 
 | # | Constraint | Problem | Recommendation |
@@ -847,7 +847,7 @@ experiment:
 | 6 | Cap headroom discipline | Zero-headroom drafts are unfillable in practice | Generators target <= 90% of any hard cap; strict warns at >= 98%; adopt (new check) |
 | 7 | PL-23's 200-word no-op floor | Two similar small skeletons silently get different effective rule sets; the author is never told which regime applies | Drop the no-op floor (the derived clock now prints unconditionally), or print the regime; adopt drop |
 | 8 | Depth-qualified endings, zero shallow allowance | Bans the telegraphed page-2 gotcha outright rather than discounting it; the 13-16 pilot needed a pre-ending linker trick | Allow one shallow ending per book exempt from qualification; adopt |
-| 9 | In-degree cap counts parallel edges | A 3-option soft-decision fan spends 3 of the cap on arrival; drafters chain continues through each other, creating the runs item 2 penalizes | Count distinct predecessor NODES for the cap; leave funnel INTENT to UW-C82's k-hop and sibling-consequence metrics |
+| 9 | In-degree cap counts parallel edges | A 3-option soft-decision fan spends 3 of the cap on arrival; drafters chain continues through each other, creating the runs item 2 penalizes | Count distinct predecessor NODES for the cap; leave funnel INTENT to UW-C86's k-hop and sibling-consequence metrics |
 | 10 | Kid-band walk floors (60/40%) | Measure almost nothing at 3-5 (band policy already forces ~100%) | Keep as cheap backstops; no change |
 | 11 | CG-1 run cap 6 at gamebook cells | Dead letter: CG-3 makes runs of 2-6 unusable anyway | Leave until stop-based measurement (UW-C23) lands; no change |
 | 12 | PL-25 window vs ADR-011's "2-3 node" prose | Code anchors on JHM 2019 (windows to 9-10 nodes); the ADR text was never annotated as superseded | Annotate ADR-011 section 6; keep the code values |
@@ -856,7 +856,7 @@ Items 1-3, 5-9 change what compliant skeletons look like and should be ruled bef
 wave 1; items 4, 10-12 are documentation or post-wave recalibration. Also implemented on
 the open, unmerged PR #661 (the hand-authoring recommendations, re-scoped for LLM authoring
 per the owner's steer): `scripts/generate_drafting_brief.py` emits the full per-cell
-constraint set from the enforced sources (AL-149 applied; hand-copied briefs drifted twice
+constraint set from the enforced sources (AL-153 applied; hand-copied briefs drifted twice
 during the pilot), and PR #661 also fixes `skeleton-format.md` to carry the corrected word
 table (see 2.1), the strict-bar section, and the `{SLOT}`/contract grammar (see 2.3); none
 of this has landed on `main`. The pure-hand drafting path receives no further tooling
