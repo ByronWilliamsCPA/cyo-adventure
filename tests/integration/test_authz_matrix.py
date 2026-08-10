@@ -334,7 +334,10 @@ def _authoring_plan_body(_seed: Seed) -> dict[str, Any]:
 
 
 def _send_back_body(_seed: Seed) -> dict[str, Any]:
-    return {"reason": "authorization matrix regression check"}
+    return {
+        "reason": "authorization matrix regression check",
+        "reason_code": "other",
+    }
 
 
 def _assignment_body(seed: Seed) -> dict[str, Any]:

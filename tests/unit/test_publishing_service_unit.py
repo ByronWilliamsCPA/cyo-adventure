@@ -294,7 +294,9 @@ async def test_send_back_moves_to_needs_revision() -> None:
     story = _story("in_review")
     session = AsyncMock(spec=AsyncSession)
 
-    await service.send_back(session, _principal("admin"), story, "too scary")
+    await service.send_back(
+        session, _principal("admin"), story, "too scary", reason_code="safety_concern"
+    )
 
     assert story.status == "needs_revision"
     session.flush.assert_awaited_once()
@@ -308,7 +310,9 @@ async def test_send_back_illegal_status_raises() -> None:
 
     principal = _principal("admin")
     with pytest.raises(StateTransitionError):
-        await service.send_back(session, principal, story, "reason")
+        await service.send_back(
+            session, principal, story, "reason", reason_code="other"
+        )
 
     session.flush.assert_not_awaited()
 

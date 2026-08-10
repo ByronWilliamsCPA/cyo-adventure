@@ -1734,6 +1734,26 @@ class CharacterListView(BaseModel):
 # Approval schemas
 # ---------------------------------------------------------------------------
 
+# Closed-vocabulary calibration signal for a reviewer's send-back decision
+# (review-scorecard calibration corpus). Mirrors the KidFlagReasonLiteral
+# pattern above: named once, referenced from the request and response models
+# below so the wire contract and any future persistence stay in lockstep.
+# "other" is the deliberate escape hatch for a reason this list does not
+# anticipate; the free-text `reason` field on SendBackRequest still carries
+# the reviewer's prose for that case.
+SendBackReasonCodeLiteral = Literal[
+    "safety_concern",
+    "reading_level",
+    "coherence_error",
+    "continuity_error",
+    "weak_choices",
+    "repetitive",
+    "prose_quality",
+    "unsatisfying_ending",
+    "factual_error",
+    "other",
+]
+
 
 class SendBackRequest(BaseModel):
     """Body for the send-back endpoint."""
@@ -1749,6 +1769,15 @@ class SendBackRequest(BaseModel):
     reason: Annotated[
         str, StringConstraints(strip_whitespace=True, min_length=1, max_length=2000)
     ]
+    # #ASSUME: data integrity: required, not optional. send-back has exactly
+    # one production caller (api/approval.py -> the admin console's review
+    # dialog), so there is no external integrator whose existing calls this
+    # would break; requiring it here is what makes "every send-back has a
+    # calibration-ready reason code" hold structurally rather than by
+    # reviewer discipline. The free-text `reason` above stays alongside it,
+    # unchanged, for the prose a reviewer still wants to leave.
+    # #VERIFY: test_send_back_requires_reason_code (422 when omitted).
+    reason_code: SendBackReasonCodeLiteral
 
 
 class SubmittedView(BaseModel):
@@ -1791,6 +1820,7 @@ class SentBackView(BaseModel):
     id: str
     status: Literal["needs_revision"]
     reason: str
+    reason_code: SendBackReasonCodeLiteral
 
 
 class ArchivedView(BaseModel):
