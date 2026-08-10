@@ -133,3 +133,56 @@ alongside any published kappa, and alongside any threshold calibrated against it
 - `scripts/check_branch_obligations.py`, the deterministic delivery check that should
   run first and needs no annotation at all
 - `AL-188`, `AL-189`, and the register rows `UW-C126`, `UW-C127`
+
+## Validity, measured after reliability (2026-08-10)
+
+The section above establishes that annotators **agree**. This section records that agreement is
+not enough, and that v1 fails the separate test of measuring the right thing.
+
+Two book pairs over one graph were scored both ways: by these signatures, under three independent
+blind annotators, and by two blind readers of the finished books rating decision repetition.
+
+| Measure | Control pair | Treatment pair |
+| --- | --- | --- |
+| Same-decision reuse (one annotator, all three plans) | 24 / 28 | **28 / 28** |
+| Action-family rate | 0.929 | **1.000** |
+| Tradeoff rate | 0.893 | **1.000** |
+| Ordered-sequence rate | 0.909 | **1.000** |
+| Two blind readers | **more repetitive** | less repetitive |
+
+**The signatures rank the pairs in the opposite order from the readers, on every axis.** Kappa
+between annotators on the same artifacts is 0.96 on `action_family` and 1.000 on `consequence`, so
+this is not noise. It is a reliable measurement of something that is not the target.
+
+The diff says exactly where v1 breaks, and it breaks in both directions at once.
+
+**Deaf at the forks that decide it.** At the three forks both readers named as decisive
+(`n_clockface`, `n_vault`, `n_setjam`), all three plans carry *identical* signatures, choice for
+choice. "Compute a value and dial it" and "match a shape against a full-size drawing and seat the
+part" are one signature and two kinds of thinking. **There is no field for what kind of reasoning
+a choice demands**, and that is the axis readers respond to.
+
+**Over-sensitive at the door.** The control pair's entire measured advantage comes from four entry
+forks where a change of world turned "get past the building" into "read what the building
+remembers", moving PHYSICAL_RISK/BARRIER/ACCESS to INFORMATION/LOCATION/KNOWLEDGE. The act did not
+change; the scenery did, and the labels followed it. This is Rule 2 violated through the plan
+rather than through the annotator: the annotators labelled `choice_semantics` faithfully, and the
+scenery had already entered the text they were given.
+
+### What this means for a v2
+
+1. **Add a reasoning-kind dimension** (compute, match, recall, infer, negotiate, exert). This is
+   the decisive gap and it outranks the three gaps recorded above.
+2. **Consider making solution transfer the primary construct.** "Do these two puzzles resolve by
+   the same operation to the same answer" is what the readers actually used, is what discriminated
+   in the rating, and is plausibly computable from the plans.
+3. **Rule 2 needs an upstream counterpart.** A rule binding the annotator cannot help when the
+   plan's own `choice_semantics` describes one act in two vocabularies. Whoever writes
+   `choice_semantics` is subject to Rule 2 as much as whoever labels it.
+
+### Standing conclusion
+
+Fields that clear the kappa floor may be **reported**. Until a v2 vocabulary is measured against
+reader judgement rather than against another annotator, **no field here may route anything**: not
+a gate, not a repair, not a generation retry. Reliability was necessary and is not sufficient, and
+this project now has the counterexample that proves it.

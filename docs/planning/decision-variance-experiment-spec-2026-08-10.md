@@ -193,3 +193,180 @@ whether varying decisions *would* move recognition. It says only that varying th
 fixed graph is much harder than assumed, and that our first attempt to do so failed while
 appearing to succeed. Testing the lever still requires an architecture that can actually
 produce different decisions, which is now the gating problem rather than a downstream one.
+
+---
+
+## 9. Results, second attempt (2026-08-10)
+
+Section 8 recorded a run that terminated before any fill. This section records the run that
+completed: a third contract (`contract_v5`) over the same graph, filled, guarded, and rated.
+
+**Headline.** With a clean fill, two blind raters in counterbalanced order both judged the
+treatment pair **less** decision-repetitive than the control pair, which is the pre-registered
+outcome 1 in direction. Both also called the effect thin. And the deterministic signature
+instrument ranked the same two pairs in the **opposite** order, on every axis, under three
+independent annotators. That contradiction, not the rating, is this run's main result.
+
+### 9.1 Two prep defects invalidated the first two attempts
+
+Both were mine, both were invisible to every guard then in place, and both are now checkable.
+
+**Shell contamination (`AL-195`).** The fill shell carried the skeleton's own choice labels with
+slot tokens bound. Because 13 of 35 skeleton labels carry no slot token (`AL-184`), the treatment
+author was handed clocktower-dial vocabulary for a salvage story. It rewrote all 35 labels and
+still stayed inside the frame, producing "Force the hands into place instead" against the shell's
+"Force the hands by guesswork". Every deterministic guard passed while sibling grams hit 28.8 per
+1000, the highest ever measured, with 4 shared menu frames. Rebuilding the shell with every label
+as a `<<FILL label contract='node.choice'>>` directive took the same pair to 8.9 and 0.
+
+**Device collision (`AL-196`).** The treatment binding shared 14 of 24 props with the control,
+including the cipher itself. Two blind raters, opposite orders, both named exactly those props as
+decisive, and one added that stripping two of the affected forks would have left the pairs
+indistinguishable. That rating measured the binding, not the contract, and was discarded. Only 6
+of the 14 sat at the same node; the other 8 were the same props relocated, which a same-slot diff
+scores as fresh and which a rater described unprompted as "variety fork by fork but pure
+rearrangement at the book level". `scripts/check_device_collision.py` now compares every prop
+against every prop and scores that binding 0.583.
+
+### 9.2 The clean treatment was delivered
+
+`armV5b_selection.json` rebinds every device with no collision, keeping the shared world. The
+resulting fill, `filled_V5c.json`, passes the whole battery (`eval_v5c.sh`):
+
+| Guard | Treatment pair (C vs V5c) | Control pair (C vs D) |
+| --- | --- | --- |
+| Device collision rate | 0.000 | 0.000 |
+| Shared 4-grams per 1000 | **1.8** | 2.7 (post-revision) |
+| Shared menu frames (margin 0) | 0 | 0 |
+| Validator gate | not blocked, 1 advisory | not blocked |
+| Prose craft, em-dashes, titles | clean | clean |
+
+The treatment pair is now *less* lexically convergent than the control pair while sharing the
+world the control pair does not.
+
+### 9.3 The readers: treatment less decision-repetitive, thinly
+
+Two rater instances, each rating both pairs within-rater, in opposite pair orders, blind to the
+design. Scores are (rater A, rater B).
+
+| # | Question | Control α+β | Treatment α+γ |
+| --- | --- | --- | --- |
+| 1 | Same kinds of actions | 5, 5 | 4, 5 |
+| 2 | Same tradeoffs | 5, 5 | **4, 4** |
+| 3 | Different consequences *(high good)* | 2, 2 | **3, 3** |
+| 4 | Repeated sequence | 5, 5 | 5, 5 |
+| 5 | Meaningful and informed *(high good)* | 3, 4 | 4, 4 |
+| 6 | Solution transfer *(high bad)* | 4, 4 | **3, 3** |
+| | **Forced comparison** | **more similar** (high conf. / medium conf.) | less similar |
+
+Both raters converged unprompted on the same three decisive forks, `n_clockface`, `n_vault` and
+`n_setjam`, and on the same mechanism: the control changes every noun and almost no decision,
+while the treatment keeps the nouns and changes the act. The control and its base both decode a
+notation and set a brass dial at the top of the tower; the treatment checks an object's
+orientation against a full-size drawing and seats it at a bench.
+
+**The result survives a stacked deck.** The treatment shares the control base's entire world while
+the control changes world wholesale. One rater flagged this directly: the treatment "will *feel*
+more repetitive to a child than it scores here, and if you disagree with excluding [world], the
+answer flips." Excluding shared world is the owner's operational definition (section 6), so under
+that definition the treatment wins while carrying the heavier load.
+
+**Both raters called the effect thin,** and it is recorded as thin: "three re-skins of one graph",
+separation resting on three forks out of eleven, one rater at medium confidence.
+
+### 9.4 Q6 was invented by the raters, and it is the item that worked
+
+The five-question instrument of section 4 was amended before this run. Both raters of the
+discarded round, independently and without conferring, reported that Q1 and Q4 saturate at 5 for
+both pairs because all three books share one skeleton, and both proposed the same missing item:
+*did solving the first book hand you the answer to the second* (`AL-198`). It was added as Q6.
+
+On first use, Q1 and Q4 saturated exactly as predicted (Q4 is 5,5 against 5,5, contributing
+nothing), and Q6 separated the pairs cleanly and consistently, 4,4 against 3,3. Q2, Q3 and Q6
+carried the entire judgement. Two raters converging on an unprompted diagnosis, which then
+replicates on the next run, is the strongest instrument evidence this programme has produced.
+
+### 9.5 The signature instrument inverts the reader ordering
+
+This is the finding that matters. Blind annotators labelled the contracts from
+`choice_semantics` alone, stripped of prior annotations, neutrally named, with no knowledge of
+what was being compared or that divergence was the goal.
+
+| Measure | Control pair (v2 vs v3) | Treatment pair (v2 vs v5) |
+| --- | --- | --- |
+| Same-decision reuse, one annotator over all three plans | 24 / 28 | **28 / 28** |
+| Action-family rate | 0.929 | **1.000** |
+| Tradeoff rate | 0.893 | **1.000** |
+| Consequence rate | 0.857 | **0.964** |
+| Ordered-sequence rate | 0.909 | **1.000** |
+| Two blind readers of the filled books | **more repetitive** | less repetitive |
+
+Replicated across annotators: two further independent annotators scored the control pair at 24/28
+and 23/28 (family 0.893 both), against the earlier pair of annotators' 28/28 and 1.000 for the
+treatment. Every annotation ranks the treatment as the more repetitive pair; every reader ranks it
+as the less repetitive one.
+
+Unreliability does not explain it. Fleiss' kappa between the two independent annotators is 0.961
+and 0.962 on `action_family`, 0.924 and 0.803 on `target_role`, 1.000 on `consequence`, and 0.675
+and 0.672 on `tradeoff`, all above the 0.60 floor and mostly in the almost-perfect band.
+
+### 9.6 Why it inverts, exactly
+
+Two errors in opposite directions, both visible in one diff.
+
+**Blind where it matters.** At the three forks both raters called decisive, the signatures are
+*identical across all three plans*, choice for choice:
+
+| Fork | v2 | v3 | v5 |
+| --- | --- | --- | --- |
+| `n_clockface.c_face_correct` | CRAFT / EFFORT_VS_SHORTCUT | CRAFT / EFFORT_VS_SHORTCUT | CRAFT / EFFORT_VS_SHORTCUT |
+| `n_vault.c_vault_share` | MORAL / NONE | MORAL / NONE | MORAL / NONE |
+| `n_setjam.c_jam_oil` | CRAFT / NONE | CRAFT / NONE | CRAFT / NONE |
+
+"Compute a value and dial it" and "match a shape and seat the part" are one signature and two
+kinds of thinking. The vocabulary has no dimension for **what kind of reasoning the choice
+demands**, which is precisely the axis the readers responded to and precisely what Q6 measures.
+
+**Leaking scenery where it should not.** The control pair's entire measured advantage comes from
+four entry forks, `n_start.c_door`, `n_start.c_keeper`, `n_door.c_door_force` and
+`n_door.c_door_window`, where the control's world change turns "get past the building" into "read
+what the building remembers": PHYSICAL_RISK/BARRIER/ACCESS becomes INFORMATION/LOCATION/KNOWLEDGE.
+The act is the same, the framing changed with the scenery, and the labels followed. Rule 2 of the
+labelling principle forbids exactly this, and the annotators were not at fault: they labelled the
+`choice_semantics` text faithfully, and the scenery had already entered the plan.
+
+So the instrument is deaf at the climax and over-sensitive at the door. Both errors push the same
+way here, which is why the inversion is clean rather than noisy.
+
+### 9.7 Consequences for the proposed architectures
+
+- **A decision-program compiler that emits DecisionSignatures and is scored on them would optimise
+  the wrong direction** on this evidence. It would read the control pair as the more diverse of
+  the two and reproduce the pattern readers like least. `AL-188` established that the scorer must
+  be independent of the author; this run establishes something worse, that the v1 scoring
+  construct is not merely coarse but anti-correlated with the judgement it exists to predict.
+- **A v2 vocabulary needs a reasoning-kind dimension** (compute, match, recall, infer, negotiate,
+  exert) before any signature metric routes anything. The three gaps both earlier annotators
+  raised (`AL-193`) remain, and this run adds the decisive fourth.
+- **Solution transfer is the construct to build the metric around**, not action families. It is
+  what the readers used, it is what discriminated, and it is plausibly computable from the plan:
+  two puzzles that resolve by the same operation to the same answer are the defect.
+- **The branch-obligation screen is one-way** (`AL-197`). `contract_v5` scores same-shape rate
+  0.000 with zero renames and is still 28/28 identical by signature and still recognisably the
+  same book at three of eleven forks. A pass buys nothing.
+
+### 9.8 What was not learned, and what is now suspect
+
+- n=1 graph, one pair per condition, one fill each, two raters. The 26-node pilot graph is an
+  outlier against a catalog median of 151 nodes and is not production-eligible.
+- The treatment bundles two changes: different decision content *and* four rooms that each yield a
+  distinct physical component. One rater credited the latter explicitly. They are not separated
+  here, so the effect cannot be attributed to decision content alone.
+- Author and raters share a model family, engaging the self-preference effect (research brief
+  reference 37).
+- **Both raters independently reported a defect the pair framing cannot see** (`AL-199`): the
+  four-room `n_inside` fork has no consequence in *any* of the three books, and roughly seven of
+  nine forks either do not branch or reconverge one node later. Because the defect is identical
+  everywhere it cancels out of every pairwise comparison. Illusory choice may be the larger threat
+  to the reading experience than cross-book repetition, and the entire diversity programme is
+  currently blind to it.

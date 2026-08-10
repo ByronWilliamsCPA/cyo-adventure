@@ -1,0 +1,73 @@
+{
+  "n_open": {
+    "c_open": {"action": "read_the_clearance_notice", "action_family": "INFORMATION", "target_role": "INFORMATION", "tradeoff": "NONE", "consequence": "ACCESS"}
+  },
+  "n_start": {
+    "c_examine": {"action": "decode_the_coded_index", "action_family": "INFORMATION", "target_role": "INFORMATION", "tradeoff": "SPEED_VS_INFO", "consequence": "KNOWLEDGE"},
+    "c_door": {"action": "scout_the_building_for_a_way_in", "action_family": "NAVIGATION", "target_role": "BARRIER", "tradeoff": "PRIDE_VS_HELP", "consequence": "ACCESS"},
+    "c_keeper": {"action": "ask_the_keeper_to_join_the_crew", "action_family": "SOCIAL", "target_role": "PERSON", "tradeoff": "PRIDE_VS_HELP", "consequence": "RELATIONSHIP"}
+  },
+  "n_note": {
+    "c_note_key": {"action": "chase_the_indexed_lead_precisely", "action_family": "INFORMATION", "target_role": "INFORMATION", "tradeoff": "SPEED_VS_INFO", "consequence": "KNOWLEDGE"},
+    "c_note_inside": {"action": "act_on_the_plain_reading_now", "action_family": "NAVIGATION", "target_role": "BARRIER", "tradeoff": "SPEED_VS_INFO", "consequence": "ACCESS"}
+  },
+  "n_door": {
+    "c_door_force": {"action": "force_the_stiff_side_door", "action_family": "NAVIGATION", "target_role": "BARRIER", "tradeoff": "NONE", "consequence": "ACCESS"},
+    "c_door_window": {"action": "climb_to_the_high_window", "action_family": "NAVIGATION", "target_role": "BARRIER", "tradeoff": "SAFETY_VS_REWARD", "consequence": "ACCESS"}
+  },
+  "n_keeper": {
+    "c_keeper_enter": {"action": "accept_the_keepers_offer_and_go", "action_family": "NAVIGATION", "target_role": "BARRIER", "tradeoff": "SPEED_VS_INFO", "consequence": "ACCESS"},
+    "c_keeper_story": {"action": "hear_the_keepers_account_of_the_maker", "action_family": "INFORMATION", "target_role": "INFORMATION", "tradeoff": "SPEED_VS_INFO", "consequence": "KNOWLEDGE"}
+  },
+  "n_keyhunt": {
+    "c_keyhunt_in": {"action": "enter_via_the_confirmed_lead", "action_family": "NAVIGATION", "target_role": "BARRIER", "tradeoff": "NONE", "consequence": "ACCESS"}
+  },
+  "n_keeper_story": {
+    "c_story_in": {"action": "enter_informed_by_the_makers_story", "action_family": "NAVIGATION", "target_role": "BARRIER", "tradeoff": "NONE", "consequence": "ACCESS"}
+  },
+  "n_window": {
+    "c_window_in": {"action": "drop_through_the_scouted_window", "action_family": "PHYSICAL_RISK", "target_role": "BARRIER", "tradeoff": "NONE", "consequence": "ACCESS"}
+  },
+  "n_inside": {
+    "c_inside_stairs": {"action": "head_to_the_climb", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "NONE", "consequence": "LOCATION"},
+    "c_inside_study": {"action": "head_to_the_study", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "NONE", "consequence": "LOCATION"},
+    "c_inside_pendulum": {"action": "head_to_the_crossing", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "NONE", "consequence": "LOCATION"},
+    "c_inside_basement": {"action": "head_to_the_basement", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "NONE", "consequence": "LOCATION"}
+  },
+  "n_stairs": {
+    "c_stairs_face": {"action": "carry_the_piece_up_to_the_bench", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "NONE", "consequence": "LOCATION"}
+  },
+  "n_study": {
+    "c_study_face": {"action": "press_on_to_the_bench", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "EFFORT_VS_SHORTCUT", "consequence": "LOCATION"},
+    "c_study_logs": {"action": "catalogue_the_ledgers_instead_of_rushing_on", "action_family": "INFORMATION", "target_role": "INFORMATION", "tradeoff": "EFFORT_VS_SHORTCUT", "consequence": "KNOWLEDGE"}
+  },
+  "n_pendulum": {
+    "c_pendulum_oil": {"action": "cross_the_moving_works_with_care", "action_family": "PHYSICAL_RISK", "target_role": "BARRIER", "tradeoff": "SAFETY_VS_REWARD", "consequence": "RESOURCE"},
+    "c_pendulum_giveup": {"action": "judge_the_crossing_not_worth_it", "action_family": "MORAL", "target_role": "BARRIER", "tradeoff": "SAFETY_VS_REWARD", "consequence": "SAFETY"}
+  },
+  "n_basement": {
+    "c_basement_face": {"action": "carry_the_piece_straight_up_to_the_bench", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "NONE", "consequence": "LOCATION"}
+  },
+  "n_clockface": {
+    "c_face_correct": {"action": "fit_the_piece_by_the_diagram", "action_family": "CRAFT", "target_role": "MECHANISM", "tradeoff": "NONE", "consequence": "ACCESS"},
+    "c_face_jam": {"action": "muscle_the_piece_into_place", "action_family": "CRAFT", "target_role": "MECHANISM", "tradeoff": "EFFORT_VS_SHORTCUT", "consequence": "ACCESS"},
+    "c_face_panel": {"action": "search_behind_the_bench_for_another_way", "action_family": "INFORMATION", "target_role": "INFORMATION", "tradeoff": "SPEED_VS_INFO", "consequence": "KNOWLEDGE"},
+    "c_face_random": {"action": "gamble_on_a_random_fit", "action_family": "CRAFT", "target_role": "MECHANISM", "tradeoff": "CERTAINTY_VS_TIME", "consequence": "ACCESS"}
+  },
+  "n_setcorrect": {
+    "c_correct_vault": {"action": "open_the_way_the_bench_was_guarding", "action_family": "NAVIGATION", "target_role": "BARRIER", "tradeoff": "NONE", "consequence": "ACCESS"}
+  },
+  "n_setjam": {
+    "c_jam_oil": {"action": "work_the_jam_loose_and_refit_properly", "action_family": "CRAFT", "target_role": "MECHANISM", "tradeoff": "NONE", "consequence": "ACCESS"},
+    "c_jam_stuck": {"action": "accept_the_fit_failed_and_stop", "action_family": "TEMPORAL", "target_role": "SELF", "tradeoff": "NONE", "consequence": "SAFETY"}
+  },
+  "n_backpanel": {
+    "c_panel_vault": {"action": "follow_the_second_index_to_the_strongroom", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "NONE", "consequence": "ACCESS"},
+    "c_panel_secret": {"action": "follow_the_second_index_to_the_hidden_room", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "NONE", "consequence": "ACCESS"}
+  },
+  "n_vault": {
+    "c_vault_share": {"action": "carry_the_piece_to_the_settlements_collection", "action_family": "MORAL", "target_role": "OBJECT", "tradeoff": "NONE", "consequence": "REPUTATION"},
+    "c_vault_keep": {"action": "keep_only_the_small_keepsake", "action_family": "MORAL", "target_role": "OBJECT", "tradeoff": "NONE", "consequence": "RELATIONSHIP"},
+    "c_vault_grab": {"action": "try_to_carry_out_more_than_allowed", "action_family": "MORAL", "target_role": "OBJECT", "tradeoff": "EFFORT_VS_SHORTCUT", "consequence": "RESOURCE"}
+  }
+}

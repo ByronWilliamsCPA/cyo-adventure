@@ -1,0 +1,73 @@
+{
+  "n_open": {
+    "c_open": {"action": "read_the_farewell_note_together", "action_family": "INFORMATION", "target_role": "INFORMATION", "tradeoff": "NONE", "consequence": "KNOWLEDGE"}
+  },
+  "n_start": {
+    "c_examine": {"action": "work_the_coded_note", "action_family": "INFORMATION", "target_role": "INFORMATION", "tradeoff": "NONE", "consequence": "KNOWLEDGE"},
+    "c_door": {"action": "read_the_building_for_traces", "action_family": "INFORMATION", "target_role": "LOCATION", "tradeoff": "NONE", "consequence": "KNOWLEDGE"},
+    "c_keeper": {"action": "ask_a_person_who_remembers", "action_family": "SOCIAL", "target_role": "PERSON", "tradeoff": "NONE", "consequence": "KNOWLEDGE"}
+  },
+  "n_note": {
+    "c_note_key": {"action": "track_the_named_place_down", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "CERTAINTY_VS_TIME", "consequence": "LOCATION"},
+    "c_note_inside": {"action": "go_straight_to_the_named_place", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "CERTAINTY_VS_TIME", "consequence": "LOCATION"}
+  },
+  "n_door": {
+    "c_door_force": {"action": "read_a_worn_route", "action_family": "INFORMATION", "target_role": "LOCATION", "tradeoff": "NONE", "consequence": "KNOWLEDGE"},
+    "c_door_window": {"action": "read_a_worn_route", "action_family": "INFORMATION", "target_role": "LOCATION", "tradeoff": "NONE", "consequence": "KNOWLEDGE"}
+  },
+  "n_keeper": {
+    "c_keeper_enter": {"action": "go_in_by_the_offered_route", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "SPEED_VS_INFO", "consequence": "LOCATION"},
+    "c_keeper_story": {"action": "listen_to_a_persons_account", "action_family": "SOCIAL", "target_role": "PERSON", "tradeoff": "SPEED_VS_INFO", "consequence": "KNOWLEDGE"}
+  },
+  "n_keyhunt": {
+    "c_keyhunt_in": {"action": "go_in_by_the_confirmed_route", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "NONE", "consequence": "LOCATION"}
+  },
+  "n_keeper_story": {
+    "c_story_in": {"action": "go_inside_the_tower", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "NONE", "consequence": "LOCATION"}
+  },
+  "n_window": {
+    "c_window_in": {"action": "climb_and_drop_inside", "action_family": "PHYSICAL_RISK", "target_role": "BARRIER", "tradeoff": "SAFETY_VS_REWARD", "consequence": "ACCESS"}
+  },
+  "n_inside": {
+    "c_inside_stairs": {"action": "go_to_a_chosen_wing", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "NONE", "consequence": "LOCATION"},
+    "c_inside_study": {"action": "go_to_a_chosen_wing", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "NONE", "consequence": "LOCATION"},
+    "c_inside_pendulum": {"action": "go_to_a_chosen_wing", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "NONE", "consequence": "LOCATION"},
+    "c_inside_basement": {"action": "go_to_a_chosen_wing", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "NONE", "consequence": "LOCATION"}
+  },
+  "n_stairs": {
+    "c_stairs_face": {"action": "go_up_to_the_clock", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "NONE", "consequence": "LOCATION"}
+  },
+  "n_study": {
+    "c_study_face": {"action": "go_up_to_the_clock", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "SPEED_VS_INFO", "consequence": "LOCATION"},
+    "c_study_logs": {"action": "read_the_archive_records", "action_family": "INFORMATION", "target_role": "INFORMATION", "tradeoff": "SPEED_VS_INFO", "consequence": "KNOWLEDGE"}
+  },
+  "n_pendulum": {
+    "c_pendulum_oil": {"action": "cross_the_hazard_carefully", "action_family": "PHYSICAL_RISK", "target_role": "BARRIER", "tradeoff": "SAFETY_VS_REWARD", "consequence": "RESOURCE"},
+    "c_pendulum_giveup": {"action": "decline_the_hazard", "action_family": "PHYSICAL_RISK", "target_role": "BARRIER", "tradeoff": "SAFETY_VS_REWARD", "consequence": "SAFETY"}
+  },
+  "n_basement": {
+    "c_basement_face": {"action": "go_up_to_the_clock", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "NONE", "consequence": "LOCATION"}
+  },
+  "n_clockface": {
+    "c_face_correct": {"action": "set_the_mechanism_by_reasoning", "action_family": "CRAFT", "target_role": "MECHANISM", "tradeoff": "EFFORT_VS_SHORTCUT", "consequence": "ACCESS"},
+    "c_face_jam": {"action": "force_the_mechanism", "action_family": "PHYSICAL_RISK", "target_role": "MECHANISM", "tradeoff": "EFFORT_VS_SHORTCUT", "consequence": "ACCESS"},
+    "c_face_panel": {"action": "search_the_mechanism_for_a_hidden_clue", "action_family": "INFORMATION", "target_role": "MECHANISM", "tradeoff": "SPEED_VS_INFO", "consequence": "KNOWLEDGE"},
+    "c_face_random": {"action": "guess_at_the_mechanism_setting", "action_family": "CRAFT", "target_role": "MECHANISM", "tradeoff": "EFFORT_VS_SHORTCUT", "consequence": "ACCESS"}
+  },
+  "n_setcorrect": {
+    "c_correct_vault": {"action": "step_through_into_the_chamber", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "NONE", "consequence": "LOCATION"}
+  },
+  "n_setjam": {
+    "c_jam_oil": {"action": "free_the_jammed_mechanism", "action_family": "CRAFT", "target_role": "MECHANISM", "tradeoff": "NONE", "consequence": "ACCESS"},
+    "c_jam_stuck": {"action": "stop_working_the_mechanism", "action_family": "CRAFT", "target_role": "MECHANISM", "tradeoff": "NONE", "consequence": "SAFETY"}
+  },
+  "n_backpanel": {
+    "c_panel_vault": {"action": "follow_the_second_note_to_a_room", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "NONE", "consequence": "LOCATION"},
+    "c_panel_secret": {"action": "follow_the_second_note_to_a_room", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "NONE", "consequence": "LOCATION"}
+  },
+  "n_vault": {
+    "c_vault_share": {"action": "give_the_find_to_the_community", "action_family": "MORAL", "target_role": "OBJECT", "tradeoff": "NONE", "consequence": "REPUTATION"},
+    "c_vault_keep": {"action": "keep_the_find_among_friends", "action_family": "MORAL", "target_role": "OBJECT", "tradeoff": "NONE", "consequence": "RELATIONSHIP"},
+    "c_vault_grab": {"action": "take_the_treasure_for_yourselves", "action_family": "MORAL", "target_role": "OBJECT", "tradeoff": "SAFETY_VS_REWARD", "consequence": "RESOURCE"}
+  }
+}
