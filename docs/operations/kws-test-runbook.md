@@ -368,23 +368,51 @@ at container creation, so a redeploy between the send and the check silently tru
 ssh byron@docker-host 'docker inspect -f "started={{.State.StartedAt}}" cyo-staging-backend'
 ```
 
-**3. Reading the result.** These three outcomes have different causes and different fixes:
+**3. Check the edge log, not just the origin log.** Staging sits behind Cloudflare, and a request
+blocked at the edge never becomes an origin request. No amount of origin-side logging can see it, so
+an absent POST in `docker logs` bounds the origin and says nothing about what the internet sent. Open
+Security > Events, filter on `/api/v1/webhooks/kws/parent-verified`, and cover the send window.
 
-| Row | Inbound POSTs | Means |
+The self-sent probe above is **not** a valid control for this. It leaves a residential address, and a
+WAF that blocks a datacenter ASN will pass it, so the probe proves the route is reachable *for you*
+while the vendor is being turned away. Treat the probe as a check on the route and the secret, never
+as evidence about the vendor's path.
+
+**4. Reading the result.** These outcomes have different causes and different fixes:
+
+| Row | Origin POSTs | Means |
 | --- | --- | --- |
 | `verified` | at least one | working end to end |
 | `sent` | one or more, answered `401` | delivery reaches us but the signature does not verify: this is Q3, compare the header against the query-string form |
-| `sent` | zero, with the probe visible | **KWS never sent one.** Not a code problem. Check the webhook URL registration in the Control Panel |
+| `sent` | zero, **edge log shows blocks** | delivery is being dropped in transit. Not a code problem and not a registration problem; fix the edge rule |
+| `sent` | zero, **edge log clean** | KWS genuinely sent nothing. Check the webhook method is enabled and saved in the Control Panel, not merely filled in |
 | `sent` | zero, probe also absent | the route or the host is unreachable from outside; fix that before reading anything else |
 
-Allow for deferral before concluding the third row. Epic documents an intentional random delay of up
+Allow for deferral before concluding the fourth row. Epic documents an intentional random delay of up
 to two hours on the pre-verified confirmation path, so a check a few minutes after a send cannot
 distinguish "never sent" from "not yet". The row persists, so a late delivery still resolves it;
 re-run check 1 rather than re-sending and burning budget.
 
-**Observed 2026-08-10.** Row `sent`, zero inbound POSTs, probe POSTs visible in the same log, route
-answering `401` from the public internet through Cloudflare. That is the third row: KWS sent
-nothing, and the registration is the thing to check.
+**Observed 2026-08-10, and the reason this section now leads with the edge.** Two runs read as the
+fourth row: row `sent`, zero origin POSTs, probe POSTs visible in the same log, route answering `401`
+from the public internet. Both readings were wrong. Cloudflare's own event log showed KWS delivering
+the webhook **four times** between 17:07:37Z and 17:11:05Z from AWS eu-west-1 (`54.74.122.34`,
+`3.248.160.217`, user agent `axios/0.30.3`), every one mitigated `Block by Custom rules`. The
+integration was correct throughout and the origin log could never have said so.
+
+Two things follow. The remedy is a narrow Cloudflare **Skip** rule ordered above the blocking rule,
+matching `http.request.uri.path eq "/api/v1/webhooks/kws/parent-verified"` and
+`http.request.method eq "POST"`. Do not allowlist source IPs: those are rotating AWS addresses, and
+the handler already authenticates with an HMAC over the raw body under a bounded skew before it
+parses anything, so the application layer is where this endpoint's identity check belongs.
+
+And **KWS retries automatically**, four attempts inside 3.5 minutes, then stops. This refines rather
+than contradicts the premise behind the insert-before-send ordering: `consent/service.py` claims KWS
+will not replay a delivery *on request*, which is about asking Epic to resend and is untouched by
+this. Keep the two apart. Automatic retry gives a blocked or briefly-unhealthy receiver a few minutes
+of grace; it does not give an operator a way to recover an attempt that had no row to match, which is
+the hole the ordering exists to close. The practical consequence is narrow: after fixing a transit
+fault, check whether the retry budget is still open before spending a fresh send.
 
 ## What Gate 1 does not do
 
