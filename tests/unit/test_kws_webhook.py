@@ -288,6 +288,54 @@ class TestEnvelopeRouting:
         assert response.json() == {"handled": True}
 
     @pytest.mark.unit
+    def test_empty_product_id_is_unpinned_not_a_mismatch(
+        self, client: TestClient, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """The state this route was actually in on staging, and could not pass.
+
+        Every other test here sets the product id by direct assignment, which
+        skips the field validator, and none of them ever set ``""``. So the
+        suite covered None and covered a real id, and missed the one value the
+        deployment was actually carrying: ``${KWS_PRODUCT_ID:-}`` injects an
+        empty string, which is not None, so the unpinned branch was
+        unreachable and every delivery compared against ``""`` and lost.
+
+        The symptom was the worst kind. A correctly signed, one-second-old
+        ``parent-verified`` event was answered ``200 handled=False``, which is
+        terminal: KWS does not retry a 2xx, so the verification was consumed
+        and the row stayed at ``sent``.
+        """
+        monkeypatch.setattr(settings, "kws_product_id", "")
+        body = _body()
+
+        response = client.post(_URL, content=body, headers=_headers(body))
+
+        assert response.json() == {"handled": True}
+
+    @pytest.mark.unit
+    def test_ignored_delivery_logs_the_ids_it_received(
+        self, client: TestClient, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A mismatch has to name both sides, or it cannot be acted on.
+
+        The old line reported ``product_matches=False`` and neither id. That
+        is enough to know a comparison failed and not enough to do anything
+        about it: it names neither the value to pin nor the value we were
+        comparing against, and on 2026-08-10 that turned a one-line
+        configuration fault into an investigation.
+        """
+        monkeypatch.setattr(settings, "kws_product_id", _PRODUCT)
+        other = "00000000-0000-4000-8000-0000000000ee"
+        body = _body(product_id=other)
+
+        with patch("cyo_adventure.api.kws_webhook.logger") as mock_logger:
+            client.post(_URL, content=body, headers=_headers(body))
+
+        logged = mock_logger.warning.call_args.kwargs
+        assert logged["received_product_id"] == other
+        assert logged["received_org_id"] == _ORG
+
+    @pytest.mark.unit
     def test_pinned_product_id_mismatch_not_handled(
         self, client: TestClient, monkeypatch: pytest.MonkeyPatch
     ) -> None:

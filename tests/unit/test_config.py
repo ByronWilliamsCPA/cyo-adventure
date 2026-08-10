@@ -1644,11 +1644,55 @@ class TestKwsSettings:
         )
 
     @pytest.mark.unit
+    @pytest.mark.parametrize(
+        "field",
+        [
+            "kws_environment_label",
+            "kws_organization_id",
+            "kws_product_id",
+            "kws_api_origin",
+            "kws_client_id",
+        ],
+    )
+    def test_empty_kws_identifier_is_unset_not_a_value(self, field: str) -> None:
+        """``""`` must be indistinguishable from unset for every identifier.
+
+        The same ``${VAR:-}`` idiom that would refuse to boot on a constrained
+        field fails silently on these: they default to None to mean "not pinned
+        yet", and their consumers test that with ``is None``. An empty string
+        is not None, so the escape hatch closes and the field becomes a value
+        nothing can ever equal.
+
+        That is not hypothetical. On 2026-08-10 a correctly signed, one-second-
+        old ``parent-verified`` delivery was ignored with ``200 handled=False``
+        because ``kws_product_id`` was ``""`` and ``_product_matches`` compared
+        against it instead of skipping the check. Nothing raised and nothing
+        retried, so ``is None`` is asserted here rather than falsiness: only
+        the former is what the consumers actually branch on.
+        """
+        from cyo_adventure.core.config import Settings
+
+        assert getattr(Settings(**{field: ""}), field) is None
+
+    @pytest.mark.unit
     def test_a_real_kws_user_agent_override_still_wins(self) -> None:
         """The fallback must be scoped to emptiness, not swallow real values."""
         from cyo_adventure.core.config import Settings
 
         assert Settings(kws_user_agent="cyo/1.2").kws_user_agent == "cyo/1.2"
+
+    @pytest.mark.unit
+    def test_a_real_kws_product_id_still_pins_the_check(self) -> None:
+        """Normalising emptiness must not disable the guard it protects.
+
+        The point of tolerating ``""`` is to keep the *unpinned* state
+        reachable, not to make the pinned state unreachable. A real value has
+        to survive, or the fix would trade a guard that never passes for one
+        that never fires.
+        """
+        from cyo_adventure.core.config import Settings
+
+        assert Settings(kws_product_id="prod-1").kws_product_id == "prod-1"
 
     @pytest.mark.unit
     def test_a_real_kws_skew_override_still_wins(self) -> None:

@@ -319,6 +319,16 @@ async def receive_parent_verified(
             event_name=event.name,
             org_matches=event.org_id == settings.kws_organization_id,
             product_matches=_product_matches(event),
+            # The received ids, not just the verdicts. `product_matches=False`
+            # names a mismatch without naming either side of it, which on
+            # 2026-08-10 meant a delivery could report the comparison failing
+            # while the value we needed in order to pin the setting, and the
+            # value that revealed the setting was `""` rather than unset, both
+            # went unlogged. Neither id is personal data: they identify our own
+            # KWS tenant and product, and the delivery is authenticated by the
+            # time this line runs.
+            received_org_id=event.org_id,
+            received_product_id=event.product_id,
             kws_environment=settings.kws_environment,
         )
         return ParentVerifiedAck(handled=False)
@@ -400,15 +410,23 @@ def _product_matches(event: _VerificationEvent) -> bool:
     bounds the delivery to our tenant, and refusing everything until the id is
     known would prevent the very delivery that reveals it.
 
+    "Unset" is tested by emptiness rather than by ``is None``, which is the
+    narrower check this used to make. ``core/config.py`` now normalises an
+    empty override to None, so a settings object built from the environment
+    can no longer carry ``""`` here; this stays because a settings object is
+    not always built that way. Direct assignment bypasses field validators
+    entirely, which is exactly how every test of this function sets the value,
+    and it is how the guard came to be tested only in states it could not
+    actually be in. The cost of the two checks disagreeing is a signed, fresh
+    delivery silently dropped, so they are made to agree here as well.
+
     Args:
         event: The parsed delivery envelope.
 
     Returns:
         bool: True when the product id matches or is not yet pinned.
     """
-    return (
-        settings.kws_product_id is None or event.product_id == settings.kws_product_id
-    )
+    return not settings.kws_product_id or event.product_id == settings.kws_product_id
 
 
 def _is_for_us(event: _VerificationEvent) -> bool:

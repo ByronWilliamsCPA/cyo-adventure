@@ -1128,26 +1128,52 @@ class Settings(BaseSettings):
         default_factory=list, validation_alias="KWS_ENABLED_METHODS"
     )
 
-    @field_validator("kws_user_agent", "kws_webhook_max_skew_seconds", mode="before")
+    @field_validator(
+        "kws_user_agent",
+        "kws_webhook_max_skew_seconds",
+        "kws_environment_label",
+        "kws_organization_id",
+        "kws_product_id",
+        "kws_api_origin",
+        "kws_client_id",
+        mode="before",
+    )
     @classmethod
     def _empty_kws_override_means_unset(
         cls, value: object, info: ValidationInfo
     ) -> object:
         """Treat an empty override as absence, not as a value.
 
-        #CRITICAL: external resources: these two fields are the only KWS
-        settings that are non-optional with a constrained default
-        (``min_length=1`` and ``ge=1``), so an empty string is a hard
-        ``ValidationError`` at ``Settings()`` construction, which means the
-        CONTAINER DOES NOT BOOT. That matters because the house compose idiom
-        for an optional variable is ``${VAR:-}``, which injects ``""`` rather
-        than leaving the variable unset: the same line that is correct for
-        every credential here would take the service down. The four credential
-        fields already treat ``""`` as missing (see ``_kws_credential_state``);
-        this closes the gap so one idiom is safe across the whole block.
+        #CRITICAL: external resources: the house compose idiom for an optional
+        variable is ``${VAR:-}``, which injects ``""`` rather than leaving the
+        variable unset. That one idiom produces TWO different failures here,
+        and only the loud one was covered when this validator was written.
+
+        The loud one: ``kws_user_agent`` and ``kws_webhook_max_skew_seconds``
+        are non-optional with constrained defaults (``min_length=1``,
+        ``ge=1``), so ``""`` is a hard ``ValidationError`` at ``Settings()``
+        construction and the CONTAINER DOES NOT BOOT.
+
+        The quiet one is worse, and cost a KWS Test delivery on 2026-08-10 to
+        find. The identifier fields default to ``None`` to mean "not pinned
+        yet", and their consumers test that with ``is None``. An empty string
+        is not ``None``, so the escape hatch closes and the field becomes a
+        value that can never match: ``api/kws_webhook.py::_product_matches``
+        compared ``event.product_id == ""``, answered False, and the receiver
+        ignored a correctly signed, freshly delivered ``parent-verified``
+        event with ``200 handled=False``. Nothing raised, nothing retried, and
+        the verification row stayed at ``sent`` forever. A guard whose "off"
+        position is unreachable is worse than no guard, because it reads as
+        protection in the code and as silence in the logs.
+
+        The four credential fields are excluded because
+        ``_kws_credential_state`` already treats ``""`` as missing. Everything
+        else in the block is normalised here, so one idiom is safe across all
+        of it.
         #VERIFY: tests/unit/test_config.py::TestKwsSettings::
-        test_empty_kws_user_agent_falls_back_to_the_default and
-        ::test_empty_kws_skew_seconds_falls_back_to_the_default.
+        test_empty_kws_user_agent_falls_back_to_the_default,
+        ::test_empty_kws_skew_seconds_falls_back_to_the_default and
+        ::test_empty_kws_identifier_is_unset_not_a_value.
 
         Args:
             value: The raw field input.
