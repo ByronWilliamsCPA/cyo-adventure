@@ -1,0 +1,423 @@
+{
+ "schema_version": "2.0",
+ "id": "d6",
+ "version": 1,
+ "title": "The Puppet-Maker's Dare",
+ "metadata": {
+  "age_band": "10-13",
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 5.5,
+   "tolerance": 1.5
+  },
+  "tier": 1,
+  "themes": [
+   "mystery",
+   "puzzles",
+   "friendship",
+   "history"
+  ],
+  "estimated_minutes": 18,
+  "ending_count": 8,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "mild",
+   "peril": "mild"
+  },
+  "topology": "branch_and_bottleneck",
+  "production_eligible": false
+ },
+ "variables": [],
+ "start_node": "n_open",
+ "nodes": [
+  {
+   "id": "n_open",
+   "body": "The old Bellhollow Playhouse stood shuttered at the end of Mill Street, its doors boarded and its windows dark. Chalk letters marked the stage door, fresh enough to still be white: a dare, plain and open, meant for whoever stopped to read it. Beside the chalk, someone had posted the night's closing hour, the exact minute the town's curfew bell would ring. Mara, Theo, and Priya stood reading it together, shoulder to shoulder. None of them looked away first. \"We do this together,\" Priya said, and the other two nodded. Whatever the dare asked, tonight would answer it, before the bell.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_open",
+     "label": "Take the dare.",
+     "target": "n_start"
+    }
+   ]
+  },
+  {
+   "id": "n_start",
+   "body": "Up close, the dare asked for more than nerve. Faded lines of marginalia ran along the chalked words, small and careful, like someone had left a trail on purpose. The stuck side door sat a few steps off, warped tight in its frame. Past the corner, a lamp still burned in the caretaker's window. Mara wanted to read the marginalia line by line, though it would take real time. Theo eyed the door, sure his own hands could open it. Priya kept glancing at the lit window, weighing whether asking counted as trying. The bell would ring at the same hour no matter which one they spent first.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_examine",
+     "label": "Read the marginalia.",
+     "target": "n_note"
+    },
+    {
+     "id": "c_door",
+     "label": "Shove the door.",
+     "target": "n_door"
+    },
+    {
+     "id": "c_keeper",
+     "label": "Ask the caretaker.",
+     "target": "n_keeper"
+    }
+   ]
+  },
+  {
+   "id": "n_note",
+   "body": "Mara worked the marginalia slowly, matching each small knot-shape to the letter it stood for. It took real minutes, but the line finally read clear: a loose brick, three courses up the alley wall, hid a niche behind a curl of ivy. Inside sat a small brass stage key. She fit it into her satchel, already crowded with what the night had cost so far. The blank notebook pages she had packed for taking notes stayed behind on the shelf by the door; there was nothing left to write once the line was solved. Patience had paid off, but it had spent the pages to do it.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_note_key",
+     "label": "Search for the niche.",
+     "target": "n_keyhunt"
+    },
+    {
+     "id": "c_note_inside",
+     "label": "Act on it now.",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_door",
+   "body": "Theo set his shoulder against the warped side door and pushed. It gave a little, then stuck, then gave more. He kept at it, knuckles scraping the old wood, until the door swung open with a groan. No marginalia, no code, just stubborn effort spent on a door that had been waiting for someone willing to try. The small crowbar he had packed in case the door needed prying stayed clipped to the shelf by the entrance; bare hands had done the job without it. Theo grinned, catching his breath. It had cost him time and a few scraped knuckles, but the door was open.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_door_force",
+     "label": "Shoulder the door open.",
+     "target": "n_inside"
+    },
+    {
+     "id": "c_door_window",
+     "label": "Climb through the window.",
+     "target": "n_window"
+    }
+   ]
+  },
+  {
+   "id": "n_keeper",
+   "body": "Priya knocked on the lit window until Nan Ferris, the playhouse's caretaker, opened her door. Nan looked the three of them over, brisk and unhurried, asking plain questions about why they wanted in. Priya answered honestly, pride set aside. Something in her answers must have satisfied Nan, because she reached for her ring of keys. \"I'll walk you in myself,\" she said. From the hook by her door she offered a second lantern, but the friends already carried one between them, so the spare stayed hanging on the wall. Asking had cost Priya her pride for a moment. It had earned them a real way in.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_keeper_enter",
+     "label": "Go in now.",
+     "target": "n_inside"
+    },
+    {
+     "id": "c_keeper_story",
+     "label": "Hear her story.",
+     "target": "n_keeper_story"
+    }
+   ]
+  },
+  {
+   "id": "n_keyhunt",
+   "body": "The brick was exactly where the marginalia promised, loose under Mara's fingers. Behind the curl of ivy, the niche held the small brass key, cool and real in her palm. She turned it over once, checking it against what the note had described, before tucking it away. The last of the errand's spare minutes went into that checking, but the proof was solid: the marginalia had told the truth. With the key found and confirmed, Mara led Theo and Priya back to the stage door, ready to use exactly the way in the note had named, the knot-code line finally paid off in full.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_keyhunt_in",
+     "label": "Enter through the niche.",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_keeper_story",
+   "body": "Before leading them in, Nan paused at her doorway and told them about Corrin Vane, the puppet-maker who had built the playhouse's dares. Vane had never meant them as tricks, Nan said, but as a way of finding people patient enough, or brave enough, or humble enough, to be trusted with what waited backstage. She did not say what that was. The story took real minutes, minutes the bell would remember, but the friends listened without complaint. When Nan finally led them through her door, they carried something new: not just an entrance, but a reason for the whole strange dare.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_story_in",
+     "label": "Follow her inside.",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_window",
+   "body": "Theo's proof was not finished at the door. A high window over the alley stood cracked open, its sill just within reach if someone climbed the drainpipe. He went first, testing each foothold, Mara and Priya steadying him from below. At the top he swung a leg over the sill and dropped down into the dark backstage, landing light on his feet. The climb had cost the last minutes patience might have saved them, but grit had proven itself twice over. He called back up through the window, voice echoing off old curtains: \"Come on. We're in.\"",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_window_in",
+     "label": "Squeeze through the window.",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_inside",
+   "body": "However the door had opened for them, the three friends now stood backstage, deep in the dark heart of Bellhollow Playhouse. Dust hung in the air, and old curtains rose up out of sight. Their one satchel already held what tonight had cost to get this far, with little room left in it. Four ways opened before them: a ladder climbing to a rigging loft, a doorway into a playbill archive, a narrow catwalk strung high overhead, and a stair leading down into the understage. Somewhere above, a clock ticked toward the closing hour. Whichever way they chose would spend part of what was left of the night.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_inside_stairs",
+     "label": "Climb the rigging loft.",
+     "target": "n_stairs"
+    },
+    {
+     "id": "c_inside_study",
+     "label": "Read in the archive.",
+     "target": "n_study"
+    },
+    {
+     "id": "c_inside_pendulum",
+     "label": "Cross the high catwalk.",
+     "target": "n_pendulum"
+    },
+    {
+     "id": "c_inside_basement",
+     "label": "Descend to the understage.",
+     "target": "n_basement"
+    }
+   ]
+  },
+  {
+   "id": "n_stairs",
+   "body": "The ladder to the rigging loft climbed higher than it looked from the ground. Mara's arms burned by the halfway mark, but she kept going, rung after rung. Pinned to the stairwell wall partway up hung a hand-drawn diagram of the loft's ropes and pulleys, its lines labeled in small knot-code marks she could now read. Near the top, tucked into the rafters and long forgotten, sat a small carved wooden mask, one of Corrin Vane's own. She left it where it lay and kept climbing. By the time she reached the platform, tired but steady, she understood enough of the code to face what came next.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_stairs_face",
+     "label": "Carry the proof up.",
+     "target": "n_clockface"
+    }
+   ]
+  },
+  {
+   "id": "n_study",
+   "body": "The playbill archive smelled of old paper and dust. A thick rehearsal ledger lay open on the reading table, its margins dense with knot-code notes explaining the control bridge's levers, line after patient line. Priya read them twice to be sure. On a side shelf sat a small music box, still wound tight, waiting for someone to lift its lid and hear the tune inside. The archive pulled at her, page after page of the playhouse's whole history laid out for anyone willing to stay. She could feel the hour slipping while she read, the pull real and the cost of staying just as real.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_study_face",
+     "label": "Leave the archive now.",
+     "target": "n_clockface"
+    },
+    {
+     "id": "c_study_logs",
+     "label": "Stay to keep reading.",
+     "target": "n_end_library"
+    }
+   ]
+  },
+  {
+   "id": "n_pendulum",
+   "body": "The catwalk stretched high above the stage, narrow and rimmed by a rail on just one side. Years of hands sliding along that rail had worn the old paint into a pattern, knot-code shapes legible even from the safe end of the walk. Theo studied them there before deciding anything. Far across, at the walk's other end, something small sat wrapped and waiting, set aside for whoever crossed. Every step out onto the boards would spend nerve, and maybe more, against a stumble that would cost real time to recover from. He weighed the walk's narrow boards against the hour they had left.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_pendulum_oil",
+     "label": "Cross for the keepsake.",
+     "target": "n_clockface"
+    },
+    {
+     "id": "c_pendulum_giveup",
+     "label": "Back away from the catwalk.",
+     "target": "n_end_giveup"
+    }
+   ]
+  },
+  {
+   "id": "n_basement",
+   "body": "The stairs to the understage creaked under Priya's feet, leading down into a low, dim room lit by a single hanging bulb. Along the floor joists ran a pattern of small pegs and notches, cut deliberately, spelling knot-code to careful fingers reading them in the dark. She traced the pattern slowly, letting her eyes adjust. On a support post nearby clung a large pale moth, its wings dusted silver, calm and still in the gloom. Priya stayed steady, breath even, until the pattern made sense. Climbing back up, she carried the code with her, the dim minutes spent but not wasted.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_basement_face",
+     "label": "Climb back to the bridge.",
+     "target": "n_clockface"
+    }
+   ]
+  },
+  {
+   "id": "n_clockface",
+   "body": "At the heart of the playhouse stood the control bridge, a wall of levers and dials marked in knot-code, waiting under a hanging clock that read too close to the closing hour. Whichever wing had taught them, the friends now stood before it together, a working sense of the code between them. The levers rhymed exactly with what they had learned. Answering carefully was one bet. Forcing the stubborn mechanism was another, faster but risky. Searching for a way around it was a third. Guessing outright, gambling the bell would be slow, was the last and most reckless of all.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_face_correct",
+     "label": "Set the levers carefully.",
+     "target": "n_setcorrect"
+    },
+    {
+     "id": "c_face_jam",
+     "label": "Force the levers instead.",
+     "target": "n_setjam"
+    },
+    {
+     "id": "c_face_panel",
+     "label": "Search for another way.",
+     "target": "n_backpanel"
+    },
+    {
+     "id": "c_face_random",
+     "label": "Guess and hope quickly.",
+     "target": "n_end_timeout"
+    }
+   ]
+  },
+  {
+   "id": "n_setcorrect",
+   "body": "One by one, the friends set each lever exactly as the code demanded, checking every knot-shape against what they had learned. No lever fought them. No dial stuck. The mechanism recognized the pattern and gave way smoothly, gears turning somewhere behind the wall with a soft, satisfied click. A section of paneling slid open, revealing a passage beyond. Nothing had broken. Nothing had been rushed past. The answer had cost them only attention, patient and careful, and the control bridge had paid it back in full, opening onto whatever Corrin Vane had built it to guard.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_correct_vault",
+     "label": "Step through the bridge.",
+     "target": "n_vault"
+    }
+   ]
+  },
+  {
+   "id": "n_setjam",
+   "body": "Impatient with the levers, someone forced one hard, betting muscle would beat the puzzle the minutes could not. Something inside the mechanism gave with a sharp crack, and the lever went loose in its socket, snapped for good. No one panicked. From a coil of spare cord in the satchel, they spliced the broken linkage the way the rigging diagram had shown, steadying it without pretending it was fixed. The bridge held now, but the splice would always show, and the lever would stick a little from tonight on. Forcing it had cost something real that no amount of care could take back.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_jam_oil",
+     "label": "Splice the broken lever.",
+     "target": "n_vault"
+    },
+    {
+     "id": "c_jam_stuck",
+     "label": "Leave the lever broken.",
+     "target": "n_end_stuck"
+    }
+   ]
+  },
+  {
+   "id": "n_backpanel",
+   "body": "Instead of forcing anything, the friends searched the bridge's edges and found a small back panel, nearly hidden behind a support beam. Its surface carried a second knot-code puzzle, smaller and quicker than the main levers, using only the hint they already carried. Corrin Vane had built this one for careful searchers, not for the impatient. Working it through spent the last patience the night had left, but it revealed two thin seams: one leading toward the vault everyone had come for, the other toward a door no one had mentioned all night. Either way, the panel had already cost them time to find.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_panel_vault",
+     "label": "Press toward the workshop.",
+     "target": "n_vault"
+    },
+    {
+     "id": "c_panel_secret",
+     "label": "Chase the hidden room.",
+     "target": "n_end_secret"
+    }
+   ]
+  },
+  {
+   "id": "n_vault",
+   "body": "Past the bridge, the friends stood in a small room that smelled of wood shavings and old paper. On a desk lay a letter sealed with wax and a small knot, written in Corrin Vane's own hand. Beside it, in a shallow dish, sat a smooth carved wooden token. A faded program nearby listed decades of Bellhollow Playhouse shows, some names still familiar around town. The satchel could not hold everything, and it plainly should not try. Whatever they chose to carry out, and whatever they chose to leave behind, would decide what tonight's dare had really been about.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_vault_share",
+     "label": "Carry the letter home.",
+     "target": "n_end_hero"
+    },
+    {
+     "id": "c_vault_keep",
+     "label": "Keep the passing quiet.",
+     "target": "n_end_keepsake"
+    },
+    {
+     "id": "c_vault_grab",
+     "label": "Grab more than allowed.",
+     "target": "n_end_caught"
+    }
+   ]
+  },
+  {
+   "id": "n_end_library",
+   "body": "Priya kept reading. Page after page of the rehearsal ledger pulled her in, and the hour slipped away without her quite noticing. When the closing bell finally rang, Nan Ferris found her still bent over the table, the music box's small tune playing softly beside her. Nan did not scold her. Instead she slid a copied page into Priya's satchel, the one thing she carried out that night, and walked her to the door. The control bridge would still be waiting, chalk dare and all, on another night. The music box was still playing softly when the playhouse door closed behind them.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_library",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Archive Wins"
+   }
+  },
+  {
+   "id": "n_end_giveup",
+   "body": "Theo looked hard at the narrow catwalk, at the low rail on just one side, and did the math out loud. \"It's not worth it tonight,\" he said. Neither Mara nor Priya argued. They backed off the boards together, the wrapped keepsake still waiting untouched at the far end for whoever came another time. The clock still had minutes left on it when they turned away, minutes they kept instead of spending on a crossing that could have cost far more than it proved. They turned back toward the stairs, lantern light swinging gently in Theo's hand, the catwalk empty and waiting behind them.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_giveup",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Judging the Catwalk"
+   }
+  },
+  {
+   "id": "n_end_timeout",
+   "body": "Priya guessed, spinning a dial to a setting that felt right but was not checked against anything. The mechanism groaned, hesitated, then locked tight, refusing to budge further. Somewhere above, the closing bell began to ring, its first low note rolling through the empty playhouse. Nan Ferris appeared moments later, keys jingling, and reset the bridge herself with a patient shake of her head. The guess had cost them the whole night's last chance, spent on odds that were never good to begin with. Outside, the street lamps were already lit, and the three friends walked home under them, empty-handed but unharmed.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_timeout",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Beaten by the Bell"
+   }
+  },
+  {
+   "id": "n_end_stuck",
+   "body": "The splice held the lever steady, but steady was not the same as fixed. What the bridge needed now was a proper tool, the kind that lived in Nan Ferris's own toolbox, not in any satchel three friends could carry. They told her exactly what had happened, knuckle to lever, holding nothing back. Nan listened, nodded, and said the bridge would keep until she could mend it right. The posted curfew ended the attempt before the honest fix could finish. They left the playhouse with the bell already ringing behind them, the broken lever waiting for daylight and better tools.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_stuck",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Lever Stays Snapped"
+   }
+  },
+  {
+   "id": "n_end_secret",
+   "body": "The second seam led up a narrow stair into a small loft, warm and cluttered and clearly still in use. Fresh wood shavings covered the workbench, curling and pale, still faintly warm, as though Corrin Vane had only just set down her tools. Half-strung marionettes hung from pegs along the wall, waiting for hands to finish them. A note pinned above the bench named whoever found this room its keeper, plain as that. Mara, Theo, and Priya looked at each other, then at the waiting bench. There was work here worth coming back for, and they meant to.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_secret",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Keeper of the Loft"
+   }
+  },
+  {
+   "id": "n_end_hero",
+   "body": "They carried Corrin Vane's letter back into town, and within days its words were common knowledge on every porch on Mill Street. The letter named a debt the old puppet-maker had quietly meant to repay to the town, one the friends helped finally settle. Nan Ferris announced their names outside the playhouse doors, and Bellhollow turned out to see the dare finally answered after so many years standing chalked and waiting. Afterward, Nan handed each of them a key to her own side door, theirs to use whenever they liked. The playhouse, once shuttered, stood open to them now.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_hero",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Town Remembers"
+   }
+  },
+  {
+   "id": "n_end_keepsake",
+   "body": "They put the letter back exactly where it had lain, and the program too, leaving the workshop just as they had found it. Only the small carved token left with them, passed hand to hand under the single hanging bulb while each of them made a quiet promise to the others. What had happened backstage that night stayed backstage, known only to the three of them. Walking home under a sky gone fully dark, they kept the token wrapped in Priya's satchel, warm from all three sets of hands, saying nothing more about it than they needed to.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_keepsake",
+    "valence": "positive",
+    "kind": "success",
+    "title": "A Promise Kept Quiet"
+   }
+  },
+  {
+   "id": "n_end_caught",
+   "body": "Theo reached for more than the satchel could hold, arms full of the token and the program both, and the counterweights overhead answered with a soft, ringing chime. Nan Ferris stepped out from the wings before he had even lowered his arms, unsurprised, as if she had been waiting for exactly this. \"That's the alarm Corrin built for greedy hands,\" she said, not unkindly. Everything went back to its shelf and its dish, piece by piece, under her patient watch. She walked them out still chuckling under her breath, and the playhouse door clicked shut behind them, the chime still humming faintly in the dark.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_caught",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Caught by the Chime"
+   }
+  }
+ ]
+}
