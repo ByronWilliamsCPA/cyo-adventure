@@ -11,17 +11,18 @@ handles the parsing and validation.
 
 from __future__ import annotations
 
-from typing import Literal, NamedTuple
+from typing import Annotated, Literal, NamedTuple
 from urllib.parse import urlsplit
 
 from pydantic import (
     AliasChoices,
     Field,
     SecretStr,
+    ValidationInfo,
     field_validator,
     model_validator,
 )
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 from cyo_adventure.core.exceptions import ConfigurationError
 from cyo_adventure.core.token_audience import TokenAudience
@@ -45,6 +46,28 @@ _SUPAVISOR_TRANSACTION_POOLER_PORT = 6543
 # CIDR uvicorn's --forwarded-allow-ips trusts, hardcoding it here is
 # intentional.
 _DEFAULT_FORWARDED_ALLOW_IPS_CIDR = "172.16.0.0/12"  # NOSONAR(S1313)
+
+# The verification methods KWS's Control Panel offers per environment, as a
+# closed set so a typo becomes a startup error rather than a silently wrong
+# claim on a consent record. Names mirror the Control Panel's own rows.
+# Availability is regional and KWS enforces it, not us: social_security_number
+# is US-and-territories only, id_scan and face_scan are worldwide EXCEPT the US
+# and its territories (and Korea), curp_number is Mexico, cpf_number is Brazil,
+# cell_phone_certification and ipin_authentication are Korea, and the two card
+# methods are worldwide except a sanctions list (debit_card additionally
+# excludes the United Kingdom). For a US family that leaves exactly three
+# options: social_security_number, credit_card, debit_card.
+KwsVerificationMethod = Literal[
+    "social_security_number",
+    "id_scan",
+    "curp_number",
+    "cpf_number",
+    "face_scan",
+    "cell_phone_certification",
+    "ipin_authentication",
+    "credit_card",
+    "debit_card",
+]
 
 
 def _check_pooler_port_requires_disabled_cache(
@@ -969,6 +992,225 @@ class Settings(BaseSettings):
         validation_alias="CYO_ADVENTURE_SENTRY_TRACES_SAMPLE_RATE",
     )
 
+    # --- Parent Verification Service (KWS, Epic; ADR-018) ---
+    # SCOPE, before any of this is read as COPPA compliance. Epic's own
+    # documentation states the PV Service "has not been designed to obtain
+    # consent from verified parents or guardians or to address direct notice
+    # requirements when required by applicable law (such as COPPA)"; it
+    # establishes that an adult is an adult. The 16 CFR 312.5 consent leg and
+    # the 312.4 direct-notice leg remain ours to build and evidence. Epic's
+    # Consent Management Service is the product that combines both, and it is
+    # not self-serve. These settings therefore configure an adult-verification
+    # signal, not a finished VPC mechanism.
+    #
+    # Which KWS environment produced a verification. Stored on the verification
+    # record and never inferred from kws_api_origin, so a Test verification can
+    # never be read back as a real one. Defaults to "test" because the failure
+    # modes are asymmetric: mislabelling a real consent as a test is
+    # recoverable, and treating a sandbox verification as genuine parental
+    # consent is not.
+    # #CRITICAL: data integrity: this value is the only thing distinguishing a
+    # sandbox verification record from evidence of real parental consent; the
+    # KWS API itself reports nothing that identifies which environment answered.
+    # #VERIFY: tests/unit/test_config.py::TestKwsSettings::
+    # test_kws_environment_defaults_to_test and
+    # ::test_production_kws_environment_rejected_from_a_local_app.
+    kws_environment: Literal["test", "production"] = Field(
+        default="test", validation_alias="KWS_ENVIRONMENT"
+    )
+    # Which of the Control Panel's environments this is. Up to 5 are allowed
+    # (exactly one Production, at least one Test), each with its own label and
+    # its own credentials, so kws_environment's type does not identify the
+    # source on its own.
+    kws_environment_label: str | None = Field(
+        default=None, validation_alias="KWS_ENVIRONMENT_LABEL"
+    )
+    # Tenant and product identifiers. The organization id is constant across
+    # environments; the client id and API key are issued per environment. That
+    # asymmetry is what makes kws_environment a real partition rather than a
+    # label we assert: reaching Production requires pasting a different
+    # credential, not flipping this string.
+    kws_organization_id: str | None = Field(
+        default=None, validation_alias="KWS_ORGANIZATION_ID"
+    )
+    # Every webhook body carries both orgId and productId. Pin this once a
+    # webhook reveals it so an inbound event for another product is rejected
+    # rather than attributed to us.
+    kws_product_id: str | None = Field(default=None, validation_alias="KWS_PRODUCT_ID")
+    # Two DISTINCT hosts. The API origin is the "Service API host URL" from the
+    # Integration Information tab; token minting is a Keycloak realm at
+    # auth.kidswebservices.com/auth/realms/kws/protocol/openid-connect/token, so
+    # a single base URL cannot express both.
+    kws_api_origin: str | None = Field(default=None, validation_alias="KWS_API_ORIGIN")
+    kws_auth_origin: str = Field(
+        default="https://auth.kidswebservices.com",
+        validation_alias="KWS_AUTH_ORIGIN",
+    )
+    # OAuth2 client-credentials pair, sent as HTTP Basic against the token
+    # endpoint (client id is the username, API key the password). The Control
+    # Panel calls the secret half an API key; it is the client secret.
+    # #CRITICAL: security: a KWS API key mints tokens that can trigger
+    # verification emails to arbitrary addresses in our organization's name;
+    # never log it, which is why it is SecretStr rather than str.
+    # #VERIFY: tests/unit/test_config.py::TestKwsSettings::
+    # test_partial_kws_credentials_are_rejected.
+    kws_client_id: str | None = Field(default=None, validation_alias="KWS_CLIENT_ID")
+    kws_api_key: SecretStr | None = Field(default=None, validation_alias="KWS_API_KEY")
+    # Sent as the User-Agent on every KWS API call. This is REQUIRED by KWS,
+    # not cosmetic: a request with a missing or empty user-agent is rejected
+    # with 403 "Request blocked". Defaulted (and constrained non-empty) rather
+    # than left None so that failure mode cannot be reached by omission.
+    kws_user_agent: str = Field(
+        default="cyo-adventure",
+        min_length=1,
+        validation_alias="KWS_USER_AGENT",
+    )
+    # Webhook authenticity for the parent-verified event. KWS signs with a
+    # Stripe-style scheme: an x-kws-signature header of the form
+    # t=<epoch-seconds>,v1=<hex>, where the hex is HMAC-SHA256 over the literal
+    # string "{t}.{raw request body}" keyed by this secret. The header may
+    # carry MORE THAN ONE v1= component, which is how a secret rotation stays
+    # non-breaking, so a verifier must accept a match against any of them.
+    #
+    # Left independently optional rather than required alongside the API
+    # credentials, so token minting can be smoke-tested before a webhook URL
+    # exists. Unset does NOT mean "trust unsigned webhooks": the receiver
+    # rejects when this is unset, because an unverifiable consent event is
+    # worse than a missed one once it becomes our evidence of a consent that
+    # may never have happened.
+    # #CRITICAL: security: this key is what separates a KWS-signed consent
+    # event from one an attacker posted at our webhook URL.
+    # #VERIFY: tests/unit/test_config.py::TestKwsSettings::
+    # test_kws_secrets_are_secretstr.
+    kws_webhook_secret: SecretStr | None = Field(
+        default=None, validation_alias="KWS_WEBHOOK_SECRET"
+    )
+    # The redirect return leg uses a DIFFERENT secret AND a different
+    # construction: HMAC-SHA256 over "{status}:{externalPayload}" with NO
+    # timestamp, arriving as a signature query parameter. A verifier written
+    # for the webhook is wrong here; the two do not share code.
+    kws_verification_secret: SecretStr | None = Field(
+        default=None, validation_alias="KWS_VERIFICATION_SECRET"
+    )
+    # Replay window for the signature's t= component, in seconds. KWS puts the
+    # timestamp inside the signed string precisely so this can be enforced; a
+    # verifier that checks only the MAC leaves a captured webhook replayable
+    # forever.
+    kws_webhook_max_skew_seconds: int = Field(
+        default=300, ge=1, validation_alias="KWS_WEBHOOK_MAX_SKEW_SECONDS"
+    )
+    # Which verification methods are switched on for this environment, mirrored
+    # from the Control Panel's "Verification methods" tab as a comma-separated
+    # list, e.g. KWS_ENABLED_METHODS=credit_card,debit_card.
+    #
+    # This is EVIDENCE, not a preference, and it is the reason the setting
+    # exists rather than the Control Panel being read live. The parent-verified
+    # webhook's `status` object reports only `verified` and `transactionId`,
+    # with no method, so the enabled set at the moment of verification is the
+    # only thing that bounds which method could have run. Read live, that bound
+    # evaporates the instant anyone toggles a row, retroactively, for every
+    # record ever written. Declared here, it can be copied onto each
+    # verification record and stays true afterwards.
+    #
+    # The set also has retroactive reach through AgeGraph: KWS pre-verifies a
+    # parent whose hashed email it holds only when they were verified "using a
+    # verification method enabled for the current product", so switching a
+    # method on silently converts parents verified that way elsewhere into
+    # pre-verified for us, with no new verification event on our side.
+    #
+    # #CRITICAL: data integrity: a record written while this is stale, or while
+    # it is empty, carries no bound at all on how its parent was verified, and
+    # the vendor cannot supply one after the fact.
+    # #VERIFY: tests/unit/test_config.py::TestKwsEnabledMethods::
+    # test_configured_kws_requires_declared_methods pins the empty case, and
+    # ::test_unknown_method_rejected pins the typo case.
+    kws_enabled_methods: Annotated[list[KwsVerificationMethod], NoDecode] = Field(
+        default_factory=list, validation_alias="KWS_ENABLED_METHODS"
+    )
+
+    @field_validator("kws_user_agent", "kws_webhook_max_skew_seconds", mode="before")
+    @classmethod
+    def _empty_kws_override_means_unset(
+        cls, value: object, info: ValidationInfo
+    ) -> object:
+        """Treat an empty override as absence, not as a value.
+
+        #CRITICAL: external resources: these two fields are the only KWS
+        settings that are non-optional with a constrained default
+        (``min_length=1`` and ``ge=1``), so an empty string is a hard
+        ``ValidationError`` at ``Settings()`` construction, which means the
+        CONTAINER DOES NOT BOOT. That matters because the house compose idiom
+        for an optional variable is ``${VAR:-}``, which injects ``""`` rather
+        than leaving the variable unset: the same line that is correct for
+        every credential here would take the service down. The four credential
+        fields already treat ``""`` as missing (see ``_kws_credential_state``);
+        this closes the gap so one idiom is safe across the whole block.
+        #VERIFY: tests/unit/test_config.py::TestKwsSettings::
+        test_empty_kws_user_agent_falls_back_to_the_default and
+        ::test_empty_kws_skew_seconds_falls_back_to_the_default.
+
+        Args:
+            value: The raw field input.
+            info: The field being validated, used to find its default.
+
+        Returns:
+            object: The field's default when the input is an empty or
+                whitespace-only string, otherwise the input unchanged.
+        """
+        # info.field_name is Optional in pydantic's signature but is always set
+        # for a field validator; the guard keeps the fallback from becoming a
+        # KeyError if that ever stops holding, in which case the constrained
+        # field rejects the empty string exactly as it did before.
+        if isinstance(value, str) and not value.strip() and info.field_name:
+            return cls.model_fields[info.field_name].get_default()
+        return value
+
+    @field_validator("kws_enabled_methods", mode="before")
+    @classmethod
+    def _split_kws_enabled_methods(cls, value: object) -> object:
+        """Accept a comma-separated env value instead of a JSON array.
+
+        ``NoDecode`` on the field suppresses pydantic-settings' default JSON
+        decoding of complex types, which would otherwise force operators to
+        write ``KWS_ENABLED_METHODS='["credit_card"]'``. The names being
+        mirrored come from a Control Panel screen, so the transcription should
+        be as close to what is on that screen as possible; a JSON array is one
+        more place for a stray quote to turn a compliance-relevant declaration
+        into a startup failure at best.
+
+        Args:
+            value: The raw field input, a string when it came from the
+                environment and a list when constructed programmatically.
+
+        Returns:
+            object: A list of trimmed names for the string case, otherwise the
+                input unchanged for Pydantic to validate as usual.
+        """
+        if isinstance(value, str):
+            return [part.strip() for part in value.split(",") if part.strip()]
+        return value
+
+    @field_validator("kws_enabled_methods")
+    @classmethod
+    def _canonicalize_kws_enabled_methods(
+        cls, methods: list[KwsVerificationMethod]
+    ) -> list[KwsVerificationMethod]:
+        """Dedupe and sort, so the declaration has one canonical form.
+
+        This value is copied onto verification records and compared across
+        them. Without canonicalisation, ``credit_card,debit_card`` and
+        ``debit_card,credit_card`` would be two different declarations of the
+        same fact, and a diff between two records would show a change where
+        none happened.
+
+        Args:
+            methods: The validated method names.
+
+        Returns:
+            list[KwsVerificationMethod]: The same names, deduped and sorted.
+        """
+        return sorted(set(methods))
+
     # --- ADR-028 UW-A47: bound the run_gate worker-thread hold ---
     # How many concurrent api/gate_limits.py::gate_limiter() holders may
     # occupy an AnyIO worker thread at once. AnyIO's default worker pool is
@@ -1445,6 +1687,158 @@ class Settings(BaseSettings):
                 "session for the entire run_gate call, so a limiter sized "
                 "only against the AnyIO thread pool can still exhaust the "
                 "connection pool and starve every other route in the process."
+            )
+            raise ConfigurationError(msg)
+        return self
+
+    def _kws_credential_state(self) -> tuple[tuple[str, ...], tuple[str, ...]]:
+        """Split the KWS API-call credentials into those provided and those missing.
+
+        Four values are needed before any KWS API call can be made: the tenant
+        id, the service host, and the client-credentials pair. An empty string
+        counts as missing, not as a configured-but-empty value, because compose
+        interpolation of an unset variable (``${KWS_API_KEY:-}``) injects ``""``
+        rather than leaving the variable unset (the same reasoning as
+        ``worker_database_url_effective``).
+
+        Returns:
+            tuple[tuple[str, ...], tuple[str, ...]]: the operator-facing
+                variable names that are present, and those that are missing.
+        """
+        api_key = self.kws_api_key.get_secret_value() if self.kws_api_key else None
+        pairs = (
+            ("KWS_ORGANIZATION_ID", self.kws_organization_id),
+            ("KWS_API_ORIGIN", self.kws_api_origin),
+            ("KWS_CLIENT_ID", self.kws_client_id),
+            ("KWS_API_KEY", api_key),
+        )
+        present = tuple(name for name, value in pairs if value)
+        missing = tuple(name for name, value in pairs if not value)
+        return present, missing
+
+    @property
+    def kws_configured(self) -> bool:
+        """Whether the Parent Verification Service can be called at all.
+
+        False (the default) means the integration is unconfigured and no KWS
+        call is ever made, matching the GEMINI_API_KEY / R2_* pattern: there is
+        no separate enable flag, presence of credentials is the switch.
+
+        Returns:
+            bool: True when all four API-call credentials are present.
+        """
+        _, missing = self._kws_credential_state()
+        return not missing
+
+    @model_validator(mode="after")
+    def _require_kws_credentials_together(self) -> Settings:
+        """Fail fast on a partially configured KWS integration.
+
+        A partial credential set is the worst of both worlds: ``kws_configured``
+        reads False, so the app boots and behaves as though KWS were
+        deliberately switched off, while the operator who pasted three of the
+        four values believes verification is live. Nothing downstream can tell
+        those two states apart, because both present as "no KWS". Refusing to
+        boot converts a silent no-op into a startup error naming the gap.
+
+        #CRITICAL: security: an operator who believes parental verification is
+        running when it is not would ship an unverified consent path; failing
+        at startup is the only point where the two states are still
+        distinguishable.
+        #VERIFY: tests/unit/test_config.py::TestKwsSettings::
+        test_partial_kws_credentials_are_rejected and
+        ::test_empty_string_kws_credentials_count_as_unset.
+
+        Raises:
+            ConfigurationError: when some but not all of the four KWS API-call
+                credentials are provided.
+        """
+        present, missing = self._kws_credential_state()
+        if present and missing:
+            msg = (
+                "KWS is partially configured: "
+                f"{', '.join(present)} set but {', '.join(missing)} missing. "
+                "Set all four or none; a partial set boots silently as though "
+                "the Parent Verification Service were switched off, which is "
+                "indistinguishable from a deliberate opt-out."
+            )
+            raise ConfigurationError(msg)
+        return self
+
+    @model_validator(mode="after")
+    def _require_declared_kws_methods_when_configured(self) -> Settings:
+        """Refuse a configured KWS integration that declares no enabled methods.
+
+        An empty ``kws_enabled_methods`` alongside working credentials is not a
+        harmless omission: verifications will succeed, records will be written,
+        and every one of them will carry an empty bound on how the parent was
+        verified. The vendor cannot supply that bound afterwards, because the
+        webhook never reports a method, so the omission is unrecoverable rather
+        than merely untidy. Requiring the declaration up front is the only
+        point at which the operator still has the Control Panel open in front
+        of them.
+
+        The check deliberately does not attempt to reconcile the declaration
+        against the Control Panel: there is no API to read it from, so this is
+        an asserted fact, and asserting it explicitly is the whole point.
+
+        #CRITICAL: data integrity: consent records written under an empty
+        declaration cannot be retroactively bounded to any verification method.
+        #VERIFY: tests/unit/test_config.py::TestKwsEnabledMethods::
+        test_configured_kws_requires_declared_methods and
+        ::test_unconfigured_kws_may_declare_nothing.
+
+        Raises:
+            ConfigurationError: when the KWS credentials are complete but no
+                verification method has been declared.
+        """
+        if self.kws_configured and not self.kws_enabled_methods:
+            msg = (
+                "KWS is configured but KWS_ENABLED_METHODS is empty. Mirror "
+                "the Control Panel's Verification methods tab for this "
+                "environment (e.g. 'credit_card,debit_card'): the "
+                "parent-verified webhook reports no method, so this "
+                "declaration is the only bound on how a parent was verified, "
+                "and it cannot be reconstructed after the record is written."
+            )
+            raise ConfigurationError(msg)
+        return self
+
+    @model_validator(mode="after")
+    def _reject_production_kws_from_a_local_app(self) -> Settings:
+        """Refuse to point a local process at the production KWS environment.
+
+        A verification recorded with ``kws_environment="production"`` is
+        evidence that a real adult completed a real verification, and the KWS
+        API reports nothing that would let us re-derive the environment later
+        (the parent-verified webhook's ``status`` object carries only
+        ``verified`` and ``transactionId``). A developer machine writing such
+        records would therefore contaminate the consent ledger with rows that
+        cannot be told apart from genuine ones afterwards.
+
+        The check is deliberately one-directional: ``kws_environment="test"``
+        in a deployed tier is allowed, because a real environment exercising
+        the sandbox is a normal staging posture and mislabelling a real consent
+        as a test is the recoverable direction of the error.
+
+        #CRITICAL: data integrity: production consent records minted from a
+        local process are indistinguishable from genuine ones and cannot be
+        retroactively identified.
+        #VERIFY: tests/unit/test_config.py::TestKwsSettings::
+        test_production_kws_environment_rejected_from_a_local_app and
+        ::test_test_kws_environment_allowed_in_a_deployed_tier.
+
+        Raises:
+            ConfigurationError: when ``kws_environment`` is ``"production"``
+                while the app's own ``environment`` is ``"local"``.
+        """
+        if self.kws_environment == "production" and self.environment == "local":
+            msg = (
+                "KWS_ENVIRONMENT='production' is refused while ENVIRONMENT is "
+                "'local': a verification recorded from a developer machine "
+                "would be indistinguishable from real parental consent, and "
+                "KWS reports nothing that would let the environment be "
+                "re-derived later. Use the Test environment's credentials."
             )
             raise ConfigurationError(msg)
         return self
