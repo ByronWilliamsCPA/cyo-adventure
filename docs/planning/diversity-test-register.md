@@ -594,6 +594,55 @@ nor asking nicely will do it.
 **Limits, as pre-registered.** Six graphs, one model, 27 to 35 nodes against a catalog median of
 149. This tests the easy end and licenses nothing about production scale.
 
+### M-4 interim: instructed independence does not produce independence, one layer up
+
+M-4 needs an arm whose contract prices failure, and D-6 says that contract must be **independently
+worded** or the fill will measure the wording leak rather than the stakes. The first attempt was
+briefed accordingly, with the requirement stated as a hard experimental constraint and itemised:
+copy no sentence or distinctive phrase, invent your own fact names, choose a different world, write
+every `choice_semantics` and `beat_hint` from scratch, read the reference once for format then write
+without it open.
+
+**Structurally the artifact is excellent.** 26 nodes matching the shell exactly, 52 facts, 11 forks,
+no em-dash, every fact defined, and **zero fact-closure violations under an independent
+reimplementation of the closure walk**, including at the three multi-parent merges. Every surface
+marker of independence is satisfied: a different world (a shuttered puppet theatre against a river
+lock-house), a different slug, and **zero fact-name overlap**.
+
+**The wording is not independent at all.**
+
+| Contract field | Shared 4-grams per 1000 with the reference |
+| --- | --- |
+| `beat_hint` | **260.3** |
+| `safety_envelope` + `world_recipe` | 127.5 |
+| `choice_semantics` | 96.2 |
+| `facts` | 87.7 |
+| `resolution_space` | 55.8 |
+| **whole contract** | **126.7** |
+
+For scale, D-6's *worst* condition was 16.9 per 1000 and the generator floor is 3.3. The resolution
+entries are near-paraphrases: "a copied page from the archive goes into the satchel in place of
+anything else, carried home to study" against "a passage in the archive holds a copy of the
+challenge, carried home to study on their own time".
+
+**This is D-6's `diverge` condition one layer up, and far worse.** At fill time, telling an author
+not to reuse the plan's wording cut contract-traceable grams by 45 percent. At contract-authoring
+time the same instruction, stated more forcefully and itemised, achieved essentially nothing. **The
+markers an instruction can be checked against (world, names, slug) were all satisfied while the
+thing that actually matters was not**, which is worth noting on its own: surface independence is
+easy to demand and easy to deliver without delivering independence.
+
+**So the artifact is unusable as an M-4 arm** and the row is not blocked so much as re-methoded. The
+second attempt withholds the reference contract entirely, supplying the format as a written schema
+instead, so the author never sees the prose it must not converge on. **The two attempts together are
+the controlled test** of whether instructed independence is achievable at all, or whether
+independence has to be enforced by what the author is not shown.
+
+This also lands on the architecture re-specification. R1-3 was promoted there partly because it
+generates a fresh contract per book by construction, which is `AL-208`'s untested third repair.
+**Fresh-per-book is not the same as independent**, and if the second attempt also converges then
+R1-3's repulsion has to act on the generated wording and not merely on the fact that it is new.
+
 ## A2. What D-6 costs every remaining fill-based row
 
 D-6 is a result about method, not only about architecture, and it re-prices four rows that were
@@ -617,7 +666,7 @@ and until `AL-213` is addressed it is a hand job of roughly 1.7KB per node.
 
 | ID | Test | Source | Thesis | Cheapest experiment (proposer's) | Falsifier | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| M-4 | Stake economics | in-house, from rater testimony | Not *what* the goal is but whether failure costs anything. The treatment's goal imposed a live global constraint, a closing clock and a carrying limit and damage that persists, which re-prices every fork; the control's goal change did not. Both raters cited this unprompted, one noting that forcing is a free do-over in both control books and has a price in the treatment. | Two books, same graph, non-colliding bindings, same goal, differing only in whether failure is free. Existing rig. | The two books rate as repetitive as each other, meaning a reader does not price failure into how a choice feels. | queued |
+| M-4 | Stake economics | in-house, from rater testimony | Not *what* the goal is but whether failure costs anything. The treatment's goal imposed a live global constraint, a closing clock and a carrying limit and damage that persists, which re-prices every fork; the control's goal change did not. Both raters cited this unprompted, one noting that forcing is a free do-over in both control books and has a price in the treatment. | Two books, same graph, non-colliding bindings, same goal, differing only in whether failure is free. Existing rig. | The two books rate as repetitive as each other, meaning a reader does not price failure into how a choice feels. | **running, re-methoded**: the stake-priced contract is structurally excellent (26 nodes, 52 facts, zero closure violations under an independent reimplementation) but failed its wording-independence requirement at 126.7 shared 4-grams per 1000 against the reference, despite a different world and zero fact-name overlap. Re-authoring without the reference in view. See the interim above. |
 | M-2 | World-graph tours | in-house | A graph is a *world*, not a book; a book is a validated subgraph tour. The catalog already holds graphs at 677, 551 and 250 nodes. | Take the largest 10-13 graph, cut two disjoint tours by hand, fill both, rate. Tests coherence as much as diversity. | **Structurally confirmed for 18 of 21 large graphs, without a single fill**: they are linear-with-decorations, not worlds, so no two disjoint tours exist to cut. Three graphs survive, one of them in-band. See below. | **partially done, DETERMINISTIC PRE-TEST; the fill-and-rate half is unblocked on exactly 3 named graphs** |
 | Q-2 | Cross-skeleton recombination | framework Q2 | Subtree grafting is the only mechanism that has ever cleared the anti-clone floor, and has never been evaluated for reader-perceived distinctness or coherence cost. | Graft subtrees between two catalog graphs, fill, rate for distinctness and for coherence damage. | Grafts read as incoherent, or as no more distinct than a plain sibling pair. | **blocked, and now on a named thing**: grafting needs narrative contracts for both source graphs, and 2 of 61 skeletons have one (`AL-213`, Q-1 below). Not exposed to D-6. Unblocked the moment contract coverage moves. |
 | Q-3 | How close is the skeleton-free path | framework Q3, brief 5.3 | Named the cheapest outstanding experiment before this programme started, and never run. **D-6 promotes it: a skeleton-free graph shares no plan by construction, so it is the only queued row that structurally cannot hit the convergence wall.** | Six graphs generated from scratch by isolated authors, format reference only, no skeleton and no validator in the loop. Score deterministically against the structural rules and the project gate. Analysis pre-registered below before the artifacts exist. | 6 generations, 0 raters | Did not fire. **6 of 6 structurally clean.** All six are nonetheless blocked by the project gate, and every blocking finding violates a constraint that was never stated to the author. | **done, POSITIVE on the pre-registered primary; see the split below** |

@@ -1,0 +1,386 @@
+{
+ "narrative_version": 1,
+ "skeleton_slug": "last-day-clock-tower",
+ "age_band": "10-13",
+ "premise": {
+  "engine": "single-day-countdown-heist",
+  "dramatic_question": "Can a determined kid reach the hidden vault inside the town's last-day clock tower and choose wisely what to take before the final closing chime seals it forever?",
+  "resolution_space": [
+   "Choosing to read the tower's ledgers all the way through instead of pressing on costs the rest of the day, so the visit ends among the old pages, the vault unsolved but the tower's history finally understood.",
+   "Standing at the frozen pendulum weight and deciding it cannot be moved sends the visit back out through the gate empty-handed, the tower closing for good with the puzzle still locked inside it.",
+   "Spinning the clock's hands to a guess instead of working out the true time trips the mechanism early, and the tower's chime rings out ahead of schedule, ending the search on the spot.",
+   "Forcing the already-chipped gear a second time instead of easing it with oil shears the tooth clean off, seizing the mechanism forever and sealing the vault path exactly where the visit stands.",
+   "Stopping at the hidden compartment behind the back panel instead of pressing on to the vault itself turns up a small trove of old letters, a quieter discovery that closes the search on its own satisfying note.",
+   "Leaving every piece of the vault's find untouched and running straight to tell the keeper turns the discovery into something the whole tower shares, the closing chime catching a visit that gave everything away.",
+   "Choosing exactly one small keepsake for the satchel's single pocket and leaving the rest of the vault behind lets the visit end with one honest, well-earned prize as the final chime sounds.",
+   "Trying to carry more from the vault than one pocket and two hands can hold costs precious final minutes fumbling in the open vault, and the noise brings the keeper straight to the door as the last chime begins."
+  ]
+ },
+ "label_styles": [
+  "Verb-first action phrasing naming the physical move (for example 'Force the door').",
+  "Cost-forward phrasing that names what is given up before what is gained.",
+  "Question-style options that voice the character's internal debate.",
+  "Object-anchored phrasing naming the tool or place involved.",
+  "Time-anchored phrasing that reminds the reader of the closing hour."
+ ],
+ "facts": {
+  "quest_begun": "The tower has opened for its one and only day before being sealed for good, and the closing hour is fixed and cannot be delayed.",
+  "midday_light": "It is midday, meaning most of the day's fixed hours before closing have not yet been spent.",
+  "shadows_lengthening": "Enough time has passed getting inside that the afternoon shadows are visibly stretching, meaning a real share of the closing countdown is gone.",
+  "dusk_at_the_windows": "Dusk shows through the tower's windows, meaning the closing hour is now close enough that there is no time left to backtrack to another room.",
+  "final_chime_minutes": "Only minutes remain before the tower's final chime locks every door for good, meaning whatever happens next happens now or not at all.",
+  "satchel_empty": "The satchel's one pocket is still empty, so a single tool could still be picked up without giving up anything else.",
+  "satchel_holds_master_key": "The satchel's one pocket is filled with the heavy master key found earlier, so no other tool can be carried alongside it for the rest of the visit.",
+  "keeper_trust_earned": "The tower keeper has explained what the keeper knows about the clock's mechanism, a piece of knowledge gained at the cost of the time spent hearing it.",
+  "logs_fully_read": "The tower's old ledgers have been read all the way through, answering real questions about its past at the cost of ever reaching the clock face today.",
+  "hands_set_true": "The clock's hands have been set to the exact correct time, opening the mechanism cleanly with no force and nothing damaged.",
+  "gear_teeth_chipped": "Forcing the stuck gear by hand has chipped one of its teeth, a permanent flaw in the mechanism that no later choice undoes.",
+  "vault_located": "The hidden vault behind the clock mechanism has been found and stands open."
+ },
+ "safety_envelope": {
+  "affect_ceiling": "Suspense stays at wonder-tinged curiosity and mild time-pressure; nothing darker than mild peril or a wistful, bittersweet miss.",
+  "forbid_affect": ["dread", "terror", "despair", "humiliation", "panic", "grief"],
+  "forbid_facts": [
+   "a child is injured",
+   "an adult menaces or threatens a child",
+   "a character is mocked or humiliated for a choice they made",
+   "theft or dishonesty is rewarded as the best outcome",
+   "a character is left permanently alone or abandoned"
+  ],
+  "permitted_device_kinds": ["mechanical_lock", "hidden_lever", "riddle_note", "worn_ledger", "gear_mechanism", "pressure_pad"]
+ },
+ "world_recipe": {
+  "requires": {
+   "entry_devices": {
+    "count": 3,
+    "kinds": ["mechanical_lock", "hidden_lever", "riddle_note"],
+    "note": "One puzzle-shaped way into the tower is bound per opening approach (note, door, keeper), so each route feels distinct."
+   },
+   "clockworks_devices": {
+    "count": 3,
+    "kinds": ["gear_mechanism", "pressure_pad", "mechanical_lock"],
+    "note": "The clock-face climax draws one mechanism per resolution path (correct, jam, panel) so the vault opens differently depending on the route taken."
+   },
+   "lore_devices": {
+    "count": 2,
+    "kinds": ["worn_ledger", "riddle_note"],
+    "note": "Background lore objects are bound to the knowledge-costing detours so the time spent reading or listening pays off in specific, nameable content."
+   }
+  }
+ },
+ "nodes": {
+  "n_open": {
+   "tier": "prologue",
+   "function": "frame-the-closing-clock",
+   "entry_state": [],
+   "establishes": ["quest_begun", "midday_light", "satchel_empty"],
+   "forbids": ["shadows_lengthening", "dusk_at_the_windows", "final_chime_minutes", "satchel_holds_master_key"],
+   "affect": {"target": "hushed anticipation with a hint of wonder at the old tower", "forbid": ["dread", "fear"]},
+   "choice_semantics": {
+    "c_open": "Means stepping through the courtyard gate to begin the search on the tower's one open day; it costs nothing yet, but it starts a closing countdown that will not pause for the rest of the visit."
+   },
+   "beat_hint": "The narrator establishes that the tower opens today only, closing for good at a fixed hour, and that the satchel holds just one thing, so whatever is carried in must be chosen carefully."
+  },
+  "n_start": {
+   "tier": "opening",
+   "function": "choose-approach",
+   "entry_state": ["quest_begun", "midday_light", "satchel_empty"],
+   "establishes": ["quest_begun", "midday_light", "satchel_empty"],
+   "forbids": ["shadows_lengthening", "dusk_at_the_windows", "final_chime_minutes"],
+   "affect": {"target": "curious weighing of options", "forbid": ["dread", "panic"]},
+   "choice_semantics": {
+    "c_examine": "Means pausing at the gate to read a note pinned there before committing to a way in; costs a few midday minutes but may reveal what is worth carrying.",
+    "c_door": "Means heading straight for the tower's heavy door; costs no time up front but may force a harder choice if it will not budge easily.",
+    "c_keeper": "Means finding the tower keeper first to ask how to get in; costs time spent talking but may open a gentler way inside."
+   },
+   "beat_hint": "Three ways to begin are laid out side by side: reading, forcing, or asking, each trading time for a different kind of advantage."
+  },
+  "n_note": {
+   "tier": "opening",
+   "function": "reveal-the-tradeoff",
+   "entry_state": ["quest_begun", "midday_light", "satchel_empty"],
+   "establishes": ["quest_begun", "midday_light", "satchel_empty"],
+   "forbids": ["shadows_lengthening", "dusk_at_the_windows", "final_chime_minutes"],
+   "affect": {"target": "quiet detective interest", "forbid": ["dread"]},
+   "choice_semantics": {
+    "c_note_key": "Means going to search out a spare master key the note mentions before going in; it fills the satchel's one pocket with the key and spends real midday minutes doing it, meaning there is no room or time left to gather anything else.",
+    "c_note_inside": "Means leaving the key where it is and heading straight inside empty-handed; it costs nothing and keeps the satchel free, but nothing will be on hand later if a lock or gear needs help."
+   },
+   "beat_hint": "The note names a hidden spare key, and reading it forces an immediate choice between spending time and space to fetch it or staying light and fast."
+  },
+  "n_door": {
+   "tier": "opening",
+   "function": "force-or-detour",
+   "entry_state": ["quest_begun", "midday_light", "satchel_empty"],
+   "establishes": ["quest_begun", "midday_light", "satchel_empty"],
+   "forbids": ["shadows_lengthening", "dusk_at_the_windows", "final_chime_minutes"],
+   "affect": {"target": "determined problem-solving", "forbid": ["dread", "fear"]},
+   "choice_semantics": {
+    "c_door_force": "Means putting a shoulder into the stuck door and forcing it wide; it costs no time and gets you straight inside, but the old hinge bends in a way that will not straighten again for the rest of the visit.",
+    "c_door_window": "Means giving up on the door and circling to a low window instead; it avoids damaging anything, but the walk around and the climb through cost precious midday minutes."
+   },
+   "beat_hint": "The door will not give easily, and the choice is between damaging it to save time or taking the slower, gentler way around."
+  },
+  "n_keeper": {
+   "tier": "opening",
+   "function": "earn-trust-or-move-on",
+   "entry_state": ["quest_begun", "midday_light", "satchel_empty"],
+   "establishes": ["quest_begun", "midday_light", "satchel_empty"],
+   "forbids": ["shadows_lengthening", "dusk_at_the_windows", "final_chime_minutes"],
+   "affect": {"target": "warm, unhurried curiosity", "forbid": ["dread"]},
+   "choice_semantics": {
+    "c_keeper_enter": "Means asking the keeper for the quickest way in and taking it immediately; it costs little time and keeps the satchel free, but skips whatever the keeper might have explained.",
+    "c_keeper_story": "Means asking the keeper to explain the tower's mechanism first; it earns real, useful knowledge, but the telling takes long enough that midday visibly slips toward afternoon."
+   },
+   "beat_hint": "The keeper is willing to talk at length or simply point the way, and which one is chosen trades time for insight."
+  },
+  "n_keyhunt": {
+   "tier": "rising",
+   "function": "pay-for-the-key",
+   "entry_state": ["quest_begun", "midday_light", "satchel_empty"],
+   "establishes": ["quest_begun", "midday_light", "satchel_holds_master_key"],
+   "forbids": ["shadows_lengthening", "dusk_at_the_windows", "final_chime_minutes"],
+   "affect": {"target": "satisfaction of a small win, tempered by the clock", "forbid": ["dread"]},
+   "choice_semantics": {
+    "c_keyhunt_in": "Means finally digging the heavy master key out of the flowerbed and carrying it inside; the key is now the one thing in the satchel for the rest of the visit, and the search has used up minutes that were not free."
+   },
+   "beat_hint": "The key turns up exactly where the note promised, but the search has taken real time and claimed the satchel's only pocket."
+  },
+  "n_keeper_story": {
+   "tier": "rising",
+   "function": "pay-for-knowledge",
+   "entry_state": ["quest_begun", "midday_light", "satchel_empty"],
+   "establishes": ["quest_begun", "midday_light", "satchel_empty", "keeper_trust_earned"],
+   "forbids": ["shadows_lengthening", "dusk_at_the_windows", "final_chime_minutes", "satchel_holds_master_key"],
+   "affect": {"target": "gratitude and quiet confidence", "forbid": ["dread"]},
+   "choice_semantics": {
+    "c_story_in": "Means thanking the keeper and finally heading inside with what was learned; the knowledge travels with you for free, but the long telling has cost enough time that the light outside has already begun to change."
+   },
+   "beat_hint": "The keeper finishes explaining how the tower's clock hides its vault, and heading inside now carries that knowledge but not the earlier hour."
+  },
+  "n_window": {
+   "tier": "rising",
+   "function": "pay-in-time",
+   "entry_state": ["quest_begun", "midday_light", "satchel_empty"],
+   "establishes": ["quest_begun", "midday_light", "satchel_empty"],
+   "forbids": ["shadows_lengthening", "dusk_at_the_windows", "final_chime_minutes"],
+   "affect": {"target": "nimble relief", "forbid": ["dread"]},
+   "choice_semantics": {
+    "c_window_in": "Means finishing the climb through the low window and dropping down inside; it costs nothing but the minutes already spent walking around, and the satchel is still free because there was nothing to grab along the way."
+   },
+   "beat_hint": "The window climb finishes without damage, but the detour has eaten into the midday hours that will not come back."
+  },
+  "n_inside": {
+   "tier": "rising",
+   "function": "pick-a-route-inside",
+   "entry_state": ["quest_begun", "midday_light"],
+   "establishes": ["quest_begun", "shadows_lengthening"],
+   "forbids": ["dusk_at_the_windows", "final_chime_minutes", "satchel_empty", "satchel_holds_master_key", "keeper_trust_earned"],
+   "affect": {"target": "exploratory wonder inside the old tower", "forbid": ["dread", "fear"]},
+   "choice_semantics": {
+    "c_inside_stairs": "Means heading straight up the spiral stairs; costs no time and touches nothing, but offers no chance to find or use a tool along the way.",
+    "c_inside_study": "Means detouring into the study first; costs a little time either way, but opens a choice between a quick clue and a much longer read.",
+    "c_inside_pendulum": "Means heading for the room with the great pendulum; costs real effort to get past what is jammed there, one way or another.",
+    "c_inside_basement": "Means dropping down into the basement passage; costs a little nerve in the dark but nothing else, a quiet way up to the clock face."
+   },
+   "beat_hint": "Once inside, four rooms branch off before the clock face, each asking for a different kind of cost: nothing, time, effort, or nerve."
+  },
+  "n_stairs": {
+   "tier": "rising",
+   "function": "fastest-route",
+   "entry_state": ["quest_begun", "shadows_lengthening"],
+   "establishes": ["quest_begun", "shadows_lengthening"],
+   "forbids": ["midday_light", "dusk_at_the_windows", "final_chime_minutes", "satchel_empty", "satchel_holds_master_key"],
+   "affect": {"target": "brisk, breathless momentum", "forbid": ["dread"]},
+   "choice_semantics": {
+    "c_stairs_face": "Means climbing the tight spiral stairs straight to the clock face without stopping in any other room; it costs no extra time and touches nothing that could be broken, but you arrive with nothing extra in hand for whatever the mechanism needs."
+   },
+   "beat_hint": "The spiral stairs offer the quickest way up, at the cost of skipping every room that might have offered something useful."
+  },
+  "n_study": {
+   "tier": "rising",
+   "function": "knowledge-or-deadline",
+   "entry_state": ["quest_begun", "shadows_lengthening"],
+   "establishes": ["quest_begun", "shadows_lengthening", "logs_fully_read"],
+   "forbids": ["midday_light", "dusk_at_the_windows", "final_chime_minutes", "satchel_empty", "satchel_holds_master_key"],
+   "affect": {"target": "absorbed, bookish curiosity", "forbid": ["dread"]},
+   "choice_semantics": {
+    "c_study_face": "Means skimming just enough of the study's ledgers to catch the clock's secret before moving on; it costs a little time, but not so much that the afternoon slips away, and leaves the satchel exactly as it was.",
+    "c_study_logs": "Means staying to read the ledgers properly, cover to cover; it answers real questions about the tower's past, but the closing hour does not wait for finished reading, and this is as far as the visit goes."
+   },
+   "beat_hint": "The study's ledgers hold real answers, and the only question is how much of the remaining time is worth spending on them."
+  },
+  "n_pendulum": {
+   "tier": "rising",
+   "function": "struggle-or-retreat",
+   "entry_state": ["quest_begun", "shadows_lengthening"],
+   "establishes": ["quest_begun", "shadows_lengthening"],
+   "forbids": ["midday_light", "dusk_at_the_windows", "final_chime_minutes", "satchel_empty", "satchel_holds_master_key"],
+   "affect": {"target": "gritty, hopeful effort", "forbid": ["dread", "despair"]},
+   "choice_semantics": {
+    "c_pendulum_oil": "Means working the heavy pendulum weight free by hand, or with an oil can if the satchel still has its pocket free from earlier; either way it costs several of the remaining minutes and real effort, but frees the mechanism without breaking anything.",
+    "c_pendulum_giveup": "Means deciding the weight will not move and turning back for the gate instead of trying another way past it; it costs nothing further, but the tower closes today only, and there is no route back in once you leave."
+   },
+   "beat_hint": "The pendulum's weight is jammed fast, and the choice is between the effort to free it and walking away for good."
+  },
+  "n_basement": {
+   "tier": "rising",
+   "function": "quiet-passage",
+   "entry_state": ["quest_begun", "shadows_lengthening"],
+   "establishes": ["quest_begun", "shadows_lengthening"],
+   "forbids": ["midday_light", "dusk_at_the_windows", "final_chime_minutes", "satchel_empty", "satchel_holds_master_key"],
+   "affect": {"target": "mild, tingling suspense with curiosity underneath", "forbid": ["dread", "fear"]},
+   "choice_semantics": {
+    "c_basement_face": "Means crossing the dim basement's narrow walkway straight to the stairs up to the clock face; it costs a little nerve in the dark but no time or tools, and nothing here needs to be forced."
+   },
+   "beat_hint": "The basement is dim and close, but the way through is unobstructed, a calm beat before the clock face."
+  },
+  "n_clockface": {
+   "tier": "climax_approach",
+   "function": "choose-the-mechanism",
+   "entry_state": ["quest_begun", "shadows_lengthening"],
+   "establishes": ["quest_begun", "dusk_at_the_windows"],
+   "forbids": ["midday_light", "final_chime_minutes", "satchel_empty", "satchel_holds_master_key", "keeper_trust_earned", "hands_set_true", "gear_teeth_chipped"],
+   "affect": {"target": "focused, wondering concentration at the mechanism", "forbid": ["dread", "panic", "humiliation"]},
+   "choice_semantics": {
+    "c_face_correct": "Means setting the clock hands to the exact time learned earlier from the note or the keeper's story; it costs nothing extra if that knowledge was gathered, and opens the mechanism cleanly with no force and no damage.",
+    "c_face_jam": "Means forcing the gear that looks stuck instead of puzzling out the right time; it opens the mechanism fast, but forcing it chips one of the gear's teeth, a scar the tower's workings will carry for the rest of the visit.",
+    "c_face_panel": "Means prying open a back panel instead of touching the face at all; it costs time working the panel loose, but bypasses the hands entirely and risks nothing being chipped.",
+    "c_face_random": "Means spinning the hands to a guess rather than working out the answer; it costs no effort, but a wrong guess this close to closing trips the tower's chime early, and the closing hour it warns of cannot be talked back."
+   },
+   "beat_hint": "Four ways to move the mechanism are in front of you: the earned answer, the forced shortcut, the hidden panel, or a guess, and dusk is already at the windows."
+  },
+  "n_setcorrect": {
+   "tier": "climax",
+   "function": "clean-opening",
+   "entry_state": ["quest_begun", "dusk_at_the_windows"],
+   "establishes": ["quest_begun", "dusk_at_the_windows", "hands_set_true"],
+   "forbids": ["gear_teeth_chipped", "midday_light", "shadows_lengthening", "final_chime_minutes", "satchel_empty", "satchel_holds_master_key"],
+   "affect": {"target": "clean, earned satisfaction", "forbid": ["dread"]},
+   "choice_semantics": {
+    "c_correct_vault": "Means pressing the now-aligned hands and watching the mechanism swing open on its own; it costs nothing further and leaves the clockworks undamaged on the way to the vault."
+   },
+   "beat_hint": "The correctly set hands click into place and the mechanism opens itself, no force needed."
+  },
+  "n_setjam": {
+   "tier": "climax",
+   "function": "pay-for-the-shortcut",
+   "entry_state": ["quest_begun", "dusk_at_the_windows"],
+   "establishes": ["quest_begun", "dusk_at_the_windows", "gear_teeth_chipped"],
+   "forbids": ["hands_set_true", "midday_light", "shadows_lengthening", "final_chime_minutes", "satchel_empty", "satchel_holds_master_key"],
+   "affect": {"target": "tense but hopeful effort", "forbid": ["dread", "panic"]},
+   "choice_semantics": {
+    "c_jam_oil": "Means working oil into the chipped gear, from the satchel if it is still free or borrowed from the pendulum room if not, so it turns despite the damage; it costs more of the little time left, but gets the mechanism moving enough to reach the vault.",
+    "c_jam_stuck": "Means forcing the already-chipped gear harder instead of easing it with oil; it costs nothing in time, but the tooth shears off completely and the mechanism seizes for good, with no time left to try anything else."
+   },
+   "beat_hint": "The chip from forcing the gear open is already there, and now it decides whether the mechanism can still be coaxed forward or whether it seizes for good."
+  },
+  "n_backpanel": {
+   "tier": "climax",
+   "function": "quiet-bypass",
+   "entry_state": ["quest_begun", "dusk_at_the_windows"],
+   "establishes": ["quest_begun", "dusk_at_the_windows"],
+   "forbids": ["gear_teeth_chipped", "hands_set_true", "midday_light", "shadows_lengthening", "final_chime_minutes", "satchel_empty", "satchel_holds_master_key"],
+   "affect": {"target": "careful, curious concentration", "forbid": ["dread"]},
+   "choice_semantics": {
+    "c_panel_vault": "Means easing the panel fully open toward the vault beyond; it costs the last of the time spent working the panel loose, but the way to the vault is now clear and nothing is damaged.",
+    "c_panel_secret": "Means stopping at what the panel reveals instead of pushing on to the vault; it costs the chance at the vault itself, but a hidden compartment of old letters is enough of a find to end the search here."
+   },
+   "beat_hint": "The panel swings open on a choice: keep going toward the vault, or let this quieter find be the end of the search."
+  },
+  "n_vault": {
+   "tier": "climax",
+   "function": "the-carrying-limit-choice",
+   "entry_state": ["quest_begun", "dusk_at_the_windows"],
+   "establishes": ["quest_begun", "final_chime_minutes", "vault_located"],
+   "forbids": ["midday_light", "shadows_lengthening", "hands_set_true", "gear_teeth_chipped", "satchel_empty", "satchel_holds_master_key"],
+   "affect": {"target": "wonder at the find, weighing a real choice", "forbid": ["dread", "humiliation"]},
+   "choice_semantics": {
+    "c_vault_share": "Means leaving every last piece of the vault's find exactly where it sits and going straight to tell the keeper what has been found; it costs the chance to keep anything at all for yourself, but nothing is lost, broken, or taken that should not be.",
+    "c_vault_keep": "Means choosing exactly one small piece from the vault to fit in the satchel's one free pocket and leaving the rest untouched; it costs the rest of the find, which stays behind for good, but the one keepsake is honestly yours.",
+    "c_vault_grab": "Means trying to sweep more than one pocket's worth into your arms at once; it costs the last of the closing minutes fumbling with more than can be carried, and the noise of it brings the keeper straight to the vault door as the tower's final chime begins."
+   },
+   "beat_hint": "The vault is open at last, and what happens next is entirely a question of how much is taken and how it is taken, with the final chime seconds away."
+  },
+  "n_end_library": {
+   "tier": "locked_outcome",
+   "function": "time-cost-ending",
+   "entry_state": ["quest_begun", "shadows_lengthening", "logs_fully_read"],
+   "establishes": [],
+   "forbids": ["final_chime_minutes", "vault_located"],
+   "affect": {"target": "wistful, satisfied curiosity", "forbid": ["dread", "despair"]},
+   "choice_semantics": {},
+   "beat_hint": "The visit ends among the study's ledgers, the tower's history now known even though the vault never was."
+  },
+  "n_end_giveup": {
+   "tier": "locked_outcome",
+   "function": "retreat-ending",
+   "entry_state": ["quest_begun", "shadows_lengthening"],
+   "establishes": [],
+   "forbids": ["vault_located", "gear_teeth_chipped"],
+   "affect": {"target": "gentle, bittersweet resolve", "forbid": ["dread", "despair", "humiliation"]},
+   "choice_semantics": {},
+   "beat_hint": "Walking back out through the gate closes the day's chance for good, no shame in it, just a door that will not open again today."
+  },
+  "n_end_timeout": {
+   "tier": "locked_outcome",
+   "function": "closing-clock-ending",
+   "entry_state": ["quest_begun", "dusk_at_the_windows"],
+   "establishes": [],
+   "forbids": ["vault_located", "final_chime_minutes"],
+   "affect": {"target": "surprised, bittersweet acceptance", "forbid": ["dread", "panic"]},
+   "choice_semantics": {},
+   "beat_hint": "The guessed hands trip the chime early, and the tower closes around the search a little sooner than it should have."
+  },
+  "n_end_stuck": {
+   "tier": "locked_outcome",
+   "function": "persistent-damage-ending",
+   "entry_state": ["quest_begun", "dusk_at_the_windows", "gear_teeth_chipped"],
+   "establishes": [],
+   "forbids": ["vault_located", "hands_set_true"],
+   "affect": {"target": "quiet, matter-of-fact letdown, not shame", "forbid": ["dread", "humiliation"]},
+   "choice_semantics": {},
+   "beat_hint": "The chipped gear finally seizes for good, and the mechanism will not move again today, the visible cost of forcing it earlier."
+  },
+  "n_end_secret": {
+   "tier": "locked_outcome",
+   "function": "alternate-discovery-ending",
+   "entry_state": ["quest_begun", "dusk_at_the_windows"],
+   "establishes": [],
+   "forbids": ["vault_located", "gear_teeth_chipped"],
+   "affect": {"target": "quiet, satisfied wonder", "forbid": ["dread"]},
+   "choice_semantics": {},
+   "beat_hint": "The hidden compartment's old letters are their own kind of find, and the search ends there, content rather than triumphant."
+  },
+  "n_end_hero": {
+   "tier": "locked_outcome",
+   "function": "share-everything-ending",
+   "entry_state": ["quest_begun", "final_chime_minutes", "vault_located"],
+   "establishes": [],
+   "forbids": [],
+   "affect": {"target": "warm, generous triumph", "forbid": ["dread"]},
+   "choice_semantics": {},
+   "beat_hint": "Nothing from the vault leaves with you, and telling the keeper everything makes the discovery belong to the whole tower."
+  },
+  "n_end_keepsake": {
+   "tier": "locked_outcome",
+   "function": "one-item-ending",
+   "entry_state": ["quest_begun", "final_chime_minutes", "vault_located"],
+   "establishes": [],
+   "forbids": [],
+   "affect": {"target": "honest, quiet pride", "forbid": ["dread"]},
+   "choice_semantics": {},
+   "beat_hint": "One small keepsake fits the satchel's single pocket, and the rest of the vault stays behind, a fair trade the visit can live with."
+  },
+  "n_end_caught": {
+   "tier": "locked_outcome",
+   "function": "overreach-ending",
+   "entry_state": ["quest_begun", "final_chime_minutes", "vault_located"],
+   "establishes": [],
+   "forbids": [],
+   "affect": {"target": "flustered but not humiliated, a lesson landing gently", "forbid": ["dread", "humiliation", "shame"]},
+   "choice_semantics": {},
+   "beat_hint": "Trying to carry more than one pocket can hold costs the last minutes and brings the keeper to the door just as the final chime sounds, a warm scolding rather than any real trouble."
+  }
+ }
+}

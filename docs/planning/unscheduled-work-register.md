@@ -401,6 +401,7 @@ substantially the same work under different headings. Do not triple-book.
 | UW-C152 | `AL-218` 18 of 21 large catalog graphs put nearly every node in one post-hub spoke, so no disjoint tour can be cut from them; only 3 are world-shaped and one is in-band. Scope M-2 to those 3, add spoke balance to catalog metrics, and check what a cut object is before reporting a uniform graph-theoretic extreme. | now | unscheduled |
 | UW-C153 | `AL-219` Six unaided skeleton-free graphs were 6 of 6 structurally clean and 0 of 6 gate-clean, with every blocking finding violating a constraint the brief never stated. Put band budgets, opening floor and ending schema into the generation brief and re-run before concluding anything about model capability. | now | unscheduled |
 | UW-C154 | `AL-220` Six stories sharing no plan sit at the idiom floor on average yet converge on one premise, so removing a shared plan does not vary the premise. Point R1-3's repulsion term at the premise as well as the bound solution chain, since neither sharing less nor instructing achieves it. | now | unscheduled |
+| UW-C155 | `AL-221` A contract briefed with hard, itemised wording-independence came back at 126.7 shared 4-grams per 1000 with its reference despite a different world and zero fact-name overlap. Enforce independence by withholding the reference and supplying a written schema, and note that R1-3's fresh-contract-per-book is not the same as independent-per-book. | now | unscheduled |
 
 ## Cluster D: untracked GitHub issues
 
