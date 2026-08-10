@@ -1,0 +1,467 @@
+{
+  "narrative_version": 1,
+  "skeleton_slug": "the-lost-mitten",
+  "age_band": "3-5",
+  "premise": {
+    "engine": "search-and-recover",
+    "dramatic_question": "Will {HERO} get the {LOST_ITEM} back?",
+    "resolution_space": [
+      "recovered by own reach",
+      "recovered by shared effort",
+      "was never lost"
+    ]
+  },
+  "facts": {
+    "item_missing": "the reader knows one cherished item is gone",
+    "hero_discomfort": "the hero is mildly, comically worse off without it",
+    "search_intent": "the hero has committed to looking",
+    "cleared:LANDMARK_A": "the reader knows the item is not at the first landmark",
+    "cleared:LANDMARK_B": "the reader knows the item is not at the second landmark",
+    "cleared:FRIEND": "the friend has not seen the item",
+    "lead:MEETING_PLACE": "the reader has a concrete reason to go to the meeting place next",
+    "glimpse:ITEM_COLOR": "a color-matched sign has been noticed at the meeting place, deliberately ambiguous",
+    "item_sighted": "the item, or an unmistakable part of it, has been seen",
+    "item_out_of_reach": "the item is visible but cannot be taken by the hero alone",
+    "helpers_alerted": "the helper animals are engaged in the search",
+    "helpers_group_effort": "friends are physically cooperating to reach the item",
+    "home_comfort": "the hero is home, warm, and welcomed",
+    "item_recovered": "the item is back with the hero",
+    "reveal:never_lost": "the item was never at any search site",
+    "shared:HOME_TREAT": "the treat is shared in company",
+    "friendship_payoff": "the shared effort is celebrated together"
+  },
+  "safety_envelope": {
+    "affect_ceiling": "curious",
+    "forbid_affect": [
+      "dread",
+      "urgency",
+      "grief",
+      "shame"
+    ],
+    "forbid_facts": [
+      "hero_alone_and_afraid",
+      "adult_disapproves",
+      "item_destroyed"
+    ],
+    "permitted_device_kinds": [
+      "sensory_trace",
+      "testimony",
+      "disturbance",
+      "container",
+      "shared_effort",
+      "out_of_reach"
+    ],
+    "forbidden_device_kinds": [
+      "deception",
+      "mechanism_with_failure_state",
+      "injury",
+      "loss_of_caregiver"
+    ]
+  },
+  "world_recipe": {
+    "requires": {
+      "clue_channels": {
+        "count": 3,
+        "unique_within_story": true,
+        "max_words": 10
+      },
+      "obstacle_kinds": {
+        "count": 1,
+        "kinds": [
+          "out_of_reach"
+        ]
+      },
+      "help_modes": {
+        "count": 1,
+        "kinds": [
+          "shared_effort"
+        ]
+      },
+      "containers": {
+        "count": 1,
+        "note": "something the hero carries or wears home"
+      }
+    },
+    "identity_roles": [
+      "HERO",
+      "FRIEND",
+      "CAREGIVER",
+      "LOST_ITEM",
+      "MEETING_PLACE"
+    ],
+    "texture_roles": [
+      "PLAY_PLACE",
+      "LANDMARK_A",
+      "LANDMARK_B",
+      "HOME_TREAT",
+      "HELPERS",
+      "FRIEND_GROUP"
+    ]
+  },
+  "nodes": {
+    "n_start": {
+      "tier": "open",
+      "function": "introduce-stakes",
+      "reentrant": true,
+      "entry_state": [],
+      "establishes": [
+        "item_missing",
+        "hero_discomfort",
+        "search_intent"
+      ],
+      "forbids": [
+        "item_sighted",
+        "lead:MEETING_PLACE"
+      ],
+      "affect": {
+        "target": "warm, then a small comic dismay",
+        "forbid": [
+          "dread",
+          "urgency"
+        ]
+      },
+      "invention": {
+        "loss_moment": {
+          "pick": 1,
+          "from": "bible.world.physics_notes + bible.motifs",
+          "note": "how the item came to be gone; never the hero's fault, never theft"
+        }
+      },
+      "reentry_contract": "Re-rendered on every return from a failed search. Write the loss as an established fact the hero is living with, not as fresh news; no oh-no discovery beat.",
+      "choice_semantics": {
+        "c_pine": "search a nearby landmark",
+        "c_rabbit": "seek testimony from a peer",
+        "c_sled": "search a used play surface"
+      },
+      "beat_hint": "hub. establish the want and the three ways to chase it."
+    },
+    "n_pine": {
+      "tier": "open",
+      "move": "search.empty_but_directional",
+      "function": "plant-clue",
+      "reentrant": true,
+      "entry_state": [
+        "item_missing",
+        "search_intent"
+      ],
+      "establishes": [
+        "cleared:LANDMARK_A",
+        "lead:MEETING_PLACE"
+      ],
+      "forbids": [
+        "item_sighted",
+        "item_recovered"
+      ],
+      "affect": {
+        "target": "curious",
+        "forbid": [
+          "dread",
+          "frustration"
+        ]
+      },
+      "invention": {
+        "clue_channel": {
+          "pick": 1,
+          "from": "bible.device_vocabulary.clue_channels",
+          "unique_within_story": true,
+          "assigned_at": "bind"
+        }
+      },
+      "constraints": {
+        "clue_must_be": "readable by a four-year-old without inference: one thing, pointing one way",
+        "must_not": "explain the clue in a second sentence; the image carries it"
+      },
+      "reentry_contract": "May be re-read after a loop; write the empty search as a calm check, not a dashed hope.",
+      "choice_semantics": {
+        "c_pine_creek": "commit to the lead",
+        "c_pine_back": "abandon this lead, resume at the hub"
+      },
+      "beat_hint": "the search comes up empty, but the place gives up a direction."
+    },
+    "n_rabbit": {
+      "tier": "open",
+      "move": "search.empty_but_directional",
+      "function": "plant-clue",
+      "reentrant": true,
+      "entry_state": [
+        "item_missing",
+        "search_intent"
+      ],
+      "establishes": [
+        "cleared:FRIEND",
+        "lead:MEETING_PLACE"
+      ],
+      "forbids": [
+        "item_sighted",
+        "item_recovered"
+      ],
+      "affect": {
+        "target": "friendly curiosity",
+        "forbid": [
+          "dread"
+        ]
+      },
+      "invention": {
+        "clue_channel": {
+          "pick": 1,
+          "from": "bible.device_vocabulary.clue_channels",
+          "kind_must_be": "testimony",
+          "unique_within_story": true,
+          "assigned_at": "bind"
+        }
+      },
+      "reentry_contract": "May be re-read after a loop; the friend stays warm and unhurried on a second ask.",
+      "choice_semantics": {
+        "c_rabbit_creek": "commit to the lead",
+        "c_rabbit_back": "abandon this lead, resume at the hub"
+      },
+      "beat_hint": "the peer has not seen it, but something they noticed points onward."
+    },
+    "n_sled": {
+      "tier": "open",
+      "move": "search.empty_but_directional",
+      "function": "plant-clue",
+      "reentrant": true,
+      "entry_state": [
+        "item_missing",
+        "search_intent"
+      ],
+      "establishes": [
+        "cleared:LANDMARK_B",
+        "lead:MEETING_PLACE"
+      ],
+      "forbids": [
+        "item_sighted",
+        "item_recovered"
+      ],
+      "affect": {
+        "target": "curious",
+        "forbid": [
+          "dread",
+          "frustration"
+        ]
+      },
+      "invention": {
+        "clue_channel": {
+          "pick": 1,
+          "from": "bible.device_vocabulary.clue_channels",
+          "unique_within_story": true,
+          "assigned_at": "bind"
+        }
+      },
+      "reentry_contract": "May be re-read after a loop; write the empty search as a calm check, not a dashed hope.",
+      "choice_semantics": {
+        "c_sled_creek": "commit to the lead",
+        "c_sled_back": "abandon this lead, resume at the hub"
+      },
+      "beat_hint": "the play surface is clear, but it holds a trace pointing onward."
+    },
+    "n_creek": {
+      "tier": "open",
+      "function": "converge-and-offer",
+      "entry_state": [
+        "item_missing",
+        "search_intent",
+        "lead:MEETING_PLACE"
+      ],
+      "establishes": [
+        "glimpse:ITEM_COLOR",
+        "helpers_alerted"
+      ],
+      "forbids": [
+        "item_recovered",
+        "item_sighted"
+      ],
+      "affect": {
+        "target": "bright anticipation",
+        "forbid": [
+          "dread",
+          "urgency"
+        ]
+      },
+      "constraints": {
+        "glimpse_must_be": "a color-matched sign only, never confirmably the item itself; the surprise ending depends on this ambiguity",
+        "offers": "three concrete, sensory offers matching the three choices; each offer stands alone"
+      },
+      "merge_note": "NC-1: three parents (n_pine, n_rabbit, n_sled) each arrive with a DIFFERENT clue channel assigned; presuppose none of them specifically. Reference the lead generically.",
+      "choice_semantics": {
+        "c_creek_red": "go directly for the color-matched sign",
+        "c_creek_birds": "follow the helpers' signal upward",
+        "c_creek_home": "let the search rest and head home to comfort"
+      },
+      "beat_hint": "the meeting place makes three offers at once: something seen, something heard, something homeward."
+    },
+    "n_birds": {
+      "tier": "open",
+      "function": "raise-obstacle",
+      "entry_state": [
+        "glimpse:ITEM_COLOR",
+        "helpers_alerted"
+      ],
+      "establishes": [
+        "item_sighted",
+        "item_out_of_reach"
+      ],
+      "forbids": [
+        "item_recovered"
+      ],
+      "affect": {
+        "target": "delighted so-close",
+        "forbid": [
+          "frustration",
+          "dread"
+        ]
+      },
+      "invention": {
+        "obstacle": {
+          "pick": 1,
+          "from": "bible.device_vocabulary.obstacle_kinds",
+          "assigned_at": "bind"
+        }
+      },
+      "choice_semantics": {
+        "c_birds_lift": "try to reach it alone",
+        "c_birds_help": "call friends to reach it together"
+      },
+      "beat_hint": "the helpers reveal the item, visible but just beyond the hero's reach."
+    },
+    "n_help": {
+      "tier": "open",
+      "function": "raise-camaraderie",
+      "entry_state": [
+        "item_sighted",
+        "item_out_of_reach"
+      ],
+      "establishes": [
+        "helpers_group_effort"
+      ],
+      "forbids": [
+        "item_recovered"
+      ],
+      "affect": {
+        "target": "giggly teamwork",
+        "forbid": [
+          "strain",
+          "danger"
+        ]
+      },
+      "invention": {
+        "help_mode": {
+          "pick": 1,
+          "from": "bible.device_vocabulary.help_modes",
+          "assigned_at": "bind"
+        }
+      },
+      "choice_semantics": {
+        "c_help_together": "make the reach together"
+      },
+      "beat_hint": "friends assemble a cheerful cooperative reach; the fun is the wobble, never the risk."
+    },
+    "n_cocoa": {
+      "tier": "open",
+      "function": "turn-homeward",
+      "entry_state": [
+        "item_missing",
+        "search_intent"
+      ],
+      "establishes": [
+        "home_comfort"
+      ],
+      "forbids": [
+        "item_recovered",
+        "adult_disapproves"
+      ],
+      "affect": {
+        "target": "cozy welcome",
+        "forbid": [
+          "shame",
+          "scolding"
+        ]
+      },
+      "invention": {
+        "container": {
+          "pick": 1,
+          "from": "bible.device_vocabulary.containers",
+          "assigned_at": "bind",
+          "note": "must be something the hero has carried or worn the whole story; plant it here naturally"
+        }
+      },
+      "choice_semantics": {
+        "c_cocoa_surprise": "look at what just turned up"
+      },
+      "beat_hint": "home receives the hero warmly; as outdoor things come off, something color-matched appears."
+    },
+    "n_found": {
+      "tier": "locked_outcome",
+      "function": "payoff",
+      "entry_state": [
+        "glimpse:ITEM_COLOR"
+      ],
+      "establishes": [
+        "item_sighted",
+        "item_recovered"
+      ],
+      "forbids": [
+        "item_out_of_reach",
+        "helpers_group_effort"
+      ],
+      "affect": {
+        "target": "quiet satisfaction",
+        "forbid": [
+          "anticlimax"
+        ]
+      },
+      "merge_note": "NC-1: parents are n_creek (ambiguous glimpse) and n_birds (sighted, was out of reach, hero chose to reach alone). Write the recovery on what both guarantee: the item is now seen and takeable by the hero alone. Do not presuppose ground level or reaching up.",
+      "beat_hint": "the hero completes the recovery alone; both hands warm; cozy solo win."
+    },
+    "n_together": {
+      "tier": "locked_outcome",
+      "function": "payoff",
+      "entry_state": [
+        "item_sighted",
+        "helpers_group_effort"
+      ],
+      "establishes": [
+        "item_recovered",
+        "friendship_payoff"
+      ],
+      "forbids": [
+        "anyone_hurt"
+      ],
+      "affect": {
+        "target": "shared triumph",
+        "forbid": [
+          "anticlimax"
+        ]
+      },
+      "beat_hint": "the cooperative reach succeeds; the celebration belongs to everyone."
+    },
+    "n_surprise": {
+      "tier": "locked_outcome",
+      "function": "payoff",
+      "entry_state": [
+        "home_comfort"
+      ],
+      "establishes": [
+        "reveal:never_lost",
+        "item_recovered",
+        "shared:HOME_TREAT"
+      ],
+      "forbids": [
+        "hero_at_fault",
+        "anyone_scolded"
+      ],
+      "affect": {
+        "target": "comic warmth",
+        "forbid": [
+          "embarrassment",
+          "anticlimax"
+        ]
+      },
+      "constraints": {
+        "reveal_must_not": "retroactively claim the color-matched sign at the meeting place was the item; that sign stays its own small mystery or is gently explained as something else"
+      },
+      "beat_hint": "it was with them all along; everybody laughs; nobody is embarrassed."
+    }
+  }
+}

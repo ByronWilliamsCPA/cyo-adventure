@@ -10,6 +10,7 @@ import pytest
 
 from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.generation import skeleton_match
+from cyo_adventure.generation.skeleton import is_sidecar
 from cyo_adventure.generation.skeleton_match import (
     candidates_for_cell,
     find_skeleton_metadata,
@@ -593,7 +594,7 @@ def test_no_catalog_continuation_book_is_offered_for_any_cell() -> None:
         for band_dir in (Path(__file__).resolve().parents[2] / "skeletons").iterdir()
         if band_dir.is_dir()
         for path in sorted(band_dir.glob("*.json"))
-        if not path.name.endswith((".contract.json", ".lineage.json"))
+        if not is_sidecar(path)
         and (meta := find_skeleton_metadata(path.stem)) is not None
         and is_continuation_skeleton(meta)
     ]
