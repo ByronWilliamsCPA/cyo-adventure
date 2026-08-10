@@ -105,6 +105,26 @@ def near_noun_swaps(
     return swaps
 
 
+def _load_json_object(path: str) -> dict[str, Any] | None:
+    """Load a JSON object from path, or report and return None.
+
+    Args:
+        path: File path to read.
+
+    Returns:
+        The decoded object, or None on any load failure.
+    """
+    try:
+        data = json.loads(Path(path).read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        sys.stderr.write(f"error: cannot load {path}: {exc}\n")
+        return None
+    if not isinstance(data, dict):
+        sys.stderr.write(f"error: expected a JSON object in {path}\n")
+        return None
+    return cast("dict[str, Any]", data)
+
+
 def main(argv: list[str] | None = None) -> int:
     """CLI entry point; exit 1 with --check when any pair sits below tau."""
     parser = argparse.ArgumentParser(description=__doc__)
@@ -123,15 +143,23 @@ def main(argv: list[str] | None = None) -> int:
     if len(args.bibles) < 2:
         sys.stderr.write("need at least two bibles\n")
         return 2
-    loaded = {
-        path: cast("dict[str, Any]", json.loads(Path(path).read_text(encoding="utf-8")))
-        for path in args.bibles
-    }
+    if len(set(args.bibles)) != len(args.bibles):
+        dupes = sorted({p for p in args.bibles if args.bibles.count(p) > 1})
+        sys.stderr.write(f"error: duplicate bible path(s): {', '.join(dupes)}\n")
+        return 2
+    if not 0.0 <= args.tau <= 1.0:
+        sys.stderr.write(f"error: --tau must be within [0.0, 1.0], got {args.tau}\n")
+        return 2
+    loaded: dict[str, dict[str, Any]] = {}
+    for path in args.bibles:
+        bible = _load_json_object(path)
+        if bible is None:
+            return 2
+        loaded[path] = bible
     if args.contract:
-        contract = cast(
-            "dict[str, Any]",
-            json.loads(Path(args.contract).read_text(encoding="utf-8")),
-        )
+        contract = _load_json_object(args.contract)
+        if contract is None:
+            return 2
         forced: dict[str, set[str]] = {}
         for entry in cast("dict[str, Any]", contract.get("nodes") or {}).values():
             for spec in cast(
@@ -143,8 +171,15 @@ def main(argv: list[str] | None = None) -> int:
                 if category and must:
                     forced.setdefault(str(category), set()).add(str(must))
         sys.stdout.write("per-category kind headroom (forced kinds cannot diverge):\n")
-        sample = next(iter(loaded.values()))
-        for category, kinds in sorted(_kind_multisets(sample).items()):
+        # Union the category set across every loaded bible: deriving it from
+        # only the first bible (``next(iter(loaded.values()))``) silently
+        # dropped any category that first appears in a later sibling, making
+        # --contract report a falsely-clean table for it.
+        aggregate_kinds: dict[str, Counter[str]] = {}
+        for bible in loaded.values():
+            for category, counter in _kind_multisets(bible).items():
+                aggregate_kinds.setdefault(category, Counter()).update(counter)
+        for category, kinds in sorted(aggregate_kinds.items()):
             frozen = sorted(forced.get(category, set()))
             free = sum(
                 c for k, c in kinds.items() if k not in forced.get(category, set())

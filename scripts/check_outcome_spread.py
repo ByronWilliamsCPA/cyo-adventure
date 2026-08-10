@@ -33,7 +33,7 @@ import sys
 from pathlib import Path
 from typing import Any, cast
 
-from cyo_adventure.generation.skeleton import is_sidecar
+from cyo_adventure.generation.skeleton import is_production_eligible, is_sidecar
 
 _SKELETONS_ROOT = Path(__file__).resolve().parent.parent / "skeletons"
 
@@ -108,13 +108,32 @@ def signature_distance(a: tuple[float, ...], b: tuple[float, ...]) -> float:
     return (tv_kind + tv_val) / 2
 
 
+def _load_skeleton(path: Path) -> dict[str, Any] | None:
+    """Load a skeleton JSON object from path, or report and return None.
+
+    Args:
+        path: File path to read.
+
+    Returns:
+        The decoded object, or None on any load failure.
+    """
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        sys.stderr.write(f"error: cannot load {path}: {exc}\n")
+        return None
+    return cast("dict[str, Any]", data)
+
+
 def _load_cells() -> dict[tuple[str, str, str], list[tuple[str, tuple[float, ...]]]]:
     """Group production skeleton signatures by (band, length, style) cell."""
     cells: dict[tuple[str, str, str], list[tuple[str, tuple[float, ...]]]] = {}
     for path in sorted(_SKELETONS_ROOT.glob("*/*.json")):
         if is_sidecar(path):
             continue
-        story = cast("dict[str, Any]", json.loads(path.read_text(encoding="utf-8")))
+        story = _load_skeleton(path)
+        if story is None:
+            continue
         metadata = cast("dict[str, Any]", story.get("metadata") or {})
         band = metadata.get("age_band")
         length = metadata.get("length")
@@ -124,7 +143,9 @@ def _load_cells() -> dict[tuple[str, str, str], list[tuple[str, tuple[float, ...
             or not isinstance(length, str)
             or not isinstance(style, str)
         ):
-            continue  # MVP seed: declares no cell, audits nothing
+            continue  # metadata-shape: MVP seed declares no cell, audits nothing
+        if not is_production_eligible(story):
+            continue  # explicit production_eligible: False, audits nothing
         signature = outcome_signature(story)
         if signature is None:
             continue
@@ -155,6 +176,9 @@ def main(argv: list[str] | None = None) -> int:
         help=f"Breach threshold (default {DEFAULT_TAU}).",
     )
     args = parser.parse_args(argv)
+    if not 0.0 <= args.tau <= 1.0:
+        sys.stderr.write(f"error: --tau must be within [0.0, 1.0], got {args.tau}\n")
+        return 2
     pairs: list[tuple[float, tuple[str, str, str], str, str]] = []
     for cell, members in sorted(_load_cells().items()):
         for i, (slug_a, sig_a) in enumerate(members):
