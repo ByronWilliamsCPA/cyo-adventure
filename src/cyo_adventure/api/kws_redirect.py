@@ -256,17 +256,22 @@ def _require_verification_configured() -> str:
 def _reports_verified(status: str) -> bool:
     """Whether the signed ``status`` value says the parent was verified.
 
-    #ASSUME: external resources: Epic documents that a ``status`` parameter
-    comes back on the redirect but not what it contains. The JSON-object
-    reading (``{"verified": true, ...}``) matches the shape the
-    ``parent-verified`` webhook uses for the same fact and is the
-    better-evidenced of the readings; the bare-token fallback covers a plain
-    ``verified``/``true``/``success`` string. Anything else reads as NOT
-    verified, which is the safe direction: this page writes nothing, and the
-    webhook remains the authoritative record either way.
+    Epic's PV Service API pages (Developer Portal, read 2026-08-10) give the
+    return URL verbatim, and ``status`` is a URL-encoded JSON object:
+    ``{"verified":true,"transactionId":"<id>","errorCode":null}``. That
+    settles what an earlier ``#ASSUME`` here had to hedge. The documented
+    shape is the JSON-object branch, and it matches the shape the
+    ``parent-verified`` webhook uses for the same fact.
+
+    #EDGE: external resources: the bare-token fallback (a plain
+    ``verified``/``true``/``success`` string) is kept for a ``status`` that is
+    not a JSON object. No documented response takes that shape, so it guards
+    against an undocumented variant rather than a branch we expect to run.
+    Anything neither branch recognises reads as NOT verified, which is the
+    safe direction: this page writes nothing, and the webhook remains the
+    authoritative record either way.
     #VERIFY: tests/unit/test_kws_redirect.py::TestStatusReading pins the JSON
-    object, the JSON literal, the bare token, and the unrecognised cases; the
-    first real Test-environment redirect settles which one KWS actually sends.
+    object, the JSON literal, the bare token, and the unrecognised cases.
 
     Args:
         status: The ``status`` query parameter, already signature-verified.
