@@ -333,7 +333,7 @@
    "choice_semantics": {
     "c_open": "read the note as what it is, someone's last word, and take it seriously together"
    },
-   "beat_hint": "a locked, half-forgotten tower and a farewell note nobody ever finished reading."
+   "beat_hint": "an old farewell is still waiting to be read, and reading it together is the story's real beginning."
   },
   "n_start": {
    "tier": "open",
@@ -365,7 +365,7 @@
     "c_door": "follow the maker's handiwork: read the building itself",
     "c_keeper": "follow the maker's confidant: ask who still remembers"
    },
-   "beat_hint": "hub. the friends split on whose trace to follow first, not on whether to look."
+   "beat_hint": "before recovering anything, the friends decide whose trace to follow first: his words, his walls, or his people."
   },
   "n_note": {
    "tier": "open",
@@ -407,7 +407,7 @@
     "c_note_key": "chase the named place down properly",
     "c_note_inside": "act on the plain reading and go there directly"
    },
-   "beat_hint": "patience with his code pays off: the first recovered fact points two ways at once."
+   "beat_hint": "translating just the opening line recovers one true fact, and that fact quietly points two directions."
   },
   "n_door": {
    "tier": "open",
@@ -448,7 +448,7 @@
     "c_door_force": "read the low, worn path he used often",
     "c_door_window": "read the high, less-worn path he used rarely"
    },
-   "beat_hint": "the building itself remembers two honest routes he used to take."
+   "beat_hint": "walking his old routes without him leaves two separate traces of habits nobody else noticed."
   },
   "n_keeper": {
    "tier": "open",
@@ -491,7 +491,7 @@
     "c_keeper_enter": "take the offered way in and go now",
     "c_keeper_story": "stay for the memory before the way in"
    },
-   "beat_hint": "asking someone to remember is presented as a kindness; the keeper repays it with a real offer."
+   "beat_hint": "coaxing a reluctant memory out of someone is repaid with both a way in and a story."
   },
   "n_keyhunt": {
    "tier": "open",
@@ -520,7 +520,7 @@
    "choice_semantics": {
     "c_keyhunt_in": "use the confirmed lead and go in the way it points"
    },
-   "beat_hint": "the recovered fact proves out in the real world; a hunch becomes trust in his handwriting."
+   "beat_hint": "the world confirms the translated line was telling the truth about him all along."
   },
   "n_keeper_story": {
    "tier": "open",
@@ -550,7 +550,7 @@
    "choice_semantics": {
     "c_story_in": "carry the understood departure inside, entering already knowing why he left"
    },
-   "beat_hint": "background that turns later clues into recognition of a man, not luck with a machine."
+   "beat_hint": "hearing why he really withdrew turns every later clue into recognition instead of guesswork."
   },
   "n_window": {
    "tier": "open",
@@ -579,7 +579,7 @@
    "choice_semantics": {
     "c_window_in": "commit to the drop, cross into the maker's world"
    },
-   "beat_hint": "the squeeze through is the fun; the landing puts them where he used to stand."
+   "beat_hint": "a small dare puts them physically where he used to stand, not just where he wrote."
   },
   "n_inside": {
    "tier": "open",
@@ -615,7 +615,7 @@
     "c_inside_pendulum": "follow the crossing he once risked",
     "c_inside_basement": "follow the depths he built from"
    },
-   "beat_hint": "bottleneck. inside at last; four traces of his daily life to choose from."
+   "beat_hint": "past the threshold, four different traces of his daily life wait to be followed."
   },
   "n_stairs": {
    "tier": "open",
@@ -663,7 +663,7 @@
    "choice_semantics": {
     "c_stairs_face": "carry the recovered piece up to the clock"
    },
-   "beat_hint": "the spine of the tower, worn by a routine that is starting to feel familiar."
+   "beat_hint": "retracing his daily climb recovers a piece of his timeline along with a small personal token."
   },
   "n_study": {
    "tier": "open",
@@ -713,7 +713,7 @@
     "c_study_face": "take what the room recovered and press on to the clock",
     "c_study_logs": "let the records hold you: choose his past over the present puzzle"
    },
-   "beat_hint": "his working room explains a piece of the timeline and, just as loudly, invites them to stay."
+   "beat_hint": "his old working room recovers part of the timeline and tempts the friends to just stay reading."
   },
   "n_pendulum": {
    "tier": "open",
@@ -763,7 +763,7 @@
     "c_pendulum_oil": "cross with the same care he must have, and claim what he left there",
     "c_pendulum_giveup": "judge the risk honestly and decline it, as he might have understood"
    },
-   "beat_hint": "the room of moving works holds the one risk he clearly respected, and something he left past it."
+   "beat_hint": "crossing the same risk he once weighed recovers a piece of his story and something he left behind."
   },
   "n_basement": {
    "tier": "open",
@@ -811,7 +811,7 @@
    "choice_semantics": {
     "c_basement_face": "carry the recovered piece straight up to the clock"
    },
-   "beat_hint": "the machine's roots hold their own piece of his timeline, and a way runs straight up to the clock."
+   "beat_hint": "the lowest room holds the foundations his later work was built on, plus its own piece of memory."
   },
   "n_clockface": {
    "tier": "open",
@@ -847,7 +847,7 @@
     "c_face_panel": "distrust the obvious setting, search behind the face for another answer",
     "c_face_random": "gamble: try a random setting and hope it lands"
    },
-   "beat_hint": "bottleneck. everything narrows to the clock and his unfinished setting; four ways to meet it."
+   "beat_hint": "the search narrows down to the one setting he left half-done, and each friend approaches it their own way."
   },
   "n_setcorrect": {
    "tier": "open",
@@ -876,7 +876,7 @@
    "choice_semantics": {
     "c_correct_vault": "step through into what his finished work reveals"
    },
-   "beat_hint": "the setting finishes his work; the tower's memory runs true again after decades."
+   "beat_hint": "finishing the setting he left undone is a small act of honoring someone else's unfinished work."
   },
   "n_setjam": {
    "tier": "open",
@@ -917,7 +917,7 @@
     "c_jam_oil": "work the problem: find the honest way back and try again more carefully",
     "c_jam_stuck": "accept the mechanism has won tonight"
    },
-   "beat_hint": "force meets a mechanism that protects itself; setting it right must be earned, not forced."
+   "beat_hint": "pushing at his unfinished mechanism only seizes it further, and gentleness is what undoes the damage."
   },
   "n_backpanel": {
    "tier": "open",
@@ -947,7 +947,7 @@
     "c_panel_vault": "follow the second note toward what everyone came for",
     "c_panel_secret": "follow the second note the other way, toward a room no one mentioned"
    },
-   "beat_hint": "behind the clock's face, he left a second, smaller note and two directions to follow it."
+   "beat_hint": "a second note waits behind the first setting, left for whoever searches carefully enough to find it."
   },
   "n_vault": {
    "tier": "open",
@@ -989,7 +989,7 @@
     "c_vault_keep": "keep the memory privately: let it belong to the friends who found it",
     "c_vault_grab": "treat the memory as loot and take the treasure for yourselves"
    },
-   "beat_hint": "bottleneck. his story is answered; now a choice of what memory the friends owe the settlement."
+   "beat_hint": "his story is finally answered, and now the friends must decide what they owe his memory."
   },
   "n_end_library": {
    "tier": "locked_outcome",
@@ -1030,7 +1030,7 @@
    "constraints": {
     "ending_must_read": "as a different kind of win: they chose his history over the clock and the choice is honored; the search waits, richer for what they now know"
    },
-   "beat_hint": "the readers' ending; clever, warm, and openly unfinished."
+   "beat_hint": "staying with his old records instead of chasing the setting still counts as time well spent with him."
   },
   "n_end_giveup": {
    "tier": "locked_outcome",
@@ -1071,7 +1071,7 @@
    "constraints": {
     "ending_must_read": "as judgment, not fear: knowing when not to is a skill he'd have recognized; the search stays open"
    },
-   "beat_hint": "the setback that is also wisdom; nobody laughs, and the search stays open."
+   "beat_hint": "understanding the risk he once weighed firsthand is worth more tonight than finishing his story."
   },
   "n_end_timeout": {
    "tier": "locked_outcome",
@@ -1112,7 +1112,7 @@
    "constraints": {
     "ending_must_read": "as the fair cost of guessing at a thing built for thinking; the lesson is theirs to use next time"
    },
-   "beat_hint": "chance loses to his design; the tower closes politely around the gamble."
+   "beat_hint": "some answers about him cannot be rushed, and a guess was never going to earn one."
   },
   "n_end_stuck": {
    "tier": "locked_outcome",
@@ -1152,7 +1152,7 @@
    "constraints": {
     "ending_must_read": "as a pause, not a verdict: the friends leave already planning the return with the right care"
    },
-   "beat_hint": "the mechanism wins the night; the friends win the plan to return more carefully."
+   "beat_hint": "his old machine gets the better of them tonight, and they leave resolved to handle it more gently next time."
   },
   "n_end_secret": {
    "tier": "locked_outcome",
@@ -1201,7 +1201,7 @@
    "constraints": {
     "room_must_be": "a working room alive with his presence; the reward is responsibility and access, never possession"
    },
-   "beat_hint": "the sideways ending: not the chamber, but his living workshop, and a role in keeping it."
+   "beat_hint": "the second note's real find is a living workshop, and inheriting it feels like being expected."
   },
   "n_end_hero": {
    "tier": "locked_outcome",
@@ -1243,7 +1243,7 @@
    "constraints": {
     "restoration_must_be": "concrete and communal: the recovered story gives the settlement back its memory of him, and the clock runs true as the visible sign of it"
    },
-   "beat_hint": "the main triumphant ending; his story finally returned, decades late, by the right hands."
+   "beat_hint": "returning his story to the settlement gives it back a memory it had let go of."
   },
   "n_end_keepsake": {
    "tier": "locked_outcome",
@@ -1283,7 +1283,7 @@
    "constraints": {
     "keeping_must_read": "as guardianship, not hoarding: nothing leaves the chamber that belongs to the settlement; what the friends keep is the memory, and each other"
    },
-   "beat_hint": "the private happy ending; some memories are for keeping close, and keepers are what they became."
+   "beat_hint": "some inheritances are meant to stay small, held close by the few who went looking."
   },
   "n_end_caught": {
    "tier": "locked_outcome",
@@ -1338,7 +1338,7 @@
     "correction_must_be": "fair and complete without cruelty: everything goes back, the keeper is firm but kind, and the friends leave lighter for having been caught",
     "must_not": "threaten, lecture at length, or bar the friends from the tower forever"
    },
-   "beat_hint": "the grab meets his old sense of humor; a gentle giveaway, a keeper, and a putting-right that costs only blushes."
+   "beat_hint": "mistaking his memory for treasure gets gently corrected, and the correction is its own kind of tribute."
   }
  }
 }

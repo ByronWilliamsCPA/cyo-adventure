@@ -333,7 +333,7 @@
    "choice_semantics": {
     "c_open": "accept that the sealed door is asking something of them, and answer it together"
    },
-   "beat_hint": "a sealed door and a challenge that clearly expects to be taken up, not just found."
+   "beat_hint": "the sealed building poses its challenge before anyone touches the door, and the friends accept it as one."
   },
   "n_start": {
    "tier": "open",
@@ -365,7 +365,7 @@
     "c_door": "lead with self-reliance: find your own way past the wall",
     "c_keeper": "lead with humility: ask someone who already passed"
    },
-   "beat_hint": "hub. the friends split on which virtue to lead with, not on the goal."
+   "beat_hint": "three virtues compete for who leads first: patience, self-reliance, or asking for help."
   },
   "n_note": {
    "tier": "open",
@@ -407,7 +407,7 @@
     "c_note_key": "honor the proof fully: go hunt exactly where it points",
     "c_note_inside": "trust the proof enough to act on its plainest reading now"
    },
-   "beat_hint": "patience with the code pays off: the proven line points two ways at once."
+   "beat_hint": "working the note slowly turns patience into proof, and that proof points to two different leads."
   },
   "n_door": {
    "tier": "open",
@@ -448,7 +448,7 @@
     "c_door_force": "prove it the hard way: push through the overlooked gap yourself",
     "c_door_window": "prove it the bold way: climb to the high window on your own"
    },
-   "beat_hint": "the building itself offers two honest ways to prove you don't need help."
+   "beat_hint": "solving the building's own puzzle without any help is the whole point of this branch, twice over."
   },
   "n_keeper": {
    "tier": "open",
@@ -491,7 +491,7 @@
     "c_keeper_enter": "take the earned offer and go now",
     "c_keeper_story": "spend the earned trust on the maker's story instead of speed"
    },
-   "beat_hint": "asking for help is itself the test; the keeper honors passing it with a real offer."
+   "beat_hint": "an adult is quietly grading how the friends ask for help, and a real offer is the passing grade."
   },
   "n_keyhunt": {
    "tier": "open",
@@ -520,7 +520,7 @@
    "choice_semantics": {
     "c_keyhunt_in": "use what the test earned and go in the confirmed way"
    },
-   "beat_hint": "the proof pans out in the real world; passing the note's test becomes fluency with it."
+   "beat_hint": "the world checks the patient friends' work and confirms the test they passed was real."
   },
   "n_keeper_story": {
    "tier": "open",
@@ -550,7 +550,7 @@
    "choice_semantics": {
     "c_story_in": "carry the understood purpose inside, entering having passed the keeper's real test"
    },
-   "beat_hint": "understanding what the tests are for turns later trials into recognition, not luck."
+   "beat_hint": "earned trust buys the friends an explanation of why any of this was ever a test."
   },
   "n_window": {
    "tier": "open",
@@ -579,7 +579,7 @@
    "choice_semantics": {
     "c_window_in": "commit to the drop, prove the self-reliant route true"
    },
-   "beat_hint": "the squeeze through is the dare; landing inside is proof it was answered."
+   "beat_hint": "a physical dare stands between self-reliance claimed and self-reliance proven, and clearing it settles the question."
   },
   "n_inside": {
    "tier": "open",
@@ -615,7 +615,7 @@
     "c_inside_pendulum": "choose the crossing: prove nerve",
     "c_inside_basement": "choose the descent: prove steadiness"
    },
-   "beat_hint": "bottleneck. past the seal at last; the tower offers four different tests of character."
+   "beat_hint": "having cleared the first test, the friends now see four more waiting, each grading something different."
   },
   "n_stairs": {
    "tier": "open",
@@ -663,7 +663,7 @@
    "choice_semantics": {
     "c_stairs_face": "carry the earned proof up to the dial"
    },
-   "beat_hint": "the spine of the tower; the climb is a test of endurance that also teaches a piece of the code."
+   "beat_hint": "the climb itself is the test here, and finishing it earns the next piece of proof."
   },
   "n_study": {
    "tier": "open",
@@ -713,7 +713,7 @@
     "c_study_face": "take the proof earned and press on to the dial",
     "c_study_logs": "let the archive's own test win: choose depth over speed"
    },
-   "beat_hint": "the maker's room teaches the code and, just as loudly, tests whether they'll stay for the archive."
+   "beat_hint": "the room grades curiosity, and passing well means resisting the urge to just keep reading."
   },
   "n_pendulum": {
    "tier": "open",
@@ -763,7 +763,7 @@
     "c_pendulum_oil": "cross with care and claim the maker's set-aside reward",
     "c_pendulum_giveup": "judge the test honestly and decline it"
    },
-   "beat_hint": "the room of moving works holds the tower's most direct test of nerve, and a reward past it."
+   "beat_hint": "of the four, this test asks the most nerve, and a visible reward waits for whoever clears it."
   },
   "n_basement": {
    "tier": "open",
@@ -811,7 +811,7 @@
    "choice_semantics": {
     "c_basement_face": "carry the earned proof straight up to the dial"
    },
-   "beat_hint": "the machine's roots keep their own test of steadiness, and a way runs straight up to the dial."
+   "beat_hint": "in the dark, the test is composure, not cleverness, and staying steady is what it grades."
   },
   "n_clockface": {
    "tier": "open",
@@ -847,7 +847,7 @@
     "c_face_panel": "distrust the test, look for a way around it",
     "c_face_random": "gamble on the test: guess and hope it's lenient"
    },
-   "beat_hint": "bottleneck. everything narrows to the dial and its test; four temperaments answer it four ways."
+   "beat_hint": "all four tests funnel into one last examiner, and each friend answers its challenge on their own terms."
   },
   "n_setcorrect": {
    "tier": "open",
@@ -876,7 +876,7 @@
    "choice_semantics": {
     "c_correct_vault": "step through into what the trial was protecting"
    },
-   "beat_hint": "the setting answers the maker's test; the tower opens the way it was built to for a true pass."
+   "beat_hint": "the answer is graded on the spot, and getting it right is the moment the trial recognizes them."
   },
   "n_setjam": {
    "tier": "open",
@@ -917,7 +917,7 @@
     "c_jam_oil": "work the problem: find the honest way back and retake the test properly",
     "c_jam_stuck": "accept the test was failed tonight"
    },
-   "beat_hint": "force meets a test that protects itself; retaking it must be earned on the machine's own terms."
+   "beat_hint": "muscling through the answer fails outright, and the only honest fix is a proper second attempt."
   },
   "n_backpanel": {
    "tier": "open",
@@ -947,7 +947,7 @@
     "c_panel_vault": "solve the hidden test toward what everyone came for",
     "c_panel_secret": "follow the hidden test the other way, toward a room no one mentioned"
    },
-   "beat_hint": "behind the dial, the maker left a second, smaller test and two directions to answer it."
+   "beat_hint": "careful searchers discover the trial had a second, smaller question waiting behind the obvious one."
   },
   "n_vault": {
    "tier": "open",
@@ -989,7 +989,7 @@
     "c_vault_keep": "let the trial's verdict stay private: the passing belongs to the friends alone",
     "c_vault_grab": "treat the trial as a prize to loot instead of a test to honor"
    },
-   "beat_hint": "bottleneck. the trial is passed; now a last, unwritten test of what they do with passing it."
+   "beat_hint": "passing the trial was never the last question; what to do with a passing grade is."
   },
   "n_end_library": {
    "tier": "locked_outcome",
@@ -1030,7 +1030,7 @@
    "constraints": {
     "ending_must_read": "as a different kind of pass: they chose depth over the clock and the choice is honored; the trial waits, richer for what they now know"
    },
-   "beat_hint": "the readers' ending; clever, warm, and openly unfinished."
+   "beat_hint": "the archive wins this round, and staying to read counts as a legitimate choice, not a retreat."
   },
   "n_end_giveup": {
    "tier": "locked_outcome",
@@ -1071,7 +1071,7 @@
    "constraints": {
     "ending_must_read": "as judgment, not fear: reading a test correctly and declining is itself a passed test"
    },
-   "beat_hint": "the setback that is also wisdom; nobody laughs, and the trial stays open."
+   "beat_hint": "reading the risk correctly and walking away from it is graded as a pass, not a failure."
   },
   "n_end_timeout": {
    "tier": "locked_outcome",
@@ -1112,7 +1112,7 @@
    "constraints": {
     "ending_must_read": "as the fair cost of guessing at a thing built to be reasoned through; the lesson is theirs to use next time"
    },
-   "beat_hint": "chance loses to design; the trial closes politely around the gamble."
+   "beat_hint": "a guess was never going to satisfy an examiner built to reward reasoning instead."
   },
   "n_end_stuck": {
    "tier": "locked_outcome",
@@ -1152,7 +1152,7 @@
    "constraints": {
     "ending_must_read": "as a pause, not a verdict: the friends leave already planning the retake with the right approach"
    },
-   "beat_hint": "the test wins the night; the friends win the plan to retake it."
+   "beat_hint": "tonight's test gets the better of them, and the friends walk away already sketching a second attempt."
   },
   "n_end_secret": {
    "tier": "locked_outcome",
@@ -1201,7 +1201,7 @@
    "constraints": {
     "room_must_be": "a working room alive with the maker's presence; the reward is responsibility and access, never possession"
    },
-   "beat_hint": "the sideways ending: not the sanctum, but a living room of the maker's craft, and a role in it."
+   "beat_hint": "the hidden question's real reward turns out to be a standing role, not an answer."
   },
   "n_end_hero": {
    "tier": "locked_outcome",
@@ -1243,7 +1243,7 @@
    "constraints": {
     "restoration_must_be": "concrete and communal: the decoded message gives the settlement back something real, and the trial's outcome is publicly honored"
    },
-   "beat_hint": "the main triumphant ending; the maker's test finally passed, decades late, by the right hands."
+   "beat_hint": "the friends' passing grade becomes public record, and the whole settlement benefits from it."
   },
   "n_end_keepsake": {
    "tier": "locked_outcome",
@@ -1283,7 +1283,7 @@
    "constraints": {
     "keeping_must_read": "as guardianship, not hoarding: nothing leaves the sanctum that belongs to the settlement; what the friends keep is the passing, and each other"
    },
-   "beat_hint": "the private happy ending; some tests are for keeping to yourself, and keepers are what they became."
+   "beat_hint": "some passing grades are worth more kept quiet, shared only among the friends who earned them."
   },
   "n_end_caught": {
    "tier": "locked_outcome",
@@ -1338,7 +1338,7 @@
     "correction_must_be": "fair and complete without cruelty: everything goes back, the keeper is firm but kind, and the friends leave lighter for having failed the last test kindly",
     "must_not": "threaten, lecture at length, or bar the friends from the tower forever"
    },
-   "beat_hint": "the grab meets the maker's sense of humor; the trial's real final question, answered honestly after all."
+   "beat_hint": "the real final test was never the dial, and grabbing at treasure is the answer that fails it."
   }
  }
 }
