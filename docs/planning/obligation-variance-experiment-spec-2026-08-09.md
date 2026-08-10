@@ -167,3 +167,98 @@ Sonnet directive, made to preserve comparability with the anchor.
 
 Four agent runs: one contract author, two isolated fills, one rater. Plus the deterministic
 battery, which is already scripted. No production code changes.
+
+---
+
+## 12. Results (2026-08-10)
+
+**The intervention failed decisively, and the failure identifies the actual fingerprint.**
+
+### 12.1 Primary outcome
+
+| Measure | Margin | Control (A/B) | Treatment (C/D) |
+| --- | --- | --- | --- |
+| Recognition landing | past position 5, or none | node 4 | **position 2** |
+| Five-point distinctness | > 2.5 | 2.5 | **2.0** |
+
+Recognition landed three positions earlier than the control and scored half a point lower.
+The margin was missed in the wrong direction, so obligation variance is refuted as the lever.
+
+Whether the treatment is genuinely *worse* than the control is not established: the two
+ratings come from separate rater instances and inter-rater reliability on this rubric is
+unmeasured (`UW-C105`). The defensible claim is that varying obligations did not move
+recognition later, not that it moved it earlier.
+
+### 12.2 Quality guards, all met
+
+The arm is valid: it did not buy its result by degrading the books.
+
+| Guard | Margin | Result |
+| --- | --- | --- |
+| Fill integrity (`--allow-title-rewrite`) | exit 0 both | met |
+| Full validator gate | not blocked both | met |
+| Prose craft (`--check`) | exit 0 both | met, 0 tense-unstable nodes, 0 moral tags, 0 told-emotion phrases |
+| Sibling grams per 1000 | <= 4.0 | 2.7 |
+| Menu frames shared | 0 | 0 |
+| Em-dashes | 0 | 0 |
+
+Sibling convergence had to be read at a matched protocol stage, because the 4.0 budget is
+calibrated on post-revision output (`AL-165`): control pre-revision 9.0, treatment
+pre-revision 6.4, control post-revision 0.3, treatment post-revision 2.7. The treatment pair
+began *less* convergent than the control did.
+
+### 12.3 Why it failed: obligations are downstream of topology
+
+The contracts varied `choice_semantics` completely at both landing nodes:
+
+- `n_start`, v2: "lead with patience / lead with self-reliance / lead with humility"
+- `n_start`, v3: "follow the maker's own words / his handiwork / his confidant"
+
+The blind rater nonetheless recorded the same fork in the same order at position 2, and the
+same four-room fan at position 5. The reason is that a choice's *destination* is graph
+structure, not contract content:
+
+```
+n_start  -> n_note, n_door, n_keeper
+n_inside -> n_stairs, n_study, n_pendulum, n_basement
+```
+
+Whatever a contract says a choice *means*, choice 1 still leads to the note-decoding scene,
+choice 2 to the find-another-way-in scene, choice 3 to the keeper scene. Both authors must
+still write a stair, a study, a catwalk, and a basement. **A reader perceives where the
+choices lead, not why the contract says they are offered.**
+
+This unifies every prior null result rather than adding another. Devices change the nouns in
+the rooms; prose changes the wording; model tier changes the quality; obligations change why
+the rooms matter. None of them changes the rooms, because the rooms are edges. The only
+intervention that ever moved recognition at all was mutation, which changes the graph, and
+the only mechanism that ever cleared the anti-clone floor was cross-skeleton grafting, which
+is recombination of two graphs.
+
+### 12.4 Conclusion
+
+Outcome three of section 9 obtains. **Single-use is inherent to a shared armature.** Stop
+looking for a format fix inside one graph. Catalog diversity comes from more graphs: catalog
+depth per cell (`UW-C110`, `UW-C113`), and possibly cross-skeleton recombination.
+
+### 12.5 Two defects surfaced in passing, both independent of the outcome
+
+1. **Unslotted choice labels are an unchecked recognition channel.** 13 of the skeleton's 35
+   choice labels carry no slot token, so they are byte-identical across every binding
+   (`Climb the spiral stair.`, `Spin the hands at random and hope.`, ...). NC-8 warns about
+   unslotted *ending* titles and says nothing about choice labels, even though choice-menu
+   semantics was already named as a residual leak (`AL-166`). Observed live: both isolated
+   authors rewrote `Climb the spiral stair.` to `Head up the spiral stair.`
+2. **Mechanic Divergence is category-scoped and blind to cross-category collisions.** MD
+   scored these bibles 0.978 with no within-category kind overlap, while arm C's
+   `cipher_hint_carriers/pattern_in_mechanism` ("long, long, short") and arm D's
+   `cipher_forms/rhythm_code` ("read each pull as long or short") are the same device. The
+   rater caught it unaided: "the two books' secret codes are the same code."
+
+### 12.6 Limitations, as pre-registered
+
+n=1 skeleton, one rated pair per condition, separate rater instances, and an off-matrix
+skeleton (`AL-176`), so catalog-level conclusions require replication. One asymmetry arose
+from agent discretion rather than design: arm D volunteered a sentence-splitting pass that
+cut its reading-level warnings from 19 to 2 while arm C left its 20 standing, so the books
+differ in sentence rhythm for reasons unrelated to the treatment.
