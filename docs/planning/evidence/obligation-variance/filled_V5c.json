@@ -1,0 +1,423 @@
+{
+ "schema_version": "2.0",
+ "id": "sk_clocktower_cipher",
+ "version": 1,
+ "title": "The Lock-House Salvage",
+ "metadata": {
+  "age_band": "10-13",
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 5.5,
+   "tolerance": 1.5
+  },
+  "tier": 1,
+  "themes": [
+   "mystery",
+   "puzzles",
+   "friendship",
+   "history"
+  ],
+  "estimated_minutes": 18,
+  "ending_count": 8,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "mild",
+   "peril": "mild"
+  },
+  "topology": "branch_and_bottleneck",
+  "production_eligible": false
+ },
+ "variables": [],
+ "start_node": "n_open",
+ "nodes": [
+  {
+   "id": "n_open",
+   "body": "The notice went up on the lock-house door in the first week of June. Barrow Lock's old tower was to be sealed for repairs at the end of the month. Anything still worth saving inside had to come out before then, and help was wanted. Nell read it twice. Pinned under it was a page from Maren Ives's parts index, and not one word on it was a word. Every entry was a small drawing of the part itself, outline only, so reading the index meant matching a drawing to a real object. Arun laughed at it. Toby did not. Walking home, the three of them made themselves a crew.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_open",
+     "label": "We take the job on.",
+     "target": "n_start"
+    }
+   ]
+  },
+  {
+   "id": "n_start",
+   "body": "They met on the towpath after school with a plan to make. Taking a job on had been easy. Starting one was not. Nell wanted the index first. If Maren had drawn every part in that tower, the drawings had to say where things were kept. Arun wanted to walk the outside of the building and find a way in that nobody had thought about in years. Toby wanted to ask outright. The inspector ran the clearance, and clearances took volunteers. Three good starts, and one evening to spend. They sat on the wall and worked out which one paid off soonest.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_examine",
+     "label": "We read Maren's drawings first.",
+     "target": "n_note"
+    },
+    {
+     "id": "c_door",
+     "label": "We scout the tower ourselves.",
+     "target": "n_door"
+    },
+    {
+     "id": "c_keeper",
+     "label": "We ask to join the clearance.",
+     "target": "n_keeper"
+    }
+   ]
+  },
+  {
+   "id": "n_note",
+   "body": "They spread the page out on the bench by the lock-house door. No letters on it, and no numbers either. Only shapes. Nell got the trick first: every entry was the outline of the thing itself, so the way to read it was to hold a drawing up against a real object. One row showed a long-shanked gate key. Beside it sat a squat towpath post with a hollow cap. Only one post along the path had a cap like that, the third one from the gate. The same page flagged one unfinished job above the rest: Maren's gate fitting, made but never seated.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_note_key",
+     "label": "We check the capped bollard.",
+     "target": "n_keyhunt"
+    },
+    {
+     "id": "c_note_inside",
+     "label": "We head for the tower now.",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_door",
+   "body": "They walked the outside of the tower slowly, the way a rider checks a bike before a long trip. The main door was barred and stayed barred. Round on the river side, though, the old tide-gauge window sat in its frame above the weir wall. Toby tried the slip bolt. It caught. Then Arun leaned on the swollen corner of the frame while Toby slid the bolt again, and this time it lifted like it had been waiting years to be asked. They had broken nothing. The window was theirs now, either by a straight step in off the weir wall, or by a climb up the gauge platform and a drop from above.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_door_force",
+     "label": "We step straight in.",
+     "target": "n_inside"
+    },
+    {
+     "id": "c_door_window",
+     "label": "We go over the top.",
+     "target": "n_window"
+    }
+   ]
+  },
+  {
+   "id": "n_keeper",
+   "body": "Inspector Dunn ran the clearance, and Inspector Dunn did not smile much. Toby did the asking anyway, out on the towpath, hands in his pockets. She looked at the three of them for a long moment. Then she took out the roster and wrote all three names on it, one under the other. Volunteers on the evening walk-round, she said, which meant boots on, no wandering off, and the towpath gate opened by her. She told them what the tower had been to Maren Ives, and how much of Maren's work was still sitting inside it. Nobody was doing this job for them.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_keeper_enter",
+     "label": "We start work now.",
+     "target": "n_inside"
+    },
+    {
+     "id": "c_keeper_story",
+     "label": "We ask about Maren first.",
+     "target": "n_keeper_story"
+    }
+   ]
+  },
+  {
+   "id": "n_keyhunt",
+   "body": "The third post along the towpath was greener than the others and cold to the hand. Its cap did not screw off. It lifted, once Toby got both thumbs under the lip, and inside was a hollow no wider than a mug. A gate key hung there on a bent nail, dry as a bone under all that weather. Nell held it up beside the drawing. Same long shank, same square eye, same small step near the end. The outline answered the object exactly, just as the drawn index had promised it would. The index was honest, so the rest of what it said could be trusted too.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_keyhunt_in",
+     "label": "We use the key.",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_keeper_story",
+   "body": "They sat on the lock beam while the light went orange on the water. Maren Ives had kept this weir for thirty-one years, Dunn said. She mended the gates, she drew every part she made, and she taught half of Barrow Ferry to swim. In her last winter here she started something new for the lower gate, a fitting she cut herself, and she never got it seated. Then her hands got too stiff for fine work and she went to her sister's on the coast. Nobody after her could read her drawings well enough to finish the job. It was still there, Dunn said.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_story_in",
+     "label": "We take her story inside.",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_window",
+   "body": "Arun went up the gauge platform first, because he asked to. The climb was shorter than it looked from below, four rungs and a flat rail to sit on, and Nell kept a hand under his heel the whole way. He swung through the open window, hung off the inside of the frame, and let go. It was a drop of about his own height onto dry stone. He landed easily and called up that the floor was solid. Toby came next, with Arun steadying his legs. Nell came last and left the window on its catch, in case they wanted it later.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_window_in",
+     "label": "We take the drop.",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_inside",
+   "body": "Inside, the tower was one tall room with floors bolted into it, and the whole place smelled of cold iron and river. Dust hung in the light. The work started here, and it split four ways. The stairs went up the wall in one long turn, past ledges nobody had cleared in years. A door on the second floor stood open on Maren's study, which was mostly paper. A hatch on the river side let out onto the weir walk, where the gate arms still swung. And a ladder dropped into the sump below, cold and lightless.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_inside_stairs",
+     "label": "We take the stairs up.",
+     "target": "n_stairs"
+    },
+    {
+     "id": "c_inside_study",
+     "label": "We clear the study.",
+     "target": "n_study"
+    },
+    {
+     "id": "c_inside_pendulum",
+     "label": "We go out on the weir walk.",
+     "target": "n_pendulum"
+    },
+    {
+     "id": "c_inside_basement",
+     "label": "We climb down to the sump.",
+     "target": "n_basement"
+    }
+   ]
+  },
+  {
+   "id": "n_stairs",
+   "body": "The stairs took longer than they looked. Halfway up, on a ledge worn smooth, lay a folding rule in boxwood, its second joint gone dark where a thumb had ridden it for years. Nell put it in her pocket. At the stair head a hoist spanner hung on a short chain, and its shaft was scratched all over with small outlines: every fitting the spanner was meant to turn, drawn in the shape it really was. Match the shape, name the part. Toby worked two of them out in a minute. Wedged behind the hoist frame lay a piece of the gate fitting, cold and heavy.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_stairs_face",
+     "label": "We carry the piece down.",
+     "target": "n_clockface"
+    }
+   ]
+  },
+  {
+   "id": "n_study",
+   "body": "Maren's study was paper from the floor to the sill: ledgers, tide tables, forty years of lock accounts, and not one of them catalogued. On the desk stood a card drum that still worked. A tap of its treadle spun the drum to any letter at all, clean as new. But the fitting drawer under the desk was the real find. Every spare sat in its own cut pocket, shaped exactly to it, so an empty pocket named the part that belonged there without a word written down. One pocket held a bracket off the gate fitting. Two more sat empty, waiting.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_study_face",
+     "label": "We take the bracket to the bench.",
+     "target": "n_clockface"
+    },
+    {
+     "id": "c_study_logs",
+     "label": "We stay and catalogue the ledgers.",
+     "target": "n_end_library"
+    }
+   ]
+  },
+  {
+   "id": "n_pendulum",
+   "body": "The hatch let them out level with the weir head. The gate arms were still swinging, slow and heavy, and from the safe end the low sun laid each one flat on the whitewashed wall behind, one clean outline at a time. Arun read them like drawings on a page, and understood the fitting better in four minutes than in the hour before. A short pin off it lay in the gutter by his boot, and Nell pocketed that. The seat itself sat in a bracket at the far end. Between here and there ran the sill walk, green with weed, crossed a shuffle at a time with one hand on the rail.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_pendulum_oil",
+     "label": "We cross the sill carefully.",
+     "target": "n_clockface"
+    },
+    {
+     "id": "c_pendulum_giveup",
+     "label": "We call the crossing off.",
+     "target": "n_end_giveup"
+    }
+   ]
+  },
+  {
+   "id": "n_basement",
+   "body": "The ladder went down twelve rungs into the sump, and the cold came up to meet them. Toby said Nell's name at the foot of it, and the far wall handed it back doubled, as if somebody down there were being polite. They tried it four or five times before they got on with the job. The flood staff stood against the wall. It carried no numbers at all. Each mark on it was a small cut profile, the shape of the fitting that worked at that water level, low mark to high. The fitting's collar hung on the staff's own bracket.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_basement_face",
+     "label": "We carry the collar up.",
+     "target": "n_clockface"
+    }
+   ]
+  },
+  {
+   "id": "n_clockface",
+   "body": "Maren's assembly bench stood on the ground floor under a lamp that still worked. The gate fitting sat half built in its cradle, waiting on the part they had gone and found. Above the bench hung her board. No writing on it anywhere, only outlines, each drawn the exact size and shape of the part that belonged in it. One outline was empty. Beside it she had drawn the seating twice, once loose and once home, so anyone could see the part went in one way and one way only. Force it and something would give. Read it and it would drop.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_face_correct",
+     "label": "We fit it as drawn.",
+     "target": "n_setcorrect"
+    },
+    {
+     "id": "c_face_jam",
+     "label": "We push it in hard.",
+     "target": "n_setjam"
+    },
+    {
+     "id": "c_face_panel",
+     "label": "We look behind the bench.",
+     "target": "n_backpanel"
+    },
+    {
+     "id": "c_face_random",
+     "label": "We try a fit and hope.",
+     "target": "n_end_timeout"
+    }
+   ]
+  },
+  {
+   "id": "n_setcorrect",
+   "body": "Nell laid the piece flat on the board first, right on the empty outline. It sat inside the line exactly, no overlap anywhere, which meant this was the part and that was its place. The drawing showed the notch riding left, not right. They had been holding it backwards. Toby turned it over, Arun held the lamp steady, and Nell walked it down into the seat the slow way, a little at a time. It went in without a sound until the last of it. Then the whole bench gave one small, definite click, and something behind it let go and swung.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_correct_vault",
+     "label": "We open the way through.",
+     "target": "n_vault"
+    }
+   ]
+  },
+  {
+   "id": "n_setjam",
+   "body": "Arun got both hands on it and pushed. The piece went in a finger's width and stopped dead. A pin along the back of the seat slid sideways and bound, and after that nothing moved at all, not forward and not back. Nobody said anything unkind. The bench had told them plainly enough, and they had chosen not to read it. Then Toby went through the scrap box under the bench and came up with a spare lock tally, a thin strip of dry wood. Shave that thinner still, he said, work it under the bound pin, and the pin gets room to drop back into its seat.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_jam_oil",
+     "label": "We shim the pin free.",
+     "target": "n_vault"
+    },
+    {
+     "id": "c_jam_stuck",
+     "label": "We stop for tonight.",
+     "target": "n_end_stuck"
+    }
+   ]
+  },
+  {
+   "id": "n_backpanel",
+   "body": "Toby did not trust the fitting to be the whole of it. He got the lamp in behind the bench and found the back panel loose on two turnbuttons. Behind it, pinned flat to the wood, was a second index, a quarter the size of the first and drawn the same way: outlines only, one to a line. It read quicker, once they had the trick of it. Two entries near the bottom pointed two different ways. One drew the strongroom door with its lifting bar. The other drew a plain hook with nothing on it, and named no room at all.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_panel_vault",
+     "label": "We follow the strongroom line.",
+     "target": "n_vault"
+    },
+    {
+     "id": "c_panel_secret",
+     "label": "We follow the empty hook.",
+     "target": "n_end_secret"
+    }
+   ]
+  },
+  {
+   "id": "n_vault",
+   "body": "The strongroom was smaller than any of them expected, and fuller. One shelf ran the whole length of it. There lay the lock's first grant of passage in its oilcloth sleeve, signed by the river commissioners and never once copied. There was a letter in Maren's hand, addressed to whoever got this far. There was a shelf-end of plain lock property, brasses and gauges belonging to the settlement. And there was one small thing, a wooden tag with an outline cut into it, that was nobody's but hers. Closing was twenty minutes off. Three pairs of hands, one trip.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_vault_share",
+     "label": "We take the fitting to the settlement.",
+     "target": "n_end_hero"
+    },
+    {
+     "id": "c_vault_keep",
+     "label": "We take only the small tag.",
+     "target": "n_end_keepsake"
+    },
+    {
+     "id": "c_vault_grab",
+     "label": "We take all we can carry.",
+     "target": "n_end_caught"
+    }
+   ]
+  },
+  {
+   "id": "n_end_library",
+   "body": "They stayed. It was not a hard call once they had started, and it did not feel like giving anything up. Nell took the tide tables, Arun took the lock accounts, Toby took the loose stuff at the back, and they worked along the shelf the way Maren would have wanted it done: everything named, everything in order, nothing guessed at. The pile of catalogued ledgers grew past their knees. Somewhere in the fourth book Nell found a page that stopped her. A clerk, years back, had traced a whole sheet of Maren's index onto it, outline for outline, to keep a copy near the desk. She folded that page into her coat to puzzle over at home. The tower shut at dusk, and dusk came while she was still reading. They left with the shelf half done and the rest of it labelled for next time. The job would keep. So would they, and now they had a page of their own to read.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_library",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "A Page Traced Home"
+   }
+  },
+  {
+   "id": "n_end_giveup",
+   "body": "Arun went first, one hand on the rail, sliding his boots instead of lifting them. Four steps out, the weed took his left foot and slid it a hand's width sideways before the rail caught him. Nothing dramatic happened. He stood there a second, breathing, feeling how little grip was actually under him. Then he said the sensible thing out loud: this is worse than it looks, and that seat is not going anywhere. Nell agreed straight away. Toby agreed a moment later, which was honest of him. Arun came back the way he had gone, a shuffle at a time, no hurrying, both hands where they should be. On the dry stone he sat down and laughed at himself, and nobody laughed at him. They had the pin, they had the shadows on the wall, and they knew now what the far end would really cost. Some of this job wanted daylight and a dry sill. That was a fact about the weir, not about them.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_giveup",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Wet Sill, Sound Call"
+   }
+  },
+  {
+   "id": "n_end_timeout",
+   "body": "They guessed. There was no better word for it. Toby held the piece against the empty outline without really looking at the line, turned it the way that felt right, and pushed it down into the seat. It went in crooked and stopped a finger short. Arun tried it the other way round and got the same stop in the same place. The board hung right there over the bench with the answer drawn on it, full size, and none of them had read it properly. Then the lock's closing horn came up the weir, long and flat, and after it the second one, and that was the evening finished. The fitting sat half in, not seated, not damaged, exactly as far as guessing ever gets anybody. Nell put the lamp out. On the towpath Toby said the thing all three were thinking: it was a reading job, and they had treated it like a raffle.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_timeout",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Horn Before Guess"
+   }
+  },
+  {
+   "id": "n_end_stuck",
+   "body": "Toby shaved the tally down as thin as he dared and worked it under the pin. The pin did move, about as far as a fingernail. Then it stopped again, and Arun got the lamp low and saw why. The little linkage behind the seat had taken the whole of that shove and bent with it, a shallow curve where there should have been a straight run. Nothing was broken. It was only bent, and bent metal does not argue with a wooden shim. On the wall by the bench was a bracket with an outline drawn round it, the shape of the tool that lived there: a puller, long-armed, exactly the thing for easing a bent pin straight. The bracket was empty. Nobody had brought one, and nobody was going to turn one up in the tower at that hour. They left it where it was. On the way home they worked out who could borrow a puller by Saturday.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_stuck",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "No Puller Tonight"
+   }
+  },
+  {
+   "id": "n_end_secret",
+   "body": "The second index took them along a passage nobody had bothered to name and up three steps into a room the size of a shed. Maren's own workshop. Nell found the lamp by feel and lit it, and the wall came alive. Every tool hung on its own painted outline, saw on saw, gouge on gouge, each shape drawn under it so anyone could see at a glance what was out and what was home. There were shavings on the bench still. Nothing in that room felt finished with. One hook near the middle was empty, and its outline waited under it, patient as anything. Pinned beside that hook was a card in Maren's hand. Whoever found this room, it said, was to keep it: sweep it, oil what needs oiling, put back what they borrow, and leave it better than they found it. It was not a prize. It was a post, and the three of them took it, the same way they had taken the notice.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_secret",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Empty Hook, New Keepers"
+   }
+  },
+  {
+   "id": "n_end_hero",
+   "body": "They carried the fitting out, and they wrote down every single thing they left behind. The grant went back into its oilcloth sleeve. The brasses went back along the shelf in their own order. They read Maren's letter, then wrote it into the ledger by name, so anybody could find it again. It told them why she had stopped. She had cut the fitting a second time, better than the first, and she wanted whoever came after to seat the good one rather than the quick one. That was the whole of it. She had been waiting on a careful person, not a fast one. The settlement's collection took the fitting in on a Tuesday, entered it in the register, and set it out on the lock-house wall in a case that anyone walking the towpath can stop and look at. There are three names on the card beneath it. The three of them go down to look more often than they will admit.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_hero",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Gate Fitting Goes Public"
+   }
+  },
+  {
+   "id": "n_end_keepsake",
+   "body": "They put it all back. The grant went into its oilcloth sleeve and onto the shelf at the exact spot where the dust showed it had sat for years. The brasses went beside it in their own order. Then Toby wrote the whole shelf into the ledger in his careful handwriting, item by item, so the next person through that door would know precisely what was in there and who had been in before them. It took longer than carrying the lot out would have. The only thing that left the strongroom was the wooden tag, the small one with the outline cut into it, no bigger than a matchbox and worth nothing to anybody but them. They settled it on the towpath. The tag lives at Nell's, on a nail by the door, and any of the three can take it whenever they want it. Nobody else in Barrow Ferry knows what stayed on that shelf. The three of them do.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_keepsake",
+    "valence": "positive",
+    "kind": "success",
+    "title": "One Small Thing Kept"
+   }
+  },
+  {
+   "id": "n_end_caught",
+   "body": "They filled the satchel, and then they filled their arms. Halfway to the door the shelf behind them lifted, slow and smooth, like a boat coming off a mooring, and a red-painted paddle swung out across the doorway and stopped there. Arun pushed it. It did not push. He tried again with his shoulder, which achieved nothing except a good look at how carefully the counterweight had been built. Take more than a satchel's worth off that shelf and the paddle comes out. That was all it did, and it was plenty. Toby was already putting the brasses back before anyone said so, because he had gone quiet two steps after the door. They were most of the way through returning it when Inspector Dunn came round on her evening walk with her ledger open. She did not shout. She had them write down everything they had lifted, then everything they had put back, and she signed under it. The tower opens again Thursday, she said. She would want them there.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_caught",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Red Paddle, Open Ledger"
+   }
+  }
+ ]
+}

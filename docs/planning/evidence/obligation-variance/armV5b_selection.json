@@ -1,0 +1,111 @@
+{
+ "n_keeper": {
+  "access_route": {
+   "text": "the weir inspector adds the crew to her evening walk-round, signs everyone onto the clearance roster, and brings the whole party through the towpath gate on foot",
+   "kind": "trusted_escort"
+  }
+ },
+ "n_open": {
+  "cipher_form": {
+   "text": "Maren indexed by drawing: every entry is the part's own silhouette, so reading the index means matching outline to object",
+   "kind": "pictogram_code"
+  }
+ },
+ "n_note": {
+  "access_route": {
+   "text": "a gate key hung inside the hollow cap of the third towpath bollard, exactly where the drawn index says to look",
+   "kind": "hidden_key"
+  }
+ },
+ "n_door": {
+  "access_route": {
+   "text": "the tide-gauge window's slip bolt lifts if you press the swollen corner of the frame while you slide it",
+   "kind": "concealed_latch"
+  }
+ },
+ "n_stairs": {
+  "curiosity": {
+   "text": "Maren's folding boxwood rule left on a stair ledge, its second joint dark where her thumb rode",
+   "kind": "maker_relic"
+  },
+  "hint_carrier": {
+   "text": "a hoist spanner chained at the stair head, its shaft scratched with the outlines of every fitting it is meant to turn",
+   "kind": "annotated_tool"
+  }
+ },
+ "n_study": {
+  "curiosity": {
+   "text": "a card drum on the study desk that still spins to any letter at a tap of its treadle",
+   "kind": "working_mechanism"
+  },
+  "hint_carrier": {
+   "text": "Maren's fitting drawer, each spare nested in a cut pocket shaped exactly to it, so an empty pocket names the part that belongs there",
+   "kind": "sorted_collection"
+  }
+ },
+ "n_pendulum": {
+  "hint_carrier": {
+   "text": "from the safe end of the weir walk, low sun lays each moving arm flat on the whitewashed wall, one clean outline at a time",
+   "kind": "shadow_alignment"
+  },
+  "obstacle": {
+   "text": "the weed-slick sill walk across the weir head, crossed a shuffle at a time with one hand on the rail",
+   "kind": "slick_traverse"
+  }
+ },
+ "n_basement": {
+  "curiosity": {
+   "text": "the sump chamber hands every word back doubled, so a name spoken at the ladder foot answers from the far wall",
+   "kind": "acoustic_wonder"
+  },
+  "hint_carrier": {
+   "text": "the flood staff at the sump is graduated not in numbers but in small cut profiles, each mark the shape of the fitting that works at that level",
+   "kind": "calibration_scale"
+  }
+ },
+ "n_setjam": {
+  "remedy": {
+   "text": "a lock tally shaved thin off the bench's own scrap box makes a shim that lets the bound pin drop back into its seat",
+   "kind": "tool_improvised"
+  }
+ },
+ "n_vault": {
+  "contents": {
+   "text": "the lock's original grant of passage in its oilcloth sleeve, signed by the river commissioners and never copied",
+   "kind": "heritage_document"
+  }
+ },
+ "n_end_secret": {
+  "loft_signature": {
+   "text": "every tool hung on its own painted outline along the workshop wall, with one hook empty and its outline still waiting",
+   "kind": "tools_in_order"
+  },
+  "mechanism": "a card pinned beside the empty hook appoints whoever finds this workshop its next keeper, and the friends take the post"
+ },
+ "n_end_caught": {
+  "safeguard": {
+   "text": "the strongroom shelf rides on a counterweight, and lifting more than a satchel's worth off it swings a red-painted paddle out over the doorway that will not be pushed back",
+   "kind": "weight_sense"
+  },
+  "mechanism": "the shelf rises before they reach the door, and second thoughts have them mid-return when the inspector's evening round arrives, ledger open"
+ },
+ "n_end_library": {
+  "mechanism": "one ledger page carries a traced copy of Maren's drawn index, folded away to puzzle over at home"
+ },
+ "n_end_giveup": {
+  "mechanism": "a boot slips on the weed-slick sill early enough to turn the crossing into a calm, deliberate shuffle back, and the pull-back is the sound call"
+ },
+ "n_end_timeout": {
+  "mechanism": "the lock's closing horn carries up the weir before the guessed fitting seats, and the fit waits for another evening"
+ },
+ "n_end_stuck": {
+  "mechanism": "muscling the pin bends its linkage, and the puller its empty bracket plainly expects is a tool nobody brought tonight"
+ },
+ "n_end_hero": {
+  "mechanism": "the recovered gate fitting is entered in the settlement's collection and set out on the lock-house wall for anyone to see"
+ },
+ "n_end_keepsake": {
+  "mechanism": "the grant and the rest go back on the shelf exactly as found and into the ledger honestly, and only the small keepsake travels home with them"
+ },
+ "label_style": "first-person plural resolves: what we do next"
+}
