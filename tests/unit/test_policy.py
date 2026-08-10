@@ -1689,3 +1689,24 @@ def test_pl24_gamebook_floor_scales_with_ending_count() -> None:
     kinds += [(EndingKind.SUCCESS, Valence.POSITIVE)] * 5
     report = validate_policy(_mix_story(kinds=kinds, style=NarrativeStyle.GAMEBOOK))
     assert not [f for f in report.findings if "positive-valence ending(s)" in f.message]
+
+
+def test_pl24_gamebook_floor_rounds_up_not_down() -> None:
+    """The 5% floor uses ``math.ceil``, not truncation or nearest-rounding.
+
+    At total=61, 5% is 3.05: ``ceil`` yields a floor of 4 while ``int`` and
+    ``round`` both yield 3. Combined with the ``max(3, ...)`` absolute floor,
+    3 wins in 61 endings only trips the warning under ``ceil``; a truncating
+    or nearest-rounding implementation would consider 3 wins sufficient and
+    stay silent.
+    """
+    kinds: list[tuple[EndingKind, Valence]] = [
+        (EndingKind.DEATH, Valence.NEGATIVE)
+    ] * 58
+    kinds += [(EndingKind.SUCCESS, Valence.POSITIVE)] * 3
+    report = validate_policy(_mix_story(kinds=kinds, style=NarrativeStyle.GAMEBOOK))
+    winnable = [f for f in report.findings if "positive-valence ending(s)" in f.message]
+    assert len(winnable) == 1, (
+        "3 wins in 61 endings is below the ceil-scaled floor of 4"
+    )
+    assert "below the gamebook floor of 4" in winnable[0].message
