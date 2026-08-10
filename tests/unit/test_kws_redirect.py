@@ -12,6 +12,7 @@ import ast
 import hmac
 import inspect
 from hashlib import sha256
+from pathlib import Path
 from typing import TYPE_CHECKING, Any
 from unittest.mock import AsyncMock, patch
 
@@ -70,6 +71,10 @@ def _modules_imported(module: ModuleType) -> set[str]:
 
 _SECRET = "test-verification-secret-not-a-real-credential"
 _URL = "/api/v1/consent/kws/return"
+
+# The literal the page renders, asserted as bytes rather than read back off
+# the route module: what matters is what reaches the parent's browser.
+_LANDING_PATH = "/guardian"
 
 _VERIFIED_STATUS = '{"verified": true, "transactionId": "tx-1"}'
 _UNVERIFIED_STATUS = '{"verified": false}'
@@ -435,6 +440,62 @@ class TestDisclosure:
         response = client.get(_URL, params=_params())
 
         assert response.headers["cache-control"] == "no-store"
+
+
+@pytest.mark.usefixtures("_configured")
+class TestLanding:
+    """Where the page leaves a parent who has finished at Epic."""
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize(
+        ("params", "expected_status"),
+        [
+            (_params(), 200),
+            (_params(_UNVERIFIED_STATUS), 200),
+            ({"status": _VERIFIED_STATUS, "externalPayload": _EXTERNAL}, 400),
+        ],
+        ids=["verified", "not-verified", "unconfirmed"],
+    )
+    def test_every_page_offers_a_way_back_into_the_app(
+        self,
+        client: TestClient,
+        params: dict[str, str],
+        expected_status: int,
+    ) -> None:
+        """All three outcomes, one way out.
+
+        The parent reaches this page from a link in Epic's email, so there is
+        no history to go back through and, in a mail app's browser, no session
+        either. Without a link the page is a dead end whichever way the
+        verification went, and the two non-success pages are the ones that ask
+        the parent to start again.
+
+        Covering the rejection page here also keeps the three structurally
+        alike: an offer present on success and absent on refusal would hand
+        back exactly the discriminator ``TestDisclosure`` exists to deny.
+        """
+        response = client.get(_URL, params=params)
+
+        assert response.status_code == expected_status
+        assert f'href="{_LANDING_PATH}"' in response.text
+        assert "Return to CYO Adventure" in response.text
+
+    @pytest.mark.unit
+    def test_the_landing_path_matches_the_app_route(self) -> None:
+        """The one thing that silently breaks this link is a frontend rename.
+
+        The path is a literal on both sides of a stack boundary with nothing
+        connecting them, so a route rename in the SPA would leave this page
+        pointing at the app's own 404 and every test above would still pass.
+        Reading the constant the router actually uses is what makes that a
+        failing test rather than a report from a parent.
+        """
+        routes = Path(__file__).resolve().parents[2] / "frontend" / "src" / "routes.ts"
+
+        assert routes.is_file(), f"expected the SPA route table at {routes}"
+        assert f"GUARDIAN_CONSOLE_PATH = '{_LANDING_PATH}'" in routes.read_text(
+            encoding="utf-8"
+        ), f"the SPA no longer routes {_LANDING_PATH} to the guardian console"
 
 
 class TestRefusalToRun:
