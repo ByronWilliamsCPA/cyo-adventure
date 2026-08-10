@@ -16,6 +16,27 @@ tags:
 > **Status**: Accepted (2026-07-16; see Amendment below)
 > **Date**: 2026-06-29
 
+## Amendment (2026-08-10): reviewed-storybook exemption for the 30-day sweep
+
+The review-scorecard calibration effort needs a corpus of human-reviewed books
+paired with their original raw generation output (`GenerationJob.report`) and
+the reviewer's decision. The unqualified 30-day sweep below destroys that
+pairing for any job whose storybook took longer than 30 days to reach a
+decision, one day at a time, so it now carries a narrow exemption:
+`supabase/migrations/20260810000000_exempt_reviewed_generation_job_report_from_purge.sql`
+amends the `purge_generation_job_report` pg_cron job in place (same job
+name, unschedule-then-reschedule) to skip a `generation_job` row when its
+`storybook.status` is `published`, `archived`, or `needs_revision` -- i.e.
+the storybook was approved/published or sent back with a reason at some
+point. `draft` and `in_review` storybooks, and jobs whose `storybook_id`
+resolves to no row at all, are not exempt: the default 30-day retention this
+ADR decided still applies to a job that never reached a human. The on-publish
+purge in `publishing/service.py::approve` (below) is unchanged: it still
+nulls the just-published version's own `report` immediately, so the
+exemption's practical effect is mostly for a storybook that was sent back
+(and any earlier job/version on the same storybook once any later job on it
+is decided) rather than for the version that ends up published.
+
 ## Amendment (2026-07-17): purge implemented (Phase 5, M5 register item S10)
 
 Both halves of the purge described in the TL;DR and Decision sections below are now
