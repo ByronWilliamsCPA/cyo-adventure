@@ -86,7 +86,13 @@ def load_skeleton(
         The decoded skeleton as a dict.
 
     Raises:
-        ValidationError: If the skeleton fails the gate's blocking (L1/L2) layers.
+        ValidationError: If any ERROR-severity finding in the gate's merged
+            report has a ``rule_id`` starting with ``"CH"`` (character
+            envelope, ADR-028), ``"L1"`` (Layer 1 graph structure, schema,
+            and logic), ``"L2"`` (Layer 2 state-space walk), or ``"PL"``
+            (policy: age-safety and shape invariants); see
+            :func:`cyo_adventure.validator.gate.run_gate`'s blocking
+            semantics.
     """
     data: dict[str, object] = json.loads(path.read_text(encoding="utf-8"))
     result = run_gate(data, enforce_grammar=enforce_grammar)
