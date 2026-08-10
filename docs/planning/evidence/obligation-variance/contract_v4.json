@@ -1,0 +1,1625 @@
+{
+ "narrative_version": 1,
+ "skeleton_slug": "the-clocktower-cipher",
+ "age_band": "10-13",
+ "premise": {
+  "engine": "restart-before-the-tide",
+  "dramatic_question": "Will {HEROES} restart {MECHANISM} before the flood tide, finishing the restart routine {MAKER} left for whoever {KEEPER} judges ready?",
+  "resolution_space": [
+   "the flood ledgers teach them how past overflows were handled, arming a smarter attempt tomorrow",
+   "a loose page from the ledgers, copied out, goes home with them to puzzle over before the next tide",
+   "the evening tide horns cut the reading short, and the warden walks them out with a promise to leave the ledgers open",
+   "a level look at the catwalk convinces them that crossing it tonight would cost more than it proves",
+   "one friend says the crossing isn't worth it and the others agree without argument, calling the retreat a sound call",
+   "a foot slips on the wet rail and the near-miss turns the attempt into a calm, deliberate retreat",
+   "yanking levers at random trips a safeguard built for exactly that shortcut, freezing the board until the warden resets it",
+   "the tide horns sound before any lever lands right, and the restart must wait for the morning crew",
+   "the overworked gearing raises a grinding fuss that brings the warden up to end the attempt for the night",
+   "the stalled gearing binds fast, and nothing they carry tonight will free it",
+   "a bent linkage needs a tool the restart routine clearly expects, and nobody brought one",
+   "the warden's posted rule ends forcing attempts at nightfall, and they honor it as part of doing the job right",
+   "the workshop adopts them as its quiet keepers, the thanks for a job nobody told them they were doing",
+   "some unfinished repair in the room invites their hands, and finishing it becomes their standing task",
+   "Maren Pool's own notes name whoever finds the room its caretaker, and the friends accept the charge",
+   "the restart is announced and celebrated by the settlement, the tide-engine's return made public at last",
+   "the restart quietly saves something the settlement was about to lose, proof enough without an announcement",
+   "the restart earns the warden's open trust and a standing invitation back to the lock-house",
+   "a promise sworn over the keepsake binds the friends as the ones who quietly kept the engine running",
+   "they reset every gauge exactly as found, keeping the fix and leaving the rest untouched",
+   "Maren Pool's letter asks its finders to choose, and they choose to let the fix stay quiet",
+   "the engine's true safeguard announces the grab, and the warden arrives before the door does",
+   "what they try to carry out is exactly what the safeguard was built to catch on the way down",
+   "second thoughts slow them just enough for the warden's evening rounds to catch them mid-return, the last gauge answered honestly after all"
+  ]
+ },
+ "label_styles": [
+  "terse imperatives, three words where possible",
+  "first-person plural resolves: what we do next",
+  "sensory verb first, object second",
+  "question-forms at decisions, statements at continues",
+  "name the place or thing, let the action stay implied"
+ ],
+ "facts": {
+  "doors_barred": "the lock-house's outer doors stand barred by storm wrack, and the warden's appeal reads as urgent rather than ceremonial",
+  "appeal_posted": "the warden's hand-lettered appeal for capable hands is nailed where anyone passing will see it",
+  "crew_ready": "the friends read the appeal together and commit to answering it as one crew",
+  "task_accepted": "the friends have agreed to take on the warden's restart routine before the tide turns",
+  "caution_proven": "working the flag-code checklist line by line proves caution is worth the minutes it costs",
+  "route_named_by_checklist": "the checklist's proven line names a specific service route into the flooded lower works",
+  "grit_shown": "hauling storm debris clear of two overlooked ways in, a low grate and a high sluice gate, by their own effort proves the friends' grit",
+  "warden_tested_them": "the warden has watched how the friends handle the appeal and reads it as fair testing, not idle suspicion",
+  "warden_offer_earned": "the warden, satisfied, offers both a way past the barred door and what he remembers of the engine's builder",
+  "makers_purpose_understood": "Engineer Maren Pool built the tide-engine's fail-safes decades ago out of care for a town she would not always be there to protect",
+  "past_the_barred_door": "the friends stand past the lock-house's barred outer door, however they earned the way through",
+  "service_points_known": "four service points are known: the winch loft, the map room, the weir catwalk, and the engine racks below",
+  "checklist_read": "the friends carry a working grasp of the flag code's restart logic, earned at some service point",
+  "ledgers_beckon": "the map room's toll ledgers pose their own quiet pull: linger over them, or press on to the tide board",
+  "catwalk_dares_them": "the weir catwalk is the most direct test of nerve among the four service points",
+  "cache_glimpsed": "something Maren Pool set aside for whoever crosses the catwalk safely waits at its far end",
+  "at_the_tide_board": "the friends stand at the great tide board, the engine's last control point",
+  "board_reading_live": "the tide board's own gauge states plainly what setting will restart the engine, and that forcing it has a cost",
+  "engine_restarted": "the friends restart the tide-engine on the warden's own terms",
+  "engine_jammed": "forcing the tide board's levers stalls the engine's gearing instead of restarting it",
+  "second_gauge_found": "a second, smaller gauge is found behind the tide board",
+  "strongroom_entered": "the friends stand inside the flood-safe strongroom the engine was built to protect",
+  "strongroom_seen": "what the engine protects is seen: Maren Pool's letter and modest things meant for the whole town",
+  "steady_exit": "the friends leave with their composure intact; the outcome is a result, never a shaming",
+  "routine_reopens": "the tide-engine's restart routine can be attempted again; nothing about tonight uses it up",
+  "ledger_set_straight": "whatever was disturbed is put back and owned honestly to the warden",
+  "hidden_workshop_found": "Maren Pool's living workshop is found past the second gauge",
+  "care_role_earned": "the friends earn ongoing responsibility for what they found",
+  "restart_made_public": "the friends' successful restart is shared with the settlement",
+  "restart_kept_private": "the friends' successful restart stays a private matter among them",
+  "crew_bond_formed": "the shared repair forges a lasting trust between the friends",
+  "warden_intervenes": "the warden turns up in the moment of temptation, mid-task whether the friends know it or not"
+ },
+ "safety_envelope": {
+  "affect_ceiling": "suspense with wonder and mild urgency; tension may tighten but never tips into threat",
+  "forbid_affect": [
+   "despair",
+   "hopelessness",
+   "terror",
+   "humiliation",
+   "cruel_mockery"
+  ],
+  "forbid_facts": [
+   "anyone_injured",
+   "friends_turn_on_each_other",
+   "adult_menaces_children",
+   "theft_rewarded",
+   "gore_of_any_kind"
+  ],
+  "permitted_device_kinds": [
+   "symbol_substitution",
+   "clock_arithmetic",
+   "pictogram_code",
+   "rhythm_code",
+   "tally_cipher",
+   "hidden_key",
+   "forgotten_entrance",
+   "trusted_escort",
+   "concealed_latch",
+   "timed_opening",
+   "service_route",
+   "mechanism_operated",
+   "engraved_numbers",
+   "maker_diagram",
+   "pattern_in_mechanism",
+   "annotated_tool",
+   "calibration_scale",
+   "sorted_collection",
+   "wear_pattern",
+   "shadow_alignment",
+   "maker_relic",
+   "working_mechanism",
+   "written_record",
+   "acoustic_wonder",
+   "scale_model",
+   "light_play",
+   "resident_creature",
+   "heritage_document",
+   "handmade_keepsake",
+   "community_memory",
+   "stiff_mechanism",
+   "narrow_crossing",
+   "timed_passage",
+   "dark_passage",
+   "heavy_barrier",
+   "slick_traverse",
+   "time_pressure",
+   "sound_alarm",
+   "weight_sense",
+   "light_signal",
+   "messenger_creature",
+   "self_closing",
+   "tell_tale_mark",
+   "patience_ritual",
+   "tool_improvised",
+   "consumable_applied",
+   "mechanism_reset",
+   "knowledge_applied",
+   "shared_effort",
+   "unfinished_work",
+   "living_thing_tended",
+   "letter_waiting",
+   "tools_in_order",
+   "season_preserved",
+   "provisions_laid"
+  ],
+  "forbidden_device_kinds": [
+   "weapon",
+   "gore",
+   "cruelty",
+   "theft_rewarded",
+   "adult_menace"
+  ]
+ },
+ "world_recipe": {
+  "requires": {
+   "cipher_forms": {
+    "count": 1,
+    "kinds": [
+     "symbol_substitution",
+     "clock_arithmetic",
+     "pictogram_code",
+     "rhythm_code",
+     "tally_cipher"
+    ],
+    "note": "one cipher form per story, chosen at bind and used consistently from note to clockface to back panel"
+   },
+   "access_details": {
+    "count": 3,
+    "kinds": [
+     "hidden_key",
+     "forgotten_entrance",
+     "trusted_escort",
+     "concealed_latch",
+     "timed_opening",
+     "service_route",
+     "mechanism_operated"
+    ],
+    "note": "one concrete way in per approach branch: the note's decoded route and the building's own weak point draw freely; the keeper's branch stays person-mediated"
+   },
+   "cipher_hint_carriers": {
+    "count": 4,
+    "kinds": [
+     "engraved_numbers",
+     "maker_diagram",
+     "pattern_in_mechanism",
+     "annotated_tool",
+     "calibration_scale",
+     "sorted_collection",
+     "wear_pattern",
+     "shadow_alignment"
+    ],
+    "note": "one per exploration room, drawn freely; unique_within_story gives each book four different carriers, and each carries enough logic that any single room makes the dial attemptable"
+   },
+   "room_curiosities": {
+    "count": 4,
+    "kinds": [
+     "maker_relic",
+     "working_mechanism",
+     "written_record",
+     "acoustic_wonder",
+     "handmade_keepsake",
+     "scale_model",
+     "light_play",
+     "community_memory",
+     "resident_creature"
+    ],
+    "note": "what makes each room distinct and worth the visit beyond its hint"
+   },
+   "vault_contents": {
+    "count": 3,
+    "kinds": [
+     "heritage_document",
+     "handmade_keepsake",
+     "community_memory",
+     "written_record",
+     "maker_relic",
+     "acoustic_wonder"
+    ],
+    "note": "the vault protects knowledge, heritage, and wonder; any treasure is modest and communal, never loot"
+   },
+   "obstacle_kinds": {
+    "count": 1,
+    "kinds": [
+     "narrow_crossing",
+     "timed_passage",
+     "slick_traverse",
+     "dark_passage",
+     "heavy_barrier",
+     "stiff_mechanism"
+    ],
+    "note": "physical difficulty stays honest and non-injurious; failure costs time or access, never safety"
+   },
+   "safeguards": {
+    "count": 1,
+    "kinds": [
+     "sound_alarm",
+     "weight_sense",
+     "light_signal",
+     "messenger_creature",
+     "self_closing",
+     "tell_tale_mark"
+    ],
+    "note": "the maker's anti-taking measure; gentle and funny, it embarrasses no one and hurts no one"
+   },
+   "remedies": {
+    "count": 1,
+    "kinds": [
+     "patience_ritual",
+     "tool_improvised",
+     "consumable_applied",
+     "mechanism_reset",
+     "knowledge_applied",
+     "shared_effort"
+    ],
+    "note": "the honest way back from a jam, on the machine's own terms; care, patience, or wit, never strength"
+   },
+   "loft_signatures": {
+    "count": 1,
+    "kinds": [
+     "unfinished_work",
+     "living_thing_tended",
+     "letter_waiting",
+     "tools_in_order",
+     "season_preserved",
+     "provisions_laid"
+    ],
+    "note": "the one detail that makes the maker's hidden room feel currently alive rather than preserved"
+   }
+  },
+  "identity_roles": [
+   "HEROES",
+   "KEEPER",
+   "MAKER",
+   "CIPHER",
+   "SETTLEMENT",
+   "VAULT"
+  ],
+  "texture_roles": [
+   "THRESHOLD",
+   "ACCESS_LOW",
+   "ACCESS_HIGH",
+   "OPENER",
+   "STUDY",
+   "HAZARD",
+   "LANDMARK_FACE",
+   "TOKEN",
+   "CIPHER_TOOL",
+   "ARCHIVE",
+   "REMEDY",
+   "MACHINERY",
+   "SECRET_ROOM",
+   "KEEPSAKE",
+   "CLOSING_SIGN",
+   "MECHANISM",
+   "CRAFT"
+  ]
+ },
+ "nodes": {
+  "n_open": {
+   "tier": "open",
+   "function": "answer-the-call",
+   "entry_state": [],
+   "establishes": [
+    "doors_barred",
+    "appeal_posted",
+    "crew_ready"
+   ],
+   "forbids": [
+    "past_the_barred_door",
+    "caution_proven",
+    "warden_tested_them"
+   ],
+   "affect": {
+    "target": "wary readiness, the pull of being needed",
+    "forbid": [
+     "panic",
+     "despair"
+    ]
+   },
+   "invention": {
+    "cipher_form": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.cipher_forms",
+     "category": "cipher_forms",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the story's one flag-code form; every later restart step renders it consistently"
+    }
+   },
+   "choice_semantics": {
+    "c_open": "answer the appeal aloud, committing themselves before the tide turns"
+   },
+   "beat_hint": "A silent flood bell and a barred door mean somebody has to get inside before dark, and the friends decide that somebody is them.",
+   "decisions": {
+    "c_open": {
+     "action": "commit_to_the_appeal_before_the_tide",
+     "action_family": "TEMPORAL",
+     "target_role": "SELF",
+     "tradeoff": "NONE",
+     "consequence": "RELATIONSHIP"
+    }
+   }
+  },
+  "n_start": {
+   "tier": "open",
+   "function": "choose-a-first-task",
+   "entry_state": [
+    "appeal_posted",
+    "crew_ready"
+   ],
+   "establishes": [
+    "task_accepted"
+   ],
+   "forbids": [
+    "caution_proven",
+    "past_the_barred_door"
+   ],
+   "affect": {
+    "target": "brisk resolve, sizing up which job buys the most time",
+    "forbid": [
+     "quarrel",
+     "despair"
+    ]
+   },
+   "constraints": {
+    "offers_must_be": "three genuinely different first jobs: read the gauges, clear a way in, or find the warden; no option is the smart one",
+    "must_not": "resolve any task here; the split happens before anyone finishes a job"
+   },
+   "choice_semantics": {
+    "c_examine": "start with the numbers: read the posted flood gauge before doing anything else",
+    "c_door": "start with muscle: clear the storm debris from the low hatch yourselves",
+    "c_keeper": "start with people: go find the warden and offer your hands"
+   },
+   "beat_hint": "Three jobs need doing before the water rises, and the friends split on which one to tackle first.",
+   "decisions": {
+    "c_examine": {
+     "action": "read_the_posted_flood_gauge",
+     "action_family": "INFORMATION",
+     "target_role": "OBJECT",
+     "tradeoff": "SPEED_VS_INFO",
+     "consequence": "KNOWLEDGE"
+    },
+    "c_door": {
+     "action": "clear_storm_debris_from_the_hatch",
+     "action_family": "PHYSICAL_RISK",
+     "target_role": "BARRIER",
+     "tradeoff": "EFFORT_VS_SHORTCUT",
+     "consequence": "ACCESS"
+    },
+    "c_keeper": {
+     "action": "find_the_warden_and_offer_to_help",
+     "action_family": "SOCIAL",
+     "target_role": "PERSON",
+     "tradeoff": "PRIDE_VS_HELP",
+     "consequence": "RELATIONSHIP"
+    }
+   }
+  },
+  "n_note": {
+   "tier": "open",
+   "function": "confirm-the-checklist",
+   "entry_state": [
+    "appeal_posted",
+    "task_accepted",
+    "crew_ready"
+   ],
+   "establishes": [
+    "caution_proven",
+    "route_named_by_checklist"
+   ],
+   "forbids": [
+    "past_the_barred_door"
+   ],
+   "affect": {
+    "target": "the click of numbers finally lining up",
+    "forbid": [
+     "frustration",
+     "despair"
+    ]
+   },
+   "invention": {
+    "access_route": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.access_details",
+     "category": "access_details",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the checklist's proven line names one concrete way in: where it hides or how it works, plus a plain first step"
+    }
+   },
+   "constraints": {
+    "reading_must_be": "shown on the page in the story's one flag-code form, so a reader can play along; first entry only",
+    "must_not": "make the reading trivial or make the other two jobs look like the wrong call for not trying it first"
+   },
+   "choice_semantics": {
+    "c_note_key": "follow the gauge mark to wherever the checklist says the spare crank is cached",
+    "c_note_inside": "grab a lantern and head straight for the hatch the checklist names"
+   },
+   "beat_hint": "Numbers on a gauge do not argue, and once they line up, the friends have two honest ways to spend what they learned.",
+   "decisions": {
+    "c_note_key": {
+     "action": "note_the_gauge_marks_pointing_to_the_crank",
+     "action_family": "INFORMATION",
+     "target_role": "INFORMATION",
+     "tradeoff": "CERTAINTY_VS_TIME",
+     "consequence": "KNOWLEDGE"
+    },
+    "c_note_inside": {
+     "action": "head_straight_in_before_the_marked_deadline",
+     "action_family": "TEMPORAL",
+     "target_role": "LOCATION",
+     "tradeoff": "SPEED_VS_INFO",
+     "consequence": "ACCESS"
+    }
+   }
+  },
+  "n_door": {
+   "tier": "open",
+   "function": "clear-a-way-in",
+   "entry_state": [
+    "doors_barred",
+    "task_accepted"
+   ],
+   "establishes": [
+    "grit_shown"
+   ],
+   "forbids": [
+    "caution_proven",
+    "past_the_barred_door"
+   ],
+   "affect": {
+    "target": "stubborn satisfaction in muscling a problem loose",
+    "forbid": [
+     "danger",
+     "guilt"
+    ]
+   },
+   "invention": {
+    "access_route": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.access_details",
+     "category": "access_details",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the building's own overlooked way in; clearing it reads as grit, never as damage"
+    }
+   },
+   "constraints": {
+    "entry_must_read": "as capable, hands-on work on a storm-battered building, not as break-in",
+    "must_not": "carry any checklist knowledge; this branch never stopped to read the gauge"
+   },
+   "choice_semantics": {
+    "c_door_force": "pry the swollen low door with a lever, the harder way",
+    "c_door_window": "climb up to release the jammed high sluice gate instead"
+   },
+   "beat_hint": "A jammed door and a stuck gate do not care how clever the friends are, only how hard they are willing to work.",
+   "decisions": {
+    "c_door_force": {
+     "action": "pry_the_swollen_door_with_a_lever",
+     "action_family": "CRAFT",
+     "target_role": "MECHANISM",
+     "tradeoff": "EFFORT_VS_SHORTCUT",
+     "consequence": "ACCESS"
+    },
+    "c_door_window": {
+     "action": "climb_to_release_the_high_sluice_gate",
+     "action_family": "PHYSICAL_RISK",
+     "target_role": "MECHANISM",
+     "tradeoff": "SAFETY_VS_REWARD",
+     "consequence": "ACCESS"
+    }
+   }
+  },
+  "n_keeper": {
+   "tier": "open",
+   "function": "convince-the-warden",
+   "entry_state": [
+    "task_accepted",
+    "crew_ready"
+   ],
+   "establishes": [
+    "warden_tested_them",
+    "warden_offer_earned"
+   ],
+   "forbids": [
+    "caution_proven",
+    "past_the_barred_door"
+   ],
+   "affect": {
+    "target": "the nerves of being looked over, then the relief of being trusted",
+    "forbid": [
+     "menace",
+     "condescension"
+    ]
+   },
+   "invention": {
+    "access_route": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.access_details",
+     "category": "access_details",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "kept person-mediated on purpose: this branch's whole meaning is earning a person's trust, not finding a trick",
+     "kind_must_be": "trusted_escort"
+    }
+   },
+   "constraints": {
+    "warden_must_be": "gruff on the surface, glad underneath that someone finally showed up; an adult who takes kids seriously",
+    "must_not": "have the warden do the restart for them or forbid the attempt"
+   },
+   "choice_semantics": {
+    "c_keeper_enter": "follow the warden's lantern down to the works right away",
+    "c_keeper_story": "offer to carry his tool bag while he explains who built the engine"
+   },
+   "beat_hint": "The warden says nothing about a test, but carrying his tools without being asked earns more than a lantern would.",
+   "decisions": {
+    "c_keeper_enter": {
+     "action": "follow_the_wardens_lantern_down",
+     "action_family": "NAVIGATION",
+     "target_role": "PERSON",
+     "tradeoff": "SPEED_VS_INFO",
+     "consequence": "ACCESS"
+    },
+    "c_keeper_story": {
+     "action": "offer_to_carry_the_wardens_tools",
+     "action_family": "SOCIAL",
+     "target_role": "PERSON",
+     "tradeoff": "PRIDE_VS_HELP",
+     "consequence": "RELATIONSHIP"
+    }
+   }
+  },
+  "n_keyhunt": {
+   "tier": "open",
+   "function": "recover-the-crank",
+   "entry_state": [
+    "caution_proven",
+    "route_named_by_checklist"
+   ],
+   "establishes": [
+    "checklist_read"
+   ],
+   "forbids": [
+    "past_the_barred_door"
+   ],
+   "affect": {
+    "target": "satisfaction of a plan that checks out in the real world",
+    "forbid": [
+     "frustration",
+     "despair"
+    ]
+   },
+   "constraints": {
+    "payoff_must_be": "the crank exactly where the gauge marks promised; the world confirms the reading was right",
+    "must_not": "introduce a second puzzle here; this beat is confirmation, not complication"
+   },
+   "choice_semantics": {
+    "c_keyhunt_in": "wind the hatch ratchet open with the recovered crank"
+   },
+   "beat_hint": "Finding the crank exactly where the numbers said proves the reading was sound, not lucky.",
+   "decisions": {
+    "c_keyhunt_in": {
+     "action": "wind_the_hatch_ratchet_with_the_crank",
+     "action_family": "CRAFT",
+     "target_role": "MECHANISM",
+     "tradeoff": "NONE",
+     "consequence": "ACCESS"
+    }
+   }
+  },
+  "n_keeper_story": {
+   "tier": "open",
+   "function": "hear-the-engines-history",
+   "entry_state": [
+    "warden_tested_them",
+    "warden_offer_earned"
+   ],
+   "establishes": [
+    "makers_purpose_understood"
+   ],
+   "forbids": [
+    "past_the_barred_door",
+    "caution_proven"
+   ],
+   "affect": {
+    "target": "hushed listening, a stranger's care becoming personal",
+    "forbid": [
+     "grief",
+     "despair"
+    ]
+   },
+   "constraints": {
+    "history_must_be": "warm and specific: Maren Pool built the fail-safes out of care for the town, not out of secrecy; motive stays kind while details stay open",
+    "must_not": "reveal what the strongroom holds or how the tide board's reading resolves"
+   },
+   "choice_semantics": {
+    "c_story_in": "hurry down before the tide catches up with the story still fresh"
+   },
+   "beat_hint": "Once he starts talking, the friends finally understand why a laid-up old man would ask a bunch of kids for help.",
+   "decisions": {
+    "c_story_in": {
+     "action": "hurry_down_before_the_tide_catches_up",
+     "action_family": "TEMPORAL",
+     "target_role": "LOCATION",
+     "tradeoff": "NONE",
+     "consequence": "ACCESS"
+    }
+   }
+  },
+  "n_window": {
+   "tier": "open",
+   "function": "drop-through-the-sluice-gate",
+   "entry_state": [
+    "grit_shown",
+    "task_accepted"
+   ],
+   "establishes": [
+    "past_the_barred_door"
+   ],
+   "forbids": [
+    "anyone_injured"
+   ],
+   "affect": {
+    "target": "quick nerve, then the hush of having made it through",
+    "forbid": [
+     "real_peril",
+     "panic"
+    ]
+   },
+   "constraints": {
+    "climb_must_be": "exciting but visibly safe: short drop, good holds, friends spotting each other",
+    "must_not": "injure anyone or play the climb as recklessness"
+   },
+   "choice_semantics": {
+    "c_window_in": "climb in through the sluice gate they just freed"
+   },
+   "beat_hint": "The gate they forced open a minute ago is now just a doorway, and climbing through settles nothing except that they're inside.",
+   "decisions": {
+    "c_window_in": {
+     "action": "climb_in_through_the_released_sluice_gate",
+     "action_family": "NAVIGATION",
+     "target_role": "LOCATION",
+     "tradeoff": "NONE",
+     "consequence": "ACCESS"
+    }
+   }
+  },
+  "n_inside": {
+   "tier": "open",
+   "function": "reach-the-service-points",
+   "entry_state": [
+    "appeal_posted",
+    "task_accepted",
+    "crew_ready"
+   ],
+   "establishes": [
+    "past_the_barred_door",
+    "service_points_known"
+   ],
+   "forbids": [
+    "at_the_tide_board",
+    "strongroom_entered"
+   ],
+   "affect": {
+    "target": "brisk focus: the real work starts now",
+    "forbid": [
+     "dread",
+     "claustrophobia"
+    ]
+   },
+   "merge_note": "NC-1: six parents (n_note, n_door, n_keeper, n_keyhunt, n_keeper_story, n_window) arrive by different routes carrying different proofs. Presuppose only the intersection: the appeal exists, the friends accepted the job and are together. Do NOT reference how they got in, which job they led with, or whether the warden is present. Write arrival generically: they are past the barred door, the real work starts now.",
+   "constraints": {
+    "offers_must_be": "four sensory, distinct service points matching the four rooms: height, paper, motion, depth; each stands alone",
+    "must_not": "rank the service points or hint one is the correct one"
+   },
+   "choice_semantics": {
+    "c_inside_stairs": "climb to the winch loft: wind the spring there",
+    "c_inside_study": "duck into the map room: recalibrate the survey instrument",
+    "c_inside_pendulum": "edge along the weir catwalk: retrieve the cached gauge",
+    "c_inside_basement": "go down to the engine racks: log the rack readings"
+   },
+   "beat_hint": "Past the barred door, four separate jobs still need doing before the board can be read at all.",
+   "decisions": {
+    "c_inside_stairs": {
+     "action": "climb_to_the_winch_loft",
+     "action_family": "PHYSICAL_RISK",
+     "target_role": "LOCATION",
+     "tradeoff": "NONE",
+     "consequence": "LOCATION"
+    },
+    "c_inside_study": {
+     "action": "recalibrate_the_survey_instrument",
+     "action_family": "CRAFT",
+     "target_role": "LOCATION",
+     "tradeoff": "NONE",
+     "consequence": "LOCATION"
+    },
+    "c_inside_pendulum": {
+     "action": "cross_the_weir_catwalk_for_the_cache",
+     "action_family": "PHYSICAL_RISK",
+     "target_role": "LOCATION",
+     "tradeoff": "NONE",
+     "consequence": "LOCATION"
+    },
+    "c_inside_basement": {
+     "action": "descend_to_the_engine_racks",
+     "action_family": "PHYSICAL_RISK",
+     "target_role": "LOCATION",
+     "tradeoff": "NONE",
+     "consequence": "LOCATION"
+    }
+   }
+  },
+  "n_stairs": {
+   "tier": "open",
+   "function": "wind-the-winch-loft",
+   "entry_state": [
+    "past_the_barred_door",
+    "service_points_known"
+   ],
+   "establishes": [
+    "checklist_read"
+   ],
+   "forbids": [
+    "at_the_tide_board",
+    "strongroom_entered"
+   ],
+   "affect": {
+    "target": "the burn of cranking a stiff spring turning into quiet pride",
+    "forbid": [
+     "exhaustion",
+     "despair"
+    ]
+   },
+   "invention": {
+    "hint_carrier": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.cipher_hint_carriers",
+     "category": "cipher_hint_carriers",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "something met in the loft that teaches a usable piece of the tide board's reading"
+    },
+    "curiosity": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.room_curiosities",
+     "category": "room_curiosities",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "a small token of Maren Pool's found in the loft; personal, pocketable, easily missed"
+    }
+   },
+   "constraints": {
+    "hint_must_be": "sufficient on its own to make the tide board's reading attemptable for someone who never read the checklist",
+    "must_not": "presuppose the checklist reading is already done"
+   },
+   "choice_semantics": {
+    "c_stairs_face": "carry the wound spring gauge down to the tide board"
+   },
+   "beat_hint": "Winding the loft spring back to tension is its own small job, and finishing it earns a working gauge.",
+   "decisions": {
+    "c_stairs_face": {
+     "action": "carry_the_wound_spring_gauge_down",
+     "action_family": "CRAFT",
+     "target_role": "OBJECT",
+     "tradeoff": "NONE",
+     "consequence": "LOCATION"
+    }
+   }
+  },
+  "n_study": {
+   "tier": "open",
+   "function": "read-the-map-room",
+   "entry_state": [
+    "past_the_barred_door",
+    "service_points_known"
+   ],
+   "establishes": [
+    "checklist_read",
+    "ledgers_beckon"
+   ],
+   "forbids": [
+    "at_the_tide_board",
+    "strongroom_entered"
+   ],
+   "affect": {
+    "target": "the pull of a job that rewards lingering as much as leaving",
+    "forbid": [
+     "boredom",
+     "despair"
+    ]
+   },
+   "invention": {
+    "hint_carrier": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.cipher_hint_carriers",
+     "category": "cipher_hint_carriers",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "whatever in Maren Pool's own map room teaches the reading most directly; the richest hint of the four"
+    },
+    "curiosity": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.room_curiosities",
+     "category": "room_curiosities",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the ledgers whose pull is genuine: something browsable enough to fill an evening; staying is a legitimate answer"
+    }
+   },
+   "constraints": {
+    "temptation_must_be": "honest: the ledgers really are fascinating, and choosing them is a legitimate reader identity, not a failure",
+    "must_not": "frame staying to read as laziness or failure"
+   },
+   "choice_semantics": {
+    "c_study_face": "take the recalibrated gauge and press on to the tide board",
+    "c_study_logs": "let the ledgers win: choose the record over the clock"
+   },
+   "beat_hint": "There is no rule against getting absorbed in old flood records instead of finishing the job faster.",
+   "decisions": {
+    "c_study_face": {
+     "action": "carry_the_recalibrated_gauge_onward",
+     "action_family": "NAVIGATION",
+     "target_role": "OBJECT",
+     "tradeoff": "SPEED_VS_INFO",
+     "consequence": "LOCATION"
+    },
+    "c_study_logs": {
+     "action": "linger_over_the_flood_ledgers",
+     "action_family": "INFORMATION",
+     "target_role": "INFORMATION",
+     "tradeoff": "SPEED_VS_INFO",
+     "consequence": "KNOWLEDGE"
+    }
+   }
+  },
+  "n_pendulum": {
+   "tier": "open",
+   "function": "cross-the-weir-catwalk",
+   "entry_state": [
+    "past_the_barred_door",
+    "service_points_known"
+   ],
+   "establishes": [
+    "checklist_read",
+    "catwalk_dares_them",
+    "cache_glimpsed"
+   ],
+   "forbids": [
+    "anyone_injured",
+    "at_the_tide_board"
+   ],
+   "affect": {
+    "target": "focused nerve: this job asks the most of the four",
+    "forbid": [
+     "terror",
+     "recklessness_glorified"
+    ]
+   },
+   "invention": {
+    "hint_carrier": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.cipher_hint_carriers",
+     "category": "cipher_hint_carriers",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "something about the moving gearing, legible from a safe spot, that teaches a piece of the tide board's reading"
+    },
+    "obstacle": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.obstacle_kinds",
+     "category": "obstacle_kinds",
+     "assigned_at": "bind",
+     "note": "a traversal with real, legible, survivable risk; the far side holds something worth the daring"
+    }
+   },
+   "constraints": {
+    "peril_must_be": "mild and legible: the worst case is a soaked boot and a long walk back; the crossing rewards care, not daring",
+    "must_not": "punish the reader for either crossing or declining; both are respectable answers"
+   },
+   "choice_semantics": {
+    "c_pendulum_oil": "cross with care and unhook Maren Pool's cached gauge",
+    "c_pendulum_giveup": "judge the crossing honestly and turn back"
+   },
+   "beat_hint": "Wet rails and a long drop make this the hardest of the four jobs, though the spare gauge at the end is worth arguing for.",
+   "decisions": {
+    "c_pendulum_oil": {
+     "action": "unhook_the_cached_gauge_at_the_catwalks_end",
+     "action_family": "RESOURCE",
+     "target_role": "OBJECT",
+     "tradeoff": "SAFETY_VS_REWARD",
+     "consequence": "RESOURCE"
+    },
+    "c_pendulum_giveup": {
+     "action": "call_off_the_wet_crossing",
+     "action_family": "MORAL",
+     "target_role": "SELF",
+     "tradeoff": "SAFETY_VS_REWARD",
+     "consequence": "SAFETY"
+    }
+   }
+  },
+  "n_basement": {
+   "tier": "open",
+   "function": "check-the-engine-racks",
+   "entry_state": [
+    "past_the_barred_door",
+    "service_points_known"
+   ],
+   "establishes": [
+    "checklist_read"
+   ],
+   "forbids": [
+    "at_the_tide_board",
+    "strongroom_entered"
+   ],
+   "affect": {
+    "target": "dim-lit calm, steady hands rewarded in the dark",
+    "forbid": [
+     "despair",
+     "claustrophobia"
+    ]
+   },
+   "invention": {
+    "hint_carrier": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.cipher_hint_carriers",
+     "category": "cipher_hint_carriers",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "something down among the engine's roots that teaches a piece of the tide board's reading from below"
+    },
+    "curiosity": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.room_curiosities",
+     "category": "room_curiosities",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "what makes the deepest room worth the dark; the straight way up is the room's parting gift"
+    }
+   },
+   "constraints": {
+    "darkness_must_be": "atmosphere, not threat; the racks are dim and strange, never menacing",
+    "must_not": "presuppose the checklist reading is already done"
+   },
+   "choice_semantics": {
+    "c_basement_face": "log the rack readings before heading straight up"
+   },
+   "beat_hint": "Down among the racks, the job is steady hands and careful notes, not cleverness.",
+   "decisions": {
+    "c_basement_face": {
+     "action": "log_the_rack_readings_before_heading_up",
+     "action_family": "INFORMATION",
+     "target_role": "OBJECT",
+     "tradeoff": "NONE",
+     "consequence": "LOCATION"
+    }
+   }
+  },
+  "n_clockface": {
+   "tier": "open",
+   "function": "read-the-tide-board",
+   "entry_state": [
+    "past_the_barred_door",
+    "checklist_read"
+   ],
+   "establishes": [
+    "at_the_tide_board",
+    "board_reading_live"
+   ],
+   "forbids": [
+    "strongroom_entered",
+    "engine_restarted"
+   ],
+   "affect": {
+    "target": "peak focus; every service point narrows to this one board",
+    "forbid": [
+     "despair",
+     "panic"
+    ]
+   },
+   "merge_note": "NC-1: four parents (n_stairs, n_study, n_pendulum, n_basement), each of which supplied checklist_read from a DIFFERENT service point. Presuppose checklist_read generically: the friends have a working grasp of the board's reading, source unnamed. Do NOT presuppose which service point was visited, any object carried from any room, or any specific room. The board itself must restate its reading: its own gauge echoes the flag-code form, so the correct-setting choice is honest on every path.",
+   "constraints": {
+    "puzzle_must_be": "self-teaching at the board: the gauge rhymes with the reading the reader carries, so restarting feels earned, not lucky",
+    "stakes_must_be": "clear before choosing: setting, forcing, searching, and guessing are visibly different bets",
+    "must_not": "reference any carried object or any room's device; the board's own gauge and levers carry the whole beat"
+   },
+   "choice_semantics": {
+    "c_face_correct": "set the levers on the board's own terms, deliberately",
+    "c_face_jam": "muscle the big lever instead of reading the gauge",
+    "c_face_panel": "distrust the gauge, go looking for a maintenance panel",
+    "c_face_random": "yank levers at random and hope it catches"
+   },
+   "beat_hint": "Every route through the lock-house ends here, at a board that will not turn without an honest reading.",
+   "decisions": {
+    "c_face_correct": {
+     "action": "set_the_levers_using_the_reading",
+     "action_family": "CRAFT",
+     "target_role": "MECHANISM",
+     "tradeoff": "CERTAINTY_VS_TIME",
+     "consequence": "ACCESS"
+    },
+    "c_face_jam": {
+     "action": "force_the_big_lever_by_guesswork",
+     "action_family": "PHYSICAL_RISK",
+     "target_role": "MECHANISM",
+     "tradeoff": "EFFORT_VS_SHORTCUT",
+     "consequence": "ACCESS"
+    },
+    "c_face_panel": {
+     "action": "search_for_a_maintenance_panel",
+     "action_family": "CRAFT",
+     "target_role": "MECHANISM",
+     "tradeoff": "EFFORT_VS_SHORTCUT",
+     "consequence": "ACCESS"
+    },
+    "c_face_random": {
+     "action": "yank_the_levers_at_random",
+     "action_family": "PHYSICAL_RISK",
+     "target_role": "MECHANISM",
+     "tradeoff": "SPEED_VS_INFO",
+     "consequence": "ACCESS"
+    }
+   }
+  },
+  "n_setcorrect": {
+   "tier": "open",
+   "function": "the-engine-catches",
+   "entry_state": [
+    "at_the_tide_board",
+    "board_reading_live",
+    "checklist_read"
+   ],
+   "establishes": [
+    "engine_restarted"
+   ],
+   "forbids": [
+    "engine_jammed"
+   ],
+   "affect": {
+    "target": "a held breath let go as the gearing finally turns over",
+    "forbid": [
+     "anticlimax"
+    ]
+   },
+   "constraints": {
+    "solution_must_be": "shown, not skipped: the setting follows the reading the reader carries, in the story's one flag-code form",
+    "must_not": "presuppose the note branch or any specific room; the reasoning works from the generic hint plus the board's own gauge"
+   },
+   "choice_semantics": {
+    "c_correct_vault": "step through into the strongroom the restart unlocked"
+   },
+   "beat_hint": "The gearing catches on the first honest try, and the door behind the board finally gives.",
+   "decisions": {
+    "c_correct_vault": {
+     "action": "step_through_into_the_strongroom",
+     "action_family": "NAVIGATION",
+     "target_role": "LOCATION",
+     "tradeoff": "NONE",
+     "consequence": "ACCESS"
+    }
+   }
+  },
+  "n_setjam": {
+   "tier": "open",
+   "function": "free-the-stalled-gearing",
+   "entry_state": [
+    "at_the_tide_board",
+    "board_reading_live"
+   ],
+   "establishes": [
+    "engine_jammed"
+   ],
+   "forbids": [
+    "anyone_injured",
+    "engine_restarted"
+   ],
+   "affect": {
+    "target": "a wince at forcing it, then resolve to do it properly",
+    "forbid": [
+     "despair",
+     "blame"
+    ]
+   },
+   "invention": {
+    "remedy": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.remedies",
+     "category": "remedies",
+     "assigned_at": "bind",
+     "note": "the engine's own honest way back from the stall, supplied entirely by the bible"
+    }
+   },
+   "constraints": {
+    "remedy_must_be": "workable at the scene on every path, presupposing nothing carried from any other room",
+    "jam_must_read": "as the engine protecting itself, a fair consequence of forcing, not a punishment of the friends",
+    "must_not": "shame whoever forced the levers"
+   },
+   "choice_semantics": {
+    "c_jam_oil": "work the problem: free the stalled gearing and try the reading properly",
+    "c_jam_stuck": "accept tonight's attempt is over"
+   },
+   "beat_hint": "The big lever does not bend to muscle, and pretending otherwise only means doing the job twice.",
+   "decisions": {
+    "c_jam_oil": {
+     "action": "free_the_stalled_gearing_with_the_remedy",
+     "action_family": "CRAFT",
+     "target_role": "MECHANISM",
+     "tradeoff": "EFFORT_VS_SHORTCUT",
+     "consequence": "ACCESS"
+    },
+    "c_jam_stuck": {
+     "action": "accept_tonights_attempt_is_over",
+     "action_family": "MORAL",
+     "target_role": "SELF",
+     "tradeoff": "NONE",
+     "consequence": "SAFETY"
+    }
+   }
+  },
+  "n_backpanel": {
+   "tier": "open",
+   "function": "find-the-second-gauge",
+   "entry_state": [
+    "at_the_tide_board",
+    "board_reading_live"
+   ],
+   "establishes": [
+    "second_gauge_found"
+   ],
+   "forbids": [
+    "engine_jammed",
+    "strongroom_entered"
+   ],
+   "affect": {
+    "target": "sly delight at finding a gauge nobody mentioned",
+    "forbid": [
+     "despair"
+    ]
+   },
+   "constraints": {
+    "panel_reading_must_be": "the same flag-code form as the checklist, smaller and quicker; reading it uses the carried hint, never the full checklist",
+    "must_not": "make this route feel like cheating; Maren Pool built it on purpose for careful searchers"
+   },
+   "choice_semantics": {
+    "c_panel_vault": "read the second gauge toward the strongroom",
+    "c_panel_secret": "follow the second gauge the other way, toward a room no one mentioned"
+   },
+   "beat_hint": "Nobody has to open the panel behind the board, which is exactly why the ones who do find something extra.",
+   "decisions": {
+    "c_panel_vault": {
+     "action": "read_the_second_gauge_toward_the_strongroom",
+     "action_family": "INFORMATION",
+     "target_role": "MECHANISM",
+     "tradeoff": "NONE",
+     "consequence": "ACCESS"
+    },
+    "c_panel_secret": {
+     "action": "follow_the_second_gauge_to_the_workshop",
+     "action_family": "NAVIGATION",
+     "target_role": "LOCATION",
+     "tradeoff": "NONE",
+     "consequence": "ACCESS"
+    }
+   }
+  },
+  "n_vault": {
+   "tier": "open",
+   "function": "decide-what-the-restart-means",
+   "entry_state": [
+    "at_the_tide_board",
+    "checklist_read"
+   ],
+   "establishes": [
+    "strongroom_entered",
+    "strongroom_seen"
+   ],
+   "forbids": [
+    "anyone_injured"
+   ],
+   "affect": {
+    "target": "quiet awe; the engine is running again, and now a question about what to do with that",
+    "forbid": [
+     "greed_glamorized",
+     "despair"
+    ]
+   },
+   "merge_note": "NC-1: three parents (n_setcorrect, n_setjam, n_backpanel) opened the way by different means. Presuppose only that they stand past the board with the restart in hand; write the strongroom's opening as already behind them without re-describing which route yielded it.",
+   "invention": {
+    "contents": {
+     "pick": 3,
+     "from": "bible.device_vocabulary.vault_contents",
+     "category": "vault_contents",
+     "assigned_at": "bind",
+     "note": "Maren Pool's letter, the keepsake, and a modest heritage treasure; the letter's voice is kind and asks nothing"
+    }
+   },
+   "constraints": {
+    "contents_must_be": "knowledge, heritage, and wonder; the treasure is modest and clearly the settlement's, which is what makes the grab choice legible as a failed job",
+    "choice_must_be": "a genuine three-way question of character with no narrator's thumb on the scale before the outcome"
+   },
+   "choice_semantics": {
+    "c_vault_share": "let the restart be public: carry the letter to the settlement",
+    "c_vault_keep": "let the restart stay private: swear the crew to keep it between them",
+    "c_vault_grab": "treat the strongroom as a prize to loot instead of a job well done"
+   },
+   "beat_hint": "A running engine still leaves one open question: who gets to know about it, and who gets to stay quiet.",
+   "decisions": {
+    "c_vault_share": {
+     "action": "carry_the_makers_letter_to_the_settlement",
+     "action_family": "SOCIAL",
+     "target_role": "PERSON",
+     "tradeoff": "LOYALTY_VS_TRUTH",
+     "consequence": "REPUTATION"
+    },
+    "c_vault_keep": {
+     "action": "swear_the_crew_to_keep_it_quiet",
+     "action_family": "SOCIAL",
+     "target_role": "PERSON",
+     "tradeoff": "LOYALTY_VS_TRUTH",
+     "consequence": "RELATIONSHIP"
+    },
+    "c_vault_grab": {
+     "action": "pocket_the_keepsake_and_slip_out",
+     "action_family": "MORAL",
+     "target_role": "OBJECT",
+     "tradeoff": "SAFETY_VS_REWARD",
+     "consequence": "RESOURCE"
+    }
+   }
+  },
+  "n_end_library": {
+   "tier": "locked_outcome",
+   "function": "payoff-choosing-the-record",
+   "entry_state": [
+    "past_the_barred_door",
+    "ledgers_beckon"
+   ],
+   "establishes": [
+    "steady_exit",
+    "routine_reopens"
+   ],
+   "forbids": [
+    "shame",
+    "regret_dominant"
+   ],
+   "affect": {
+    "target": "absorbed calm; the ledgers turn out to matter as much as the engine",
+    "forbid": [
+     "despair",
+     "mockery"
+    ]
+   },
+   "mechanisms": [
+    "the flood ledgers teach them how past overflows were handled, arming a smarter attempt tomorrow",
+    "a loose page from the ledgers, copied out, goes home with them to puzzle over before the next tide",
+    "the evening tide horns cut the reading short, and the warden walks them out with a promise to leave the ledgers open"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "ending_must_read": "as a different kind of help: they chose the record over the clock, and the choice is honored; the engine waits, better understood for what they now know"
+   },
+   "beat_hint": "Between the ledgers and the board, the friends pick the ledgers, and nobody calls that giving up."
+  },
+  "n_end_giveup": {
+   "tier": "locked_outcome",
+   "function": "payoff-declining-the-crossing",
+   "entry_state": [
+    "catwalk_dares_them",
+    "cache_glimpsed"
+   ],
+   "establishes": [
+    "steady_exit",
+    "routine_reopens"
+   ],
+   "forbids": [
+    "cowardice_implied",
+    "mockery"
+   ],
+   "affect": {
+    "target": "sober pride in reading a risk correctly and walking away from it",
+    "forbid": [
+     "despair",
+     "shame"
+    ]
+   },
+   "mechanisms": [
+    "a level look at the catwalk convinces them that crossing it tonight would cost more than it proves",
+    "one friend says the crossing isn't worth it and the others agree without argument, calling the retreat a sound call",
+    "a foot slips on the wet rail and the near-miss turns the attempt into a calm, deliberate retreat"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "ending_must_read": "as good judgment, not fear: turning back from a bad crossing is itself a job done right"
+   },
+   "beat_hint": "The wet rail and the long drop settle the question before anyone has to argue about it."
+  },
+  "n_end_timeout": {
+   "tier": "locked_outcome",
+   "function": "payoff-guessing-honestly",
+   "entry_state": [
+    "at_the_tide_board",
+    "board_reading_live"
+   ],
+   "establishes": [
+    "steady_exit",
+    "routine_reopens"
+   ],
+   "forbids": [
+    "humiliation",
+    "permanent_damage"
+   ],
+   "affect": {
+    "target": "rueful acceptance that a guess was never going to satisfy this gauge",
+    "forbid": [
+     "despair",
+     "punishing_tone"
+    ]
+   },
+   "mechanisms": [
+    "yanking levers at random trips a safeguard built for exactly that shortcut, freezing the board until the warden resets it",
+    "the tide horns sound before any lever lands right, and the restart must wait for the morning crew",
+    "the overworked gearing raises a grinding fuss that brings the warden up to end the attempt for the night"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "ending_must_read": "as the fair cost of guessing at a board built to be read, not forced; the lesson travels home with them"
+   },
+   "beat_hint": "The board was built to reward reading, not luck, and the levers make that plain the hard way."
+  },
+  "n_end_stuck": {
+   "tier": "locked_outcome",
+   "function": "payoff-planning-the-retry",
+   "entry_state": [
+    "engine_jammed"
+   ],
+   "establishes": [
+    "steady_exit",
+    "routine_reopens"
+   ],
+   "forbids": [
+    "blame",
+    "permanent_damage"
+   ],
+   "affect": {
+    "target": "determined resolve to come back properly equipped",
+    "forbid": [
+     "despair",
+     "defeat_as_identity"
+    ]
+   },
+   "mechanisms": [
+    "the stalled gearing binds fast, and nothing they carry tonight will free it",
+    "a bent linkage needs a tool the restart routine clearly expects, and nobody brought one",
+    "the warden's posted rule ends forcing attempts at nightfall, and they honor it as part of doing the job right"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "ending_must_read": "as a pause, not a verdict: the friends leave already sketching the fix for next time"
+   },
+   "beat_hint": "Tonight's gearing wins, and the walk home is already half a plan for tomorrow."
+  },
+  "n_end_secret": {
+   "tier": "locked_outcome",
+   "function": "payoff-the-workshops-welcome",
+   "entry_state": [
+    "second_gauge_found"
+   ],
+   "establishes": [
+    "hidden_workshop_found",
+    "care_role_earned",
+    "crew_bond_formed"
+   ],
+   "forbids": [
+    "exploitation_of_find"
+   ],
+   "affect": {
+    "target": "hushed wonder at a job that rewards curiosity as much as effort",
+    "forbid": [
+     "greed",
+     "anticlimax"
+    ]
+   },
+   "invention": {
+    "loft_signature": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.loft_signatures",
+     "category": "loft_signatures",
+     "assigned_at": "bind",
+     "note": "the one detail that makes Maren Pool's workshop feel currently alive and mid-thought rather than preserved"
+    }
+   },
+   "mechanisms": [
+    "the workshop adopts them as its quiet keepers, the thanks for a job nobody told them they were doing",
+    "some unfinished repair in the room invites their hands, and finishing it becomes their standing task",
+    "Maren Pool's own notes name whoever finds the room its caretaker, and the friends accept the charge"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "room_must_be": "a working room alive with Maren Pool's presence; the reward is responsibility and access, never possession"
+   },
+   "beat_hint": "Nobody promised a reward for checking behind the second gauge, and yet here is a whole workshop that needs looking after."
+  },
+  "n_end_hero": {
+   "tier": "locked_outcome",
+   "function": "payoff-going-public",
+   "entry_state": [
+    "strongroom_entered",
+    "strongroom_seen"
+   ],
+   "establishes": [
+    "restart_made_public",
+    "engine_restarted",
+    "makers_purpose_understood",
+    "crew_bond_formed"
+   ],
+   "forbids": [
+    "reward_as_riches"
+   ],
+   "affect": {
+    "target": "quiet pride; the whole settlement notices the tide-engine running again",
+    "forbid": [
+     "gloating",
+     "anticlimax"
+    ]
+   },
+   "mechanisms": [
+    "the restart is announced and celebrated by the settlement, the tide-engine's return made public at last",
+    "the restart quietly saves something the settlement was about to lose, proof enough without an announcement",
+    "the restart earns the warden's open trust and a standing invitation back to the lock-house"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "restoration_must_be": "concrete and communal: the running engine gives the settlement back something real, and the friends' work is publicly credited"
+   },
+   "beat_hint": "The gearing's hum carries further than the lock-house, and by morning the whole settlement has heard it."
+  },
+  "n_end_keepsake": {
+   "tier": "locked_outcome",
+   "function": "payoff-a-quiet-fix",
+   "entry_state": [
+    "strongroom_entered",
+    "strongroom_seen"
+   ],
+   "establishes": [
+    "restart_kept_private",
+    "crew_bond_formed"
+   ],
+   "forbids": [
+    "selfishness_implied"
+   ],
+   "affect": {
+    "target": "warm quiet pride, kept just among themselves",
+    "forbid": [
+     "guilt",
+     "anticlimax"
+    ]
+   },
+   "mechanisms": [
+    "a promise sworn over the keepsake binds the friends as the ones who quietly kept the engine running",
+    "they reset every gauge exactly as found, keeping the fix and leaving the rest untouched",
+    "Maren Pool's letter asks its finders to choose, and they choose to let the fix stay quiet"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "keeping_must_read": "as guardianship, not hoarding: nothing leaves the strongroom that belongs to the settlement; what the friends keep is the fix, and each other"
+   },
+   "beat_hint": "Nobody in Eelgate needs to hear how the engine came back on; the friends decide that is theirs to hold."
+  },
+  "n_end_caught": {
+   "tier": "locked_outcome",
+   "function": "payoff-the-safeguard-catches-them",
+   "entry_state": [
+    "strongroom_entered",
+    "strongroom_seen"
+   ],
+   "establishes": [
+    "ledger_set_straight",
+    "warden_intervenes",
+    "steady_exit",
+    "routine_reopens"
+   ],
+   "forbids": [
+    "humiliation",
+    "punishment_beyond_returning",
+    "theft_rewarded"
+   ],
+   "affect": {
+    "target": "comic sheepishness at failing the one job that mattered most",
+    "forbid": [
+     "menace",
+     "despair",
+     "shaming"
+    ]
+   },
+   "invention": {
+    "safeguard": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.safeguards",
+     "category": "safeguards",
+     "assigned_at": "bind",
+     "note": "Maren Pool anticipated this exact impulse; whatever form it takes, the safeguard is gentle, funny, and impossible to be hurt by"
+    }
+   },
+   "mechanisms": [
+    "the engine's true safeguard announces the grab, and the warden arrives before the door does",
+    "what they try to carry out is exactly what the safeguard was built to catch on the way down",
+    "second thoughts slow them just enough for the warden's evening rounds to catch them mid-return, the last gauge answered honestly after all"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "correction_must_be": "fair and complete without cruelty: everything goes back, the warden is firm but kind, and the friends leave lighter for having failed the last gauge kindly",
+    "must_not": "threaten, lecture at length, or bar the friends from the lock-house forever"
+   },
+   "beat_hint": "Reaching for what is not theirs trips the one gauge nobody thought to mention."
+  }
+ }
+}
