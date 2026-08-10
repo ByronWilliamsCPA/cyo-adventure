@@ -109,8 +109,29 @@ ALL_ROLES: frozenset[Role] = frozenset({Role.GUARDIAN, Role.CHILD, Role.ADMIN})
 # ``/health/*`` loopback alias the production container healthcheck still
 # probes directly. Both sets of paths are genuinely unauthenticated routes
 # the app serves, so both stay listed here.
+#
+# The two KWS routes (ADR-018) are a different case and must not be read as
+# "unguarded". Neither carries a bearer token because neither caller holds a
+# session: one is Epic's server calling us, the other is a parent's browser
+# arriving from Epic's hosted flow. Each authenticates by HMAC instead, and
+# each refuses before it parses anything when the signature is absent or
+# wrong:
+#   POST /api/v1/webhooks/kws/parent-verified  KWS_WEBHOOK_SECRET, Stripe-style
+#       t=/v1= over the raw body, with a bounded clock skew. This is the ONLY
+#       route that writes consent state.
+#       Covered by tests/unit/test_kws_webhook.py.
+#   GET  /api/v1/consent/kws/return            KWS_VERIFICATION_SECRET, HMAC
+#       over "status:external_payload". That string carries no timestamp, so
+#       it is replayable by construction, which is exactly why this route is
+#       display-only and writes nothing.
+#       Covered by tests/unit/test_kws_redirect.py.
+# Listing them here says "no ROUTE_TABLE role expectation applies", not "no
+# authorization applies". If either ever gains a session-authenticated form,
+# it belongs in ROUTE_TABLE instead.
 _PUBLIC_ROUTES: frozenset[tuple[str, str]] = frozenset(
     {
+        ("POST", "/api/v1/webhooks/kws/parent-verified"),
+        ("GET", "/api/v1/consent/kws/return"),
         ("GET", "/docs"),
         ("HEAD", "/docs"),
         ("GET", "/docs/oauth2-redirect"),

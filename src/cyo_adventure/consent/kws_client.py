@@ -49,12 +49,14 @@ from cyo_adventure.utils.logging import get_logger
 logger = get_logger(__name__)
 
 _SERVICE = "kws"
-# The S105 suppression below is a false positive: this is the OIDC token
-# ENDPOINT's URL path, a public constant published in Epic's docs, not a
-# credential. The credential is settings.kws_api_key, which is a SecretStr and
-# is never a literal. (This comment must not open with the bare word that ruff
-# reads as a directive, or the prose itself becomes a blanket suppression.)
-_TOKEN_PATH = "/auth/realms/kws/protocol/openid-connect/token"  # noqa: S105
+# The two suppressions below are the same false positive reported twice: ruff
+# raises S105 and bandit raises its B105 equivalent, and each needs its own
+# marker because neither reads the other's. This is the OIDC token ENDPOINT's
+# URL path, a public constant published in Epic's docs, not a credential. The
+# credential is settings.kws_api_key, which is a SecretStr and is never a
+# literal. (This comment must not open with the bare word that ruff reads as a
+# directive, or the prose itself becomes a blanket suppression.)
+_TOKEN_PATH = "/auth/realms/kws/protocol/openid-connect/token"  # noqa: S105  # nosec B105
 _SEND_EMAIL_PATH = "/v1/verifications/send-email"
 
 # Per-attempt ceiling on a single HTTP call. Deliberately a constant rather than
