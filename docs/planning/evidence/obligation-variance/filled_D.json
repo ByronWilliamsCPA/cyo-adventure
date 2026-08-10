@@ -1,0 +1,423 @@
+{
+ "schema_version": "2.0",
+ "id": "sk_clocktower_cipher",
+ "version": 1,
+ "title": "The Founder's Last Peal",
+ "metadata": {
+  "age_band": "10-13",
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 5.5,
+   "tolerance": 1.5
+  },
+  "tier": 1,
+  "themes": [
+   "mystery",
+   "puzzles",
+   "friendship",
+   "history"
+  ],
+  "estimated_minutes": 18,
+  "ending_count": 8,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "mild",
+   "peril": "mild"
+  },
+  "topology": "branch_and_bottleneck",
+  "production_eligible": false
+ },
+ "variables": [],
+ "start_node": "n_open",
+ "nodes": [
+  {
+   "id": "n_open",
+   "body": "The bell foundry at Thistledown had been shut for as long as Nora could remember, doors chained, windows grey with dust, the yard gone quiet under weeds. Grown-ups called it done and mostly walked past it now. But this afternoon Sam stopped dead at the gate, pointing. A square of paper was still pinned to the door, its edges curled and yellowed, covered in a strange pattern of long and short marks instead of words. Idris caught up and put a hand flat against the wood, careful not to touch the page. None of them reached for it alone. They stood shoulder to shoulder and looked.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_open",
+     "label": "Read it together, right now.",
+     "target": "n_start"
+    }
+   ]
+  },
+  {
+   "id": "n_start",
+   "body": "“It's peal code,” Nora said, tracing one row of marks with her finger. “Long pulls and short ones. Josiah Vane used to write his whole day that way.” None of them could read it yet, not properly, but just naming it made the note feel less like a wall. Sam was already eyeing the shuttered windows, wondering how a building kept its own secrets. Idris kept looking toward the lane where Old Weaver's cottage smoke rose, the one person left who might still remember. Three trails from the same man: his words, his walls, his people. They agreed to try one first and see where it led.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_examine",
+     "label": "Work out the note ourselves.",
+     "target": "n_note"
+    },
+    {
+     "id": "c_door",
+     "label": "Read what the building remembers.",
+     "target": "n_door"
+    },
+    {
+     "id": "c_keeper",
+     "label": "Go ask someone who knew him.",
+     "target": "n_keeper"
+    }
+   ]
+  },
+  {
+   "id": "n_note",
+   "body": "Nora spread the note flat on a crate lid. Long pull, long pull, short, she matched each mark to a letter the way her grandmother had taught her to read ringing changes, mouthing the pattern to herself. The first line gave up slowly: look where the flue turns cold before you come to me. One true thing, in his own hand, at last. Sam pointed at the old flue tunnel snaking under the building. Idris studied the fold of the paper itself, where a crease pointed toward the loose grate near its base, as if the note was a map as much as a message. Two ways to chase the same lead.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_note_key",
+     "label": "Track down the key the fold points to.",
+     "target": "n_keyhunt"
+    },
+    {
+     "id": "c_note_inside",
+     "label": "Head straight for the flue tunnel.",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_door",
+   "body": "With the note still a mystery, Idris crouched at the foundry's base and read the ground instead. A path of flattened weeds ran to the low side door. Grass there was worn thin by years of one man's daily feet. Sam noticed a second trail: scuff marks climbing the drainpipe toward a belfry hatch. It was fainter, used less often, but used all the same. Nora crouched beside the door and found a catch tucked under the lip of a rusted board, hidden unless you knew to feel for it. Two paths, two habits: the route he walked most days, and the route he saved for something else.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_door_force",
+     "label": "Follow the low, worn path.",
+     "target": "n_inside"
+    },
+    {
+     "id": "c_door_window",
+     "label": "Follow the fainter high path.",
+     "target": "n_window"
+    }
+   ]
+  },
+  {
+   "id": "n_keeper",
+   "body": "Old Weaver answered the door with his eyebrows already climbing. “Vane's place? Nobody's asked me about that in years.” He said it gruff, but he didn't shut the door either. His hand went to the ring of keys at his belt, keys that still, after all this time, opened the casting floor. “I could walk you in,” he said, “if that's what you're after.” Then, quieter, like it cost him something: “Or I could tell you a bit about him first. Not many left who remember Josiah Vane proper.” He waited, keys jingling faintly, letting them choose which they wanted more.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_keeper_enter",
+     "label": "Take the offered way in, now.",
+     "target": "n_inside"
+    },
+    {
+     "id": "c_keeper_story",
+     "label": "Ask for the story first.",
+     "target": "n_keeper_story"
+    }
+   ]
+  },
+  {
+   "id": "n_keyhunt",
+   "body": "The flue grate hung loose exactly the way the note promised, one screw missing, the metal cold under Idris's fingers. Behind it, on a bent nail, hung a brass key gone dull with years but still whole. Sam grinned, quick and relieved, the note hadn't been a riddle for its own sake after all. It had been true, every word, pointing straight at something real. Nora turned the key over, reading a single stamped date scratched into its shank, one more fixed point in Josiah Vane's last days. Whatever else they found tonight, the note had not lied to them.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_keyhunt_in",
+     "label": "Unlock the door with the key.",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_keeper_story",
+   "body": "Old Weaver settled onto the porch step like the story needed sitting for. “Vane didn't vanish because anything happened to him,” he said. “He stepped back because the foundry was getting too loud with people who wanted bells cast fast and cheap, and he wouldn't do shoddy work. Rather shut the doors himself than watch his name go on something rushed.” He picked at a loose thread on his sleeve. “Proud man. Private, after that. Didn't mean he stopped caring what happened to this town, or the bell.” He said no more about what Vane left behind, only that leaving had been a kindness to himself, not a wound to hide.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_story_in",
+     "label": "Carry his story inside with you.",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_window",
+   "body": "The belfry hatch was higher than the door, but the drainpipe brackets made an honest ladder. They were spaced like someone had meant for the climb to be easy. Sam went first, testing each bracket before trusting it, calling down “solid” at every step. Idris braced the base. Nora spotted from the side, ready to catch an elbow if a foot slipped. At the top, the hatch gave with one good shove, swinging in on a hinge gone stiff but not stuck. They dropped through one after another, landing soft on old sawdust. They breathed foundry air for the first time in years. His air, waiting.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_window_in",
+     "label": "Drop through the hatch.",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_inside",
+   "body": "Inside, the foundry held the day's warmth in its cast-iron bones, the way it always had. Dust motes turned slow in the little light left. The friends stood on the casting floor together, foundry air thick with old metal and cold ash. From here, Josiah Vane's four old habits spread out plain: a spiral stair climbing toward the belfry, a door into his pattern room thick with paper, a narrow catwalk threading the swinging bell frames, and a stair down into the dark below. Every route was his, worn by the same pair of boots for thirty years. None of them looked more right than the others. Somebody would have to choose, and it might as well be now.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_inside_stairs",
+     "label": "Follow his footsteps toward the belfry.",
+     "target": "n_stairs"
+    },
+    {
+     "id": "c_inside_study",
+     "label": "Step into his pattern room.",
+     "target": "n_study"
+    },
+    {
+     "id": "c_inside_pendulum",
+     "label": "Edge along the bell-frame catwalk.",
+     "target": "n_pendulum"
+    },
+    {
+     "id": "c_inside_basement",
+     "label": "Head down into the dark.",
+     "target": "n_basement"
+    }
+   ]
+  },
+  {
+   "id": "n_stairs",
+   "body": "The spiral stair climbed past a landing crowded with a rack of tuning forks. They were sorted smallest to largest, each one labeled in a cramped hand with a number of pulls. Nora ran a finger down the row, matching the climbing counts to a rhythm she could almost hear. Wedged behind the rack sat a small hand bell, cast slightly crooked, its clapper a touch off-true. Sam turned it over and laughed. Someone's first try, kept instead of melted down. Idris read the tag tied to its handle: a date, an apology to no one, a private joke. Between the forks and the bell, they had a real piece of his last winter now.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_stairs_face",
+     "label": "Carry it up to the tuning board.",
+     "target": "n_clockface"
+    }
+   ]
+  },
+  {
+   "id": "n_study",
+   "body": "The pattern room still smelled of paper and linseed oil. On the workbench lay a tuning hammer, its handle scratched all over with tiny marks. Each one was keyed, Nora realized, to a single pull of a bell. Sam worked out the pattern almost by accident, tapping the bench in time. Overhead, sun through a coloured glass transom threw bell-shaped patches of red and gold across the floor, drifting slow as the afternoon wore on. Shelf after shelf held peal logs, decades of them, spines cracked from use. Idris pulled one down without meaning to and got lost in the first page. It would be easy, almost natural, to just stay here reading.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_study_face",
+     "label": "Take the notes and press on.",
+     "target": "n_clockface"
+    },
+    {
+     "id": "c_study_logs",
+     "label": "Let the peal logs hold you.",
+     "target": "n_end_library"
+    }
+   ]
+  },
+  {
+   "id": "n_pendulum",
+   "body": "The bell-frame catwalk ran narrow between the great swinging cradles. Planks slick with old tallow, it crossed one handhold at a time. A fall here meant only a bruise and a long, embarrassed walk home. Never worse than that. Partway across, a brass calibration scale was bolted to the mould bench below. Its notches climbed in the same carry the peals used, plain enough to read from where they stood. Beyond it, wedged in a bracket past the last cradle, something small and bronze caught the light. A medallion, just visible, just out of easy reach. Sam eyed the gap and did the honest math on whether it was worth the risk tonight.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_pendulum_oil",
+     "label": "Brave the crossing and claim it.",
+     "target": "n_clockface"
+    },
+    {
+     "id": "c_pendulum_giveup",
+     "label": "Call the risk not worth it.",
+     "target": "n_end_giveup"
+    }
+   ]
+  },
+  {
+   "id": "n_basement",
+   "body": "Down in the basement, the air went cool and close, thick with the smell of old ash and cold metal. A single beam of light found its way down through a belfry louver far above. It landed across one floor plank, scored with careful marks. The light's slow crawl across it matched the same counting the peals used, Idris realized. Against the far wall hung a leather apron, pockets worn into the shape of tools that weren't there anymore. Josiah Vane's, unmistakably, left hanging as if he meant to come back for it. Nora traced the marked plank with her toe, working out one more true beat of his last days from the shadow alone.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_basement_face",
+     "label": "Bring the pattern up top.",
+     "target": "n_clockface"
+    }
+   ]
+  },
+  {
+   "id": "n_clockface",
+   "body": "The great tuning board filled the top of the tower: a broad brass dial studded with pegs instead of numbers, each one meant to be set to a particular pull. Around its rim, long and short marks were stamped into the metal itself, the same pattern the note had used, waiting to be read one more time. Whatever they now understood of his last days lined up with those marks like a key finding its lock. Nora looked at the pegs, thinking it through. Sam's hand hovered, itching to just start turning things. Idris noticed a seam along the board's edge that might be a panel. Four ways to meet this, and only one of them was patient.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_face_correct",
+     "label": "Work out the setting, carefully.",
+     "target": "n_setcorrect"
+    },
+    {
+     "id": "c_face_jam",
+     "label": "Force the pegs and see.",
+     "target": "n_setjam"
+    },
+    {
+     "id": "c_face_panel",
+     "label": "Search behind the face instead.",
+     "target": "n_backpanel"
+    },
+    {
+     "id": "c_face_random",
+     "label": "Spin the pegs and hope.",
+     "target": "n_end_timeout"
+    }
+   ]
+  },
+  {
+   "id": "n_setcorrect",
+   "body": "Nora matched the pegs to the pattern stamped around the rim: long pull, long pull, short. She worked the rhythm through slowly instead of guessing. Each peg clicked into place with a small, satisfying give, like the board had been waiting years for someone patient enough to finish the sentence. On the last peg, something deep in the tower's works let go all at once. Not a jolt, just release, the whole mechanism sighing into motion. Somewhere below, a single true note rang out through the empty foundry, clean and whole. Sam whooped. Idris just stood still, listening to a sound the tower hadn't made in years.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_correct_vault",
+     "label": "Follow the sound to the vault.",
+     "target": "n_vault"
+    }
+   ]
+  },
+  {
+   "id": "n_setjam",
+   "body": "Sam went for speed over patience, wrenching two pegs that didn't want to turn together. Something inside the tuning board caught hard. Gears ground to a stop with a metallic groan that made everyone wince. Nothing broke, and nobody got so much as a scraped knuckle, but the whole mechanism had locked tight, refusing to move another inch. “It's protecting itself,” Idris said, more curious than upset, running a hand along a small safety catch near the cradle's base. “Vane built it not to be rushed.” Nora crouched beside him. Releasing the catch and easing the cradle back to rest might be the honest way through, if they were willing to slow down and give it another careful go.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_jam_oil",
+     "label": "Slow down and reset the catch.",
+     "target": "n_vault"
+    },
+    {
+     "id": "c_jam_stuck",
+     "label": "Admit the mechanism has won.",
+     "target": "n_end_stuck"
+    }
+   ]
+  },
+  {
+   "id": "n_backpanel",
+   "body": "Idris ran a thumb along the seam at the board's edge and found a hairline catch. Not a flaw, but a design, built by Vane for whoever searched carefully enough to notice. The panel swung open on oiled hinges to show a second slip of paper. Its marks were smaller, but written in the same long-and-short pattern as the note on the door. It took only the piece they already carried to work out its short line: a fork in the passage ahead. One way led toward the vault everyone expected. One way led toward somewhere nobody had mentioned at all. Nora grinned. “He liked hiding things behind things,” she said. “This wasn't luck. This was for us.”",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_panel_vault",
+     "label": "Follow the note toward the vault.",
+     "target": "n_vault"
+    },
+    {
+     "id": "c_panel_secret",
+     "label": "Follow the note the other way.",
+     "target": "n_end_secret"
+    }
+   ]
+  },
+  {
+   "id": "n_vault",
+   "body": "The casting vault was smaller than any of them expected, and quieter. Pinned just inside the door was a letter in Josiah Vane's own hand. No code this time, just plain words: a goodbye, gentle and unafraid, addressed to whoever finally came looking. Beside it sat the founding charter of Thistledown's bell, signed by the town and by Vane both. Next to that lay a ledger of every wedding and homecoming the bell had rung for. On a shelf alone lay his marking chisel, kept oiled as though he meant to return for it. Nothing here was locked away for its own sake. It was owed to somebody. The question now was what they owed him back.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_vault_share",
+     "label": "Bring it back to Thistledown.",
+     "target": "n_end_hero"
+    },
+    {
+     "id": "c_vault_keep",
+     "label": "Hold his secret just among yourselves.",
+     "target": "n_end_keepsake"
+    },
+    {
+     "id": "c_vault_grab",
+     "label": "Grab the treasure and run.",
+     "target": "n_end_caught"
+    }
+   ]
+  },
+  {
+   "id": "n_end_library",
+   "body": "They lost track of time in the peal logs, and none of them minded. Deep in one ledger, tucked between two pages, Idris found a loose sheet: a hand-copied version of the note pinned outside, written out clean in Josiah Vane's own hand for some reason only he'd have known. Nora folded it carefully into her pocket. Outside, the light had gone long and gold. They knew, without saying it, that the tuning board would keep until another day. They walked home slower than they'd come, already planning how they'd finish the translation on Nora's kitchen table, whenever they came back to try.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_library",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "A Page to Keep"
+   }
+  },
+  {
+   "id": "n_end_giveup",
+   "body": "Sam's foot went out from under him on the second plank, tallow slicker than it looked. For one flat second the whole catwalk seemed to tilt. Idris's hand closed hard on his sleeve and hauled him back before the slip became anything worse. They stood a moment, breathing, boots planted on the solid landing. “He'd have called that one right,” Nora said finally, nodding at the gap they weren't going to cross tonight. Nobody argued it as failure. They climbed down together, steady now, already talking about coming back with rope and better boots. The medallion stayed exactly where it had been, waiting for a smarter try.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_giveup",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Caught In Time"
+   }
+  },
+  {
+   "id": "n_end_timeout",
+   "body": "Sam spun three pegs at random, betting on luck over logic. The tuning board answered with a soft click, then nothing. No grind, no damage, just a quiet stillness, as if the whole mechanism had simply decided to wait them out. Nora found a small stamped plate near the rim. It was a note, in effect, that guessed settings locked the board until someone with the proper reset came to free it. Nobody was hurt, nothing was broken, and there was no getting around it tonight. Idris almost laughed. “He really did think of everything,” he said. They climbed back down, already agreeing that next time, they'd read the pattern instead of trusting chance.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_timeout",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Guess That Froze"
+   }
+  },
+  {
+   "id": "n_end_stuck",
+   "body": "The safety catch eased back well enough. But underneath it, a linkage had bent just slightly out of true. It needed a specific narrow-jawed tool to straighten, exactly the kind Josiah Vane had once kept racked by the mould bench. It was exactly the kind none of them had thought to bring tonight. Nobody blamed Sam for trying. The tower wasn't damaged, just stubborn, waiting on the right hands with the right tool. They didn't force it further. Already they were agreeing on what to pack for next time: gloves, the right wrench, and a little more patience with pegs that didn't want to turn.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_stuck",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Missing Tool"
+   }
+  },
+  {
+   "id": "n_end_secret",
+   "body": "The second passage opened onto a small loft above the casting floor. It didn't feel abandoned at all. Every tool was racked and labeled, oiled, ready for a workday that had simply never come. Pinned to the bench, in the same steady hand as the note, were a few lines. They named whoever found this room its steward, not its owner. Nobody said anything for a moment. Then Sam picked up a rag and started wiping down the nearest bench, like there was suddenly a job to do. Idris read the note twice. Nora just looked around at all of it, waiting for them, the way it seemed Josiah Vane had somehow known someone would.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_secret",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Steward of the Loft"
+   }
+  },
+  {
+   "id": "n_end_hero",
+   "body": "They carried the charter and the ledger down to Thistledown together. It didn't take long for people to understand what they were looking at. Old Weaver told the town the plain truth. Josiah Vane hadn't vanished in shame. He'd stepped back rather than let his bell be rushed by people who didn't care about doing it right. By evening, someone had climbed up and set the tuning board true at last. The bell rang out clean over the rooftops, for the first time in years. Nora, Sam, and Idris stood in the yard listening. They were no longer three kids with a secret. They were the ones who'd brought a whole town's memory back.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_hero",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Town Remembers"
+   }
+  },
+  {
+   "id": "n_end_keepsake",
+   "body": "They left the charter, the ledger, and the chisel exactly where they lay. None of it was theirs to carry off, and all three of them knew it without needing to say so. What they took instead was simpler: the whole shape of his story, pieced together over one long evening. They understood it now in a way no one else in Thistledown had bothered to learn. Idris locked the vault door behind them, gentle as closing a book. Full dark had settled over the foundry yard by the time they stepped out, and Nora, Sam, and Idris made a quiet pact on the steps. They would hold Josiah Vane's memory close, just among themselves, exactly the way he'd have wanted something true kept.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_keepsake",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Keeping the Story Close"
+   }
+  },
+  {
+   "id": "n_end_caught",
+   "body": "Sam had the chisel half into his bag before a thin wire near the shelf caught his ankle, and out in the yard a hand bell rang loud and sudden, Vane's own trip-alarm, decades old and still working. Sam's fingers stopped on the strap, chisel half in, half out. This wasn't why they'd come, and he knew it before anyone said a word. He was already sliding the chisel home when Old Weaver's boots sounded on the stair. The keeper studied Nora, Sam, and Idris without a word, then nodded at the shelf. “Put it right and go home,” he said, not unkind. They did, walking out lighter than they'd walked in, the foundry's door still open to them another day.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_caught",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Caught by the Bell"
+   }
+  }
+ ]
+}
