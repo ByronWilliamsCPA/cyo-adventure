@@ -1,0 +1,353 @@
+{
+  "n_open": {
+    "c_open": {
+      "action": "read_the_pinned_farewell_note_together",
+      "action_family": "INFORMATION",
+      "reasoning_kind": "PERCEIVE",
+      "target_role": "INFORMATION",
+      "tradeoff": "NONE",
+      "consequence": "KNOWLEDGE",
+      "stake": "NOTHING"
+    }
+  },
+  "n_start": {
+    "c_examine": {
+      "action": "work_the_long_short_peal_code_on_the_note",
+      "action_family": "INFORMATION",
+      "reasoning_kind": "MATCH",
+      "target_role": "INFORMATION",
+      "tradeoff": "SPEED_VS_INFO",
+      "consequence": "KNOWLEDGE",
+      "stake": "NOTHING"
+    },
+    "c_door": {
+      "action": "scout_the_foundry_walls_for_his_old_routes",
+      "action_family": "SEARCH",
+      "reasoning_kind": "PERCEIVE",
+      "target_role": "LOCATION",
+      "tradeoff": "PRIDE_VS_HELP",
+      "consequence": "KNOWLEDGE",
+      "stake": "NOTHING"
+    },
+    "c_keeper": {
+      "action": "ask_the_last_bell_ringer_what_he_remembers",
+      "action_family": "SOCIAL",
+      "reasoning_kind": "NEGOTIATE",
+      "target_role": "PERSON",
+      "tradeoff": "PRIDE_VS_HELP",
+      "consequence": "ACCESS",
+      "stake": "NOTHING"
+    }
+  },
+  "n_note": {
+    "c_note_key": {
+      "action": "search_the_loose_flue_grate_for_the_spare_foundry_key",
+      "action_family": "SEARCH",
+      "reasoning_kind": "PERCEIVE",
+      "target_role": "OBJECT",
+      "tradeoff": "CERTAINTY_VS_TIME",
+      "consequence": "ACCESS",
+      "stake": "NOTHING"
+    },
+    "c_note_inside": {
+      "action": "go_straight_in_on_the_plain_reading",
+      "action_family": "NAVIGATION",
+      "reasoning_kind": "NONE",
+      "target_role": "LOCATION",
+      "tradeoff": "CERTAINTY_VS_TIME",
+      "consequence": "ACCESS",
+      "stake": "NOTHING"
+    }
+  },
+  "n_door": {
+    "c_door_force": {
+      "action": "spot_the_hidden_catch_on_his_worn_low_route",
+      "action_family": "SEARCH",
+      "reasoning_kind": "PERCEIVE",
+      "target_role": "BARRIER",
+      "tradeoff": "NONE",
+      "consequence": "ACCESS",
+      "stake": "NOTHING"
+    },
+    "c_door_window": {
+      "action": "spot_the_high_route_he_used_rarely",
+      "action_family": "SEARCH",
+      "reasoning_kind": "PERCEIVE",
+      "target_role": "BARRIER",
+      "tradeoff": "NONE",
+      "consequence": "ACCESS",
+      "stake": "NOTHING"
+    }
+  },
+  "n_keeper": {
+    "c_keeper_enter": {
+      "action": "follow_the_bell_ringer_in_through_the_casting_floor_door",
+      "action_family": "NAVIGATION",
+      "reasoning_kind": "NONE",
+      "target_role": "LOCATION",
+      "tradeoff": "SPEED_VS_INFO",
+      "consequence": "ACCESS",
+      "stake": "NOTHING"
+    },
+    "c_keeper_story": {
+      "action": "stay_for_the_bell_ringers_memory_of_the_founder",
+      "action_family": "SOCIAL",
+      "reasoning_kind": "NEGOTIATE",
+      "target_role": "PERSON",
+      "tradeoff": "SPEED_VS_INFO",
+      "consequence": "KNOWLEDGE",
+      "stake": "NOTHING"
+    }
+  },
+  "n_keyhunt": {
+    "c_keyhunt_in": {
+      "action": "let_yourselves_in_with_the_found_key",
+      "action_family": "NAVIGATION",
+      "reasoning_kind": "NONE",
+      "target_role": "LOCATION",
+      "tradeoff": "NONE",
+      "consequence": "ACCESS",
+      "stake": "NOTHING"
+    }
+  },
+  "n_keeper_story": {
+    "c_story_in": {
+      "action": "carry_his_reason_for_leaving_inside",
+      "action_family": "NAVIGATION",
+      "reasoning_kind": "NONE",
+      "target_role": "LOCATION",
+      "tradeoff": "NONE",
+      "consequence": "ACCESS",
+      "stake": "NOTHING"
+    }
+  },
+  "n_window": {
+    "c_window_in": {
+      "action": "commit_to_the_drop_from_the_high_window",
+      "action_family": "PHYSICAL_RISK",
+      "reasoning_kind": "EXERT",
+      "target_role": "BARRIER",
+      "tradeoff": "SAFETY_VS_REWARD",
+      "consequence": "ACCESS",
+      "stake": "NOTHING"
+    }
+  },
+  "n_inside": {
+    "c_inside_stairs": {
+      "action": "take_the_stair_wing_he_climbed_daily",
+      "action_family": "NAVIGATION",
+      "reasoning_kind": "NONE",
+      "target_role": "LOCATION",
+      "tradeoff": "NONE",
+      "consequence": "LOCATION",
+      "stake": "NOTHING"
+    },
+    "c_inside_study": {
+      "action": "take_the_pattern_room_where_he_thought",
+      "action_family": "NAVIGATION",
+      "reasoning_kind": "NONE",
+      "target_role": "LOCATION",
+      "tradeoff": "NONE",
+      "consequence": "LOCATION",
+      "stake": "NOTHING"
+    },
+    "c_inside_pendulum": {
+      "action": "take_the_bell_frame_crossing_he_once_risked",
+      "action_family": "NAVIGATION",
+      "reasoning_kind": "NONE",
+      "target_role": "LOCATION",
+      "tradeoff": "NONE",
+      "consequence": "LOCATION",
+      "stake": "NOTHING"
+    },
+    "c_inside_basement": {
+      "action": "take_the_casting_floor_depths_he_built_from",
+      "action_family": "NAVIGATION",
+      "reasoning_kind": "NONE",
+      "target_role": "LOCATION",
+      "tradeoff": "NONE",
+      "consequence": "LOCATION",
+      "stake": "NOTHING"
+    }
+  },
+  "n_stairs": {
+    "c_stairs_face": {
+      "action": "carry_the_recovered_piece_up_to_the_clock",
+      "action_family": "NAVIGATION",
+      "reasoning_kind": "NONE",
+      "target_role": "LOCATION",
+      "tradeoff": "NONE",
+      "consequence": "PROGRESS",
+      "stake": "NOTHING"
+    }
+  },
+  "n_study": {
+    "c_study_face": {
+      "action": "leave_the_records_and_press_on_to_the_clock",
+      "action_family": "NAVIGATION",
+      "reasoning_kind": "NONE",
+      "target_role": "LOCATION",
+      "tradeoff": "SPEED_VS_INFO",
+      "consequence": "PROGRESS",
+      "stake": "NOTHING"
+    },
+    "c_study_logs": {
+      "action": "stay_and_read_the_founders_records",
+      "action_family": "INFORMATION",
+      "reasoning_kind": "PERCEIVE",
+      "target_role": "INFORMATION",
+      "tradeoff": "SPEED_VS_INFO",
+      "consequence": "KNOWLEDGE",
+      "stake": "TIME"
+    }
+  },
+  "n_pendulum": {
+    "c_pendulum_oil": {
+      "action": "cross_the_tallow_slick_bell_frame_catwalk_for_the_keepsake",
+      "action_family": "PHYSICAL_RISK",
+      "reasoning_kind": "EXERT",
+      "target_role": "BARRIER",
+      "tradeoff": "SAFETY_VS_REWARD",
+      "consequence": "RESOURCE",
+      "stake": "TIME"
+    },
+    "c_pendulum_giveup": {
+      "action": "judge_the_catwalk_not_worth_it_and_turn_back",
+      "action_family": "PHYSICAL_RISK",
+      "reasoning_kind": "INFER",
+      "target_role": "BARRIER",
+      "tradeoff": "SAFETY_VS_REWARD",
+      "consequence": "SAFETY",
+      "stake": "ACCESS"
+    }
+  },
+  "n_basement": {
+    "c_basement_face": {
+      "action": "carry_the_recovered_piece_straight_up_to_the_clock",
+      "action_family": "NAVIGATION",
+      "reasoning_kind": "NONE",
+      "target_role": "LOCATION",
+      "tradeoff": "NONE",
+      "consequence": "PROGRESS",
+      "stake": "NOTHING"
+    }
+  },
+  "n_clockface": {
+    "c_face_correct": {
+      "action": "read_the_long_short_peal_phrase_and_set_the_clock",
+      "action_family": "CRAFT",
+      "reasoning_kind": "MATCH",
+      "target_role": "MECHANISM",
+      "tradeoff": "EFFORT_VS_SHORTCUT",
+      "consequence": "ACCESS",
+      "stake": "NOTHING"
+    },
+    "c_face_jam": {
+      "action": "force_the_setting_by_hand",
+      "action_family": "PHYSICAL_RISK",
+      "reasoning_kind": "EXERT",
+      "target_role": "MECHANISM",
+      "tradeoff": "EFFORT_VS_SHORTCUT",
+      "consequence": "ACCESS",
+      "stake": "ACCESS"
+    },
+    "c_face_panel": {
+      "action": "search_behind_the_clock_face_for_another_answer",
+      "action_family": "SEARCH",
+      "reasoning_kind": "PERCEIVE",
+      "target_role": "MECHANISM",
+      "tradeoff": "SPEED_VS_INFO",
+      "consequence": "KNOWLEDGE",
+      "stake": "NOTHING"
+    },
+    "c_face_random": {
+      "action": "guess_a_setting_at_random",
+      "action_family": "CRAFT",
+      "reasoning_kind": "NONE",
+      "target_role": "MECHANISM",
+      "tradeoff": "EFFORT_VS_SHORTCUT",
+      "consequence": "ACCESS",
+      "stake": "ACCESS"
+    }
+  },
+  "n_setcorrect": {
+    "c_correct_vault": {
+      "action": "step_through_into_the_chamber",
+      "action_family": "NAVIGATION",
+      "reasoning_kind": "NONE",
+      "target_role": "LOCATION",
+      "tradeoff": "NONE",
+      "consequence": "ACCESS",
+      "stake": "NOTHING"
+    }
+  },
+  "n_setjam": {
+    "c_jam_oil": {
+      "action": "release_the_cradle_safety_catch_and_ease_it_back_to_rest",
+      "action_family": "CRAFT",
+      "reasoning_kind": "EXERT",
+      "target_role": "MECHANISM",
+      "tradeoff": "NONE",
+      "consequence": "ACCESS",
+      "stake": "NOTHING"
+    },
+    "c_jam_stuck": {
+      "action": "call_the_night_off_at_the_jammed_mechanism",
+      "action_family": "TEMPORAL",
+      "reasoning_kind": "NONE",
+      "target_role": "SELF",
+      "tradeoff": "NONE",
+      "consequence": "KNOWLEDGE",
+      "stake": "ACCESS"
+    }
+  },
+  "n_backpanel": {
+    "c_panel_vault": {
+      "action": "read_the_smaller_peal_note_toward_the_chamber",
+      "action_family": "INFORMATION",
+      "reasoning_kind": "MATCH",
+      "target_role": "INFORMATION",
+      "tradeoff": "NONE",
+      "consequence": "ACCESS",
+      "stake": "NOTHING"
+    },
+    "c_panel_secret": {
+      "action": "read_the_smaller_peal_note_the_other_way",
+      "action_family": "INFORMATION",
+      "reasoning_kind": "MATCH",
+      "target_role": "INFORMATION",
+      "tradeoff": "NONE",
+      "consequence": "LOCATION",
+      "stake": "NOTHING"
+    }
+  },
+  "n_vault": {
+    "c_vault_share": {
+      "action": "give_his_letter_back_to_the_settlement",
+      "action_family": "MORAL",
+      "reasoning_kind": "NONE",
+      "target_role": "PERSON",
+      "tradeoff": "PRIVACY_VS_RECOGNITION",
+      "consequence": "REPUTATION",
+      "stake": "NOTHING"
+    },
+    "c_vault_keep": {
+      "action": "keep_his_memory_among_the_friends",
+      "action_family": "MORAL",
+      "reasoning_kind": "NONE",
+      "target_role": "SELF",
+      "tradeoff": "PRIVACY_VS_RECOGNITION",
+      "consequence": "RELATIONSHIP",
+      "stake": "NOTHING"
+    },
+    "c_vault_grab": {
+      "action": "take_the_chambers_treasure_for_yourselves",
+      "action_family": "MORAL",
+      "reasoning_kind": "NONE",
+      "target_role": "OBJECT",
+      "tradeoff": "SAFETY_VS_REWARD",
+      "consequence": "RESOURCE",
+      "stake": "STANDING"
+    }
+  }
+}

@@ -57,7 +57,7 @@ omits what readers respond to**, and each needs re-specifying rather than re-sch
 | D-2 | Replicate on a production-eligible graph | Does any of this survive off a 26-node outlier? The catalog median is 151 nodes and the pilot graph is not production-eligible. | Repeat the winning arm on a median-size 10-13 skeleton, same protocol, same instrument. | 2 fills, 2 raters | The effect vanishes or inverts at production scale. | queued |
 | D-3 | DecisionSignature v2 over the contracts | Can a richer vocabulary agree with readers instead of inverting them? | Added `reasoning_kind` (compute, match, recall, infer, perceive, negotiate, exert) and `stake` (nothing, time, resource, access, standing, permanent) plus the three `AL-193` gaps, and re-annotated the three plans blind. | 2 annotators over 3 plans | Hit its own falsifier: still ranks the treatment pair as the more repetitive one. Annotator A 0 of 6 fields agreeing with readers, annotator B 1 of 6. `reasoning_kind` inverts under both (0.929 against 1.000, and 0.857 against 0.964). Not a reliability failure: kappa between the two annotators is 0.77 to 0.81 on `reasoning_kind` and 0.72 on `stake`, both clear of the floor. The new fields are labellable and do not discriminate. | **done, NEGATIVE** |
 | D-3b | Same vocabulary over contract **plus binding** | Is the inversion a vocabulary problem or a layer problem? The contracts describe `n_clockface` as "answer the test on its own terms" and "fit the piece the way the diagram shows", which Rule 2 correctly calls one decision; the mechanic readers responded to lives in the binding (`clock_arithmetic`, `rhythm_code`, `pictogram_code`). | Identical annotation pass with each plan's bound devices attached. | 1 to 2 annotators over 3 plans | Ordering still inverts with the binding visible, which would mean the discriminating property is not in the plan at all and only the filled prose carries it. Did not fire. | **done, POSITIVE, 1 annotator** |
-| D-3c | Confirm D-3b with a second blind annotator | Is D-3b reproducible, and does it survive a subset fixed in advance? | Second independent annotator, same three bundles, same brief. Analysis pre-registered below before the labels exist. | 1 annotator over 3 plans | The second annotator's `reasoning_kind` does not separate the pairs in the readers' direction over the pre-registered fork subset. | queued |
+| D-3c | Confirm D-3b with a second blind annotator | Is D-3b reproducible, and does it survive a subset fixed in advance? | Second independent annotator, same three bundles, same brief. Analysis pre-registered below before the labels exist. | 1 annotator over 3 plans | The second annotator's `reasoning_kind` does not separate the pairs in the readers' direction over the pre-registered fork subset. Did not fire, but the margin nearly vanished. | **done, PARTIAL** |
 | D-4 | Solution-transfer metric | Is the item that actually discriminated computable from a plan, rather than only ratable by a reader? | Formalise "these two puzzles resolve by the same operation to the same answer" against the three existing contracts, and check it reproduces the raters' Q6 ordering (4,4 against 3,3). | deterministic, no model | It cannot reproduce the known ordering on the pair we have already rated. | queued |
 | D-5 | Rate the discarded contaminated arm as a negative control | Does the six-question instrument correctly detect a pair we know is contaminated? | The 14-of-24 shared-prop binding is preserved. Feed `filled_V5b` to fresh blind raters and confirm it scores worse than `filled_V5c` on Q6. | 2 raters | The instrument cannot separate a known-contaminated pair from a clean one, which would invalidate every rating taken with it. | queued |
 
@@ -97,6 +97,39 @@ is fixed here first.
 2. The entry forks are expected to invert again. That is the scenery-leak prediction, and its
    failing would itself be informative.
 3. Nothing else will be reported as a headline. Any further slicing is exploratory and labelled so.
+
+### D-3c result: the direction replicates, the magnitude does not
+
+| Pre-registered measure | Annotator C | Annotator D |
+| --- | --- | --- |
+| `reasoning_kind`, puzzle chain, control | 1.000 | 0.333 |
+| `reasoning_kind`, puzzle chain, treatment | 0.000 | 0.167 |
+| Primary verdict | agrees with readers | agrees with readers |
+| Entry forks (predicted to invert) | inverts | inverts |
+| All 28 options, `reasoning_kind` | agrees (0.857 / 0.750) | tied (0.750 / 0.750) |
+
+**The pre-registered primary passed under both annotators, and the scenery-leak prediction held
+under both.** That is the honest positive. But annotator C separated the pairs 1.000 against 0.000
+and annotator D only 0.333 against 0.167, and over the full option set D's `reasoning_kind` ties
+rather than agreeing. A result that survives replication in sign but loses most of its magnitude is
+not yet a metric.
+
+**The cause is localised and nameable.** Inter-annotator kappa on `reasoning_kind` is 1.000 on the
+arithmetic plan and 0.919 on the pictogram plan, but **0.719 on the rhythm plan**. The two
+annotators split on one judgement: is "read each pull as long or short and let the repeating phrase
+spell out the setting" `COMPUTE` or `MATCH`? C said `COMPUTE`, D said `MATCH`. Both readings are
+defensible, and that single call drives most of C's clean separation, because it decides whether the
+control's two books share a reasoning kind or not.
+
+So the v2 vocabulary has an underspecified boundary exactly where the construct does its work:
+**decoding a symbolic notation** sits between "derive a value by rule" and "compare against a
+pattern", and the definitions do not say which.
+
+**A warning about the obvious next move.** Sharpening the boundary would resolve the ambiguous case
+in whichever direction the sharpening is written, and the direction that rescues the clean result is
+the one a motivated author would choose. Any such rule must therefore be treated as a *reliability*
+fix and must not be reported as re-confirming the hypothesis on these same three plans, which would
+be circular. Re-testing validity requires artifacts this vocabulary has never seen, which is D-2.
 
 ## B. Architectures that do not depend on the broken instrument
 
