@@ -1071,6 +1071,42 @@ and stripping setting nouns would separate books by embedding distance. Our resu
 separation would be small, because the acts remain the same after noun-stripping, but we have not
 run it.
 
+## 16b. A separate question, answered along the way: does the prose deliver the plan?
+
+Our architecture has carried an unverified assumption since we adopted skeletons. The pipeline
+checks that a book's graph is valid, that its prose is safe and age-appropriate, and that the
+authoring shell survived intact. **Nothing checked whether a scene actually establishes the facts
+its plan obliged it to establish.** A node could promise "the friends are now inside" and deliver a
+paragraph that never gets them in, and every gate would pass.
+
+We had one book judged blind against all 49 of its obligations.
+
+| Verdict | Count |
+| --- | --- |
+| Delivered | 44 |
+| Partial | 5 |
+| Missing | 0 |
+| Contradicted | 0 |
+
+**The assumption holds.** Nothing missing, nothing contradicted, including the structurally awkward
+cases: the two merge points where several paths converge and the node may only assume what every
+path guarantees, and all eight endings.
+
+One of the five partials is a genuine reader-facing defect and would not have been found any other
+way. The book's finale requires a grasp of its code, and two of its four exploration rooms teach
+that code while the other two do not. A child entering the finale through the wrong two rooms
+arrives holding a pattern with no way to use it. **That is path-dependent under-preparation, and no
+whole-book measure can see it**, because the book as a whole plainly does teach the code.
+
+We also tried to do this deterministically first, and report the failure because the cheap version
+is tempting. A lexical measure comparing each obligation's definition against the prose of the node
+meant to establish it scored **precision 0.167 and recall 0.600** against the judged pass. The
+misses are the diagnosis: both scored above zero, because lexical overlap tracks whether a node is
+*about* the right subject, while the failures that matter are nodes about the right subject that
+never close the obligation. Verifying an obligation is a paraphrase problem. "The friends stand
+past the tower's seal" is delivered by a boot on a drainpipe bracket and a hand on a sill, and no
+word-overlap measure reaches that.
+
 ## 17. Corrections to Part I
 
 - **5.3's "untested cell" has been tested**, and the result is not the simple one either reading

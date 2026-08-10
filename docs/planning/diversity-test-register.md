@@ -177,7 +177,40 @@ similar opening premise and still won on decision repetition.
 | M-2 | World-graph tours | in-house | A graph is a *world*, not a book; a book is a validated subgraph tour. The catalog already holds graphs at 677, 551 and 250 nodes. | Take the largest 10-13 graph, cut two disjoint tours by hand, fill both, rate. Tests coherence as much as diversity. | Tours read as incoherent, because the large graphs were authored assuming roughly linear progression rather than as worlds. | queued |
 | Q-2 | Cross-skeleton recombination | framework Q2 | Subtree grafting is the only mechanism that has ever cleared the anti-clone floor, and has never been evaluated for reader-perceived distinctness or coherence cost. | Graft subtrees between two catalog graphs, fill, rate for distinctness and for coherence damage. | Grafts read as incoherent, or as no more distinct than a plain sibling pair. | queued |
 | Q-3 | How close is the skeleton-free path | framework Q3, brief 5.3 | Named the cheapest outstanding experiment before this programme started, and never run. | Per brief section 5.3. | The skeleton-free path produces structurally invalid graphs at a rate that no gate can absorb. | queued |
-| Q-5 | Does the fill match its contract | framework Q5 | Nothing verifies finished prose against the node obligations it was written to satisfy. This is S4's unaddressed second weakness and it is independent of everything else here. | Check each filled node against its contract's `establishes` and `forbids`. | Fills already satisfy their contracts, making the check redundant. | queued |
+| Q-5 | Does the fill match its contract | framework Q5 | Nothing verifies finished prose against the node obligations it was written to satisfy. This is S4's unaddressed second weakness and it is independent of everything else here. | One model pass judging entailment over all 49 obligations of one book, plus a deterministic lexical triage scored against it. | Fired in the useful direction: fills do substantially satisfy their contracts, so the interesting result is that a deterministic check cannot verify it. | **done** |
+
+### Q-5 result: the fills are faithful, and only a model can tell you so
+
+A blind pass judged every one of the 49 `(node, obligation)` pairs of one book against its prose.
+
+| Verdict | Count |
+| --- | --- |
+| DELIVERED | 44 |
+| PARTIAL | 5 |
+| MISSING | 0 |
+| CONTRADICTED | 0 |
+
+Nothing is missing or contradicted, including the hard cases: the two multi-parent merges, the
+four-way room split, and all eight endings. **S4's unaddressed second weakness turns out not to be
+a defect in practice**, at least on this book, which is a real answer to a question that has been
+open since the skeleton architecture was adopted.
+
+The five partials are specific and worth fixing rather than dismissing:
+
+- `logic_earned` at `n_stairs` and `n_pendulum`. Two of the four exploration rooms do not teach the
+  dial's arithmetic the way the other two do, so a reader entering the finale by those paths carries
+  a pattern with no way to convert it. This is **path-dependent under-preparation**, invisible to
+  any whole-book measure, and it is the only finding here with a direct reader consequence.
+- `dial_test_live` at `n_clockface`. The plate states what to set but never that guessing costs
+  anything; the stated cost belongs to forcing, a different option.
+- `trust_bond_formed` at two of its three endings, where the bond is implied rather than made.
+
+**The deterministic triage failed against this ground truth**, and the numbers are worth recording
+because they set expectations for anyone tempted by the cheap version: precision 0.167, recall
+0.600. It flags 18 obligations, of which 3 are real, and misses 2 of the 5. The two misses both
+scored *above* zero, which is the diagnosis: lexical support tracks whether a node is about the
+right subject, and the failures that matter are nodes about the right subject that do not close
+the obligation. `scripts/check_fill_fidelity.py` is kept as a reading order and cannot gate.
 
 ## C. Architectures gated on D-3
 

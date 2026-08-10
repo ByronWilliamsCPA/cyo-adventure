@@ -36,11 +36,21 @@ call it giving up... nobody looked over their shoulder twice"). **All three
 deliver their obligation perfectly and share no vocabulary with its
 definition.** Precision at zero support was 0 of 3 on its first sample.
 
-So the claim is withdrawn. Roughly a third of obligations score zero here and
-the sampled ones were all correct, which means this measure **must not gate
-anything** and `--check` is deliberately absent. Verifying an obligation is a
-paraphrase problem: "past the seal" is delivered by a boot on a drainpipe
-bracket, and no lexical measure reaches that.
+So the claim is withdrawn. Scored against a full model-judged pass over the
+same 49 obligations, this measure runs **precision 0.167 and recall 0.600**:
+it flags 18, of which 3 are real, and misses 2 of the 5 genuine problems.
+That is why it **must not gate anything** and why `--check` is deliberately
+absent. Verifying an obligation is a paraphrase problem: "past the seal" is
+delivered by a boot on a drainpipe bracket, and no lexical measure reaches
+that.
+
+The two misses are the instructive ones, because both scored *above* zero
+while being real defects: `n_clockface.dial_test_live` at 0.30 (the node
+states what to set but never that guessing costs anything) and
+`n_end_hero.trust_bond_formed` at 0.11 (the ending dramatises the keeper's
+trust in the friends, not the friends' trust in each other). Lexical support
+tracks whether a node is *about* the right subject, and the failures that
+matter are nodes about the right subject that do not close the obligation.
 
 What survives is narrow. The score is comparable *across arms of one
 experiment*, where the books are written from a shared fact vocabulary, so a
