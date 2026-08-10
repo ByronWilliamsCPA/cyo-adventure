@@ -4077,10 +4077,25 @@ at the units or the meaning of the <code>t=</code> value rather than at elapsed 
 verification succeeded and we did not record it</em>, and no amount of origin-side or edge-side logging
 distinguishes those two, because both produce the same absence on our side. Read the parent's inbox
 as a third log, alongside the origin and the edge. It is the only one written by the vendor.</p>
-<p>The state it documents is the one the insert-before-send ordering was built for: four adults are
-verified as far as Epic is concerned, and this application holds zero consent records. The rows
-still name the attempts, which is exactly what stops each of these being unattributable forever, so
-the ordering did its job even though nothing resolved.</p>
+<p><strong>This third log exists in Test only, and its absence in production is a gap rather than a
+detail.</strong> We can read the mailbox here for one reason: Epic requires the Test address to be an
+organization developer or admin address, or an alias of one, so the parent and the operator are the
+same person by construction. In production they are not, the mailbox belongs to a stranger, and
+nothing in it is queryable by us.</p>
+<p>Carry the consequence forward rather than the technique. In production, a verification that succeeds
+at KWS whose webhook never arrives leaves <strong>no signal on any log we can read</strong>: the origin log has
+nothing, the edge log has nothing once the rule is right, and the parent holds a confirmation email
+saying we were told. The only surviving trace is a <code>kws_verification</code> row resting at <code>sent</code> forever,
+which is precisely why that row is written and committed before the outbound call. Gate 2 and Gate 3
+therefore owe a mechanism that treats a long-unresolved <code>sent</code> row as an alert rather than as
+silence, because in production that row is the entire detection surface. Do not let a Test run's
+easy confirmation stand in for building it.</p>
+<p>The state all of this documents is the one the insert-before-send ordering was built for: four
+verifications are complete as far as Epic is concerned, and this application holds zero consent
+records. Four verifications, not four adults: every run used the same operator address, which is
+the same constraint that makes the mailbox readable at all. The rows still name the attempts, which
+is exactly what stops each of these being unattributable forever, so the ordering did its job even
+though nothing resolved.</p>
 <p>Two cautions the email itself raises:</p>
 <ul>
 <li><strong>Its "KWS will remember you have verified your age the next time you use this email" line is
@@ -4120,7 +4135,7 @@ mitigated one.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 10, 2026 18:49:44 UTC">August 10, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 10, 2026 19:55:22 UTC">August 10, 2026</span>
   </span>
 
     
