@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.74.1] - 2026-08-10
+
+### Bug Fixes
+
+- **consent**: Read the KWS webhook timestamp in the unit KWS sends
+  ([#675](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/675),
+  [`1c5e26f`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/1c5e26fe8bd66d020c324ef65a9baeffaf7502e2))
+
+
 ## [0.74.0] - 2026-08-10
 
 ### Features
@@ -3339,6 +3348,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.74.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.74.0...v0.74.1
 [0.74.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.73.0...v0.74.0
 [0.73.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.72.0...v0.73.0
 [0.72.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.71.0...v0.72.0
