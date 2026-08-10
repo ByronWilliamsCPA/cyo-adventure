@@ -265,20 +265,20 @@ class TestVerifyWebhookSignature:
             )
 
     @pytest.mark.unit
-    # The third offset turns `_NOW` seconds into `_NOW` MILLISECONDS, which is
-    # the shape a unit mismatch actually takes on the wire rather than an
-    # arbitrary large number.
-    @pytest.mark.parametrize("offset", [-301, 301, _NOW * 1000 - _NOW])
+    @pytest.mark.parametrize("offset", [-301, 301])
     def test_window_rejection_measures_the_skew_it_rejected(self, offset: int) -> None:
-        """The reason label alone cannot separate three different faults.
+        """The reason label alone cannot separate the remaining faults.
 
-        A few seconds of skew is our own clock drifting, minutes to hours is a
-        replay or a queued redelivery, and a value near 1.8e12 is a sender
-        emitting milliseconds where this compares seconds. Those need an NTP
-        fix, an investigation, and a code change respectively, so shipping only
-        ``timestamp_outside_window`` forces a guess. The third parameter is
-        that millisecond case, which is the hypothesis a KWS Test delivery
-        raised on 2026-08-10 and which this measurement exists to settle.
+        A few seconds of skew is our own clock drifting and needs NTP; minutes
+        to hours is a replay or a queued redelivery and needs investigating.
+        Shipping only ``timestamp_outside_window`` forces a guess between them.
+
+        This test used to carry a third case, a millisecond-shaped value, on
+        the hypothesis that it would surface here as enormous skew. A KWS Test
+        delivery on 2026-08-10 confirmed the units and the verifier now accepts
+        them, so that case moved to
+        ``test_millisecond_timestamps_are_accepted_as_fresh``. The measurement
+        stays because it is what settled the question.
         """
         timestamp = _NOW + offset
         header = _header(timestamp=timestamp)
@@ -316,6 +316,98 @@ class TestVerifyWebhookSignature:
         extras = {key: value for key, value in details.items() if key != "reason"}
         assert extras
         assert all(isinstance(value, int) for value in extras.values())
+
+    @pytest.mark.unit
+    def test_millisecond_timestamps_are_accepted_as_fresh(self) -> None:
+        """The regression this whole change exists to prevent.
+
+        KWS sends ``t=`` in milliseconds and documents no unit anywhere. Read
+        as seconds, a delivery half a second old measures as roughly 56,000
+        years of skew and is rejected, which is what happened to every Gate 1
+        Test delivery on 2026-08-10. The failure is quiet in the worst way: the
+        parent verifies successfully at the vendor, we record nothing, and no
+        log anyone can read says a verification was lost.
+        """
+        # The literal shape observed on the wire, not a synthetic round number,
+        # so this fails if someone "tidies" the band edges past it.
+        now_ms = 1_786_390_879_601
+        window = FreshnessWindow(now=now_ms // 1000, max_skew_seconds=_SKEW)
+        header = _header(timestamp=now_ms)
+
+        parsed = verify_webhook_signature(
+            header=header, body=_BODY, secret=_SECRET, window=window
+        )
+
+        assert parsed.unit == "ms"
+        assert parsed.epoch_seconds == now_ms // 1000
+
+    @pytest.mark.unit
+    def test_second_timestamps_are_still_accepted(self) -> None:
+        """Tolerating milliseconds must not drop the other unit.
+
+        Nothing in Epic's documentation commits to a unit, so the observed one
+        is a fact about one environment on one day, not a contract. Rejecting
+        seconds to "fix" the bug would just move the silent-failure mode from
+        today's sender to tomorrow's.
+        """
+        parsed = verify_webhook_signature(
+            header=_header(timestamp=_NOW), body=_BODY, secret=_SECRET, window=_WINDOW
+        )
+
+        assert parsed.unit == "s"
+        assert parsed.epoch_seconds == _NOW
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize("timestamp", [0, 1, 999_999_999, 10_000_000_000])
+    def test_timestamp_in_neither_band_is_malformed_not_stale(
+        self, timestamp: int
+    ) -> None:
+        """A value that cannot be a date must not be reported as skew.
+
+        Reporting it as ``timestamp_outside_window`` sends the reader to check
+        NTP and the retry queue, neither of which is involved. The distinct
+        label is the difference between an hour of investigation and a glance.
+
+        ``10_000_000_000`` is the deliberate hole between the two bands: too
+        large to be seconds, too small to be milliseconds. It has to be
+        rejected rather than silently pulled into whichever band is nearer.
+        """
+        header = _header(timestamp=timestamp)
+
+        with pytest.raises(AuthenticationError) as exc_info:
+            verify_webhook_signature(
+                header=header, body=_BODY, secret=_SECRET, window=_WINDOW
+            )
+
+        details = exc_info.value.details or {}
+        assert details["reason"] == "implausible_timestamp"
+
+    @pytest.mark.unit
+    def test_signed_material_uses_the_verbatim_token_not_the_parsed_int(self) -> None:
+        """What we hash must be the characters KWS hashed.
+
+        ``int("0001786390879601")`` and ``int("1786390879601")`` are equal, so
+        reconstructing the signed string from the parsed value agrees with the
+        sender right up until it does not. Now that the parsed value is
+        reinterpreted by unit, that reconstruction is one refactor away from
+        dividing by 1000 before hashing and invalidating every signature at
+        once, with a ``no_matching_signature`` label pointing at the secret.
+        """
+        padded = "0001786390879601"
+        window = FreshnessWindow(now=int(padded) // 1000, max_skew_seconds=_SKEW)
+        signature = hmac.new(
+            _SECRET.encode(), f"{padded}.".encode() + _BODY, sha256
+        ).hexdigest()
+
+        parsed = verify_webhook_signature(
+            header=f"t={padded},v1={signature}",
+            body=_BODY,
+            secret=_SECRET,
+            window=window,
+        )
+
+        assert parsed.raw_timestamp == padded
+        assert parsed.timestamp == 1_786_390_879_601
 
     @pytest.mark.unit
     @pytest.mark.parametrize("offset", [-300, 0, 300])

@@ -495,6 +495,33 @@ class TestDisclosure:
         assert "tx-1" in rendered
 
     @pytest.mark.unit
+    def test_millisecond_delivery_is_authenticated_end_to_end(
+        self, client: TestClient
+    ) -> None:
+        """The route, not just the verifier, must accept KWS's real wire shape.
+
+        The verifier is unit-tested against milliseconds directly, but the
+        defect on 2026-08-10 lived in the seam: the route builds the freshness
+        window from its own ``time.time()`` in seconds and hands it to a
+        verifier that was comparing raw values. Only a request that travels the
+        whole path exercises that seam, so this asserts on the route.
+        """
+        body = _body()
+        at_ms = int(time.time()) * 1000
+
+        with patch("cyo_adventure.api.kws_webhook.logger") as mock_logger:
+            response = client.post(_URL, content=body, headers=_headers(body, at=at_ms))
+
+        assert response.status_code == 200
+        rendered = _rendered_log_calls(mock_logger)
+        # Authenticated, not merely un-rejected: reaching the parent-verified
+        # line means the signature was checked and passed.
+        assert "kws_parent_verified" in rendered
+        # The unit is reported on the accepted path, because once both units
+        # verify, a sender switching units produces no rejection to alarm on.
+        assert mock_logger.info.call_args_list[0].kwargs["timestamp_unit"] == "ms"
+
+    @pytest.mark.unit
     def test_rejection_body_does_not_name_the_failed_check(
         self, client: TestClient
     ) -> None:
