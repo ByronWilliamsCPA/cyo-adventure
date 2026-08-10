@@ -64,6 +64,8 @@ from typing import Any, cast
 _HARD_EXACT_BUDGET = 0
 _FAMILY_RATE_CEILING = 0.6
 _SEQUENCE_CEILING = 0.6
+_WORST_FORK_CEILING = 0.5
+_TRADEOFF_CEILING = 0.6
 
 
 def _decisions(contract: dict[str, Any]) -> dict[str, dict[str, dict[str, str]]]:
@@ -129,23 +131,52 @@ def compare(
         A (scores, notes) pair.
     """
     a, b = _decisions(left), _decisions(right)
-    shared_nodes = sorted(set(a) & set(b))
+    # #CRITICAL: data-integrity: a node offering ONE option is not a decision, it
+    # is a page turn. Counting them inflates the denominator with non-choices and
+    # lets a mean pass while every real fork is unchanged. Measured live: a
+    # contract pair scored 0.486 aggregate family overlap (inside a 0.6 ceiling)
+    # while its three principal forks sat at 0.67, 0.75 and 0.75 and two forks sat
+    # at 1.00, because six single-option nodes scoring 0.00 dragged the mean down.
+    # Excluding them and weighting by option count puts the same pair at 0.615,
+    # which fails. This is the third instance of a threshold hiding the thing it
+    # was built to catch (see AL-182, AL-186).
+    # #VERIFY: worst_fork_family_rate is reported and gated separately, so a mean
+    # can never again pass on the strength of nodes that ask nothing of the reader.
+    shared_nodes = sorted(
+        n for n in set(a) & set(b) if len(a[n]) > 1 and len(b[n]) > 1
+    )
+    skipped = sorted((set(a) & set(b)) - set(shared_nodes))
     notes: list[str] = []
     if not shared_nodes:
-        return {}, ["no node declares a decisions block in both contracts"]
+        return {}, ["no node declares a multi-option decisions block in both contracts"]
+    if skipped:
+        notes.append(
+            f"  excluded {len(skipped)} single-option node(s), not decisions: "
+            f"{', '.join(skipped)}"
+        )
 
     total_options = 0
     exact = family = tradeoff = consequence = 0
+    worst_family = 0.0
     for node_id in shared_nodes:
         la, lb = a[node_id], b[node_id]
-        total_options += max(len(la), len(lb))
+        options = max(len(la), len(lb))
+        total_options += options
         hits = _best_alignment(la, lb, "action")
         exact += hits
-        family += _best_alignment(la, lb, "action_family")
+        fam_hits = _best_alignment(la, lb, "action_family")
+        family += fam_hits
         tradeoff += _best_alignment(la, lb, "tradeoff")
         consequence += _best_alignment(la, lb, "consequence")
+        rate = fam_hits / float(options)
+        worst_family = max(worst_family, rate)
         if hits:
             notes.append(f"  {node_id}: {hits} option(s) reuse the same concrete action")
+        if rate >= 0.5:
+            notes.append(
+                f"  {node_id}: {fam_hits}/{options} options keep the same action family "
+                f"({rate:.2f})"
+            )
 
     # Ordered sequence: the family of each fork, in node order, compared as a
     # multiset-free ordered signature. A repeated decision program shows up here
@@ -170,6 +201,7 @@ def compare(
             "tradeoff_rate": tradeoff / denom,
             "consequence_rate": consequence / denom,
             "ordered_sequence_rate": seq_match / float(len(shared_nodes) or 1),
+            "worst_fork_family_rate": worst_family,
         },
         notes,
     )
@@ -182,6 +214,25 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--max-exact", type=int, default=_HARD_EXACT_BUDGET)
     parser.add_argument("--max-family-rate", type=float, default=_FAMILY_RATE_CEILING)
     parser.add_argument("--max-sequence-rate", type=float, default=_SEQUENCE_CEILING)
+    parser.add_argument(
+        "--max-worst-fork-family-rate",
+        type=float,
+        default=_WORST_FORK_CEILING,
+        help=(
+            "Ceiling on the single most-unchanged fork. A mean cannot substitute: "
+            "the forks a reader meets first are the ones that decide recognition."
+        ),
+    )
+    parser.add_argument(
+        "--max-tradeoff-rate",
+        type=float,
+        default=_TRADEOFF_CEILING,
+        help=(
+            "Ceiling on repeated tradeoffs. Two options can differ in verb and "
+            "family while offering the reader the identical bargain, which "
+            "external review identified as the failure a surface metric misses."
+        ),
+    )
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args(argv)
 
@@ -190,6 +241,9 @@ def main(argv: list[str] | None = None) -> int:
         for p in args.contracts
     )
     scores, notes = compare(left, right)
+    worst_node = next(
+        (n.strip().split(":")[0] for n in notes if "same action family" in n), ""
+    )
     if not scores:
         for note in notes:
             sys.stderr.write(f"{note}\n")
@@ -210,6 +264,15 @@ def main(argv: list[str] | None = None) -> int:
         breaches.append(
             f"action-family rate {scores['action_family_rate']:.3f} > "
             f"{args.max_family_rate}"
+        )
+    if scores["worst_fork_family_rate"] > args.max_worst_fork_family_rate:
+        breaches.append(
+            f"worst fork ({worst_node or 'n/a'}) family rate "
+            f"{scores['worst_fork_family_rate']:.3f} > {args.max_worst_fork_family_rate}"
+        )
+    if scores["tradeoff_rate"] > args.max_tradeoff_rate:
+        breaches.append(
+            f"tradeoff rate {scores['tradeoff_rate']:.3f} > {args.max_tradeoff_rate}"
         )
     if scores["ordered_sequence_rate"] > args.max_sequence_rate:
         breaches.append(
