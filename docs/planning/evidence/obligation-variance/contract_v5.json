@@ -1,0 +1,1339 @@
+{
+ "narrative_version": 1,
+ "skeleton_slug": "the-clocktower-cipher",
+ "age_band": "10-13",
+ "premise": {
+  "engine": "salvage-and-triage",
+  "dramatic_question": "Will {HEROES} salvage what still matters from {THRESHOLD} before the closing horns seal it for good, and choose rightly what cannot all be saved?",
+  "resolution_space": [
+   "the ledgers teach the crew what the index was really cataloguing, arming a better-prepared second pass",
+   "a page in the ledgers holds a copy of the index, carried home to puzzle over on their own time",
+   "closing time arrives mid-page and the keeper walks them out gently, with a promise to hold the ledgers",
+   "a level look at the crossing convinces them that this piece would cost more than it is worth tonight",
+   "one friend names the real risk aloud and the others agree without argument, calling the retreat the right call",
+   "a slip caught in time turns the attempt into a calm, deliberate pull-back, and the pull-back reads as the sound decision",
+   "the wrong setting trips a safeguard built for exactly this shortcut, freezing the bench until the keeper resets it",
+   "the closing horns sound before the guess lands, and the fit must wait for another day",
+   "the strained mechanism raises a polite fuss that brings the keeper up to end the attempt for the night",
+   "the forced fit binds fast, and nothing the crew carries tonight will free it",
+   "a bent linkage needs a tool the bench clearly expects, and nobody brought one",
+   "the keeper's posted rule ends forcing attempts at nightfall, and the crew honors it as part of the job",
+   "the workshop adopts the friends as its quiet caretakers, a role nobody assigned but everybody means",
+   "some unfinished piece in the room invites their hands, and finishing it becomes their standing task",
+   "the maker's notes name whoever finds the room its keeper, and the friends accept the appointment",
+   "the recovered piece is registered and shown by the settlement, the salvage's public record at last",
+   "the recovered piece quietly restores something the settlement had given up on, proof enough without a fuss",
+   "the recovery earns the keeper's open trust and a standing invitation back to the tower",
+   "a small promise made over the keepsake binds the friends as the ones who know what stayed behind",
+   "everything else goes back exactly as found and is logged honestly; the keepsake alone travels with them",
+   "the maker's letter asks its finders to choose what to keep quiet, and they choose the keepsake",
+   "the strongroom's true safeguard announces the overreach, and the keeper arrives before the door does",
+   "what they try to carry out past the limit is exactly what the safeguard was built to catch",
+   "second thoughts slow them just enough for the keeper's evening rounds to catch them mid-return, ledger in hand"
+  ]
+ },
+ "label_styles": [
+  "terse imperatives, three words where possible",
+  "first-person plural resolves: what we do next",
+  "sensory verb first, object second",
+  "question-forms at decisions, statements at continues",
+  "name the place or thing, let the action stay implied"
+ ],
+ "facts": {
+  "notice_posted": "a clearance notice is posted: the tower will be sealed for renovation, and help is wanted before then",
+  "crew_formed": "the friends form an informal salvage crew; no one works the job alone",
+  "job_undertaken": "the friends commit to doing the actual work, not just reading the notice",
+  "index_studied": "the maker's coded parts-index has been read closely, in the tower's one indexing code",
+  "priority_item_named": "the index names one unfinished project as worth saving first, and a first lead on where to start",
+  "own_way_found": "the friends work out their own way past the building's weak points, unofficially",
+  "keeper_enlisted": "the outgoing keeper agrees to let the friends join the sanctioned clearance crew",
+  "keeper_briefing_earned": "the keeper, satisfied the friends mean to work, briefs them on the maker",
+  "key_found": "searching where the index points turns up a fitting tool, exactly as promised",
+  "maker_history_known": "the keeper's account of the maker's last years is understood",
+  "past_the_door": "the friends are inside the tower on their own steam, no escort needed",
+  "salvage_underway": "the salvage job is properly underway; the friends are past the door, working",
+  "four_zones_known": "four areas of the tower are known to hold scattered pieces: a climb, a study, a crossing, a cellar",
+  "piece_recovered": "a piece of the maker's unfinished mechanism has been recovered, from some zone or other",
+  "archive_tempts": "the study's ledgers pose their own quiet pull: catalogue them properly, or press on",
+  "crossing_tests_nerve": "the crossing is the tower's most exposed salvage run",
+  "prize_glimpsed": "a piece worth the risk waits at the crossing's far end",
+  "at_the_bench": "the friends stand at the maker's old assembly bench, where the pieces must be fitted",
+  "assembly_live": "the bench's own diagram shows plainly how the recovered piece fits, and that forcing it costs something",
+  "assembly_jammed": "forcing the fit jams the mechanism instead of completing it",
+  "assembly_completed": "the mechanism is properly assembled, on the bench's own terms",
+  "second_index_found": "a second, smaller index is found behind the bench",
+  "strongroom_reached": "the friends stand inside the strongroom the bench was guarding",
+  "salvage_inventoried": "what can be salvaged is seen and listed: the maker's letter, a keepsake, and modest settlement property",
+  "carry_limit_understood": "there is no time and no way to carry everything out before the horns seal the room; something must be left",
+  "composure_kept": "the friends leave with their composure intact; the outcome is a result, never a shaming",
+  "salvage_can_resume": "the salvage job can be picked up again; nothing about it is used up",
+  "hidden_workshop_found": "the maker's living workshop is found past the second index",
+  "caretaker_role_earned": "the friends earn an ongoing caretaking role over what they found",
+  "crew_bond_formed": "the shared job forges a lasting trust between the friends",
+  "salvage_registered": "the friends register the recovered piece with the settlement's public collection",
+  "maker_intent_understood": "the maker's reason for leaving the piece unfinished is understood",
+  "salvage_kept_private": "the friends keep the small keepsake among themselves, and log everything else honestly",
+  "ledger_corrected": "whatever was taken is put back and entered honestly in the keeper's ledger",
+  "keeper_catches_them": "the keeper turns up at the moment of temptation, whether the friends meant to be caught or not"
+ },
+ "safety_envelope": {
+  "affect_ceiling": "brisk purpose with mild time pressure and real fondness for the work; tension may tighten but never tips into threat",
+  "forbid_affect": [
+   "despair",
+   "hopelessness",
+   "terror",
+   "humiliation",
+   "cruel_mockery"
+  ],
+  "forbid_facts": [
+   "anyone_injured",
+   "friends_turn_on_each_other",
+   "adult_menaces_children",
+   "theft_rewarded",
+   "gore_of_any_kind"
+  ],
+  "permitted_device_kinds": [
+   "symbol_substitution",
+   "clock_arithmetic",
+   "pictogram_code",
+   "rhythm_code",
+   "tally_cipher",
+   "hidden_key",
+   "forgotten_entrance",
+   "trusted_escort",
+   "concealed_latch",
+   "timed_opening",
+   "service_route",
+   "mechanism_operated",
+   "engraved_numbers",
+   "maker_diagram",
+   "pattern_in_mechanism",
+   "annotated_tool",
+   "calibration_scale",
+   "sorted_collection",
+   "wear_pattern",
+   "shadow_alignment",
+   "maker_relic",
+   "working_mechanism",
+   "written_record",
+   "acoustic_wonder",
+   "scale_model",
+   "light_play",
+   "resident_creature",
+   "heritage_document",
+   "handmade_keepsake",
+   "community_memory",
+   "stiff_mechanism",
+   "narrow_crossing",
+   "timed_passage",
+   "dark_passage",
+   "heavy_barrier",
+   "slick_traverse",
+   "time_pressure",
+   "sound_alarm",
+   "weight_sense",
+   "light_signal",
+   "messenger_creature",
+   "self_closing",
+   "tell_tale_mark",
+   "patience_ritual",
+   "tool_improvised",
+   "consumable_applied",
+   "mechanism_reset",
+   "knowledge_applied",
+   "shared_effort",
+   "unfinished_work",
+   "living_thing_tended",
+   "letter_waiting",
+   "tools_in_order",
+   "season_preserved",
+   "provisions_laid"
+  ],
+  "forbidden_device_kinds": [
+   "weapon",
+   "gore",
+   "cruelty",
+   "theft_rewarded",
+   "adult_menace"
+  ]
+ },
+ "world_recipe": {
+  "requires": {
+   "cipher_forms": {
+    "count": 1,
+    "kinds": [
+     "symbol_substitution",
+     "clock_arithmetic",
+     "pictogram_code",
+     "rhythm_code",
+     "tally_cipher"
+    ],
+    "note": "one indexing code per story, chosen at bind and used consistently from the notice to the bench to the back panel"
+   },
+   "access_details": {
+    "count": 3,
+    "kinds": [
+     "hidden_key",
+     "forgotten_entrance",
+     "trusted_escort",
+     "concealed_latch",
+     "timed_opening",
+     "service_route",
+     "mechanism_operated"
+    ],
+    "note": "one concrete way in per approach branch: the index's named lead and the building's own weak point draw freely; the keeper's branch stays person-mediated"
+   },
+   "cipher_hint_carriers": {
+    "count": 4,
+    "kinds": [
+     "engraved_numbers",
+     "maker_diagram",
+     "pattern_in_mechanism",
+     "annotated_tool",
+     "calibration_scale",
+     "sorted_collection",
+     "wear_pattern",
+     "shadow_alignment"
+    ],
+    "note": "one per salvage zone, drawn freely; unique_within_story gives each book four different carriers, and each carries enough logic that any single zone makes the bench attemptable"
+   },
+   "room_curiosities": {
+    "count": 4,
+    "kinds": [
+     "maker_relic",
+     "working_mechanism",
+     "written_record",
+     "acoustic_wonder",
+     "handmade_keepsake",
+     "scale_model",
+     "light_play",
+     "community_memory",
+     "resident_creature"
+    ],
+    "note": "what makes each zone distinct and worth salvaging beyond its hint"
+   },
+   "vault_contents": {
+    "count": 3,
+    "kinds": [
+     "heritage_document",
+     "handmade_keepsake",
+     "community_memory",
+     "written_record",
+     "maker_relic",
+     "acoustic_wonder"
+    ],
+    "note": "the strongroom holds more than can be carried out; contents are knowledge, heritage, and wonder, any treasure modest and communal, never loot"
+   },
+   "obstacle_kinds": {
+    "count": 1,
+    "kinds": [
+     "narrow_crossing",
+     "timed_passage",
+     "slick_traverse",
+     "dark_passage",
+     "heavy_barrier",
+     "stiff_mechanism"
+    ],
+    "note": "physical difficulty stays honest and non-injurious; failure costs time or a piece, never safety"
+   },
+   "safeguards": {
+    "count": 1,
+    "kinds": [
+     "sound_alarm",
+     "weight_sense",
+     "light_signal",
+     "messenger_creature",
+     "self_closing",
+     "tell_tale_mark"
+    ],
+    "note": "the maker's anti-taking measure; gentle and funny, it embarrasses no one and hurts no one"
+   },
+   "remedies": {
+    "count": 1,
+    "kinds": [
+     "patience_ritual",
+     "tool_improvised",
+     "consumable_applied",
+     "mechanism_reset",
+     "knowledge_applied",
+     "shared_effort"
+    ],
+    "note": "the honest way back from a jam, on the machine's own terms; care, patience, or wit, never strength"
+   },
+   "loft_signatures": {
+    "count": 1,
+    "kinds": [
+     "unfinished_work",
+     "living_thing_tended",
+     "letter_waiting",
+     "tools_in_order",
+     "season_preserved",
+     "provisions_laid"
+    ],
+    "note": "the one detail that makes the maker's hidden workshop feel currently alive rather than preserved"
+   }
+  },
+  "identity_roles": [
+   "HEROES",
+   "KEEPER",
+   "MAKER",
+   "CIPHER",
+   "SETTLEMENT",
+   "VAULT"
+  ],
+  "texture_roles": [
+   "THRESHOLD",
+   "ACCESS_LOW",
+   "ACCESS_HIGH",
+   "OPENER",
+   "STUDY",
+   "HAZARD",
+   "LANDMARK_FACE",
+   "TOKEN",
+   "CIPHER_TOOL",
+   "ARCHIVE",
+   "REMEDY",
+   "MACHINERY",
+   "SECRET_ROOM",
+   "KEEPSAKE",
+   "CLOSING_SIGN",
+   "MECHANISM",
+   "CRAFT"
+  ]
+ },
+ "nodes": {
+  "n_open": {
+   "tier": "open",
+   "function": "post-the-notice",
+   "entry_state": [],
+   "establishes": [
+    "notice_posted",
+    "crew_formed"
+   ],
+   "forbids": [
+    "salvage_underway",
+    "index_studied",
+    "keeper_enlisted"
+   ],
+   "affect": {
+    "target": "brisk purpose, the pull of a job worth doing",
+    "forbid": [
+     "dread",
+     "urgency"
+    ]
+   },
+   "invention": {
+    "cipher_form": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.cipher_forms",
+     "category": "cipher_forms",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the story's one indexing code; every later cataloguing beat renders it consistently"
+    }
+   },
+   "choice_semantics": {
+    "c_open": "read the clearance notice as a job worth taking on together"
+   },
+   "beat_hint": "a clearance notice names the tower's closing date, and the friends decide, as a crew, to help before the seal goes up."
+  },
+  "n_start": {
+   "tier": "open",
+   "function": "choose-a-strategy",
+   "entry_state": [
+    "notice_posted"
+   ],
+   "establishes": [
+    "job_undertaken"
+   ],
+   "forbids": [
+    "salvage_underway",
+    "own_way_found"
+   ],
+   "affect": {
+    "target": "practical energy, weighing which lead pays off fastest",
+    "forbid": [
+     "quarrel",
+     "dread"
+    ]
+   },
+   "constraints": {
+    "offers_must_be": "three genuinely different ways to start the salvage job: study the index, scout your own entry, or ask the keeper to let you join properly",
+    "must_not": "resolve any lead here; the split happens before anyone is inside"
+   },
+   "choice_semantics": {
+    "c_examine": "start with the notice's own coded index: work out what it is really cataloguing",
+    "c_door": "start by scouting the building itself for a working way in, no help needed",
+    "c_keeper": "start by asking the keeper to let the crew join the sanctioned clearance"
+   },
+   "beat_hint": "three different openings to the same job compete: read the index, scout an entrance, or ask to join the crew properly."
+  },
+  "n_note": {
+   "tier": "open",
+   "function": "study-the-index",
+   "entry_state": [
+    "notice_posted"
+   ],
+   "establishes": [
+    "index_studied",
+    "priority_item_named"
+   ],
+   "forbids": [
+    "salvage_underway"
+   ],
+   "affect": {
+    "target": "the satisfaction of a system starting to make sense",
+    "forbid": [
+     "frustration",
+     "dread"
+    ]
+   },
+   "invention": {
+    "access_route": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.access_details",
+     "category": "access_details",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the index names one concrete way in, plus which unfinished project it flags as worth saving first"
+    }
+   },
+   "constraints": {
+    "decode_must_be": "shown on the page in the story's one indexing code, so a reader can follow the cataloguing logic",
+    "must_not": "make the index trivial to read, or make the other two openings look like the weaker choice"
+   },
+   "choice_semantics": {
+    "c_note_key": "chase the index's lead exactly where it points before doing anything else",
+    "c_note_inside": "trust the index's plainest reading and act on it now"
+   },
+   "beat_hint": "the coded index turns out to be a cataloguing system, and working it out points two different ways forward."
+  },
+  "n_door": {
+   "tier": "open",
+   "function": "find-your-own-way",
+   "entry_state": [
+    "notice_posted",
+    "crew_formed"
+   ],
+   "establishes": [
+    "own_way_found"
+   ],
+   "forbids": [
+    "index_studied",
+    "salvage_underway"
+   ],
+   "affect": {
+    "target": "stubborn satisfaction at cracking the building's own weak points",
+    "forbid": [
+     "danger",
+     "guilt"
+    ]
+   },
+   "invention": {
+    "access_route": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.access_details",
+     "category": "access_details",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the building's own overlooked way in; using it reads as resourcefulness, never as damage"
+    }
+   },
+   "constraints": {
+    "entry_must_read": "as clever, independent scouting of a neglected building, not as break-in",
+    "must_not": "carry any indexing knowledge; this branch has not read the notice's code closely"
+   },
+   "choice_semantics": {
+    "c_door_force": "muscle the stiff side door and get in the plain way",
+    "c_door_window": "climb to the high window and let yourself down the bold way"
+   },
+   "beat_hint": "finding an unofficial way past a locked building is its own small job, and there are two honest ways to do it."
+  },
+  "n_keeper": {
+   "tier": "open",
+   "function": "join-the-crew",
+   "entry_state": [],
+   "establishes": [
+    "keeper_enlisted",
+    "keeper_briefing_earned"
+   ],
+   "forbids": [
+    "index_studied",
+    "own_way_found"
+   ],
+   "affect": {
+    "target": "the nerves of asking to help, then the relief of being taken seriously",
+    "forbid": [
+     "menace",
+     "condescension"
+    ]
+   },
+   "invention": {
+    "access_route": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.access_details",
+     "category": "access_details",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "kept person-mediated on purpose: this branch's meaning is joining a real crew, not finding a trick",
+     "kind_must_be": "trusted_escort"
+    }
+   },
+   "constraints": {
+    "keeper_must_be": "gruff on the surface, glad underneath that anyone volunteered; an adult who takes the offer seriously",
+    "must_not": "have the keeper do the salvage work for them or turn the offer down"
+   },
+   "choice_semantics": {
+    "c_keeper_enter": "take the keeper's offer and start the job now",
+    "c_keeper_story": "spend a minute on the keeper's account of the maker before starting"
+   },
+   "beat_hint": "asking to help outright turns out to be its own kind of opening, and the keeper takes the ask seriously."
+  },
+  "n_keyhunt": {
+   "tier": "open",
+   "function": "confirm-the-lead",
+   "entry_state": [
+    "priority_item_named"
+   ],
+   "establishes": [
+    "key_found"
+   ],
+   "forbids": [
+    "salvage_underway"
+   ],
+   "affect": {
+    "target": "satisfaction of a lead that checks out in the real world",
+    "forbid": [
+     "frustration",
+     "dread"
+    ]
+   },
+   "constraints": {
+    "payoff_must_be": "the tool or route exactly where the index promised; the system was honest",
+    "must_not": "introduce a second puzzle here; this beat is confirmation, not complication"
+   },
+   "choice_semantics": {
+    "c_keyhunt_in": "use the confirmed lead and go in the way it names"
+   },
+   "beat_hint": "the tower confirms the index's promise, and the confirmed lead is the way in."
+  },
+  "n_keeper_story": {
+   "tier": "open",
+   "function": "learn-the-makers-story",
+   "entry_state": [
+    "keeper_enlisted"
+   ],
+   "establishes": [
+    "maker_history_known"
+   ],
+   "forbids": [
+    "salvage_underway"
+   ],
+   "affect": {
+    "target": "hushed listening, the job taking on real weight",
+    "forbid": [
+     "grief",
+     "dread"
+    ]
+   },
+   "constraints": {
+    "history_must_be": "warm and specific: the maker left the tower's work unfinished for reasons that matter, without spoiling what the strongroom holds",
+    "must_not": "reveal what the strongroom holds or how the bench resolves"
+   },
+   "choice_semantics": {
+    "c_story_in": "carry the maker's story inside and start the job informed"
+   },
+   "beat_hint": "the keeper's account of the maker turns a job into something the crew now understands the point of."
+  },
+  "n_window": {
+   "tier": "open",
+   "function": "climb-in-solo",
+   "entry_state": [
+    "crew_formed",
+    "job_undertaken",
+    "own_way_found"
+   ],
+   "establishes": [
+    "past_the_door"
+   ],
+   "forbids": [
+    "anyone_injured"
+   ],
+   "affect": {
+    "target": "a dare answered cleanly, then quiet satisfaction",
+    "forbid": [
+     "real_peril",
+     "panic"
+    ]
+   },
+   "constraints": {
+    "climb_must_be": "exciting but visibly safe: short height, good holds, friends spotting each other",
+    "must_not": "injure anyone or play the climb as recklessness"
+   },
+   "choice_semantics": {
+    "c_window_in": "commit to the drop and confirm the scouted route works"
+   },
+   "beat_hint": "the scouted route only counts once someone actually takes it, and the drop settles the question."
+  },
+  "n_inside": {
+   "tier": "open",
+   "function": "survey-the-zones",
+   "entry_state": [
+    "notice_posted",
+    "job_undertaken"
+   ],
+   "establishes": [
+    "salvage_underway",
+    "four_zones_known"
+   ],
+   "forbids": [
+    "at_the_bench",
+    "strongroom_reached"
+   ],
+   "affect": {
+    "target": "the job turning real: four zones to clear before the horns sound",
+    "forbid": [
+     "dread",
+     "claustrophobia"
+    ]
+   },
+   "merge_note": "NC-1: six parents (n_note, n_door, n_keeper, n_keyhunt, n_keeper_story, n_window) arrive carrying different leads, tools, or company. Presuppose only the intersection every route guarantees: the notice exists and the crew has committed to the work. Do NOT reference how they got in, which opening they used, or whether the keeper is present. Write the arrival generically: the crew is inside, the actual salvage work starts now.",
+   "constraints": {
+    "offers_must_be": "four sensory, distinct zones matching the four rooms: height, paper, motion, depth; each stands alone",
+    "must_not": "rank the zones or hint one holds the important piece"
+   },
+   "choice_semantics": {
+    "c_inside_stairs": "clear the climb: the tower's height",
+    "c_inside_study": "clear the study: the tower's paperwork",
+    "c_inside_pendulum": "clear the crossing: the tower's moving works",
+    "c_inside_basement": "clear the basement: the tower's depths"
+   },
+   "beat_hint": "the crew is in, and the closing notice's four zones turn out to be four separate salvage runs."
+  },
+  "n_stairs": {
+   "tier": "open",
+   "function": "salvage-the-climb",
+   "entry_state": [
+    "four_zones_known"
+   ],
+   "establishes": [
+    "piece_recovered"
+   ],
+   "forbids": [
+    "at_the_bench",
+    "strongroom_reached"
+   ],
+   "affect": {
+    "target": "the burn of the climb turning into a real find",
+    "forbid": [
+     "exhaustion",
+     "dread"
+    ]
+   },
+   "invention": {
+    "hint_carrier": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.cipher_hint_carriers",
+     "category": "cipher_hint_carriers",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "something met on the climb that teaches a usable piece of the bench's fitting logic"
+    },
+    "curiosity": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.room_curiosities",
+     "category": "room_curiosities",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "a small salvageable thing found along the stair; personal, pocketable, easily missed"
+    }
+   },
+   "constraints": {
+    "hint_must_be": "sufficient on its own to make the bench attemptable for a reader who never read the index",
+    "must_not": "presuppose the index's lead is already confirmed"
+   },
+   "choice_semantics": {
+    "c_stairs_face": "carry the recovered piece up to the bench"
+   },
+   "beat_hint": "height, not paper or shadow, is what this zone tests, and the payoff for climbing it rides back down in a pocket."
+  },
+  "n_study": {
+   "tier": "open",
+   "function": "salvage-the-study",
+   "entry_state": [
+    "crew_formed",
+    "salvage_underway",
+    "four_zones_known"
+   ],
+   "establishes": [
+    "piece_recovered",
+    "archive_tempts"
+   ],
+   "forbids": [
+    "at_the_bench",
+    "strongroom_reached"
+   ],
+   "affect": {
+    "target": "the pull of ledgers that reward staying as much as leaving",
+    "forbid": [
+     "boredom",
+     "dread"
+    ]
+   },
+   "invention": {
+    "hint_carrier": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.cipher_hint_carriers",
+     "category": "cipher_hint_carriers",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "whatever in the maker's own study teaches the bench's logic most directly; the richest of the four hints"
+    },
+    "curiosity": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.room_curiosities",
+     "category": "room_curiosities",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "ledgers whose pull is genuine: browsable enough to fill an evening; staying to catalogue is a legitimate answer"
+    }
+   },
+   "constraints": {
+    "temptation_must_be": "honest: the ledgers really are worth cataloguing properly, and choosing them is a legitimate crew role, not a failure",
+    "must_not": "frame staying to catalogue as laziness or failure"
+   },
+   "choice_semantics": {
+    "c_study_face": "take the recovered piece and press on to the bench",
+    "c_study_logs": "let the ledgers win this round: catalogue properly instead of rushing on"
+   },
+   "beat_hint": "the study rewards thoroughness, and finishing the catalogue can matter more than reaching the bench fast."
+  },
+  "n_pendulum": {
+   "tier": "open",
+   "function": "salvage-the-crossing",
+   "entry_state": [
+    "four_zones_known"
+   ],
+   "establishes": [
+    "piece_recovered",
+    "crossing_tests_nerve",
+    "prize_glimpsed"
+   ],
+   "forbids": [
+    "anyone_injured",
+    "at_the_bench"
+   ],
+   "affect": {
+    "target": "focused nerve: the riskiest salvage run of the four",
+    "forbid": [
+     "terror",
+     "recklessness_glorified"
+    ]
+   },
+   "invention": {
+    "hint_carrier": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.cipher_hint_carriers",
+     "category": "cipher_hint_carriers",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "something about the moving works, legible from a safe spot, that teaches a piece of the bench's logic"
+    },
+    "obstacle": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.obstacle_kinds",
+     "category": "obstacle_kinds",
+     "assigned_at": "bind",
+     "note": "a crossing with real, legible, survivable risk; the far side holds a piece worth the daring"
+    }
+   },
+   "constraints": {
+    "peril_must_be": "mild and legible: the worst case is a bruise and a long walk home; care is rewarded over daring",
+    "must_not": "punish the reader for either crossing or declining; both are respectable calls on a real job"
+   },
+   "choice_semantics": {
+    "c_pendulum_oil": "cross with care and claim the piece waiting on the far side",
+    "c_pendulum_giveup": "judge the crossing honestly and decide it is not worth it tonight"
+   },
+   "beat_hint": "nerve gets tested hardest at the crossing, where the tower keeps its best-guarded salvage piece."
+  },
+  "n_basement": {
+   "tier": "open",
+   "function": "salvage-the-basement",
+   "entry_state": [
+    "salvage_underway"
+   ],
+   "establishes": [
+    "piece_recovered"
+   ],
+   "forbids": [
+    "at_the_bench",
+    "strongroom_reached"
+   ],
+   "affect": {
+    "target": "dim-lit steadiness, a find worth the dark",
+    "forbid": [
+     "dread",
+     "claustrophobia"
+    ]
+   },
+   "invention": {
+    "hint_carrier": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.cipher_hint_carriers",
+     "category": "cipher_hint_carriers",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "something down among the machine's roots that teaches a piece of the bench's logic from below"
+    },
+    "curiosity": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.room_curiosities",
+     "category": "room_curiosities",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "what makes the deepest zone a spectacle worth the dark; the straight way up is its parting gift"
+    }
+   },
+   "constraints": {
+    "darkness_must_be": "atmosphere, not threat; the basement is dim and strange, never menacing",
+    "must_not": "presuppose the index's lead is already confirmed"
+   },
+   "choice_semantics": {
+    "c_basement_face": "carry the recovered piece straight up to the bench"
+   },
+   "beat_hint": "in the dark, steadiness is what the salvage run grades, and it ends with a piece worth the climb back up."
+  },
+  "n_clockface": {
+   "tier": "open",
+   "function": "reach-the-bench",
+   "entry_state": [
+    "notice_posted",
+    "four_zones_known",
+    "piece_recovered"
+   ],
+   "establishes": [
+    "at_the_bench",
+    "assembly_live"
+   ],
+   "forbids": [
+    "strongroom_reached",
+    "assembly_completed"
+   ],
+   "affect": {
+    "target": "peak focus; every zone's work narrows to this one fit",
+    "forbid": [
+     "despair",
+     "panic"
+    ]
+   },
+   "merge_note": "NC-1: four parents (n_stairs, n_study, n_pendulum, n_basement), each of which supplied piece_recovered from a DIFFERENT zone. Presuppose piece_recovered generically: the crew has something to fit, source unnamed. Do NOT presuppose which zone was cleared, any specific object carried, or any room's device. The bench itself must restate its own logic: its diagram echoes the story's indexing code, so the correct-fit choice is honest on every path.",
+   "constraints": {
+    "puzzle_must_be": "self-teaching at the bench: the diagram rhymes with the logic the reader carries, so the fit feels earned, not lucky",
+    "stakes_must_be": "clear before choosing: fitting it, forcing it, searching behind it, and guessing are visibly different bets",
+    "must_not": "reference any carried object or any zone's device; the bench's own diagram and fittings carry the whole beat"
+   },
+   "choice_semantics": {
+    "c_face_correct": "fit the piece the way the diagram shows, deliberately",
+    "c_face_jam": "muscle the piece into place instead of reading the diagram",
+    "c_face_panel": "distrust the fitting, look for another way behind the bench",
+    "c_face_random": "gamble on a fit and hope it holds"
+   },
+   "beat_hint": "every zone's recovered piece comes down to one bench, and each friend has their own idea of how to fit it."
+  },
+  "n_setcorrect": {
+   "tier": "open",
+   "function": "fit-it-right",
+   "entry_state": [
+    "at_the_bench",
+    "assembly_live",
+    "crew_formed"
+   ],
+   "establishes": [
+    "assembly_completed"
+   ],
+   "forbids": [
+    "assembly_jammed"
+   ],
+   "affect": {
+    "target": "the quiet click of a fit that finally holds",
+    "forbid": [
+     "anticlimax"
+    ]
+   },
+   "constraints": {
+    "solution_must_be": "shown, not skipped: the fit follows the logic the reader carries, in the story's one indexing code",
+    "must_not": "presuppose the notice branch or any specific zone; the reasoning works from the generic hint plus the bench's own diagram"
+   },
+   "choice_semantics": {
+    "c_correct_vault": "open the way through to what the bench was guarding"
+   },
+   "beat_hint": "a fit read correctly off the diagram opens straight through, no force required."
+  },
+  "n_setjam": {
+   "tier": "open",
+   "function": "force-the-fit",
+   "entry_state": [
+    "at_the_bench"
+   ],
+   "establishes": [
+    "assembly_jammed"
+   ],
+   "forbids": [
+    "anyone_injured",
+    "assembly_completed"
+   ],
+   "affect": {
+    "target": "wince of a shortcut that did not pay off, then resolve to do it properly",
+    "forbid": [
+     "despair",
+     "blame"
+    ]
+   },
+   "invention": {
+    "remedy": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.remedies",
+     "category": "remedies",
+     "assigned_at": "bind",
+     "note": "the bench's own honest way back from a jam, supplied entirely by the bible"
+    }
+   },
+   "constraints": {
+    "remedy_must_be": "workable at the scene on every path, presupposing nothing carried from any other zone",
+    "jam_must_read": "as the mechanism protecting itself, a fair consequence of forcing, not a punishment of the crew",
+    "must_not": "shame whoever forced the fit"
+   },
+   "choice_semantics": {
+    "c_jam_oil": "work the jam loose the honest way and refit it properly",
+    "c_jam_stuck": "accept the fit failed tonight and stop"
+   },
+   "beat_hint": "force does not work on this bench; only patience and the right remedy free a jammed fit."
+  },
+  "n_backpanel": {
+   "tier": "open",
+   "function": "find-the-second-index",
+   "entry_state": [
+    "assembly_live"
+   ],
+   "establishes": [
+    "second_index_found"
+   ],
+   "forbids": [
+    "assembly_jammed",
+    "strongroom_reached"
+   ],
+   "affect": {
+    "target": "sly delight at a catalogue within the catalogue",
+    "forbid": [
+     "dread"
+    ]
+   },
+   "constraints": {
+    "panel_cipher_must_be": "the same indexing code as the notice, smaller and quicker; solving it uses the carried hint, never the full proof",
+    "must_not": "make this route feel like cheating; the maker built it on purpose for careful searchers"
+   },
+   "choice_semantics": {
+    "c_panel_vault": "solve the smaller index toward the strongroom everyone came for",
+    "c_panel_secret": "follow the smaller index the other way, toward a room no one catalogued"
+   },
+   "beat_hint": "behind the obvious index sits a second one, smaller and easy to miss unless you go looking for it."
+  },
+  "n_vault": {
+   "tier": "open",
+   "function": "face-the-triage",
+   "entry_state": [
+    "crew_formed",
+    "piece_recovered",
+    "assembly_live"
+   ],
+   "establishes": [
+    "strongroom_reached",
+    "salvage_inventoried",
+    "carry_limit_understood"
+   ],
+   "forbids": [
+    "anyone_injured"
+   ],
+   "affect": {
+    "target": "the job's real cost lands: more here than the crew can carry out before the horns",
+    "forbid": [
+     "greed_glamorized",
+     "dread"
+    ]
+   },
+   "merge_note": "NC-1: three parents (n_setcorrect, n_setjam, n_backpanel) opened the way by different means. Presuppose only that the crew stands past the bench with a piece in hand; write the strongroom's opening as already behind them without re-describing which fit yielded it.",
+   "invention": {
+    "contents": {
+     "pick": 3,
+     "from": "bible.device_vocabulary.vault_contents",
+     "category": "vault_contents",
+     "assigned_at": "bind",
+     "note": "the maker's letter, a keepsake, and a modest heritage item; more than the crew can carry before the seal"
+    }
+   },
+   "constraints": {
+    "contents_must_be": "knowledge, heritage, and wonder, laid out so it is visibly more than three pairs of hands can carry before the horns",
+    "choice_must_be": "a genuine three-way question about what to save when not everything can be saved, with no narrator's thumb on the scale before the outcome"
+   },
+   "choice_semantics": {
+    "c_vault_share": "carry the piece out to the settlement's public collection, and log the rest honestly",
+    "c_vault_keep": "carry out only the small keepsake, and leave the rest logged for the keeper",
+    "c_vault_grab": "try to carry out more than the crew can rightly claim"
+   },
+   "beat_hint": "the strongroom holds more than the crew can carry before the seal, and what to leave behind is the real question."
+  },
+  "n_end_library": {
+   "tier": "locked_outcome",
+   "function": "payoff-choosing-the-archive",
+   "entry_state": [
+    "salvage_underway",
+    "four_zones_known"
+   ],
+   "establishes": [
+    "composure_kept",
+    "salvage_can_resume"
+   ],
+   "forbids": [
+    "shame",
+    "regret_dominant"
+   ],
+   "affect": {
+    "target": "contented absorption; cataloguing well was its own kind of salvage",
+    "forbid": [
+     "despair",
+     "mockery"
+    ]
+   },
+   "mechanisms": [
+    "the ledgers teach the crew what the index was really cataloguing, arming a better-prepared second pass",
+    "a page in the ledgers holds a copy of the index, carried home to puzzle over on their own time",
+    "closing time arrives mid-page and the keeper walks them out gently, with a promise to hold the ledgers"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "ending_must_read": "as a different kind of finish: the crew chose thoroughness over the clock, and the choice is honored; the job waits, better catalogued for it"
+   },
+   "beat_hint": "cataloguing the ledgers properly, instead of racing past them, turns out to be the night's real accomplishment."
+  },
+  "n_end_giveup": {
+   "tier": "locked_outcome",
+   "function": "payoff-declining-the-crossing",
+   "entry_state": [
+    "prize_glimpsed"
+   ],
+   "establishes": [
+    "composure_kept",
+    "salvage_can_resume"
+   ],
+   "forbids": [
+    "cowardice_implied",
+    "mockery"
+   ],
+   "affect": {
+    "target": "sober pride in reading a risk correctly and walking away from it",
+    "forbid": [
+     "despair",
+     "shame"
+    ]
+   },
+   "mechanisms": [
+    "a level look at the crossing convinces them that this piece would cost more than it is worth tonight",
+    "one friend names the real risk aloud and the others agree without argument, calling the retreat the right call",
+    "a slip caught in time turns the attempt into a calm, deliberate pull-back, and the pull-back reads as the sound decision"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "ending_must_read": "as judgment, not fear: calling off a risky salvage run is itself sound work"
+   },
+   "beat_hint": "turning back from a bad crossing takes as much nerve as finishing it, and tonight that nerve is what shows."
+  },
+  "n_end_timeout": {
+   "tier": "locked_outcome",
+   "function": "payoff-guessing-wrong",
+   "entry_state": [
+    "piece_recovered"
+   ],
+   "establishes": [
+    "composure_kept",
+    "salvage_can_resume"
+   ],
+   "forbids": [
+    "humiliation",
+    "permanent_damage"
+   ],
+   "affect": {
+    "target": "rueful acceptance that a guess was never going to satisfy a careful fit",
+    "forbid": [
+     "despair",
+     "punishing_tone"
+    ]
+   },
+   "mechanisms": [
+    "the wrong setting trips a safeguard built for exactly this shortcut, freezing the bench until the keeper resets it",
+    "the closing horns sound before the guess lands, and the fit must wait for another day",
+    "the strained mechanism raises a polite fuss that brings the keeper up to end the attempt for the night"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "ending_must_read": "as the fair cost of guessing at a bench built to be read, not gambled on; the lesson travels with them"
+   },
+   "beat_hint": "guessing at a mechanism built for patient reading was always going to end in a jam, not a lucky break."
+  },
+  "n_end_stuck": {
+   "tier": "locked_outcome",
+   "function": "payoff-jammed-for-the-night",
+   "entry_state": [
+    "piece_recovered",
+    "at_the_bench",
+    "assembly_jammed"
+   ],
+   "establishes": [
+    "composure_kept",
+    "salvage_can_resume"
+   ],
+   "forbids": [
+    "blame",
+    "permanent_damage"
+   ],
+   "affect": {
+    "target": "determined resolve to come back and fit it properly",
+    "forbid": [
+     "despair",
+     "defeat_as_identity"
+    ]
+   },
+   "mechanisms": [
+    "the forced fit binds fast, and nothing the crew carries tonight will free it",
+    "a bent linkage needs a tool the bench clearly expects, and nobody brought one",
+    "the keeper's posted rule ends forcing attempts at nightfall, and the crew honors it as part of the job"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "ending_must_read": "as a pause, not a verdict: the crew leaves already planning the proper refit"
+   },
+   "beat_hint": "a jam tonight only means a better attempt tomorrow, tools in hand next time."
+  },
+  "n_end_secret": {
+   "tier": "locked_outcome",
+   "function": "payoff-the-hidden-workshop",
+   "entry_state": [
+    "piece_recovered",
+    "at_the_bench",
+    "second_index_found"
+   ],
+   "establishes": [
+    "hidden_workshop_found",
+    "caretaker_role_earned",
+    "crew_bond_formed"
+   ],
+   "forbids": [
+    "exploitation_of_find"
+   ],
+   "affect": {
+    "target": "hushed wonder at a find that rewards curiosity as much as care",
+    "forbid": [
+     "greed",
+     "anticlimax"
+    ]
+   },
+   "invention": {
+    "loft_signature": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.loft_signatures",
+     "category": "loft_signatures",
+     "assigned_at": "bind",
+     "note": "the one detail that makes the maker's workshop feel currently alive and mid-thought rather than preserved"
+    }
+   },
+   "mechanisms": [
+    "the workshop adopts the friends as its quiet caretakers, a role nobody assigned but everybody means",
+    "some unfinished piece in the room invites their hands, and finishing it becomes their standing task",
+    "the maker's notes name whoever finds the room its keeper, and the friends accept the appointment"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "room_must_be": "a working room alive with the maker's presence; the reward is responsibility and access, never possession"
+   },
+   "beat_hint": "past the second index waits not a prize but a job: someone has to keep the workshop going."
+  },
+  "n_end_hero": {
+   "tier": "locked_outcome",
+   "function": "payoff-going-public",
+   "entry_state": [
+    "strongroom_reached",
+    "salvage_inventoried",
+    "carry_limit_understood"
+   ],
+   "establishes": [
+    "salvage_registered",
+    "maker_intent_understood",
+    "crew_bond_formed"
+   ],
+   "forbids": [
+    "reward_as_riches"
+   ],
+   "affect": {
+    "target": "quiet pride; the salvage becomes something the whole settlement benefits from",
+    "forbid": [
+     "gloating",
+     "anticlimax"
+    ]
+   },
+   "mechanisms": [
+    "the recovered piece is registered and shown by the settlement, the salvage's public record at last",
+    "the recovered piece quietly restores something the settlement had given up on, proof enough without a fuss",
+    "the recovery earns the keeper's open trust and a standing invitation back to the tower"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "restoration_must_be": "concrete and communal: the recovered piece gives the settlement back something real, and what stayed behind is honestly logged, not mourned"
+   },
+   "beat_hint": "the crew chooses to carry the piece out for everyone, and logging the rest honestly is part of the choice."
+  },
+  "n_end_keepsake": {
+   "tier": "locked_outcome",
+   "function": "payoff-keeping-it-quiet",
+   "entry_state": [
+    "carry_limit_understood"
+   ],
+   "establishes": [
+    "salvage_kept_private",
+    "crew_bond_formed"
+   ],
+   "forbids": [
+    "selfishness_implied"
+   ],
+   "affect": {
+    "target": "warm quiet pride in choosing well within a hard limit",
+    "forbid": [
+     "guilt",
+     "anticlimax"
+    ]
+   },
+   "mechanisms": [
+    "a small promise made over the keepsake binds the friends as the ones who know what stayed behind",
+    "everything else goes back exactly as found and is logged honestly; the keepsake alone travels with them",
+    "the maker's letter asks its finders to choose what to keep quiet, and they choose the keepsake"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "keeping_must_read": "as guardianship, not hoarding: everything that belongs to the settlement is logged and left; the one small keepsake is what the crew earned"
+   },
+   "beat_hint": "with only so much room to carry, choosing the one small keepsake and logging the rest is its own kind of care."
+  },
+  "n_end_caught": {
+   "tier": "locked_outcome",
+   "function": "payoff-caught-taking-too-much",
+   "entry_state": [
+    "at_the_bench",
+    "strongroom_reached",
+    "salvage_inventoried",
+    "carry_limit_understood"
+   ],
+   "establishes": [
+    "ledger_corrected",
+    "keeper_catches_them",
+    "composure_kept",
+    "salvage_can_resume"
+   ],
+   "forbids": [
+    "humiliation",
+    "punishment_beyond_returning",
+    "theft_rewarded"
+   ],
+   "affect": {
+    "target": "comic sheepishness at ignoring the one limit that mattered",
+    "forbid": [
+     "menace",
+     "despair",
+     "shaming"
+    ]
+   },
+   "invention": {
+    "safeguard": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.safeguards",
+     "category": "safeguards",
+     "assigned_at": "bind",
+     "note": "the maker anticipated this exact impulse; whatever form it takes, the safeguard is gentle, funny, and impossible to be hurt by"
+    }
+   },
+   "mechanisms": [
+    "the strongroom's true safeguard announces the overreach, and the keeper arrives before the door does",
+    "what they try to carry out past the limit is exactly what the safeguard was built to catch",
+    "second thoughts slow them just enough for the keeper's evening rounds to catch them mid-return, ledger in hand"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "correction_must_be": "fair and complete without cruelty: everything over the limit goes back, the keeper is firm but kind, and the crew leaves lighter for having ignored the one rule that mattered",
+    "must_not": "threaten, lecture at length, or bar the crew from the tower forever"
+   },
+   "beat_hint": "trying to walk out with more than the crew can rightly claim is exactly what the safeguard was waiting for."
+  }
+ }
+}
