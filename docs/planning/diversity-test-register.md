@@ -63,8 +63,60 @@ omits what readers respond to**, and each needs re-specifying rather than re-sch
 | D-3 | DecisionSignature v2 over the contracts | Can a richer vocabulary agree with readers instead of inverting them? | Added `reasoning_kind` (compute, match, recall, infer, perceive, negotiate, exert) and `stake` (nothing, time, resource, access, standing, permanent) plus the three `AL-193` gaps, and re-annotated the three plans blind. | 2 annotators over 3 plans | Hit its own falsifier: still ranks the treatment pair as the more repetitive one. Annotator A 0 of 6 fields agreeing with readers, annotator B 1 of 6. `reasoning_kind` inverts under both (0.929 against 1.000, and 0.857 against 0.964). Not a reliability failure: kappa between the two annotators is 0.77 to 0.81 on `reasoning_kind` and 0.72 on `stake`, both clear of the floor. The new fields are labellable and do not discriminate. | **done, NEGATIVE** |
 | D-3b | Same vocabulary over contract **plus binding** | Is the inversion a vocabulary problem or a layer problem? The contracts describe `n_clockface` as "answer the test on its own terms" and "fit the piece the way the diagram shows", which Rule 2 correctly calls one decision; the mechanic readers responded to lives in the binding (`clock_arithmetic`, `rhythm_code`, `pictogram_code`). | Identical annotation pass with each plan's bound devices attached. | 1 to 2 annotators over 3 plans | Ordering still inverts with the binding visible, which would mean the discriminating property is not in the plan at all and only the filled prose carries it. Did not fire. | **done, POSITIVE, 1 annotator** |
 | D-3c | Confirm D-3b with a second blind annotator | Is D-3b reproducible, and does it survive a subset fixed in advance? | Second independent annotator, same three bundles, same brief. Analysis pre-registered below before the labels exist. | 1 annotator over 3 plans | The second annotator's `reasoning_kind` does not separate the pairs in the readers' direction over the pre-registered fork subset. Did not fire, but the margin nearly vanished. | **done, PARTIAL** |
-| D-4 | Solution-transfer metric | Is the item that actually discriminated computable from a plan, rather than only ratable by a reader? | Formalise "these two puzzles resolve by the same operation to the same answer" against the three existing contracts, and check it reproduces the raters' Q6 ordering (4,4 against 3,3). | deterministic, no model | It cannot reproduce the known ordering on the pair we have already rated. | queued |
+| D-4 | Solution-transfer metric | Is the item that actually discriminated computable from a plan, rather than only ratable by a reader? | Formalise "these two puzzles resolve by the same operation to the same answer" against the three existing contracts, and check it reproduces the raters' Q6 ordering (4,4 against 3,3). Scored against **three** rated pairs rather than the one the row asked for, since D-5 supplied a second ordering. | deterministic, no model | Did not fire. Reproduces all three orderings strictly, and does so on the tier that uses no taxonomy. | **done, POSITIVE but narrow** |
+| D-6 | Which repair unblocks D-2 | `AL-208` says D-2 converged because its arms shared one contract. That is a diagnosis nothing has tested, and three candidate repairs were proposed with no way to choose between them. | One contract, two bindings held constant, three conditions (`verbatim`, `neutral`, `diverge`), six independent 26-node fills. Outcome is the guard battery itself, so no rater is needed. | 6 fills, 0 raters | `verbatim` lands near the pilot's 1.8 to 2.7 per 1000, which would mean contract sharing is not the cause and `AL-208` misdiagnosed D-2. Or all three conditions converge alike, which would mean no cheap repair exists. | **running** |
 | D-5 | Rate the discarded contaminated arm as a negative control | Does the six-question instrument correctly detect a pair we know is contaminated? | The 14-of-24 shared-prop binding is preserved. Feed `filled_V5b` to fresh blind raters and confirm it scores worse than `filled_V5c` on Q6. | 2 raters | Did not fire. Both raters, opposite orders, scored the contaminated pair Q6 = 5 and the clean pair Q6 = 2, and both chose the contaminated pair as more similar at high confidence. A three-point gap on the item that matters. **Re-run independently 2026-08-10 because the original result was not produced here: two fresh raters in opposite orders reproduced it exactly, Q6 = 5 for the contaminated pair against 2 for the clean one, both choosing the contaminated pair at high confidence.** The instrument detects a known-bad pair, so the ratings in section 13 stand. | **done, PASS, replicated** |
+
+### D-4 result: solution transfer is computable from a plan, but only its taxonomy-free half
+
+`scripts/check_solution_transfer.py` scores, for each prop on a book's solution chain, the
+strongest transfer available to it in the other book: **answer transfer** (the same device, so the
+puzzle is recognised rather than solved), **operation transfer** (a different device resolving by
+the same operation), or **family transfer** (a different operation of the same kind). The chain is
+every prop bound in a puzzle-carrying device category; no fork or node is hand-picked.
+
+D-5 handed this row a second rated ordering the register did not anticipate, so it was scored
+against three pairs rather than one.
+
+| Pair | Raters' Q6 | Answer transfer alone | Full score |
+| --- | --- | --- | --- |
+| base against the contaminated arm | 5, 5 | **1.000** | 1.000 |
+| base against the control | 4, 4 | **0.167** | 0.467 |
+| base against the treatment | 3, 3 and 2, 2 | **0.000** | 0.225 |
+
+**The falsifier did not fire, and the reason it did not is the interesting part.** The worry going
+in was circularity: tiers 2 and 3 encode the D-3b distinction, which was discovered on these same
+plans, so agreement would prove nothing. It does not arise, because **tier 1 reproduces the whole
+ordering by itself** and tier 1 uses no taxonomy at all. The part that matches the readers is the
+part that could not have been fitted to them.
+
+**Tiers 2 and 3 were then run against the 101-node bindings and did not survive.** On vocabulary
+the lexicon has never seen it classifies 2 of 6 chain props and returns nothing for the rest, with
+two failure modes neither fixable by adding words: no negation, so "a page of small hand-drawn
+icons instead of numbers" reads as arithmetic, and polysemy, so "a short tail" on a drawn symbol
+reads as rhythm. The one operation match it does report between arms is both waypoint marks
+scoring `MATCH`, an artifact of the slot rather than a fact about either puzzle. `--check`
+therefore gates on tier 1 only.
+
+**So the honest headline is narrow: device identity is computable and generalises; operation
+identity needs a model.** That is the same boundary Q-5 found for obligation delivery, reached
+independently from the other end, and it is now two-for-two: the lexical version of a question in
+this programme has never yet been good enough to gate.
+
+**One caveat this raises about section 13 rather than about the metric.** The control pair's 0.167
+is a single link: that pair's rhythm hint carrier against the other book's rhythm cipher, which is
+the `AL-185` collision, sitting on the control pair's own solution chain. The 4-against-3 gap may
+therefore be driven by an uncontrolled device collision rather than by the treatment. The
+5-against-2 gap is not exposed to this, since that pair shares 14 props against none.
+
+**A defect in the first version, recorded because the failure mode generalises.** Rarity was first
+computed inside the solution chain, which is vacuous when the chain is short: two props per book
+make a four-prop corpus in which nearly every word is "used by at most two props". It reported
+three plainly different waypoint marks (a scratched star, a painted spiral, an inked triangle) as
+the same device, on the shared words `logbook's`, `mark` and `margins`, which are the contract's
+framing for the slot. Rarity is now judged over both bindings entire. **Any threshold calibrated on
+a large corpus and then applied to a subset inherits this**, and `check_device_collision.py` is the
+tool that calibration came from.
 
 ### D-2 halted at the guard battery: sharing a contract makes the contract the fingerprint
 
@@ -104,7 +156,51 @@ which passed at 0.000, and it is exactly the failure the shared-gram guard exist
 To resume D-2, one of three things has to happen: neutralise `choice_semantics` to non-evocative
 phrasing, generate the semantics per book, or require authors to diverge from the given wording
 explicitly. All three are cheaper than the three contracts the pilot's structure implies, and which
-of them works is itself worth testing.
+of them works is itself worth testing. **That test is now D-6**, below.
+
+**One candidate confound is already excluded.** D-2's three arms carried *different* `label_style`
+values ("imperative and verb-first, said out loud", "name the place you are going to, let the
+reason stay implied", "physical verbs for physical legs, quiet verbs for the choices about
+people"). A shared house style is therefore not what made them converge, which leaves the shared
+contract as the live hypothesis rather than one of two.
+
+### D-6, pre-registered before any fill exists: which repair actually works
+
+`AL-208` is a diagnosis, not a result. D-6 tests it directly, at pilot scale where the baseline is
+known, holding every input constant except how `choice_semantics` reaches the author.
+
+One contract (`contract_v2`, 26 nodes), two bindings held constant (`armC` and `armD`, the pilot's
+own), three conditions, six fills authored by agents that cannot see each other:
+
+| Condition | What the author is handed |
+| --- | --- |
+| `verbatim` | the contract's `choice_semantics` exactly as written |
+| `neutral` | the act and its object in the plainest words, no metaphor, no virtue noun, no colour |
+| `diverge` | the semantics as written, plus an explicit instruction not to reuse their wording |
+
+**The outcome measure is the guard battery itself**, shared 4-grams per 1000 and identical choice
+menus between the two books of each condition, so D-6 needs no rater and cannot be argued with.
+
+Anchors: D-2, one shared contract, 59.2 to 63.8 per 1000. The pilot, different contracts, 1.8 to
+2.7. Budget 4.0.
+
+**Prediction, fixed now:** `verbatim` lands far above the pilot baseline, reproducing D-2's failure
+at 26 nodes; `neutral` and `diverge` land materially below `verbatim`.
+
+**Falsifiers, stated in advance:** if `verbatim` lands near 1.8 to 2.7, contract sharing is not the
+cause and `AL-208` misdiagnosed D-2, which would most likely mean the convergence was a scale
+effect. If all three conditions converge alike, no cheap repair exists and every reusable-plan
+architecture inherits the problem.
+
+**The obvious construction of `neutral` was tried first and is unusable, which is a result in its
+own right.** Deriving each branch's semantics mechanically from the fact graph, as the facts its
+destination presupposes that the fork does not already guarantee, needs no author and so cannot
+smuggle in a voice. It also destroys the fork: at `n_clockface` all four options, answering the
+code, forcing the dial, going round the back and guessing at random, own exactly the same
+obligation, so all four neutralise to the identical sentence. That is `AL-197` reached from the
+opposite direction, **the fact graph does not contain the decision**, so nothing derived from it
+can flatten the wording while preserving the choice. The neutral phrasing is therefore hand-written
+under a stated rule, and the rule is what is on trial.
 
 **A second guard finding, independent of the above.** All three books landed at whole-book
 Flesch-Kincaid 8.14 to 8.41 against a 5.5 target, with only 16 to 20 of 101 nodes inside the band
@@ -333,6 +429,40 @@ scored *above* zero, which is the diagnosis: lexical support tracks whether a no
 right subject, and the failures that matter are nodes about the right subject that do not close
 the obligation. `scripts/check_fill_fidelity.py` is kept as a reading order and cannot gate.
 
+### Q-1 result: the shelf is as thin as claimed, and it is the wrong shelf to count
+
+The counting was never done, so it is done here. Across all six bands:
+
+| | Count |
+| --- | --- |
+| Skeletons in the catalog | 61 |
+| Band-by-length cells | 17 |
+| Mean skeletons per cell | 3.6 |
+| Cells holding 4 or fewer | **13 of 17** |
+| **Skeletons carrying a narrative contract** | **2 of 61** |
+
+The framework's premise holds: 13 of 17 cells hold four skeletons or fewer, so a child who
+requests four books in one cell has met every distinct graph it contains. The 10-13 band is 11
+skeletons over 1,610 nodes with a median of 149.
+
+**But depth in this catalog is not the capital that matters, and this programme is why.** Every
+measure built here runs off a *narrative contract*, and 2 of 61 skeletons have one. Measured on the
+one that ships with the catalog, a contract costs about 1.7KB per node of hand-authored
+specification; the catalog's 11,458 nodes would be roughly 17MB of it. Buying more skeletons buys
+graphs that no measure in this programme can score and that no architecture proposed to us can plan
+over.
+
+**And the unit of that purchase is not yet known, because D-6 decides it.** If contracts can be
+shared across the books of a series, the unit is contracts-per-skeleton and depth is a bounded,
+one-time cost. If `AL-208` stands unrepaired and each book needs its own contract, the unit is
+contracts-per-book, the cost scales with readership rather than with catalog size, and **skeleton
+depth buys nothing at all**: a deeper shelf of graphs does not reduce the number of contracts you
+must author per child.
+
+So Q-1 is answered as far as counting can answer it, and it is downstream of D-6 rather than
+independent of it. That is a change from how this row was filed: it was listed as a purchasing
+decision that needed no research, and it turns out the research decides which purchase it is.
+
 ## C. Architectures gated on D-3
 
 Each of these emits, scores, or optimises decision signatures. Running one before D-3 lands
@@ -353,7 +483,7 @@ measures with an instrument known to invert.
 | R2-2 | Typed choice-capsule library | reviewer 2 | The reusable unit is a fork-to-join *choice capsule*, not a scene. Mine the existing 11,458 nodes across 61 graphs rather than authoring a new library. | Extract 12 to 20 capsules from three existing graphs, place into compatible regions of the pilot graph, produce six decision programs as scene plans and choice cards only. Proposer: 20 to 40 human hours for the first set. | Cosmetically different capsules collapse to the same decision family, making the library a new finite formula. | queued |
 | R1-2 | Component-based narrative assembly | reviewer 1 | Classical planner (ASP or STRIPS) over a scene library with preconditions and effects; validity by construction rather than by LLM verification. | 10 plot outlines from a 20-scene library; evaluate cohesion and decision overlap manually. Proposer: low compute, ~4 human hours. | The solver produces logically valid but narratively disjointed sequences, the proposer's stated "so what?" problem. | queued |
 | R2-3 | Decision-first attributed graph grammar | reviewer 2 | Compile a valid topology from invariant-preserving productions after sampling the decision portfolio. Most ambitious; the proposer explicitly says it must not precede the manual test, which is now done. | One branch-and-bottleneck grammar, three productions, 12 hand-authored decision frames, 50 structural plans without prose, deterministic verification, prose for 4. Proposer: 2 to 4 engineer-weeks after the decision schema exists. | Generated shapes are valid but dramatically flat, or the grammar's production repertoire becomes its own fingerprint. | queued |
-| Q-1 | Does catalog depth solve it | framework Q1 | A child exhausts a cell by roughly their fourth request at 3 to 4 skeletons per cell, and demand concentrates on medium length while the catalog is flat across lengths. | Not a research question. A capital question about depth against the demand curve. | Not falsifiable as stated; it is a purchasing decision, and is listed only so it is not mistaken for outstanding research. | queued |
+| Q-1 | Does catalog depth solve it | framework Q1 | A child exhausts a cell by roughly their fourth request at 3 to 4 skeletons per cell, and demand concentrates on medium length while the catalog is flat across lengths. | Not a research question. A capital question about depth against the demand curve. | Not falsifiable as stated; it is a purchasing decision. **But which purchase is now decided by D-6, and the counting has been done.** See below. | **done, ANSWERED and reframed** |
 
 ## E. Retired
 

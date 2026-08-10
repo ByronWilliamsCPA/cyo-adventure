@@ -1190,6 +1190,101 @@ plan per book, which is what our pilot did without realising that was the load-b
 band, and our gate passed all three because every reading-level finding is advisory. Reading level
 degrades at scale and our gate cannot currently stop it.
 
+## 16e. Your first subsidiary question, answered: solution transfer is computable, halfway
+
+Section 18 asked whether "solution transfer" can be computed from a plan-and-binding pair, since it
+is what our raters actually used and it is the only instrument item that discriminated. It can, and
+the half that works is not the half we expected.
+
+We score, for every prop on a book's **solution chain** (every prop bound in a device category that
+carries the puzzle), the strongest transfer available to it in the other book:
+
+1. **Answer transfer**, the same device, so the second puzzle is recognised rather than solved.
+   Detected by text identity, near-identity, or shared vocabulary that almost nothing else in
+   either book uses. **No taxonomy of any kind.**
+2. **Operation transfer**, different devices resolving by the same operation.
+3. **Family transfer**, different operations of the same kind, converting a notation against
+   recognising a correspondence.
+
+Scored against all three pairs our blind raters have ranked on the solution-transfer question:
+
+| Pair | Raters | Answer transfer alone | Full score |
+| --- | --- | --- | --- |
+| base against the contaminated arm | 5, 5 | **1.000** | 1.000 |
+| base against the control | 4, 4 | **0.167** | 0.467 |
+| base against the treatment | 3, 3 and 2, 2 | **0.000** | 0.225 |
+
+**The ordering is reproduced strictly, and tier 1 reproduces it alone.** That matters more than the
+agreement does. Tiers 2 and 3 encode a distinction we discovered on these same artifacts, so their
+agreeing with these raters would have proved nothing. Tier 1 encodes nothing, and it does the whole
+job.
+
+**Then we ran tiers 2 and 3 against the 101-node bindings, whose vocabulary the classifier had
+never seen, and they collapsed**: 2 of 6 chain props classified, the rest unclassifiable. Two
+failure modes, neither repairable by extending a word list. It cannot read negation, so "a page of
+small hand-drawn icons instead of numbers" scores as arithmetic. And its markers are polysemous, so
+"a short tail" on a drawn symbol scores as rhythm. The single operation match it did report between
+two arms was an artifact of the slot, not a fact about either puzzle.
+
+So our answer to your question is: **device identity is computable from a plan and generalises;
+operation identity is not, and needs a model reading the device.** This is the second time in this
+programme that the deterministic version of a question has been good enough to rank and not good
+enough to gate, the first being 16b's obligation check. We now treat that as the expected shape of
+these measures rather than as bad luck.
+
+**One thing this measure says about section 13 rather than about itself, which we would rather
+report than sit on.** The control pair's 0.167 is one link: that book's rhythm hint carrier against
+the other's rhythm cipher, a device collision we had already found by hand, sitting on the control
+pair's own solution chain. **The 4-against-3 gap in section 13 may therefore be driven by an
+uncontrolled collision rather than by the treatment.** The 5-against-2 gap in 13.4 is not exposed
+to this, since that pair shares 14 props against none, and it is the stronger of the two results.
+
+## 16f. What the capital question turns out to be
+
+We had filed "does catalog depth solve this" as a purchasing decision requiring no research. The
+counting had never actually been done, so we did it:
+
+| | Count |
+| --- | --- |
+| Skeletons in the catalog | 61 |
+| Band-by-length cells | 17 |
+| Cells holding 4 skeletons or fewer | **13 of 17** |
+| **Skeletons carrying a narrative contract** | **2 of 61** |
+
+The exhaustion premise holds. But the shelf we were counting is the wrong one. Every measure in
+this programme, and every architecture proposed to us, runs off a narrative contract, and 3 percent
+of the catalog has one; a contract costs roughly 1.7KB per node of hand-authored specification, so
+the catalog's 11,458 nodes represent about 17MB of writing that does not exist.
+
+**And 16d decides the unit that has to be bought.** If a contract can be shared across the books of
+a series, this is a bounded one-time cost per skeleton. If it cannot, the unit is one contract per
+*book*, the cost scales with readership rather than with catalog size, and buying more skeletons
+buys nothing: a deeper shelf of graphs does not reduce how many contracts you must write per child.
+That makes 16d the most commercially consequential result in Part II, which is not how it looked
+when we found it.
+
+## 16g. Testing 16d's diagnosis rather than believing it
+
+16d gives a cause and three candidate repairs. It does not test any of them, and we would rather
+not hand you a diagnosis we have only reasoned our way to. So we are running the direct test at
+pilot scale, where the baseline is known: one contract, two bindings held constant, three
+conditions differing only in how the choice semantics reach the author (verbatim, deliberately
+flattened, and verbatim-plus-an-instruction-to-diverge), six independently authored books.
+
+The outcome measure is the convergence guard itself, so no rater is involved and the result cannot
+be argued with. We have fixed the prediction and the falsifiers before authoring: if the verbatim
+condition lands near the pilot's 1.8 to 2.7 per 1000, our diagnosis in 16d is wrong and the
+convergence was a scale effect.
+
+**One thing already fell out of building it.** We first tried to construct the flattened condition
+mechanically, deriving each branch's semantics from the fact graph so that no author's voice could
+enter. It destroys the fork: at the story's central four-way decision, answering the code, forcing
+the mechanism, going round the back and guessing at random all carry exactly the same obligation
+and so flatten to exactly the same sentence. That is our own one-way-screen finding arriving from
+the other direction. **The fact graph does not contain the decision**, so nothing derived from it
+can neutralise the wording while preserving the choice, and the flattening has to be authored under
+a stated rule instead. The rule is what is on trial.
+
 ## 17. Corrections to Part I
 
 - **5.3's "untested cell" has been tested**, and the result is not the simple one either reading
@@ -1225,8 +1320,19 @@ other of it without naming the dilemma.
 
 Two subsidiary questions we would value:
 
-1. Is there a formulation of "solution transfer" computable from a plan-and-binding pair? It is
-   what our raters used, it is the only instrument item that discriminated, and it is not obviously
-   the same thing as decision-signature overlap.
+1. ~~Is there a formulation of "solution transfer" computable from a plan-and-binding pair?~~
+   **Answered in 16e, partially and by ourselves.** Its device-identity half is computable,
+   generalises, and reproduces every reader ranking we have. Its operation half needs a model. The
+   question we would put in its place: **is there a plan-level representation of "the same
+   operation" that a deterministic check can read?** Ours failed on negation and polysemy, which
+   are properties of language rather than of our word list, so we suspect the answer is no and that
+   the operation has to be declared in the plan rather than inferred from it. If that is right, the
+   plan schema needs a field we have not been writing.
 2. Our treatment bundled act-kind, stake economics, and per-room payoff. If you had to spend one
    experiment separating those three, which would you isolate first, and why?
+3. **New, and now the one we would most like an outside opinion on.** 16d found that books sharing
+   a plan converge on the plan's own prose, and 16f shows that whether a plan can be shared decides
+   whether this product's capital cost scales with the catalog or with the readership. We are
+   testing three repairs (16g). If all three fail, is there a formulation of a reusable plan that
+   carries no reusable *wording* at all, or does specifying a decision to an author inevitably
+   supply the words for it?

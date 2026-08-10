@@ -1,0 +1,423 @@
+{
+ "schema_version": "2.0",
+ "id": "d6",
+ "version": 1,
+ "title": "The Founder's Peal",
+ "metadata": {
+  "age_band": "10-13",
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 5.5,
+   "tolerance": 1.5
+  },
+  "tier": 1,
+  "themes": [
+   "mystery",
+   "puzzles",
+   "friendship",
+   "history"
+  ],
+  "estimated_minutes": 18,
+  "ending_count": 8,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "mild",
+   "peril": "mild"
+  },
+  "topology": "branch_and_bottleneck",
+  "production_eligible": false
+ },
+ "variables": [],
+ "start_node": "n_open",
+ "nodes": [
+  {
+   "id": "n_open",
+   "body": "The old bell foundry has stood locked for forty years. Its iron door is bolted, and ivy has climbed over the hinges. Nora, Sam, and Priya stop in front of it on a quiet Saturday morning. Pinned to the door is a strip of paper, gone soft with weather. Rows of small marks run down it: some short, some long, like a code no one has cracked. Sam reads it twice. \"This isn't just old paper,\" she says. \"Somebody wants this found.\" The three friends look at each other. Nobody says it out loud, but they all feel it: the door is asking them a question. They decide, together, to answer it.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_open",
+     "label": "We take the challenge together.",
+     "target": "n_start"
+    }
+   ]
+  },
+  {
+   "id": "n_start",
+   "body": "Up close, the foundry looks bigger and stranger. The coded note is stuck fast to the door with old wax. Around the building, ivy hides a side door and a low window. Down the lane, an old man sweeps the yard of the bell-ringers' hall; everyone says he rang the last peal here. Nora wants to sit with the note until it makes sense. Sam wants to find her own way in, no help needed. Priya thinks the old man might know more than any of them. Three good ideas, and only one place to start. The friends look at each other, waiting for someone to choose.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_examine",
+     "label": "We study the note first.",
+     "target": "n_note"
+    },
+    {
+     "id": "c_door",
+     "label": "We find our own way in.",
+     "target": "n_door"
+    },
+    {
+     "id": "c_keeper",
+     "label": "We ask the old man.",
+     "target": "n_keeper"
+    }
+   ]
+  },
+  {
+   "id": "n_note",
+   "body": "Nora sits on the step with the note in her lap. Short pull, short pull, long pull, she reads, tracing each mark with her finger. She matches marks to letters, one careful line at a time. It takes a long time. Sam almost gives up twice, but Priya keeps her steady. Finally the first line clicks into place: LOOK BEHIND THE LOOSE FLUE GRATE. Nora grins. The patient reading worked. The note was never a trick; it was a fair test, and they just passed the first part of it. Somewhere on this building, a grate sits loose, hiding something the note promises is worth finding.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_note_key",
+     "label": "We hunt for the loose grate.",
+     "target": "n_keyhunt"
+    },
+    {
+     "id": "c_note_inside",
+     "label": "We trust the note and go in now.",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_door",
+   "body": "Sam walks the outside wall, running her hand along every crack and board. No note, no help, just her own eyes. Near the old tuning shed, she finds a warped wooden board bolted low to the wall. She kneels and feels underneath its lip. There: a small catch, hidden where nobody would think to look unless they were looking hard. She doesn't know what the note says, and she doesn't need to. Around back, a narrow gap waits where the catch might lead, and above it, a high window catches the afternoon light. Two ways forward, both earned by nothing but patience with her own two hands.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_door_force",
+     "label": "We squeeze through the gap.",
+     "target": "n_inside"
+    },
+    {
+     "id": "c_door_window",
+     "label": "We climb to the high window.",
+     "target": "n_window"
+    }
+   ]
+  },
+  {
+   "id": "n_keeper",
+   "body": "The old man in the yard doesn't look up right away. Priya asks about the foundry, careful and polite. He asks questions back: why do they want in, and are they ready to work for it. He asks about the note, about what they've noticed, about whether they'll quit at the first hard part. Priya answers honestly, every time. Slowly, the gruff lines in his face soften. \"Not many kids stop to ask first,\" he says. He pulls a ring of keys from his belt. \"I'm Tom. Rang the last peal here myself.\" He waits, keys jingling, offering a choice: go straight in, or hear how this all started.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_keeper_enter",
+     "label": "We take Tom's offer and go in.",
+     "target": "n_inside"
+    },
+    {
+     "id": "c_keeper_story",
+     "label": "We ask Tom for the story.",
+     "target": "n_keeper_story"
+    }
+   ]
+  },
+  {
+   "id": "n_keyhunt",
+   "body": "Behind the bell tower, the friends find the flue grate the note described. It hangs loose, just as promised, one corner bent from age. Nora eases it open. Behind it, on a rusty nail, hangs a small iron key, exactly where the patient reading said it would be. Sam laughs in relief. Priya turns the key over in her hands, amazed the note told the truth. The world just confirmed what careful reading already proved: this test was fair from the start. With the key in hand, the friends step toward the foundry's old side door, ready for whatever room comes next.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_keyhunt_in",
+     "label": "We use the key and go inside.",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_keeper_story",
+   "body": "Tom leans on his broom and tells them about Josiah Vane, the man who built this foundry and cast half the bells in town. Vane loved puzzles almost as much as bells. Before he died, he built tests into his workshop, not to keep people out, but to find the right kind of person to let in: patient, careful, kind to each other. \"He wasn't hiding treasure,\" Tom says. \"He was hiding a question.\" He doesn't say what waits past the door. He just hands over the key, satisfied, and nods toward the casting floor entrance, letting the friends carry his story inside with them.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_story_in",
+     "label": "We carry Tom's story inside.",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_window",
+   "body": "The high window sits above a stack of old crates, just low enough to reach if they help each other. Sam goes first, boosted by Priya, gripping a thick stone ledge. Nora spots her from below, ready to catch if she slips. The window frame is loose, and it swings open with one good push. Sam climbs through, then reaches back to pull the others up one at a time. Nobody slips. Nobody gets hurt. It takes nerve, and it takes teamwork, but a minute later all three friends are standing inside the dusty foundry, past the sealed door at last, proud of themselves.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_window_in",
+     "label": "We climb through together.",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_inside",
+   "body": "Inside, the foundry is bigger than it looked from the yard. Dust hangs in the light from cracked windows. Old tools line the walls, and the smell of metal and oil still lingers after all these years. Ahead, four ways lead deeper in: a narrow staircase climbing into the belfry, a study stacked with papers and books, a bell-frame room where old cradles hang still, and a stairway dropping into the dark basement. Each room feels like its own kind of test. Nora, Sam, and Priya look at each of the four doors, and pick one, knowing there will be time for the rest.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_inside_stairs",
+     "label": "We climb the belfry stairs.",
+     "target": "n_stairs"
+    },
+    {
+     "id": "c_inside_study",
+     "label": "We search the study.",
+     "target": "n_study"
+    },
+    {
+     "id": "c_inside_pendulum",
+     "label": "We cross the bell frame.",
+     "target": "n_pendulum"
+    },
+    {
+     "id": "c_inside_basement",
+     "label": "We go down to the basement.",
+     "target": "n_basement"
+    }
+   ]
+  },
+  {
+   "id": "n_stairs",
+   "body": "The stairs wind up and up, narrow and steep. Halfway up, a shelf holds a row of tuning forks, lined up from low to high, each one tagged with a number. Sam counts them: the numbers climb the same way the note's marks did, short pulls low, long pulls high. She writes the pattern in her notebook. Tucked beside the forks sits a small hand bell, cast crooked on purpose, the founder's first failed try kept as a joke. Priya smiles at it and keeps climbing. By the top, legs burning, they've earned more than a view. They've earned a piece of the puzzle.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_stairs_face",
+     "label": "We carry it up to the wheel.",
+     "target": "n_clockface"
+    }
+   ]
+  },
+  {
+   "id": "n_study",
+   "body": "The study smells like old paper. Shelves sag with foundry ledgers and drawings. On the desk lies a tuning hammer, its handle scratched with tiny marks, Vane's own notes on which pull means what. Priya studies it carefully, matching each scratch to the note's code. Sunlight pours through a coloured glass transom above, scattering bell-shaped light across the floor and across shelf after shelf of old journals. Nora wants to read every single one. There's real logic here now, enough to try the wheel. But the archive is calling too, wide and patient, offering a whole different kind of afternoon.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_study_face",
+     "label": "We take the logic and go on.",
+     "target": "n_clockface"
+    },
+    {
+     "id": "c_study_logs",
+     "label": "We stay and read a while.",
+     "target": "n_end_library"
+    }
+   ]
+  },
+  {
+   "id": "n_pendulum",
+   "body": "The bell-frame room holds three huge cradles, silent and still, hanging from thick beams. A narrow catwalk crosses between them, its planks slick with old tallow. Bolted to the mould bench nearby is a brass scale, its notches climbing in the same steady pattern as the note's pulls. Sam studies it, then looks at the catwalk. Crossing means careful footing, one handhold at a time, nothing worse than a stumble if she's careless. On the far side, something small glints, set out like a prize. It's the tower's hardest dare yet: cross with care, or judge it not worth the risk.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_pendulum_oil",
+     "label": "We cross carefully for the prize.",
+     "target": "n_clockface"
+    },
+    {
+     "id": "c_pendulum_giveup",
+     "label": "We decide it isn't worth it.",
+     "target": "n_end_giveup"
+    }
+   ]
+  },
+  {
+   "id": "n_basement",
+   "body": "The basement is dim and cool, lit by thin light from the belfry louvers far above. It falls in a straight line across the casting floor, landing on one marked plank, the same count as the note's longest pull. Nora kneels to check it twice, steady even in the dark. Against the wall hangs an old leather apron, pockets worn soft to the shape of tools that once filled them. Josiah Vane's own apron, Priya guesses. Nobody speaks above a whisper. The room asks for calm, not cleverness, and the friends give it exactly that before heading back up toward the wheel.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_basement_face",
+     "label": "We climb back up steady.",
+     "target": "n_clockface"
+    }
+   ]
+  },
+  {
+   "id": "n_clockface",
+   "body": "At the top of the tower stands the great chiming wheel, ringed with pegs like the face of a clock. Beside it, carved into the wood, are Vane's own instructions: push each peg short or long to match the phrase, and get it right the first time. Push it wrong, and something will jam. The friends stand before it with everything they've learned tonight. They could set the pegs carefully, working out the pattern step by step. They could force the wheel and hope it gives. They could search for a way around it. Or they could just guess and see what happens.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_face_correct",
+     "label": "We set it carefully, peg by peg.",
+     "target": "n_setcorrect"
+    },
+    {
+     "id": "c_face_jam",
+     "label": "We force the wheel.",
+     "target": "n_setjam"
+    },
+    {
+     "id": "c_face_panel",
+     "label": "We look for a way around it.",
+     "target": "n_backpanel"
+    },
+    {
+     "id": "c_face_random",
+     "label": "We guess and hope.",
+     "target": "n_end_timeout"
+    }
+   ]
+  },
+  {
+   "id": "n_setcorrect",
+   "body": "Working together, the friends read the pegs one at a time: short, short, long, short, long, just like the marks on the note. Each peg clicks into place with a solid, satisfying sound. When the last one settles, the whole wheel gives a low groan and turns on its own, smooth and sure. A hidden door swings open beside it, revealing a short stone passage. No alarm. No jam. Just the quiet click of a test recognizing the right answer. Sam lets out a breath she didn't know she was holding. They didn't get lucky. They earned this, one careful peg at a time.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_correct_vault",
+     "label": "We step through the open door.",
+     "target": "n_vault"
+    }
+   ]
+  },
+  {
+   "id": "n_setjam",
+   "body": "Sam grips the wheel and shoves. It groans, resists, then locks tight with a grinding clunk. Nothing moves. \"That was the wrong test,\" Priya says gently, no blame in her voice. Nora spots a small safety catch near the base of the wheel, the same kind that locks the bell cradles when they're not in use. She works it loose, easing the mechanism back to rest. The wheel sighs and softens, ready to be tried again, properly this time. Forcing it never had a chance. The wheel was built to protect its own answer, not to punish anyone for trying the wrong way.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_jam_oil",
+     "label": "We reset it and try again right.",
+     "target": "n_vault"
+    },
+    {
+     "id": "c_jam_stuck",
+     "label": "We admit we're stuck tonight.",
+     "target": "n_end_stuck"
+    }
+   ]
+  },
+  {
+   "id": "n_backpanel",
+   "body": "Instead of touching the wheel, Priya runs her fingers along its wooden frame, checking every seam. Behind a loose panel, she finds a second, smaller row of pegs, half hidden in shadow. It uses the same short-and-long pattern as the note, just shorter, a quick little riddle inside the bigger one. Nora and Sam lean in, working it out together using what they already know. It doesn't need the full answer, just a fragment of it. Vane built this for the searchers, the ones patient enough to look past the obvious door. Two paths open now: straight ahead, or somewhere no one mentioned.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_panel_vault",
+     "label": "We solve it and head for the vault.",
+     "target": "n_vault"
+    },
+    {
+     "id": "c_panel_secret",
+     "label": "We follow it toward the hidden room.",
+     "target": "n_end_secret"
+    }
+   ]
+  },
+  {
+   "id": "n_vault",
+   "body": "The passage opens into a small stone room, quiet and cool. On a shelf sits a letter, sealed with wax and addressed to whoever finds this room. Beside it lies Vane's own marking chisel, kept oiled as though he might come back for it any day. A few other modest things wait too, nothing grand, nothing worth much except what it means. The friends stand together, awed by the quiet of it. They passed his test. Now a new question sits in front of them, just as real as the wheel: tell the whole town what they found, keep it between themselves, or take something for their own.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_vault_share",
+     "label": "We bring the letter to town.",
+     "target": "n_end_hero"
+    },
+    {
+     "id": "c_vault_keep",
+     "label": "We keep this between us.",
+     "target": "n_end_keepsake"
+    },
+    {
+     "id": "c_vault_grab",
+     "label": "We grab something to take home.",
+     "target": "n_end_caught"
+    }
+   ]
+  },
+  {
+   "id": "n_end_library",
+   "body": "The friends stay in the study long past when they meant to leave. Priya finds a page tucked in an old ledger, a copy of the note itself, written in Vane's own hand. They carefully fold it and tuck it away to study at home. Outside, the light is fading, and it's time to go. Nobody feels like they failed. They chose the archive over the clock, and the archive gave something back: a second chance to work the puzzle, unhurried, at their own kitchen table. The wheel isn't going anywhere. Vane's tower will wait, patient as ever, for whenever they're ready to return.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_library",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Copied Page"
+   }
+  },
+  {
+   "id": "n_end_giveup",
+   "body": "Sam steps onto the catwalk, then feels her foot slide on the slick plank. She catches herself in time, heart thumping, and steps back to solid ground. \"Not tonight,\" she says, and nobody argues. Priya nods; Nora squeezes her shoulder. Walking away from the prize glinting on the far side doesn't feel like losing. It feels like getting the answer right in a different way. Not every test is about crossing. Sometimes it's about knowing when not to. The tower will still be standing next week, cradles and catwalk and all, and so will they, ready to come back smarter and steadier.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_giveup",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Steady Retreat"
+   }
+  },
+  {
+   "id": "n_end_timeout",
+   "body": "Nora shrugs and pushes the pegs at random, hoping for a lucky guess. The wheel gives a soft click, then locks solid, frozen mid-turn. A small brass flag pops up near the base, marked RESET NEEDED. Vane built the wheel to catch exactly this kind of shortcut. Nobody's hurt, and nothing's broken, but the test is done for tonight. Later, Tom finds them on the stairs and laughs when he sees the flag. \"He built that for guessers,\" he says, resetting it with one practiced twist. Guessing was never going to satisfy a puzzle built to be worked out properly, and they know it now.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_timeout",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Reset Flag"
+   }
+  },
+  {
+   "id": "n_end_stuck",
+   "body": "The reset catch won't budge tonight. Something inside has bent just enough that it needs a proper tool, the same kind Vane kept racked along his workshop wall, the kind none of them thought to bring. Nobody blames Sam for forcing it. It was a fair guess, just the wrong one. They leave the wheel locked where it sits, already planning the next visit: bring the right tool, read the pegs slower, listen more to what the tower is telling them. The foundry door will still open tomorrow, or the week after. Some tests just take two tries to pass properly.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_stuck",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Right Tool"
+   }
+  },
+  {
+   "id": "n_end_secret",
+   "body": "The hidden passage opens into Vane's own workshop, exactly as he left it. Every casting tool sits racked and labeled, ready for a workday that never came. A note pinned above the bench names whoever finds this room its steward, in Vane's own careful hand. Nora, Sam, and Priya look at each other, then at the room, then back at each other. It feels less like finding treasure and more like being handed a job, one they didn't know they wanted until right now. They promise to come back and keep the room alive. Passing this test meant earning a place, not a prize.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_secret",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Named Steward"
+   }
+  },
+  {
+   "id": "n_end_hero",
+   "body": "The friends carry Vane's letter straight to the town hall. Inside, it turns out Vane had never been properly thanked for the bells he cast for half the town, bells still ringing every Sunday. The mayor reads the letter aloud at the next town meeting, and people who'd forgotten his name start saying it again. Tom stands in the back, quietly proud. Nora, Sam, and Priya don't ask for anything, and nobody offers riches; what they get instead is better: the whole town nodding at them like they finally understand what patience and care can earn. The trial is over, and everyone knows they passed it.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_hero",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Town Remembers"
+   }
+  },
+  {
+   "id": "n_end_keepsake",
+   "body": "The friends read the letter together, then put it back exactly where they found it, beside the oiled chisel. Nothing leaves the little stone room except what can't be carried anyway: the fact that they did it. On the walk home, they make a quiet pact, just the three of them, to never really explain what happened that night at the old foundry. It isn't about hiding anything. It's about keeping something just theirs. Some passing grades don't need an audience. Vane's tower will keep their secret the same way it kept his, patient and sealed, until the next Saturday the three of them decide to return.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_keepsake",
+    "valence": "positive",
+    "kind": "success",
+    "title": "A Quiet Pact"
+   }
+  },
+  {
+   "id": "n_end_caught",
+   "body": "Sam reaches for the marking chisel, thinking just this once. The moment her hand strays close, a trip-wire tugs a small hand bell strung by the door, and it rings out clear across the whole yard. She freezes, chisel still in hand, second thoughts catching up a beat too late. Outside, Tom's evening rounds bring him straight to the foundry door, and he finds them right there, halfway between taking and putting back. Nobody yells. Nobody's in real trouble. Sam puts the chisel back herself, cheeks burning, and Tom just nods, like this was the last question the tower asked all along, and she'd answered it honestly after all.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_caught",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Warning Bell"
+   }
+  }
+ ]
+}
