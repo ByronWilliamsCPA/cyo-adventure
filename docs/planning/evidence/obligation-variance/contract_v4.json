@@ -392,10 +392,10 @@
     },
     "c_keeper": {
      "action": "find_the_warden_and_offer_to_help",
-     "action_family": "SOCIAL",
+     "action_family": "CRAFT",
      "target_role": "PERSON",
-     "tradeoff": "PRIDE_VS_HELP",
-     "consequence": "RELATIONSHIP"
+     "tradeoff": "EFFORT_VS_SHORTCUT",
+     "consequence": "REPUTATION"
     }
    }
   },
@@ -445,15 +445,15 @@
      "action": "note_the_gauge_marks_pointing_to_the_crank",
      "action_family": "INFORMATION",
      "target_role": "INFORMATION",
-     "tradeoff": "CERTAINTY_VS_TIME",
+     "tradeoff": "EFFORT_VS_SHORTCUT",
      "consequence": "KNOWLEDGE"
     },
     "c_note_inside": {
      "action": "head_straight_in_before_the_marked_deadline",
      "action_family": "TEMPORAL",
      "target_role": "LOCATION",
-     "tradeoff": "SPEED_VS_INFO",
-     "consequence": "ACCESS"
+     "tradeoff": "NONE",
+     "consequence": "LOCATION"
     }
    }
   },
@@ -493,7 +493,7 @@
     "must_not": "carry any checklist knowledge; this branch never stopped to read the gauge"
    },
    "choice_semantics": {
-    "c_door_force": "pry the swollen low door with a lever, the harder way",
+    "c_door_force": "pry the swollen low door with a scavenged lever, keeping it once it's done its job",
     "c_door_window": "climb up to release the jammed high sluice gate instead"
    },
    "beat_hint": "A jammed door and a stuck gate do not care how clever the friends are, only how hard they are willing to work.",
@@ -502,15 +502,15 @@
      "action": "pry_the_swollen_door_with_a_lever",
      "action_family": "CRAFT",
      "target_role": "MECHANISM",
-     "tradeoff": "EFFORT_VS_SHORTCUT",
-     "consequence": "ACCESS"
+     "tradeoff": "SAFETY_VS_REWARD",
+     "consequence": "RESOURCE"
     },
     "c_door_window": {
      "action": "climb_to_release_the_high_sluice_gate",
      "action_family": "PHYSICAL_RISK",
      "target_role": "MECHANISM",
-     "tradeoff": "SAFETY_VS_REWARD",
-     "consequence": "ACCESS"
+     "tradeoff": "EFFORT_VS_SHORTCUT",
+     "consequence": "LOCATION"
     }
    }
   },
@@ -561,8 +561,8 @@
      "action": "follow_the_wardens_lantern_down",
      "action_family": "NAVIGATION",
      "target_role": "PERSON",
-     "tradeoff": "SPEED_VS_INFO",
-     "consequence": "ACCESS"
+     "tradeoff": "EFFORT_VS_SHORTCUT",
+     "consequence": "LOCATION"
     },
     "c_keeper_story": {
      "action": "offer_to_carry_the_wardens_tools",
@@ -726,28 +726,28 @@
    "decisions": {
     "c_inside_stairs": {
      "action": "climb_to_the_winch_loft",
-     "action_family": "PHYSICAL_RISK",
+     "action_family": "NAVIGATION",
      "target_role": "LOCATION",
-     "tradeoff": "NONE",
+     "tradeoff": "EFFORT_VS_SHORTCUT",
      "consequence": "LOCATION"
     },
     "c_inside_study": {
-     "action": "recalibrate_the_survey_instrument",
-     "action_family": "CRAFT",
+     "action": "head_for_the_map_room",
+     "action_family": "NAVIGATION",
      "target_role": "LOCATION",
-     "tradeoff": "NONE",
-     "consequence": "LOCATION"
+     "tradeoff": "CERTAINTY_VS_TIME",
+     "consequence": "KNOWLEDGE"
     },
     "c_inside_pendulum": {
-     "action": "cross_the_weir_catwalk_for_the_cache",
-     "action_family": "PHYSICAL_RISK",
+     "action": "head_for_the_weir_catwalk",
+     "action_family": "NAVIGATION",
      "target_role": "LOCATION",
-     "tradeoff": "NONE",
-     "consequence": "LOCATION"
+     "tradeoff": "SAFETY_VS_REWARD",
+     "consequence": "RESOURCE"
     },
     "c_inside_basement": {
-     "action": "descend_to_the_engine_racks",
-     "action_family": "PHYSICAL_RISK",
+     "action": "head_for_the_engine_racks",
+     "action_family": "NAVIGATION",
      "target_role": "LOCATION",
      "tradeoff": "NONE",
      "consequence": "LOCATION"
@@ -865,14 +865,14 @@
      "action": "carry_the_recalibrated_gauge_onward",
      "action_family": "NAVIGATION",
      "target_role": "OBJECT",
-     "tradeoff": "SPEED_VS_INFO",
-     "consequence": "LOCATION"
+     "tradeoff": "CERTAINTY_VS_TIME",
+     "consequence": "ACCESS"
     },
     "c_study_logs": {
      "action": "linger_over_the_flood_ledgers",
      "action_family": "INFORMATION",
      "target_role": "INFORMATION",
-     "tradeoff": "SPEED_VS_INFO",
+     "tradeoff": "NONE",
      "consequence": "KNOWLEDGE"
     }
    }
@@ -931,14 +931,14 @@
      "action": "unhook_the_cached_gauge_at_the_catwalks_end",
      "action_family": "RESOURCE",
      "target_role": "OBJECT",
-     "tradeoff": "SAFETY_VS_REWARD",
+     "tradeoff": "EFFORT_VS_SHORTCUT",
      "consequence": "RESOURCE"
     },
     "c_pendulum_giveup": {
      "action": "call_off_the_wet_crossing",
      "action_family": "MORAL",
      "target_role": "SELF",
-     "tradeoff": "SAFETY_VS_REWARD",
+     "tradeoff": "NONE",
      "consequence": "SAFETY"
     }
    }
@@ -1040,29 +1040,29 @@
      "action": "set_the_levers_using_the_reading",
      "action_family": "CRAFT",
      "target_role": "MECHANISM",
-     "tradeoff": "CERTAINTY_VS_TIME",
+     "tradeoff": "EFFORT_VS_SHORTCUT",
      "consequence": "ACCESS"
     },
     "c_face_jam": {
      "action": "force_the_big_lever_by_guesswork",
      "action_family": "PHYSICAL_RISK",
      "target_role": "MECHANISM",
-     "tradeoff": "EFFORT_VS_SHORTCUT",
-     "consequence": "ACCESS"
+     "tradeoff": "SAFETY_VS_REWARD",
+     "consequence": "SAFETY"
     },
     "c_face_panel": {
      "action": "search_for_a_maintenance_panel",
      "action_family": "CRAFT",
      "target_role": "MECHANISM",
-     "tradeoff": "EFFORT_VS_SHORTCUT",
-     "consequence": "ACCESS"
+     "tradeoff": "CERTAINTY_VS_TIME",
+     "consequence": "KNOWLEDGE"
     },
     "c_face_random": {
      "action": "yank_the_levers_at_random",
-     "action_family": "PHYSICAL_RISK",
+     "action_family": "MORAL",
      "target_role": "MECHANISM",
-     "tradeoff": "SPEED_VS_INFO",
-     "consequence": "ACCESS"
+     "tradeoff": "EFFORT_VS_SHORTCUT",
+     "consequence": "SAFETY"
     }
    }
   },
@@ -1149,14 +1149,14 @@
      "action": "free_the_stalled_gearing_with_the_remedy",
      "action_family": "CRAFT",
      "target_role": "MECHANISM",
-     "tradeoff": "EFFORT_VS_SHORTCUT",
-     "consequence": "ACCESS"
+     "tradeoff": "CERTAINTY_VS_TIME",
+     "consequence": "RESOURCE"
     },
     "c_jam_stuck": {
      "action": "accept_tonights_attempt_is_over",
-     "action_family": "MORAL",
+     "action_family": "TEMPORAL",
      "target_role": "SELF",
-     "tradeoff": "NONE",
+     "tradeoff": "SAFETY_VS_REWARD",
      "consequence": "SAFETY"
     }
    }
@@ -1195,15 +1195,15 @@
      "action": "read_the_second_gauge_toward_the_strongroom",
      "action_family": "INFORMATION",
      "target_role": "MECHANISM",
-     "tradeoff": "NONE",
+     "tradeoff": "CERTAINTY_VS_TIME",
      "consequence": "ACCESS"
     },
     "c_panel_secret": {
      "action": "follow_the_second_gauge_to_the_workshop",
      "action_family": "NAVIGATION",
      "target_role": "LOCATION",
-     "tradeoff": "NONE",
-     "consequence": "ACCESS"
+     "tradeoff": "EFFORT_VS_SHORTCUT",
+     "consequence": "LOCATION"
     }
    }
   },
@@ -1258,14 +1258,14 @@
     },
     "c_vault_keep": {
      "action": "swear_the_crew_to_keep_it_quiet",
-     "action_family": "SOCIAL",
+     "action_family": "MORAL",
      "target_role": "PERSON",
      "tradeoff": "LOYALTY_VS_TRUTH",
      "consequence": "RELATIONSHIP"
     },
     "c_vault_grab": {
      "action": "pocket_the_keepsake_and_slip_out",
-     "action_family": "MORAL",
+     "action_family": "RESOURCE",
      "target_role": "OBJECT",
      "tradeoff": "SAFETY_VS_REWARD",
      "consequence": "RESOURCE"
