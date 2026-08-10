@@ -122,6 +122,23 @@ and never from a sibling book.** The structural stratum is wordless by section 2
 there is nothing there to converge on. This is implementable, cheap, and it is the concrete form of
 `AL-208`'s untested third repair.
 
+**And the bar is lower than section 2.1 implied, which is a correction to this document.** Checking
+the new contract against the one whose fills were already rated turned up something unexpected: the
+pilot's two contracts are **118.4** shared four-grams per 1000, almost exactly as similar as the
+attempt discarded above as unusable, and **their fills sat at the floor, 2.9**. They share vocabulary
+heavily while sharing **0 of 35 `choice_semantics` strings**.
+
+Convergence therefore does not work by degree of lexical similarity, which is how 2.1 read it. Two
+authors handed *the same sentence* converge on it; two authors handed *different sentences sharing
+vocabulary* do not, even at 118 per 1000. **The threshold is sentence identity.** A per-book
+decisional stratum does not have to be independent of its siblings, only separately written, which
+any separate generation gives for free. Withholding the reference is good practice and is not the
+requirement.
+
+*Limit:* the pilot's contracts also differ in premise, so sentence-difference and premise-difference
+are bundled in the single available comparison. Which one does the work is untested and is the
+cheapest open question in this line.
+
 **It does not touch the premise, and that is now measured too.** The author who never saw the
 reference independently chose a clock tower, against a reference set in a clocktower. Wording as
 independent as anything in this programme; the same setting. Withholding closes the wording channel

@@ -1458,10 +1458,28 @@ authors sharing no plan all wrote "children find a thing left by an older person
 that these are two separate channels needing two separate mechanisms: **withholding closes the
 wording channel completely and does nothing whatsoever to the premise.**
 
-For anyone proposing an architecture: generating a plan per book is sufficient for wording
-independence *if the generator is shown the structure and never a sibling plan*, and it is not
-sufficient for premise independence under any arrangement we have found. The premise needs something
-that actively pushes candidates apart.
+**A correction we owe on 16d, found while checking this comparison for confounds.** We had read
+16d as saying plan similarity leaks into books by degree, and concluded a per-book plan must be
+independently worded. Checking the new plan against the one whose books we had already rated shows
+otherwise: **our pilot's two plans are 118.4 shared four-grams per 1000, almost exactly as similar as
+the attempt we discarded as unusable, and their books sat at the floor, 2.9.** They share vocabulary
+heavily while sharing **zero of thirty-five choice-semantics strings**.
+
+So convergence does not scale with lexical similarity. Two authors given *the same sentence* converge
+on it; two authors given *different sentences that share vocabulary* do not, even at 118 per 1000.
+**The threshold is sentence identity, not lexical distance**, and the repair is therefore much
+cheaper than 16d implied: a per-book plan need only be separately written, which any separate
+generation gives for free.
+
+One limit we cannot resolve with what we hold: our pilot's two plans also differ in *premise*, so
+sentence-difference and premise-difference are bundled in the single comparison available, and 16d
+found the premise to be the largest channel. Two plans sharing a premise but not a sentence, filled
+and measured, is the cheapest experiment left in this line and we have not run it.
+
+For anyone proposing an architecture, in summary: generating a plan per book is sufficient for
+wording independence provided no generation sees a sibling plan, near-total independence is more than
+the job needs, and **nothing we have found is sufficient for premise independence**. The premise needs
+something that actively pushes candidates apart.
 
 ## 17. Corrections to Part I
 
