@@ -32,6 +32,27 @@ from collections import Counter
 from pathlib import Path
 from typing import Any, cast
 
+
+def _load(path: str) -> dict[str, Any] | None:
+    """Load a filled-story JSON object, or report and return None.
+
+    Args:
+        path: File path to read.
+
+    Returns:
+        The decoded object, or None on any load failure.
+    """
+    try:
+        data = json.loads(Path(path).read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        sys.stderr.write(f"error: cannot load {path}: {exc}\n")
+        return None
+    if not isinstance(data, dict):
+        sys.stderr.write(f"error: expected a JSON object in {path}\n")
+        return None
+    return cast("dict[str, Any]", data)
+
+
 _WORD_RE = re.compile(r"[a-z']+")
 _STOPWORDS = frozenset(
     "a an and are as at be but by for from had has he her his i in is it its "
@@ -103,7 +124,13 @@ def menu_frame_overlap(
 
 
 def main(argv: list[str] | None = None) -> int:
-    """CLI entry point; exit 1 with --check above the shared-gram budget."""
+    """CLI entry point.
+
+    Returns:
+        Exit code: 2 when fewer than two fills are given or a fill cannot
+        be read, 1 when ``--check`` is set and the shared-gram budget is
+        exceeded, 0 otherwise.
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("fills", nargs="+", help="Two or more sibling filled stories.")
     parser.add_argument(
@@ -122,10 +149,12 @@ def main(argv: list[str] | None = None) -> int:
     if len(args.fills) < 2:
         sys.stderr.write("need at least two fills\n")
         return 2
-    stories = [
-        cast("dict[str, Any]", json.loads(Path(p).read_text(encoding="utf-8")))
-        for p in args.fills
-    ]
+    stories: list[dict[str, Any]] = []
+    for p in args.fills:
+        story = _load(p)
+        if story is None:
+            return 2
+        stories.append(story)
     shared = shared_grams(stories)
     mean_words = sum(
         len(_WORD_RE.findall(_leaf_text(story).lower())) for story in stories

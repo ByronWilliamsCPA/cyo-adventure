@@ -2046,7 +2046,9 @@ def _build_parser() -> argparse.ArgumentParser:
         default=None,
         help=(
             "compute theme_overlap from this request premise; omitted means a "
-            "zero-overlap request, which the selector treats as pre-W2.2"
+            "zero-overlap request, which the selector treats as pre-W2.2. "
+            "Only affects the curves section (--section curves); every "
+            "other section ignores this flag"
         ),
     )
     parser.add_argument(
@@ -2132,32 +2134,28 @@ def _build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main(argv: list[str] | None = None) -> int:
-    """Run the sibling-exposure analysis.
+def _validate_run_counts(
+    *,
+    trials: int,
+    requests: int,
+    counterfactual_trials: int,
+    demand_trials: int,
+    demand_requests: int,
+    budget_trials: int,
+) -> int | None:
+    """Validate the CLI trial/request counts are all at least 1.
 
     Args:
-        argv: Argument vector; defaults to ``sys.argv[1:]``.
+        trials: ``--trials``.
+        requests: ``--requests``.
+        counterfactual_trials: ``--counterfactual-trials``.
+        demand_trials: ``--demand-trials``.
+        demand_requests: ``--demand-requests``.
+        budget_trials: ``--budget-trials``.
 
     Returns:
-        int: ``0`` on a clean run, ``2`` when the catalog is missing or a
-            requested cell does not exist.
+        Exit code 2 when any count is below 1, otherwise None.
     """
-    args = _build_parser().parse_args(argv)
-    section = cast("str", args.section)
-    trials = cast("int", args.trials)
-    counterfactual_trials = cast("int", args.counterfactual_trials)
-    requests = cast("int", args.requests)
-    seed = cast("int", args.seed)
-    premise = cast("str | None", args.premise)
-    selectors = cast("list[tuple[str, str, str]] | None", args.cell)
-    regime_names = cast("list[str] | None", args.length_demand)
-    custom = cast("dict[str, float] | None", args.length_demand_custom)
-    demand_trials = cast("int", args.demand_trials)
-    demand_requests = cast("int", args.demand_requests)
-    budgets = cast("list[int] | None", args.budget)
-    declared_only = cast("str", args.length_demand_scope) == "declared"
-    budget_trials = cast("int", args.budget_trials)
-
     if trials < 1 or requests < 1 or counterfactual_trials < 1:
         sys.stderr.write(
             "error: --trials/--requests/--counterfactual-trials must be at least 1\n"
@@ -2169,30 +2167,101 @@ def main(argv: list[str] | None = None) -> int:
             "at least 1\n"
         )
         return 2
-    budgets = list(budgets) if budgets else list(_BUDGET_SIZES)
-    if any(size < 0 for size in budgets):
-        sys.stderr.write("error: --budget must not be negative\n")
-        return 2
-    if custom is not None:
-        regimes = [("custom", custom)]
-    else:
-        names = list(regime_names) if regime_names else list(_LENGTH_REGIMES)
-        if "all" in names:
-            names = list(_LENGTH_REGIMES)
-        regimes = _regime_maps(names)
+    return None
 
+
+def _resolve_budgets(budgets: list[int] | None) -> tuple[list[int], int | None]:
+    """Resolve the ``--budget`` list, defaulting and validating it.
+
+    Args:
+        budgets: The raw ``--budget`` values, or None when unset.
+
+    Returns:
+        The resolved budget list, and exit code 2 (with an empty list) when
+        any budget is negative, otherwise None for the exit code.
+    """
+    resolved = list(budgets) if budgets else list(_BUDGET_SIZES)
+    if any(size < 0 for size in resolved):
+        sys.stderr.write("error: --budget must not be negative\n")
+        return [], 2
+    return resolved, None
+
+
+def _resolve_regimes(
+    custom: dict[str, float] | None, regime_names: list[str] | None
+) -> list[tuple[str, dict[str, float]]]:
+    """Resolve the length-demand regimes to report.
+
+    Args:
+        custom: A caller-supplied ``--length-demand-custom`` map, or None.
+        regime_names: The ``--length-demand`` names, or None for the default.
+
+    Returns:
+        The resolved (name, map) regime pairs.
+    """
+    if custom is not None:
+        return [("custom", custom)]
+    names = list(regime_names) if regime_names else list(_LENGTH_REGIMES)
+    if "all" in names:
+        names = list(_LENGTH_REGIMES)
+    return _regime_maps(names)
+
+
+def _resolve_cells_and_focus(
+    selectors: list[tuple[str, str, str]] | None,
+) -> tuple[list[Cell], list[Cell], int | None]:
+    """Resolve the catalog cells and the focus cells for reporting.
+
+    Args:
+        selectors: The parsed ``--cell`` selectors, or None for the default
+            focus set.
+
+    Returns:
+        The full cell list, the resolved focus cells, and exit code 2 (with
+        both lists empty) when the catalog is missing or a requested cell is
+        unknown; otherwise None for the exit code.
+    """
     cells = list(iter_cells())
     if not any(cell.slugs for cell in cells):
         sys.stderr.write("error: no production-eligible skeleton found; is the ")
         sys.stderr.write("catalog present and the cwd the repository root?\n")
-        return 2
-
+        return [], [], 2
     focus_selectors = selectors or list(_DEFAULT_FOCUS)
     focus, missing = _resolve_focus(focus_selectors)
     if missing:
         sys.stderr.write(f"error: unknown cell(s): {', '.join(missing)}\n")
-        return 2
+        return [], [], 2
+    return cells, focus, None
 
+
+def _dispatch_core_sections(
+    section: str,
+    *,
+    cells: list[Cell],
+    focus: list[Cell],
+    trials: int,
+    requests: int,
+    counterfactual_trials: int,
+    seed: int,
+    premise: str | None,
+) -> list[BandProfile]:
+    """Run the pools/curves/siblings/bands/sizing/counterfactual sections.
+
+    Args:
+        section: The resolved ``--section`` choice.
+        cells: The full catalog cell list (reassigned locally by the pools
+            section, matching the prior inline behavior).
+        focus: The resolved focus cells.
+        trials: ``--trials``.
+        requests: ``--requests``.
+        counterfactual_trials: ``--counterfactual-trials``.
+        seed: ``--seed``.
+        premise: ``--premise`` (curves section only).
+
+    Returns:
+        The band profiles computed by the bands section (empty when that
+        section did not run), for the demand-family sections to reuse.
+    """
     if section in {"all", "pools"}:
         cells = _report_pools()
     if section in {"all", "curves"}:
@@ -2209,6 +2278,35 @@ def main(argv: list[str] | None = None) -> int:
         _report_sizing(profiles or band_profiles())
     if section in {"all", "counterfactual"}:
         _report_counterfactual(cells, trials=counterfactual_trials, seed=seed)
+    return profiles
+
+
+def _dispatch_demand_sections(
+    section: str,
+    *,
+    profiles: list[BandProfile],
+    regimes: list[tuple[str, dict[str, float]]],
+    demand_trials: int,
+    demand_requests: int,
+    budgets: list[int],
+    declared_only: bool,
+    budget_trials: int,
+    seed: int,
+) -> None:
+    """Run the demand/demand-sizing/budget sections.
+
+    Args:
+        section: The resolved ``--section`` choice.
+        profiles: The band profiles from the core sections (recomputed here
+            when empty, matching the prior inline behavior).
+        regimes: The resolved length-demand regimes.
+        demand_trials: ``--demand-trials``.
+        demand_requests: ``--demand-requests``.
+        budgets: The resolved ``--budget`` list.
+        declared_only: Whether ``--length-demand-scope`` is ``declared``.
+        budget_trials: ``--budget-trials``.
+        seed: ``--seed``.
+    """
     if section in {"all", "demand", "demand-sizing", "budget"}:
         profiles = profiles or band_profiles()
     if section in {"all", "demand"}:
@@ -2232,6 +2330,76 @@ def main(argv: list[str] | None = None) -> int:
             seed=seed,
             declared_only=declared_only,
         )
+
+
+def main(argv: list[str] | None = None) -> int:
+    """Run the sibling-exposure analysis.
+
+    Args:
+        argv: Argument vector; defaults to ``sys.argv[1:]``.
+
+    Returns:
+        int: ``0`` on a clean run, ``2`` when the catalog is missing or a
+            requested cell does not exist.
+    """
+    args = _build_parser().parse_args(argv)
+    section = cast("str", args.section)
+    trials = cast("int", args.trials)
+    counterfactual_trials = cast("int", args.counterfactual_trials)
+    requests = cast("int", args.requests)
+    seed = cast("int", args.seed)
+    premise = cast("str | None", args.premise)
+    selectors = cast("list[tuple[str, str, str]] | None", args.cell)
+    regime_names = cast("list[str] | None", args.length_demand)
+    custom = cast("dict[str, float] | None", args.length_demand_custom)
+    demand_trials = cast("int", args.demand_trials)
+    demand_requests = cast("int", args.demand_requests)
+    budgets_arg = cast("list[int] | None", args.budget)
+    declared_only = cast("str", args.length_demand_scope) == "declared"
+    budget_trials = cast("int", args.budget_trials)
+
+    count_error = _validate_run_counts(
+        trials=trials,
+        requests=requests,
+        counterfactual_trials=counterfactual_trials,
+        demand_trials=demand_trials,
+        demand_requests=demand_requests,
+        budget_trials=budget_trials,
+    )
+    if count_error is not None:
+        return count_error
+
+    budgets, budget_error = _resolve_budgets(budgets_arg)
+    if budget_error is not None:
+        return budget_error
+
+    regimes = _resolve_regimes(custom, regime_names)
+
+    cells, focus, cell_error = _resolve_cells_and_focus(selectors)
+    if cell_error is not None:
+        return cell_error
+
+    profiles = _dispatch_core_sections(
+        section,
+        cells=cells,
+        focus=focus,
+        trials=trials,
+        requests=requests,
+        counterfactual_trials=counterfactual_trials,
+        seed=seed,
+        premise=premise,
+    )
+    _dispatch_demand_sections(
+        section,
+        profiles=profiles,
+        regimes=regimes,
+        demand_trials=demand_trials,
+        demand_requests=demand_requests,
+        budgets=budgets,
+        declared_only=declared_only,
+        budget_trials=budget_trials,
+        seed=seed,
+    )
     return 0
 
 
