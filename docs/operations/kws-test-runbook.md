@@ -63,7 +63,7 @@ Pick one before sending:
 | Approach | What it needs | Trade-off |
 |---|---|---|
 | Point the local shell at staging's database | `DATABASE_URL` for staging's `cyo_api` role in a local env file | Fastest. Puts a staging DB credential on the workstation, so treat it as a secret and remove it after. |
-| Run the script inside the staging backend container | Portainer or `docker exec` into `backend` on staging | No credential leaves the host; the container already holds the right `DATABASE_URL` and KWS credentials. Preferred. |
+| Run the script inside the staging backend container | `docker exec -i cyo-staging-backend` with the script piped over stdin, since `scripts/` is not in the image | No credential leaves the host; the container already holds the right `DATABASE_URL` and KWS credentials. **Preferred**, and the only option whose commands are given in full below. |
 | Register a second return/webhook URL against a tunnel to the workstation | A public tunnel and a Control Panel registration | Most work, and mints a second pair of HMAC secrets to manage. Only worth it for iterating on the handler code. |
 
 Whichever you pick, `--dry-run` first. It resolves the guardian and prints the plan without
@@ -174,31 +174,54 @@ the staging `DATABASE_URL` and the KWS credentials, so the row lands in the data
 will resolve against and no credential leaves the host. This is the only invocation that satisfies
 the trap described above; the local one below is recorded so it is recognisable, not so it is used.
 
-Two mechanical details about the runtime image, both of which break the obvious command:
+Three mechanical facts about the runtime image, all verified against the live container on
+2026-08-10, and each of which breaks the obvious command:
 
+- **The script is not in the image.** `.dockerignore` line 179 excludes `scripts/` under the comment
+  "Validation and scripts (not needed in runtime)", so the Dockerfile's `COPY . .` never carries it
+  and `/app/scripts/` does not exist. Any procedure of the form
+  `docker exec <c> /app/.venv/bin/python scripts/kws_send_test_verification.py` is impossible, not
+  merely awkward. **Pipe the script over stdin instead** and let Python read it from `-`.
 - **It ships no shell.** The Dockerfile uses a DHI hardened base, so `docker exec ... bash` and
-  `... sh` both fail. Exec the interpreter directly.
+  `... sh` both fail. This rules out the usual `cat > /tmp/x.py` workaround as well; the stdin route
+  is what remains. Exec the interpreter directly.
 - **`uv` is not installed**, only the virtualenv it built. The interpreter is at
   `/app/.venv/bin/python`.
 
+Run these from the repo worktree on the workstation. The redirect feeds the local file into `ssh`,
+which forwards it to `docker exec -i`, which forwards it to Python's stdin. `docker exec` needs
+`-i` for this; without it the script arrives empty and Python exits silently with nothing done.
+
 ```bash
-# on the homelab host: find the container (the service is named `backend`, not `api`)
-docker ps --filter name=backend --format '{{.Names}}\t{{.Image}}'
+cd .worktrees/kws-test-integration
 
 # preflight: resolves the guardian, prints the plan, sends nothing, writes nothing
-docker exec <staging-backend-container> /app/.venv/bin/python \
-    scripts/kws_send_test_verification.py \
-    --user-id <guardian-uuid> --email parent@example.com --location US --dry-run
+ssh byron@docker-host 'docker exec -i cyo-staging-backend /app/.venv/bin/python - \
+    --user-id <guardian-uuid> --email parent@example.com --location US --dry-run' \
+    < scripts/kws_send_test_verification.py
 
 # the real send: drop --dry-run only after the plan reads correctly
-docker exec <staging-backend-container> /app/.venv/bin/python \
-    scripts/kws_send_test_verification.py \
-    --user-id <guardian-uuid> --email parent@example.com --location US
+ssh byron@docker-host 'docker exec -i cyo-staging-backend /app/.venv/bin/python - \
+    --user-id <guardian-uuid> --email parent@example.com --location US' \
+    < scripts/kws_send_test_verification.py
 ```
 
-`--user-id` must be a guardian in **staging's** database. A production UUID will fail to resolve,
-which is the harmless failure; a UUID that happens to exist in both is the dangerous one, so read
-the `--dry-run` plan rather than assuming the resolve proved the tier.
+**The container name is the tier selector, and the two tiers differ by one word.** Staging is
+`cyo-staging-backend`; production is `cyo-adventure-backend`. Verified 2026-08-10, the production
+container **fails closed** on this script: `_require_configured` refuses with exit 1 because the
+four KWS API credentials are not all present in that environment. That is a real safety property,
+but it is a property of production's current configuration rather than a guard, and it will stop
+holding the moment the KWS block lands in production's compose. Read the `kws environment` and
+`label` lines the dry-run prints; they are the confirmation that the right container answered.
+
+`--user-id` must be a guardian in **staging's** database, which is a different Supabase project from
+production's (staging resolves through `aws-1-us-west-2`, production through `aws-0-us-east-1`).
+A production UUID failing to resolve is the harmless failure; a UUID that happens to exist in both
+is the dangerous one, so read the `--dry-run` plan rather than assuming the resolve proved the tier.
+
+`--email` is the address the verification is sent to and is independent of the guardian's own stored
+email, which is what makes it possible to answer Q1 and Q2 from the same guardian record using two
+different inboxes.
 
 > **The local invocation is the trap, not an alternative.** Running
 > `uv run --env-file .env python scripts/kws_send_test_verification.py ...` from the worktree
