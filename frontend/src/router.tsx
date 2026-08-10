@@ -31,6 +31,7 @@ import {
   NotFoundPage,
   PreviewAsChildPage,
   PrivacyPage,
+  PrivacyPolicyPage,
   ProfilePickerPage,
   ProfilesPage,
   ProviderAllowlistPage,
@@ -40,6 +41,7 @@ import {
   ReviewDetailPage,
   RouteError,
   RouteFallback,
+  SupportPage,
   AuditPage,
   UserManagementPage,
 } from './routeElements'
@@ -51,6 +53,8 @@ import {
   GUARDIAN_LOGIN_PATH,
   GUARDIAN_UNAVAILABLE_PATH,
   KID_PICKER_PATH,
+  PRIVACY_PATH,
+  SUPPORT_PATH,
 } from './routes'
 
 function suspended(element: ReactNode) {
@@ -91,6 +95,15 @@ export const routes = [
     errorElement: <RouteError />,
     children: [
       { index: true, element: suspended(<LandingPage />) },
+      // Public legal/support surfaces, siblings of the landing index and
+      // deliberately OUTSIDE the KidShell wrapper below: they carry no kid
+      // chrome, and more importantly they sit outside every auth and
+      // device-grant gate. Epic's Kids Web Services holds both URLs
+      // (ADR-018 D1), and a parent follows them from a verification screen
+      // with no session at all. See routes.ts for why gating either one would
+      // be a security defect rather than a UX one.
+      { path: PRIVACY_PATH.slice(1), element: suspended(<PrivacyPolicyPage />) },
+      { path: SUPPORT_PATH.slice(1), element: suspended(<SupportPage />) },
       {
         element: suspended(<KidShell />),
         children: [

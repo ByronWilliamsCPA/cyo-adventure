@@ -394,6 +394,26 @@ guardian acts on what it says.
 - E2E-mocked: `frontend/e2e/guardian-privacy.spec.ts` (the page reached in the routed app: its load-bearing claims render, the guardian-shell nav links resolve to their real hrefs with Profiles click-tested through, and an unauthenticated visit redirects to guardian login)
 - **Gap**: no `e2e-real`, `e2e-staging`, or `e2e-prod` coverage. The page is static and its claims are pinned at the component tier, so the higher tiers would only re-assert that a link navigates.
 
+## Public: privacy policy and support (signed-out)
+
+The two pages at `/privacy` and `/support`, reachable with no account and no
+session. These are the URLs registered with Epic's Kids Web Services (ADR-018
+D1), so the reader is often a parent partway through a third-party verification
+flow rather than someone already inside the app.
+
+Two distinct risks are covered here, and they need different tiers. The first is
+placement: a gate on either route would bounce a mid-verification parent to a
+login page from a consent flow, which reads as a phishing redirect. That is a
+property of the route config, not of the components, so it is asserted against
+the config. The second is claim accuracy: a privacy policy that overclaims is
+acted on by parents and is a regulatory exposure in its own right, so the tests
+pin both the load-bearing claims and the claims deliberately withheld.
+
+- Component: `frontend/src/legal/PrivacyPolicyPage.test.tsx` (renders with no auth provider mounted; pins the contact route against the shared constant, the never-collected-from-a-child list including location, the Epic recipient row naming both the parent email and the child's country, the hard-fail wording for the PII guard rather than a removal claim, and the four claims held back pending counsel or unfinished work: per-purpose GDPR legal basis, processor-only use, a named transfer mechanism, and re-consent on material change), `frontend/src/legal/SupportPage.test.tsx` (same signed-out render, contact route, and the FAQ entries that restate policy claims)
+- Config: `frontend/src/router.test.tsx` (structural assertions over the exported route config without rendering: both public paths resolve outside every gate, with a positive control on a known-gated guardian route so the public assertions cannot pass vacuously)
+- E2E-mocked: `frontend/e2e/visual.spec.ts` (the landing footer that links to both pages is inside the landing-page visual baseline)
+- **Gap**: no `e2e-real`, `e2e-staging`, or `e2e-prod` coverage, and no test asserts the pages resolve over HTTP for a signed-out client against a deployed environment. That is the assertion KWS actually depends on; the component tier proves the components need no session, not that the deployed URL answers.
+
 ## Guardian: invite a co-parent (self-serve)
 
 The guardian's own way to add a second adult to the family, from the guardian
@@ -765,7 +785,11 @@ in their journey sections instead.
   than only a state update, and the key is profile-scoped so one child's larger
   text does not follow another)
 - App shell / infrastructure: `frontend/src/AppErrorBoundary.test.tsx`,
-  `frontend/src/routeElements.test.tsx`, `frontend/src/lazyWithReload.test.ts`,
+  `frontend/src/routeElements.test.tsx`, `frontend/src/router.test.tsx`
+  (structural assertions over the route config with no rendering: which gate
+  components stand between the tree root and each leaf URL, carrying a positive
+  control on a known-gated route so an ungated-looking result means ungated
+  rather than broken detection), `frontend/src/lazyWithReload.test.ts`,
   `frontend/src/observability.test.ts`, `frontend/src/env.test.ts` (table test
   pinning `flagEnabled`'s exact contract, the switch behind every feature flag:
   only the lowercase literal `"true"` is on, so `"TRUE"`/`"True"`/`"1"`/`"yes"`/
