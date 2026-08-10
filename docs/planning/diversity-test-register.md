@@ -632,9 +632,25 @@ markers an instruction can be checked against (world, names, slug) were all sati
 thing that actually matters was not**, which is worth noting on its own: surface independence is
 easy to demand and easy to deliver without delivering independence.
 
-**So the artifact is unusable as an M-4 arm** and the row is not blocked so much as re-methoded. The
-second attempt withholds the reference contract entirely, supplying the format as a written schema
-instead, so the author never sees the prose it must not converge on.
+**So the artifact looked unusable as an M-4 arm**, and the second attempt withheld the reference
+contract entirely, supplying the format as a written schema instead, so the author never saw the
+prose it must not converge on.
+
+**That discard was premature, and the criterion that reverses it is the one the second attempt
+produced.** See below: convergence keys on *sentence identity*, not on lexical similarity. Measured
+against that criterion, attempt 1 shares **0 of 35** `choice_semantics` strings and 1 of 26
+`beat_hint` strings with the base, which is the same profile as the pilot pair whose fills landed at
+the floor. It is also the better M-4 arm on the design's own terms: it **holds the goal constant**
+(`prove-and-earn` in both, where M-4 requires "same goal, differing only in whether failure is
+free") and it declares **19 `invention` slots**, where the second attempt changed the goal to a
+countdown heist and declared none. Attempt 1 is therefore restored as the M-4 arm, with its one
+shared `beat_hint` rewritten, and attempt 2 is kept as the evidence for `AL-222` rather than as an
+arm.
+
+**The reversal is worth more than the arm.** A decision made on a plausible criterion (lexical
+distance) was reversed by measuring the right one, and the discarded artifact turned out to be the
+correct one all along. Recorded because it is a live demonstration that `AL-223` changes real
+decisions rather than merely rewording guidance.
 
 ### The controlled result: withholding works completely, instructing does nothing
 
