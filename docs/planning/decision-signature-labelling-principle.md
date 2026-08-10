@@ -186,3 +186,34 @@ Fields that clear the kappa floor may be **reported**. Until a v2 vocabulary is 
 reader judgement rather than against another annotator, **no field here may route anything**: not
 a gate, not a repair, not a generation retry. Reliability was necessary and is not sufficient, and
 this project now has the counterexample that proves it.
+
+## A richer vocabulary was tried and did not help (D-3, 2026-08-10)
+
+The section above proposed a v2 vocabulary with a reasoning-kind dimension. It was built and
+tested: `reasoning_kind` (compute, match, recall, infer, perceive, negotiate, exert) and `stake`
+(nothing, time, resource, access, standing, permanent) were added alongside the three gaps recorded
+above, and two independent blind annotators re-labelled all three plans.
+
+**It did not move the result.** `reasoning_kind` inverts the reader ordering exactly as
+`action_family` did, under both annotators. Across six fields, one annotator had none ordering the
+pairs as readers did and the other had one.
+
+The new fields are not unreliable. Kappa between the two annotators is 0.773 to 0.811 on
+`reasoning_kind` and 0.716 on `stake`, comfortably above the floor. They are labellable, agreed
+upon, and uninformative.
+
+**The cause is that the contracts do not contain the property, so no vocabulary applied to them
+can.** The decisive fork reads "answer the test on its own terms, set it deliberately" in one plan
+and "fit the piece the way the diagram shows, deliberately" in another. Rule 2 above requires those
+to receive the same labels, and Rule 2 is right: at the contract layer they *are* the same decision.
+Adding two numbers and carrying past twelve, against holding a part against its full-size outline,
+is a distinction that lives in the book's binding (`clock_arithmetic` against `pictogram_code`), one
+layer below the artifact being annotated.
+
+This corrects the "deaf at the forks that decide it" framing in the validity section above. The
+vocabulary was not deaf; the contract was silent, and the vocabulary reported that silence
+faithfully. The scenery-leakage half of that diagnosis stands unchanged.
+
+**Consequence for this document.** The unit of annotation is wrong. Signatures must be assigned
+over the contract *and its binding* together, and any threshold calibrated over contracts alone is
+measuring an artifact that omits what readers respond to. See `AL-203`.

@@ -33,10 +33,19 @@ annotators, with inter-annotator kappa of 0.96 on `action_family`. It is deaf at
 call decisive and follows scenery at the entry forks.
 
 Six of the ten architecture rows below either emit these signatures, score against them, or
-optimise them. **Any such row run before D-3 lands is measuring with an instrument known to point
-the wrong way**, and a positive result from it would be uninterpretable. That is why the D rows
-sort above the architecture rows, and it is a change from the reviewers' recommended orders, which
-were written before this was known.
+optimise them. **Any such row run before the instrument is fixed is measuring with something known
+to point the wrong way**, and a positive result from it would be uninterpretable. That is why the
+D rows sort above the architecture rows, and it is a change from the reviewers' recommended
+orders, which were written before this was known.
+
+**D-3 has since narrowed the problem, and widened who it affects.** Enriching the vocabulary
+changed nothing: annotated over the contracts, `reasoning_kind` inverts exactly as
+`action_family` did and `stake` ties, zero of six fields ordering the pairs as readers did. The
+cause is that the contracts do not contain the property. They describe the decisive fork as
+"answer the test on its own terms" and "fit the piece the way the diagram shows"; the arithmetic
+against shape-matching distinction that both raters named lives in the binding. So **R2-1b, R1-1
+and M-3 are not merely blocked on a metric, they are specified to plan at a layer that provably
+omits what readers respond to**, and each needs re-specifying rather than re-scheduling.
 
 ---
 
@@ -44,9 +53,10 @@ were written before this was known.
 
 | ID | Test | Question it settles | Method | Cost | Falsifier | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| D-1 | Separate the treatment's two bundled changes | Was the 2026-08-10 effect from varied decisions, or from the four rooms yielding distinct components? One rater credited the latter explicitly, and they are confounded. | Third arm on the same graph: varied decisions, rooms restored to yielding the same thing. Rate against the same base book with the six-question instrument. | ~1 fill, 2 raters | The varied-decision-only arm rates the same as the control, meaning the whole effect was the components. | queued |
+| D-1 | Separate the treatment's **three** bundled changes | Was the 2026-08-10 effect from the different kind of act, from the stake economics, or from the four rooms yielding distinct components? Raters cited act-kind at one fork and stakes at two, so the original two-way framing understated the confound. | Three arms on the same graph, each restoring one change to the control's setting while holding the other two. Rate each against the same base book with the six-question instrument. | 3 fills, 2 raters | Restoring any single change collapses the effect, which would name that change as the whole lever rather than one of three. | queued |
 | D-2 | Replicate on a production-eligible graph | Does any of this survive off a 26-node outlier? The catalog median is 151 nodes and the pilot graph is not production-eligible. | Repeat the winning arm on a median-size 10-13 skeleton, same protocol, same instrument. | 2 fills, 2 raters | The effect vanishes or inverts at production scale. | queued |
-| D-3 | DecisionSignature v2 with a reasoning-kind dimension | Can a signature vocabulary be built that agrees with readers instead of inverting them? Gates six architecture rows. | Add reasoning-kind (compute, match, recall, infer, negotiate, exert) plus the three gaps from `AL-193`. Re-annotate the three existing plans blind, re-measure kappa, and check the ordering against the ratings already taken. | 3 annotators over 3 plans | v2 still ranks the treatment pair as the more repetitive one, or kappa falls below 0.60. | queued |
+| D-3 | DecisionSignature v2 over the contracts | Can a richer vocabulary agree with readers instead of inverting them? | Added `reasoning_kind` (compute, match, recall, infer, perceive, negotiate, exert) and `stake` (nothing, time, resource, access, standing, permanent) plus the three `AL-193` gaps, and re-annotated the three plans blind. | 2 annotators over 3 plans | Hit its own falsifier: still ranks the treatment pair as the more repetitive one. Annotator A 0 of 6 fields agreeing with readers, annotator B 1 of 6. `reasoning_kind` inverts under both (0.929 against 1.000, and 0.857 against 0.964). Not a reliability failure: kappa between the two annotators is 0.77 to 0.81 on `reasoning_kind` and 0.72 on `stake`, both clear of the floor. The new fields are labellable and do not discriminate. | **done, NEGATIVE** |
+| D-3b | Same vocabulary over contract **plus binding** | Is the inversion a vocabulary problem or a layer problem? The contracts describe `n_clockface` as "answer the test on its own terms" and "fit the piece the way the diagram shows", which Rule 2 correctly calls one decision; the mechanic readers responded to lives in the binding (`clock_arithmetic`, `rhythm_code`, `pictogram_code`). | Identical annotation pass with each plan's bound devices attached. | 1 to 2 annotators over 3 plans | Ordering still inverts with the binding visible, which would mean the discriminating property is not in the plan at all and only the filled prose carries it. | running |
 | D-4 | Solution-transfer metric | Is the item that actually discriminated computable from a plan, rather than only ratable by a reader? | Formalise "these two puzzles resolve by the same operation to the same answer" against the three existing contracts, and check it reproduces the raters' Q6 ordering (4,4 against 3,3). | deterministic, no model | It cannot reproduce the known ordering on the pair we have already rated. | queued |
 | D-5 | Rate the discarded contaminated arm as a negative control | Does the six-question instrument correctly detect a pair we know is contaminated? | The 14-of-24 shared-prop binding is preserved. Feed `filled_V5b` to fresh blind raters and confirm it scores worse than `filled_V5c` on Q6. | 2 raters | The instrument cannot separate a known-contaminated pair from a clean one, which would invalidate every rating taken with it. | queued |
 
@@ -54,7 +64,7 @@ were written before this was known.
 
 | ID | Test | Source | Thesis | Cheapest experiment (proposer's) | Falsifier | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| M-1 | Goal transform | in-house | Vary what the *reader is trying to do* as one global variable that re-reads every fork. We varied why each scene exists and failed; we never varied the reader's objective. | Two books, same graph, same binding, different goal. Existing rig, one afternoon. | The two books rate as repetitive as the control pair, meaning the objects at each fork dominate the reader's goal. | queued |
+| M-4 | Stake economics | in-house, from rater testimony | Not *what* the goal is but whether failure costs anything. The treatment's goal imposed a live global constraint, a closing clock and a carrying limit and damage that persists, which re-prices every fork; the control's goal change did not. Both raters cited this unprompted, one noting that forcing is a free do-over in both control books and has a price in the treatment. | Two books, same graph, non-colliding bindings, same goal, differing only in whether failure is free. Existing rig. | The two books rate as repetitive as each other, meaning a reader does not price failure into how a choice feels. | queued |
 | M-2 | World-graph tours | in-house | A graph is a *world*, not a book; a book is a validated subgraph tour. The catalog already holds graphs at 677, 551 and 250 nodes. | Take the largest 10-13 graph, cut two disjoint tours by hand, fill both, rate. Tests coherence as much as diversity. | Tours read as incoherent, because the large graphs were authored assuming roughly linear progression rather than as worlds. | queued |
 | Q-2 | Cross-skeleton recombination | framework Q2 | Subtree grafting is the only mechanism that has ever cleared the anti-clone floor, and has never been evaluated for reader-perceived distinctness or coherence cost. | Graft subtrees between two catalog graphs, fill, rate for distinctness and for coherence damage. | Grafts read as incoherent, or as no more distinct than a plain sibling pair. | queued |
 | Q-3 | How close is the skeleton-free path | framework Q3, brief 5.3 | Named the cheapest outstanding experiment before this programme started, and never run. | Per brief section 5.3. | The skeleton-free path produces structurally invalid graphs at a rate that no gate can absorb. | queued |
@@ -86,6 +96,7 @@ measures with an instrument known to invert.
 
 | ID | Test | Why retired |
 | --- | --- | --- |
+| M-1 | Goal transform | **Refuted for free from data already held, no fill spent.** The option proposed varying what the reader is trying to do. All three books in the 2026-08-10 run already have different goals (prove-and-earn, reconstruct-and-remember, salvage-and-triage), and the control pair differs in goal while rating as the *more* repetitive of the two. Varying the dramatic question is therefore not sufficient. Superseded by M-4, which names the property the treatment's goal actually carried. |
 | AL-199 | Per-book illusory-choice gate | Owner ruling, spec section 9.9. Loop-back exploration paths are a convention of the form, not a flaw; sweeping every room is the play. The structural observation stands, the defect framing does not. |
 | Q-4 | Replicate the topology finding | The finding it would replicate was withdrawn. Topology is not itself the fingerprint (spec section 8.3), and the branch-obligation screen that replaced the claim has since been shown one-way (`AL-197`). Superseded by D-2. |
 
