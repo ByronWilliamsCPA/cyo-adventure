@@ -496,6 +496,41 @@ One rater noted a mismatch that strengthens rather than weakens the result: the 
 and the clean book share a framing the base book does not, so the contaminated pair had the *less*
 similar opening premise and still won on decision repetition.
 
+### Q-3 design, pre-registered 2026-08-10 before any graph exists
+
+Six story graphs for the 10-13 band, generated from scratch by six isolated authors given the JSON
+format and nothing else: no skeleton, no catalog, no example story, and **no validator in the loop**.
+Each is asked for 25 to 35 nodes, 5 to 9 endings, fully written prose, and is told which structural
+properties matter.
+
+**Withholding the validator is deliberate and it changes what this measures.** A production system
+would run the gate and repair, so this is not a measure of what the skeleton-free path could
+achieve. It is the **first-pass yield**, which is the number that decides the cost, and it is the
+number nobody has.
+
+**Scored deterministically**, no rater and no model:
+
+1. **Hard structural failures**: a dangling choice target, an unreachable node, a non-ending node
+   with no choices, an ending node carrying choices, a start node that is not the declared one, or
+   any node from which no ending is reachable.
+2. **The project gate** (`scripts/run_story_gate.py`), reported as blocked or not, with findings.
+3. For each failure class, whether repair needs **authorial judgement** or is **mechanical** (a
+   dangling target needs someone to decide where it should point; an ending carrying a leftover
+   choice does not).
+
+**Primary measure, fixed now:** the share of the six with zero hard structural failures.
+
+**The falsifier requires both halves, stated before the numbers exist.** Q-3's falsifier as written
+is "produces structurally invalid graphs at a rate no gate can absorb". A gate detects all six
+failure classes above with certainty, so detection is never the issue and the falsifier has to be
+read as a yield-and-repairability claim. It fires only if **fewer than half are clean AND the
+dominant failure class needs authorial judgement.** A poor yield whose failures a repair pass fixes
+mechanically is a cost to be priced, not a refutation.
+
+**Two limits on whatever comes back.** Six graphs from one model is a small sample, and at 25 to 35
+nodes against a catalog median of 149 this tests the easy end. A clean result licenses nothing about
+production scale, and the register should not let it.
+
 ## A2. What D-6 costs every remaining fill-based row
 
 D-6 is a result about method, not only about architecture, and it re-prices four rows that were
@@ -522,7 +557,7 @@ and until `AL-213` is addressed it is a hand job of roughly 1.7KB per node.
 | M-4 | Stake economics | in-house, from rater testimony | Not *what* the goal is but whether failure costs anything. The treatment's goal imposed a live global constraint, a closing clock and a carrying limit and damage that persists, which re-prices every fork; the control's goal change did not. Both raters cited this unprompted, one noting that forcing is a free do-over in both control books and has a price in the treatment. | Two books, same graph, non-colliding bindings, same goal, differing only in whether failure is free. Existing rig. | The two books rate as repetitive as each other, meaning a reader does not price failure into how a choice feels. | queued |
 | M-2 | World-graph tours | in-house | A graph is a *world*, not a book; a book is a validated subgraph tour. The catalog already holds graphs at 677, 551 and 250 nodes. | Take the largest 10-13 graph, cut two disjoint tours by hand, fill both, rate. Tests coherence as much as diversity. | Tours read as incoherent, because the large graphs were authored assuming roughly linear progression rather than as worlds. | queued |
 | Q-2 | Cross-skeleton recombination | framework Q2 | Subtree grafting is the only mechanism that has ever cleared the anti-clone floor, and has never been evaluated for reader-perceived distinctness or coherence cost. | Graft subtrees between two catalog graphs, fill, rate for distinctness and for coherence damage. | Grafts read as incoherent, or as no more distinct than a plain sibling pair. | queued |
-| Q-3 | How close is the skeleton-free path | framework Q3, brief 5.3 | Named the cheapest outstanding experiment before this programme started, and never run. | Per brief section 5.3. | The skeleton-free path produces structurally invalid graphs at a rate that no gate can absorb. | queued |
+| Q-3 | How close is the skeleton-free path | framework Q3, brief 5.3 | Named the cheapest outstanding experiment before this programme started, and never run. **D-6 promotes it: a skeleton-free graph shares no plan by construction, so it is the only queued row that structurally cannot hit the convergence wall.** | Six graphs generated from scratch by isolated authors, format reference only, no skeleton and no validator in the loop. Score deterministically against the structural rules and the project gate. Analysis pre-registered below before the artifacts exist. | 6 generations, 0 raters | Structurally clean share below half **and** the failures needing authorial judgement rather than mechanical repair. Both halves required: a low yield that a repair pass fixes for free is a cost, not a refutation. | **running** |
 | Q-5 | Does the fill match its contract | framework Q5 | Nothing verifies finished prose against the node obligations it was written to satisfy. This is S4's unaddressed second weakness and it is independent of everything else here. | One model pass judging entailment over all 49 obligations of one book, plus a deterministic lexical triage scored against it. | Fired in the useful direction: fills do substantially satisfy their contracts, so the interesting result is that a deterministic check cannot verify it. | **done** |
 
 ### Q-5 result: the fills are faithful, and only a model can tell you so
