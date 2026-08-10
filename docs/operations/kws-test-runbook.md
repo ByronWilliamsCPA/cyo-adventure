@@ -61,7 +61,7 @@ hourly sends and gathered no evidence.
 Pick one before sending:
 
 | Approach | What it needs | Trade-off |
-|---|---|---|
+| --- | --- | --- |
 | Point the local shell at staging's database | `DATABASE_URL` for staging's `cyo_api` role in a local env file | Fastest. Puts a staging DB credential on the workstation, so treat it as a secret and remove it after. |
 | Run the script inside the staging backend container | `docker exec -i cyo-staging-backend` with the script piped over stdin, since `scripts/` is not in the image | No credential leaves the host; the container already holds the right `DATABASE_URL` and KWS credentials. **Preferred**, and the only option whose commands are given in full below. |
 | Register a second return/webhook URL against a tunnel to the workstation | A public tunnel and a Control Panel registration | Most work, and mints a second pair of HMAC secrets to manage. Only worth it for iterating on the handler code. |
@@ -88,26 +88,43 @@ in**, following the owner ruling that KWS card or debit verification is the sole
 typed-name attestation is never relied on as the enumerated method:
 
 | Run | Answers | Address needed | Blocked on |
-|---|---|---|---|
-| 1 | **Q2**, and Q3 for free | a real inbox with **no** prior Epic verification | branding published to Test; card alerts enabled first; execution inside the staging container |
-| 2 | Q1 | an address that **has** completed an Epic verification | the same execution path |
-| none | Q4 | none | **answered from vendor documentation 2026-08-10; no run needed** |
+| --- | --- | --- | --- |
+| 1 | **Q2 structural half** (done 2026-08-10); Q3 **not** answered | any org developer or admin address, or an alias of one | nothing; branding was published 2026-08-10 |
+| 2 | Q1, and Q3 if any delivery arrives | the **`+verified` alias** of the same address | webhook URL registered in the Control Panel |
+| none | Q4 | none | **answered from vendor documentation 2026-08-10, confirmed by observation; no run needed** |
 
 Q2 moved to the front because the ruling removed the fallback. It was the question that could
 *retire* the O-122 accepted exception; with no second method behind it, it is now the question that
-decides whether the chosen method is available at all. Q3 needs no run of its own: it is answered by
-capturing the raw request on any real webhook delivery, so run 1 answers both. Q4 left the run list
-entirely on 2026-08-10: Epic's own API pages document the shape verbatim, which is better evidence
-than a single observed redirect would have been, and it cost no send budget.
+decides whether the chosen method is available at all. Q4 left the run list entirely on 2026-08-10:
+Epic's own API pages document the shape verbatim, which is better evidence than a single observed
+redirect would have been, and it cost no send budget. Run 1 then observed that shape directly and
+agreed with the documentation.
 
-**Both remaining runs are blocked on publishing branding to the Test environment.** Until that is
-done, `send-email` answers `400 ERR_INVALID_REQUEST` with "you need to publish your branding in the
-developer portal before you can call this api". The Developer Portal's Branding page requires a
-**Global brand name** and a **Privacy Policy URL**, then offers **Publish to Test**. This is an
-operator action in the portal; no code change unblocks it.
+Q3 did **not** come free with run 1, contrary to what this table said before that run. It is
+answered by capturing the raw request on a real webhook delivery, and run 1 produced no delivery at
+all, so it is now carried on run 2. See "Checking whether a webhook arrived" below.
 
-Note that Q1 and Q2 want opposite addresses and cannot share one. An address Epic has already
-verified inherits through AgeGraph, so no method runs and there is no card transaction to observe.
+**Branding was published to Test on 2026-08-10**, which cleared the block both runs previously
+carried. Before that, `send-email` answered `400 ERR_INVALID_REQUEST` with "you need to publish your
+branding in the developer portal before you can call this api". The Developer Portal's Branding page
+requires a **Global brand name** and a **Privacy Policy URL**, then offers **Publish to Test**.
+
+### Test addresses: the alias is the mechanism, and nothing gets burned
+
+Epic's testing page sets two rules that between them replace the old "find two inboxes with opposite
+histories" plan:
+
+- The address must belong to a developer or admin in the organization, or be an **alias** of one
+  (`test.user+1@domain.com`).
+- **In the test environment KWS does not add verified addresses to the AgeGraph.** The pre-verified
+  flow is reached by adding the **`+verified`** alias instead, for example
+  `test.user+verified@domain.com`.
+
+Two consequences worth stating plainly, because the earlier version of this document had both
+backwards. An address used for a Test verification is **not** consumed: it gains no AgeGraph entry,
+so it remains valid for repeat first-time runs. And Q1 needs no second mailbox, because the alias
+simulates the inheritance path deterministically. The ten-per-hour limit is per unique address, so
+the alias also carries its own independent budget rather than sharing the base address's.
 
 ### Q1: does `parent-verified` fire on the AgeGraph inheritance path?
 
@@ -115,7 +132,10 @@ Epic's AgeGraph can treat a parent as already verified from a prior verification
 Epic's ecosystem, with no method running for us at all. This is an accepted risk, not a defect,
 but its blast radius depends on whether we are told.
 
-- **Setup**: use an email address that has previously completed an Epic parent verification.
+- **Setup**: use the **`+verified` alias** of an org developer or admin address, for example
+  `test.user+verified@domain.com`. This is the documented Test-environment mechanism for the
+  pre-verified flow, and it is deterministic. Do not go looking for an inbox with real prior Epic
+  history: a Test verification never writes to the AgeGraph, so no address accumulates one.
 - **What to watch**: whether a `parent-verified` delivery arrives at all, how quickly, and whether
   `payload.status.transactionId` is present.
 - **Why it matters**: if the webhook fires identically for an inherited verification, then a row
@@ -135,19 +155,40 @@ but its blast radius depends on whether we are told.
   up to two hours**, which is survivable but means no Gate 2 surface may treat the absence of a
   webhook shortly after a send as a negative result.
 
-### Q2 (run first): does the card method capture and refund, or authorise only?
+### Q2 (structural half ANSWERED 2026-08-10; notification limb cannot be answered in Test)
 
 16 CFR 312.5(b)(2)(ii) requires the card be used "in connection with a transaction" and that it
-"provides notification of each discrete transaction to the primary account holder." Whether a
-zero-charge authorisation triggers cardholder notification is the unanswered question at the
-centre of the payment-card route.
+"provides notification of each discrete transaction to the primary account holder." That is two
+limbs, and the Test environment can answer exactly one of them. Splitting them is the correction
+this section carries: the earlier version treated them as a single question and instructed the
+operator to enable card alerts before running, which was wrong and wasted preparation.
 
-- **Setup**: complete a verification using the card method, with a card whose statement and
-  notification settings you can inspect. **Enable transaction alerts before the run, not after**:
-  whether a notification would have fired cannot be established retroactively, and a run that
-  answers everything except the notification limb has answered nothing that matters.
-- **What to watch**: whether a charge appears and is reversed, the amount, and critically
-  **whether the cardholder receives a notification**.
+**Test runs on Stripe test cards, so no real money moves.** Epic's testing page routes card
+verification through Stripe and points at `docs.stripe.com/testing` for the numbers. Stripe states
+that test-mode transactions do not move funds, do not appear on a real cardholder statement, and do
+not generate real cardholder notifications. Use `4242 4242 4242 4242`, any future expiry, any
+three-digit CVC. **Do not enable card alerts as a precondition and do not go looking at a statement
+afterwards**: there is nothing there to find, by construction.
+
+- **Answered (first limb).** The method creates a **PaymentIntent for $0.05**, not a `SetupIntent`
+  and not a zero-amount authorisation, and the observed return carried a real PaymentIntent id
+  (`pi_...`). The parent-facing screen commits to the behaviour in writing: "Stripe will charge
+  $0.05 to your card to confirm the card is valid. This amount will be refunded to you in
+  approximately 8-13 business days." Test mode exercises the same API objects and only simulates
+  settlement, so the shape of the transaction is real evidence even though the money is not. The
+  "in connection with a transaction" limb is met through the vendor, with no card handling built
+  here.
+- **Not answered, and not answerable in Test (second limb).** Whether a live $0.05 charge produces
+  notification to the primary account holder cannot be observed without a live-mode charge.
+- **Ask counsel before spending a production verification on it.** The 8-13 business day refund lag
+  means the capture and the refund post as **two discrete statement entries** rather than a
+  same-day pair an issuer might net out before the statement closes. If "notification" is read as
+  the statement line item rather than an issuer push alert, the observed design already satisfies
+  the limb and no live run is needed. Put that question first; it may retire the limb outright.
+- **If a live observation is required**, note what it costs: a KWS **production** verification is a
+  genuine VPC event that writes real consent state, so it cannot be treated as a test. It has to
+  come after the Gate 2 consumer exists, not before. Epic separately recommends an end-to-end
+  production run regardless, so the two can be the same run.
 - **Why it matters, restated 2026-08-10.** This was the only one of the four that could *retire* the
   O-122 accepted exception rather than merely characterise it. The owner ruling that KWS card or
   debit verification is the **sole** VPC method, with the typed-name attestation retained as consent
@@ -169,6 +210,10 @@ observed delivery.
 - **Why it matters**: a signature we cannot verify is answered `401`, which is the correct
   direction to fail but means a real verification is silently dropped. This is the one question
   whose wrong answer breaks the integration outright rather than weakening a claim about it.
+- **Still open after run 1 (2026-08-10).** The run produced **no delivery at all**, so there was no
+  raw request to capture. A header-versus-query-string disagreement would have surfaced as a `401`
+  in the log; zero inbound POSTs is a different failure and points upstream of the signature. Q3 is
+  therefore carried to run 2 and stays open until some delivery lands.
 
 ### Q4 (ANSWERED 2026-08-10, no run needed): what shape is the redirect's `status` value in?
 
@@ -270,6 +315,76 @@ Control Panel registration has not happened yet and no verification can complete
 check `/api/v1/health/`'s `version` and `uptime_seconds` before suspecting the wiring: a Portainer
 stack update without the re-pull option reuses the local image and reports success having changed
 nothing.
+
+## Checking whether a webhook arrived
+
+The redirect page is display-only, so it never tells you whether a verification was recorded. Only
+these checks do. Run them in this order; each one narrows what the previous one leaves ambiguous.
+
+**1. The row, which is the authoritative answer.** `sent` means no delivery has been processed;
+`verified` with a populated `resolved_at` and `transaction_id` means one has. Pipe a `SELECT` into
+the staging container the same way the send script is piped:
+
+```bash
+ssh byron@docker-host 'docker exec -i cyo-staging-backend /app/.venv/bin/python -' <<'PY'
+import asyncio
+from sqlalchemy import text
+from cyo_adventure.core.database import get_session
+
+async def main() -> None:
+    async with get_session() as s:
+        for r in (await s.execute(text(
+            "SELECT id, kws_environment, status, requested_at, resolved_at, transaction_id "
+            "FROM kws_verification ORDER BY requested_at DESC LIMIT 5"
+        ))).mappings():
+            print(dict(r))
+
+asyncio.run(main())
+PY
+```
+
+**2. The log, but only after proving the log can see.** A count of inbound POSTs is worthless on its
+own, because a log that never records POSTs reads as zero whether or not KWS sent one. Send one
+yourself with a deliberately invalid signature, confirm it appears, and only then trust the count:
+
+```bash
+curl -s -o /dev/null -w '%{http_code}\n' -X POST \
+  https://cyo-staging.williamshome.family/api/v1/webhooks/kws/parent-verified \
+  -H 'Content-Type: application/json' -H 'x-kws-signature: t=1,v1=deadbeef' -d '{"name":"probe"}'
+# expect 401 from our app, which also proves the route is reachable from the public internet
+
+ssh byron@docker-host \
+  'docker logs cyo-staging-backend 2>&1 | grep -c "POST /api/v1/webhooks/kws/parent-verified"'
+```
+
+A `401` to that probe is a good result on three counts at once: the route is published, Cloudflare
+is not filtering it, and the receiver secret is loaded. The probe writes no verification state; an
+invalid signature is rejected before the body is parsed, leaving only a security-audit entry.
+
+**Also check the container's start time before reading a count as evidence.** `docker logs` begins
+at container creation, so a redeploy between the send and the check silently truncates the window:
+
+```bash
+ssh byron@docker-host 'docker inspect -f "started={{.State.StartedAt}}" cyo-staging-backend'
+```
+
+**3. Reading the result.** These three outcomes have different causes and different fixes:
+
+| Row | Inbound POSTs | Means |
+| --- | --- | --- |
+| `verified` | at least one | working end to end |
+| `sent` | one or more, answered `401` | delivery reaches us but the signature does not verify: this is Q3, compare the header against the query-string form |
+| `sent` | zero, with the probe visible | **KWS never sent one.** Not a code problem. Check the webhook URL registration in the Control Panel |
+| `sent` | zero, probe also absent | the route or the host is unreachable from outside; fix that before reading anything else |
+
+Allow for deferral before concluding the third row. Epic documents an intentional random delay of up
+to two hours on the pre-verified confirmation path, so a check a few minutes after a send cannot
+distinguish "never sent" from "not yet". The row persists, so a late delivery still resolves it;
+re-run check 1 rather than re-sending and burning budget.
+
+**Observed 2026-08-10.** Row `sent`, zero inbound POSTs, probe POSTs visible in the same log, route
+answering `401` from the public internet through Cloudflare. That is the third row: KWS sent
+nothing, and the registration is the thing to check.
 
 ## What Gate 1 does not do
 
