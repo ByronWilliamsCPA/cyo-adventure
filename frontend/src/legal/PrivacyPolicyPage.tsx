@@ -48,6 +48,30 @@ import './legal.css'
  * #VERIFY: PrivacyPolicyPage.test.tsx pins each of the four absences, so
  * re-adding one fails a test that names the reason rather than passing quietly.
  *
+ * The same rule cuts the other way, and five statements here are PRESENT for a
+ * reason rather than by default. Each one reads as an awkward hedge and is the
+ * kind of sentence an editor tidies away, so each is pinned by a test too:
+ *   - the PII check "stops the request rather than editing it".
+ *     `generation/pii.py::assert_prompt_pii_safe` RAISES; it strips nothing,
+ *     and guardian/PrivacyPage.tsx already carries a standing instruction that
+ *     the wording must not imply otherwise. "Checked to remove" is the exact
+ *     phrasing that instruction forbids.
+ *   - the Epic row naming a country code and a language, not just an email.
+ *     `consent/kws_client.py` sends `{email, location, language, ...}` and
+ *     documents `location` as the CHILD's, so an email-only row would be false
+ *     by omission about a child-linked transfer.
+ *   - the AgeGraph paragraph. `core/config.py`'s kws_enabled_methods note
+ *     records that a matched hashed email pre-verifies a parent with no new
+ *     verification event on our side, under a method the webhook never reports.
+ *   - Epic "not acting solely on our instructions", which is ADR-018's
+ *     independent-controller finding. It is deliberately NOT phrased as the
+ *     inverse of the withheld processor-only claim above; both can be true of
+ *     different vendors, and the tests pin them independently.
+ *   - which rights have an in-app control and which are done by email.
+ *     guardian/PrivacyPage.test.tsx pins "no button for this in the app yet"
+ *     for family deletion; a public page promising the button would contradict
+ *     a named regression test on the signed-in page.
+ *
  * Relationship to the consent record: `auth/onboardingApi.ts` holds
  * CONSENT_POLICY_VERSION, the stamp stored on `User.consent_policy_version` so
  * a recorded consent points at the exact text agreed to. That is deliberately
@@ -77,8 +101,9 @@ export function PrivacyPolicyPage() {
             the part of the app a child uses.
           </li>
           <li>
-            A grown-up sets up every profile, approves every story, and can export or delete the
-            family&apos;s data at any time.
+            A grown-up sets up every profile, approves every story, and can delete a child&apos;s
+            profile at any time. Exporting your data, deleting the whole family account, and pausing
+            a profile are done by emailing us, not yet by a button in the app.
           </li>
         </ul>
       </div>
@@ -104,7 +129,10 @@ export function PrivacyPolicyPage() {
       </p>
 
       <h2>What we collect, and why</h2>
-      <div className="legal__table-wrap">
+      {/* tabIndex on the scroll container, not decoration: these tables set a
+          min-width and scroll sideways on a phone, and a region that scrolls
+          but cannot be focused is unreachable by keyboard alone. */}
+      <div className="legal__table-wrap" tabIndex={0} role="region" aria-label="What we collect">
         <table className="legal__table">
           <thead>
             <tr>
@@ -166,11 +194,20 @@ export function PrivacyPolicyPage() {
             </tr>
             <tr>
               <td>
-                A record of administrator actions on your account, and of administrator views of
-                your family&apos;s data
+                A record of administrator actions on your account, and of an administrator opening
+                one of your child&apos;s profiles
               </td>
               <td>Guardian, Child</td>
               <td>Safety review, account support, and an audit trail of who did what</td>
+            </tr>
+            <tr>
+              <td>
+                Security records: the IP address a request came from, what was asked for, and what
+                happened. These are written for requests from a child&apos;s device as well as from
+                yours
+              </td>
+              <td>Guardian, Child</td>
+              <td>Spotting and investigating abuse, and keeping an account-security trail</td>
             </tr>
           </tbody>
         </table>
@@ -182,9 +219,14 @@ export function PrivacyPolicyPage() {
       </p>
       <p>
         <strong>What we deliberately never collect from a child</strong>: their real name,
-        birthdate, exact age, photograph, email address, phone number, or location. A child never
-        has their own email, phone number, or sign-in identity. Every way into the app resolves back
-        to a guardian&apos;s account.
+        birthdate, exact age, photograph, email address, or phone number. A child never has their
+        own email, phone number, or sign-in identity. Every way into the app resolves back to a
+        guardian&apos;s account.
+      </p>
+      <p>
+        We do not collect a child&apos;s precise location. The only place a location is involved at
+        all is the age-verification step described below, which sends a country or region code
+        derived from the country you chose for your own account.
       </p>
 
       <h2>How we get your permission</h2>
@@ -199,10 +241,24 @@ export function PrivacyPolicyPage() {
         Web Services, which confirms that the person giving permission is an adult before a profile
         can be created. Until that is switched on, the process above is what happens.
       </p>
+      <p>
+        Two things about that service are worth knowing before it is switched on. Epic keeps a
+        record of parents it has already checked, matched on a one-way scrambled form of the email
+        address. If yours is in that record, Epic can tell us you are an adult without sending you
+        anything: the check that stands behind it happened somewhere else, at a time we do not see,
+        and Epic does not tell us which method was used. Separately, Epic uses that same record to
+        answer the same question for its other customers, which is why we describe it above as not
+        acting solely on our instructions.
+      </p>
 
       <h2>Who we share information with</h2>
       <p>We use the following outside companies to run the app:</p>
-      <div className="legal__table-wrap">
+      <div
+        className="legal__table-wrap"
+        tabIndex={0}
+        role="region"
+        aria-label="Who we share information with"
+      >
         <table className="legal__table">
           <thead>
             <tr>
@@ -220,18 +276,22 @@ export function PrivacyPolicyPage() {
             <tr>
               <td>OpenRouter and the AI model providers it routes to, and Anthropic directly</td>
               <td>
-                Story prompts, checked first to remove real names, contact details, and addresses
+                Story prompts. A prompt is rejected and no story is written if it contains a
+                registered child&apos;s name, an email address, a phone number, or something shaped
+                like a street address. The check stops the request rather than editing it, and it
+                cannot catch every name a child might type, such as a friend&apos;s or a
+                school&apos;s
               </td>
               <td>Writing your child&apos;s stories</td>
             </tr>
             <tr>
               <td>OpenAI Moderation, Google Perspective</td>
-              <td>Generated story text and typed story ideas, checked the same way</td>
+              <td>Generated story text and typed story ideas, subject to the same check</td>
               <td>Safety-checking content before it reaches your child</td>
             </tr>
             <tr>
               <td>Google (Gemini)</td>
-              <td>Cover-art prompts, checked the same way</td>
+              <td>Cover-art prompts, subject to the same check</td>
               <td>Drawing book cover art</td>
             </tr>
             <tr>
@@ -241,8 +301,15 @@ export function PrivacyPolicyPage() {
             </tr>
             <tr>
               <td>Epic Games (Kids Web Services)</td>
-              <td>A parent&apos;s email address, when a verification is requested</td>
-              <td>Confirming that a person giving permission is an adult</td>
+              <td>
+                A parent&apos;s email address, a country or region code for the child, and which
+                language to write in, when a verification is requested
+              </td>
+              <td>
+                Confirming that a person giving permission is an adult. Epic also keeps what it
+                receives in a record it uses to answer the same question for its other customers, so
+                for this one step it is not acting solely on our instructions
+              </td>
             </tr>
             <tr>
               <td>Sentry</td>
@@ -257,10 +324,20 @@ export function PrivacyPolicyPage() {
         There are no advertising or marketing SDKs of any kind in the parts of the app your child
         uses.
       </p>
-      <p>Every company listed above is based in the United States.</p>
+      <p>
+        Each company named above is based in the United States. OpenRouter passes prompts on to
+        model providers we have put on an allowlist, and those providers may in turn run on
+        infrastructure operated by other companies; we do not independently verify where every one
+        of them processes data.
+      </p>
 
       <h2>How long we keep information</h2>
-      <div className="legal__table-wrap">
+      <div
+        className="legal__table-wrap"
+        tabIndex={0}
+        role="region"
+        aria-label="How long we keep information"
+      >
         <table className="legal__table">
           <thead>
             <tr>
@@ -293,7 +370,11 @@ export function PrivacyPolicyPage() {
             </tr>
             <tr>
               <td>Records of safety reviews</td>
-              <td>One to two years</td>
+              <td>
+                Up to two years. Nothing deletes these on a timer yet; until that is built they go
+                when we remove them by hand, so treat two years as the target rather than a
+                guarantee
+              </td>
             </tr>
             <tr>
               <td>
@@ -301,6 +382,13 @@ export function PrivacyPolicyPage() {
                 and categories, never your child&apos;s name or story text
               </td>
               <td>Kept indefinitely, as a compliance and dispute-resolution record</td>
+            </tr>
+            <tr>
+              <td>The security records described above, including IP addresses</td>
+              <td>
+                Kept indefinitely. These are written so they cannot be altered afterwards, which
+                also means there is no routine deletion path for them today
+              </td>
             </tr>
           </tbody>
         </table>
@@ -313,19 +401,20 @@ export function PrivacyPolicyPage() {
       </p>
       <ul>
         <li>
-          <strong>See what we have.</strong> Ask for a full export of your family&apos;s data.
+          <strong>See what we have.</strong> Ask for a full export of your family&apos;s data. There
+          is no button for this in the app yet, so it is done by email.
         </li>
         <li>
-          <strong>Correct it.</strong> Update your child&apos;s profile settings, or your own
-          account details, in the app.
+          <strong>Correct it.</strong> Update your child&apos;s profile settings in the app.
+          Changing your own account details is done by email; the app has no screen for it yet.
         </li>
         <li>
-          <strong>Delete it.</strong> Delete a single child&apos;s profile, or your whole family
-          account. Deletion is permanent.
+          <strong>Delete it.</strong> Delete a single child&apos;s profile in the app. Deleting your
+          whole family account is done by email, not yet by a button. Deletion is permanent.
         </li>
         <li>
           <strong>Pause a profile.</strong> Stop active use of one profile&apos;s data without
-          deleting it, for example while you sort out a concern.
+          deleting it, for example while you sort out a concern. This is done by email too.
         </li>
         <li>
           <strong>Complain.</strong> If you are in the EU or UK, you can complain to your local data
@@ -333,8 +422,10 @@ export function PrivacyPolicyPage() {
         </li>
       </ul>
       <p>
-        Use the controls in your guardian console, or email{' '}
-        <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> and we will action it for you.
+        Where a right above says &quot;in the app&quot;, the control is in your guardian console.
+        Everything else is done by emailing <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>,
+        where a person actions it by hand. We say which is which rather than describing them all as
+        app features, because the difference changes how long a request takes.
       </p>
 
       <h2>Security</h2>
@@ -348,7 +439,8 @@ export function PrivacyPolicyPage() {
       <p>
         If we change this policy, the date at the top of the page changes with it. If a change
         materially affects what you agreed to, we will contact you at the email address on your
-        account.
+        account. There is no automated mailing behind that: a person sends it, so check this page if
+        you want the current text rather than waiting to be told.
       </p>
 
       <h2 className="legal__contact">Contact us</h2>

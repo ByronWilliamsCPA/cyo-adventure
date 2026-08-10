@@ -63,7 +63,11 @@ export function SupportPage() {
           Children&apos;s privacy law requires that a parent or legal guardian, not a child, gives
           permission before a child&apos;s profile is created. We use Epic&apos;s Kids Web Services
           to confirm that the person giving permission is an adult. We receive the result of that
-          check; we do not receive or store your payment card details.
+          check; we do not receive or store your payment card details. Some parents are not asked
+          anything at all: if Epic already holds a record that this email address belongs to a
+          verified adult, it tells us so directly, and that earlier check is one we did not see and
+          cannot inspect. The <Link to={PRIVACY_PATH}>privacy policy</Link> explains what Epic
+          receives and keeps.
         </dd>
 
         {/* #ASSUME: payment/financial: what the card method actually does to a
@@ -110,9 +114,10 @@ export function SupportPage() {
 
         <dt>How do I delete our data?</dt>
         <dd>
-          You can delete a single child&apos;s profile or your entire family account. Deletion is
-          permanent. Use the controls in your guardian console, or email us and we will action it
-          for you.
+          You can delete a single child&apos;s profile yourself, from your guardian console.
+          Deleting your entire family account, exporting your data, and pausing a profile do not
+          have a button in the app yet: email us and a person will do it. Deletion is permanent
+          either way.
         </dd>
 
         <dt>I think something unsafe reached my child.</dt>

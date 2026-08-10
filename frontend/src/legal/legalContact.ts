@@ -30,5 +30,20 @@ export const CONTACT_EMAIL = 'byronawilliams@gmail.com'
  */
 export const POLICY_LAST_UPDATED = '10 August 2026'
 
-/** Who is responsible for the information described on these pages. */
+/**
+ * Who is responsible for the information described on these pages.
+ *
+ * #ASSUME: security: `docs/compliance/privacy-notice.md` carries this as a
+ * `[COUNSEL: ...]` bracket, because who the controller IS, a natural person or
+ * a legal entity, is a question for counsel and not a naming choice. Publishing
+ * a natural person here resolves that bracket by default rather than by
+ * decision, and it is the answer that puts personal liability on an individual
+ * and a home-linked identity on a public page. It stands because a policy with
+ * no named controller is worse under both COPPA and GDPR than one naming a
+ * person.
+ * #VERIFY: revisit when the entity question is answered; if an entity is
+ * formed, this constant and the privacy-notice bracket change together, and
+ * the consent version in `auth/onboardingApi.ts` bumps because the identity of
+ * the controller is substance, not wording.
+ */
 export const CONTROLLER_NAME = 'Byron Williams'
