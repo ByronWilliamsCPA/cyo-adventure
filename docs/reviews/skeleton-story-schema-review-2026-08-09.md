@@ -271,16 +271,31 @@ comparison, pathfinder, critical analysis) for recommended-but-unbuilt changes.
 ## 6. New quantitative findings (this review)
 
 - **40 of 61 skeletons carry at least one hidden gate advisory**: 37 PL-23 clock drifts
-  (declared `estimated_minutes` off by 30-125% from the derived fastest-finish clock), 25 PL-24
-  ending-mix breaches (7 gamebooks below the 3-distinct-winnable-endings floor), 4 L2-13
-  past-hand-authoring-ceiling flags, 2 PL-26 corridor-density flags.
-- **A random reader at the teen bands essentially cannot win.** Uniform-random-walk win
-  probability (positive-valence ending), by band median: 3-5 100%, 5-8 71%, 8-11 43%,
-  10-13 29%, 13-16 **0.3%**, 16+ **1.2%**. Twelve teen gamebooks sit at or below 0.1%;
-  negative-valence ending share runs 78-98% (`the-pale-road`: 147 of 150 endings negative).
-  Caveats: the walk ignores Tier-2 condition gating (informed readers do better) and counts
-  neutral endings as non-wins; gamebook lethality is a declared style. But the spread across
-  trees in the same cell is near zero, which is the actual defect (see 7.2).
+  (declared `estimated_minutes` off by 30-125% from the derived fastest-finish clock), 21
+  PL-24 ending-mix breaches (7 gamebooks below the 3-distinct-winnable-endings floor), 4
+  L2-13 past-hand-authoring-ceiling flags, 2 PL-26 corridor-density flags.
+- **A random reader at the teen bands essentially cannot win, on the positive-valence-only
+  metric.** Uniform-random-walk win probability (**positive-valence ending only**; this is
+  not the metric the strict walk floor enforces, see the reconciliation below), by band
+  median: 3-5 100%, 5-8 63.1%, 8-11 43.2%, 10-13 29.0%, 13-16 **0.16%**, 16+ **0.66%**.
+  (Re-measured over all 61 catalog skeletons at PR #661's head, 736d6a46, on 2026-08-09:
+  3-5, 8-11, and 10-13 reproduce the figures previously reported here; 5-8, 13-16, and 16+
+  do not, previously reported as 71%, 0.3%, and 1.2%, each higher than re-measurement; the
+  discrepancy is unexplained and the earlier derivation is not recorded.) Thirteen of the
+  14 teen gamebooks (8 at 13-16, 6 at 16+) sit at or below 0.1% on this metric;
+  negative-valence ending share runs 78-98% **across the teen gamebooks specifically**
+  (`the-pale-road`: 147 of 150 endings negative). That band is not a teen-wide figure:
+  teen prose runs 8-70% on the same measure, so the lethality is a property of the
+  declared gamebook style rather than of the teen bands.
+  Caveats: the walk ignores Tier-2 condition gating (informed readers do better) and this
+  metric counts neutral endings as non-wins; gamebook lethality is a declared style. But
+  the spread across trees in the same cell is near zero, which is the actual defect (see
+  7.2). **Reconciling with the strict census (Part 3):** its "Random-walk outcome floor |
+  11" row measures a different metric, `satisfying_walk_probability` (positive OR neutral),
+  across all bands and styles, not just teen gamebooks; its 11 decompose as 9 teen
+  gamebooks (floor 2%) plus 2 teen prose skeletons (floor 10%): `the-blackwood-sanatorium`
+  (16+ prose, 0.06%) and `the-vanishing-orchard` (13-16 prose, 3.84%). The 13 and 11 are
+  not in conflict; they measure different things over different populations.
 - **Tier-2 state is largely cosmetic.** Of 14 stateful skeletons, most gate under 5% of choices
   on any variable; the 551-node pair gates 7 of 802 choices (0.9%). Zero variables exist at
   3-5, 5-8, and 8-11. Zero skeletons declare `accepts_character` (the ADR-028 runtime shipped
@@ -470,9 +485,10 @@ recommendation to the owner, not a ruling; the register rows stay open until rul
 > **RULED 2026-08-09 (owner)**: R1, R2, and R3 are accepted as written below. R4 is accepted
 > with one amendment: the reconvergence constraint is a **hard gate**, not an advisory. The
 > owner's stated plan is to remove all non-conforming skeletons and build a new catalog set;
-> a robust, high-quality skeleton set is the long-term priority. Implementation status:
-> R1's walk floors are ratified in `check_skeleton.py --strict`, PL-24's winnability floor
-> now scales as `max(3, ceil(5% of endings))` in `validator/policy.py`, and the cell-level
+> a robust, high-quality skeleton set is the long-term priority. Implementation status (all
+> delivered on the open, unmerged PR #661; nothing below has landed on `main`): R1's walk
+> floors are ratified in `check_skeleton.py --strict`, PL-24's winnability floor now scales
+> as `max(3, ceil(5% of endings))` in `validator/policy.py`, and the cell-level
 > outcome-spread audit exists as `scripts/check_outcome_spread.py` (3 breaches at tau 0.10
 > in the current catalog, headed by the clone pair at distance 0.0000). R2's depth-qualified
 > endings floor and R4's topology-aware max in-degree cap are hard failures in
@@ -486,9 +502,10 @@ recommendation to the owner, not a ruling; the register rows stay open until rul
 
 ### Strict-bar conformance census (2026-08-09, post-ruling)
 
-`check_skeleton.py --strict --allow-mvp` over all 61 catalog skeletons: **2 pass, 59 fail**
-(`3-5/puddle-jumping-day`, `3-5/the-big-red-balloon` are the survivors). Failure drivers,
-counted per skeleton (most fail on several):
+`check_skeleton.py --strict --allow-mvp`, run at PR #661's head (736d6a46, unmerged), over
+all 61 catalog skeletons: **2 pass, 59 fail** (`3-5/puddle-jumping-day`,
+`3-5/the-big-red-balloon` are the survivors). Failure drivers, counted per skeleton (most
+fail on several):
 
 | Driver | Skeletons | Note |
 | --- | --- | --- |
@@ -501,6 +518,12 @@ counted per skeleton (most fail on several):
 | Reconvergence in-degree cap | 7 | the mega-funnels, headed by the clone pair at 31 |
 | Depth-qualified endings floor | 2 | |
 | PL-26 corridor density | 2 | |
+
+The "Random-walk outcome floor" row measures a different metric than section 6's
+positive-only walk probability: it is `satisfying_walk_probability` (positive OR neutral),
+decomposing as 9 teen gamebooks (floor 2%) plus 2 teen prose skeletons (floor 10%):
+`the-blackwood-sanatorium` (16+ prose, 0.06%) and `the-vanishing-orchard` (13-16 prose,
+3.84%); see section 6 for the reconciliation with the positive-only figures reported there.
 
 Reading the census: the dominant driver is the choice grammar, which has never been
 enforced anywhere, so the catalog predates its own bar; this is the UW-C24 flip cost made
@@ -523,11 +546,12 @@ gone.
 **Recommend: keep lethal gamebooks legal; regulate the experienced economy, not the census.**
 A raw death-count ceiling would ban the genre (real gamebooks are death-heavy and the
 corpus was authored to that style). Instead adopt three complementary constraints: (a) the
-random-walk satisfying-outcome floor at 2% for teen gamebooks (now live in
-`check_skeleton.py --strict`, pending this calibration ruling); (b) PL-24's winnability
-floor scaled to `max(3, 5% of endings)` instead of the absolute 3 that the corpus was
-calibrated to clear; (c) the cell-level outcome-spread audit (9.3.1), so each gamebook cell
-holds at least one graded-setback tree alongside the punishing ones. Rationale: the defect
+random-walk satisfying-outcome floor at 2% for teen gamebooks (live in `check_skeleton.py
+--strict` on the open PR #661, not yet on `main`, pending this calibration ruling); (b)
+PL-24's winnability floor scaled to `max(3, 5% of endings)` instead of the absolute 3 that
+the corpus was calibrated to clear; (c) the cell-level outcome-spread audit (9.3.1), so
+each gamebook cell holds at least one graded-setback tree alongside the punishing ones.
+Rationale: the defect
 the data shows is not "too many deaths" but "every tree in the cell has the same 2-wins
 shape and a random reader wins with p < 0.003"; the walk floor and the spread rule target
 exactly that while leaving a deliberately brutal tree legal in a cell that also offers
@@ -636,11 +660,12 @@ Two headline facts coexist and are both load-bearing:
 ### What this ruling means for the rebuild workflow
 
 The drafting loop for wave 1 must be: generated brief from `band_profile.py` (the pilot's own
-briefs drifted from code twice), structural harness draft, `check_skeleton.py --strict`, the
-catalog audits run with the candidate placed in its target cell (`check_incell_clones.py`,
-`check_outcome_spread.py`), and a mandatory adversarial critique stage before any promotion
-PR. Strict must additionally gate parameterization (a slotless `production_eligible` shell
-currently exits 0 and would take the legacy free-text fill path in matching). The
+briefs drifted from code twice), structural harness draft, `check_skeleton.py --strict`
+(PR #661), the catalog audits run with the candidate placed in its target cell
+(`check_incell_clones.py`, `check_outcome_spread.py`, the latter also PR #661-only), and a
+mandatory adversarial critique stage before any promotion PR. Strict must additionally
+gate parameterization (a slotless `production_eligible` shell currently exits 0 and would
+take the legacy free-text fill path in matching). The
 next-generation checks the critiques specify, in priority order: tag-vs-beat honesty audit,
 positional fate-bias check with seeded option shuffling, sibling reachable-ending-overlap and
 k-hop funnel metrics, merge-node beat-presupposition linting, and a near-cap headroom
@@ -727,8 +752,14 @@ variants), now with direct experimental evidence:
 3. **Honest series framing** in the product for same-skeleton siblings (covers, titles,
    "another Momo adventure"): converts the sameness kids tolerate into a feature and removes
    the parent-trust failure at zero authoring cost.
-4. For true "three real stories": structurally distinct siblings via the `mutation/` engine
-   (ADR-020), which exists for exactly this, at catalog-time curation cost.
+4. For true "three real stories" via mutation: withdrawn. A later experiment on this same
+   PR (2026-08-09) tested bounded per-request mutation of one parent skeleton and withdrew
+   it as a diversity lever: it preserved 100% of the parent's beat directives, structural
+   distances landed 0.0000-0.0064 against the 0.05 floor, and a reader reached the
+   same-book verdict at position 3 (AL-179/UW-C115; full result in
+   `docs/planning/skeleton-free-alternatives-proposal-2026-08-09.md` section 11.5). The
+   withdrawal is specific to per-request mutation as a diversity lever; cross-skeleton
+   recombination remains an open question and is not ruled out by this result.
 
 Lessons AL-151..AL-153 (UW-C88..UW-C90) carry the defects and proposals.
 
@@ -785,9 +816,9 @@ walk is the sole correctness guarantee), and binds generator output equally.
    widens the hand-feasible envelope at small/medium cells and reduces template pressure for
    everyone, but 245-node gamebook cells remain generator territory under any plausible
    calibration.
-3. **Live incremental linting** (editor/watch mode over `check_skeleton --strict`): reduces
-   the cost of each iteration rather than the number of coupled constraints; cheap, worth
-   having, insufficient alone at scale.
+3. **Live incremental linting** (editor/watch mode over `check_skeleton --strict`, from PR
+   #661): reduces the cost of each iteration rather than the number of coupled constraints;
+   cheap, worth having, insufficient alone at scale.
 4. **Reserve the pure-hand path for the small cells** (3-5, 5-8), where it demonstrably
    works and where craft density matters most per node.
 
@@ -822,11 +853,12 @@ experiment:
 | 12 | PL-25 window vs ADR-011's "2-3 node" prose | Code anchors on JHM 2019 (windows to 9-10 nodes); the ADR text was never annotated as superseded | Annotate ADR-011 section 6; keep the code values |
 
 Items 1-3, 5-9 change what compliant skeletons look like and should be ruled before rebuild
-wave 1; items 4, 10-12 are documentation or post-wave recalibration. Also implemented with
-this revision (the hand-authoring recommendations, re-scoped for LLM authoring per the
-owner's steer): `scripts/generate_drafting_brief.py` emits the full per-cell constraint set
-from the enforced sources (AL-149 applied; hand-copied briefs drifted twice during the
-pilot), and `skeleton-format.md` now carries the corrected word table, the strict-bar
-section, and the `{SLOT}`/contract grammar. The pure-hand drafting path receives no further
-tooling investment; the strict-bar reference and brief generator serve the LLM authoring
-agents that are the catalog's actual production path.
+wave 1; items 4, 10-12 are documentation or post-wave recalibration. Also implemented on
+the open, unmerged PR #661 (the hand-authoring recommendations, re-scoped for LLM authoring
+per the owner's steer): `scripts/generate_drafting_brief.py` emits the full per-cell
+constraint set from the enforced sources (AL-149 applied; hand-copied briefs drifted twice
+during the pilot), and PR #661 also fixes `skeleton-format.md` to carry the corrected word
+table (see 2.1), the strict-bar section, and the `{SLOT}`/contract grammar (see 2.3); none
+of this has landed on `main`. The pure-hand drafting path receives no further tooling
+investment; the strict-bar reference and brief generator serve the LLM authoring agents
+that are the catalog's actual production path.
