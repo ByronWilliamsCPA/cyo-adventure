@@ -1,0 +1,4750 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A choose-your-own-adventure reading app for kids">
+      
+      
+        <meta name="author" content="Byron Williams">
+      
+      
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/cyo-generation-research-brief-2026-08-10/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Generating choose-your-own-adventure books with LLMs: problem statement, capability analysis, and an open puzzle - CYO Adventure</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config",""),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#generating-choose-your-own-adventure-books-with-llms-problem-statement-capability-analysis-and-an-open-puzzle" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            CYO Adventure
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Generating choose-your-own-adventure books with LLMs: problem statement, capability analysis, and an open puzzle
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../guides/overview/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  User Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api-reference/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../operations/runbook/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Operations
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../security/assurance-spine/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Security
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../development/architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../project/roadmap/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Project
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Planning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../PROJECT_SETUP/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Supplementary Docs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../ADRs/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    CYO Adventure
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/usage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/supabase-environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supabase environments
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Operations
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/runbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator Runbook
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/authoring-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authoring Guide
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/security-events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security Event Catalog
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../architecture/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/user-journeys/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Journeys
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/system-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/generation-pipeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Generation Pipeline
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/validation-and-player/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation and Player
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/data-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Model
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/assurance-spine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assurance Spine
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/assurance-register/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assurance Register
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/control-inheritance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Control Inheritance Map
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/crypto-inventory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cryptographic Inventory
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/red-team-design-review-2026-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Red Team Design Review
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../api/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/code-quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code Quality
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/license/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    License
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planning
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Planning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../project-vision/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Vision
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tech-spec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tech Specification
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROJECT-PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Plan
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../adr/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADRs
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9_6" id="__nav_9_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ADRs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-001-story-format-json-storybook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-002-client-pwa/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-002
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-003-frontier-llm-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-003
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-004-homelab-first-deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-004
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-005-mandatory-human-approval/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-005
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-006
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-007-raw-output-retention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-008-public-app-store-launch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-008
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-009-supabase-platform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-009
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-010
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-011-story-scale-framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-011
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../research/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Story Structure Diversity
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9_7" id="__nav_9_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Story Structure Diversity
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../story-structure-diversity-critical-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Critical Analysis
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../story-structure-improvement-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Improvement Plan
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../story-structure-implementation-briefs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation Briefs
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supplementary Docs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Supplementary Docs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PROJECT_SETUP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Setup
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPENSSF_COMPLIANCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenSSF Compliance
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PYTHON_COMPATIBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python Compatibility
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../ADRs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_11" id="__nav_11_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ADRs/adr-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR Template
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-what-we-are-asking-you-to-do" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. What we are asking you to do
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-the-product-goal-from-first-principles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. The product goal, from first principles
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. The product goal, from first principles">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-the-artifact" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 The artifact
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-what-we-know-readers-of-this-form-want" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 What we know readers of this form want
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-what-actually-counts-as-the-defect" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 What actually counts as the defect
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-our-measurement-does-not-match-that-definition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Our measurement does not match that definition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-operational-success-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.5 Operational success criteria
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-scale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Scale
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-capability-analysis-why-one-pass-cannot-do-this" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Capability analysis: why one pass cannot do this
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Capability analysis: why one pass cannot do this">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-a-composite-of-two-tasks-with-different-profiles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 A composite of two tasks with different profiles
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-hierarchical-planning-is-the-established-remedy-with-a-known-ceiling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Hierarchical planning is the established remedy, with a known ceiling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-the-branching-specific-literature-is-thin-and-what-exists-agrees-with-us" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 The branching-specific literature is thin, and what exists agrees with us
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-compositional-degradation-predicts-where-a-single-pass-breaks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Compositional degradation predicts where a single pass breaks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-long-context-does-not-rescue-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 Long context does not rescue it
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#36-self-verification-limits-force-an-external-gate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6 Self-verification limits force an external gate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#37-output-diversity-is-the-actual-bottleneck-and-it-is-a-model-level-property" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7 Output diversity is the actual bottleneck, and it is a model-level property
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#38-our-evaluation-instruments-were-themselves-a-source-of-error" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.8 Our evaluation instruments were themselves a source of error
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-what-we-built-and-what-each-intervention-measured" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. What we built, and what each intervention measured
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-the-empirical-result-and-a-correction-to-how-we-first-read-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. The empirical result, and a correction to how we first read it
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. The empirical result, and a correction to how we first read it">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-what-the-rater-actually-reported" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 What the rater actually reported
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-the-correction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 The correction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-the-cell-we-never-tested" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 The cell we never tested
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#54-what-survives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4 What survives
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-where-theory-and-our-evidence-pull-apart" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Where theory and our evidence pull apart
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-methods-appendix-so-you-can-weight-the-evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Methods appendix, so you can weight the evidence
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-what-we-want-from-you-candidate-architectures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. What we want from you: candidate architectures
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. What we want from you: candidate architectures">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-what-each-proposal-should-specify" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 What each proposal should specify
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-constraints-any-proposal-must-respect" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2 Constraints any proposal must respect
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#83-design-considerations-we-would-like-addressed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.3 Design considerations we would like addressed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#84-families-we-have-considered-but-not-developed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.4 Families we have considered but not developed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-glossary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Glossary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. References
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. References">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#interactive-narrative-and-choice-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interactive narrative and choice structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#story-generation-with-language-models-linear" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Story generation with language models (linear)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#branching-and-choice-based-narrative-generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Branching and choice-based narrative generation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#planning-compositionality-self-correction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Planning, compositionality, self-correction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#long-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Long context
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#diversity-and-homogenization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Diversity and homogenization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#model-based-evaluation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Model-based evaluation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#constrained-generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Constrained generation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reader-psychology-childrens-reading-and-formula" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reader psychology, children's reading, and formula
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="generating-choose-your-own-adventure-books-with-llms-problem-statement-capability-analysis-and-an-open-puzzle">Generating choose-your-own-adventure books with LLMs: problem statement, capability analysis, and an open puzzle<a class="headerlink" href="#generating-choose-your-own-adventure-books-with-llms-problem-statement-capability-analysis-and-an-open-puzzle" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>Status: research brief prepared for external analysis.</strong> Written to be handed to readers
+with no access to the system it describes, so it is self-contained: every term is defined
+in section 9 and no claim depends on inspecting our code. Its purpose is to get independent
+theorizing on a problem we have attacked from ten directions without solving.</p>
+<p><strong>Citations.</strong> Every reference in section 10 was verified against a primary source
+(publisher page, ACL Anthology, or proceedings entry). Six entries in an earlier draft were
+wrong and are corrected here; two claims that could not be verified were removed rather
+than softened. Where a finding is ours rather than published, it is marked as such.</p>
+</blockquote>
+<hr />
+<h2 id="0-what-we-are-asking-you-to-do">0. What we are asking you to do<a class="headerlink" href="#0-what-we-are-asking-you-to-do" title="Permanent link">&para;</a></h2>
+<p>Read sections 1 through 7, then produce what section 8 asks for: <strong>two to four concrete
+architectures we could build and test.</strong> Section 8.1 gives the specification each proposal
+should meet, 8.2 the hard constraints, 8.3 the design questions we expect a good proposal to
+take a position on, and 8.4 some undeveloped families you are free to extend or dismiss.</p>
+<p>We are not asking whether LLMs can write stories. They can. We are asking something
+narrower: <strong>what architecture lets one reusable story graph produce many books in which the
+reader is asked to decide genuinely different things?</strong></p>
+<p>Sharing an armature across books is fine and intended; the product already supports series.
+The defect is narrower, and section 1.3 defines it precisely: the reader being asked to make
+the same decisions, in the same order, book after book.</p>
+<p>We have a deployed system that satisfies every other requirement. We have measured ten
+interventions against this one. All ten varied something other than the decisions
+themselves, which we did not realize until we tabulated them (section 5.3).</p>
+<p>The central design problem, which every proposal has to solve somehow: <strong>how do you keep a
+plan strict enough for a program to verify, while leaving the scene content and the offered
+choices free to vary per request?</strong> Our plans currently fix both, and we do not know whether
+that is necessary or just how we built it.</p>
+<p>Two further things we would value:</p>
+<ol>
+<li><strong>A valid instrument.</strong> Section 1.4 shows ours measures the wrong construct. We need one
+   that scores decision repetition and ignores shared world, cast, and shape.</li>
+<li><strong>Attack the framing.</strong> If you think 1.3 draws the line in the wrong place, say so. It is
+   an owner judgment informed by the literature in 1.2, not an experimental result, and an
+   architecture aimed at the wrong target is worse than none.</li>
+</ol>
+<hr />
+<h2 id="1-the-product-goal-from-first-principles">1. The product goal, from first principles<a class="headerlink" href="#1-the-product-goal-from-first-principles" title="Permanent link">&para;</a></h2>
+<h3 id="11-the-artifact">1.1 The artifact<a class="headerlink" href="#11-the-artifact" title="Permanent link">&para;</a></h3>
+<p>A guardian requests a story for a specific child. The system generates a <strong>choose-your-own
+adventure book</strong>: a directed graph whose nodes carry prose and whose edges are labeled
+choices. The child reads on a tablet, offline, choosing at each fork. Every path terminates
+at an ending. An adult approves each book before the child sees it.</p>
+<h3 id="12-what-we-know-readers-of-this-form-want">1.2 What we know readers of this form want<a class="headerlink" href="#12-what-we-know-readers-of-this-form-want" title="Permanent link">&para;</a></h3>
+<p><strong>Choice produces engagement, and the effect is strongest for our users.</strong> Patall, Cooper and
+Robinson's meta-analysis of 41 studies [41] found choice reliably raised intrinsic
+motivation, effort, task performance, and perceived competence. Two moderators matter for
+design: the effect is <strong>stronger for children than adults</strong>, and the optimum is around
+<strong>two to four successive choices</strong> rather than more. Self-determination theory [42] supplies
+the mechanism, with autonomy as one of three basic psychological needs.</p>
+<p>Our per-band rules cap options per choice at two to four. That was arrived at
+independently and turns out to match the meta-analytic optimum.</p>
+<p>Survey evidence points the same way. Scholastic's <em>Kids &amp; Family Reading Report</em> [52] reports
+<strong>93% of children agree that "my favorite books are the ones I have picked out myself"</strong>
+(8<sup>th</sup> edition, 2024; the comparable 5<sup>th</sup>-edition figure was 91%).</p>
+<p><strong>Agency is not branching.</strong> Murray [5] named agency as one of three characteristic pleasures
+of digital environments, defining it as "the satisfying power to take meaningful action and
+see the results of our decisions." The common design error is reading that as an argument for
+wide graphs. Mawhorter and colleagues' choice poetics [2] locates the effect one level down:
+a choice reads as meaningful based on how it is structured and framed, not merely on what it
+leads to. Riedl and Bulitko's survey [3] frames the whole field as managing the tension
+between authorial intent and player agency.</p>
+<p>This matters because it puts reader experience in the <strong>local texture of a single choice</strong>,
+which is the opposite of where our engineering effort has gone. Ryan [6] makes the wider
+point that interactive media produce genuinely new narrative modes rather than degraded
+literary ones, which is a caution against evaluating our books as if they were novels that
+happen to fork.</p>
+<p><strong>Structure has a small vocabulary.</strong> Ashwell's survey of choice-based games [1] identifies
+eight recurring macro-topologies: Time Cave, Gauntlet, Branch and Bottleneck, Quest, Open
+Map, Sorting Hat, Floating Modules, and Loop and Grow. His observation is that widely
+branching shapes are rare because authoring cost explodes, and that branch-and-bottleneck
+dominates published work because reconvergence bounds that cost while preserving local
+choice.</p>
+<p>Our catalog reproduced this independently. Of 61 graphs: 22 branch-and-bottleneck, 11 open
+map, 9 sorting hat, 7 time cave, 6 gauntlet, 6 loop and grow. That is six of Ashwell's eight
+patterns, with the same shape dominant, arrived at by our authors without reference to his
+taxonomy. Weak evidence that we are in the right design space; <strong>strong evidence that the
+space is small</strong>. That mattered while we believed shape was the fingerprint; it matters much
+less now, for reasons in 5.4.</p>
+<p><strong>Formula is the product in this genre.</strong> This is the literature we had been ignoring, and
+the one our verification pass strengthened most.</p>
+<p>Ross's study of series-book readers [48] is the direct evidence. Drawing on 142 open-ended
+interviews with adult pleasure readers reflecting on childhood reading, plus textual
+analysis, it argues that the <strong>predictability of series books is what does the developmental
+work</strong>: reliable structure lets a beginning reader practise sense-making across extended
+text, and series reading "far from being harmful, might be for some readers an essential
+stage in their development as powerful literates." Gannon [49] argues from children's
+literature theory that repetition clarifies narrative structure, aids recall, and supplies
+ritual pleasure, and that a series book "can only be properly appreciated" against the
+pattern of its siblings. Merga [50] found "series adherence" among five recurring themes
+when Year 4 and Year 6 children were asked what would make them read more; Loh and
+colleagues [51] found series books and repeated reading persistently popular across primary
+years.</p>
+<p>The general theory sits behind this. Cawelti [46] treats formula as an artistic resource
+rather than a mark of failure; Radway's ethnography [47] found romance readers reject books
+that <em>violate</em> the formula. Nell [45] found ludic reading depends on absorption that
+predictability supports, and that readers' pleasure is not predicted by literary quality.
+Berlyne [43] gives the shape: hedonic value is an inverted-U function of novelty and
+complexity, so both total predictability and total novelty are aversive. Zajonc [44] shows
+mere exposure alone increases liking.</p>
+<h3 id="13-what-actually-counts-as-the-defect">1.3 What actually counts as the defect<a class="headerlink" href="#13-what-actually-counts-as-the-defect" title="Permanent link">&para;</a></h3>
+<p>Two literatures appear to pull against each other. Diversity is what we have been buying;
+series-fiction research says formula is the contract and readers seek it. Berlyne's
+inverted-U [43] implies some layer must stay constant and some must vary, and the design
+question is which is which.</p>
+<p><strong>We can now answer that, and the answer is narrower than "the books must differ."</strong> Series
+framing is already supported in the product, so the constant layer is settled: shared world,
+shared cast register, shared scale and format, recurring shape. Those are assets.</p>
+<p>The defect is <strong>close regurgitation of process: the reader being asked to make the same
+decisions, in the same order.</strong></p>
+<p>Worked example, which is the operational definition we now use.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>First book</th>
+<th>Second book</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Setting</td>
+<td>unicorn</td>
+<td>goblin</td>
+<td>(varies in all cases)</td>
+</tr>
+<tr>
+<td>Choice at the opening fork</td>
+<td>"Open the door" / "Go around back"</td>
+<td>"Open the door" / "Go around back"</td>
+<td><strong>Defect.</strong> Same decision, new paint.</td>
+</tr>
+<tr>
+<td>Choice at the opening fork</td>
+<td>"Open the door" / "Go around back"</td>
+<td>"Go upstairs" / "Go downstairs"</td>
+<td><strong>Acceptable.</strong></td>
+</tr>
+</tbody>
+</table>
+<p>The second row is the important one, and it is counterintuitive from an engineering seat.
+The two books there may be <strong>structurally identical</strong>: the same binary fork, the same
+downstream branch shape, the same reconvergence, the same node count. The reader does not
+experience that as repetition, because what a reader tracks is <strong>what they were asked to
+decide</strong>, not the shape of the decision tree that recorded it.</p>
+<p>Two consequences that shape everything below:</p>
+<ol>
+<li><strong>Graph shape is reusable. Decision content is not.</strong> Reusing an armature is not the
+   defect and never was. Reusing the <em>decisions</em> is.</li>
+<li>This is a property of the choice's <strong>action semantics</strong>, meaning the concrete act the
+   reader picks between. It is not a property of the choice's <em>motivation</em>, its emotional
+   framing, its narrative function, or the props in the room. Those are all things we varied
+   at length; see section 5.</li>
+</ol>
+<h3 id="14-our-measurement-does-not-match-that-definition">1.4 Our measurement does not match that definition<a class="headerlink" href="#14-our-measurement-does-not-match-that-definition" title="Permanent link">&para;</a></h3>
+<p>Having stated the defect precisely, we have to admit our instrument does not measure it.</p>
+<p>Our protocol asks a rater for the reading position at which a child would conclude "this is
+the same book in different clothes." <strong>That measures detectability of the shared armature.</strong>
+By 1.3, detecting the armature is not the defect: a child who notices they are reading
+another book in a familiar series is having the intended experience.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Reader notices shared structure</th>
+<th>Reader does not notice</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Reader is satisfied</strong></td>
+<td>Series pleasure, the case Ross [48] documents. Intended.</td>
+<td>Ideal, and expensive</td>
+</tr>
+<tr>
+<td><strong>Reader is dissatisfied</strong></td>
+<td><strong>The real defect: decisions repeat</strong></td>
+<td>Failure for other reasons</td>
+</tr>
+</tbody>
+</table>
+<p>Our instrument cannot separate the top-left cell from the bottom-left one, and every number
+in section 5 is subject to that confound.</p>
+<p>The literature supports the distinction. [2] locates reader experience in the structure and
+framing of individual choices, which is the level 1.3 identifies, rather than in global
+shape. And a search run specifically to find the counterargument found no peer-reviewed work
+holding that series readers experience formula as a defect; the classic anti-series position
+in librarianship is prescriptive rather than reader-evidence-based, and [48] is explicitly a
+rebuttal to it.</p>
+<p>One further bias worth stating: series formula tolerance is measured over books read weeks
+apart, while our rater compares two books back to back. That is the condition least
+favorable to formula tolerance, so our numbers are biased toward "too similar."</p>
+<h3 id="15-operational-success-criteria">1.5 Operational success criteria<a class="headerlink" href="#15-operational-success-criteria" title="Permanent link">&para;</a></h3>
+<p>Deterministic code enforces, independent of provenance: graph reachability and termination,
+no trap loops, per-band word envelopes, reading level, ending economy and valence mix,
+condition and effect coherence across branches, safety classification, and mandatory human
+approval.</p>
+<p>The unsolved criterion: <strong>the book should be distinct from the other books this same child
+has read.</strong> It is the only one that cannot be evaluated on a single artifact, being a
+property of a pair relative to one reader's memory. The unit is the child, not the household.</p>
+<hr />
+<h2 id="2-scale">2. Scale<a class="headerlink" href="#2-scale" title="Permanent link">&para;</a></h2>
+<p>61 graphs, 11,458 nodes total.</p>
+<table>
+<thead>
+<tr>
+<th>Band (reader age)</th>
+<th>Graphs</th>
+<th>Nodes min / median / max</th>
+<th>Words per node</th>
+<th>Median book</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3-5</td>
+<td>7</td>
+<td>11 / 20 / 32</td>
+<td>40</td>
+<td>~800 words</td>
+</tr>
+<tr>
+<td>5-8</td>
+<td>6</td>
+<td>35 / 57 / 62</td>
+<td>70</td>
+<td>~4,000 words</td>
+</tr>
+<tr>
+<td>8-11</td>
+<td>9</td>
+<td>65 / 121 / 191</td>
+<td>100</td>
+<td>~12,100 words</td>
+</tr>
+<tr>
+<td>10-13</td>
+<td>11</td>
+<td>26 / 149 / 250</td>
+<td>100</td>
+<td>~14,900 words</td>
+</tr>
+<tr>
+<td>13-16</td>
+<td>14</td>
+<td>124 / 277 / 551</td>
+<td>140</td>
+<td>~38,800 words</td>
+</tr>
+<tr>
+<td>16+</td>
+<td>14</td>
+<td>33 / 248 / 677</td>
+<td>175</td>
+<td>~43,400 words</td>
+</tr>
+</tbody>
+</table>
+<p>The largest graph is 677 nodes, roughly 118,000 words of branching prose in which every path
+must terminate, hold reading level, and not contradict itself where paths reconverge. A novel
+with a graph, not a long short story.</p>
+<hr />
+<h2 id="3-capability-analysis-why-one-pass-cannot-do-this">3. Capability analysis: why one pass cannot do this<a class="headerlink" href="#3-capability-analysis-why-one-pass-cannot-do-this" title="Permanent link">&para;</a></h2>
+<h3 id="31-a-composite-of-two-tasks-with-different-profiles">3.1 A composite of two tasks with different profiles<a class="headerlink" href="#31-a-composite-of-two-tasks-with-different-profiles" title="Permanent link">&para;</a></h3>
+<p>The artifact requires solving a <strong>combinatorial structure problem</strong> (global reachability,
+termination, reconvergence consistency) and a <strong>creative generation problem</strong> (controlled
+reading level, consistent voice) at once. Our original finding, which motivated the
+architecture, was that a single prompt asking for both produced acceptable neither.</p>
+<p>The literature supplies a mechanism rather than just a description. Tam et al. [38] found
+that imposing structured output formats measurably degrades reasoning, with larger drops
+under stricter constraints. Park et al. [39] showed grammar-constrained decoding distorts the
+model's learned distribution rather than sampling from it conditioned on validity, and built
+a "grammar-aligned" alternative precisely because the naive version costs quality.</p>
+<p><strong>Structural constraint is not free. It is paid for out of the budget that produces content
+quality.</strong> That argues for separating the jobs across calls, which is what we do.</p>
+<p>Worth noting the alternative this suggests: if validity can be guaranteed by construction
+rather than by asking the model, the tension disappears. Regex and grammar-guided decoding
+[40] does this at token level, and classical narrative planning [4] did it at plot level long
+before LLMs, generating plots that are causally sound by construction. Question 4 in section 8
+asks whether that is the right move for graph synthesis.</p>
+<h3 id="32-hierarchical-planning-is-the-established-remedy-with-a-known-ceiling">3.2 Hierarchical planning is the established remedy, with a known ceiling<a class="headerlink" href="#32-hierarchical-planning-is-the-established-remedy-with-a-known-ceiling" title="Permanent link">&para;</a></h3>
+<p>The plan-then-write tradition is well developed for <em>linear</em> fiction. Fan et al. [7]
+established hierarchical generation, producing a premise then conditioning on it, roughly
+doubling human preference. Rashkin et al. [8] added dynamic plot-state tracking against an
+outline. Yang et al. [9] scaled to 2,000+ word stories through recursive reprompting
+(+14% plot coherence, +20% premise relevance), then showed [10] that pushing creative burden
+into a <em>detailed</em> outline plus a controller beat that by a further 22.5% absolute. Mirowski
+et al. [11] took the strongest version for our purposes: Dramatron generates log line, then
+characters, then beats, then dialogue, and 15 industry professionals found it useful for
+structure while criticizing logical gaps.</p>
+<p>Our architecture is this pattern with the plan <strong>precomputed and human-reviewed</strong> rather
+than generated per request.</p>
+<p>The ceiling is visible in the same literature. Dramatron's professional evaluators noted
+structural sameness across runs. <strong>A fixed plan is a fixed story.</strong> This tradition optimizes
+coherence, which is a within-book property. Our problem is a between-book property, and we
+found no work in this line that treats it as an objective.</p>
+<p>Tian et al. [12] give the quality-side limit: measured on story arcs, turning points, and
+arousal/valence, LLM narratives are homogeneously positive and structurally flat relative to
+human ones, placing setbacks and climaxes prematurely so suspense collapses in the second
+half. That is a <em>narrative</em> limitation distinct from the structural ones, and it bears on
+whether more graphs would even be well-used.</p>
+<h3 id="33-the-branching-specific-literature-is-thin-and-what-exists-agrees-with-us">3.3 The branching-specific literature is thin, and what exists agrees with us<a class="headerlink" href="#33-the-branching-specific-literature-is-thin-and-what-exists-agrees-with-us" title="Permanent link">&para;</a></h3>
+<p>Most story-generation work is linear. The choice-based subset is small and recent:</p>
+<ul>
+<li>Mateas, Mawhorter and Wardrip-Fruin [13] used choice poetics as a <em>generative</em> target, so
+  choices are produced to achieve intended narrative effects rather than merely to be valid.
+  This remains the closest thing to a foundational treatment of choice generation as its own
+  problem.</li>
+<li>Harmon and Rutman [14] evaluated open-source LLMs generating choices and consequences at
+  plot crossroads, producing a taxonomy of 18 failure types graded mild, severe, and
+  catastrophic.</li>
+<li>Tikhonov [15] treats identifying <em>where</em> a branch should occur as a detection task in its
+  own right.</li>
+<li>Wu et al. [16] built an authoring system in which the narrative is specified as a directed
+  tree with per-node causal constraints and the LLM fills responses inside it. Their
+  design-study finding: <strong>authorial control has to be structural rather than prompt-level to
+  keep branches consistent.</strong></li>
+</ul>
+<p>That last result is independent corroboration of our own most expensive finding (5.4).
+We arrived at it by refuting prompt-level control ten times; they arrived at it from a
+design study. We take the convergence seriously.</p>
+<p><strong>The gap:</strong> we found no benchmark, metric, or method addressing <em>between-artifact
+distinctness</em> for branching narrative. If that gap is real, question 2 in section 8 may not
+have a literature answer waiting.</p>
+<h3 id="34-compositional-degradation-predicts-where-a-single-pass-breaks">3.4 Compositional degradation predicts where a single pass breaks<a class="headerlink" href="#34-compositional-degradation-predicts-where-a-single-pass-breaks" title="Permanent link">&para;</a></h3>
+<p>Dziri et al. [19] showed transformers reduce multi-step compositional reasoning to
+linearized subgraph matching, with performance collapsing as depth and width exceed training
+patterns, and errors accumulating rather than cancelling. Zhang et al. [20] showed models
+commit to an early wrong answer and generate further false claims to justify it, claims they
+can independently recognize as false 67-94% of the time. Error does not stay local.</p>
+<p>The planning literature agrees from another direction. Valmeekam et al. [17] found LLM
+autonomous plan-generation accuracy very low on classical planning domains, including
+name-obfuscated variants that strip linguistic cues, indicating retrieval rather than
+planning. Kambhampati [18] argues LLMs are better understood as approximate retrievers of
+plan-shaped text.</p>
+<p><strong>The prediction we rely on:</strong> supply the graph and the model performs; ask for the graph and
+it degrades. This is what we observe, and it is the strongest theoretical support for the
+skeleton architecture.</p>
+<h3 id="35-long-context-does-not-rescue-it">3.5 Long context does not rescue it<a class="headerlink" href="#35-long-context-does-not-rescue-it" title="Permanent link">&para;</a></h3>
+<p>Holding a book in context is not using it. Liu et al. [24] found a U-shaped position curve,
+with middle-of-context information used far worse than the ends. Hsieh et al. [25] found only
+about half of models claiming 32K context hold up at 32K once the task exceeds retrieval.
+Karpinska et al. [26] found that on 1,001 minimally-different true/false claim pairs about
+recent novels, no open-weight model beat chance and the best model reached 55.8%, despite
+near-perfect needle-in-haystack scores. Chang et al. [27] found book-length summarization
+suffers systematic coherence failures.</p>
+<p>Our requirement is <strong>constraint maintenance across a long generation</strong>, which is the
+capability this cluster is least optimistic about.</p>
+<h3 id="36-self-verification-limits-force-an-external-gate">3.6 Self-verification limits force an external gate<a class="headerlink" href="#36-self-verification-limits-force-an-external-gate" title="Permanent link">&para;</a></h3>
+<p>This is the single most load-bearing result for our design. Huang et al. [21] found that
+without external feedback, intrinsic self-correction generally <em>degrades</em> reasoning accuracy,
+and that prior reported gains came from oracle labels leaking in. Stechly et al. [22] found
+GPT-4 self-verification does not help and often hurts on Game of 24, graph coloring, and
+STRIPS planning, while a sound external verifier does: the assumption that verification is
+easier than generation does not hold for LLMs. Gou et al. [23] supply the complement:
+grounding critique in external tools produces reliable self-correction where unaided
+critique does not.</p>
+<p><strong>Never ask the model whether its graph is valid. Compute it.</strong> Our validator is a program,
+not a prompt, because of this.</p>
+<p>We see the predicted effect directly. Our agents, given a checker to run in a loop, produced
+a 31-fact narrative contract passing every coherence check on the first attempt and closed a
+large convergence gap in one revision round with no human repair. Without the checker they
+do not. The capability is unlocked by external verification exactly as [23] predicts.</p>
+<h3 id="37-output-diversity-is-the-actual-bottleneck-and-it-is-a-model-level-property">3.7 Output diversity is the actual bottleneck, and it is a model-level property<a class="headerlink" href="#37-output-diversity-is-the-actual-bottleneck-and-it-is-a-model-level-property" title="Permanent link">&para;</a></h3>
+<p>Everything above concerns producing <strong>one</strong> good book. Our problem is producing <strong>many
+different</strong> ones.</p>
+<p>Kirk et al. [30] found RLHF improves out-of-distribution generalisation while substantially
+reducing output diversity both per-input and across inputs, evidencing a
+generalisation/diversity tradeoff. <strong>The models best at following our constraints are the
+ones worst at varying.</strong></p>
+<p>The effect propagates. Padmakumar and He [31] found LLM-assisted writing reduced lexical and
+content diversity and made different authors' essays more similar to each other, with the
+model contributing the homogenizing text. Doshi and Hauser [32] found generative AI raised
+individual story quality while making the resulting corpus measurably more similar. Anderson
+et al. [33] found ideation homogenized across users of the same model. Chakrabarty et al.
+[34] found LLM stories pass 3-10x fewer expert creativity tests than professional writing,
+and that LLM judges do not correlate positively with expert assessment.</p>
+<p>Holtzman et al. [28] give the mechanical version: likelihood maximization is the wrong
+objective for open-ended generation, and the remedy trades along a diversity/coherence axis
+we cannot escape by tuning.</p>
+<p><strong>Our direct observation, which we consider the cleanest finding we have.</strong> Two agents on the
+same model, given different narrative contracts, different settings, different device
+vocabularies, and no access to each other, produced 21 identical four-word phrases including
+"a sky gone properly dark" and "carry the rhythm up", none of which appear in any input we
+supplied. After a revision round eliminated those, both agents independently rewrote the same
+choice label to the identical new string, "Head up the spiral stair."</p>
+<p>This is not a prompting failure. It is what sampling one model twice does, and it bounds how
+different two books can be when the same model writes both.</p>
+<h3 id="38-our-evaluation-instruments-were-themselves-a-source-of-error">3.8 Our evaluation instruments were themselves a source of error<a class="headerlink" href="#38-our-evaluation-instruments-were-themselves-a-source-of-error" title="Permanent link">&para;</a></h3>
+<p>Tevet and Berant [35] argued diversity metrics must be validated against the specific notion
+of diversity a task cares about, and found humans estimate content diversity far better than
+automatic metrics, while decoding-parameter tuning moves <em>form</em> diversity rather than
+<em>content</em> diversity.</p>
+<p>We rediscovered this expensively. Our deterministic similarity bench scored a pair of books
+sharing their narrative obligations at 0.548 perceived similarity, and a pair not sharing
+them at 0.547. A human rater separated the pairs immediately. <strong>The metric had no
+discriminative power on the exact distinction the product depends on</strong>, while returning
+stable, plausible numbers throughout. Distinct-n style metrics [29] have the same character:
+they measure form.</p>
+<p>Related hazards, two of which we walked into:</p>
+<ul>
+<li>Panickssery et al. [37] found LLM evaluators recognize their own generations and that this
+  causally drives self-preference. Our rater and authors shared a model family.</li>
+<li>Zheng et al. [36] documented position, verbosity, and self-enhancement biases in LLM
+  judges. Our protocol presents two books in a fixed order.</li>
+<li>We measured the same books at 2.2 in isolation and 3.0 comparatively. The review surface
+  determines the verdict.</li>
+</ul>
+<hr />
+<h2 id="4-what-we-built-and-what-each-intervention-measured">4. What we built, and what each intervention measured<a class="headerlink" href="#4-what-we-built-and-what-each-intervention-measured" title="Permanent link">&para;</a></h2>
+<p>Ten designs, chronological, each a response to the measured failure of the previous.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Design</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S0</td>
+<td>Zero-shot single call</td>
+<td>Failed on structure and prose together</td>
+</tr>
+<tr>
+<td>S1</td>
+<td>Staged pipeline: structure, then prose, then repair</td>
+<td>Shipped; inadequate on six specific defects</td>
+</tr>
+<tr>
+<td>S2</td>
+<td>Human-authored graph, per-node prescribed beats</td>
+<td>Works; the beats <em>are</em> the book (prescription ratio 0.83 at ages 3-5, 0.40 catalog-wide)</td>
+</tr>
+<tr>
+<td>S3</td>
+<td>Slot-parameterized graphs, per-request theme binding</td>
+<td>Varies what is slotted; freezes the rest byte-identically</td>
+</tr>
+<tr>
+<td>S4</td>
+<td>Per-node obligation contracts (what a scene is <em>for</em>)</td>
+<td>Lowered the sameness ceiling; did not lift it</td>
+</tr>
+<tr>
+<td>S5</td>
+<td>Per-request device pools from a per-binding bible</td>
+<td><strong>Solved on its own terms</strong> (divergence 0.41 to 0.978); recognition unmoved</td>
+</tr>
+<tr>
+<td>S6</td>
+<td>Sibling-convergence measurement fed back for revision</td>
+<td><strong>Solved on its own terms</strong> (shared 4-grams 20.4 to 1.2 per 1000); recognition unmoved</td>
+</tr>
+<tr>
+<td>S7</td>
+<td>Varying model tier</td>
+<td>Craft 4.9 / 4.0 / 2.2 across three tiers; recognition 2.5 at <em>both</em> ends</td>
+</tr>
+<tr>
+<td>S8</td>
+<td>Per-request graph mutation</td>
+<td>Refuted: shape-preserving operators give structural distance exactly 0.0000; all mutants retain 100% of the parent's authored beats</td>
+</tr>
+<tr>
+<td>S9</td>
+<td>Multiple complete obligation contracts over one graph</td>
+<td>Refuted: recognition landed <em>earlier</em> (position 2) than the single-contract control (position 4)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Instrument.</strong> A rater blind to the design walks a path through two books and reports the
+reading position at which a child who just finished book one would conclude book two is the
+same book, plus a five-point distinctness score anchored at "position 2 is 2.0" and
+"position 4 is 2.5."</p>
+<p><strong>Read this table with 5.3 in hand.</strong> Every row varied something other than scene identity
+and the actions offered at each choice, so none of these results speaks to the lever
+identified in 1.3. Rows S5 and S6 are genuine successes at what they set out to do; they are
+listed as failures only against a target we now think was the wrong one.</p>
+<hr />
+<h2 id="5-the-empirical-result-and-a-correction-to-how-we-first-read-it">5. The empirical result, and a correction to how we first read it<a class="headerlink" href="#5-the-empirical-result-and-a-correction-to-how-we-first-read-it" title="Permanent link">&para;</a></h2>
+<h3 id="51-what-the-rater-actually-reported">5.1 What the rater actually reported<a class="headerlink" href="#51-what-the-rater-actually-reported" title="Permanent link">&para;</a></h3>
+<p>The decisive case is S9. We wrote two complete narrative contracts over one unchanged graph,
+every node serving a different narrative function. At the fork where recognition landed, the
+two contracts framed the three options completely differently: one as "lead with patience /
+lead with self-reliance / lead with humility", the other as "follow the maker's own words /
+follow his handiwork / follow his confidant."</p>
+<p>The blind rater recorded the same fork, in the same order, at position 2. Its stated evidence
+was not about graph shape. It was:</p>
+<blockquote>
+<p>Same three doors, decode the note / read the building for a way in / go find the last
+person who remembers, in the same sequence.</p>
+</blockquote>
+<p>and at position 5, four rooms of the same four kinds in the same order.</p>
+<p>That is <strong>decision content</strong>, in the exact sense of 1.3. The reader was asked to make the
+same three decisions, in the same order, in both books.</p>
+<h3 id="52-the-correction">5.2 The correction<a class="headerlink" href="#52-the-correction" title="Permanent link">&para;</a></h3>
+<p>We first read this as "recognition tracks graph topology, therefore variety requires more
+graphs." That reading is <strong>too strong, and probably wrong.</strong></p>
+<p>What is fixed in our architecture is not only the shape. Each node also carries a <strong>scene
+identity</strong>: a vertex is not an abstract position, it is <em>the note-decoding scene</em>. An edge
+pointing to an abstract vertex carries no information a reader can perceive; an edge pointing
+to "the scene where you decode the note" is the entire fingerprint. Our skeletons bind both,
+and we had been attributing to the first what belongs to the second.</p>
+<p>The strongest evidence against the topology reading is our own S8. Mutation <strong>changed the
+graph</strong> and recognition barely moved, and the mutants retained <strong>100% of the parent's
+authored scene directives</strong>. If shape were the fingerprint, rearranging it should have
+helped substantially. It did not, because the scenes came along unchanged.</p>
+<p>Restated to match 1.3: <strong>shape is reusable; the decisions are not.</strong> Two books can share a
+graph and not read as the same book, provided the reader is asked to decide different things.</p>
+<h3 id="53-the-cell-we-never-tested">5.3 The cell we never tested<a class="headerlink" href="#53-the-cell-we-never-tested" title="Permanent link">&para;</a></h3>
+<p>Cataloguing what each intervention actually varied makes the gap embarrassing.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>What it varied</th>
+<th>Scene identity</th>
+<th>Action offered at each choice</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S2, S3</td>
+<td>world, cast, props via slots</td>
+<td>fixed</td>
+<td>fixed</td>
+</tr>
+<tr>
+<td>S4</td>
+<td>what each scene is <em>for</em></td>
+<td>fixed</td>
+<td>fixed</td>
+</tr>
+<tr>
+<td>S5</td>
+<td>props and clues inside scenes</td>
+<td>fixed</td>
+<td>fixed</td>
+</tr>
+<tr>
+<td>S6</td>
+<td>wording</td>
+<td>fixed</td>
+<td>fixed</td>
+</tr>
+<tr>
+<td>S7</td>
+<td>model quality</td>
+<td>fixed</td>
+<td>fixed</td>
+</tr>
+<tr>
+<td>S8</td>
+<td>edges between scenes</td>
+<td>fixed</td>
+<td>fixed</td>
+</tr>
+<tr>
+<td>S9</td>
+<td>what each scene is <em>for</em>, harder</td>
+<td>fixed</td>
+<td>fixed</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Scene identity and action semantics were held constant in all ten designs.</strong> They were
+constant by construction from S2 onward, because a human-authored skeleton names each scene
+at authoring time and every later mechanism was built to vary things <em>around</em> that.</p>
+<p>So the ten results do not show that the problem is hard. They show that we varied every
+layer except the one that 1.3 identifies as the defect, and then measured whether readers
+still noticed the layer we never varied.</p>
+<p>S9 is the sharpest illustration. It appeared to vary choice semantics and did not: it varied
+the <em>motivation</em> for each choice while the <em>act</em> stayed "examine the note", "search the
+building", "find the keeper" in both books. Rewriting why a choice is offered does not change
+what the reader is choosing to do.</p>
+<h3 id="54-what-survives">5.4 What survives<a class="headerlink" href="#54-what-survives" title="Permanent link">&para;</a></h3>
+<p>Two claims are unaffected and we still hold them:</p>
+<ul>
+<li><strong>Same-model idiom convergence</strong> (3.7) is real and independent of any of this.</li>
+<li><strong>Authorial control must be structural rather than prompt-level.</strong> We refuted prompt-level
+  control ten times; Wu et al. [16] reached the same conclusion from a design study. But
+  "structural" should now be read as <em>the scene and choice content are specified data</em>, not
+  as <em>the graph must be regenerated</em>.</li>
+</ul>
+<p>The expensive conclusion, that variety requires many more graphs, is <strong>withdrawn pending a
+test of the untested cell</strong>. If it had been right, it would also have been bad news on
+Ashwell's evidence [1]: only eight macro-topologies exist, our catalog uses six, and two
+branch-and-bottleneck graphs of similar size may well be perceptually one graph. That
+argument is now moot if shape is reusable.</p>
+<hr />
+<h2 id="6-where-theory-and-our-evidence-pull-apart">6. Where theory and our evidence pull apart<a class="headerlink" href="#6-where-theory-and-our-evidence-pull-apart" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>The plan-then-write literature optimizes coherence; we need decorrelation.</strong> No work we
+   found treats between-artifact distinctness as an objective, for linear or branching
+   narrative. Is there a formulation of this as diversity-constrained generation rather than
+   a quality problem?</li>
+<li><strong>Our strongest theoretical support argues for freezing exactly what must vary.</strong> Sections
+   3.4 and 3.6 argue for supplying a fixed plan and verifying externally, because models
+   plan poorly and cannot self-verify. But a plan detailed enough to be verifiable is a plan
+   that names the scenes, and naming the scenes is what 5.2 identifies as the fingerprint.
+   <strong>The open architectural question is whether a plan can be strict enough to verify while
+   leaving scene and choice content free.</strong> Our skeletons conflate the two, and we do not
+   know whether that is necessary or merely how we built it.</li>
+<li><strong>Diversity collapse (3.7) is model-level, so it may bound any architecture.</strong> If two
+   samples converge on "a sky gone properly dark" with no shared input, is architectural
+   variety the right lever at all, or does this need different models, different decoding, or
+   explicit inter-sample repulsion?</li>
+<li><strong>Our instrument measures the wrong construct (1.4, 3.8).</strong> It scores detectability of the
+   armature, which by 1.3 is not the defect. Our automatic metrics separately showed zero
+   discriminative power. We do not currently have a valid measurement of the thing we care
+   about, which means every number in section 4 needs re-reading before it is trusted.</li>
+</ol>
+<hr />
+<h2 id="7-methods-appendix-so-you-can-weight-the-evidence">7. Methods appendix, so you can weight the evidence<a class="headerlink" href="#7-methods-appendix-so-you-can-weight-the-evidence" title="Permanent link">&para;</a></h2>
+<p><strong>Protocol.</strong> Two books are authored by independently-prompted agents that cannot see each
+other's inputs or outputs; tool-call logs are audited afterwards to confirm isolation. A
+rater agent, blind to what is being tested, walks one path through each and reports
+recognition position and a five-point score against fixed anchors. Deterministic checks run
+alongside as quality guards, so an intervention cannot buy distinctness by degrading books.</p>
+<p><strong>Weaknesses, stated plainly.</strong></p>
+<ul>
+<li>n=1 graph for the decisive result, one rated pair per condition, one pass.</li>
+<li>Control and treatment were rated by <em>separate</em> rater instances; inter-rater reliability is
+  unmeasured. Differences under one full position should not be treated as signal.</li>
+<li>The pilot graph is a 26-node outlier, chosen because it alone had both a validated contract
+  and a prior baseline. The catalog median is 151 nodes.</li>
+<li>The rater compares books back to back: the condition least favorable to formula tolerance.</li>
+<li>Author and rater shared a model family, engaging the self-preference effect in [37].</li>
+<li>Several automatic metrics were later shown uninformative or miscalibrated (3.8).</li>
+</ul>
+<p><strong>What we consider solid regardless:</strong> the deterministic convergence measurements (they
+replicate exactly), the same-model idiom convergence observation (a direct observation, not
+an inference), and the structural claim in section 5 (it follows from graph definitions, not
+from the rating).</p>
+<hr />
+<h2 id="8-what-we-want-from-you-candidate-architectures">8. What we want from you: candidate architectures<a class="headerlink" href="#8-what-we-want-from-you-candidate-architectures" title="Permanent link">&para;</a></h2>
+<p><strong>Primary deliverable: two to four concrete architectures we could build and test</strong>, each
+aimed at producing many books from reusable material in which the reader is asked to decide
+genuinely different things (1.3). We are past the point of wanting a diagnosis. We want
+designs, stated precisely enough to implement and to falsify.</p>
+<p>Propose designs you think are <em>right</em>, not designs you think we will like. If your reading
+of sections 3 and 5 says our whole premise is wrong, propose the architecture that follows
+from your reading instead.</p>
+<h3 id="81-what-each-proposal-should-specify">8.1 What each proposal should specify<a class="headerlink" href="#81-what-each-proposal-should-specify" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Name and thesis</strong>, one line.</li>
+<li><strong>The fixed/generated split.</strong> What is authored once and reused, what is generated per
+   request, and what is human-reviewed. This is the axis every one of our ten designs
+   differs on, so state it first.</li>
+<li><strong>How structural validity is guaranteed.</strong> Section 3.6 is not negotiable: we will not
+   accept "the model checks its own graph." Say what program, grammar, solver, or invariant
+   makes reachability, termination, and merge-consistency true, and <em>when</em> it runs relative
+   to prose generation.</li>
+<li><strong>How the decisions vary.</strong> The lever in 1.3. Concretely: at a given fork, what makes one
+   book offer "open the door / go around back" and another "go upstairs / go downstairs"?</li>
+<li><strong>What stays constant</strong>, and why that preserves the series contract (1.2).</li>
+<li><strong>Where the human attaches.</strong> One adult approves every published book regardless. What
+   are they looking at, and does your design make that review cheaper or dearer per book?</li>
+<li><strong>Expected failure modes</strong>, including the ones that would show up only at book 20 rather
+   than book 2.</li>
+<li><strong>A falsifiable prediction.</strong> What should this do to decision repetition that our current
+   architecture does not, and how would we see it?</li>
+<li><strong>The cheapest discriminating experiment</strong>, with a rough cost in generations and human
+   hours.</li>
+<li><strong>Which of our ten results already bears on it</strong>, including any that count against it.</li>
+</ol>
+<h3 id="82-constraints-any-proposal-must-respect">8.2 Constraints any proposal must respect<a class="headerlink" href="#82-constraints-any-proposal-must-respect" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Every path terminates; no unreachable nodes; no trap loops.</li>
+<li>Scenes where paths reconverge must be writable from every incoming path, so what the
+  reader can be assumed to know at that point has to be knowable in advance.</li>
+<li>Per-band word envelopes, reading level, ending count and valence mix, safety limits.</li>
+<li>A human approves every finished book. Amortizing human review is valuable but cannot be
+  achieved by removing the final approval.</li>
+<li>Books are read offline from a static artifact. Nothing may depend on calling a model at
+  read time.</li>
+<li>Cost per book must be plausible for a consumer product, so an architecture requiring
+  hundreds of frontier generations per book needs to justify itself.</li>
+</ul>
+<h3 id="83-design-considerations-we-would-like-addressed">8.3 Design considerations we would like addressed<a class="headerlink" href="#83-design-considerations-we-would-like-addressed" title="Permanent link">&para;</a></h3>
+<p>Not separate questions, but the things we expect a good proposal to have a position on.</p>
+<ul>
+<li><strong>The verifiability/freedom tension (section 6, item 2).</strong> A plan detailed enough to verify is a plan
+  that names the scenes, and naming the scenes is what 5.2 identifies as the fingerprint. Is
+  that tension real, or an artifact of how we represent plans? A representation that
+  separates <em>shape</em> from <em>scene identity</em>, in the sense of the glossary, is the thing we most
+  want to see.</li>
+<li><strong>Measurement.</strong> We need an instrument that scores decision repetition across two books and
+  ignores shared world, cast, and shape (1.4). Candidates we are weighing: action-semantic
+  labelling of each choice with set overlap on the labels; embedding distance over choice
+  text with setting nouns stripped; or asking a rater the narrow question "were you asked to
+  decide the same things" rather than "is this the same book." If your architecture implies a
+  different metric, say so.</li>
+<li><strong>Model-level diversity collapse (3.7).</strong> Two samples converged on "a sky gone properly
+  dark" with no shared input. If that floor binds, architecture may not be the lever at all,
+  and the answer is decoding-level or population-level: explicit repulsion against prior
+  outputs, determinantal point processes, model or persona ensembling. Does your design
+  assume that floor away, work around it, or attack it?</li>
+<li><strong>How much variety is enough.</strong> Berlyne [43] implies an optimum rather than a maximum, and
+  the series literature [46, 47, 48] says the constant layer is load-bearing. Maximizing
+  distinctness is probably wrong. Is there a principled target?</li>
+<li><strong>Unit of reuse.</strong> We reuse the graph <em>and</em> its scenes. If those separate, the options
+  multiply: reuse a shape and synthesize scenes; keep a scene library and recombine; reuse a
+  pattern in Ashwell's sense [1] and synthesize both; invert the order and sample the
+  decision set first, then build a shape to carry it. Which gives the most decision variety
+  per unit of human review?</li>
+</ul>
+<h3 id="84-families-we-have-considered-but-not-developed">8.4 Families we have considered but not developed<a class="headerlink" href="#84-families-we-have-considered-but-not-developed" title="Permanent link">&para;</a></h3>
+<p>Listed to save you time and to be argued with, not to constrain you. We have no evidence for
+any of these; extend, combine, or dismiss them.</p>
+<ul>
+<li><strong>Shape-only skeletons.</strong> The reusable asset is the graph with <em>no</em> scene identities. Scene
+  content and choices are synthesized per request against typed constraints at each node.</li>
+<li><strong>Scene library plus recombination.</strong> Reusable assets are validated scene fragments with
+  declared preconditions and effects; a solver assembles a valid graph per request. The one
+  mechanism that ever cleared our structural-distance floor was grafting a subtree from a
+  different graph, which is a crude version of this.</li>
+<li><strong>Grammar over patterns.</strong> A generative grammar whose productions are Ashwell-style
+  patterns [1], emitting a fresh shape per request that is valid by construction.</li>
+<li><strong>Planner-based.</strong> Classical narrative planning [4] over preconditions and effects, with
+  scene content as free variables, so validity is a property of the plan rather than of a
+  reviewed artifact.</li>
+<li><strong>Decision-first inversion.</strong> Sample the <em>set of decisions</em> the book will ask, deliberately
+  decorrelated from decisions this child has already seen, then construct a shape that
+  carries them. This makes 1.3 the primary object rather than a downstream consequence.</li>
+<li><strong>Explicit inter-book repulsion.</strong> Keep the current architecture and condition generation
+  on the child's prior books with a decorrelation objective, attacking 3.7 directly rather
+  than routing around it.</li>
+</ul>
+<hr />
+<h2 id="9-glossary">9. Glossary<a class="headerlink" href="#9-glossary" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Band</strong>: an age range with its own word, reading-level, and safety envelope.</li>
+<li><strong>Skeleton / graph</strong>: the reusable directed graph, human-authored and reviewed. Currently
+  fixes both the <em>shape</em> and the <em>scene identity</em> at every node; 5.2 argues those should be
+  separable.</li>
+<li><strong>Shape</strong>: the graph's structure alone. Which vertices exist, which edges connect them,
+  where paths reconverge, how many endings. Carries no information a reader can perceive.</li>
+<li><strong>Scene identity</strong>: what the scene at a given node <em>is</em>, for example "the scene where you
+  decode the note." Fixed at authoring time in our system.</li>
+<li><strong>Action semantics</strong>: the concrete act a choice asks the reader to perform, for example
+  "open the door", as distinct from the choice's motivation, emotional framing, or narrative
+  function. Section 1.3 argues this is the layer that must vary.</li>
+<li><strong>Binding</strong>: the per-request setting and cast bound into a graph's slots.</li>
+<li><strong>Obligation contract</strong>: per-node declaration of what a scene must establish, must not
+  establish, what the reader knows on arrival, and what each choice means.</li>
+<li><strong>Recognition position</strong>: the reading position at which a rater judges a child would call
+  two books the same book. Note 1.4: this measures armature detectability, not the defect.</li>
+</ul>
+<hr />
+<h2 id="10-references">10. References<a class="headerlink" href="#10-references" title="Permanent link">&para;</a></h2>
+<p>All entries verified against a primary source.</p>
+<h3 id="interactive-narrative-and-choice-structure">Interactive narrative and choice structure<a class="headerlink" href="#interactive-narrative-and-choice-structure" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>[1]</strong> Ashwell, S. K. (2015). <em>Standard Patterns in Choice-Based Games</em>. These Heterogenous
+   Tasks, 26 January 2015. Defines eight topologies: Time Cave, Gauntlet, Branch and
+   Bottleneck, Quest, Open Map, Sorting Hat, Floating Modules, Loop and Grow.</li>
+<li><strong>[2]</strong> Mawhorter, P., Mateas, M., Wardrip-Fruin, N., &amp; Jhala, A. (2014). Towards a Theory of
+   Choice Poetics. <em>Foundations of Digital Games (FDG)</em>, paper 19.</li>
+<li><strong>[3]</strong> Riedl, M. O., &amp; Bulitko, V. (2013). Interactive Narrative: An Intelligent Systems
+   Approach. <em>AI Magazine</em>, 34(1), 67-77.</li>
+<li><strong>[4]</strong> Riedl, M. O., &amp; Young, R. M. (2010). Narrative Planning: Balancing Plot and Character.
+   <em>JAIR</em>, 39, 217-267.</li>
+<li><strong>[5]</strong> Murray, J. H. (1997). <em>Hamlet on the Holodeck: The Future of Narrative in Cyberspace</em>.
+   Free Press.</li>
+<li><strong>[6]</strong> Ryan, M.-L. (2006). <em>Avatars of Story</em>. University of Minnesota Press.</li>
+</ul>
+<h3 id="story-generation-with-language-models-linear">Story generation with language models (linear)<a class="headerlink" href="#story-generation-with-language-models-linear" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>[7]</strong> Fan, A., Lewis, M., &amp; Dauphin, Y. N. (2018). Hierarchical Neural Story Generation. <em>ACL</em>.</li>
+<li><strong>[8]</strong> Rashkin, H., Celikyilmaz, A., Choi, Y., &amp; Gao, J. (2020). PlotMachines:
+   Outline-Conditioned Generation with Dynamic Plot State Tracking. <em>EMNLP</em>.</li>
+<li><strong>[9]</strong> Yang, K., Tian, Y., Peng, N., &amp; Klein, D. (2022). Re3: Generating Longer Stories With
+   Recursive Reprompting and Revision. <em>EMNLP</em>.</li>
+<li><strong>[10]</strong> Yang, K., Klein, D., Peng, N., &amp; Tian, Y. (2023). DOC: Improving Long Story Coherence
+  With Detailed Outline Control. <em>ACL</em>.</li>
+<li><strong>[11]</strong> Mirowski, P., Mathewson, K. W., Pittman, J., &amp; Evans, R. (2023). Co-Writing Screenplays
+  and Theatre Scripts with Language Models: Evaluation by Industry Professionals. <em>CHI</em>.</li>
+<li><strong>[12]</strong> Tian, Y., Huang, T., Liu, M., Jiang, D., Spangher, A., Chen, M., May, J., &amp; Peng, N.
+  (2024). Are Large Language Models Capable of Generating Human-Level Narratives? <em>EMNLP</em>.</li>
+</ul>
+<h3 id="branching-and-choice-based-narrative-generation">Branching and choice-based narrative generation<a class="headerlink" href="#branching-and-choice-based-narrative-generation" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>[13]</strong> Mateas, M., Mawhorter, P., &amp; Wardrip-Fruin, N. (2015). Intentionally Generating Choices
+  in Interactive Narratives. <em>ICCC</em>, 292-299.</li>
+<li><strong>[14]</strong> Harmon, S., &amp; Rutman, S. (2023). Prompt Engineering for Narrative Choice Generation.
+  <em>ICIDS</em>, Springer LNCS.</li>
+<li><strong>[15]</strong> Tikhonov, A. (2024). Branching Narratives: Character Decision Points Detection. <em>Games
+  and NLP workshop, LREC-COLING</em>.</li>
+<li><strong>[16]</strong> Wu, Z., Kumyol, S., Wong, S. Y., Hu, X., Tong, X., &amp; Braud, T. (2025). Orchid: A Creative
+  Approach for Authoring LLM-Driven Interactive Narratives. <em>Creativity &amp; Cognition</em>,
+  774-791.</li>
+</ul>
+<h3 id="planning-compositionality-self-correction">Planning, compositionality, self-correction<a class="headerlink" href="#planning-compositionality-self-correction" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>[17]</strong> Valmeekam, K., Marquez, M., Olmo, A., Sreedharan, S., &amp; Kambhampati, S. (2023).
+  PlanBench: An Extensible Benchmark for Evaluating Large Language Models on Planning and
+  Reasoning about Change. <em>NeurIPS Datasets &amp; Benchmarks</em>.</li>
+<li><strong>[18]</strong> Kambhampati, S. (2024). Can large language models reason and plan? <em>Annals of the New
+  York Academy of Sciences</em>, 1534(1), 15-18.</li>
+<li><strong>[19]</strong> Dziri, N., et al. (2023). Faith and Fate: Limits of Transformers on Compositionality.
+  <em>NeurIPS</em> (Spotlight).</li>
+<li><strong>[20]</strong> Zhang, M., Press, O., Merrill, W., Liu, A., &amp; Smith, N. A. (2024). How Language Model
+  Hallucinations Can Snowball. <em>ICML</em>.</li>
+<li><strong>[21]</strong> Huang, J., Chen, X., Mishra, S., Zheng, H. S., Yu, A. W., Song, X., &amp; Zhou, D. (2024).
+  Large Language Models Cannot Self-Correct Reasoning Yet. <em>ICLR</em>.</li>
+<li><strong>[22]</strong> Stechly, K., Valmeekam, K., &amp; Kambhampati, S. (2025). On the Self-Verification
+  Limitations of Large Language Models on Reasoning and Planning Tasks. <em>ICLR</em> (arXiv
+  2402.08115, 2024).</li>
+<li><strong>[23]</strong> Gou, Z., Shao, Z., Gong, Y., Shen, Y., Yang, Y., Duan, N., &amp; Chen, W. (2024). CRITIC:
+  Large Language Models Can Self-Correct with Tool-Interactive Critiquing. <em>ICLR</em>.</li>
+</ul>
+<h3 id="long-context">Long context<a class="headerlink" href="#long-context" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>[24]</strong> Liu, N. F., Lin, K., Hewitt, J., Paranjape, A., Bevilacqua, M., Petroni, F., &amp; Liang, P.
+  (2024). Lost in the Middle: How Language Models Use Long Contexts. <em>TACL</em>, 12.</li>
+<li><strong>[25]</strong> Hsieh, C.-P., et al. (2024). RULER: What's the Real Context Size of Your Long-Context
+  Language Models? <em>COLM</em>.</li>
+<li><strong>[26]</strong> Karpinska, M., Thai, K., Lo, K., Goyal, T., &amp; Iyyer, M. (2024). One Thousand and One
+  Pairs: A "novel" challenge for long-context language models. <em>EMNLP</em>.</li>
+<li><strong>[27]</strong> Chang, Y., Lo, K., Goyal, T., &amp; Iyyer, M. (2024). BooookScore: A systematic exploration
+  of book-length summarization in the era of LLMs. <em>ICLR</em> (Oral).</li>
+</ul>
+<h3 id="diversity-and-homogenization">Diversity and homogenization<a class="headerlink" href="#diversity-and-homogenization" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>[28]</strong> Holtzman, A., Buys, J., Du, L., Forbes, M., &amp; Choi, Y. (2020). The Curious Case of Neural
+  Text Degeneration. <em>ICLR</em>.</li>
+<li><strong>[29]</strong> Li, J., Galley, M., Brockett, C., Gao, J., &amp; Dolan, B. (2016). A Diversity-Promoting
+  Objective Function for Neural Conversation Models. <em>NAACL-HLT</em>, 110-119. Origin of
+  distinct-n.</li>
+<li><strong>[30]</strong> Kirk, R., Mediratta, I., Nalmpantis, C., Luketina, J., Hambro, E., Grefenstette, E., &amp;
+  Raileanu, R. (2024). Understanding the Effects of RLHF on LLM Generalisation and
+  Diversity. <em>ICLR</em>.</li>
+<li><strong>[31]</strong> Padmakumar, V., &amp; He, H. (2024). Does Writing with Language Models Reduce Content
+  Diversity? <em>ICLR</em>.</li>
+<li><strong>[32]</strong> Doshi, A. R., &amp; Hauser, O. P. (2024). Generative AI enhances individual creativity but
+  reduces the collective diversity of novel content. <em>Science Advances</em>, 10(28).</li>
+<li><strong>[33]</strong> Anderson, B. R., Shah, J. H., &amp; Kreminski, M. (2024). Homogenization Effects of Large
+  Language Models on Human Creative Ideation. <em>Creativity &amp; Cognition</em>, 413-425.</li>
+<li><strong>[34]</strong> Chakrabarty, T., Laban, P., Agarwal, D., Muresan, S., &amp; Wu, C.-S. (2024). Art or
+  Artifice? Large Language Models and the False Promise of Creativity. <em>CHI</em>.</li>
+<li><strong>[35]</strong> Tevet, G., &amp; Berant, J. (2021). Evaluating the Evaluation of Diversity in Natural
+  Language Generation. <em>EACL</em>, 326-346.</li>
+</ul>
+<h3 id="model-based-evaluation">Model-based evaluation<a class="headerlink" href="#model-based-evaluation" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>[36]</strong> Zheng, L., Chiang, W.-L., Sheng, Y., et al. (2023). Judging LLM-as-a-Judge with MT-Bench
+  and Chatbot Arena. <em>NeurIPS Datasets &amp; Benchmarks</em>.</li>
+<li><strong>[37]</strong> Panickssery, A., Bowman, S. R., &amp; Feng, S. (2024). LLM Evaluators Recognize and Favor
+  Their Own Generations. <em>NeurIPS</em>.</li>
+</ul>
+<h3 id="constrained-generation">Constrained generation<a class="headerlink" href="#constrained-generation" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>[38]</strong> Tam, Z. R., Wu, C.-K., Tsai, Y.-L., Lin, C.-Y., Lee, H.-Y., &amp; Chen, Y.-N. (2024). Let Me
+  Speak Freely? A Study On The Impact Of Format Restrictions On Large Language Model
+  Performance. <em>EMNLP Industry Track</em>, 1218-1236.</li>
+<li><strong>[39]</strong> Park, K., Wang, J., Berg-Kirkpatrick, T., Polikarpova, N., &amp; D'Antoni, L. (2024).
+  Grammar-Aligned Decoding. <em>NeurIPS</em>.</li>
+<li><strong>[40]</strong> Willard, B. T., &amp; Louf, R. (2023). Efficient Guided Generation for Large Language Models.
+  arXiv:2307.09702. Preprint, not peer reviewed; implemented as Outlines.</li>
+</ul>
+<h3 id="reader-psychology-childrens-reading-and-formula">Reader psychology, children's reading, and formula<a class="headerlink" href="#reader-psychology-childrens-reading-and-formula" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>[41]</strong> Patall, E. A., Cooper, H., &amp; Robinson, J. C. (2008). The effects of choice on intrinsic
+  motivation and related outcomes: A meta-analysis of research findings. <em>Psychological
+  Bulletin</em>, 134(2), 270-300.</li>
+<li><strong>[42]</strong> Deci, E. L., &amp; Ryan, R. M. (2000). The "what" and "why" of goal pursuits: Human needs and
+  the self-determination of behavior. <em>Psychological Inquiry</em>, 11(4), 227-268.</li>
+<li><strong>[43]</strong> Berlyne, D. E. (1970). Novelty, complexity, and hedonic value. <em>Perception &amp;
+  Psychophysics</em>, 8(5), 279-286.</li>
+<li><strong>[44]</strong> Zajonc, R. B. (1968). Attitudinal effects of mere exposure. <em>JPSP</em>, 9(2, Pt. 2), 1-27.</li>
+<li><strong>[45]</strong> Nell, V. (1988). <em>Lost in a Book: The Psychology of Reading for Pleasure</em>. Yale
+  University Press.</li>
+<li><strong>[46]</strong> Cawelti, J. G. (1976). <em>Adventure, Mystery, and Romance: Formula Stories as Art and
+  Popular Culture</em>. University of Chicago Press.</li>
+<li><strong>[47]</strong> Radway, J. A. (1984). <em>Reading the Romance: Women, Patriarchy, and Popular Literature</em>.
+  University of North Carolina Press.</li>
+<li><strong>[48]</strong> Ross, C. S. (1995). "If they read Nancy Drew, so what?": Series book readers talk back.
+  <em>Library &amp; Information Science Research</em>, 17(3), 201-236.</li>
+<li><strong>[49]</strong> Gannon, S. R. (1987). One More Time: Approaches to Repetition in Children's
+   Literature. <em>Children's Literature Association Quarterly</em>, 12(1), 2-5.
+   <a href="https://muse.jhu.edu/article/248501">https://muse.jhu.edu/article/248501</a></li>
+<li><strong>[50]</strong> Merga, M. K. (2017). What would make children read for pleasure more frequently?
+   <em>English in Education</em>, 51(2), 207-223. DOI 10.1111/eie.12143</li>
+<li><strong>[51]</strong> Loh, C. E., Gan, S., &amp; Mounsey, S. (2022). What do children want to read? A case
+   study of how one primary school library supported reading for pleasure. <em>Journal of
+   Library Administration</em>, 62(7), 931-945. DOI 10.1080/01930826.2022.2117955</li>
+<li><strong>[52]</strong> Scholastic (2024). <em>Kids &amp; Family Reading Report</em>, 8<sup>th</sup> edition, released August
+   2024; survey fielded by Fluent Research, December 2022 to January 2023, n = 1,724 parents
+   and children. <a href="https://www.scholastic.com/readingreport">https://www.scholastic.com/readingreport</a>. The 93% figure ("my favorite
+   books are the ones I have picked out myself") appears in Scholastic's editorial coverage
+   of the 8<sup>th</sup> edition rather than on its Key Findings page; the 5<sup>th</sup> edition (2015) reported
+   91% for the same item.</li>
+</ul>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 10, 2026 03:25:35 UTC">August 10, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 10, 2026 03:25:35 UTC">August 10, 2026</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025 Byron Williams
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/williaby" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
