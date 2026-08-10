@@ -96,7 +96,8 @@ Our catalog reproduced this independently. Of 61 graphs: 22 branch-and-bottlenec
 map, 9 sorting hat, 7 time cave, 6 gauntlet, 6 loop and grow. That is six of Ashwell's eight
 patterns, with the same shape dominant, arrived at by our authors without reference to his
 taxonomy. Weak evidence that we are in the right design space; **strong evidence that the
-space is small**, which becomes the problem in section 6.
+space is small**. That mattered while we believed shape was the fingerprint; it matters much
+less now, for reasons in 5.4.
 
 **Formula is the product in this genre.** This is the literature we had been ignoring, and
 the one our verification pass strengthened most.
@@ -287,7 +288,7 @@ Most story-generation work is linear. The choice-based subset is small and recen
   design-study finding: **authorial control has to be structural rather than prompt-level to
   keep branches consistent.**
 
-That last result is independent corroboration of our own most expensive finding (section 6).
+That last result is independent corroboration of our own most expensive finding (5.4).
 We arrived at it by refuting prompt-level control ten times; they arrived at it from a
 design study. We take the convergence seriously.
 
@@ -617,7 +618,7 @@ from your reading instead.
 
 Not separate questions, but the things we expect a good proposal to have a position on.
 
-- **The verifiability/freedom tension (6.2).** A plan detailed enough to verify is a plan
+- **The verifiability/freedom tension (section 6, item 2).** A plan detailed enough to verify is a plan
   that names the scenes, and naming the scenes is what 5.2 identifies as the fingerprint. Is
   that tension real, or an artifact of how we represent plans? A representation that
   separates *shape* from *scene identity*, in the sense of the glossary, is the thing we most
