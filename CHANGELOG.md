@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.72.0] - 2026-08-10
+
+### Features
+
+- **consent**: Add the KWS parent-verification integration (ADR-018)
+  ([#664](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/664),
+  [`0d7c42c`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/0d7c42c121ec7e8ebff86263686be92956e20683))
+
+
 ## [0.71.0] - 2026-08-10
 
 ### Features
@@ -3312,6 +3321,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.72.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.71.0...v0.72.0
 [0.71.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.70.0...v0.71.0
 [0.70.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.69.1...v0.70.0
 [0.69.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.69.0...v0.69.1
