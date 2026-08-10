@@ -56,9 +56,47 @@ omits what readers respond to**, and each needs re-specifying rather than re-sch
 | D-1 | Separate the treatment's **three** bundled changes | Was the 2026-08-10 effect from the different kind of act, from the stake economics, or from the four rooms yielding distinct components? Raters cited act-kind at one fork and stakes at two, so the original two-way framing understated the confound. | Three arms on the same graph, each restoring one change to the control's setting while holding the other two. Rate each against the same base book with the six-question instrument. | 3 fills, 2 raters | Restoring any single change collapses the effect, which would name that change as the whole lever rather than one of three. | queued |
 | D-2 | Replicate on a production-eligible graph | Does any of this survive off a 26-node outlier? The catalog median is 151 nodes and the pilot graph is not production-eligible. | Repeat the winning arm on a median-size 10-13 skeleton, same protocol, same instrument. | 2 fills, 2 raters | The effect vanishes or inverts at production scale. | queued |
 | D-3 | DecisionSignature v2 over the contracts | Can a richer vocabulary agree with readers instead of inverting them? | Added `reasoning_kind` (compute, match, recall, infer, perceive, negotiate, exert) and `stake` (nothing, time, resource, access, standing, permanent) plus the three `AL-193` gaps, and re-annotated the three plans blind. | 2 annotators over 3 plans | Hit its own falsifier: still ranks the treatment pair as the more repetitive one. Annotator A 0 of 6 fields agreeing with readers, annotator B 1 of 6. `reasoning_kind` inverts under both (0.929 against 1.000, and 0.857 against 0.964). Not a reliability failure: kappa between the two annotators is 0.77 to 0.81 on `reasoning_kind` and 0.72 on `stake`, both clear of the floor. The new fields are labellable and do not discriminate. | **done, NEGATIVE** |
-| D-3b | Same vocabulary over contract **plus binding** | Is the inversion a vocabulary problem or a layer problem? The contracts describe `n_clockface` as "answer the test on its own terms" and "fit the piece the way the diagram shows", which Rule 2 correctly calls one decision; the mechanic readers responded to lives in the binding (`clock_arithmetic`, `rhythm_code`, `pictogram_code`). | Identical annotation pass with each plan's bound devices attached. | 1 to 2 annotators over 3 plans | Ordering still inverts with the binding visible, which would mean the discriminating property is not in the plan at all and only the filled prose carries it. | running |
+| D-3b | Same vocabulary over contract **plus binding** | Is the inversion a vocabulary problem or a layer problem? The contracts describe `n_clockface` as "answer the test on its own terms" and "fit the piece the way the diagram shows", which Rule 2 correctly calls one decision; the mechanic readers responded to lives in the binding (`clock_arithmetic`, `rhythm_code`, `pictogram_code`). | Identical annotation pass with each plan's bound devices attached. | 1 to 2 annotators over 3 plans | Ordering still inverts with the binding visible, which would mean the discriminating property is not in the plan at all and only the filled prose carries it. Did not fire. | **done, POSITIVE, 1 annotator** |
+| D-3c | Confirm D-3b with a second blind annotator | Is D-3b reproducible, and does it survive a subset fixed in advance? | Second independent annotator, same three bundles, same brief. Analysis pre-registered below before the labels exist. | 1 annotator over 3 plans | The second annotator's `reasoning_kind` does not separate the pairs in the readers' direction over the pre-registered fork subset. | queued |
 | D-4 | Solution-transfer metric | Is the item that actually discriminated computable from a plan, rather than only ratable by a reader? | Formalise "these two puzzles resolve by the same operation to the same answer" against the three existing contracts, and check it reproduces the raters' Q6 ordering (4,4 against 3,3). | deterministic, no model | It cannot reproduce the known ordering on the pair we have already rated. | queued |
 | D-5 | Rate the discarded contaminated arm as a negative control | Does the six-question instrument correctly detect a pair we know is contaminated? | The 14-of-24 shared-prop binding is preserved. Feed `filled_V5b` to fresh blind raters and confirm it scores worse than `filled_V5c` on Q6. | 2 raters | The instrument cannot separate a known-contaminated pair from a clean one, which would invalidate every rating taken with it. | queued |
+
+### D-3b result, and the pre-registration D-3c must satisfy
+
+Attaching each plan's binding flips the field the test was built around. Over all 28 fork options,
+`reasoning_kind` becomes the one field of six that orders the pairs as readers did, control 0.857
+against treatment 0.750. Every other field still inverts, `stake` among them.
+
+Splitting the forks by what they touch shows why the blended number is muted, and gives a far
+sharper picture. **Both subsets are defined from the contract's own `world_recipe`, which states
+that the book's one indexing code is "used consistently from the notice to the bench to the back
+panel" with one hint carrier per zone. They are derivable without seeing a single label.**
+
+| Fork subset | Control pair | Treatment pair | |
+| --- | --- | --- | --- |
+| Puzzle-chain forks, the six the code runs through | **1.000**, identical at every one | **0.000**, different at every one | agrees with readers |
+| Entry forks, the three the world change reframes | 0.000 | 1.000 | inverts |
+
+The control's two books bind different codes, `clock_arithmetic` and `rhythm_code`, that are the
+same *kind of thinking*: decode a notation, set a dial. They therefore carry identical reasoning
+kinds down the whole chain. The treatment's `pictogram_code` matches a shape to an object and
+differs at every link. That is exactly the split both raters drew unprompted, recovered here from
+the plans alone with no prose.
+
+The entry forks are the scenery leak in isolation: the control's world change turns `PERCEIVE` and
+`EXERT` into `INFER` with no change of act, inverting perfectly.
+
+**Stated honestly:** the subsets are principled and derivable in advance, but they were applied
+after these labels existed, and this is one annotator. That is why D-3c exists and why its analysis
+is fixed here first.
+
+**Pre-registered for D-3c**, before the second annotator's labels exist:
+
+1. Primary: `reasoning_kind` over the six puzzle-chain forks must show control reuse strictly
+   greater than treatment reuse.
+2. The entry forks are expected to invert again. That is the scenery-leak prediction, and its
+   failing would itself be informative.
+3. Nothing else will be reported as a headline. Any further slicing is exploratory and labelled so.
 
 ## B. Architectures that do not depend on the broken instrument
 
