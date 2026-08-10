@@ -799,6 +799,14 @@ ADR-018's D1 section and `docs/compliance/counsel-engagement-brief.md` for the f
 including a since-reopened payment-card route (312.5(b)(2)(ii)) and active vendor evaluation; this
 key does not attempt to compress all of it, only to stop understating it.
 
+**Disposition, 2026-08-09.** The owner ruled the shipped mechanism adequate and withdrew this
+question from the counsel engagement. Every sentence above still holds, including the AgeCheq
+authority; an acceptance reassigns who carries a risk and does not shrink it. The item is now an
+accepted exception at assurance-register row O-122, expiring at R2. **The gate itself is
+unaffected**: `_require_consent` still blocks every child profile, so what is accepted is the
+*quality* of the consent evidence, never its absence, and the universal upstream gate described
+above continues to apply to all ten events in this matrix.
+
 ### Art. 18/21: Restriction and objection
 
 **Corrected 2026-08-09.** `ChildProfile.processing_restricted_at`, guardian-set via

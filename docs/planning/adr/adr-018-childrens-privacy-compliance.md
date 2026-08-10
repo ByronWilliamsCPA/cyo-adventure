@@ -47,8 +47,16 @@ tags:
 > has no runtime backstop, and the three questions the Test environment exists to answer.
 > **This chooses nothing**: KWS versus a direct Stripe integration is still open, and the accepted
 > risks are unchanged.
+> **Amended**: 2026-08-09, later the same day. **Owner ruling on D1's enumerated-method
+> question.** The owner reviewed the corrected framing and the AgeCheq adverse authority and
+> ruled the shipped typed-name mechanism adequate, withdrawing brief Questions 1C and 1D from
+> the counsel engagement. Nothing in D1's analysis is retracted; the risk is reassigned, not
+> reduced. It is carried as an accepted exception at assurance-register row O-122, expiring at
+> R2. Questions 1A and 1B remain live counsel asks, so D1 is narrowed, not closed.
 > **This does not flip the status.** Every decision below is an owner choice pending counsel
-> confirmation; only counsel closing D1 through D5 moves this ADR to Accepted. **D6 and D7 are
+> confirmation; only counsel closing D1 through D5 moves this ADR to Accepted. D1's remaining
+> counsel content is Questions 1A and 1B; its enumerated-method half is now an owner-accepted
+> risk rather than a pending answer. **D6 and D7 are
 > owner-side obligations rather than counsel questions**, and are deliberately excluded from the
 > counsel engagement. **D8 rides on Question 1A as a sub-question** rather than becoming a sixth.
 > The engagement stays scoped at five questions.
@@ -264,6 +272,29 @@ operator has submitted a VPC method for FTC approval since 2015. The accurate fr
 reduction, not authorisation**, and the live question is how much risk the current flow carries,
 which the AgeCheq material above suggests is more than previously assumed.
 
+**Owner ruling, 2026-08-09: risk accepted, question withdrawn from counsel.** Having read the
+corrected rule-text framing and the AgeCheq adverse authority above, the owner ruled that the
+mechanism as built meets the requirement, and withdrew brief Questions 1C and 1D from the counsel
+engagement. Three things this ruling is not:
+
+- **It is not a retraction.** Every paragraph above stands as written, including the finding that
+  312.5(b)(2)(i) has no in-app-signature method and that AgeCheq reaches the 312.5(b)(1) fallback
+  rather than only the enumerated list. Editing the analysis to agree with the decision would
+  falsify the record of what was known on the date the decision was made.
+- **It is not a reduction in the risk.** An acceptance reassigns who carries a risk; it does not
+  shrink it. `dpia.md` keeps this item at residual risk **High** for exactly that reason, and the
+  withdrawal removes the route by which the risk would have been resolved, not the risk itself.
+- **It is not a gap in the gate.** `api/profiles.py::_require_consent` and
+  `api/admin_profiles.py::_require_family_consent` are unchanged, so no child profile can be
+  created without a consent record. What is accepted is the *quality* of that consent evidence,
+  never its *absence*.
+
+Recorded as an accepted exception at `docs/security/assurance-register.md` row **O-122**, with
+compensating controls and an expiry at R2. Two routes could retire it early rather than defend it:
+the Safe Harbor evaluation in D4, and the KWS vendor path below, which reaches an enumerated method
+at (b)(2)(ii) without our building card handling. Questions 1A and 1B remain live counsel asks, so
+D1 is narrowed, not closed.
+
 **The payment-card rejection above is withdrawn (2026-08-08), and the reason it was made no longer
 exists.** The 2026-07-20 decision ruled out a payment-card transaction partly on PCI scope and
 partly because the app is not monetized, treating a payment-based consent method as something that
@@ -350,11 +381,15 @@ its inline citations resolve to internal search-tool tokens rather than URLs, so
 traces to a page and it is treated as a lead rather than authority. The AgeGraph finding above
 does not depend on it: it comes from the owner's own screenshots of the portal.
 
-**Flagged for counsel**: whether a typed-name attestation captured inside our own application
-is an enumerated 312.5(b)(2) method **at all** is the single highest-risk open question in
-this decision, and it is a broader question than the "is our signature good enough" one this
-ADR originally posed. It should be the first thing reviewed in the drafted consent-flow copy
-(`docs/compliance/` DPIA and Privacy Notice drafts, in progress).
+**~~Flagged for counsel~~, withdrawn 2026-08-09; now an accepted exception**: whether a
+typed-name attestation captured inside our own application is an enumerated 312.5(b)(2) method
+**at all** was the single highest-risk open question in this decision, and it is a broader
+question than the "is our signature good enough" one this ADR originally posed. The owner ruled
+the mechanism adequate and withdrew it from the engagement (see the Owner ruling above); it is
+carried at assurance-register row O-122 rather than answered. **It remains the highest-risk item
+in this decision after the ruling as it was before it**, which is what an acceptance means. The
+DPIA and Privacy Notice drafts still go to counsel on their own merits, and the Privacy Notice
+paragraph describing this flow must not acquire a claim about which method applies.
 
 **Implemented 2026-07-20.** `POST /api/v1/onboarding`'s `consent` payload
 (`accepted`/`policy_version`/`signer_name`) persists onto
@@ -362,8 +397,10 @@ ADR originally posed. It should be the first thing reviewed in the drafted conse
 (paired, CHECK-enforced); `api/profiles.py::_require_consent` gates
 `POST /api/v1/profiles` on it. Frontend: `GuardianConsentPage.tsx`, reached automatically via
 a new `AuthStatus = 'needs-consent'`. This is the engineering half of D1; the flagged
-counsel-review question above is unchanged by implementation and still needs an answer
-before this ADR can flip to Accepted.
+counsel-review question above is unchanged by implementation. **Superseded 2026-08-09**: that
+question no longer needs an answer before this ADR can flip to Accepted, because it was
+withdrawn from the engagement and accepted as a risk (O-122). What still gates Accepted is
+counsel closing Questions 1A and 1B, plus D2 through D5.
 
 **Gate hole found and closed 2026-08-08.** The implementation above covered only the
 guardian-facing create path. `POST /api/v1/admin/profiles`
@@ -407,7 +444,9 @@ variables, so the integration is off there by configuration rather than by code.
 *What this does not settle.* It does not choose the route. KWS versus a direct Stripe integration
 remains open exactly as recorded above; building against Test is what makes that comparison
 decidable on observed behaviour instead of on documentation. It does not touch the flagged
-counsel question, and it converts neither accepted risk into a mitigated one.
+counsel question (withdrawn and accepted later the same day, see the Owner ruling above; a
+Test-environment verification would not have satisfied it in any case), and it converts neither
+accepted risk into a mitigated one.
 
 **The "configuration is the evidence" constraint now has a mechanism rather than an intention.**
 The consent-record paragraph above requires the stored method to be the vendor and the flow,

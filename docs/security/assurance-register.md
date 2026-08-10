@@ -3391,10 +3391,42 @@ posture at a trust boundary must be verified from outside that boundary.
   independently foreclosed: "email plus" (312.5(b)(2)(viii)) and its neighbour (ix) require no
   disclosure of the child's information to third parties, and a child's free-text story wish reaches
   third-party classifiers.
+- **Acceptance record (2026-08-09).** The owner ruled that the approach as built meets the
+  requirement and withdrew parts 1C and 1D from the counsel engagement
+  (`docs/compliance/counsel-engagement-brief.md` Sections 1.0, 1.3, 6). Recording the three things
+  the spine requires of an accepted exception, so the acceptance is a decision rather than a
+  disappearance:
+  - **Risk accepted.** That the in-app typed-name flow is neither an enumerated 312.5(b)(2) method
+    nor defensible under the 312.5(b)(1) general standard. The specific adverse authority is the
+    FTC's **January 2015 AgeCheq** decision, which declined to approve a structurally analogous
+    method (a signature artifact plus a step binding it to a real adult) on the ground that it was
+    not reasonably calculated to ensure the consenting person was the parent, and which noted that
+    the 2013 Rule **excluded digital signatures** from the enumerated methods because a digital
+    signature alone is not a reliable means of obtaining consent. This authority was identified by
+    the operator against the operator's own position and is retained verbatim in the brief; it is
+    not disputed here, it is accepted. Its force is not confined to the enumerated list: it is an
+    application of 312.5(b)(1) itself, so it bears on the fallback as well.
+  - **Compensating controls.** (a) Exposure is bounded by population: T2 records one household plus
+    invited families, with the public consumer population arriving only at R2/R3. (b) The flow logs
+    more than a signature: a typed legal name, an adulthood attestation, a guardianship attestation,
+    a residence country, a consent-language version, an IP address, a timestamp, and an OAuth-bound
+    account identity, which is the combination the 312.5(b)(1) argument rests on. (c) Two
+    independent enforcement gates refuse child-data collection without a consent record
+    (`api/profiles.py::_require_consent` on the caller's record,
+    `api/admin_profiles.py::_require_family_consent` on the target family's), so the accepted risk
+    is about the *quality* of consent, never about its *absence*. (d) The KWS evaluation at O-123
+    and O-124 is a live route to a stronger mechanism and is not foreclosed by this acceptance.
+  - **Expiry.** R2, the first distribution beyond the operator's household and invited families,
+    whichever comes first with any change to how consent is captured. Two events retire the
+    exception earlier rather than renewing it: a counsel answer to Section 1.6 (whether a separate
+    signature step is required at all) that removes the need for the step, or a counsel answer to
+    Question 1B that opens "email plus" at 312.5(b)(2)(viii). Both remain live asks.
 - **Phase home:** unassigned
 - **Owner:** core-maintainer
-- **Last verified:** not verified
-- **Status:** finding open
+- **Last verified:** not verified. **An accepted exception is not a verification**: nothing below
+  has been checked against the rule text by anyone qualified to do so, and the acceptance does not
+  convert the open question into a closed one. It records who decided to carry it and on what basis.
+- **Status:** accepted exception
 - **Check:** The VPC method relied on is named, and is either an enumerated 16 CFR 312.5(b)(2)
   method identified by provision, or a non-enumerated method carrying a 312.5(b)(3) Safe Harbor
   approval. "An electronic signature is captured" is not an answer to this check

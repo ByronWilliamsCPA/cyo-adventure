@@ -193,7 +193,8 @@ the four ADR-018 items, in ADR-018 itself; each resolution is marked "pending co
 confirmation" where that ADR's own Validation checklist requires counsel sign-off before the
 decision is final, per the "we draft, counsel reviews" model adopted this round.
 
-- **VPC method.** *Mechanism built; its legal sufficiency is OPEN, not resolved.* A typed
+- **VPC method.** *Mechanism built; its legal sufficiency is an ACCEPTED EXCEPTION as of
+  2026-08-09, not an open question and not a resolution on the merits.* A typed
   full-legal-name attestation plus checkbox, layered on the existing Supabase/Google OAuth
   login and logged server-side with IP, timestamp, and account id. **As built the typed name
   is the only signature-equivalent; a canvas-drawn signature was considered in the 2026-07-20
@@ -203,11 +204,19 @@ decision is final, per the "we draft, counsel reviews" model adopted this round.
   establishing that the method is available to us: the word *monetary* was struck, but "in
   connection with a transaction" survives verbatim, as does the requirement that the card
   "provides notification of each discrete transaction to the primary account holder." Whether a
-  zero-charge authorization is a transaction that triggers that notification is the open
-  question, and it is counsel's to answer. The third-party ID vendor remains ruled out. The
-  question for counsel is no longer "does a typed signature count as signed" but whether this
-  is an enumerated 312.5(b)(2) method **at all**, and it carries adverse authority (FTC
-  v. AgeCheq, January 2015). See ADR-018 D1 and `counsel-engagement-brief.md` Section 1.3.
+  zero-charge authorization is a transaction that triggers that notification remained
+  unanswered. The third-party ID vendor remains ruled out for identity proofing, though a VPC
+  vendor (Epic's Kids Web Services) is wired on staging under ADR-018 D1. The analysis above
+  reframed the question from "does a typed signature count as signed" to whether this is an
+  enumerated 312.5(b)(2) method **at all**, and recorded adverse authority against it (the
+  FTC's January 2015 AgeCheq decision).
+  **Disposition, 2026-08-09.** The owner reviewed that analysis and ruled the approach as built
+  adequate, withdrawing the question from the counsel engagement. Nothing above is retracted;
+  what changed is who carries the risk, not its size. It is now an accepted exception at
+  assurance-register row O-122, with compensating controls and an expiry at R2 recorded there.
+  The DPIA's residual risk for this item stays **High**. See ADR-018 D1 and
+  `counsel-engagement-brief.md` Section 1.3, retained as a record of what was known on the
+  date of the decision.
 - **Supabase project region.** *Resolved: stay US.* You've confirmed Supabase stays in the US,
   with a possible future move from `us-east-1` to a US-west region. See Section 5 ("Supabase
   region") for why this is compliance-neutral and needs no further analysis.
@@ -295,8 +304,11 @@ all shipped (commit on `claude/gdpr-compliance-review-qzyvc2`).**
   existing." Frontend: `GuardianConsentPage.tsx`, a typed full-legal-name attestation +
   checkbox (built on the belief that this was the FTC's "sign and submit electronically"
   method at 312.5(b)(2)(i); **that premise was falsified on 2026-08-08, no such method exists
-  in the rule text**, and whether the flow is an enumerated method at all is now the open
-  question, see ADR-018 D1), reached automatically via a new `AuthStatus = 'needs-consent'`
+  in the rule text**. **Ruled 2026-08-09**: the owner is satisfied the approach as built meets
+  the requirement and withdrew the question from the counsel engagement. It is no longer an
+  open question; it is an accepted exception carried at assurance-register row O-122, whose
+  recorded residual risk is the FTC's January 2015 AgeCheq decision. See ADR-018 D1),
+  reached automatically via a new `AuthStatus = 'needs-consent'`
   that `ProtectedRoute`
   routes to before any other guardian page. Also fixed a real, independent gap found while
   wiring this in: the frontend never called `POST /v1/onboarding` at all before this change,
@@ -704,8 +716,13 @@ marked **(no default)** genuinely need your input.
      that the card "provides notification of each discrete transaction to the primary account
      holder" untouched. A $0 authorization that generates no cardholder notification therefore
      has an unanswered question at its centre, not a settled answer. Still the cheapest of the
-     strong options to build, and it still does not force a monetization decision; whether it is
-     an enumerated method is for counsel (ADR-018 D1, `counsel-engagement-brief.md` Section 1.4).
+     strong options to build, and it still does not force a monetization decision.
+     **Status as of 2026-08-09**: this is no longer a counsel question. The owner ruled the
+     shipped typed-name flow adequate and withdrew Section 1.4 from the engagement, so the card
+     route is not being pursued as a remedy. It survives here as the cheapest retirement route
+     for the O-122 accepted exception should that acceptance ever be revisited, not as pending
+     work. The card method is also reachable via the KWS vendor path (ADR-018 D1) without
+     building card handling ourselves; see Gate 1 in the KWS production plan.
    - **A third-party VPC vendor** (e.g., Persona, Yoti, Privo, k-ID, SuperAwesome, ID.me) doing
      ID verification or knowledge-based authentication as a service. Higher cost and integration
      effort, but several of these are purpose-built for child-directed apps and explicitly cover
@@ -869,6 +886,13 @@ section used to carry):
   312.5(b)(2)(i) has no "sign and submit electronically" method to satisfy, so the real
   question is whether any enumerated method applies; and the card-verification exclusion is
   withdrawn. See ADR-018 D1 and `counsel-engagement-brief.md` Sections 1.3 and 1.4.
+  **Amended again 2026-08-09**: the owner ruled the mechanism adequate and withdrew the
+  question from counsel, so it is no longer "the top item for counsel's review"; it is an
+  accepted exception at assurance-register row O-122, expiring at R2. The acceptance is
+  recorded against, not in ignorance of, the adverse authority in
+  `counsel-engagement-brief.md` Section 1.3, which is retained as a record of what was known
+  on the date of the decision. The Privacy Notice half of this line is unaffected and still
+  needs counsel review.
 - **Retention windows**: the draft table in Section 5 is accepted as-is; Phase 4b can now
   publish it as the retention policy.
 - **ZDR/processor-paperwork owner**: the account owner (not counsel, not a hired vendor

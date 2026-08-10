@@ -77,12 +77,17 @@ a guardian-minted session) resolves back to your account.
 Before you can create a child profile, we ask you to type your full legal name and check a
 box confirming that you are that child's parent or legal guardian and that you agree to this
 notice. We record your typed name, the date, the version of this notice you agreed to, and
-your IP address at the time, alongside the sign-in you already completed. [COUNSEL: this is
-the mechanism flagged in ADR-018 D1 as needing review. Please advise whether it is an
-enumerated method under 16 CFR 312.5(b)(2) **at all**, and if not, whether it meets the
-general standard at 312.5(b)(1). Do not read this as asserting 312.5(b)(2)(i): an earlier
-draft cited a "sign and submit electronically" method there, and reading the provision
-directly found no such method. See counsel-engagement-brief.md Section 1.3.]
+your IP address at the time, alongside the sign-in you already completed. [NOT A COUNSEL ASK, as
+of 2026-08-09. This mechanism was flagged in ADR-018 D1 as needing review; the owner ruled that
+the approach as built meets the requirement and withdrew the question from the engagement. It is
+carried as an accepted exception at assurance-register row O-122, whose recorded residual risk is
+the FTC's January 2015 AgeCheq decision. Do not read this passage as asserting 312.5(b)(2)(i): an
+earlier draft cited a "sign and submit electronically" method there, and reading the provision
+directly found no such method. **This paragraph makes no claim to the reader about which method
+applies, and it must not acquire one**: a security or privacy claim in a public notice is an
+enforceable representation under FTC Act §5 (register row O-38), so describing the flow as
+"verified" or as satisfying a named method would convert an accepted internal risk into an
+external misstatement. See counsel-engagement-brief.md Section 1.3, retained as record.]
 
 ### Who we share information with
 

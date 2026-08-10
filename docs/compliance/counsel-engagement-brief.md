@@ -63,8 +63,23 @@ alone, there is no need to trace it back into the source material.
 
 ## 1. Question 1: the highest-risk open item (verifiable parental consent)
 
-This is the single question we most need answered before this document set can be considered
-complete, and it is the first thing counsel should look at.
+> **Parts 1C and 1D were WITHDRAWN from this engagement by owner ruling on 2026-08-09.**
+> The owner is satisfied that the consent mechanism as built meets the requirement, and is not
+> purchasing an opinion on it. **Parts 1A and 1B remain live and are still asked**, because the
+> ruling is about whether our mechanism suffices, not about whether consent is owed (1A) or how
+> the third-party data flows classify (1B); a "no" at 1A would still dispose of the whole section,
+> and 1B still decides whether the two cheapest methods in the Rule are open to us.
+>
+> **Sections 1.3, 1.4, and 1.5 are retained but are NOT review asks.** They are not billable
+> reading. They are kept in place because Section 1.3 carries adverse authority we identified
+> against our own position (the FTC's January 2015 AgeCheq decision), and the owner ruling is
+> recorded in the assurance register at **O-122** as an accepted exception whose stated residual
+> risk is exactly that authority. Deleting the analysis would leave the acceptance with nothing
+> attached to it. Counsel should skip to Section 1.6 and Section 2 unless answering 1A or 1B
+> requires the background in 1.1 and 1.2.
+
+This was the single question we most needed answered before this document set could be considered
+complete. Parts 1A and 1B still are.
 
 ### 1.0 The four parts of Question 1, and the order to take them in
 
@@ -77,14 +92,17 @@ we assumed. Question 1 is therefore posed in four parts, to be taken in order:
 |---|---|---|
 | **1A** | Does the child-facing service collect "personal information" from a child at all, such that verifiable parental consent is owed? | Stated in full below |
 | **1B** | For each third party that receives data from us, is that a "disclosure," an "integral" disclosure, or support for internal operations? | Stated in full below |
-| **1C** | If consent is owed, does the mechanism we built satisfy the Rule? | Section 1.3, with background in 1.1 and 1.2 |
-| **1D** | If it does not, what is the minimum compliant alternative? | Section 1.3's closing list and Section 1.5 |
+| ~~**1C**~~ | ~~If consent is owed, does the mechanism we built satisfy the Rule?~~ **WITHDRAWN 2026-08-09 by owner ruling. Not a review ask.** | Section 1.3 retained as the record behind register row O-122, not as a question |
+| ~~**1D**~~ | ~~If it does not, what is the minimum compliant alternative?~~ **WITHDRAWN 2026-08-09, consequent on 1C.** | Section 1.3's closing list and Section 1.5, retained on the same basis |
 
 The order matters and is not merely tidy. A "no" at 1A disposes of everything after it. The answer
-at 1B decides whether the two cheapest methods in the Rule are available to us, which in turn
-decides whether 1C is a question about a method we must defend or a method we can simply replace.
-Section 1.6 then asks the mirror-image of 1C: whether the step we built was required even if
-consent is owed.
+at 1B decides whether the two cheapest methods in the Rule are available to us. With 1C and 1D
+withdrawn, 1B's value changes rather than disappears: it no longer decides whether we must defend
+our method or replace it, but it still tells us whether a cheaper enumerated route sits open beside
+the one we have accepted, which is the information that would make the O-122 exception cheap to
+retire later. Section 1.6 remains live and is worth noting alongside the withdrawal: it asks
+whether the signature-capture step was required **at all**, and an answer there could retire the
+accepted exception rather than defend it.
 
 **Question 1A. Is COPPA personal information collected from a child here at all?** We ask because
 the answer is not obvious to us and it sets the scope of everything else. Two features of the
@@ -260,7 +278,14 @@ built and shipped, not a design proposal:
   are not asking counsel to assume that: if the existence of a staff-operated bypass affects
   the analysis, we would rather hear so now than after a filing.
 
-### 1.3 The precise question for counsel
+### 1.3 The precise question for counsel (WITHDRAWN 2026-08-09, retained as record)
+
+> **Not a review ask.** The owner ruled on 2026-08-09 that the mechanism as built meets the
+> requirement, and withdrew this from the engagement. Everything below is preserved unedited as the
+> analysis the ruling was taken against, and is cited by assurance-register row **O-122** as the
+> residual risk of that acceptance. The AgeCheq material further down is adverse authority we
+> identified against ourselves; it is the single most important thing in this section and it is
+> retained deliberately. Nothing here has been softened to fit the ruling.
 
 **Is the consent flow described in Section 1.2, a typed full legal name captured inside our own
 application on top of an OAuth login, an enumerated verifiable-parental-consent method under
@@ -751,10 +776,13 @@ We consider this engagement complete when all five of the following are true:
       geography, audience classification, the AI-training data-segregation constraint, and the
       compliance-artifact document review) are each closed with a counsel opinion or confirmation, and
       our internal architecture record's status is updated from "proposed" to "accepted" with each
-      closed decision recorded in place. Question 1 is closed only when all four of its parts are
-      answered: whether personal information is collected from a child at all (1A), how each
-      third-party recipient is characterised (1B), whether the mechanism we built suffices (1C),
-      and what the minimum compliant alternative is if it does not (1D).
+      closed decision recorded in place. Question 1 is closed when its two remaining parts are
+      answered: whether personal information is collected from a child at all (1A), and how each
+      third-party recipient is characterised (1B). Parts 1C (whether the mechanism we built
+      suffices) and 1D (the minimum compliant alternative) were **withdrawn by owner ruling on
+      2026-08-09** and are not closure criteria for this engagement; they are carried instead as
+      assurance-register row O-122, an accepted exception with a recorded residual risk and expiry.
+      Section 1.6 remains in scope and is not part of the withdrawal.
 - [ ] The direct-notice gap identified in Section 3 is closed. This is a completion criterion of
       the Section 3 document-review question rather than a sixth question, and it does not expand
       the engagement past five. It is closed when **both** of the following have happened: counsel
