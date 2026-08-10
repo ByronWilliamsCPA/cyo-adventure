@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.71.0] - 2026-08-10
+
+### Features
+
+- **validator**: Story-diversity checkers and strict skeleton bar
+  ([#661](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/661),
+  [`4e1a08b`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/4e1a08bcf261abf8fa5baa39111f73621410047a))
+
+
 ## [0.70.0] - 2026-08-09
 
 ### Features
@@ -3303,6 +3312,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.71.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.70.0...v0.71.0
 [0.70.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.69.1...v0.70.0
 [0.69.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.69.0...v0.69.1
 [0.69.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.68.4...v0.69.0
