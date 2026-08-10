@@ -414,6 +414,47 @@ of grace; it does not give an operator a way to recover an attempt that had no r
 the hole the ordering exists to close. The practical consequence is narrow: after fixing a transit
 fault, check whether the retry budget is still open before spending a fresh send.
 
+**Observed 2026-08-10: the parent's confirmation email is the control the origin log cannot be.**
+The sends produced KWS confirmation emails to the parent, headed "You're successfully verified for
+CYO Adventure" and reading "You've successfully verified that you're an adult with KWS using your
+credit or debit card. We've let CYO Adventure know." Meanwhile all four `kws_verification` rows sit
+at `status='sent'` with `resolved_at` and `transaction_id` null.
+
+The tightest correlation is on attempt `c5ff1711`, the run made after the edge rule was fixed. It
+was sent at 17:31:30Z, its confirmation email is stamped 17:32, and the two origin POSTs we rejected
+arrived at 17:32:09 and 17:32:51. Those are one event seen three ways, which settles something the
+rejection alone could not: the delivery we refused was a genuine success notification, not a probe,
+a malformed retry, or a failure report. Note the times are local in the mailbox and UTC everywhere
+else, and a seven-hour offset is enough to attribute an email to the wrong run; take the attribution
+from the `requested_at` column rather than from a rendered inbox timestamp.
+
+That the delivery was fresh is the other half. A verification that completes about a minute after
+the send, with the webhook following within seconds, leaves no room for the delivery to be stale in
+any ordinary sense, so a `timestamp_outside_window` rejection against a 300-second tolerance points
+at the units or the meaning of the `t=` value rather than at elapsed time.
+
+That pairing is worth more than either half. It separates *the verification failed* from *the
+verification succeeded and we did not record it*, and no amount of origin-side or edge-side logging
+distinguishes those two, because both produce the same absence on our side. Read the parent's inbox
+as a third log, alongside the origin and the edge. It is the only one written by the vendor.
+
+The state it documents is the one the insert-before-send ordering was built for: four adults are
+verified as far as Epic is concerned, and this application holds zero consent records. The rows
+still name the attempts, which is exactly what stops each of these being unattributable forever, so
+the ordering did its job even though nothing resolved.
+
+Two cautions the email itself raises:
+
+- **Its "KWS will remember you have verified your age the next time you use this email" line is
+  production copy sent verbatim in Test, and it is false here.** Epic's testing page is explicit
+  that the Test environment does not add verified addresses to the AgeGraph; see the alias section
+  above. Do not expect a second run from the same address to skip card entry, and do not read the
+  sentence as evidence about Q1. The `+verified` alias remains the only deterministic route to the
+  pre-verified flow.
+- **Each first-time run costs a real $0.05 authorization**, refunded in roughly 8 to 13 business
+  days. Iterating is cheap but not free, which is the argument for deploying a diagnostic change
+  *before* spending the next send rather than sending again to see whether anything changed.
+
 ## What Gate 1 does not do
 
 It does not choose the route. KWS versus a direct Stripe integration stays open, and building
