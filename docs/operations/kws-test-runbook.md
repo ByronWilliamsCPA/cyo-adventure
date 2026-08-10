@@ -89,16 +89,22 @@ typed-name attestation is never relied on as the enumerated method:
 
 | Run | Answers | Address needed | Blocked on |
 |---|---|---|---|
-| 1 | **Q2**, and Q3 for free | a real inbox with **no** prior Epic verification | card alerts enabled first; execution inside the staging container |
+| 1 | **Q2**, and Q3 for free | a real inbox with **no** prior Epic verification | branding published to Test; card alerts enabled first; execution inside the staging container |
 | 2 | Q1 | an address that **has** completed an Epic verification | the same execution path |
-| later | Q4 | either | Control Panel return-URL registration, secret pasted, redeploy |
+| none | Q4 | none | **answered from vendor documentation 2026-08-10; no run needed** |
 
 Q2 moved to the front because the ruling removed the fallback. It was the question that could
 *retire* the O-122 accepted exception; with no second method behind it, it is now the question that
 decides whether the chosen method is available at all. Q3 needs no run of its own: it is answered by
-capturing the raw request on any real webhook delivery, so run 1 answers both. Q4 dropped to last
-because it is a user-experience defect on a surface Gate 2 has not built yet, and a UX question does
-not outrank a lawfulness question.
+capturing the raw request on any real webhook delivery, so run 1 answers both. Q4 left the run list
+entirely on 2026-08-10: Epic's own API pages document the shape verbatim, which is better evidence
+than a single observed redirect would have been, and it cost no send budget.
+
+**Both remaining runs are blocked on publishing branding to the Test environment.** Until that is
+done, `send-email` answers `400 ERR_INVALID_REQUEST` with "you need to publish your branding in the
+developer portal before you can call this api". The Developer Portal's Branding page requires a
+**Global brand name** and a **Privacy Policy URL**, then offers **Publish to Test**. This is an
+operator action in the portal; no code change unblocks it.
 
 Note that Q1 and Q2 want opposite addresses and cannot share one. An address Epic has already
 verified inherits through AgeGraph, so no method runs and there is no card transaction to observe.
@@ -117,6 +123,17 @@ but its blast radius depends on whether we are told.
   gathered at an unknown time by an unknown method. That is the whole content of register row
   O-124's "snapshot, never a live read" constraint, and confirming it turns an assumption into a
   finding.
+- **Sharpened 2026-08-10 by vendor documentation.** Epic's PV Service pages describe the
+  pre-verified path as one where the parent "doesn't receive a verification request" and instead
+  sees a Web UI screen saying they already verified, followed by a confirmation email carrying
+  **an intentional random delay of up to two hours**. Those pages document `parent-verified` only
+  under the first-time flow's success branch and say nothing about a webhook on the pre-verified
+  path. That is absence of evidence rather than evidence of absence, so it does not answer Q1; it
+  raises the prior that the answer is bad. Two failure modes now need distinguishing on the run,
+  and a run that stops watching after a few minutes cannot tell them apart:
+  **no delivery ever**, which strands the row at `sent` forever, versus **a delivery deferred by
+  up to two hours**, which is survivable but means no Gate 2 surface may treat the absence of a
+  webhook shortly after a send as a negative result.
 
 ### Q2 (run first): does the card method capture and refund, or authorise only?
 
@@ -153,19 +170,24 @@ observed delivery.
   direction to fail but means a real verification is silently dropped. This is the one question
   whose wrong answer breaks the integration outright rather than weakening a claim about it.
 
-### Q4: what shape is the redirect's `status` value actually in?
+### Q4 (ANSWERED 2026-08-10, no run needed): what shape is the redirect's `status` value in?
 
-`api/kws_redirect.py::_reports_verified` tries a JSON reading first
-(`{"verified": true, ...}`) and falls back to the bare tokens `verified` / `true` / `success`.
-Both are guesses; Epic's documentation does not pin the shape, and the code says so in an
-`#ASSUME` tag.
+**Answer: a URL-encoded JSON object.** Epic's PV Service API pages give the return URL verbatim,
+and decoded it reads `status={"verified":true,"transactionId":"<transactionId>","errorCode":null}`,
+alongside `externalPayload` and `signature` as separate query parameters.
 
-- **What to watch**: the literal `status` query-parameter value on the return URL, before any
-  parsing.
-- **Why it matters**: anything unrecognised reads as *not verified*, which is the safe direction
-  (the page writes nothing either way), but it means a genuinely verified parent may see the
-  unconfirmed page. That is a UX defect on the surface Gate 2 will build against, so answer it
-  before building.
+`api/kws_redirect.py::_reports_verified` already tries that JSON reading **first**, so the
+implementation was correct before the question was answered. What changed is the evidence behind
+it: the code carried an `#ASSUME` saying Epic documented that a `status` parameter comes back but
+not what it contains, and that is no longer true. The marker was downgraded to `#EDGE` and moved
+onto the bare-token fallback, which is the only part still speculative. The fallback stays, because
+it is what makes an undocumented variant fail closed to *not verified*.
+
+Documentation beat a live run to this answer, and it is the better evidence of the two: one
+observed redirect shows one case, whereas the published contract covers the `errorCode` and
+unverified branches a single successful run would never exercise. It also cost none of the
+ten-per-hour send budget. Nothing here is contingent on the Control Panel return-URL registration,
+which remains outstanding for its own reasons.
 
 ## Running it
 

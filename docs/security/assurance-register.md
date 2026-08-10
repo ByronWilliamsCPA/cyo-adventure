@@ -3605,6 +3605,22 @@ posture at a trust boundary must be verified from outside that boundary.
   reconciled**: there is no KWS API to read the Control Panel's own configuration from, so nothing
   can detect an operator whose declaration and Control Panel disagree. That is a known limit of this
   control, stated here rather than left for a reader to discover.
+- **Confirmed from vendor documentation, 2026-08-10.** The premise this row rests on was previously
+  inferred from the callback schema. Epic's Developer Portal pages now state it directly: the
+  `parent-verified` payload carries `parentEmail`, `externalPayload`, and a `status` object holding
+  `verified` and `transactionId`, alongside envelope fields `name`, `time`, `orgId`, and
+  `productId`. There is no method field anywhere in it. The same pages describe the pre-verified
+  AgeGraph path as one where the parent "doesn't receive a verification request" at all, so on that
+  branch no method runs for us even in principle. Both readings strengthen this row rather than
+  changing it: the operator's send-time declaration remains the only bound that will ever exist, and
+  on the inheritance branch it is a bound on a method that was never exercised. The declaration
+  should be read as *what we permitted*, never as *what happened*, and any surface that renders it
+  to a human must not imply otherwise.
+- **Available hardening, not yet taken:** the payload's `productId` is checkable, and
+  `api/kws_webhook.py` already compares it against `settings.kws_product_id`. That comparison is
+  vacuously true today because `KWS_PRODUCT_ID` is unset on staging, so a delivery naming any
+  product passes. The value is visible in the Developer Portal and can be pinned whenever the
+  branding work takes an operator there.
 - **Phase home:** unassigned
 - **Owner:** core-maintainer
 - **Last verified:** 2026-08-09 (staging only; the control has never run on a tier serving real

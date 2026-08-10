@@ -536,6 +536,24 @@ typed-name path remains fully reachable in production; and nothing refuses a `kw
 is register row O-123, which this ruling promotes from follow-on work to a precondition of the gate
 change itself.
 
+**The vendor independently confirms the boundary, 2026-08-10.** Epic's own PV Service documentation
+states that the service "has not been designed to obtain consent from verified parents or guardians
+or to address direct notice requirements when required by applicable law (such as COPPA)", and that
+it is "usually used in combination with an internal consent management solution". That is Epic
+drawing the same line the first bullet above draws: KWS answers *is this person an adult holding a
+payment instrument*, and the record of *what was agreed to* is ours to keep. It removes the residual
+worry that retaining the typed-name capture after retiring it as the enumerated method was
+belt-and-braces; on the vendor's own account, dropping it would leave the direct-notice and
+agreement record with no owner at all.
+
+The same page names a separate **Consent Management Service**, available through Epic's Technical
+Account Manager rather than self-serve. This ADR has not evaluated it and does not adopt it. It is
+recorded here because it is a route the D1 analysis never considered, and because the decision
+whether to build the consent record ourselves or take Epic's is a real fork that should be taken
+knowingly rather than by default. Nothing about it blocks the Test-environment questions below, and
+it should not be allowed to delay them: it bears on how consent content is stored, not on whether
+the card method satisfies 312.5(b)(2)(ii).
+
 **What the Test environment exists to answer.** Four questions, held with stable identifiers in the
 [KWS Test-environment runbook](../../operations/kws-test-runbook.md), which is the operational
 source of truth for running them and now carries the run order this ruling implies:
@@ -544,6 +562,12 @@ source of truth for running them and now carries the run order this ruling impli
    inherited verification produces no delivery and therefore no consent record, which would
    restate accepted risk (a) from "verified under a method we did not choose" into "no record
    was created at all". That is a materially worse finding than the one the owner accepted.
+   Epic's documentation (read 2026-08-10) raises the prior that the answer is bad without settling
+   it: it describes the pre-verified parent as one who "doesn't receive a verification request",
+   documents `parent-verified` only under the first-time flow's success branch, and notes that the
+   confirmation email on that path carries an intentional random delay of up to two hours. The run
+   must therefore distinguish *no delivery* from *a delivery deferred by hours*; the two have very
+   different consequences and a short observation window cannot tell them apart.
 2. **Q2: does the card method capture-and-refund, or authorise only, and is the cardholder
    notified?** This bears directly on the 312.5(b)(2)(ii) mapping recorded above, whose second limb
    requires notification "of each discrete transaction to the primary account holder".
@@ -554,14 +578,21 @@ source of truth for running them and now carries the run order this ruling impli
    the Control Panel copy disagree; `api/kws_webhook.py` records the open question as an
    `#ASSUME` marker rather than resolving it silently. It needs no run of its own, being answered by
    capturing the raw request on the Q2 delivery.
-4. **Q4: what shape is the redirect's `status` value actually in?** `api/kws_redirect.py::
-   _reports_verified` guesses a JSON reading and falls back to bare tokens, both marked `#ASSUME`.
-   Last, and blocked on Control Panel registration of the return URL: an unrecognised value reads as
-   *not verified*, which is the safe direction, so this is a user-experience defect on a surface
-   Gate 2 has not built rather than a question about lawfulness.
+4. **Q4: what shape is the redirect's `status` value actually in? ANSWERED 2026-08-10, no run
+   needed.** Epic's API pages give the return URL verbatim: `status` is a URL-encoded JSON object,
+   `{"verified":true,"transactionId":"<id>","errorCode":null}`, with `externalPayload` and
+   `signature` as separate query parameters. `api/kws_redirect.py::_reports_verified` already read
+   that shape first, so the implementation needed no change; the `#ASSUME` behind it did, and was
+   downgraded to an `#EDGE` on the bare-token fallback alone. Documentation is the better evidence
+   here than a run would have been, because the published contract covers the `errorCode` and
+   unverified branches that a single successful redirect would never exercise, and it spent none of
+   the ten-per-hour send budget.
 
 Q1 and Q2 require addresses with opposite histories and cannot share one, since an address Epic has
-already verified inherits through AgeGraph and runs no method at all.
+already verified inherits through AgeGraph and runs no method at all. Both are blocked, as of
+2026-08-10, on publishing branding to the Test environment in the Developer Portal: until that is
+done `send-email` answers `400 ERR_INVALID_REQUEST` naming the unpublished branding, and no
+verification email is sent. That is an operator action in Epic's portal, not a code change.
 
 ### D2: Audience classification
 
