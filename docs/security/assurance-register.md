@@ -3387,10 +3387,19 @@ posture at a trust boundary must be verified from outside that boundary.
   Note also what the flow is not: it captures a **typed name only**. There is no drawn signature;
   `GuardianConsentPage.tsx` has one text input, two checkboxes, and one select, with no `<canvas>`,
   no `getContext`, and no `toDataURL`, though several documents described a canvas that was
-  considered in the 2026-07-20 framing and never built. Two of the cheaper enumerated routes are
-  independently foreclosed: "email plus" (312.5(b)(2)(viii)) and its neighbour (ix) require no
-  disclosure of the child's information to third parties, and a child's free-text story wish reaches
-  third-party classifiers.
+  considered in the 2026-07-20 framing and never built. Two of the cheaper enumerated routes,
+  "email plus" (312.5(b)(2)(viii)) and its neighbour (ix), require no disclosure of the child's
+  information to third parties, and a child's free-text story wish reaches third-party classifiers.
+  **Corrected 2026-08-09: that is a conditional bar, not a foreclosure, and an earlier draft of
+  this row overstated it.** COPPA's definition of "disclosure" at 312.2 excludes release to a person
+  "who provides support for the internal operations" and does not use the information for any other
+  purpose. Whether the generation, moderation, and cover-art vendors sit inside that exclusion is
+  precisely **Question 1B**, which is a live counsel ask. Two limbs have to hold, not one: the
+  purposes must fall within 312.2's enumerated internal-operations list, **and** each recipient must
+  not use or disclose for any other purpose, which is what `processor-dpa-checklist.md` tracks and
+  currently records as unexecuted for several vendors (OpenRouter's ZDR coverage of downstream model
+  providers, the Anthropic terms tier, Google Perspective's Cloud DPA coverage). Until both hold,
+  email-plus is unavailable; it is not permanently unavailable.
 - **Acceptance record (2026-08-09).** The owner ruled that the approach as built meets the
   requirement and withdrew parts 1C and 1D from the counsel engagement
   (`docs/compliance/counsel-engagement-brief.md` Sections 1.0, 1.3, 6). Recording the three things
@@ -3417,10 +3426,20 @@ posture at a trust boundary must be verified from outside that boundary.
     is about the *quality* of consent, never about its *absence*. (d) The KWS evaluation at O-123
     and O-124 is a live route to a stronger mechanism and is not foreclosed by this acceptance.
   - **Expiry.** R2, the first distribution beyond the operator's household and invited families,
-    whichever comes first with any change to how consent is captured. Two events retire the
-    exception earlier rather than renewing it: a counsel answer to Section 1.6 (whether a separate
-    signature step is required at all) that removes the need for the step, or a counsel answer to
-    Question 1B that opens "email plus" at 312.5(b)(2)(viii). Both remain live asks.
+    whichever comes first with any change to how consent is captured. **The intended retirement
+    mechanism, recorded 2026-08-09, is a KWS card or debit-card verification required at every
+    guardian signup**, which reaches the enumerated method at 312.5(b)(2)(ii) and makes the
+    AgeCheq authority beside the point rather than answered. That reframes this exception as an
+    interim covering the population verified between now and KWS reaching the enforcement path,
+    not as a permanent posture. **It is not yet earned**: the (b)(2)(ii) text requires the card be
+    used "in connection with a transaction" *and* that the card "provides notification of each
+    discrete transaction to the primary account holder", so a zero-charge authorisation that
+    generates no cardholder notification may not land inside the method. Gate 1's question Q2
+    (`docs/operations/kws-test-runbook.md`) is what settles it, and it is now the highest-value
+    experiment in the gate because the retirement plan rests on its answer. Two further events
+    retire the exception earlier rather than renewing it: a counsel answer to Section 1.6 (whether
+    a separate signature step is required at all) that removes the need for the step, or a counsel
+    answer to Question 1B that opens "email plus" at 312.5(b)(2)(viii). Both remain live asks.
 - **Phase home:** unassigned
 - **Owner:** core-maintainer
 - **Last verified:** not verified. **An accepted exception is not a verification**: nothing below
