@@ -1376,6 +1376,56 @@ tours a large graph, the graph has to have been authored as a world**, and a gra
 branching story will not become one by being large. That is a property worth checking before
 building on it, and it costs a dominator computation.
 
+## 16i. The skeleton-free path, run at last, and what it says about the model
+
+Section 5.3 named this the cheapest outstanding experiment before this programme began and it was
+never run. 16d gave it a new reason to matter: a story generated without a skeleton shares no plan
+with anything, so it is the only option on our list that structurally cannot hit the convergence
+wall. We ran it: six graphs, six isolated authors, the JSON format and nothing else. No skeleton, no
+example story, and deliberately **no validator in the loop**, so this is first-pass yield rather
+than what the path could reach with repair.
+
+**Structurally, six of six.** Zero dangling targets, zero unreachable nodes, zero nodes with no way
+out, zero cycles a reader could be trapped in, at 27 to 35 nodes with 7 to 9 endings each. The thing
+we assumed a hand-authored skeleton was load-bearing for, a well-formed graph, this model does
+unaided and reliably.
+
+**And our gate blocked all six.** The two findings are not in tension, and the reason matters more
+than either:
+
+| Blocking finding | Graphs | What it is |
+| --- | --- | --- |
+| branch depth 10 to 14, budget 0 to 9 | 4 of 6 | a band budget |
+| first decision 1 node in, band floor 2 | 2 of 6 | a band policy |
+| ending object fails our schema | 2 of 6 | a schema shape |
+
+**Every blocking finding violates a constraint we never told the author about.** We stated the
+structural rules and the model met all of them. We did not state the depth budget, the opening floor
+or the ending schema, and those are precisely what failed. As a measure of story-graph competence
+this is a pass; as a measure of our brief it is a failure, and the brief was ours. We have not tested
+whether stating the constraints closes the gap, and that is the obvious next run.
+
+**On convergence, which is why 16d promoted this.** Across fifteen pairs, bodies only, the mean is
+**3.5 shared four-grams per 1000 against a floor of 3.3 and a budget of 4.0.** Six stories sharing no
+plan sit at the generator's floor. That is the cleanest evidence we have that the convergence in 16d
+came from the shared contract and not from the model.
+
+**But four of fifteen pairs breach the budget, and the reason connects the two results.** Our six
+titles are *The Time Capsule of Widow's Watch*, *The Sparrow Hollow Observatory*, *The Bell Beneath
+Pike's Cove*, *The Moonbloom Grove*, *The Kite That Remembered* and *The Lighthouse Frequency*. Two
+coastal mysteries about a lost signal, two woodland camp discoveries, and **all six are the same
+story: children find a thing left behind by an older person and follow clues to it.** No coordination
+and no shared plan.
+
+16d found the premise to be the largest traceable channel of convergence and we concluded a reusable
+plan must vary its premise per book. This says **removing the plan does not vary the premise**,
+because the model converges there on its own. Taken together: the premise has to be varied by
+something that actively pushes candidates apart. Sharing less will not do it and neither will asking.
+If you are proposing a repulsion mechanism, the premise is a target it must include.
+
+**Limits, fixed before we looked.** Six graphs, one model, 27 to 35 nodes against a catalog median
+of 149. This is the easy end and licenses nothing about production scale.
+
 ## 17. Corrections to Part I
 
 - **5.3's "untested cell" has been tested**, and the result is not the simple one either reading

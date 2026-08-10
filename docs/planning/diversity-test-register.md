@@ -531,6 +531,69 @@ mechanically is a cost to be priced, not a refutation.
 nodes against a catalog median of 149 this tests the easy end. A clean result licenses nothing about
 production scale, and the register should not let it.
 
+### Q-3 result: the graphs are sound, the policy is not, and nobody told the author the policy
+
+**The pre-registered primary passed outright.** Six authors, no skeleton, no example story, no
+validator in the loop, scored by `scripts/check_graph_structure.py` rather than by their own
+self-checks:
+
+| | Nodes | Endings | Forks | Structural failures |
+| --- | --- | --- | --- | --- |
+| graph_A | 30 | 7 | 10 | 0 |
+| graph_B | 29 | 8 | 11 | 0 |
+| graph_C | 33 | 9 | 18 | 0 |
+| graph_D | 35 | 7 | 10 | 0 |
+| graph_E | 34 | 7 | 25 | 0 |
+| graph_F | 27 | 8 | 9 | 0 |
+
+**Six of six, no dangling target, no unreachable node, no sink, no trapped cycle.** The thing a
+skeleton was assumed to be load-bearing for, a well-formed graph, an unaided model does reliably at
+this scale.
+
+**And all six are blocked by the project gate.** That looks like a contradiction and is not:
+
+| Blocking finding | Graphs | What it is |
+| --- | --- | --- |
+| `L1-7` branch depth out of range (10 to 14, allowed 0 to 9) | A, D, E, F | a band budget |
+| `PL-25` first decision 1 node in, band floor 2 | B, C | a band policy |
+| `L1-1` ending object fails the Storybook schema | D, E | a schema shape |
+
+**Every one of these violates a constraint the author was never given.** The brief stated the
+structural rules and the model hit all of them; it stated nothing about depth budgets, opening
+floors or the ending-object schema, and those are exactly what failed. Read as a measure of story-
+graph competence this is a pass; read as a measure of the brief it is a fail, and the brief was
+mine. **What Q-3 has not tested is whether stating the constraints closes the gap**, which is the
+obvious and cheap follow-up.
+
+**Convergence, the reason D-6 promoted this row.** Fifteen pairs, bodies only:
+
+| | per 1000 |
+| --- | --- |
+| generator idiom floor | 3.3 |
+| budget | 4.0 |
+| **Q-3, mean of 15 pairs** | **3.5** |
+| Q-3, worst pair | 6.1 |
+
+**On average, six stories sharing no plan at all sit at the idiom floor**, which is the cleanest
+demonstration available that the convergence D-2 and D-6 measured comes from the shared plan and not
+from the model. But 4 of 15 pairs breach the 4.0 budget, so "no shared plan" is not a guarantee.
+
+**The worst pairs are the ones that converged on a premise, and this is where Q-3 meets D-6.**
+The six titles are *The Time Capsule of Widow's Watch*, *The Sparrow Hollow Observatory*, *The Bell
+Beneath Pike's Cove*, *The Moonbloom Grove*, *The Kite That Remembered* and *The Lighthouse
+Frequency*. Two coastal mysteries about a lost signal or bell, two summer-camp discoveries in
+woodland, and **all six are the same story: children find a thing left behind by an older person and
+follow clues to it.** Nobody coordinated and nobody shared a plan.
+
+D-6 found the `premise` to be the largest traceable channel of convergence and concluded that a
+reusable plan must vary its premise per book. Q-3 shows that **removing the plan entirely does not
+vary the premise**, because the model converges there on its own. The two results together say the
+premise has to be varied by something that actively pushes them apart, and that neither sharing less
+nor asking nicely will do it.
+
+**Limits, as pre-registered.** Six graphs, one model, 27 to 35 nodes against a catalog median of
+149. This tests the easy end and licenses nothing about production scale.
+
 ## A2. What D-6 costs every remaining fill-based row
 
 D-6 is a result about method, not only about architecture, and it re-prices four rows that were
@@ -557,7 +620,7 @@ and until `AL-213` is addressed it is a hand job of roughly 1.7KB per node.
 | M-4 | Stake economics | in-house, from rater testimony | Not *what* the goal is but whether failure costs anything. The treatment's goal imposed a live global constraint, a closing clock and a carrying limit and damage that persists, which re-prices every fork; the control's goal change did not. Both raters cited this unprompted, one noting that forcing is a free do-over in both control books and has a price in the treatment. | Two books, same graph, non-colliding bindings, same goal, differing only in whether failure is free. Existing rig. | The two books rate as repetitive as each other, meaning a reader does not price failure into how a choice feels. | queued |
 | M-2 | World-graph tours | in-house | A graph is a *world*, not a book; a book is a validated subgraph tour. The catalog already holds graphs at 677, 551 and 250 nodes. | Take the largest 10-13 graph, cut two disjoint tours by hand, fill both, rate. Tests coherence as much as diversity. | **Structurally confirmed for 18 of 21 large graphs, without a single fill**: they are linear-with-decorations, not worlds, so no two disjoint tours exist to cut. Three graphs survive, one of them in-band. See below. | **partially done, DETERMINISTIC PRE-TEST; the fill-and-rate half is unblocked on exactly 3 named graphs** |
 | Q-2 | Cross-skeleton recombination | framework Q2 | Subtree grafting is the only mechanism that has ever cleared the anti-clone floor, and has never been evaluated for reader-perceived distinctness or coherence cost. | Graft subtrees between two catalog graphs, fill, rate for distinctness and for coherence damage. | Grafts read as incoherent, or as no more distinct than a plain sibling pair. | queued |
-| Q-3 | How close is the skeleton-free path | framework Q3, brief 5.3 | Named the cheapest outstanding experiment before this programme started, and never run. **D-6 promotes it: a skeleton-free graph shares no plan by construction, so it is the only queued row that structurally cannot hit the convergence wall.** | Six graphs generated from scratch by isolated authors, format reference only, no skeleton and no validator in the loop. Score deterministically against the structural rules and the project gate. Analysis pre-registered below before the artifacts exist. | 6 generations, 0 raters | Structurally clean share below half **and** the failures needing authorial judgement rather than mechanical repair. Both halves required: a low yield that a repair pass fixes for free is a cost, not a refutation. | **running** |
+| Q-3 | How close is the skeleton-free path | framework Q3, brief 5.3 | Named the cheapest outstanding experiment before this programme started, and never run. **D-6 promotes it: a skeleton-free graph shares no plan by construction, so it is the only queued row that structurally cannot hit the convergence wall.** | Six graphs generated from scratch by isolated authors, format reference only, no skeleton and no validator in the loop. Score deterministically against the structural rules and the project gate. Analysis pre-registered below before the artifacts exist. | 6 generations, 0 raters | Did not fire. **6 of 6 structurally clean.** All six are nonetheless blocked by the project gate, and every blocking finding violates a constraint that was never stated to the author. | **done, POSITIVE on the pre-registered primary; see the split below** |
 | Q-5 | Does the fill match its contract | framework Q5 | Nothing verifies finished prose against the node obligations it was written to satisfy. This is S4's unaddressed second weakness and it is independent of everything else here. | One model pass judging entailment over all 49 obligations of one book, plus a deterministic lexical triage scored against it. | Fired in the useful direction: fills do substantially satisfy their contracts, so the interesting result is that a deterministic check cannot verify it. | **done** |
 
 ### M-2 pre-test: 18 of 21 large graphs cannot supply two disjoint tours, and 3 can
