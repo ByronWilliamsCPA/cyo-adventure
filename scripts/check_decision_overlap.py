@@ -79,6 +79,19 @@ def _decisions(contract: dict[str, Any]) -> dict[str, dict[str, dict[str, str]]]
             for cid, sig in block.items()
             if isinstance(sig, dict)
         }
+        # #CRITICAL: data-integrity: the hard bar must compare the DECISION, not
+        # the nouns. Measured live: two contracts scored 0/35 identical `action`
+        # strings while a blind annotator judged 34/35 the same decision, because
+        # "set_the_dial_deliberately" and "set_the_levers_deliberately" differ as
+        # strings and are the same act. A free-text field makes the owner's
+        # "exact action repetition" bar vacuous, since the surface changing while
+        # the decision does not IS the defect being measured.
+        # #VERIFY: exact reuse is computed on the normalized act (family, target,
+        # tradeoff); the raw string is retained for reporting only.
+        for sig in sigs.values():
+            sig["_normalized_act"] = "|".join(
+                sig.get(k, "") for k in ("action_family", "target_role", "tradeoff")
+            )
         if sigs:
             out[str(node_id)] = sigs
     return out
@@ -162,7 +175,7 @@ def compare(
         la, lb = a[node_id], b[node_id]
         options = max(len(la), len(lb))
         total_options += options
-        hits = _best_alignment(la, lb, "action")
+        hits = _best_alignment(la, lb, "_normalized_act")
         exact += hits
         fam_hits = _best_alignment(la, lb, "action_family")
         family += fam_hits
@@ -171,7 +184,10 @@ def compare(
         rate = fam_hits / float(options)
         worst_family = max(worst_family, rate)
         if hits:
-            notes.append(f"  {node_id}: {hits} option(s) reuse the same concrete action")
+            notes.append(
+                f"  {node_id}: {hits} option(s) ask the same decision "
+                f"(same family, target and tradeoff)"
+            )
         if rate >= 0.5:
             notes.append(
                 f"  {node_id}: {fam_hits}/{options} options keep the same action family "
@@ -196,7 +212,7 @@ def compare(
         {
             "forks_compared": float(len(shared_nodes)),
             "options_compared": float(total_options),
-            "exact_action_reuse": float(exact),
+            "same_decision_reuse": float(exact),
             "action_family_rate": family / denom,
             "tradeoff_rate": tradeoff / denom,
             "consequence_rate": consequence / denom,
@@ -256,9 +272,10 @@ def main(argv: list[str] | None = None) -> int:
         sys.stdout.write(f"{note}\n")
 
     breaches: list[str] = []
-    if scores["exact_action_reuse"] > args.max_exact:
+    if scores["same_decision_reuse"] > args.max_exact:
         breaches.append(
-            f"exact action reuse {scores['exact_action_reuse']:.0f} > {args.max_exact}"
+            f"same-decision reuse {scores['same_decision_reuse']:.0f} > {args.max_exact} "
+            f"(options identical in family, target and tradeoff)"
         )
     if scores["action_family_rate"] > args.max_family_rate:
         breaches.append(

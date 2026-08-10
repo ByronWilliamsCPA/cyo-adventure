@@ -1,0 +1,73 @@
+{
+  "n_open": {
+    "c_open": {"action": "answer_the_appeal_for_help", "action_family": "SOCIAL", "target_role": "PERSON", "tradeoff": "NONE", "consequence": "ACCESS"}
+  },
+  "n_start": {
+    "c_examine": {"action": "read_the_posted_flood_gauge", "action_family": "INFORMATION", "target_role": "INFORMATION", "tradeoff": "CERTAINTY_VS_TIME", "consequence": "KNOWLEDGE"},
+    "c_door": {"action": "clear_the_storm_debris_from_the_hatch", "action_family": "NAVIGATION", "target_role": "BARRIER", "tradeoff": "PRIDE_VS_HELP", "consequence": "ACCESS"},
+    "c_keeper": {"action": "go_find_the_warden", "action_family": "SOCIAL", "target_role": "PERSON", "tradeoff": "PRIDE_VS_HELP", "consequence": "RELATIONSHIP"}
+  },
+  "n_note": {
+    "c_note_key": {"action": "follow_the_gauge_to_the_cached_crank", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "EFFORT_VS_SHORTCUT", "consequence": "RESOURCE"},
+    "c_note_inside": {"action": "head_straight_for_the_named_hatch", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "EFFORT_VS_SHORTCUT", "consequence": "ACCESS"}
+  },
+  "n_door": {
+    "c_door_force": {"action": "pry_open_the_swollen_low_door", "action_family": "NAVIGATION", "target_role": "BARRIER", "tradeoff": "NONE", "consequence": "ACCESS"},
+    "c_door_window": {"action": "release_the_jammed_sluice_gate", "action_family": "NAVIGATION", "target_role": "BARRIER", "tradeoff": "NONE", "consequence": "ACCESS"}
+  },
+  "n_keeper": {
+    "c_keeper_enter": {"action": "follow_the_wardens_lantern_down", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "SPEED_VS_INFO", "consequence": "ACCESS"},
+    "c_keeper_story": {"action": "carry_his_tools_and_hear_the_story", "action_family": "INFORMATION", "target_role": "INFORMATION", "tradeoff": "SPEED_VS_INFO", "consequence": "KNOWLEDGE"}
+  },
+  "n_keyhunt": {
+    "c_keyhunt_in": {"action": "wind_the_hatch_ratchet_open", "action_family": "CRAFT", "target_role": "MECHANISM", "tradeoff": "NONE", "consequence": "ACCESS"}
+  },
+  "n_keeper_story": {
+    "c_story_in": {"action": "hurry_down_before_the_tide", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "NONE", "consequence": "ACCESS"}
+  },
+  "n_window": {
+    "c_window_in": {"action": "climb_through_the_freed_sluice_gate", "action_family": "PHYSICAL_RISK", "target_role": "BARRIER", "tradeoff": "NONE", "consequence": "ACCESS"}
+  },
+  "n_inside": {
+    "c_inside_stairs": {"action": "climb_to_the_winch_loft", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "NONE", "consequence": "LOCATION"},
+    "c_inside_study": {"action": "duck_into_the_map_room", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "NONE", "consequence": "LOCATION"},
+    "c_inside_pendulum": {"action": "edge_along_the_weir_catwalk", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "NONE", "consequence": "LOCATION"},
+    "c_inside_basement": {"action": "go_down_to_the_engine_racks", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "NONE", "consequence": "LOCATION"}
+  },
+  "n_stairs": {
+    "c_stairs_face": {"action": "carry_the_gauge_to_the_tide_board", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "NONE", "consequence": "ACCESS"}
+  },
+  "n_study": {
+    "c_study_face": {"action": "press_on_to_the_tide_board", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "SPEED_VS_INFO", "consequence": "ACCESS"},
+    "c_study_logs": {"action": "stay_and_read_the_ledgers", "action_family": "INFORMATION", "target_role": "INFORMATION", "tradeoff": "SPEED_VS_INFO", "consequence": "KNOWLEDGE"}
+  },
+  "n_pendulum": {
+    "c_pendulum_oil": {"action": "cross_carefully_for_the_cached_gauge", "action_family": "PHYSICAL_RISK", "target_role": "BARRIER", "tradeoff": "SAFETY_VS_REWARD", "consequence": "RESOURCE"},
+    "c_pendulum_giveup": {"action": "judge_the_crossing_and_turn_back", "action_family": "MORAL", "target_role": "SELF", "tradeoff": "SAFETY_VS_REWARD", "consequence": "SAFETY"}
+  },
+  "n_basement": {
+    "c_basement_face": {"action": "log_the_readings_and_head_up", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "NONE", "consequence": "ACCESS"}
+  },
+  "n_clockface": {
+    "c_face_correct": {"action": "set_the_levers_deliberately", "action_family": "CRAFT", "target_role": "MECHANISM", "tradeoff": "NONE", "consequence": "ACCESS"},
+    "c_face_jam": {"action": "force_the_lever", "action_family": "CRAFT", "target_role": "MECHANISM", "tradeoff": "EFFORT_VS_SHORTCUT", "consequence": "ACCESS"},
+    "c_face_panel": {"action": "search_for_a_maintenance_panel", "action_family": "INFORMATION", "target_role": "MECHANISM", "tradeoff": "CERTAINTY_VS_TIME", "consequence": "KNOWLEDGE"},
+    "c_face_random": {"action": "yank_levers_at_random", "action_family": "CRAFT", "target_role": "MECHANISM", "tradeoff": "CERTAINTY_VS_TIME", "consequence": "ACCESS"}
+  },
+  "n_setcorrect": {
+    "c_correct_vault": {"action": "step_into_the_strongroom", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "NONE", "consequence": "ACCESS"}
+  },
+  "n_setjam": {
+    "c_jam_oil": {"action": "free_the_gearing_and_retry", "action_family": "CRAFT", "target_role": "MECHANISM", "tradeoff": "EFFORT_VS_SHORTCUT", "consequence": "RESOURCE"},
+    "c_jam_stuck": {"action": "accept_tonights_attempt_is_over", "action_family": "MORAL", "target_role": "SELF", "tradeoff": "EFFORT_VS_SHORTCUT", "consequence": "REPUTATION"}
+  },
+  "n_backpanel": {
+    "c_panel_vault": {"action": "read_the_second_gauge_toward_the_strongroom", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "NONE", "consequence": "ACCESS"},
+    "c_panel_secret": {"action": "follow_the_second_gauge_to_the_secret_room", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "NONE", "consequence": "ACCESS"}
+  },
+  "n_vault": {
+    "c_vault_share": {"action": "carry_the_letter_to_the_settlement", "action_family": "SOCIAL", "target_role": "PERSON", "tradeoff": "NONE", "consequence": "REPUTATION"},
+    "c_vault_keep": {"action": "swear_the_crew_to_secrecy", "action_family": "SOCIAL", "target_role": "SELF", "tradeoff": "NONE", "consequence": "RELATIONSHIP"},
+    "c_vault_grab": {"action": "loot_the_strongroom", "action_family": "RESOURCE", "target_role": "OBJECT", "tradeoff": "SAFETY_VS_REWARD", "consequence": "RESOURCE"}
+  }
+}
