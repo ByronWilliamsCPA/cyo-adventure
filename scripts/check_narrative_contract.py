@@ -53,8 +53,21 @@ from cyo_adventure.storybook.models import AgeBand
 from cyo_adventure.validator.slots import band_mandatory_bundles, denylisted_bundles
 
 
-def _load(path: Path) -> dict[str, Any]:
-    return cast("dict[str, Any]", json.loads(path.read_text(encoding="utf-8")))
+def _load(path: Path) -> dict[str, Any] | None:
+    """Load a JSON object from path, or report and return None.
+
+    Args:
+        path: File path to read.
+
+    Returns:
+        The decoded object, or None on any load failure (missing file,
+        unreadable file, or malformed JSON).
+    """
+    try:
+        return cast("dict[str, Any]", json.loads(path.read_text(encoding="utf-8")))
+    except (OSError, json.JSONDecodeError) as exc:
+        sys.stderr.write(f"FAIL: cannot load {path}: {exc}\n")
+        return None
 
 
 def _graph(skeleton: dict[str, Any]) -> tuple[dict[str, list[str]], list[str], str]:
@@ -92,6 +105,26 @@ def _reachable(succ: dict[str, list[str]], roots: list[str]) -> set[str]:
     return seen
 
 
+def _meet(guaranteed: dict[str, frozenset[str]], parents: list[str]) -> frozenset[str]:
+    """Return the fact intersection across every parent's guaranteed set.
+
+    Args:
+        guaranteed: Per-node guaranteed-fact sets built so far.
+        parents: Parent node ids to intersect over.
+
+    Returns:
+        The set intersection of ``guaranteed[parent]`` for every parent, or
+        an empty frozenset when ``parents`` is empty. NC-1 and NC-2 both rely
+        on this single definition of "meet" so they cannot silently diverge.
+    """
+    if not parents:
+        return frozenset()
+    meet = guaranteed[parents[0]]
+    for parent in parents[1:]:
+        meet = meet & guaranteed[parent]
+    return meet
+
+
 def _guaranteed_facts(
     succ: dict[str, list[str]],
     pred: dict[str, list[str]],
@@ -114,14 +147,7 @@ def _guaranteed_facts(
                 incoming = est.get(start, frozenset())
             else:
                 parents = pred.get(node) or []
-                if not parents:
-                    incoming = frozenset()
-                else:
-                    meet = guaranteed[parents[0]]
-                    for parent in parents[1:]:
-                        meet = meet & guaranteed[parent]
-                    incoming = meet
-                incoming = incoming | est.get(node, frozenset())
+                incoming = _meet(guaranteed, parents) | est.get(node, frozenset())
             if incoming != guaranteed[node]:
                 guaranteed[node] = incoming
                 changed = True
@@ -162,6 +188,7 @@ def check_bible(
     warnings: list[str] = []
     envelope = cast("dict[str, Any]", contract.get("safety_envelope") or {})
     permitted = set(cast("list[str]", envelope.get("permitted_device_kinds") or []))
+    forbidden = set(cast("list[str]", envelope.get("forbidden_device_kinds") or []))
     try:
         age_band = AgeBand(band)
     except ValueError:
@@ -192,16 +219,30 @@ def check_bible(
 
     _walk_strings(bible, "$")
     vocab = cast("dict[str, Any]", bible.get("device_vocabulary") or {})
+    if vocab and not permitted:
+        errors.append(
+            "NC-5 bible: device_vocabulary is non-empty but the contract "
+            "declares no permitted_device_kinds"
+        )
     for category, entries in vocab.items():
         for index, entry in enumerate(cast("list[Any]", entries)):
             if not isinstance(entry, dict):
                 errors.append(f"NC-5 bible device {category}[{index}]: not an object")
                 continue
-            kind = str(cast("dict[str, Any]", entry).get("kind"))
+            raw_kind = cast("dict[str, Any]", entry).get("kind")
+            if raw_kind is None:
+                errors.append(f"NC-5 bible device {category}[{index}]: missing kind")
+                continue
+            kind = str(raw_kind)
             if permitted and kind not in permitted:
                 errors.append(
                     f"NC-5 bible device {category}[{index}]: kind {kind!r} not in "
                     f"permitted_device_kinds"
+                )
+            if kind in forbidden:
+                errors.append(
+                    f"NC-5 bible device {category}[{index}]: kind {kind!r} is in "
+                    f"forbidden_device_kinds"
                 )
     return errors, warnings
 
@@ -253,6 +294,9 @@ def check_selection(
             continue
         if node_id not in contracts:
             errors.append(f"NC-7: selection names unknown node {node_id!r}")
+            continue
+        if not isinstance(assigned, dict):
+            errors.append(f"NC-7: {node_id!r} selection entry is not an object")
             continue
         entry = contracts[node_id]
         inventions = cast("dict[str, Any]", entry.get("invention") or {})
@@ -339,7 +383,7 @@ def check_contract(
             for choice_id in cast("dict[str, Any]", entry.get("choice_semantics") or {})
             if choice_ids.get(choice_id) != node_id
         )
-        for fact_list in ("entry_state", "establishes"):
+        for fact_list in ("entry_state", "establishes", "forbids"):
             warnings.extend(
                 f"NC-0: {node_id}.{fact_list} uses undeclared fact {fact!r}"
                 for fact in cast("list[str]", entry.get(fact_list) or [])
@@ -356,9 +400,7 @@ def check_contract(
         if node_id == start or not parents:
             available: frozenset[str] = frozenset()
         else:
-            available = guaranteed[parents[0]]
-            for parent in parents[1:]:
-                available = available & guaranteed[parent]
+            available = _meet(guaranteed, parents)
         missing = declared_entry - available
         if missing:
             errors.append(
@@ -379,9 +421,7 @@ def check_contract(
         if reachable_from_successors and not str(entry.get("reentry_contract") or ""):
             errors.append(f"NC-4: {node_id!r} is reentrant but has no reentry_contract")
         if not reachable_from_successors and parents and node_id != start:
-            meet = guaranteed[parents[0]]
-            for parent in parents[1:]:
-                meet = meet & guaranteed[parent]
+            meet = _meet(guaranteed, parents)
             redundant = (
                 frozenset(cast("list[str]", entry.get("establishes") or [])) & meet
             )
@@ -456,19 +496,24 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     skeleton = _load(skeleton_path)
     contract = _load(contract_path)
+    if skeleton is None or contract is None:
+        return 1
     errors, warnings = check_contract(skeleton, contract)
     if args.bible:
         band = str(
             cast("dict[str, Any]", skeleton.get("metadata") or {}).get("age_band", "")
         )
         bible = _load(Path(args.bible))
+        if bible is None:
+            return 1
         bible_errors, bible_warnings = check_bible(bible, contract, band)
         errors.extend(bible_errors)
         warnings.extend(bible_warnings)
         if args.selection:
-            sel_errors, sel_warnings = check_selection(
-                _load(Path(args.selection)), contract, bible
-            )
+            selection = _load(Path(args.selection))
+            if selection is None:
+                return 1
+            sel_errors, sel_warnings = check_selection(selection, contract, bible)
             errors.extend(sel_errors)
             warnings.extend(sel_warnings)
     elif args.selection:
