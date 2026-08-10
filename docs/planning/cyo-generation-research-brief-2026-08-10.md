@@ -1107,6 +1107,43 @@ never close the obligation. Verifying an obligation is a paraphrase problem. "Th
 past the tower's seal" is delivered by a boot on a drainpipe bracket and a hand on a sill, and no
 word-overlap measure reaches that.
 
+## 16c. An external-validity problem we did not know we had
+
+Setting up the replication turned up something we should have known before running anything.
+
+Every measure in this brief, the branch-obligation screen, the decision-overlap score, all nine
+blind annotations, the reasoning-kind result of section 15, is computed from a **narrative
+contract**: a per-node object declaring what facts a scene may assume, what it must establish, what
+it must not make true, and what each choice asks the reader to do, together with a recipe for the
+devices a binding will supply.
+
+That artifact exists for **two** stories in our catalog. One is the 26-node pilot every result here
+rests on. The other is for a much younger age band. Our catalog holds eleven skeletons in the band
+under discussion and twenty-three finished books, and not one of the production skeletons has a
+narrative contract. The catalog's other contract files are a different thing entirely: lists of
+substitutable roles, with no nodes, no facts, and no choice semantics, and no measure here can run
+against them.
+
+**So this work is n=1 in a stronger sense than "one graph".** It is one representation instance,
+hand-built for one small skeleton. Not one of our measures can currently be run against a
+production-scale story, and because every finished book in our catalog sits on a distinct skeleton,
+there is not even an accidental pair lying around to measure.
+
+We report this for two reasons.
+
+The first is honesty about the weight of Part II. The finding in 15 is real and mechanistic, and it
+has been reproduced across annotators, but it has been reproduced on one 26-node artifact with
+eleven forks, three of which carried the effect. Whether it survives a graph with 39 forks is
+genuinely unknown, and we are now authoring a contract for a 101-node skeleton to find out.
+
+The second matters to anyone proposing an architecture. A decision-program compiler, or
+decision-first routing, or decision-axis scheduling, all assume a plan object of roughly this shape
+is available per request. Producing one is presently a hand-authoring job of around 1.7KB per node
+with a fact-closure obligation across every path, and nobody has produced one at production scale.
+**That prerequisite is unstated in every proposal we received, including our own.** Whatever the
+right architecture turns out to be, generating this artifact at catalog scale is on its critical
+path, and it is a larger and less glamorous problem than choosing between the candidates.
+
 ## 17. Corrections to Part I
 
 - **5.3's "untested cell" has been tested**, and the result is not the simple one either reading

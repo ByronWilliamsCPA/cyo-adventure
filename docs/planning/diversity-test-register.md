@@ -59,12 +59,49 @@ omits what readers respond to**, and each needs re-specifying rather than re-sch
 | ID | Test | Question it settles | Method | Cost | Falsifier | Status |
 | --- | --- | --- | --- | --- | --- | --- |
 | D-1 | Separate the treatment's **three** bundled changes | Was the 2026-08-10 effect from the different kind of act, from the stake economics, or from the four rooms yielding distinct components? Raters cited act-kind at one fork and stakes at two, so the original two-way framing understated the confound. | Three arms on the same graph, each restoring one change to the control's setting while holding the other two. Rate each against the same base book with the six-question instrument. | 3 fills, 2 raters | Restoring any single change collapses the effect, which would name that change as the whole lever rather than one of three. | queued |
-| D-2 | Replicate on a production-eligible graph | Does any of this survive off a 26-node outlier? The catalog median is 151 nodes and the pilot graph is not production-eligible. | Repeat the winning arm on a median-size 10-13 skeleton, same protocol, same instrument. | 2 fills, 2 raters | The effect vanishes or inverts at production scale. | queued |
+| D-2 | Replicate on a production-eligible graph | Does any of this survive off a 26-node outlier? The catalog median is 151 nodes and the pilot graph is not production-eligible. | Repeat the winning arm on a production-scale 10-13 skeleton, same protocol, same instrument. **Blocked on an artifact nobody noticed was missing: see below.** | **badly underestimated, see below** | The effect vanishes or inverts at production scale. | running, contract authoring |
 | D-3 | DecisionSignature v2 over the contracts | Can a richer vocabulary agree with readers instead of inverting them? | Added `reasoning_kind` (compute, match, recall, infer, perceive, negotiate, exert) and `stake` (nothing, time, resource, access, standing, permanent) plus the three `AL-193` gaps, and re-annotated the three plans blind. | 2 annotators over 3 plans | Hit its own falsifier: still ranks the treatment pair as the more repetitive one. Annotator A 0 of 6 fields agreeing with readers, annotator B 1 of 6. `reasoning_kind` inverts under both (0.929 against 1.000, and 0.857 against 0.964). Not a reliability failure: kappa between the two annotators is 0.77 to 0.81 on `reasoning_kind` and 0.72 on `stake`, both clear of the floor. The new fields are labellable and do not discriminate. | **done, NEGATIVE** |
 | D-3b | Same vocabulary over contract **plus binding** | Is the inversion a vocabulary problem or a layer problem? The contracts describe `n_clockface` as "answer the test on its own terms" and "fit the piece the way the diagram shows", which Rule 2 correctly calls one decision; the mechanic readers responded to lives in the binding (`clock_arithmetic`, `rhythm_code`, `pictogram_code`). | Identical annotation pass with each plan's bound devices attached. | 1 to 2 annotators over 3 plans | Ordering still inverts with the binding visible, which would mean the discriminating property is not in the plan at all and only the filled prose carries it. Did not fire. | **done, POSITIVE, 1 annotator** |
 | D-3c | Confirm D-3b with a second blind annotator | Is D-3b reproducible, and does it survive a subset fixed in advance? | Second independent annotator, same three bundles, same brief. Analysis pre-registered below before the labels exist. | 1 annotator over 3 plans | The second annotator's `reasoning_kind` does not separate the pairs in the readers' direction over the pre-registered fork subset. Did not fire, but the margin nearly vanished. | **done, PARTIAL** |
 | D-4 | Solution-transfer metric | Is the item that actually discriminated computable from a plan, rather than only ratable by a reader? | Formalise "these two puzzles resolve by the same operation to the same answer" against the three existing contracts, and check it reproduces the raters' Q6 ordering (4,4 against 3,3). | deterministic, no model | It cannot reproduce the known ordering on the pair we have already rated. | queued |
 | D-5 | Rate the discarded contaminated arm as a negative control | Does the six-question instrument correctly detect a pair we know is contaminated? | The 14-of-24 shared-prop binding is preserved. Feed `filled_V5b` to fresh blind raters and confirm it scores worse than `filled_V5c` on Q6. | 2 raters | Did not fire. Both raters, opposite orders, scored the contaminated pair Q6 = 5 and the clean pair Q6 = 2, and both chose the contaminated pair as more similar at high confidence. A three-point gap on the item that matters. | **done, PASS** |
+
+### D-2 discovered a hole under the whole programme
+
+Setting up D-2 turned up something more consequential than the test itself.
+
+**The narrative contract exists for exactly two skeletons in the catalog, and neither is
+production-eligible for this band.** Every artifact in this programme, the branch-obligation
+screen, the decision-overlap metric, all nine blind annotations, the reasoning-kind measure, is
+computed from a narrative contract: the per-node object carrying `entry_state`, `establishes`,
+`forbids`, `choice_semantics` and a `world_recipe`. The catalog has eleven 10-13 skeletons, and
+narrative contracts exist for the 26-node pilot and for one 3-5 band story. Nothing else.
+
+The catalog's `.contract.json` files are a different artifact entirely: slot and theme contracts
+under ADR-019, listing substitutable roles (`HERO`, `THRESHOLD`, `OPENING_MOMENT`) with no nodes,
+no facts, and no choice semantics. They cannot carry any measure in this programme.
+
+**So the programme is n=1 in a stronger sense than "one graph".** It is one *representation
+instance*, hand-built for one 26-node skeleton, and no measure we have built can be run against a
+single production skeleton today. Twenty-three filled books exist in the repository and every one
+sits on a distinct skeleton, so there is not even an accidental pair to measure.
+
+This also lands on the proposals. Reviewer 2's decision-program compiler and reviewer 1's
+decision-first routing both assume a plan object of roughly this shape is available per request.
+Producing one is currently a hand-authoring job of about 1.7KB per node, and nobody has produced
+one at production scale. That prerequisite is unstated in both proposals and in our own roadmap.
+
+**Revised D-2 cost.** The register's "2 fills, 2 raters" was wrong, which is exactly the failure
+mode the header warns about. The real sequence is: author a narrative contract for a
+production-scale skeleton, then bind devices for each arm, then fill, then rate. Contract authoring
+for the 101-node `the-midnight-frequency` (39 forks, 18 endings) is in flight as the first step,
+and is useful under every version of D-2 and to anyone re-specifying an architecture, so it is not
+wasted if the rest is rescoped.
+
+The catalog median is 149 nodes. 101 was chosen over 149 deliberately: it is a fourfold increase in
+forks over the pilot (39 against 11), which is enough to answer whether an effect resting on three
+forks dilutes at scale, at roughly two-thirds the authoring cost. If the effect survives at 101 a
+further test at 149-plus is warranted; that tradeoff is recorded rather than hidden.
 
 ### D-3b result, and the pre-registration D-3c must satisfy
 
