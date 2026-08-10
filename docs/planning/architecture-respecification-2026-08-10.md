@@ -199,6 +199,39 @@ found the boundary between "derive a value by rule" and "compare against a patte
 kappa 0.719 between two annotators, so this falsifier has a live chance of firing and the operation
 vocabulary needs settling first.
 
+## 5b. R1-3 and R2-4, the two repulsion rows
+
+These were filed separately from the three above, as "optimising the inverted objective" rather than
+planning at the wrong layer. That is right, and it makes them the cheapest two to fix: **neither
+needs re-scoping, both need their objective swapped.**
+
+**R1-3, repulsive generation via obligation contracts.** Feed the child's prior action semantics
+into contract generation as a repulsion penalty. Two changes:
+
+1. Repel on the **bound solution chain** and score with solution transfer tier 1, not on action
+   semantics, which are a device-agnostic artifact and which D-3 shows do not carry the property.
+2. **Add the shared-gram guard across the generated set.** The proposal has no convergence check at
+   all, and its own stated failure mode ("repulsion exhausts natural choices and produces bizarre
+   action semantics") is not the one D-6 predicts it will hit first.
+
+R1-3 has an advantage none of the others has, and it is worth naming because it was invisible before
+D-6: **it generates a fresh contract per book by construction.** That is precisely the untested third
+repair from `AL-208`, so R1-3 doubles as the experiment that would settle it. It should probably run
+before R2-1b for that reason alone. Note it inherits section 2.1's caution: per-book generation still
+leaves the premise and the idiom floor unless the premise is varied too.
+
+**R2-4, portfolio generation with semantic repulsion.** Generate K decision programs per request,
+select on quality-minus-novelty before any prose. The selection layer is sound; its novelty term is
+measured against a signature vocabulary that inverts. Replace the novelty term with solution
+transfer tier 1 plus, once prose exists for the selected candidates, the shared-gram rate. Both are
+deterministic, so the selection stays cheap, which was the proposal's main attraction.
+
+**One warning specific to R2-4 that D-6 sharpens.** Selecting K candidates from one generator and
+keeping the most novel does not escape the idiom floor: every candidate is the same model writing
+the same situation, and the floor is a property of that generator rather than of the candidates.
+A portfolio can only select away variance it actually produces, and D-6 measured roughly a quarter
+of the convergence to be generator idiom that no plan-level choice touches.
+
 ## 6. What changed, in one table
 
 | | Was blocked on | Is actually blocked on | Cheapest unblocking step |
