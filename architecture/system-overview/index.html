@@ -879,6 +879,8 @@
       
         
       
+        
+      
     
     
     
@@ -941,6 +943,41 @@
     
   
     Operator Runbook
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/kws-test-runbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    KWS Test-Environment Runbook
   
 
     
@@ -3426,6 +3463,15 @@ Adventure system depends on.</p>
   seam, while non-local environments verify the JWT via <code>jwt.PyJWKClient</code> (see <code>api/deps.py</code>).</li>
 <li><strong>PostgreSQL</strong> holds all operational metadata: family records, users, child profiles,
   storybook lifecycle, reading state, completions, generation jobs.</li>
+<li><strong>Kids Web Services (Epic)</strong> is the verifiable-parental-consent counterparty under
+  evaluation (ADR-018 D1, still open). The backend sends a verification email through
+  Epic's API, the parent completes Epic's hosted flow, and Epic calls a webhook back. The
+  parent's browser also returns to us over a signed redirect, but that leg is display-only:
+  its HMAC covers no timestamp and no nonce, so a link a parent once received replays
+  forever. <strong>Only the <code>parent-verified</code> webhook writes consent state.</strong> As of 2026-08-09
+  this is wired on staging against the KWS <strong>Test</strong> environment and nothing is wired in
+  production; a Test verification is not a valid VPC. See
+  <a href="../diagrams/seq-kws-verification.puml">seq-kws-verification.puml</a>.</li>
 </ul>
 <h2 id="c4-level-2-containers">C4 Level 2: Containers<a class="headerlink" href="#c4-level-2-containers" title="Permanent link">&para;</a></h2>
 <p>The container diagram shows how the system is split across runtime boundaries.</p>
@@ -3458,7 +3504,7 @@ Adventure system depends on.</p>
 <tr>
 <td>PostgreSQL</td>
 <td>PostgreSQL 16, SQLAlchemy 2</td>
-<td>All operational entities (26 ORM tables)</td>
+<td>All operational entities (31 ORM tables)</td>
 </tr>
 <tr>
 <td>Redis</td>
@@ -3512,7 +3558,9 @@ in <code>published</code>.</p>
 <ul>
 <li><a href="../generation-pipeline/">Generation Pipeline</a>: staged LLM generation and provider cascade</li>
 <li><a href="../validation-and-player/">Validation and Player</a>: validator gate and story engine</li>
-<li><a href="../data-model/">Data Model</a>: the 26 ORM tables and their relationships</li>
+<li><a href="../data-model/">Data Model</a>: the 31 ORM tables and their relationships</li>
+<li><a href="../diagrams/seq-kws-verification.puml">KWS Parent Verification</a>: the three legs of the
+  ADR-018 D1 consent integration and why only one of them may write consent state</li>
 <li><a href="../deployment/">Deployment</a>: homelab Docker deployment</li>
 <li>ADR-005: <a href="../../planning/adr/adr-005-mandatory-human-approval/">Mandatory Human Approval</a></li>
 <li>ADR-002: <a href="../../planning/adr/adr-002-client-pwa/">Client: Progressive Web App</a></li>
@@ -3539,7 +3587,7 @@ in <code>published</code>.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 4, 2026 20:02:02 UTC">August 4, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 10, 2026 18:04:11 UTC">August 10, 2026</span>
   </span>
 
     

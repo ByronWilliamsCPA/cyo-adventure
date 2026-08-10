@@ -12,9 +12,13 @@
         <meta name="author" content="Byron Williams">
       
       
-        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/draft-stories-manifest/">
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/operations/kws-test-runbook/">
       
       
+        <link rel="prev" href="../runbook/">
+      
+      
+        <link rel="next" href="../authoring-guide/">
       
       
         
@@ -25,7 +29,7 @@
     
     
       
-        <title>Draft stories manifest - CYO Adventure</title>
+        <title>KWS Test-Environment Runbook - CYO Adventure</title>
       
     
     
@@ -88,7 +92,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#draft-stories-manifest-authored-and-imported-not-yet-published" class="md-skip">
+        <a href="#what-a-test-run-is-worth" class="md-skip">
           Skip to content
         </a>
       
@@ -122,7 +126,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Draft stories manifest
+              KWS Test-Environment Runbook
             
           </span>
         </div>
@@ -296,11 +300,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../../operations/runbook/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../runbook/" class="md-tabs__link">
           
   
   
@@ -410,7 +416,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../" class="md-tabs__link">
+        <a href="../../planning/" class="md-tabs__link">
           
   
   
@@ -862,8 +868,10 @@
       
   
   
+    
   
   
+  
     
     
       
@@ -879,21 +887,22 @@
     
     
       
+        
+        
+      
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
         
           
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
-        
-          
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
             
   
   
@@ -911,7 +920,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
@@ -929,7 +938,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../operations/runbook/" class="md-nav__link">
+      <a href="../runbook/" class="md-nav__link">
         
   
   
@@ -961,10 +970,42 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../operations/kws-test-runbook/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    KWS Test-Environment Runbook
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -987,6 +1028,173 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-a-test-run-is-worth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What a Test run is worth
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-trap-that-will-waste-a-run-which-database-the-row-lands-in" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The trap that will waste a run: which database the row lands in
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#budget-ten-sends-per-hour-per-address" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Budget: ten sends per hour, per address
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-four-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The four questions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The four questions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#test-addresses-the-alias-is-the-mechanism-and-nothing-gets-burned" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test addresses: the alias is the mechanism, and nothing gets burned
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q1-does-parent-verified-fire-on-the-agegraph-inheritance-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q1: does parent-verified fire on the AgeGraph inheritance path?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q2-structural-half-answered-2026-08-10-notification-limb-cannot-be-answered-in-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q2 (structural half ANSWERED 2026-08-10; notification limb cannot be answered in Test)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q3-is-the-webhook-signature-in-the-header-or-the-query-string" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q3: is the webhook signature in the header or the query string?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q4-answered-2026-08-10-no-run-needed-what-shape-is-the-redirects-status-value-in" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q4 (ANSWERED 2026-08-10, no run needed): what shape is the redirect's status value in?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Running it
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#checking-the-deployed-wiring-first" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checking the deployed wiring first
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#checking-whether-a-webhook-arrived" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checking whether a webhook arrived
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-gate-1-does-not-do" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Gate 1 does not do
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -999,7 +1207,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../operations/authoring-guide/" class="md-nav__link">
+      <a href="../authoring-guide/" class="md-nav__link">
         
   
   
@@ -1034,7 +1242,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../operations/security-events/" class="md-nav__link">
+      <a href="../security-events/" class="md-nav__link">
         
   
   
@@ -2071,7 +2279,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../" class="md-nav__link ">
+            <a href="../../planning/" class="md-nav__link ">
               
   
   
@@ -2122,7 +2330,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../project-vision/" class="md-nav__link">
+      <a href="../../planning/project-vision/" class="md-nav__link">
         
   
   
@@ -2157,7 +2365,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tech-spec/" class="md-nav__link">
+      <a href="../../planning/tech-spec/" class="md-nav__link">
         
   
   
@@ -2192,7 +2400,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../PROJECT-PLAN/" class="md-nav__link">
+      <a href="../../planning/PROJECT-PLAN/" class="md-nav__link">
         
   
   
@@ -2227,7 +2435,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../roadmap/" class="md-nav__link">
+      <a href="../../planning/roadmap/" class="md-nav__link">
         
   
   
@@ -2309,7 +2517,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../adr/" class="md-nav__link ">
+            <a href="../../planning/adr/" class="md-nav__link ">
               
   
   
@@ -2360,7 +2568,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-001-story-format-json-storybook/" class="md-nav__link">
+      <a href="../../planning/adr/adr-001-story-format-json-storybook/" class="md-nav__link">
         
   
   
@@ -2395,7 +2603,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-002-client-pwa/" class="md-nav__link">
+      <a href="../../planning/adr/adr-002-client-pwa/" class="md-nav__link">
         
   
   
@@ -2430,7 +2638,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-003-frontier-llm-generation/" class="md-nav__link">
+      <a href="../../planning/adr/adr-003-frontier-llm-generation/" class="md-nav__link">
         
   
   
@@ -2465,7 +2673,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-004-homelab-first-deployment/" class="md-nav__link">
+      <a href="../../planning/adr/adr-004-homelab-first-deployment/" class="md-nav__link">
         
   
   
@@ -2500,7 +2708,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-005-mandatory-human-approval/" class="md-nav__link">
+      <a href="../../planning/adr/adr-005-mandatory-human-approval/" class="md-nav__link">
         
   
   
@@ -2535,7 +2743,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+      <a href="../../planning/adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
         
   
   
@@ -2570,7 +2778,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-007-raw-output-retention/" class="md-nav__link">
+      <a href="../../planning/adr/adr-007-raw-output-retention/" class="md-nav__link">
         
   
   
@@ -2605,7 +2813,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-008-public-app-store-launch/" class="md-nav__link">
+      <a href="../../planning/adr/adr-008-public-app-store-launch/" class="md-nav__link">
         
   
   
@@ -2640,7 +2848,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-009-supabase-platform/" class="md-nav__link">
+      <a href="../../planning/adr/adr-009-supabase-platform/" class="md-nav__link">
         
   
   
@@ -2675,7 +2883,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+      <a href="../../planning/adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
         
   
   
@@ -2710,7 +2918,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-011-story-scale-framework/" class="md-nav__link">
+      <a href="../../planning/adr/adr-011-story-scale-framework/" class="md-nav__link">
         
   
   
@@ -2784,7 +2992,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../research/" class="md-nav__link ">
+            <a href="../../planning/research/" class="md-nav__link ">
               
   
   
@@ -2833,7 +3041,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../story-structure-diversity-critical-analysis/" class="md-nav__link">
+      <a href="../../planning/story-structure-diversity-critical-analysis/" class="md-nav__link">
         
   
   
@@ -2868,7 +3076,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../story-structure-improvement-plan/" class="md-nav__link">
+      <a href="../../planning/story-structure-improvement-plan/" class="md-nav__link">
         
   
   
@@ -2903,7 +3111,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../story-structure-implementation-briefs/" class="md-nav__link">
+      <a href="../../planning/story-structure-implementation-briefs/" class="md-nav__link">
         
   
   
@@ -3259,8 +3467,6 @@
   
   
   
-    
-  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -3269,10 +3475,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#stories-23-distinct-across-all-six-bands" class="md-nav__link">
+  <a href="#what-a-test-run-is-worth" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Stories (23 distinct, across all six bands)
+        What a Test run is worth
       
     </span>
   </a>
@@ -3280,10 +3486,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#pilot-re-theme-variants" class="md-nav__link">
+  <a href="#the-trap-that-will-waste-a-run-which-database-the-row-lands-in" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Pilot re-theme variants
+        The trap that will waste a run: which database the row lands in
       
     </span>
   </a>
@@ -3291,10 +3497,126 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#notes" class="md-nav__link">
+  <a href="#budget-ten-sends-per-hour-per-address" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Notes
+        Budget: ten sends per hour, per address
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-four-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The four questions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The four questions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#test-addresses-the-alias-is-the-mechanism-and-nothing-gets-burned" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test addresses: the alias is the mechanism, and nothing gets burned
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q1-does-parent-verified-fire-on-the-agegraph-inheritance-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q1: does parent-verified fire on the AgeGraph inheritance path?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q2-structural-half-answered-2026-08-10-notification-limb-cannot-be-answered-in-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q2 (structural half ANSWERED 2026-08-10; notification limb cannot be answered in Test)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q3-is-the-webhook-signature-in-the-header-or-the-query-string" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q3: is the webhook signature in the header or the query string?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q4-answered-2026-08-10-no-run-needed-what-shape-is-the-redirects-status-value-in" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q4 (ANSWERED 2026-08-10, no run needed): what shape is the redirect's status value in?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Running it
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#checking-the-deployed-wiring-first" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checking the deployed wiring first
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#checking-whether-a-webhook-arrived" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checking whether a webhook arrived
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-gate-1-does-not-do" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Gate 1 does not do
       
     </span>
   </a>
@@ -3321,339 +3643,425 @@
   
 
 
-<!--
-SPDX-FileCopyrightText: 2026 Byron Williams <byronawilliams@gmail.com>
-SPDX-License-Identifier: MIT
--->
+  <h1>KWS Test-Environment Runbook</h1>
 
-<h1 id="draft-stories-manifest-authored-and-imported-not-yet-published">Draft stories manifest (authored and imported, not yet published)<a class="headerlink" href="#draft-stories-manifest-authored-and-imported-not-yet-published" title="Permanent link">&para;</a></h1>
-<p>These are complete, validator-passed filled Storybooks that have been authored
-(a <code>skeletons/&lt;band&gt;/&lt;slug&gt;.json</code> shell filled with age-band-appropriate prose)
-and imported into production, where they sit at <code>in_review</code>. They have NOT been
-published: no child can reach them yet.</p>
-<p><strong>Corrected 2026-08-03.</strong> This manifest previously said the books "have NOT been
-imported or published to production". The import half of that was wrong. Issue
-<a href="https://github.com/ByronWilliamsCPA/cyo-adventure/issues/347">#347</a> records an
-import run against production on 2026-07-21, the ADR-021 production catalog
-seed, landing 25 stories (the 23 below plus the 2 pilot re-themes) at
-<code>in_review</code>.</p>
-<p>Import and publish are two separate steps, and only the first has run:</p>
+<p>This is the procedure for Gate 1 of the KWS production plan: gathering empirical evidence about
+Epic's Kids Web Services Parent Verification Service by running the built integration against the
+<strong>Test</strong> environment. It is not a production procedure, and following it never produces a valid
+verifiable parental consent record.</p>
+<p>Background and the decision this feeds: <a href="../../planning/adr/adr-018-childrens-privacy-compliance/">ADR-018</a>
+decision D1. Wire protocol and trust properties:
+<a href="../../architecture/diagrams/seq-kws-verification.puml">the sequence diagram</a>. Register coverage:
+<code>docs/security/assurance-register.md</code> rows O-122, O-123, O-124.</p>
+<h2 id="what-a-test-run-is-worth">What a Test run is worth<a class="headerlink" href="#what-a-test-run-is-worth" title="Permanent link">&para;</a></h2>
+<p>A Test-environment verification is <strong>not</strong> a valid VPC under COPPA, and no deployed tier can
+detect that it was one after the fact. The <code>kws_verification</code> row it writes is indistinguishable
+in shape from a production row; the only thing separating them is which credentials were in the
+environment at send time. That is why:</p>
 <ul>
-<li><strong>Import</strong> (<code>generation/import_catalog.py</code>, or the <code>cyo-author</code> skill for a
-  single story) runs the validator gate, persists a draft, and runs moderation,
-  leaving each story at <code>in_review</code> or <code>needs_revision</code>. Its own module
-  docstring states that it never publishes, because ADR-005 makes human
-  approval mandatory.</li>
-<li><strong>Publish</strong> is the separate, explicitly-invoked admin promotion
-  (<code>publishing/catalog_publish.py::promote_catalog_story</code>), which runs the
-  <code>publishing/</code> approve-and-publish state machine and sets <code>published</code> /
-  <code>catalog</code> visibility. Nothing on record shows it has run for this inventory.</li>
+<li><code>scripts/kws_send_test_verification.py::_require_test_environment</code> refuses to run unless
+  <code>KWS_ENVIRONMENT</code> is <code>test</code>, with no override flag.</li>
+<li><code>core/config.py::_reject_production_kws_from_a_local_app</code> refuses production KWS credentials on
+  a local app. Note its limit: it fires only when <code>ENVIRONMENT == "local"</code>, and <strong>staging declares
+  <code>ENVIRONMENT=production</code></strong>, so it cannot fire on either deployed tier. The guard is
+  one-directional by design and register row O-123 records that as <code>evidence invalid</code> rather than
+  claiming coverage it does not have.</li>
 </ul>
-<p>This manifest has no database access and cannot confirm current live state; it
-records only that an import run happened and that promotion is the outstanding
-step. Verifying the live <code>visibility</code> per book is step 1 of the SQ-01 runbook in
-<a href="../story-structure-implementation-briefs/">story-structure-implementation-briefs.md</a>.</p>
-<p>All files below are git-tracked in <code>ByronWilliamsCPA/cyo-adventure</code>; no access
-beyond the repository is required. Generated 2026-07-20; import state corrected
-2026-08-03.</p>
-<p>Not drafts (do not point here):</p>
-<ul>
-<li><code>skeletons/&lt;band&gt;/&lt;slug&gt;.json</code>: the shells (structure + <code>&lt;&lt;FILL&gt;&gt;</code> directives,
-  no prose) these were filled from.</li>
-<li><code>out/ws2/&lt;slug&gt;/</code>: WS-2 theme-rebinding intermediates (<code>plan.json</code>,
-  <code>new-theme.bound.json</code>, <code>binding.json</code>, <code>fingerprint-manifest.json</code>).</li>
-<li>Gitignored scratch: <code>out/mutations/</code> (WS-5 promotion bundles),
-  <code>out/diversity/</code> (eval fills), <code>output/</code>.</li>
-</ul>
-<h2 id="stories-23-distinct-across-all-six-bands">Stories (23 distinct, across all six bands)<a class="headerlink" href="#stories-23-distinct-across-all-six-bands" title="Permanent link">&para;</a></h2>
+<p>Treat every row these runs produce as test data, and do not let one become the basis of a consent
+decision.</p>
+<h2 id="the-trap-that-will-waste-a-run-which-database-the-row-lands-in">The trap that will waste a run: which database the row lands in<a class="headerlink" href="#the-trap-that-will-waste-a-run-which-database-the-row-lands-in" title="Permanent link">&para;</a></h2>
+<p>The send leg writes a committed <code>kws_verification</code> row <strong>before</strong> calling KWS, because KWS will
+not replay a delivery and an unmatched attempt is unattributable forever. The webhook then
+resolves that row by its id.</p>
+<p>The two halves can land in different databases. <code>scripts/kws_send_test_verification.py</code> runs on
+whatever <code>DATABASE_URL</code> the invoking shell has, which locally is the local Postgres. The
+<code>parent-verified</code> webhook is delivered to the URL registered in Epic's Control Panel, which is
+<strong>staging's</strong> hostname, so it resolves against the <strong>staging</strong> Supabase project.</p>
+<p>If the row is written locally and the webhook lands on staging, the webhook answers <code>200</code> with
+<code>handled=False</code> and writes nothing. That is a correct, deliberate response to an attempt id it
+holds no row for (see <code>api/kws_webhook.py</code>'s "Everything this route declines to treat as an
+error"), so <strong>nothing in the logs will look like a failure</strong>. You will have burned one of ten
+hourly sends and gathered no evidence.</p>
+<p>Pick one before sending:</p>
 <table>
 <thead>
 <tr>
-<th>Title</th>
-<th>Band</th>
-<th>Length</th>
-<th>Style</th>
-<th>Tier</th>
-<th>Nodes</th>
-<th>Endings</th>
-<th>Path</th>
+<th>Approach</th>
+<th>What it needs</th>
+<th>Trade-off</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Clover and the Butterfly</td>
-<td>3-5</td>
-<td>short</td>
-<td>prose</td>
-<td>T1</td>
-<td>20</td>
-<td>7</td>
-<td><code>out/the-clover-and-the-butterfly.filled.json</code></td>
+<td>Point the local shell at staging's database</td>
+<td><code>DATABASE_URL</code> for staging's <code>cyo_api</code> role in a local env file</td>
+<td>Fastest. Puts a staging DB credential on the workstation, so treat it as a secret and remove it after.</td>
 </tr>
 <tr>
-<td>The Lost Mitten</td>
-<td>3-5</td>
-<td>n/a</td>
-<td>n/a</td>
-<td>T1</td>
-<td>11</td>
-<td>3</td>
-<td><code>out/the-lost-mitten.filled.json</code></td>
+<td>Run the script inside the staging backend container</td>
+<td><code>docker exec -i cyo-staging-backend</code> with the script piped over stdin, since <code>scripts/</code> is not in the image</td>
+<td>No credential leaves the host; the container already holds the right <code>DATABASE_URL</code> and KWS credentials. <strong>Preferred</strong>, and the only option whose commands are given in full below.</td>
 </tr>
 <tr>
-<td>The Teddy Bears' Picnic</td>
-<td>3-5</td>
-<td>medium</td>
-<td>prose</td>
-<td>T1</td>
-<td>29</td>
-<td>11</td>
-<td><code>out/the-teddy-bears-picnic.filled.json</code></td>
-</tr>
-<tr>
-<td>The Backyard Treasure Map</td>
-<td>5-8</td>
-<td>medium</td>
-<td>prose</td>
-<td>T1</td>
-<td>61</td>
-<td>12</td>
-<td><code>out/the-backyard-treasure-map.filled.json</code></td>
-</tr>
-<tr>
-<td>The Lantern Festival</td>
-<td>5-8</td>
-<td>short</td>
-<td>prose</td>
-<td>T1</td>
-<td>36</td>
-<td>10</td>
-<td><code>out/the-lantern-festival.filled.json</code></td>
-</tr>
-<tr>
-<td>The Cave of Echoes</td>
-<td>8-11</td>
-<td>short</td>
-<td>prose</td>
-<td>T1</td>
-<td>64</td>
-<td>16</td>
-<td><code>out/the-cave-of-echoes.filled.json</code></td>
-</tr>
-<tr>
-<td>The Clockwork Menagerie</td>
-<td>8-11</td>
-<td>long</td>
-<td>prose</td>
-<td>T1</td>
-<td>166</td>
-<td>27</td>
-<td><code>out/the-clockwork-menagerie.filled.json</code></td>
-</tr>
-<tr>
-<td>The Sky-Ship Stowaway</td>
-<td>8-11</td>
-<td>medium</td>
-<td>prose</td>
-<td>T1</td>
-<td>111</td>
-<td>20</td>
-<td><code>out/the-sky-ship-stowaway.filled.json</code></td>
-</tr>
-<tr>
-<td>The Clocktower Cipher</td>
-<td>10-13</td>
-<td>n/a</td>
-<td>n/a</td>
-<td>T1</td>
-<td>25</td>
-<td>8</td>
-<td><code>out/the-clocktower-cipher.filled.json</code></td>
-</tr>
-<tr>
-<td>The Hollow Lighthouse</td>
-<td>10-13</td>
-<td>medium</td>
-<td>prose</td>
-<td>T1</td>
-<td>148</td>
-<td>31</td>
-<td><code>out/the-hollow-lighthouse.filled.json</code></td>
-</tr>
-<tr>
-<td>The Mapmaker's Island</td>
-<td>10-13</td>
-<td>long</td>
-<td>prose</td>
-<td>T1</td>
-<td>224</td>
-<td>72</td>
-<td><code>out/the-mapmakers-island.filled.json</code></td>
-</tr>
-<tr>
-<td>The Midnight Museum</td>
-<td>10-13</td>
-<td>short</td>
-<td>prose</td>
-<td>T1</td>
-<td>94</td>
-<td>19</td>
-<td><code>out/the-midnight-museum.filled.json</code></td>
-</tr>
-<tr>
-<td>The Harrowstone Keep</td>
-<td>13-16</td>
-<td>long</td>
-<td>gamebook</td>
-<td>T2</td>
-<td>550</td>
-<td>152</td>
-<td><code>out/the-harrowstone-keep.filled.json</code></td>
-</tr>
-<tr>
-<td>The Signal in the Static</td>
-<td>13-16</td>
-<td>medium</td>
-<td>prose</td>
-<td>T1</td>
-<td>123</td>
-<td>32</td>
-<td><code>out/the-signal-in-the-static.filled.json</code></td>
-</tr>
-<tr>
-<td>The Sunken Temple</td>
-<td>13-16</td>
-<td>long</td>
-<td>gamebook</td>
-<td>T2</td>
-<td>550</td>
-<td>152</td>
-<td><code>out/the-sunken-temple.filled.json</code></td>
-</tr>
-<tr>
-<td>The Sunspire Ascent</td>
-<td>13-16</td>
-<td>medium</td>
-<td>gamebook</td>
-<td>T1</td>
-<td>252</td>
-<td>74</td>
-<td><code>out/the-sunspire-ascent.filled.json</code></td>
-</tr>
-<tr>
-<td>The Thornwood Trial</td>
-<td>13-16</td>
-<td>long</td>
-<td>gamebook</td>
-<td>T1</td>
-<td>375</td>
-<td>115</td>
-<td><code>out/the-thornwood-trial.filled.json</code></td>
-</tr>
-<tr>
-<td>The Vanishing Orchard</td>
-<td>13-16</td>
-<td>long</td>
-<td>prose</td>
-<td>T1</td>
-<td>177</td>
-<td>33</td>
-<td><code>out/the-vanishing-orchard.filled.json</code></td>
-</tr>
-<tr>
-<td>The Ashfall Expedition</td>
-<td>16+</td>
-<td>long</td>
-<td>gamebook</td>
-<td>T1</td>
-<td>505</td>
-<td>143</td>
-<td><code>out/the-ashfall-expedition.filled.json</code></td>
-</tr>
-<tr>
-<td>The Drowned Court</td>
-<td>16+</td>
-<td>medium</td>
-<td>gamebook</td>
-<td>T1</td>
-<td>314</td>
-<td>105</td>
-<td><code>out/the-drowned-court.filled.json</code></td>
-</tr>
-<tr>
-<td>The Last Train North</td>
-<td>16+</td>
-<td>medium</td>
-<td>prose</td>
-<td>T1</td>
-<td>143</td>
-<td>25</td>
-<td><code>out/the-last-train-north.filled.json</code></td>
-</tr>
-<tr>
-<td>The Salt Archive</td>
-<td>16+</td>
-<td>long</td>
-<td>prose</td>
-<td>T1</td>
-<td>225</td>
-<td>54</td>
-<td><code>out/the-salt-archive.filled.json</code></td>
-</tr>
-<tr>
-<td>The Sunken Signal</td>
-<td>16+</td>
-<td>n/a</td>
-<td>n/a</td>
-<td>T2</td>
-<td>32</td>
-<td>14</td>
-<td><code>out/the-sunken-signal.filled.json</code></td>
+<td>Register a second return/webhook URL against a tunnel to the workstation</td>
+<td>A public tunnel and a Control Panel registration</td>
+<td>Most work, and mints a second pair of HMAC secrets to manage. Only worth it for iterating on the handler code.</td>
 </tr>
 </tbody>
 </table>
-<h2 id="pilot-re-theme-variants">Pilot re-theme variants<a class="headerlink" href="#pilot-re-theme-variants" title="Permanent link">&para;</a></h2>
-<p>Same <em>Cave of Echoes</em> skeleton, filled for two alternate themes (WS-2 pilot).</p>
+<p>Whichever you pick, <code>--dry-run</code> first. It resolves the guardian and prints the plan without
+sending or writing, so it catches a wrong <code>--user-id</code> or an unconfigured credential set for free.</p>
+<h2 id="budget-ten-sends-per-hour-per-address">Budget: ten sends per hour, per address<a class="headerlink" href="#budget-ten-sends-per-hour-per-address" title="Permanent link">&para;</a></h2>
+<p>The rate limit is <strong>10 requests per hour per unique parent email</strong>, and it applies in Test exactly
+as in production. Nothing in the code retries, deliberately. Plan the questions below so each send
+answers something, and use a distinct address if you need to reset the quota rather than waiting.</p>
+<p>The address must be a real inbox you control: Test differs from production in credentials and data
+partition, not in whether mail is delivered.</p>
+<h2 id="the-four-questions">The four questions<a class="headerlink" href="#the-four-questions" title="Permanent link">&para;</a></h2>
+<p>Record every answer in ADR-018's D1 section with the date, and update the register row it bears on.</p>
+<p>The identifiers below are stable and are cited from ADR-018 and from register rows O-122 through
+O-124, so they keep their meanings. What changed on 2026-08-10 is the <strong>order they should be run
+in</strong>, following the owner ruling that KWS card or debit verification is the sole VPC method and the
+typed-name attestation is never relied on as the enumerated method:</p>
 <table>
 <thead>
 <tr>
-<th>Title (theme)</th>
-<th>Band</th>
-<th>Path</th>
+<th>Run</th>
+<th>Answers</th>
+<th>Address needed</th>
+<th>Blocked on</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>The Cave of Echoes (dino-dig)</td>
-<td>8-11</td>
-<td><code>out/pilot/fills/the-cave-of-echoes.dino-dig.filled.json</code></td>
+<td>1</td>
+<td><strong>Q2 structural half</strong> (done 2026-08-10); Q3 <strong>not</strong> answered</td>
+<td>any org developer or admin address, or an alias of one</td>
+<td>nothing; branding was published 2026-08-10</td>
 </tr>
 <tr>
-<td>The Cave of Echoes (space-station)</td>
-<td>8-11</td>
-<td><code>out/pilot/fills/the-cave-of-echoes.space-station.filled.json</code></td>
+<td>2</td>
+<td>Q1, and Q3 if any delivery arrives</td>
+<td>the <strong><code>+verified</code> alias</strong> of the same address</td>
+<td>webhook URL registered in the Control Panel</td>
+</tr>
+<tr>
+<td>none</td>
+<td>Q4</td>
+<td>none</td>
+<td><strong>answered from vendor documentation 2026-08-10, confirmed by observation; no run needed</strong></td>
 </tr>
 </tbody>
 </table>
-<h2 id="notes">Notes<a class="headerlink" href="#notes" title="Permanent link">&para;</a></h2>
+<p>Q2 moved to the front because the ruling removed the fallback. It was the question that could
+<em>retire</em> the O-122 accepted exception; with no second method behind it, it is now the question that
+decides whether the chosen method is available at all. Q4 left the run list entirely on 2026-08-10:
+Epic's own API pages document the shape verbatim, which is better evidence than a single observed
+redirect would have been, and it cost no send budget. Run 1 then observed that shape directly and
+agreed with the documentation.</p>
+<p>Q3 did <strong>not</strong> come free with run 1, contrary to what this table said before that run. It is
+answered by capturing the raw request on a real webhook delivery, and run 1 produced no delivery at
+all, so it is now carried on run 2. See "Checking whether a webhook arrived" below.</p>
+<p><strong>Branding was published to Test on 2026-08-10</strong>, which cleared the block both runs previously
+carried. Before that, <code>send-email</code> answered <code>400 ERR_INVALID_REQUEST</code> with "you need to publish your
+branding in the developer portal before you can call this api". The Developer Portal's Branding page
+requires a <strong>Global brand name</strong> and a <strong>Privacy Policy URL</strong>, then offers <strong>Publish to Test</strong>.</p>
+<h3 id="test-addresses-the-alias-is-the-mechanism-and-nothing-gets-burned">Test addresses: the alias is the mechanism, and nothing gets burned<a class="headerlink" href="#test-addresses-the-alias-is-the-mechanism-and-nothing-gets-burned" title="Permanent link">&para;</a></h3>
+<p>Epic's testing page sets two rules that between them replace the old "find two inboxes with opposite
+histories" plan:</p>
 <ul>
-<li>Tier-2 (stateful, items/flags/counters) stories: The Harrowstone Keep, The
-  Sunken Temple, The Sunken Signal.</li>
-<li>Three stories carry an older metadata shape (<code>schema_version: "1.0"</code>, no
-  <code>metadata.topology</code>, stale <code>{id, type, title}</code> endings): The Lost Mitten,
-  The Clocktower Cipher, The Sunken Signal. Empirically verified (by running
-  <code>validator/gate.py::run_gate</code> against each) to need exactly three
-  normalizations before the gate passes, all backfilled from the source
-  skeleton rather than invented: bump <code>schema_version</code> to <code>"2.0"</code>; copy
-  <code>metadata.topology</code> and <code>metadata.production_eligible</code> (<code>False</code> for all
-  three) from the skeleton; replace each node's stale <code>ending</code> dict with the
-  skeleton's <code>{id, valence, kind, title}</code> shape, matched by node id. See
-  <code>generation/import_catalog.py::_normalize_legacy_fill</code> for the
-  implementation and <code>tests/unit/test_import_catalog.py::
-  TestRealLegacyFilesNormalizeCleanly</code> for the regression proving it against
-  these three files.</li>
-<li>Node and ending counts are read directly from each filled document.</li>
+<li>The address must belong to a developer or admin in the organization, or be an <strong>alias</strong> of one
+  (<code>test.user+1@domain.com</code>).</li>
+<li><strong>In the test environment KWS does not add verified addresses to the AgeGraph.</strong> The pre-verified
+  flow is reached by adding the <strong><code>+verified</code></strong> alias instead, for example
+  <code>test.user+verified@domain.com</code>.</li>
 </ul>
+<p>Two consequences worth stating plainly, because the earlier version of this document had both
+backwards. An address used for a Test verification is <strong>not</strong> consumed: it gains no AgeGraph entry,
+so it remains valid for repeat first-time runs. And Q1 needs no second mailbox, because the alias
+simulates the inheritance path deterministically. The ten-per-hour limit is per unique address, so
+the alias also carries its own independent budget rather than sharing the base address's.</p>
+<h3 id="q1-does-parent-verified-fire-on-the-agegraph-inheritance-path">Q1: does <code>parent-verified</code> fire on the AgeGraph inheritance path?<a class="headerlink" href="#q1-does-parent-verified-fire-on-the-agegraph-inheritance-path" title="Permanent link">&para;</a></h3>
+<p>Epic's AgeGraph can treat a parent as already verified from a prior verification elsewhere in
+Epic's ecosystem, with no method running for us at all. This is an accepted risk, not a defect,
+but its blast radius depends on whether we are told.</p>
+<ul>
+<li><strong>Setup</strong>: use the <strong><code>+verified</code> alias</strong> of an org developer or admin address, for example
+  <code>test.user+verified@domain.com</code>. This is the documented Test-environment mechanism for the
+  pre-verified flow, and it is deterministic. Do not go looking for an inbox with real prior Epic
+  history: a Test verification never writes to the AgeGraph, so no address accumulates one.</li>
+<li><strong>What to watch</strong>: whether a <code>parent-verified</code> delivery arrives at all, how quickly, and whether
+  <code>payload.status.transactionId</code> is present.</li>
+<li><strong>Why it matters</strong>: if the webhook fires identically for an inherited verification, then a row
+  reading <code>verified</code> proves only that Epic believes the address belongs to an adult, on evidence
+  gathered at an unknown time by an unknown method. That is the whole content of register row
+  O-124's "snapshot, never a live read" constraint, and confirming it turns an assumption into a
+  finding.</li>
+<li><strong>Sharpened 2026-08-10 by vendor documentation.</strong> Epic's PV Service pages describe the
+  pre-verified path as one where the parent "doesn't receive a verification request" and instead
+  sees a Web UI screen saying they already verified, followed by a confirmation email carrying
+  <strong>an intentional random delay of up to two hours</strong>. Those pages document <code>parent-verified</code> only
+  under the first-time flow's success branch and say nothing about a webhook on the pre-verified
+  path. That is absence of evidence rather than evidence of absence, so it does not answer Q1; it
+  raises the prior that the answer is bad. Two failure modes now need distinguishing on the run,
+  and a run that stops watching after a few minutes cannot tell them apart:
+  <strong>no delivery ever</strong>, which strands the row at <code>sent</code> forever, versus <strong>a delivery deferred by
+  up to two hours</strong>, which is survivable but means no Gate 2 surface may treat the absence of a
+  webhook shortly after a send as a negative result.</li>
+</ul>
+<h3 id="q2-structural-half-answered-2026-08-10-notification-limb-cannot-be-answered-in-test">Q2 (structural half ANSWERED 2026-08-10; notification limb cannot be answered in Test)<a class="headerlink" href="#q2-structural-half-answered-2026-08-10-notification-limb-cannot-be-answered-in-test" title="Permanent link">&para;</a></h3>
+<p>16 CFR 312.5(b)(2)(ii) requires the card be used "in connection with a transaction" and that it
+"provides notification of each discrete transaction to the primary account holder." That is two
+limbs, and the Test environment can answer exactly one of them. Splitting them is the correction
+this section carries: the earlier version treated them as a single question and instructed the
+operator to enable card alerts before running, which was wrong and wasted preparation.</p>
+<p><strong>Test runs on Stripe test cards, so no real money moves.</strong> Epic's testing page routes card
+verification through Stripe and points at <code>docs.stripe.com/testing</code> for the numbers. Stripe states
+that test-mode transactions do not move funds, do not appear on a real cardholder statement, and do
+not generate real cardholder notifications. Use <code>4242 4242 4242 4242</code>, any future expiry, any
+three-digit CVC. <strong>Do not enable card alerts as a precondition and do not go looking at a statement
+afterwards</strong>: there is nothing there to find, by construction.</p>
+<ul>
+<li><strong>Answered (first limb).</strong> The method creates a <strong>PaymentIntent for $0.05</strong>, not a <code>SetupIntent</code>
+  and not a zero-amount authorisation, and the observed return carried a real PaymentIntent id
+  (<code>pi_...</code>). The parent-facing screen commits to the behaviour in writing: "Stripe will charge
+  $0.05 to your card to confirm the card is valid. This amount will be refunded to you in
+  approximately 8-13 business days." Test mode exercises the same API objects and only simulates
+  settlement, so the shape of the transaction is real evidence even though the money is not. The
+  "in connection with a transaction" limb is met through the vendor, with no card handling built
+  here.</li>
+<li><strong>Not answered, and not answerable in Test (second limb).</strong> Whether a live $0.05 charge produces
+  notification to the primary account holder cannot be observed without a live-mode charge.</li>
+<li><strong>Ask counsel before spending a production verification on it.</strong> The 8-13 business day refund lag
+  means the capture and the refund post as <strong>two discrete statement entries</strong> rather than a
+  same-day pair an issuer might net out before the statement closes. If "notification" is read as
+  the statement line item rather than an issuer push alert, the observed design already satisfies
+  the limb and no live run is needed. Put that question first; it may retire the limb outright.</li>
+<li><strong>If a live observation is required</strong>, note what it costs: a KWS <strong>production</strong> verification is a
+  genuine VPC event that writes real consent state, so it cannot be treated as a test. It has to
+  come after the Gate 2 consumer exists, not before. Epic separately recommends an end-to-end
+  production run regardless, so the two can be the same run.</li>
+<li><strong>Why it matters, restated 2026-08-10.</strong> This was the only one of the four that could <em>retire</em> the
+  O-122 accepted exception rather than merely characterise it. The owner ruling that KWS card or
+  debit verification is the <strong>sole</strong> VPC method, with the typed-name attestation retained as consent
+  content and never relied on as the enumerated method, promotes it further: it is now the
+  <strong>viability gate</strong>. If Epic's card method produces a notified discrete transaction, (b)(2)(ii) is
+  reachable through the vendor without our building card handling. If it produces a zero-charge
+  authorisation with no notification to the primary account holder, the second limb of (b)(2)(ii) is
+  unmet and there is no fallback method behind it, because the ruling removed the one that existed.
+  Answer this before any Gate 2 work is scheduled.</li>
+</ul>
+<h3 id="q3-is-the-webhook-signature-in-the-header-or-the-query-string">Q3: is the webhook signature in the header or the query string?<a class="headerlink" href="#q3-is-the-webhook-signature-in-the-header-or-the-query-string" title="Permanent link">&para;</a></h3>
+<p><code>consent/kws_signature.py</code> implements a Stripe-style <code>t=</code>/<code>v1=</code> scheme over the raw body with
+bounded skew. That shape came from vendor documentation and a protocol reading, not from an
+observed delivery.</p>
+<ul>
+<li><strong>What to watch</strong>: the exact header name and value, or the query parameters, on a real delivery.
+  Capture the raw request, not a parsed summary.</li>
+<li><strong>Why it matters</strong>: a signature we cannot verify is answered <code>401</code>, which is the correct
+  direction to fail but means a real verification is silently dropped. This is the one question
+  whose wrong answer breaks the integration outright rather than weakening a claim about it.</li>
+<li><strong>Still open after run 1 (2026-08-10).</strong> The run produced <strong>no delivery at all</strong>, so there was no
+  raw request to capture. A header-versus-query-string disagreement would have surfaced as a <code>401</code>
+  in the log; zero inbound POSTs is a different failure and points upstream of the signature. Q3 is
+  therefore carried to run 2 and stays open until some delivery lands.</li>
+</ul>
+<h3 id="q4-answered-2026-08-10-no-run-needed-what-shape-is-the-redirects-status-value-in">Q4 (ANSWERED 2026-08-10, no run needed): what shape is the redirect's <code>status</code> value in?<a class="headerlink" href="#q4-answered-2026-08-10-no-run-needed-what-shape-is-the-redirects-status-value-in" title="Permanent link">&para;</a></h3>
+<p><strong>Answer: a URL-encoded JSON object.</strong> Epic's PV Service API pages give the return URL verbatim,
+and decoded it reads <code>status={"verified":true,"transactionId":"&lt;transactionId&gt;","errorCode":null}</code>,
+alongside <code>externalPayload</code> and <code>signature</code> as separate query parameters.</p>
+<p><code>api/kws_redirect.py::_reports_verified</code> already tries that JSON reading <strong>first</strong>, so the
+implementation was correct before the question was answered. What changed is the evidence behind
+it: the code carried an <code>#ASSUME</code> saying Epic documented that a <code>status</code> parameter comes back but
+not what it contains, and that is no longer true. The marker was downgraded to <code>#EDGE</code> and moved
+onto the bare-token fallback, which is the only part still speculative. The fallback stays, because
+it is what makes an undocumented variant fail closed to <em>not verified</em>.</p>
+<p>Documentation beat a live run to this answer, and it is the better evidence of the two: one
+observed redirect shows one case, whereas the published contract covers the <code>errorCode</code> and
+unverified branches a single successful run would never exercise. It also cost none of the
+ten-per-hour send budget. Nothing here is contingent on the Control Panel return-URL registration,
+which remains outstanding for its own reasons.</p>
+<h2 id="running-it">Running it<a class="headerlink" href="#running-it" title="Permanent link">&para;</a></h2>
+<p>Run it <strong>inside the staging <code>backend</code> container</strong>, on the homelab host. That container already holds
+the staging <code>DATABASE_URL</code> and the KWS credentials, so the row lands in the database the webhook
+will resolve against and no credential leaves the host. This is the only invocation that satisfies
+the trap described above; the local one below is recorded so it is recognisable, not so it is used.</p>
+<p>Three mechanical facts about the runtime image, all verified against the live container on
+2026-08-10, and each of which breaks the obvious command:</p>
+<ul>
+<li><strong>The script is not in the image.</strong> <code>.dockerignore</code> line 179 excludes <code>scripts/</code> under the comment
+  "Validation and scripts (not needed in runtime)", so the Dockerfile's <code>COPY . .</code> never carries it
+  and <code>/app/scripts/</code> does not exist. Any procedure of the form
+  <code>docker exec &lt;c&gt; /app/.venv/bin/python scripts/kws_send_test_verification.py</code> is impossible, not
+  merely awkward. <strong>Pipe the script over stdin instead</strong> and let Python read it from <code>-</code>.</li>
+<li><strong>It ships no shell.</strong> The Dockerfile uses a DHI hardened base, so <code>docker exec ... bash</code> and
+  <code>... sh</code> both fail. This rules out the usual <code>cat &gt; /tmp/x.py</code> workaround as well; the stdin route
+  is what remains. Exec the interpreter directly.</li>
+<li><strong><code>uv</code> is not installed</strong>, only the virtualenv it built. The interpreter is at
+  <code>/app/.venv/bin/python</code>.</li>
+</ul>
+<p>Run these from the repo worktree on the workstation. The redirect feeds the local file into <code>ssh</code>,
+which forwards it to <code>docker exec -i</code>, which forwards it to Python's stdin. <code>docker exec</code> needs
+<code>-i</code> for this; without it the script arrives empty and Python exits silently with nothing done.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">cd</span><span class="w"> </span>.worktrees/kws-test-integration
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1"># preflight: resolves the guardian, prints the plan, sends nothing, writes nothing</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>ssh<span class="w"> </span>byron@docker-host<span class="w"> </span><span class="s1">&#39;docker exec -i cyo-staging-backend /app/.venv/bin/python - \</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="s1">    --user-id &lt;guardian-uuid&gt; --email parent@example.com --location US --dry-run&#39;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">    </span>&lt;<span class="w"> </span>scripts/kws_send_test_verification.py
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="c1"># the real send: drop --dry-run only after the plan reads correctly</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>ssh<span class="w"> </span>byron@docker-host<span class="w"> </span><span class="s1">&#39;docker exec -i cyo-staging-backend /app/.venv/bin/python - \</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="s1">    --user-id &lt;guardian-uuid&gt; --email parent@example.com --location US&#39;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="w">    </span>&lt;<span class="w"> </span>scripts/kws_send_test_verification.py
+</span></code></pre></div>
+<p><strong>The container name is the tier selector, and the two tiers differ by one word.</strong> Staging is
+<code>cyo-staging-backend</code>; production is <code>cyo-adventure-backend</code>. Verified 2026-08-10, the production
+container <strong>fails closed</strong> on this script: <code>_require_configured</code> refuses with exit 1 because the
+four KWS API credentials are not all present in that environment. That is a real safety property,
+but it is a property of production's current configuration rather than a guard, and it will stop
+holding the moment the KWS block lands in production's compose. Read the <code>kws environment</code> and
+<code>label</code> lines the dry-run prints; they are the confirmation that the right container answered.</p>
+<p><code>--user-id</code> must be a guardian in <strong>staging's</strong> database, which is a different Supabase project from
+production's (staging resolves through <code>aws-1-us-west-2</code>, production through <code>aws-0-us-east-1</code>).
+A production UUID failing to resolve is the harmless failure; a UUID that happens to exist in both
+is the dangerous one, so read the <code>--dry-run</code> plan rather than assuming the resolve proved the tier.</p>
+<p><code>--email</code> is the address the verification is sent to and is independent of the guardian's own stored
+email, which is what makes it possible to answer Q1 and Q2 from the same guardian record using two
+different inboxes.</p>
+<blockquote>
+<p><strong>The local invocation is the trap, not an alternative.</strong> Running
+<code>uv run --env-file .env python scripts/kws_send_test_verification.py ...</code> from the worktree
+executes against whatever <code>DATABASE_URL</code> the shell has, which is local Postgres. The send
+succeeds, the parent receives mail, and the webhook then arrives at staging holding an attempt id
+staging has no row for, so it answers <code>200 handled=False</code> and writes nothing. Use it only if you
+have deliberately pointed the shell at staging's database per the first row of the table above.</p>
+</blockquote>
+<p><code>--location</code> is the <strong>child's</strong> location as ISO 3166-1 alpha-2 or ISO 3166-2, and it selects which
+methods the parent is offered. It is a compliance input and deliberately has no default.</p>
+<p>On success the script prints an <code>attempt_id</code>. That single value is the <code>kws_verification</code> primary
+key, the <code>externalPayload</code> sent to Epic, and what both return legs quote back, so it is the thread
+to follow through the redirect page and the webhook logs.</p>
+<h2 id="checking-the-deployed-wiring-first">Checking the deployed wiring first<a class="headerlink" href="#checking-the-deployed-wiring-first" title="Permanent link">&para;</a></h2>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/kws_probe_endpoints.py<span class="w"> </span>--origin<span class="w"> </span>https://cyo-staging.williamshome.family
+</span></code></pre></div>
+<p>Both routes should report ready. If they report "route is live but <code>KWS_*_SECRET</code> is unset", the
+Control Panel registration has not happened yet and no verification can complete. If they 404,
+check <code>/api/v1/health/</code>'s <code>version</code> and <code>uptime_seconds</code> before suspecting the wiring: a Portainer
+stack update without the re-pull option reuses the local image and reports success having changed
+nothing.</p>
+<h2 id="checking-whether-a-webhook-arrived">Checking whether a webhook arrived<a class="headerlink" href="#checking-whether-a-webhook-arrived" title="Permanent link">&para;</a></h2>
+<p>The redirect page is display-only, so it never tells you whether a verification was recorded. Only
+these checks do. Run them in this order; each one narrows what the previous one leaves ambiguous.</p>
+<p><strong>1. The row, which is the authoritative answer.</strong> <code>sent</code> means no delivery has been processed;
+<code>verified</code> with a populated <code>resolved_at</code> and <code>transaction_id</code> means one has. Pipe a <code>SELECT</code> into
+the staging container the same way the send script is piped:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>ssh<span class="w"> </span>byron@docker-host<span class="w"> </span><span class="s1">&#39;docker exec -i cyo-staging-backend /app/.venv/bin/python -&#39;</span><span class="w"> </span><span class="s">&lt;&lt;&#39;PY&#39;</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="s">import asyncio</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="s">from sqlalchemy import text</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="s">from cyo_adventure.core.database import get_session</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="s">async def main() -&gt; None:</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="s">    async with get_session() as s:</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="s">        for r in (await s.execute(text(</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="s">            &quot;SELECT id, kws_environment, status, requested_at, resolved_at, transaction_id &quot;</span>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="s">            &quot;FROM kws_verification ORDER BY requested_at DESC LIMIT 5&quot;</span>
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="s">        ))).mappings():</span>
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="s">            print(dict(r))</span>
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>
+</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="s">asyncio.run(main())</span>
+</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="s">PY</span>
+</span></code></pre></div>
+<p><strong>2. The log, but only after proving the log can see.</strong> A count of inbound POSTs is worthless on its
+own, because a log that never records POSTs reads as zero whether or not KWS sent one. Send one
+yourself with a deliberately invalid signature, confirm it appears, and only then trust the count:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>curl<span class="w"> </span>-s<span class="w"> </span>-o<span class="w"> </span>/dev/null<span class="w"> </span>-w<span class="w"> </span><span class="s1">&#39;%{http_code}\n&#39;</span><span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span>https://cyo-staging.williamshome.family/api/v1/webhooks/kws/parent-verified<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span>-H<span class="w"> </span><span class="s1">&#39;Content-Type: application/json&#39;</span><span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;x-kws-signature: t=1,v1=deadbeef&#39;</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;name&quot;:&quot;probe&quot;}&#39;</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1"># expect 401 from our app, which also proves the route is reachable from the public internet</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>ssh<span class="w"> </span>byron@docker-host<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">  </span><span class="s1">&#39;docker logs cyo-staging-backend 2&gt;&amp;1 | grep -c &quot;POST /api/v1/webhooks/kws/parent-verified&quot;&#39;</span>
+</span></code></pre></div>
+<p>A <code>401</code> to that probe is a good result on three counts at once: the route is published, Cloudflare
+is not filtering it, and the receiver secret is loaded. The probe writes no verification state; an
+invalid signature is rejected before the body is parsed, leaving only a security-audit entry.</p>
+<p><strong>Also check the container's start time before reading a count as evidence.</strong> <code>docker logs</code> begins
+at container creation, so a redeploy between the send and the check silently truncates the window:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>ssh<span class="w"> </span>byron@docker-host<span class="w"> </span><span class="s1">&#39;docker inspect -f &quot;started={{.State.StartedAt}}&quot; cyo-staging-backend&#39;</span>
+</span></code></pre></div>
+<p><strong>3. Check the edge log, not just the origin log.</strong> Staging sits behind Cloudflare, and a request
+blocked at the edge never becomes an origin request. No amount of origin-side logging can see it, so
+an absent POST in <code>docker logs</code> bounds the origin and says nothing about what the internet sent. Open
+Security &gt; Events, filter on <code>/api/v1/webhooks/kws/parent-verified</code>, and cover the send window.</p>
+<p>The self-sent probe above is <strong>not</strong> a valid control for this. It leaves a residential address, and a
+WAF that blocks a datacenter ASN will pass it, so the probe proves the route is reachable <em>for you</em>
+while the vendor is being turned away. Treat the probe as a check on the route and the secret, never
+as evidence about the vendor's path.</p>
+<p><strong>4. Reading the result.</strong> These outcomes have different causes and different fixes:</p>
+<table>
+<thead>
+<tr>
+<th>Row</th>
+<th>Origin POSTs</th>
+<th>Means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>verified</code></td>
+<td>at least one</td>
+<td>working end to end</td>
+</tr>
+<tr>
+<td><code>sent</code></td>
+<td>one or more, answered <code>401</code></td>
+<td>delivery reaches us but the signature does not verify: this is Q3, compare the header against the query-string form</td>
+</tr>
+<tr>
+<td><code>sent</code></td>
+<td>zero, <strong>edge log shows blocks</strong></td>
+<td>delivery is being dropped in transit. Not a code problem and not a registration problem; fix the edge rule</td>
+</tr>
+<tr>
+<td><code>sent</code></td>
+<td>zero, <strong>edge log clean</strong></td>
+<td>KWS genuinely sent nothing. Check the webhook method is enabled and saved in the Control Panel, not merely filled in</td>
+</tr>
+<tr>
+<td><code>sent</code></td>
+<td>zero, probe also absent</td>
+<td>the route or the host is unreachable from outside; fix that before reading anything else</td>
+</tr>
+</tbody>
+</table>
+<p>Allow for deferral before concluding the fourth row. Epic documents an intentional random delay of up
+to two hours on the pre-verified confirmation path, so a check a few minutes after a send cannot
+distinguish "never sent" from "not yet". The row persists, so a late delivery still resolves it;
+re-run check 1 rather than re-sending and burning budget.</p>
+<p><strong>Observed 2026-08-10, and the reason this section now leads with the edge.</strong> Two runs read as the
+fourth row: row <code>sent</code>, zero origin POSTs, probe POSTs visible in the same log, route answering <code>401</code>
+from the public internet. Both readings were wrong. Cloudflare's own event log showed KWS delivering
+the webhook <strong>four times</strong> between 17:07:37Z and 17:11:05Z from AWS eu-west-1 (<code>54.74.122.34</code>,
+<code>3.248.160.217</code>, user agent <code>axios/0.30.3</code>), every one mitigated <code>Block by Custom rules</code>. The
+integration was correct throughout and the origin log could never have said so.</p>
+<p>Two things follow. The remedy is a narrow Cloudflare <strong>Skip</strong> rule ordered above the blocking rule,
+matching <code>http.request.uri.path eq "/api/v1/webhooks/kws/parent-verified"</code> and
+<code>http.request.method eq "POST"</code>. Do not allowlist source IPs: those are rotating AWS addresses, and
+the handler already authenticates with an HMAC over the raw body under a bounded skew before it
+parses anything, so the application layer is where this endpoint's identity check belongs.</p>
+<p>And <strong>KWS retries automatically</strong>, four attempts inside 3.5 minutes, then stops. This refines rather
+than contradicts the premise behind the insert-before-send ordering: <code>consent/service.py</code> claims KWS
+will not replay a delivery <em>on request</em>, which is about asking Epic to resend and is untouched by
+this. Keep the two apart. Automatic retry gives a blocked or briefly-unhealthy receiver a few minutes
+of grace; it does not give an operator a way to recover an attempt that had no row to match, which is
+the hole the ordering exists to close. The practical consequence is narrow: after fixing a transit
+fault, check whether the retry budget is still open before spending a fresh send.</p>
+<h2 id="what-gate-1-does-not-do">What Gate 1 does not do<a class="headerlink" href="#what-gate-1-does-not-do" title="Permanent link">&para;</a></h2>
+<p>It does not choose the route. KWS versus a direct Stripe integration stays open, and building
+against Test is what makes that comparison decidable on observed behaviour instead of on
+documentation. It does not close ADR-018 D1, and it does not convert any accepted risk into a
+mitigated one.</p>
 
 
 
@@ -3676,7 +4084,7 @@ beyond the repository is required. Generated 2026-07-20; import state corrected
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 3, 2026 22:31:48 UTC">August 3, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 10, 2026 18:04:11 UTC">August 10, 2026</span>
   </span>
 
     
@@ -3686,7 +4094,7 @@ beyond the repository is required. Generated 2026-07-20; import state corrected
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 21, 2026 14:32:50 UTC">July 21, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 10, 2026 18:04:11 UTC">August 10, 2026</span>
   </span>
 
     

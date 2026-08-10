@@ -879,6 +879,8 @@
       
         
       
+        
+      
     
     
     
@@ -941,6 +943,41 @@
     
   
     Operator Runbook
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/kws-test-runbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    KWS Test-Environment Runbook
   
 
     
@@ -1384,6 +1421,17 @@
     <span class="md-ellipsis">
       
         user
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kws_verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        kws_verification
       
     </span>
   </a>
@@ -3692,6 +3740,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#kws_verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        kws_verification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#child_profile" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4036,7 +4095,7 @@ application boundary, which keeps schema migrations simple and avoids enum-type 
 <p>The PlantUML source above (<code>diagrams/er-diagram.puml</code>) is authoritative: it carries the
 full CHECK constraint list, ON DELETE semantics, and a note on pure-attribution foreign
 keys to <code>user.id</code> that are deliberately not drawn as edges. The Mermaid version below is a
-hand-maintained companion (<code>diagrams/er-diagram.mmd</code>) covering the same 30 tables and
+hand-maintained companion (<code>diagrams/er-diagram.mmd</code>) covering the same 31 tables and
 relationships, kept for inline rendering directly on GitHub without opening the SVG.</p>
 <pre class="mermaid"><code>erDiagram
     family ||--o{ user : "has users"
@@ -4475,6 +4534,9 @@ relationships, kept for inline rendering directly on GitHub without opening the 
         timestamptz updated_at "last-confirmed signal"
     }</code></pre>
 <h2 id="table-reference">Table Reference<a class="headerlink" href="#table-reference" title="Permanent link">&para;</a></h2>
+<p>Twenty-nine of the 31 tables are described below. <code>reading_activity_day</code> and
+<code>security_event</code> appear in both ER diagrams but have no section yet; that is known drift,
+not a claim that they are undocumented by design.</p>
 <h3 id="family"><code>family</code><a class="headerlink" href="#family" title="Permanent link">&para;</a></h3>
 <p>The ownership root. Every other entity is scoped to a family. Family ownership is
 checked on every resource access; a valid token for family A cannot reach family B's
@@ -4610,6 +4672,80 @@ one adult can be a guardian, an admin, or both.</p>
 </tr>
 </tbody>
 </table>
+<h3 id="kws_verification"><code>kws_verification</code><a class="headerlink" href="#kws_verification" title="Permanent link">&para;</a></h3>
+<p>One Kids Web Services parent-verification attempt, from send to resolution (ADR-018 D1).
+Scope matters here, because the name invites a wrong reading: KWS establishes that an
+adult is an adult, so a <code>verified</code> row is corroborating evidence <em>beside</em> the 16 CFR
+312.5 consent record on <code>user.consent_*</code>, never a replacement for it. The row is written
+by <code>consent/service.py::start_parent_verification</code> and committed on its own session
+<strong>before</strong> the outbound send, and resolved later by
+<code>consent/service.py::record_parent_verified</code> when the authenticated <code>parent-verified</code>
+webhook quotes our <code>externalPayload</code> back. The redirect the parent's browser makes never
+writes here: its HMAC covers no timestamp and no nonce, so it is replayable by
+construction.</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>UUID PK</td>
+<td>IS the correlation, not a surrogate key. No server or ORM default: the value handed to KWS in <code>externalPayload</code> and the value a delivery is looked up by must be the same value, so a caller that forgets to supply it gets a NOT NULL failure rather than a second, unmatchable id</td>
+</tr>
+<tr>
+<td>user_id</td>
+<td>UUID FK</td>
+<td>user.id; ON DELETE CASCADE (an attempt is personal data about the guardian who started it), indexed</td>
+</tr>
+<tr>
+<td>kws_environment</td>
+<td>VARCHAR(16)</td>
+<td><code>test</code> or <code>production</code>, CHECK-constrained at rest. The KWS API reports nothing that identifies which environment answered, so this column is the only thing separating a sandbox attempt from evidence about a real parent</td>
+</tr>
+<tr>
+<td>status</td>
+<td>VARCHAR(16)</td>
+<td><code>sent</code> (default), <code>verified</code>, or <code>failed</code>; CHECK-constrained at rest</td>
+</tr>
+<tr>
+<td>requested_at</td>
+<td>TIMESTAMPTZ</td>
+<td>Send time, <code>server_default now()</code></td>
+</tr>
+<tr>
+<td>resolved_at</td>
+<td>TIMESTAMPTZ NULL</td>
+<td>NULL while <code>sent</code>; a CHECK enforces <code>(status = 'sent') = (resolved_at IS NULL)</code> so a "still waiting" filter can never disagree with the timestamp</td>
+</tr>
+<tr>
+<td>transaction_id</td>
+<td>VARCHAR(128) NULL</td>
+<td>KWS's opaque id, NULL until a delivery reports one</td>
+</tr>
+<tr>
+<td>enabled_methods</td>
+<td>JSONB</td>
+<td><code>settings.kws_enabled_methods</code> as it stood at send time, copied not referenced</td>
+</tr>
+</tbody>
+</table>
+<p>There is deliberately <strong>no <code>parent_email</code> column, and none may be added under any name</strong>.
+Keeping the parent's address out of this table is the entire reason the opaque
+per-attempt correlation exists (<code>consent/external_payload.py</code>); a column here would
+reintroduce the most sensitive field in the delivery as the table's natural key, and it
+would not survive a guardian changing their address either.
+<code>tests/unit/test_kws_verification_model.py::test_the_table_has_no_email_column</code> is the
+guard.</p>
+<p><code>enabled_methods</code> is a snapshot rather than a live read for a compliance reason: the
+<code>parent-verified</code> event reports no verification method at all, so the set enabled at send
+time is the only bound that will ever exist on how a given parent was verified, and the
+vendor cannot supply one afterwards. Read live, that bound would evaporate retroactively
+whenever an operator changed the setting.</p>
 <h3 id="child_profile"><code>child_profile</code><a class="headerlink" href="#child_profile" title="Permanent link">&para;</a></h3>
 <p>Per-child reading profile. Age band and content caps filter which stories are visible.
 <code>tts_enabled</code> gates the Web Speech API read-aloud feature.</p>
@@ -6390,7 +6526,7 @@ primary authorization boundary; RLS is defense-in-depth beneath it, not a replac
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 10, 2026 01:50:28 UTC">August 10, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 10, 2026 18:04:11 UTC">August 10, 2026</span>
   </span>
 
     
