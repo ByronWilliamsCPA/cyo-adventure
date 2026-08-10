@@ -83,6 +83,11 @@ than as footnotes to it:
    it is the story's dramatic question, and section 2 tacitly left it shared. D-6 says that is the
    single largest traceable channel. A structural stratum that is genuinely wordless holds topology,
    fact *names*, typed slots and categories, and no prose at all, the premise included.
+   **Read this as "not the same sentences", not as "a different story every time".** D-6 measured the
+   premise's weight *within a shared contract*, where it is shared verbatim; section 2.2's finding
+   then shows the threshold is sentence identity. Two books may pose the same dramatic question in
+   separately written words. Indeed the pilot pair that filled at the floor shares 312 shared
+   four-grams per 1000 of premise vocabulary, more than the arm that holds the goal constant does.
 2. **There is an idiom floor no wording intervention reaches, and it has since been measured at
    3.3 shared four-grams per 1000**, on book pairs sharing nothing but the model and the age band.
    Two books written by one model from one situation converge on "let out a breath" and "for a long

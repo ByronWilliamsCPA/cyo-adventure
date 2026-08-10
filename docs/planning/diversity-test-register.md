@@ -721,6 +721,39 @@ sentence difference or the premise difference did the work here is **untested**,
 cheapest remaining question in this whole line: two contracts sharing a premise but not a sentence,
 filled and measured.
 
+#### That disambiguating test is already in flight, and its reading is fixed here first
+
+The restored M-4 arm happens to be exactly the missing cell. Its contract shares the base's premise
+engine (`prove-and-earn` in both) and **0 of 35 `choice_semantics` sentences**, so filling it and
+measuring against the base separates the two bundled causes at no extra cost.
+
+Measuring premise similarity to the base first, before the fill exists, produces a result that is
+worth stating on its own because it is the opposite of what the labels suggest:
+
+| Arm | Premise engine | Premise vocabulary shared with the base |
+| --- | --- | --- |
+| `contract_v3`, the pilot's rated arm | **different** (`reconstruct-and-remember`) | **312.3** per 1000 |
+| `contract_costly`, the M-4 arm | **same** (`prove-and-earn`) | 60.6 per 1000 |
+
+**Lexical premise similarity does not track "same goal", and the pilot's arm sits at 312 per 1000 of
+shared premise vocabulary while its fills landed at the floor.** That already pushes against a
+premise-difference explanation, since the pair that worked has the *more* similar premise wording of
+the two.
+
+**Prediction, fixed before the fill exists:** the M-4 arm against the base will land near the floor,
+at or under about 4 shared 4-grams per 1000, despite holding the goal constant.
+
+**Falsifier for `AL-223`, fixed here:** if it lands materially above the floor, sentence identity is
+not the threshold, the pilot's floor result owed something to its differing premise after all, and
+`AL-223` is wrong.
+
+**And a qualification `AL-223` forces on D-6's premise finding, which was mine.** D-6 measured the
+premise to be the largest channel *within a shared contract*, where the premise is shared verbatim.
+It does not follow that a per-book premise must differ in *content*. It follows only that it must not
+be the same sentences, like everything else in the decisional stratum. The amendment in section 2.1
+of the architecture re-specification is right that the premise moves per book, and would be too
+strong if read as requiring a different story every time.
+
 ## A2. What D-6 costs every remaining fill-based row
 
 D-6 is a result about method, not only about architecture, and it re-prices four rows that were
