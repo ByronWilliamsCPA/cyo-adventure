@@ -92,6 +92,21 @@ function gatesOn(path: string): unknown[] {
 }
 
 describe('route config', () => {
+  // Second vacuity guard, upstream of the positive control. GATE_COMPONENTS is
+  // typed `readonly unknown[]`, which is what lets it hold four unrelated
+  // component types, and it is also what stops the compiler noticing if one of
+  // the four imports resolves to undefined after a rename or a barrel-file
+  // change. `includes(undefined)` then matches nothing real, and every path
+  // reads as ungated. The positive control below would catch it too, but only
+  // by failing with a confusing "expected [] to contain undefined"; this fails
+  // first and says which import broke.
+  it('resolves every gate component it filters on', () => {
+    for (const gate of GATE_COMPONENTS) {
+      expect(gate).toBeDefined()
+    }
+    expect(new Set(GATE_COMPONENTS).size).toBe(GATE_COMPONENTS.length)
+  })
+
   // Positive control, and the reason the two assertions below mean anything.
   // If gate detection silently stopped working (a refactor that stops wrapping
   // in Suspense, a component swapped for a differently-imported copy, an
