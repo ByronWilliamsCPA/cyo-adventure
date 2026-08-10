@@ -4057,6 +4057,42 @@ this. Keep the two apart. Automatic retry gives a blocked or briefly-unhealthy r
 of grace; it does not give an operator a way to recover an attempt that had no row to match, which is
 the hole the ordering exists to close. The practical consequence is narrow: after fixing a transit
 fault, check whether the retry budget is still open before spending a fresh send.</p>
+<p><strong>Observed 2026-08-10: the parent's confirmation email is the control the origin log cannot be.</strong>
+The sends produced KWS confirmation emails to the parent, headed "You're successfully verified for
+CYO Adventure" and reading "You've successfully verified that you're an adult with KWS using your
+credit or debit card. We've let CYO Adventure know." Meanwhile all four <code>kws_verification</code> rows sit
+at <code>status='sent'</code> with <code>resolved_at</code> and <code>transaction_id</code> null.</p>
+<p>The tightest correlation is on attempt <code>c5ff1711</code>, the run made after the edge rule was fixed. It
+was sent at 17:31:30Z, its confirmation email is stamped 17:32, and the two origin POSTs we rejected
+arrived at 17:32:09 and 17:32:51. Those are one event seen three ways, which settles something the
+rejection alone could not: the delivery we refused was a genuine success notification, not a probe,
+a malformed retry, or a failure report. Note the times are local in the mailbox and UTC everywhere
+else, and a seven-hour offset is enough to attribute an email to the wrong run; take the attribution
+from the <code>requested_at</code> column rather than from a rendered inbox timestamp.</p>
+<p>That the delivery was fresh is the other half. A verification that completes about a minute after
+the send, with the webhook following within seconds, leaves no room for the delivery to be stale in
+any ordinary sense, so a <code>timestamp_outside_window</code> rejection against a 300-second tolerance points
+at the units or the meaning of the <code>t=</code> value rather than at elapsed time.</p>
+<p>That pairing is worth more than either half. It separates <em>the verification failed</em> from <em>the
+verification succeeded and we did not record it</em>, and no amount of origin-side or edge-side logging
+distinguishes those two, because both produce the same absence on our side. Read the parent's inbox
+as a third log, alongside the origin and the edge. It is the only one written by the vendor.</p>
+<p>The state it documents is the one the insert-before-send ordering was built for: four adults are
+verified as far as Epic is concerned, and this application holds zero consent records. The rows
+still name the attempts, which is exactly what stops each of these being unattributable forever, so
+the ordering did its job even though nothing resolved.</p>
+<p>Two cautions the email itself raises:</p>
+<ul>
+<li><strong>Its "KWS will remember you have verified your age the next time you use this email" line is
+  production copy sent verbatim in Test, and it is false here.</strong> Epic's testing page is explicit
+  that the Test environment does not add verified addresses to the AgeGraph; see the alias section
+  above. Do not expect a second run from the same address to skip card entry, and do not read the
+  sentence as evidence about Q1. The <code>+verified</code> alias remains the only deterministic route to the
+  pre-verified flow.</li>
+<li><strong>Each first-time run costs a real $0.05 authorization</strong>, refunded in roughly 8 to 13 business
+  days. Iterating is cheap but not free, which is the argument for deploying a diagnostic change
+  <em>before</em> spending the next send rather than sending again to see whether anything changed.</li>
+</ul>
 <h2 id="what-gate-1-does-not-do">What Gate 1 does not do<a class="headerlink" href="#what-gate-1-does-not-do" title="Permanent link">&para;</a></h2>
 <p>It does not choose the route. KWS versus a direct Stripe integration stays open, and building
 against Test is what makes that comparison decidable on observed behaviour instead of on
@@ -4084,7 +4120,7 @@ mitigated one.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 10, 2026 18:04:11 UTC">August 10, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 10, 2026 18:49:44 UTC">August 10, 2026</span>
   </span>
 
     
