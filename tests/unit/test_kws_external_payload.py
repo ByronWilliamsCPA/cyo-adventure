@@ -37,13 +37,17 @@ class TestMintAndSerialize:
 
     @pytest.mark.unit
     def test_each_mint_is_unique(self) -> None:
-        """Two attempts must never share a correlation token.
+        """No two attempts may share a correlation token.
 
         A reused token would let one verification's result be attributed to a
         different attempt, which is the whole failure mode the token exists to
-        prevent.
+        prevent. Asserting distinctness over a batch rather than over a single
+        pair states that property directly, and it also catches a mint that
+        memoises or cycles a small pool of values, which two draws would miss.
         """
-        assert mint_correlation() != mint_correlation()
+        minted = [mint_correlation() for _ in range(256)]
+
+        assert len(set(minted)) == len(minted)
 
     @pytest.mark.unit
     def test_stays_well_inside_the_vendor_cap(self) -> None:
