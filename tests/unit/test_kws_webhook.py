@@ -533,6 +533,57 @@ class TestDisclosure:
         assert "kws_webhook_rejected" in rendered
         assert "no_matching_signature" in rendered
 
+    @pytest.mark.unit
+    def test_stale_rejection_carries_the_measured_skew_to_telemetry(
+        self, client: TestClient
+    ) -> None:
+        """A stale rejection is only actionable if the numbers survive the hop.
+
+        The verifier measures the skew, but the handler deliberately drops the
+        verifier's ``details`` before the error is serialised, so the
+        measurement is one careless filter away from being discarded on our
+        side of the boundary rather than the caller's. That is what this pins.
+        """
+        body = _body()
+        sent_at = int(time.time()) - 3600
+
+        with patch("cyo_adventure.api.kws_webhook.logger") as mock_logger:
+            client.post(_URL, content=body, headers=_headers(body, at=sent_at))
+
+        logged = mock_logger.warning.call_args.kwargs
+        assert logged["reason"] == "timestamp_outside_window"
+        # Echoed verbatim from the header, so this is exact rather than
+        # approximate: it is the number that distinguishes a stale delivery
+        # from a sender emitting milliseconds.
+        assert logged["signature_timestamp"] == sent_at
+        # The wall clock advances between the send above and the check inside
+        # the handler, so only the magnitude is stable. The sign is the part
+        # that carries meaning, and it is exact.
+        assert logged["skew_seconds"] >= 3600
+
+    @pytest.mark.unit
+    def test_skew_diagnostics_do_not_change_the_rejection_body(
+        self, client: TestClient
+    ) -> None:
+        """Adding telemetry must not reopen the oracle the 401 body closes.
+
+        ``test_rejection_body_does_not_name_the_failed_check`` above compares a
+        stale delivery against a wrong-key one. This compares two STALE
+        deliveries whose diagnostics differ, since those now flow through a
+        code path the older test never exercises: identical bodies here mean
+        the new fields stayed server-side.
+        """
+        body = _body()
+        recent = client.post(
+            _URL, content=body, headers=_headers(body, at=int(time.time()) - 400)
+        )
+        ancient = client.post(
+            _URL, content=body, headers=_headers(body, at=int(time.time()) - 999_999)
+        )
+
+        assert recent.status_code == ancient.status_code == 401
+        assert recent.json() == ancient.json()
+
 
 def _rendered_log_calls(mock_logger: Any) -> str:
     """Flatten every argument of every call made to a mocked logger.

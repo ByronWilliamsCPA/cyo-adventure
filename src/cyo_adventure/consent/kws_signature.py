@@ -87,7 +87,7 @@ class ParsedSignatureHeader:
     signatures: tuple[str, ...]
 
 
-def _fail(reason: str) -> AuthenticationError:
+def _fail(reason: str, **diagnostics: int) -> AuthenticationError:
     """Build the single, deliberately uninformative rejection error.
 
     Every rejection path raises the same message. The caller logs ``reason``
@@ -97,13 +97,20 @@ def _fail(reason: str) -> AuthenticationError:
 
     Args:
         reason: A short, log-safe discriminator for our own telemetry.
+        diagnostics: Extra measurements for the same telemetry, typed ``int``
+            deliberately. The type is the safeguard, not a convenience: it
+            makes it impossible for a future call site to route a header, a
+            digest, or a secret through this channel, since none of those are
+            integers. Values reach the server log only; ``api/kws_webhook.py``
+            drops the whole ``details`` mapping before the error is serialised.
 
     Returns:
-        AuthenticationError: The error to raise, carrying ``reason`` in
-            ``details`` for structured logging rather than in the message.
+        AuthenticationError: The error to raise, carrying ``reason`` and any
+            diagnostics in ``details`` for structured logging rather than in
+            the message.
     """
     return AuthenticationError(
-        "KWS signature verification failed", details={"reason": reason}
+        "KWS signature verification failed", details={"reason": reason, **diagnostics}
     )
 
 
@@ -224,9 +231,23 @@ def verify_webhook_signature(
 
     # Freshness first, so a replay of an otherwise-valid capture is rejected
     # without spending an HMAC on it.
+    #
+    # The measurements travel with the reason because the label alone cannot
+    # separate three very different faults, and a KWS Test run on 2026-08-10
+    # cost real time to exactly this ambiguity. A skew of a few seconds is our
+    # clock drifting; minutes to hours is a genuine replay or a queued
+    # redelivery; a value near 1.8e12 is a sender emitting MILLISECONDS where
+    # this compares seconds, which is a wire-format change, not a stale
+    # delivery, and needs a code fix rather than an NTP fix. Signed, not
+    # absolute: the direction distinguishes a delivery from the past from one
+    # from the future.
     if abs(window.now - parsed.timestamp) > window.max_skew_seconds:
         reason = "timestamp_outside_window"
-        raise _fail(reason)
+        raise _fail(
+            reason,
+            signature_timestamp=parsed.timestamp,
+            skew_seconds=window.now - parsed.timestamp,
+        )
 
     signed = f"{parsed.timestamp}.".encode() + body
     expected = hmac.new(secret.encode(), signed, sha256).hexdigest()
