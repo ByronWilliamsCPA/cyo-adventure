@@ -22,7 +22,7 @@ deterministic validation gate and mandatory admin approval (ADR-005).
 | [System Overview](system-overview.md) | C4 context and container diagrams; publish state machine |
 | [Generation Pipeline](generation-pipeline.md) | Staged LLM generation (Structure/Prose/Repair), provider fallback |
 | [Validation and Player](validation-and-player.md) | Validator gate, story engine, offline sync |
-| [Data Model](data-model.md) | 26 ORM tables, ER diagram, relationships |
+| [Data Model](data-model.md) | 31 ORM tables, ER diagram, relationships |
 | [Story Skeletons](story-skeletons.md) | Preset skeleton structure diagrams and metadata data dictionary |
 | [Deployment](deployment.md) | Homelab Docker stack, Pangolin, Supabase auth, MinIO (deferred Phase 5) |
 
@@ -61,13 +61,16 @@ PWA (React 19, TypeScript)
   |  REST /api/v1 + Bearer token (OIDC via Supabase Auth)
   v
 FastAPI backend (Python 3.14)
-  - api/: 28 routers -- health, library, reading, reading_history, generation,
-                 profiles, families, ratings, assignments, approval (global admin),
+  - api/: 36 routers -- health, library, reading, reading_history, reading_time,
+                 progress, generation, profiles, personalization, characters,
+                 families, ratings, assignments, approval (global admin),
                  node_edit, covers, moderation_thresholds, moderation_dashboard,
-                 audit, rescreen, provider_allowlist, me, story_requests,
-                 child_sessions, device_grants (ADR-014), onboarding, flags,
-                 notifications, admin_users, admin_profiles, family_connections,
-                 recommendations (#270 M4b-d + #277)
+                 audit, rescreen, remoderate, provider_allowlist, me,
+                 story_requests, child_sessions, device_grants (ADR-014),
+                 offline_downloads, onboarding, flags, notifications,
+                 admin_users, admin_profiles, family_connections,
+                 recommendations (#270 M4b-d + #277),
+                 kws_webhook + kws_redirect (ADR-018 D1)
   - api/deps.py: Principal (role/family/profile) auth seam; Role.DEVICE
                  routing branch for the device grant (ADR-014)
   - storybook/: Pydantic models, condition DSL, evaluator
@@ -87,9 +90,13 @@ FastAPI backend (Python 3.14)
                  category overrides + admin noise floor), repair
   - events/: append-only pipeline_event writer (WS-D)
   - publishing/: approve -> publish state machine
+  - consent/: KWS parent verification (ADR-018 D1). Three legs, one writer:
+                 the parent-verified webhook. The signed redirect back from
+                 the parent's browser is replayable by construction and is
+                 display-only. Staging + KWS Test only; nothing in production
   - middleware/: CorrelationMiddleware (first), SecurityMiddleware (OWASP)
   |
-  +-- PostgreSQL 16 (async SQLAlchemy 2, 26 tables, Supabase CLI SQL migrations)
+  +-- PostgreSQL 16 (async SQLAlchemy 2, 31 tables, Supabase CLI SQL migrations)
   +-- Redis 7 (RQ job queue)
   |
   +-- [worker container] RQ worker
@@ -113,7 +120,7 @@ FastAPI backend (Python 3.14)
 
 ## Architecture Decision Records
 
-The table below lists all 21 ADRs in `docs/planning/adr/`; see that directory for the
+The table below lists all 28 ADRs in `docs/planning/adr/`; see that directory for the
 full decision records.
 
 | ADR | Title | Status |
@@ -139,3 +146,10 @@ full decision records.
 | [ADR-019](../planning/adr/adr-019-parameterized-skeletons-theme-contracts.md) | Parameterized skeletons and theme contracts | Accepted |
 | [ADR-020](../planning/adr/adr-020-mutation-derived-skeletons-and-catalog-growth.md) | Mutation-derived skeletons and catalog growth | Accepted |
 | [ADR-021](../planning/adr/adr-021-service-account-rls-and-worker-deployment.md) | Service-account RLS and in-repo worker deployment | Accepted |
+| [ADR-022](../planning/adr/adr-022-tiered-rls-scoping.md) | Tiered RLS scoping (flat per-family enforcement on the high-sensitivity tables) | Proposed |
+| [ADR-023](../planning/adr/adr-023-story-personalization-slots.md) | Guardian opt-in story personalization (render-time slot substitution) | Accepted |
+| [ADR-024](../planning/adr/adr-024-bounded-backtracking-path-replay.md) | Bounded backtracking by forward path replay | Accepted |
+| [ADR-025](../planning/adr/adr-025-additive-storybook-schema-versioning.md) | Additive minor versioning for the Storybook schema | Accepted |
+| [ADR-026](../planning/adr/adr-026-rendered-stop-flow.md) | Rendered-stop flow of linear passages | Accepted |
+| [ADR-027](../planning/adr/adr-027-in-story-illustration.md) | In-story illustration (3-5 pilot) | Accepted |
+| [ADR-028](../planning/adr/adr-028-persistent-reader-characters.md) | Persistent reader characters | Accepted |

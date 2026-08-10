@@ -40,6 +40,13 @@ tags:
 > exception at 312.5(c)(7) as a route to a consent-free free tier; new D9 scoping California
 > SB 976, whose core provisions take effect 2027-01-01 and whose VPC framework incorporates
 > COPPA's approved-method list, so D1's answer propagates into state law.
+> **Amended**: 2026-08-09. D1 gains the engineering half of the KWS evaluation: the integration is
+> built and deployed to staging against the KWS **Test** environment, with nothing wired in
+> production. It records the two mechanisms that now enforce D1's "configuration is the evidence"
+> constraint, why only the webhook leg may write consent state, why the Test/Production partition
+> has no runtime backstop, and the three questions the Test environment exists to answer.
+> **This chooses nothing**: KWS versus a direct Stripe integration is still open, and the accepted
+> risks are unchanged.
 > **This does not flip the status.** Every decision below is an owner choice pending counsel
 > confirmation; only counsel closing D1 through D5 moves this ADR to Accepted. **D6 and D7 are
 > owner-side obligations rather than counsel questions**, and are deliberately excluded from the
@@ -385,6 +392,68 @@ mechanism. An admin approves (`-> active`) or denies (`-> deactivated`) via the 
 `pending` status already in this ADR's "already decided" list; an admin-invited guardian is
 still trusted immediately on bind, unaffected by this gate. Frontend:
 `GuardianAwaitingApprovalPage.tsx`, reached via a new `AuthStatus = 'awaiting-approval'`.
+
+**Built and deployed to staging 2026-08-09, against the KWS *Test* environment. This gathers
+evidence for D1; it does not close it.** Everything above was decided from vendor documentation
+and portal text. The owner's direction was to determine the vendor's actual behaviour empirically
+rather than wait on Epic, so the integration now exists and runs: `consent/kws_client.py` (the
+send leg, OAuth2 client-credentials), `consent/service.py`
+(`start_parent_verification` / `record_parent_verified`), `api/kws_webhook.py` (the
+`parent-verified` delivery), `api/kws_redirect.py` (the parent's browser returning from Epic's
+hosted flow), and a `kws_verification` table (migration `20260809130000`). **Nothing is wired in
+production**: `services/cyo-adventure/docker-compose.yml` in homelab-infra carries no `KWS_*`
+variables, so the integration is off there by configuration rather than by code.
+
+*What this does not settle.* It does not choose the route. KWS versus a direct Stripe integration
+remains open exactly as recorded above; building against Test is what makes that comparison
+decidable on observed behaviour instead of on documentation. It does not touch the flagged
+counsel question, and it converts neither accepted risk into a mitigated one.
+
+**The "configuration is the evidence" constraint now has a mechanism rather than an intention.**
+The consent-record paragraph above requires the stored method to be the vendor and the flow,
+accompanied by a snapshot of the method configuration in force at that moment. Two things now
+enforce that:
+
+- `kws_verification.enabled_methods` stores `settings.kws_enabled_methods` **as it stood at send
+  time**, never a live read, so a later configuration change cannot retroactively rewrite what a
+  past verification claims about itself.
+- The application **refuses to start** when KWS credentials are present and
+  `KWS_ENABLED_METHODS` is empty
+  (`core/config.py::_require_declared_kws_methods_when_configured`). Because the callback reports
+  no method, that declaration is the only bound on how a parent was verified, so an operator
+  cannot silently run the integration without one. This is not hypothetical: it refused to boot
+  the staging stack on first activation, which is a control behaving as intended rather than a
+  defect.
+
+**Only one of the three legs writes consent state, and the asymmetry is structural.** The
+`parent-verified` webhook is signed Stripe-style (`t=` / `v1=`) over the raw body with a bounded
+clock skew, and it alone resolves a `kws_verification` row. The redirect return is signed over
+`f"{status}:{external_payload}"`, which carries **no timestamp and no nonce and is therefore
+replayable by construction**, so that route is display-only and writes nothing. A consent record
+that could be created by replaying a URL a parent once received would not be a consent record.
+
+**The Test/Production partition is recorded per verification and has no runtime backstop.** Each
+row stores its own `kws_environment`, because KWS reports nothing that would let the environment
+be re-derived afterwards. The application's guard against production KWS credentials fires only
+when its own `ENVIRONMENT` is `local`, and every deployed tier declares `production`, so **no
+deployed environment can catch a misconfiguration here**. A verification performed against Epic's
+Test environment is not a valid VPC, so Test credentials must never be present in the production
+stack. This is an operational control resting on the operator, not an enforced one.
+
+*Live state, 2026-08-09.* Both routes answer on staging. The webhook leg verifies signatures
+(an unsigned request is rejected `401`); the redirect leg awaits its Control Panel secret.
+
+**What the Test environment now exists to answer**, ordered by how much each would change D1:
+
+1. **Does `parent-verified` fire at all on the pre-verified AgeGraph path?** If it does not, an
+   inherited verification produces no delivery and therefore no consent record, which would
+   restate accepted risk (a) from "verified under a method we did not choose" into "no record
+   was created at all". That is a materially worse finding than the one the owner accepted.
+2. **Does the card method capture-and-refund, or authorise only?** This bears directly on the
+   312.5(b)(2)(ii) mapping recorded above.
+3. **Is the webhook signature carried in a header or in the query string?** The API reference and
+   the Control Panel copy disagree; `api/kws_webhook.py` records the open question as an
+   `#ASSUME` marker rather than resolving it silently.
 
 ### D2: Audience classification
 

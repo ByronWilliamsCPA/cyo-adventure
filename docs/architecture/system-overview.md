@@ -41,6 +41,15 @@ Adventure system depends on.
   seam, while non-local environments verify the JWT via `jwt.PyJWKClient` (see `api/deps.py`).
 - **PostgreSQL** holds all operational metadata: family records, users, child profiles,
   storybook lifecycle, reading state, completions, generation jobs.
+- **Kids Web Services (Epic)** is the verifiable-parental-consent counterparty under
+  evaluation (ADR-018 D1, still open). The backend sends a verification email through
+  Epic's API, the parent completes Epic's hosted flow, and Epic calls a webhook back. The
+  parent's browser also returns to us over a signed redirect, but that leg is display-only:
+  its HMAC covers no timestamp and no nonce, so a link a parent once received replays
+  forever. **Only the `parent-verified` webhook writes consent state.** As of 2026-08-09
+  this is wired on staging against the KWS **Test** environment and nothing is wired in
+  production; a Test verification is not a valid VPC. See
+  [seq-kws-verification.puml](diagrams/seq-kws-verification.puml).
 
 ## C4 Level 2: Containers
 
@@ -55,7 +64,7 @@ The container diagram shows how the system is split across runtime boundaries.
 | PWA | React 19, TypeScript, Vite | Reader UI, library, offline cache, XState player |
 | FastAPI Backend | Python 3.14, FastAPI, Pydantic v2 | API routers, auth, validator, generation dispatch |
 | Generation Worker | RQ, Python | Async staged generation; long-running, separate container |
-| PostgreSQL | PostgreSQL 16, SQLAlchemy 2 | All operational entities (26 ORM tables) |
+| PostgreSQL | PostgreSQL 16, SQLAlchemy 2 | All operational entities (31 ORM tables) |
 | Redis | Redis 7, RQ | Generation job queue and broker |
 | MinIO | MinIO / S3 API | Story blob storage (deferred to Phase 5; Phase 1 uses inline JSONB) |
 | Cloudflare R2 | R2 / S3 API | AI cover-art (WebP) object storage, ADR-017 (shipped); written by the covers RQ worker (`covers/worker.py`) |
@@ -109,7 +118,9 @@ in `published`.
 
 - [Generation Pipeline](generation-pipeline.md): staged LLM generation and provider cascade
 - [Validation and Player](validation-and-player.md): validator gate and story engine
-- [Data Model](data-model.md): the 26 ORM tables and their relationships
+- [Data Model](data-model.md): the 31 ORM tables and their relationships
+- [KWS Parent Verification](diagrams/seq-kws-verification.puml): the three legs of the
+  ADR-018 D1 consent integration and why only one of them may write consent state
 - [Deployment](deployment.md): homelab Docker deployment
 - ADR-005: [Mandatory Human Approval](../planning/adr/adr-005-mandatory-human-approval.md)
 - ADR-002: [Client: Progressive Web App](../planning/adr/adr-002-client-pwa.md)
