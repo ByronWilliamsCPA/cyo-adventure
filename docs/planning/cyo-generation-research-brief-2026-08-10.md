@@ -1,9 +1,9 @@
 # Generating choose-your-own-adventure books with LLMs: problem statement, capability analysis, and an open puzzle
 
-> **Status: research brief prepared for external analysis.** Written to be handed to a
-> language model with no access to our codebase, so it is self-contained. Its purpose is to
-> get independent theorizing on a problem we have attacked from ten directions without
-> solving.
+> **Status: research brief prepared for external analysis.** Written to be handed to readers
+> with no access to the system it describes, so it is self-contained: every term is defined
+> in section 9 and no claim depends on inspecting our code. Its purpose is to get independent
+> theorizing on a problem we have attacked from ten directions without solving.
 >
 > **Citations.** Every reference in section 10 was verified against a primary source
 > (publisher page, ACL Anthology, or proceedings entry). Six entries in an earlier draft were
@@ -14,26 +14,35 @@
 
 ## 0. What we are asking you to do
 
-Read sections 1 through 7, then answer section 8.
+Read sections 1 through 7, then produce what section 8 asks for: **two to four concrete
+architectures we could build and test.** Section 8.1 gives the specification each proposal
+should meet, 8.2 the hard constraints, 8.3 the design questions we expect a good proposal to
+take a position on, and 8.4 some undeveloped families you are free to extend or dismiss.
 
 We are not asking whether LLMs can write stories. They can. We are asking something
-narrower: **what architecture produces a large branching narrative that one child can be
-given repeatedly, over months, without that child perceiving they are reading the same book
-with new paint?**
+narrower: **what architecture lets one reusable story graph produce many books in which the
+reader is asked to decide genuinely different things?**
 
-We have a deployed system that satisfies every requirement except that one. We have measured
-ten interventions. Nine did nothing. The tenth pointed at an answer we find expensive and
-would like to be wrong about.
+Sharing an armature across books is fine and intended; the product already supports series.
+The defect is narrower, and section 1.3 defines it precisely: the reader being asked to make
+the same decisions, in the same order, book after book.
 
-Two things we would specifically value:
+We have a deployed system that satisfies every other requirement. We have measured ten
+interventions against this one. All ten varied something other than the decisions
+themselves, which we did not realize until we tabulated them (section 5.3).
 
-1. **Attack our framing.** Section 1.4 argues our entire diversity program may rest on a
-   category error about what child readers want. The literature search we ran while
-   preparing this brief made that argument *stronger* than we expected, and we have not
-   acted on it.
-2. **Attack our conclusion.** Section 6 concludes that reader-perceived sameness tracks graph
-   topology, so variety must come from more graphs. If there is a cheaper mechanism we have
-   not tested, we want it.
+The central design problem, which every proposal has to solve somehow: **how do you keep a
+plan strict enough for a program to verify, while leaving the scene content and the offered
+choices free to vary per request?** Our plans currently fix both, and we do not know whether
+that is necessary or just how we built it.
+
+Two further things we would value:
+
+1. **A valid instrument.** Section 1.4 shows ours measures the wrong construct. We need one
+   that scores decision repetition and ignores shared world, cast, and shape.
+2. **Attack the framing.** If you think 1.3 draws the line in the wrong place, say so. It is
+   an owner judgment informed by the literature in 1.2, not an experimental result, and an
+   architecture aimed at the wrong target is worse than none.
 
 ---
 
@@ -113,50 +122,70 @@ Berlyne [43] gives the shape: hedonic value is an inverted-U function of novelty
 complexity, so both total predictability and total novelty are aversive. Zajonc [44] shows
 mere exposure alone increases liking.
 
-### 1.3 Where the tension actually sits
+### 1.3 What actually counts as the defect
 
-Two literatures pull against each other, and the resolution is not obvious:
+Two literatures appear to pull against each other. Diversity is what we have been buying;
+series-fiction research says formula is the contract and readers seek it. Berlyne's
+inverted-U [43] implies some layer must stay constant and some must vary, and the design
+question is which is which.
 
-- Diversity is what we have been buying. Sameness across books is what we treat as the defect.
-- Series-fiction research says formula is the contract, and readers seek it.
+**We can now answer that, and the answer is narrower than "the books must differ."** Series
+framing is already supported in the product, so the constant layer is settled: shared world,
+shared cast register, shared scale and format, recurring shape. Those are assets.
 
-The reconciliation is presumably Berlyne's inverted-U [43]: some layer must stay constant
-for the series contract to hold, and some layer must vary for the book to be worth reading.
-**We have never identified which layer is which.** We have been varying every layer we could
-reach and measuring whether readers still notice the constant one.
+The defect is **close regurgitation of process: the reader being asked to make the same
+decisions, in the same order.**
 
-### 1.4 The reframe we think may invalidate our own program
+Worked example, which is the operational definition we now use.
 
-Our diversity work assumes, untested, that **a child detecting the shared armature is a
-failure.**
+| | First book | Second book | Verdict |
+| --- | --- | --- | --- |
+| Setting | unicorn | goblin | (varies in all cases) |
+| Choice at the opening fork | "Open the door" / "Go around back" | "Open the door" / "Go around back" | **Defect.** Same decision, new paint. |
+| Choice at the opening fork | "Open the door" / "Go around back" | "Go upstairs" / "Go downstairs" | **Acceptable.** |
 
-Our measurement protocol asks a rater to find the reading position at which a child would
-conclude "this is the same book in different clothes." **That measures detectability, not
-dissatisfaction.** We have been optimizing against detectability and calling it quality.
+The second row is the important one, and it is counterintuitive from an engineering seat.
+The two books there may be **structurally identical**: the same binary fork, the same
+downstream branch shape, the same reconvergence, the same node count. The reader does not
+experience that as repetition, because what a reader tracks is **what they were asked to
+decide**, not the shape of the decision tree that recorded it.
+
+Two consequences that shape everything below:
+
+1. **Graph shape is reusable. Decision content is not.** Reusing an armature is not the
+   defect and never was. Reusing the *decisions* is.
+2. This is a property of the choice's **action semantics**, meaning the concrete act the
+   reader picks between. It is not a property of the choice's *motivation*, its emotional
+   framing, its narrative function, or the props in the room. Those are all things we varied
+   at length; see section 5.
+
+### 1.4 Our measurement does not match that definition
+
+Having stated the defect precisely, we have to admit our instrument does not measure it.
+
+Our protocol asks a rater for the reading position at which a child would conclude "this is
+the same book in different clothes." **That measures detectability of the shared armature.**
+By 1.3, detecting the armature is not the defect: a child who notices they are reading
+another book in a familiar series is having the intended experience.
 
 | | Reader notices shared structure | Reader does not notice |
 | --- | --- | --- |
-| **Reader is satisfied** | Series pleasure: the case Ross [48] documents | Ideal, and expensive |
-| **Reader is dissatisfied** | The failure we assume we measure | Failure for other reasons |
+| **Reader is satisfied** | Series pleasure, the case Ross [48] documents. Intended. | Ideal, and expensive |
+| **Reader is dissatisfied** | **The real defect: decisions repeat** | Failure for other reasons |
 
-Three consequences we have not tested:
+Our instrument cannot separate the top-left cell from the bottom-left one, and every number
+in section 5 is subject to that confound.
 
-1. If series pleasure dominates, the correct move is the inverse of ours: make the armature
-   *legible and consistent*, brand it as a series, and spend the diversity budget on
-   scene-level texture rather than graph variety.
-2. If it does not, we need the actual dissatisfaction trigger. The leading candidate from
-   [2] is local rather than global: the reader's choices stop feeling consequential because
-   the same fork recurs, which is a choice-poetics failure and not a topology failure.
-3. The moderator is probably elapsed time. Series formula tolerance is measured over books
-   read weeks apart. Our rater compares two books back to back, which is the condition
-   least favorable to formula tolerance and therefore biases every number we have toward
-   "too similar."
+The literature supports the distinction. [2] locates reader experience in the structure and
+framing of individual choices, which is the level 1.3 identifies, rather than in global
+shape. And a search run specifically to find the counterargument found no peer-reviewed work
+holding that series readers experience formula as a defect; the classic anti-series position
+in librarianship is prescriptive rather than reader-evidence-based, and [48] is explicitly a
+rebuttal to it.
 
-**A literature search run specifically to find the counterargument found none.** We looked
-for peer-reviewed work arguing that series readers experience formula as a defect and did
-not find it; the classic anti-series position in librarianship is prescriptive rather than
-reader-evidence-based, and [48] is explicitly a rebuttal to it. We report that as a strike
-against our own program.
+One further bias worth stating: series formula tolerance is measured over books read weeks
+apart, while our rater compares two books back to back. That is the condition least
+favorable to formula tolerance, so our numbers are biased toward "too similar."
 
 ### 1.5 Operational success criteria
 
@@ -395,46 +424,95 @@ reading position at which a child who just finished book one would conclude book
 same book, plus a five-point distinctness score anchored at "position 2 is 2.0" and
 "position 4 is 2.5."
 
+**Read this table with 5.3 in hand.** Every row varied something other than scene identity
+and the actions offered at each choice, so none of these results speaks to the lever
+identified in 1.3. Rows S5 and S6 are genuine successes at what they set out to do; they are
+listed as failures only against a target we now think was the wrong one.
+
 ---
 
-## 5. The empirical result
+## 5. The empirical result, and a correction to how we first read it
 
-**Recognition tracks graph topology. Everything else we varied sits downstream of it.**
+### 5.1 What the rater actually reported
 
 The decisive case is S9. We wrote two complete narrative contracts over one unchanged graph,
-every node serving a different narrative function. At the fork where recognition lands, the
-contracts framed the three options completely differently: one as "lead with patience / lead
-with self-reliance / lead with humility", the other as "follow the maker's own words / follow
-his handiwork / follow his confidant."
+every node serving a different narrative function. At the fork where recognition landed, the
+two contracts framed the three options completely differently: one as "lead with patience /
+lead with self-reliance / lead with humility", the other as "follow the maker's own words /
+follow his handiwork / follow his confidant."
 
-The blind rater recorded the same fork, in the same order, at position 2.
+The blind rater recorded the same fork, in the same order, at position 2. Its stated evidence
+was not about graph shape. It was:
 
-The reason is structural. A choice's *destination* is an edge, not a property of the
-contract:
+> Same three doors, decode the note / read the building for a way in / go find the last
+> person who remembers, in the same sequence.
 
-```
-n_start  -> n_note, n_door, n_keeper
-n_inside -> n_stairs, n_study, n_pendulum, n_basement
-```
+and at position 5, four rooms of the same four kinds in the same order.
 
-Whatever the contract says choice 1 *means*, it still leads to the decode-the-note scene, and
-both authors must still write a stair, a study, a catwalk, and a basement. **A reader
-perceives where choices lead, not why the author was told they were offered.**
+That is **decision content**, in the exact sense of 1.3. The reader was asked to make the
+same three decisions, in the same order, in both books.
 
-This unifies the nine prior nulls rather than adding a tenth. Devices change the nouns in the
-rooms; prose changes the wording; model tier changes the quality; obligations change why the
-rooms matter. None changes the rooms, because the rooms are edges. Consistent with this: the
-only intervention that moved recognition was graph mutation (S8), and the only mechanism that
-cleared our structural-distance floor was grafting a subtree from a *different* graph, which
-is recombination rather than variation.
+### 5.2 The correction
 
-It also matches Wu et al. [16] arriving independently at the conclusion that authorial
-control must be structural rather than prompt-level.
+We first read this as "recognition tracks graph topology, therefore variety requires more
+graphs." That reading is **too strong, and probably wrong.**
 
-**Uncomfortable corollary.** If variety requires distinct graphs, and the space of workable
-shapes is as small as Ashwell's eight patterns [1] and our own convergence onto six of them
-suggest, then topological variety is bounded well below what combinatorics implies. Two
-branch-and-bottleneck graphs of similar size may be perceptually the same graph.
+What is fixed in our architecture is not only the shape. Each node also carries a **scene
+identity**: node 3 is not an abstract vertex, it is *the note-decoding scene*. An edge to
+"node 3" carries no information a reader can perceive; an edge to "the scene where you
+decode the note" is the entire fingerprint. Our skeletons bind both, and we had been
+attributing to the first what belongs to the second.
+
+The strongest evidence against the topology reading is our own S8. Mutation **changed the
+graph** and recognition barely moved, and the mutants retained **100% of the parent's
+authored scene directives**. If shape were the fingerprint, rearranging it should have
+helped substantially. It did not, because the scenes came along unchanged.
+
+Restated to match 1.3: **shape is reusable; the decisions are not.** Two books can share a
+graph and not read as the same book, provided the reader is asked to decide different things.
+
+### 5.3 The cell we never tested
+
+Cataloguing what each intervention actually varied makes the gap embarrassing.
+
+| | What it varied | Scene identity | Action offered at each choice |
+| --- | --- | --- | --- |
+| S2, S3 | world, cast, props via slots | fixed | fixed |
+| S4 | what each scene is *for* | fixed | fixed |
+| S5 | props and clues inside scenes | fixed | fixed |
+| S6 | wording | fixed | fixed |
+| S7 | model quality | fixed | fixed |
+| S8 | edges between scenes | fixed | fixed |
+| S9 | what each scene is *for*, harder | fixed | fixed |
+
+**Scene identity and action semantics were held constant in all ten designs.** They were
+constant by construction from S2 onward, because a human-authored skeleton names each scene
+at authoring time and every later mechanism was built to vary things *around* that.
+
+So the ten results do not show that the problem is hard. They show that we varied every
+layer except the one that 1.3 identifies as the defect, and then measured whether readers
+still noticed the layer we never varied.
+
+S9 is the sharpest illustration. It appeared to vary choice semantics and did not: it varied
+the *motivation* for each choice while the *act* stayed "examine the note", "search the
+building", "find the keeper" in both books. Rewriting why a choice is offered does not change
+what the reader is choosing to do.
+
+### 5.4 What survives
+
+Two claims are unaffected and we still hold them:
+
+- **Same-model idiom convergence** (3.7) is real and independent of any of this.
+- **Authorial control must be structural rather than prompt-level.** We refuted prompt-level
+  control ten times; Wu et al. [16] reached the same conclusion from a design study. But
+  "structural" should now be read as *the scene and choice content are specified data*, not
+  as *the graph must be regenerated*.
+
+The expensive conclusion, that variety requires many more graphs, is **withdrawn pending a
+test of the untested cell**. If it had been right, it would also have been bad news on
+Ashwell's evidence [1]: only eight macro-topologies exist, our catalog uses six, and two
+branch-and-bottleneck graphs of similar size may well be perceptually one graph. That
+argument is now moot if shape is reusable.
 
 ---
 
@@ -444,17 +522,21 @@ branch-and-bottleneck graphs of similar size may be perceptually the same graph.
    found treats between-artifact distinctness as an objective, for linear or branching
    narrative. Is there a formulation of this as diversity-constrained generation rather than
    a quality problem?
-2. **Our strongest theoretical support is for the thing that causes our problem.** Sections
-   3.4 and 3.6 argue for supplying a fixed plan and verifying externally. That is exactly
-   what freezes the topology. The architecture is well-founded *and* is the defect.
+2. **Our strongest theoretical support argues for freezing exactly what must vary.** Sections
+   3.4 and 3.6 argue for supplying a fixed plan and verifying externally, because models
+   plan poorly and cannot self-verify. But a plan detailed enough to be verifiable is a plan
+   that names the scenes, and naming the scenes is what 5.2 identifies as the fingerprint.
+   **The open architectural question is whether a plan can be strict enough to verify while
+   leaving scene and choice content free.** Our skeletons conflate the two, and we do not
+   know whether that is necessary or merely how we built it.
 3. **Diversity collapse (3.7) is model-level, so it may bound any architecture.** If two
    samples converge on "a sky gone properly dark" with no shared input, is architectural
    variety the right lever at all, or does this need different models, different decoding, or
    explicit inter-sample repulsion?
-4. **Reader preference may not want what we are building (1.4),** and the literature leans
-   against us.
-5. **We may be measuring the wrong construct (3.8).** Detectability is not dissatisfaction,
-   and our automatic metrics have demonstrated zero discriminative power on the target.
+4. **Our instrument measures the wrong construct (1.4, 3.8).** It scores detectability of the
+   armature, which by 1.3 is not the defect. Our automatic metrics separately showed zero
+   discriminative power. We do not currently have a valid measurement of the thing we care
+   about, which means every number in section 4 needs re-reading before it is trusted.
 
 ---
 
@@ -484,40 +566,125 @@ from the rating).
 
 ---
 
-## 8. Questions for you
+## 8. What we want from you: candidate architectures
 
-Ranked by what would change our decisions most.
+**Primary deliverable: two to four concrete architectures we could build and test**, each
+aimed at producing many books from reusable material in which the reader is asked to decide
+genuinely different things (1.3). We are past the point of wanting a diagnosis. We want
+designs, stated precisely enough to implement and to falsify.
 
-1. **Is the reframe in 1.4 correct?** If children's series readers value the armature, what
-   is the actual failure mode we should measure instead of detectability, and how would you
-   measure it? Note that [48] and [2] suggest different answers: developmental value of
-   predictability versus local choice-poetics failure.
-2. **Is there a mechanism for perceived distinctness that does not require distinct graphs?**
-   We have refuted devices, prose, model tier, per-node obligations, and bounded mutation.
-3. **Can inter-sample diversity be engineered against a shared plan?** Given 3.7, is there a
-   decoding-level, prompting-level, or population-level method (determinantal point
-   processes, explicit repulsion against prior outputs, model ensembling, persona
-   conditioning) with evidence at this scale?
-4. **How would you make the graph itself cheap to vary?** If topology is the fingerprint, the
-   bottleneck becomes producing many *validated* graphs. Is graph synthesis under hard global
-   constraints a place where grammars, planners, or constraint solvers beat LLM generation
-   outright, perhaps as a generative grammar over Ashwell-style patterns [1]?
-5. **What is the right unit of reuse?** We assume the graph. Alternatives: reuse a *pattern*
-   and synthesize graphs from it; reuse *fragments* and recombine; reuse nothing. Which gives
-   the best distinctness per unit of human review?
-6. **What experiment falsifies our topology conclusion most cheaply?** Design the replication.
+Propose designs you think are *right*, not designs you think we will like. If your reading
+of sections 3 and 5 says our whole premise is wrong, propose the architecture that follows
+from your reading instead.
+
+### 8.1 What each proposal should specify
+
+1. **Name and thesis**, one line.
+2. **The fixed/generated split.** What is authored once and reused, what is generated per
+   request, and what is human-reviewed. This is the axis every one of our ten designs
+   differs on, so state it first.
+3. **How structural validity is guaranteed.** Section 3.6 is not negotiable: we will not
+   accept "the model checks its own graph." Say what program, grammar, solver, or invariant
+   makes reachability, termination, and merge-consistency true, and *when* it runs relative
+   to prose generation.
+4. **How the decisions vary.** The lever in 1.3. Concretely: at a given fork, what makes one
+   book offer "open the door / go around back" and another "go upstairs / go downstairs"?
+5. **What stays constant**, and why that preserves the series contract (1.2).
+6. **Where the human attaches.** One adult approves every published book regardless. What
+   are they looking at, and does your design make that review cheaper or dearer per book?
+7. **Expected failure modes**, including the ones that would show up only at book 20 rather
+   than book 2.
+8. **A falsifiable prediction.** What should this do to decision repetition that our current
+   architecture does not, and how would we see it?
+9. **The cheapest discriminating experiment**, with a rough cost in generations and human
+   hours.
+10. **Which of our ten results already bears on it**, including any that count against it.
+
+### 8.2 Constraints any proposal must respect
+
+- Every path terminates; no unreachable nodes; no trap loops.
+- Scenes where paths reconverge must be writable from every incoming path, so what the
+  reader can be assumed to know at that point has to be knowable in advance.
+- Per-band word envelopes, reading level, ending count and valence mix, safety limits.
+- A human approves every finished book. Amortizing human review is valuable but cannot be
+  achieved by removing the final approval.
+- Books are read offline from a static artifact. Nothing may depend on calling a model at
+  read time.
+- Cost per book must be plausible for a consumer product, so an architecture requiring
+  hundreds of frontier generations per book needs to justify itself.
+
+### 8.3 Design considerations we would like addressed
+
+Not separate questions, but the things we expect a good proposal to have a position on.
+
+- **The verifiability/freedom tension (6.2).** A plan detailed enough to verify is a plan
+  that names the scenes, and naming the scenes is what 5.2 identifies as the fingerprint. Is
+  that tension real, or an artifact of how we represent plans? A representation that
+  separates *shape* from *scene identity*, in the sense of the glossary, is the thing we most
+  want to see.
+- **Measurement.** We need an instrument that scores decision repetition across two books and
+  ignores shared world, cast, and shape (1.4). Candidates we are weighing: action-semantic
+  labelling of each choice with set overlap on the labels; embedding distance over choice
+  text with setting nouns stripped; or asking a rater the narrow question "were you asked to
+  decide the same things" rather than "is this the same book." If your architecture implies a
+  different metric, say so.
+- **Model-level diversity collapse (3.7).** Two samples converged on "a sky gone properly
+  dark" with no shared input. If that floor binds, architecture may not be the lever at all,
+  and the answer is decoding-level or population-level: explicit repulsion against prior
+  outputs, determinantal point processes, model or persona ensembling. Does your design
+  assume that floor away, work around it, or attack it?
+- **How much variety is enough.** Berlyne [43] implies an optimum rather than a maximum, and
+  the series literature [46, 47, 48] says the constant layer is load-bearing. Maximizing
+  distinctness is probably wrong. Is there a principled target?
+- **Unit of reuse.** We reuse the graph *and* its scenes. If those separate, the options
+  multiply: reuse a shape and synthesize scenes; keep a scene library and recombine; reuse a
+  pattern in Ashwell's sense [1] and synthesize both; invert the order and sample the
+  decision set first, then build a shape to carry it. Which gives the most decision variety
+  per unit of human review?
+
+### 8.4 Families we have considered but not developed
+
+Listed to save you time and to be argued with, not to constrain you. We have no evidence for
+any of these; extend, combine, or dismiss them.
+
+- **Shape-only skeletons.** The reusable asset is the graph with *no* scene identities. Scene
+  content and choices are synthesized per request against typed constraints at each node.
+- **Scene library plus recombination.** Reusable assets are validated scene fragments with
+  declared preconditions and effects; a solver assembles a valid graph per request. The one
+  mechanism that ever cleared our structural-distance floor was grafting a subtree from a
+  different graph, which is a crude version of this.
+- **Grammar over patterns.** A generative grammar whose productions are Ashwell-style
+  patterns [1], emitting a fresh shape per request that is valid by construction.
+- **Planner-based.** Classical narrative planning [4] over preconditions and effects, with
+  scene content as free variables, so validity is a property of the plan rather than of a
+  reviewed artifact.
+- **Decision-first inversion.** Sample the *set of decisions* the book will ask, deliberately
+  decorrelated from decisions this child has already seen, then construct a shape that
+  carries them. This makes 1.3 the primary object rather than a downstream consequence.
+- **Explicit inter-book repulsion.** Keep the current architecture and condition generation
+  on the child's prior books with a decorrelation objective, attacking 3.7 directly rather
+  than routing around it.
 
 ---
 
 ## 9. Glossary
 
 - **Band**: an age range with its own word, reading-level, and safety envelope.
-- **Skeleton / graph**: the reusable directed graph, human-authored and reviewed.
+- **Skeleton / graph**: the reusable directed graph, human-authored and reviewed. Currently
+  fixes both the *shape* and the *scene identity* at every node; 5.2 argues those should be
+  separable.
+- **Shape**: the graph's structure alone. Which vertices exist, which edges connect them,
+  where paths reconverge, how many endings. Carries no information a reader can perceive.
+- **Scene identity**: what the scene at a given node *is*, for example "the scene where you
+  decode the note." Fixed at authoring time in our system.
+- **Action semantics**: the concrete act a choice asks the reader to perform, for example
+  "open the door", as distinct from the choice's motivation, emotional framing, or narrative
+  function. Section 1.3 argues this is the layer that must vary.
 - **Binding**: the per-request setting and cast bound into a graph's slots.
 - **Obligation contract**: per-node declaration of what a scene must establish, must not
   establish, what the reader knows on arrival, and what each choice means.
 - **Recognition position**: the reading position at which a rater judges a child would call
-  two books the same book.
+  two books the same book. Note 1.4: this measures armature detectability, not the defect.
 
 ---
 
