@@ -21,6 +21,15 @@ heavily (token Jaccard above 0.5) are flagged as near-noun-swaps (warning).
 Calibration anchor: the first pilot's three bibles score MD 0.0 on the
 clue-channel category (identical kind multisets), exactly the failure the
 scene rater found downstream.
+
+Worst-unit note (2026-08-10 external review): unlike the other three
+checkers this program is retrofitting, this one was already gating
+correctly. ``--check`` fails as soon as any single pair's MD sits below
+``--tau``, i.e. on the worst pair, never on a mean across pairs; a bible
+set with nine clean pairs and one collapsed pair already fails today. No
+gating change was needed here. The only addition is an explicit "worst
+pair" summary line so that fact is visible in the output itself rather
+than only true by construction of the loop below.
 """
 
 from __future__ import annotations
@@ -147,6 +156,10 @@ def main(argv: list[str] | None = None) -> int:
                 f"{frozen or 'none'}, free entries {free}\n"
             )
     breaches = 0
+    # #ASSUME: data-integrity: worst-pair tracking assumes at least one pair
+    # exists, guaranteed above by the len(args.bibles) < 2 early return.
+    # #VERIFY: worst is always assigned inside the loop below before use.
+    worst_pair: tuple[float, str, str] | None = None
     for (path_a, bible_a), (path_b, bible_b) in combinations(loaded.items(), 2):
         divergence = mechanic_divergence(bible_a, bible_b)
         marker = "FAIL" if divergence < args.tau else "ok  "
@@ -160,6 +173,16 @@ def main(argv: list[str] | None = None) -> int:
             sys.stdout.write(
                 f"     WARNING near-noun-swap [{category}]: {text_a!r} ~ {text_b!r}\n"
             )
+        if worst_pair is None or divergence < worst_pair[0]:
+            worst_pair = (divergence, Path(path_a).name, Path(path_b).name)
+    if worst_pair is not None:
+        worst_md, worst_a, worst_b = worst_pair
+        worst_marker = "FAIL" if worst_md < args.tau else "ok  "
+        sys.stdout.write(
+            f"worst pair: {worst_marker} MD={worst_md:.3f}  {worst_a} vs {worst_b} "
+            f"(lowest divergence = most similar; --check already gates on this "
+            f"pair, not a mean, so a set otherwise clean cannot outvote it)\n"
+        )
     if args.check and breaches:
         return 1
     return 0

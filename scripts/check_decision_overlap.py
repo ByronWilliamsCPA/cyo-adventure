@@ -50,6 +50,17 @@ pairs a human separated instantly:
 Options are aligned by choice id where ids match and by optimal bipartite
 matching on the remaining ones, because two forks may offer two, three, or
 four alternatives.
+
+Worst-fork reporting (2026-08-10 external review): ``worst_fork_family_rate``
+already exists and is gated separately from the ``action_family_rate`` mean
+(see the #CRITICAL note on the 0.486-vs-0.67/0.75/0.75/1.00 measurement
+below). Tradeoff and consequence reuse were still mean-only scores with no
+worst-fork counterpart, so the same treatment is applied to both:
+``worst_fork_tradeoff_rate`` and ``worst_fork_consequence_rate``, each
+reported with the node id it came from and each gated via its own
+``--max-worst-fork-*-rate`` flag, defaulted to the same 0.5 ceiling as
+family on the grounds that a reader's first hard forks deserve the same
+scrutiny regardless of which axis repeats.
 """
 
 from __future__ import annotations
@@ -66,6 +77,8 @@ _FAMILY_RATE_CEILING = 0.6
 _SEQUENCE_CEILING = 0.6
 _WORST_FORK_CEILING = 0.5
 _TRADEOFF_CEILING = 0.6
+_WORST_FORK_TRADEOFF_CEILING = 0.5
+_WORST_FORK_CONSEQUENCE_CEILING = 0.5
 
 
 def _decisions(contract: dict[str, Any]) -> dict[str, dict[str, dict[str, str]]]:
@@ -133,7 +146,7 @@ def _best_alignment(
 
 def compare(
     left: dict[str, Any], right: dict[str, Any]
-) -> tuple[dict[str, float], list[str]]:
+) -> tuple[dict[str, float], list[str], dict[str, str]]:
     """Compare two contracts' decision programs.
 
     Args:
@@ -141,7 +154,11 @@ def compare(
         right: The other decoded contract.
 
     Returns:
-        A (scores, notes) pair.
+        A (scores, notes, worst_nodes) triple. ``worst_nodes`` maps
+        ``"family"``, ``"tradeoff"``, and ``"consequence"`` to the node id
+        whose fork carried the highest reuse rate on that axis (empty
+        string when no shared node exists), so the worst-fork scores are
+        actionable rather than bare numbers.
     """
     a, b = _decisions(left), _decisions(right)
     # #CRITICAL: data-integrity: a node offering ONE option is not a decision, it
@@ -161,7 +178,11 @@ def compare(
     skipped = sorted((set(a) & set(b)) - set(shared_nodes))
     notes: list[str] = []
     if not shared_nodes:
-        return {}, ["no node declares a multi-option decisions block in both contracts"]
+        return (
+            {},
+            ["no node declares a multi-option decisions block in both contracts"],
+            {},
+        )
     if skipped:
         notes.append(
             f"  excluded {len(skipped)} single-option node(s), not decisions: "
@@ -170,7 +191,23 @@ def compare(
 
     total_options = 0
     exact = family = tradeoff = consequence = 0
+    # #CRITICAL: data-integrity: worst_family/tradeoff/consequence must track
+    # WHICH node produced the max, not only the value, or the worst-fork
+    # score is unactionable (a bare number a reviewer cannot go open). An
+    # earlier version of this file derived the node id after the fact by
+    # regexing notes for the string "same action family", which silently
+    # returned the FIRST matching node in shared_nodes order rather than the
+    # actual argmax whenever two nodes tied or the true worst node's note
+    # text did not match the search string (as would happen for tradeoff or
+    # consequence, which never wrote that note at all).
+    # #VERIFY: each worst_* value and its *_node id are updated together, in
+    # the same branch, so they can never point at different nodes.
     worst_family = 0.0
+    worst_family_node = ""
+    worst_tradeoff = 0.0
+    worst_tradeoff_node = ""
+    worst_consequence = 0.0
+    worst_consequence_node = ""
     for node_id in shared_nodes:
         la, lb = a[node_id], b[node_id]
         options = max(len(la), len(lb))
@@ -179,10 +216,21 @@ def compare(
         exact += hits
         fam_hits = _best_alignment(la, lb, "action_family")
         family += fam_hits
-        tradeoff += _best_alignment(la, lb, "tradeoff")
-        consequence += _best_alignment(la, lb, "consequence")
+        tradeoff_hits = _best_alignment(la, lb, "tradeoff")
+        tradeoff += tradeoff_hits
+        consequence_hits = _best_alignment(la, lb, "consequence")
+        consequence += consequence_hits
+
         rate = fam_hits / float(options)
-        worst_family = max(worst_family, rate)
+        if rate > worst_family:
+            worst_family, worst_family_node = rate, node_id
+        tradeoff_rate = tradeoff_hits / float(options)
+        if tradeoff_rate > worst_tradeoff:
+            worst_tradeoff, worst_tradeoff_node = tradeoff_rate, node_id
+        consequence_rate = consequence_hits / float(options)
+        if consequence_rate > worst_consequence:
+            worst_consequence, worst_consequence_node = consequence_rate, node_id
+
         if hits:
             notes.append(
                 f"  {node_id}: {hits} option(s) ask the same decision "
@@ -218,8 +266,15 @@ def compare(
             "consequence_rate": consequence / denom,
             "ordered_sequence_rate": seq_match / float(len(shared_nodes) or 1),
             "worst_fork_family_rate": worst_family,
+            "worst_fork_tradeoff_rate": worst_tradeoff,
+            "worst_fork_consequence_rate": worst_consequence,
         },
         notes,
+        {
+            "family": worst_family_node,
+            "tradeoff": worst_tradeoff_node,
+            "consequence": worst_consequence_node,
+        },
     )
 
 
@@ -249,6 +304,29 @@ def main(argv: list[str] | None = None) -> int:
             "external review identified as the failure a surface metric misses."
         ),
     )
+    parser.add_argument(
+        "--max-worst-fork-tradeoff-rate",
+        type=float,
+        default=_WORST_FORK_TRADEOFF_CEILING,
+        help=(
+            "Ceiling on the single fork with the most repeated tradeoff, "
+            "same treatment as --max-worst-fork-family-rate: --max-tradeoff-"
+            "rate is a mean across every shared fork and can pass while the "
+            "forks a reader meets first offer the identical bargain twice."
+        ),
+    )
+    parser.add_argument(
+        "--max-worst-fork-consequence-rate",
+        type=float,
+        default=_WORST_FORK_CONSEQUENCE_CEILING,
+        help=(
+            "Ceiling on the single fork with the most repeated consequence. "
+            "consequence_rate itself is reported but not gated as a mean "
+            "(pre-existing behavior, unchanged here); this worst-fork gate "
+            "is additive and catches a concentrated repeat that a mean, "
+            "gated or not, would still average away."
+        ),
+    )
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args(argv)
 
@@ -256,10 +334,7 @@ def main(argv: list[str] | None = None) -> int:
         cast("dict[str, Any]", json.loads(Path(p).read_text(encoding="utf-8")))
         for p in args.contracts
     )
-    scores, notes = compare(left, right)
-    worst_node = next(
-        (n.strip().split(":")[0] for n in notes if "same action family" in n), ""
-    )
+    scores, notes, worst_nodes = compare(left, right)
     if not scores:
         for note in notes:
             sys.stderr.write(f"{note}\n")
@@ -268,6 +343,15 @@ def main(argv: list[str] | None = None) -> int:
     for key, value in scores.items():
         shown = f"{value:.0f}" if value.is_integer() and "rate" not in key else f"{value:.3f}"
         sys.stdout.write(f"{key:24s} {shown}\n")
+    sys.stdout.write(
+        f"{'worst_fork_family_node':24s} {worst_nodes['family'] or 'n/a'}\n"
+    )
+    sys.stdout.write(
+        f"{'worst_fork_tradeoff_node':24s} {worst_nodes['tradeoff'] or 'n/a'}\n"
+    )
+    sys.stdout.write(
+        f"{'worst_fork_consequence_node':24s} {worst_nodes['consequence'] or 'n/a'}\n"
+    )
     for note in notes:
         sys.stdout.write(f"{note}\n")
 
@@ -284,12 +368,24 @@ def main(argv: list[str] | None = None) -> int:
         )
     if scores["worst_fork_family_rate"] > args.max_worst_fork_family_rate:
         breaches.append(
-            f"worst fork ({worst_node or 'n/a'}) family rate "
+            f"worst fork ({worst_nodes['family'] or 'n/a'}) family rate "
             f"{scores['worst_fork_family_rate']:.3f} > {args.max_worst_fork_family_rate}"
         )
     if scores["tradeoff_rate"] > args.max_tradeoff_rate:
         breaches.append(
             f"tradeoff rate {scores['tradeoff_rate']:.3f} > {args.max_tradeoff_rate}"
+        )
+    if scores["worst_fork_tradeoff_rate"] > args.max_worst_fork_tradeoff_rate:
+        breaches.append(
+            f"worst fork ({worst_nodes['tradeoff'] or 'n/a'}) tradeoff rate "
+            f"{scores['worst_fork_tradeoff_rate']:.3f} > "
+            f"{args.max_worst_fork_tradeoff_rate}"
+        )
+    if scores["worst_fork_consequence_rate"] > args.max_worst_fork_consequence_rate:
+        breaches.append(
+            f"worst fork ({worst_nodes['consequence'] or 'n/a'}) consequence rate "
+            f"{scores['worst_fork_consequence_rate']:.3f} > "
+            f"{args.max_worst_fork_consequence_rate}"
         )
     if scores["ordered_sequence_rate"] > args.max_sequence_rate:
         breaches.append(
