@@ -24,13 +24,30 @@ identically-shaped obligation, with facts that were largely direct renames
 annotator, labelling the resulting choices blind, judged 28 of 28 to be the
 same decision. This checker predicts that verdict from the contracts alone.
 
-**Why it beats annotating the choices.** It is deterministic, needs no model,
-no labelling principle, and no annotator agreement study, and it runs before a
+**Why it is worth running first.** It is deterministic, needs no model, no
+labelling principle, and no annotator agreement study, and it runs before a
 single word of prose exists. A signature-based measure of the same property is
 Class C, costs a model call per choice, and is only as good as an unstated
 labelling convention: the same two artifacts scored 0.179 and 1.000 on tradeoff
 reuse depending purely on who annotated them (AL-188). Use this first, and
 spend annotation only on what survives it.
+
+**It is a one-way screen, and the false-negative direction is measured, not
+theoretical.** A high same-shape rate is strong evidence the decisions repeat.
+A low one is *not* evidence they differ. A third contract over this same graph
+was written specifically to break the obligation structure and succeeded on
+this checker's own terms, scoring same-shape rate 0.000 with zero one-for-one
+renames, meaning the fact graph was rebuilt rather than repainted. Two blind
+annotators then labelled it against the original and returned 28 of 28 options
+asking the same decision, with action-family, tradeoff, consequence and
+ordered-sequence rates all at 1.000 (AL-197).
+
+So a passing score here buys nothing on its own. Treat this as a cheap way to
+reject a contract before spending a fill, never as a certificate that a
+contract varies the decisions; only independent annotation can say that. The
+leading reading of the counterexample is that the decision space at a fork is
+genuinely small (learn something, spend physical effort, or ask a person), in
+which case no rearrangement of facts over a fixed graph can move it.
 
 Reports the shape comparison (fully deterministic) and a rename analysis (a
 weaker signal, since a genuinely new fact and a renamed one are not always
@@ -144,9 +161,7 @@ def compare(
             same_shape += 1
         if owed_a == owed_b:
             identical += 1
-            notes.append(
-                f"  {key[0]}.{key[1]}: identical obligation {sorted(owed_a)}"
-            )
+            notes.append(f"  {key[0]}.{key[1]}: identical obligation {sorted(owed_a)}")
         elif len(owed_a) == 1 and len(owed_b) == 1:
             # A one-for-one swap at the same branch is the signature of a
             # renamed fact rather than a new commitment. Collected, not gated:
