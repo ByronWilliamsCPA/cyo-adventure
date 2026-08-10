@@ -10,6 +10,8 @@ import {
   GUARDIAN_CONSOLE_PATH,
   GUARDIAN_LOGIN_PATH,
   KID_PICKER_PATH,
+  PRIVACY_PATH,
+  SUPPORT_PATH,
 } from '../routes'
 import { ThemeToggle } from '../theme/ThemeToggle'
 
@@ -143,6 +145,22 @@ export function LandingPage() {
           Get started
         </Link>
       </p>
+      {/* The public privacy and support pages, linked from the one page every
+          visitor lands on. Both are registered with Epic's Kids Web Services
+          (ADR-018 D1), so they must be discoverable from the site itself and
+          not only by anyone holding the direct URL: a policy reachable only
+          through a third party's consent screen is not published in any sense
+          a parent would recognise. */}
+      <footer className="landing__footer">
+        <nav aria-label="About this app">
+          <Link className="landing__footer-link" to={PRIVACY_PATH}>
+            Privacy
+          </Link>
+          <Link className="landing__footer-link" to={SUPPORT_PATH}>
+            Support
+          </Link>
+        </nav>
+      </footer>
     </main>
   )
 }

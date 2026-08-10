@@ -163,6 +163,17 @@ export const DevicesPage = lazyWithReload('DevicesPage', () =>
 export const PrivacyPage = lazyWithReload('PrivacyPage', () =>
   import('./guardian/PrivacyPage').then((m) => ({ default: m.PrivacyPage }))
 )
+// Public legal/support surfaces. Separate chunks from the guardian pages above
+// and from each other: they are reached by signed-out visitors (and by Epic's
+// KWS, which holds their URLs), so neither should drag the guardian/Supabase
+// bundle in behind it. Note PrivacyPolicyPage is NOT the same page as
+// PrivacyPage directly above; see each component's docstring.
+export const PrivacyPolicyPage = lazyWithReload('PrivacyPolicyPage', () =>
+  import('./legal/PrivacyPolicyPage').then((m) => ({ default: m.PrivacyPolicyPage }))
+)
+export const SupportPage = lazyWithReload('SupportPage', () =>
+  import('./legal/SupportPage').then((m) => ({ default: m.SupportPage }))
+)
 export const AdminShell = lazyWithReload('AdminShell', () =>
   import('./admin/AdminShell').then((m) => ({ default: m.AdminShell }))
 )

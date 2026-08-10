@@ -35,6 +35,27 @@ export const GUARDIAN_UNAVAILABLE_PATH = '/guardian/unavailable'
 export const KID_PICKER_PATH = '/kids'
 
 /**
+ * Public privacy policy and support pages.
+ *
+ * #CRITICAL: security: these two MUST stay outside every auth gate. Both are
+ * registered with Epic's Kids Web Services (ADR-018 D1) as our Privacy Policy
+ * and Support URLs, and a parent follows them mid-verification with no account
+ * and no session. Nesting either under ProtectedRoute would send that parent to
+ * a login page from a third-party consent flow, which reads as a phishing
+ * redirect and is the failure this constant's placement exists to prevent.
+ * Note the distinction from `/guardian/privacy`, which is a different page: the
+ * signed-in G11 trust surface, which stays gated on purpose.
+ * #VERIFY: router.test.tsx walks the exported route config and asserts the
+ * chain of components between the tree root and each of these two paths
+ * contains no gate, with a positive control so the assertion cannot pass by
+ * failing to see gates at all. The paired page tests are the weaker companion
+ * claim: they render each page with no auth provider mounted, which proves the
+ * component needs no session but says nothing about where the route sits.
+ */
+export const PRIVACY_PATH = '/privacy'
+export const SUPPORT_PATH = '/support'
+
+/**
  * Guardian console root. The landing page links here (not to the login page)
  * so ProtectedRoute decides: signed-out visitors bounce to login, a
  * signed-in guardian lands straight on the console.
