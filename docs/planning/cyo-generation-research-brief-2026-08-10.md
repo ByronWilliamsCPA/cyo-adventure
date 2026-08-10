@@ -5,6 +5,11 @@
 > in section 9 and no claim depends on inspecting our code. Its purpose is to get independent
 > theorizing on a problem we have attacked from ten directions without solving.
 >
+> **Part II, added 2026-08-10**, reports what we ran after two external reviews came back,
+> including a finding that our own measurement instrument ranks book pairs in the opposite
+> order from readers. Part I is left unchanged so it remains the document those reviews
+> responded to; corrections to it are collected in section 17 rather than edited in place.
+>
 > **Citations.** Every reference in section 10 was verified against a primary source
 > (publisher page, ACL Anthology, or proceedings entry). Six entries in an earlier draft were
 > wrong and are corrected here; two claims that could not be verified were removed rather
@@ -828,3 +833,250 @@ All entries verified against a primary source.
     Administration*.
 52. Scholastic. *Kids & Family Reading Report*, 8th edition (2024). 93% of children agree
     "my favorite books are the ones I have picked out myself."
+
+---
+
+## Part II. Results since this brief was circulated
+
+> Added 2026-08-10, after two external reviewers returned candidate architectures. Part I above
+> is unchanged, so it remains the document those reviews responded to. This part reports what we
+> ran, what it cost us in wasted rounds, and the two findings that change what we would ask next.
+> Like Part I it is written to be read without access to our code.
+
+## 11. What we did with the reviews
+
+Both reviewers, independently, named the same first step, and neither proposed building anything
+before it: **manually author a different decision program over one unchanged graph and see whether
+readers notice.** That is precisely the untested cell of 5.3. We ran it.
+
+Design. One 26-node graph, held fixed. Three complete books over it:
+
+| | Goal | World | Puzzle the book is indexed by | Role |
+| --- | --- | --- | --- | --- |
+| Book A | prove-and-earn | river lock-house | arithmetic: add two numbers, carry past twelve | base |
+| Book B | reconstruct-and-remember | bell foundry | rhythm: read pulls as long or short | **control** |
+| Book C | salvage-and-triage | river lock-house | drawn outlines: match a silhouette to the object | **treatment** |
+
+The control pair is A against B, which is what our existing pipeline already produces: change the
+world wholesale, keep the decisions. The treatment pair is A against C, which varies the acts
+offered while **keeping the world A uses**. The treatment therefore carries a handicap the control
+does not, which was deliberate: it is the actual series condition, and it biases the comparison
+against the treatment.
+
+Instrument. Two rater instances, each rating both pairs, in opposite pair orders, blind to the
+design, answering six questions per pair and then a forced choice of which pair asked the reader to
+do more similar things. The sixth question is new and is discussed in 13.2.
+
+## 12. Two preparation failures, reported because they would catch anyone
+
+Two rounds were run and discarded before the round that counted. Both passed every automated guard
+we had. Anyone attempting this comparison should expect both.
+
+**Failure one: the fill shell leaked the control's vocabulary.** Our authoring shells carried the
+skeleton's own choice labels. Thirteen of thirty-five of those labels contain no substitutable
+slot, so they reach the author as fixed text from an unrelated book. The author rewrote all
+thirty-five labels and still stayed inside the frame it had been handed, turning "force the hands
+by guesswork" into "force the hands into place instead" for a story with no clock in it. Every
+guard passed. Shared four-gram density between the two books hit 28.8 per thousand words, the
+highest we have ever measured, with four choice menus opening on identical wording. Rebuilding the
+shell so that every author-controlled string is an explicit blank took the same pair to 8.9 and
+zero.
+
+**Failure two: the two books shared their props.** The treatment book's binding reused fourteen of
+twenty-four concrete devices from the control base, including the code the whole book is indexed
+by. Two blind raters both named exactly those props as their decisive evidence, and one said that
+removing two of the affected forks would have left the pairs indistinguishable. That round measured
+our binding, not our contract.
+
+Only six of the fourteen shared props sat at the same node. The other eight were the same props
+**relocated**, which a same-position comparison scores as fresh, and which one rater described
+unprompted as reading like variety fork by fork while being pure rearrangement at the book level.
+Any collision check must therefore compare every prop against every prop, not position against
+position.
+
+The general lesson, and the reason we report it: **sharing a world is the series contract and must
+never be penalised, but sharing the devices inside that world reads to a reader as the same book.**
+Those two are easy to conflate when holding the world fixed is a deliberate part of the design.
+
+## 13. The result
+
+### 13.1 Readers: the treatment is less decision-repetitive, thinly
+
+Both raters, in opposite orders, chose the **control** pair as the more decision-repetitive one.
+Scores are (rater 1, rater 2), where a high score is bad except where marked.
+
+| Question | Control A/B | Treatment A/C |
+| --- | --- | --- |
+| Same kinds of actions | 5, 5 | 4, 5 |
+| Same tradeoffs | 5, 5 | **4, 4** |
+| Different consequences *(high good)* | 2, 2 | **3, 3** |
+| Repeated sequence | 5, 5 | 5, 5 |
+| Meaningful and informed *(high good)* | 3, 4 | 4, 4 |
+| Solution transfer *(high bad)* | 4, 4 | **3, 3** |
+| Forced comparison | **more similar** | less similar |
+
+Both converged unprompted on the same three decisive forks and on the same mechanism: the control
+changes every noun and almost no decision, while the treatment keeps the nouns and changes the act.
+Both books in the control pair decode a notation and set a brass dial at the top of a tower; the
+treatment checks an object's orientation against a full-size drawing and seats it at a bench.
+
+**Both also called the effect thin**, and we report it as thin: "three re-skins of one graph",
+separation resting on three forks out of eleven, one rater at medium confidence. One rater added
+that the treatment would *feel* more repetitive to a child than it scores, because it reuses the
+world, and that the verdict flips if shared world is counted against a book. Under the definition
+in 1.3 it must not be, so the treatment wins while carrying the heavier load.
+
+### 13.2 The raters designed the only question that worked
+
+The instrument of Part I asked five questions. Both raters of a discarded round independently
+reported that two of them saturate: with all books on one graph, "same kinds of actions" and
+"repeated sequence" are answered before a word is read. Both then proposed **the same missing
+question, without conferring**: *did solving the first book hand you the answer to the second?*
+
+We added it. On first use the two structural questions saturated exactly as predicted, contributing
+nothing, and the new question separated the pairs cleanly and consistently. Anyone building an
+instrument for this defect should start there rather than with action taxonomies.
+
+### 13.3 The treatment bundled more than one change
+
+Stated against our own interest: the treatment differs from the control base in at least three
+ways, not one. It varies the kind of act, it gives four otherwise-decorative rooms a distinct
+component each, and it imposes a live global constraint (a closing clock and a carrying limit, and
+damage that persists) that re-prices every fork. Raters cited the act at one fork and the stakes at
+two. **We cannot presently attribute the effect to decision variation alone.**
+
+The stake observation was not something we had proposed and is now a candidate lever in its own
+right: in the control pair, forcing a mechanism is a free retry in both books, and in the treatment
+it costs something. That is a property of the consequence graph rather than of the choice.
+
+## 14. The main finding: our measurement instrument ranks the pairs backwards
+
+We had built a deterministic decision-overlap score on top of blind human annotation, precisely to
+avoid trusting raters alone. Annotators received each book's plan stripped of prior annotations,
+neutrally named, with no knowledge of what was being compared or which was the control, and applied
+a written convention whose decisive rule is that two choices asking the reader to do the same thing
+get the same labels however the story dresses them.
+
+| Measure | Control pair | Treatment pair |
+| --- | --- | --- |
+| Same-decision reuse, one annotator over all three plans | 24 / 28 | **28 / 28** |
+| Action-family reuse | 0.929 | **1.000** |
+| Tradeoff reuse | 0.893 | **1.000** |
+| Ordered-sequence reuse | 0.909 | **1.000** |
+| Two blind readers of the finished books | **more repetitive** | less repetitive |
+
+**The instrument ranks the two pairs in the opposite order from readers, on every axis.**
+Replicated across three independent annotators. It is not unreliability: inter-annotator Fleiss
+kappa on the same artifacts is 0.96 on action family and 1.00 on consequence.
+
+This is the result we would most like reviewers to sit with, because it invalidates a scoring
+approach that both reviews assumed. An architecture that emits decision signatures and is selected
+on them would, on this evidence, select the pattern readers liked least.
+
+## 15. Why it inverts, and why that is worse news than a coarse vocabulary
+
+Our first diagnosis was that the vocabulary was too coarse. We tested that directly by enriching
+it: we added a **reasoning-kind** dimension (compute, match, recall, infer, perceive, negotiate,
+exert) and a **stake** dimension (nothing, time, resource, access, standing, permanent), and had
+two fresh blind annotators relabel all three plans.
+
+**Enrichment changed nothing.** Reasoning-kind inverted exactly as action-family had, under both
+annotators, and stake tied. Zero and one of six fields respectively ordered the pairs as readers
+did. The new fields were perfectly labellable, with kappa 0.77 to 0.81 on reasoning-kind and 0.72
+on stake. They were reliable and uninformative at the same time.
+
+The cause is verifiable without any annotator. Here is the decisive fork as our plans describe it:
+
+- Book A: "answer the test on its own terms, set it deliberately"
+- Book C: "fit the piece the way the diagram shows, deliberately"
+
+An annotator following the convention correctly calls those the same decision, because **at the
+plan layer they are the same decision.** Adding two numbers and carrying, against holding a part
+against its outline to see which way round it goes, is a distinction that lives in the book's
+**binding**, one layer below the artifact being annotated. Our plans are deliberately
+device-agnostic so that one plan can be bound many ways, and that abstraction is exactly what
+discards the property readers respond to.
+
+We then re-ran the identical annotation with each plan's binding attached. Reasoning-kind became
+the one field of six that orders the pairs as readers did. Restricting to the six forks the book's
+code actually runs through, which our own world recipe defines in advance as running "from the
+notice to the bench to the back panel", one annotator scored the control at 1.000 reuse and the
+treatment at 0.000: the control's two books bind *different* codes that are the *same kind of
+thinking*, so they carry identical reasoning kinds down the whole chain.
+
+**We are not claiming this as a solved metric.** A second annotator reproduced the direction and
+lost most of the magnitude (0.333 against 0.167), and over the full option set tied. The
+disagreement is localised to one unwritten boundary: is decoding a symbolic notation "compute" or
+"match"? Kappa on reasoning-kind is 1.00 on the arithmetic book and 0.92 on the drawn-outline book,
+but 0.72 on the rhythm book, and that single call decides most of the effect. Sharpening the
+definition would resolve the ambiguous case in whichever direction we wrote it, so we are treating
+that as a reliability fix that cannot re-confirm the hypothesis on these same three books.
+
+## 16. What this does to the architectures you proposed
+
+Between the two reviews we received seven candidate architectures. The layer finding in 15 cuts
+across them in a way none of us anticipated, so we set it out plainly rather than quietly
+re-ranking.
+
+**Three architectures plan decision variety at the layer that provably omits the property.**
+Decision-first abstract routing, the decision-program compiler on a fixed topology, and our own
+decision-axis scheduling all schedule decisions over device-agnostic plans. On this evidence those
+plans cannot express the difference between arithmetic and shape-matching, which is what our raters
+actually responded to. This is a defect in the specifications rather than in our instrument, and we
+think each needs re-specifying to plan over the plan-and-binding pair.
+
+**Two repulsion architectures inherit the scoring problem.** Repulsive generation via obligation
+contracts, and portfolio generation with semantic repulsion, both optimise a novelty objective over
+decision semantics. Section 14 says that objective currently points the wrong way. Neither is
+refuted, but neither can be evaluated until the objective is fixed.
+
+**Two library architectures are untouched by this finding.** The typed choice-capsule library and
+component-based narrative assembly do not depend on scoring decision signatures, and the capsule
+proposal's instinct that the reusable unit is a fork-to-join package rather than a scene is
+consistent with everything above. We have not tested either.
+
+One reviewer's specific prediction is worth recording as unresolved: that extracting choice text
+and stripping setting nouns would separate books by embedding distance. Our results suggest the
+separation would be small, because the acts remain the same after noun-stripping, but we have not
+run it.
+
+## 17. Corrections to Part I
+
+- **5.3's "untested cell" has been tested**, and the result is not the simple one either reading
+  predicted. Varying the acts offered does reduce perceived decision repetition, thinly, but it is
+  much harder to do on a fixed graph than we assumed, and our first two attempts to do it failed
+  while appearing to succeed.
+- **A hypothesis we advanced after Part I and have since refuted:** that the graph plus fact-graph
+  closure pins the decisions, so a branch's obligations determine its decision. We built a
+  deterministic checker for this and it reproduced two known failures. Book C then rebuilt the fact
+  graph completely, scoring zero on that checker, and blind annotation still called 28 of 28
+  options the same decision. The checker is a one-way screen: a high score is evidence the
+  decisions repeat, a low score is no evidence they differ.
+- **3.8 understated the problem.** It said our instruments were a source of error. Section 14 shows
+  one of them was anti-correlated with the judgement it existed to predict, which is a stronger
+  claim than "noisy".
+- **A product judgment we withdrew.** Both raters reported that most forks on this graph reconverge
+  with no differing consequence and called it illusory choice. Our own product owner rejected the
+  framing: loop-back exploration paths are a convention of the form, on the analogy that in tabletop
+  play a party sweeps every room precisely because some rooms are empty and you cannot know which
+  without looking. The structural observation stands and the defect framing does not.
+
+## 18. What we would ask you now
+
+The question in section 8 has moved. We no longer think the primary open problem is which
+architecture to build. It is this:
+
+**At what layer must a story plan be specified so that the property readers respond to is
+representable in it, while the plan stays reusable across many books?** Our plans are
+device-agnostic in order to be reusable, and that abstraction discards what readers notice. Binding
+the devices into the plan restores the property and destroys the reuse. We do not know whether
+there is a middle representation, and every architecture proposed to us sits on one horn or the
+other of it without naming the dilemma.
+
+Two subsidiary questions we would value:
+
+1. Is there a formulation of "solution transfer" computable from a plan-and-binding pair? It is
+   what our raters used, it is the only instrument item that discriminated, and it is not obviously
+   the same thing as decision-signature overlap.
+2. Our treatment bundled act-kind, stake economics, and per-room payoff. If you had to spend one
+   experiment separating those three, which would you isolate first, and why?

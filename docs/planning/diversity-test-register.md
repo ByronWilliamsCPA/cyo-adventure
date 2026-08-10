@@ -15,6 +15,11 @@ been wrong in both directions on this programme, so they are recorded rather tha
 **Every row names what would falsify it.** A test with no falsifier is a demonstration, and a
 demonstration cannot change anyone's mind. Rows that cannot state one are marked as such.
 
+**Results flow into the paper.** Every row that reaches `done` must also be reflected in Part II
+of [the research brief](./cyo-generation-research-brief-2026-08-10.md), which is the document
+external reviewers read. A result recorded here but absent there is half-delivered: this file
+tracks the work, that one is the work's account of itself.
+
 **Sources.** `R1-*` and `R2-*` are the two external reviewers' candidate architectures, `M-*` are
 the three options identified in-house, `Q-*` are the open questions in
 [cyo-framework-problem-and-structures](./cyo-framework-problem-and-structures-2026-08-10.md)
