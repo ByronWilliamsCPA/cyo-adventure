@@ -438,10 +438,27 @@ verification succeeded and we did not record it*, and no amount of origin-side o
 distinguishes those two, because both produce the same absence on our side. Read the parent's inbox
 as a third log, alongside the origin and the edge. It is the only one written by the vendor.
 
-The state it documents is the one the insert-before-send ordering was built for: four adults are
-verified as far as Epic is concerned, and this application holds zero consent records. The rows
-still name the attempts, which is exactly what stops each of these being unattributable forever, so
-the ordering did its job even though nothing resolved.
+**This third log exists in Test only, and its absence in production is a gap rather than a
+detail.** We can read the mailbox here for one reason: Epic requires the Test address to be an
+organization developer or admin address, or an alias of one, so the parent and the operator are the
+same person by construction. In production they are not, the mailbox belongs to a stranger, and
+nothing in it is queryable by us.
+
+Carry the consequence forward rather than the technique. In production, a verification that succeeds
+at KWS whose webhook never arrives leaves **no signal on any log we can read**: the origin log has
+nothing, the edge log has nothing once the rule is right, and the parent holds a confirmation email
+saying we were told. The only surviving trace is a `kws_verification` row resting at `sent` forever,
+which is precisely why that row is written and committed before the outbound call. Gate 2 and Gate 3
+therefore owe a mechanism that treats a long-unresolved `sent` row as an alert rather than as
+silence, because in production that row is the entire detection surface. Do not let a Test run's
+easy confirmation stand in for building it.
+
+The state all of this documents is the one the insert-before-send ordering was built for: four
+verifications are complete as far as Epic is concerned, and this application holds zero consent
+records. Four verifications, not four adults: every run used the same operator address, which is
+the same constraint that makes the mailbox readable at all. The rows still name the attempts, which
+is exactly what stops each of these being unattributable forever, so the ordering did its job even
+though nothing resolved.
 
 Two cautions the email itself raises:
 
