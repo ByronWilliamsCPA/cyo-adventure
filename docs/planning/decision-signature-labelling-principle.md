@@ -77,6 +77,39 @@ For a comparison, the annotator should receive the artifacts stripped of prior
 annotations, renamed neutrally, with no indication of which is the control or that
 divergence is the goal.
 
+## Measured agreement under this principle (v1, 2026-08-10)
+
+Two independent annotators, each given only the contract and the rules above, with no
+knowledge of what was being compared:
+
+| Field | Fleiss' kappa | Band | Raw agreement |
+| --- | --- | --- | --- |
+| `action_family` | 0.796 | substantial | 0.857 |
+| `target_role` | 0.816 | almost perfect | 0.857 |
+| `tradeoff` | 0.758 | substantial | 0.829 |
+| `consequence` | 0.758 | substantial | 0.829 |
+
+n = 35 choices, 0 dropped. All four fields clear the 0.60 floor, so all four may carry
+decision weight under v1 of this principle.
+
+**This reframes the 0.179-versus-1.000 failure.** That gap was never annotator
+unreliability: two independent annotators following a written rule agree substantially.
+It was the author scoring its own work. The fix is therefore independence and a written
+convention, not a richer vocabulary or a better model.
+
+**Vocabulary gaps both annotators raised independently**, which is the evidence for a v2:
+
+- No family separates "search a mechanism for a hidden alternative" from "read a
+  document"; both collapse into `INFORMATION`.
+- No `tradeoff` names a public-versus-private axis, which is exactly the fork where a
+  book decides whether to make a discovery public. `LOYALTY_VS_TRUTH` is the nearest fit
+  and is not a good one.
+- `consequence: LOCATION` does double duty for "you are in a new room" and "you have
+  progressed toward the goal".
+
+Two annotators reaching the same three complaints without conferring is a stronger
+signal than either one alone, and any v2 should start there.
+
 ## Before any signature metric routes anything
 
 Run `scripts/check_annotator_agreement.py` over at least two independent annotations of
