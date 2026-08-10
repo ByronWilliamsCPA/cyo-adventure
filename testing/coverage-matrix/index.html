@@ -3417,6 +3417,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#public-privacy-policy-and-support-signed-out" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Public: privacy policy and support (signed-out)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#guardian-invite-a-co-parent-self-serve" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4104,6 +4115,24 @@ guardian acts on what it says.</p>
 <li>E2E-mocked: <code>frontend/e2e/guardian-privacy.spec.ts</code> (the page reached in the routed app: its load-bearing claims render, the guardian-shell nav links resolve to their real hrefs with Profiles click-tested through, and an unauthenticated visit redirects to guardian login)</li>
 <li><strong>Gap</strong>: no <code>e2e-real</code>, <code>e2e-staging</code>, or <code>e2e-prod</code> coverage. The page is static and its claims are pinned at the component tier, so the higher tiers would only re-assert that a link navigates.</li>
 </ul>
+<h2 id="public-privacy-policy-and-support-signed-out">Public: privacy policy and support (signed-out)<a class="headerlink" href="#public-privacy-policy-and-support-signed-out" title="Permanent link">&para;</a></h2>
+<p>The two pages at <code>/privacy</code> and <code>/support</code>, reachable with no account and no
+session. These are the URLs registered with Epic's Kids Web Services (ADR-018
+D1), so the reader is often a parent partway through a third-party verification
+flow rather than someone already inside the app.</p>
+<p>Two distinct risks are covered here, and they need different tiers. The first is
+placement: a gate on either route would bounce a mid-verification parent to a
+login page from a consent flow, which reads as a phishing redirect. That is a
+property of the route config, not of the components, so it is asserted against
+the config. The second is claim accuracy: a privacy policy that overclaims is
+acted on by parents and is a regulatory exposure in its own right, so the tests
+pin both the load-bearing claims and the claims deliberately withheld.</p>
+<ul>
+<li>Component: <code>frontend/src/legal/PrivacyPolicyPage.test.tsx</code> (renders with no auth provider mounted; pins the contact route against the shared constant, the never-collected-from-a-child list including location, the Epic recipient row naming both the parent email and the child's country, the hard-fail wording for the PII guard rather than a removal claim, and the four claims held back pending counsel or unfinished work: per-purpose GDPR legal basis, processor-only use, a named transfer mechanism, and re-consent on material change), <code>frontend/src/legal/SupportPage.test.tsx</code> (same signed-out render, contact route, and the FAQ entries that restate policy claims)</li>
+<li>Config: <code>frontend/src/router.test.tsx</code> (structural assertions over the exported route config without rendering: both public paths resolve outside every gate, with a positive control on a known-gated guardian route so the public assertions cannot pass vacuously)</li>
+<li>E2E-mocked: <code>frontend/e2e/visual.spec.ts</code> (the landing footer that links to both pages is inside the landing-page visual baseline)</li>
+<li><strong>Gap</strong>: no <code>e2e-real</code>, <code>e2e-staging</code>, or <code>e2e-prod</code> coverage, and no test asserts the pages resolve over HTTP for a signed-out client against a deployed environment. That is the assertion KWS actually depends on; the component tier proves the components need no session, not that the deployed URL answers.</li>
+</ul>
 <h2 id="guardian-invite-a-co-parent-self-serve">Guardian: invite a co-parent (self-serve)<a class="headerlink" href="#guardian-invite-a-co-parent-self-serve" title="Permanent link">&para;</a></h2>
 <p>The guardian's own way to add a second adult to the family, from the guardian
 console, without an app admin doing it for them. It is the same
@@ -4465,7 +4494,11 @@ in their journey sections instead.</p>
   than only a state update, and the key is profile-scoped so one child's larger
   text does not follow another)</li>
 <li>App shell / infrastructure: <code>frontend/src/AppErrorBoundary.test.tsx</code>,
-  <code>frontend/src/routeElements.test.tsx</code>, <code>frontend/src/lazyWithReload.test.ts</code>,
+  <code>frontend/src/routeElements.test.tsx</code>, <code>frontend/src/router.test.tsx</code>
+  (structural assertions over the route config with no rendering: which gate
+  components stand between the tree root and each leaf URL, carrying a positive
+  control on a known-gated route so an ungated-looking result means ungated
+  rather than broken detection), <code>frontend/src/lazyWithReload.test.ts</code>,
   <code>frontend/src/observability.test.ts</code>, <code>frontend/src/env.test.ts</code> (table test
   pinning <code>flagEnabled</code>'s exact contract, the switch behind every feature flag:
   only the lowercase literal <code>"true"</code> is on, so <code>"TRUE"</code>/<code>"True"</code>/<code>"1"</code>/<code>"yes"</code>/
@@ -4531,7 +4564,7 @@ closure. A companion action-level verdict for this audit lives at
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 9, 2026 15:35:42 UTC">August 9, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 10, 2026 17:43:27 UTC">August 10, 2026</span>
   </span>
 
     
