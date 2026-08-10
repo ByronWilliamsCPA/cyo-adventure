@@ -370,3 +370,28 @@ way here, which is why the inversion is clean rather than noisy.
   everywhere it cancels out of every pairwise comparison. Illusory choice may be the larger threat
   to the reading experience than cross-book repetition, and the entire diversity programme is
   currently blind to it.
+
+### 9.9 Owner ruling: reconverging exploration is not a defect (2026-08-10)
+
+Section 9.8 reported, from both raters, that most forks on this graph reconverge with no differing
+consequence, and proposed a per-book illusory-choice check. **That proposal is rejected.**
+
+The owner's ruling: choice paths that do not progress the story and loop back so the reader can
+explore another option are a convention of the form, not a flaw. The comparison offered is
+tabletop play, where a party sweeps every room in an area precisely because some rooms hold
+nothing and you cannot know which until you look. The checking is the play. A reader who takes
+the catwalk, finds a hint, and returns to take the stair has not been cheated; they have explored.
+
+This is the same class of correction as the one that redefined the central defect earlier in this
+programme. The raters were reporting a structural fact accurately and then attaching a product
+judgment to it that is not the owner's. Recording it here so the fact stays and the judgment goes.
+
+Two things survive the ruling, both narrow:
+
+- Single-option nodes remain excluded from decision metrics (`AL-189`). A node offering one option
+  is a page turn, and counting it as a decision pads any rate with units that cannot repeat. That
+  is an arithmetic point about denominators, not a claim that such nodes are bad.
+- The *proportion* is unmeasured, not ruled on. Nobody has established what share of forks should
+  reconverge for this form and this age band, and no gate should be built until someone does.
+
+No illusory-choice gate will be built. `AL-199` is closed as rejected.
