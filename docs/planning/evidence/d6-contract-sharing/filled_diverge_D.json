@@ -1,0 +1,423 @@
+{
+ "schema_version": "2.0",
+ "id": "d6",
+ "version": 1,
+ "title": "The Founder's Peal",
+ "metadata": {
+  "age_band": "10-13",
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 5.5,
+   "tolerance": 1.5
+  },
+  "tier": 1,
+  "themes": [
+   "mystery",
+   "puzzles",
+   "friendship",
+   "history"
+  ],
+  "estimated_minutes": 18,
+  "ending_count": 8,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "mild",
+   "peril": "mild"
+  },
+  "topology": "branch_and_bottleneck",
+  "production_eligible": false
+ },
+ "variables": [],
+ "start_node": "n_open",
+ "nodes": [
+  {
+   "id": "n_open",
+   "body": "The old foundry tower stood at the edge of Bellhaven, its iron door bolted shut for as long as anyone could remember. Ivy, Theo, and Sam had heard the stories: a bell founder named Josiah Vane built the tower, then sealed it with a puzzle only the right finder could solve. Pinned to the door was a strip of parchment, marked in long and short dashes, the pattern of a bell peal. It looked less like a warning and more like a question. The three of them read it twice, then looked at each other. Whatever this tower was testing, they were ready to find out, together.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_open",
+     "label": "We step up to the challenge as one.",
+     "target": "n_start"
+    }
+   ]
+  },
+  {
+   "id": "n_start",
+   "body": "Up close, the tower door was thick oak, its hinges rusted fast. Beside it, a smaller side door and a window too high to reach without effort. Theo wanted to sit with the coded note until it gave up its secret. Sam eyed the side door and the window, sure they could find a way past on their own. Ivy remembered the tower had a keeper, an old bell-ringer who still swept the yard some mornings. Each idea felt right in its own way. None of them was faster or smarter than the others, just different roads to the same locked place.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_examine",
+     "label": "We puzzle over the parchment first.",
+     "target": "n_note"
+    },
+    {
+     "id": "c_door",
+     "label": "We test the side door ourselves.",
+     "target": "n_door"
+    },
+    {
+     "id": "c_keeper",
+     "label": "We look for the old ringer's help.",
+     "target": "n_keeper"
+    }
+   ]
+  },
+  {
+   "id": "n_note",
+   "body": "Theo pinned the parchment flat and started counting marks: a long dash, then two short, over and over, like a peal a ringer might pull on the bells. Long, short, short. Long, short, short. It took a while to see it wasn't nonsense: each pattern matched a letter, the way ringers call changes. Slowly, one line untangled: grate, loose, flue, key. Theo read it twice to be sure, then grinned. The waiting had paid off. Somewhere on this tower was a loose flue grate, and behind it, a key. The note hadn't lied. Now it was only a matter of finding the spot.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_note_key",
+     "label": "We head straight for the flue grate.",
+     "target": "n_keyhunt"
+    },
+    {
+     "id": "c_note_inside",
+     "label": "We use what we've already worked out and go in.",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_door",
+   "body": "Sam walked the tower's base, running a hand along every gap and ledge, ignoring the coded note entirely. Down by the old tuning board bolted to the outside wall, something felt off: a lip that gave slightly under a thumb. Sam pressed again, harder. A catch clicked somewhere inside, and the side door shifted open a crack. No decoding, no waiting around, just careful hands and a good eye for a building that had been standing empty a long time. Sam waved the others over, proud of finding it without anyone's help. There was still the upper window too, if anyone wanted a real dare.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_door_force",
+     "label": "We slip through the side door.",
+     "target": "n_inside"
+    },
+    {
+     "id": "c_door_window",
+     "label": "We scale the wall to the upper opening.",
+     "target": "n_window"
+    }
+   ]
+  },
+  {
+   "id": "n_keeper",
+   "body": "Ivy found the old bell-ringer sweeping leaves by the yard gate, a man with rope-calloused hands and a squint that missed nothing. She asked, plain and honest, if he'd let them in. He looked the three of them over for a long moment, the kind of look that seemed to be grading something. Then he asked why they wanted in, and listened to every word of their answer without interrupting. Finally he nodded, slow. Not many ask proper anymore, he said, and pulled a ring of keys from his belt. Follow me. Casting floor door's this way.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_keeper_enter",
+     "label": "We follow him inside straightaway.",
+     "target": "n_inside"
+    },
+    {
+     "id": "c_keeper_story",
+     "label": "We ask about the tower's past before stepping in.",
+     "target": "n_keeper_story"
+    }
+   ]
+  },
+  {
+   "id": "n_keyhunt",
+   "body": "Behind the loose flue grate, right where the note said, hung a small foundry key on a bent nail. Theo's fingers closed around it, and for a second nobody said anything. The tower wasn't playing tricks. It was testing whether they'd trust careful work over guesswork, and the key in Theo's palm was proof they'd read it right. Sam turned the key over, studying the notches cut along its edge, each one lining up with the peal pattern from the note. Whatever waited past this door, the first test was already behind them, fair and square.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_keyhunt_in",
+     "label": "We fit the key to the lock and step through.",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_keeper_story",
+   "body": "The old ringer leaned against the casting floor door and told them about Josiah Vane, the founder who built this tower and every bell in it. Vane never trusted a finder who just wanted treasure, the ringer said. He wanted someone patient enough to listen, someone who'd ask before taking. So he built his tests to sort the two apart. He wasn't cruel about it, the ringer added. Just careful. Man spent his whole life shaping metal that had to ring true or not at all. Ivy, Theo, and Sam traded a look. Whatever waited inside, it mattered more to them now.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_story_in",
+     "label": "We head in already knowing why.",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_window",
+   "body": "The window sat high above a stack of old crates, close enough to reach with a boost. Sam went first, Theo bracing the crates steady while Ivy called out handholds worn smooth by decades of rain. The stone ledges were wide, easy to grip, and Sam's foot never slipped once. At the top, the window swung inward at a push, stiff but not stuck. Sam dropped down onto a dusty floor inside and let out a breath, then reached back to help the others through, one at a time. They were in, and nobody had needed anyone's permission to manage it.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_window_in",
+     "label": "We climb through and land inside.",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_inside",
+   "body": "Inside, the tower opened into a wide room hung with silent bells, ropes coiled and waiting. Dust hung in shafts of light from high windows. Four ways led off the room: a stone stairway spiraling up, a study crowded with shelves and drawers, a walkway threading through the swinging bell-frames, and a passage sinking down toward the casting floor below. Somewhere above, the great dial waited, whatever it was. Ivy, Theo, and Sam stood together at the center, listening to the hush. Each path promised something different, and no one path looked like the right one to try first.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_inside_stairs",
+     "label": "We head up the winding stairs.",
+     "target": "n_stairs"
+    },
+    {
+     "id": "c_inside_study",
+     "label": "We duck into the shelf-lined room.",
+     "target": "n_study"
+    },
+    {
+     "id": "c_inside_pendulum",
+     "label": "We edge onto the swinging walkway.",
+     "target": "n_pendulum"
+    },
+    {
+     "id": "c_inside_basement",
+     "label": "We start down toward the casting floor.",
+     "target": "n_basement"
+    }
+   ]
+  },
+  {
+   "id": "n_stairs",
+   "body": "The spiral stairs climbed past landing after landing, legs burning by the top. On one ledge sat a rack of tuning forks, sorted low to high, each stamped with a number of pulls. Theo tapped a few and listened, working out that each fork's pitch matched a count, low forks meaning short pulls, high ones long. Beside the rack sat a small hand bell, cast crooked on purpose, a founder's old joke kept on display. Sam laughed at it, then pocketed the pattern in memory, not the bell itself. By the top step, they had the beginning of a working code, built one stair at a time.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_stairs_face",
+     "label": "We carry what we learned to the top.",
+     "target": "n_clockface"
+    }
+   ]
+  },
+  {
+   "id": "n_study",
+   "body": "Shelves crowded the study room floor to ceiling, and dust motes drifted through sun pouring in from a coloured glass transom, throwing bell-shaped patches of light across the floorboards. On a workbench lay a tuning hammer, the founder's own notes scratched along its handle, each scratch keyed to a pull of the rope. Ivy studied the marks carefully, matching them to the pattern from the stairs. Behind the workbench sat a whole shelf of the founder's old journals, spines cracked from use, clearly worth an afternoon. It would be easy to lose an hour here, maybe more. The dial could wait, or it couldn't; that was the real question.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_study_face",
+     "label": "We take what we've learned and keep moving.",
+     "target": "n_clockface"
+    },
+    {
+     "id": "c_study_logs",
+     "label": "We pull a journal down and start reading.",
+     "target": "n_end_library"
+    }
+   ]
+  },
+  {
+   "id": "n_pendulum",
+   "body": "The bell-frame room hummed faintly, huge bronze bells hanging still on their cradles. A narrow catwalk crossed between them, planks slick with old tallow, one handhold at a time. Bolted to the mould bench nearby was a brass calibration scale, notches climbing in the same steps as the peal pattern, another piece of the puzzle. Across the walkway, something small caught the light, set carefully on a far ledge, clearly left there on purpose. Sam eyed the crossing: doable, if careful, but a slip meant a hard landing and a long, sore walk home. Not dangerous exactly. Just a real question about how much this was worth.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_pendulum_oil",
+     "label": "We edge across, hand over hand.",
+     "target": "n_clockface"
+    },
+    {
+     "id": "c_pendulum_giveup",
+     "label": "We decide it isn't worth the risk.",
+     "target": "n_end_giveup"
+    }
+   ]
+  },
+  {
+   "id": "n_basement",
+   "body": "Down among the casting floor, the air smelled of old iron and cold stone. Noon light slid through the belfry louvers overhead, falling in a bright stripe across one marked floorboard, lining up neatly with the pull-count pattern from the note upstairs. Hanging on a peg nearby was a leather apron, worn soft, its pockets shaped by years of tools that no longer sat inside. Nobody said much down here. The dark wasn't scary, just old, and it asked for steady footing more than cleverness. By the time they climbed back toward the light, the pattern made sense.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_basement_face",
+     "label": "We climb back toward the tower's top.",
+     "target": "n_clockface"
+    }
+   ]
+  },
+  {
+   "id": "n_clockface",
+   "body": "At the top of the tower stood the great dial, its face ringed with notches instead of numbers, each notch marked long or short like a bell pull. A small brass lever sat below it, waiting. The dial's own rim carried a second pattern, half-worn but readable, plainly meant to be matched against whatever code they'd puzzled out along the way. Ivy read the markings twice. They could set the lever carefully, following the pattern through. They could force it and hope the mechanism gave. They could hunt for another way around the back. Or they could just guess and see what happened. Only one of those choices actually matched what the dial was asking for.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_face_correct",
+     "label": "We line up the lever, notch by notch.",
+     "target": "n_setcorrect"
+    },
+    {
+     "id": "c_face_jam",
+     "label": "We wrench the lever hard.",
+     "target": "n_setjam"
+    },
+    {
+     "id": "c_face_panel",
+     "label": "We search the frame for another route.",
+     "target": "n_backpanel"
+    },
+    {
+     "id": "c_face_random",
+     "label": "We spin the lever and take our chances.",
+     "target": "n_end_timeout"
+    }
+   ]
+  },
+  {
+   "id": "n_setcorrect",
+   "body": "Notch by notch, Ivy worked the lever through the pattern: long, short, short, long, matching the rhythm they'd puzzled together along the way. Halfway through, the dial's hands twitched. By the last notch, something deep in the tower gave a soft, satisfied click, like a bell settling after its final ring. The rim of the dial swung outward, revealing a narrow stair down into darkness behind it. Sam let out a breath nobody knew they'd been holding. It wasn't luck. The pattern had held from the first note to this very lever, and the tower had recognized their work.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_correct_vault",
+     "label": "We go down into the hidden room.",
+     "target": "n_vault"
+    }
+   ]
+  },
+  {
+   "id": "n_setjam",
+   "body": "Theo, impatient, wrenched the lever hard, past where it wanted to go. Somewhere inside the tower, gears bit down and the whole mechanism locked stiff, refusing to move another inch. Nobody panicked. Sam traced the linkage down to a small safety catch on one of the bell cradles below, the kind that kept a swinging bell from over-rotating. Easing the catch loose and letting the cradle settle back to rest freed the jam with a soft groan of relief. It's not broken, Sam said. Just protecting itself. Theo nodded, sheepish but steady, ready to try the dial the right way this time.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_jam_oil",
+     "label": "We free the catch and try the lever again.",
+     "target": "n_vault"
+    },
+    {
+     "id": "c_jam_stuck",
+     "label": "We call it a night and head home.",
+     "target": "n_end_stuck"
+    }
+   ]
+  },
+  {
+   "id": "n_backpanel",
+   "body": "Behind the dial's housing, Ivy found a small hinged panel, easy to miss unless you were looking. Scratched across it was a second, shorter pattern: three quick marks, long-short-long, small enough to work out on the spot with what they already knew. It felt less like a shortcut and more like a second question, tucked in for anyone careful enough to check behind the obvious one. Two paths opened from behind the panel: one led on toward wherever the main dial opened, the other toward a narrow door nobody had mentioned before. Whatever the founder intended, he'd clearly meant for someone to find this.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_panel_vault",
+     "label": "We follow it toward the main chamber.",
+     "target": "n_vault"
+    },
+    {
+     "id": "c_panel_secret",
+     "label": "We take the narrow, unmarked door instead.",
+     "target": "n_end_secret"
+    }
+   ]
+  },
+  {
+   "id": "n_vault",
+   "body": "The room beyond was small and quiet, lined with shelves that held ledgers, a stack of old bell-casting drawings, and a modest wooden case. Inside the case lay Josiah Vane's own marking chisel, kept oiled as though he meant to come back for it. Propped against the ledgers was a letter, its wax seal still whole, addressed to whoever finally made it this far. Ivy, Theo, and Sam looked around the little room, then at each other. They had passed every test the tower set for them. Now came a quieter one: what they did next, and who they told about it, was entirely up to them.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_vault_share",
+     "label": "We carry the letter back to Bellhaven.",
+     "target": "n_end_hero"
+    },
+    {
+     "id": "c_vault_keep",
+     "label": "We keep this just between the three of us.",
+     "target": "n_end_keepsake"
+    },
+    {
+     "id": "c_vault_grab",
+     "label": "We pocket the chisel and slip out quickly.",
+     "target": "n_end_caught"
+    }
+   ]
+  },
+  {
+   "id": "n_end_library",
+   "body": "Ivy lost track of time among the founder's journals, and honestly, nobody minded. The colored light from the transom crept slowly across the floor as the afternoon wore on. Tucked between two ledgers, Ivy found a whole page copied out in the same pull-pattern as the note on the door, waiting to be worked out properly. They folded it carefully and tucked it away to study at home. The dial upstairs could wait; it wasn't going anywhere. Walking back through Bellhaven that evening, notebook page in pocket, it didn't feel like they'd given anything up. Some days, the reading is the reward, and the tower would still be there tomorrow.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_library",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Waiting Page"
+   }
+  },
+  {
+   "id": "n_end_giveup",
+   "body": "Sam's foot skated on the tallow-slick plank, just an inch, just enough to feel the catwalk's whole point. Nobody laughed it off. Ivy caught Sam's sleeve, and for a second they all just stood there, weighing it honestly: the crossing, the glint of something waiting on the far side, and what a real fall would cost. Not today, Theo said finally, and nobody argued. They backed off the walkway slowly, one careful step at a time, until solid floor was under their feet again. It didn't feel like losing. Reading a risk right and walking away from it took its own kind of nerve, and they'd have another chance at the crossing another day.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_giveup",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Careful Retreat"
+   }
+  },
+  {
+   "id": "n_end_timeout",
+   "body": "With no real pattern worked out, Theo spun the lever at random, hoping for the best. The dial's hands jerked, then froze solid, notch after notch locking in place with a soft, final click. Nothing broke. Nothing hurt. But the mechanism plainly wasn't going anywhere until someone who knew it properly came to reset it. Ivy sighed, more amused than upset. Guess Josiah Vane thought of everything, she said. They left a note of their own on the workbench, admitting the guess, and headed home to think it through properly. The tower's trial wasn't cruel about a bad guess. It just expected better next time, and there'd be a next time.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_timeout",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Frozen Dial"
+   }
+  },
+  {
+   "id": "n_end_stuck",
+   "body": "The jam held tighter than the safety catch could fix. Down in the linkage, a small rod had bent just enough to need a proper wrench, the exact kind racked neatly on Josiah Vane's old workbench below, which none of them had thought to grab. Nobody blamed Theo for forcing the lever. It was an honest mistake, the sort the tower seemed built to catch gently rather than punish. They climbed back down, already talking through what they'd bring next time: patience, and the right tool for the job. The dial would still be waiting, unbothered, whenever they came back better prepared.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_stuck",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Missing Wrench"
+   }
+  },
+  {
+   "id": "n_end_secret",
+   "body": "The narrow door behind the panel opened onto Josiah Vane's own workshop, untouched, tools racked and labeled along the wall as if he meant to be back any minute for a workday that never came. Dust lay thin over everything, careful rather than abandoned. Pinned above the bench was a short note in the founder's hand, naming whoever found this room its keeper from here on. Ivy, Theo, and Sam looked at the waiting tools, then at each other. It felt less like finding treasure and more like being handed a job. They agreed, quietly and completely, that they'd be back, and that the workshop wouldn't sit empty much longer.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_secret",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Waiting Workshop"
+   }
+  },
+  {
+   "id": "n_end_hero",
+   "body": "They brought the letter straight to the town hall, and within a day, half of Bellhaven had heard the story of the tower and the founder who built it. The letter told of Josiah Vane's years of careful work, and why he'd sealed the place the way he had: not to keep people out forever, just to make sure the right kind of finder came along eventually. The town held a small gathering by the tower that weekend, the first time its bells had rung properly in years. Ivy, Theo, and Sam stood at the edge of the crowd, not needing the credit, just glad the founder finally got remembered the way he deserved.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_hero",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Bells for the Founder"
+   }
+  },
+  {
+   "id": "n_end_keepsake",
+   "body": "They read the letter together, twice, then set it back exactly where it had been, chisel and all. Whatever the room held belonged to the tower, not to them. What they kept instead was the story of getting here: the note, the stairs, the catwalk, the dial finally giving way. Walking home that evening, none of them said much, but it was the good kind of quiet. Some passing grades didn't need an audience. Years later, they'd still remember exactly how it felt to stand in that little room, just the three of them, knowing something the rest of Bellhaven didn't, and being fine with that.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_keepsake",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Just Between Us"
+   }
+  },
+  {
+   "id": "n_end_caught",
+   "body": "Theo's hand had barely closed around the chisel when a thin wire, strung low across the shelf, tugged a hand bell somewhere out in the yard. It rang bright and clear, the kind of sound that carried. Halfway back to the panel, second thoughts caught up with all three of them at once, and they were still standing there, chisel half out of Theo's pocket, when the old ringer's evening rounds brought him straight to the doorway. He didn't shout. He just looked at the chisel, then at them, and held out his hand. They put everything back themselves, cheeks burning, and somehow the walk home felt lighter anyway. The tower's last test, it turned out, wasn't the dial at all.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_caught",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Last Test"
+   }
+  }
+ ]
+}

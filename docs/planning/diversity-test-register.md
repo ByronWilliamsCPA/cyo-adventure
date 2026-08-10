@@ -468,11 +468,32 @@ decision that needed no research, and it turns out the research decides which pu
 Each of these emits, scores, or optimises decision signatures. Running one before D-3 lands
 measures with an instrument known to invert.
 
+**Three of these have now been re-specified, and "gated on D-3" turns out to be the wrong label for
+all three.** See [the architecture re-specification](./architecture-respecification-2026-08-10.md).
+In summary:
+
+| | Was blocked on | Is actually blocked on | Cheapest unblocking step |
+| --- | --- | --- | --- |
+| R2-1b | D-3, a metric | nothing, once its programs carry bindings | re-scope to bound tuples, score with D-4 tier 1 |
+| R1-1 | D-3, a metric | nothing, once it repels on the bound chain | swap the repulsion target and the measure |
+| M-3 | D-3, a metric | a **contract schema field**, plus a reliability check on it | one annotation round on declared operations |
+
+Two are unblocked by re-scoping alone; none needs the signature vocabulary repaired. The
+re-specification also resolves the dilemma the brief's section 18 put to the reviewers, by
+stratifying the plan into a **structural** part that may be shared freely (topology and fact graph,
+which `AL-197` and `AL-212` prove do not determine the decision, so sharing them cannot make the
+decisions repeat) and a **decisional** part that must be generated per book (`choice_semantics`,
+`beat_hint`, the devices, the operation and the stake, which is simultaneously where D-3b locates
+the property and where `AL-208` locates the fingerprint). The concrete change is that
+`choice_semantics` and `beat_hint` move out of the reusable contract into the per-book bind step.
+**D-6 tests the weakest version of that claim, so section 2 of the re-specification is provisional
+until D-6 reports.**
+
 | ID | Test | Source | Thesis | Cheapest experiment (proposer's) | Falsifier | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| R2-1b | Decision-program compiler | reviewer 2 | The manual precondition test is **done** and passed, thinly. Next step is a minimal DecisionProgram schema, 20 candidate maps without prose, blinded rating, full prose for the best 4 to 6. | 20 plan-only generations, blinded rating | Compiled decision maps rate no better than hand-authored ones. | blocked on D-3 |
-| M-3 | Decision-axis scheduling | in-house | Classify every fork by the kind of decision it asks and schedule kinds per book, making decision variety a solvable, verifiable scheduling problem. | Schedule axes over the pilot graph, fill, rate. | Second-order by construction: it needs scene identity already free, so it fails if forks cannot be repurposed. | blocked on D-3 |
-| R1-1 | Decision-first abstract routing | reviewer 1 | Shape-only graph as a state-routing machine; sample the decision set away from the child's prior books, then map onto the graph. | 5 books on one abstract skeleton with explicitly varied decision sets; measure choice-text overlap by embedding. Proposer: ~10 generations, 2 human hours. | Choice embeddings are no more separated than S4's, or the abstract state changes cannot be cleanly mapped to varied decisions. | blocked on D-3 |
+| R2-1b | Decision-program compiler | reviewer 2 | **Re-specified**: a DecisionProgram is a set of (act, bound device, stake, consequence) tuples, not abstract decision descriptions, because a prose-free program is exactly the artifact D-3 rules out. | 20 candidates over one structural stratum, no two sharing a `choice_semantics` string, screened on D-4 tier 1, then blinded rating to confirm rather than produce a ranking, then prose for the best 4 to 6 with the shared-gram guard across all of them. | Twenty programs over one structural stratum still breach the shared-gram budget once prose exists, which would mean the structural stratum leaks wording too. | **re-specified, unblocked; cost now LOWER than proposed** |
+| M-3 | Decision-axis scheduling | in-house | **Re-specified, and it is the biggest change of the three: stop classifying, declare.** Three attempts to recover the axis from an artifact have failed (v1 inverts, v2 inverts and ties with kappa clear of the floor, the deterministic version classifies 2 of 6 props on an unseen contract). The axis is not recoverable by model or by word list. | Add `operation` and `stake` to each fork option in the contract's decisional stratum, authored when the author already knows. Scheduling over declared values then needs no annotator, no kappa study and no lexicon. | Authors cannot agree on the declared operation at acceptable reliability. **Live chance of firing**: D-3c already found the derive-against-compare boundary contested at kappa 0.719, so the operation vocabulary needs settling first. | **re-specified; blocked on a schema field, not a metric** |
+| R1-1 | Decision-first abstract routing | reviewer 1 | **Re-specified**: repel on the **bound solution chain** (devices used, operations asked, answers reached), not on the abstract decision set. Its shape-only graph is now a virtue rather than an accident: it is the structural stratum, which may be shared freely. | Unchanged in size, 5 books on one abstract skeleton. Measure with solution transfer against the child's prior books; keep choice-text overlap but demote it to a convergence guard, which is what `AL-208` shows it actually measures. | **Replaces the proposer's**: repulsion succeeds on the bound chain (transfer near zero across all five) and blind readers still call the books decision-repetitive. That would be the most informative negative available from any row here. | **re-specified, unblocked** |
 | R1-3 | Repulsive generation via obligation contracts | reviewer 1 | Keep the current architecture; feed the child's prior action semantics in as a repulsion penalty during contract generation. | Generate book 2 with book 1's action semantics as a negative prompt; compare action overlap against the S9 baseline. Proposer: 2 generations, 1 human hour. | Repulsion exhausts natural choices and produces bizarre action semantics, the proposer's own stated failure mode. | blocked on D-3 |
 | R2-4 | Portfolio generation with semantic repulsion | reviewer 2 | Generate K decision programs per request, validate, and select on a quality-minus-novelty objective before any prose. A cross-cutting selection layer over R1-1 or R2-3, not a standalone fix. | 10 requests by 8 programs, 80 short plan generations, no prose. Compare random, best-quality, and combined-objective selections; blinded raters see only choice maps. Proposer: 4 to 8 rating hours. | The novelty scorer rewards bizarre or low-quality decisions, or all candidates share one model's preferred patterns. | blocked on D-3 |
 
