@@ -53,6 +53,16 @@ tags:
 > the counsel engagement. Nothing in D1's analysis is retracted; the risk is reassigned, not
 > reduced. It is carried as an accepted exception at assurance-register row O-122, expiring at
 > R2. Questions 1A and 1B remain live counsel asks, so D1 is narrowed, not closed.
+> **Amended**: 2026-08-10. **Owner ruling that KWS card or debit verification is the sole VPC
+> method, and that no parent is verified until it is active.** This supersedes the 2026-08-09
+> acceptance rather than editing it: a risk decided to be eliminated before first real use is
+> scheduled remediation, not a carried exception, so O-122 moves off `accepted exception` while the
+> dated acceptance record is preserved. The typed-name attestation is **retained as consent
+> content** and retired only from the verification role. Two consequences: the § 312.2 "disclose"
+> analysis leaves the VPC critical path, since 312.5(b)(2)(ii) carries no no-disclosure condition;
+> and Gate 1's Q2 becomes the viability gate rather than a retirement opportunity, because the
+> ruling removed the fallback behind it. Question 1A survives for the installed base only, and that
+> population is not yet established.
 > **This does not flip the status.** Every decision below is an owner choice pending counsel
 > confirmation; only counsel closing D1 through D5 moves this ADR to Accepted. D1's remaining
 > counsel content is Questions 1A and 1B; its enumerated-method half is now an owner-accepted
@@ -495,17 +505,63 @@ stack. This is an operational control resting on the operator, not an enforced o
 *Live state, 2026-08-09.* Both routes answer on staging. The webhook leg verifies signatures
 (an unsigned request is rejected `401`); the redirect leg awaits its Control Panel secret.
 
-**What the Test environment now exists to answer**, ordered by how much each would change D1:
+**Owner ruling, 2026-08-10: KWS card or debit verification is the sole VPC method, and no parent is
+verified until it is active.** No guardian will be verified through the typed-name path; the product
+waits for KWS rather than relying on an attestation whose enumerated status is unresolved. Three
+consequences, and one boundary that must not be lost:
 
-1. **Does `parent-verified` fire at all on the pre-verified AgeGraph path?** If it does not, an
+- **The typed-name attestation is retained, in a different role.** It is the record of *what the
+  parent agreed to*, which 312.5(a)(1) and 312.4 require independently of the verification method.
+  16 CFR 312.5(b)(2) establishes that the consenting person is a parent; it does not capture the
+  agreement itself. Retiring the attestation as the enumerated method is correct; deleting the
+  capture would create a different gap and must not follow from this ruling.
+- **The § 312.2 "disclose" analysis leaves the VPC critical path.** Its closed internal-operations
+  list conditions only (viii) and (ix). 312.5(b)(2)(ii) carries no no-disclosure condition, so a
+  card-only route does not turn on whether a child's free-text story wish reaching a third-party
+  classifier is disclosure. Brief Question 1B stays live on the processor and GDPR track for its own
+  reasons, and the unexecuted DPAs in `processor-dpa-checklist.md` remain scheduled work, but
+  neither gates consent any longer.
+- **O-122 stops being a carried acceptance.** A risk the owner has decided to eliminate before first
+  real use is scheduled remediation, not an accepted exception. The 2026-08-09 acceptance record is
+  preserved rather than edited, because it was true on its date; the status moves forward from it.
+- **Question 1A survives for the installed base only.** Any child profile already created behind the
+  typed-name gate was collected under a mechanism this ruling declines to rely on going forward.
+  Whether that set is non-empty, and whether every member of it is the owner's own family, is **not
+  yet established** and is a precondition for treating 1A as closed rather than narrowed.
+
+Two things must be true in code before this ruling is a control rather than an intention, and
+neither is true today: the consent gates still read `user.consent_*` and nothing else, so the
+typed-name path remains fully reachable in production; and nothing refuses a `kws_environment =
+'test'` row, so a staging-era verification could satisfy a production consent decision. The second
+is register row O-123, which this ruling promotes from follow-on work to a precondition of the gate
+change itself.
+
+**What the Test environment exists to answer.** Four questions, held with stable identifiers in the
+[KWS Test-environment runbook](../../operations/kws-test-runbook.md), which is the operational
+source of truth for running them and now carries the run order this ruling implies:
+
+1. **Q1: does `parent-verified` fire at all on the pre-verified AgeGraph path?** If it does not, an
    inherited verification produces no delivery and therefore no consent record, which would
    restate accepted risk (a) from "verified under a method we did not choose" into "no record
    was created at all". That is a materially worse finding than the one the owner accepted.
-2. **Does the card method capture-and-refund, or authorise only?** This bears directly on the
-   312.5(b)(2)(ii) mapping recorded above.
-3. **Is the webhook signature carried in a header or in the query string?** The API reference and
+2. **Q2: does the card method capture-and-refund, or authorise only, and is the cardholder
+   notified?** This bears directly on the 312.5(b)(2)(ii) mapping recorded above, whose second limb
+   requires notification "of each discrete transaction to the primary account holder".
+   **Run this first.** The ruling above removed the fallback, so Q2 is no longer the question that
+   could retire an accepted exception; it is the question that decides whether the sole chosen
+   method is available at all.
+3. **Q3: is the webhook signature carried in a header or in the query string?** The API reference and
    the Control Panel copy disagree; `api/kws_webhook.py` records the open question as an
-   `#ASSUME` marker rather than resolving it silently.
+   `#ASSUME` marker rather than resolving it silently. It needs no run of its own, being answered by
+   capturing the raw request on the Q2 delivery.
+4. **Q4: what shape is the redirect's `status` value actually in?** `api/kws_redirect.py::
+   _reports_verified` guesses a JSON reading and falls back to bare tokens, both marked `#ASSUME`.
+   Last, and blocked on Control Panel registration of the return URL: an unrecognised value reads as
+   *not verified*, which is the safe direction, so this is a user-experience defect on a surface
+   Gate 2 has not built rather than a question about lawfulness.
+
+Q1 and Q2 require addresses with opposite histories and cannot share one, since an address Epic has
+already verified inherits through AgeGraph and runs no method at all.
 
 ### D2: Audience classification
 

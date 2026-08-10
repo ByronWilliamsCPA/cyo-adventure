@@ -3472,12 +3472,43 @@ posture at a trust boundary must be verified from outside that boundary.
     retire the exception earlier rather than renewing it: a counsel answer to Section 1.6 (whether
     a separate signature step is required at all) that removes the need for the step, or a counsel
     answer to Question 1B that opens "email plus" at 312.5(b)(2)(viii). Both remain live asks.
+- **Superseded 2026-08-10, and the acceptance record above is preserved rather than edited.** The
+  owner ruled that KWS card or debit verification is the **sole** VPC method and that **no parent is
+  verified until it is active**. A risk the owner has decided to eliminate before first real use is
+  scheduled remediation, not an exception being carried, so the status moves off `accepted
+  exception`. What that changes, and what it does not:
+  - **The typed-name attestation is retained in a different role**, as the record of what the parent
+    agreed to under 312.5(a)(1) and 312.4. 312.5(b)(2) establishes that the consenting person is a
+    parent; it does not capture the agreement. This row's Verification target therefore still points
+    at that flow, but the property it protects is now "the method **relied on** is enumerated",
+    which the attestation no longer claims to satisfy.
+  - **The retirement mechanism named on 2026-08-09 is now the only mechanism**, so its unearned
+    status is more consequential, not less. Gate 1's Q2 is promoted from the highest-value
+    experiment to the **viability gate**: a zero-charge authorisation generating no cardholder
+    notification leaves (b)(2)(ii)'s second limb unmet with no fallback behind it.
+  - **The ruling is not yet a control.** `api/profiles.py::_require_consent` and
+    `api/admin_profiles.py::_require_family_consent` still read `user.consent_*` and nothing else,
+    and nothing reads a `kws_verification` row for any decision, so the typed-name path remains
+    fully reachable in production. Until the gates require a KWS-verified record, this is a policy
+    the operator holds, not a mechanism. That gate change has a precondition at **O-123**, which is
+    promoted accordingly: without a refusal of `kws_environment = 'test'`, a staging-era row could
+    satisfy a production consent decision.
+  - **Compensating control (c) is unaffected** and remains the reason this is a quality question
+    rather than an absence question: both gates still refuse child-data collection without a consent
+    record.
+  - **Question 1A now bears only on the installed base.** Any child profile already created behind
+    the typed-name gate was collected under a mechanism the product declines to rely on going
+    forward. Whether that set is non-empty, and whether every member is the operator's own household,
+    is **not established**; establishing it is a precondition for closing 1A rather than narrowing
+    it, and it is a read-only query against the production project, not an inference.
 - **Phase home:** unassigned
 - **Owner:** core-maintainer
-- **Last verified:** not verified. **An accepted exception is not a verification**: nothing below
-  has been checked against the rule text by anyone qualified to do so, and the acceptance does not
-  convert the open question into a closed one. It records who decided to carry it and on what basis.
-- **Status:** accepted exception
+- **Last verified:** not verified. **Neither an accepted exception nor a decision to remediate is a
+  verification**: nothing below has been checked against the rule text by anyone qualified to do so.
+  The 2026-08-09 record says who decided to carry the risk and on what basis; the 2026-08-10 record
+  says who decided to eliminate it and by what mechanism. Neither converts the open question into a
+  closed one.
+- **Status:** finding open
 - **Check:** The VPC method relied on is named, and is either an enumerated 16 CFR 312.5(b)(2)
   method identified by provision, or a non-enumerated method carrying a 312.5(b)(3) Safe Harbor
   approval. "An electronic signature is captured" is not an answer to this check
@@ -3519,6 +3550,16 @@ posture at a trust boundary must be verified from outside that boundary.
   inert **by coincidence of sequencing, not by any control**, and would be picked up silently by the
   deploy that first lands the KWS block in that compose file. Removing them is the cheap mitigation
   and needs no production redeploy.
+- **Promoted 2026-08-10 from follow-on work to a precondition.** The owner ruling recorded at O-122
+  makes KWS the sole VPC method, which means the consent gates must stop reading `user.consent_*`
+  and start requiring a `kws_verification` row. The moment that consumer exists, the gap this row
+  describes stops being theoretical: a `test` row becomes capable of satisfying a production consent
+  decision, and no deployed tier can detect it, because `_reject_production_kws_from_a_local_app`
+  fires only when `environment == "local"` and **staging declares `ENVIRONMENT=production`**. The
+  refusal to treat a `test` row as evidence must therefore ship **in the same change as the
+  consumer**, not after it. Shipping the consumer first would create, for the duration of the gap, a
+  production consent path satisfiable by a staging artifact, which is a worse posture than the one
+  the ruling was made to improve.
 - **Phase home:** unassigned
 - **Owner:** core-maintainer
 - **Last verified:** not verified

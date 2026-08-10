@@ -80,8 +80,28 @@ partition, not in whether mail is delivered.
 
 ## The four questions
 
-Ordered by how much each would change D1. Record every answer in ADR-018's D1 section with the
-date, and update the register row it bears on.
+Record every answer in ADR-018's D1 section with the date, and update the register row it bears on.
+
+The identifiers below are stable and are cited from ADR-018 and from register rows O-122 through
+O-124, so they keep their meanings. What changed on 2026-08-10 is the **order they should be run
+in**, following the owner ruling that KWS card or debit verification is the sole VPC method and the
+typed-name attestation is never relied on as the enumerated method:
+
+| Run | Answers | Address needed | Blocked on |
+|---|---|---|---|
+| 1 | **Q2**, and Q3 for free | a real inbox with **no** prior Epic verification | card alerts enabled first; execution inside the staging container |
+| 2 | Q1 | an address that **has** completed an Epic verification | the same execution path |
+| later | Q4 | either | Control Panel return-URL registration, secret pasted, redeploy |
+
+Q2 moved to the front because the ruling removed the fallback. It was the question that could
+*retire* the O-122 accepted exception; with no second method behind it, it is now the question that
+decides whether the chosen method is available at all. Q3 needs no run of its own: it is answered by
+capturing the raw request on any real webhook delivery, so run 1 answers both. Q4 dropped to last
+because it is a user-experience defect on a surface Gate 2 has not built yet, and a UX question does
+not outrank a lawfulness question.
+
+Note that Q1 and Q2 want opposite addresses and cannot share one. An address Epic has already
+verified inherits through AgeGraph, so no method runs and there is no card transaction to observe.
 
 ### Q1: does `parent-verified` fire on the AgeGraph inheritance path?
 
@@ -98,7 +118,7 @@ but its blast radius depends on whether we are told.
   O-124's "snapshot, never a live read" constraint, and confirming it turns an assumption into a
   finding.
 
-### Q2: does the card method capture and refund, or authorise only?
+### Q2 (run first): does the card method capture and refund, or authorise only?
 
 16 CFR 312.5(b)(2)(ii) requires the card be used "in connection with a transaction" and that it
 "provides notification of each discrete transaction to the primary account holder." Whether a
@@ -106,13 +126,20 @@ zero-charge authorisation triggers cardholder notification is the unanswered que
 centre of the payment-card route.
 
 - **Setup**: complete a verification using the card method, with a card whose statement and
-  notification settings you can inspect.
+  notification settings you can inspect. **Enable transaction alerts before the run, not after**:
+  whether a notification would have fired cannot be established retroactively, and a run that
+  answers everything except the notification limb has answered nothing that matters.
 - **What to watch**: whether a charge appears and is reversed, the amount, and critically
   **whether the cardholder receives a notification**.
-- **Why it matters**: this is the only one of the four that could *retire* the O-122 accepted
-  exception rather than merely characterise it. If Epic's card method produces a notified discrete
-  transaction, the enumerated method at (b)(2)(ii) is reachable through the vendor without our
-  building card handling.
+- **Why it matters, restated 2026-08-10.** This was the only one of the four that could *retire* the
+  O-122 accepted exception rather than merely characterise it. The owner ruling that KWS card or
+  debit verification is the **sole** VPC method, with the typed-name attestation retained as consent
+  content and never relied on as the enumerated method, promotes it further: it is now the
+  **viability gate**. If Epic's card method produces a notified discrete transaction, (b)(2)(ii) is
+  reachable through the vendor without our building card handling. If it produces a zero-charge
+  authorisation with no notification to the primary account holder, the second limb of (b)(2)(ii) is
+  unmet and there is no fallback method behind it, because the ruling removed the one that existed.
+  Answer this before any Gate 2 work is scheduled.
 
 ### Q3: is the webhook signature in the header or the query string?
 
@@ -142,18 +169,43 @@ Both are guesses; Epic's documentation does not pin the shape, and the code says
 
 ## Running it
 
+Run it **inside the staging `backend` container**, on the homelab host. That container already holds
+the staging `DATABASE_URL` and the KWS credentials, so the row lands in the database the webhook
+will resolve against and no credential leaves the host. This is the only invocation that satisfies
+the trap described above; the local one below is recorded so it is recognisable, not so it is used.
+
+Two mechanical details about the runtime image, both of which break the obvious command:
+
+- **It ships no shell.** The Dockerfile uses a DHI hardened base, so `docker exec ... bash` and
+  `... sh` both fail. Exec the interpreter directly.
+- **`uv` is not installed**, only the virtualenv it built. The interpreter is at
+  `/app/.venv/bin/python`.
+
 ```bash
-# from the worktree; the primary checkout may predate the merge and have no such script
-cd .worktrees/kws-test-integration
+# on the homelab host: find the container (the service is named `backend`, not `api`)
+docker ps --filter name=backend --format '{{.Names}}\t{{.Image}}'
 
 # preflight: resolves the guardian, prints the plan, sends nothing, writes nothing
-uv run --env-file .env python scripts/kws_send_test_verification.py \
+docker exec <staging-backend-container> /app/.venv/bin/python \
+    scripts/kws_send_test_verification.py \
     --user-id <guardian-uuid> --email parent@example.com --location US --dry-run
 
-# the real send
-uv run --env-file .env python scripts/kws_send_test_verification.py \
+# the real send: drop --dry-run only after the plan reads correctly
+docker exec <staging-backend-container> /app/.venv/bin/python \
+    scripts/kws_send_test_verification.py \
     --user-id <guardian-uuid> --email parent@example.com --location US
 ```
+
+`--user-id` must be a guardian in **staging's** database. A production UUID will fail to resolve,
+which is the harmless failure; a UUID that happens to exist in both is the dangerous one, so read
+the `--dry-run` plan rather than assuming the resolve proved the tier.
+
+> **The local invocation is the trap, not an alternative.** Running
+> `uv run --env-file .env python scripts/kws_send_test_verification.py ...` from the worktree
+> executes against whatever `DATABASE_URL` the shell has, which is local Postgres. The send
+> succeeds, the parent receives mail, and the webhook then arrives at staging holding an attempt id
+> staging has no row for, so it answers `200 handled=False` and writes nothing. Use it only if you
+> have deliberately pointed the shell at staging's database per the first row of the table above.
 
 `--location` is the **child's** location as ISO 3166-1 alpha-2 or ISO 3166-2, and it selects which
 methods the parent is offered. It is a compliance input and deliberately has no default.
