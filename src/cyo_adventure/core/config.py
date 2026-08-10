@@ -1127,6 +1127,38 @@ class Settings(BaseSettings):
     kws_enabled_methods: Annotated[list[KwsVerificationMethod], NoDecode] = Field(
         default_factory=list, validation_alias="KWS_ENABLED_METHODS"
     )
+    # Whether a verification from the Test environment counts as evidence for
+    # the child-profile gates below. Staging runs the whole flow end to end
+    # against KWS Test, so somewhere has to be allowed to rely on a Test row;
+    # this setting is that permission, made explicit and per-tier.
+    #
+    # #CRITICAL: security: the default is False, and it is False rather than
+    # True because of which mistake each default produces. Defaulted True, a
+    # tier that simply never sets the variable would quietly accept sandbox
+    # verifications as parental consent, and nothing in the record would show
+    # it later. Defaulted False, the same omission makes staging refuse to
+    # create profiles, which is loud, immediate, and harmless.
+    # #VERIFY: tests/unit/test_config.py::TestKwsEvidenceSettings::
+    # test_test_evidence_is_refused_by_default.
+    kws_accept_test_evidence: bool = Field(
+        default=False, validation_alias="KWS_ACCEPT_TEST_EVIDENCE"
+    )
+    # Whether the child-profile gates additionally require a usable
+    # verification, on top of the existing consent record.
+    #
+    # Defaults False so the gate can land ahead of the flow that satisfies it:
+    # switched on before guardians have any way to verify, it locks every
+    # existing account out of profile creation. Turning it on is therefore a
+    # deliberate per-tier act, taken once the start endpoint and its screens
+    # are deployed on that tier.
+    # #ASSUME: security: an operator who sets this True on a tier where KWS is
+    # not configured gets a hard stop on profile creation rather than a
+    # bypass. That is the intended direction of the failure.
+    # #VERIFY: tests/unit/test_config.py::TestKwsEvidenceSettings::
+    # test_verification_is_not_required_by_default.
+    kws_verification_required: bool = Field(
+        default=False, validation_alias="KWS_VERIFICATION_REQUIRED"
+    )
 
     @field_validator(
         "kws_user_agent",
@@ -1826,6 +1858,45 @@ class Settings(BaseSettings):
                 "parent-verified webhook reports no method, so this "
                 "declaration is the only bound on how a parent was verified, "
                 "and it cannot be reconstructed after the record is written."
+            )
+            raise ConfigurationError(msg)
+        return self
+
+    @model_validator(mode="after")
+    def _reject_test_evidence_against_production_kws(self) -> Settings:
+        """Refuse to accept Test verifications while pointed at Production KWS.
+
+        The two settings have no legitimate combination. ``kws_environment``
+        is Production only where real parents verify, and there
+        ``kws_accept_test_evidence`` can only be a staging variable that rode
+        into the wrong tier's configuration; left standing it would widen what
+        counts as parental consent, silently and with nothing in the resulting
+        records to show for it.
+
+        Keyed on ``kws_environment`` rather than on ``environment`` on
+        purpose. Staging declares ``ENVIRONMENT=production`` (so that its
+        posture matches production's), which makes any guard written against
+        ``environment`` unable to tell the two tiers apart. ``kws_environment``
+        does tell them apart, and it is also the value the evidence is
+        recorded under, so it is the honest thing to key on.
+
+        #CRITICAL: security: this is the guard that keeps a copied staging
+        env file from turning sandbox verifications into consent evidence in
+        production.
+        #VERIFY: tests/unit/test_config.py::TestKwsEvidenceSettings::
+        test_accepting_test_evidence_against_production_kws_is_refused.
+
+        Raises:
+            ConfigurationError: when ``kws_accept_test_evidence`` is set while
+                ``kws_environment`` is ``"production"``.
+        """
+        if self.kws_accept_test_evidence and self.kws_environment == "production":
+            msg = (
+                "KWS_ACCEPT_TEST_EVIDENCE=true is refused while "
+                "KWS_ENVIRONMENT='production': a Test verification is a "
+                "sandbox event, not evidence about a real parent, and the "
+                "combination can only mean a staging variable reached a "
+                "production tier."
             )
             raise ConfigurationError(msg)
         return self

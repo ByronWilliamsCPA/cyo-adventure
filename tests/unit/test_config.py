@@ -1883,3 +1883,92 @@ class TestKwsEnabledMethods:
 
         assert settings.kws_configured is False
         assert settings.kws_enabled_methods == []
+
+
+@pytest.mark.unit
+class TestKwsEvidenceSettings:
+    """The two switches that decide what a verification is allowed to prove.
+
+    Both default to the refusing value, and both tests below assert the
+    DEFAULT rather than the mechanism, because the failure these settings
+    guard against is an omission: a tier that never sets the variable at all.
+    """
+
+    @pytest.fixture(autouse=True)
+    def _clear_kws_env(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Keep a developer's own KWS_* exports out of these assertions."""
+        for name in (
+            "KWS_ENVIRONMENT",
+            "KWS_ACCEPT_TEST_EVIDENCE",
+            "KWS_VERIFICATION_REQUIRED",
+        ):
+            monkeypatch.delenv(name, raising=False)
+
+    @pytest.mark.unit
+    def test_test_evidence_is_refused_by_default(self) -> None:
+        """An unset variable must not let sandbox verifications count."""
+        from cyo_adventure.core.config import Settings
+
+        assert Settings().kws_accept_test_evidence is False
+
+    @pytest.mark.unit
+    def test_verification_is_not_required_by_default(self) -> None:
+        """The gate lands switched off, so it cannot strand an existing tier."""
+        from cyo_adventure.core.config import Settings
+
+        assert Settings().kws_verification_required is False
+
+    @pytest.mark.unit
+    def test_accepting_test_evidence_against_production_kws_is_refused(self) -> None:
+        """The combination can only be a staging variable in the wrong tier.
+
+        Keyed on ``kws_environment``, not ``environment``: staging declares
+        ``ENVIRONMENT=production`` so the app-level value cannot separate the
+        two tiers, and a guard written against it would be inert exactly where
+        it is needed.
+        """
+        from cyo_adventure.core.config import Settings
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        with pytest.raises(ConfigurationError, match="KWS_ACCEPT_TEST_EVIDENCE"):
+            Settings(
+                environment="production",
+                kws_environment="production",
+                kws_accept_test_evidence=True,
+                database_url=_PROD_DB_URL,
+                oidc_issuer="https://project.supabase.co/auth/v1",
+                oidc_jwks_url=(
+                    "https://project.supabase.co/auth/v1/.well-known/jwks.json"
+                ),
+                child_session_secret=_CHILD_SECRET,
+                device_grant_secret=_DEVICE_SECRET,
+                allow_mock_review=True,
+                kws_enabled_methods=_KWS_METHODS,
+                **_KWS_CREDS,
+            )
+
+    @pytest.mark.unit
+    def test_accepting_test_evidence_against_test_kws_is_allowed(self) -> None:
+        """Staging has to be able to rely on a Test verification, or it proves nothing.
+
+        The counterpart to the refusal above: without this case the setting
+        would have no legal use at all, so this pins that the guard is scoped
+        to the Production environment rather than being a blanket ban.
+        """
+        from cyo_adventure.core.config import Settings
+
+        settings = Settings(
+            environment="staging",
+            kws_environment="test",
+            kws_accept_test_evidence=True,
+            database_url=_PROD_DB_URL,
+            oidc_issuer="https://project.supabase.co/auth/v1",
+            oidc_jwks_url="https://project.supabase.co/auth/v1/.well-known/jwks.json",
+            child_session_secret=_CHILD_SECRET,
+            device_grant_secret=_DEVICE_SECRET,
+            allow_mock_review=True,
+            kws_enabled_methods=_KWS_METHODS,
+            **_KWS_CREDS,
+        )
+
+        assert settings.kws_accept_test_evidence is True

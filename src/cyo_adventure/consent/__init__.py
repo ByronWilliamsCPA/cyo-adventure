@@ -33,8 +33,10 @@ from cyo_adventure.consent.kws_signature import (
 from cyo_adventure.consent.service import (
     ParentVerifiedOutcome,
     VerificationStartRequest,
+    has_usable_verification,
     record_parent_verified,
     start_parent_verification,
+    usable_verification_id,
 )
 
 __all__ = [
@@ -47,12 +49,14 @@ __all__ = [
     "VerificationEmailRequest",
     "VerificationEmailResult",
     "VerificationStartRequest",
+    "has_usable_verification",
     "mint_correlation",
     "parse_correlation",
     "parse_signature_header",
     "record_parent_verified",
     "serialize_correlation",
     "start_parent_verification",
+    "usable_verification_id",
     "verify_redirect_signature",
     "verify_webhook_signature",
 ]

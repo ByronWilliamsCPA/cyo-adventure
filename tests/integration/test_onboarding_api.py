@@ -7,6 +7,8 @@ capture, and the auth boundary (missing bearer, child session token).
 
 from __future__ import annotations
 
+import uuid
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING, cast
 
 import pytest
@@ -16,7 +18,8 @@ from cyo_adventure.api import deps, onboarding
 from cyo_adventure.api.deps import OnboardingIdentity
 from cyo_adventure.app import app
 from cyo_adventure.core.child_session import mint_child_session_token
-from cyo_adventure.db.models import Family, User
+from cyo_adventure.core.config import settings
+from cyo_adventure.db.models import Family, KwsVerification, User
 
 from .conftest import Seed, auth
 
@@ -474,6 +477,104 @@ async def test_onboarding_records_consent_once_and_is_idempotent(
     assert user.consent_signer_name == "Jane A. Guardian"
     assert user.residence_country == "US"
     assert user.adulthood_attested_at == first_attested_at
+
+
+async def test_onboarding_links_the_consent_record_to_its_verification(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A consent recorded after a verification names the verification (ADR-018 D1).
+
+    Follows the real order of events: the empty first call provisions the
+    account, the parent then verifies, and only the consent written afterward
+    can carry the link. The column is evidence, not a gate, so nothing here
+    asserts that the consent was allowed or refused because of it.
+    """
+    _ = seed
+    monkeypatch.setattr(settings, "kws_environment", "test")
+    monkeypatch.setattr(settings, "kws_accept_test_evidence", True)
+    subject = "verified-then-consenting-guardian"
+    provisioned = await client.post(_ONBOARDING, headers=auth(subject))
+    assert provisioned.status_code == 201
+
+    attempt_id = uuid.uuid4()
+    async with sessions() as session:
+        user_id = await session.scalar(
+            select(User.id).where(User.authn_subject == subject)
+        )
+        assert user_id is not None
+        session.add(
+            KwsVerification(
+                id=attempt_id,
+                user_id=user_id,
+                kws_environment="test",
+                status="verified",
+                requested_at=datetime.now(UTC),
+                resolved_at=datetime.now(UTC),
+                enabled_methods=["credit_card"],
+                location="US",
+            )
+        )
+        await session.commit()
+
+    consented = await client.post(
+        _ONBOARDING,
+        headers=auth(subject),
+        json={
+            "consent": {
+                "accepted": True,
+                "policy_version": "2026-07",
+                "signer_name": "Verified A. Guardian",
+                "residence_country": "US",
+                "adulthood_attested": True,
+            }
+        },
+    )
+    assert consented.status_code == 200
+
+    async with sessions() as session:
+        user = await session.scalar(select(User).where(User.authn_subject == subject))
+    assert user is not None
+    assert user.consent_verification_id == attempt_id
+
+
+async def test_onboarding_consent_without_a_verification_links_nothing(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+) -> None:
+    """NULL is the legitimate answer for a typed-name-only consent record.
+
+    The paired negative for the test above, and the reason the column is
+    deliberately absent from ``ck_user_consent_pairing``: every consent
+    recorded before ADR-018 D1's verification leg existed looks exactly like
+    this, and a pairing constraint would make all of them illegal at rest.
+    """
+    _ = seed
+    subject = "unverified-consenting-guardian"
+
+    resp = await client.post(
+        _ONBOARDING,
+        headers=auth(subject),
+        json={
+            "consent": {
+                "accepted": True,
+                "policy_version": "2026-07",
+                "signer_name": "Unverified A. Guardian",
+                "residence_country": "US",
+                "adulthood_attested": True,
+            }
+        },
+    )
+    assert resp.status_code == 201
+
+    async with sessions() as session:
+        user = await session.scalar(select(User).where(User.authn_subject == subject))
+    assert user is not None
+    assert user.consent_accepted_at is not None
+    assert user.consent_verification_id is None
 
 
 async def test_onboarding_race_recovers_winner(

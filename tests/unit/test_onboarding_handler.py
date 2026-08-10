@@ -139,6 +139,7 @@ async def test_record_consent_race_keeps_first_writer_values() -> None:
             "consent_ip",
             "residence_country",
             "adulthood_attested_at",
+            "consent_verification_id",
         ]
         # Simulate the winner's write becoming visible on refresh.
         target.consent_accepted_at = datetime.now(UTC)

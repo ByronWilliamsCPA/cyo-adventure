@@ -30,6 +30,7 @@ from cyo_adventure.consent import KwsClient
 from cyo_adventure.consent.service import (
     ParentVerifiedOutcome,
     VerificationStartRequest,
+    has_usable_verification,
     record_parent_verified,
     start_parent_verification,
 )
@@ -334,6 +335,23 @@ class TestStartRecordShape:
 
     @pytest.mark.unit
     @pytest.mark.asyncio
+    async def test_the_location_is_recorded_on_the_attempt(
+        self, mock_async_session: AsyncMock
+    ) -> None:
+        """The location bounds how the parent could have been verified.
+
+        It is what selects the methods KWS offers, and the parent-verified
+        event reports neither it nor the method that ran, so an attempt that
+        does not record it leaves no trace of either.
+        """
+        recorder = _SendRecorder(mock_async_session)
+
+        await start_parent_verification(_START, client=_client(recorder))
+
+        assert _added_row(mock_async_session).location == _START.location
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
     async def test_the_parent_email_is_not_written_to_the_row(
         self, mock_async_session: AsyncMock
     ) -> None:
@@ -506,3 +524,103 @@ class TestRecordParentVerified:
         )
 
         assert mock_async_session.commit.await_count == 0
+
+
+class TestUsableVerification:
+    """What counts as evidence, and what silently must not.
+
+    No ``_configured`` fixture here on purpose: this reader asks nothing of
+    the credentials, only of ``kws_environment`` and the two evidence
+    switches, so configuring the client would obscure which setting each
+    assertion actually turns on.
+    """
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_a_test_environment_verification_is_not_usable_by_default(
+        self, mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A sandbox verification is an event about whoever clicked the link.
+
+        The KWS API reports nothing that would let a Test verification be told
+        apart from a real one after the fact, so the refusal has to be made
+        here, at read time, on the environment recorded at write time.
+        """
+        monkeypatch.setattr(settings, "kws_environment", "test")
+        monkeypatch.setattr(settings, "kws_accept_test_evidence", False)
+
+        usable = await has_usable_verification(mock_async_session, (_USER_ID,))
+
+        assert usable is False
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_the_test_refusal_never_reaches_the_database(
+        self, mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """The refusal runs FIRST, so no ordering of the rest can leak a Test row.
+
+        Stronger than asserting the False above: a refusal evaluated after the
+        query would still return False today and would become wrong the moment
+        anyone reordered the conditions or added an early return between them.
+        """
+        monkeypatch.setattr(settings, "kws_environment", "test")
+        monkeypatch.setattr(settings, "kws_accept_test_evidence", False)
+
+        await has_usable_verification(mock_async_session, (_USER_ID,))
+
+        assert mock_async_session.scalar.await_count == 0
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_an_accepted_test_verification_is_usable(
+        self, mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Staging opts in explicitly, or the flow could never be exercised at all."""
+        monkeypatch.setattr(settings, "kws_environment", "test")
+        monkeypatch.setattr(settings, "kws_accept_test_evidence", True)
+        mock_async_session.scalar.return_value = uuid.uuid4()
+
+        usable = await has_usable_verification(mock_async_session, (_USER_ID,))
+
+        assert usable is True
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_no_candidate_adults_is_answered_without_a_query(
+        self, mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """An empty set is "no" by definition, and ``IN ()`` is not worth emitting."""
+        monkeypatch.setattr(settings, "kws_environment", "production")
+
+        usable = await has_usable_verification(mock_async_session, ())
+
+        assert usable is False
+        assert mock_async_session.scalar.await_count == 0
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_the_query_is_scoped_to_the_configured_environment(
+        self, mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """The other direction: a Production process must not count a Test row.
+
+        The refusal above closes "Test rows where Test is not accepted"; this
+        closes "Test rows left over from before a cutover, read by a process
+        now pointed at Production". Asserted on the compiled parameters rather
+        than on a returned row, because the point is that the filter is IN the
+        statement, not that a particular fixture row failed to match it.
+        """
+        monkeypatch.setattr(settings, "kws_environment", "production")
+        monkeypatch.setattr(settings, "kws_accept_test_evidence", False)
+        mock_async_session.scalar.return_value = None
+
+        await has_usable_verification(mock_async_session, (_USER_ID,))
+
+        statement = mock_async_session.scalar.await_args.args[0]
+        # dict_values rather than a set: the IN clause binds a list, which is
+        # unhashable, and membership here compares by equality anyway.
+        bound = statement.compile().params.values()
+        assert "production" in bound
+        assert "verified" in bound
+        assert [_USER_ID] in bound

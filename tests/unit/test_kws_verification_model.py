@@ -147,4 +147,5 @@ def test_the_table_has_no_email_column() -> None:
         "resolved_at",
         "transaction_id",
         "enabled_methods",
+        "location",
     }

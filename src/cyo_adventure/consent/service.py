@@ -38,6 +38,8 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
+from sqlalchemy import select
+
 from cyo_adventure.consent.external_payload import (
     VerificationCorrelation,
     mint_correlation,
@@ -46,6 +48,7 @@ from cyo_adventure.consent.kws_client import KwsClient, VerificationEmailRequest
 from cyo_adventure.core.config import settings
 from cyo_adventure.core.database import get_session
 from cyo_adventure.db.models import (
+    KWS_ENVIRONMENT_TEST,
     KWS_VERIFICATION_STATUS_FAILED,
     KWS_VERIFICATION_STATUS_SENT,
     KWS_VERIFICATION_STATUS_VERIFIED,
@@ -55,6 +58,7 @@ from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
     import uuid
+    from collections.abc import Collection
 
     from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -166,6 +170,10 @@ async def start_parent_verification(
                 # setting, which is the exact retroactivity the snapshot exists
                 # to prevent.
                 enabled_methods=list(settings.kws_enabled_methods),
+                # Recorded for the same reason the method list is: it is what
+                # decided which methods KWS offered this parent, and no later
+                # read of the vendor's API can recover it.
+                location=request.location,
             )
         )
         await session.commit()
@@ -270,3 +278,95 @@ async def record_parent_verified(
         kws_environment=record.kws_environment,
     )
     return True
+
+
+async def usable_verification_id(
+    session: AsyncSession, user_ids: Collection[uuid.UUID]
+) -> uuid.UUID | None:
+    """Return the id of a verification worth relying on, for any of these adults.
+
+    "Usable" is a narrower question than "verified", and the gap is the whole
+    reason this function exists rather than a ``status == 'verified'`` filter
+    written inline at each call site. Three things have to hold: the attempt
+    resolved as verified, it ran against the KWS environment this process is
+    configured for, and that environment is one whose verifications this
+    deployment is willing to treat as evidence.
+
+    Plural ``user_ids`` because the callers ask about different sets. The
+    guardian-facing gate asks about one adult, the caller themselves; the admin
+    gate asks about the target family's adults, since 16 CFR 312.5(a)(1) poses
+    the question of the child's parent, not of whoever is typing.
+
+    The id, rather than a bool, because ``api/onboarding.py::_record_consent``
+    stamps it onto the consent record it writes. Both shapes come from this one
+    function so that the refusal below cannot apply to the gates and not to the
+    evidence link, which would be the worst combination: a record naming a
+    sandbox verification as the thing that corroborated it.
+
+    #CRITICAL: security: a ``test`` verification is a sandbox event about
+    whoever happened to click the link, not evidence about a real parent, and
+    the KWS API reports nothing that would let the two be told apart after the
+    fact. The refusal is therefore evaluated FIRST and returns before the query
+    runs, so there is no ordering of the remaining conditions in which a Test
+    row can be read as evidence. It is also keyed on ``kws_environment``, never
+    on ``settings.environment``: staging declares ``ENVIRONMENT=production``,
+    so an ``environment == "local"``-shaped guard is inert on every deployed
+    tier and would be a control in name only.
+    #VERIFY: tests/unit/test_kws_verification_service.py::
+    test_a_test_environment_verification_is_not_usable_by_default and
+    ::test_the_test_refusal_never_reaches_the_database.
+
+    Args:
+        session: The caller's session. This function only reads.
+        user_ids: The adults to consider. Empty means none, without a query.
+
+    Returns:
+        uuid.UUID | None: The most recently resolved usable attempt, or None
+            when there is none.
+    """
+    if (
+        settings.kws_environment == KWS_ENVIRONMENT_TEST
+        and not settings.kws_accept_test_evidence
+    ):
+        logger.info(
+            "kws_test_evidence_refused",
+            kws_environment=settings.kws_environment,
+            kws_environment_label=settings.kws_environment_label,
+        )
+        return None
+    if not user_ids:
+        return None
+
+    # kws_environment is filtered here as well as being gated above, so the
+    # other direction is closed too: a production-configured process must not
+    # count a leftover Test row from before the cutover.
+    return await session.scalar(
+        select(KwsVerification.id)
+        .where(
+            KwsVerification.user_id.in_(user_ids),
+            KwsVerification.status == KWS_VERIFICATION_STATUS_VERIFIED,
+            KwsVerification.kws_environment == settings.kws_environment,
+        )
+        # Most recent first, so a guardian who verified again after an earlier
+        # attempt is corroborated by the attempt they actually just completed.
+        .order_by(KwsVerification.resolved_at.desc())
+        .limit(1)
+    )
+
+
+async def has_usable_verification(
+    session: AsyncSession, user_ids: Collection[uuid.UUID]
+) -> bool:
+    """Report whether any of these adults holds a verification worth relying on.
+
+    The gate-shaped face of ``usable_verification_id``; see that function for
+    what "usable" means and why the test-environment refusal runs first.
+
+    Args:
+        session: The caller's session. This function only reads.
+        user_ids: The adults to consider.
+
+    Returns:
+        bool: True when at least one of ``user_ids`` has a usable verification.
+    """
+    return await usable_verification_id(session, user_ids) is not None

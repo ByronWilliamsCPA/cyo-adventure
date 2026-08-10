@@ -270,7 +270,9 @@ _KWS_VERIFICATION_STATUS_VALUES = "'sent', 'verified', 'failed'"
 # add an import edge from the ORM layer into settings for one two-element list.
 # tests/unit/test_kws_verification_model.py::
 # test_at_rest_environment_vocabulary_matches_the_setting guards the drift.
-_KWS_ENVIRONMENT_VALUES = "'test', 'production'"
+KWS_ENVIRONMENT_TEST = "test"
+KWS_ENVIRONMENT_PRODUCTION = "production"
+_KWS_ENVIRONMENT_VALUES = f"'{KWS_ENVIRONMENT_TEST}', '{KWS_ENVIRONMENT_PRODUCTION}'"
 
 
 class UUIDPrimaryKeyMixin:
@@ -627,6 +629,41 @@ class User(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     # rollout (migrate-before-deploy), per the header comment in the
     # migration file.
     adulthood_attested_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
+    # ADR-018 D1: which KWS verification attempt corroborated THIS consent
+    # event. Evidence, not a gate: nothing reads this column to decide whether
+    # a guardian may proceed (``consent/service.py::has_usable_verification``
+    # asks that question of kws_verification directly, so a guardian who
+    # consented before verification existed can still verify later without
+    # anything rewriting their historical record).
+    #
+    # Deliberately NOT added to ck_user_consent_pairing. NULL here is a real
+    # and permanent state with a specific meaning: "this consent event was
+    # recorded under the typed-name-only mechanism, and was not itself backed
+    # by a verification". Pairing it with consent_accepted_at would make every
+    # such row violate the CHECK, and the only ways out would be to falsify
+    # those records or to invent evidence for them.
+    #
+    # use_alter=True because "user" and kws_verification reference each other
+    # (that table's user_id points back here), which is a cycle CREATE TABLE
+    # cannot order; SQLAlchemy emits this one as a separate ALTER TABLE, which
+    # is also how the migration spells it. ON DELETE SET NULL rather than
+    # CASCADE: erasing the verification attempt must never take the 16 CFR
+    # 312.5(c) consent record with it.
+    # #ASSUME: data-integrity: the guardian-deletion path deletes both rows in
+    # one statement, so the CASCADE on kws_verification.user_id and this
+    # SET NULL fire against each other inside the same command.
+    # #VERIFY: tests/integration/test_deletion_drill.py::
+    # test_delete_my_family_removes_everything covers a guardian delete with
+    # this constraint in place.
+    consent_verification_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey(
+            "kws_verification.id",
+            ondelete="SET NULL",
+            use_alter=True,
+            name="fk_user_consent_verification_id",
+        ),
+        default=None,
+    )
 
 
 class ChildProfile(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
@@ -2796,6 +2833,9 @@ class KwsVerification(Base):
             delivery reports one.
         enabled_methods: ``settings.kws_enabled_methods`` as it stood at send
             time.
+        location: The location sent to KWS for this attempt, which selected
+            which methods the parent was offered. ``None`` on rows written
+            before the column existed.
     """
 
     __tablename__ = "kws_verification"
@@ -2822,6 +2862,18 @@ class KwsVerification(Base):
         CheckConstraint(
             "(status = 'sent') = (resolved_at IS NULL)",
             name="ck_kws_verification_resolution_pairing",
+        ),
+        # ADR-018 D1 names the location a compliance input, because it is what
+        # selects the methods KWS offers the parent; a FORMAT check only, in
+        # the same spirit as ck_user_residence_country_format. It accepts an
+        # ISO 3166-1 alpha-2 country ("US") or an ISO 3166-2 subdivision
+        # ("US-CA"), and does not test membership: real membership is enforced
+        # at the API boundary, and KWS itself rejects a code it does not know.
+        # NULL stays legal, since rows written before this column existed
+        # carry no location and inventing one for them would be a lie.
+        CheckConstraint(
+            "location IS NULL OR location ~ '^[A-Z]{2}(-[A-Z0-9]{1,3})?$'",
+            name="ck_kws_verification_location_format",
         ),
     )
 
@@ -2853,3 +2905,12 @@ class KwsVerification(Base):
     # #VERIFY: tests/unit/test_kws_verification_service.py::
     # test_the_enabled_methods_snapshot_is_copied_not_referenced.
     enabled_methods: Mapped[list[str]] = mapped_column(JSONB)
+    # #CRITICAL: data integrity: a SNAPSHOT for the same reason
+    # enabled_methods is one. The location decides which methods KWS offers
+    # this parent, so it bounds how they could have been verified just as
+    # directly as the method list does, and the parent-verified event reports
+    # neither. Nullable because rows predating this column have no location
+    # and no way to recover one.
+    # #VERIFY: tests/unit/test_kws_verification_service.py::
+    # test_the_location_is_recorded_on_the_attempt.
+    location: Mapped[str | None] = mapped_column(String(16), default=None)

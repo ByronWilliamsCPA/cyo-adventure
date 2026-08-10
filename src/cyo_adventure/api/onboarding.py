@@ -60,6 +60,7 @@ from cyo_adventure.api.schemas import (
     OnboardingView,
     error_responses,
 )
+from cyo_adventure.consent import usable_verification_id
 from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.db.integrity import is_authn_subject_conflict
 from cyo_adventure.db.models import (
@@ -113,6 +114,9 @@ async def _record_consent(
     existing ``consent_*`` quartet: an existing already-consented guardian's
     row retains ``NULL`` in both new columns, since there is no
     re-consent-on-policy-change flow that would ever revisit it.
+    ``consent_verification_id`` (ADR-018 D1) joins the same envelope, and
+    ``NULL`` there is likewise permanent and meaningful: this consent event
+    was not itself backed by a KWS verification.
 
     Args:
         session: The request unit-of-work session.
@@ -164,6 +168,14 @@ async def _record_consent(
     # #VERIFY: tests/unit/test_onboarding_handler.py::
     # test_record_consent_race_keeps_first_writer_values.
     now = datetime.now(UTC)
+    # ADR-018 D1: which verification, if any, corroborates THIS consent event.
+    # None is a legitimate and permanent answer, not a failure: it is what a
+    # consent recorded under the typed-name-only mechanism looks like, and it
+    # is what a tier with verification switched off records for everyone. This
+    # call decides nothing about whether consent may be recorded; the gates in
+    # api/profiles.py and api/admin_profiles.py are what require a
+    # verification, and they ask their own question.
+    verification_id = await usable_verification_id(session, (user.id,))
     result = await session.execute(
         sa_update(User)
         .where(User.id == user.id, User.consent_accepted_at.is_(None))
@@ -174,6 +186,7 @@ async def _record_consent(
             consent_ip=client_ip,
             residence_country=consent.residence_country,
             adulthood_attested_at=now,
+            consent_verification_id=verification_id,
         )
         .execution_options(synchronize_session="evaluate")
         .returning(User.id)
@@ -188,6 +201,7 @@ async def _record_consent(
                 "consent_ip",
                 "residence_country",
                 "adulthood_attested_at",
+                "consent_verification_id",
             ],
         )
         return

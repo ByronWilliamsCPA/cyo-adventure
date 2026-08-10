@@ -7,11 +7,14 @@ listing and the child-session mint.
 
 from __future__ import annotations
 
+import uuid
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING, cast
 
 import pytest
 
-from cyo_adventure.db.models import Family, User
+from cyo_adventure.core.config import settings
+from cyo_adventure.db.models import Family, KwsVerification, User
 
 from .conftest import Seed, auth
 
@@ -304,6 +307,83 @@ async def test_admin_create_allowed_when_target_family_has_consented(
         },
     )
     assert resp.status_code == 201, resp.text
+
+
+async def test_admin_create_requires_a_usable_verification_when_required(
+    client: AsyncClient, seed: Seed, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The target family's consent stops being enough once verification is required.
+
+    Family A's guardians are consented and have never verified, so this is
+    the admin-side twin of the guardian gate's installed-base case.
+    """
+    monkeypatch.setattr(settings, "kws_verification_required", True)
+    monkeypatch.setattr(settings, "kws_accept_test_evidence", True)
+
+    resp = await client.post(
+        _PROFILES,
+        headers=auth(seed.admin_token),
+        json={
+            "family_id": str(seed.family_id),
+            "display_name": "Unverified Family Kid",
+            "age_band": "5-8",
+        },
+    )
+
+    assert resp.status_code == 400, resp.text
+    assert "verification" in resp.text.lower()
+
+
+async def test_admin_create_ignores_a_verification_by_an_unconsented_adult(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A verification by an adult who never consented does not unlock the family.
+
+    The two questions have to land on the SAME person to corroborate each
+    other. An adult who verified but never signed has proved they are an
+    adult and consented to nothing; reading the family as verified on their
+    row would let a second adult's identity check stand in for the first
+    adult's consent, which is not what 16 CFR 312.5(a)(1) asks.
+    """
+    monkeypatch.setattr(settings, "kws_verification_required", True)
+    monkeypatch.setattr(settings, "kws_environment", "test")
+    monkeypatch.setattr(settings, "kws_accept_test_evidence", True)
+    async with sessions() as session:
+        unconsented = User(
+            family_id=seed.family_id,
+            role="guardian",
+            authn_subject="verified-but-unconsented-a",
+        )
+        session.add(unconsented)
+        await session.flush()
+        session.add(
+            KwsVerification(
+                id=uuid.uuid4(),
+                user_id=unconsented.id,
+                kws_environment="test",
+                status="verified",
+                requested_at=datetime.now(UTC),
+                resolved_at=datetime.now(UTC),
+                enabled_methods=["credit_card"],
+                location="US",
+            )
+        )
+        await session.commit()
+
+    resp = await client.post(
+        _PROFILES,
+        headers=auth(seed.admin_token),
+        json={
+            "family_id": str(seed.family_id),
+            "display_name": "Still Gated Kid",
+            "age_band": "5-8",
+        },
+    )
+
+    assert resp.status_code == 400, resp.text
 
 
 async def test_reactivated_profile_reappears_in_listing(
