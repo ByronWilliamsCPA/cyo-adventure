@@ -3788,7 +3788,7 @@ invariants that guard them live in <code>validator/band_profile.py</code>.</p>
 <tr>
 <td>PL-24</td>
 <td>Policy</td>
-<td><strong>Ending mix</strong>: two advisory shape checks over the ending set, which PL-15 (forbidden kinds) and PL-17 (ending count) do not cover. (a) No single <code>ending.kind</code> may exceed 60% of endings. (b) A winnability floor that is <strong>style-aware</strong>: prose must have at least 10% positive-valence endings, while a gamebook must have at least 3 distinct positive-valence endings. The gamebook rule is an absolute count, not a share, because a share floor calibrated against the committed corpus would flag every gamebook (all sit at 2-5% positive against prose's 15-70%); that spread is ADR-011 section 5's declared 'few wins and many fails' shape, not nine defects.</td>
+<td><strong>Ending mix</strong>: two advisory shape checks over the ending set, which PL-15 (forbidden kinds) and PL-17 (ending count) do not cover. (a) No single <code>ending.kind</code> may exceed 60% of endings. (b) A winnability floor that is <strong>style-aware</strong>: prose must have at least 10% positive-valence endings, while a gamebook must have at least <code>max(3, ceil(5% of endings))</code> distinct positive-valence endings (ruled 2026-08-09, review Part 4 R1; previously an absolute 3, which a 200-ending book could clear with the same 2-3 wins as a 30-ending one). The gamebook rule is a scaled count, not a raw share, because a share floor calibrated against the committed corpus would flag every gamebook (all sit at 2-5% positive against prose's 15-70%); that spread is ADR-011 section 5's declared 'few wins and many fails' shape, not nine defects.</td>
 <td><code>PL-24 mix: ending kind '{kind}' is {n} of {total} endings ({share}), above the {ceiling} share ceiling in story '{story_id}' (advisory only)</code></td>
 </tr>
 <tr>
@@ -4098,7 +4098,7 @@ to address only the flagged node ids and rule violations, changing nothing else.
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 7, 2026 05:16:52 UTC">August 7, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 10, 2026 00:26:44 UTC">August 10, 2026</span>
   </span>
 
     

@@ -4754,6 +4754,46 @@ plan somewhere. <code>applied</code> means the change is merged and the <code>Re
 <td>open</td>
 <td><code>UW-C79</code></td>
 </tr>
+<tr>
+<td>AL-138</td>
+<td>2026-08-09</td>
+<td>PR #661 review, story-diversity checkers (branch <code>feat/story-diversity-checkers</code>)</td>
+<td>validator</td>
+<td>PL-24's gamebook winnability floor was changed from an absolute 3 to <code>max(3, ceil(0.05 * total))</code>, justified in a comment committed to <code>validator/policy.py</code> saying the absolute floor "had been calibrated below the whole corpus and was exercised only by unit test". Measuring the committed catalog falsifies both halves: the absolute floor already fired on 7 of 14 gamebooks, and the share floor fires on all 14. The cause is that winnable endings in this corpus are roughly constant rather than proportional to book size. Every gamebook carries between 2 and 5 positive endings whether it holds 74 endings or 209, so a 5% share demands 11 positive endings from <code>the-tenfold-siege</code> where the author wrote 2, and the highest positive count anywhere in the catalog is 5. An advisory that fires on 100% of one narrative style carries no information, and the false calibration claim now sits in production source where the next reader will trust it.</td>
+<td>Require any scaled or share-based floor to arrive at review with a measured distribution attached rather than a prose claim about one. Add a catalog measurement mode that reports a proposed floor's fire rate per narrative style and age band, so the corpus impact of a threshold change is computed rather than asserted. Separately, rule on which way this specific case cuts: gamebooks averaging 3 winnable endings out of roughly 130 may be a genuine design defect for a kids' reading app, in which case the floor is right and the catalog is the work.</td>
+<td>open</td>
+<td></td>
+</tr>
+<tr>
+<td>AL-139</td>
+<td>2026-08-09</td>
+<td>PR #661 review, story-diversity checkers (branch <code>feat/story-diversity-checkers</code>)</td>
+<td>process</td>
+<td>A <code>#VERIFY</code> marker naming tests that do not exist reads as backed at the call site, because the thing that permits it lives in a file the reader never opens. <code>scripts/check_fill_integrity.py</code> carries a <code>#CRITICAL: data-integrity</code> block whose <code>#VERIFY</code> names <code>test_check_fill_integrity_rejects_same_file</code> and <code>test_check_fill_integrity_rejects_a_skeleton_with_no_markers</code>; neither exists. The RAD citation gate is not blind to this. It scans <code>scripts/</code>, it knows both names are unresolved, and <code>rad-citation-baseline.toml</code> grandfathers them explicitly while <code>--assert-no-growth</code> blocks new ones. So the gate works as designed and the marker is still a claim proved by nothing. Verifying it cost a full round trip precisely because the marker's own prose warns that "a checker that cannot fail manufactures confidence", which reads as evidence of rigour rather than as an unbacked assertion. Same class as <code>AL-135</code>, one release later, in a different file, and reached by a reviewer rather than by a gate.</td>
+<td>Make the grandfathering visible where the claim is made, not only in the baseline: have <code>check_rad_citations.py</code> require an inline annotation on any baselined citation (for example <code>#VERIFY(unproved): ...</code>) so a reader of the marker can see it is currently proved by nothing without opening <code>rad-citation-baseline.toml</code>. This is the enforcement half of the sweep <code>UW-C77</code> already schedules: the sweep drains the backlog, this stops it silently refilling.</td>
+<td>open</td>
+<td></td>
+</tr>
+<tr>
+<td>AL-140</td>
+<td>2026-08-09</td>
+<td>PR #661 review, story-diversity checkers (branch <code>feat/story-diversity-checkers</code>)</td>
+<td>tooling</td>
+<td><code>codecov/patch</code> reported green on a pull request adding roughly 5,000 lines, about 4,900 of them under <code>scripts/</code>, while <code>qlty coverage diff</code> on the same diff reported "no coverage data for the files in this diff". The green check was not evidence of anything: <code>[tool.coverage.run] omit</code> includes <code>scripts/*</code>, so those lines carry no coverage obligation and the patch gate is structurally incapable of failing on them. The same path is exempt at three further sites, <code>[tool.basedpyright] include = ["src"]</code>, a per-file ignore dropping <code>PLR</code> and <code>C901</code>, and <code>[tool.pydoclint] exclude</code>. Re-running ruff without the complexity exemption reported C901 18 and PLR0912 18 branches on a single <code>main()</code>, which no gate would ever have surfaced. Two independent review passes reached this from opposite directions, the coverage pipeline and the lint config, which is the tell that the gap is structural rather than incidental to one file.</td>
+<td>Decide the posture deliberately rather than by accumulated exemption, now that <code>scripts/</code> holds real gate logic rather than one-off helpers: either narrow the four exemptions, or keep them and make the absence legible, for example by failing the patch-coverage step when a diff's covered-line denominator is zero so that "nothing to measure" stops rendering identically to "measured and clean".</td>
+<td>open</td>
+<td></td>
+</tr>
+<tr>
+<td>AL-141</td>
+<td>2026-08-09</td>
+<td>PR #661 review, story-diversity checkers (branch <code>feat/story-diversity-checkers</code>)</td>
+<td>validator</td>
+<td>The narrative contract sidecar declares safety obligations its checker never reads. <code>check_narrative_contract.py</code>'s NC-0 registration loop covered only <code>entry_state</code> and <code>establishes</code>, so facts named in a node's <code>forbids</code> were never validated against the declared <code>facts</code> registry, and <code>safety_envelope.forbidden_device_kinds</code> appeared nowhere in the 489-line checker at all. Adding <code>forbids</code> to that loop and running it against the committed pilot surfaced four undeclared forbid-facts (<code>adult_disapproves</code>, <code>anyone_hurt</code>, <code>anyone_scolded</code>, <code>hero_at_fault</code>), three of which are absent from <code>forbid_facts</code> as well, so a typo in any of them forbids nothing and the contract still reports clean. The same shape recurred twice more in the same file: NC-5 skipped the device-kind check entirely when <code>permitted_device_kinds</code> was missing or empty, and stringified a missing <code>kind</code> to the literal "None".</td>
+<td>Derive the checker's enforced key set from the contract schema rather than hand-maintaining it, and fail when a declared key has no consumer, so adding a safety key to the schema cannot silently produce an unenforced obligation. Also rule on severity for the newly-registered <code>forbids</code> facts: they currently surface as NC-0 warnings to match the existing loop, which means a typo is reported but does not fail, and promoting them to errors requires registering the four pilot facts first.</td>
+<td>open</td>
+<td></td>
+</tr>
 </tbody>
 </table>
 <hr />
@@ -4793,7 +4833,7 @@ plan somewhere. <code>applied</code> means the change is merged and the <code>Re
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 8, 2026 23:59:52 UTC">August 8, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 10, 2026 00:26:44 UTC">August 10, 2026</span>
   </span>
 
     
