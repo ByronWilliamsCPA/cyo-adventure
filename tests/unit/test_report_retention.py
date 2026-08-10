@@ -297,21 +297,45 @@ def test_amendment_migration_keeps_thirty_day_default_and_terminal_statuses() ->
     assert "'awaiting_manual_fill'" not in job_body
 
 
-def test_amendment_migration_exempts_reviewed_storybook_statuses() -> None:
-    """The new predicate exempts published/archived/needs_revision storybooks.
-
-    These correspond to "approved/published" and "sent back" per the task's
-    calibration-corpus decision vocabulary.
-    """
+def test_amendment_migration_exempts_human_approved_storybooks() -> None:
+    """The approve half of the exemption keys on published/archived status."""
     sql = _AMENDMENT_MIGRATION_PATH.read_text(encoding="utf-8")
     job_body = sql.split("$job$")[1]
     assert "NOT EXISTS" in job_body
     assert '"public"."storybook"' in job_body
-    assert "'published', 'archived', 'needs_revision'" in job_body
+    assert "'published', 'archived'" in job_body
     # The undecided statuses must NOT appear in the exemption's status list,
     # so a draft or still-in-review storybook's job keeps purging on schedule.
     assert "'draft'" not in job_body
     assert "'in_review'" not in job_body
+
+
+def test_amendment_migration_exempts_send_back_via_event_not_status() -> None:
+    """The send-back half must key on the event, never on needs_revision.
+
+    A story reaches ``needs_revision`` without a human ever seeing it via the
+    ``draft --auto_reject--> needs_revision`` hop that
+    ``moderation/pipeline.py`` drives on a hard classifier BLOCK. Exempting on
+    that status would preserve every machine-rejected story's raw output
+    indefinitely: it widens ADR-007's retention window with no human decision
+    to justify it, and fills the calibration corpus with rows carrying no
+    reviewer judgment. Only ``publishing/service.py::send_back`` writes a
+    SENT_BACK pipeline event, so the event is the human-only marker.
+    """
+    sql = _AMENDMENT_MIGRATION_PATH.read_text(encoding="utf-8")
+    job_body = sql.split("$job$")[1]
+    assert '"public"."pipeline_event"' in job_body
+    assert "'sent_back'" in job_body
+    assert "'storybook'" in job_body
+    # The regression this guards: needs_revision must never gate the exemption.
+    assert "needs_revision" not in job_body
+
+
+def test_amendment_migration_indexes_the_event_lookup() -> None:
+    """The pipeline_event probe is indexed, not a nightly sequential scan."""
+    sql = _AMENDMENT_MIGRATION_PATH.read_text(encoding="utf-8")
+    assert "ix_pipeline_event_entity_event_type" in sql
+    assert '"entity_type", "entity_id", "event_type"' in sql
 
 
 def test_amendment_migration_still_only_targets_report_column() -> None:

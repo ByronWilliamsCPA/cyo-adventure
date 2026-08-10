@@ -25,12 +25,30 @@ pairing for any job whose storybook took longer than 30 days to reach a
 decision, one day at a time, so it now carries a narrow exemption:
 `supabase/migrations/20260810000000_exempt_reviewed_generation_job_report_from_purge.sql`
 amends the `purge_generation_job_report` pg_cron job in place (same job
-name, unschedule-then-reschedule) to skip a `generation_job` row when its
-`storybook.status` is `published`, `archived`, or `needs_revision` -- i.e.
-the storybook was approved/published or sent back with a reason at some
-point. `draft` and `in_review` storybooks, and jobs whose `storybook_id`
-resolves to no row at all, are not exempt: the default 30-day retention this
-ADR decided still applies to a job that never reached a human. The on-publish
+name, unschedule-then-reschedule) to skip a `generation_job` row when a
+**human** review decision was reached about the storybook it produced, in
+either direction:
+
+- **approve**: `storybook.status` is `published` or `archived` (archived is a
+  published book pulled later; both required a human approve).
+- **send-back**: a `sent_back` row exists in `pipeline_event` for that
+  storybook.
+
+The send-back half deliberately keys on the **event**, not on
+`storybook.status = "needs_revision"`. A story reaches `needs_revision`
+without any human seeing it via the `draft --auto_reject--> needs_revision`
+hop that `moderation/pipeline.py` drives on a hard classifier BLOCK.
+Exempting on that status would preserve every machine-rejected story's raw
+output indefinitely, which widens this ADR's retention window with no human
+decision to justify it, and fills the calibration corpus the exemption exists
+to serve with rows carrying no reviewer judgment. Only
+`publishing/service.py::send_back` writes a `SENT_BACK` event, so it is the
+human-only marker. (Note `publishing/state_machine.py`'s docstring still
+describes the `auto_reject` hop as having "no slice-1 caller"; that is stale.)
+
+`draft` and `in_review` storybooks with no send-back event, and jobs whose
+`storybook_id` resolves to no row at all, are not exempt: the default 30-day
+retention this ADR decided still applies to a job that never reached a human. The on-publish
 purge in `publishing/service.py::approve` (below) is unchanged: it still
 nulls the just-published version's own `report` immediately, so the
 exemption's practical effect is mostly for a storybook that was sent back
@@ -136,11 +154,13 @@ purge reason (`expired` or `published`) at INFO level with a structured key.
 ## Consequences
 
 **Positive**:
+
 - Minimal raw LLM output retained: aligns with privacy model.
 - Reduces storage footprint for high-volume generation.
 - Limits exposure if the database is compromised.
 
 **Negative**:
+
 - Debugging a generation failure after 30 days is harder; `stage_log` and
   `error` columns remain, but the raw LLM output is gone.
 - Requires a scheduled worker (Phase 5); the mechanism does not exist yet.

@@ -13,14 +13,32 @@
 -- than 30 days to reach a decision, one day at a time.
 --
 -- New predicate: a "public"."generation_job" row is exempt from the sweep
--- (its "report" is left alone, however old) when its "public"."storybook"
--- row's status shows a human review decision was reached at some point:
--- "published" or "archived" (both mean an approve happened; archived is a
--- published book pulled later) or "needs_revision" (a send-back happened).
--- "draft" and "in_review" are NOT exempt: neither has had a decision yet, so
--- the default 30-day retention in ADR-007 still applies to them, same as a
--- job whose storybook_id never resolves to a row at all (a job that failed
--- before any storybook existed -- see GenerationJob's class docstring).
+-- (its "report" is left alone, however old) when a HUMAN review decision was
+-- reached about the storybook it produced, in either direction:
+--   * approve: storybook status is "published" or "archived" (archived is a
+--     published book pulled later; both required a human approve).
+--   * send-back: a "sent_back" row exists in "public"."pipeline_event" for
+--     that storybook.
+--
+-- #CRITICAL: data-integrity: the send-back half MUST key on the event, not on
+-- storybook status "needs_revision". A story can reach "needs_revision"
+-- without any human seeing it, via the draft --auto_reject--> needs_revision
+-- hop that moderation/pipeline.py drives when a classifier returns a hard
+-- BLOCK. Exempting on status would therefore preserve every machine-rejected
+-- story's raw output indefinitely, which both widens ADR-007's retention
+-- window with no human decision to justify it and pollutes the calibration
+-- corpus with rows carrying no reviewer judgment to learn from. Only
+-- publishing/service.py::send_back writes a SENT_BACK pipeline_event, so that
+-- event is the human-only marker; auto_reject writes none.
+-- (state_machine.py's docstring still says the auto_reject hop "has no
+-- slice-1 caller"; that is stale, moderation/pipeline.py drives it today.)
+-- #VERIFY: tests/unit/test_report_retention.py asserts the predicate matches
+-- on the event rather than on the needs_revision status.
+--
+-- "draft" and "in_review" with no send-back event are NOT exempt: neither has
+-- had a decision yet, so ADR-007's default 30-day retention still applies,
+-- same as a job whose storybook_id never resolves to a row at all (a job that
+-- failed before any storybook existed -- see GenerationJob's class docstring).
 --
 -- #ASSUME: data-integrity: exemption is keyed on the STORYBOOK's status, not
 -- the individual job/version. A storybook can accumulate several
@@ -54,6 +72,13 @@
 -- migration is self-contained and safe to re-run on its own.
 create index if not exists "ix_generation_job_status_updated_at"
     on "public"."generation_job" using "btree" ("status", "updated_at");
+
+-- The send-back exemption probes pipeline_event by (entity_type, entity_id,
+-- event_type). Without support that is a sequential scan of an append-only
+-- log on every nightly sweep, so back it explicitly.
+create index if not exists "ix_pipeline_event_entity_event_type"
+    on "public"."pipeline_event" using "btree"
+    ("entity_type", "entity_id", "event_type");
 
 DO $$
 BEGIN
@@ -90,7 +115,14 @@ BEGIN
                   SELECT 1
                   FROM "public"."storybook" AS "sb"
                   WHERE "sb"."id" = "gj"."storybook_id"
-                    AND "sb"."status" IN ('published', 'archived', 'needs_revision')
+                    AND "sb"."status" IN ('published', 'archived')
+              )
+              AND NOT EXISTS (
+                  SELECT 1
+                  FROM "public"."pipeline_event" AS "pe"
+                  WHERE "pe"."entity_type" = 'storybook'
+                    AND "pe"."entity_id" = "gj"."storybook_id"
+                    AND "pe"."event_type" = 'sent_back'
               );
             $job$
         );
