@@ -1144,6 +1144,52 @@ with a fact-closure obligation across every path, and nobody has produced one at
 right architecture turns out to be, generating this artifact at catalog scale is on its critical
 path, and it is a larger and less glamorous problem than choosing between the candidates.
 
+## 16d. Reusing one plan across books makes the plan the fingerprint
+
+We attempted the replication described in 16c on a 101-node skeleton with 39 forks, roughly four
+times the pilot's branching. We authored a narrative contract for it, bound three books from that
+one contract with devices verified non-colliding, and had three isolated authors write about 10,000
+words each. The books are structurally sound and the design was realised exactly.
+
+**We did not rate them, because the convergence guard failed by an order of magnitude.**
+
+| Pair | Shared four-grams per 1000 words (budget 4) | Identical choice menus |
+| --- | --- | --- |
+| control pair | **59.2** | **51** of 131 |
+| treatment pair | **63.8** | **41** of 131 |
+| the pilot's clean pair | 1.8 to 2.7 | 0 |
+
+Between forty and fifty choice menus open with the same words in two books whose authors could not
+see each other's work.
+
+The obvious explanation is that our contract was lexically over-prescriptive, handing every author
+the same verbs. **We measured it and it is false.** Labels reuse a distinctive word from their own
+choice semantics at 46.6 percent in the converged books and 54.3 percent in the pilot books that
+did not converge. Per-book reuse is *higher* in the case that worked.
+
+The real cause is structural, and it is the point worth taking away. **The pilot's books were
+written from different contracts**, whose choice semantics were identical at 0 of 35 choices. These
+three books were written from **one shared contract**, identical at 131 of 131 by construction.
+Sharing the plan means sharing its prose, and three authors writing from one sentence converge on
+that sentence.
+
+This is a constraint on every architecture proposed to us that reuses a plan across many books, and
+we did not anticipate it. A choice-capsule library, a reusable topology with per-request semantics,
+a compiler emitting one decision program per graph: each makes the reusable artifact's own wording a
+fingerprint that no amount of binding diversity removes. It is invisible to a device-collision check,
+which passed these three books at zero, and it will not show up until books built from the same plan
+are compared for shared language.
+
+Three repairs are available and we do not know which works: neutralise the plan's phrasing to
+something deliberately flat, generate the phrasing per book while keeping the structure shared, or
+require authors to diverge from the wording they are given. Each is far cheaper than authoring one
+plan per book, which is what our pilot did without realising that was the load-bearing difference.
+
+**A second finding from the same battery.** All three books landed at whole-book Flesch-Kincaid
+8.14 to 8.41 against a 5.5 target with 1.5 tolerance, with only 16 to 20 of 101 nodes inside the
+band, and our gate passed all three because every reading-level finding is advisory. Reading level
+degrades at scale and our gate cannot currently stop it.
+
 ## 17. Corrections to Part I
 
 - **5.3's "untested cell" has been tested**, and the result is not the simple one either reading

@@ -1,0 +1,409 @@
+{
+ "n_start": {
+  "code_form": {
+   "text": "rows of two-letter map references coming through steady between the pips, each one jotted down the moment it lands",
+   "kind": "letter_grid"
+  },
+  "receiver": {
+   "text": "her portable direction finder, dials and a swinging needle in a case scuffed pale at the corners",
+   "kind": "direction_finder"
+  }
+ },
+ "n_decode": {
+  "code_form": {
+   "text": "the logbook's grid key: a lettered-and-numbered square taped inside the cover; find the row letter, find the column number, and read off the square where they cross",
+   "kind": "letter_grid"
+  }
+ },
+ "wt_lane": {
+  "landmark": {
+   "text": "the Wrenfield reservoir standpipe on Gill Bank, a single round column ringed by five identical iron rungs bolted up its side",
+   "kind": "waterworks_landmark"
+  }
+ },
+ "wt_gate": {
+  "code_form": {
+   "text": "the grid reads off E3, B3, B7: REACH LOW RUNG, telling them the height and which rung to check",
+   "kind": "letter_grid"
+  }
+ },
+ "wt_ladder": {
+  "obstacle": {
+   "text": "the standpipe's outer rungs, each one slick with a night's frost and the top one bent besides",
+   "kind": "frozen_climb"
+  }
+ },
+ "wt_tap": {
+  "wonder_detail": {
+   "text": "the marked rung gives back a bright, ringing note when struck, brighter than the flat clank of the rungs around it",
+   "kind": "resonant_note"
+  }
+ },
+ "wt_marks": {
+  "waypoint_mark": {
+   "text": "a tiny painted spiral with a single dot at its centre, which turns out to match the mark drawn inside the logbook's own cover",
+   "kind": "painted_glyph"
+  }
+ },
+ "wt_box": {
+  "cache_container": {
+   "text": "a small hinged inspection door on the marked rung's bracket, repurposed to hold one folded note",
+   "kind": "hinged_fitting"
+  },
+  "memory_carrier": {
+   "text": "a torn corner of graph paper pinned inside the fixture, a hand-ruled diagram of the ropewalk's racks with a number circled twice",
+   "kind": "drawn_card"
+  }
+ },
+ "wt_shed": {
+  "club_relic": {
+   "text": "a yellowed group snapshot pinned above the store bench, curled hard at the corners",
+   "kind": "photograph_caption"
+  }
+ },
+ "wt_photo": {
+  "club_relic": {
+   "text": "the same photograph read close up: 'Reservoir Watch, Wrenfield, 1959', captioned with her own maiden name",
+   "kind": "photograph_caption"
+  }
+ },
+ "wt_cans": {
+  "cache_container": {
+   "text": "a coil-oil can on the shelf, labelled 'EMPTY - SPARE' in block capitals, and oddly light for its size",
+   "kind": "mislabelled_container"
+  }
+ },
+ "wt_cache": {
+  "keepsake_token": {
+   "text": "an engraved washer reading THE, its rim green with age",
+   "kind": "engraved_token"
+  },
+  "memory_slip": {
+   "text": "a handwritten slip: she climbed the standpipe every spring to check the rungs herself, longer than the town ever asked her to",
+   "kind": "handwritten_slip"
+  }
+ },
+ "cn_marquee": {
+  "landmark": {
+   "text": "the boarded-up Lyric Hall on Cooper's Row, its ticket booth window still chalked with a matinee price",
+   "kind": "shuttered_playhouse"
+  },
+  "code_form": {
+   "text": "the grid reads off D2, F9, F1, F5: SEAT J NINE, THEN WHERE THE LIGHT LIVES",
+   "kind": "letter_grid"
+  }
+ },
+ "cn_stage": {
+  "obstacle": {
+   "text": "the Lyric's orchestra pit cover, one panel clearly rotted through beside a perfectly sound plank walkway",
+   "kind": "weak_floor"
+  }
+ },
+ "cn_horns": {
+  "wonder_detail": {
+   "text": "the beam finds the Lyric's old speaker horns stacked in the wings, brass bells tarnished green and pointed every which way",
+   "kind": "night_view"
+  }
+ },
+ "cn_plate": {
+  "cache_container": {
+   "text": "a neat hollow chiselled into the pit cover's underside, dry and hand-shaped",
+   "kind": "cast_cavity"
+  }
+ },
+ "cn_booth": {
+  "cache_container": {
+   "text": "a tobacco tin wedged in the rack, taped shut and lettered dark with one single word on the lid",
+   "kind": "sealed_tin"
+  },
+  "club_relic": {
+   "text": "a reel labelled in faded grease pencil, 'LYRIC - CLOSING NIGHT', still threaded from whoever last watched it",
+   "kind": "film_reel"
+  }
+ },
+ "cn_cache": {
+  "keepsake_token": {
+   "text": "a punched fibre disc reading NET, softer than metal and warm to the touch",
+   "kind": "punched_disc"
+  },
+  "memory_slip": {
+   "text": "a photograph caption: she sold tickets at the Lyric Hall for six winters and knew every regular by their coat",
+   "kind": "photograph_caption"
+  }
+ },
+ "hb_road": {
+  "landmark": {
+   "text": "the ropewalk store beside Gull Quay, stacked floor to roof with coiled line and retired winches",
+   "kind": "working_waterfront"
+  },
+  "wonder_detail": {
+   "text": "a channel buoy bell far out on the water, tolling once every so often in a rhythm the whole valley seems to breathe to",
+   "kind": "distant_bell"
+  }
+ },
+ "hb_quay": {
+  "obstacle": {
+   "text": "a flat-bottomed punt chained at the ropewalk steps, a crack up one side plugged with old rag",
+   "kind": "unfit_boat"
+  }
+ },
+ "hb_doors": {
+  "waypoint_mark": {
+   "text": "worked in among the barrier's stencilled numbers, the same small painted spiral-and-dot",
+   "kind": "painted_glyph"
+  }
+ },
+ "hb_office": {
+  "night_keeper": {
+   "text": "the ropewalk's night porter, a transistor radio muttering on the shelf beside his tea",
+   "kind": "night_watch_adult"
+  }
+ },
+ "hb_pad": {
+  "club_relic": {
+   "text": "his own ropewalk stock-books stacked under tonight's grid sheets, her initials once in a margin beside a delivery date",
+   "kind": "old_logsheets"
+  },
+  "waypoint_mark": {
+   "text": "the spiral-and-dot, painted small in one corner of his own old log pages",
+   "kind": "painted_glyph"
+  }
+ },
+ "hb_shed": {
+  "code_form": {
+   "text": "the grid reads off, letter by letter, THE ONE THAT STILL SPEAKS, naming the retired winch that answers back",
+   "kind": "letter_grid"
+  }
+ },
+ "hb_cage": {
+  "waypoint_mark": {
+   "text": "under the torch, fresher paint resolves into the spiral-and-dot with an arrow beside it",
+   "kind": "painted_glyph"
+  }
+ },
+ "hb_cache": {
+  "cache_container": {
+   "text": "a narrow capsule fitted into the old winch's drum, exactly where a bearing should sit and doesn't",
+   "kind": "swaged_capsule"
+  },
+  "keepsake_token": {
+   "text": "a cast pewter medallion reading STAYS, cool and dense in the palm",
+   "kind": "cast_medallion"
+  },
+  "memory_slip": {
+   "text": "an annotated chart: her own log of the ropewalk's stock, margins noting which nights she covered for the night watchman",
+   "kind": "annotated_chart"
+  }
+ },
+ "lb_green": {
+  "landmark": {
+   "text": "the Wrenfield Reading Room on Parish Lane, a converted chapel that keeps the valley's old newspapers and maps",
+   "kind": "civic_archive"
+  },
+  "wonder_detail": {
+   "text": "a single green-shaded lamp left burning over the newspaper table, the only light on in the whole reading room",
+   "kind": "lamp_left_burning"
+  },
+  "code_form": {
+   "text": "the grid reads off ROOM CHART FIFTY-NINE, MIND THE BELL, naming the room, the chart's year, and the door's warning",
+   "kind": "letter_grid"
+  }
+ },
+ "lb_porch": {
+  "obstacle": {
+   "text": "a set of tin cans wired above the reading room's side door, strung to rattle at the slightest push",
+   "kind": "night_alarm"
+  },
+  "key_place": {
+   "text": "a bent nail under the reading room's step, the spare key looped on it since long before the children were born",
+   "kind": "hidden_nail"
+  }
+ },
+ "lb_maproom": {
+  "waypoint_mark": {
+   "text": "one drawer label carries the spiral-and-dot in paint where all the others carry only type",
+   "kind": "painted_glyph"
+  }
+ },
+ "lb_hunt": {
+  "waypoint_mark": {
+   "text": "the search ends on the same painted spiral-and-dot, bright even under old varnish",
+   "kind": "painted_glyph"
+  }
+ },
+ "lb_table": {
+  "club_relic": {
+   "text": "a half-mounted display card naming 'The Wrenfield Valley Net, established 1960', one corner still waiting for its pin",
+   "kind": "display_card"
+  }
+ },
+ "lb_drawer": {
+  "cache_container": {
+   "text": "a capsule taped flat inside the chart cabinet's own runner, exactly where the filer's hand would rest",
+   "kind": "taped_capsule"
+  },
+  "keepsake_token": {
+   "text": "a stamped luggage tag reading OPEN, its string still knotted the way she tied it",
+   "kind": "stamped_tag"
+  },
+  "memory_slip": {
+   "text": "a drawn card: a quick sketch of the founding supper, place cards in a ring, hers at the head",
+   "kind": "drawn_card"
+  }
+ },
+ "bh_path": {
+  "landmark": {
+   "text": "the disused fire-spotting tower on Cross Fell, a wooden lookout cab on iron stilts above the heather",
+   "kind": "hilltop_installation"
+  },
+  "obstacle": {
+   "text": "a slide of loose shale below the fire tower's proper stair, visibly moving even before anyone sets foot on it",
+   "kind": "loose_slope"
+  }
+ },
+ "bh_wind": {
+  "wonder_detail": {
+   "text": "the fire tower's guy cables hum in the wind at different pitches, so the whole tower seems to be humming one long chord",
+   "kind": "wind_music"
+  },
+  "code_form": {
+   "text": "the grid reads off WIRES HUM SECOND POST, naming the singing stays and which post to search",
+   "kind": "letter_grid"
+  }
+ },
+ "bh_plate": {
+  "waypoint_mark": {
+   "text": "one fastening alone wears a painted spiral-and-dot that was never part of the original fitting",
+   "kind": "painted_glyph"
+  }
+ },
+ "bh_pillar": {
+  "waypoint_mark": {
+   "text": "the spiral-and-dot is painted beside the survey marker, with one line pointing off it",
+   "kind": "painted_glyph"
+  }
+ },
+ "bh_hollow": {
+  "cache_container": {
+   "text": "a dry pocket built into the fire tower's footing when it was raised, closed with a fitted stone",
+   "kind": "cast_cavity"
+  }
+ },
+ "bh_cache": {
+  "keepsake_token": {
+   "text": "a second engraved washer, smaller, reading TONIGHT",
+   "kind": "engraved_token"
+  },
+  "memory_slip": {
+   "text": "another handwritten note: she once talked a stranded trawler home by voice alone, and wrote the whole exchange out afterward word for word",
+   "kind": "handwritten_slip"
+  }
+ },
+ "fin_bearing": {
+  "destination": {
+   "text": "the abandoned Wrenfield Junction ticket office beyond the goods yard, a single lamp burning behind its shuttered booking window and a wire looping out to a birch tree",
+   "kind": "disused_railway_building"
+  }
+ },
+ "fin_gate": {
+  "obstacle": {
+   "text": "the ticket office's booking window, boarded from the inside and well out of any safe reach",
+   "kind": "painted_shut_window"
+  }
+ },
+ "fin_lintel": {
+  "key_place": {
+   "text": "the ticket office's lintel, felt along and found empty except old paint flakes",
+   "kind": "under_lintel"
+  }
+ },
+ "fin_wrenbox": {
+  "key_place": {
+   "text": "a weatherproofed nesting box wired to the aerial mast, its little door holding a key wrapped in a twist of brown paper",
+   "kind": "weatherproof_box"
+  }
+ },
+ "fin_threshold": {
+  "station_workings": {
+   "text": "a clockwork timer counting down under glass, a spooled tape deck running untouched beside it, and a hand crank clipped beside the housing",
+   "kind": "clockwork_timer"
+  }
+ },
+ "fin_wall": {
+  "club_relic": {
+   "text": "a chart of members pinned to corkboard, call letters in one column and a note beside each, ending in a typed card that lays out the office's whole purpose",
+   "kind": "annotated_chart"
+  }
+ },
+ "fin_keep": {
+  "documentation": {
+   "text": "a maintenance folder, diagrams numbered one to ten and written for someone who has never done this before",
+   "kind": "maintenance_folder"
+  }
+ },
+ "f_answer_script": {
+  "code_form": {
+   "text": "the grid's last coordinates resolve into the five words the club always closed on, ruled out along the cover of the logbook: THE NET STAYS OPEN TONIGHT",
+   "kind": "letter_grid"
+  }
+ },
+ "e_win_signoff": {
+  "code_form": {
+   "text": "the five words the grid gave up, letter by letter, are read aloud in the order the coordinates found them",
+   "kind": "letter_grid"
+  },
+  "mechanism": "the grid gives up its closing phrase letter by letter and it is read complete, THE NET STAYS OPEN TONIGHT, and the reels wind down on the coordinate that was always meant to be last"
+ },
+ "e_wt_climb": {
+  "mechanism": "a hand slips on the frost-slick top rung and a sibling catches her elbow before the bent rung takes any weight, the standpipe left for another night with the grid still unbroken here"
+ },
+ "e_cn_boards": {
+  "mechanism": "the Lyric's rotted pit cover gives with a crack and a sibling's grip has her before the gap opens wider than a boot, the sound apron a slow careful crawl away"
+ },
+ "e_cn_reel": {
+  "mechanism": "the labelled reel threads and runs, and the Lyric's screen gives back a night the ropewalk crowd once shared, watched start to finish from two seats in an empty house"
+ },
+ "e_hb_dinghy": {
+  "mechanism": "the punt's patched crack lets in water within a boat's length of the ropewalk steps, and two children squelch back up in a hurry while the buoy bell tolls on regardless"
+ },
+ "e_hb_stories": {
+  "mechanism": "the transistor radio gets turned down and the night porter's stories outlast the clock, the ropewalk's whole history told over two mugs of tea until the tide turns"
+ },
+ "e_lb_alarm": {
+  "mechanism": "the wired tin cans clatter under a pushed door, and the children stand their ground, waiting for the caretaker who appears in her cardigan, setting terms rather than a telling-off"
+ },
+ "e_bh_scree": {
+  "mechanism": "the loose shale slide gives way and sets them down hard at the base of the fire tower's stair, palms grazed and the proper stair waiting, unhurried, for another night"
+ },
+ "e_fin_window": {
+  "mechanism": "the stretch toward the ticket office's boarded window proves hopeless from the first foot of reach, and a sibling hauls her back before the sill even takes her weight"
+ },
+ "e_fin_late": {
+  "mechanism": "one line too many read off the members' chart, and the closing groups start over the speaker before either of them reaches the microphone"
+ },
+ "e_fin_listen": {
+  "mechanism": "the closing groups play out through the ticket office door, unopened, the two of them shoulder to shoulder on the step until the tape runs out"
+ },
+ "e_win_net": {
+  "mechanism": "the grid's last coordinate gives way to a held-open pause, and old members of the valley net answer back one by one, farther and farther down the line"
+ },
+ "e_win_answer": {
+  "mechanism": "her name goes under the grid key's last entry in the same book, and the reel finishes with her voice recorded next to the coordinates that got her here"
+ },
+ "e_win_encore": {
+  "mechanism": "the grid's closing phrase is read complete, then a promise of their own follows it, and the crank winds the tape machine firm for next year's opening night"
+ },
+ "e_win_keepers": {
+  "mechanism": "hands are shaken over the freshly wound tape machine, and the grid key gets two keepers who promise to keep the coordinates straight"
+ },
+ "e_win_apprentice": {
+  "mechanism": "the numbered diagrams get worked through Saturday by Saturday, until two new names sit in the book as people who can run the grid key and the reel machine alike"
+ },
+ "e_win_family": {
+  "mechanism": "the charged phone brings the parent in before the tape runs out, and three generations crowd the little desk for the closing coordinates together"
+ },
+ "e_win_passiton": {
+  "mechanism": "five new grid references go onto the reel in two young voices, and the following spring other children across Wrenfield start decoding a hunt of their own"
+ },
+ "label_style": "name the place you are going to, let the reason stay implied"
+}

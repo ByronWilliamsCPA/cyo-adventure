@@ -1,0 +1,1470 @@
+{
+ "schema_version": "2.0",
+ "id": "sk_midnight_frequency",
+ "version": 1,
+ "title": "<<FILL book_title>>",
+ "metadata": {
+  "age_band": "10-13",
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 5.5,
+   "tolerance": 1.5
+  },
+  "tier": 1,
+  "themes": [
+   "mystery",
+   "codes",
+   "family",
+   "legacy"
+  ],
+  "estimated_minutes": 7,
+  "ending_count": 18,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "mild",
+   "peril": "moderate"
+  },
+  "topology": "open_map",
+  "length": "short",
+  "narrative_style": "prose",
+  "production_eligible": true
+ },
+ "variables": [],
+ "start_node": "n_start",
+ "nodes": [
+  {
+   "id": "n_start",
+   "body": "<<FILL role=setup words=120 tier=open contract='n_start'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_start_teo",
+     "label": "<<FILL label contract='n_start.c_start_teo'>>",
+     "target": "n_teo"
+    }
+   ]
+  },
+  {
+   "id": "n_teo",
+   "body": "<<FILL role=setup words=105 tier=open contract='n_teo'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_teo_decode",
+     "label": "<<FILL label contract='n_teo.c_teo_decode'>>",
+     "target": "n_decode"
+    }
+   ]
+  },
+  {
+   "id": "n_decode",
+   "body": "<<FILL role=setup words=115 tier=open contract='n_decode'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_decode_ride",
+     "label": "<<FILL label contract='n_decode.c_decode_ride'>>",
+     "target": "n_hub"
+    }
+   ]
+  },
+  {
+   "id": "n_hub",
+   "body": "<<FILL role=choice words=110 tier=open contract='n_hub'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hub_tower",
+     "label": "<<FILL label contract='n_hub.c_hub_tower'>>",
+     "target": "wt_lane"
+    },
+    {
+     "id": "c_hub_cinema",
+     "label": "<<FILL label contract='n_hub.c_hub_cinema'>>",
+     "target": "cn_marquee"
+    },
+    {
+     "id": "c_hub_harbor",
+     "label": "<<FILL label contract='n_hub.c_hub_harbor'>>",
+     "target": "hb_road"
+    },
+    {
+     "id": "c_hub_library",
+     "label": "<<FILL label contract='n_hub.c_hub_library'>>",
+     "target": "lb_green"
+    },
+    {
+     "id": "c_hub_mast",
+     "label": "<<FILL label contract='n_hub.c_hub_mast'>>",
+     "target": "bh_path"
+    },
+    {
+     "id": "c_hub_nest",
+     "label": "<<FILL label contract='n_hub.c_hub_nest'>>",
+     "target": "fin_bearing"
+    }
+   ]
+  },
+  {
+   "id": "wt_lane",
+   "body": "<<FILL role=rising words=90 tier=open contract='wt_lane'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wt_lane_on",
+     "label": "<<FILL label contract='wt_lane.c_wt_lane_on'>>",
+     "target": "wt_gap"
+    }
+   ]
+  },
+  {
+   "id": "wt_gap",
+   "body": "<<FILL role=rising words=85 tier=open contract='wt_gap'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wt_gap_lot",
+     "label": "<<FILL label contract='wt_gap.c_wt_gap_lot'>>",
+     "target": "wt_gate"
+    }
+   ]
+  },
+  {
+   "id": "wt_gate",
+   "body": "<<FILL role=choice words=105 tier=open contract='wt_gate'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wt_gate_shed",
+     "label": "<<FILL label contract='wt_gate.c_wt_gate_shed'>>",
+     "target": "wt_shed"
+    },
+    {
+     "id": "c_wt_gate_legs",
+     "label": "<<FILL label contract='wt_gate.c_wt_gate_legs'>>",
+     "target": "wt_legs"
+    },
+    {
+     "id": "c_wt_gate_ladder",
+     "label": "<<FILL label contract='wt_gate.c_wt_gate_ladder'>>",
+     "target": "wt_ladder"
+    }
+   ]
+  },
+  {
+   "id": "wt_ladder",
+   "body": "<<FILL role=choice words=95 tier=open contract='wt_ladder'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wt_ladder_climb",
+     "label": "<<FILL label contract='wt_ladder.c_wt_ladder_climb'>>",
+     "target": "e_wt_climb"
+    },
+    {
+     "id": "c_wt_ladder_legs",
+     "label": "<<FILL label contract='wt_ladder.c_wt_ladder_legs'>>",
+     "target": "wt_legs"
+    }
+   ]
+  },
+  {
+   "id": "wt_legs",
+   "body": "<<FILL role=choice words=95 tier=open contract='wt_legs'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wt_legs_tap",
+     "label": "<<FILL label contract='wt_legs.c_wt_legs_tap'>>",
+     "target": "wt_tap"
+    },
+    {
+     "id": "c_wt_legs_marks",
+     "label": "<<FILL label contract='wt_legs.c_wt_legs_marks'>>",
+     "target": "wt_marks"
+    }
+   ]
+  },
+  {
+   "id": "wt_tap",
+   "body": "<<FILL role=rising words=90 tier=open contract='wt_tap'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wt_tap_box",
+     "label": "<<FILL label contract='wt_tap.c_wt_tap_box'>>",
+     "target": "wt_box"
+    }
+   ]
+  },
+  {
+   "id": "wt_marks",
+   "body": "<<FILL role=rising words=85 tier=open contract='wt_marks'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wt_marks_box",
+     "label": "<<FILL label contract='wt_marks.c_wt_marks_box'>>",
+     "target": "wt_box"
+    }
+   ]
+  },
+  {
+   "id": "wt_box",
+   "body": "<<FILL role=choice words=95 tier=open contract='wt_box'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wt_box_shed",
+     "label": "<<FILL label contract='wt_box.c_wt_box_shed'>>",
+     "target": "wt_shed"
+    },
+    {
+     "id": "c_wt_box_card",
+     "label": "<<FILL label contract='wt_box.c_wt_box_card'>>",
+     "target": "wt_card"
+    }
+   ]
+  },
+  {
+   "id": "wt_card",
+   "body": "<<FILL role=rising words=90 tier=open contract='wt_card'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wt_card_shed",
+     "label": "<<FILL label contract='wt_card.c_wt_card_shed'>>",
+     "target": "wt_shed"
+    }
+   ]
+  },
+  {
+   "id": "wt_shed",
+   "body": "<<FILL role=choice words=100 tier=open contract='wt_shed'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wt_shed_cans",
+     "label": "<<FILL label contract='wt_shed.c_wt_shed_cans'>>",
+     "target": "wt_cans"
+    },
+    {
+     "id": "c_wt_shed_photo",
+     "label": "<<FILL label contract='wt_shed.c_wt_shed_photo'>>",
+     "target": "wt_photo"
+    }
+   ]
+  },
+  {
+   "id": "wt_photo",
+   "body": "<<FILL role=rising words=90 tier=open contract='wt_photo'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wt_photo_cans",
+     "label": "<<FILL label contract='wt_photo.c_wt_photo_cans'>>",
+     "target": "wt_cans"
+    }
+   ]
+  },
+  {
+   "id": "wt_cans",
+   "body": "<<FILL role=rising words=95 tier=open contract='wt_cans'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wt_cans_open",
+     "label": "<<FILL label contract='wt_cans.c_wt_cans_open'>>",
+     "target": "wt_cache"
+    }
+   ]
+  },
+  {
+   "id": "wt_cache",
+   "body": "<<FILL role=choice words=110 tier=open contract='wt_cache'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wt_cache_hub",
+     "label": "<<FILL label contract='wt_cache.c_wt_cache_hub'>>",
+     "target": "n_hub"
+    },
+    {
+     "id": "c_wt_cache_nest",
+     "label": "<<FILL label contract='wt_cache.c_wt_cache_nest'>>",
+     "target": "fin_bearing"
+    }
+   ]
+  },
+  {
+   "id": "e_wt_climb",
+   "body": "<<FILL role=failure words=90 tier=locked_outcome contract='e_wt_climb'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end_wt_climb",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "<<FILL ending_title>>"
+   }
+  },
+  {
+   "id": "cn_marquee",
+   "body": "<<FILL role=rising words=90 tier=open contract='cn_marquee'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cn_marquee_alley",
+     "label": "<<FILL label contract='cn_marquee.c_cn_marquee_alley'>>",
+     "target": "cn_alley"
+    }
+   ]
+  },
+  {
+   "id": "cn_alley",
+   "body": "<<FILL role=choice words=95 tier=open contract='cn_alley'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cn_alley_stalls",
+     "label": "<<FILL label contract='cn_alley.c_cn_alley_stalls'>>",
+     "target": "cn_stalls"
+    },
+    {
+     "id": "c_cn_alley_stairs",
+     "label": "<<FILL label contract='cn_alley.c_cn_alley_stairs'>>",
+     "target": "cn_boothstairs"
+    }
+   ]
+  },
+  {
+   "id": "cn_stalls",
+   "body": "<<FILL role=choice words=100 tier=open contract='cn_stalls'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cn_stalls_rowj",
+     "label": "<<FILL label contract='cn_stalls.c_cn_stalls_rowj'>>",
+     "target": "cn_rowj"
+    },
+    {
+     "id": "c_cn_stalls_stage",
+     "label": "<<FILL label contract='cn_stalls.c_cn_stalls_stage'>>",
+     "target": "cn_stage"
+    }
+   ]
+  },
+  {
+   "id": "cn_rowj",
+   "body": "<<FILL role=choice words=95 tier=open contract='cn_rowj'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cn_rowj_under",
+     "label": "<<FILL label contract='cn_rowj.c_cn_rowj_under'>>",
+     "target": "cn_under"
+    },
+    {
+     "id": "c_cn_rowj_tip",
+     "label": "<<FILL label contract='cn_rowj.c_cn_rowj_tip'>>",
+     "target": "cn_tip"
+    }
+   ]
+  },
+  {
+   "id": "cn_under",
+   "body": "<<FILL role=rising words=85 tier=open contract='cn_under'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cn_under_plate",
+     "label": "<<FILL label contract='cn_under.c_cn_under_plate'>>",
+     "target": "cn_plate"
+    }
+   ]
+  },
+  {
+   "id": "cn_tip",
+   "body": "<<FILL role=rising words=85 tier=open contract='cn_tip'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cn_tip_plate",
+     "label": "<<FILL label contract='cn_tip.c_cn_tip_plate'>>",
+     "target": "cn_plate"
+    }
+   ]
+  },
+  {
+   "id": "cn_plate",
+   "body": "<<FILL role=rising words=95 tier=open contract='cn_plate'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cn_plate_stairs",
+     "label": "<<FILL label contract='cn_plate.c_cn_plate_stairs'>>",
+     "target": "cn_boothstairs"
+    }
+   ]
+  },
+  {
+   "id": "cn_stage",
+   "body": "<<FILL role=choice words=95 tier=open contract='cn_stage'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cn_stage_edge",
+     "label": "<<FILL label contract='cn_stage.c_cn_stage_edge'>>",
+     "target": "cn_horns"
+    },
+    {
+     "id": "c_cn_stage_rush",
+     "label": "<<FILL label contract='cn_stage.c_cn_stage_rush'>>",
+     "target": "e_cn_boards"
+    }
+   ]
+  },
+  {
+   "id": "cn_horns",
+   "body": "<<FILL role=rising words=90 tier=open contract='cn_horns'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cn_horns_stairs",
+     "label": "<<FILL label contract='cn_horns.c_cn_horns_stairs'>>",
+     "target": "cn_boothstairs"
+    }
+   ]
+  },
+  {
+   "id": "cn_boothstairs",
+   "body": "<<FILL role=choice words=90 tier=open contract='cn_boothstairs'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cn_stairs_in",
+     "label": "<<FILL label contract='cn_boothstairs.c_cn_stairs_in'>>",
+     "target": "cn_booth"
+    },
+    {
+     "id": "c_cn_stairs_port",
+     "label": "<<FILL label contract='cn_boothstairs.c_cn_stairs_port'>>",
+     "target": "cn_port"
+    }
+   ]
+  },
+  {
+   "id": "cn_port",
+   "body": "<<FILL role=rising words=85 tier=open contract='cn_port'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cn_port_in",
+     "label": "<<FILL label contract='cn_port.c_cn_port_in'>>",
+     "target": "cn_booth"
+    }
+   ]
+  },
+  {
+   "id": "cn_booth",
+   "body": "<<FILL role=choice words=100 tier=open contract='cn_booth'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cn_booth_open",
+     "label": "<<FILL label contract='cn_booth.c_cn_booth_open'>>",
+     "target": "cn_cache"
+    },
+    {
+     "id": "c_cn_booth_thread",
+     "label": "<<FILL label contract='cn_booth.c_cn_booth_thread'>>",
+     "target": "e_cn_reel"
+    }
+   ]
+  },
+  {
+   "id": "cn_cache",
+   "body": "<<FILL role=choice words=110 tier=open contract='cn_cache'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cn_cache_hub",
+     "label": "<<FILL label contract='cn_cache.c_cn_cache_hub'>>",
+     "target": "n_hub"
+    },
+    {
+     "id": "c_cn_cache_nest",
+     "label": "<<FILL label contract='cn_cache.c_cn_cache_nest'>>",
+     "target": "fin_bearing"
+    }
+   ]
+  },
+  {
+   "id": "e_cn_boards",
+   "body": "<<FILL role=failure words=90 tier=locked_outcome contract='e_cn_boards'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end_cn_boards",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "<<FILL ending_title>>"
+   }
+  },
+  {
+   "id": "e_cn_reel",
+   "body": "<<FILL role=ending words=95 tier=locked_outcome contract='e_cn_reel'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end_cn_reel",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "<<FILL ending_title>>"
+   }
+  },
+  {
+   "id": "hb_road",
+   "body": "<<FILL role=rising words=90 tier=open contract='hb_road'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hb_road_wall",
+     "label": "<<FILL label contract='hb_road.c_hb_road_wall'>>",
+     "target": "hb_wall"
+    }
+   ]
+  },
+  {
+   "id": "hb_wall",
+   "body": "<<FILL role=rising words=85 tier=open contract='hb_wall'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hb_wall_quay",
+     "label": "<<FILL label contract='hb_wall.c_hb_wall_quay'>>",
+     "target": "hb_quay"
+    }
+   ]
+  },
+  {
+   "id": "hb_quay",
+   "body": "<<FILL role=choice words=100 tier=open contract='hb_quay'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hb_quay_office",
+     "label": "<<FILL label contract='hb_quay.c_hb_quay_office'>>",
+     "target": "hb_office"
+    },
+    {
+     "id": "c_hb_quay_doors",
+     "label": "<<FILL label contract='hb_quay.c_hb_quay_doors'>>",
+     "target": "hb_doors"
+    },
+    {
+     "id": "c_hb_quay_dinghy",
+     "label": "<<FILL label contract='hb_quay.c_hb_quay_dinghy'>>",
+     "target": "e_hb_dinghy"
+    }
+   ]
+  },
+  {
+   "id": "hb_doors",
+   "body": "<<FILL role=choice words=90 tier=open contract='hb_doors'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hb_doors_peek",
+     "label": "<<FILL label contract='hb_doors.c_hb_doors_peek'>>",
+     "target": "hb_peek"
+    },
+    {
+     "id": "c_hb_doors_office",
+     "label": "<<FILL label contract='hb_doors.c_hb_doors_office'>>",
+     "target": "hb_office"
+    }
+   ]
+  },
+  {
+   "id": "hb_peek",
+   "body": "<<FILL role=rising words=85 tier=open contract='hb_peek'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hb_peek_office",
+     "label": "<<FILL label contract='hb_peek.c_hb_peek_office'>>",
+     "target": "hb_office"
+    }
+   ]
+  },
+  {
+   "id": "hb_office",
+   "body": "<<FILL role=choice words=105 tier=open contract='hb_office'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hb_office_show",
+     "label": "<<FILL label contract='hb_office.c_hb_office_show'>>",
+     "target": "hb_show"
+    },
+    {
+     "id": "c_hb_office_pad",
+     "label": "<<FILL label contract='hb_office.c_hb_office_pad'>>",
+     "target": "hb_pad"
+    }
+   ]
+  },
+  {
+   "id": "hb_show",
+   "body": "<<FILL role=rising words=95 tier=open contract='hb_show'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hb_show_key",
+     "label": "<<FILL label contract='hb_show.c_hb_show_key'>>",
+     "target": "hb_key"
+    }
+   ]
+  },
+  {
+   "id": "hb_pad",
+   "body": "<<FILL role=rising words=95 tier=open contract='hb_pad'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hb_pad_key",
+     "label": "<<FILL label contract='hb_pad.c_hb_pad_key'>>",
+     "target": "hb_key"
+    }
+   ]
+  },
+  {
+   "id": "hb_key",
+   "body": "<<FILL role=choice words=95 tier=open contract='hb_key'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hb_key_shed",
+     "label": "<<FILL label contract='hb_key.c_hb_key_shed'>>",
+     "target": "hb_shed"
+    },
+    {
+     "id": "c_hb_key_stories",
+     "label": "<<FILL label contract='hb_key.c_hb_key_stories'>>",
+     "target": "e_hb_stories"
+    }
+   ]
+  },
+  {
+   "id": "hb_shed",
+   "body": "<<FILL role=choice words=95 tier=open contract='hb_shed'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hb_shed_ring",
+     "label": "<<FILL label contract='hb_shed.c_hb_shed_ring'>>",
+     "target": "hb_bell"
+    },
+    {
+     "id": "c_hb_shed_cage",
+     "label": "<<FILL label contract='hb_shed.c_hb_shed_cage'>>",
+     "target": "hb_cage"
+    }
+   ]
+  },
+  {
+   "id": "hb_bell",
+   "body": "<<FILL role=rising words=90 tier=open contract='hb_bell'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hb_bell_capsule",
+     "label": "<<FILL label contract='hb_bell.c_hb_bell_capsule'>>",
+     "target": "hb_cache"
+    }
+   ]
+  },
+  {
+   "id": "hb_cage",
+   "body": "<<FILL role=rising words=85 tier=open contract='hb_cage'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hb_cage_capsule",
+     "label": "<<FILL label contract='hb_cage.c_hb_cage_capsule'>>",
+     "target": "hb_cache"
+    }
+   ]
+  },
+  {
+   "id": "hb_cache",
+   "body": "<<FILL role=choice words=110 tier=open contract='hb_cache'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hb_cache_hub",
+     "label": "<<FILL label contract='hb_cache.c_hb_cache_hub'>>",
+     "target": "n_hub"
+    },
+    {
+     "id": "c_hb_cache_nest",
+     "label": "<<FILL label contract='hb_cache.c_hb_cache_nest'>>",
+     "target": "fin_bearing"
+    }
+   ]
+  },
+  {
+   "id": "e_hb_dinghy",
+   "body": "<<FILL role=failure words=90 tier=locked_outcome contract='e_hb_dinghy'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end_hb_dinghy",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "<<FILL ending_title>>"
+   }
+  },
+  {
+   "id": "e_hb_stories",
+   "body": "<<FILL role=ending words=100 tier=locked_outcome contract='e_hb_stories'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end_hb_stories",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "<<FILL ending_title>>"
+   }
+  },
+  {
+   "id": "lb_green",
+   "body": "<<FILL role=rising words=85 tier=open contract='lb_green'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_lb_green_porch",
+     "label": "<<FILL label contract='lb_green.c_lb_green_porch'>>",
+     "target": "lb_porch"
+    }
+   ]
+  },
+  {
+   "id": "lb_porch",
+   "body": "<<FILL role=choice words=95 tier=open contract='lb_porch'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_lb_porch_owl",
+     "label": "<<FILL label contract='lb_porch.c_lb_porch_owl'>>",
+     "target": "lb_key"
+    },
+    {
+     "id": "c_lb_porch_handle",
+     "label": "<<FILL label contract='lb_porch.c_lb_porch_handle'>>",
+     "target": "e_lb_alarm"
+    }
+   ]
+  },
+  {
+   "id": "lb_key",
+   "body": "<<FILL role=rising words=85 tier=open contract='lb_key'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_lb_key_hall",
+     "label": "<<FILL label contract='lb_key.c_lb_key_hall'>>",
+     "target": "lb_hall"
+    }
+   ]
+  },
+  {
+   "id": "lb_hall",
+   "body": "<<FILL role=choice words=90 tier=open contract='lb_hall'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_lb_hall_maproom",
+     "label": "<<FILL label contract='lb_hall.c_lb_hall_maproom'>>",
+     "target": "lb_maproom"
+    },
+    {
+     "id": "c_lb_hall_table",
+     "label": "<<FILL label contract='lb_hall.c_lb_hall_table'>>",
+     "target": "lb_table"
+    }
+   ]
+  },
+  {
+   "id": "lb_table",
+   "body": "<<FILL role=rising words=85 tier=open contract='lb_table'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_lb_table_maproom",
+     "label": "<<FILL label contract='lb_table.c_lb_table_maproom'>>",
+     "target": "lb_maproom"
+    }
+   ]
+  },
+  {
+   "id": "lb_maproom",
+   "body": "<<FILL role=choice words=95 tier=open contract='lb_maproom'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_lb_maproom_diamond",
+     "label": "<<FILL label contract='lb_maproom.c_lb_maproom_diamond'>>",
+     "target": "lb_drawer"
+    },
+    {
+     "id": "c_lb_maproom_hunt",
+     "label": "<<FILL label contract='lb_maproom.c_lb_maproom_hunt'>>",
+     "target": "lb_hunt"
+    }
+   ]
+  },
+  {
+   "id": "lb_hunt",
+   "body": "<<FILL role=rising words=85 tier=open contract='lb_hunt'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_lb_hunt_drawer",
+     "label": "<<FILL label contract='lb_hunt.c_lb_hunt_drawer'>>",
+     "target": "lb_drawer"
+    }
+   ]
+  },
+  {
+   "id": "lb_drawer",
+   "body": "<<FILL role=choice words=115 tier=open contract='lb_drawer'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_lb_drawer_hub",
+     "label": "<<FILL label contract='lb_drawer.c_lb_drawer_hub'>>",
+     "target": "n_hub"
+    },
+    {
+     "id": "c_lb_drawer_nest",
+     "label": "<<FILL label contract='lb_drawer.c_lb_drawer_nest'>>",
+     "target": "fin_bearing"
+    }
+   ]
+  },
+  {
+   "id": "e_lb_alarm",
+   "body": "<<FILL role=failure words=90 tier=locked_outcome contract='e_lb_alarm'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end_lb_alarm",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "<<FILL ending_title>>"
+   }
+  },
+  {
+   "id": "bh_path",
+   "body": "<<FILL role=choice words=95 tier=open contract='bh_path'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_bh_path_switch",
+     "label": "<<FILL label contract='bh_path.c_bh_path_switch'>>",
+     "target": "bh_climb"
+    },
+    {
+     "id": "c_bh_path_scree",
+     "label": "<<FILL label contract='bh_path.c_bh_path_scree'>>",
+     "target": "e_bh_scree"
+    }
+   ]
+  },
+  {
+   "id": "bh_climb",
+   "body": "<<FILL role=rising words=85 tier=open contract='bh_climb'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_bh_climb_wind",
+     "label": "<<FILL label contract='bh_climb.c_bh_climb_wind'>>",
+     "target": "bh_wind"
+    }
+   ]
+  },
+  {
+   "id": "bh_wind",
+   "body": "<<FILL role=rising words=85 tier=open contract='bh_wind'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_bh_wind_summit",
+     "label": "<<FILL label contract='bh_wind.c_bh_wind_summit'>>",
+     "target": "bh_summit"
+    }
+   ]
+  },
+  {
+   "id": "bh_summit",
+   "body": "<<FILL role=choice words=100 tier=open contract='bh_summit'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_bh_summit_anchors",
+     "label": "<<FILL label contract='bh_summit.c_bh_summit_anchors'>>",
+     "target": "bh_anchors"
+    },
+    {
+     "id": "c_bh_summit_listen",
+     "label": "<<FILL label contract='bh_summit.c_bh_summit_listen'>>",
+     "target": "bh_listen"
+    }
+   ]
+  },
+  {
+   "id": "bh_listen",
+   "body": "<<FILL role=rising words=85 tier=open contract='bh_listen'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_bh_listen_anchors",
+     "label": "<<FILL label contract='bh_listen.c_bh_listen_anchors'>>",
+     "target": "bh_anchors"
+    }
+   ]
+  },
+  {
+   "id": "bh_anchors",
+   "body": "<<FILL role=choice words=95 tier=open contract='bh_anchors'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_bh_anchors_plate",
+     "label": "<<FILL label contract='bh_anchors.c_bh_anchors_plate'>>",
+     "target": "bh_plate"
+    },
+    {
+     "id": "c_bh_anchors_pillar",
+     "label": "<<FILL label contract='bh_anchors.c_bh_anchors_pillar'>>",
+     "target": "bh_pillar"
+    }
+   ]
+  },
+  {
+   "id": "bh_plate",
+   "body": "<<FILL role=rising words=85 tier=open contract='bh_plate'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_bh_plate_hollow",
+     "label": "<<FILL label contract='bh_plate.c_bh_plate_hollow'>>",
+     "target": "bh_hollow"
+    }
+   ]
+  },
+  {
+   "id": "bh_pillar",
+   "body": "<<FILL role=rising words=85 tier=open contract='bh_pillar'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_bh_pillar_hollow",
+     "label": "<<FILL label contract='bh_pillar.c_bh_pillar_hollow'>>",
+     "target": "bh_hollow"
+    }
+   ]
+  },
+  {
+   "id": "bh_hollow",
+   "body": "<<FILL role=rising words=95 tier=open contract='bh_hollow'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_bh_hollow_open",
+     "label": "<<FILL label contract='bh_hollow.c_bh_hollow_open'>>",
+     "target": "bh_cache"
+    }
+   ]
+  },
+  {
+   "id": "bh_cache",
+   "body": "<<FILL role=rising words=105 tier=open contract='bh_cache'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_bh_cache_view",
+     "label": "<<FILL label contract='bh_cache.c_bh_cache_view'>>",
+     "target": "bh_view"
+    }
+   ]
+  },
+  {
+   "id": "bh_view",
+   "body": "<<FILL role=choice words=100 tier=open contract='bh_view'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_bh_view_hub",
+     "label": "<<FILL label contract='bh_view.c_bh_view_hub'>>",
+     "target": "n_hub"
+    },
+    {
+     "id": "c_bh_view_nest",
+     "label": "<<FILL label contract='bh_view.c_bh_view_nest'>>",
+     "target": "fin_bearing"
+    }
+   ]
+  },
+  {
+   "id": "e_bh_scree",
+   "body": "<<FILL role=failure words=90 tier=locked_outcome contract='e_bh_scree'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end_bh_scree",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "<<FILL ending_title>>"
+   }
+  },
+  {
+   "id": "fin_bearing",
+   "body": "<<FILL role=rising words=100 tier=open contract='fin_bearing'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_finb_rails",
+     "label": "<<FILL label contract='fin_bearing.c_finb_rails'>>",
+     "target": "fin_gate"
+    }
+   ]
+  },
+  {
+   "id": "fin_gate",
+   "body": "<<FILL role=choice words=105 tier=open contract='fin_gate'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fing_key",
+     "label": "<<FILL label contract='fin_gate.c_fing_key'>>",
+     "target": "fin_search"
+    },
+    {
+     "id": "c_fing_window",
+     "label": "<<FILL label contract='fin_gate.c_fing_window'>>",
+     "target": "e_fin_window"
+    },
+    {
+     "id": "c_fing_listen",
+     "label": "<<FILL label contract='fin_gate.c_fing_listen'>>",
+     "target": "fin_door_listen"
+    }
+   ]
+  },
+  {
+   "id": "fin_door_listen",
+   "body": "<<FILL role=choice words=90 tier=open contract='fin_door_listen'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_finl_search",
+     "label": "<<FILL label contract='fin_door_listen.c_finl_search'>>",
+     "target": "fin_search"
+    },
+    {
+     "id": "c_finl_stay",
+     "label": "<<FILL label contract='fin_door_listen.c_finl_stay'>>",
+     "target": "e_fin_listen"
+    }
+   ]
+  },
+  {
+   "id": "fin_search",
+   "body": "<<FILL role=choice words=90 tier=open contract='fin_search'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fins_wrenbox",
+     "label": "<<FILL label contract='fin_search.c_fins_wrenbox'>>",
+     "target": "fin_wrenbox"
+    },
+    {
+     "id": "c_fins_lintel",
+     "label": "<<FILL label contract='fin_search.c_fins_lintel'>>",
+     "target": "fin_lintel"
+    }
+   ]
+  },
+  {
+   "id": "fin_lintel",
+   "body": "<<FILL role=rising words=80 tier=open contract='fin_lintel'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_flin_box",
+     "label": "<<FILL label contract='fin_lintel.c_flin_box'>>",
+     "target": "fin_wrenbox"
+    }
+   ]
+  },
+  {
+   "id": "fin_wrenbox",
+   "body": "<<FILL role=rising words=90 tier=open contract='fin_wrenbox'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_finw_door",
+     "label": "<<FILL label contract='fin_wrenbox.c_finw_door'>>",
+     "target": "fin_door"
+    }
+   ]
+  },
+  {
+   "id": "fin_door",
+   "body": "<<FILL role=rising words=85 tier=open contract='fin_door'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_find_in",
+     "label": "<<FILL label contract='fin_door.c_find_in'>>",
+     "target": "fin_threshold"
+    }
+   ]
+  },
+  {
+   "id": "fin_threshold",
+   "body": "<<FILL role=rising words=90 tier=open contract='fin_threshold'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fint_in",
+     "label": "<<FILL label contract='fin_threshold.c_fint_in'>>",
+     "target": "fin_inside"
+    }
+   ]
+  },
+  {
+   "id": "fin_inside",
+   "body": "<<FILL role=choice words=110 tier=open contract='fin_inside'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fini_wall",
+     "label": "<<FILL label contract='fin_inside.c_fini_wall'>>",
+     "target": "fin_wall"
+    },
+    {
+     "id": "c_fini_log",
+     "label": "<<FILL label contract='fin_inside.c_fini_log'>>",
+     "target": "fin_log"
+    },
+    {
+     "id": "c_fini_rack",
+     "label": "<<FILL label contract='fin_inside.c_fini_rack'>>",
+     "target": "fin_rack"
+    }
+   ]
+  },
+  {
+   "id": "fin_wall",
+   "body": "<<FILL role=choice words=105 tier=open contract='fin_wall'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fwall_linger",
+     "label": "<<FILL label contract='fin_wall.c_fwall_linger'>>",
+     "target": "e_fin_late"
+    },
+    {
+     "id": "c_fwall_turn",
+     "label": "<<FILL label contract='fin_wall.c_fwall_turn'>>",
+     "target": "fin_rack"
+    }
+   ]
+  },
+  {
+   "id": "fin_log",
+   "body": "<<FILL role=rising words=105 tier=open contract='fin_log'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_finlog_rack",
+     "label": "<<FILL label contract='fin_log.c_finlog_rack'>>",
+     "target": "fin_rack"
+    }
+   ]
+  },
+  {
+   "id": "fin_rack",
+   "body": "<<FILL role=choice words=115 tier=open contract='fin_rack'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_finr_answer",
+     "label": "<<FILL label contract='fin_rack.c_finr_answer'>>",
+     "target": "fin_answer"
+    },
+    {
+     "id": "c_finr_keep",
+     "label": "<<FILL label contract='fin_rack.c_finr_keep'>>",
+     "target": "fin_keep"
+    },
+    {
+     "id": "c_finr_share",
+     "label": "<<FILL label contract='fin_rack.c_finr_share'>>",
+     "target": "fin_share"
+    }
+   ]
+  },
+  {
+   "id": "fin_answer",
+   "body": "<<FILL role=choice words=100 tier=open contract='fin_answer'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fina_own",
+     "label": "<<FILL label contract='fin_answer.c_fina_own'>>",
+     "target": "f_answer_own"
+    },
+    {
+     "id": "c_fina_script",
+     "label": "<<FILL label contract='fin_answer.c_fina_script'>>",
+     "target": "f_answer_script"
+    }
+   ]
+  },
+  {
+   "id": "f_answer_own",
+   "body": "<<FILL role=choice words=100 tier=open contract='f_answer_own'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fao_listen",
+     "label": "<<FILL label contract='f_answer_own.c_fao_listen'>>",
+     "target": "e_win_net"
+    },
+    {
+     "id": "c_fao_sign",
+     "label": "<<FILL label contract='f_answer_own.c_fao_sign'>>",
+     "target": "e_win_answer"
+    }
+   ]
+  },
+  {
+   "id": "f_answer_script",
+   "body": "<<FILL role=choice words=100 tier=open contract='f_answer_script'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fas_written",
+     "label": "<<FILL label contract='f_answer_script.c_fas_written'>>",
+     "target": "e_win_signoff"
+    },
+    {
+     "id": "c_fas_promise",
+     "label": "<<FILL label contract='f_answer_script.c_fas_promise'>>",
+     "target": "e_win_encore"
+    }
+   ]
+  },
+  {
+   "id": "fin_keep",
+   "body": "<<FILL role=choice words=100 tier=open contract='fin_keep'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fink_wind",
+     "label": "<<FILL label contract='fin_keep.c_fink_wind'>>",
+     "target": "f_keep_wind"
+    },
+    {
+     "id": "c_fink_learn",
+     "label": "<<FILL label contract='fin_keep.c_fink_learn'>>",
+     "target": "f_keep_learn"
+    }
+   ]
+  },
+  {
+   "id": "f_keep_wind",
+   "body": "<<FILL role=rising words=95 tier=open contract='f_keep_wind'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fkw_end",
+     "label": "<<FILL label contract='f_keep_wind.c_fkw_end'>>",
+     "target": "e_win_keepers"
+    }
+   ]
+  },
+  {
+   "id": "f_keep_learn",
+   "body": "<<FILL role=rising words=95 tier=open contract='f_keep_learn'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fkl_end",
+     "label": "<<FILL label contract='f_keep_learn.c_fkl_end'>>",
+     "target": "e_win_apprentice"
+    }
+   ]
+  },
+  {
+   "id": "fin_share",
+   "body": "<<FILL role=choice words=100 tier=open contract='fin_share'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fsh_family",
+     "label": "<<FILL label contract='fin_share.c_fsh_family'>>",
+     "target": "f_share_family"
+    },
+    {
+     "id": "c_fsh_hunt",
+     "label": "<<FILL label contract='fin_share.c_fsh_hunt'>>",
+     "target": "f_share_hunt"
+    }
+   ]
+  },
+  {
+   "id": "f_share_family",
+   "body": "<<FILL role=rising words=95 tier=open contract='f_share_family'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fsf_end",
+     "label": "<<FILL label contract='f_share_family.c_fsf_end'>>",
+     "target": "e_win_family"
+    }
+   ]
+  },
+  {
+   "id": "f_share_hunt",
+   "body": "<<FILL role=rising words=95 tier=open contract='f_share_hunt'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fshu_end",
+     "label": "<<FILL label contract='f_share_hunt.c_fshu_end'>>",
+     "target": "e_win_passiton"
+    }
+   ]
+  },
+  {
+   "id": "e_fin_window",
+   "body": "<<FILL role=failure words=90 tier=locked_outcome contract='e_fin_window'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end_fin_window",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "<<FILL ending_title>>"
+   }
+  },
+  {
+   "id": "e_fin_late",
+   "body": "<<FILL role=failure words=95 tier=locked_outcome contract='e_fin_late'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end_fin_late",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "<<FILL ending_title>>"
+   }
+  },
+  {
+   "id": "e_fin_listen",
+   "body": "<<FILL role=ending words=95 tier=locked_outcome contract='e_fin_listen'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end_fin_listen",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "<<FILL ending_title>>"
+   }
+  },
+  {
+   "id": "e_win_net",
+   "body": "<<FILL role=completion words=105 tier=locked_outcome contract='e_win_net'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end_win_net",
+    "valence": "positive",
+    "kind": "success",
+    "title": "<<FILL ending_title>>"
+   }
+  },
+  {
+   "id": "e_win_answer",
+   "body": "<<FILL role=completion words=95 tier=locked_outcome contract='e_win_answer'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end_win_answer",
+    "valence": "positive",
+    "kind": "success",
+    "title": "<<FILL ending_title>>"
+   }
+  },
+  {
+   "id": "e_win_signoff",
+   "body": "<<FILL role=completion words=100 tier=locked_outcome contract='e_win_signoff'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end_win_signoff",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "<<FILL ending_title>>"
+   }
+  },
+  {
+   "id": "e_win_encore",
+   "body": "<<FILL role=completion words=100 tier=locked_outcome contract='e_win_encore'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end_win_encore",
+    "valence": "positive",
+    "kind": "success",
+    "title": "<<FILL ending_title>>"
+   }
+  },
+  {
+   "id": "e_win_keepers",
+   "body": "<<FILL role=completion words=95 tier=locked_outcome contract='e_win_keepers'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end_win_keepers",
+    "valence": "positive",
+    "kind": "success",
+    "title": "<<FILL ending_title>>"
+   }
+  },
+  {
+   "id": "e_win_apprentice",
+   "body": "<<FILL role=completion words=100 tier=locked_outcome contract='e_win_apprentice'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end_win_apprentice",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "<<FILL ending_title>>"
+   }
+  },
+  {
+   "id": "e_win_family",
+   "body": "<<FILL role=completion words=100 tier=locked_outcome contract='e_win_family'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end_win_family",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "<<FILL ending_title>>"
+   }
+  },
+  {
+   "id": "e_win_passiton",
+   "body": "<<FILL role=completion words=100 tier=locked_outcome contract='e_win_passiton'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end_win_passiton",
+    "valence": "positive",
+    "kind": "success",
+    "title": "<<FILL ending_title>>"
+   }
+  }
+ ]
+}

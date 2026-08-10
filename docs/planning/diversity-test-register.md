@@ -59,12 +59,57 @@ omits what readers respond to**, and each needs re-specifying rather than re-sch
 | ID | Test | Question it settles | Method | Cost | Falsifier | Status |
 | --- | --- | --- | --- | --- | --- | --- |
 | D-1 | Separate the treatment's **three** bundled changes | Was the 2026-08-10 effect from the different kind of act, from the stake economics, or from the four rooms yielding distinct components? Raters cited act-kind at one fork and stakes at two, so the original two-way framing understated the confound. | Three arms on the same graph, each restoring one change to the control's setting while holding the other two. Rate each against the same base book with the six-question instrument. | 3 fills, 2 raters | Restoring any single change collapses the effect, which would name that change as the whole lever rather than one of three. | queued |
-| D-2 | Replicate on a production-eligible graph | Does any of this survive off a 26-node outlier? The catalog median is 151 nodes and the pilot graph is not production-eligible. | Repeat the winning arm on a production-scale 10-13 skeleton, same protocol, same instrument. **Blocked on an artifact nobody noticed was missing: see below.** | **badly underestimated, see below** | The effect vanishes or inverts at production scale. | **running, at rating prep**: contract authored and independently verified (101 nodes, 39 forks, 0 closure violations); three bindings verified at 0.000 collision with only the 6 designed shared-world props; three fills complete and structurally clean (10.2k to 10.6k words each); cast renamed to restore the pre-registered design. Remaining: retitle, guard battery, two blind raters. |
+| D-2 | Replicate on a production-eligible graph | Does any of this survive off a 26-node outlier? The catalog median is 151 nodes and the pilot graph is not production-eligible. | Repeat the winning arm on a production-scale 10-13 skeleton, same protocol, same instrument. **Blocked on an artifact nobody noticed was missing: see below.** | **badly underestimated, see below** | The effect vanishes or inverts at production scale. | **running, at rating prep**: contract authored and independently verified (101 nodes, 39 forks, 0 closure violations); three bindings verified at 0.000 collision with only the 6 designed shared-world props; three fills complete and structurally clean (10.2k to 10.6k words each); cast renamed and titles separated. **HALTED AT THE GUARD BATTERY, not rated.** See below. |
 | D-3 | DecisionSignature v2 over the contracts | Can a richer vocabulary agree with readers instead of inverting them? | Added `reasoning_kind` (compute, match, recall, infer, perceive, negotiate, exert) and `stake` (nothing, time, resource, access, standing, permanent) plus the three `AL-193` gaps, and re-annotated the three plans blind. | 2 annotators over 3 plans | Hit its own falsifier: still ranks the treatment pair as the more repetitive one. Annotator A 0 of 6 fields agreeing with readers, annotator B 1 of 6. `reasoning_kind` inverts under both (0.929 against 1.000, and 0.857 against 0.964). Not a reliability failure: kappa between the two annotators is 0.77 to 0.81 on `reasoning_kind` and 0.72 on `stake`, both clear of the floor. The new fields are labellable and do not discriminate. | **done, NEGATIVE** |
 | D-3b | Same vocabulary over contract **plus binding** | Is the inversion a vocabulary problem or a layer problem? The contracts describe `n_clockface` as "answer the test on its own terms" and "fit the piece the way the diagram shows", which Rule 2 correctly calls one decision; the mechanic readers responded to lives in the binding (`clock_arithmetic`, `rhythm_code`, `pictogram_code`). | Identical annotation pass with each plan's bound devices attached. | 1 to 2 annotators over 3 plans | Ordering still inverts with the binding visible, which would mean the discriminating property is not in the plan at all and only the filled prose carries it. Did not fire. | **done, POSITIVE, 1 annotator** |
 | D-3c | Confirm D-3b with a second blind annotator | Is D-3b reproducible, and does it survive a subset fixed in advance? | Second independent annotator, same three bundles, same brief. Analysis pre-registered below before the labels exist. | 1 annotator over 3 plans | The second annotator's `reasoning_kind` does not separate the pairs in the readers' direction over the pre-registered fork subset. Did not fire, but the margin nearly vanished. | **done, PARTIAL** |
 | D-4 | Solution-transfer metric | Is the item that actually discriminated computable from a plan, rather than only ratable by a reader? | Formalise "these two puzzles resolve by the same operation to the same answer" against the three existing contracts, and check it reproduces the raters' Q6 ordering (4,4 against 3,3). | deterministic, no model | It cannot reproduce the known ordering on the pair we have already rated. | queued |
-| D-5 | Rate the discarded contaminated arm as a negative control | Does the six-question instrument correctly detect a pair we know is contaminated? | The 14-of-24 shared-prop binding is preserved. Feed `filled_V5b` to fresh blind raters and confirm it scores worse than `filled_V5c` on Q6. | 2 raters | Did not fire. Both raters, opposite orders, scored the contaminated pair Q6 = 5 and the clean pair Q6 = 2, and both chose the contaminated pair as more similar at high confidence. A three-point gap on the item that matters. | **done, PASS** |
+| D-5 | Rate the discarded contaminated arm as a negative control | Does the six-question instrument correctly detect a pair we know is contaminated? | The 14-of-24 shared-prop binding is preserved. Feed `filled_V5b` to fresh blind raters and confirm it scores worse than `filled_V5c` on Q6. | 2 raters | Did not fire. Both raters, opposite orders, scored the contaminated pair Q6 = 5 and the clean pair Q6 = 2, and both chose the contaminated pair as more similar at high confidence. A three-point gap on the item that matters. **Re-run independently 2026-08-10 because the original result was not produced here: two fresh raters in opposite orders reproduced it exactly, Q6 = 5 for the contaminated pair against 2 for the clean one, both choosing the contaminated pair at high confidence.** The instrument detects a known-bad pair, so the ratings in section 13 stand. | **done, PASS, replicated** |
+
+### D-2 halted at the guard battery: sharing a contract makes the contract the fingerprint
+
+The three books are structurally sound and the design was realised: 101 nodes each, 10.2k to 10.6k
+words, fill integrity clean, validator gate not blocked, prose craft clean, zero em-dashes, bindings
+at 0.000 collision with only the six designed shared-world props, P/Q sharing no proper noun and P/R
+sharing town, family and destination.
+
+**They cannot be rated.** The convergence guard fails by an order of magnitude:
+
+| Pair | Shared 4-grams per 1000 (budget 4.0) | Identical choice menus (margin 0) |
+| --- | --- | --- |
+| P vs Q, the control pair | **59.2** | **51** of 131 |
+| P vs R, the treatment pair | **63.8** | **41** of 131 |
+| pilot's clean pair, for reference | 1.8 to 2.7 | 0 |
+
+Forty-one to fifty-one choice menus open with the same words in two books that no author could see
+past. Rating this would measure convergence, not the treatment, and the discipline recorded in
+`AL-191` says terminate rather than spend a measurement on an artifact the guards reject.
+
+**The first diagnosis was wrong and was refuted by measurement.** The obvious culprit is a
+lexically over-prescriptive contract handing authors its verbs. Measured: D-2 labels reuse a
+distinctive word from their own `choice_semantics` at 46.6 percent, and the *pilot* does so at 54.3
+percent. Per-book reuse is higher in the case that did not converge.
+
+**The real cause is structural, and it is a design error in D-2.** The pilot's arms read
+**different contracts**: their `choice_semantics` were identical at 0 of 35 choices. D-2's three
+arms read **one contract**, identical at 131 of 131 by construction. Sharing the plan means sharing
+its prose, and three authors writing from one sentence converge on it. D-2 mirrored the pilot's arm
+structure while varying only bindings, where the pilot varied contracts.
+
+**This is a bigger result than the replication would have been.** Every architecture proposed to us
+that reuses one plan across many books inherits this: the plan's own wording becomes the
+fingerprint, and no binding diversity can remove it. It is invisible to the device-collision check,
+which passed at 0.000, and it is exactly the failure the shared-gram guard exists to catch.
+
+To resume D-2, one of three things has to happen: neutralise `choice_semantics` to non-evocative
+phrasing, generate the semantics per book, or require authors to diverge from the given wording
+explicitly. All three are cheaper than the three contracts the pilot's structure implies, and which
+of them works is itself worth testing.
+
+**A second guard finding, independent of the above.** All three books landed at whole-book
+Flesch-Kincaid 8.14 to 8.41 against a 5.5 target, with only 16 to 20 of 101 nodes inside the band
+and 81 to 85 advisory warnings each, while the gate returned `blocked=False` on all three
+(`AL-209`).
 
 ### D-2 discovered a hole under the whole programme
 
