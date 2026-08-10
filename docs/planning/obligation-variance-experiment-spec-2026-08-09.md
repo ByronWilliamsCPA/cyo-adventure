@@ -48,10 +48,24 @@ unit of variation is therefore a **complete, individually NC-clean contract** ov
 nodes and edges, in which nodes serve different narrative functions.
 
 A variant is only admissible if it changes what nodes are *for*, not how they are worded.
-Concretely, across variants a given node must differ in at least two of:
-`establishes`, `choice_semantics`, `affect`, and its `function` label. Rewording a
-`beat_hint` while keeping the same establishes and semantics is a paraphrase, not a
-variant, and fails review.
+Two criteria, both enforced per node and per contract pair by
+`docs/planning/evidence/obligation-variance/check_variant_divergence.py --check`:
+
+1. **Field divergence.** A given node must differ in at least two of `establishes`,
+   `choice_semantics`, `affect`, and its `function` label. Rewording a `beat_hint` while
+   keeping the same establishes and semantics is a paraphrase, not a variant.
+2. **Beat-hint divergence.** `beat_hint` similarity must stay below 0.60 (difflib ratio),
+   against every other variant including the shipped v1.
+
+**Criterion 2 was added after the first draft passed criterion 1 and was rejected anyway**
+(AL-182). That draft's `beat_hint` strings were v1's sentences with single nouns swapped:
+byte-identical at `n_end_library` across all three variants, at or above 0.85 at 10 of 26
+nodes against v1, and above 0.60 at 22 of 26. Criterion 1 could not see it because
+`beat_hint` is not one of its four fields, an omission in the original bar rather than a
+finding about the draft. That matters because `beat_hint` is the most direct instruction a
+fill agent reads: holding it constant leaves the intervention largely undelivered, and
+would make the most likely outcome uninterpretable, since "obligation variance does not
+work" could not then be separated from "the obligations were never varied."
 
 **Arms.**
 
