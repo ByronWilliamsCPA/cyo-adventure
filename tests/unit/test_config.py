@@ -1553,6 +1553,8 @@ class TestKwsSettings:
             "KWS_USER_AGENT",
             "KWS_WEBHOOK_SECRET",
             "KWS_VERIFICATION_SECRET",
+            "KWS_WEBHOOK_MAX_SKEW_SECONDS",
+            "KWS_ENABLED_METHODS",
         ):
             monkeypatch.delenv(name, raising=False)
 
@@ -1617,6 +1619,48 @@ class TestKwsSettings:
             Settings(**{**_KWS_CREDS, "kws_api_key": ""})
 
     @pytest.mark.unit
+    def test_empty_kws_user_agent_falls_back_to_the_default(self) -> None:
+        """An empty override must not defeat the non-empty constraint.
+
+        This is the deployment case, not a theoretical one: ``${VAR:-}`` is the
+        house compose idiom for an optional variable and injects ``""``. With
+        ``min_length=1`` and no coercion, that string is a ValidationError at
+        settings construction, so the container never starts. Falling back to
+        the default keeps a real User-Agent on the wire, which KWS requires:
+        an empty one is answered with 403 "Request blocked".
+        """
+        from cyo_adventure.core.config import Settings
+
+        assert Settings(kws_user_agent="").kws_user_agent == "cyo-adventure"
+
+    @pytest.mark.unit
+    def test_empty_kws_skew_seconds_falls_back_to_the_default(self) -> None:
+        """Same idiom, same failure: "" is not an int and would refuse to boot."""
+        from cyo_adventure.core.config import Settings
+
+        assert (
+            Settings(kws_webhook_max_skew_seconds="").kws_webhook_max_skew_seconds
+            == 300
+        )
+
+    @pytest.mark.unit
+    def test_a_real_kws_user_agent_override_still_wins(self) -> None:
+        """The fallback must be scoped to emptiness, not swallow real values."""
+        from cyo_adventure.core.config import Settings
+
+        assert Settings(kws_user_agent="cyo/1.2").kws_user_agent == "cyo/1.2"
+
+    @pytest.mark.unit
+    def test_a_real_kws_skew_override_still_wins(self) -> None:
+        """A configured window must survive the empty-string coercion."""
+        from cyo_adventure.core.config import Settings
+
+        assert (
+            Settings(kws_webhook_max_skew_seconds=120).kws_webhook_max_skew_seconds
+            == 120
+        )
+
+    @pytest.mark.unit
     def test_production_kws_environment_rejected_from_a_local_app(self) -> None:
         """A developer machine must not mint records indistinguishable from real ones."""
         from cyo_adventure.core.config import Settings
@@ -1674,14 +1718,23 @@ class TestKwsSettings:
         assert Settings().kws_user_agent
 
     @pytest.mark.unit
-    def test_empty_kws_user_agent_rejected(self) -> None:
-        """An explicitly empty user-agent is the 403 case, so it fails the bound."""
-        from pydantic import ValidationError
+    def test_the_resolved_kws_user_agent_is_never_empty(self) -> None:
+        """The durable invariant: an empty user-agent never reaches KWS.
 
+        This test previously asserted that ``kws_user_agent=""`` raises, which
+        enforced the same invariant by refusing to construct settings at all.
+        That was changed deliberately: the empty string's realistic source is
+        ``${KWS_USER_AGENT:-}`` in compose, not an operator typing an empty
+        value, and refusing to boot over an optional variable with a perfectly
+        good default trades a 403 on one API call for a dead container. The
+        property being protected is unchanged and is what this asserts: the
+        field cannot HOLD an empty value by any route.
+        """
         from cyo_adventure.core.config import Settings
 
-        with pytest.raises(ValidationError):
-            Settings(kws_user_agent="")
+        assert Settings().kws_user_agent
+        assert Settings(kws_user_agent="").kws_user_agent
+        assert Settings(kws_user_agent="   ").kws_user_agent
 
     @pytest.mark.unit
     def test_auth_origin_defaults_to_the_documented_keycloak_host(self) -> None:

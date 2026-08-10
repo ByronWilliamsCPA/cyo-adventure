@@ -18,6 +18,7 @@ from pydantic import (
     AliasChoices,
     Field,
     SecretStr,
+    ValidationInfo,
     field_validator,
     model_validator,
 )
@@ -1126,6 +1127,43 @@ class Settings(BaseSettings):
     kws_enabled_methods: Annotated[list[KwsVerificationMethod], NoDecode] = Field(
         default_factory=list, validation_alias="KWS_ENABLED_METHODS"
     )
+
+    @field_validator("kws_user_agent", "kws_webhook_max_skew_seconds", mode="before")
+    @classmethod
+    def _empty_kws_override_means_unset(
+        cls, value: object, info: ValidationInfo
+    ) -> object:
+        """Treat an empty override as absence, not as a value.
+
+        #CRITICAL: external resources: these two fields are the only KWS
+        settings that are non-optional with a constrained default
+        (``min_length=1`` and ``ge=1``), so an empty string is a hard
+        ``ValidationError`` at ``Settings()`` construction, which means the
+        CONTAINER DOES NOT BOOT. That matters because the house compose idiom
+        for an optional variable is ``${VAR:-}``, which injects ``""`` rather
+        than leaving the variable unset: the same line that is correct for
+        every credential here would take the service down. The four credential
+        fields already treat ``""`` as missing (see ``_kws_credential_state``);
+        this closes the gap so one idiom is safe across the whole block.
+        #VERIFY: tests/unit/test_config.py::TestKwsSettings::
+        test_empty_kws_user_agent_falls_back_to_the_default and
+        ::test_empty_kws_skew_seconds_falls_back_to_the_default.
+
+        Args:
+            value: The raw field input.
+            info: The field being validated, used to find its default.
+
+        Returns:
+            object: The field's default when the input is an empty or
+                whitespace-only string, otherwise the input unchanged.
+        """
+        # info.field_name is Optional in pydantic's signature but is always set
+        # for a field validator; the guard keeps the fallback from becoming a
+        # KeyError if that ever stops holding, in which case the constrained
+        # field rejects the empty string exactly as it did before.
+        if isinstance(value, str) and not value.strip() and info.field_name:
+            return cls.model_fields[info.field_name].get_default()
+        return value
 
     @field_validator("kws_enabled_methods", mode="before")
     @classmethod
