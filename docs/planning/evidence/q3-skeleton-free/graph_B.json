@@ -1,0 +1,459 @@
+{
+ "schema_version": "2.0",
+ "id": "graph_B",
+ "version": 1,
+ "title": "The Sparrow Hollow Observatory",
+ "metadata": {
+  "age_band": "10-13",
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 5.5,
+   "tolerance": 1.5
+  },
+  "tier": 1,
+  "themes": [
+   "mystery",
+   "astronomy",
+   "friendship",
+   "discovery"
+  ],
+  "estimated_minutes": 20,
+  "ending_count": 8,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "none"
+  },
+  "topology": "branch_and_bottleneck",
+  "production_eligible": false
+ },
+ "variables": [],
+ "start_node": "n_open",
+ "nodes": [
+  {
+   "id": "n_open",
+   "body": "Mia and Jonah had lived in Sparrow Hollow for exactly six days when they found the observatory. It stood at the top of Baker's Ridge, its white dome tarnished green, hidden behind a curtain of pine branches. A hand painted sign read CALLOWAY OBSERVATORY, EST. 1968, though half the letters had peeled away. The front door hung open on rusted hinges, and off to the side a low metal hatch sat half buried in leaves. Down the hill, smoke curled from the chimney of a small cottage where, their neighbor had mentioned, an old astronomer's assistant still lived. Where should the twins begin?",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_front",
+     "label": "Push open the front door",
+     "target": "n_frontdoor"
+    },
+    {
+     "id": "c_hatch",
+     "label": "Crawl through the side hatch",
+     "target": "n_sidehatch"
+    },
+    {
+     "id": "c_reyes",
+     "label": "Walk down to ask the neighbor first",
+     "target": "n_reyes"
+    }
+   ]
+  },
+  {
+   "id": "n_frontdoor",
+   "body": "The front door groaned as Mia pushed it wide, and dust drifted through a shaft of afternoon light. Inside was a round entry hall lined with faded star charts and a curved staircase leading up into shadow. A poster taped to the wall announced the Sparrow Hollow Meteor Festival, this Saturday night, with a note scrawled beneath it: Observatory closed until further notice, by order of the town council. Jonah counted on his fingers. Only four days left. Beyond the entry hall, hallways branched toward what looked like an office, a library, and a stairway down. The dusty air smelled like old paper and rain.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hall",
+     "label": "Head deeper into the observatory",
+     "target": "n_hall"
+    }
+   ]
+  },
+  {
+   "id": "n_sidehatch",
+   "body": "The hatch was stiff with rust, but Jonah wedged his shoulder under it and shoved until it swung up with a metallic groan. A short tunnel of cool stone led into a cramped storage room stacked with wooden crates labeled LENSES and SPARE MIRRORS. Cobwebs draped every shelf like gray lace. A narrow staircase in the corner climbed up toward a door marked BOILER ROOM, and another passage curved back toward what sounded like the echoing front hall. Mia brushed dust from her sleeve and looked at the two options, wondering which one Dr. Calloway had used more often when this place still hummed with life.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_boiler",
+     "label": "Climb toward the boiler room",
+     "target": "n_boilerroom"
+    },
+    {
+     "id": "c_back",
+     "label": "Follow the passage back to the front hall",
+     "target": "n_frontdoor"
+    }
+   ]
+  },
+  {
+   "id": "n_boilerroom",
+   "body": "The boiler room was warm despite years of disuse, its great iron tank ticking faintly as if it still remembered being lit. Pipes ran along the ceiling like tangled roots, and a faded chalkboard nearby still bore Dr. Calloway's looping handwriting: Remember, the stars wait for no one, but neither should you. Jonah traced the words with a finger while Mia noticed a service door standing ajar, spilling light from the main hall beyond. The room felt less like a machine closet and more like a message someone had left behind on purpose, half hoping a curious visitor would someday find it.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_toHall",
+     "label": "Step through into the main hall",
+     "target": "n_hall"
+    }
+   ]
+  },
+  {
+   "id": "n_reyes",
+   "body": "Mr. Reyes answered the door in a cardigan the color of a robin's egg, unsurprised to see them. 'Figured someone would wander up there eventually,' he said, waving them inside. He explained he had been Dr. Calloway's assistant for eleven years, until she retired suddenly and moved away without finishing her final project: a notebook of calibrations for the big telescope, hidden somewhere in the dome. From a drawer he produced a heavy brass key. 'This opens the office,' he said. 'Might help you along.' He studied their eager faces. 'Want to hear how it all happened, or would you rather get straight to exploring?'",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_key",
+     "label": "Take the key and head to the observatory",
+     "target": "n_hall"
+    },
+    {
+     "id": "c_story",
+     "label": "Ask Mr. Reyes to tell the story first",
+     "target": "n_reyes_story"
+    }
+   ]
+  },
+  {
+   "id": "n_reyes_story",
+   "body": "Mr. Reyes settled into his armchair and told them about the night the big telescope's mirror mount jammed during a meteor shower, the last one Dr. Calloway ever watched from the dome. Frustrated and heartbroken, she packed her notebook away somewhere safe, vowing to fix the mechanism properly before she ever used it again. Then her sister got sick, and she left town within the month. 'She always meant to come back,' he said quietly. 'Never did.' He handed them the brass key and pointed them toward the ridge. 'The festival's this Saturday. Seems like a fine time for someone to finish what she started.'",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_toHall2",
+     "label": "Thank him and head up to the observatory",
+     "target": "n_hall"
+    }
+   ]
+  },
+  {
+   "id": "n_hall",
+   "body": "Standing at the center of the observatory, the twins could see just how much there was to explore. A spiral staircase climbed toward the dome, where the great telescope waited under a canvas cover. A door on the left, unlocked with the brass key, led into what must have been Dr. Calloway's office. Down a short hallway sat a small library, shelves sagging under decades of star atlases. And a stairwell beside the boiler room passage dropped down into darkness, toward a basement neither of them had explored yet. Somewhere in this building was the notebook Mr. Reyes had described. Where should they search first?",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_dome",
+     "label": "Climb the staircase toward the dome",
+     "target": "n_dome"
+    },
+    {
+     "id": "c_office",
+     "label": "Search Dr. Calloway's office",
+     "target": "n_office"
+    },
+    {
+     "id": "c_library",
+     "label": "Browse the small library",
+     "target": "n_library"
+    },
+    {
+     "id": "c_basement",
+     "label": "Head down into the basement",
+     "target": "n_basement"
+    }
+   ]
+  },
+  {
+   "id": "n_dome",
+   "body": "The dome smelled like machine oil and cold metal. A canvas tarp covered the great telescope, and Jonah pulled it away to reveal brass fittings gone dull with age. A narrow ladder beside the mount led up to a catwalk that circled the base of the dome itself, where a slit in the roof let in a blade of daylight. Mia crouched by the telescope's control panel, tracing a row of tiny dials, each one etched with a faded number. Jonah looked longingly at the ladder. There was time, probably, to look at both, but something told them to choose one path before the light outside started fading.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_telescope",
+     "label": "Examine the telescope's control panel",
+     "target": "n_telescope"
+    },
+    {
+     "id": "c_catwalk",
+     "label": "Climb up to the catwalk",
+     "target": "n_catwalk"
+    }
+   ]
+  },
+  {
+   "id": "n_telescope",
+   "body": "Mia leaned close to the control panel and found five brass dials arranged in a row, each stiff with rust but still turning if she pushed hard enough. Scratched faintly into the metal beside them were three numbers: 4, 12, 7, half worn away by decades of dust and handling. Beneath the dials, a small drawer held nothing but an empty velvet pouch shaped like it once held a notebook. Jonah photographed the numbers on his phone before the light dimmed too far to see them. It looked like a code, the kind of thing that might open a locked panel somewhere else in the building.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_toPuzzle1",
+     "label": "Go find where this code might unlock something",
+     "target": "n_puzzlebox"
+    }
+   ]
+  },
+  {
+   "id": "n_catwalk",
+   "body": "Out on the catwalk, the whole valley opened up below them, gold with late afternoon light. A little brass plaque was bolted to the railing: Dedicated to everyone who ever looked up and wondered. Jonah felt a strange, quiet thrill standing there, like he understood a little of why Dr. Calloway had loved this place so much. Mia noticed a weathered panel set into the dome wall nearby, its cover slightly loose, hinting at something mechanical hidden behind it. They could stay up here a while longer and simply take in the view, or go pry that panel open and keep searching for the notebook.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_stay",
+     "label": "Stay and watch the valley in the fading light",
+     "target": "n_end_stargaze"
+    },
+    {
+     "id": "c_pry",
+     "label": "Pry open the loose panel",
+     "target": "n_puzzlebox"
+    }
+   ]
+  },
+  {
+   "id": "n_office",
+   "body": "Dr. Calloway's office looked frozen in time: a rolltop desk buried under papers, a corkboard cluttered with photographs and star charts, and a globe of the moon gathering dust on a shelf. The desk drawers were stuck fast except for one, which slid open to reveal a stack of yellowed observation logs. Pinned crookedly to the corkboard was an old photograph showing Dr. Calloway and a younger Mr. Reyes standing proudly beside the telescope, a small handwritten caption tucked beneath it. Mia wanted to dig through the logs on the desk, while Jonah was already leaning in to read whatever the photograph's caption said.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_desk",
+     "label": "Dig through the observation logs",
+     "target": "n_notebook_clue"
+    },
+    {
+     "id": "c_photo",
+     "label": "Read the caption on the old photograph",
+     "target": "n_photo_clue"
+    }
+   ]
+  },
+  {
+   "id": "n_notebook_clue",
+   "body": "The observation logs were dense with dates and measurements, mostly too technical to follow, but tucked between two pages Mia found a folded scrap of paper. On it, in the same looping handwriting from the boiler room chalkboard, were the words: The dome panel remembers what the mirror forgot: 4-12-7. It matched the numbers Mr. Reyes had hinted at without quite saying, a code meant to unlock something mechanical. Mia's pulse quickened. This felt like the last piece of a puzzle Dr. Calloway had left behind on purpose, a trail meant for someone patient enough to follow it all the way to the dome.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_toPuzzle2",
+     "label": "Hurry to try the code on the dome panel",
+     "target": "n_puzzlebox"
+    }
+   ]
+  },
+  {
+   "id": "n_photo_clue",
+   "body": "The caption under the photograph read: Calibration night, the mirror mount jams again, three tries and counting. Someday I'll get the numbers right. Jonah realized the photo was Dr. Calloway's private joke about the very telescope upstairs, the one still wrapped in its canvas cover. Behind the photograph, tucked into the corkboard's frame, he found a torn corner of paper with three faint digits: 4, 1, 2, cut off before the rest. It clearly matched something bigger, something worth finding whole. He waved Mia over, and together they decided the dome, and whatever mechanism those numbers belonged to, was exactly where they needed to go next.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_toPuzzle3",
+     "label": "Head back up to the dome with the numbers",
+     "target": "n_puzzlebox"
+    }
+   ]
+  },
+  {
+   "id": "n_library",
+   "body": "The library was small but cozy, every shelf packed with star atlases and astronomy magazines going back decades. A reading nook by the window held a stack of Dr. Calloway's favorite novels, worn soft at the corners. On the center table lay a large, hand drawn star chart, its edges curling with age, dotted with tiny notes in the margins. Jonah was drawn to the chart immediately, sure it held some kind of clue. Mia, though, had already curled into the reading nook with one of the novels, utterly content to lose herself in it for a while. Time was ticking, but this room made it easy to forget that.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_chart",
+     "label": "Study the hand drawn star chart",
+     "target": "n_starchart"
+    },
+    {
+     "id": "c_read",
+     "label": "Curl up and read for a while",
+     "target": "n_end_daydream"
+    }
+   ]
+  },
+  {
+   "id": "n_starchart",
+   "body": "The star chart was covered in tiny annotations, mostly notes about meteor showers from years past, but one corner stood out: a small sketch of five dials with the numbers 4, 12, 7 written beside them and the words try the dome panel underlined twice. It was clearly the same code Mr. Reyes had alluded to, written here in Dr. Calloway's own hand for anyone clever enough to find it. Jonah rolled the chart carefully and tucked it under his arm. Whatever the code opened, it was almost certainly upstairs in the dome, where the old telescope and its stubborn control panel were waiting.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_toPuzzle4",
+     "label": "Race up to try the code in the dome",
+     "target": "n_puzzlebox"
+    }
+   ]
+  },
+  {
+   "id": "n_basement",
+   "body": "The basement was cool and smelled faintly of motor oil. A single bulb flickered overhead, revealing a hulking generator against one wall and, opposite it, a heavy door with a simple slide bolt, slightly ajar. Jonah nudged the door open a crack and saw only a dark storage closet beyond, not much worth exploring. The generator, on the other hand, had a hand crank and a small brass plate that read EMERGENCY POWER, DOME CIRCUIT. If the dome panel really did need power to open, this might matter. Mia weighed whether to bother with the generator at all, or just step over and look inside the closet.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_generator",
+     "label": "Try starting the generator",
+     "target": "n_generator"
+    },
+    {
+     "id": "c_closet",
+     "label": "Step into the storage closet to look around",
+     "target": "n_end_locked"
+    }
+   ]
+  },
+  {
+   "id": "n_generator",
+   "body": "Jonah gripped the hand crank and turned it with all his strength until the generator sputtered, coughed, and finally rumbled to life, filling the basement with a low hum. Somewhere above them, lights flickered on in the dome, and a faint mechanical click echoed down the stairwell, like a panel unlocking itself. Mia grinned. Whatever code they had, or hoped to find, would probably work a lot better now that the dome circuit had power behind it. They climbed the stairs two at a time, the hum of the generator fading behind them as excitement carried them straight up toward the telescope room.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_toPuzzle5",
+     "label": "Hurry up to the dome while it has power",
+     "target": "n_puzzlebox"
+    }
+   ]
+  },
+  {
+   "id": "n_puzzlebox",
+   "body": "Back in the dome, the twins found the loose panel Mia and Jonah had noticed near the telescope's base, its cover hinged but stubborn. Beneath it sat five brass dials, exactly like the ones on the control panel, waiting to be turned to a hidden combination. Between the notebook page, the photograph's torn corner, and the star chart, they were fairly sure the numbers were 4, 12, 7. Evening light was already slanting gold through the dome's slit window. They could turn the dials slowly and carefully, force the stiff panel open by hand, run down to fetch Mr. Reyes for help, or simply wait and hope it opened on its own.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_careful",
+     "label": "Turn the dials carefully to 4, 12, 7",
+     "target": "n_open_dial"
+    },
+    {
+     "id": "c_force",
+     "label": "Force the panel open by hand",
+     "target": "n_end_jam"
+    },
+    {
+     "id": "c_getreyes",
+     "label": "Run down and get Mr. Reyes",
+     "target": "n_call_reyes"
+    },
+    {
+     "id": "c_wait",
+     "label": "Wait quietly and hope it opens on its own",
+     "target": "n_end_toolate"
+    }
+   ]
+  },
+  {
+   "id": "n_open_dial",
+   "body": "Mia turned each dial with careful patience: four clicks, then twelve, then seven. On the final click, the panel gave a soft chime and swung open on its own, revealing a small compartment lined in faded blue velvet. Inside sat a leather notebook, its cover embossed with Dr. Calloway's initials, and tucked beside it a single brass gear, small enough to fit in Jonah's palm. A note was pressed against the notebook's cover: For whoever finds this and finishes what I couldn't. Jonah's hands were shaking a little as he lifted the notebook out into the light, hardly believing they had actually found it.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_toVault1",
+     "label": "Open the notebook together",
+     "target": "n_vault"
+    }
+   ]
+  },
+  {
+   "id": "n_call_reyes",
+   "body": "Jonah sprinted down to the cottage and returned minutes later with Mr. Reyes, slightly out of breath but smiling at the sight of the dials. 'She always did love a good lock,' he chuckled, and guided Mia's fingers through the sequence: four, twelve, seven. The panel chimed open just as it had for decades of calibration nights, revealing the leather notebook tucked inside, along with a small brass gear. Mr. Reyes' eyes went misty as he recognized his old friend's handwriting on the note pressed to the cover. 'For whoever finishes what I couldn't,' he read aloud, his voice thick with emotion and relief.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_toVault2",
+     "label": "Open the notebook together",
+     "target": "n_vault"
+    }
+   ]
+  },
+  {
+   "id": "n_vault",
+   "body": "Inside the notebook were pages of careful diagrams, the exact fix for the telescope's jammed mirror mount, using the small brass gear as the missing part. Dr. Calloway had solved the problem years ago and simply never had the chance to use her solution. The twins looked at each other, notebook and gear in hand, with the Meteor Festival only days away and the whole town gathered on the ridge each year to watch the sky with nothing but their own eyes. They could tell everyone what they had found, quietly keep the notebook as their own treasured secret, or try to actually repair the telescope in time for Saturday night.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_share",
+     "label": "Tell the town council what you found",
+     "target": "n_end_hero"
+    },
+    {
+     "id": "c_keep",
+     "label": "Keep the notebook as a private treasure",
+     "target": "n_end_keepsake"
+    },
+    {
+     "id": "c_signal",
+     "label": "Try to repair the telescope before the festival",
+     "target": "n_end_signal"
+    }
+   ]
+  },
+  {
+   "id": "n_end_stargaze",
+   "body": "Mia and Jonah stayed on the catwalk until the sun dipped fully behind the ridge, the sky sliding from gold to a deep, star scattered blue. They never did find the notebook that afternoon, but they watched the first few stars blink on together, tracing constellations Jonah half remembered from a school project. When they finally climbed down and walked home in the cool evening air, neither of them felt disappointed. Some discoveries were about testing your patience and getting exactly what you came for; others were simply about noticing how big and quiet the sky could be. They promised each other they would come back and search properly, very soon.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_stargaze",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The View Worth Waiting For"
+   }
+  },
+  {
+   "id": "n_end_daydream",
+   "body": "Mia settled deeper into the reading nook, and Jonah, unable to resist, sat down across from her with an old astronomy magazine. The library was warm, and the stories were good, and somehow an hour slipped by, then two, until long shadows fell across the star chart still unread on the table. By the time they glanced at a clock, the light outside had faded and it was well past when they had promised to be home. They hurried out without solving anything, notebook still hidden, code still a mystery. It wasn't a disaster, just a lesson: the observatory, and its secrets, would still be there tomorrow, patiently waiting.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_daydream",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Lost in a Good Book"
+   }
+  },
+  {
+   "id": "n_end_locked",
+   "body": "Jonah pulled the storage closet door open and stepped inside to look around, and the old bolt, loosened by decades of rust, slipped shut behind him with a soft thunk. Mia laughed at first, certain it was a joke, until she realized the door truly wouldn't budge. They weren't scared, exactly, just annoyed, and after a few minutes of knocking and calling out, they heard familiar footsteps on the basement stairs. Mr. Reyes, checking on them as promised, freed the bolt in seconds and shook his head fondly. 'That door's done that since 1979,' he said. They laughed about it the whole walk home, already turning it into a story.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_locked",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Door That Sticks"
+   }
+  },
+  {
+   "id": "n_end_jam",
+   "body": "Impatient, Jonah wedged his fingers under the panel and pulled hard, and the stiff old hinge gave a nasty crack before jamming completely sideways, wedged tighter than before. No amount of gentle wiggling would budge it now. Mia sighed, more disappointed than upset; some things, it turned out, really did need patience instead of muscle. They left a note for Mr. Reyes explaining what happened and promising to help fix it properly another day. Walking home under a sky just beginning to show its first stars, they agreed that some puzzles simply couldn't be rushed, and that the notebook, wherever it was, could wait a little longer for someone more careful.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_jam",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Too Much Muscle, Not Enough Patience"
+   }
+  },
+  {
+   "id": "n_end_toolate",
+   "body": "They waited by the panel, hoping it might simply spring open on its own, watching the light through the dome's slit window shift slowly from gold to gray. Nothing happened. Eventually the observatory grew too dark to see clearly, and they had to admit that some things needed more than hope to move forward. They climbed down the stairs in the dusk, disappointed but not defeated, already planning to come back with a flashlight and a plan instead of just patience alone. As they walked home, Jonah pointed out that at least now they knew exactly which panel to try again, which felt like progress even without an answer yet.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_toolate",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Waiting for a Sign"
+   }
+  },
+  {
+   "id": "n_end_hero",
+   "body": "The town council meeting was crowded that Thursday night, and Mia's hands trembled slightly as she held up the notebook and explained everything: the code, the clues, Dr. Calloway's unfinished work. Mr. Reyes stood beside them, confirming every word. By the end of the meeting, the council had voted to reopen the observatory as a community science center, with the twins credited as the ones who found the missing piece of its history. Local news even ran a small article with their photo beside the old telescope. Walking home afterward, Mia realized this felt better than keeping any secret to themselves; Sparrow Hollow had gotten its observatory back, and everyone would get to look through that telescope now.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_hero",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Observatory Reopens"
+   }
+  },
+  {
+   "id": "n_end_keepsake",
+   "body": "They decided, in the end, that the notebook belonged with them, at least for now. They didn't tell the town council, though they did quietly show Mr. Reyes, who smiled and said Dr. Calloway would have liked that it stayed in curious hands. The twins kept the notebook on their windowsill, reading a page or two most nights, learning about mirror mounts and meteor showers and a scientist's patient, careful mind. Sometimes they climbed the ridge just to sit near the dome and imagine the calibration nights described in its pages. It became their own private tradition, a small and steady friendship with a stranger they had never met but somehow understood.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_keepsake",
+    "valence": "positive",
+    "kind": "success",
+    "title": "A Notebook of Their Own"
+   }
+  },
+  {
+   "id": "n_end_signal",
+   "body": "Working together with Mr. Reyes late into Friday night, they fitted the small brass gear exactly where the diagrams showed, and the old mirror mount finally, smoothly, turned. On Saturday, as the whole town gathered on the ridge for the Meteor Festival, the observatory dome slid open for the first time in years, and a line of neighbors took turns peering through the eyepiece at meteors streaking silver across the sky. Dr. Calloway, reached by phone that same afternoon, cried when Mr. Reyes described who had finished her repair. Mia and Jonah stood at the back of the line, grinning, having turned a rusty old mystery into the best night Sparrow Hollow had seen in years.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_signal",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Telescope Sees the Sky Again"
+   }
+  }
+ ]
+}

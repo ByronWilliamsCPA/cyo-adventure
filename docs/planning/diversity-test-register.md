@@ -555,10 +555,53 @@ and until `AL-213` is addressed it is a hand job of roughly 1.7KB per node.
 | ID | Test | Source | Thesis | Cheapest experiment (proposer's) | Falsifier | Status |
 | --- | --- | --- | --- | --- | --- | --- |
 | M-4 | Stake economics | in-house, from rater testimony | Not *what* the goal is but whether failure costs anything. The treatment's goal imposed a live global constraint, a closing clock and a carrying limit and damage that persists, which re-prices every fork; the control's goal change did not. Both raters cited this unprompted, one noting that forcing is a free do-over in both control books and has a price in the treatment. | Two books, same graph, non-colliding bindings, same goal, differing only in whether failure is free. Existing rig. | The two books rate as repetitive as each other, meaning a reader does not price failure into how a choice feels. | queued |
-| M-2 | World-graph tours | in-house | A graph is a *world*, not a book; a book is a validated subgraph tour. The catalog already holds graphs at 677, 551 and 250 nodes. | Take the largest 10-13 graph, cut two disjoint tours by hand, fill both, rate. Tests coherence as much as diversity. | Tours read as incoherent, because the large graphs were authored assuming roughly linear progression rather than as worlds. | queued |
+| M-2 | World-graph tours | in-house | A graph is a *world*, not a book; a book is a validated subgraph tour. The catalog already holds graphs at 677, 551 and 250 nodes. | Take the largest 10-13 graph, cut two disjoint tours by hand, fill both, rate. Tests coherence as much as diversity. | **Structurally confirmed for 18 of 21 large graphs, without a single fill**: they are linear-with-decorations, not worlds, so no two disjoint tours exist to cut. Three graphs survive, one of them in-band. See below. | **partially done, DETERMINISTIC PRE-TEST; the fill-and-rate half is unblocked on exactly 3 named graphs** |
 | Q-2 | Cross-skeleton recombination | framework Q2 | Subtree grafting is the only mechanism that has ever cleared the anti-clone floor, and has never been evaluated for reader-perceived distinctness or coherence cost. | Graft subtrees between two catalog graphs, fill, rate for distinctness and for coherence damage. | Grafts read as incoherent, or as no more distinct than a plain sibling pair. | queued |
 | Q-3 | How close is the skeleton-free path | framework Q3, brief 5.3 | Named the cheapest outstanding experiment before this programme started, and never run. **D-6 promotes it: a skeleton-free graph shares no plan by construction, so it is the only queued row that structurally cannot hit the convergence wall.** | Six graphs generated from scratch by isolated authors, format reference only, no skeleton and no validator in the loop. Score deterministically against the structural rules and the project gate. Analysis pre-registered below before the artifacts exist. | 6 generations, 0 raters | Structurally clean share below half **and** the failures needing authorial judgement rather than mechanical repair. Both halves required: a low yield that a repair pass fixes for free is a cost, not a refutation. | **running** |
 | Q-5 | Does the fill match its contract | framework Q5 | Nothing verifies finished prose against the node obligations it was written to satisfy. This is S4's unaddressed second weakness and it is independent of everything else here. | One model pass judging entailment over all 49 obligations of one book, plus a deterministic lexical triage scored against it. | Fired in the useful direction: fills do substantially satisfy their contracts, so the interesting result is that a deterministic check cannot verify it. | **done** |
+
+### M-2 pre-test: 18 of 21 large graphs cannot supply two disjoint tours, and 3 can
+
+M-2's falsifier ("tours read as incoherent, because the large graphs were authored assuming roughly
+linear progression rather than as worlds") was written as something only a fill and a rating could
+settle. Most of it is decidable from the graphs alone, and doing so costs nothing.
+
+**The first attempt measured the wrong thing, and is recorded because the error is instructive.**
+Maximum node-disjoint start-to-ending paths, by max-flow with unit node capacities, returns **1 for
+all 21 graphs of 200-plus nodes**. Read naively that kills M-2 outright. It does not, because the
+single cut node is in every case the world's **hub** (`n_hub`, `n_sort`, `c01_gate`, `muster_gate`)
+sitting at depth 1 to 5. A hub is what a hub-and-spoke world is *supposed* to have, and two tours of
+one world would both cross the town square. Strict node-disjointness is simply the wrong
+requirement.
+
+**The right test is whether the spokes can be partitioned.** Removing the hub and taking the
+connected components of what remains gives the independent regions a tour could be cut from:
+
+| Graph | Band | Nodes | Hub | Spoke sizes (those containing endings) |
+| --- | --- | --- | --- | --- |
+| **the-skyrail-heist** | **10-13** | 246 | `n_sort` | **83, 82, 77** |
+| the-year-of-four-banners | 13-16 | 212 | `n_sort` | 83, 70, 56 |
+| the-tricameral-city | 16+ | 240 | `n03` | 100, 73, 64 |
+| the-tenfold-siege | 16+ | 677 | `a01_g1` | **656**, 3, 3, 3, 3, 3 |
+| the-sunken-temple | 13-16 | 551 | `n_start` | **549** |
+| the-pale-road | 16+ | 498 | `c01_gate` | **481**, 3, 3, 3, 3 |
+| the-mapmakers-island | 10-13 | 225 | `n_start` | **223** |
+| the-winter-of-the-wolf-queen | 10-13 | 250 | `n_hub` | **242**, 4 |
+| *(13 further graphs)* | | | | same shape: one giant spoke, the rest of size 1 to 4 |
+
+**Eighteen of the twenty-one have one spoke holding nearly every node**, with the remainder being
+short early-exit endings of one to four nodes. There is no second region to cut a tour from. M-2's
+falsifier is confirmed for those graphs on structure alone, and the size of the catalog is no help:
+the 677-node graph is the worst offender at 656 of 677 in a single mass.
+
+**Three are genuinely world-shaped**, with three balanced regions apiece. One of them,
+`the-skyrail-heist`, is in the 10-13 band this programme studies, is 246 nodes, and offers three
+regions of 83, 82 and 77 nodes each containing endings. **That is the graph M-2 should use, and
+before this nobody knew which graph M-2 meant.**
+
+So M-2 is neither dead nor open: its scope is now three named graphs instead of "the largest", and
+its remaining half is the fill-and-rate, which is exposed to the contract-coverage problem
+(`AL-213`) like everything else rather than to D-6.
 
 ### Q-5 result: the fills are faithful, and only a model can tell you so
 
