@@ -64,6 +64,18 @@ async def _verification_state(ctx: Context) -> VerificationStatus:
         VerificationStatus: The caller's state, or ``"none"`` when the
             question does not arise.
     """
+    # #ASSUME: security: the short-circuit is a cost optimisation, NOT an
+    # authorization decision, and the two must not be conflated. It answers
+    # "none" for a child or device principal because parent verification is not
+    # a question about them, not because they are being denied anything; the
+    # value is display-only either way (see
+    # consent/service.py::reportable_verification_status). Adding a role to
+    # this tuple therefore hides a state from that role, it does not gate them,
+    # so a role that DOES need the answer must never be added here for speed.
+    # #VERIFY: tests/integration/test_me.py::
+    # test_me_reports_a_verification_once_one_is_usable exercises the adult
+    # path; ::test_me_reports_no_verification_state_while_the_flag_is_off
+    # covers the flag-off answer the shared function supplies.
     if ctx.principal.role in (Role.CHILD, Role.DEVICE):
         return "none"
     return await reportable_verification_status(ctx.session, ctx.principal.user_id)

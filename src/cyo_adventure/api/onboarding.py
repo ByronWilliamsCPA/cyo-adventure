@@ -237,6 +237,18 @@ async def _view(session: AsyncSession, user: User, *, created: bool) -> Onboardi
     # MeResponse: "none" is what a caller reads both when the tier does not
     # gate on verification and when they simply have not started, and this is
     # the only response that guardian can read.
+    #
+    # #ASSUME: external resources: this projection is no longer pure. The
+    # verification field awaits a query, so a caller that used to be able to
+    # render this response without touching the database now cannot, and a
+    # database fault surfaces on the ONE endpoint an unapproved guardian can
+    # reach. That is accepted rather than defended: falling back to a literal
+    # "none" on error would tell a guardian who must verify that there is
+    # nothing to do, which is the failure mode this endpoint exists to prevent.
+    # #VERIFY: tests/integration/test_onboarding_api.py::
+    # test_onboarding_reports_the_verification_state_the_guardian_must_act_on
+    # and ::test_onboarding_reports_no_verification_requirement_while_the_flag_is_off
+    # cover both answers against a real database.
     return OnboardingView(
         family_id=str(user.family_id),
         user_id=str(user.id),

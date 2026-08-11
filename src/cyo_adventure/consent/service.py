@@ -362,6 +362,19 @@ async def has_usable_verification(
     The gate-shaped face of ``usable_verification_id``; see that function for
     what "usable" means and why the test-environment refusal runs first.
 
+    #CRITICAL: security: this is what ``api/profiles.py::_require_consent`` and
+    ``api/admin_profiles.py::_require_family_consent`` ask before letting an
+    adult create a child profile, so a wrong True is the failure that matters.
+    It delegates the whole decision rather than re-deriving any part of it,
+    which is the point: the ``test``-evidence refusal and the
+    ``kws_environment`` scoping cannot end up applied on the id-shaped face and
+    missing from the gate-shaped one. Do not inline the query here.
+    #VERIFY: tests/unit/test_kws_verification_service.py::
+    test_a_test_environment_verification_is_not_usable_by_default and
+    ::test_the_query_is_scoped_to_the_configured_environment both drive the
+    refusal and the scoping THROUGH this function, not through
+    ``usable_verification_id``, so inlining would break them.
+
     Args:
         session: The caller's session. This function only reads.
         user_ids: The adults to consider.
@@ -592,6 +605,17 @@ async def verification_status(
     from the database at the point of use, so a client that ignores this value
     loses a screen, not a control.
 
+    #ASSUME: concurrency: the two reads below are separate statements, so the
+    pair is not a snapshot. A webhook that resolves the attempt between them
+    makes the first read miss the resolution and the second miss the open
+    attempt, and this function briefly answers ``"none"`` for an adult who is
+    in fact verified. That interleaving is tolerable ONLY because this is a
+    display fact: the caller re-polls, and the gates named above never consult
+    it. Widening this to an enforcement value would make that window a hole.
+    #VERIFY: tests/unit/test_kws_verification_service.py::
+    test_verified_outranks_an_open_attempt pins the ordering; the window itself
+    is accepted, not defended against.
+
     Args:
         session: The caller's session. This function only reads.
         user_id: The adult to report on.
@@ -624,6 +648,17 @@ async def reportable_verification_status(
     serves the one who is not approved yet and whom ``require_principal``
     refuses. Sharing one function is what stops those two answers drifting
     apart while a guardian moves between them.
+
+    #CRITICAL: security: this function answers ``"none"`` for EVERY adult while
+    ``kws_verification_required`` is off, including adults who really did
+    verify. It is therefore unusable as a control by construction, and nothing
+    may gate on it: an authorization check written against this value would
+    read "not verified" and "this tier does not ask" as the same answer, which
+    is exactly the collapse the flag exists to avoid. Enforcement asks
+    ``has_usable_verification``; ``verification_required`` ships beside this
+    value on both responses so a client can tell the two cases apart.
+    #VERIFY: tests/unit/test_kws_verification_service.py::
+    test_the_flag_being_off_suppresses_the_state_entirely.
 
     Args:
         session: The caller's session. This function only reads.
