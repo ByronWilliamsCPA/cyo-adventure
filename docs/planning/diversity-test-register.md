@@ -67,7 +67,7 @@ plus the shared-gram guard, both deterministic and both already built.
 
 | ID | Test | Question it settles | Method | Cost | Falsifier | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| D-1 | Separate the treatment's **three** bundled changes | Was the 2026-08-10 effect from the different kind of act, from the stake economics, or from the four rooms yielding distinct components? Raters cited act-kind at one fork and stakes at two, so the original two-way framing understated the confound. | Three arms on the same graph, each restoring one change to the control's setting while holding the other two. Rate each against the same base book with the six-question instrument. | 3 fills, 2 raters | Restoring any single change collapses the effect, which would name that change as the whole lever rather than one of three. | queued |
+| D-1 | Separate the treatment's **three** bundled changes | Was the 2026-08-10 effect from the different kind of act, from the stake economics, or from the four rooms yielding distinct components? Raters cited act-kind at one fork and stakes at two, so the original two-way framing understated the confound. | Three arms on the same graph, each restoring one change to the control's setting while holding the other two. Rate each against the same base book with the six-question instrument. | 3 fills, 2 raters | Restoring any single change collapses the effect, which would name that change as the whole lever rather than one of three. | **retired as specified, not skipped.** Twelve cells of instrument history show Q4 at 5 in 12 of 12 and separating the pairs in 0 of 3 rounds, Q3 compressed into a 2-point band, and Q6, the only item that ever carried a result, tied at 5,5 in the one uncontaminated round. D-1 would buy a null that is an instrument artifact. One third of it is already answered by M-4's null on stake economics. See below for what it needs first. |
 | D-2 | Replicate on a production-eligible graph | Does any of this survive off a 26-node outlier? The catalog median is 151 nodes and the pilot graph is not production-eligible. | Repeat the winning arm on a production-scale 10-13 skeleton, same protocol, same instrument. **Blocked on an artifact nobody noticed was missing: see below.** | **badly underestimated, see below** | The effect vanishes or inverts at production scale. | **halted at the guard battery, not rated**; contract authored and independently verified (101 nodes, 39 forks, 0 closure violations); three bindings verified at 0.000 collision with only the 6 designed shared-world props; three fills complete and structurally clean (10.2k to 10.6k words each); cast renamed and titles separated. **HALTED AT THE GUARD BATTERY, not rated.** D-6 has since supplied the way forward and priced it: neither cheap repair suffices, so resuming D-2 needs the decisional stratum generated per book **and** the premise varied across arms. See below. |
 | D-3 | DecisionSignature v2 over the contracts | Can a richer vocabulary agree with readers instead of inverting them? | Added `reasoning_kind` (compute, match, recall, infer, perceive, negotiate, exert) and `stake` (nothing, time, resource, access, standing, permanent) plus the three `AL-193` gaps, and re-annotated the three plans blind. | 2 annotators over 3 plans | Hit its own falsifier: still ranks the treatment pair as the more repetitive one. Annotator A 0 of 6 fields agreeing with readers, annotator B 1 of 6. `reasoning_kind` inverts under both (0.929 against 1.000, and 0.857 against 0.964). Not a reliability failure: kappa between the two annotators is 0.77 to 0.81 on `reasoning_kind` and 0.72 on `stake`, both clear of the floor. The new fields are labellable and do not discriminate. | **done, NEGATIVE** |
 | D-3b | Same vocabulary over contract **plus binding** | Is the inversion a vocabulary problem or a layer problem? The contracts describe `n_clockface` as "answer the test on its own terms" and "fit the piece the way the diagram shows", which Rule 2 correctly calls one decision; the mechanic readers responded to lives in the binding (`clock_arithmetic`, `rhythm_code`, `pictogram_code`). | Identical annotation pass with each plan's bound devices attached. | 1 to 2 annotators over 3 plans | Ordering still inverts with the binding visible, which would mean the discriminating property is not in the plan at all and only the filled prose carries it. Did not fire. | **done, POSITIVE, 1 annotator** |
@@ -856,6 +856,45 @@ It does not follow that a per-book premise must differ in *content*. It follows 
 be the same sentences, like everything else in the decisional stratum. The amendment in section 2.1
 of the architecture re-specification is right that the premise moves per book, and would be too
 strong if read as requiring a different story every time.
+
+### D-1 should not be run as specified, and the instrument's own record is why
+
+D-1 proposes three more arms on this graph, rated against the same base with the six-question
+instrument. Before spending three contracts and three fills on that, here is every cell the
+instrument has produced across the three rounds with recorded per-question scores:
+
+| Item | Cells | At ceiling | Range | Rounds where it separated the two pairs |
+| --- | --- | --- | --- | --- |
+| Q1 same kinds of action | 12 | 7 | 4 to 5 | 3 of 3 |
+| Q2 same tradeoffs | 12 | 6 | 3 to 5 | 3 of 3 |
+| Q3 different consequences | 12 | 0 | **2 to 3** | 2 of 3 |
+| **Q4 sequence repeats** | 12 | **12** | **5 to 5** | **0 of 3** |
+| Q5 meaningful and informed | 12 | 1 | 2 to 5 | 1 of 3 |
+| **Q6 solution transfer** | 12 | 7 | 2 to 5 | 2 of 3 |
+
+**Q4 has never varied.** Twelve cells, three rounds, every one a 5, and it has never once separated
+the pairs it was asked to separate. Two raters recommended retiring it unprompted after the D-5
+round and the recommendation was recorded and not acted on; the case is now closed by twelve
+observations. Q3 is compressed into a two-point band at the bottom and has never exceeded 3.
+
+**And Q6, the only item that ever carried the result, tied at 5, 5 in the one uncontaminated
+round.** That is the M-4 round 2 result read as a fact about the instrument rather than about stake
+economics: on this graph, cleanly presented, the item that discriminates has reached its ceiling.
+
+So **D-1 as specified would spend three contracts and three fills to produce a null that is an
+instrument artifact rather than a finding.** Q4 returns 5, 5 by construction, Q3 cannot move more
+than a point, and Q6 is already saturated on this graph. That is not a reason to skip D-1; it is a
+reason not to run *this* D-1.
+
+**What D-1 needs before it is worth running.** Either a graph whose central puzzle differs
+structurally between arms, since Q6 saturates here because all arms funnel through one four-option
+mechanism by construction, or a discriminating measure that is not at ceiling. `check_solution_transfer.py`
+tier 1 is deterministic, free, and did separate the three rated pairs 1.000 / 0.167 / 0.000, but it
+measures device identity and D-1's three changes are act-kind, stake economics and per-room payoff,
+so it would not capture them either. **We currently have no instrument that could read D-1's result.**
+
+**One third of D-1 is answered anyway.** M-4 isolated the stake-economics change and returned a
+null, so the remaining live question is narrower than the row states: act-kind and per-room payoff.
 
 ## A2. What D-6 costs every remaining fill-based row
 

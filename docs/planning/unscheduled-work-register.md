@@ -411,6 +411,7 @@ substantially the same work under different headings. Do not triple-book.
 | UW-C162 | `AL-228` Fact-graph closure held in the contract while the prose at a merge node named clues from two rooms a reader visits only one of. Nothing checks over-assumption, only delivery. Add a bounded model pass at merge nodes asking whether prose references facts `entry_state` does not guarantee. | now | unscheduled |
 | UW-C163 | `AL-229` A choice promising to claim a reward drops the fact representing it, which survives only on the branch that declines the reward; the pattern repeats across three independently authored contracts and produced a hole a blind rater found in all three books. Add an asymmetric-drop check at forks, invisible to both closure and the branch-obligation screen. | now | unscheduled |
 | UW-C164 | `AL-230` Two blind raters agreed on an effect that vanished once a label template and a provenance leak were removed, splitting the raters and tying Q6. Treat rater agreement as necessary not sufficient, keep the rebuild-rather-than-caveat rule, and check whether a held-constant variable is itself a similarity channel before reading a null. | now | unscheduled |
+| UW-C165 | `AL-231` Q4 scored 5 in 12 of 12 cells across three rounds and separated the pairs in none of them, while Q6 saturated in the one clean round, so D-1 as specified would buy an instrument artifact. Drop Q4 from scoring and audit instrument ceilings from accumulated cells before commissioning any further rating round. | now | unscheduled |
 
 ## Cluster D: untracked GitHub issues
 
