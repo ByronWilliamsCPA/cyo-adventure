@@ -29,6 +29,7 @@ import json
 import re
 import sys
 from collections import Counter
+from itertools import combinations
 from pathlib import Path
 from typing import Any, cast
 
@@ -91,6 +92,74 @@ def shared_grams(stories: list[dict[str, Any]], n: int = 4) -> Counter[tuple[str
         for gram in grams:
             counts[gram] += 1
     return Counter({gram: c for gram, c in counts.items() if c >= 2})
+
+
+def pairwise_shared_grams(
+    stories: list[dict[str, Any]], n: int = 4
+) -> list[tuple[int, int, int, float]]:
+    """Return (i, j, shared_count, per_1000) for every pair of sibling fills.
+
+    #ASSUME: data-integrity: a pairwise intersection is computed directly
+    between two fills' gram sets, independent of how many other siblings are
+    present. This is deliberate: the global ``shared_grams`` rate is diluted
+    by the mean word count of the *whole* set, so two fills that converge
+    heavily on their own can still clear the aggregate budget once several
+    clean fills are averaged in. The worst pair below is immune to that
+    dilution because its denominator is only the two fills involved.
+    #ASSUME: tooling: this helper is **not wired into main()** and nothing gates
+    on it. An earlier docstring claimed main() gated --check on the highest-rate
+    pair via --max-pair-shared-per-1000; no such flag exists and main() never
+    calls this. It is used from analysis scripts that import it directly, and a
+    reader calibrating against it should know no gate depends on it.
+    #VERIFY: grep for the flag name before believing any claim that it gates.
+    """
+    grams = [_grams(_leaf_text(story), n) for story in stories]
+    words = [len(_WORD_RE.findall(_leaf_text(story).lower())) for story in stories]
+    pairs: list[tuple[int, int, int, float]] = []
+    for i, j in combinations(range(len(stories)), 2):
+        count = len(grams[i] & grams[j])
+        mean_words = (words[i] + words[j]) / 2.0
+        rate = count / max(mean_words, 1.0) * 1000.0
+        pairs.append((i, j, count, rate))
+    return pairs
+
+
+def node_gram_concentration(
+    stories: list[dict[str, Any]], shared: Counter[tuple[str, ...]], n: int = 4
+) -> Counter[str]:
+    """Tally, per node id, how many globally-shared grams that node contains.
+
+    A shared gram counted once at the aggregate level may in practice live
+    entirely inside one or two nodes; this points a reviewer at the node or
+    region carrying the recognition risk instead of leaving them to search
+    the whole book for a rate.
+
+    Args:
+        stories: Decoded sibling fills.
+        shared: The output of ``shared_grams`` for the same fills.
+        n: Gram length, matched to ``shared``.
+
+    Returns:
+        node id -> number of (story, node) occurrences of a shared gram.
+        A gram repeated in the same node across several fills counts once
+        per fill, so a node that is the recurring source of the leak scores
+        higher than one that merely echoes it once.
+    """
+    shared_set = set(shared)
+    tally: Counter[str] = Counter()
+    for story in stories:
+        for node in cast("list[dict[str, Any]]", story.get("nodes") or []):
+            node_id = str(node.get("id", "?"))
+            parts = [str(node.get("body", ""))]
+            parts.extend(
+                str(c.get("label", ""))
+                for c in cast("list[dict[str, Any]]", node.get("choices") or [])
+            )
+            node_grams = _grams(" ".join(parts), n)
+            hit = len(node_grams & shared_set)
+            if hit:
+                tally[node_id] += hit
+    return tally
 
 
 def menu_frame_overlap(

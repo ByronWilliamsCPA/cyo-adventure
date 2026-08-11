@@ -92,12 +92,45 @@ class _RedirectStatus(BaseModel):
     verified: bool = False
 
 
+# Where the parent goes next. Every page below is otherwise a dead end: the
+# parent arrives here from Epic's hosted flow, frequently by tapping a link in
+# a mail app, so there is no history to go back through and, on a fresh
+# browser, no session either. `/guardian` handles both: with a session it is
+# the console, without one the SPA sends them to the guardian login.
+#
+# A ROOT-RELATIVE href, so the link is correct on whatever origin served the
+# page and the page keeps referencing nothing external
+# (tests/unit/test_kws_redirect.py::TestNoPersistence::
+# test_success_page_is_self_contained pins that).
+#
+# #ASSUME: external-resources: mirrors GUARDIAN_CONSOLE_PATH in
+# frontend/src/routes.ts. Nothing links the two, so moving the console route
+# there lands a parent on the app's 404 page here.
+# #VERIFY: tests/unit/test_kws_redirect.py::TestLanding::
+# test_the_landing_path_matches_the_app_route, which reads the constant the SPA
+# router actually uses. The sibling test_every_page_offers_a_way_back_into_the_app
+# only proves a link is present, so it cannot catch a rename on the other side.
+_APP_PATH = "/guardian"
+_APP_LINK_LABEL = "Return to CYO Adventure"
+
+
 def _render(*, title: str, heading: str, body: str) -> str:
     """Build a complete, self-contained HTML page.
 
     Every substitution comes from a module-level literal below, never from the
     query string, so this deliberately does no escaping: there is no
     caller-controlled text on the page to escape.
+
+    The link back into the app is rendered on every page rather than only on
+    the success page, because a parent whose verification did not complete is
+    exactly the one who most needs a route back to try again.
+
+    Note what that does not buy. Success and failure are already fully
+    distinguishable by their headings, by design, so no non-disclosure property
+    rests on the link being present in both. What ``TestDisclosure`` denies is
+    discrimination among the four REJECTION causes, and those four already
+    collapse onto one page; the link is symmetric because a dead end is bad on
+    every outcome, not because an oracle depends on it.
 
     Args:
         title: The document title.
@@ -117,16 +150,39 @@ def _render(*, title: str, heading: str, body: str) -> str:
         f"<title>{title}</title>\n"
         "<style>\n"
         "body { font-family: system-ui, sans-serif; margin: 0; padding: 2rem;\n"
-        "       color: #1b1b1f; background: #fbfbfd; }\n"
+        "       color: #1b1b1f; background: #f8f3e8; }\n"
         "main { max-width: 32rem; margin: 3rem auto; }\n"
         "h1 { font-size: 1.5rem; margin: 0 0 0.75rem; }\n"
         "p { font-size: 1rem; line-height: 1.5; margin: 0; }\n"
+        # The app's own parchment surface and amber accent, copied as literals
+        # rather than imported: this page must render with no stylesheet, no
+        # font, and no script fetched from anywhere.
+        #
+        # Ink on the amber fill, not white. frontend/design-system/src/tokens.css
+        # records amber-deep against white at 3.42:1, under the 4.5:1 WCAG AA
+        # floor for normal text (1rem at weight 600 is not "large text"), and
+        # prescribes ink on the fill instead; guardian.css's
+        # `.intake-request__assign` is the in-app precedent. Do not restore a
+        # light foreground here.
+        "a { display: inline-block; margin-top: 1.75rem; padding: 0.7rem 1.2rem;\n"
+        "    border-radius: 0.5rem; background: #c17b2a; color: #1b1b1f;\n"
+        "    font-size: 1rem; font-weight: 600; text-decoration: none; }\n"
+        "a:focus-visible { outline: 3px solid #1b1b1f; outline-offset: 3px; }\n"
         "</style>\n"
         "</head>\n"
         "<body>\n"
         "<main>\n"
         f"<h1>{heading}</h1>\n"
         f"<p>{body}</p>\n"
+        # #CRITICAL: security: rel="noreferrer" because the URL of THIS page is
+        # itself a replayable signed credential (see the module docstring). The
+        # global Referrer-Policy is strict-origin-when-cross-origin, which drops
+        # the path and query only on CROSS-origin navigations; `/guardian` is
+        # same-origin, so without this the full return URL, signature and all,
+        # is sent as `Referer` and lands in whatever access log serves the app.
+        # #VERIFY: tests/unit/test_kws_redirect.py::TestLanding::
+        # test_the_way_back_sends_no_referrer.
+        f'<a href="{_APP_PATH}" rel="noreferrer">{_APP_LINK_LABEL}</a>\n'
         "</main>\n"
         "</body>\n"
         "</html>\n"
@@ -137,8 +193,9 @@ _VERIFIED_PAGE = _render(
     title="Verification complete",
     heading="Verification complete",
     body=(
-        "Thank you. You can close this window and return to CYO Adventure on "
-        "the device your child is using."
+        "Thank you. There is nothing else for you to do here. Head back to "
+        "CYO Adventure to carry on, or close this window if you started on "
+        "another device."
     ),
 )
 
@@ -146,8 +203,9 @@ _NOT_VERIFIED_PAGE = _render(
     title="Verification not completed",
     heading="Verification was not completed",
     body=(
-        "This verification did not finish. You can close this window and start "
-        "again from CYO Adventure whenever you are ready."
+        "This verification did not finish, and nothing has changed on your "
+        "account. You can start again from CYO Adventure whenever you are "
+        "ready."
     ),
 )
 
@@ -157,8 +215,8 @@ _UNCONFIRMED_PAGE = _render(
     title="Link could not be confirmed",
     heading="We could not confirm this link",
     body=(
-        "This link is not one we can recognise. Please close this window and "
-        "start the verification again from CYO Adventure."
+        "This link is not one we can recognise. Please start the verification "
+        "again from CYO Adventure."
     ),
 )
 
