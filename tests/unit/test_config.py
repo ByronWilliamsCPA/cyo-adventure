@@ -1995,6 +1995,47 @@ class TestKwsEvidenceSettings:
             )
 
     @pytest.mark.unit
+    def test_test_evidence_is_refused_on_production_kws_from_a_staging_app(
+        self,
+    ) -> None:
+        """The case that tells ``kws_environment`` apart from ``environment``.
+
+        The two tests either side of this one move both fields together:
+        (production, production) refuses and (staging, test) allows. A guard
+        written against ``environment`` passes both of them unchanged, so
+        together they assert nothing about which field is load-bearing, which
+        is precisely the claim the refusal test's docstring makes.
+
+        This pair is the mismatched one. ``environment="staging"`` with
+        ``kws_environment="production"`` must still raise, and an
+        ``environment``-keyed guard cannot make it, because it would read
+        "staging" and wave the combination through. That is the inert-guard
+        failure the docstrings warn about, and it is reachable rather than
+        theoretical: staging deploys with ``ENVIRONMENT=production`` today, so
+        the app-level value is not a tier discriminator on this deployment at
+        all.
+        """
+        from cyo_adventure.core.config import Settings
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        with pytest.raises(ConfigurationError, match="KWS_ACCEPT_TEST_EVIDENCE"):
+            Settings(
+                environment="staging",
+                kws_environment="production",
+                kws_accept_test_evidence=True,
+                database_url=_PROD_DB_URL,
+                oidc_issuer="https://project.supabase.co/auth/v1",
+                oidc_jwks_url=(
+                    "https://project.supabase.co/auth/v1/.well-known/jwks.json"
+                ),
+                child_session_secret=_CHILD_SECRET,
+                device_grant_secret=_DEVICE_SECRET,
+                allow_mock_review=True,
+                kws_enabled_methods=_KWS_METHODS,
+                **_KWS_CREDS,
+            )
+
+    @pytest.mark.unit
     def test_accepting_test_evidence_against_test_kws_is_allowed(self) -> None:
         """Staging has to be able to rely on a Test verification, or it proves nothing.
 
@@ -2022,14 +2063,21 @@ class TestKwsEvidenceSettings:
 
     @pytest.mark.unit
     def test_the_real_staging_shape_is_allowed_not_just_a_staging_label(self) -> None:
-        """The only case that can tell ``kws_environment`` from ``environment`` apart.
+        """The allow-direction case that tells ``kws_environment`` from ``environment``.
 
-        The two tests above move both values together (production/production
-        and staging/test), so a guard rewritten to read ``self.environment``
-        passes both: the first still raises, the second still allows. That
-        makes them unable to detect the exact regression the docstring on
-        ``_refuse_test_evidence_against_production_kws`` says it exists to
-        prevent.
+        Two of the tests above move both values together
+        (production/production and staging/test), so a guard rewritten to read
+        ``self.environment`` passes both: the first still raises, the second
+        still allows. That makes them unable to detect the exact regression
+        the docstring on ``_refuse_test_evidence_against_production_kws`` says
+        it exists to prevent.
+
+        This case covers the allow direction, and
+        ``test_test_evidence_is_refused_on_production_kws_from_a_staging_app``
+        covers the refuse direction. Both are needed: this one alone still
+        passes against a guard narrowed to require BOTH fields to read
+        ``production``, and that narrowing is the dangerous failure, since it
+        would accept sandbox evidence against Production KWS.
 
         This is the shape staging actually deploys, and the reason the guard
         was keyed on the KWS environment in the first place: ``ENVIRONMENT`` is
