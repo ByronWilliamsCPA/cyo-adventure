@@ -336,10 +336,28 @@ Supabase endpoints rather than `/api/v1`.
   `offers no way to name the recipient` and `sends no recipient of any kind`. The
   verification email goes to the account's own adult, and a recipient field would
   turn the flow into a way to send mail to an arbitrary address.
-- **Gap**: no E2E tier at all, mocked or real. The full round trip needs Epic's
-  hosted flow and a webhook, so nothing below `e2e-staging` can execute it, and the
-  staging tier does not cover it yet. What is proven here is the client's behavior
-  around the call, not that a verification ever completes.
+- E2E-staging: `frontend/e2e-staging/kws-public-urls.spec.ts` covers the redirect-return
+  leg only (`GET /api/v1/consent/kws/return`, `api/kws_redirect.py`), not the send: it
+  asserts the deployed origin, rather than the service worker, is what answers that path,
+  both before and after the SW takes control of navigations. That is the regression guard
+  for PR #679 (the SW's navigation fallback was answering this exact path with the cached
+  SPA shell). It sends no `signature` query parameter, so a deterministic 400 refusal is
+  what the test observes; nothing here calls `POST /api/v1/consent/kws/start` or writes a
+  `kws_verification` row. The body assertion accepts either of the origin's two legitimate
+  400s, the HTML refusal page or a JSON `ConfigurationError`, because whether
+  `KWS_VERIFICATION_SECRET` is set is operator state this repo cannot read: the value is
+  injected at the stack layer, and the blank in homelab-infra's staging `stack.env` is the
+  placeholder convention every secret-bearing key there follows, not a reading of the
+  deployed value. Staging was observed serving the refusal-page branch on 2026-08-11. Both
+  branches still exclude the SPA shell and a Cloudflare interstitial, which is what the
+  assertion is for; the run annotates itself when the unset branch is taken so that gap
+  stays visible rather than reading as an unqualified pass.
+- **Gap**: no E2E tier drives an actual completed verification. That still needs Epic's
+  hosted flow and a real webhook call and stays a manual check (see the KWS wire-protocol
+  memory and D1's staging note). What the new staging spec closes is narrower and different:
+  proof that the return leg itself is reachable and correctly rendered by the deployed
+  origin for a signed-out client, not that a verification can complete end to end. The
+  client's behavior around the `/start` call is still proven only at the component tier.
 
 ## Guardian: submit story request (intake)
 
@@ -455,7 +473,18 @@ pin both the load-bearing claims and the claims deliberately withheld.
 - Component: `frontend/src/legal/PrivacyPolicyPage.test.tsx` (renders with no auth provider mounted; pins the contact route against the shared constant, the never-collected-from-a-child list including location, the Epic recipient row naming both the parent email and the child's country, the hard-fail wording for the PII guard rather than a removal claim, and the four claims held back pending counsel or unfinished work: per-purpose GDPR legal basis, processor-only use, a named transfer mechanism, and re-consent on material change), `frontend/src/legal/SupportPage.test.tsx` (same signed-out render, contact route, and the FAQ entries that restate policy claims)
 - Config: `frontend/src/router.test.tsx` (structural assertions over the exported route config without rendering: both public paths resolve outside every gate, with a positive control on a known-gated guardian route so the public assertions cannot pass vacuously)
 - E2E-mocked: `frontend/e2e/visual.spec.ts` (the landing footer that links to both pages is inside the landing-page visual baseline)
-- **Gap**: no `e2e-real`, `e2e-staging`, or `e2e-prod` coverage, and no test asserts the pages resolve over HTTP for a signed-out client against a deployed environment. That is the assertion KWS actually depends on; the component tier proves the components need no session, not that the deployed URL answers.
+- E2E-staging: `frontend/e2e-staging/kws-public-urls.spec.ts` (both `/privacy` and `/support`
+  resolve with their real, distinctive content and a 200 response for a signed-out client
+  against the real deployed staging origin, checked once right after the service worker's
+  registration reports `active` and once more after that, since a first-visit-only check can
+  pass by accident; also asserts neither page redirects, closing the phishing-redirect risk
+  this section names. The same spec covers the KWS redirect-return page under the ADR-018 D1
+  section below, since that page is server-rendered rather than a React route)
+- **Gap**: still no `e2e-real` or `e2e-prod` coverage. What remained open here, that no test
+  asserted the pages resolve over HTTP for a signed-out client against a deployed environment,
+  is now covered at `e2e-staging`; the component and config tiers above prove the components
+  need no session and the router leaves both paths ungated, neither of which is the same claim
+  as the deployed URL actually answering, which is what the new spec adds.
 
 ## Guardian: invite a co-parent (self-serve)
 
