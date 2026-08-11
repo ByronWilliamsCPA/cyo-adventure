@@ -501,9 +501,13 @@ async def send_back(
         principal: The admin sending it back.
         storybook: The story being returned.
         reason: Why it was sent back (free text; logged, not persisted).
-        reason_code: Closed-vocabulary calibration code for why it was sent
-            back (``api.schemas.SendBackReasonCodeLiteral``); persisted on
-            the SENT_BACK pipeline event so it is queryable later.
+        reason_code: Calibration code for why it was sent back, persisted on
+            the SENT_BACK pipeline event so it is queryable later. Typed
+            ``str`` here on purpose: the closed vocabulary is
+            ``api.schemas.SendBackReasonCodeLiteral`` and is enforced at the
+            API boundary, because ``publishing`` must not import from ``api``.
+            **This function does not validate it**, so a non-API caller can
+            persist a code outside the vocabulary.
 
     Raises:
         StateTransitionError: If the story is not in ``in_review``.

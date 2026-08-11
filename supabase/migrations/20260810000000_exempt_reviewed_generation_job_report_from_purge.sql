@@ -30,8 +30,9 @@
 -- corpus with rows carrying no reviewer judgment to learn from. Only
 -- publishing/service.py::send_back writes a SENT_BACK pipeline_event, so that
 -- event is the human-only marker; auto_reject writes none.
--- (state_machine.py's docstring still says the auto_reject hop "has no
--- slice-1 caller"; that is stale, moderation/pipeline.py drives it today.)
+-- (state_machine.py's docstring used to say the auto_reject hop "has no
+-- slice-1 caller"; moderation/pipeline.py drives it today, and that docstring
+-- is corrected in the same change as this migration.)
 -- #VERIFY: tests/unit/test_report_retention.py asserts the predicate matches
 -- on the event rather than on the needs_revision status.
 --
