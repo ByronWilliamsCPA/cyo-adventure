@@ -48,7 +48,7 @@ Legend: [x] done · [~] partial (rest blocked/deferred, see notes) · [ ] not st
 | P11 | Backlog re-triage + doc corrections | A11 | S | none | [x] |
 | P12 | Evaluator depth cap + schema_version gate | ARCH-M9, ARCH-M6 (A12) | M | none | [~] evaluator depth cap (ARCH-M9) done; schema_version reader gate (ARCH-M6) not started |
 | P13 | Offline sync robustness (locks, conflicts store, IDB) | ARCH-M4, ARCH-M5 (A12) | M | P5 | [~] cross-tab replay lock + IDB blocking callbacks done; durable conflicts store (data-loss-on-tab-close) deferred (touches the delicate resolution flow) |
-| P14 | Dev-loop and CI-gate hygiene | ARCH-M10, ARCH-M11, jsx-a11y (A13) | S | none | [~] nox extras + 3.10 drop + codecov + stale ignore done; jsx-a11y deferred (plugin peer range excludes eslint 10) |
+| P14 | Dev-loop and CI-gate hygiene | ARCH-M10, ARCH-M11, jsx-a11y (A13) | S | none | [~] nox extras + 3.10 drop + codecov + stale ignore done; jsx-a11y shipped 2026-08-11 (ADR-029) despite the plugin's peer range still excluding eslint 10, via a `package.json` `overrides` pin rather than waiting on upstream (`UW-I06`, `UW-F30`) |
 | P15 | UX polish batch 1 (kid surface) | UX-K3, UX-K4, UX-K6, UX-K7 (A14) | S | none | [x] |
 | P16 | UX polish batch 2 (adult surfaces + tokens) | UX-C1, UX-C2, UX-A1, UX-A3, UX-G4 (A14) | M | none | [x] |
 | P17 | Progress semantics (finished state) | UX-K5 | M | P12 | [x] |
@@ -380,6 +380,14 @@ documented pre-push parity loop runs (`noxfile.py`); add `api/deps.py` and
 `frontend/package.json` and wire it into the flat config so the existing
 accessibility work is regression-protected; remove the stale `utils/financial.py`
 per-file-ignore.
+
+**Update 2026-08-11 (ADR-029)**: the jsx-a11y item shipped on its own, ahead of the
+rest of this batch, without waiting on the peer-range precondition this row
+originally deferred it on. `eslint-plugin-jsx-a11y@6.10.2` still declares
+`eslint@^3..^9` against this project's `eslint@10.8.0`; the plugin ships anyway via
+a `package.json` `overrides` entry pinning its peer check to the project's own
+resolved `eslint` version, verified against a clean `npm ci`. See `UW-I06` and
+`UW-F30` for the register-side tracking.
 
 ### P15. `fix(kid): kid-surface polish batch`
 

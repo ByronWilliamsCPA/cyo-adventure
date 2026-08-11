@@ -61,11 +61,15 @@ relate to the Supabase project constraints.
   "best-practice" rules (landmark/heading structure). Kept off the per-PR
   gate deliberately (slower, and best-practice findings are not WCAG
   conformance failures). First correct run (2026-08-11, after fixing a
-  lazy-route-chunk race the wider rule set exposed) found four real
-  structural gaps, tracked as `UW-F27`: nested/duplicate `<main>` landmarks
-  on six admin pages, two pages with no `<h1>`, `GuardianLoginPage` rendering
-  with no `<main>` landmark at all, and a heading-order skip on the admin
-  review detail page's "Endings" section.
+  lazy-route-chunk race the wider rule set exposed) found four distinct
+  structural gaps across 13 failing test cases, tracked as `UW-F27`:
+  nested/duplicate `<main>` landmarks on admin pages (scan-confirmed on 4 of
+  6; the other 2 share the code pattern but sit on routes neither tier ever
+  visits, `UW-F29`), two pages with no `<h1>`, `guardian/LoginPage.tsx`
+  rendering with no `<main>` landmark at all, and a heading-order skip on the
+  admin review detail page's "Endings" section. This suite's own coverage
+  gap (11 routes scanned at neither tier, including two this same pass
+  edited for accessibility) is tracked as `UW-F29`.
 - **Keyboard operability of dialogs (2026-07-27)**:
   `frontend/e2e/keyboard-nav.spec.ts` — the focus behavior axe cannot see,
   asserted against the real built app. Three representative `cyo-dialog` modals

@@ -6,9 +6,15 @@
 # rule-tag scope from WCAG 2.1 A/AA only to WCAG 2.1 A/AA + WCAG 2.2 A/AA +
 # axe's non-normative "best-practice" rules (UW-N04, UW-F27). That wider
 # scope is deliberately kept off the per-PR gate: it is slower, noisier
-# (best-practice findings are not WCAG conformance failures), and the owner
-# ruled the blocking `frontend-e2e` job should not grow in scope or run time.
-# Scheduled + manual only, never on every PR.
+# (best-practice findings are not WCAG conformance failures), and per the
+# dated ruling in ADR-029's Constraints section (the primary source for it;
+# do not restate it here as free-standing fact). Scheduled + manual only,
+# never on every PR.
+#
+# Uses the same "Alert on failure (pinned issue)" pattern as e2e-prod.yml and
+# e2e-staging.yml (marker [a11y-weekly]) rather than shipping silent: a
+# scheduled workflow with no notification path is how a red run trains the
+# signal to zero before anyone acts on it.
 # ============================================================================
 name: Accessibility Compliance Weekly
 
@@ -32,6 +38,9 @@ jobs:
     name: Playwright (axe, extended tags)
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    permissions:
+      contents: read
+      issues: write
     defaults:
       run:
         working-directory: ./frontend
@@ -84,3 +93,61 @@ jobs:
           name: accessibility-compliance-report
           path: frontend/test-results/
           retention-days: 14
+
+      - name: Alert on failure (pinned issue)
+        # Reusable alerting pattern for scheduled E2E tiers, same as
+        # e2e-prod.yml: find an OPEN issue labeled e2e-alert whose title
+        # starts with this workflow's marker and comment on it, or open one
+        # if none exists yet, so repo watchers get GitHub's native
+        # email/push notification instead of a red run nobody checks the
+        # Actions tab for. Findings this scan surfaces get their own UW-*
+        # register row (see UW-F27); this step is about noticing a NEW
+        # regression promptly, not about the known, already-tracked ones.
+        if: ${{ failure() }}
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const marker = '[a11y-weekly]'
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
+            const today = new Date().toISOString().slice(0, 10)
+
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'e2e-alert',
+            })
+            const existing = issues.find((issue) => issue.title.startsWith(marker))
+
+            if (existing) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                body: `Scheduled accessibility compliance scan failed again on ${today}. Run: ${runUrl}`,
+              })
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `${marker} scheduled accessibility compliance scan failing`,
+                labels: ['e2e-alert'],
+                body: [
+                  'The scheduled `Accessibility Compliance Weekly` workflow',
+                  '(`.github/workflows/accessibility-compliance-weekly.yml`) failed.',
+                  '',
+                  'This tier runs the WCAG 2.2 + axe best-practice extended scan',
+                  '(A11Y_EXTENDED=1) against the mocked-tier build, weekly. A failure here',
+                  'is either a new regression or one of the findings already tracked as',
+                  'UW-F27 (see docs/planning/unscheduled-work-register.md) resurfacing on a',
+                  'page this run newly covers; check which before assuming it is known.',
+                  '',
+                  `First failing run: ${runUrl}`,
+                  `Date: ${today}`,
+                  '',
+                  'This issue stays open and accumulates one comment per failing run until',
+                  'someone resolves the underlying problem and closes it; the next failure',
+                  'after that opens a fresh issue.',
+                ].join('\n'),
+              })
+            }

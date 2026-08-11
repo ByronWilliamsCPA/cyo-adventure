@@ -83,6 +83,13 @@ async function assertNoViolations(page: Page) {
   // page-wide structure being present, only on structure that IS present
   // being correctly formed. Resolves immediately when the fallback was never
   // mounted (the common case once a chunk is warm).
+  // #ASSUME: timing dependency: 10s covers a cold lazy-chunk load on a CI
+  // runner; the landing-page test additionally asserts real content first
+  // (see that test) so this wait is never the only thing standing between
+  // the scan and a still-loading page there. #VERIFY: if this ever times out
+  // in CI, widen the timeout before suspecting a real accessibility
+  // regression; a genuinely hung fallback is a build/network problem, not an
+  // axe finding.
   if (AXE_TAGS.includes('best-practice')) {
     await page.waitForSelector('.route-fallback', { state: 'detached', timeout: 10_000 })
   }
@@ -118,6 +125,13 @@ async function assertNoViolations(page: Page) {
 
 test('landing page has no detectable accessibility violations', async ({ page }) => {
   await page.goto('/')
+  // Unlike every other test below, this one has no per-test content assertion
+  // to wait on first (the landing route has no auth/route gate to clear), so
+  // it is the one place a scan could otherwise land before the lazy chunk
+  // mounts anything at all, not just before it replaces an already-mounted
+  // fallback. Waiting on the real heading closes that gap the same way the
+  // other tests' pre-existing assertions already do.
+  await expect(page.getByRole('heading', { name: 'CYO Adventure' })).toBeVisible()
   await assertNoViolations(page)
 })
 

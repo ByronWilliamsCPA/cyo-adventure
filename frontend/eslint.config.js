@@ -36,9 +36,11 @@ export default tseslint.config(
       ],
       // A horizontally-scrollable region (legal/PrivacyPolicyPage.tsx's
       // table wrappers) needs tabIndex=0 on its role="region" container so
-      // keyboard users can scroll it (WAI-ARIA APG SCR26); the rule's
-      // built-in exceptions don't cover "region", so this is a project-wide
-      // allowance rather than a per-instance suppression.
+      // keyboard users can scroll it (WAI-ARIA APG SCR26); this rule's
+      // `roles`/`tags` options have no default list at all (verified against
+      // 6.10.2's source: unset, they're simply never checked), so this
+      // project-wide allowance is filling an absent exception list, not
+      // widening an existing one.
       'jsx-a11y/no-noninteractive-tabindex': ['error', { roles: ['region'] }],
     },
   },

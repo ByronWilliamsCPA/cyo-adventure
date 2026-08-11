@@ -189,31 +189,24 @@ During `cruft update`, this section may be updated. Review changes carefully.
 
 ## Web Accessibility (WCAG 2.1 AA)
 
-See [ADR-029](docs/planning/adr/adr-029-web-accessibility-conformance.md) for the full decision
-record. The short version, for anyone touching `frontend/`:
+Target, testing-tier rationale, the dated ruling behind the per-PR/weekly split, and known gaps
+are all recorded in [ADR-029](docs/planning/adr/adr-029-web-accessibility-conformance.md); this
+section only adds what that document doesn't already say. Do not widen `frontend/e2e/a11y.spec.ts`
+or `keyboard-nav.spec.ts`'s scope inside the required `frontend-e2e` CI job without an explicit
+owner decision (ADR-029 Constraints); new or broader compliance scanning belongs in
+`accessibility-compliance-weekly.yml` instead, gated behind `A11Y_EXTENDED=1`.
 
-- **Target**: WCAG 2.1 Level AA on every guardian, admin, and kid surface.
-- **Lint time**: `eslint-plugin-jsx-a11y`'s recommended rules run as part of `npm run lint`. Fix
-  what it flags; if a finding is a deliberate, justified choice (a scrollable region's
-  `tabIndex=0`, an intentional `autoFocus` on an interposed prompt), the project-wide rule
-  override or an inline `eslint-disable-next-line` with a reason comment is already the pattern to
-  follow, not a blanket suppression.
-- **Per-PR (required, do not widen)**: `frontend/e2e/a11y.spec.ts` (axe-core, WCAG 2.1 A/AA tags)
-  and `frontend/e2e/keyboard-nav.spec.ts` (keyboard focus-trap contract) run in the `frontend-e2e`
-  CI job on every PR. Keep this tier fast and WCAG-scoped; do not add best-practice rules,
-  additional tag sets, or new page coverage here without an explicit owner decision, since the
-  owner has ruled this blocking job should not grow in scope or run time.
-- **Weekly, non-blocking**: `.github/workflows/accessibility-compliance-weekly.yml` re-runs
-  `a11y.spec.ts` with `A11Y_EXTENDED=1`, widening the axe tag scope to WCAG 2.2 A/AA plus axe's
-  best-practice rules. This is where new, broader, or slower compliance checks belong; route
-  new/expanded compliance scanning here, not into the per-PR gate.
+- Lint findings from `eslint-plugin-jsx-a11y` (part of `npm run lint`): fix them. For a
+  deliberate, justified exception (a scrollable region's `tabIndex=0`, an intentional `autoFocus`
+  on an interposed prompt), use the existing pattern: a project-wide rule override or an inline
+  `eslint-disable-next-line` with a reason comment, not a blanket suppression.
 - New skip-link needs: use the shared `SkipLink` component (`@ds/components/SkipLink`), not a
   bespoke implementation; see `KidShell.tsx`/`GuardianShell.tsx`/`AdminShell.tsx` for the pattern
   (a `SkipLink` as the shell's first child, targeting an `id` + `tabIndex={-1}` on that shell's
   `<main>`).
-- Known open gaps, tracked so they are not silently reintroduced: `UW-F27` (nested `<main>`
-  landmarks on several admin pages, missing `<h1>` on two pages, a heading-order skip) and
-  `UW-F28` (manual screen-reader audit, published accessibility statement).
+- Known open gaps, tracked so they are not silently reintroduced: `UW-F27` through `UW-F30`
+  (structural findings from the weekly scan, unscanned routes, the jsx-a11y peer-range override)
+  and `UW-F28` (manual screen-reader audit, published accessibility statement).
 
 ---
 

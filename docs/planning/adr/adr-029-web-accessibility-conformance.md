@@ -40,29 +40,58 @@ the open gaps a home.
 
 An external prompt (a small-business ADA-lawsuit-risk article) triggered an audit of this
 project's web-accessibility posture. The audit found substantial, actively-maintained engineering
-already in place: axe-core WCAG scans across every top-level page and modal as a required,
-blocking CI check (`frontend/e2e/a11y.spec.ts`); a tested keyboard focus-trap contract citing WCAG
-2.1.1 by number (`design-system/src/components/Dialog/Dialog.tsx`,
-`frontend/e2e/keyboard-nav.spec.ts`); WCAG 2.5.5 tap-target regression tests; and systematic,
-apparently disciplined ARIA/semantic-HTML use across 84 of 92 component files. None of this was
-named as a project standard anywhere: CLAUDE.md, `project-vision.md`, `tech-spec.md`, and the
+already in place: axe-core WCAG scans as a required, blocking CI check
+(`frontend/e2e/a11y.spec.ts`); a tested keyboard focus-trap contract citing WCAG 2.1.1 by number
+(`design-system/src/components/Dialog/Dialog.tsx`, `frontend/e2e/keyboard-nav.spec.ts`); WCAG
+2.5.5 tap-target regression tests; and widespread ARIA/semantic-HTML use (`grep -lE
+'aria-[a-z]+=|role="|<button|<label|htmlFor=' -r src --include='*.tsx' | grep -v
+'\.test\.tsx$' | wc -l` finds 69 of 92 non-test component files, a lower bound: the pattern is
+narrow by design so the count stays honestly reproducible rather than impressive). None of this
+was named as a project standard anywhere: CLAUDE.md, `project-vision.md`, `tech-spec.md`, and the
 capability register are silent on accessibility, and `roadmap.md`'s Phase 5 line item still reads
 as an open, unchecked deliverable ("Performance pass, offline-edge hardening, accessibility (WCAG
 AA basics)"). Good practice with no named standard is not durable: it depends on whoever wrote
 those tests, not on anything a future contributor, or an auditor, would find documented.
 
+**The axe-core scan's own coverage is narrower than "every page" and needs stating precisely,
+since overstating it in the one document meant to be citable evidence is worse than saying
+nothing.** `a11y.spec.ts` visits 15 distinct routes. Cross-referenced against `router.tsx`, 11
+routes are scanned at neither tier: `/admin/library`, `/admin/users`, `/admin/audit`,
+`/guardian/review/:storybookId`, `/guardian/reading`, `/guardian/connections`,
+`/guardian/devices`, `/guardian/privacy`, `/guardian/preview/:profileId`, `/privacy`, and
+`/support`. Two of those are pages this very PR edits for accessibility:
+`legal/PrivacyPolicyPage.tsx` (the `role="region"` scrollable-table pattern motivating the
+project-wide lint override below) and `guardian/PrivacyPage.tsx` (the `role="list"`
+suppression), and neither has ever been axe-scanned. Closing this gap is `UW-F29` below.
+
 ### Constraints
 
 - **Technical**: `@axe-core/playwright` (bundled axe-core 4.12.1) supports WCAG 2.1 and WCAG 2.2
   tags plus a non-normative "best-practice" rule set. `eslint-plugin-jsx-a11y`'s latest release
-  (6.10.2) declares a peer range of `eslint@^3..^9`; this project runs `eslint@10.8.0`. The plugin
-  is pure AST analysis (`jsx-ast-utils`, `aria-query`, `axobject-query`) with no dependency on
-  ESLint's own runtime internals, and its flat-config export (`flatConfigs.recommended`) loaded
-  and ran clean end-to-end (`npm run lint`, full tree) once installed; treated as a verified,
-  working exception to the peer-range warning rather than an unverified one.
-- **Business**: the owner ruled that the per-PR `frontend-e2e` job (currently ~10 minutes,
-  required on every PR) must not grow in scope or run time. Any new, broader compliance checking
-  goes on a separate, non-blocking, scheduled cadence instead.
+  (6.10.2) declares a peer range of `eslint@^3..^9`; this project runs `eslint@10.8.0`. This is
+  the exact precondition that `UW-I06`/remediation-plan `P14` deferred the plugin on
+  (2026-07-17); it is still unmet upstream, and shipping anyway reproduced the named risk once
+  before landing: a first attempt installed the plugin with `npm install --force`, which
+  succeeded locally but produced a lockfile that a plain `npm ci` (what every CI job actually
+  runs) rejected with `ERESOLVE`, breaking every frontend job on this PR's first push. The fix,
+  not a workaround: a `package.json` `overrides` entry
+  (`"eslint-plugin-jsx-a11y": { "eslint": "$eslint" }`) that pins the plugin's peer check to this
+  project's own resolved `eslint` version. The plugin is pure AST analysis (`jsx-ast-utils`,
+  `aria-query`, `axobject-query`) with no dependency on ESLint's own runtime internals, and its
+  flat-config export (`flatConfigs.recommended`) ran clean end-to-end (`npm run lint`, full tree,
+  and a clean `npm ci` from the regenerated lockfile) once the override was in place. This
+  override is a **permanent** peer-check silence, not a temporary one: unlike this project's other
+  `overrides` entries (which bump a transitive package past a known CVE and are self-evidently
+  temporary), this one removes the signal that would otherwise prompt revisiting it. See
+  Technical debt.
+- **Business**: the per-PR `frontend-e2e` job is measured, not estimated: this PR's own run took
+  3m58s (`Frontend E2E (Playwright, mocked tier)`, 2026-08-11). **Ruling (2026-08-11, this PR's
+  authoring conversation)**: the project owner directed that new or expanded accessibility
+  compliance scanning run on a scheduled, non-blocking cadence against `main`, not inside the
+  per-PR gate, so that gate does not grow in scope or run time. This is the primary source for
+  that ruling; every other reference to it in this repository (CLAUDE.md, the weekly workflow's
+  header comment, Decision item 2 below) points back to this paragraph rather than restating it
+  as free-standing fact.
 
 ### Significance
 
@@ -94,12 +123,11 @@ only if it is documented as a standing practice rather than left as undocumented
    - **Tier 2, weekly, non-blocking (new)**: the same `a11y.spec.ts` suite, re-run with the new
      `A11Y_EXTENDED=1` environment variable, by the new
      `.github/workflows/accessibility-compliance-weekly.yml`. This widens the axe tag scope to
-     WCAG 2.2 A/AA (both `wcag22a` and `wcag22aa` — axe's WCAG tags are additive per level, so
+     WCAG 2.2 A/AA (both `wcag22a` and `wcag22aa`: axe's WCAG tags are additive per level, so
      `wcag22aa` alone would silently skip the 2.2 Level A criteria, the exact pitfall
      `UW-N04` names) plus axe's non-normative "best-practice" rules (missing landmark/heading
-     structure, redundant roles, and similar). Deliberately excluded from Tier 1 because
-     best-practice findings are not WCAG conformance failures and the owner ruled against growing
-     the blocking gate's scope or run time.
+     structure, redundant roles, and similar). Kept off Tier 1 both because best-practice findings
+     are not WCAG conformance failures and per the Business ruling in Constraints above.
 3. **Manual verification remains a named, open gap, not a silent one.** Automated scanning (axe
    included) only catches programmatically detectable issues by construction; there is no evidence
    in this repository of a manual screen-reader pass (VoiceOver/NVDA/JAWS), a published
@@ -118,9 +146,9 @@ only if it is documented as a standing practice rather than left as undocumented
 
 - Accessibility is now a named, citable project standard instead of undocumented practice; a
   future contributor, or an external auditor, has a document to point to.
-- The new Tier 2 scan found real value on its first correct run: four genuine structural gaps
-  (tracked as `UW-F27`) invisible to the Tier 1 WCAG-only scan because they are axe best-practice
-  rules, not WCAG conformance rules.
+- The new Tier 2 scan found real value on its first correct run: 13 test-case failures tracing to
+  four distinct structural defects (tracked as `UW-F27`), invisible to the Tier 1 WCAG-only scan
+  because they are axe best-practice rules, not WCAG conformance rules.
 - `eslint-plugin-jsx-a11y` moves detection earlier (write time) for a meaningful class of defects
   at effectively zero added CI time (verified: `npm run lint` on the full tree stayed clean and
   fast after enabling it; only 4 real findings surfaced across the whole app, two of them
@@ -138,18 +166,33 @@ only if it is documented as a standing practice rather than left as undocumented
 
 ### Technical debt
 
-- `eslint-plugin-jsx-a11y`'s peer-dependency range does not yet include `eslint@10`; re-verify (or
-  drop the implicit exception) on the plugin's next major/minor release that explicitly adds
-  ESLint 10 support.
+- `eslint-plugin-jsx-a11y`'s peer-dependency range does not yet include `eslint@10`, and the
+  `overrides` entry silences the ERESOLVE warning permanently rather than temporarily, which
+  removes the signal that would otherwise prompt revisiting it (finding surfaced in this PR's own
+  review). Tracked as `UW-F30` below rather than left to memory, since a `Technical debt` bullet
+  with no register row is exactly the pattern this project's ADR discipline exists to close.
 - Tier 2's first run surfaced findings (`UW-F27`) that remain unfixed as of this ADR; Tier 2 exists
   to keep finding drift like this, not to fix it inline.
 
 ## Follow-on work
 
-- **`UW-F27`** (Cluster F, phase 5, unscheduled): fix the four structural gaps Tier 2's first
-  correct run found (nested `<main>` landmarks on six admin pages, missing `<h1>` on two pages,
-  `GuardianLoginPage`'s missing `<main>` landmark, and a heading-order skip on the admin review
-  detail page).
+- **`UW-F27`** (Cluster F, phase 5, unscheduled): fix the four distinct defects behind Tier 2's
+  first correct run (13 failing test cases in total, reconciled here: nested `<main>` landmarks on
+  admin pages, missing `<h1>` on two pages, `guardian/LoginPage.tsx`'s missing `<main>` landmark,
+  and a heading-order skip on the admin review detail page). The nested-`<main>` defect is
+  code-confirmed on all six admin pages named in that row, but Tier 2 only ever axe-*scans* four of
+  them (`AuthoringQueuePage`, `ModerationDashboardPage`, `ModerationThresholdsPage`,
+  `ProviderAllowlistPage`); `AuditPage` (`/admin/audit`) and `UserManagementPage`
+  (`/admin/users`) share the identical pattern by code inspection but are never navigated to at
+  either tier (the same 11-route gap named above, `UW-F29`), so those two are unconfirmed by any
+  running test.
+- **`UW-F29`** (Cluster F, phase 5, unscheduled, new): axe-scan the 11 routes named in Context
+  that neither tier visits today, starting with `legal/PrivacyPolicyPage.tsx` (`/privacy`) and
+  `guardian/PrivacyPage.tsx` (`/guardian/privacy`) since this PR edits both for accessibility
+  without ever scanning either, and `/admin/audit`/`/admin/users` since `UW-F27` depends on them.
+- **`UW-F30`** (Cluster F, phase 5, unscheduled, new): re-verify (or replace) the
+  `eslint-plugin-jsx-a11y` peer-dependency override on the plugin's next release, since the
+  override silences the ERESOLVE signal permanently rather than temporarily. See Technical debt.
 - **`UW-N04`** (Cluster N, phase 5, unscheduled, updated by this ADR): WCAG 2.2 scanning now runs,
   but on the new weekly Tier 2 job rather than the per-PR gate. Widening the *blocking* gate itself
   to WCAG 2.2, if ever wanted, is still that row's open work.
@@ -158,3 +201,8 @@ only if it is documented as a standing practice rather than left as undocumented
   published accessibility statement naming the WCAG 2.1 AA target and a contact/remediation path.
   Both wait on an owner ruling (scope/budget for the audit, and what the statement commits to)
   before either is schedulable.
+- **`UW-I06`/remediation-plan `P14`**: this ADR ships `eslint-plugin-jsx-a11y` despite `P14`'s
+  deferral precondition (an eslint-10-compatible peer range) still being unmet upstream. The
+  override above is the mitigation, verified against a clean `npm ci`, not a claim that the
+  precondition is satisfied. Both rows are updated alongside this ADR to record that the plugin
+  shipped anyway and why.
