@@ -76,6 +76,7 @@ jobs:
           egress-policy: audit
 
       - name: Read the readiness check
+        id: probe
         env:
           TIER: ${{ matrix.tier }}
           # Staging has no public literal to fall back to; production does.
@@ -86,7 +87,17 @@ jobs:
         run: |
           set -euo pipefail
 
+          # One line, written before every exit, so the alert job can name the
+          # tier and the outcome without anybody opening the log. Without this
+          # the issue can only say "something failed": `fail-fast: false` means
+          # either leg can be the failing one, and the alert job runs once for
+          # both, so it has no way to tell them apart from `needs.probe` alone.
+          record() {
+            printf '%s\t%s\t%s\n' "${TIER}" "$1" "${2:-}" > "outcome-${TIER}.tsv"
+          }
+
           if [ -z "${BASE_URL}" ]; then
+            record no-base-url "no base URL configured"
             echo "::notice::${TIER}: no base URL configured, nothing probed."
             exit 0
           fi
@@ -95,6 +106,7 @@ jobs:
           # nginx answers with 404 from outside the container (UW-L04).
           if ! body=$(curl -fsS --max-time 30 --retry 3 --retry-delay 5 \
                         "${BASE_URL}/api/v1/health/ready"); then
+            record unreachable "readiness was unreachable or non-2xx"
             echo "::error::${TIER}: /api/v1/health/ready was unreachable or returned a" \
                  "non-2xx status. That is either a readiness 503 (the database check" \
                  "gates the status code) or an edge/ingress problem; it says nothing" \
@@ -104,6 +116,8 @@ jobs:
 
           state=$(printf '%s' "${body}" | jq -r '.checks.kws_verification.state // "missing"')
           detail=$(printf '%s' "${body}" | jq -r '.checks.kws_verification.error // ""')
+
+          record "${state}" "${detail}"
 
           case "${state}" in
             ok)
@@ -135,6 +149,18 @@ jobs:
               ;;
           esac
 
+      # always(), because the outcome of a FAILING leg is the one the alert
+      # needs. An upload conditioned on success would carry only the legs that
+      # had nothing to report.
+      - name: Publish this tier's outcome
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: kws-health-${{ matrix.tier }}
+          path: outcome-${{ matrix.tier }}.tsv
+          if-no-files-found: warn
+          retention-days: 7
+
   alert:
     name: Alert on failure
     needs: probe
@@ -142,6 +168,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
+      # No `actions: read`. The artifact download below reads artifacts from
+      # THIS run, which goes through the runtime token rather than
+      # GITHUB_TOKEN; the `actions: read` scope is only required when
+      # download-artifact is given a `run-id` for a different run.
       issues: write
     steps:
       - name: Harden the runner
@@ -149,13 +179,47 @@ jobs:
         with:
           egress-policy: audit
 
+      - name: Collect each tier's outcome
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: kws-health-*
+          path: outcomes
+          merge-multiple: true
+
       - name: File or comment on the pinned issue
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           script: |
+            const fs = require('node:fs')
             const marker = '[kws-delivery-health]'
             const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
             const today = new Date().toISOString().slice(0, 10)
+
+            // Which tier, in which state. Without this both the new issue and
+            // every repeat comment say only "the probe failed", which for a
+            // two-tier matrix is the one thing a responder cannot act on: the
+            // triage steps below diverge completely by state, and the tiers
+            // have different expected states while production is unwired.
+            let summary = '_No tier reported an outcome; read the job log._'
+            try {
+              const rows = fs
+                .readdirSync('outcomes')
+                .filter((f) => f.endsWith('.tsv'))
+                .map((f) => fs.readFileSync(`outcomes/${f}`, 'utf8').trim())
+                .filter(Boolean)
+                .map((line) => {
+                  const [tier, state, detail] = line.split('\t')
+                  return `| \`${tier}\` | \`${state}\` | ${detail || '(none)'} |`
+                })
+              if (rows.length > 0) {
+                summary = ['| Tier | State | Detail |', '| --- | --- | --- |', ...rows].join('\n')
+              }
+            } catch (err) {
+              // A missing artifact directory is not itself worth failing the
+              // alert over: an alert that cannot file is strictly worse than
+              // one that files without the table.
+              core.warning(`could not read tier outcomes: ${err.message}`)
+            }
 
             const issues = await github.paginate(github.rest.issues.listForRepo, {
               owner: context.repo.owner,
@@ -171,7 +235,13 @@ jobs:
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: existing.number,
-                body: `KWS delivery-health probe failed again on ${today}. Run: ${runUrl}`,
+                body: [
+                  `KWS delivery-health probe failed again on ${today}.`,
+                  '',
+                  summary,
+                  '',
+                  `Run: ${runUrl}`,
+                ].join('\n'),
               })
             } else {
               await github.rest.issues.create({
@@ -181,8 +251,11 @@ jobs:
                 labels: ['ci-failure'],
                 body: [
                   'The scheduled `KWS delivery health` workflow',
-                  '(`.github/workflows/kws-delivery-health.yml`) failed. Read the job log first:',
-                  'it names the tier and prints which of the four outcomes fired.',
+                  '(`.github/workflows/kws-delivery-health.yml`) failed.',
+                  '',
+                  summary,
+                  '',
+                  'The triage below diverges by state, so read the table first.',
                   '',
                   '**If the state was `degraded`**, verification emails are going out and',
                   'nothing is coming back. Parents are stuck on the wait screen and cannot',
