@@ -1194,8 +1194,14 @@ class Settings(BaseSettings):
     )
 
     @field_validator(
+        "kws_environment",
+        "kws_auth_origin",
         "kws_user_agent",
         "kws_webhook_max_skew_seconds",
+        "kws_open_attempt_minutes",
+        "kws_start_max_attempts_per_hour",
+        "kws_accept_test_evidence",
+        "kws_verification_required",
         "kws_environment_label",
         "kws_organization_id",
         "kws_product_id",
@@ -1214,9 +1220,10 @@ class Settings(BaseSettings):
         variable unset. That one idiom produces TWO different failures here,
         and only the loud one was covered when this validator was written.
 
-        The loud one: ``kws_user_agent`` and ``kws_webhook_max_skew_seconds``
-        are non-optional with constrained defaults (``min_length=1``,
-        ``ge=1``), so ``""`` is a hard ``ValidationError`` at ``Settings()``
+        The loud one: the constrained and enumerated fields
+        (``kws_user_agent``'s ``min_length=1``, the three ``ge=1`` ints,
+        ``kws_environment``'s ``Literal``, and the two ``bool``s) reject ``""``
+        outright, so it is a hard ``ValidationError`` at ``Settings()``
         construction and the CONTAINER DOES NOT BOOT.
 
         The quiet one is worse, and cost a KWS Test delivery on 2026-08-10 to
@@ -1231,14 +1238,32 @@ class Settings(BaseSettings):
         position is unreachable is worse than no guard, because it reads as
         protection in the code and as silence in the logs.
 
-        The four credential fields are excluded because
-        ``_kws_credential_state`` already treats ``""`` as missing. Everything
-        else in the block is normalised here, so one idiom is safe across all
-        of it.
+        The list must cover EVERY field in the KWS block, and it is easy to
+        add a field and forget this decorator: the two rate-limit ints and the
+        two booleans were all added later and all missed it, invisibly,
+        because reaching the failure needs a compose file that passes
+        ``${KWS_OPEN_ATTEMPT_MINUTES:-}`` and no tier does yet.
+        ``test_every_kws_setting_tolerates_an_empty_override`` enumerates the
+        block instead of pinning a list, so the next omission fails a test
+        rather than a deploy.
+
+        Exactly two exclusions, both deliberate:
+
+        * ``kws_api_key``, ``kws_webhook_secret`` and ``kws_verification_secret``
+          are ``SecretStr`` credentials that already treat ``""`` as missing
+          (``_kws_credential_state`` for the first, the signature verifiers for
+          the other two), so normalising them would only move the check.
+        * ``kws_enabled_methods`` is left to fail loudly. It is evidence rather
+          than configuration: the parent-verified webhook reports no method, so
+          the declared set at send time is the only bound on which method could
+          have run. Silently defaulting an empty override would mint rows whose
+          evidence field is a guess, and refusal to boot IS the control.
         #VERIFY: tests/unit/test_config.py::TestKwsSettings::
         test_empty_kws_user_agent_falls_back_to_the_default,
-        ::test_empty_kws_skew_seconds_falls_back_to_the_default and
-        ::test_empty_kws_identifier_is_unset_not_a_value.
+        ::test_empty_kws_skew_seconds_falls_back_to_the_default,
+        ::test_empty_kws_identifier_is_unset_not_a_value and
+        ::test_every_kws_setting_tolerates_an_empty_override, which
+        enumerates the block rather than pinning a fixed list.
 
         Args:
             value: The raw field input.
@@ -1917,7 +1942,12 @@ class Settings(BaseSettings):
         env file from turning sandbox verifications into consent evidence in
         production.
         #VERIFY: tests/unit/test_config.py::TestKwsEvidenceSettings::
-        test_accepting_test_evidence_against_production_kws_is_refused.
+        test_the_real_staging_shape_is_allowed_not_just_a_staging_label. Cite
+        that one, not the refusal test: the refusal test and its allow-case
+        counterpart move ``environment`` and ``kws_environment`` in lockstep,
+        so both still pass if this guard is rewritten against ``environment``.
+        Only the mismatched pair (``environment="production"`` with
+        ``kws_environment="test"``) can observe the difference.
 
         Raises:
             ConfigurationError: when ``kws_accept_test_evidence`` is set while

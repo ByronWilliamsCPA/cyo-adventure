@@ -1781,6 +1781,53 @@ class TestKwsSettings:
         assert Settings(kws_user_agent="   ").kws_user_agent
 
     @pytest.mark.unit
+    def test_every_kws_setting_tolerates_an_empty_override(self) -> None:
+        """Enumerate the KWS block instead of pinning a list of field names.
+
+        The empty-override validator is opt-in per field, so the real defect is
+        not any single omission but the fact that adding a KWS setting and
+        forgetting the decorator is silent: no tier passes
+        ``${KWS_OPEN_ATTEMPT_MINUTES:-}`` today, so the container that dies is
+        the next one, on a machine nobody is watching. Four fields were already
+        missing when this test was written (the two rate-limit ints and the two
+        booleans), plus ``kws_environment`` and ``kws_auth_origin``.
+
+        Enumerating ``model_fields`` makes the next omission fail here rather
+        than at boot. The two carve-outs are the ones the validator's docstring
+        justifies, and naming them explicitly means widening the exclusion set
+        is a visible edit rather than a quiet one.
+        """
+        from cyo_adventure.core.config import Settings
+
+        deliberately_unnormalised = {
+            # Credentials: "" already counts as missing where it is read.
+            "kws_api_key",
+            "kws_webhook_secret",
+            "kws_verification_secret",
+            # Evidence, not configuration: refusal to boot IS the control.
+            "kws_enabled_methods",
+        }
+        kws_fields = [
+            name
+            for name in Settings.model_fields
+            if name.startswith("kws_") and name not in deliberately_unnormalised
+        ]
+
+        assert kws_fields, "the KWS block moved; this test is now vacuous"
+
+        # Compare against a bare Settings() rather than FieldInfo.get_default(),
+        # which returns PydanticUndefined for any default_factory field and
+        # would fail a future addition for the wrong reason. The observable
+        # property is "an empty override behaves exactly like no override".
+        baseline = Settings()
+
+        for name in kws_fields:
+            assert getattr(Settings(**{name: ""}), name) == getattr(baseline, name), (
+                f"{name} is missing from _empty_kws_override_means_unset; "
+                f"a ${{{name.upper()}:-}} override would not fall back"
+            )
+
+    @pytest.mark.unit
     def test_auth_origin_defaults_to_the_documented_keycloak_host(self) -> None:
         """The token endpoint is on a different host from the service API.
 
@@ -1972,6 +2019,44 @@ class TestKwsEvidenceSettings:
         )
 
         assert settings.kws_accept_test_evidence is True
+
+    @pytest.mark.unit
+    def test_the_real_staging_shape_is_allowed_not_just_a_staging_label(self) -> None:
+        """The only case that can tell ``kws_environment`` from ``environment`` apart.
+
+        The two tests above move both values together (production/production
+        and staging/test), so a guard rewritten to read ``self.environment``
+        passes both: the first still raises, the second still allows. That
+        makes them unable to detect the exact regression the docstring on
+        ``_refuse_test_evidence_against_production_kws`` says it exists to
+        prevent.
+
+        This is the shape staging actually deploys, and the reason the guard
+        was keyed on the KWS environment in the first place: ``ENVIRONMENT`` is
+        the literal string ``production`` there (see
+        ``docs/operations/runbook.md``), while KWS is the sandbox. An
+        ``environment``-keyed guard raises here and takes staging down; the
+        correct one allows it.
+        """
+        from cyo_adventure.core.config import Settings
+
+        settings = Settings(
+            environment="production",
+            kws_environment="test",
+            kws_accept_test_evidence=True,
+            database_url=_PROD_DB_URL,
+            oidc_issuer="https://project.supabase.co/auth/v1",
+            oidc_jwks_url="https://project.supabase.co/auth/v1/.well-known/jwks.json",
+            child_session_secret=_CHILD_SECRET,
+            device_grant_secret=_DEVICE_SECRET,
+            allow_mock_review=True,
+            kws_enabled_methods=_KWS_METHODS,
+            **_KWS_CREDS,
+        )
+
+        assert settings.kws_accept_test_evidence is True
+        assert settings.environment == "production"
+        assert settings.kws_environment == "test"
 
 
 class TestKwsStartLimits:
