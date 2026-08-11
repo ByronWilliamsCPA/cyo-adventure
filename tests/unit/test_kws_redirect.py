@@ -11,7 +11,9 @@ from __future__ import annotations
 import ast
 import hmac
 import inspect
+import re
 from hashlib import sha256
+from pathlib import Path
 from typing import TYPE_CHECKING, Any
 from unittest.mock import AsyncMock, patch
 
@@ -70,6 +72,20 @@ def _modules_imported(module: ModuleType) -> set[str]:
 
 _SECRET = "test-verification-secret-not-a-real-credential"
 _URL = "/api/v1/consent/kws/return"
+
+# The literal the page renders, declared here rather than imported from the
+# route module: what matters is what reaches the parent's browser, so the
+# assertions below read it back off the rendered ``response.text``.
+_LANDING_PATH = "/guardian"
+
+# Matched rather than substring-searched, so the pin survives Prettier's quote
+# style, spacing, and a later type annotation. None of those is a route rename,
+# and a pin that breaks on formatting gets weakened by the next person to hit
+# it. Extract-and-compare is the pattern
+# tests/unit/test_sentinel_pattern_frontend_pin.py already uses for this job.
+_GUARDIAN_CONSOLE_DECL = re.compile(
+    r"GUARDIAN_CONSOLE_PATH\s*(?::[^=]+)?=\s*['\"](?P<path>[^'\"]+)['\"]"
+)
 
 _VERIFIED_STATUS = '{"verified": true, "transactionId": "tx-1"}'
 _UNVERIFIED_STATUS = '{"verified": false}'
@@ -435,6 +451,105 @@ class TestDisclosure:
         response = client.get(_URL, params=_params())
 
         assert response.headers["cache-control"] == "no-store"
+
+
+@pytest.mark.usefixtures("_configured")
+class TestLanding:
+    """Where the page leaves a parent who has finished at Epic."""
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize(
+        ("params", "expected_status"),
+        [
+            (_params(), 200),
+            (_params(_UNVERIFIED_STATUS), 200),
+            ({"status": _VERIFIED_STATUS, "externalPayload": _EXTERNAL}, 400),
+        ],
+        ids=["verified", "not-verified", "unconfirmed"],
+    )
+    def test_every_page_offers_a_way_back_into_the_app(
+        self,
+        client: TestClient,
+        params: dict[str, str],
+        expected_status: int,
+    ) -> None:
+        """All three outcomes, one way out.
+
+        The parent reaches this page from a link in Epic's email, so there is
+        no history to go back through and, in a mail app's browser, no session
+        either. Without a link the page is a dead end whichever way the
+        verification went, and the two non-success pages are the ones that ask
+        the parent to start again.
+
+        The rejection page is covered too, so all three stay alike. That
+        symmetry is not what makes the refusals non-disclosing, though: success
+        and failure already differ by their headings, by design, and what
+        ``TestDisclosure`` denies is discrimination among the four rejection
+        causes. The link is on every page because a dead end is bad on every
+        outcome.
+        """
+        response = client.get(_URL, params=params)
+
+        assert response.status_code == expected_status
+        assert f'href="{_LANDING_PATH}"' in response.text
+        assert "Return to CYO Adventure" in response.text
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize(
+        ("params", "expected_status"),
+        [
+            (_params(), 200),
+            (_params(_UNVERIFIED_STATUS), 200),
+            ({"status": _VERIFIED_STATUS, "externalPayload": _EXTERNAL}, 400),
+        ],
+        ids=["verified", "not-verified", "unconfirmed"],
+    )
+    def test_the_way_back_sends_no_referrer(
+        self,
+        client: TestClient,
+        params: dict[str, str],
+        expected_status: int,
+    ) -> None:
+        """This page's own URL must not travel with the parent into the app.
+
+        The return URL is a replayable signed credential, and the global
+        ``Referrer-Policy: strict-origin-when-cross-origin`` drops the path and
+        query only when the destination is a *different* origin. The app is the
+        same origin, so a plain link would put the whole URL, signature
+        included, into the ``Referer`` header and from there into whatever
+        access log serves the app.
+        """
+        response = client.get(_URL, params=params)
+
+        assert response.status_code == expected_status
+        anchor = re.search(r"<a\s[^>]*>", response.text)
+
+        assert anchor is not None, "the page renders no link back into the app"
+        assert f'href="{_LANDING_PATH}"' in anchor.group()
+        assert 'rel="noreferrer"' in anchor.group()
+
+    @pytest.mark.unit
+    def test_the_landing_path_matches_the_app_route(self) -> None:
+        """The one thing that silently breaks this link is a frontend rename.
+
+        The path is a literal on both sides of a stack boundary with nothing
+        connecting them, so a route rename in the SPA would leave this page
+        pointing at the app's own 404 and every test above would still pass.
+        Reading the constant the router actually uses is what makes that a
+        failing test rather than a report from a parent.
+        """
+        routes = Path(__file__).resolve().parents[2] / "frontend" / "src" / "routes.ts"
+
+        assert routes.is_file(), f"expected the SPA route table at {routes}"
+        declaration = _GUARDIAN_CONSOLE_DECL.search(routes.read_text(encoding="utf-8"))
+
+        assert declaration is not None, (
+            f"no GUARDIAN_CONSOLE_PATH declaration found in {routes}"
+        )
+        assert declaration.group("path") == _LANDING_PATH, (
+            f"the SPA routes {declaration.group('path')!r} to the guardian "
+            f"console, but this page links to {_LANDING_PATH!r}"
+        )
 
 
 class TestRefusalToRun:
