@@ -286,7 +286,9 @@ row that has left the `sent` state. Every other claim in this document is either
 explicitly labelled above as a ruling. That one is the single load-bearing fact that nothing on this branch
 proves.
 
-**Still unanswered as of 2026-08-11, after merge.** Three things sharpen the query for whoever runs it:
+**Unanswered at merge; answered later the same day against staging, recorded below.** Four things
+sharpened the query, and are kept because they are what makes the answer readable rather than a bare
+row count:
 
 - **Run it against the staging project, not production.** Production has no `kws_verification` table and
   is several migrations behind `main`, which is an independent confirmation of Gate 3 above and means a
@@ -309,10 +311,38 @@ proves.
     outbound call precisely so this cannot be ambiguous, so an empty table means no send was ever
     recorded rather than that none was accepted.
 
-  Group by `status` and select `count(*) FILTER (WHERE transaction_id IS NOT NULL)` alongside it: a
-  `sent` row with a transaction id is genuinely waiting on a delivery, one without never got that far.
-  Expect `kws_environment = 'test'` on staging, which is correct there and is deliberately not usable
-  evidence.
+  Group by `status`. Do **not** reach for `transaction_id` as a discriminator among `sent` rows: it is
+  written only by the webhook (`api/kws_webhook.py:342`), so it is collinear with resolution by
+  construction and a `sent` row can never carry one. Nothing in this table separates a send that
+  reached KWS from one that never did. Expect `kws_environment = 'test'` on staging, which is correct
+  there and is deliberately not usable evidence.
 - **Resolve the version threshold rather than reading `latest`.** #675 merged as `1c5e26fe` and first
-  shipped in tag `v0.74.1`, so `GET /health` reporting a `version` at or above `v0.74.1` is what
-  establishes the deployed container carries the fix.
+  shipped in tag `v0.74.1`, so a `version` at or above `v0.74.1` establishes the deployed container
+  carries the fix. The endpoint is `GET /api/v1/health`, not `/health`: the bare path is served by the
+  SPA on the deployed hosts and answers `404` with `index.html`, which is the same anti-oracle the
+  production health-probe stub already presents.
+
+### Answered 2026-08-11, against staging
+
+**The fact is cleared.** Staging (`lbhyjcykbamjtghcidgp`) holds seven rows, all `kws_environment = 'test'`:
+five `sent` and two `verified`. The decisive one was requested `2026-08-10 22:15:35Z` and resolved
+`2026-08-10 22:16:12Z`, a **37-second** webhook round trip. `GET /api/v1/health` reports `0.77.0`.
+
+The proof does not rest on that version reading, which only describes the container running now. It rests
+on what #675 fixed: before it, the verifier compared a millisecond `t=` against a seconds clock, so every
+genuine delivery measured roughly 56,000 years of skew and **was rejected at the freshness gate before its
+HMAC was ever computed**. A `verified` row is therefore only reachable by post-#675 code, and its existence
+is itself the deployment evidence. That is a stronger argument than any restart timeline, which staging's
+mutable `latest` tag cannot supply anyway.
+
+Two observations that follow from the same query, neither of which the section 7 question asked for:
+
+- **The five `sent` rows are a live stuck-delivery alarm on a timer.** The newest is `2026-08-10 20:54:48Z`
+  and `_KWS_STUCK_AFTER` is 24h, so the health check flips to degraded around `2026-08-11 20:54Z` unless
+  the rows are resolved. Section 3.2 anticipates exactly this and says to resolve the rows rather than
+  widen the rule. What to resolve them *to* is an owner call, not a mechanical one: `20260810190000`
+  explicitly refuses to stamp old `sent` rows as `send_failed`, on the grounds that whether those emails
+  went out is genuinely unknown and inventing the status would assert something never observed.
+- **`location` is NULL on all seven rows, and that is expected, not a defect.** The column and its writer
+  arrived with #681 (merged 2026-08-11), and no attempt has been made since. It is worth re-checking on
+  the first post-#681 send, because a NULL there would be a real gap.
