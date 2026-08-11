@@ -1630,6 +1630,49 @@ that is a property of the instrument rather than of the story. We record this be
 to run it anyway was strong, and because **auditing accumulated cells for ceiling effects costs
 nothing and we should have been doing it from the start**.
 
+## 16n. Appendix: the guards, their thresholds, and what they cannot see
+
+Part II cites deterministic measurements against thresholds throughout, and until now it never
+showed you the thresholds. That is a real gap for a reviewer: several of our strongest claims are
+"this number cleared that budget", and you could not check whether the budget was chosen before or
+after the number it judges. Every threshold below was fixed before the result it is used to judge,
+except where the row says otherwise.
+
+**Gating guards.** All are deterministic, all run before any human reads a book, and all are
+runnable in one command.
+
+| Guard | Measures | Threshold | Where it came from |
+| --- | --- | --- | --- |
+| graph structure | dangling targets, unreachable nodes, sinks, endings with choices, trapped cycles, missing start | zero of each | properties a reader hits directly; 0 false positives on 3 known-good graphs, all 6 classes caught on a constructed bad one |
+| fill integrity | did the fill change anything but bodies, labels and deferred titles | byte-identical elsewhere | verified still catches a retargeted choice and a metadata drift |
+| story gate | safety, schema, band profile | not blocked | the production validator |
+| prose craft | tense stability, told emotion, moral tags in ending closings | 0 unstable nodes, 0 moral tags, 0.5 told-emotion per 1000 | pre-existing |
+| **shared four-grams** | verbatim convergence across sibling books | **4.0 per 1000** | pre-existing budget. **We later measured the generator's own floor at 3.3**, so the budget has 0.7 of headroom, and we report that rather than adjusting either number |
+| reading level | whole-book Flesch-Kincaid | **7.0**, the band's own upper edge (5.5 + 1.5) | new. Deliberately *not* chosen to make current work pass: it rejects 9 of our 22 books |
+| device collision | do sibling books share their props, across category boundaries | 0 identical or near-identical | calibrated on one known-bad pair (0.583) and one known-good (0.000) |
+| label template | is a book identifiable from its labels with the prose removed | 0.20 first-word concentration | new, after a spoiled round. The spoiled arm scored 1.000; its comparison books 0.057 and 0.171 |
+| promise discharge | a choice promising a fact its destination does not carry | zero | new. Two of its four flags on our base contract match defects blind readers reported in separate rounds |
+
+**Non-gating measures, and why they are not gates.**
+
+| Measure | Why it cannot gate |
+| --- | --- |
+| solution transfer, tiers 2 and 3 | the operation classifier reads 2 of 6 props on an unseen contract; fails on negation and polysemy |
+| fill fidelity | precision 0.167, recall 0.600 against a model-judged pass on the same 49 obligations |
+| prose review worklist | assembles the label-against-destination and merge-assumption questions; the judging is a model call |
+
+**What a green battery does not mean, stated because it would be easy to over-read.** It does not
+mean the prose delivers its obligations, that a label leads where it promises, or that a merge node
+avoids assuming a path the reader did not take. Those are entailment questions, we have twice
+measured that attempting them lexically produces false confidence, and **all three defects our blind
+readers found this round were of exactly that kind.** Every guard above passed the books those
+defects were in.
+
+**One honest asymmetry.** The convergence budget is the threshold most of Part II turns on, and it
+is the one we did not set: it predates this work. What we contributed is the floor beneath it, and
+the finding that every artifact we have ever measured sits either at that floor or at three to
+fifteen times the budget, with nothing in between until 16l.
+
 ## 17. Corrections to Part I
 
 - **5.3's "untested cell" has been tested**, and the result is not the simple one either reading
