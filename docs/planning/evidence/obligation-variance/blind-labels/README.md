@@ -1,10 +1,10 @@
 # Blind decision-signature annotations
 
 Every annotation behind section 9.5 of
-[the decision-variance experiment spec](../../decision-variance-experiment-spec-2026-08-10.md).
+[the decision-variance experiment spec](../../../decision-variance-experiment-spec-2026-08-10.md).
 
 Each file is one annotator's signatures for one contract, produced under the
-[decision signature labelling principle](../../decision-signature-labelling-principle.md) v1.
+[decision signature labelling principle](../../../decision-signature-labelling-principle.md) v1.
 Annotators received the contract stripped of any prior `decisions` block, renamed neutrally, with
 no knowledge of what was being compared, which artifact was the control, or that divergence was
 the goal. No annotator authored any contract it labelled.
