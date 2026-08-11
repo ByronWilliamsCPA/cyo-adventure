@@ -42,12 +42,26 @@ name: KWS delivery health
 
 on:
   schedule:
-    # 11:00 UTC daily, spreading scheduled jobs across the day (supabase-backup
-    # 08:00, notification-digest 09:00, e2e-staging 13:00). Cadence is matched
-    # to the check's own 24h staleness threshold: probing more often cannot
-    # surface an outage sooner, because no attempt counts as waiting until it
-    # has aged past that threshold.
-    - cron: "0 11 * * *"
+    # Every 6h, offset off the other scheduled jobs (supabase-backup 08:00,
+    # notification-digest 09:00, e2e-staging 13:00).
+    #
+    # Detection latency is the check's 24h staleness threshold PLUS however
+    # long until the next probe, because the threshold decides when an outage
+    # becomes visible and the cadence decides when anyone looks. An earlier
+    # version of this file ran daily and justified it with "probing more often
+    # cannot surface an outage sooner, because no attempt counts as waiting
+    # until it has aged past that threshold". Only the first half of that is
+    # true: the threshold does floor the latency at 24h, but a daily probe
+    # adds up to another 24h on top, so an attempt that goes stale one minute
+    # after a run waits nearly a full day for the next one. Worst case was
+    # ~48h. At 6h it is ~30h, for a job that curls one public endpoint.
+    #
+    # The cost is that a persistent outage now comments on the marker issue
+    # four times a day instead of once. That is the right direction for this
+    # particular alarm: while it is firing, parents cannot finish signing up
+    # and cannot create child profiles, so the issue is meant to be loud
+    # rather than a daily diary entry.
+    - cron: "0 5,11,17,23 * * *"
   workflow_dispatch: {}
 
 permissions: {}

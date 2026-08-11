@@ -485,10 +485,13 @@ silence, because in production that row is the entire detection surface. Do not 
 easy confirmation stand in for building it.
 
 **Built 2026-08-10, so this paragraph is now a description rather than a debt.** The readiness
-endpoint carries a non-gating `kws_verification` check, and a daily workflow probes it on both
-tiers and files a `ci-failure` issue when it degrades. The alarm is deliberately **not** a
-stuck-row count, which ordinary abandonment would trip forever; it is the conjunction *rows stuck
-past 24h, and sends going out in the last 24h, and nothing at all coming back in the last 24h*.
+endpoint carries a non-gating `kws_verification` check, and a workflow probes it every 6 hours on
+both tiers and files a `ci-failure` issue when it degrades. The alarm is deliberately **not** a
+stuck-row count, which ordinary abandonment would trip forever; it fires when *nothing has resolved
+since the newest attempt that is still waiting*, once that attempt is older than 24h. An earlier
+version of the rule also required fresh sends in the same window, and that extra conjunct was
+dropped: it bought silence on exactly the low-traffic tiers where an outage is hardest to notice by
+any other means. Detection therefore lands roughly 24 to 30 hours after deliveries stop.
 Procedure and triage order (edge before origin, for the reason the 2026-08-09 incident taught):
 `docs/operations/runbook.md` section 7.1. What that closes is detection, not delivery: Gate 3 still
 owes a **verified** production webhook round trip, because a probe that reports "nothing has come

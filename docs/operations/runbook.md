@@ -565,8 +565,8 @@ verification (not automated alerting), see
 ### 7.1 KWS parent-verification delivery health
 
 **`.github/workflows/kws-delivery-health.yml`** ("KWS delivery health", marker `[kws-delivery-health]`,
-label `ci-failure`) runs daily at 11:00 UTC against both staging and production. It is worth calling
-out separately because of what it watches and why nothing else can.
+label `ci-failure`) runs every 6 hours (05:00, 11:00, 17:00, 23:00 UTC) against both staging and
+production. It is worth calling out separately because of what it watches and why nothing else can.
 
 On 2026-08-09 a Cloudflare custom rule blocked four KWS webhook retries at the edge. The origin
 logged zero POSTs, so every log-derived view of that outage read exactly like "the vendor never sent
@@ -580,6 +580,12 @@ row forever. The check compares two timestamps instead: it fires when **nothing 
 the most recent attempt that is still waiting** (once that attempt is older than 24h, so a parent
 still reading their inbox is not mistaken for an outage). A resolution counts whether the
 verification succeeded or was refused, since either one proves deliveries are arriving.
+
+**Expected detection latency is up to about 30 hours**, and knowing that matters when you are dating
+an outage from the alarm. It is the 24h staleness threshold, which is how long an attempt must sit
+before it counts as waiting at all, plus up to 6 hours until the next probe reads the endpoint. So
+the alarm is never evidence that the outage started recently; read the `requested_at` spread for
+that, not the time the issue was filed.
 
 Two properties of that rule are worth knowing before you read an alarm:
 
