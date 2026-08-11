@@ -12,31 +12,27 @@
         <meta name="author" content="Byron Williams">
       
       
-        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/adr/adr-007-raw-output-retention/">
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/decision-variance-experiment-spec-2026-08-10/">
       
       
-        <link rel="prev" href="../adr-006-conditions-inhouse-evaluator/">
-      
-      
-        <link rel="next" href="../adr-008-public-app-store-launch/">
       
       
         
       
       
-      <link rel="icon" href="../../../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
-        <title>ADR-007: Raw LLM output retention policy for GenerationJob.report - CYO Adventure</title>
+        <title>Experiment spec: does varying the decisions break repetition? (2026-08-10) - CYO Adventure</title>
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
-        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -55,9 +51,9 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
   
@@ -92,7 +88,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#adr-007-raw-llm-output-retention-policy-for-generationjobreport" class="md-skip">
+        <a href="#experiment-spec-does-varying-the-decisions-break-repetition-2026-08-10" class="md-skip">
           Skip to content
         </a>
       
@@ -106,7 +102,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -126,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              ADR-007: Raw LLM output retention policy for GenerationJob.report
+              Experiment spec: does varying the decisions break repetition? (2026-08-10)
             
           </span>
         </div>
@@ -239,7 +235,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../.." class="md-tabs__link">
+      <a href="../.." class="md-tabs__link">
         
   
   
@@ -260,7 +256,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../guides/overview/" class="md-tabs__link">
+        <a href="../../guides/overview/" class="md-tabs__link">
           
   
   
@@ -282,7 +278,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../api-reference/" class="md-tabs__link">
+        <a href="../../api-reference/" class="md-tabs__link">
           
   
   
@@ -304,7 +300,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../operations/runbook/" class="md-tabs__link">
+        <a href="../../operations/runbook/" class="md-tabs__link">
           
   
   
@@ -326,7 +322,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../architecture/" class="md-tabs__link">
+        <a href="../../architecture/" class="md-tabs__link">
           
   
   
@@ -348,7 +344,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../security/assurance-spine/" class="md-tabs__link">
+        <a href="../../security/assurance-spine/" class="md-tabs__link">
           
   
   
@@ -370,7 +366,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../development/architecture/" class="md-tabs__link">
+        <a href="../../development/architecture/" class="md-tabs__link">
           
   
   
@@ -392,7 +388,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../project/roadmap/" class="md-tabs__link">
+        <a href="../../project/roadmap/" class="md-tabs__link">
           
   
   
@@ -410,13 +406,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../../" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../" class="md-tabs__link">
           
   
   
@@ -438,7 +432,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../PROJECT_SETUP/" class="md-tabs__link">
+        <a href="../../PROJECT_SETUP/" class="md-tabs__link">
           
   
   
@@ -460,7 +454,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../ADRs/" class="md-tabs__link">
+        <a href="../../ADRs/" class="md-tabs__link">
           
   
   
@@ -496,7 +490,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -526,7 +520,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../.." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   
@@ -624,7 +618,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../guides/overview/" class="md-nav__link">
+      <a href="../../guides/overview/" class="md-nav__link">
         
   
   
@@ -659,7 +653,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../guides/configuration/" class="md-nav__link">
+      <a href="../../guides/configuration/" class="md-nav__link">
         
   
   
@@ -694,7 +688,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../guides/usage/" class="md-nav__link">
+      <a href="../../guides/usage/" class="md-nav__link">
         
   
   
@@ -729,7 +723,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../guides/supabase-environments/" class="md-nav__link">
+      <a href="../../guides/supabase-environments/" class="md-nav__link">
         
   
   
@@ -829,7 +823,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../api-reference/" class="md-nav__link">
+      <a href="../../api-reference/" class="md-nav__link">
         
   
   
@@ -935,7 +929,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../operations/runbook/" class="md-nav__link">
+      <a href="../../operations/runbook/" class="md-nav__link">
         
   
   
@@ -970,7 +964,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../operations/kws-test-runbook/" class="md-nav__link">
+      <a href="../../operations/kws-test-runbook/" class="md-nav__link">
         
   
   
@@ -1005,7 +999,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../operations/authoring-guide/" class="md-nav__link">
+      <a href="../../operations/authoring-guide/" class="md-nav__link">
         
   
   
@@ -1040,7 +1034,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../operations/security-events/" class="md-nav__link">
+      <a href="../../operations/security-events/" class="md-nav__link">
         
   
   
@@ -1119,7 +1113,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../architecture/" class="md-nav__link ">
+            <a href="../../architecture/" class="md-nav__link ">
               
   
   
@@ -1170,7 +1164,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/user-journeys/" class="md-nav__link">
+      <a href="../../architecture/user-journeys/" class="md-nav__link">
         
   
   
@@ -1205,7 +1199,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/system-overview/" class="md-nav__link">
+      <a href="../../architecture/system-overview/" class="md-nav__link">
         
   
   
@@ -1240,7 +1234,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/generation-pipeline/" class="md-nav__link">
+      <a href="../../architecture/generation-pipeline/" class="md-nav__link">
         
   
   
@@ -1275,7 +1269,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/validation-and-player/" class="md-nav__link">
+      <a href="../../architecture/validation-and-player/" class="md-nav__link">
         
   
   
@@ -1310,7 +1304,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/data-model/" class="md-nav__link">
+      <a href="../../architecture/data-model/" class="md-nav__link">
         
   
   
@@ -1345,7 +1339,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/deployment/" class="md-nav__link">
+      <a href="../../architecture/deployment/" class="md-nav__link">
         
   
   
@@ -1453,7 +1447,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../security/assurance-spine/" class="md-nav__link">
+      <a href="../../security/assurance-spine/" class="md-nav__link">
         
   
   
@@ -1488,7 +1482,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../security/assurance-register/" class="md-nav__link">
+      <a href="../../security/assurance-register/" class="md-nav__link">
         
   
   
@@ -1523,7 +1517,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../security/control-inheritance/" class="md-nav__link">
+      <a href="../../security/control-inheritance/" class="md-nav__link">
         
   
   
@@ -1558,7 +1552,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../security/crypto-inventory/" class="md-nav__link">
+      <a href="../../security/crypto-inventory/" class="md-nav__link">
         
   
   
@@ -1593,7 +1587,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../security/red-team-design-review-2026-07/" class="md-nav__link">
+      <a href="../../security/red-team-design-review-2026-07/" class="md-nav__link">
         
   
   
@@ -1668,7 +1662,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../api/" class="md-nav__link ">
+            <a href="../../api/" class="md-nav__link ">
               
   
   
@@ -1717,7 +1711,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../development/architecture/" class="md-nav__link">
+      <a href="../../development/architecture/" class="md-nav__link">
         
   
   
@@ -1752,7 +1746,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../development/testing/" class="md-nav__link">
+      <a href="../../development/testing/" class="md-nav__link">
         
   
   
@@ -1789,7 +1783,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../development/code-quality/" class="md-nav__link">
+      <a href="../../development/code-quality/" class="md-nav__link">
         
   
   
@@ -1824,7 +1818,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../development/contributing/" class="md-nav__link">
+      <a href="../../development/contributing/" class="md-nav__link">
         
   
   
@@ -1928,7 +1922,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../project/roadmap/" class="md-nav__link">
+      <a href="../../project/roadmap/" class="md-nav__link">
         
   
   
@@ -1963,7 +1957,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../project/changelog/" class="md-nav__link">
+      <a href="../../project/changelog/" class="md-nav__link">
         
   
   
@@ -1998,7 +1992,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../project/license/" class="md-nav__link">
+      <a href="../../project/license/" class="md-nav__link">
         
   
   
@@ -2037,8 +2031,6 @@
       
   
   
-    
-  
   
   
     
@@ -2064,23 +2056,22 @@
     
     
       
-        
-        
-      
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../" class="md-nav__link ">
+            <a href="../" class="md-nav__link ">
               
   
   
@@ -2105,13 +2096,13 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="">
+              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_9">
             <span class="md-nav__icon md-icon"></span>
             
@@ -2131,7 +2122,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../project-vision/" class="md-nav__link">
+      <a href="../project-vision/" class="md-nav__link">
         
   
   
@@ -2166,7 +2157,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tech-spec/" class="md-nav__link">
+      <a href="../tech-spec/" class="md-nav__link">
         
   
   
@@ -2201,7 +2192,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../PROJECT-PLAN/" class="md-nav__link">
+      <a href="../PROJECT-PLAN/" class="md-nav__link">
         
   
   
@@ -2236,7 +2227,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../roadmap/" class="md-nav__link">
+      <a href="../roadmap/" class="md-nav__link">
         
   
   
@@ -2268,8 +2259,6 @@
                 
   
   
-    
-  
   
   
     
@@ -2307,21 +2296,20 @@
       
       
         
-          
-          
-        
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9_6" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9_6" >
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../" class="md-nav__link ">
+            <a href="../adr/" class="md-nav__link ">
               
   
   
@@ -2346,13 +2334,13 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_9_6" id="__nav_9_6_label" tabindex="">
+              <label class="md-nav__link " for="__nav_9_6" id="__nav_9_6_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_6_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_9_6">
             <span class="md-nav__icon md-icon"></span>
             
@@ -2372,7 +2360,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-001-story-format-json-storybook/" class="md-nav__link">
+      <a href="../adr/adr-001-story-format-json-storybook/" class="md-nav__link">
         
   
   
@@ -2407,7 +2395,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-002-client-pwa/" class="md-nav__link">
+      <a href="../adr/adr-002-client-pwa/" class="md-nav__link">
         
   
   
@@ -2442,7 +2430,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-003-frontier-llm-generation/" class="md-nav__link">
+      <a href="../adr/adr-003-frontier-llm-generation/" class="md-nav__link">
         
   
   
@@ -2477,7 +2465,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-004-homelab-first-deployment/" class="md-nav__link">
+      <a href="../adr/adr-004-homelab-first-deployment/" class="md-nav__link">
         
   
   
@@ -2512,7 +2500,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-005-mandatory-human-approval/" class="md-nav__link">
+      <a href="../adr/adr-005-mandatory-human-approval/" class="md-nav__link">
         
   
   
@@ -2547,7 +2535,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+      <a href="../adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
         
   
   
@@ -2579,44 +2567,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    ADR-007
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--accepted"></span>
-  
-
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../adr/adr-007-raw-output-retention/" class="md-nav__link">
         
   
   
@@ -2639,153 +2593,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#amendment-2026-08-10-reviewed-storybook-exemption-for-the-30-day-sweep" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Amendment (2026-08-10): reviewed-storybook exemption for the 30-day sweep
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#amendment-2026-07-17-purge-implemented-phase-5-m5-register-item-s10" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Amendment (2026-07-17): purge implemented (Phase 5, M5 register item S10)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#amendment-2026-07-16-access-control-ruling-and-code-reconciliation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Amendment (2026-07-16): access-control ruling and code reconciliation
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#tldr" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        TL;DR
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#context" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Context
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Context">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#problem" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Problem
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#why-this-matters" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why This Matters
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#decision" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Decision
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#consequences" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Consequences
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#implementation-notes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Implementation Notes
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#alternatives-considered" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Alternatives Considered
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -2798,7 +2605,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-008-public-app-store-launch/" class="md-nav__link">
+      <a href="../adr/adr-008-public-app-store-launch/" class="md-nav__link">
         
   
   
@@ -2833,7 +2640,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-009-supabase-platform/" class="md-nav__link">
+      <a href="../adr/adr-009-supabase-platform/" class="md-nav__link">
         
   
   
@@ -2868,7 +2675,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+      <a href="../adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
         
   
   
@@ -2903,7 +2710,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-011-story-scale-framework/" class="md-nav__link">
+      <a href="../adr/adr-011-story-scale-framework/" class="md-nav__link">
         
   
   
@@ -2964,13 +2771,10 @@
       
       
         
-          
-          
-        
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
@@ -2980,7 +2784,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../research/" class="md-nav__link ">
+            <a href="../research/" class="md-nav__link ">
               
   
   
@@ -3005,7 +2809,7 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_9_7" id="__nav_9_7_label" tabindex="">
+              <label class="md-nav__link " for="__nav_9_7" id="__nav_9_7_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
@@ -3029,7 +2833,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../story-structure-diversity-critical-analysis/" class="md-nav__link">
+      <a href="../story-structure-diversity-critical-analysis/" class="md-nav__link">
         
   
   
@@ -3064,7 +2868,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../story-structure-improvement-plan/" class="md-nav__link">
+      <a href="../story-structure-improvement-plan/" class="md-nav__link">
         
   
   
@@ -3099,7 +2903,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../story-structure-implementation-briefs/" class="md-nav__link">
+      <a href="../story-structure-implementation-briefs/" class="md-nav__link">
         
   
   
@@ -3213,7 +3017,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../PROJECT_SETUP/" class="md-nav__link">
+      <a href="../../PROJECT_SETUP/" class="md-nav__link">
         
   
   
@@ -3248,7 +3052,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../OPENSSF_COMPLIANCE/" class="md-nav__link">
+      <a href="../../OPENSSF_COMPLIANCE/" class="md-nav__link">
         
   
   
@@ -3283,7 +3087,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../PYTHON_COMPATIBILITY/" class="md-nav__link">
+      <a href="../../PYTHON_COMPATIBILITY/" class="md-nav__link">
         
   
   
@@ -3352,7 +3156,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../ADRs/" class="md-nav__link ">
+            <a href="../../ADRs/" class="md-nav__link ">
               
   
   
@@ -3403,7 +3207,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../ADRs/adr-template/" class="md-nav__link">
+      <a href="../../ADRs/adr-template/" class="md-nav__link">
         
   
   
@@ -3465,10 +3269,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#amendment-2026-08-10-reviewed-storybook-exemption-for-the-30-day-sweep" class="md-nav__link">
+  <a href="#0-provenance-of-every-rating-in-this-spec" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Amendment (2026-08-10): reviewed-storybook exemption for the 30-day sweep
+        0. Provenance of every rating in this spec
       
     </span>
   </a>
@@ -3476,10 +3280,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#amendment-2026-07-17-purge-implemented-phase-5-m5-register-item-s10" class="md-nav__link">
+  <a href="#1-the-question" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Amendment (2026-07-17): purge implemented (Phase 5, M5 register item S10)
+        1. The question
       
     </span>
   </a>
@@ -3487,10 +3291,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#amendment-2026-07-16-access-control-ruling-and-code-reconciliation" class="md-nav__link">
+  <a href="#2-design" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Amendment (2026-07-16): access-control ruling and code reconciliation
+        2. Design
       
     </span>
   </a>
@@ -3498,10 +3302,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#tldr" class="md-nav__link">
+  <a href="#3-held-fixed" class="md-nav__link">
     <span class="md-ellipsis">
       
-        TL;DR
+        3. Held fixed
       
     </span>
   </a>
@@ -3509,22 +3313,66 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#context" class="md-nav__link">
+  <a href="#4-the-instrument-which-is-new" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Context
+        4. The instrument, which is new
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Context">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-pre-registered-outcomes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Pre-registered outcomes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-the-disagreement-this-run-adjudicates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. The disagreement this run adjudicates
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-known-limitations-stated-in-advance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Known limitations, stated in advance
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-results-2026-08-10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Results (2026-08-10)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Results (2026-08-10)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#problem" class="md-nav__link">
+  <a href="#81-the-treatment-was-not-delivered" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Problem
+        8.1 The treatment was not delivered
       
     </span>
   </a>
@@ -3532,10 +3380,43 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#why-this-matters" class="md-nav__link">
+  <a href="#82-three-instrument-defects-all-found-by-running-it" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Why This Matters
+        8.2 Three instrument defects, all found by running it
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#83-what-this-says-about-the-lever" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.3 What this says about the lever
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#84-consequences-for-the-proposed-architectures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.4 Consequences for the proposed architectures
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#85-what-was-not-learned" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.5 What was not learned
       
     </span>
   </a>
@@ -3548,46 +3429,118 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#decision" class="md-nav__link">
+  <a href="#9-results-second-attempt-2026-08-10" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Decision
+        9. Results, second attempt (2026-08-10)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. Results, second attempt (2026-08-10)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#91-two-prep-defects-invalidated-the-first-two-attempts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.1 Two prep defects invalidated the first two attempts
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#consequences" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#92-the-clean-treatment-was-delivered" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Consequences
+        9.2 The clean treatment was delivered
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#implementation-notes" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#93-the-model-evaluators-treatment-less-decision-repetitive-thinly" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Implementation Notes
+        9.3 The model evaluators: treatment less decision-repetitive, thinly
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#alternatives-considered" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#94-q6-was-invented-by-the-model-evaluators-and-it-is-the-item-that-worked" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Alternatives Considered
+        9.4 Q6 was invented by the model evaluators, and it is the item that worked
       
     </span>
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#95-the-signature-instrument-inverts-the-model-evaluator-ordering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.5 The signature instrument inverts the model evaluator ordering
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#96-why-it-inverts-exactly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.6 Why it inverts, exactly
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#97-consequences-for-the-proposed-architectures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.7 Consequences for the proposed architectures
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#98-what-was-not-learned-and-what-is-now-suspect" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.8 What was not learned, and what is now suspect
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#99-owner-ruling-reconverging-exploration-is-not-a-defect-2026-08-10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.9 Owner ruling: reconverging exploration is not a defect (2026-08-10)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3611,201 +3564,589 @@
   
 
 
-<h1 id="adr-007-raw-llm-output-retention-policy-for-generationjobreport">ADR-007: Raw LLM output retention policy for <code>GenerationJob.report</code><a class="headerlink" href="#adr-007-raw-llm-output-retention-policy-for-generationjobreport" title="Permanent link">&para;</a></h1>
+<h1 id="experiment-spec-does-varying-the-decisions-break-repetition-2026-08-10">Experiment spec: does varying the decisions break repetition? (2026-08-10)<a class="headerlink" href="#experiment-spec-does-varying-the-decisions-break-repetition-2026-08-10" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Status</strong>: Accepted (2026-07-16; see Amendment below)
-<strong>Date</strong>: 2026-06-29</p>
+<p>The test of the one lever ten prior designs never pulled. Run after two independent
+external reviews of <code>cyo-generation-research-brief-2026-08-10.md</code> converged, separately,
+on the same first step: manually author a different decision program over the same graph
+before building any compiler.</p>
 </blockquote>
-<h2 id="amendment-2026-08-10-reviewed-storybook-exemption-for-the-30-day-sweep">Amendment (2026-08-10): reviewed-storybook exemption for the 30-day sweep<a class="headerlink" href="#amendment-2026-08-10-reviewed-storybook-exemption-for-the-30-day-sweep" title="Permanent link">&para;</a></h2>
-<p>The review-scorecard calibration effort needs a corpus of human-reviewed books
-paired with their original raw generation output (<code>GenerationJob.report</code>) and
-the reviewer's decision. The unqualified 30-day sweep below destroys that
-pairing for any job whose storybook took longer than 30 days to reach a
-decision, one day at a time, so it now carries a narrow exemption:
-<code>supabase/migrations/20260810000000_exempt_reviewed_generation_job_report_from_purge.sql</code>
-amends the <code>purge_generation_job_report</code> pg_cron job in place (same job
-name, unschedule-then-reschedule) to skip a <code>generation_job</code> row when a
-<strong>human</strong> review decision was reached about the storybook it produced, in
-either direction:</p>
-<ul>
-<li><strong>approve</strong>: <code>storybook.status</code> is <code>published</code> or <code>archived</code> (archived is a
-  published book pulled later; both required a human approve).</li>
-<li><strong>send-back</strong>: a <code>sent_back</code> row exists in <code>pipeline_event</code> for that
-  storybook.</li>
-</ul>
-<p>The send-back half deliberately keys on the <strong>event</strong>, not on
-<code>storybook.status = "needs_revision"</code>. A story reaches <code>needs_revision</code>
-without any human seeing it via the <code>draft --auto_reject--&gt; needs_revision</code>
-hop that <code>moderation/pipeline.py</code> drives on a hard classifier BLOCK.
-Exempting on that status would preserve every machine-rejected story's raw
-output indefinitely, which widens this ADR's retention window with no human
-decision to justify it, and fills the calibration corpus the exemption exists
-to serve with rows carrying no reviewer judgment. Only
-<code>publishing/service.py::send_back</code> writes a <code>SENT_BACK</code> event, so it is the
-human-only marker. (Note <code>publishing/state_machine.py</code>'s docstring still
-describes the <code>auto_reject</code> hop as having "no slice-1 caller"; that is stale.)</p>
-<p><code>draft</code> and <code>in_review</code> storybooks with no send-back event, and jobs whose
-<code>storybook_id</code> resolves to no row at all, are not exempt: the default 30-day
-retention this ADR decided still applies to a job that never reached a human. The on-publish
-purge in <code>publishing/service.py::approve</code> (below) is unchanged: it still
-nulls the just-published version's own <code>report</code> immediately, so the
-exemption's practical effect is mostly for a storybook that was sent back
-(and any earlier job/version on the same storybook once any later job on it
-is decided) rather than for the version that ends up published.</p>
-<p><strong>What the retained label actually is.</strong> The corpus this exemption preserves pairs raw output
-with an approve or a send-back, and that is a <em>decision</em>, not evidence that anyone read the
-book. Approval is a single state transition with no attestation, no per-passage
-acknowledgement and no reading-progress requirement (see
-<code>docs/planning/cyo-review-response-2026-08-11.md</code> Q2), so a scorecard calibrated on this
-corpus inherits whatever sampling the reviewer actually did rather than a full read.</p>
-<p><strong>Known ordering hazard: this change is split across two pull requests.</strong> The migration that
-implements the exemption is in PR #684; this ADR amendment is in PR #685. Whichever merges
-first leaves <code>main</code> briefly inconsistent: either the schema skips human-decided jobs while the
-ADR still records an unqualified sweep, or the ADR records an exemption the database does not
-yet perform. Neither state is harmful, but neither is self-describing either, so read the two
-together until both have landed.</p>
-<p><strong>Known documentation debt: the compliance record is in neither PR.</strong>
-<code>docs/compliance/data-retention-policy.md</code> (the <code>generation_job.report</code> row, around line 66,
-and its Section 4 "Enforced by shipped code" list) still states the unconditional 30-day
-purge and marks it <strong>Enforced</strong>, citing only the original
-<code>20260718000000_add_report_retention_purge.sql</code>. That file is out of scope for both PRs, so
-until it is updated the compliance record asserts an enforcement the schema no longer
-performs for human-decided jobs.</p>
-<h2 id="amendment-2026-07-17-purge-implemented-phase-5-m5-register-item-s10">Amendment (2026-07-17): purge implemented (Phase 5, M5 register item S10)<a class="headerlink" href="#amendment-2026-07-17-purge-implemented-phase-5-m5-register-item-s10" title="Permanent link">&para;</a></h2>
-<p>Both halves of the purge described in the TL;DR and Decision sections below are now
-built, closing the "raw output currently persists indefinitely" gap the 2026-07-16
-amendment flagged:</p>
-<ul>
-<li><strong>30-day sweep</strong>: <code>supabase/migrations/20260718000000_add_report_retention_purge.sql</code>
-  registers a daily <code>pg_cron</code> job (<code>purge_generation_job_report</code>) that nulls
-  <code>generation_job.report</code> for jobs in a terminal status (<code>passed</code>, <code>needs_review</code>,
-  <code>failed</code>) whose <code>updated_at</code> is more than 30 days old. <code>queued</code>, <code>running</code>, and
-  <code>awaiting_manual_fill</code> are excluded as non-terminal. The migration guards
-  <code>CREATE EXTENSION pg_cron</code> in an exception-catching block (<code>RAISE NOTICE</code> on
-  failure) and unschedules-then-reschedules by job name, so it never hard-fails on a
-  Postgres without <code>pg_cron</code> and is safe to re-apply. An index on
-  <code>(status, updated_at)</code> backs the purge predicate per this ADR's Implementation
-  Notes.</li>
-<li><strong>On-publish purge</strong>: <code>publishing/service.py::approve</code> (the sole path that sets
-  <code>storybook.status = "published"</code>) nulls the matching <code>generation_job.report</code> (by
-  <code>storybook_id</code> and <code>version</code>) in the same transaction as the publish write, so a
-  rollback of the publish also rolls back the purge.</li>
-</ul>
-<h2 id="amendment-2026-07-16-access-control-ruling-and-code-reconciliation">Amendment (2026-07-16): access-control ruling and code reconciliation<a class="headerlink" href="#amendment-2026-07-16-access-control-ruling-and-code-reconciliation" title="Permanent link">&para;</a></h2>
-<p>The 2026-07-16 traceability review found the code had drifted from this ADR:
-<code>GET /generation-jobs/{id}</code> returned the full <code>report</code> to any guardian in the owning
-family, and the privacy model had been updated to document that reality rather than this
-ADR's admin-only rule. The owner ruled the same day: <strong>the admin reviews generated output
-first, then it reaches the parent</strong>, with a dual-role adult covered by the admin
-capability. The parent may ultimately receive unedited LLM output when the admin approves
-without changes; that is accepted, because by then it has passed the automated gates and
-admin review. Consequences:</p>
-<ul>
-<li>The single-job endpoint is tightened so <code>report</code> is returned only to principals with
-  the admin capability; guardians keep status, stage log, and error information.
-  Implemented on branch <code>claude/app-capabilities-review-wm6gt3</code>.</li>
-<li>Guardians see generated content through the normal post-approval surfaces, never
-  through raw job output.</li>
-<li>The privacy model's guardian-visibility wording is corrected back to admin-only.</li>
-<li>The 30-day/on-publish purge below remains decided and remains unbuilt (Phase 5); raw
-  output currently persists until that job ships, which is tracked as a known gap.</li>
-</ul>
-<h2 id="tldr">TL;DR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h2>
-<p>Purge <code>GenerationJob.report</code> (raw staged LLM outputs) 30 days after job
-completion or when the produced storybook version reaches <code>published</code> status,
-whichever comes first, <strong>except</strong> for a job whose storybook reached a human
-review decision (approve or send-back), which the 2026-08-10 amendment above
-exempts from the 30-day leg. Access to <code>report</code> is restricted to admin/system
-role only. Implementation shipped as a daily <code>pg_cron</code> job
-(<code>purge_generation_job_report</code>, migration <code>20260718000000_add_report_retention_purge.sql</code>),
-not as the Phase 5 RQ worker this ADR originally proposed; see the 2026-07-17
-amendment above.</p>
-<h2 id="context">Context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h2>
-<h3 id="problem">Problem<a class="headerlink" href="#problem" title="Permanent link">&para;</a></h3>
-<p><code>GenerationJob.report</code> stores the full <code>GenerationOutcome</code> JSON, which includes
-the raw text output from each stage of the generation pipeline (Structure, Prose,
-Repair passes). These raw outputs may contain:</p>
-<ul>
-<li>Prompt reflections or elaborations of the concept brief.</li>
-<li>Intermediate story drafts that were rejected by the validator.</li>
-<li>Stage-specific LLM reasoning that is not part of the published story.</li>
-</ul>
-<p>The privacy model in <code>docs/planning/tech-spec.md</code> specifies that raw outputs
-should be "short-lived and admin-only." Currently, <code>report</code> is retained
-indefinitely with no access control at the API level.</p>
-<h3 id="why-this-matters">Why This Matters<a class="headerlink" href="#why-this-matters" title="Permanent link">&para;</a></h3>
-<p>This is a kids' app. Even though the concept brief itself is guardian-authored
-and fictional (protagonist names are not real child names, per <code>generation/pii.py</code>),
-raw multi-stage LLM outputs are a novel data category with unclear long-term
-privacy implications. Minimizing retention reduces risk.</p>
-<h2 id="decision">Decision<a class="headerlink" href="#decision" title="Permanent link">&para;</a></h2>
-<p><strong>Retention window</strong>: 30 calendar days from <code>GenerationJob.updated_at</code> (the
-timestamp of the final status transition), OR when the linked
-<code>StorybookVersion.status</code> reaches <code>published</code>, whichever comes first.</p>
+<h2 id="0-provenance-of-every-rating-in-this-spec">0. Provenance of every rating in this spec<a class="headerlink" href="#0-provenance-of-every-rating-in-this-spec" title="Permanent link">&para;</a></h2>
 <blockquote>
-<p><strong>Amended 2026-08-10</strong>: the 30-day leg no longer applies to a job whose
-storybook reached a human review decision, in either direction. The
-Amendment at the top of this ADR carries the exact predicate, what it
-deliberately excludes, and why; the on-publish leg below is unchanged.</p>
+<p>[!IMPORTANT]
+<strong>Every rating, annotation and judgment of a finished book reported here was produced by LLM
+agent instances.</strong> <strong>No human and no child has read or rated any book in this run.</strong> Following
+the research brief, those instances are called <strong>model evaluators</strong> throughout, and what they
+produce is a model-based hypothesis about reader response, not reader evidence. The Fleiss
+kappas below are <strong>inter-model agreement</strong>: they measure consistency among those instances and
+establish nothing about validity. Author and evaluators shared a model family, so the whole
+battery is exposed to the self-preference effect (research brief reference 37). The
+deterministic measurements are separate and are not affected: guard battery, shared four-grams,
+device collision, overlap counts.</p>
 </blockquote>
-<p><strong>Mechanism</strong>: A periodic RQ job (Phase 5) queries for jobs where:</p>
-<div class="language-sql highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="p">(</span><span class="n">updated_at</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">NOW</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nb">INTERVAL</span><span class="w"> </span><span class="s1">&#39;30 days&#39;</span><span class="w"> </span><span class="k">OR</span><span class="w"> </span><span class="n">linked_version</span><span class="p">.</span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;published&#39;</span><span class="p">)</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="k">AND</span><span class="w"> </span><span class="n">report</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span>
-</span></code></pre></div>
-<p>and sets <code>report = NULL</code> on matching rows. The job runs daily. It does not
-delete the <code>GenerationJob</code> row; only the <code>report</code> column is nulled. The
-predicate above is the original decision as taken; the shipped job additionally
-excludes human-decided storybooks per the 2026-08-10 amendment.</p>
-<p><strong>Access control</strong>: <code>report</code> must not be exposed via guardian or child API
-endpoints. Only internal admin/system paths (e.g. a future ops dashboard or
-support tooling) may read <code>report</code>. Guardian-facing status polling
-(<code>GET /generation-jobs/{id}</code>) returns <code>status</code>, <code>stage_log</code>, and error
-information only.</p>
-<p><strong>Audit log</strong>: When a purge job nulls a <code>report</code>, it logs the job ID and
-purge reason (<code>expired</code> or <code>published</code>) at INFO level with a structured key.</p>
-<h2 id="consequences">Consequences<a class="headerlink" href="#consequences" title="Permanent link">&para;</a></h2>
-<p><strong>Positive</strong>:</p>
+<h2 id="1-the-question">1. The question<a class="headerlink" href="#1-the-question" title="Permanent link">&para;</a></h2>
+<p>Every prior intervention held two things constant: <strong>what each scene is</strong>, and <strong>what act
+each choice asks the reader to perform</strong>. Devices, prose, model tier, graph shape, and the
+stated purpose of each scene were all varied, and none moved the result (spec
+<code>obligation-variance-experiment-spec-2026-08-09.md</code> section 12, and section 5.3 of the
+research brief).</p>
+<p><strong>Does varying scene identity and action semantics, on an unchanged graph in an unchanged
+world, reduce perceived decision repetition?</strong></p>
+<h2 id="2-design">2. Design<a class="headerlink" href="#2-design" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Control pair</th>
+<th>Treatment pair</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Graph</td>
+<td>identical</td>
+<td>identical</td>
+</tr>
+<tr>
+<td>World, cast, place names</td>
+<td><strong>differs</strong> (river lock-house vs bell foundry)</td>
+<td><strong>identical</strong> (both river lock-house)</td>
+</tr>
+<tr>
+<td>Scene identity</td>
+<td>identical</td>
+<td><strong>differs</strong></td>
+</tr>
+<tr>
+<td>Action at each choice</td>
+<td>identical</td>
+<td><strong>differs</strong></td>
+</tr>
+<tr>
+<td>Node purpose / motivation</td>
+<td>differs</td>
+<td>differs</td>
+</tr>
+</tbody>
+</table>
+<p>Control pair: <code>filled_C</code> vs <code>filled_D</code>, the obligation-variance arms, already authored and
+already rated at recognition position 2.</p>
+<p>Treatment pair: <code>filled_C</code> vs <code>filled_H</code>, where <code>filled_H</code> is a new fill of the same graph
+under a new contract (<code>contract_v4</code>) that changes every scene and every offered action,
+<strong>bound to the same river lock-house world as <code>filled_C</code></strong>.</p>
+<p><strong>The treatment pair shares strictly more than the control pair.</strong> Same world, same town,
+same cast register, same building. That is deliberate: it is the actual series condition,
+and it biases the experiment <strong>against</strong> the treatment. If the treatment pair still reads as
+less decision-repetitive while sharing the world the control pair does not, the effect is
+real and understated.</p>
+<h2 id="3-held-fixed">3. Held fixed<a class="headerlink" href="#3-held-fixed" title="Permanent link">&para;</a></h2>
+<p>Graph, node ids, edges, ending kinds and valences, band (10-13), the fill protocol (isolated
+agents authoring from files), the deterministic quality guards, and the model evaluator instance.</p>
+<h2 id="4-the-instrument-which-is-new">4. The instrument, which is new<a class="headerlink" href="#4-the-instrument-which-is-new" title="Permanent link">&para;</a></h2>
+<p>The prior instrument asked for the position at which a reader would conclude "this is the
+same book." That measures armature detectability, which is <strong>not the defect</strong>: a child
+noticing they are in a familiar series is having the intended experience (research brief
+section 1.4). It is dropped.</p>
+<p>The model evaluator answers five narrow questions per pair, adapted from external review:</p>
+<ol>
+<li>Were you asked to choose the same kinds of actions?</li>
+<li>Did the options present the same tradeoff?</li>
+<li>Would the choices predictably produce different consequences?</li>
+<li>Did the sequence of decisions feel repeated?</li>
+<li>Was each choice meaningful and sufficiently informed?</li>
+</ol>
+<p><strong>One model evaluator instance rates both pairs</strong>, in counterbalanced order, and then makes a direct
+forced comparison: which pair asked the reader to do more similar things? Prior runs used
+separate model evaluator instances, which is why no difference under one full position was safe to
+interpret; the within-evaluator comparison is the fix.</p>
+<p>Deterministically, <code>scripts/check_decision_overlap.py</code> scores both pairs on exact action
+reuse, action-family rate, tradeoff rate, consequence rate, and ordered-sequence rate.</p>
+<h2 id="5-pre-registered-outcomes">5. Pre-registered outcomes<a class="headerlink" href="#5-pre-registered-outcomes" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Outcome</th>
+<th>Reading</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Treatment pair rated <strong>less</strong> decision-repetitive than control on Q1/Q4, and chosen as less similar in the forced comparison</td>
+<td>The lever is real. Proceed to a decision-program compiler.</td>
+</tr>
+<tr>
+<td>Treatment ≈ control</td>
+<td>Varying decisions does not help. The defect is elsewhere, and no proposed architecture is worth building.</td>
+</tr>
+<tr>
+<td>Treatment <strong>more</strong> repetitive</td>
+<td>Shared world dominates decisions. The series contract is doing more work than the decisions are, which would reframe the whole program.</td>
+</tr>
+</tbody>
+</table>
+<p>Deterministic guards, unchanged from prior runs and still quality gates rather than success
+criteria: fill integrity, full validator gate not blocked, prose craft clean, zero
+em-dashes, no title reuse.</p>
+<h2 id="6-the-disagreement-this-run-adjudicates">6. The disagreement this run adjudicates<a class="headerlink" href="#6-the-disagreement-this-run-adjudicates" title="Permanent link">&para;</a></h2>
+<p>Two definitions of the defect are live, and the instrument now separates them numerically.</p>
+<p>The owner's operational definition treats "open the door / go around back" against "go
+upstairs / go downstairs" as <strong>acceptably different</strong>. External review argues both are the
+same higher-order decision, choose a route through a location, and that a child may read
+them as the same choice repainted.</p>
+<p>Run through <code>check_decision_overlap.py</code>, that exact example scores <strong>exact action reuse 0</strong>,
+passing the owner's bar, and <strong>action-family rate 1.000</strong>, failing the stricter reading. The
+graded ceilings in the checker (0.6) are guesses. This run's model evaluator judgments are what
+calibrate them, by showing which score tracks the model evaluator's verdict. No human verdict is
+available to this programme, which is a weaker calibration than the word "calibrate" suggests.</p>
+<h2 id="7-known-limitations-stated-in-advance">7. Known limitations, stated in advance<a class="headerlink" href="#7-known-limitations-stated-in-advance" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Minimal raw LLM output retained: aligns with privacy model.</li>
-<li>Reduces storage footprint for high-volume generation.</li>
-<li>Limits exposure if the database is compromised.</li>
+<li>n=1 graph, one pair per condition, one pass. The 26-node pilot graph is an outlier against
+  a catalog median of 151 nodes and is not production-eligible.</li>
+<li>The control pair's existing rating came from the old instrument; only the new within-evaluator
+  comparison is used for the primary outcome.</li>
+<li>Author and model evaluator share a model family, engaging the self-preference effect documented in
+  the research brief's reference 37.</li>
+<li>Rating compares books back to back, the condition least favorable to formula tolerance.</li>
+<li>A positive result licenses building a compiler; it does not establish the magnitude, which
+  needs replication on a production-eligible graph in a real cell.</li>
 </ul>
-<p><strong>Negative</strong>:</p>
+<hr />
+<h2 id="8-results-2026-08-10">8. Results (2026-08-10)<a class="headerlink" href="#8-results-2026-08-10" title="Permanent link">&para;</a></h2>
+<p><strong>The experiment terminated before the fill, because the intervention could not be
+constructed.</strong> That is the result, and it is more informative than the rating would have
+been.</p>
+<h3 id="81-the-treatment-was-not-delivered">8.1 The treatment was not delivered<a class="headerlink" href="#81-the-treatment-was-not-delivered" title="Permanent link">&para;</a></h3>
+<p>Two authoring attempts were made over the fixed 26-node graph in a fixed world. The first
+changed every scene identity and every action string. The second was sent back with explicit
+instruction to move <code>tradeoff</code> and <code>consequence</code> rather than the verb, and iterated against
+the instrument until it passed.</p>
+<p>An independent model evaluator then labelled both contracts blind: stripped of all prior
+annotations, renamed A and B, with no knowledge that they were being compared, which was the
+control, or that divergence was the goal. It applied one written principle whose decisive
+rule was that two choices asking the reader to do the same thing get the same labels however
+the story dresses them.</p>
+<p>Its verdict: <strong>one fork of eighteen asks a genuinely different decision</strong> (<code>n_open</code>, where
+the premise itself changed from prove-yourself to rescue-before-the-tide). Every other fork,
+including all four principal ones, mapped to identical labels.</p>
+<table>
+<thead>
+<tr>
+<th>Measure</th>
+<th>Author's own labels</th>
+<th>Independent labels</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Same-decision reuse (family, target, tradeoff)</td>
+<td>1 / 28</td>
+<td><strong>28 / 28</strong></td>
+</tr>
+<tr>
+<td>Action-family rate</td>
+<td>0.286</td>
+<td><strong>1.000</strong></td>
+</tr>
+<tr>
+<td>Tradeoff rate</td>
+<td>0.179</td>
+<td><strong>1.000</strong></td>
+</tr>
+<tr>
+<td>Consequence rate</td>
+<td>0.464</td>
+<td><strong>1.000</strong></td>
+</tr>
+<tr>
+<td>Ordered-sequence rate</td>
+<td>0.000</td>
+<td><strong>1.000</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="82-three-instrument-defects-all-found-by-running-it">8.2 Three instrument defects, all found by running it<a class="headerlink" href="#82-three-instrument-defects-all-found-by-running-it" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Single-option nodes are not decisions.</strong> Six of eighteen nodes offered one option. They
+   scored 0.00 overlap because there was nothing to repeat, and dragged the aggregate under
+   its ceiling while every real fork was far worse. Excluded, and a <code>worst_fork_family_rate</code>
+   gate added so a mean can never again pass on the strength of nodes that ask nothing.</li>
+<li><strong>A declared-label metric is gameable by whoever declares the labels.</strong> The same two
+   artifacts score 0.179 and 1.000 on tradeoff reuse depending only on who annotated them.
+   The author was not cheating; it was asked to minimise a score computed from labels it
+   also wrote. Annotation must be independent of authoring.</li>
+<li><strong>A free-text action field makes the hard bar vacuous.</strong> Zero of 35 action strings matched
+   while 34 of 35 shared a family: <code>set_the_dial_deliberately</code> against
+   <code>set_the_levers_deliberately</code> is one act and two strings. The hard bar now compares the
+   normalized act (family, target role, tradeoff); the raw string is reporting only.</li>
+</ol>
+<h3 id="83-what-this-says-about-the-lever">8.3 What this says about the lever<a class="headerlink" href="#83-what-this-says-about-the-lever" title="Permanent link">&para;</a></h3>
+<p>The leading explanation is that <strong>the graph plus fact-graph closure pins the decisions.</strong>
+Each fork's children must deliver what their own descendants require, and merge closure
+propagates those requirements backward, so the <em>kind</em> of thing each branch accomplishes is
+fixed even when every prop, name and sentence changes. An author may repaint a fork freely
+and cannot repurpose it.</p>
+<p>The competing explanation is authorial limitation. It is not fully excluded by one run, but
+it is strained: two attempts, the second explicitly targeting the lever with metric feedback,
+still produced 28 of 28 options that a blind model evaluator called the same decision. The one
+fork that did move, <code>n_open</code>, is the one with no incoming constraint.</p>
+<p>This reframes the topology conclusion withdrawn in the research brief rather than restoring
+it. Topology is not itself the fingerprint. Topology <strong>pins the decisions</strong>, and the
+decisions are the fingerprint. The causal chain is graph, then pinned decisions, then
+recognition.</p>
+<h3 id="84-consequences-for-the-proposed-architectures">8.4 Consequences for the proposed architectures<a class="headerlink" href="#84-consequences-for-the-proposed-architectures" title="Permanent link">&para;</a></h3>
+<p>All three externally proposed designs assume scene and decision content can be freed while
+the graph stays verifiable. This run is evidence that the two are coupled through the fact
+graph, not merely through our representation of it:</p>
 <ul>
-<li>Debugging a generation failure after 30 days is harder; <code>stage_log</code> and
-  <code>error</code> columns remain, but the raw LLM output is gone.</li>
-<li>Requires a scheduled worker (Phase 5); the mechanism does not exist yet.
-  <strong>Superseded 2026-07-17</strong>: it does exist, as a daily <code>pg_cron</code> job rather than
-  an RQ worker, so this consequence no longer holds as written.</li>
+<li>A <strong>shape-only skeleton</strong> is only decision-free if its declared entry and exit facts are
+  also free, and if those are free the merge cannot be verified before prose. That is the
+  verifiability/freedom tension, now with evidence that it is real rather than an artifact.</li>
+<li>A <strong>decision-program compiler</strong> must therefore generate the fact graph and the decisions
+  together, not assign decisions onto a fixed fact skeleton.</li>
+<li>Any <strong>DecisionSignature</strong> scoring must be computed by a party that did not author the
+  program. Section 8.2 defect 2 applies directly to a compiler that emits its own signatures
+  and is scored on them.</li>
 </ul>
-<h2 id="implementation-notes">Implementation Notes<a class="headerlink" href="#implementation-notes" title="Permanent link">&para;</a></h2>
-<p>Phase 5 task: add <code>generation_job_purge</code> to the RQ scheduler with a 24-hour
-interval. The purge query must use an index on <code>(updated_at, status)</code> to avoid
-full-table scans on large deployments.</p>
-<blockquote>
-<p><strong>Superseded 2026-07-17</strong>: shipped instead as the daily <code>pg_cron</code> job
-<code>purge_generation_job_report</code>, so no RQ scheduler entry exists or is wanted.
-The index shipped as <code>(status, updated_at)</code>, the reverse of the order written
-above, which is the correct order for this predicate: <code>status</code> is matched by
-equality against a terminal-status set and <code>updated_at</code> by range, and a
-composite index is only usable for a range scan when the equality column comes
-first. Read the column order above as an error in the original note, not as a
-divergence in the migration.</p>
-</blockquote>
-<p>Interim (Phases 3-4): add the <code>#CRITICAL</code> privacy comment on the <code>report</code>
-column in <code>db/models.py</code> (done in this cleanup) and ensure no guardian/child
-endpoint returns <code>report</code> content.</p>
-<h2 id="alternatives-considered">Alternatives Considered<a class="headerlink" href="#alternatives-considered" title="Permanent link">&para;</a></h2>
+<h3 id="85-what-was-not-learned">8.5 What was not learned<a class="headerlink" href="#85-what-was-not-learned" title="Permanent link">&para;</a></h3>
+<p>No fill was generated and no reader-facing rating was taken, so this run says nothing about
+whether varying decisions <em>would</em> move recognition. It says only that varying them on a
+fixed graph is much harder than assumed, and that our first attempt to do so failed while
+appearing to succeed. Testing the lever still requires an architecture that can actually
+produce different decisions, which is now the gating problem rather than a downstream one.</p>
+<hr />
+<h2 id="9-results-second-attempt-2026-08-10">9. Results, second attempt (2026-08-10)<a class="headerlink" href="#9-results-second-attempt-2026-08-10" title="Permanent link">&para;</a></h2>
+<p>Section 8 recorded a run that terminated before any fill. This section records the run that
+completed: a third contract (<code>contract_v5</code>) over the same graph, filled, guarded, and rated.</p>
+<p><strong>Headline.</strong> With a clean fill, two blind model evaluators in counterbalanced order both judged the
+treatment pair <strong>less</strong> decision-repetitive than the control pair, which is the pre-registered
+outcome 1 in direction. Both also called the effect thin. And the deterministic signature
+instrument ranked the same two pairs in the <strong>opposite</strong> order, on every axis, under three
+independent model evaluators. That contradiction, not the rating, is this run's main result.</p>
+<h3 id="91-two-prep-defects-invalidated-the-first-two-attempts">9.1 Two prep defects invalidated the first two attempts<a class="headerlink" href="#91-two-prep-defects-invalidated-the-first-two-attempts" title="Permanent link">&para;</a></h3>
+<p>Both were mine, both were invisible to every guard then in place, and both are now checkable.</p>
+<p><strong>Shell contamination (<code>AL-195</code>).</strong> The fill shell carried the skeleton's own choice labels with
+slot tokens bound. Because 13 of 35 skeleton labels carry no slot token (<code>AL-184</code>), the treatment
+author was handed clocktower-dial vocabulary for a salvage story. It rewrote all 35 labels and
+still stayed inside the frame, producing "Force the hands into place instead" against the shell's
+"Force the hands by guesswork". Every deterministic guard passed while sibling grams hit 28.8 per
+1000, the highest ever measured, with 4 shared menu frames. Rebuilding the shell with every label
+as a <code>&lt;&lt;FILL label contract='node.choice'&gt;&gt;</code> directive took the same pair to 8.9 and 0.</p>
+<p><strong>Device collision (<code>AL-196</code>).</strong> The treatment binding shared 14 of 24 props with the control,
+including the cipher itself. Two blind model evaluators, opposite orders, both named exactly those props as
+decisive, and one added that stripping two of the affected forks would have left the pairs
+indistinguishable. That rating measured the binding, not the contract, and was discarded. Only 6
+of the 14 sat at the same node; the other 8 were the same props relocated, which a same-slot diff
+scores as fresh and which a model evaluator described unprompted as "variety fork by fork but pure
+rearrangement at the book level". <code>scripts/check_device_collision.py</code> now compares every prop
+against every prop and scores that binding 0.583.</p>
+<h3 id="92-the-clean-treatment-was-delivered">9.2 The clean treatment was delivered<a class="headerlink" href="#92-the-clean-treatment-was-delivered" title="Permanent link">&para;</a></h3>
+<p><code>armV5b_selection.json</code> rebinds every device with no collision, keeping the shared world. The
+resulting fill, <code>filled_V5c.json</code>, passes the whole battery (<code>eval_v5c.sh</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Guard</th>
+<th>Treatment pair (C vs V5c)</th>
+<th>Control pair (C vs D)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Device collision rate</td>
+<td>0.000</td>
+<td>0.000</td>
+</tr>
+<tr>
+<td>Shared 4-grams per 1000</td>
+<td><strong>1.8</strong></td>
+<td>2.7 (post-revision)</td>
+</tr>
+<tr>
+<td>Shared menu frames (margin 0)</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Validator gate</td>
+<td>not blocked, 1 advisory</td>
+<td>not blocked</td>
+</tr>
+<tr>
+<td>Prose craft, em-dashes, titles</td>
+<td>clean</td>
+<td>clean</td>
+</tr>
+</tbody>
+</table>
+<p>The treatment pair is now <em>less</em> lexically convergent than the control pair while sharing the
+world the control pair does not.</p>
+<h3 id="93-the-model-evaluators-treatment-less-decision-repetitive-thinly">9.3 The model evaluators: treatment less decision-repetitive, thinly<a class="headerlink" href="#93-the-model-evaluators-treatment-less-decision-repetitive-thinly" title="Permanent link">&para;</a></h3>
+<p>Two model evaluator instances, each rating both pairs within-evaluator, in opposite pair orders, blind to the
+design. Scores are (evaluator A, evaluator B).</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Question</th>
+<th>Control α+β</th>
+<th>Treatment α+γ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Same kinds of actions</td>
+<td>5, 5</td>
+<td>4, 5</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Same tradeoffs</td>
+<td>5, 5</td>
+<td><strong>4, 4</strong></td>
+</tr>
+<tr>
+<td>3</td>
+<td>Different consequences <em>(high good)</em></td>
+<td>2, 2</td>
+<td><strong>3, 3</strong></td>
+</tr>
+<tr>
+<td>4</td>
+<td>Repeated sequence</td>
+<td>5, 5</td>
+<td>5, 5</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Meaningful and informed <em>(high good)</em></td>
+<td>3, 4</td>
+<td>4, 4</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Solution transfer <em>(high bad)</em></td>
+<td>4, 4</td>
+<td><strong>3, 3</strong></td>
+</tr>
+<tr>
+<td></td>
+<td><strong>Forced comparison</strong></td>
+<td><strong>more similar</strong> (high conf. / medium conf.)</td>
+<td>less similar</td>
+</tr>
+</tbody>
+</table>
+<p>Both model evaluators converged unprompted on the same three decisive forks, <code>n_clockface</code>, <code>n_vault</code> and
+<code>n_setjam</code>, and on the same mechanism: the control changes every noun and almost no decision,
+while the treatment keeps the nouns and changes the act. The control and its base both decode a
+notation and set a brass dial at the top of the tower; the treatment checks an object's
+orientation against a full-size drawing and seats it at a bench.</p>
+<p><strong>The result survives a stacked deck.</strong> The treatment shares the control base's entire world while
+the control changes world wholesale. One model evaluator flagged this directly: the treatment "will <em>feel</em>
+more repetitive to a child than it scores here, and if you disagree with excluding [world], the
+answer flips." Excluding shared world is the owner's operational definition (section 6), so under
+that definition the treatment wins while carrying the heavier load.</p>
+<p><strong>Both model evaluators called the effect thin,</strong> and it is recorded as thin: "three re-skins of one graph",
+separation resting on three forks out of eleven, one model evaluator at medium confidence.</p>
+<h3 id="94-q6-was-invented-by-the-model-evaluators-and-it-is-the-item-that-worked">9.4 Q6 was invented by the model evaluators, and it is the item that worked<a class="headerlink" href="#94-q6-was-invented-by-the-model-evaluators-and-it-is-the-item-that-worked" title="Permanent link">&para;</a></h3>
+<p>The five-question instrument of section 4 was amended before this run. Both model evaluators of the
+discarded round, independently and without conferring, reported that Q1 and Q4 saturate at 5 for
+both pairs because all three books share one skeleton, and both proposed the same missing item:
+<em>did solving the first book hand you the answer to the second</em> (<code>AL-198</code>). It was added as Q6.</p>
+<p>On first use, Q1 and Q4 saturated exactly as predicted (Q4 is 5,5 against 5,5, contributing
+nothing), and Q6 separated the pairs cleanly and consistently, 4,4 against 3,3. Q2, Q3 and Q6
+carried the entire judgement. Two model evaluators converging on an unprompted diagnosis, which then
+replicates on the next run, is the strongest instrument evidence this programme has produced.</p>
+<h3 id="95-the-signature-instrument-inverts-the-model-evaluator-ordering">9.5 The signature instrument inverts the model evaluator ordering<a class="headerlink" href="#95-the-signature-instrument-inverts-the-model-evaluator-ordering" title="Permanent link">&para;</a></h3>
+<p>This is the finding that matters. Blind model evaluators labelled the contracts from
+<code>choice_semantics</code> alone, stripped of prior annotations, neutrally named, with no knowledge of
+what was being compared or that divergence was the goal.</p>
+<table>
+<thead>
+<tr>
+<th>Measure</th>
+<th>Control pair (v2 vs v3)</th>
+<th>Treatment pair (v2 vs v5)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Same-decision reuse, one model evaluator over all three plans</td>
+<td>24 / 28</td>
+<td><strong>28 / 28</strong></td>
+</tr>
+<tr>
+<td>Action-family rate</td>
+<td>0.929</td>
+<td><strong>1.000</strong></td>
+</tr>
+<tr>
+<td>Tradeoff rate</td>
+<td>0.893</td>
+<td><strong>1.000</strong></td>
+</tr>
+<tr>
+<td>Consequence rate</td>
+<td>0.857</td>
+<td><strong>0.964</strong></td>
+</tr>
+<tr>
+<td>Ordered-sequence rate</td>
+<td>0.909</td>
+<td><strong>1.000</strong></td>
+</tr>
+<tr>
+<td>Two blind model evaluators of the filled books</td>
+<td><strong>more repetitive</strong></td>
+<td>less repetitive</td>
+</tr>
+</tbody>
+</table>
+<p>Replicated across model evaluators: two further independent model evaluators scored the control pair
+at 24/28 and 23/28 (family 0.893 both), against the earlier pair of model evaluators' 28/28 and
+1.000 for the treatment. Every annotation ranks the treatment as the more repetitive pair; every
+model evaluator of the filled books ranks it as the less repetitive one.</p>
+<p>Unreliability does not explain it, and here is the whole agreement set rather than its best rows.
+Fleiss' kappa between the two independent model evaluators, both measurements per field:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Fleiss' kappa</th>
+<th>Lower measurement, above the 0.60 floor by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>consequence</code></td>
+<td>1.000</td>
+<td>0.400</td>
+</tr>
+<tr>
+<td><code>action_family</code></td>
+<td>0.961, 0.962</td>
+<td>0.361</td>
+</tr>
+<tr>
+<td><code>target_role</code></td>
+<td>0.924, 0.803</td>
+<td>0.203</td>
+</tr>
+<tr>
+<td><strong><code>tradeoff</code></strong></td>
+<td><strong>0.675, 0.672</strong></td>
+<td><strong>0.072</strong></td>
+</tr>
+</tbody>
+</table>
+<p>All four clear the floor, and the set is not uniform: quoting only <code>action_family</code> and <code>consequence</code>
+reports the two strongest of the four fields and makes agreement look better than it is.
+<strong><code>tradeoff</code> is the weakest axis and sits roughly 0.07 above the floor</strong>, in Landis and Koch's
+substantial band but nowhere near the almost-perfect one, and it is one of the three fields
+same-decision reuse is computed from (family, target role, tradeoff). So the inversion rests on a
+measurement that is near-perfectly reproducible on two of its axes and only marginally so on a
+third. Read the reuse figures with that in mind; nothing here licenses the shorter claim that
+agreement is uniformly almost perfect.</p>
+<h3 id="96-why-it-inverts-exactly">9.6 Why it inverts, exactly<a class="headerlink" href="#96-why-it-inverts-exactly" title="Permanent link">&para;</a></h3>
+<p>Two errors in opposite directions, both visible in one diff.</p>
+<p><strong>Blind where it matters.</strong> At the three forks both model evaluators called decisive, the signatures are
+<em>identical across all three plans</em>, choice for choice:</p>
+<table>
+<thead>
+<tr>
+<th>Fork</th>
+<th>v2</th>
+<th>v3</th>
+<th>v5</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>n_clockface.c_face_correct</code></td>
+<td>CRAFT / EFFORT_VS_SHORTCUT</td>
+<td>CRAFT / EFFORT_VS_SHORTCUT</td>
+<td>CRAFT / EFFORT_VS_SHORTCUT</td>
+</tr>
+<tr>
+<td><code>n_vault.c_vault_share</code></td>
+<td>MORAL / NONE</td>
+<td>MORAL / NONE</td>
+<td>MORAL / NONE</td>
+</tr>
+<tr>
+<td><code>n_setjam.c_jam_oil</code></td>
+<td>CRAFT / NONE</td>
+<td>CRAFT / NONE</td>
+<td>CRAFT / NONE</td>
+</tr>
+</tbody>
+</table>
+<p>"Compute a value and dial it" and "match a shape and seat the part" are one signature and two
+kinds of thinking. The vocabulary has no dimension for <strong>what kind of reasoning the choice
+demands</strong>, which is precisely the axis the model evaluators responded to and precisely what Q6 measures.</p>
+<p><strong>Leaking scenery where it should not.</strong> The control pair's entire measured advantage comes from
+four entry forks, <code>n_start.c_door</code>, <code>n_start.c_keeper</code>, <code>n_door.c_door_force</code> and
+<code>n_door.c_door_window</code>, where the control's world change turns "get past the building" into "read
+what the building remembers": PHYSICAL_RISK/BARRIER/ACCESS becomes INFORMATION/LOCATION/KNOWLEDGE.
+The act is the same, the framing changed with the scenery, and the labels followed. Rule 2 of the
+labelling principle forbids exactly this, and the model evaluators were not at fault: they labelled the
+<code>choice_semantics</code> text faithfully, and the scenery had already entered the plan.</p>
+<p>So the instrument is deaf at the climax and over-sensitive at the door. Both errors push the same
+way here, which is why the inversion is clean rather than noisy.</p>
+<h3 id="97-consequences-for-the-proposed-architectures">9.7 Consequences for the proposed architectures<a class="headerlink" href="#97-consequences-for-the-proposed-architectures" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>Never retain raw output</strong>: Simpler, but loses debugging capability entirely.
-  Stage logs and validator reports are insufficient for diagnosing subtle LLM
-  coherence failures.</li>
-<li><strong>Shorter window (7 days)</strong>: More aggressive but makes debugging a generation
-  failure over a weekend harder. 30 days is a reasonable balance.</li>
-<li><strong>Encrypt <code>report</code> at rest</strong>: Adds operational complexity (key rotation) for
-  marginal gain given the data is already inside the encrypted database volume.
-  Not adopted for Phase 5; revisit if regulatory requirements emerge.</li>
+<li><strong>A decision-program compiler that emits DecisionSignatures and is scored on them would optimise
+  the wrong direction</strong> on this evidence. It would read the control pair as the more diverse of
+  the two and reproduce the pattern the model evaluators liked least. <code>AL-188</code> established that the scorer must
+  be independent of the author; this run establishes something worse, that the v1 scoring
+  construct is not merely coarse but anti-correlated with the judgement it exists to predict.</li>
+<li><strong>A v2 vocabulary needs a reasoning-kind dimension</strong> (compute, match, recall, infer, negotiate,
+  exert) before any signature metric routes anything. The three gaps both earlier model evaluators
+  raised (<code>AL-193</code>) remain, and this run adds the decisive fourth.</li>
+<li><strong>Solution transfer is the construct to build the metric around</strong>, not action families. It is
+  what the model evaluators used, it is what discriminated, and it is plausibly computable from the plan:
+  two puzzles that resolve by the same operation to the same answer are the defect.</li>
+<li><strong>The branch-obligation screen is one-way</strong> (<code>AL-197</code>). <code>contract_v5</code> scores same-shape rate
+  0.000 with zero renames and is still 28/28 identical by signature and still recognisably the
+  same book at three of eleven forks. A pass buys nothing.</li>
 </ul>
+<h3 id="98-what-was-not-learned-and-what-is-now-suspect">9.8 What was not learned, and what is now suspect<a class="headerlink" href="#98-what-was-not-learned-and-what-is-now-suspect" title="Permanent link">&para;</a></h3>
+<ul>
+<li>n=1 graph, one pair per condition, one fill each, two model evaluators. The 26-node pilot graph is an
+  outlier against a catalog median of 151 nodes and is not production-eligible.</li>
+<li>The treatment bundles two changes: different decision content <em>and</em> four rooms that each yield a
+  distinct physical component. One model evaluator credited the latter explicitly. They are not separated
+  here, so the effect cannot be attributed to decision content alone.</li>
+<li>Author and model evaluators share a model family, engaging the self-preference effect (research brief
+  reference 37).</li>
+<li><strong>Both model evaluators independently reported a defect the pair framing cannot see</strong> (<code>AL-199</code>): the
+  four-room <code>n_inside</code> fork has no consequence in <em>any</em> of the three books, and roughly seven of
+  nine forks either do not branch or reconverge one node later. Because the defect is identical
+  everywhere it cancels out of every pairwise comparison. Illusory choice may be the larger threat
+  to the reading experience than cross-book repetition, and the entire diversity programme is
+  currently blind to it.</li>
+</ul>
+<h3 id="99-owner-ruling-reconverging-exploration-is-not-a-defect-2026-08-10">9.9 Owner ruling: reconverging exploration is not a defect (2026-08-10)<a class="headerlink" href="#99-owner-ruling-reconverging-exploration-is-not-a-defect-2026-08-10" title="Permanent link">&para;</a></h3>
+<p>Section 9.8 reported, from both model evaluators, that most forks on this graph reconverge with no differing
+consequence, and proposed a per-book illusory-choice check. <strong>That proposal is rejected.</strong></p>
+<p>The owner's ruling: choice paths that do not progress the story and loop back so the reader can
+explore another option are a convention of the form, not a flaw. The comparison offered is
+tabletop play, where a party sweeps every room in an area precisely because some rooms hold
+nothing and you cannot know which until you look. The checking is the play. A reader who takes
+the catwalk, finds a hint, and returns to take the stair has not been cheated; they have explored.</p>
+<p>This is the same class of correction as the one that redefined the central defect earlier in this
+programme. The model evaluators were reporting a structural fact accurately and then attaching a product
+judgment to it that is not the owner's. Recording it here so the fact stays and the judgment goes.</p>
+<p>Two things survive the ruling, both narrow:</p>
+<ul>
+<li>Single-option nodes remain excluded from decision metrics (<code>AL-189</code>). A node offering one option
+  is a page turn, and counting it as a decision pads any rate with units that cannot repeat. That
+  is an arithmetic point about denominators, not a claim that such nodes are bad.</li>
+<li>The <em>proportion</em> is unmeasured, not ruled on. Nobody has established what share of forks should
+  reconverge for this form and this age band, and no gate should be built until someone does.</li>
+</ul>
+<p>No illusory-choice gate will be built. <code>AL-199</code> is closed as rejected.</p>
 
 
 
@@ -3838,7 +4179,7 @@ endpoint returns <code>report</code> content.</p>
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 29, 2026 05:19:06 UTC">June 29, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 11, 2026 14:38:55 UTC">August 11, 2026</span>
   </span>
 
     
@@ -3915,10 +4256,10 @@ endpoint returns <code>report</code> content.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

@@ -12,31 +12,27 @@
         <meta name="author" content="Byron Williams">
       
       
-        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/adr/adr-007-raw-output-retention/">
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/architecture-respecification-2026-08-10/">
       
       
-        <link rel="prev" href="../adr-006-conditions-inhouse-evaluator/">
-      
-      
-        <link rel="next" href="../adr-008-public-app-store-launch/">
       
       
         
       
       
-      <link rel="icon" href="../../../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
-        <title>ADR-007: Raw LLM output retention policy for GenerationJob.report - CYO Adventure</title>
+        <title>Re-specifying the three gated architectures - CYO Adventure</title>
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
-        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -55,9 +51,9 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
   
@@ -92,7 +88,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#adr-007-raw-llm-output-retention-policy-for-generationjobreport" class="md-skip">
+        <a href="#re-specifying-the-three-gated-architectures" class="md-skip">
           Skip to content
         </a>
       
@@ -106,7 +102,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -126,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              ADR-007: Raw LLM output retention policy for GenerationJob.report
+              Re-specifying the three gated architectures
             
           </span>
         </div>
@@ -239,7 +235,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../.." class="md-tabs__link">
+      <a href="../.." class="md-tabs__link">
         
   
   
@@ -260,7 +256,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../guides/overview/" class="md-tabs__link">
+        <a href="../../guides/overview/" class="md-tabs__link">
           
   
   
@@ -282,7 +278,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../api-reference/" class="md-tabs__link">
+        <a href="../../api-reference/" class="md-tabs__link">
           
   
   
@@ -304,7 +300,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../operations/runbook/" class="md-tabs__link">
+        <a href="../../operations/runbook/" class="md-tabs__link">
           
   
   
@@ -326,7 +322,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../architecture/" class="md-tabs__link">
+        <a href="../../architecture/" class="md-tabs__link">
           
   
   
@@ -348,7 +344,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../security/assurance-spine/" class="md-tabs__link">
+        <a href="../../security/assurance-spine/" class="md-tabs__link">
           
   
   
@@ -370,7 +366,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../development/architecture/" class="md-tabs__link">
+        <a href="../../development/architecture/" class="md-tabs__link">
           
   
   
@@ -392,7 +388,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../project/roadmap/" class="md-tabs__link">
+        <a href="../../project/roadmap/" class="md-tabs__link">
           
   
   
@@ -410,13 +406,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../../" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../" class="md-tabs__link">
           
   
   
@@ -438,7 +432,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../PROJECT_SETUP/" class="md-tabs__link">
+        <a href="../../PROJECT_SETUP/" class="md-tabs__link">
           
   
   
@@ -460,7 +454,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../ADRs/" class="md-tabs__link">
+        <a href="../../ADRs/" class="md-tabs__link">
           
   
   
@@ -496,7 +490,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -526,7 +520,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../.." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   
@@ -624,7 +618,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../guides/overview/" class="md-nav__link">
+      <a href="../../guides/overview/" class="md-nav__link">
         
   
   
@@ -659,7 +653,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../guides/configuration/" class="md-nav__link">
+      <a href="../../guides/configuration/" class="md-nav__link">
         
   
   
@@ -694,7 +688,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../guides/usage/" class="md-nav__link">
+      <a href="../../guides/usage/" class="md-nav__link">
         
   
   
@@ -729,7 +723,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../guides/supabase-environments/" class="md-nav__link">
+      <a href="../../guides/supabase-environments/" class="md-nav__link">
         
   
   
@@ -829,7 +823,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../api-reference/" class="md-nav__link">
+      <a href="../../api-reference/" class="md-nav__link">
         
   
   
@@ -935,7 +929,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../operations/runbook/" class="md-nav__link">
+      <a href="../../operations/runbook/" class="md-nav__link">
         
   
   
@@ -970,7 +964,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../operations/kws-test-runbook/" class="md-nav__link">
+      <a href="../../operations/kws-test-runbook/" class="md-nav__link">
         
   
   
@@ -1005,7 +999,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../operations/authoring-guide/" class="md-nav__link">
+      <a href="../../operations/authoring-guide/" class="md-nav__link">
         
   
   
@@ -1040,7 +1034,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../operations/security-events/" class="md-nav__link">
+      <a href="../../operations/security-events/" class="md-nav__link">
         
   
   
@@ -1119,7 +1113,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../architecture/" class="md-nav__link ">
+            <a href="../../architecture/" class="md-nav__link ">
               
   
   
@@ -1170,7 +1164,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/user-journeys/" class="md-nav__link">
+      <a href="../../architecture/user-journeys/" class="md-nav__link">
         
   
   
@@ -1205,7 +1199,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/system-overview/" class="md-nav__link">
+      <a href="../../architecture/system-overview/" class="md-nav__link">
         
   
   
@@ -1240,7 +1234,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/generation-pipeline/" class="md-nav__link">
+      <a href="../../architecture/generation-pipeline/" class="md-nav__link">
         
   
   
@@ -1275,7 +1269,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/validation-and-player/" class="md-nav__link">
+      <a href="../../architecture/validation-and-player/" class="md-nav__link">
         
   
   
@@ -1310,7 +1304,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/data-model/" class="md-nav__link">
+      <a href="../../architecture/data-model/" class="md-nav__link">
         
   
   
@@ -1345,7 +1339,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/deployment/" class="md-nav__link">
+      <a href="../../architecture/deployment/" class="md-nav__link">
         
   
   
@@ -1453,7 +1447,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../security/assurance-spine/" class="md-nav__link">
+      <a href="../../security/assurance-spine/" class="md-nav__link">
         
   
   
@@ -1488,7 +1482,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../security/assurance-register/" class="md-nav__link">
+      <a href="../../security/assurance-register/" class="md-nav__link">
         
   
   
@@ -1523,7 +1517,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../security/control-inheritance/" class="md-nav__link">
+      <a href="../../security/control-inheritance/" class="md-nav__link">
         
   
   
@@ -1558,7 +1552,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../security/crypto-inventory/" class="md-nav__link">
+      <a href="../../security/crypto-inventory/" class="md-nav__link">
         
   
   
@@ -1593,7 +1587,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../security/red-team-design-review-2026-07/" class="md-nav__link">
+      <a href="../../security/red-team-design-review-2026-07/" class="md-nav__link">
         
   
   
@@ -1668,7 +1662,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../api/" class="md-nav__link ">
+            <a href="../../api/" class="md-nav__link ">
               
   
   
@@ -1717,7 +1711,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../development/architecture/" class="md-nav__link">
+      <a href="../../development/architecture/" class="md-nav__link">
         
   
   
@@ -1752,7 +1746,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../development/testing/" class="md-nav__link">
+      <a href="../../development/testing/" class="md-nav__link">
         
   
   
@@ -1789,7 +1783,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../development/code-quality/" class="md-nav__link">
+      <a href="../../development/code-quality/" class="md-nav__link">
         
   
   
@@ -1824,7 +1818,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../development/contributing/" class="md-nav__link">
+      <a href="../../development/contributing/" class="md-nav__link">
         
   
   
@@ -1928,7 +1922,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../project/roadmap/" class="md-nav__link">
+      <a href="../../project/roadmap/" class="md-nav__link">
         
   
   
@@ -1963,7 +1957,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../project/changelog/" class="md-nav__link">
+      <a href="../../project/changelog/" class="md-nav__link">
         
   
   
@@ -1998,7 +1992,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../project/license/" class="md-nav__link">
+      <a href="../../project/license/" class="md-nav__link">
         
   
   
@@ -2037,8 +2031,6 @@
       
   
   
-    
-  
   
   
     
@@ -2064,23 +2056,22 @@
     
     
       
-        
-        
-      
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../" class="md-nav__link ">
+            <a href="../" class="md-nav__link ">
               
   
   
@@ -2105,13 +2096,13 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="">
+              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_9">
             <span class="md-nav__icon md-icon"></span>
             
@@ -2131,7 +2122,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../project-vision/" class="md-nav__link">
+      <a href="../project-vision/" class="md-nav__link">
         
   
   
@@ -2166,7 +2157,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tech-spec/" class="md-nav__link">
+      <a href="../tech-spec/" class="md-nav__link">
         
   
   
@@ -2201,7 +2192,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../PROJECT-PLAN/" class="md-nav__link">
+      <a href="../PROJECT-PLAN/" class="md-nav__link">
         
   
   
@@ -2236,7 +2227,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../roadmap/" class="md-nav__link">
+      <a href="../roadmap/" class="md-nav__link">
         
   
   
@@ -2268,8 +2259,6 @@
                 
   
   
-    
-  
   
   
     
@@ -2307,21 +2296,20 @@
       
       
         
-          
-          
-        
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9_6" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9_6" >
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../" class="md-nav__link ">
+            <a href="../adr/" class="md-nav__link ">
               
   
   
@@ -2346,13 +2334,13 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_9_6" id="__nav_9_6_label" tabindex="">
+              <label class="md-nav__link " for="__nav_9_6" id="__nav_9_6_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_6_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_9_6">
             <span class="md-nav__icon md-icon"></span>
             
@@ -2372,7 +2360,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-001-story-format-json-storybook/" class="md-nav__link">
+      <a href="../adr/adr-001-story-format-json-storybook/" class="md-nav__link">
         
   
   
@@ -2407,7 +2395,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-002-client-pwa/" class="md-nav__link">
+      <a href="../adr/adr-002-client-pwa/" class="md-nav__link">
         
   
   
@@ -2442,7 +2430,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-003-frontier-llm-generation/" class="md-nav__link">
+      <a href="../adr/adr-003-frontier-llm-generation/" class="md-nav__link">
         
   
   
@@ -2477,7 +2465,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-004-homelab-first-deployment/" class="md-nav__link">
+      <a href="../adr/adr-004-homelab-first-deployment/" class="md-nav__link">
         
   
   
@@ -2512,7 +2500,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-005-mandatory-human-approval/" class="md-nav__link">
+      <a href="../adr/adr-005-mandatory-human-approval/" class="md-nav__link">
         
   
   
@@ -2547,7 +2535,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+      <a href="../adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
         
   
   
@@ -2579,44 +2567,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    ADR-007
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--accepted"></span>
-  
-
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../adr/adr-007-raw-output-retention/" class="md-nav__link">
         
   
   
@@ -2639,153 +2593,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#amendment-2026-08-10-reviewed-storybook-exemption-for-the-30-day-sweep" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Amendment (2026-08-10): reviewed-storybook exemption for the 30-day sweep
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#amendment-2026-07-17-purge-implemented-phase-5-m5-register-item-s10" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Amendment (2026-07-17): purge implemented (Phase 5, M5 register item S10)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#amendment-2026-07-16-access-control-ruling-and-code-reconciliation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Amendment (2026-07-16): access-control ruling and code reconciliation
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#tldr" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        TL;DR
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#context" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Context
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Context">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#problem" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Problem
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#why-this-matters" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why This Matters
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#decision" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Decision
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#consequences" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Consequences
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#implementation-notes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Implementation Notes
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#alternatives-considered" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Alternatives Considered
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -2798,7 +2605,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-008-public-app-store-launch/" class="md-nav__link">
+      <a href="../adr/adr-008-public-app-store-launch/" class="md-nav__link">
         
   
   
@@ -2833,7 +2640,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-009-supabase-platform/" class="md-nav__link">
+      <a href="../adr/adr-009-supabase-platform/" class="md-nav__link">
         
   
   
@@ -2868,7 +2675,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+      <a href="../adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
         
   
   
@@ -2903,7 +2710,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-011-story-scale-framework/" class="md-nav__link">
+      <a href="../adr/adr-011-story-scale-framework/" class="md-nav__link">
         
   
   
@@ -2964,13 +2771,10 @@
       
       
         
-          
-          
-        
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
@@ -2980,7 +2784,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../research/" class="md-nav__link ">
+            <a href="../research/" class="md-nav__link ">
               
   
   
@@ -3005,7 +2809,7 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_9_7" id="__nav_9_7_label" tabindex="">
+              <label class="md-nav__link " for="__nav_9_7" id="__nav_9_7_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
@@ -3029,7 +2833,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../story-structure-diversity-critical-analysis/" class="md-nav__link">
+      <a href="../story-structure-diversity-critical-analysis/" class="md-nav__link">
         
   
   
@@ -3064,7 +2868,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../story-structure-improvement-plan/" class="md-nav__link">
+      <a href="../story-structure-improvement-plan/" class="md-nav__link">
         
   
   
@@ -3099,7 +2903,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../story-structure-implementation-briefs/" class="md-nav__link">
+      <a href="../story-structure-implementation-briefs/" class="md-nav__link">
         
   
   
@@ -3213,7 +3017,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../PROJECT_SETUP/" class="md-nav__link">
+      <a href="../../PROJECT_SETUP/" class="md-nav__link">
         
   
   
@@ -3248,7 +3052,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../OPENSSF_COMPLIANCE/" class="md-nav__link">
+      <a href="../../OPENSSF_COMPLIANCE/" class="md-nav__link">
         
   
   
@@ -3283,7 +3087,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../PYTHON_COMPATIBILITY/" class="md-nav__link">
+      <a href="../../PYTHON_COMPATIBILITY/" class="md-nav__link">
         
   
   
@@ -3352,7 +3156,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../ADRs/" class="md-nav__link ">
+            <a href="../../ADRs/" class="md-nav__link ">
               
   
   
@@ -3403,7 +3207,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../ADRs/adr-template/" class="md-nav__link">
+      <a href="../../ADRs/adr-template/" class="md-nav__link">
         
   
   
@@ -3465,10 +3269,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#amendment-2026-08-10-reviewed-storybook-exemption-for-the-30-day-sweep" class="md-nav__link">
+  <a href="#1-the-two-constraints-and-why-they-pull-against-each-other" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Amendment (2026-08-10): reviewed-storybook exemption for the 30-day sweep
+        1. The two constraints, and why they pull against each other
       
     </span>
   </a>
@@ -3476,55 +3280,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#amendment-2026-07-17-purge-implemented-phase-5-m5-register-item-s10" class="md-nav__link">
+  <a href="#2-the-move-that-resolves-it-stratify-the-plan-by-whether-it-carries-words" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Amendment (2026-07-17): purge implemented (Phase 5, M5 register item S10)
+        2. The move that resolves it: stratify the plan by whether it carries words
       
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#amendment-2026-07-16-access-control-ruling-and-code-reconciliation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Amendment (2026-07-16): access-control ruling and code reconciliation
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#tldr" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        TL;DR
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#context" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Context
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Context">
+    <nav class="md-nav" aria-label="2. The move that resolves it: stratify the plan by whether it carries words">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#problem" class="md-nav__link">
+  <a href="#21-d-6-reported-and-it-corrects-section-2-rather-than-confirming-it" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Problem
+        2.1 D-6 reported, and it corrects section 2 rather than confirming it
       
     </span>
   </a>
@@ -3532,10 +3303,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#why-this-matters" class="md-nav__link">
+  <a href="#22-the-mechanism-now-measured-generate-from-the-structure-never-from-a-sibling" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Why This Matters
+        2.2 The mechanism, now measured: generate from the structure, never from a sibling
       
     </span>
   </a>
@@ -3548,10 +3319,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#decision" class="md-nav__link">
+  <a href="#3-r2-1b-the-decision-program-compiler" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Decision
+        3. R2-1b, the decision-program compiler
       
     </span>
   </a>
@@ -3559,10 +3330,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#consequences" class="md-nav__link">
+  <a href="#4-r1-1-decision-first-abstract-routing" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Consequences
+        4. R1-1, decision-first abstract routing
       
     </span>
   </a>
@@ -3570,10 +3341,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#implementation-notes" class="md-nav__link">
+  <a href="#5-m-3-decision-axis-scheduling" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Implementation Notes
+        5. M-3, decision-axis scheduling
       
     </span>
   </a>
@@ -3581,10 +3352,32 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#alternatives-considered" class="md-nav__link">
+  <a href="#5b-r1-3-and-r2-4-the-two-repulsion-rows" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Alternatives Considered
+        5b. R1-3 and R2-4, the two repulsion rows
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-what-changed-in-one-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. What changed, in one table
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related
       
     </span>
   </a>
@@ -3611,200 +3404,328 @@
   
 
 
-<h1 id="adr-007-raw-llm-output-retention-policy-for-generationjobreport">ADR-007: Raw LLM output retention policy for <code>GenerationJob.report</code><a class="headerlink" href="#adr-007-raw-llm-output-retention-policy-for-generationjobreport" title="Permanent link">&para;</a></h1>
+<h1 id="re-specifying-the-three-gated-architectures">Re-specifying the three gated architectures<a class="headerlink" href="#re-specifying-the-three-gated-architectures" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Status</strong>: Accepted (2026-07-16; see Amendment below)
-<strong>Date</strong>: 2026-06-29</p>
+<p>Opened 2026-08-10. R2-1b, R1-1 and M-3 are marked <code>blocked on D-3</code> in the
+<a href="../diversity-test-register/">diversity test register</a>, but that label is wrong in a way that
+matters: they are not waiting for a metric to be repaired, they are <strong>specified to plan at a layer
+that provably does not contain the property they exist to vary</strong>. Rescheduling them changes
+nothing. This document re-specifies each one, and states the two constraints all three now inherit.</p>
 </blockquote>
-<h2 id="amendment-2026-08-10-reviewed-storybook-exemption-for-the-30-day-sweep">Amendment (2026-08-10): reviewed-storybook exemption for the 30-day sweep<a class="headerlink" href="#amendment-2026-08-10-reviewed-storybook-exemption-for-the-30-day-sweep" title="Permanent link">&para;</a></h2>
-<p>The review-scorecard calibration effort needs a corpus of human-reviewed books
-paired with their original raw generation output (<code>GenerationJob.report</code>) and
-the reviewer's decision. The unqualified 30-day sweep below destroys that
-pairing for any job whose storybook took longer than 30 days to reach a
-decision, one day at a time, so it now carries a narrow exemption:
-<code>supabase/migrations/20260810000000_exempt_reviewed_generation_job_report_from_purge.sql</code>
-amends the <code>purge_generation_job_report</code> pg_cron job in place (same job
-name, unschedule-then-reschedule) to skip a <code>generation_job</code> row when a
-<strong>human</strong> review decision was reached about the storybook it produced, in
-either direction:</p>
-<ul>
-<li><strong>approve</strong>: <code>storybook.status</code> is <code>published</code> or <code>archived</code> (archived is a
-  published book pulled later; both required a human approve).</li>
-<li><strong>send-back</strong>: a <code>sent_back</code> row exists in <code>pipeline_event</code> for that
-  storybook.</li>
-</ul>
-<p>The send-back half deliberately keys on the <strong>event</strong>, not on
-<code>storybook.status = "needs_revision"</code>. A story reaches <code>needs_revision</code>
-without any human seeing it via the <code>draft --auto_reject--&gt; needs_revision</code>
-hop that <code>moderation/pipeline.py</code> drives on a hard classifier BLOCK.
-Exempting on that status would preserve every machine-rejected story's raw
-output indefinitely, which widens this ADR's retention window with no human
-decision to justify it, and fills the calibration corpus the exemption exists
-to serve with rows carrying no reviewer judgment. Only
-<code>publishing/service.py::send_back</code> writes a <code>SENT_BACK</code> event, so it is the
-human-only marker. (Note <code>publishing/state_machine.py</code>'s docstring still
-describes the <code>auto_reject</code> hop as having "no slice-1 caller"; that is stale.)</p>
-<p><code>draft</code> and <code>in_review</code> storybooks with no send-back event, and jobs whose
-<code>storybook_id</code> resolves to no row at all, are not exempt: the default 30-day
-retention this ADR decided still applies to a job that never reached a human. The on-publish
-purge in <code>publishing/service.py::approve</code> (below) is unchanged: it still
-nulls the just-published version's own <code>report</code> immediately, so the
-exemption's practical effect is mostly for a storybook that was sent back
-(and any earlier job/version on the same storybook once any later job on it
-is decided) rather than for the version that ends up published.</p>
-<p><strong>What the retained label actually is.</strong> The corpus this exemption preserves pairs raw output
-with an approve or a send-back, and that is a <em>decision</em>, not evidence that anyone read the
-book. Approval is a single state transition with no attestation, no per-passage
-acknowledgement and no reading-progress requirement (see
-<code>docs/planning/cyo-review-response-2026-08-11.md</code> Q2), so a scorecard calibrated on this
-corpus inherits whatever sampling the reviewer actually did rather than a full read.</p>
-<p><strong>Known ordering hazard: this change is split across two pull requests.</strong> The migration that
-implements the exemption is in PR #684; this ADR amendment is in PR #685. Whichever merges
-first leaves <code>main</code> briefly inconsistent: either the schema skips human-decided jobs while the
-ADR still records an unqualified sweep, or the ADR records an exemption the database does not
-yet perform. Neither state is harmful, but neither is self-describing either, so read the two
-together until both have landed.</p>
-<p><strong>Known documentation debt: the compliance record is in neither PR.</strong>
-<code>docs/compliance/data-retention-policy.md</code> (the <code>generation_job.report</code> row, around line 66,
-and its Section 4 "Enforced by shipped code" list) still states the unconditional 30-day
-purge and marks it <strong>Enforced</strong>, citing only the original
-<code>20260718000000_add_report_retention_purge.sql</code>. That file is out of scope for both PRs, so
-until it is updated the compliance record asserts an enforcement the schema no longer
-performs for human-decided jobs.</p>
-<h2 id="amendment-2026-07-17-purge-implemented-phase-5-m5-register-item-s10">Amendment (2026-07-17): purge implemented (Phase 5, M5 register item S10)<a class="headerlink" href="#amendment-2026-07-17-purge-implemented-phase-5-m5-register-item-s10" title="Permanent link">&para;</a></h2>
-<p>Both halves of the purge described in the TL;DR and Decision sections below are now
-built, closing the "raw output currently persists indefinitely" gap the 2026-07-16
-amendment flagged:</p>
-<ul>
-<li><strong>30-day sweep</strong>: <code>supabase/migrations/20260718000000_add_report_retention_purge.sql</code>
-  registers a daily <code>pg_cron</code> job (<code>purge_generation_job_report</code>) that nulls
-  <code>generation_job.report</code> for jobs in a terminal status (<code>passed</code>, <code>needs_review</code>,
-  <code>failed</code>) whose <code>updated_at</code> is more than 30 days old. <code>queued</code>, <code>running</code>, and
-  <code>awaiting_manual_fill</code> are excluded as non-terminal. The migration guards
-  <code>CREATE EXTENSION pg_cron</code> in an exception-catching block (<code>RAISE NOTICE</code> on
-  failure) and unschedules-then-reschedules by job name, so it never hard-fails on a
-  Postgres without <code>pg_cron</code> and is safe to re-apply. An index on
-  <code>(status, updated_at)</code> backs the purge predicate per this ADR's Implementation
-  Notes.</li>
-<li><strong>On-publish purge</strong>: <code>publishing/service.py::approve</code> (the sole path that sets
-  <code>storybook.status = "published"</code>) nulls the matching <code>generation_job.report</code> (by
-  <code>storybook_id</code> and <code>version</code>) in the same transaction as the publish write, so a
-  rollback of the publish also rolls back the purge.</li>
-</ul>
-<h2 id="amendment-2026-07-16-access-control-ruling-and-code-reconciliation">Amendment (2026-07-16): access-control ruling and code reconciliation<a class="headerlink" href="#amendment-2026-07-16-access-control-ruling-and-code-reconciliation" title="Permanent link">&para;</a></h2>
-<p>The 2026-07-16 traceability review found the code had drifted from this ADR:
-<code>GET /generation-jobs/{id}</code> returned the full <code>report</code> to any guardian in the owning
-family, and the privacy model had been updated to document that reality rather than this
-ADR's admin-only rule. The owner ruled the same day: <strong>the admin reviews generated output
-first, then it reaches the parent</strong>, with a dual-role adult covered by the admin
-capability. The parent may ultimately receive unedited LLM output when the admin approves
-without changes; that is accepted, because by then it has passed the automated gates and
-admin review. Consequences:</p>
-<ul>
-<li>The single-job endpoint is tightened so <code>report</code> is returned only to principals with
-  the admin capability; guardians keep status, stage log, and error information.
-  Implemented on branch <code>claude/app-capabilities-review-wm6gt3</code>.</li>
-<li>Guardians see generated content through the normal post-approval surfaces, never
-  through raw job output.</li>
-<li>The privacy model's guardian-visibility wording is corrected back to admin-only.</li>
-<li>The 30-day/on-publish purge below remains decided and remains unbuilt (Phase 5); raw
-  output currently persists until that job ships, which is tracked as a known gap.</li>
-</ul>
-<h2 id="tldr">TL;DR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h2>
-<p>Purge <code>GenerationJob.report</code> (raw staged LLM outputs) 30 days after job
-completion or when the produced storybook version reaches <code>published</code> status,
-whichever comes first, <strong>except</strong> for a job whose storybook reached a human
-review decision (approve or send-back), which the 2026-08-10 amendment above
-exempts from the 30-day leg. Access to <code>report</code> is restricted to admin/system
-role only. Implementation shipped as a daily <code>pg_cron</code> job
-(<code>purge_generation_job_report</code>, migration <code>20260718000000_add_report_retention_purge.sql</code>),
-not as the Phase 5 RQ worker this ADR originally proposed; see the 2026-07-17
-amendment above.</p>
-<h2 id="context">Context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h2>
-<h3 id="problem">Problem<a class="headerlink" href="#problem" title="Permanent link">&para;</a></h3>
-<p><code>GenerationJob.report</code> stores the full <code>GenerationOutcome</code> JSON, which includes
-the raw text output from each stage of the generation pipeline (Structure, Prose,
-Repair passes). These raw outputs may contain:</p>
-<ul>
-<li>Prompt reflections or elaborations of the concept brief.</li>
-<li>Intermediate story drafts that were rejected by the validator.</li>
-<li>Stage-specific LLM reasoning that is not part of the published story.</li>
-</ul>
-<p>The privacy model in <code>docs/planning/tech-spec.md</code> specifies that raw outputs
-should be "short-lived and admin-only." Currently, <code>report</code> is retained
-indefinitely with no access control at the API level.</p>
-<h3 id="why-this-matters">Why This Matters<a class="headerlink" href="#why-this-matters" title="Permanent link">&para;</a></h3>
-<p>This is a kids' app. Even though the concept brief itself is guardian-authored
-and fictional (protagonist names are not real child names, per <code>generation/pii.py</code>),
-raw multi-stage LLM outputs are a novel data category with unclear long-term
-privacy implications. Minimizing retention reduces risk.</p>
-<h2 id="decision">Decision<a class="headerlink" href="#decision" title="Permanent link">&para;</a></h2>
-<p><strong>Retention window</strong>: 30 calendar days from <code>GenerationJob.updated_at</code> (the
-timestamp of the final status transition), OR when the linked
-<code>StorybookVersion.status</code> reaches <code>published</code>, whichever comes first.</p>
+<h2 id="1-the-two-constraints-and-why-they-pull-against-each-other">1. The two constraints, and why they pull against each other<a class="headerlink" href="#1-the-two-constraints-and-why-they-pull-against-each-other" title="Permanent link">&para;</a></h2>
+<p>Everything below follows from two measured results. Neither was known when the three architectures
+were proposed, and each on its own would be a design note; together they are a dilemma.</p>
+<p><strong>Constraint A, the layer constraint.</strong> A device-agnostic plan does not contain the property readers
+respond to. Three independent blind annotators scoring plans alone ranked our book pairs in the
+<em>opposite</em> order from readers, on every field of two successive vocabularies (D-3). Attaching each
+plan's binding flipped the decisive field into agreement (D-3b, replicated in direction by D-3c).
+The plans describe one fork as "answer the test on its own terms" and another as "fit the piece the
+way the diagram shows"; the arithmetic-against-shape-matching distinction that both readers named
+lives in the <em>binding</em>. A separate result closes the escape route: the fact graph does not carry the
+decision either, since four materially different options at one fork own an identical obligation
+(<code>AL-197</code>, and <code>AL-212</code> arriving at it from the other side).</p>
 <blockquote>
-<p><strong>Amended 2026-08-10</strong>: the 30-day leg no longer applies to a job whose
-storybook reached a human review decision, in either direction. The
-Amendment at the top of this ADR carries the exact predicate, what it
-deliberately excludes, and why; the on-publish leg below is unchanged.</p>
+<p><strong>So: to represent what readers respond to, a plan must reach down to the bound device.</strong></p>
 </blockquote>
-<p><strong>Mechanism</strong>: A periodic RQ job (Phase 5) queries for jobs where:</p>
-<div class="language-sql highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="p">(</span><span class="n">updated_at</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">NOW</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nb">INTERVAL</span><span class="w"> </span><span class="s1">&#39;30 days&#39;</span><span class="w"> </span><span class="k">OR</span><span class="w"> </span><span class="n">linked_version</span><span class="p">.</span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;published&#39;</span><span class="p">)</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="k">AND</span><span class="w"> </span><span class="n">report</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span>
-</span></code></pre></div>
-<p>and sets <code>report = NULL</code> on matching rows. The job runs daily. It does not
-delete the <code>GenerationJob</code> row; only the <code>report</code> column is nulled. The
-predicate above is the original decision as taken; the shipped job additionally
-excludes human-decided storybooks per the 2026-08-10 amendment.</p>
-<p><strong>Access control</strong>: <code>report</code> must not be exposed via guardian or child API
-endpoints. Only internal admin/system paths (e.g. a future ops dashboard or
-support tooling) may read <code>report</code>. Guardian-facing status polling
-(<code>GET /generation-jobs/{id}</code>) returns <code>status</code>, <code>stage_log</code>, and error
-information only.</p>
-<p><strong>Audit log</strong>: When a purge job nulls a <code>report</code>, it logs the job ID and
-purge reason (<code>expired</code> or <code>published</code>) at INFO level with a structured key.</p>
-<h2 id="consequences">Consequences<a class="headerlink" href="#consequences" title="Permanent link">&para;</a></h2>
-<p><strong>Positive</strong>:</p>
-<ul>
-<li>Minimal raw LLM output retained: aligns with privacy model.</li>
-<li>Reduces storage footprint for high-volume generation.</li>
-<li>Limits exposure if the database is compromised.</li>
-</ul>
-<p><strong>Negative</strong>:</p>
-<ul>
-<li>Debugging a generation failure after 30 days is harder; <code>stage_log</code> and
-  <code>error</code> columns remain, but the raw LLM output is gone.</li>
-<li>Requires a scheduled worker (Phase 5); the mechanism does not exist yet.
-  <strong>Superseded 2026-07-17</strong>: it does exist, as a daily <code>pg_cron</code> job rather than
-  an RQ worker, so this consequence no longer holds as written.</li>
-</ul>
-<h2 id="implementation-notes">Implementation Notes<a class="headerlink" href="#implementation-notes" title="Permanent link">&para;</a></h2>
-<p>Phase 5 task: add <code>generation_job_purge</code> to the RQ scheduler with a 24-hour
-interval. The purge query must use an index on <code>(updated_at, status)</code> to avoid
-full-table scans on large deployments.</p>
+<p><strong>Constraint B, the sharing constraint.</strong> Any artifact reused verbatim across books becomes those
+books' shared fingerprint, in its own wording. Three isolated authors writing from one narrative
+contract produced 59 to 64 shared four-grams per 1000 against a budget of 4.0, and 41 to 51
+identical choice menus of 131, where arms reading <em>different</em> contracts scored 1.8 to 2.7 and zero
+(<code>AL-208</code>). Bindings were verified non-colliding and label styles differed across arms, so neither
+explains it. The shared wording does.</p>
 <blockquote>
-<p><strong>Superseded 2026-07-17</strong>: shipped instead as the daily <code>pg_cron</code> job
-<code>purge_generation_job_report</code>, so no RQ scheduler entry exists or is wanted.
-The index shipped as <code>(status, updated_at)</code>, the reverse of the order written
-above, which is the correct order for this predicate: <code>status</code> is matched by
-equality against a terminal-status set and <code>updated_at</code> by range, and a
-composite index is only usable for a range scan when the equality column comes
-first. Read the column order above as an error in the original note, not as a
-divergence in the migration.</p>
+<p><strong>So: the more of a plan is shared across books, the more those books converge.</strong></p>
 </blockquote>
-<p>Interim (Phases 3-4): add the <code>#CRITICAL</code> privacy comment on the <code>report</code>
-column in <code>db/models.py</code> (done in this cleanup) and ensure no guardian/child
-endpoint returns <code>report</code> content.</p>
-<h2 id="alternatives-considered">Alternatives Considered<a class="headerlink" href="#alternatives-considered" title="Permanent link">&para;</a></h2>
+<p><strong>The dilemma.</strong> Constraint A pushes the binding up into the plan. Constraint B punishes every
+sentence the plan holds. Satisfying A by binding the plan makes the plan per-book, which destroys
+the reuse the plan exists for. This is the question put to our reviewers in the brief's section 18,
+and none of the three architectures below names it.</p>
+<h2 id="2-the-move-that-resolves-it-stratify-the-plan-by-whether-it-carries-words">2. The move that resolves it: stratify the plan by whether it carries words<a class="headerlink" href="#2-the-move-that-resolves-it-stratify-the-plan-by-whether-it-carries-words" title="Permanent link">&para;</a></h2>
+<p>The dilemma dissolves once you notice that constraints A and B bite on <strong>different parts of the same
+object</strong>. Constraint B is about <em>wording</em>. Constraint A is about <em>the decision</em>. A narrative contract
+currently mixes both into one artifact and shares the whole thing.</p>
+<p>Split it:</p>
+<table>
+<thead>
+<tr>
+<th>Stratum</th>
+<th>Contents</th>
+<th>Shared across books?</th>
+<th>Why that is safe</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Structural</strong></td>
+<td>topology, fact graph, <code>entry_state</code>, <code>establishes</code>, <code>forbids</code>, typed slot declarations, <code>world_recipe</code> categories</td>
+<td><strong>yes, freely</strong></td>
+<td>Carries no prose that reaches an author's page. <code>AL-197</code> and <code>AL-212</code> show it provably does not determine the decision, which is exactly why sharing it cannot make the decisions repeat. Its long-standing weakness becomes its licence.</td>
+</tr>
+<tr>
+<td><strong>Decisional</strong></td>
+<td><code>choice_semantics</code>, <code>beat_hint</code>, the bound devices, the operation each puzzle asks, the stake each option carries</td>
+<td><strong>no, generated per book</strong></td>
+<td>This is where constraint A locates the property and where constraint B locates the fingerprint. They are the same stratum. Generating it per book satisfies both at once.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The single concrete change this implies:</strong> <code>choice_semantics</code> and <code>beat_hint</code> move out of the
+reusable contract and into the per-book binding step, alongside the devices. Today they sit in the
+contract, which is the shared artifact, and that is precisely the placement <code>AL-208</code> punishes.</p>
+<p>This is cheap. It does not require authoring one contract per book, which is what our pilot did
+without realising that was the load-bearing difference. It requires authoring one contract per
+<em>skeleton</em>, with a hole where the wording goes.</p>
+<p><strong>It is also, as of this writing, not proven.</strong> D-6 tests the weakest version of it (flatten the
+shared wording, rather than remove it) against two alternatives, with the prediction and falsifiers
+fixed in advance. If D-6's <code>verbatim</code> condition does not converge, constraint B is misdiagnosed and
+section 2 should be discarded rather than defended.</p>
+<h3 id="21-d-6-reported-and-it-corrects-section-2-rather-than-confirming-it">2.1 D-6 reported, and it corrects section 2 rather than confirming it<a class="headerlink" href="#21-d-6-reported-and-it-corrects-section-2-rather-than-confirming-it" title="Permanent link">&para;</a></h3>
+<p>D-6 has since run. Constraint B survives: holding graph, bindings, model and isolation constant and
+changing only whether two arms read one contract or two moves convergence from 2.9 to 16.9 shared
+four-grams per 1000, against a budget of 4.0. Sharing a plan does make books converge.</p>
+<p><strong>But the stratification above is necessary and demonstrably not sufficient, and the reason is that
+section 2 put the leak in the wrong place.</strong> Tracing shared grams to the contract field they draw
+on, <code>choice_semantics</code> accounts for well under half; the <code>premise</code> carries as much or more, and
+roughly a quarter of shared grams trace to no contract field at all and are same-model idiom
+(<code>AL-207</code>). Flattening the shared wording bought a 33 percent reduction and left the result at
+roughly three times budget.</p>
+<p>Three corrections follow, and they should be read as amendments to the table in section 2 rather
+than as footnotes to it:</p>
+<ol>
+<li><strong>The <code>premise</code> belongs in the decisional stratum, not the structural one.</strong> It looks structural,
+   it is the story's dramatic question, and section 2 tacitly left it shared. D-6 says that is the
+   single largest traceable channel. A structural stratum that is genuinely wordless holds topology,
+   fact <em>names</em>, typed slots and categories, and no prose at all, the premise included.
+   <strong>Read this as "not the same sentences", not as "a different story every time".</strong> D-6 measured the
+   premise's weight <em>within a shared contract</em>, where it is shared verbatim; section 2.2's finding
+   then shows the threshold is sentence identity. Two books may pose the same dramatic question in
+   separately written words. Indeed the pilot pair that filled at the floor shares 312 shared
+   four-grams per 1000 of premise vocabulary, more than the arm that holds the goal constant does.</li>
+<li><strong>There is an idiom floor no wording intervention reaches, and it has since been measured at
+   3.3 shared four-grams per 1000</strong>, on book pairs sharing nothing but the model and the age band.
+   Two books written by one model from one situation converge on "let out a breath" and "for a long
+   moment" whatever the plan says. <strong>The budget is 4.0, so the floor is below it and the guard is
+   achievable</strong>; an earlier draft of this point implied the floor might make the budget unreachable
+   and that was wrong. What the floor actually establishes is the opposite and more useful thing:
+   the pilot's one-contract-per-book design already sits at 2.9, indistinguishable from books that
+   share nothing, so <strong>not converging is a solved problem</strong> and the entire question is whether reuse
+   can be bought back without giving it up. D-6's repairs sit at 3.5 times the floor, so they failed
+   with a factor of three of headroom still unclaimed.</li>
+<li><strong>Section 2 claimed the dilemma "dissolves". It does not; it narrows.</strong> Stratifying removes the
+   part of constraint B that comes from shared wording, which is most of the traceable part and
+   about two thirds of the total. What remains is a shared <em>situation</em> producing shared idiom, and
+   nothing in this document addresses that. The honest claim is that stratification is a necessary
+   first move whose sufficiency is now measured and inadequate.</li>
+</ol>
+<h3 id="22-the-mechanism-now-measured-generate-from-the-structure-never-from-a-sibling">2.2 The mechanism, now measured: generate from the structure, never from a sibling<a class="headerlink" href="#22-the-mechanism-now-measured-generate-from-the-structure-never-from-a-sibling" title="Permanent link">&para;</a></h3>
+<p>Section 2 says the decisional stratum must be generated per book and does not say how to stop each
+generation converging on the last. That gap has since been closed by measurement, and the answer is
+blunt.</p>
+<p>Two contracts were authored for the same 26-node graph under the same requirement, differing in one
+variable: whether the author could see an existing contract for that graph.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Shared 4-grams per 1000 with the existing contract</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>reference shown, plus an itemised instruction to diverge from it</td>
+<td><strong>126.7</strong></td>
+</tr>
+<tr>
+<td><strong>reference withheld</strong>, format supplied as a written schema</td>
+<td><strong>1.0</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>A 127-fold reduction from a single change to what the author was shown</strong>, with both artifacts
+structurally sound on the same independent checks. Instructing divergence is close to useless here,
+and it is the intervention every proposal reaches for first, including two of the five below.</p>
+<p>So the mechanism is: <strong>generate each book's decisional stratum from the structural stratum alone,
+and never from a sibling book.</strong> The structural stratum is wordless by section 2.1's amendment, so
+there is nothing there to converge on. This is implementable, cheap, and it is the concrete form of
+<code>AL-208</code>'s untested third repair.</p>
+<p><strong>And the bar is lower than section 2.1 implied, which is a correction to this document.</strong> Checking
+the new contract against the one whose fills were already rated turned up something unexpected: the
+pilot's two contracts are <strong>118.4</strong> shared four-grams per 1000, almost exactly as similar as the
+attempt discarded above as unusable, and <strong>their fills sat at the floor, 2.9</strong>. They share vocabulary
+heavily while sharing <strong>0 of 35 <code>choice_semantics</code> strings</strong>.</p>
+<p>Convergence therefore does not work by degree of lexical similarity, which is how 2.1 read it. Two
+authors handed <em>the same sentence</em> converge on it; two authors handed <em>different sentences sharing
+vocabulary</em> do not, even at 118 per 1000. <strong>The threshold is sentence identity.</strong> A per-book
+decisional stratum does not have to be independent of its siblings, only separately written, which
+any separate generation gives for free. Withholding the reference is good practice and is not the
+requirement.</p>
+<p><em>Limit:</em> the pilot's contracts also differ in premise, so sentence-difference and premise-difference
+are bundled in the single available comparison. Which one does the work is untested and is the
+cheapest open question in this line.</p>
+<p><strong>It does not touch the premise, and that is now measured too.</strong> The author who never saw the
+reference independently chose a clock tower, against a reference set in a clocktower. Wording as
+independent as anything in this programme; the same setting. Withholding closes the wording channel
+completely and the premise channel not at all, which means section 2.1's point 1 needs a mechanism
+of its own rather than the same one. A repulsion term over premises is the obvious candidate and is
+where R1-3 should point.</p>
+<p>The re-specifications in sections 3 to 5 are unaffected in substance: each is still unblocked, and
+each still wants the same contract field. What changes is the guard they must pass. <strong>Any of them
+that reuses one structural stratum across books must run the shared-gram check across the whole
+generated set, and must expect to fail it on the first attempt.</strong> That check is the one that stopped
+D-2, no proposal we received includes it, and D-6 shows it is not a formality.</p>
+<h2 id="3-r2-1b-the-decision-program-compiler">3. R2-1b, the decision-program compiler<a class="headerlink" href="#3-r2-1b-the-decision-program-compiler" title="Permanent link">&para;</a></h2>
+<p><strong>As proposed.</strong> Define a minimal DecisionProgram schema, compile 20 candidate decision maps without
+prose, rate them blind, write full prose for the best four to six.</p>
+<p><strong>Why it cannot run as written.</strong> A DecisionProgram without prose is exactly the device-agnostic
+artifact constraint A rules out. Twenty such maps would differ in ways three annotators have already
+shown do not track what readers notice, and the blinded rating would rank them with an instrument
+measured to invert. The proposal's own cheapest experiment is the part that breaks.</p>
+<p><strong>Re-specified.</strong></p>
+<ol>
+<li>A DecisionProgram is a set of <strong>(act, bound device, stake, consequence)</strong> tuples, not a set of
+   abstract decision descriptions. The device is part of the program, not a later substitution.
+   This is the minimum that makes the artifact scoreable at all.</li>
+<li>Compile 20 candidates over one <strong>structural</strong> stratum, generating the decisional stratum fresh
+   for each. No two candidates may share a <code>choice_semantics</code> string; that is checkable
+   deterministically before any rating and costs nothing.</li>
+<li>Score candidates on <strong>solution transfer, tier 1</strong> (<code>scripts/check_solution_transfer.py</code>), which
+   reproduces every reader ranking we hold and uses no taxonomy. Do <strong>not</strong> score on
+   decision-signature overlap, which inverts, and do not score on the operation tiers, which do not
+   generalise off the contract their lexicon came from (<code>AL-211</code>).</li>
+<li>Blinded human rating is still required, but it now confirms a ranking rather than producing one,
+   which is a much cheaper use of rater time.</li>
+<li>Prose for the best four to six, then the full guard battery <strong>including the shared-gram check
+   across all six</strong>, which is the check that stopped D-2 and which no proposal currently includes.</li>
+</ol>
+<p><strong>New falsifier.</strong> Twenty programs compiled over one structural stratum still converge on shared
+four-grams above budget once prose is written. That would mean the structural stratum leaks wording
+too, and section 2 is wrong.</p>
+<p><strong>Cost change.</strong> Lower than proposed, not higher: step 3 replaces most of the rating with a
+deterministic screen.</p>
+<h2 id="4-r1-1-decision-first-abstract-routing">4. R1-1, decision-first abstract routing<a class="headerlink" href="#4-r1-1-decision-first-abstract-routing" title="Permanent link">&para;</a></h2>
+<p><strong>As proposed.</strong> Treat a shape-only graph as a state-routing machine, sample the decision set away
+from the child's prior books, map onto the graph; measure choice-text overlap by embedding.</p>
+<p><strong>Why it cannot run as written.</strong> Two independent failures. The "decision set" is sampled at the
+abstract layer, which constraint A rules out. And the proposed measure, embedding distance over
+choice text, is now known to move for a reason that has nothing to do with decisions: <code>AL-208</code> shows
+choice text converges hard when the plan's wording is shared, so the metric would report repulsion
+working or failing on the basis of how the plan was worded.</p>
+<p><strong>Re-specified.</strong></p>
+<ol>
+<li>Sample the <strong>bound solution chain</strong>, not the abstract decision set. The repulsion target is: the
+   devices this child's prior books used, the operations those puzzles asked, and the answers they
+   resolved to. That is the object D-4 showed reproduces reader judgement.</li>
+<li>The shape-only graph stays shape-only, which is now a <em>virtue</em> rather than an accident: it is the
+   structural stratum, and section 2 licenses sharing it freely.</li>
+<li>Measure with solution transfer against the child's prior books, not with choice-text embedding.
+   Report choice-text overlap too, but as a <strong>convergence guard</strong>, which is what it actually
+   measures.</li>
+<li>The proposer's five books on one abstract skeleton is still the right experiment, unchanged in
+   size.</li>
+</ol>
+<p><strong>New falsifier, replacing the proposer's.</strong> Repulsion on the bound chain succeeds (transfer near
+zero across all five books) while blind readers still call the books decision-repetitive. That would
+mean solution transfer is necessary but not sufficient, and would be the most informative negative
+result available from any row in the register.</p>
+<h2 id="5-m-3-decision-axis-scheduling">5. M-3, decision-axis scheduling<a class="headerlink" href="#5-m-3-decision-axis-scheduling" title="Permanent link">&para;</a></h2>
+<p><strong>As proposed.</strong> Classify every fork by the kind of decision it asks, and schedule kinds per book, so
+decision variety becomes a solvable scheduling problem.</p>
+<p><strong>Why it cannot run as written.</strong> It needs a classifier, and we have now measured what a classifier
+of this kind does. The v1 signature vocabulary inverted against readers. The v2 vocabulary inverted
+again and tied, with inter-annotator kappa comfortably clear of the floor, so the fields are
+labellable and simply do not discriminate. The deterministic version classified 2 of 6 props on an
+unseen contract, failing on negation and polysemy (<code>AL-211</code>). Three attempts, three failures, and
+the third one localises the cause: <strong>the axis is not recoverable from the artifact, by model or by
+word list.</strong></p>
+<p><strong>Re-specified, and this is the largest change of the three.</strong> Stop trying to classify. <strong>Declare.</strong></p>
+<ol>
+<li>Add an explicit field to the narrative contract's decisional stratum: for each fork option, the
+   <strong>operation</strong> it asks (what the reader does to resolve it) and the <strong>stake</strong> it carries. Authored
+   at contract time, when the author already knows, rather than inferred afterwards when nobody does.</li>
+<li>M-3 then becomes a scheduling problem over declared values, which is what it always claimed to
+   be, and it becomes tractable the moment the field exists. Scheduling over declared axes needs no
+   annotator, no kappa study, and no lexicon.</li>
+<li>This subsumes the brief's open question about whether a plan-level representation of "the same
+   operation" is deterministically readable. Our answer is that it is not, and the response is to
+   write it down rather than to read it off.</li>
+</ol>
+<p><strong>Dependency, stated plainly.</strong> M-3 is now blocked on a <strong>schema change</strong>, not on a metric. That is a
+smaller and much better-defined blocker, and the schema change is independently justified: it is the
+same field R2-1b's tuples need and the same field R1-1 repels on. All three re-specifications
+converge on it, which is mild evidence it is the right field.</p>
+<p><strong>New falsifier.</strong> Authors cannot agree on the declared operation for a fork at acceptable
+reliability. This is testable for the cost of one annotation round over an existing contract, and it
+should be run <em>before</em> the schema change, because it is the whole premise. Note that D-3c already
+found the boundary between "derive a value by rule" and "compare against a pattern" contested at
+kappa 0.719 between two annotators, so this falsifier has a live chance of firing and the operation
+vocabulary needs settling first.</p>
+<h2 id="5b-r1-3-and-r2-4-the-two-repulsion-rows">5b. R1-3 and R2-4, the two repulsion rows<a class="headerlink" href="#5b-r1-3-and-r2-4-the-two-repulsion-rows" title="Permanent link">&para;</a></h2>
+<p>These were filed separately from the three above, as "optimising the inverted objective" rather than
+planning at the wrong layer. That is right, and it makes them the cheapest two to fix: <strong>neither
+needs re-scoping, both need their objective swapped.</strong></p>
+<p><strong>R1-3, repulsive generation via obligation contracts.</strong> Feed the child's prior action semantics
+into contract generation as a repulsion penalty. Two changes:</p>
+<ol>
+<li>Repel on the <strong>bound solution chain</strong> and score with solution transfer tier 1, not on action
+   semantics, which are a device-agnostic artifact and which D-3 shows do not carry the property.</li>
+<li><strong>Add the shared-gram guard across the generated set.</strong> The proposal has no convergence check at
+   all, and its own stated failure mode ("repulsion exhausts natural choices and produces bizarre
+   action semantics") is not the one D-6 predicts it will hit first.</li>
+</ol>
+<p>R1-3 has an advantage none of the others has, and it is worth naming because it was invisible before
+D-6: <strong>it generates a fresh contract per book by construction.</strong> That is precisely the untested third
+repair from <code>AL-208</code>, so R1-3 doubles as the experiment that would settle it. It should probably run
+before R2-1b for that reason alone. Note it inherits section 2.1's caution: per-book generation still
+leaves the premise and the idiom floor unless the premise is varied too.</p>
+<p><strong>R2-4, portfolio generation with semantic repulsion.</strong> Generate K decision programs per request,
+select on quality-minus-novelty before any prose. The selection layer is sound; its novelty term is
+measured against a signature vocabulary that inverts. Replace the novelty term with solution
+transfer tier 1 plus, once prose exists for the selected candidates, the shared-gram rate. Both are
+deterministic, so the selection stays cheap, which was the proposal's main attraction.</p>
+<p><strong>One warning specific to R2-4 that D-6 sharpens.</strong> Selecting K candidates from one generator and
+keeping the most novel does not escape the idiom floor: every candidate is the same model writing
+the same situation, and the floor is a property of that generator rather than of the candidates.
+A portfolio can only select away variance it actually produces, and D-6 measured roughly a quarter
+of the convergence to be generator idiom that no plan-level choice touches.</p>
+<h2 id="6-what-changed-in-one-table">6. What changed, in one table<a class="headerlink" href="#6-what-changed-in-one-table" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Was blocked on</th>
+<th>Is actually blocked on</th>
+<th>Cheapest unblocking step</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R2-1b</td>
+<td>D-3, a metric</td>
+<td>nothing, once its programs carry bindings</td>
+<td>re-scope to bound tuples, score with D-4 tier 1</td>
+</tr>
+<tr>
+<td>R1-1</td>
+<td>D-3, a metric</td>
+<td>nothing, once it repels on the bound chain</td>
+<td>swap the repulsion target and the measure</td>
+</tr>
+<tr>
+<td>M-3</td>
+<td>D-3, a metric</td>
+<td>a <strong>schema field</strong>, plus a reliability check on it</td>
+<td>one annotation round on declared operations</td>
+</tr>
+</tbody>
+</table>
+<p>None of the three is blocked on repairing the signature vocabulary, which is the thing the register
+said they were waiting for. Two are unblocked by re-scoping alone. The third is blocked on something
+much smaller than it looked, and all three want the same new contract field.</p>
+<h2 id="related">Related<a class="headerlink" href="#related" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>Never retain raw output</strong>: Simpler, but loses debugging capability entirely.
-  Stage logs and validator reports are insufficient for diagnosing subtle LLM
-  coherence failures.</li>
-<li><strong>Shorter window (7 days)</strong>: More aggressive but makes debugging a generation
-  failure over a weekend harder. 30 days is a reasonable balance.</li>
-<li><strong>Encrypt <code>report</code> at rest</strong>: Adds operational complexity (key rotation) for
-  marginal gain given the data is already inside the encrypted database volume.
-  Not adopted for Phase 5; revisit if regulatory requirements emerge.</li>
+<li><a href="../diversity-test-register/">Diversity test register</a>, rows R2-1b, R1-1, M-3, D-3, D-4, D-6</li>
+<li><a href="../cyo-generation-research-brief-2026-08-10/">Research brief</a>, Part II sections 14 to 16g</li>
+<li><a href="../authoring-lessons-log/">Authoring lessons log</a>, <code>AL-197</code>, <code>AL-208</code>, <code>AL-211</code>, <code>AL-212</code></li>
 </ul>
 
 
@@ -3838,7 +3759,7 @@ endpoint returns <code>report</code> content.</p>
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 29, 2026 05:19:06 UTC">June 29, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 11, 2026 14:38:55 UTC">August 11, 2026</span>
   </span>
 
     
@@ -3915,10 +3836,10 @@ endpoint returns <code>report</code> content.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

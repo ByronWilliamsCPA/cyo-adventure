@@ -4183,6 +4183,13 @@ validator treats a missing entry there as a build failure.</p>
 <td>7</td>
 <td>decision</td>
 </tr>
+<tr>
+<td>UW-A54</td>
+<td><strong>ADR-005 overstates the control it implements: correct the approval language.</strong> The ADR claims mandatory approval delivers "a hard guarantee that a parent saw every story" and estimates review at "a few minutes". The implemented surface presents flagged passages, then every reachable passage in order, then unreachable ones, and approval is a single state transition with no attestation, no per-passage acknowledgement and no reading requirement. At the oldest band the median whole-graph artifact is roughly 42 times the words on the path a child reads (median 42,700, maximum 118,475, against about 2,800), so "a few minutes" is achievable only as flagged passages plus sampling, which the ADR does not say. Supportable claim: publication requires guardian approval after the review interface has presented the book and its review evidence. Consequences beyond wording, and the reason this is not merely editorial: deterministic graph and state validation must carry more of the safety burden, prose obligation checks must produce a strong review worklist, and high-risk uncertainty should block publication rather than rely on an improbable full read-through. Raised by the third external review.</td>
+<td>005</td>
+<td>4b</td>
+<td>decision</td>
+</tr>
 </tbody>
 </table>
 <h2 id="cluster-b-debt-register-phase-linkage">Cluster B: debt-register phase linkage<a class="headerlink" href="#cluster-b-debt-register-phase-linkage" title="Permanent link">&para;</a></h2>
@@ -5077,6 +5084,588 @@ substantially the same work under different headings. Do not triple-book.</p>
 <td>CI hygiene</td>
 <td>unscheduled</td>
 </tr>
+<tr>
+<td>UW-C126</td>
+<td><code>AL-193</code> Strict-clean does not mean approvable: three pilot drafts passed <code>check_skeleton --strict</code> with zero findings and all three failed independent adversarial review on defects no deterministic layer measures. Make adversarial critique a mandatory stage of the rebuild drafting workflow (draft, strict gate, in-cell audits, adversarial review, promotion PR), and ship the pilot's structural generator harness as a first-class authoring aid. Closes when the drafting workflow doc exists and wave 1 of the rebuild runs through it.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C127</td>
+<td><code>AL-194</code> The outcome gates read kind/valence tags, not outcomes; all three pilot drafts passed PL-24, the walk floor, and the spread audit on tag artifacts. Build the tag-honesty audit: outcome-keyed rubric in <code>audit_ending_valence.py</code> checked against ending beat text, same-terminal-event detection across an ending set, <code>role=</code> decoupled from valence. Closes when the audit runs in the drafting loop and the three pilot tag-laundering cases fail it.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C128</td>
+<td><code>AL-195</code> Choice-position fate bias and consequence-free choices are invisible to the gate: position-3 traps at 77% in one pilot draft, a zero-risk always-first-option win line in another, 25 decisions with byte-identical sibling reachable-ending sets, and staged merges collapsing 98 ancestors while respecting the direct in-degree cap. Add consequence checks to strict: positional skew ceiling, argmax-position walk test, identical-sibling-outcome flag, k-hop funnel metric; generators seeded-shuffle option order. Closes when the checks exist and both large pilot drafts fail them for the documented reasons.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C129</td>
+<td><code>AL-196</code> Merge-node beat contradictions reproduce systematically under generation (eight hard cases per large pilot draft). Lint in-degree &gt;= 2 nodes: presupposed facts checked against every inbound path's beat union, hedging-disjunction detection in terminal beats; mandatory human beat-vs-parents review of shared endings until the lint exists. Closes when the lint lands in the drafting workflow.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C130</td>
+<td><code>AL-197</code> The strict gate and the catalog admission audits are disjoint: a strict-passing draft was a 0.065 near-clone of its cell-mate, survived the spread audit by one dubious tag, and was a slotless <code>production_eligible: true</code> shell that would take the legacy fill path. Wire the clone and outcome-spread audits into the drafting loop with the candidate in its target cell, and make <code>--strict</code> fail a production-eligible shell without slots and a contract sidecar. Closes when both are enforced in the workflow.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C131</td>
+<td><code>AL-198</code> Strict constraint couplings dictated pilot draft shape: CG-3 stop ceiling vs band word means (zero-headroom stops), CG-2 exact (3,3) banning binary dilemmas, the 25% gamebook endings fraction forcing terminal-leaf padding, PL-26's unmotivated gamebook 4.0, PL-24's kind ceiling quantizing below five endings. Owner calibration review before rebuild wave 1 deciding each coupling explicitly, plus the 90%-of-cap generator headroom discipline with a strict warning at 98%. Closes on the recorded rulings and the headroom warning landing. Scope expanded 2026-08-09 to twelve items with per-item recommendations (review Part 8): adds PL-23's sub-200-word no-op regime, a one-shallow-ending allowance in depth qualification, distinct-predecessor in-degree counting, kid-band walk-floor posture, CG-1's dead-letter gamebook range, and the ADR-011 PL-25 annotation.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C132</td>
+<td><code>AL-199</code> The new-skeleton spec lives in a CLI docstring while authoring docs omit or contradict it (CG-3 composition undocumented, two senses of 'satisfying', FILL quoting folklore, hand-copied briefs drifting from code twice during the pilot). Write the strict-bar authoring reference in the cyo-author skill, generated from <code>band_profile.py</code>/<code>choice_grammar.py</code>, and generate per-cell drafting briefs from code. Partially delivered in <code>177a4c6</code> (<code>generate_drafting_brief.py</code> plus the skeleton-format.md strict-bar section and corrected tables); closes when wave 1 briefs are actually produced by the generator.</td>
+<td>doc</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C133</td>
+<td><code>AL-200</code> The authoring-lessons mandate does not say who lands lessons from delegated runs; six pilot subagents each independently re-derived that they must not edit the log. Amend CLAUDE.md's authoring-lessons section: delegated runs return candidate lessons, the orchestrating session lands them. Closes on the CLAUDE.md amendment.</td>
+<td>doc</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C134</td>
+<td><code>AL-201</code> Same-skeleton pairs have a PS floor of 0.50 and the empirical best case (three isolated fills, maximally different bindings) landed 0.59-0.60 against the 0.70 repeat threshold while reading as 'one story, three costumes'; a beat-identical triple passes every lexical gate (body trigram Jaccard 0.03). Add skeleton id plus beat-variant fingerprint to the family-scoped anti-repeat guard, adopt SQ-11 variant beat pools on high-salience nodes, and frame same-skeleton siblings as a series in the product. Closes when the structural guard signal ships and the SQ-11 ADR cites this experiment.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C135</td>
+<td><code>AL-202</code> Theme binding leaves <code>metadata.themes</code> stale ('winter' on a beach book): wrong library metadata, wrong matching signal, and 0.20 of PS pinned for every same-skeleton pair. Re-derive or strip themes at binding time with per-binding tags in the contract, plus an acceptance check that no legacy tag survives. Closes when bound skeletons carry binding-correct themes.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C136</td>
+<td><code>AL-203</code> Beats encode un-slotted world facts (weather, item anatomy, helper-species verbs) and the fill contract's reskin rule is ambiguous; three authors resolved identical conflicts three ways and one binding produced 'fireflies chirped' with no gate firing. Slot or neutralize world-fact surfaces at parameterization, add a binding-consistency lint, and sharpen the fill contract with the observed cases. Closes when the lint exists and the fill contract carries the worked examples.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C137</td>
+<td><code>AL-204</code> Every FILL-directive consumer fails open on a parse miss (four pipeline modules skip the node; three private regex copies drift free), so any format evolution the regex misses silently disables substitution, fidelity, and leak scanning at once. Total parse (blocking L1 finding on unparseable FILL), consumer lockstep test, collapse the private copies. Prerequisite 1 of the narrative redesign proposal; closes when the lockstep test exists and the copies are gone.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C138</td>
+<td><code>AL-205</code> Reentrant nodes re-render their prose verbatim on every loop and the beat stages established facts as fresh news (<code>the-lost-mitten</code> n_start; generalizes to every hub topology). Graph-derived required <code>reentrant</code> flag plus a reentry contract in the fill prompt. Ship-regardless item of the narrative redesign proposal; closes when the flag is validated and the fill prompt carries the contract.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C139</td>
+<td><code>AL-206</code> Free LLM invention diversifies pairwise while converging collectively (identical retcon, retrieval, and reveal devices in 3 of 3 isolated fills; ritual-phrase leaks in labels and dialogue), invisible to pairwise margins and lexical gates. Add sibling-scoped convergence and label/dialogue n-gram checks to the drafting loop. Closes when both checks exist and re-flag the pilot's arm C corpus.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C140</td>
+<td><code>AL-207</code> locked_outcome pinned the twist mechanism and all three arm B twists converged on it; the only unpredicted twist in the pilot changed mechanism. Select the ending mechanism per request from the contract's resolution_space via the selection vector; locked_outcome locks kind, valence, and affect only. Closes when the selector exists and a rerun passes the twist margin.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C141</td>
+<td><code>AL-208</code> Converged bibles cap the format from upstream: two of three pilot bibles carried near-identical device kinds and failed the clue margin. Enforce cross-binding device-kind diversity at bible generation (Mechanic Divergence at bind time with re-draw, wider device taxonomy). Delivered on PR #661 (<code>check_bible_diversity.py</code>), NOT yet merged: the third pilot's re-authored bibles scored 0.90-0.92 per pair and the clue-analog margin passed on all three pairs (proposal section 12). Verify on merge and close then.</td>
+<td>now</td>
+<td>verify</td>
+</tr>
+<tr>
+<td>UW-C142</td>
+<td><code>AL-209</code> The obligation contract is a shared prompt: concrete devices and vocabulary in contract strings froze the scene-device layer and seeded verbatim cross-book prose in the clocktower pilot. Contract-hygiene rules (device-abstract obligations, set-pieces as invention slots), plus a length-normalized sibling-gram budget wired into the fill loop. Closes when the hygiene pass lands on both pilot contracts and the gram check gates a rerun.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C143</td>
+<td><code>AL-210</code> kind_must_be specs consume MD headroom invisibly (0.07 over tau in the clocktower pilot; frozen categories scored 0-2 of 4 distinct downstream). Per-category forced-vs-free reporting in check_bible_diversity and a free-headroom floor in NC review. Delivered on PR #661 (<code>--contract</code> headroom report) plus the hygiene-passed clocktower contract, NOT yet merged: one forced kind remains and every multi-entry category holds &gt;= 2 free kinds (proposal section 12). Verify on merge and close then.</td>
+<td>now</td>
+<td>verify</td>
+</tr>
+<tr>
+<td>UW-C144</td>
+<td><code>AL-211</code> Choice menus and ending titles are the top recognition channels and band-scaling is real (score 2.0 at 10-13 vs 2.5 at 3-5 with better devices): generate all ending titles, path-check title props, add a menu-surface diversity directive and margin, and scale margins and budgets with band. Closes when the third pilot runs with the menu margin and band-scaled budgets.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C145</td>
+<td><code>AL-212</code> Same-model idiom convergence survives the 4-gram check: after a token-level revision round all five watched staging-idiom families reappeared in paraphrase across all three third-pilot books. Add an idiom-family layer to the sibling check (stem or embedding matching over a curated trope watch list, or a rater sample on the convergence list), budgeted per band.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C146</td>
+<td><code>AL-213</code> Fact strings are shared prompt surface: three residual concrete fact descriptions seeded cross-book prose and one contradicted the freed cipher-form slot in the third pilot. Extend contract hygiene to every prose-bearing contract string and add an NC review scan of fact strings for device-category kinds and slot-supplied nouns.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C147</td>
+<td><code>AL-215</code> The gate-revise-regate fill loop closed a 20.4 to 1.2 per-1000 gram gap in one agentic round with no human repair. Wire <code>check_sibling_fills</code> (plus title and menu checks) into the generation fill loop as a blocking gate with an automated revision pass, capped rounds before human flag.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C148</td>
+<td><code>AL-216</code> With devices, prose, menus, and titles varied, recognition still lands at node 4 via choice-menu semantics and scene-function order: sibling fills of one skeleton are structurally a series. Owner decision: series framing and an at-most-one-binding-per-reader assignment policy, and/or per-fork semantics pools rotated at selection time; catalog diversity comes from more skeletons.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C149</td>
+<td><code>AL-217</code> Node obligations are proved coherent but never verified against the prose: a fill decoded the cipher at a node whose contract forbids <code>cipher_decoded</code>, voiding a branch, and passed every gate because NC checks run pre-prose. Add a fill-vs-contract fact audit (prose vs <code>establishes</code> and <code>forbids</code> per node) as an automated review-panel stage.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C150</td>
+<td><code>AL-218</code> Model tier moves prose quality (blind craft 4.9 / 4.0 / 2.2 across frontier, Sonnet, Haiku) but not sameness (recognition 2.5 for both frontier and Haiku). Set the fill model on prose grounds with Sonnet as the floor plus a reading-level directive for its upward drift, and assign Haiku the mechanical roles it passed cleanly (selection derivation, revision rounds, triage).</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C151</td>
+<td><code>AL-219</code> Isolated quality review is systematically more forgiving than comparative review (same books: 2.2 and rewrite vs 3.0 and light-edit). Show a sibling fill beside the story under review in the approval surface and give the automated panel a comparative rubric.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C152</td>
+<td><code>AL-220</code> Gate-clean is not publishable: all nine tier books passed the full gate and three were judged unpublishable for tense instability, an asserted-not-performed puzzle, and narrator moral tags, none of which any check sees. Add deterministic prose-craft detectors calibrated to separate the observed tiers, and document that the gate certifies validity rather than quality. Delivered on PR #661 (<code>scripts/check_prose_craft.py</code>, 27 tests) reproducing the blind rater's ship verdict on the pilot corpus, NOT yet merged; out-of-sample validation is tracked separately as <code>UW-C153</code>. Verify on merge and close then.</td>
+<td>now</td>
+<td>verify</td>
+</tr>
+<tr>
+<td>UW-C153</td>
+<td><code>AL-221</code> The prose-craft detector thresholds were tuned on the same nine books they are reported to separate, so the perfect separation is in-sample fit rather than predictive power, and two thresholds are already known fragile (told-emotion ranks one unpublishable book below a shippable one; the moral-tag budget of zero is unfalsifiable on this corpus). Validate against a held-out corpus from a different skeleton and band, re-tune on the union, and keep the detectors advisory-only until then.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C154</td>
+<td><code>AL-222</code> Anti-repeat history is family-scoped with a 20-row window and no per-child skeleton history exists, which triples the second-request repeat rate at three children and hides 81% of a child's own band reading. Scope selection history and weighting to the requesting child using the already-indexed <code>StoryRequest.profile_id</code> and <code>StorybookAssignment.child_profile_id</code>, widen or drop the window, and close the catalog-visibility recency leak. Recovers 25 to 30% of required catalog for no new content.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C155</td>
+<td><code>AL-223</code> Catalog scales with per-child lifetime consumption, not user count, so catalog build is bounded capital: about 130 skeletons at 0.5 stories per child per month, 408 at 1, 816 at 2, against 57 today. Instrument per-child stories per month per band, the single unmeasured number that sets the target, then size the catalog against it.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C156</td>
+<td><code>AL-224</code> Every populated cell holds 3 to 4 skeletons, so a child exhausts a cell by their 4<sup>th</sup> request and repeats become certain. Fund catalog depth per cell, weighted by tenure times rate times cells, ahead of any pipeline replacement; revisit the skeleton-free alternatives only if catalog and scoping fixes fail.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C157</td>
+<td><code>AL-225</code> SAFE-14 is an empty stub so <code>safety_flagged</code> is a constant, yet it was reported as safety evidence seven times; the real pre-LLM denylist floor runs on the theme-binding path only. Stop reporting it as measured, mark it a stub in results tables, and document that gate strictness is caller-parameterized (<code>scale</code>, <code>enforce_grammar</code>) so cross-path comparisons declare their settings.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C158</td>
+<td><code>AL-226</code> The strict authoring bar passes 2 of 61 catalog skeletons (0 of 11 at 10-13) and the pilots' control skeleton is a non-production-eligible off-matrix seed the selector never serves. Decide whether the strict bar is the production bar (promotion would retire 97% of the catalog) and re-baseline diversity work on a production-eligible skeleton in a real cell.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C159</td>
+<td><code>AL-227</code> Length demand concentrates on medium while the catalog is flat at 3 to 4 per cell, and cells are hard partitions (0 of 58 production skeletons carry a wildcard length), so short and long surplus is stranded and the medium cell binds in every band. Author against the demand curve: first 6 to 12 skeletons per band go entirely to its medium cell, and measure the real length distribution to replace the assumed regimes.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C160</td>
+<td><code>AL-228</code> Kid auto-approve hardcodes length=SHORT for every band, steering unchosen requests into the thinnest-demand tier and producing a guaranteed 422 for teen-band children because 13-16 and 16+ have no short cell by design; ADR-011 band-by-length is also unvalidated at intake so a long 3-5 or short 13-16 request fails late. Make auto-approve length band-aware and demand-weighted, add band-by-length validation to the approve and authored-create bodies, and gate the frontend length options by band.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C161</td>
+<td><code>AL-229</code> Bounded mutation of one parent is not a catalog multiplier: every mutant preserves 100% of the parent's beat directives, distances land 0.0000 to 0.0064 against a 0.05 floor, and a reader lands the same-book verdict at position 3. Withdraw per-request mutation as a diversity lever, fund catalog depth, and test cross-skeleton recombination separately if a structural multiplier is still wanted.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C162</td>
+<td><code>AL-231</code> Sibling-convergence measurements are invalid when one author writes both arms (302 grams per 1000 on first draft, 70.4 after two de-convergence passes) and recognition ratings are not blind when the rater sees the generation plan. Define an independence protocol: one isolated author per arm, a rater blind to the plan, and an explicit author-scored label where isolation is impossible.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C163</td>
+<td><code>AL-188</code> <code>AL-189</code> <code>AL-190</code> <code>AL-191</code> <code>AL-192</code> Schema and skeleton review findings from the 2026-08-09 sweep (word-table drift, slot and contract grammar gaps, role semantics, strict-bar definition, catalog census). Delivered on PR #661 and its companion docs PR; these rows exist so the lessons stay cited while their delivery is unmerged. Closes when both PRs land and the lesson rows flip to <code>applied</code> on the merge SHAs.</td>
+<td>now</td>
+<td>verify</td>
+</tr>
+<tr>
+<td>UW-C164</td>
+<td><code>AL-214</code> Per-binding <code>label_style</code> closed the menu-surface recognition channel (0 shared menu frames, label voices scored 3.0). Delivered on PR #661 (NC-7 <code>label_style</code>) and the hygiene-passed contract; unmerged. Closes when the PRs land and <code>AL-214</code> flips to <code>applied</code> on the merge SHA.</td>
+<td>now</td>
+<td>verify</td>
+</tr>
+<tr>
+<td>UW-C165</td>
+<td><code>AL-230</code> <code>structural_distance</code> and the <code>TAU_CELL</code> floor were vindicated by the mutation pilot rather than refuted, but the claim rests on a proposal section rather than a code artifact and the pre-registered falsification condition was overridden without saying so. Re-state the pre-registration handling explicitly, and keep the metric out of any perceived-diversity gate.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C166</td>
+<td><code>AL-232</code> A field-enumerating admissibility bar exempts every field it omits: contract variants passed the 2-of-4 field bar at 26/26 nodes while <code>beat_hint</code>, the instruction a fill agent reads most directly, stayed at or above 0.85 similarity to the shipped contract at 10 of 26 nodes and was byte-identical at one ending. Adopt <code>check_variant_divergence.py</code> as the admissibility gate for multi-contract skeleton work, and require every enumerating bar in the authoring tooling to state its uncovered fields.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C167</td>
+<td><code>AL-233</code> Obligation variance is refuted (recognition position 2 against a margin of past position 5, distinctness 2.0 against a 2.5 control, all quality guards green), and the refutation shows the fingerprint is topology: a choice's destination is a graph edge, so no re-framing of what a node is FOR changes what a reader perceives at a fork. Stop funding format fixes inside one graph; fund catalog depth per cell (see UW-C156, UW-C159) and evaluate cross-skeleton recombination. Record the constraint in the drafting guide.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C168</td>
+<td><code>AL-234</code> 13 of 35 skeleton choice labels carry no slot token and are byte-identical across every binding, and NC-8 covers ending titles only, so the channel already named as the residual recognition leak (AL-216) is unchecked; two isolated authors independently produced the same rewrite of one such label. Extend the NC-8 unslotted warning to choice labels and add a per-binding label-divergence check at contract time.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C169</td>
+<td><code>AL-235</code> Mechanic Divergence is category-scoped: it certified two bibles at MD 0.978 while a hint carrier in one and a cipher form in the other were the same long-short code, which the blind rater caught unaided. Add a cross-category collision pass to <code>check_bible_diversity</code> so a device that moves category cannot pass as divergent.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C170</td>
+<td><code>AL-236</code> A calibrated threshold carries a protocol stage: gating un-revised output against the post-revision 4.0 grams-per-1000 budget reported a false guard failure, where the matched-stage comparison showed the treatment pair less convergent than the control. Also, <code>check_sibling_fills --check</code> gates grams only, leaving the 0-menu-frame margin unenforced. State the stage beside every calibrated threshold, report both stages for both arms in comparison batteries, and gate menu frames explicitly.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C171</td>
+<td><code>AL-237</code> Parallel authoring agents leak through a shared work directory (one arm's <code>ls</code> exposed the sibling's filenames) and identical briefs still yield asymmetric effort (one arm volunteered a reading-level revision pass the other did not, leaving the books differing in sentence rhythm for non-treatment reasons). Give each agent its own output directory, specify revision passes explicitly for all arms, and audit tool calls rather than accepting self-reported isolation.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C172</td>
+<td><code>AL-238</code> A signature metric scored by its own author is not a measurement: the same two contracts score 0.179 and 1.000 on tradeoff reuse depending only on who annotated them. Require annotation independent of authoring for any decision-diversity metric, and treat this as a hard constraint on the proposed decision-program compiler, which would otherwise emit and be scored on the same signatures.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C173</td>
+<td><code>AL-239</code> Instrument defects found by running it: a free-text action field makes the exact-repetition bar vacuous (0 of 35 string matches against 34 of 35 same-decision matches), and single-option nodes are not decisions yet sat in the denominator hiding forks at 1.00 overlap. Hard bar now compares the normalized act; single-option nodes excluded; worst-fork gate added alongside the mean.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C174</td>
+<td><code>AL-240</code> Two authoring attempts on one fixed graph produced 28 of 28 options a blind annotator called the same decision, suggesting the graph plus fact-graph closure pins the decisions rather than authorial habit. Reframe the topology finding: topology pins the decisions and the decisions are the fingerprint. A decision-program compiler must generate facts and decisions together; replicate on a production-eligible graph before treating the magnitude as settled.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C175</td>
+<td><code>AL-241</code> Stopping at the point the intervention could not be constructed saved two fills and a rating and produced a sharper result than a null rating would have. Add a delivery check to every intervention spec: independent verification that the treatment differs from the control on the dimension it claims to vary, before any measurement is spent.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C176</td>
+<td><code>AL-242</code> A stale docstring claiming a state-machine hop had no caller drove a retention predicate that would have preserved every machine-rejected story's raw output indefinitely. Docstring fixed and the exemption keyed on the human-only SENT_BACK event; audit other 'no caller' claims in the codebase for the same rot and require a <code>#VERIFY</code> on any such assertion.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C177</td>
+<td><code>AL-243</code> Independent annotators following a written convention reach kappa 0.76 to 0.82 on decision signatures, so signature metrics are viable and the earlier swing was conflict of interest rather than unreliability. Fund independence and convention versioning rather than vocabulary richness, and build a v2 vocabulary from the three gaps both annotators raised unprompted.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C178</td>
+<td><code>AL-244</code> A deterministic branch-obligation comparison reproduced two findings that had each cost a full measurement round, running pre-prose in milliseconds. Adopt it as the standing delivery check before any fill, and calibrate its threshold once a genuinely divergent contract exists, since it is currently validated only against known-bad pairs.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C179</td>
+<td><code>AL-245</code> A fill shell that pre-binds choice labels leaked the control book's vocabulary into the treatment and cost a full authoring and rating round; every guard passed while sibling grams hit their highest ever recorded value. Make the shell builder emit every author-controlled string as a FILL directive and refuse to emit label prose.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C180</td>
+<td><code>AL-248</code> Two blind raters independently found the same missing instrument item, whether solving the first book hands you the answer to the second, and both reported that the two structural questions saturate and carry no signal when the books share a skeleton. Add the solution-transfer item as primary and demote the saturated ones.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C181</td>
+<td><code>AL-249</code> RETIRED, no work to schedule. Both raters reported that most forks reconverge with no differing consequence and proposed a per-book illusory-choice gate; the owner ruled that loop-back exploration is a convention of the form rather than a flaw, on the tabletop analogy that sweeping every room is the play. Kept as a row so the id resolves and the ruling is discoverable. See <code>decision-variance-experiment-spec-2026-08-10.md</code> section 9.9.</td>
+<td>now</td>
+<td>done</td>
+</tr>
+<tr>
+<td>UW-C182</td>
+<td><code>AL-251</code> The v1 signature vocabulary is deaf at the forks readers call decisive and follows scenery at the entry forks, which is why it inverts the reader ordering. Add a reasoning-kind dimension (compute, match, recall, infer, negotiate, exert) and extend Rule 2 of the labelling principle upstream to whoever writes <code>choice_semantics</code>.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C183</td>
+<td><code>AL-252</code> Varying the act a choice asks for reduces perceived decision repetition, thinly, and solution transfer is the item that detects it. Rebuild the diversity metric around solution transfer rather than action-family overlap, and retest on a production-eligible graph with the two bundled treatment changes separated.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C184</td>
+<td><code>AL-253</code> Decision signatures were being annotated over contracts, which do not contain the puzzle mechanic readers respond to; enriching the vocabulary changed nothing because the artifact was wrong. Move annotation to contract plus binding, and re-specify the three proposed architectures that schedule decision variety at the contract layer.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C185</td>
+<td><code>AL-254</code> Reasoning-kind annotated with the binding visible is the only signature field that tracks reader judgement, but its decisive boundary (is decoding a symbolic notation COMPUTE or MATCH) is unwritten, and two annotators split on it, costing most of the effect. Write the boundary, and retest validity on unseen artifacts rather than on the plans that produced the hypothesis.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C186</td>
+<td><code>AL-255</code> A failed anchor-based edit chained beside a git commit in one shell invocation produced a pushed commit whose message described content absent from the diff. Separate edits from commits and verify the staged diff against the message, since these commits are the evidence record for experiments.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C187</td>
+<td><code>AL-257</code> Same-model convergence reaches proper nouns and titles under strict isolation: three authors independently chose one companion name and one book title, with no leak in any input for the names and a shell <code>id</code> leak for the title. Neutralise every identifying field in a fill shell, and add a cross-arm name and title collision check before any rating, since the shared-gram measure cannot see it.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C188</td>
+<td><code>AL-258</code> Sharing one narrative contract across books makes its own wording the fingerprint: 59 to 64 shared 4-grams per 1000 and 41 to 51 identical choice menus, against 1.8 to 2.7 and zero when arms read different contracts. Neutralise or per-book generate <code>choice_semantics</code> wording, and treat this as a constraint on every architecture built on a reusable plan object.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C189</td>
+<td><code>AL-259</code> Three 101-node books landed at Flesch-Kincaid 8.1 to 8.4 against a 5.5 target, with 81 to 85 advisory warnings each and <code>blocked=False</code> on all three. Make aggregate reading level blocking, and test model tier against scale before attributing the drop to the cheaper tier.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C190</td>
+<td><code>AL-260</code> A rarity threshold calibrated over 24-prop bindings inverts inside a 2-prop chain, where nearly every word qualifies as rare, and reported three different devices as one. Judge rarity over the corpus a threshold was calibrated on, and audit every measure reusing a calibrated constant on a filtered input.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C191</td>
+<td><code>AL-261</code> A word-list classifier for puzzle operation reproduced three known reader rankings on its home artifacts and classified 2 of 6 props on an unseen contract, failing on negation and polysemy. Declare the operation as a narrative-contract field rather than inferring it from prose, and stop building lexical proxies for semantic properties here.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C192</td>
+<td><code>AL-262</code> Deriving choice semantics from the fact graph destroys the fork: four materially different options at one decision own the same obligation and flatten to one sentence. The cheapest-looking D-2 repair is unavailable, and any flattening repair must be authored under a stated rule and tested rather than derived.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C193</td>
+<td><code>AL-263</code> 2 of 61 catalog skeletons carry a narrative contract, the artifact every measure and every proposed architecture needs, at roughly 1.7KB per node. Track contract coverage as a catalog metric, and do not scope a depth purchase until contract sharing is settled.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C194</td>
+<td><code>AL-264</code> Contract sharing confirmed as a cause: 2.9 to 16.9 shared 4-grams per 1000 with only that variable changed. Neither wording repair suffices, both landing near three times budget. Stop proposing wording-level repairs as sufficient and test per-book generation of the decisional stratum.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C195</td>
+<td><code>AL-265</code> The leak has at least four channels and <code>choice_semantics</code> is not the main one; <code>premise</code> carries as much or more and a quarter is unreachable same-model idiom. Move <code>premise</code> into the per-book stratum and measure the idiom floor before setting a shared-gram budget for any reusable-plan architecture.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C196</td>
+<td><code>AL-266</code> A cross-experiment baseline differed from its treatment in two ways, not one, because the authoring tasks differed as well as the artifacts. Diff authoring tasks before comparing against a historical baseline, and partition the measure to isolate a confound rather than caveating it.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C197</td>
+<td><code>AL-267</code> The shared-gram budget of 4.0 was never validated against the generator's floor, measured here at 3.3 per 1000 on books sharing nothing but the model. The budget is reachable, the pilot design already sits at the floor, and D-6's repairs failed with headroom rather than against a limit. Record the floor beside the budget and re-measure on any model change.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C198</td>
+<td><code>AL-268</code> 18 of 21 large catalog graphs put nearly every node in one post-hub spoke, so no disjoint tour can be cut from them; only 3 are world-shaped and one is in-band. Scope M-2 to those 3, add spoke balance to catalog metrics, and check what a cut object is before reporting a uniform graph-theoretic extreme.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C199</td>
+<td><code>AL-269</code> Six unaided skeleton-free graphs were 6 of 6 structurally clean and 0 of 6 gate-clean, with every blocking finding violating a constraint the brief never stated. Put band budgets, opening floor and ending schema into the generation brief and re-run before concluding anything about model capability.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C200</td>
+<td><code>AL-270</code> Six stories sharing no plan sit at the idiom floor on average yet converge on one premise, so removing a shared plan does not vary the premise. Point R1-3's repulsion term at the premise as well as the bound solution chain, since neither sharing less nor instructing achieves it.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C201</td>
+<td><code>AL-271</code> A contract briefed with hard, itemised wording-independence came back at 126.7 shared 4-grams per 1000 with its reference despite a different world and zero fact-name overlap. Enforce independence by withholding the reference and supplying a written schema, and note that R1-3's fresh-contract-per-book is not the same as independent-per-book.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C202</td>
+<td><code>AL-272</code> Withholding the reference contract cut cross-contract 4-gram sharing from 126.7 to 1.0 per 1000, where instructing divergence achieved nothing; the premise converged under both. Generate each book's decisional stratum from the structural stratum alone and never from a sibling, and give the premise its own repulsion mechanism.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C203</td>
+<td><code>AL-273</code> The pilot's two contracts share 118.4 4-grams per 1000 yet 0 of 35 choice-semantics strings, and their fills sat at the floor: convergence keys on sentence identity, not lexical distance. Require separate generation rather than independence, and run two contracts sharing a premise but not a sentence to separate the two bundled causes.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C204</td>
+<td><code>AL-274</code> <code>check_fill_integrity.py</code> reports a serious-sounding structural FAIL on any shell that defers the book title, which is now every shell in the programme, unless <code>--allow-title-rewrite</code> is passed. Teach it to treat any field the shell wrote as a <code>&lt;&lt;FILL ...&gt;&gt;</code> directive as fillable, so the flag disappears and cannot drift.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C205</td>
+<td><code>AL-275</code> A treatment arm's label_style encoded the treatment: all 35 labels opened with "Spend", and the first blind rater cited that pattern in its verdict, so the round could not separate the treatment from a label template. Hold label_style constant or draw it from a neutral shared pool across arms, and add a first-word-concentration check to the guard battery.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C206</td>
+<td><code>AL-276</code> Blinding renamed files and left <code>id</code> provenance inside them; a blind rater found it and called it the most concrete signal in the set. Write a reusable blinding step that normalises every non-prose field, since provenance leakage has now spoiled two rounds.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C207</td>
+<td><code>AL-277</code> A control book's "Call the risk not worth it" option depicts the character attempting the crossing and slipping, contradicting its own label, and survived every guard across three rating rounds. Add a label-to-destination consistency check, model-judged, at least for the decline/retreat family.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C208</td>
+<td><code>AL-278</code> Fact-graph closure held in the contract while the prose at a merge node named clues from two rooms a reader visits only one of. Nothing checks over-assumption, only delivery. Add a bounded model pass at merge nodes asking whether prose references facts <code>entry_state</code> does not guarantee.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C209</td>
+<td><code>AL-279</code> A choice promising to claim a reward drops the fact representing it, which survives only on the branch that declines the reward; the pattern repeats across three independently authored contracts and produced a hole a blind rater found in all three books. Add an asymmetric-drop check at forks, invisible to both closure and the branch-obligation screen.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C210</td>
+<td><code>AL-280</code> Two blind raters agreed on an effect that vanished once a label template and a provenance leak were removed, splitting the raters and tying Q6. Treat rater agreement as necessary not sufficient, keep the rebuild-rather-than-caveat rule, and check whether a held-constant variable is itself a similarity channel before reading a null.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C211</td>
+<td><code>AL-281</code> Q4 scored 5 in 12 of 12 cells across three rounds and separated the pairs in none of them, while Q6 saturated in the one clean round, so D-1 as specified would buy an instrument artifact. Drop Q4 from scoring and audit instrument ceilings from accumulated cells before commissioning any further rating round.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C212</td>
+<td><code>AL-282</code> Removing 422 words of fact glosses from a shared plan moved cross-book convergence from 12.9 to 3.2 per 1000, under budget and at the generator floor. Define the shareable stratum by exclusion (identifiers, relations, enumerated categories, no free text) rather than by enumerating prose fields, which has missed some twice.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C213</td>
+<td><code>AL-283</code> Two authors given bare fact names, node functions and their own bindings agreed in meaning on every fact while sharing zero sentences. Drop glosses from the shared stratum and require per-book <code>fact_readings</code>, making interpretation drift measurable rather than assumed.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C214</td>
+<td><code>AL-284</code> The D-7b shared kernel published as carrying "no free text at all" still contains 473 free-text words, more than the 422 the experiment deleted. Restate the rule around fact-vocabulary text against binding-process text, run the third arm that separates the two, and assert artifact claims programmatically before publishing them.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C215</td>
+<td><code>AL-285</code> The brief describes model raters as "blind human annotation" in section 14 while Part I's appendix calls them rater agents. Correct it, add a single provenance statement covering every rated result in both parts, and name the rater's nature at each reporting site.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C216</td>
+<td><code>AL-286</code> The 16l pair passes the lexical gates and scores worst of four available pairs on shared cognitive operation (0.500), with 11 of 35 aligned choices sharing an act. Stop reporting 16l as distinctness, add a per-fork reasoning-kind schedule to the exclusion rule, and validate the advisory operation tier against a known-bad battery before it gates.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C217</td>
+<td><code>AL-287</code> The brief uses 151 (catalog median) and 149 (10-13 band median) interchangeably without distinguishing them. Label every median with its population at the point of use.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C218</td>
+<td><code>AL-288</code> Constraint-stated generation reached 6 of 6 structural validity with zero repair rounds and eliminated the band-budget failure class, while 5 of 6 books missed the reading-level target stated in the same prompt. Split constraint sets by self-verifiability, and build the per-node reading-level repair loop as a prerequisite for any model-drafted pipeline.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C219</td>
+<td><code>AL-289</code> Six authors sharing nothing produced five coastal lighthouse stories with an elder keeper, at a median 1.56 shared four-grams per 1000. Premise scheduling from a curated enumerated space is mandatory in every candidate architecture; withholding buys wording independence only.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C220</td>
+<td><code>AL-290</code> Two independent instances of one model invented the same place name, titling their stories "The Lantern Under Marrow Hill" and "The Lantern Beneath Marrow Hill"; 8 of 10 generations across three tiers centre on a beacon object. Premise allocation from a curated enumerated space becomes a precondition for every architecture, and a genuine cross-vendor replication is needed before any idiom floor is quoted as general.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C221</td>
+<td><code>AL-291</code> Constraint-stated generation reached 2 of 2 structural validity at 101 and 103 nodes, but neither author managed one pass and cost was dominated by the repair loop (210k and 337k tokens, 60 and 269 tool calls). Price iteration-against-a-checker as the architecture's requirement before any bake-off.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C222</td>
+<td><code>AL-292</code> Two authors given the same explicit reading-level target diverged to FK 5.12 at 84 percent in band and FK 8.35 at 11 percent, decided solely by which one instrumented it. Build the per-node reading-level repair loop into the harness as non-optional.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
 </tbody>
 </table>
 <h2 id="cluster-d-untracked-github-issues">Cluster D: untracked GitHub issues<a class="headerlink" href="#cluster-d-untracked-github-issues" title="Permanent link">&para;</a></h2>
@@ -5744,6 +6333,41 @@ section of <a href="../roadmap/">roadmap.md</a>, created 2026-07-28 to give this
 <td><code>SR-8</code> is reserved and claimed by PR #416; <code>L2-8</code> emits no ID; <code>validator-rules.md</code> contradicts itself on whether SR-8 is implemented</td>
 <td>validator-rules</td>
 <td>doc</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-G19</td>
+<td><strong>Generation cost and latency instrumentation, as a prerequisite to any architecture comparison.</strong> The generation job record carries status, model, provider, prompt version and report, and carries no token counts, no cost and no duration, so every cost claim we could make today is an estimate presented as a measurement. Record per run: input and output tokens, estimated cost, wall-clock duration, retry count, repair count, validator failures, human review minutes, final status. Derived measures: cost per candidate, per validator-passing candidate, per approved book, cost of failed books, repair as a percentage of generation, review minutes per approved book, and cost by band and graph size. This is generation operations telemetry and contains no child content, so it sits outside the S10 boundary entirely. Raised by the third external review, which correctly refuses to rank the candidate architectures without it.</td>
+<td>external-review-3</td>
+<td>content</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-G20</td>
+<td><strong>Privacy-minimized all-pairs novelty ledger.</strong> The owner has ruled there is no recency window: a child may read any two books in their library back to back, so novelty must hold pairwise across the whole library rather than against recent history. Persist only what a novelty screen needs (pseudonymous profile, book version, experienced node ids, mechanic, device and solution-rule identifiers, ending, first and last seen day) and explicitly not fine-grained timestamps, hesitation, latency, guardian-facing choice-by-choice replay, or story prose. Keep the per-request cost sublinear with inverted indexes over device, solution rule, premise family, cognitive operation and mechanic-sequence hash rather than pairwise evaluation. Depends on the retention and purge design already specified in <a href="../reader-path-engagement-design/">reader-path-engagement-design.md</a>, whose route data currently arrives and is discarded.</td>
+<td>external-review-3</td>
+<td>content</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-G21</td>
+<td><strong>Replace the single similarity score with an auditable feature vector.</strong> Report exact device collisions, exact solution collisions, repeated mechanic count, longest repeated operation sequence, premise-family overlap, world overlap, cast overlap, topology similarity and shared free text as separate values, and do not collapse them into one weighted number until there is evidence the weighting tracks a product outcome. Follows 16o's own warning about invented weights, and the owner's ruling that the world, cast and topology exclusions are not permanent: those three become measured and reported rather than excluded in the prompt.</td>
+<td>external-review-3</td>
+<td>content</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-G22</td>
+<td><strong>Re-run skeleton-free generation with every omitted constraint supplied, then at scale.</strong> The 6-of-6 structural-validity result failed only on rules never given to the model (branch-depth budget, opening-decision floor, ending schema). Supply the complete machine-readable contract, generate once, run the external validator, return concise counterexamples for repair, and record first-pass validity separately from post-repair validity. Then two graphs near 100 nodes, since the one production-scale run halted at the guards with badly degraded reading level. Do not add a self-review prompt; the model must not certify its own output. Now the leading production candidate per the third external review, given the owner's ruling that the team may launch all new.</td>
+<td>external-review-3</td>
+<td>content</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-G23</td>
+<td><strong>Disambiguate binding contracts from narrative contracts in the catalog.</strong> 47 skeletons carry a <code>*.contract.json</code>, which is a binding contract (slots, lexicon, default binding); 2 carry a <code>*.narrative.json</code>, which is the narrative contract every proposed architecture depends on. An external reviewer read "2 of 61 have contracts" as "the other 59 are bare topology", which is wrong in both directions: 47 have a binding layer, and all 61 carry sparse formal structure (conditions on 1.4 percent and effects on 2.5 percent of 13,425 choices, entry effects on 0.5 percent of 11,458 nodes). Rename so the two cannot be confused, and state the coverage of each wherever the bottleneck is cited.</td>
+<td>external-review-3</td>
+<td>content</td>
 <td>unscheduled</td>
 </tr>
 </tbody>
@@ -6491,7 +7115,7 @@ have to re-derive them.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 10, 2026 01:33:57 UTC">August 10, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 11, 2026 14:38:55 UTC">August 11, 2026</span>
   </span>
 
     
