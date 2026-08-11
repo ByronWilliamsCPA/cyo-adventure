@@ -66,6 +66,31 @@ from cyo_adventure.utils.logging import get_logger
 
 logger = get_logger(__name__)
 
+# The account states that may cause a verification email.
+#
+# `require_principal` answers this question with `!= "active"`, but this
+# endpoint cannot use it (see the module docstring): verification sits BEFORE
+# admin approval, so refusing a non-active caller would make the endpoint
+# unreachable by the very guardians it exists for. Relaxing that requirement
+# has to be a narrowing, not a removal, and the two states below are the only
+# ones with a legitimate reason to send: 'active' for a re-verification, and
+# 'awaiting_approval' for the first-time self-signup case the endpoint was
+# built around.
+#
+# #CRITICAL: security: written as an allowlist rather than a
+# `!= "deactivated"` denylist so a state added to db/models.py's
+# _USER_STATUS_VALUES is refused here until somebody deliberately admits it.
+# The reachable exclusion is 'deactivated': app-level deactivation does not
+# revoke the Supabase JWT, so a revoked guardian holding a live token would
+# otherwise still be able to mail a real person in our organization's name,
+# spend the hourly cap, and hold the open-attempt window. The two invite
+# states carry a synthetic placeholder authn_subject that no verified subject
+# matches, so excluding them is defense in depth rather than a live hole.
+# #VERIFY: tests/integration/test_consent_api.py::
+# test_a_deactivated_guardian_cannot_start_a_verification and
+# ::test_a_guardian_awaiting_approval_can_start_a_verification.
+_VERIFICATION_ELIGIBLE_STATUSES = ("active", "awaiting_approval")
+
 router = APIRouter(
     prefix="/api/v1/consent", tags=["consent"], responses=error_responses(401)
 )
@@ -103,7 +128,8 @@ async def start_kws_verification(
         ConfigurationError: If KWS is not configured on this tier (400).
         BusinessLogicError: If the caller has no ``User`` row yet, or no email
             address to send to (400).
-        AuthorizationError: If the caller is a child account (403).
+        AuthorizationError: If the caller is a child account, or the account
+            is in a state that may not send (403).
         StateTransitionError: If an unresolved attempt is still recent (409).
         RateLimitedError: If the caller's hourly attempt cap is spent (429).
     """
@@ -158,6 +184,15 @@ async def start_kws_verification(
     # test_a_child_row_cannot_start_a_verification.
     if user.role == "child":
         msg = "a child account cannot start a parent verification"
+        raise AuthorizationError(msg)
+    # See _VERIFICATION_ELIGIBLE_STATUSES: the endpoint relaxes
+    # require_principal's active-only rule to admit a guardian awaiting
+    # approval, and this keeps that relaxation from also admitting a
+    # deactivated one. Refusing here rather than at the dependency keeps the
+    # message specific to the caller's own account, which they already know
+    # exists, so no status oracle is created for a third party.
+    if user.status not in _VERIFICATION_ELIGIBLE_STATUSES:
+        msg = "this account cannot start a parent verification"
         raise AuthorizationError(msg)
 
     # #CRITICAL: security: the recipient is never caller-supplied. The live

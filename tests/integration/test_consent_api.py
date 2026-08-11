@@ -502,6 +502,97 @@ class TestStartAuthorization:
         assert resp.status_code == 403
         assert sends.emails == []
 
+    async def test_a_deactivated_guardian_cannot_start_a_verification(
+        self,
+        client: AsyncClient,
+        sessions: async_sessionmaker[AsyncSession],
+        seed: Seed,
+        sends: _SendRecorder,
+    ) -> None:
+        """403 for a revoked adult who still holds a valid token.
+
+        ``require_principal`` would have refused this caller on status alone,
+        but this endpoint deliberately does not use it: verification sits
+        before admin approval, so an active-only dependency would lock out the
+        guardians it exists for. That relaxation has to be a narrowing rather
+        than a removal.
+
+        The gap is reachable because app-level deactivation does not revoke
+        the Supabase JWT. Without the allowlist, a guardian an admin had just
+        revoked could still make KWS mail a real person in our name, spend the
+        hourly cap, and hold the open-attempt window against the account.
+        """
+        _ = seed
+        subject = "deactivated-guardian-subject"
+        async with sessions() as session:
+            family_id = await session.scalar(select(User.family_id).limit(1))
+            assert family_id is not None
+            session.add(
+                User(
+                    family_id=family_id,
+                    role="guardian",
+                    status="deactivated",
+                    authn_subject=subject,
+                    email=_EMAIL,
+                )
+            )
+            await session.commit()
+
+        def _identity() -> OnboardingIdentity:
+            return OnboardingIdentity(subject=subject, email=_EMAIL)
+
+        app.dependency_overrides[deps.require_onboarding_identity] = _identity
+        try:
+            resp = await client.post(_START, json=_BODY)
+        finally:
+            app.dependency_overrides.pop(deps.require_onboarding_identity, None)
+
+        assert resp.status_code == 403
+        assert sends.emails == []
+
+    async def test_a_guardian_awaiting_approval_can_start_a_verification(
+        self,
+        client: AsyncClient,
+        sessions: async_sessionmaker[AsyncSession],
+        seed: Seed,
+        sends: _SendRecorder,
+    ) -> None:
+        """The allowlist must not close the case the endpoint was built for.
+
+        The counterpart to the refusal above. A self-signup guardian lands on
+        ``awaiting_approval`` and has to verify from there, so a fix that only
+        admitted ``active`` would trade one defect for a worse one: nobody
+        could ever complete first-time verification. This is what keeps the
+        allowlist honest.
+        """
+        _ = seed
+        subject = "awaiting-approval-guardian-subject"
+        async with sessions() as session:
+            family_id = await session.scalar(select(User.family_id).limit(1))
+            assert family_id is not None
+            session.add(
+                User(
+                    family_id=family_id,
+                    role="guardian",
+                    status="awaiting_approval",
+                    authn_subject=subject,
+                    email=_EMAIL,
+                )
+            )
+            await session.commit()
+
+        def _identity() -> OnboardingIdentity:
+            return OnboardingIdentity(subject=subject, email=_EMAIL)
+
+        app.dependency_overrides[deps.require_onboarding_identity] = _identity
+        try:
+            resp = await client.post(_START, json=_BODY)
+        finally:
+            app.dependency_overrides.pop(deps.require_onboarding_identity, None)
+
+        assert resp.status_code == 202
+        assert sends.emails == [_EMAIL]
+
     @pytest.mark.usefixtures("as_guardian")
     async def test_an_unconfigured_tier_refuses_before_writing_a_row(
         self,
