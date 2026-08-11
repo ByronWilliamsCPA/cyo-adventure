@@ -172,9 +172,7 @@ def compare(
     # was built to catch (see AL-182, AL-186).
     # #VERIFY: worst_fork_family_rate is reported and gated separately, so a mean
     # can never again pass on the strength of nodes that ask nothing of the reader.
-    shared_nodes = sorted(
-        n for n in set(a) & set(b) if len(a[n]) > 1 and len(b[n]) > 1
-    )
+    shared_nodes = sorted(n for n in set(a) & set(b) if len(a[n]) > 1 and len(b[n]) > 1)
     skipped = sorted((set(a) & set(b)) - set(shared_nodes))
     notes: list[str] = []
     if not shared_nodes:
@@ -341,7 +339,11 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
     for key, value in scores.items():
-        shown = f"{value:.0f}" if value.is_integer() and "rate" not in key else f"{value:.3f}"
+        shown = (
+            f"{value:.0f}"
+            if value.is_integer() and "rate" not in key
+            else f"{value:.3f}"
+        )
         sys.stdout.write(f"{key:24s} {shown}\n")
     sys.stdout.write(
         f"{'worst_fork_family_node':24s} {worst_nodes['family'] or 'n/a'}\n"
