@@ -60,7 +60,39 @@ const ONE_STORY = {
   ],
 }
 
+// Per-PR CI stays scoped to WCAG 2.1 conformance tags only (see the comment
+// below): fast and non-noisy, so it can gate every PR. The weekly
+// "Accessibility Compliance" workflow (.github/workflows/
+// accessibility-compliance-weekly.yml) sets A11Y_EXTENDED=1 to run this same
+// suite against WCAG 2.2 (both wcag22a AND wcag22aa: axe's WCAG tags are
+// additive per level, so wcag22aa alone would silently skip the 2.2 Level A
+// criteria, UW-N04) plus axe's "best-practice" rules (e.g. missing
+// landmark/heading structure), without adding that scope, or run time, to
+// every PR.
+const AXE_TAGS = process.env.A11Y_EXTENDED === '1'
+  ? ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22a', 'wcag22aa', 'best-practice']
+  : ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']
+
 async function assertNoViolations(page: Page) {
+  // Extended-only: axe's best-practice landmark/heading rules (unlike the
+  // WCAG-tagged rules the default run checks) fire against the ABSENCE of
+  // structure, so they misfire if the scan lands while a lazy route chunk's
+  // Suspense fallback (routeElements.tsx's "Just a sec..." <LoadingStatus
+  // className="route-fallback">) is still the only thing mounted. The
+  // default WCAG-tagged run never needed this: none of its rules depend on
+  // page-wide structure being present, only on structure that IS present
+  // being correctly formed. Resolves immediately when the fallback was never
+  // mounted (the common case once a chunk is warm).
+  // #ASSUME: timing dependency: 10s covers a cold lazy-chunk load on a CI
+  // runner; the landing-page test additionally asserts real content first
+  // (see that test) so this wait is never the only thing standing between
+  // the scan and a still-loading page there. #VERIFY: if this ever times out
+  // in CI, widen the timeout before suspecting a real accessibility
+  // regression; a genuinely hung fallback is a build/network problem, not an
+  // axe finding.
+  if (AXE_TAGS.includes('best-practice')) {
+    await page.waitForSelector('.route-fallback', { state: 'detached', timeout: 10_000 })
+  }
   // Let any entrance animation settle before scanning. The Dialog component
   // fades and scales in (opacity 0 -> 1); axe computes color contrast from the
   // composited style, so an element scanned mid-fade reports a blended,
@@ -80,19 +112,26 @@ async function assertNoViolations(page: Page) {
         ]).then(() => resolve())
       })
   )
-  // Scoped to WCAG 2.1 A/AA, matching this file's stated intent. axe's full
-  // default ruleset also includes "best-practice" rules (e.g. requiring a
-  // <main> landmark or exactly one <h1>) that are worth fixing but are not
-  // WCAG conformance failures; keeping the gate to WCAG tags avoids drowning
-  // real conformance regressions in opinionated-but-optional findings.
-  const results = await new AxeBuilder({ page })
-    .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
-    .analyze()
+  // Scoped to WCAG tags by default (see AXE_TAGS above), matching this
+  // file's stated intent. axe's full default ruleset also includes
+  // "best-practice" rules (e.g. requiring a <main> landmark or exactly one
+  // <h1>) that are worth fixing but are not WCAG conformance failures;
+  // keeping the per-PR gate to WCAG tags avoids drowning real conformance
+  // regressions in opinionated-but-optional findings. The weekly extended
+  // run opts into those rules via A11Y_EXTENDED.
+  const results = await new AxeBuilder({ page }).withTags(AXE_TAGS).analyze()
   expect(results.violations, JSON.stringify(results.violations, null, 2)).toEqual([])
 }
 
 test('landing page has no detectable accessibility violations', async ({ page }) => {
   await page.goto('/')
+  // Unlike every other test below, this one has no per-test content assertion
+  // to wait on first (the landing route has no auth/route gate to clear), so
+  // it is the one place a scan could otherwise land before the lazy chunk
+  // mounts anything at all, not just before it replaces an already-mounted
+  // fallback. Waiting on the real heading closes that gap the same way the
+  // other tests' pre-existing assertions already do.
+  await expect(page.getByRole('heading', { name: 'CYO Adventure' })).toBeVisible()
   await assertNoViolations(page)
 })
 

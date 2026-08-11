@@ -37,3 +37,6 @@ export type { StatusBadgeProps, StatusBadgeStatus } from './components/StatusBad
 
 export { ProgressBar } from './components/ProgressBar'
 export type { ProgressBarProps } from './components/ProgressBar'
+
+export { SkipLink } from './components/SkipLink'
+export type { SkipLinkProps } from './components/SkipLink'

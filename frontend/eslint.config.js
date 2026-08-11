@@ -1,4 +1,5 @@
 import js from '@eslint/js'
+import jsxA11y from 'eslint-plugin-jsx-a11y'
 import globals from 'globals'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
@@ -24,13 +25,23 @@ export default tseslint.config(
     plugins: {
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
+      'jsx-a11y': jsxA11y,
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
+      ...jsxA11y.flatConfigs.recommended.rules,
       'react-refresh/only-export-components': [
         'warn',
         { allowConstantExport: true },
       ],
+      // A horizontally-scrollable region (legal/PrivacyPolicyPage.tsx's
+      // table wrappers) needs tabIndex=0 on its role="region" container so
+      // keyboard users can scroll it (WAI-ARIA APG SCR26); this rule's
+      // `roles`/`tags` options have no default list at all (verified against
+      // 6.10.2's source: unset, they're simply never checked), so this
+      // project-wide allowance is filling an absent exception list, not
+      // widening an existing one.
+      'jsx-a11y/no-noninteractive-tabindex': ['error', { roles: ['region'] }],
     },
   },
 )

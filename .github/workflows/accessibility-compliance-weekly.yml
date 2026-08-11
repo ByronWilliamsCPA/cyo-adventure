@@ -1,0 +1,153 @@
+# ============================================================================
+# Weekly Accessibility Compliance scan for CYO Adventure (ADR-029)
+# ============================================================================
+# Runs the same axe-core suite as the per-PR `frontend-e2e` job
+# (frontend/e2e/a11y.spec.ts) but with A11Y_EXTENDED=1, which widens the axe
+# rule-tag scope from WCAG 2.1 A/AA only to WCAG 2.1 A/AA + WCAG 2.2 A/AA +
+# axe's non-normative "best-practice" rules (UW-N04, UW-F27). That wider
+# scope is deliberately kept off the per-PR gate: it is slower, noisier
+# (best-practice findings are not WCAG conformance failures), and per the
+# dated ruling in ADR-029's Constraints section (the primary source for it;
+# do not restate it here as free-standing fact). Scheduled + manual only,
+# never on every PR.
+#
+# Uses the same "Alert on failure (pinned issue)" pattern as e2e-prod.yml and
+# e2e-staging.yml (marker [a11y-weekly]) rather than shipping silent: a
+# scheduled workflow with no notification path is how a red run trains the
+# signal to zero before anyone acts on it.
+# ============================================================================
+name: Accessibility Compliance Weekly
+
+on:
+  schedule:
+    # 07:15 UTC every Wednesday: off-peak, and offset from both
+    # dependency-provenance-weekly.yml (Monday 06:23) and e2e-staging.yml
+    # (daily 13:00) so scheduled runs don't cluster.
+    - cron: '15 7 * * 3'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  accessibility-compliance:
+    name: Playwright (axe, extended tags)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      issues: write
+    defaults:
+      run:
+        working-directory: ./frontend
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-${{ runner.os }}-${{ hashFiles('frontend/package-lock.json') }}
+
+      - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps chromium
+
+      - name: Install Playwright OS dependencies (browser cache hit)
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium
+
+      # Scoped to a11y.spec.ts only: it is the one spec A11Y_EXTENDED affects.
+      # keyboard-nav.spec.ts (focus-trap/keyboard-operability) already runs,
+      # unaffected by this flag, in every PR's frontend-e2e job.
+      - name: Accessibility scan (axe, WCAG 2.2 + best-practice)
+        env:
+          A11Y_EXTENDED: '1'
+        run: npx playwright test --project=chromium e2e/a11y.spec.ts
+
+      - name: Upload Playwright report on failure
+        if: ${{ !cancelled() && failure() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: accessibility-compliance-report
+          path: frontend/test-results/
+          retention-days: 14
+
+      - name: Alert on failure (pinned issue)
+        # Reusable alerting pattern for scheduled E2E tiers, same as
+        # e2e-prod.yml: find an OPEN issue labeled e2e-alert whose title
+        # starts with this workflow's marker and comment on it, or open one
+        # if none exists yet, so repo watchers get GitHub's native
+        # email/push notification instead of a red run nobody checks the
+        # Actions tab for. Findings this scan surfaces get their own UW-*
+        # register row (see UW-F27); this step is about noticing a NEW
+        # regression promptly, not about the known, already-tracked ones.
+        if: ${{ failure() }}
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const marker = '[a11y-weekly]'
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
+            const today = new Date().toISOString().slice(0, 10)
+
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'e2e-alert',
+            })
+            const existing = issues.find((issue) => issue.title.startsWith(marker))
+
+            if (existing) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                body: `Scheduled accessibility compliance scan failed again on ${today}. Run: ${runUrl}`,
+              })
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `${marker} scheduled accessibility compliance scan failing`,
+                labels: ['e2e-alert'],
+                body: [
+                  'The scheduled `Accessibility Compliance Weekly` workflow',
+                  '(`.github/workflows/accessibility-compliance-weekly.yml`) failed.',
+                  '',
+                  'This tier runs the WCAG 2.2 + axe best-practice extended scan',
+                  '(A11Y_EXTENDED=1) against the mocked-tier build, weekly. A failure here',
+                  'is either a new regression or one of the findings already tracked as',
+                  'UW-F27 (see docs/planning/unscheduled-work-register.md) resurfacing on a',
+                  'page this run newly covers; check which before assuming it is known.',
+                  '',
+                  `First failing run: ${runUrl}`,
+                  `Date: ${today}`,
+                  '',
+                  'This issue stays open and accumulates one comment per failing run until',
+                  'someone resolves the underlying problem and closes it; the next failure',
+                  'after that opens a fresh issue.',
+                ].join('\n'),
+              })
+            }

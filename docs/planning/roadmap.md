@@ -887,8 +887,16 @@ runs on Supabase-managed infrastructure instead of the homelab; see
 
 ### Deliverables (scope expanded 2026-07-16, register IDs cited)
 
-- [ ] Performance pass, offline-edge hardening, accessibility (WCAG AA basics: contrast,
-      focus order, scalable text).
+- [ ] Performance pass, offline-edge hardening. Accessibility split out to its own line below
+      (2026-08-11): the "WCAG AA basics" framing here undersold what already exists, and
+      obscured what remains.
+- [ ] Accessibility, WCAG 2.1 AA (ADR-029, 2026-08-11 names the target and records what already
+      verifies it): axe-core WCAG scans and a keyboard focus-trap contract already gate every PR
+      (`frontend/e2e/a11y.spec.ts`, `keyboard-nav.spec.ts`); `eslint-plugin-jsx-a11y` now catches
+      issues at lint time; a weekly, non-blocking Tier 2 scan (WCAG 2.2 plus axe best-practice
+      rules) now runs against `main`. Stays open on: `UW-F27` (four structural gaps Tier 2's
+      first run found), a manual screen-reader audit, and a published accessibility statement
+      (see ADR-029's Follow-on work).
 - [ ] Sentry wired on client and server; backups and a tested restore. (Sentry half delivered
       2026-07-17; a scheduled backup lands with `feat/database-backups-r2`, tracked as `UW-D27` /
       [#558](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/558), but the restore drill

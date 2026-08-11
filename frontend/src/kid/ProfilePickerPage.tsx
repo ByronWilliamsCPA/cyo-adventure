@@ -414,6 +414,7 @@ export function ProfilePickerPage() {
             autoComplete="off"
             enterKeyHint="go"
             maxLength={8}
+            // eslint-disable-next-line jsx-a11y/no-autofocus -- see rationale above
             autoFocus
             value={pin}
             onChange={(e) => setPin(e.target.value.replace(/[^0-9]/g, ''))}

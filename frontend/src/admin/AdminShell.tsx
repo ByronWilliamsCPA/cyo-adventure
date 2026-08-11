@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { NavLink, Outlet } from 'react-router'
 
 import { ErrorBanner } from '@ds/components/ErrorBanner'
+import { SkipLink } from '@ds/components/SkipLink'
 import { useAuth } from '../auth/useAuth'
 import { GUARDIAN_CONSOLE_PATH } from '../routes'
 import { ThemeToggle } from '../theme/ThemeToggle'
@@ -35,6 +36,7 @@ export function AdminShell() {
 
   return (
     <div className="guardian-shell">
+      <SkipLink targetId="admin-shell-main" />
       <header className="guardian-shell__header">
         <span className="guardian-shell__brand">
           <span className="guardian-shell__title">CYO Adventure</span>
@@ -74,7 +76,7 @@ export function AdminShell() {
           Sign-out failed. Check your connection and try again.
         </ErrorBanner>
       ) : null}
-      <main className="guardian-shell__main">
+      <main id="admin-shell-main" className="guardian-shell__main" tabIndex={-1}>
         <Outlet />
       </main>
     </div>

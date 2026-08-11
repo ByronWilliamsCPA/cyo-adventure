@@ -213,6 +213,7 @@ export function CharacterCreator({ profileId, onCreated, onBack }: CharacterCrea
           value={name}
           maxLength={CHARACTER_NAME_MAX_LENGTH}
           autoComplete="off"
+          // eslint-disable-next-line jsx-a11y/no-autofocus -- see rationale above
           autoFocus
           aria-invalid={nameError !== null}
           aria-describedby={nameError ? NAME_ERROR_ID : undefined}

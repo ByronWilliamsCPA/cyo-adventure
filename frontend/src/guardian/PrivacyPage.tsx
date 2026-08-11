@@ -255,6 +255,7 @@ export function PrivacyPage() {
         and Safari/VoiceOver drops list semantics from a list with no marker.
         Without it these items are announced as loose text.
       */}
+      {/* eslint-disable-next-line jsx-a11y/no-redundant-roles -- see rationale above */}
       <ul className="privacy__nots" role="list">
         <li>
           <strong>No advertising, ever.</strong> There are no ads in the app and no advertising or

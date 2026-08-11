@@ -1,5 +1,6 @@
 import { matchPath, Outlet, useLocation } from 'react-router'
 
+import { SkipLink } from '@ds/components/SkipLink'
 import { useActiveCharacter } from '../characters/useActiveCharacter'
 import { ThemeToggle } from '../theme/ThemeToggle'
 import { KidNav } from './KidNav'
@@ -76,9 +77,10 @@ export function KidShell() {
       data-age-band={profile?.age_band}
       data-reduce-motion={profile?.reduce_motion ? 'true' : undefined}
     >
+      <SkipLink targetId="kid-shell-main" />
       {navProfileId ? <KidNav profileId={navProfileId} /> : null}
       <ThemeToggle className="kid-shell__theme-toggle" />
-      <main className="kid-shell__main">
+      <main id="kid-shell-main" className="kid-shell__main" tabIndex={-1}>
         <Outlet context={outletContext} />
       </main>
     </div>
