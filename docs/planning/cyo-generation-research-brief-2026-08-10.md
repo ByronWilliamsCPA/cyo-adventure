@@ -2104,11 +2104,18 @@ So we traced every shared four-gram in the passing pair to its source. Of seven,
 appears verbatim in the residual 473 words** and one matches only by vocabulary. The
 restated rule survives contact with the artifact:
 
-> Free text attached to the **fact vocabulary that nodes reference** drove convergence.
-> Free text **instructing the binding process** did not, at this volume.
+> Free text attached to the **fact vocabulary that nodes reference** drove convergence. The
+> experiment did **not isolate** free text instructing the binding process as a cause at this
+> volume.
 
-This also cancelled a planned experiment. The arm that would have deleted the residual
-words and refilled two books is now predictable and not worth two fills.
+The distinction matters and an earlier draft of this section blurred it. Deleting the 422 gloss
+words is what moved the measurement, and no shared gram in the passing pair traces to the 473 words
+that remained. Both are evidence of association. Neither shows the residual words are harmless, and
+only an arm that deletes them while keeping the glosses would.
+
+That arm was previously called cancelled here on the grounds that its outcome is predictable. That
+was an overstatement of what this trace licenses, and it is withdrawn: the arm is **deprioritised**
+rather than settled, because the trace makes a null outcome likely but does not establish it.
 
 **But the control run found something we cannot yet explain, and it matters more than the
 confirmation.** Under the same strict attribution, only five of the failing arm's forty
