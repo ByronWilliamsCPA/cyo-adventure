@@ -74,6 +74,7 @@ plus the shared-gram guard, both deterministic and both already built.
 | D-3c | Confirm D-3b with a second blind annotator | Is D-3b reproducible, and does it survive a subset fixed in advance? | Second independent annotator, same three bundles, same brief. Analysis pre-registered below before the labels exist. | 1 annotator over 3 plans | The second annotator's `reasoning_kind` does not separate the pairs in the readers' direction over the pre-registered fork subset. Did not fire, but the margin nearly vanished. | **done, PARTIAL** |
 | D-4 | Solution-transfer metric | Is the item that actually discriminated computable from a plan, rather than only ratable by a reader? | Formalise "these two puzzles resolve by the same operation to the same answer" against the three existing contracts, and check it reproduces the raters' Q6 ordering (4,4 against 3,3). Scored against **three** rated pairs rather than the one the row asked for, since D-5 supplied a second ordering. | deterministic, no model | Did not fire. Reproduces all three orderings strictly, and does so on the tier that uses no taxonomy. | **done, POSITIVE but narrow** |
 | D-6 | Which repair unblocks D-2 | `AL-208` says D-2 converged because its arms shared one contract. That is a diagnosis nothing has tested, and three candidate repairs were proposed with no way to choose between them. | One contract, two bindings held constant, three conditions (`verbatim`, `neutral`, `diverge`), six independent 26-node fills. Outcome is the guard battery itself, so no rater is needed. | 6 fills, 0 raters | First falsifier did not fire: `verbatim` reaches 16.9 per 1000 against the pilot's 2.9, so contract sharing is confirmed as a cause. **Second falsifier substantially fired**: the best repair reaches 11.4, still roughly 3x budget and 4x the pilot. | **done, MIXED: diagnosis confirmed, neither tested repair sufficient** |
+| D-7 | Stratified plan: wordless shared structure, per-book decisional stratum | `AL-208`'s last untested repair, and the central claim of the architecture re-specification. | One structural stratum, two decisional strata authored without sight of each other, two bindings held constant, two fills. Outcome is the guard battery, no rater. | 2 strata, 2 fills, 0 raters | **Fired.** 12.9 per 1000 against a predicted 4.0, identical to D-6's `diverge`. 62 percent of shared grams trace to the shared fact definitions, which the stratum kept and which are prose. | **done, NEGATIVE** |
 | D-5 | Rate the discarded contaminated arm as a negative control | Does the six-question instrument correctly detect a pair we know is contaminated? | The 14-of-24 shared-prop binding is preserved. Feed `filled_V5b` to fresh blind raters and confirm it scores worse than `filled_V5c` on Q6. | 2 raters | Did not fire. Both raters, opposite orders, scored the contaminated pair Q6 = 5 and the clean pair Q6 = 2, and both chose the contaminated pair as more similar at high confidence. A three-point gap on the item that matters. **Re-run independently 2026-08-10 because the original result was not produced here: two fresh raters in opposite orders reproduced it exactly, Q6 = 5 for the contaminated pair against 2 for the clean one, both choosing the contaminated pair at high confidence.** The instrument detects a known-bad pair, so the ratings in section 13 stand. | **done, PASS, replicated** |
 
 ### D-4 result: solution transfer is computable from a plan, but only its taxonomy-free half
@@ -856,6 +857,50 @@ It does not follow that a per-book premise must differ in *content*. It follows 
 be the same sentences, like everything else in the decisional stratum. The amendment in section 2.1
 of the architecture re-specification is right that the premise moves per book, and would be too
 strong if read as requiring a different story every time.
+
+### D-7 result: the stratified plan fails, and the leak is the fact definitions
+
+The last untested repair from `AL-208`, and the central claim of the architecture re-specification:
+share a wordless structural stratum, generate the decisional stratum per book. Two decisional strata
+authored from one shared structure by agents that never saw each other's work, sharing **0 of 35**
+`choice_semantics` sentences and choosing different engines. Two bindings held constant. Two fills.
+
+| | shared 4-grams per 1000 |
+| --- | --- |
+| pilot, wholly separate contracts | 2.9 |
+| generator idiom floor | 3.3 |
+| **budget** | **4.0** |
+| **D-7, shared structure + per-book decisional stratum** | **12.9** |
+| D-6 `diverge`, shared contract | 12.9 |
+| D-6 `verbatim`, shared contract | 16.9 |
+| D-2, shared contract at 101 nodes | 50.1 |
+
+**The pre-registered falsifier fires. D-7 lands exactly where D-6's `diverge` landed**, 3.2 times
+budget, and generating the decisional stratum per book bought nothing measurable over telling one
+shared author to diverge from it. Four identical choice menus appeared as well, where D-6 had none.
+
+**The diagnosis was built into the rig, and it returned its answer.** Fact *definitions* were kept
+in the structural stratum deliberately, with the docstring recording why: "if sharing them alone
+drives convergence, no wordless plan exists at all." Tracing the shared grams:
+
+| Traces to | Grams | Share |
+| --- | --- | --- |
+| **shared fact definitions** | **25** | **62%** |
+| shared fact names | 18 | |
+| shared node `function` | 8 | |
+| none of the shared parts (generator idiom) | 12 | 30% |
+
+**So the stratum was never wordless.** It carried 32 one-line prose glosses, one per fact, and both
+authors read all of them: "the clocktower stands sealed, and the seal reads like a test rather than
+an accident". I called that structure. It is prose, and it is 62 percent of the leak.
+
+**The margin this leaves is the real finding.** The budget is 4.0 and the generator floor is 3.3, so
+**a shared artifact has 0.7 per 1000 of room in total**. Every result in this programme falls either
+at the floor (nothing shared, 2.9) or at three to fifteen times budget (any plan shared). Nothing has
+ever landed in between, and D-7 was the most careful attempt to find that middle.
+
+Removing the definitions and leaving bare fact names would, on a linear reading of the trace, land
+near 4.8: still over budget, and an estimate rather than a measurement. That is D-7b, below.
 
 ### D-1 should not be run as specified, and the instrument's own record is why
 
