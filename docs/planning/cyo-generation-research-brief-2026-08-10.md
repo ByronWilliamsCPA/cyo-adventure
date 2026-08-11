@@ -1342,8 +1342,10 @@ We checked the confound before believing any of this. Our pilot's shells shipped
 and our new books wrote every label from scratch, which is a second difference that could have
 carried the whole effect. It did not: **labels contribute zero shared four-grams in every condition,
 including the pilot.** The entire signal is in the bodies, which were written from scratch
-throughout, so the comparison is clean. We note without explaining it that this contradicts 16d,
-where 41 to 51 of 131 choice menus were identical; scale and how orthogonal the arms' house styles
+throughout, so the comparison is clean. We note without explaining it that this sits alongside 16d,
+where 41 to 51 of 131 choice menus were identical, which is not a contradiction once the two
+measures are distinguished as 16l does: menu identity is a two-word prefix match per position, and
+shared four-grams need four consecutive words; scale and how orthogonal the arms' house styles
 happened to be are both candidates.
 
 **The part that changes what we would build.** Tracing each shared gram to the contract field whose
@@ -1586,9 +1588,21 @@ so the difference is attributable to the glosses alone. 422 words left the share
 
 **The metric, defined once and used everywhere below.** Numerator: distinct word four-grams present
 in both books, excluding grams made entirely of function words. Denominator: the mean word count of
-the two books, per 1000. **Scope: node bodies only.** Choice labels are excluded, and they have to
-be, because the two conditions differ in how many label words they contain and a label-inclusive
-denominator therefore moves the rate even when labels share no grams at all.
+the two books, per 1000. **Scope: node bodies only.**
+
+Choice labels are excluded, and they have to be. The two conditions differ in how many label words
+they contain, 160 against 182 on average, against bodies of 2,894 and 2,801, so a label-inclusive
+denominator moves the rate even when labels share no grams at all. That is not hypothetical: under
+the label-inclusive scope the two repair conditions swap places, which is why we report them as
+indistinguishable rather than ranking them.
+
+**A second measure appears in these tables and is not the same thing.** "Identical choice menus"
+counts, for each node and each choice position, whether two books' labels begin with the same two
+content-bearing words. It is a prefix match on a per-position basis, not an overlap over the label
+corpus. A pair of books can therefore share 41 menu openings while contributing **zero** shared
+four-grams from labels, because two shared content words are not four consecutive words: "Ask the
+warden" and "Ask the bell-ringer" share an opening and no four-gram. The two figures measure
+different surfaces and both are reported because a reader meets both.
 
 **Correcting our own table.** Two rows below were previously quoted at the wrong scope, with labels
 included where every other row excluded them. Recomputed consistently, all rows are body-only:
