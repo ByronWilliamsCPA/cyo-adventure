@@ -255,7 +255,7 @@ _PERSONALIZATION_RING2_SLOT_TYPE_VALUES = (
     "'home_type'"
 )
 
-# ADR-018: the three states one KWS parent-verification attempt can be in, and
+# ADR-018: the four states one KWS parent-verification attempt can be in, and
 # the two KWS environments an attempt can have run against. Exported (no
 # leading underscore) because ``consent/service.py`` writes these exact strings
 # and must not spell them a second time: a service-side typo would otherwise be
@@ -263,14 +263,34 @@ _PERSONALIZATION_RING2_SLOT_TYPE_VALUES = (
 KWS_VERIFICATION_STATUS_SENT = "sent"
 KWS_VERIFICATION_STATUS_VERIFIED = "verified"
 KWS_VERIFICATION_STATUS_FAILED = "failed"
-_KWS_VERIFICATION_STATUS_VALUES = "'sent', 'verified', 'failed'"
+# #CRITICAL: data integrity: `send_failed` and `failed` are different facts and
+# collapsing them loses a compliance-relevant one. `failed` is KWS's answer
+# about a parent, delivered inbound: this adult was not verified. `send_failed`
+# is our own outbound leg giving up, and says nothing at all about the parent.
+# Reading a `send_failed` row as a refusal would record a false negative about
+# an adult nobody ever asked; counting it as an inbound delivery would tell the
+# delivery-health alarm the return path works when only our own timeout code
+# ran.
+# #VERIFY: tests/unit/test_kws_verification_service.py::
+# test_a_send_failure_is_not_counted_as_a_delivery.
+KWS_VERIFICATION_STATUS_SEND_FAILED = "send_failed"
+_KWS_VERIFICATION_STATUS_VALUES = "'sent', 'verified', 'failed', 'send_failed'"
+# The statuses that mean a delivery from KWS actually reached us. A refusal
+# counts: it travelled the same inbound path a success does, which is what
+# consent/service.py::verification_delivery_health is asking about.
+KWS_VERIFICATION_DELIVERED_STATUSES = (
+    KWS_VERIFICATION_STATUS_VERIFIED,
+    KWS_VERIFICATION_STATUS_FAILED,
+)
 # Mirrors the Literal on ``core.config.Settings.kws_environment``. Hand-written
 # rather than derived from that Literal for the same reason
 # _SECURITY_EVENT_TYPE_VALUES is hand-written: importing core.config here would
 # add an import edge from the ORM layer into settings for one two-element list.
 # tests/unit/test_kws_verification_model.py::
 # test_at_rest_environment_vocabulary_matches_the_setting guards the drift.
-_KWS_ENVIRONMENT_VALUES = "'test', 'production'"
+KWS_ENVIRONMENT_TEST = "test"
+KWS_ENVIRONMENT_PRODUCTION = "production"
+_KWS_ENVIRONMENT_VALUES = f"'{KWS_ENVIRONMENT_TEST}', '{KWS_ENVIRONMENT_PRODUCTION}'"
 
 
 class UUIDPrimaryKeyMixin:
@@ -478,6 +498,27 @@ class User(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
             "AND (residence_country IS NULL OR consent_accepted_at IS NOT NULL)",
             name="ck_user_residence_adulthood_pairing",
         ),
+        # #ASSUME: data-integrity: Postgres indexes the REFERENCED side of a
+        # foreign key, never the referencing side, so without this
+        # fk_user_consent_verification_id's ON DELETE SET NULL makes the
+        # referential-integrity trigger sequentially scan "user" once per
+        # deleted kws_verification row. Erasure is the path that hurts:
+        # api/families.py's delete-my-family removes a family's verification
+        # rows, and a COPPA/GDPR subject-erasure request does the same in
+        # bulk, which is many deletes each re-scanning the same table.
+        # Partial because the column is NULL for everyone who has not
+        # completed a KWS-corroborated consent; the trigger's lookup is an
+        # equality, which implies IS NOT NULL, so the planner can still use
+        # it.
+        # #VERIFY: keep in step with supabase/migrations/
+        # 20260811150000_index_user_consent_verification_id.sql;
+        # tests/integration/test_schema_parity.py compares the two databases
+        # the two paths build, so dropping either half fails there.
+        Index(
+            "ix_user_consent_verification_id",
+            "consent_verification_id",
+            postgresql_where=text("consent_verification_id IS NOT NULL"),
+        ),
     )
 
     # #CRITICAL: data-integrity: CASCADE (Phase 3a, GDPR/COPPA erasure): every
@@ -627,6 +668,45 @@ class User(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     # rollout (migrate-before-deploy), per the header comment in the
     # migration file.
     adulthood_attested_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
+    # ADR-018 D1: which KWS verification attempt corroborated THIS consent
+    # event. Evidence, not a gate: nothing reads this column to decide whether
+    # a guardian may proceed (``consent/service.py::has_usable_verification``
+    # asks that question of kws_verification directly, so a guardian who
+    # consented before verification existed can still verify later without
+    # anything rewriting their historical record).
+    #
+    # Deliberately NOT added to ck_user_consent_pairing. NULL here is a real
+    # and permanent state with a specific meaning: "this consent event was
+    # recorded under the typed-name-only mechanism, and was not itself backed
+    # by a verification". Pairing it with consent_accepted_at would make every
+    # such row violate the CHECK, and the only ways out would be to falsify
+    # those records or to invent evidence for them.
+    #
+    # use_alter=True because "user" and kws_verification reference each other
+    # (that table's user_id points back here), which is a cycle CREATE TABLE
+    # cannot order; SQLAlchemy emits this one as a separate ALTER TABLE, which
+    # is also how the migration spells it. ON DELETE SET NULL rather than
+    # CASCADE: erasing the verification attempt must never take the 16 CFR
+    # 312.5(c) consent record with it.
+    # #ASSUME: data-integrity: the guardian-deletion path deletes both rows in
+    # one statement, so the CASCADE on kws_verification.user_id and this
+    # SET NULL fire against each other inside the same command.
+    # #VERIFY: tests/integration/test_deletion_drill.py::
+    # test_deleting_a_verification_keeps_the_consent_record (the SET NULL
+    # itself: flipping this to CASCADE fails it) and
+    # ::test_delete_my_family_removes_the_kws_verification_rows (the two
+    # constraints firing together). Do NOT cite
+    # test_delete_my_family_removes_everything: it seeds no kws_verification
+    # row at all, so it exercises neither half of this cycle.
+    consent_verification_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey(
+            "kws_verification.id",
+            ondelete="SET NULL",
+            use_alter=True,
+            name="fk_user_consent_verification_id",
+        ),
+        default=None,
+    )
 
 
 class ChildProfile(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
@@ -2800,13 +2880,21 @@ class KwsVerification(Base):
         kws_environment: Which KWS environment produced it, ``test`` or
             ``production``.
         status: ``sent`` until a delivery resolves it to ``verified`` or
-            ``failed``.
+            ``failed``, or until the outbound send itself gives up and leaves
+            it ``send_failed``. Only the first two are facts about the parent.
         requested_at: When the send was attempted (UTC, TIMESTAMPTZ).
-        resolved_at: When a delivery resolved it, or ``None`` while ``sent``.
+        resolved_at: When the attempt stopped being open, or ``None`` while
+            ``sent``. For ``verified`` and ``failed`` that is when the delivery
+            landed; for ``send_failed`` it is when we gave up sending. The
+            pairing CHECK forces the column to carry both, so a reader that
+            means "a delivery arrived" must filter on status as well.
         transaction_id: KWS's opaque id for the verification, ``None`` until a
             delivery reports one.
         enabled_methods: ``settings.kws_enabled_methods`` as it stood at send
             time.
+        location: The location sent to KWS for this attempt, which selected
+            which methods the parent was offered. ``None`` on rows written
+            before the column existed.
     """
 
     __tablename__ = "kws_verification"
@@ -2834,6 +2922,39 @@ class KwsVerification(Base):
             "(status = 'sent') = (resolved_at IS NULL)",
             name="ck_kws_verification_resolution_pairing",
         ),
+        # ADR-018 D1 names the location a compliance input, because it is what
+        # selects the methods KWS offers the parent; a FORMAT check only, in
+        # the same spirit as ck_user_residence_country_format. It accepts an
+        # ISO 3166-1 alpha-2 country ("US") or an ISO 3166-2 subdivision
+        # ("US-CA"), and does not test membership: real membership is enforced
+        # at the API boundary, and KWS itself rejects a code it does not know.
+        # NULL stays legal, since rows written before this column existed
+        # carry no location and inventing one for them would be a lie.
+        CheckConstraint(
+            "location IS NULL OR location ~ '^[A-Z]{2}(-[A-Z0-9]{1,3})?$'",
+            name="ck_kws_verification_location_format",
+        ),
+        # #ASSUME: external resources: the delivery-health aggregate
+        # (consent/service.py::verification_delivery_health) filters this whole
+        # table on kws_environment and aggregates over requested_at and
+        # resolved_at, and it is reached from the PUBLIC, UNAUTHENTICATED
+        # readiness endpoint (api/health.py::check_kws_verification). Rows here
+        # are never deleted, so without this index the scan grows without a
+        # ceiling; the only other index on the table is the user_id one, which
+        # has kws_environment nowhere in it and cannot serve the predicate at
+        # all. Its job is to bound the scan to one environment, NOT to cover
+        # the query: the aggregate's FILTER also reads status, so an index-only
+        # scan would need a four-column index, which is not worth the write
+        # cost on a table that gains one row per verification email.
+        # #VERIFY: keep in step with supabase/migrations/
+        # 20260810180000_add_kws_verification_delivery_health_index.sql;
+        # tests/integration/test_schema_parity.py compares the two databases the
+        # two paths build, so dropping either half fails there.
+        Index(
+            "ix_kws_verification_environment_requested_at",
+            "kws_environment",
+            "requested_at",
+        ),
     )
 
     # No ``UUIDPrimaryKeyMixin``, and no default: the mixin's ``uuid.uuid4``
@@ -2844,7 +2965,10 @@ class KwsVerification(Base):
     # #CRITICAL: data-integrity: CASCADE (Phase 3a, GDPR/COPPA erasure): a
     # verification attempt is personal data about the guardian who started it,
     # so it goes when their user row does.
-    # #VERIFY: tests/integration/test_deletion_drill.py.
+    # #VERIFY: tests/integration/test_deletion_drill.py::
+    # test_delete_my_family_removes_the_kws_verification_rows. Name that test,
+    # not the file: it is the only one in there that seeds a kws_verification
+    # row, so it is the only one this CASCADE can be observed by.
     user_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey(_FK_USER, ondelete="CASCADE"), index=True
     )
@@ -2864,3 +2988,12 @@ class KwsVerification(Base):
     # #VERIFY: tests/unit/test_kws_verification_service.py::
     # test_the_enabled_methods_snapshot_is_copied_not_referenced.
     enabled_methods: Mapped[list[str]] = mapped_column(JSONB)
+    # #CRITICAL: data integrity: a SNAPSHOT for the same reason
+    # enabled_methods is one. The location decides which methods KWS offers
+    # this parent, so it bounds how they could have been verified just as
+    # directly as the method list does, and the parent-verified event reports
+    # neither. Nullable because rows predating this column have no location
+    # and no way to recover one.
+    # #VERIFY: tests/unit/test_kws_verification_service.py::
+    # test_the_location_is_recorded_on_the_attempt.
+    location: Mapped[str | None] = mapped_column(String(16), default=None)

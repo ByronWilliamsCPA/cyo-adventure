@@ -292,11 +292,38 @@ Supabase endpoints rather than `/api/v1`.
   exact `POST /v1/onboarding` consent payload and name trimming; plus the
   awaiting-approval interstitial branch)
 - Component: `frontend/src/auth/GuardianConsentPage.test.tsx`,
-  `frontend/src/auth/GuardianAwaitingApprovalPage.test.tsx`
+  `frontend/src/auth/GuardianAwaitingApprovalPage.test.tsx`,
+  `frontend/src/auth/residenceDraft.test.ts` (the country answer held between the
+  consent screen and the verification step: round-trip, the empty-select value when
+  nothing was picked, forgetting on clear, that it never lands in `localStorage`, and
+  that storage being unavailable degrades rather than throws)
 - **Note**: the gate is driven by the `POST /v1/onboarding` response fields
   (`consent_recorded`, `status`), NOT `/v1/me`; see the spec header. This was
   every guardian's first screen yet only manually prod-verified before the
   2026-07-22 audit added the E2E above.
+
+## Guardian: KWS parent verification (ADR-018 D1)
+
+- Component: `frontend/src/auth/GuardianVerificationPage.test.tsx` (the screen an
+  unverified guardian is routed to: each redirect out of it, signed-out to login,
+  backend-down to the interstitial, already-verified onward to approval, approved
+  onward to consent, fully signed-in to the console, and nothing rendered while auth
+  is still loading; the send is gated on a country being picked and posts that
+  country; an already-in-flight attempt and the hourly cap each get their own
+  message rather than being reported as failures, while a real failure is reported
+  as one and re-enables the button; and the wait state polls only once an attempt
+  exists, rechecks on demand, and swallows a failed recheck rather than alarming a
+  parent mid-verification), `frontend/src/auth/consentApi.test.ts` (the start-call
+  adapter: posts the location, returns the attempt view, and propagates a refusal
+  rather than resolving)
+- **Note**: two tests exist specifically to pin an absence, not a behavior:
+  `offers no way to name the recipient` and `sends no recipient of any kind`. The
+  verification email goes to the account's own adult, and a recipient field would
+  turn the flow into a way to send mail to an arbitrary address.
+- **Gap**: no E2E tier at all, mocked or real. The full round trip needs Epic's
+  hosted flow and a webhook, so nothing below `e2e-staging` can execute it, and the
+  staging tier does not cover it yet. What is proven here is the client's behavior
+  around the call, not that a verification ever completes.
 
 ## Guardian: submit story request (intake)
 

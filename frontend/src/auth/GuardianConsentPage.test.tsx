@@ -3,6 +3,7 @@ import { MemoryRouter, Route, Routes } from 'react-router'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { GuardianConsentPage } from './GuardianConsentPage'
+import { clearResidenceDraft, rememberResidenceDraft } from './residenceDraft'
 
 const mockRecordConsent = vi.fn()
 let mockAuth: { status: string; principal: { role: string } | null } = {
@@ -31,6 +32,33 @@ function renderWithRouter() {
 beforeEach(() => {
   mockRecordConsent.mockReset()
   mockAuth = { status: 'needs-consent', principal: null }
+  clearResidenceDraft()
+})
+
+describe('GuardianConsentPage residence draft', () => {
+  function countrySelect(): HTMLSelectElement {
+    return screen.getByLabelText('Your country of residence')
+  }
+
+  it('seeds the country field from a drafted code that is in the list', () => {
+    rememberResidenceDraft('GB')
+    renderWithRouter()
+
+    expect(countrySelect().value).toBe('GB')
+  })
+
+  it('ignores a drafted country that is not in the list', () => {
+    // The failure this prevents is not "the wrong country is selected", it is
+    // a control that LOOKS empty while testing as filled. Seeding 'ZZ' gives
+    // the select no matching <option>, so it renders blank, but the submit
+    // guard reads residenceCountry.length > 0 and enables the button. The
+    // adult then posts a country they were never shown and gets a 422 they
+    // have no way to act on. Falling back to '' costs one re-pick instead.
+    rememberResidenceDraft('ZZ')
+    renderWithRouter()
+
+    expect(countrySelect().value).toBe('')
+  })
 })
 
 describe('GuardianConsentPage', () => {

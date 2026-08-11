@@ -36,6 +36,8 @@ from cyo_adventure.api.schemas import (
     ProfileView,
     error_responses,
 )
+from cyo_adventure.consent import has_usable_verification
+from cyo_adventure.core.config import settings
 from cyo_adventure.core.exceptions import (
     AuthorizationError,
     BusinessLogicError,
@@ -304,12 +306,23 @@ async def _require_consent(ctx: Context) -> None:
     caller is the child's parent), while the admin one reads the TARGET
     family's (correct, because the caller is not).
 
+    Where ``settings.kws_verification_required`` is on, the gate becomes two
+    independent questions rather than one: is there a consent record, and is
+    there a usable KWS verification. They are kept independent, rather than
+    the second being read off ``User.consent_verification_id``, because a
+    guardian who consented before verification existed has the first and not
+    the second. Composing them lets that guardian satisfy the gate by
+    verifying once, with nothing rewriting the consent record they already
+    hold, which the "never overwritten" contract on those columns forbids
+    anyway.
+
     Args:
         ctx: The request context (principal + unit-of-work session).
 
     Raises:
         BusinessLogicError: If the calling guardian's own ``User`` row has no
-            recorded consent (400).
+            recorded consent, or (when verification is required) no usable
+            KWS verification (400).
     """
     # #CRITICAL: security: a guardian who signed in before completing the
     # consent step (or whose client skipped it) must not be able to create a
@@ -324,6 +337,20 @@ async def _require_consent(ctx: Context) -> None:
             "/onboarding) before creating a child profile"
         )
         raise BusinessLogicError(msg, rule="vpc_required")
+    # #CRITICAL: security: ADR-018 D1. Checked here rather than only at the
+    # sign-in surface, for the same reason the consent check is: this is the
+    # enforcement point a client cannot skip by calling the endpoint directly.
+    # #VERIFY: tests/integration/test_profiles.py::
+    # test_create_profile_requires_a_usable_verification_when_required and
+    # ::test_create_profile_allows_a_verified_guardian.
+    if settings.kws_verification_required and not await has_usable_verification(
+        ctx.session, (user.id,)
+    ):
+        msg = (
+            "parent verification must be completed (see POST "
+            "/consent/kws/start) before creating a child profile"
+        )
+        raise BusinessLogicError(msg, rule="vpc_verification_required")
 
 
 async def _listable_profiles(ctx: Context) -> list[ChildProfile]:

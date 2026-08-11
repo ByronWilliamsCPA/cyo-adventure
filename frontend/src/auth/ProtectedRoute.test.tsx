@@ -70,6 +70,30 @@ describe('ProtectedRoute', () => {
     expect(screen.queryByText('Login page')).not.toBeInTheDocument()
   })
 
+  it('redirects to the verification interstitial, not login', () => {
+    // ADR-018 D1's first interstitial. Same reasoning as the two below it: a
+    // real Supabase session exists, so login would loop. This one matters
+    // more than most, because the guardian it catches is not yet approved and
+    // so cannot reach GET /v1/me at all; the verification page is the only
+    // screen that can move them forward.
+    mockUseAuth.mockReturnValue({ status: 'needs-verification', principal: null })
+    render(
+      <MemoryRouter initialEntries={['/protected']}>
+        <Routes>
+          <Route path="/login" element={<div>Login page</div>} />
+          <Route path="/guardian/verify" element={<div>Verification page</div>} />
+          <Route
+            element={<ProtectedRoute redirectTo="/login" allowedRoles={['guardian', 'admin']} />}
+          >
+            <Route path="/protected" element={<div>Protected content</div>} />
+          </Route>
+        </Routes>
+      </MemoryRouter>
+    )
+    expect(screen.getByText('Verification page')).toBeInTheDocument()
+    expect(screen.queryByText('Login page')).not.toBeInTheDocument()
+  })
+
   it('redirects to the consent interstitial, not login', () => {
     mockUseAuth.mockReturnValue({ status: 'needs-consent', principal: null })
     render(

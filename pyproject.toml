@@ -350,6 +350,9 @@ known-first-party = ["cyo_adventure"]
 # kws_webhook.py imports DbSession (the same kind of Annotated[..., Depends()]
 # alias) on an import line of its own, for the same startup-resolution reason.
 "**/api/kws_webhook.py" = ["TC001"]
+# consent.py imports DbSession and OnboardingIdentityDep, both Annotated[...,
+# Depends()] aliases, on one line with nothing else on it; same reason again.
+"**/api/consent.py" = ["TC001"]
 # provider_allowlist.py imports Context alone (TC001, same reasoning as above)
 # and types its path params directly as uuid.UUID (TC003): with `from __future__
 # import annotations`, FastAPI resolves that annotation string via

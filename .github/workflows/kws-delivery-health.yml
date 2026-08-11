@@ -1,0 +1,393 @@
+# Scheduled probe for the KWS parent-verification INBOUND leg (ADR-018 D1).
+#
+# Why this exists as a scheduled job rather than a log-based alert rule: on
+# 2026-08-09 a Cloudflare custom rule blocked four KWS webhook retries at the
+# edge. The origin logged zero POSTs, so every log-derived view of that outage
+# was byte-identical to "the vendor never sent anything". There was no line to
+# alert on and no absence a log rule could name. The only trace such an outage
+# leaves is verification rows that never leave `sent`, which is a fact about
+# the DATABASE, not about the logs.
+#
+# The backend publishes that fact as the non-gating `kws_verification` readiness
+# check (src/cyo_adventure/api/health.py::check_kws_verification), computed by
+# consent/service.py::VerificationDeliveryHealth, which asks whether anything
+# has come back since the most recent attempt that is still waiting.
+# This workflow is only the alarm bell: it reads the already-public, already-
+# unauthenticated readiness endpoint. That is deliberate, and is why this job
+# holds NO database credential: one detection implementation, one place it can
+# be wrong, and no second copy of the prod DSN to leak.
+#
+# Security note: no step interpolates any `github.event.*` value. The only
+# expressions used are matrix values and secrets, and both reach the shell
+# through `env:` rather than through `run:` interpolation.
+#
+# ---------------------------------------------------------------------------
+# Secrets (both environment-scoped, both already used by the e2e tiers):
+# ---------------------------------------------------------------------------
+#
+#   E2E_STAGING_BASE_URL   (`staging` environment) Staging origin. No literal
+#                          fallback exists, so an absent secret SKIPS the
+#                          staging leg with a visible notice.
+#   E2E_PROD_BASE_URL      Optional, and as of 2026-08-10 defined in NO
+#                          environment, which is why the production leg can
+#                          name `production-e2e` (an environment holding
+#                          nothing it needs) rather than `production`. Falls
+#                          back to the public production origin, matching
+#                          frontend/e2e-prod/support/prod-env.ts.
+#
+# Failure alerting mirrors supabase-backup.yml and notification-digest.yml:
+# file or comment on a labelled `ci-failure` issue, with a distinct marker so
+# the three never collide. Convention: docs/operations/runbook.md section 7.
+name: KWS delivery health
+
+on:
+  schedule:
+    # Every 6h, offset off the other scheduled jobs (supabase-backup 08:00,
+    # notification-digest 09:00, e2e-staging 13:00).
+    #
+    # Detection latency is the check's 24h staleness threshold PLUS however
+    # long until the next probe, because the threshold decides when an outage
+    # becomes visible and the cadence decides when anyone looks. An earlier
+    # version of this file ran daily and justified it with "probing more often
+    # cannot surface an outage sooner, because no attempt counts as waiting
+    # until it has aged past that threshold". Only the first half of that is
+    # true: the threshold does floor the latency at 24h, but a daily probe
+    # adds up to another 24h on top, so an attempt that goes stale one minute
+    # after a run waits nearly a full day for the next one. Worst case was
+    # ~48h. At 6h it is ~30h, for a job that curls one public endpoint.
+    #
+    # The cost is that a persistent outage now comments on the marker issue
+    # four times a day instead of once. That is the right direction for this
+    # particular alarm: while it is firing, parents cannot finish signing up
+    # and cannot create child profiles, so the issue is meant to be loud
+    # rather than a daily diary entry.
+    - cron: "0 5,11,17,23 * * *"
+  workflow_dispatch: {}
+
+permissions: {}
+
+concurrency:
+  # Read-only against a public endpoint, so an interrupted run loses nothing
+  # and the freshest answer is the only one worth having.
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  probe:
+    name: Probe ${{ matrix.tier }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # #CRITICAL: external resources: the GitHub environment is NOT the tier
+    # name, and it must not be. `production` carries a required-reviewer
+    # protection rule, and a scheduled job that names it parks in `waiting`
+    # indefinitely rather than failing, so `if: failure()` never fires and the
+    # entire alert path deadlocks silently. e2e-prod.yml hit exactly this and
+    # is why `production-e2e` exists: same reasoning, same remedy. Staging
+    # genuinely needs its environment, because E2E_STAGING_BASE_URL lives
+    # nowhere else; the production leg needs no environment-scoped secret at
+    # all (E2E_PROD_BASE_URL is defined in no environment and the literal
+    # fallback below is what production actually uses), so it is pointed at
+    # the unprotected environment purely to keep the two legs symmetric.
+    # #VERIFY: before adding any environment to this workflow, check its
+    # protection rules with
+    # `gh api repos/{owner}/{repo}/environments/{name}`; a required_reviewers
+    # entry makes it unusable from a scheduled job. Protection rules live in
+    # the API, not in this repository, so nothing here can fail on them.
+    environment: ${{ matrix.environment }}
+    permissions: {}
+    strategy:
+      # One tier must not mask the other: as of 2026-08-10 KWS is wired on
+      # staging (Test environment) only, so a matrix that stopped at the first
+      # failure could report on the tier that has nothing configured and never
+      # reach the one that does.
+      fail-fast: false
+      matrix:
+        include:
+          - tier: staging
+            environment: staging
+          - tier: production
+            environment: production-e2e
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Read the readiness check
+        id: probe
+        env:
+          TIER: ${{ matrix.tier }}
+          # Both secrets are passed through and the tier is selected in shell,
+          # deliberately, rather than with a `matrix.tier == 'staging' && A ||
+          # B` expression. GitHub's `&&`/`||` are value-returning, not boolean:
+          # when the left operand is truthy but A is an EMPTY string, the
+          # expression falls through to B. So the ternary form silently hands
+          # the STAGING leg the PRODUCTION URL the moment
+          # E2E_STAGING_BASE_URL is unset, renamed, or scoped to an
+          # environment this job did not name. The probe then reports
+          # production's health under the staging tier and the `-z` guard
+          # below can never fire, which is the worst failure a monitor has:
+          # confidently green about a tier nobody looked at.
+          STAGING_BASE_URL: ${{ secrets.E2E_STAGING_BASE_URL }}
+          # Staging has no public literal to fall back to; production does.
+          PROD_BASE_URL: ${{ secrets.E2E_PROD_BASE_URL }}
+          PROD_FALLBACK_URL: https://cyo.williamshome.family
+          # Until when a `missing` check on production is a notice rather than
+          # a failure. Production runs a build that predates the
+          # kws_verification readiness check, and nothing in this PR pairs
+          # merging with a homelab redeploy, so without this the very first
+          # scheduled run files a ci-failure issue and every run after it
+          # comments on the same issue until somebody redeploys. A month of
+          # daily noise is how a marker issue gets trained into background.
+          #
+          # A DATE rather than a boolean on purpose: a boolean would be a
+          # switch someone has to remember to flip back, and the failure mode
+          # of forgetting is a monitoring gap that looks exactly like health.
+          # After this date the grace expires by itself and production goes
+          # back to failing on `missing`, which is the permanent behaviour.
+          # Staging is never granted the grace: it is deployed from main and
+          # is where the check is meant to be live already.
+          PROD_MISSING_GRACE_UNTIL: "2026-09-10"
+        run: |
+          set -euo pipefail
+
+          # One line, written before every exit, so the alert job can name the
+          # tier and the outcome without anybody opening the log. Without this
+          # the issue can only say "something failed": `fail-fast: false` means
+          # either leg can be the failing one, and the alert job runs once for
+          # both, so it has no way to tell them apart from `needs.probe` alone.
+          record() {
+            printf '%s\t%s\t%s\n' "${TIER}" "$1" "${2:-}" > "outcome-${TIER}.tsv"
+          }
+
+          # No cross-tier fallback: staging resolves to staging's secret or to
+          # nothing at all, so an unset secret reaches the skip branch below
+          # instead of quietly probing the other tier.
+          if [ "${TIER}" = "staging" ]; then
+            BASE_URL="${STAGING_BASE_URL}"
+          else
+            BASE_URL="${PROD_BASE_URL:-${PROD_FALLBACK_URL}}"
+          fi
+
+          if [ -z "${BASE_URL}" ]; then
+            record no-base-url "no base URL configured"
+            echo "::notice::${TIER}: no base URL configured, nothing probed."
+            exit 0
+          fi
+
+          # Canonical /api/v1 path, not the un-prefixed loopback alias, which
+          # nginx answers with 404 from outside the container (UW-L04).
+          if ! body=$(curl -fsS --max-time 30 --retry 3 --retry-delay 5 \
+                        "${BASE_URL}/api/v1/health/ready"); then
+            record unreachable "readiness was unreachable or non-2xx"
+            echo "::error::${TIER}: /api/v1/health/ready was unreachable or returned a" \
+                 "non-2xx status. That is either a readiness 503 (the database check" \
+                 "gates the status code) or an edge/ingress problem; it says nothing" \
+                 "about KWS either way."
+            exit 1
+          fi
+
+          state=$(printf '%s' "${body}" | jq -r '.checks.kws_verification.state // "missing"')
+          detail=$(printf '%s' "${body}" | jq -r '.checks.kws_verification.error // ""')
+
+          record "${state}" "${detail}"
+
+          case "${state}" in
+            ok)
+              echo "::notice::${TIER}: KWS deliveries are still resolving."
+              ;;
+            unconfigured)
+              # Not a failure: a tier with KWS_VERIFICATION_REQUIRED off is not
+              # running the flow, so there is no inbound leg to be broken. It is
+              # still worth saying out loud, because "unconfigured" and "healthy"
+              # look identical to anyone reading only the job's green tick.
+              echo "::notice::${TIER}: KWS verification is switched off here; nothing to probe."
+              ;;
+            degraded)
+              echo "::error::${TIER}: KWS deliveries appear to have STOPPED. ${detail}"
+              exit 1
+              ;;
+            unknown)
+              # The check ran and could not measure: the aggregate query
+              # failed. Still a failure, because a monitor that cannot see is
+              # not a monitor, but deliberately NOT the `degraded` wording.
+              # `degraded` sends an operator to KWS, the webhook route, and
+              # the vendor dashboard; `unknown` sends them to the database.
+              # Saying "deliveries stopped" for a failed query also spends the
+              # alert: once this cries wolf for a database fault, a real
+              # stoppage reads as the same noise.
+              echo "::error::${TIER}: the kws_verification check could not run, so the" \
+                   "delivery signal is UNMEASURED. This is a database or query fault on" \
+                   "the backend, not evidence that KWS deliveries stopped. Triage the" \
+                   "database first; see runbook section 7.1. ${detail}"
+              exit 1
+              ;;
+            missing)
+              # The check itself is gone from the response. Distinguished from
+              # `unconfigured` on purpose: a probe that treats an absent key as
+              # benign is how a monitoring gap ships unnoticed.
+              #
+              # Production gets a dated grace while it still runs a build from
+              # before this check existed. The state recorded above is still
+              # `missing`, so the run log and the alert table stay honest; what
+              # the grace changes is only whether it files an issue.
+              if [ "${TIER}" = "production" ] \
+                 && [ "$(date -u +%s)" -lt "$(date -u -d "${PROD_MISSING_GRACE_UNTIL}" +%s)" ]; then
+                echo "::notice::${TIER}: no kws_verification readiness check yet, which is" \
+                     "expected until the homelab redeploys. This becomes a failure on" \
+                     "${PROD_MISSING_GRACE_UNTIL}."
+                exit 0
+              fi
+              echo "::error::${TIER}: the readiness response carries no kws_verification" \
+                   "check at all. Either the deployed build predates it or the check was" \
+                   "removed; nothing is watching the inbound leg on this tier."
+              exit 1
+              ;;
+            *)
+              echo "::error::${TIER}: unrecognised kws_verification state '${state}'."
+              exit 1
+              ;;
+          esac
+
+      # always(), because the outcome of a FAILING leg is the one the alert
+      # needs. An upload conditioned on success would carry only the legs that
+      # had nothing to report.
+      - name: Publish this tier's outcome
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: kws-health-${{ matrix.tier }}
+          path: outcome-${{ matrix.tier }}.tsv
+          if-no-files-found: warn
+          retention-days: 7
+
+  alert:
+    name: Alert on failure
+    needs: probe
+    if: failure()
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      # No `actions: read`. The artifact download below reads artifacts from
+      # THIS run, which goes through the runtime token rather than
+      # GITHUB_TOKEN; the `actions: read` scope is only required when
+      # download-artifact is given a `run-id` for a different run.
+      issues: write
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Collect each tier's outcome
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: kws-health-*
+          path: outcomes
+          merge-multiple: true
+
+      - name: File or comment on the pinned issue
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const fs = require('node:fs')
+            const marker = '[kws-delivery-health]'
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
+            const today = new Date().toISOString().slice(0, 10)
+
+            // Which tier, in which state. Without this both the new issue and
+            // every repeat comment say only "the probe failed", which for a
+            // two-tier matrix is the one thing a responder cannot act on: the
+            // triage steps below diverge completely by state, and the tiers
+            // have different expected states while production is unwired.
+            let summary = '_No tier reported an outcome; read the job log._'
+            try {
+              const rows = fs
+                .readdirSync('outcomes')
+                .filter((f) => f.endsWith('.tsv'))
+                .map((f) => fs.readFileSync(`outcomes/${f}`, 'utf8').trim())
+                .filter(Boolean)
+                .map((line) => {
+                  const [tier, state, detail] = line.split('\t')
+                  return `| \`${tier}\` | \`${state}\` | ${detail || '(none)'} |`
+                })
+              if (rows.length > 0) {
+                summary = ['| Tier | State | Detail |', '| --- | --- | --- |', ...rows].join('\n')
+              }
+            } catch (err) {
+              // A missing artifact directory is not itself worth failing the
+              // alert over: an alert that cannot file is strictly worse than
+              // one that files without the table.
+              core.warning(`could not read tier outcomes: ${err.message}`)
+            }
+
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'ci-failure',
+              per_page: 100,
+            })
+            const existing = issues.find((issue) => issue.title.startsWith(marker))
+
+            if (existing) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                body: [
+                  `KWS delivery-health probe failed again on ${today}.`,
+                  '',
+                  summary,
+                  '',
+                  `Run: ${runUrl}`,
+                ].join('\n'),
+              })
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `${marker} KWS parent-verification deliveries may have stopped`,
+                labels: ['ci-failure'],
+                body: [
+                  'The scheduled `KWS delivery health` workflow',
+                  '(`.github/workflows/kws-delivery-health.yml`) failed.',
+                  '',
+                  summary,
+                  '',
+                  'The triage below diverges by state, so read the table first.',
+                  '',
+                  '**If the state was `degraded`**, an attempt has been waiting more than',
+                  '24h and nothing has come back since it was sent. Parents are stuck on the',
+                  'wait screen and cannot create child profiles. Check, in this order:',
+                  '',
+                  '1. **The edge, before the origin.** A Cloudflare custom rule blocking the',
+                  '   webhook path leaves ZERO origin log lines, so an empty origin log is',
+                  '   evidence of nothing. Read the Cloudflare Security Events view for the',
+                  '   webhook path, not the application logs.',
+                  '2. The KWS status page and the vendor console, for a sending-side outage.',
+                  '3. `kws_verification` rows still in `sent`: their `requested_at` spread',
+                  '   dates the start of the outage.',
+                  '4. If the error says nothing has EVER resolved, suspect wiring rather than',
+                  '   an outage: a webhook URL the vendor could never reach looks exactly like',
+                  '   this, and has no start date because there was never a working state.',
+                  '5. If every waiting row is months old and the leg is otherwise fine, this is',
+                  '   an abandoned attempt, which this check reports rather than guesses about.',
+                  '   Resolve the row; do not mute the check.',
+                  '',
+                  '**If the state was `missing`**, the deployed build has no `kws_verification`',
+                  'readiness check, so nothing is watching that tier. Redeploy, or confirm the',
+                  'check was not removed.',
+                  '',
+                  '**If the endpoint was unreachable**, this is not a KWS finding at all: either',
+                  'readiness 503d on the database check or the ingress is down. Triage that first.',
+                  '',
+                  `First failing run: ${runUrl}`,
+                  `Date: ${today}`,
+                  '',
+                  'This issue stays open and accumulates one comment per failing run until',
+                  'someone resolves the underlying problem and closes it; the next failure',
+                  'after that opens a fresh issue.',
+                ].join('\n'),
+              })
+            }

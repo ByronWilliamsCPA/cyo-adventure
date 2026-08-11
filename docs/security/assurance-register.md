@@ -36,8 +36,8 @@ Automated verifications run report-only: they write a status and a scheduled sum
 zero. Every automated check enters at status *mechanism unproven* and leaves only once a negative
 control has tripped it.
 
-Applied to this document as it currently stands, that contract convicts it: **every one of the 121
-rows carries `Phase home: unassigned`, so by the register's own definition all 121 are open
+Applied to this document as it currently stands, that contract convicts it: **every one of the 122
+rows carries `Phase home: unassigned`, so by the register's own definition all 122 are open
 defects.** This is stated rather than left to be inferred, because a register that defines a defect
 and then quietly exhibits it everywhere is the hollow artifact SP-17 is about. It is not a reason
 to soften the definition. Nothing can be assigned a phase home until the `UW-*` linkage in
@@ -95,7 +95,7 @@ government contract clauses.
 | Regime | Why | Register rows |
 | --- | --- | --- |
 | **FTC Act §5** | Any consumer-facing product. Security and privacy claims in the notice become enforceable representations | O-38, O-62, O-94 |
-| **COPPA** (compliance date 22 Apr 2026, therefore live) | Children under 13, child-directed service | O-35, O-36, O-61, O-62, O-31, O-122, O-123, O-124 |
+| **COPPA** (compliance date 22 Apr 2026, therefore live) | Children under 13, child-directed service | O-35, O-36, O-61, O-62, O-31, O-122, O-123, O-124, O-125 |
 | **State breach notification** | The regime attaches with the first non-household user; the notice duty itself fires on discovery of a qualifying breach | O-92 |
 | **ADA / WCAG** | Consumer-facing; also overlaps the age-appropriate-design duty to be understandable | O-95 |
 
@@ -111,7 +111,7 @@ discovery. This is the same treatment GDPR gets: written down before it binds.
 | **State information-security statutes** (NY SHIELD Act, Massachusetts 201 CMR 17.00) | Not residency alone: both statutes key on a defined data class (NY GBL 899-aa(1) "private information"; MA 201 CMR 17.02 "personal information"), each a name plus a specific sensitive identifier: SSN, driver's license/state-ID number, or a financial-account, credit-card, or debit-card number, **with or without** an accompanying security code, access code, PIN, or password (neither statute requires the credential; a bare card or account number combined with a name is already covered), plus biometric data, or, for NY only, a username/email combined with a password or security question and answer. T1 records no SSN/DL/financial-account/card/biometric data; T1's guardian email and auth identity is the one class that plausibly meets NY's username-plus-credential prong, an open question O-120 records rather than resolves. "First NY or MA resident outside the operator's household" is this project's own internal readiness marker, not a statutory threshold; neither statute has a company-size or record-count floor | O-120. Distinct from O-97's comprehensive-privacy/design-code determination and from O-61's COPPA-scoped, children-only security program: SHIELD and 201 CMR protect residents' private/personal information as each statute defines it, not "all" data about them |
 | **App store accountability acts** (TX SB 2420, UT, LA, AL) | Store distribution at R2/R3. Duties land on the **developer**: age rating, ingest store age and consent signals, re-trigger consent on significant change | O-98 |
 | **App store policies** (Apple Kids, Google Play Families) | Store submission | O-99 |
-| **GDPR / UK GDPR** | First EU or UK child or guardian | O-57 to O-60, O-93, O-34, O-121 (Art. 8 child-consent age, added post-2026-08-02) |
+| **GDPR / UK GDPR** | First EU or UK child or guardian | O-57 to O-60, O-93, O-34, O-121 (Art. 8 child-consent age, added post-2026-08-02), O-125 (Art. 28/44-49, added 2026-08-10) |
 | **DSA Art. 28** | Analysed: does not engage, the service is not an Art. 3(i) online platform. Re-open if any O-118 structure changes | O-118 |
 | **EU AI Act** transparency | EU market entry; generated content disclosure | O-74 |
 | **CRA** | Placing the product on the EU market | Deferred |
@@ -371,8 +371,8 @@ active", and the lifecycle section separately recorded a decision to accept "81 
 figures were wrong, and the error was load-bearing rather than cosmetic: it presented the register
 as six rows over a review ceiling it is actually fifty-three rows over, and it recorded a
 row-budget decision whose stated purpose was to prevent a budget being silently exceeded. The
-authoritative count is a count of `#### O-<digits>` headings within this section: 121 rows, IDs
-running O-01 to O-124 with O-63, O-64, and O-65 unassigned. Recount with
+authoritative count is a count of `#### O-<digits>` headings within this section: 122 rows, IDs
+running O-01 to O-125 with O-63, O-64, and O-65 unassigned. Recount with
 `grep -cE '^#### O-[0-9]+$'`. Note that O-117 and O-119 also appear as the first cell of the
 initial-build commitments table below; those are cross-references to rows defined here, not
 additional rows, and the heading-anchored pattern above deliberately excludes them.
@@ -2903,6 +2903,52 @@ posture at a trust boundary must be verified from outside that boundary.
 - **Check:** Records of processing are maintained with purposes, recipients, transfers, deletion
   periods, and a description of security measures
 
+#### O-125
+
+- **Category:** SP-12
+- **Framework ref:** not determined
+- **Legal ref:** GDPR Art. 28 (processor engaged only under a contract), Art. 44-49 (transfers),
+  Art. 13(1)(e)-(f) (recipients and transfers must be disclosed at the point of collection)
+- **Class:** MANUAL
+- **Protected property:** No adult's email address is disclosed to Kids Web Services from a tier
+  serving real families until a DPA is executed with the receiving Epic entity, the transfer
+  mechanism for that entity is recorded, and the disclosure is stated to the guardian before they
+  trigger it.
+- **Verification target:** The executed Epic/KWS DPA and its named counterparty entity;
+  `processor-dpa-checklist.md`'s row for that vendor; the guardian-facing copy on
+  `GuardianVerificationPage` and the processor table in `privacy-notice.md`; and
+  `KWS_VERIFICATION_REQUIRED` on each deployed tier.
+- **Failure oracle:** `KWS_VERIFICATION_REQUIRED` is true on a tier serving real families while
+  any of the three preconditions is unmet. Equivalently: a `kws_verification` row exists for a
+  real guardian and `processor-dpa-checklist.md` has no executed Epic entry.
+- **Negative control:** none, and this is the honest state rather than an oversight. The
+  precondition is contractual and editorial, so there is nothing in the code that could refuse;
+  the only mechanical lever is the flag itself, which defaults false
+  (`tests/unit/test_config.py::TestKwsEvidenceSettings::test_verification_is_not_required_by_default`)
+  and therefore fails safe without proving anything about this row.
+- **Trigger:** Before the first production switch-on of `KWS_VERIFICATION_REQUIRED`, and on any
+  change to the receiving Epic entity or to the KWS request payload.
+- **Existing coverage:** partial, on the minimisation side only. The outbound body carries the
+  adult's email, country, language, and an opaque reference and nothing else; `kws_verification`
+  has **no** email column under any name, enforced by an AST-based source guard, so the address is
+  transmitted and not retained by us. None of that touches the three gaps this row is about.
+  **Distinct from O-123 and O-124**, which govern *which* KWS environment and *which* methods a
+  verification relied on: those ask whether the evidence is sound, this asks whether the
+  disclosure that produces the evidence is lawful at all. All three are switch-on preconditions
+  and none substitutes for another.
+- **Recorded 2026-08-10**, when the gate was built and wired on staging against the vendor's Test
+  environment. The disclosure is inherent to the design and not deferrable: the address is sent
+  when the check *starts*, so an applicant who is refused, who abandons, or who never creates a
+  child profile has still had their address disclosed. This is the only processor in the RoPA that
+  receives data about people who never become users.
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** An executed DPA, a recorded transfer mechanism for the named receiving entity, and
+  pre-send guardian disclosure all exist before any real family's email address reaches Kids Web
+  Services
+
 ### SP-13 Protected-Population Duties and Age-Appropriate Design
 
 #### O-35
@@ -3501,6 +3547,51 @@ posture at a trust boundary must be verified from outside that boundary.
     forward. Whether that set is non-empty, and whether every member is the operator's own household,
     is **not established**; establishing it is a precondition for closing 1A rather than narrowing
     it, and it is a read-only query against the production project, not an inference.
+- **The gate is built, 2026-08-10, and the bullet above is superseded on its factual half only.**
+  Both child-profile creation routes now refuse when `settings.kws_verification_required` is set and
+  the adult holds no usable verification (`api/profiles.py`, `api/admin_profiles.py`, via
+  `consent/service.py::has_usable_verification`), and `api/onboarding.py::_record_consent` stamps the
+  corroborating verification id onto the consent record. **The flag is off in production**, so the
+  typed-name path is still fully reachable there and the ruling is still policy rather than control
+  on the tier that matters; what changed is that switching it on is now a configuration decision
+  instead of unbuilt work. Three things this does **not** change, listed because a "built" note
+  invites over-reading:
+  - **It answers nothing about the method.** Q2's notification limb still decides whether
+    (b)(2)(ii) is reachable at all, and this row's Check turns on that, not on whether a gate exists.
+  - **It adds a precondition rather than removing one.** The check discloses an adult's email to
+    Epic Games at the moment it **starts**, so refused and abandoned applicants are disclosed too,
+    to a processor with no executed DPA and an unresolved counterparty entity. That is **O-125**,
+    and it gates the switch-on independently of anything in this row.
+  - **O-123 shipped with it**, as that row required, so the gate cannot be satisfied by a sandbox
+    verification. Had the consumer landed first, this row's remediation would have opened a worse
+    hole than the one it closes.
+- **Owner ruling 2026-08-10, later the same day: 312.5(b)(2)(ii)'s notification limb is accepted as
+  satisfied, and the question is withdrawn from the counsel engagement.** Recording the three things
+  the spine requires, so this is a decision rather than a disappearance:
+  - **Risk accepted.** That "provides notification of each discrete transaction to the primary
+    account holder" is met by a statement line item rather than by an issuer push alert. The basis
+    is the observed design: Epic's method creates a real **PaymentIntent for $0.05** refunded in 8 to
+    13 business days, so the capture and the refund post as **two discrete statement entries** rather
+    than a same-day pair an issuer might net out before the statement closes. The structural limb
+    ("in connection with a transaction") is not accepted risk at all; it was answered by observation,
+    including a real `pi_...` identifier, and the parent-facing screen commits to the charge in
+    writing. What is accepted is the *reading* of the second limb, which no run could have settled:
+    the Test environment uses Stripe test cards, so no real notification exists there by
+    construction, and the only instrument that could produce the evidence is a production
+    verification, which is a genuine VPC event and cannot be spent as a test.
+  - **Compensating controls.** (a) The charge is real rather than a zero-amount authorisation, which
+    is the branch this limb was written to exclude. (b) The refund lag makes two entries rather than
+    one, so the notification survives an issuer that nets same-day pairs. (c) Nothing about the
+    method is built here: the card never touches this application, so the behaviour being relied on
+    is the vendor's and is uniform across its customers.
+  - **Expiry.** Reassess if Epic changes the method (a switch to a zero-amount authorisation, a
+    same-day refund, or a `SetupIntent` would each retire the basis above), and at R2 alongside this
+    row's other acceptance. **This does not convert the open question into a closed one**: it is an
+    owner reading of rule text, taken without counsel review, and the register says so rather than
+    presenting it as settled law.
+  - **What it unblocks.** Q2 leaves the Gate 1 run list, so no production verification is needed to
+    answer it. That removes a real ordering collision: the run that would have answered this limb is
+    itself a disclosure of a real adult's email to Epic, which is precisely what **O-125** gates.
 - **Phase home:** unassigned
 - **Owner:** core-maintainer
 - **Last verified:** not verified. **Neither an accepted exception nor a decision to remediate is a
@@ -3560,10 +3651,29 @@ posture at a trust boundary must be verified from outside that boundary.
   consumer**, not after it. Shipping the consumer first would create, for the duration of the gap, a
   production consent path satisfiable by a staging artifact, which is a worse posture than the one
   the ruling was made to improve.
+- **Reliance rule shipped with the consumer, 2026-08-10, which is what the bullet above required.**
+  `consent/service.py::usable_verification_id` is the single source of both the gate answer and the
+  evidence link, and it refuses a Test verification **before the query runs**, so there is no
+  ordering of the remaining conditions under which a sandbox row can be read as evidence. The query
+  additionally filters on `kws_environment`, closing the opposite direction: a production-configured
+  process must not count a leftover Test row from before a cutover. The guard keys on
+  `kws_environment`, never on `settings.environment`, precisely because **staging declares
+  `ENVIRONMENT=production`** and the obvious predicate would be inert on every deployed tier. Both
+  child-profile creation routes (`api/profiles.py`, `api/admin_profiles.py`) consume it, and
+  `api/onboarding.py::_record_consent` stamps the same id onto the consent record, so a record
+  cannot cite a verification the gate would have refused. Unit coverage:
+  `tests/unit/test_kws_verification_service.py::test_a_test_environment_verification_is_not_usable_by_default`
+  and `::test_the_test_refusal_never_reaches_the_database`. Two limits stay open and are the reason
+  this row does not close: the escape hatch `KWS_ACCEPT_TEST_EVIDENCE` exists and nothing outside
+  code review stops an operator setting it on a tier serving real families, and the whole mechanism
+  has never executed on such a tier, because production still has no KWS wiring.
 - **Phase home:** unassigned
 - **Owner:** core-maintainer
-- **Last verified:** not verified
-- **Status:** evidence invalid
+- **Last verified:** not verified on any tier serving real families; unit-verified 2026-08-10
+- **Status:** mechanism unproven (downgraded 2026-08-10 from *evidence invalid*: the reliance rule
+  the earlier status recorded as absent now exists and is consumed, so the invalidating gap is
+  closed; what remains is an unexercised mechanism, which is this register's entry state, not a
+  finding)
 - **Check:** Every deployed tier's KWS environment is the one appropriate to that tier, and no
   `kws_verification` row carrying `kws_environment = 'test'` is relied on as evidence that a real
   parent consented
@@ -3621,6 +3731,14 @@ posture at a trust boundary must be verified from outside that boundary.
   vacuously true today because `KWS_PRODUCT_ID` is unset on staging, so a delivery naming any
   product passes. The value is visible in the Developer Portal and can be pinned whenever the
   branding work takes an operator there.
+- **Consequence raised, not changed, 2026-08-10.** A consumer of these rows now exists: child-profile
+  creation refuses without a usable verification, and the consent record cites the verification id.
+  Nothing in that path reads `enabled_methods`, so this row's mechanism is untouched. What changed is
+  what a wrong declaration costs. Before, an inaccurate snapshot was a defect in an unread record;
+  now it is the only description of how the adult behind a live consent decision was checked, and the
+  vendor supplies no field that could contradict it. Read the stored value as *what we permitted*,
+  never as *what happened*, and hold that line hardest on the AgeGraph inheritance branch, where no
+  method ran for us at all.
 - **Phase home:** unassigned
 - **Owner:** core-maintainer
 - **Last verified:** 2026-08-09 (staging only; the control has never run on a tier serving real
@@ -3919,8 +4037,10 @@ different question.
    vendor sandbox/production partition), and O-124 (the send-time snapshot of permitted verification
    methods), moving the count to 121 rows, 118 active. Those three closed a gap worth naming: the
    register cited COPPA against five rows, none of which asked *by what method* consent is verified,
-   and the word "verifiable" appeared nowhere in the file. Reopened: decide whether the active count,
-   now 118, is accepted, or trim to the ~60 ceiling. This is the maintainer's call and is deliberately left open rather than re-decided here;
+   and the word "verifiable" appeared nowhere in the file. Building that verification gate on
+   2026-08-10 then added O-125 (the processor disclosure the gate performs, as distinct from the
+   evidence it produces), moving the count to 122 rows, 119 active. Reopened: decide whether the
+   active count, now 119, is accepted, or trim to the ~60 ceiling. This is the maintainer's call and is deliberately left open rather than re-decided here;
    the point of recording each new addition here is so the next person who reopens this item
    recounts rather than trusts any historical figure.
 7. **Promote the spine.** `assurance-spine.md` is written to be lifted into whatever global

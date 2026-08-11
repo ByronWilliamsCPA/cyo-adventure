@@ -532,13 +532,17 @@ its own gap, distinct from `UW-D27`).
 
 ## 7. How you find out something broke
 
-There are two scheduled, alerting synthetic checks today, both following the same pattern: on
-failure, find-or-open a GitHub issue labeled `e2e-alert` whose title starts with a workflow-specific
-marker, and comment on it with the failing run's URL and date, rather than leaving a red run nobody
-checks the Actions tab for. The issue stays open and accumulates one comment per failing run until
-someone resolves the underlying problem and closes it (a fresh issue opens after the next failure).
-**Watch (or filter Issues by) the `e2e-alert` label** to be notified through GitHub's native issue
-notifications; there is no other outbound channel (no Slack/email/pager integration) wired up.
+Every alerting scheduled job follows the same pattern: on failure, find-or-open a GitHub issue whose
+title starts with a workflow-specific marker, and comment on it with the failing run's URL and date,
+rather than leaving a red run nobody checks the Actions tab for. The issue stays open and accumulates
+one comment per failing run until someone resolves the underlying problem and closes it (a fresh
+issue opens after the next failure). There is no other outbound channel: no Slack, email, or pager
+integration is wired up, so **watch (or filter Issues by) both labels** below to be notified through
+GitHub's native issue notifications.
+
+The label splits by what kind of job it is, which is deliberate rather than historical accident:
+`e2e-alert` for the E2E tiers, `ci-failure` for ops and quality jobs. `grep -rn "labels: '" .github/workflows/`
+lists the current producers of each; the two E2E tiers are:
 
 - **`.github/workflows/e2e-prod.yml`** ("E2E (production)"): runs the Playwright `e2e-prod` tier
   daily (`30 13 * * *` UTC) against the live production URL (`https://cyo.williamshome.family` by
@@ -551,13 +555,107 @@ notifications; there is no other outbound channel (no Slack/email/pager integrat
   devices racing a genuine 409 through the offline conflict dialog) that the mocked test suite
   cannot. Its alert marker is `[e2e-real-nightly]`.
 
-A staging counterpart (`e2e-staging.yml`) and a corresponding `[e2e-staging]`-marker alerting step
-are planned to land via PR #268 (per `e2e-prod.yml`'s own header comment) but do not exist on this
-branch yet; today staging failures only produce a Playwright trace artifact on a red CI run, with
-no issue-based alert. `docs/testing/` (a fuller test-strategy doc set) is likewise expected from
-PR #268 and is not present in this checkout; once merged, link it here instead of duplicating its
-content. For a manual, checklist-driven live verification (not automated alerting), see
+`e2e-staging.yml` ("E2E (staging)", daily at 13:00 UTC) is a third tier but is **not** on this list,
+because it has no alerting step of any kind: a staging failure leaves a red run and a Playwright
+trace artifact, and nothing opens an issue. Nobody is notified unless they look. For the wider test
+strategy see [`docs/testing/`](../testing/README.md); for a manual, checklist-driven live
+verification (not automated alerting), see
 [`docs/planning/r1-live-e2e-checklist.md`](../planning/r1-live-e2e-checklist.md).
+
+### 7.1 KWS parent-verification delivery health
+
+**`.github/workflows/kws-delivery-health.yml`** ("KWS delivery health", marker `[kws-delivery-health]`,
+label `ci-failure`) runs every 6 hours (05:00, 11:00, 17:00, 23:00 UTC) against both staging and
+production. It is worth calling out separately because of what it watches and why nothing else can.
+
+On 2026-08-09 a Cloudflare custom rule blocked four KWS webhook retries at the edge. The origin
+logged zero POSTs, so every log-derived view of that outage read exactly like "the vendor never sent
+anything": no line to alert on, and no absence a log rule could name. The only trace it left was
+`kws_verification` rows that never moved off `sent`. The alarm is therefore a query over that table,
+surfaced as the non-gating `kws_verification` check on `/api/v1/health/ready`, and this workflow just
+reads that endpoint. It holds no database credential of its own.
+
+A stuck count alone would be useless, because a parent who never opens their email leaves a `sent`
+row forever. The check compares two timestamps instead: it fires when **nothing has resolved since
+the most recent attempt that is still waiting** (once that attempt is older than 24h, so a parent
+still reading their inbox is not mistaken for an outage). A resolution counts whether the
+verification succeeded or was refused, since either one proves deliveries are arriving.
+
+**Expected detection latency is up to about 30 hours**, and knowing that matters when you are dating
+an outage from the alarm. It is the 24h staleness threshold, which is how long an attempt must sit
+before it counts as waiting at all, plus up to 6 hours until the next probe reads the endpoint. So
+the alarm is never evidence that the outage started recently; read the `requested_at` spread for
+that, not the time the issue was filed.
+
+Two properties of that rule are worth knowing before you read an alarm:
+
+- The anchor is the **newest** waiting attempt, not the oldest. One attempt abandoned months ago
+  stays the oldest forever, so anchoring on it would let every resolution since then vouch for the
+  leg and a fresh outage would never surface.
+- A lone abandoned attempt on a tier with no other traffic **does** keep alarming, and that is the
+  accepted cost. On the evidence available it is indistinguishable from a broken leg. The remedy is
+  to resolve the row, not to widen the rule; the previous rule bought silence here by also requiring
+  fresh sends, which made it quietest on exactly the low-traffic tiers where an outage is hardest to
+  notice by other means.
+- An attempt whose **outbound** send failed resolves to `send_failed` and is neither a waiting
+  attempt nor a resolution. It is not waiting, because no email went out and nothing is coming back
+  for it; and it is not a resolution, because only our own timeout handler ran, so counting it would
+  let a broken return path look healthy. The consequence to know: this check watches the **inbound**
+  leg only. A tier where every send fails outright has no waiting attempts at all and so reports
+  `ok` here, while every guardian gets a 400 from `POST /api/v1/consent/kws/start`. That outage is
+  loud in the application logs and in the guardian's face; this check is not the instrument for it.
+
+Triage, in order, when the marker issue appears with a `degraded` state:
+
+1. **Check the edge before the origin.** An edge block leaves zero origin log lines, so an empty
+   application log is evidence of nothing. Read Cloudflare's Security Events for the webhook path.
+2. Check the KWS status page and vendor console for a sending-side outage. `send_failed` rows date
+   any outbound trouble independently; a burst of them alongside stuck `sent` rows points at the
+   vendor rather than at our webhook path.
+3. Read the `requested_at` spread of the rows still in `sent`; it dates the start of the outage.
+4. If the error says **nothing has ever resolved**, suspect wiring rather than an outage: a webhook
+   URL that was never reachable from the vendor's side produces exactly this, and it has no start
+   date because there was never a working state to leave.
+5. If the rows still in `sent` are all months old and the leg is otherwise fine, this is the
+   abandonment case above. Resolve them rather than muting the check.
+
+An `unknown` state means the check ran but its aggregate query did not return, so the delivery signal
+was not measured. It is a failure, because a monitor that cannot see is not a monitor, but it is
+deliberately not `degraded` and triage goes somewhere else entirely: **start at the database**, not at
+KWS. Check that the backend can reach Postgres at all (the `database` check in the same readiness
+response will usually be failing too), then the app role's privileges on `kws_verification`. The
+distinction is worth keeping sharp in both directions. `degraded` is a specific claim, attempts were
+sent and stopped coming back, and it justifies paging someone toward the vendor and the webhook route.
+Reporting an unmeasured probe with that same wording sends that person hunting an outage that may not
+exist, and it spends the alarm: once this check has cried "deliveries stopped" for a broken query, a
+real stoppage reads as more of the same noise.
+
+A `missing` state means the deployed build carries no `kws_verification` check at all, so nothing is
+watching that tier. That is reported as a failure on purpose: a probe that treats an absent key as
+benign is how a monitoring gap ships unnoticed. Production has a dated exception, `PROD_MISSING_GRACE_UNTIL`
+in the workflow: until that date a `missing` production check is a notice rather than a failure,
+because production still runs a build from before the check existed and a daily marker issue for a
+known gap only teaches people to ignore the marker. The state is still recorded and still appears in
+the alert table, and the grace expires by itself rather than needing anyone to flip it back. Redeploying
+production before that date is what actually closes it.
+
+The two probe legs deliberately name different GitHub environments: `staging` (which holds
+`E2E_STAGING_BASE_URL`) and `production-e2e` (which holds nothing this workflow needs). The
+production leg must NOT name the `production` environment: its required-reviewer rule parks a
+scheduled run in `waiting` indefinitely instead of failing, so the alert job's `if: failure()` never
+fires and the whole alarm goes quiet. `e2e-prod.yml` hit this first and is why `production-e2e`
+exists. An `unconfigured` state is not a failure; it means
+`KWS_VERIFICATION_REQUIRED` is off on that tier, which is production's state until Gate 3 closes.
+
+`KWS_VERIFICATION_REQUIRED` also gates `POST /v1/consent/kws/start` itself, not just the
+child-profile checks. That endpoint hands an adult's email address to Epic, so credential presence
+is deliberately not what opens it: a tier holding credentials without having decided to run
+verification sends nothing. The one exception is `KWS_ALLOW_START_WHILE_NOT_REQUIRED`, which exists
+so staging can exercise the endpoint and its screens before the gate flips. It is refused at
+startup whenever `KWS_ENVIRONMENT=production`, so the process fails to boot rather than re-opening
+the endpoint on a tier serving real families. The Gate 1 procedure in
+[the KWS test runbook](kws-test-runbook.md) does not need it: that script calls the service
+directly and never reaches the endpoint.
 
 ## 8. Secrets and keys inventory
 

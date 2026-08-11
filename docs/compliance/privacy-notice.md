@@ -52,6 +52,7 @@ sets up and controls.
 |---|---|---|---|
 | Email, authentication identity, account role | Guardian | Operate your account, let you sign in | Contract |
 | Consent record (your typed name, the date, and the policy version you agreed to) | Guardian | Prove verifiable parental consent under COPPA and GDPR Article 8 | Legal obligation |
+| Adult-check record (a reference number, the country you selected, when we asked, and whether the check came back confirmed, refused, or was never answered) | Guardian | Establish through an independent service that the person setting up child profiles is an adult | Legal obligation |
 | Country of residence, chosen from a list on the same screen where you give consent | Guardian | Determine which country's privacy and online-safety rules apply to your account (for example GDPR in the EU/EEA, the Online Safety Act in the UK, COPPA in the US) | Legitimate interest (see Note 1) |
 | Confirmation that you are an adult, and the date you confirmed it | Guardian | Determine which age-related regulations apply to your account. This is a self-declaration: we record the date you checked the box, not proof of your age or identity | Legitimate interest (see Note 1) |
 | Child's display name (a nickname, not a legal name), age band, reading-level cap, avatar (from a fixed set of illustrations, not a photo), content settings | Child | Build and safely tailor your child's reading profile | Contract, on your behalf as their guardian |
@@ -89,6 +90,25 @@ enforceable representation under FTC Act §5 (register row O-38), so describing 
 "verified" or as satisfying a named method would convert an accepted internal risk into an
 external misstatement. See counsel-engagement-brief.md Section 1.3, retained as record.]
 
+Before that step, we ask an independent service, Kids Web Services (run by Epic Games), to
+confirm that you are an adult. You choose your country, we send your email address to that
+service, and it emails you a link to complete its own check. Your child's information is never
+part of this: the service receives your email address, the country you chose, the language your
+browser asked for, and a reference number that means nothing outside our system. It tells us only whether the check was confirmed
+or refused, never how you completed it, and we never store a copy of your email address on the
+adult-check record itself.
+
+This step is about **who you are**, not about what you are agreeing to. Your permission is
+still the name you type and the box you check, described above; the adult check is a separate
+gate we put in front of it. [COUNSEL: this is exactly why the two are described separately, and
+neither passage should be merged into a single "verified consent" claim. Please confirm the
+split reads correctly for a lay guardian.]
+
+[NOT YET LIVE for guardians as of 2026-08-10: this step runs on our internal staging tier only,
+against the vendor's test environment, and is switched off in the live app. Do not publish this
+passage until it is switched on, or a guardian will read a description of a step they never
+encounter.]
+
 ### Who we share information with
 
 We use the following outside companies (**processors**) to run the app. None of them may use
@@ -109,11 +129,28 @@ checklist closes before this notice is published.]
 | Google (Gemini) | Cover-art prompts, similarly screened | Generating book cover art |
 | Cloudflare (R2) | Cover art images, accessible only via a short-lived, non-public link | Image storage |
 | Sentry | Error reports, designed to exclude your child's reading content | Fixing bugs |
+| Epic Games (Kids Web Services) | **Your** email address, the country you selected, a language tag, and a reference number. Never your child's name, profile, or story content | Confirming that you are an adult before you can create a child profile |
+
+**One thing to be clear about the adult check**: we send your email address to Kids Web
+Services when the check *starts*, not when it succeeds. If you abandon it, if it comes back
+refused, or if you never create an account at all after that point, your email address has
+still been sent to them and is subject to their handling of it, not ours. There is no version
+of this step that confirms an adult without disclosing the address first. [COUNSEL: (a) does
+this need to be surfaced *before* the guardian triggers the send rather than only in this
+notice; (b) Epic operates Kids Web Services from both US and EU entities and we have not
+established which one receives our traffic or under what transfer mechanism, so the "every
+company above is based in the United States" statement below does not currently cover this
+row; (c) `processor-dpa-checklist.md` carries an Epic entry, but it records no DPA requested
+and none reviewed, so the processor-only claim at the top of this section is asserted for this
+vendor without a DPA behind it.]
 
 We do not sell your or your child's information, and we do not use it for advertising — we
 have no advertising or marketing SDKs of any kind in the parts of the app your child uses.
 
-**International transfers**: every company above is based in the United States. [COUNSEL:
+**International transfers**: every company above is based in the United States, with one
+exception we cannot yet state either way: Epic operates Kids Web Services from both a US and
+an EU entity, and we have not established which one receives our traffic. Until we have, treat
+the sentence before this one as covering every row except the Kids Web Services row. [COUNSEL:
 confirm the transfer mechanism (Standard Contractual Clauses or DPF self-certification) we
 should represent here is actually executed before publication — as of this draft, that
 paperwork (`coppa-gdpr-remediation-plan.md` Phase 5) has not yet been completed.]
@@ -127,6 +164,7 @@ paperwork (`coppa-gdpr-remediation-plan.md` Phase 5) has not yet been completed.
 | A story request we blocked or you declined | The decision and category are kept; the original typed text is replaced with a placeholder 30 days after the decision |
 | Raw story-generation output kept for troubleshooting | 30 days, or immediately once a story is published, whichever comes first |
 | Records of admin safety reviews | 1-2 years |
+| The adult-check record described above | Kept for as long as your account exists. [COUNSEL: this is a statement of current behaviour, not of a chosen policy: no deletion job covers this table, and `data-retention-policy.md` has no row for it. Please rule on a window, or confirm that keeping it alongside the consent record it supports is correct.] |
 | Our internal record of who did what (an accountability log; never contains your child's name or story text, only ids and categories) | Kept indefinitely, as a legal-compliance and dispute-resolution record; see our published Article 17(3) analysis for why this category is treated differently from the rest |
 
 ### Your rights, and your child's

@@ -6,10 +6,18 @@ import type { ReactNode } from 'react'
 import type { MeResponse } from '../client/types.gen'
 import { useApi } from '../hooks/useApi'
 import { GUARDIAN_LOGIN_PATH } from '../routes'
-import { AuthContext, type AuthContextValue, type AuthError, type AuthStatus } from './authContext'
+import {
+  AuthContext,
+  type AuthContextValue,
+  type AuthError,
+  type AuthStatus,
+  type VerificationStatus,
+} from './authContext'
 import { clearChildSession } from './childSession'
+import { makeConsentApi } from './consentApi'
 import { CONSENT_POLICY_VERSION, makeOnboardingApi } from './onboardingApi'
 import { clearAdultGate, warmAdultGate } from './parentalGateState'
+import { clearResidenceDraft, rememberResidenceDraft } from './residenceDraft'
 import {
   isPasswordRecovery,
   RECOVERY_BROADCAST_CHANNEL_NAME,
@@ -135,9 +143,11 @@ type MeResponseBody = MeResponse
 export function AuthProvider({ children }: { children: ReactNode }) {
   const api = useApi()
   const onboardingApi = useMemo(() => makeOnboardingApi(api), [api])
+  const consentApi = useMemo(() => makeConsentApi(api), [api])
   const [principal, setPrincipal] = useState<Principal | null>(null)
   const [status, setStatus] = useState<AuthStatus>('loading')
   const [authError, setAuthError] = useState<AuthError | null>(null)
+  const [verificationStatus, setVerificationStatus] = useState<VerificationStatus | null>(null)
   // Seeded from the frozen hash flag (supabaseClient captured it before
   // createClient stripped the fragment). Also flipped on by a PASSWORD_RECOVERY
   // event below, so a recovery landing is caught whether the flag or the event
@@ -192,10 +202,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (session === null) {
         safeRemoveToken()
+        clearResidenceDraft()
         if (!isStale()) {
           setPrincipal(null)
           setStatus('signed-out')
           setAuthError(null)
+          setVerificationStatus(null)
         }
         return
       }
@@ -205,18 +217,47 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // fail-closed signed-out path below instead of stranding status on
         // 'loading' (it used to sit outside the try, where a throw was fatal).
         localStorage.setItem(TOKEN_STORAGE_KEY, session.access_token)
-        // #CRITICAL: security: resolve onboarding BEFORE /v1/me. A
-        // self-signed-up guardian awaiting approval, or one who has not yet
-        // completed VPC consent, gets a User row that require_principal
-        // rejects for GET /v1/me (401 "unknown subject" for the former; the
-        // latter is merely ungated at /me but blocked later at profile
-        // creation) -- calling /me first would just dump both cases into the
-        // generic 'principal-unresolved' catch below with no way for the UI
-        // to tell them apart from a real failure.
+        // #CRITICAL: security: resolve onboarding BEFORE /v1/me. A guardian
+        // who has not passed parent verification, one awaiting approval, or
+        // one who has not yet completed VPC consent, gets a User row that
+        // require_principal rejects for GET /v1/me (401 "unknown subject" for
+        // the first two; the third is merely ungated at /me but blocked later
+        // at profile creation) -- calling /me first would just dump all three
+        // cases into the generic 'principal-unresolved' catch below with no
+        // way for the UI to tell them apart from a real failure. This is also
+        // why the onboarding response, not MeResponse, is what carries the
+        // verification pair: it is the only one these callers can read.
         // #VERIFY: AuthContext.test.tsx "awaiting-approval guardian never
-        // calls /me" and "unconsented guardian never calls /me".
+        // calls /me", "unverified guardian never calls /me", and "unconsented
+        // guardian never calls /me".
         const onboarded = await onboardingApi.onboard()
         if (isStale()) return
+        setVerificationStatus(onboarded.verification_status)
+        // #CRITICAL: security: ADR-018 D1 orders parent verification BEFORE
+        // admin approval, so this branch must stay ABOVE the approval one
+        // below. Reversing them would show an unverified guardian the
+        // "awaiting approval" dead end and never route them to the one screen
+        // that can move them forward, because approval will not arrive for an
+        // account nobody has been asked to verify.
+        //
+        // Gated on verification_required, not on the status alone: a tier with
+        // the flag off reports 'none' for every caller, which is the same
+        // value a gated guardian who has not started reads, so keying on
+        // `!== 'verified'` by itself would park every guardian on every
+        // ungated deployment in front of a verification screen.
+        // #VERIFY: AuthContext.test.tsx "routes an unverified guardian to
+        // needs-verification ahead of awaiting-approval" and "leaves a
+        // guardian alone while the tier does not require verification".
+        if (
+          onboarded.role === 'guardian' &&
+          onboarded.verification_required &&
+          onboarded.verification_status !== 'verified'
+        ) {
+          setPrincipal(null)
+          setStatus('needs-verification')
+          setAuthError(null)
+          return
+        }
         if (onboarded.role === 'guardian' && onboarded.status !== 'active') {
           setPrincipal(null)
           setStatus('awaiting-approval')
@@ -346,6 +387,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       status,
       principal,
       authError,
+      verificationStatus,
       recovery,
       recoveryError,
       // #ASSUME: data-integrity: supabase-js auth methods resolve with
@@ -411,6 +453,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // #VERIFY: AuthContext.test.tsx "sign-out drops warm adult-gate
         // state".
         clearAdultGate()
+        // Same deterministic-clear reasoning one field over: the remembered
+        // verification country belongs to the adult who is leaving, and a
+        // handed-over device must not pre-fill it into the next person's
+        // consent form. The SIGNED_OUT event's syncPrincipal(null) clears it
+        // too, but that is async and this hand-over is not.
+        clearResidenceDraft()
         // Abandoning a recovery flow (signing out from the set-new-password
         // form) must not leave the provider stuck in recovery for the next
         // session on this device. Cleared unconditionally, before the network
@@ -502,6 +550,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const { data } = await supabase.auth.getSession()
         await syncPrincipal(data.session)
       },
+      // #ASSUME: external-resources: this calls a route that mails a real
+      // person, and refusing is a normal answer rather than a fault: the
+      // endpoint returns 409 while an email is already in flight and 429 once
+      // the hourly cap is spent (api/consent.py). Both are rethrown for the
+      // page to render as guidance, not swallowed, because a silent no-op
+      // here reads to a waiting parent as "the button is broken".
+      //
+      // The country is remembered locally BEFORE the request rather than
+      // after: the consent form's pre-fill is a convenience that should
+      // survive a refused send just as well as a successful one, since the
+      // adult picked the same country either way.
+      // #VERIFY: GuardianVerificationPage.test.tsx 409/429 cases.
+      startVerification: async (location) => {
+        rememberResidenceDraft(location)
+        await consentApi.startKwsVerification(location)
+        // Re-resolve rather than assuming 'pending': the row this call just
+        // created is the same row the next onboarding read reports on, so
+        // reading it back keeps this state a projection of the server's
+        // answer instead of a second, independently-maintained copy of it.
+        const { data } = await supabase.auth.getSession()
+        await syncPrincipal(data.session)
+      },
       // P-6d: same tail as recordConsent above, minus the onboarding submit:
       // re-reads the current Supabase session and re-runs syncPrincipal's
       // onboarding-then-me resolution. For a still-awaiting-approval
@@ -516,7 +586,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await syncPrincipal(data.session)
       },
     }),
-    [status, principal, authError, recovery, recoveryError, onboardingApi, syncPrincipal]
+    [
+      status,
+      principal,
+      authError,
+      verificationStatus,
+      recovery,
+      recoveryError,
+      onboardingApi,
+      consentApi,
+      syncPrincipal,
+    ]
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

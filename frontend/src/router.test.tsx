@@ -6,7 +6,14 @@ import { DeviceAuthorizedRoute } from './auth/DeviceAuthorizedRoute'
 import { ProtectedRoute } from './auth/ProtectedRoute'
 import { AdultGate, GuardianAuthLayout } from './routeElements'
 import { routes } from './router'
-import { GUARDIAN_CONSOLE_PATH, PRIVACY_PATH, SUPPORT_PATH } from './routes'
+import {
+  GUARDIAN_AWAITING_APPROVAL_PATH,
+  GUARDIAN_CONSENT_PATH,
+  GUARDIAN_CONSOLE_PATH,
+  GUARDIAN_VERIFICATION_PATH,
+  PRIVACY_PATH,
+  SUPPORT_PATH,
+} from './routes'
 
 /**
  * Structural assertions over the exported route CONFIG, deliberately without
@@ -133,5 +140,22 @@ describe('route config', () => {
     // A gate here would bounce that parent to a login page from a third-party
     // consent flow, which reads as a phishing redirect.
     expect(gatesOn(path)).toEqual([])
+  })
+
+  it.each([
+    ['verification', GUARDIAN_VERIFICATION_PATH],
+    ['awaiting-approval', GUARDIAN_AWAITING_APPROVAL_PATH],
+    ['consent', GUARDIAN_CONSENT_PATH],
+  ])('keeps the %s interstitial reachable by the caller it is for', (_label, path) => {
+    // Each of these three is the destination ProtectedRoute redirects to for
+    // one non-'signed-in' AuthStatus, so nesting any of them under
+    // ProtectedRoute would redirect its own audience away from it, forever.
+    // AdultGate is excluded for the same reason one step earlier.
+    //
+    // Not `toEqual([])` like the public routes above: these are guardian
+    // pages and correctly sit inside GuardianAuthLayout, which supplies the
+    // auth context they read but gates nothing. Asserting the exact chain
+    // pins both halves, so moving one under a real gate fails here.
+    expect(gatesOn(path)).toEqual([GuardianAuthLayout])
   })
 })

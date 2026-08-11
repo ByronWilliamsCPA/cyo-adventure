@@ -23,6 +23,8 @@ from cyo_adventure.api.schemas import (
     UserView,
     error_responses,
 )
+from cyo_adventure.consent import VerificationStatus, reportable_verification_status
+from cyo_adventure.core.config import settings
 from cyo_adventure.core.exceptions import AuthorizationError, BusinessLogicError
 from cyo_adventure.db.models import (
     CATALOG_FAMILY_ID,
@@ -46,6 +48,39 @@ if TYPE_CHECKING:
 router = APIRouter(prefix="/api/v1", tags=["me"], responses=error_responses(401))
 
 
+async def _verification_state(ctx: Context) -> VerificationStatus:
+    """Report the caller's ADR-018 D1 verification state for the shell.
+
+    Adds one short-circuit to what ``reportable_verification_status`` already
+    applies: a child or device-grant principal, for which parent verification
+    is not a concept, so this endpoint keeps costing zero database round trips
+    for the callers that make up most of its traffic. The flag-off case lives
+    in the shared function because ``POST /v1/onboarding`` needs it too.
+
+    Args:
+        ctx: The request context (principal + unit-of-work session).
+
+    Returns:
+        VerificationStatus: The caller's state, or ``"none"`` when the
+            question does not arise.
+    """
+    # #ASSUME: security: the short-circuit is a cost optimisation, NOT an
+    # authorization decision, and the two must not be conflated. It answers
+    # "none" for a child or device principal because parent verification is not
+    # a question about them, not because they are being denied anything; the
+    # value is display-only either way (see
+    # consent/service.py::reportable_verification_status). Adding a role to
+    # this tuple therefore hides a state from that role, it does not gate them,
+    # so a role that DOES need the answer must never be added here for speed.
+    # #VERIFY: tests/integration/test_me.py::
+    # test_me_reports_a_verification_once_one_is_usable exercises the adult
+    # path; ::test_me_reports_no_verification_state_while_the_flag_is_off
+    # covers the flag-off answer the shared function supplies.
+    if ctx.principal.role in (Role.CHILD, Role.DEVICE):
+        return "none"
+    return await reportable_verification_status(ctx.session, ctx.principal.user_id)
+
+
 @router.get("/me")
 async def whoami(ctx: Context) -> MeResponse:
     """Return the authenticated caller's own identity and role.
@@ -54,7 +89,8 @@ async def whoami(ctx: Context) -> MeResponse:
         ctx: The request context (principal + unit-of-work session).
 
     Returns:
-        MeResponse: The principal's subject, role, family, and profile ids.
+        MeResponse: The principal's subject, role, family, profile ids, and
+        ADR-018 D1 verification state.
     """
     # #ASSUME: security: /me returns identity only for an already-verified
     # principal (require_principal ran and resolved a Principal); no token
@@ -68,6 +104,8 @@ async def whoami(ctx: Context) -> MeResponse:
         is_admin=principal.is_admin,
         family_id=str(principal.family_id),
         profile_ids=[str(pid) for pid in principal.profile_ids],
+        verification_required=settings.kws_verification_required,
+        verification_status=await _verification_state(ctx),
     )
 
 
