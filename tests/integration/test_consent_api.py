@@ -51,6 +51,11 @@ _ONBOARDING = "/api/v1/onboarding"
 _SUBJECT = "verifying-guardian"
 _EMAIL = "parent.under.test@example.com"
 _BODY: dict[str, object] = {"location": "US", "language": "en"}
+# Ceiling for the one test that forces two connections to contend on a row
+# lock. Generous against a slow CI runner, and still far below the job
+# timeout, so a deadlock is reported as this test failing rather than as the
+# whole workflow hanging.
+_LOCK_CONTENTION_TIMEOUT_SECONDS = 30.0
 
 
 class _SendRecorder:
@@ -531,9 +536,20 @@ class TestStartLimits:
         _ = seed
         user_id = await _provision(client)
 
-        first, second = await asyncio.gather(
-            client.post(_START, json=_BODY),
-            client.post(_START, json=_BODY),
+        # Bounded, because this is the one test that deliberately makes two
+        # connections contend on a row lock. If the lock is never released, or
+        # the test engine's pool cannot serve two connections at once, a bare
+        # gather waits forever. The repo does not install pytest-timeout, so
+        # "forever" means the whole GitHub Actions job times out and the
+        # report names the job rather than this test. That is not academic on
+        # this code path: a `FOR UPDATE` on `user` already self-deadlocked
+        # against its own FK insert once during this work.
+        first, second = await asyncio.wait_for(
+            asyncio.gather(
+                client.post(_START, json=_BODY),
+                client.post(_START, json=_BODY),
+            ),
+            timeout=_LOCK_CONTENTION_TIMEOUT_SECONDS,
         )
 
         assert sorted([first.status_code, second.status_code]) == [202, 409]

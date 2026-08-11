@@ -41,6 +41,13 @@ export function rememberResidenceDraft(country: string): void {
  * Returns '' rather than null so callers can seed a <select> value directly:
  * '' is already the sentinel for the form's "Select a country" placeholder
  * option, so an absent draft and a never-picked field are the same state.
+ *
+ * The returned value is UNVALIDATED. It is whatever is in session storage,
+ * which any same-origin script can write and which may also be a code that a
+ * later deploy dropped from the country list. Every caller must check it
+ * against its own allowed set before using it as a form value: a `<select>`
+ * seeded with a code that has no matching `<option>` renders blank while
+ * still testing as non-empty, which is worse than not seeding at all.
  */
 export function readResidenceDraft(): string {
   try {

@@ -20,6 +20,20 @@ import { useAuth } from './useAuth'
 const SUBMIT_ERROR = 'That did not go through. Please try again.'
 
 /**
+ * The remembered country, but only if this form can actually display it.
+ *
+ * `readResidenceDraft` returns whatever is in session storage. A value that
+ * is not in {@link RESIDENCE_COUNTRIES} has no matching `<option>`, so
+ * seeding it leaves the control blank while still reading as "a country is
+ * chosen" to the submit guard. Anything unrecognised becomes '', the same
+ * state as a never-touched field.
+ */
+function readDraftedCountry(): string {
+  const drafted = readResidenceDraft()
+  return RESIDENCE_COUNTRIES.some((option) => option.code === drafted) ? drafted : ''
+}
+
+/**
  * The Phase 2 / ADR-018 D1 verifiable-parental-consent step: shown to an
  * approved guardian (AuthStatus 'needs-consent') before they can reach any
  * other guardian page. A typed full-legal-name attestation plus an explicit
@@ -52,7 +66,19 @@ export function GuardianConsentPage() {
   // field the adult then owns, and re-reading it would fight their edits.
   // Absent (flag off, different device, storage refused) it is '', which is
   // exactly the empty state this select had before.
-  const [residenceCountry, setResidenceCountry] = useState(readResidenceDraft)
+  //
+  // #ASSUME: data-integrity: the draft is untrusted input, so it is checked
+  // against RESIDENCE_COUNTRIES before it is allowed to seed the field. A
+  // code with no matching <option> does not render as "nothing selected"; it
+  // renders as a BLANK select while `residenceCountry.length > 0` still
+  // enables submit, so the adult would post a country they were never shown
+  // and collect a 422 they cannot act on. Two reachable sources: this list
+  // changing between deploys while a tab keeps its session, and any
+  // same-origin script writing the key. Falling back to '' costs one
+  // re-pick in a case that should not happen anyway.
+  // #VERIFY: GuardianConsentPage.test.tsx 'ignores a drafted country that is
+  // not in the list'.
+  const [residenceCountry, setResidenceCountry] = useState(readDraftedCountry)
   const [adulthoodAttested, setAdulthoodAttested] = useState(false)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
