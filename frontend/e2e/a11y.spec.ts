@@ -60,7 +60,32 @@ const ONE_STORY = {
   ],
 }
 
+// Per-PR CI stays scoped to WCAG 2.1 conformance tags only (see the comment
+// below): fast and non-noisy, so it can gate every PR. The weekly
+// "Accessibility Compliance" workflow (.github/workflows/
+// accessibility-compliance-weekly.yml) sets A11Y_EXTENDED=1 to run this same
+// suite against WCAG 2.2 (both wcag22a AND wcag22aa: axe's WCAG tags are
+// additive per level, so wcag22aa alone would silently skip the 2.2 Level A
+// criteria, UW-N04) plus axe's "best-practice" rules (e.g. missing
+// landmark/heading structure), without adding that scope, or run time, to
+// every PR.
+const AXE_TAGS = process.env.A11Y_EXTENDED === '1'
+  ? ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22a', 'wcag22aa', 'best-practice']
+  : ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']
+
 async function assertNoViolations(page: Page) {
+  // Extended-only: axe's best-practice landmark/heading rules (unlike the
+  // WCAG-tagged rules the default run checks) fire against the ABSENCE of
+  // structure, so they misfire if the scan lands while a lazy route chunk's
+  // Suspense fallback (routeElements.tsx's "Just a sec..." <LoadingStatus
+  // className="route-fallback">) is still the only thing mounted. The
+  // default WCAG-tagged run never needed this: none of its rules depend on
+  // page-wide structure being present, only on structure that IS present
+  // being correctly formed. Resolves immediately when the fallback was never
+  // mounted (the common case once a chunk is warm).
+  if (AXE_TAGS.includes('best-practice')) {
+    await page.waitForSelector('.route-fallback', { state: 'detached', timeout: 10_000 })
+  }
   // Let any entrance animation settle before scanning. The Dialog component
   // fades and scales in (opacity 0 -> 1); axe computes color contrast from the
   // composited style, so an element scanned mid-fade reports a blended,
@@ -80,14 +105,14 @@ async function assertNoViolations(page: Page) {
         ]).then(() => resolve())
       })
   )
-  // Scoped to WCAG 2.1 A/AA, matching this file's stated intent. axe's full
-  // default ruleset also includes "best-practice" rules (e.g. requiring a
-  // <main> landmark or exactly one <h1>) that are worth fixing but are not
-  // WCAG conformance failures; keeping the gate to WCAG tags avoids drowning
-  // real conformance regressions in opinionated-but-optional findings.
-  const results = await new AxeBuilder({ page })
-    .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
-    .analyze()
+  // Scoped to WCAG tags by default (see AXE_TAGS above), matching this
+  // file's stated intent. axe's full default ruleset also includes
+  // "best-practice" rules (e.g. requiring a <main> landmark or exactly one
+  // <h1>) that are worth fixing but are not WCAG conformance failures;
+  // keeping the per-PR gate to WCAG tags avoids drowning real conformance
+  // regressions in opinionated-but-optional findings. The weekly extended
+  // run opts into those rules via A11Y_EXTENDED.
+  const results = await new AxeBuilder({ page }).withTags(AXE_TAGS).analyze()
   expect(results.violations, JSON.stringify(results.violations, null, 2)).toEqual([])
 }
 

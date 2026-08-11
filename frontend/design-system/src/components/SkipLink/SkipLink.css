@@ -1,0 +1,26 @@
+/* Visually hidden until focused: standard skip-link pattern (WCAG 2.4.1).
+   Positioned absolutely so it never affects layout while hidden, and pinned
+   to the parchment/ink palette (not a bespoke color) so it matches whichever
+   shell it's dropped into. */
+.cyo-skip-link {
+  position: absolute;
+  top: -3rem;
+  left: var(--space-3, 0.75rem);
+  z-index: 1000;
+  padding: var(--space-2, 0.5rem) var(--space-4, 1rem);
+  background: var(--color-parchment);
+  color: var(--color-ink);
+  border-radius: var(--radius-md, 0.25rem);
+  font-weight: var(--weight-semibold, 600);
+  text-decoration: none;
+  transition: top var(--duration-fast, 0.1s) var(--easing-default, ease-in-out);
+}
+
+/* Matches the 3:1-contrast focus ring used across the design system
+   (Button.css, Chip.css): amber-deep clears 3:1 on parchment where the
+   brighter amber does not. */
+.cyo-skip-link:focus-visible {
+  top: var(--space-3, 0.75rem);
+  outline: 3px solid var(--color-amber-deep);
+  outline-offset: 3px;
+}

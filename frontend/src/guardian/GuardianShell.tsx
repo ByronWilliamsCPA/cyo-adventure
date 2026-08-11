@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router'
 
 import { ErrorBanner } from '@ds/components/ErrorBanner'
+import { SkipLink } from '@ds/components/SkipLink'
 import { useAuth } from '../auth/useAuth'
 import { useApi } from '../hooks/useApi'
 import { ADMIN_CONSOLE_PATH } from '../routes'
@@ -93,6 +94,7 @@ export function GuardianShell() {
 
   return (
     <div className="guardian-shell">
+      <SkipLink targetId="guardian-shell-main" />
       <header className="guardian-shell__header">
         <span className="guardian-shell__brand">
           <span className="guardian-shell__title">CYO Adventure</span>
@@ -172,7 +174,7 @@ export function GuardianShell() {
           Sign-out failed. Check your connection and try again.
         </ErrorBanner>
       ) : null}
-      <main className="guardian-shell__main">
+      <main id="guardian-shell-main" className="guardian-shell__main" tabIndex={-1}>
         <Outlet />
       </main>
       {/* G11 trust surface. Deliberately a footer link rather than a ninth

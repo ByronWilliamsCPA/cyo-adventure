@@ -54,6 +54,18 @@ relate to the Supabase project constraints.
   outside the populated and error-alert scans added above, each remaining
   page/dialog is still checked in one fixed mock state, not every
   loading/error variant.
+- **Accessibility, extended (weekly, non-blocking, ADR-029)**: the same
+  `a11y.spec.ts` suite re-run with `A11Y_EXTENDED=1` by
+  `.github/workflows/accessibility-compliance-weekly.yml`, widening the axe
+  tag scope to WCAG 2.2 A/AA (`UW-N04`) plus axe's non-normative
+  "best-practice" rules (landmark/heading structure). Kept off the per-PR
+  gate deliberately (slower, and best-practice findings are not WCAG
+  conformance failures). First correct run (2026-08-11, after fixing a
+  lazy-route-chunk race the wider rule set exposed) found four real
+  structural gaps, tracked as `UW-F27`: nested/duplicate `<main>` landmarks
+  on six admin pages, two pages with no `<h1>`, `GuardianLoginPage` rendering
+  with no `<main>` landmark at all, and a heading-order skip on the admin
+  review detail page's "Endings" section.
 - **Keyboard operability of dialogs (2026-07-27)**:
   `frontend/e2e/keyboard-nav.spec.ts` — the focus behavior axe cannot see,
   asserted against the real built app. Three representative `cyo-dialog` modals

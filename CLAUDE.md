@@ -174,6 +174,9 @@ During `cruft update`, this section may be updated. Review changes carefully.
 - **Code Quality**: Ruff formatting (88 chars), Ruff linting (PyStrict-aligned), BasedPyright type checking (strict mode)
 - **Security**: GPG/SSH key validation, dependency scanning, encrypted secrets
 - **Testing**: Minimum 80% coverage, tiered testing approach
+- **Accessibility**: WCAG 2.1 AA target (ADR-029); ESLint (`eslint-plugin-jsx-a11y`) plus axe-core
+  via Playwright gate every PR, and a weekly non-blocking scan covers WCAG 2.2 and best-practice
+  rules
 - **Git**: Conventional commits, signed commits, feature branch workflow
 - **Response-Aware Development**: Assumption tagging and verification
 
@@ -181,6 +184,36 @@ During `cruft update`, this section may be updated. Review changes carefully.
 > operational rule files are added later (e.g., `python.md`, `git-workflow.md`,
 > `testing.md`, `writing.md`, `supervisor.md`), they apply only when editing files under
 > the paths they specify and take precedence over root-level guidance on conflicts.
+
+---
+
+## Web Accessibility (WCAG 2.1 AA)
+
+See [ADR-029](docs/planning/adr/adr-029-web-accessibility-conformance.md) for the full decision
+record. The short version, for anyone touching `frontend/`:
+
+- **Target**: WCAG 2.1 Level AA on every guardian, admin, and kid surface.
+- **Lint time**: `eslint-plugin-jsx-a11y`'s recommended rules run as part of `npm run lint`. Fix
+  what it flags; if a finding is a deliberate, justified choice (a scrollable region's
+  `tabIndex=0`, an intentional `autoFocus` on an interposed prompt), the project-wide rule
+  override or an inline `eslint-disable-next-line` with a reason comment is already the pattern to
+  follow, not a blanket suppression.
+- **Per-PR (required, do not widen)**: `frontend/e2e/a11y.spec.ts` (axe-core, WCAG 2.1 A/AA tags)
+  and `frontend/e2e/keyboard-nav.spec.ts` (keyboard focus-trap contract) run in the `frontend-e2e`
+  CI job on every PR. Keep this tier fast and WCAG-scoped; do not add best-practice rules,
+  additional tag sets, or new page coverage here without an explicit owner decision, since the
+  owner has ruled this blocking job should not grow in scope or run time.
+- **Weekly, non-blocking**: `.github/workflows/accessibility-compliance-weekly.yml` re-runs
+  `a11y.spec.ts` with `A11Y_EXTENDED=1`, widening the axe tag scope to WCAG 2.2 A/AA plus axe's
+  best-practice rules. This is where new, broader, or slower compliance checks belong; route
+  new/expanded compliance scanning here, not into the per-PR gate.
+- New skip-link needs: use the shared `SkipLink` component (`@ds/components/SkipLink`), not a
+  bespoke implementation; see `KidShell.tsx`/`GuardianShell.tsx`/`AdminShell.tsx` for the pattern
+  (a `SkipLink` as the shell's first child, targeting an `id` + `tabIndex={-1}` on that shell's
+  `<main>`).
+- Known open gaps, tracked so they are not silently reintroduced: `UW-F27` (nested `<main>`
+  landmarks on several admin pages, missing `<h1>` on two pages, a heading-order skip) and
+  `UW-F28` (manual screen-reader audit, published accessibility statement).
 
 ---
 
@@ -1006,7 +1039,7 @@ uv run pytest tests/unit/test_example.py::test_function_name -v
 
 ## CI/CD Pipeline
 
-**GitHub Actions Workflows** (`.github/workflows/`, 36 files):
+**GitHub Actions Workflows** (`.github/workflows/`, 38 files):
 
 - **Quality gate**: `ci.yml` (tests/lint/typecheck on Python 3.14, includes the
   frontend contract-drift check), `python-compatibility.yml` (3.11-3.14 Ubuntu
@@ -1020,7 +1053,9 @@ uv run pytest tests/unit/test_example.py::test_function_name -v
   `dependency-provenance-weekly.yml`, `fips-compatibility.yml`,
   `slsa-provenance.yml`, `scorecard.yml` (OpenSSF), `sonarcloud.yml`
 - **Testing depth**: `cifuzzy.yml` (fuzzing), `mutation-testing.yml`
-- **Compliance/release**: `sbom.yml`, `reuse.yml`, `validate-cruft.yml`,
+- **Compliance/release**: `accessibility-compliance-weekly.yml` (ADR-029; weekly, non-blocking
+  axe scan against `main`, WCAG 2.2 plus best-practice rules; the per-PR WCAG 2.1 AA gate lives
+  in `ci.yml`'s `frontend-e2e` job instead), `sbom.yml`, `reuse.yml`, `validate-cruft.yml`,
   `release.yml` (two-phase, ruleset-compatible flow, issues #183/#157/#158:
   a `propose` job runs python-semantic-release's writer
   (`--no-commit/--no-tag/--no-push`) to bump `pyproject.toml` and GENERATE the
@@ -1223,5 +1258,5 @@ does not currently); the table above is the operative guidance for now.
 
 ---
 
-**Last Updated**: 2026-07-18
+**Last Updated**: 2026-08-11
 **Template Version**: 0.1.0
