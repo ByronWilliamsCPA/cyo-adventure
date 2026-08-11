@@ -59,8 +59,13 @@ from pathlib import Path
 from typing import Any, NamedTuple, cast
 
 _WORD_RE = re.compile(r"[A-Za-z']+")
+# Arbitrary within a wide gap: the spoiled arm scored 1.000 and its comparison
+# books 0.057 and 0.171, so anything from roughly 0.25 to 0.9 separates the
+# observed cases identically. 0.20 is the low end of that range, chosen to be
+# strict rather than because the data picks it out.
 _MAX_SHARE = 0.20
 _MIN_LABELS = 8
+# Arbitrary, and advisory for that reason: no calibration supports this number.
 _SHAPE_ADVISORY = 0.65
 
 

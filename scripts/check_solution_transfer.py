@@ -152,6 +152,12 @@ _CHAIN_CATEGORIES = ("cipher_forms", "cipher_hint_carriers", "remedies")
 # rarity corpus from both bindings entire rather than from the chain subset.
 _EVERY = ("*",)
 
+# **These three weights are invented and rest on nothing.** Any monotone triple
+# would have served, and no result reported from this module depends on them:
+# the reader-ranking reproduction in D-4 was achieved by the ANSWER tier alone,
+# which carries no weight and no taxonomy. Read the combined score as
+# decoration and `answer_transfer` as the measure. The ceiling below is
+# arbitrary in the same way and gates the untaxonomised tier only.
 _ANSWER, _OPERATION, _FAMILY = 1.0, 0.6, 0.3
 
 # Operation markers. Deliberately coarse and deliberately three-way: see the

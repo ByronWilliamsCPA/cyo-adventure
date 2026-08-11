@@ -60,6 +60,8 @@ from cyo_adventure.validator.reading_level import (
 )
 
 _MAX_GRADE = 7.0
+# Arbitrary, and advisory for that reason. Only _MAX_GRADE gates, and it is
+# derived from the product's own band rather than chosen here.
 _MIN_IN_BAND = 0.5
 _MIN_WORDS = 20
 _TARGET = 5.5

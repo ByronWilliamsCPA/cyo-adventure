@@ -860,6 +860,7 @@ supporting or negative results.
 | **Scale and capital** | 16c, 16f | Narrative contracts exist for 2 of 61 skeletons; that, not skeleton count, is the binding cost. |
 | | 16i | A model builds structurally valid graphs unaided, 6 of 6, and fails only rules we never gave it. |
 | **Negative results** | 16b, 16h, 16k | Obligation delivery is fine; "graphs are worlds" is refuted for 18 of 21 graphs; stake economics returns a null. |
+| **Our own thresholds** | **16n, 16o** | **Every guard, every threshold, which we inherited, which we invented, and a sensitivity check on the one the headline rests on.** |
 
 **The headline has changed since the first circulation.** Section 18 then asked you to resolve a
 dilemma: a plan must reach the bound device to represent what readers respond to, but every shared
@@ -1672,6 +1673,89 @@ defects were in.
 is the one we did not set: it predates this work. What we contributed is the floor beneath it, and
 the finding that every artifact we have ever measured sits either at that floor or at three to
 fifteen times the budget, with nothing in between until 16l.
+
+## 16o. Every assumption and threshold we set, and whether anything depends on it
+
+The appendix above lists the guards. This lists the *choices* inside them, separated into what we
+inherited and what we invented, because a reviewer should not have to reverse-engineer which numbers
+are evidence and which are taste. Where a number is arbitrary we say so in those words.
+
+### Thresholds we inherited and did not choose
+
+| | Value | Source |
+| --- | --- | --- |
+| shared four-gram budget | 4.0 per 1000 | predates this work |
+| reading-level band | grade 5.5, tolerance 1.5 | product spec |
+| annotator agreement floor | kappa 0.60 | Landis and Koch convention |
+| minimum words for a stable Flesch-Kincaid | 20 | readability literature |
+
+**The first is the one most of Part II turns on and it is not ours.** We contributed the floor
+beneath it, not the budget.
+
+### Thresholds we chose, with what each rests on
+
+| | Value | Rests on | Honest description |
+| --- | --- | --- | --- |
+| generator idiom floor | 3.3 per 1000 | **3 book pairs**, range 1.9 to 5.0 | a measurement with small n, not a threshold, but we quote it like one |
+| label-template ceiling | 0.20 first-word share | 3 books: 1.000 bad, 0.057 and 0.171 good | **arbitrary within a wide gap.** Anything from about 0.25 to 0.9 separates the observed cases identically |
+| label shape advisory | 0.65 | none | **arbitrary.** Advisory only, never gates |
+| whole-book reading grade | 7.0 | the inherited band's own edge | derived, not chosen, but it inherits the band's authority |
+| share of nodes in band | 0.50 | none | **arbitrary.** Advisory only |
+| device-collision Jaccard | 0.5 | 1 known-bad pair, 1 known-good | thin, and we said so when we built it |
+| rare-vocabulary signal | 3 shared words, each in at most 2 props | one worked example | **arbitrary**, and it inverted on a short chain until we fixed the corpus |
+| solution-transfer tier weights | 1.0, 0.6, 0.3 | **nothing** | **purely invented.** See below |
+| solution-transfer ceiling | 0.35 | nothing | **arbitrary** |
+
+**The tier weights deserve their own sentence because they are the worst offender in this
+programme.** We assigned 1.0, 0.6 and 0.3 to three grades of puzzle-solution transfer with no
+justification whatsoever; any monotone triple would have served. **Nothing we report depends on
+them**, because the result that section 16e rests on was reproduced by the top tier *alone*, which
+carries no weights and no taxonomy. We would ask you to read the weighted score as decoration.
+
+### Does the headline depend on any threshold? We checked
+
+The claim in 16l is that a plan can be shared if the shared half carries no prose. It is stated
+against the 4.0 budget, so we varied the budget:
+
+| Budget | Does "the stratified plan works and the glossed one fails" still hold? |
+| --- | --- |
+| 2.5 | no, nothing passes |
+| 3.0 | no |
+| **3.2 to 12.8** | **yes** |
+| 13.0 and above | no, the failing designs start passing |
+
+**The conclusion survives every budget across a fourfold range**, so it is not an artifact of the
+number we were handed. And there is a stronger statement that needs no budget at all: at 3.2 the
+stratified pair sits **below our measured floor of 3.3**, meaning it is not distinguishable from two
+books that share nothing whatsoever. We would rather you judged 16l on that than on a threshold.
+
+### Assumptions that are not numbers
+
+These are load-bearing and none is established by our evidence.
+
+1. **That shared four-grams measure "reads like the same book".** It is a proxy for verbatim
+   convergence, it is deterministic and cheap, and no reader has ever been asked whether it tracks
+   their experience. Every convergence claim in Part II inherits this.
+2. **That one model's idiom floor generalises.** We measured 3.3 on one model. A different generator
+   has a different floor, and every margin we quote moves with it.
+3. **That shared world, cast and graph shape must never count against a pair.** This is our product
+   owner's ruling on what a series *is*, not a finding, and our rating instrument is built on it.
+4. **That loop-back exploration is a convention rather than a flaw.** Also an owner ruling, made
+   against both raters' stated view, and recorded as overriding them.
+5. **That a 26-node graph tells us anything about a 149-node one.** Our decisive results are on the
+   26-node pilot; the one attempt at production scale halted at the guards, and reading level
+   degraded badly there.
+6. **That author and rater sharing a model family is tolerable.** It engages self-preference, we
+   flagged it in Part I, and we have not controlled for it since.
+
+### Where an arbitrary choice could have changed a result, and did
+
+We record one, because it is the argument for taking this section seriously. We discarded a
+stake-economics contract for sharing 126.7 four-grams per 1000 with its reference, on the reasonable
+but unexamined assumption that convergence scales with lexical similarity. It does not: the threshold
+is sentence identity, and by that criterion the discarded artifact was the *correct* arm and we had
+thrown away the better experiment. The criterion was arbitrary, we had not written it down as a
+choice, and it cost us a round.
 
 ## 17. Corrections to Part I
 
