@@ -102,8 +102,11 @@ confirms the check is published even with the flag off and never gates readiness
 ### 3.3 No email address is stored
 
 `kws_verification` has **no `parent_email` column under any name**. The email is sent to Epic and not
-retained; the row holds an opaque reference, country, language tag, timestamps, and verdict. Both the
-webhook handler and the start endpoint log the attempt id rather than the parent email. This is recorded
+retained; the row holds an id, the owning `user_id`, the KWS environment, the status, the requested and
+resolved timestamps, the vendor's `transaction_id`, the send-time `enabled_methods` snapshot, and
+`location`. No language column: the language tag is sent to Epic on the wire but never stored, so it
+is a disclosure to describe in `privacy-notice.md`, not a retained field. Both the webhook handler and
+the start endpoint log the attempt id rather than the parent email. This is recorded
 as activity 12 in [records-of-processing-activities.md](../compliance/records-of-processing-activities.md).
 
 Grep the migration and the model before trusting this paragraph; it is the kind of property that a later
@@ -156,7 +159,14 @@ only settled by decision.**
    references. A production webhook round trip must be *verified*, not assumed, and the memory of how
    staging behaved does not transfer: an edge rule once ate four webhook retries with zero origin POSTs,
    which reads exactly like "the vendor never sent."
-3. **The flag flip revokes existing accounts.** Every guardian who consented under typed-name-only,
+3. **PR #679 is unmerged, so the parent's return leg 404s in every browser.** The service worker
+   answers *every* navigation on the origin, and `api/kws_redirect.py` renders server-side, so a
+   parent who completes Epic's check lands on a 404. This does not block the *mechanism*: only the
+   webhook resolves an attempt, and it resolves it regardless. It does block switching the flag on,
+   because the last thing a real parent sees at the end of a successful adult check would be a broken
+   page, with no signal that the check in fact worked. Note the failure is invisible to every tool we
+   would reach for: curl, Postman, and CI have no service worker and all see the page fine.
+4. **The flag flip revokes existing accounts.** Every guardian who consented under typed-name-only,
    including the owner's own account, loses child-profile creation until they re-verify. Staging bites
    first. This is the intended behavior per the standing decision that verification sits *before* admin
    approval and that prior consenters must re-verify, but it should be a deliberate act with a
@@ -179,9 +189,10 @@ only settled by decision.**
 document) and `feat/kws-return-landing` (`591d10b8`). Everything else in the list below is local-only.
 
 `feat/kws-return-landing` is the one genuinely additive branch not yet merged: 5 files, +212/-7, carrying
-the service-worker `navigateFallbackDenylist` plus the `kws_redirect.py` landing improvements. It is worth
-a PR on its own. The denylist matters beyond KWS: the service worker currently answers *every* navigation
-on the origin, so backend-rendered pages 404 in browsers while curl, Postman, and CI all see them fine.
+the service-worker `navigateFallbackDenylist` plus the `kws_redirect.py` landing improvements. It already
+has its own PR, **#679**, open and green; it needs merging, not opening. The denylist matters beyond KWS:
+the service worker currently answers *every* navigation on the origin, so backend-rendered pages 404 in
+browsers while curl, Postman, and CI all see them fine. See blocker 3 in Section 5.
 
 Every other local KWS branch is **stale, and a PR from it would revert work already on main**:
 

@@ -93,8 +93,8 @@ external misstatement. See counsel-engagement-brief.md Section 1.3, retained as 
 Before that step, we ask an independent service, Kids Web Services (run by Epic Games), to
 confirm that you are an adult. You choose your country, we send your email address to that
 service, and it emails you a link to complete its own check. Your child's information is never
-part of this: the service receives your email address, the country you chose, and a reference
-number that means nothing outside our system. It tells us only whether the check was confirmed
+part of this: the service receives your email address, the country you chose, the language your
+browser asked for, and a reference number that means nothing outside our system. It tells us only whether the check was confirmed
 or refused, never how you completed it, and we never store a copy of your email address on the
 adult-check record itself.
 
@@ -129,7 +129,7 @@ checklist closes before this notice is published.]
 | Google (Gemini) | Cover-art prompts, similarly screened | Generating book cover art |
 | Cloudflare (R2) | Cover art images, accessible only via a short-lived, non-public link | Image storage |
 | Sentry | Error reports, designed to exclude your child's reading content | Fixing bugs |
-| Epic Games (Kids Web Services) | **Your** email address, the country you selected, and a reference number. Never your child's name, profile, or story content | Confirming that you are an adult before you can create a child profile |
+| Epic Games (Kids Web Services) | **Your** email address, the country you selected, a language tag, and a reference number. Never your child's name, profile, or story content | Confirming that you are an adult before you can create a child profile |
 
 **One thing to be clear about the adult check**: we send your email address to Kids Web
 Services when the check *starts*, not when it succeeds. If you abandon it, if it comes back
@@ -140,13 +140,17 @@ this need to be surfaced *before* the guardian triggers the send rather than onl
 notice; (b) Epic operates Kids Web Services from both US and EU entities and we have not
 established which one receives our traffic or under what transfer mechanism, so the "every
 company above is based in the United States" statement below does not currently cover this
-row; (c) `processor-dpa-checklist.md` has no Epic entry at all, so the processor-only claim
-at the top of this section is asserted for this vendor without a DPA behind it.]
+row; (c) `processor-dpa-checklist.md` carries an Epic entry, but it records no DPA requested
+and none reviewed, so the processor-only claim at the top of this section is asserted for this
+vendor without a DPA behind it.]
 
 We do not sell your or your child's information, and we do not use it for advertising — we
 have no advertising or marketing SDKs of any kind in the parts of the app your child uses.
 
-**International transfers**: every company above is based in the United States. [COUNSEL:
+**International transfers**: every company above is based in the United States, with one
+exception we cannot yet state either way: Epic operates Kids Web Services from both a US and
+an EU entity, and we have not established which one receives our traffic. Until we have, treat
+the sentence before this one as covering every row except the Kids Web Services row. [COUNSEL:
 confirm the transfer mechanism (Standard Contractual Clauses or DPF self-certification) we
 should represent here is actually executed before publication — as of this draft, that
 paperwork (`coppa-gdpr-remediation-plan.md` Phase 5) has not yet been completed.]

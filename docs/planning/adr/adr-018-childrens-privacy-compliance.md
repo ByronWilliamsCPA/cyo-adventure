@@ -67,11 +67,15 @@ tags:
 > four slices, behind a flag that is off in production: child-profile creation refuses without a
 > usable verification (guardian and admin routes both), a start endpoint with anti-automation caps,
 > a `needs-verification` auth state with its start and wait screens, and delivery-health alerting
-> that treats long-unresolved `sent` rows as a signal rather than as silence. **O-123 moves from
-> precondition to closed**: the Test refusal is evaluated before the query runs and the query is
+> that treats long-unresolved `sent` rows as a signal rather than as silence. **O-123 is downgraded,
+> not closed**: it moves from *evidence invalid* to *mechanism unproven*, which is this register's
+> entry state rather than a pass. What the slices supplied is the reliance rule the earlier status
+> recorded as absent: the Test refusal is evaluated before the query runs and the query is
 > environment-filtered, so neither direction of the sandbox/production confusion is reachable, and
 > the guard keys on `kws_environment` rather than `settings.environment` because staging declares
-> `ENVIRONMENT=production`. **Nothing here answers Q2's notification limb**, which remains the
+> `ENVIRONMENT=production`. What is still missing is exercise: the row is unit-verified only and has
+> never been verified on a tier serving real families. Read O-123's own `Status` field as
+> authoritative if this paragraph and the register ever disagree. **Nothing here answers Q2's notification limb**, which remains the
 > viability gate for the chosen method. One new obligation surfaced: the check discloses an adult's
 > email address to Epic Games when it **starts**, so refused and abandoned applicants are disclosed
 > too. That is a processor relationship with no executed DPA and an unresolved counterparty entity,
@@ -568,7 +572,9 @@ was true on its date; what follows is the state that replaced it.
   `settings.kws_verification_required` is set and the adult has no usable verification. The flag is
   off in production, so the typed-name path remains reachable there until it is switched on; that
   switch is now a configuration decision rather than a build.
-- **O-123 is closed by construction rather than by convention.** `usable_verification_id` evaluates
+- **O-123's reliance rule is supplied by construction rather than by convention.** This downgrades
+  the row from *evidence invalid* to *mechanism unproven*; it does not close it, because nothing
+  here has been exercised on a tier serving real families. `usable_verification_id` evaluates
   the Test refusal **first and returns before the query runs**, so no ordering of the remaining
   conditions admits a sandbox row, and it filters on `kws_environment` as well, which closes the
   opposite direction (a production-configured process counting a leftover Test row from before a
@@ -619,13 +625,23 @@ source of truth for running them and now carries the run order this ruling impli
 2. **Q2: does the card method capture-and-refund, or authorise only, and is the cardholder
    notified?** This bears directly on the 312.5(b)(2)(ii) mapping recorded above, whose second limb
    requires notification "of each discrete transaction to the primary account holder".
-   **Run this first.** The ruling above removed the fallback, so Q2 is no longer the question that
-   could retire an accepted exception; it is the question that decides whether the sole chosen
-   method is available at all.
-3. **Q3: is the webhook signature carried in a header or in the query string?** The API reference and
-   the Control Panel copy disagree; `api/kws_webhook.py` records the open question as an
+   **WITHDRAWN from the run list 2026-08-10** by the second amendment above, which accepted the
+   notification limb as satisfied by owner ruling and recorded it as a risk acceptance at O-122.
+   The text below is preserved as written because it was true on its date, and because the
+   acceptance is a reading adopted rather than a fact established, so the question is retired, not
+   answered. What it said: "Run this first. The ruling above removed the fallback, so Q2 is no
+   longer the question that could retire an accepted exception; it is the question that decides
+   whether the sole chosen method is available at all." Withdrawing it is also what removes the
+   collision with O-125, since running it in production would itself have been the disclosure
+   O-125 exists to gate.
+3. **Q3: is the webhook signature carried in a header or in the query string? ANSWERED 2026-08-10,
+   no run needed.** A captured delivery settles it: the signature arrives in the `x-kws-signature`
+   **header**. The same capture caught an undocumented detail the API reference does not state, that
+   `t=` is in milliseconds rather than seconds, fixed in #675. Superseded text: "The API reference
+   and the Control Panel copy disagree; `api/kws_webhook.py` records the open question as an
    `#ASSUME` marker rather than resolving it silently. It needs no run of its own, being answered by
-   capturing the raw request on the Q2 delivery.
+   capturing the raw request on the Q2 delivery." Note that Q2 has since been withdrawn, so the
+   dependency that sentence assumed no longer exists either way.
 4. **Q4: what shape is the redirect's `status` value actually in? ANSWERED 2026-08-10, no run
    needed.** Epic's API pages give the return URL verbatim: `status` is a URL-encoded JSON object,
    `{"verified":true,"transactionId":"<id>","errorCode":null}`, with `externalPayload` and

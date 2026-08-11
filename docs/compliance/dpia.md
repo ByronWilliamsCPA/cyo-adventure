@@ -250,9 +250,11 @@ other processor disclosures in 2.1:
 - **It reaches people who never become users.** Every other processor in the RoPA receives data
   about someone who is already a customer. This one receives data about applicants, including
   rejected ones.
-- **It is a new processor with no executed DPA.** `processor-dpa-checklist.md` has no Epic row.
-  The processor-only claim asserted for every vendor in `privacy-notice.md` is, for this vendor,
-  currently unbacked.
+- **It is a new processor with no executed DPA.** `processor-dpa-checklist.md` carries an Epic
+  row, added alongside this section, but that row records no DPA requested, no DPA reviewed, and
+  no transfer mechanism nameable while the counterparty entity is unresolved. The gap is the
+  agreement, not the tracking: the processor-only claim asserted for every vendor in
+  `privacy-notice.md` is, for this vendor, currently unbacked.
 
 **Mitigation**: the disclosure is minimised at the point of design rather than by policy. The
 outbound body carries the adult's email, the country they picked, a language tag, and an opaque
@@ -311,4 +313,4 @@ complete for Article 35 purposes.]
 | `privacy-notice.md` | The guardian-facing document describing the same processing this DPIA assesses internally; both carry the same `[COUNSEL: ...]` flag on the VPC method question (2.2), and the processor-table brackets added for the KWS disclosure are the guardian-facing face of Section 2.8. |
 | ADR-018 | D1's VPC decision is the direct subject of Section 2.2, and the KWS gate built under it is the subject of Section 2.8. |
 | `docs/security/assurance-register.md` | Rows O-122 (VPC method, accepted exception) and O-125 (KWS processor disclosure, added with Section 2.8) are where these risks are tracked to closure; O-123 and O-124 are the adjacent switch-on preconditions. |
-| `processor-dpa-checklist.md` | Has no Epic/KWS row; that absence is the first of Section 2.8's three unresolved fronts. |
+| `processor-dpa-checklist.md` | Carries the Epic/KWS row added with Section 2.8; that row's unexecuted DPA and undetermined counterparty entity are the first of Section 2.8's three unresolved fronts. |

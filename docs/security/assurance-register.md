@@ -36,8 +36,8 @@ Automated verifications run report-only: they write a status and a scheduled sum
 zero. Every automated check enters at status *mechanism unproven* and leaves only once a negative
 control has tripped it.
 
-Applied to this document as it currently stands, that contract convicts it: **every one of the 121
-rows carries `Phase home: unassigned`, so by the register's own definition all 121 are open
+Applied to this document as it currently stands, that contract convicts it: **every one of the 122
+rows carries `Phase home: unassigned`, so by the register's own definition all 122 are open
 defects.** This is stated rather than left to be inferred, because a register that defines a defect
 and then quietly exhibits it everywhere is the hollow artifact SP-17 is about. It is not a reason
 to soften the definition. Nothing can be assigned a phase home until the `UW-*` linkage in
