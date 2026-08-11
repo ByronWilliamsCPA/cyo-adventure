@@ -4562,6 +4562,31 @@ in their journey sections instead.</p>
   and <code>frontend/src/offline/persist.test.ts</code> (<code>requestPersistentStorage()</code>: an
   absent Storage API resolves false, and it skips the <code>persist()</code> request when
   storage is already persisted)</li>
+<li>Service-worker navigation fallback (which paths the SPA shell may answer):
+  <code>frontend/src/pwa/navigateFallbackDenylist.test.ts</code> (every pattern Workbox's
+  NavigationRoute must not claim, one case each, checked in both directions:
+  against the paths the backend server-renders on this same origin, including
+  the KWS verification return page and the root-mounted <code>/health</code> probes, and
+  against the real SPA routes plus paths that merely start like a server path,
+  so widening the denylist cannot silently break client-side routing). The
+  wiring from that array into the emitted <code>dist/sw.js</code> is a separate,
+  artifact-level check: <code>frontend/scripts/check-sw-denylist.mjs</code>, run as npm's
+  <code>postbuild</code> so every <code>npm run build</code> covers it. The split is deliberate. The
+  unit test proves the array is correct; only the built artifact proves Workbox
+  was ever told about it, and a clean removal of the <code>vite.config.ts</code> wiring
+  leaves <code>tsc -b</code>, eslint, and all of the unit tests green.
+  Not tied to one journey because the service worker intercepts every top-level
+  navigation on the origin. <strong>The component tier is the only tier that sees this
+  today</strong>, but not for the reason you would guess: curl and Postman run no
+  service worker, and <code>playwright.config.ts</code> sets <code>serviceWorkers: 'block'</code>, so
+  none of those can observe it. The staging, staging-sweep, and prod configs
+  leave <code>serviceWorkers</code> unset and so default to <code>'allow'</code>, meaning they <em>could</em>
+  observe it; what stops them is that no spec in them navigates a
+  server-rendered path in a browser (<code>e2e-prod/health-probe.spec.ts</code> reaches
+  <code>/health/ready</code> through the <code>request</code> fixture, which bypasses the service
+  worker entirely). A path swallowed by the fallback therefore still looks
+  healthy from every vantage point except a real browser that has loaded the app
+  before</li>
 </ul>
 <h2 id="keeping-this-matrix-current">Keeping this matrix current<a class="headerlink" href="#keeping-this-matrix-current" title="Permanent link">&para;</a></h2>
 <p><code>#ASSUME: data-integrity: this matrix is hand-maintained and will drift as
@@ -4601,7 +4626,7 @@ closure. A companion action-level verdict for this audit lives at
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 10, 2026 17:43:27 UTC">August 10, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 11, 2026 05:16:35 UTC">August 11, 2026</span>
   </span>
 
     
