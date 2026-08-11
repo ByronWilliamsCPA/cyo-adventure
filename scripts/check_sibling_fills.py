@@ -29,6 +29,7 @@ import json
 import re
 import sys
 from collections import Counter
+from itertools import combinations
 from pathlib import Path
 from typing import Any, cast
 
@@ -105,8 +106,12 @@ def pairwise_shared_grams(
     heavily on their own can still clear the aggregate budget once several
     clean fills are averaged in. The worst pair below is immune to that
     dilution because its denominator is only the two fills involved.
-    #VERIFY: main() gates --check on the highest-rate pair here (via
-    --max-pair-shared-per-1000) whenever more than two fills are supplied.
+    #ASSUME: tooling: this helper is **not wired into main()** and nothing gates
+    on it. An earlier docstring claimed main() gated --check on the highest-rate
+    pair via --max-pair-shared-per-1000; no such flag exists and main() never
+    calls this. It is used from analysis scripts that import it directly, and a
+    reader calibrating against it should know no gate depends on it.
+    #VERIFY: grep for the flag name before believing any claim that it gates.
     """
     grams = [_grams(_leaf_text(story), n) for story in stories]
     words = [len(_WORD_RE.findall(_leaf_text(story).lower())) for story in stories]

@@ -178,11 +178,27 @@ def main(argv: list[str] | None = None) -> int:
         sys.stdout.write(f"{mark}  {r.guard:{width}s}  {r.scope:22s}  {r.detail}\n")
 
     failed = [r for r in results if not r.ok and r.gating]
+    gating = [r for r in results if r.gating]
+    advisory = [r for r in results if not r.gating]
+    skipped = [r for r in results if r.detail.lower().startswith("skipped")]
+    # Report the gating denominator, not the total. Counting advisory and
+    # skipped checks toward "clear" let a single-book run print a fully green
+    # battery while every pairwise guard had been skipped for want of a sibling,
+    # which is the one case where a reader most needs to see the gap.
     sys.stdout.write(
-        f"\n{len(results) - len(failed)} of {len(results)} guards clear\n"
-        f"NOT run, and not implied by a green battery: obligation delivery and "
-        f"prose entailment, which need a model (see "
-        f"build_prose_review_worklist.py)\n"
+        f"\n{len(gating) - len(failed)} of {len(gating)} GATING guards clear"
+        f"  ({len(advisory)} advisory, {len(skipped)} skipped)\n"
+    )
+    if skipped:
+        sys.stdout.write(
+            "skipped, so this battery says nothing about them: "
+            + ", ".join(sorted({r.guard for r in skipped}))
+            + "\n"
+        )
+    sys.stdout.write(
+        "NOT run, and not implied by a green battery: obligation delivery and "
+        "prose entailment, which need a model (see "
+        "build_prose_review_worklist.py)\n"
     )
     if failed:
         sys.stderr.write(

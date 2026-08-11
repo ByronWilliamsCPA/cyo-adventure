@@ -76,6 +76,14 @@ class Score(NamedTuple):
     words: int
     grade: float
     in_band: float
+    """Share of *scored* nodes inside the band.
+
+    Nodes under the minimum word count are unscorable and are excluded from
+    both numerator and denominator, so this is not the share of all nodes. A
+    book with many short nodes will report a higher figure than a whole-book
+    reading would suggest; ``nodes`` and ``scored_nodes`` together show the gap.
+    """
+    scored_nodes: int
 
 
 def grade(text: str) -> float | None:
@@ -127,6 +135,7 @@ def score(path: Path) -> Score | None:
         len(_WORD_RE.findall(" ".join(bodies))),
         whole,
         in_band,
+        len(scored),
     )
 
 
@@ -164,11 +173,16 @@ def main(argv: list[str] | None = None) -> int:
         sys.stdout.write(
             f"{scored.book:34s} {scored.nodes:5d} {scored.words:6d} "
             f"{scored.grade:9.2f} {scored.in_band:7.0%}"
-            f"{'   OVER' if over else ''}\n"
+            + (
+                f"  ({scored.nodes - scored.scored_nodes} node(s) too short to score)"
+                if scored.scored_nodes != scored.nodes
+                else ""
+            )
+            + f"{'   OVER' if over else ''}\n"
         )
         if scored.in_band < args.min_in_band:
             sys.stdout.write(
-                f"{'':34s} advisory: only {scored.in_band:.0%} of nodes sit inside "
+                f"{'':34s} advisory: only {scored.in_band:.0%} of SCORED nodes sit inside "
                 f"the band, so the aggregate is carried by a minority\n"
             )
 
