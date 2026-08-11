@@ -50,6 +50,31 @@ _AMENDMENT_MIGRATION_PATH = (
     / "20260810000000_exempt_reviewed_generation_job_report_from_purge.sql"
 )
 
+_MIGRATIONS_DIR = Path(__file__).resolve().parents[2] / "supabase" / "migrations"
+
+# The two single-statement files that rebuild the send-back exemption's index
+# without locking pipeline_event, in the order they apply.
+_INDEX_REBUILD_MIGRATIONS = (
+    _MIGRATIONS_DIR / "20260811160000_drop_pipeline_event_entity_event_type_index.sql",
+    _MIGRATIONS_DIR
+    / "20260811160100_create_pipeline_event_entity_event_type_index_concurrently.sql",
+)
+
+
+def _statements(sql: str) -> list[str]:
+    """Split migration SQL into statements, dropping comments and blanks.
+
+    Deliberately naive: it strips whole-line ``--`` comments and splits on
+    semicolons. That is enough for the two files it is used on, which contain
+    one statement each by construction, and it stays honest about why they do
+    (a multi-statement file is executed as a pgx pipeline, where CONCURRENTLY
+    fails with SQLSTATE 25001 and aborts the deploy).
+    """
+    body = "\n".join(
+        line for line in sql.splitlines() if not line.lstrip().startswith("--")
+    )
+    return [stmt.strip() for stmt in body.split(";") if stmt.strip()]
+
 
 def _principal(role: str) -> Principal:
     """Build a minimal Principal with the given role."""
@@ -357,3 +382,54 @@ def test_amendment_migration_has_no_em_dash() -> None:
     """House style (root CLAUDE.md): never use U+2014 in any project output."""
     sql = _AMENDMENT_MIGRATION_PATH.read_text(encoding="utf-8")
     assert "—" not in sql
+
+
+def test_pipeline_event_index_is_rebuilt_concurrently() -> None:
+    """The index rebuild pair exists, is concurrent, and is one statement each.
+
+    The single-statement rule is not style. Supabase CLI 2.109.1 executes a
+    multi-statement migration file as a pgx pipeline, and a CONCURRENTLY
+    statement inside a pipeline fails with SQLSTATE 25001, which aborts
+    ``supabase db push`` and blocks the deploy. A later edit that folds these
+    two files together, or adds a second statement to either, would ship a
+    migration that cannot apply; this test is what catches that before it
+    reaches an environment.
+    """
+    drop_path, create_path = _INDEX_REBUILD_MIGRATIONS
+    for path in _INDEX_REBUILD_MIGRATIONS:
+        assert path.is_file(), f"expected migration at {path}"
+        statements = _statements(path.read_text(encoding="utf-8"))
+        assert len(statements) == 1, (
+            f"{path.name} must hold exactly one statement, found "
+            f"{len(statements)}; a multi-statement file cannot use CONCURRENTLY"
+        )
+        assert "concurrently" in statements[0].lower()
+
+    drop_sql = _statements(drop_path.read_text(encoding="utf-8"))[0].lower()
+    create_sql = _statements(create_path.read_text(encoding="utf-8"))[0].lower()
+    assert drop_sql.startswith("drop index concurrently if exists")
+    assert create_sql.startswith("create index concurrently if not exists")
+    # Same name and same column list as the index 20260810000000 created, so
+    # the rebuild changes how it is built and nothing about what it is.
+    for sql in (drop_sql, create_sql):
+        assert "ix_pipeline_event_entity_event_type" in sql
+    assert '"entity_type", "entity_id", "event_type"' in create_sql
+
+
+def test_pipeline_event_index_rebuild_sorts_after_the_amendment() -> None:
+    """The rebuild applies after the migration that first created the index.
+
+    Supabase applies migrations in filename order and refuses one that sorts
+    before the last applied version, so a rebuild timestamped earlier than
+    20260810000000 would either never run or block the push.
+    """
+    for path in _INDEX_REBUILD_MIGRATIONS:
+        assert path.name > _AMENDMENT_MIGRATION_PATH.name
+    drop_path, create_path = _INDEX_REBUILD_MIGRATIONS
+    assert drop_path.name < create_path.name
+
+
+def test_pipeline_event_index_rebuild_has_no_em_dash() -> None:
+    """House style (root CLAUDE.md): never use U+2014 in any project output."""
+    for path in _INDEX_REBUILD_MIGRATIONS:
+        assert "—" not in path.read_text(encoding="utf-8")

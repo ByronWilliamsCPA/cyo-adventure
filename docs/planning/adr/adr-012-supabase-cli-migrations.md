@@ -190,6 +190,22 @@ truth; Alembic is retired.**
 - **Trigger-only behavior**: see the `pipeline_event` bullet under Consequences; it is
   called out here again because it is the concrete reason the parity gate could not be
   the only test for this migration.
+- **`CONCURRENTLY` is usable, in a migration file holding exactly one statement**
+  (established 2026-08-11 by reproduction against CLI `2.109.1`, against a throwaway
+  database). The rule is not "the CLI wraps each migration in a transaction", which is
+  what `20260810180000_add_kws_verification_delivery_health_index.sql` and
+  `20260811150000_index_user_consent_verification_id.sql` both assert in their header
+  comments; read those two claims as superseded. What actually happens is that a
+  multi-statement file is executed as a `pgx` **pipeline**, and a `CONCURRENTLY`
+  statement inside a pipeline fails with `CREATE INDEX CONCURRENTLY cannot be executed
+  within a pipeline (SQLSTATE 25001)`, aborting the whole `db push` and blocking the
+  deploy. A file holding one statement runs it outside a pipeline and succeeds, leaving
+  the index `indisvalid = true`. Comments are not statements, so prose is free.
+  Consequence for authors: an index on a table large enough for the build lock to matter
+  should be added as its own single-statement migration, as
+  `20260811160000`/`20260811160100` do for `ix_pipeline_event_entity_event_type`. The two
+  indexes named above are left as they are; they are already built, and rebuilding them
+  would be churn.
 
 ### Testing Strategy
 

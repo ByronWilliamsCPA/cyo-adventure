@@ -1,0 +1,48 @@
+-- Rebuild ix_pipeline_event_entity_event_type without an exclusive lock, part 1 of 2.
+--
+-- 20260810000000_exempt_reviewed_generation_job_report_from_purge.sql created this index
+-- with a plain `create index`, which holds a SHARE lock on "pipeline_event" for the
+-- duration of the build and therefore blocks every INSERT into it. "pipeline_event" is
+-- the append-only accountability log written by events/writer.py::record_event on every
+-- pipeline transition, so blocking writes to it stalls submit, approve, send-back and
+-- release for as long as the build runs. The #684 review asked for the CONCURRENTLY form
+-- instead; this pair of migrations delivers it.
+--
+-- Two files, one statement each, because of a CLI constraint established by reproduction
+-- rather than assumption (Supabase CLI 2.109.1, the version both deploy workflows pin):
+--
+--   * A migration file holding a single statement runs that statement outside a
+--     transaction, so CREATE/DROP INDEX CONCURRENTLY succeeds. Verified against a
+--     throwaway database: the index came back indisvalid = true, indisready = true.
+--   * A migration file holding two or more statements is executed as a pgx pipeline, and
+--     a CONCURRENTLY statement inside one fails with
+--     "CREATE INDEX CONCURRENTLY cannot be executed within a pipeline (SQLSTATE 25001)",
+--     which aborts the whole `supabase db push` and blocks the deploy.
+--
+-- Comments are not statements, so a file may carry as much prose as it likes.
+--
+-- This corrects a belief recorded in two earlier migrations
+-- (20260810180000_add_kws_verification_delivery_health_index.sql and
+-- 20260811150000_index_user_consent_verification_id.sql), both of which state that the
+-- CLI "runs each migration inside a transaction" and that CONCURRENTLY therefore cannot
+-- be used at all. The narrower rule above is the one that holds. Those two indexes are
+-- left exactly as they are: they are already built, and rebuilding them would be churn.
+--
+-- #EDGE: external resources: at current production scale this is a pattern fix, not an
+-- outage fix. Production's "pipeline_event" holds 61 rows in 112 kB (measured
+-- 2026-08-11), so the plain build's lock is sub-millisecond and no writer would notice
+-- it. The table is append-only with no deletion path, so it only grows; the point of
+-- fixing the pattern now is that the next build of this index, and any index added to
+-- this table later, happens on a table that is no longer 61 rows.
+-- #VERIFY: tests/unit/test_report_retention.py::
+-- test_pipeline_event_index_is_rebuilt_concurrently asserts this pair exists, that each
+-- file carries exactly one statement, and that both use the CONCURRENTLY form.
+--
+-- Part 2 (20260811160100) recreates the index. Between the two the send-back exemption's
+-- nightly probe has no index support; that window is one migration long, on a nightly
+-- job, against a table of this size, so it costs nothing observable.
+--
+-- Forward-only migration per this project's Supabase CLI convention (ADR-012); no down
+-- script. `if exists` makes it safe on a database that never applied 20260810000000.
+
+drop index concurrently if exists "public"."ix_pipeline_event_entity_event_type";
