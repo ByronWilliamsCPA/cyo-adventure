@@ -642,12 +642,22 @@ async def check_kws_verification() -> ReadinessCheck:
         # S1110 false positive); see check_database's identical comment.
         latency_ms = (time.time() - start) * 1000  # NOSONAR
         logger.warning(_CHECK_FAILED_LOG, check="kws_verification", error=str(exc))
+        # state="unknown", not "degraded", for the same reason as
+        # check_database_privilege above. "degraded" on this check is a
+        # specific, load-bearing claim: attempts were sent and stopped coming
+        # back, so the inbound webhook leg is broken and parents are stuck
+        # mid-verification. A query, permission, or connection failure
+        # supports none of that; it means the delivery signal was not
+        # measured at all. Reporting the unmeasured case as "degraded" sends
+        # an operator to hunt a KWS outage that may not exist, and worse, it
+        # spends the alert: once the probe cries "deliveries stopped" for a
+        # broken database, a later real stoppage looks like the same noise.
         return ReadinessCheck(
             name="kws_verification",
             status=False,
             latency_ms=round(latency_ms, 2),
             error=_CHECK_FAILED_MESSAGE,
-            state="degraded",
+            state="unknown",
         )
 
 

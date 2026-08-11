@@ -193,6 +193,21 @@ jobs:
               echo "::error::${TIER}: KWS deliveries appear to have STOPPED. ${detail}"
               exit 1
               ;;
+            unknown)
+              # The check ran and could not measure: the aggregate query
+              # failed. Still a failure, because a monitor that cannot see is
+              # not a monitor, but deliberately NOT the `degraded` wording.
+              # `degraded` sends an operator to KWS, the webhook route, and
+              # the vendor dashboard; `unknown` sends them to the database.
+              # Saying "deliveries stopped" for a failed query also spends the
+              # alert: once this cries wolf for a database fault, a real
+              # stoppage reads as the same noise.
+              echo "::error::${TIER}: the kws_verification check could not run, so the" \
+                   "delivery signal is UNMEASURED. This is a database or query fault on" \
+                   "the backend, not evidence that KWS deliveries stopped. Triage the" \
+                   "database first; see runbook section 7.1. ${detail}"
+              exit 1
+              ;;
             missing)
               # The check itself is gone from the response. Distinguished from
               # `unconfigured` on purpose: a probe that treats an absent key as

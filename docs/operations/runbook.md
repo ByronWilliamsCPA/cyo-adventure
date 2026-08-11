@@ -613,6 +613,17 @@ Triage, in order, when the marker issue appears with a `degraded` state:
 5. If the rows still in `sent` are all months old and the leg is otherwise fine, this is the
    abandonment case above. Resolve them rather than muting the check.
 
+An `unknown` state means the check ran but its aggregate query did not return, so the delivery signal
+was not measured. It is a failure, because a monitor that cannot see is not a monitor, but it is
+deliberately not `degraded` and triage goes somewhere else entirely: **start at the database**, not at
+KWS. Check that the backend can reach Postgres at all (the `database` check in the same readiness
+response will usually be failing too), then the app role's privileges on `kws_verification`. The
+distinction is worth keeping sharp in both directions. `degraded` is a specific claim, attempts were
+sent and stopped coming back, and it justifies paging someone toward the vendor and the webhook route.
+Reporting an unmeasured probe with that same wording sends that person hunting an outage that may not
+exist, and it spends the alarm: once this check has cried "deliveries stopped" for a broken query, a
+real stoppage reads as more of the same noise.
+
 A `missing` state means the deployed build carries no `kws_verification` check at all, so nothing is
 watching that tier. That is reported as a failure on purpose: a probe that treats an absent key as
 benign is how a monitoring gap ships unnoticed. Production has a dated exception, `PROD_MISSING_GRACE_UNTIL`

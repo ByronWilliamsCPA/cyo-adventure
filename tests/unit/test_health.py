@@ -1778,12 +1778,21 @@ class TestCheckKwsVerification:
 
     @pytest.mark.unit
     @pytest.mark.asyncio
-    async def test_a_query_failure_degrades_without_leaking_the_exception(self) -> None:
-        """A broken check reports degraded, and says nothing about why.
+    async def test_a_query_failure_is_unknown_not_degraded_and_leaks_nothing(
+        self,
+    ) -> None:
+        """A broken check reports unknown, and says nothing about why.
 
-        Matches check_database and check_generation_queue: /health/ready is
-        unauthenticated, so a driver message naming a host, role, or schema
-        would be published to anyone who asks.
+        The state matters as much as the redaction. "degraded" on this check
+        asserts that attempts were sent and stopped resolving, which is a page
+        for a broken inbound webhook leg. A query failure asserts nothing of
+        the kind: the delivery signal is simply unmeasured, which is
+        "unknown". Conflating the two sends an operator after a KWS outage
+        that may not exist, and spends the alert that a real stoppage needs.
+
+        The redaction half matches check_database and check_generation_queue:
+        /health/ready is unauthenticated, so a driver message naming a host,
+        role, or schema would be published to anyone who asks.
         """
         from cyo_adventure.api.health import check_kws_verification
 
@@ -1806,7 +1815,7 @@ class TestCheckKwsVerification:
             result = await check_kws_verification()
 
         assert result.status is False
-        assert result.state == "degraded"
+        assert result.state == "unknown"
         assert internal_message not in (result.error or "")
         assert "10.0.0.5" not in (result.error or "")
 
