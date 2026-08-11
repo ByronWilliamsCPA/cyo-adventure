@@ -9,15 +9,25 @@ function fakeAxios(overrides: Partial<AxiosInstance>): AxiosInstance {
 
 describe('makeConsentApi', () => {
   it('posts the location and returns the attempt view', async () => {
-    const post = vi.fn().mockResolvedValue({
-      data: { status: 'sent', requested_at: '2026-08-10T12:00:00Z' },
-    })
+    // The fixture is the WHOLE wire shape, all three required fields of
+    // KwsVerificationStartView, not the two this app happens to read today.
+    // A fixture that omits `attempt_id` asserts a response the server cannot
+    // send, so it would pass just as happily against an adapter that dropped
+    // the field. Nothing type-checks this mock into agreement with the
+    // generated type: `vi.fn()` returns `any`, so the fidelity has to be
+    // maintained here deliberately.
+    const view = {
+      attempt_id: '6f1d2c7e-0b6a-4a1e-9f3c-2f7f1a8d9e40',
+      status: 'sent',
+      requested_at: '2026-08-10T12:00:00Z',
+    }
+    const post = vi.fn().mockResolvedValue({ data: view })
     const api = makeConsentApi(fakeAxios({ post }))
 
     const result = await api.startKwsVerification('US')
 
     expect(post).toHaveBeenCalledWith('/v1/consent/kws/start', { location: 'US' })
-    expect(result).toEqual({ status: 'sent', requested_at: '2026-08-10T12:00:00Z' })
+    expect(result).toEqual(view)
   })
 
   it('sends no recipient of any kind', async () => {

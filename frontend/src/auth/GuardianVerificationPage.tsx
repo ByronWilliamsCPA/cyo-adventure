@@ -189,7 +189,9 @@ export function GuardianVerificationPage() {
       // still mounted at this point in both branches, so this is not a
       // set-after-unmount.
       // #VERIFY: GuardianVerificationPage.test.tsx
-      // 'a start that does not move the status leaves the form usable'.
+      // 'leaves the form usable when a start resolves without moving the
+      // status'. Deleting this line fails that test and
+      // 're-enables the button after a refusal so the parent can retry'.
       setBusy(false)
     }
   }
