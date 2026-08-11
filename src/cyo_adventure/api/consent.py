@@ -99,7 +99,7 @@ router = APIRouter(
 @router.post(
     "/kws/start",
     status_code=202,
-    responses=error_responses(400, 403, 409, 429),
+    responses=error_responses(400, 403, 409, 429, 502),
 )
 async def start_kws_verification(
     body: KwsVerificationStartBody,
@@ -132,6 +132,10 @@ async def start_kws_verification(
             is in a state that may not send (403).
         StateTransitionError: If an unresolved attempt is still recent (409).
         RateLimitedError: If the caller's hourly attempt cap is spent (429).
+        ExternalServiceError: If KWS rejects or fails the outbound send, or
+            the call times out (502). Unlike the four refusals above, this
+            one clears on its own, and the closed-out `send_failed` row lets
+            an immediate retry through (UW-A55).
     """
     # Checked before anything is written, so an unconfigured tier cannot leave
     # a `sent` row behind for an email that was never sendable. kws_client.py

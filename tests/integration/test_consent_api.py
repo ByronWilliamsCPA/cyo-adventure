@@ -473,13 +473,14 @@ class TestStartLimits:
 
         resp = await client.post(_START, json=_BODY)
 
-        # 400 rather than a 5xx, because ``app.py::_status_for`` has no entry
-        # for ExternalServiceError and falls back to 400 app-wide (pinned by
-        # tests/unit/test_app.py::test_external_service_error_falls_back_to_400).
-        # Asserted as-is rather than corrected here: the mapping predates this
-        # endpoint and every provider-backed route shares it. The property
-        # under test is the row, not the code.
-        assert resp.status_code == 400
+        # 502, not a permanent 400 (UW-A55): app.py::_status_for maps
+        # ExternalServiceError to 502 (pinned by
+        # tests/unit/test_app.py::test_external_service_error_maps_to_502),
+        # so a KWS outage is distinguishable from a refusal that will not
+        # clear on its own. The property under test here is the row, not the
+        # status code, but the status is asserted too so a regression back to
+        # the old 400 fallback fails this test as well.
+        assert resp.status_code == 502
         rows = await _attempts(sessions, user_id)
         assert len(rows) == 1
         assert rows[0].status == "send_failed"
@@ -505,7 +506,7 @@ class TestStartLimits:
         user_id = await _provision(client)
         sends.fail_with = ExternalServiceError("KWS is down", service_name="kws")
         failed = await client.post(_START, json=_BODY)
-        assert failed.status_code == 400
+        assert failed.status_code == 502
 
         sends.fail_with = None
         retry = await client.post(_START, json=_BODY)

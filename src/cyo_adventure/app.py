@@ -60,6 +60,7 @@ from cyo_adventure.core.config import settings
 from cyo_adventure.core.exceptions import (
     AuthenticationError,
     AuthorizationError,
+    ExternalServiceError,
     ProjectBaseError,
     RateLimitedError,
     ResourceNotFoundError,
@@ -106,6 +107,15 @@ def _client_safe_error(payload: dict[str, Any]) -> dict[str, Any]:
 # RateLimitedError are both BusinessLogicError subclasses; BusinessLogicError
 # itself is deliberately absent and served by the 400 fallback below, which is
 # what keeps this table from having to be ordered against it.
+#
+# ExternalServiceError (UW-A55) gets 502 rather than the 400 fallback, so a
+# vendor outage or timeout (retrying may help) is distinguishable from a
+# permanent refusal like a bad request or an unmet precondition (retrying
+# cannot help). APIError, DatabaseError, and ProviderError are all
+# ExternalServiceError subclasses with no entry of their own, so each is
+# caught by this same row via isinstance and inherits 502; none needs a
+# separate, more-specific row unless one of them is ever given a distinct
+# status, in which case that row must be listed above this one.
 _STATUS_BY_EXCEPTION: tuple[tuple[type[ProjectBaseError], int], ...] = (
     (AuthenticationError, 401),
     (AuthorizationError, 403),
@@ -113,6 +123,7 @@ _STATUS_BY_EXCEPTION: tuple[tuple[type[ProjectBaseError], int], ...] = (
     (ValidationError, 422),
     (StateTransitionError, 409),
     (RateLimitedError, 429),
+    (ExternalServiceError, 502),
 )
 
 

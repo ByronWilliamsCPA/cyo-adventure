@@ -22,6 +22,7 @@ from cyo_adventure.app import (
     create_app,
 )
 from cyo_adventure.core.exceptions import (
+    APIError,
     AuthenticationError,
     AuthorizationError,
     BusinessLogicError,
@@ -29,6 +30,7 @@ from cyo_adventure.core.exceptions import (
     DatabaseError,
     ExternalServiceError,
     ProjectBaseError,
+    ProviderError,
     RateLimitedError,
     ResourceNotFoundError,
     StateTransitionError,
@@ -66,12 +68,42 @@ class TestStatusFor:
         assert _status_for(ConfigurationError("bad config")) == 400
 
     @pytest.mark.unit
-    def test_database_error_falls_back_to_400(self) -> None:
-        assert _status_for(DatabaseError("db fail")) == 400
+    def test_external_service_error_maps_to_502(self) -> None:
+        """UW-A55: a vendor outage is distinguishable from the 400 fallback.
+
+        502 (Bad Gateway) rather than 400: the failure is on the far side of
+        an outbound call, so retrying may succeed once the dependency
+        recovers, unlike a 400 the app itself decided (bad config, an unmet
+        precondition) which will not change on its own.
+        """
+        assert _status_for(ExternalServiceError("upstream down")) == 502
 
     @pytest.mark.unit
-    def test_external_service_error_falls_back_to_400(self) -> None:
-        assert _status_for(ExternalServiceError("upstream down")) == 400
+    def test_database_error_maps_to_502_via_external_service_error(self) -> None:
+        """DatabaseError has no row of its own; it inherits 502 by isinstance.
+
+        Pins the isinstance-inheritance behavior explicitly, the reverse of
+        test_status_for_rate_limited_is_429 below: there the point was that a
+        subclass must NOT let an ancestor's row absorb it, and here the point
+        is that a subclass WITHOUT a more specific row of its own correctly
+        IS absorbed by its ancestor's row.
+        """
+        assert _status_for(DatabaseError("db fail")) == 502
+
+    @pytest.mark.unit
+    def test_api_error_maps_to_502_via_external_service_error(self) -> None:
+        """APIError has no row of its own either; same isinstance inheritance."""
+        assert _status_for(APIError("rate limited", status_code=429)) == 502
+
+    @pytest.mark.unit
+    def test_provider_error_maps_to_502_via_external_service_error(self) -> None:
+        """ProviderError (generation backend failures) inherits 502 the same way.
+
+        ProviderError never reaches this handler in production (it is
+        consumed inside the generation pipeline, not raised from a route), but
+        the mapping is still correct if that ever changes, and this pins it.
+        """
+        assert _status_for(ProviderError("model not found", status_code=404)) == 502
 
     @pytest.mark.unit
     def test_status_for_state_transition_is_409(self) -> None:

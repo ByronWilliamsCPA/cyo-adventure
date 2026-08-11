@@ -7015,6 +7015,10 @@ export type RequestCoverApiV1StorybooksStorybookIdVersionsVersionCoverPostErrors
      * Validation Error
      */
     422: HttpValidationError;
+    /**
+     * An external service failed or timed out; the action may succeed later.
+     */
+    502: ErrorResponse;
 };
 
 export type RequestCoverApiV1StorybooksStorybookIdVersionsVersionCoverPostError = RequestCoverApiV1StorybooksStorybookIdVersionsVersionCoverPostErrors[keyof RequestCoverApiV1StorybooksStorybookIdVersionsVersionCoverPostErrors];
@@ -8307,6 +8311,10 @@ export type StartKwsVerificationApiV1ConsentKwsStartPostErrors = {
      * A per-account quota was exhausted; the action may succeed later.
      */
     429: ErrorResponse;
+    /**
+     * An external service failed or timed out; the action may succeed later.
+     */
+    502: ErrorResponse;
 };
 
 export type StartKwsVerificationApiV1ConsentKwsStartPostError = StartKwsVerificationApiV1ConsentKwsStartPostErrors[keyof StartKwsVerificationApiV1ConsentKwsStartPostErrors];

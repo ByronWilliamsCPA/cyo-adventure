@@ -2328,6 +2328,10 @@ export const onboardApiV1OnboardingPost = <ThrowOnError extends boolean = false>
  * is in a state that may not send (403).
  * StateTransitionError: If an unresolved attempt is still recent (409).
  * RateLimitedError: If the caller's hourly attempt cap is spent (429).
+ * ExternalServiceError: If KWS rejects or fails the outbound send, or
+ * the call times out (502). Unlike the four refusals above, this
+ * one clears on its own, and the closed-out `send_failed` row lets
+ * an immediate retry through (UW-A55).
  */
 export const startKwsVerificationApiV1ConsentKwsStartPost = <ThrowOnError extends boolean = false>(options: Options<StartKwsVerificationApiV1ConsentKwsStartPostData, ThrowOnError>): RequestResult<StartKwsVerificationApiV1ConsentKwsStartPostResponses, StartKwsVerificationApiV1ConsentKwsStartPostErrors, ThrowOnError> => (options.client ?? client).post<StartKwsVerificationApiV1ConsentKwsStartPostResponses, StartKwsVerificationApiV1ConsentKwsStartPostErrors, ThrowOnError>({
     responseType: 'json',

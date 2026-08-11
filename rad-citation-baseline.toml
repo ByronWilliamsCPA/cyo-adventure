@@ -93,7 +93,6 @@
 "src/cyo_adventure/api/covers.py" = [
     "test_covers_api.py",
     "test_request_cover_already_generating",
-    "test_request_cover_enqueue_failure",
 ]
 "src/cyo_adventure/api/deps.py" = [
     "test_child_session.py::test_require_principal_child_branch_scopes",

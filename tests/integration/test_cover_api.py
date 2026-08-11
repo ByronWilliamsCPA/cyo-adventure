@@ -179,7 +179,11 @@ async def test_request_cover_enqueue_failure_marks_failed(
         f"/api/v1/storybooks/{seed.storybook_id}/versions/{seed.version}/cover",
         headers=auth(seed.admin_token),
     )
-    assert resp.status_code >= 400
+    # 502 (UW-A55), not merely ">= 400": the broker being unreachable is an
+    # ExternalServiceError, and asserting the exact status is what would catch
+    # a regression back to the old undifferentiated 400 fallback. A ">= 400"
+    # assertion would pass either way and prove nothing about which one fired.
+    assert resp.status_code == 502
     # The row must not be stranded in 'generating' when the enqueue fails.
     async with sessions() as s:
         row = await s.get(StorybookVersion, (seed.storybook_id, seed.version))

@@ -211,6 +211,26 @@ describe('GuardianVerificationPage start form', () => {
     }
   )
 
+  it('treats a KWS outage as a fault worth retrying, not a permanent refusal', async () => {
+    // UW-A55: a 502 (backend's ExternalServiceError, e.g. a KWS timeout or
+    // outage) used to be indistinguishable from the 400/403 permanent
+    // refusals above and got the same "trying again will not help" copy,
+    // which was wrong: the backend even closes the attempt out as
+    // send_failed so an immediate retry is accepted. This is the case the
+    // 400/403 test above must NOT also cover, and the positive counterpart of
+    // "reports a real failure as a failure": both a 500 and a 502 are faults
+    // that clear on their own, and both must read as retryable.
+    mockStartVerification.mockRejectedValue(refusal(502))
+    renderWithRouter()
+    chooseCountry()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Email me a verification link' }))
+
+    const alert = await screen.findByRole('alert')
+    expect(alert).not.toHaveTextContent(/trying again will not help/i)
+    expect(alert).toHaveTextContent(/try again/i)
+  })
+
   it('leaves the form usable when a start resolves without moving the status', async () => {
     // The gap that `finally` closes. startVerification resolves, so nothing
     // is thrown, but verificationStatus stays 'none' (a re-resolve that read
