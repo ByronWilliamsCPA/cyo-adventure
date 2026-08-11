@@ -590,7 +590,19 @@ Triage, in order, when the marker issue appears with a `degraded` state:
 
 A `missing` state means the deployed build carries no `kws_verification` check at all, so nothing is
 watching that tier. That is reported as a failure on purpose: a probe that treats an absent key as
-benign is how a monitoring gap ships unnoticed. An `unconfigured` state is not a failure; it means
+benign is how a monitoring gap ships unnoticed. Production has a dated exception, `PROD_MISSING_GRACE_UNTIL`
+in the workflow: until that date a `missing` production check is a notice rather than a failure,
+because production still runs a build from before the check existed and a daily marker issue for a
+known gap only teaches people to ignore the marker. The state is still recorded and still appears in
+the alert table, and the grace expires by itself rather than needing anyone to flip it back. Redeploying
+production before that date is what actually closes it.
+
+The two probe legs deliberately name different GitHub environments: `staging` (which holds
+`E2E_STAGING_BASE_URL`) and `production-e2e` (which holds nothing this workflow needs). The
+production leg must NOT name the `production` environment: its required-reviewer rule parks a
+scheduled run in `waiting` indefinitely instead of failing, so the alert job's `if: failure()` never
+fires and the whole alarm goes quiet. `e2e-prod.yml` hit this first and is why `production-e2e`
+exists. An `unconfigured` state is not a failure; it means
 `KWS_VERIFICATION_REQUIRED` is off on that tier, which is production's state until Gate 3 closes.
 
 `KWS_VERIFICATION_REQUIRED` also gates `POST /v1/consent/kws/start` itself, not just the

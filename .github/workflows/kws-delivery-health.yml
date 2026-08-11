@@ -59,7 +59,23 @@ jobs:
     name: Probe ${{ matrix.tier }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    environment: ${{ matrix.tier }}
+    # #CRITICAL: external resources: the GitHub environment is NOT the tier
+    # name, and it must not be. `production` carries a required-reviewer
+    # protection rule, and a scheduled job that names it parks in `waiting`
+    # indefinitely rather than failing, so `if: failure()` never fires and the
+    # entire alert path deadlocks silently. e2e-prod.yml hit exactly this and
+    # is why `production-e2e` exists: same reasoning, same remedy. Staging
+    # genuinely needs its environment, because E2E_STAGING_BASE_URL lives
+    # nowhere else; the production leg needs no environment-scoped secret at
+    # all (E2E_PROD_BASE_URL is defined in no environment and the literal
+    # fallback below is what production actually uses), so it is pointed at
+    # the unprotected environment purely to keep the two legs symmetric.
+    # #VERIFY: before adding any environment to this workflow, check its
+    # protection rules with
+    # `gh api repos/{owner}/{repo}/environments/{name}`; a required_reviewers
+    # entry makes it unusable from a scheduled job. Protection rules live in
+    # the API, not in this repository, so nothing here can fail on them.
+    environment: ${{ matrix.environment }}
     permissions: {}
     strategy:
       # One tier must not mask the other: as of 2026-08-10 KWS is wired on
@@ -68,7 +84,11 @@ jobs:
       # reach the one that does.
       fail-fast: false
       matrix:
-        tier: [staging, production]
+        include:
+          - tier: staging
+            environment: staging
+          - tier: production
+            environment: production-e2e
     steps:
       - name: Harden the runner
         uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
@@ -84,6 +104,22 @@ jobs:
             ${{ matrix.tier == 'staging'
                 && secrets.E2E_STAGING_BASE_URL
                 || (secrets.E2E_PROD_BASE_URL || 'https://cyo.williamshome.family') }}
+          # Until when a `missing` check on production is a notice rather than
+          # a failure. Production runs a build that predates the
+          # kws_verification readiness check, and nothing in this PR pairs
+          # merging with a homelab redeploy, so without this the very first
+          # scheduled run files a ci-failure issue and every run after it
+          # comments on the same issue until somebody redeploys. A month of
+          # daily noise is how a marker issue gets trained into background.
+          #
+          # A DATE rather than a boolean on purpose: a boolean would be a
+          # switch someone has to remember to flip back, and the failure mode
+          # of forgetting is a monitoring gap that looks exactly like health.
+          # After this date the grace expires by itself and production goes
+          # back to failing on `missing`, which is the permanent behaviour.
+          # Staging is never granted the grace: it is deployed from main and
+          # is where the check is meant to be live already.
+          PROD_MISSING_GRACE_UNTIL: "2026-09-10"
         run: |
           set -euo pipefail
 
@@ -138,6 +174,18 @@ jobs:
               # The check itself is gone from the response. Distinguished from
               # `unconfigured` on purpose: a probe that treats an absent key as
               # benign is how a monitoring gap ships unnoticed.
+              #
+              # Production gets a dated grace while it still runs a build from
+              # before this check existed. The state recorded above is still
+              # `missing`, so the run log and the alert table stay honest; what
+              # the grace changes is only whether it files an issue.
+              if [ "${TIER}" = "production" ] \
+                 && [ "$(date -u +%s)" -lt "$(date -u -d "${PROD_MISSING_GRACE_UNTIL}" +%s)" ]; then
+                echo "::notice::${TIER}: no kws_verification readiness check yet, which is" \
+                     "expected until the homelab redeploys. This becomes a failure on" \
+                     "${PROD_MISSING_GRACE_UNTIL}."
+                exit 0
+              fi
               echo "::error::${TIER}: the readiness response carries no kws_verification" \
                    "check at all. Either the deployed build predates it or the check was" \
                    "removed; nothing is watching the inbound leg on this tier."
