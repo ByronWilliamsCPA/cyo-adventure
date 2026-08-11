@@ -104,11 +104,16 @@ reviews:
     - "!**/.coverage"
     # Experimental artifacts, not code. These are generated story graphs,
     # bindings and contracts produced by the diversity-research runs and kept
-    # verbatim as evidence: reviewing them line by line yields nothing, and a
-    # single research round can add over a hundred of them, which alone pushed
-    # PR #682 past the reviewer's file limit and cost the runtime changes in
-    # that PR their review. The build scripts and READMEs alongside them stay
-    # in review; only the data files are excluded.
+    # verbatim as evidence; reviewing them line by line yields nothing. The
+    # build scripts and READMEs alongside them stay in review; only the data
+    # files are excluded.
+    #
+    # This reduces review NOISE and does NOT reduce the file count a PR is
+    # charged against the reviewer's per-PR limit. Verified on PR #682: adding
+    # this filter left the reported count at 192 of a 100 limit, because the
+    # count is taken before path filters apply. A PR carrying a research round
+    # therefore still has to be split to be reviewable at all. Do not reach for
+    # this filter to fix a "too many files" skip.
     - "!docs/planning/evidence/**/*.json"
 
   # Path-specific instructions
