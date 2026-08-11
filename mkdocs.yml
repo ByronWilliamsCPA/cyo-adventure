@@ -239,9 +239,22 @@ nav:
 # template_feedback.md is gitignored and local-only, so it is absent in CI but
 # present in a working checkout. Excluding it keeps `strict: true` from failing
 # locally on a file that is deliberately not in the nav.
+# planning/evidence/ is the raw artifact set behind the generation research brief:
+# model outputs, rating rounds, and the scripts that built them, archived in git so
+# the brief's figures stay re-derivable. MkDocs copies non-Markdown files under
+# docs/ into the site verbatim, so without this entry roughly 3 MB of JSON, Python,
+# and shell fixtures would be served as public static assets. The evidence is kept
+# in the repository and read there, not published.
+# sentinel-reinsertion/ is deliberately re-included: it predates the rest of the
+# evidence tree, is already published, and fifteen links from the story-personalization
+# and story-structure planning docs resolve into it. Excluding it would turn those
+# into 404s on the site, and MkDocs reports a link to an excluded page at INFO level,
+# so `strict: true` would not catch the breakage.
 exclude_docs: |
   planning/README.md
   planning/project-plan-template.md
+  planning/evidence/
+  !planning/evidence/sentinel-reinsertion/
   template_feedback.md
 
 # Validation

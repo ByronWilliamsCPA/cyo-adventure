@@ -45,6 +45,10 @@ uv run python scripts/check_annotator_agreement.py annotator1_v2.json annotator2
 
 The signatures rank the treatment pair as **more** decision-repetitive than the control pair
 (28/28 against 24/28; 1.000 against 0.929 on action family), and two blind readers of the finished
-books rank it as **less** repetitive. Agreement between annotators on the same artifacts is kappa
-0.96 on `action_family` and 1.000 on `consequence`, so the inversion is not annotator noise. See
-`AL-200` and `AL-201`.
+books rank it as **less** repetitive. Agreement between annotators on the same artifacts, all four
+fields as `scripts/check_annotator_agreement.py` reports them, is kappa 0.961 on `action_family`,
+0.924 on `target_role`, 0.675 on `tradeoff`, and 1.000 on `consequence`. Three of the four are
+almost perfect and none is below the 0.60 floor, so the inversion is not annotator noise, but
+`tradeoff` is the weak one and it clears the floor by only 0.075. Since `tradeoff` is one of the
+three fields the same-decision signature is computed from, read the inversion as resting on the
+other two more than on it. See `AL-200` and `AL-201`.
