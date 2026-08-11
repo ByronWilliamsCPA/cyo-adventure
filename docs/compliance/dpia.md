@@ -139,6 +139,14 @@ limit the blast radius:
   on an unenumerated method meeting 312.5(b)(1) without FTC approval; the 312.5(b)(3) Safe
   Harbor route buys certainty, not permission. This is risk reduction, not authorisation.
 
+**Update 2026-08-10**: the additive layering the first bullet anticipated is now built. A Kids Web
+Services adult check gates child-profile creation ahead of the consent capture, wired on staging
+against the vendor's Test environment and switched off in production. It does not close this
+section, and this DPIA makes no claim that it does: the vendor's own documentation states that its
+Parent Verification service is not itself a COPPA consent mechanism, the consent artifact is still
+the typed name, and a Test-environment verification is not evidence of anything (O-123). What the
+gate *does* create is a new processor disclosure, assessed separately at **2.8**.
+
 **Residual risk**: **High, and now accepted rather than pending.** It stays High: the 2026-08-09
 owner ruling withdrew the question from counsel, which removes the route by which the risk would
 have been resolved, not the risk. This remains the single highest-priority open item this DPIA
@@ -216,6 +224,51 @@ retention table server-side, not just as a stated policy.
 **Residual risk**: Low. `generation_job.report`'s purge (ADR-007) predates this DPIA; both new
 jobs mirror its idempotent, pg_cron-optional design.
 
+### 2.8 A guardian's email is disclosed to a new processor before, and regardless of, any outcome (Medium)
+
+> Added 2026-08-10, when the KWS adult-check gate was built. Wired on the staging tier against
+> the vendor's Test environment only; switched off in production. Assessed now rather than at
+> switch-on, because the disclosure is inherent to the design and does not become assessable
+> later.
+
+**Risk**: to establish that an account holder is an adult, we send their email address to Kids
+Web Services, operated by Epic Games. Three properties make this different in kind from the
+other processor disclosures in 2.1:
+
+- **The disclosure happens at the start of the check, not on success.** An adult whose check is
+  refused, who abandons it, or who never creates a child profile has still had their address
+  disclosed. There is no ordering that confirms an adult without disclosing first.
+- **It reaches people who never become users.** Every other processor in the RoPA receives data
+  about someone who is already a customer. This one receives data about applicants, including
+  rejected ones.
+- **It is a new processor with no executed DPA.** `processor-dpa-checklist.md` has no Epic row.
+  The processor-only claim asserted for every vendor in `privacy-notice.md` is, for this vendor,
+  currently unbacked.
+
+**Mitigation**: the disclosure is minimised at the point of design rather than by policy. The
+outbound body carries the adult's email, the country they picked, a language tag, and an opaque
+reference number, and nothing else; `assert_prompt_pii_safe` is not involved because no child
+data is in scope to screen. The `kws_verification` table has **no** email column under any name,
+enforced by a source-text guard, so the address is transmitted and then not retained by us. The
+vendor tells us only confirmed or refused, never the method used, so we do not receive payment
+or identity artifacts back. Anti-automation limits (an open-attempt refusal plus an hourly cap)
+bound how many addresses one account can cause to be disclosed, which also blocks the obvious
+abuse of the endpoint as an unmetered mailer.
+
+**Residual risk**: **Medium, and unresolved on three fronts.** (a) No DPA is executed, so the
+Article 28 basis for this transfer does not currently exist on paper. (b) Epic operates KWS from
+both US and EU entities and we have not established which receives our traffic, so neither the
+"all processors are US-based" statement in the privacy notice nor any transfer mechanism covers
+this row. (c) Whether the disclosure needs surfacing to the guardian *before* they trigger the
+send, rather than only in the notice, is a live question. All three are carried as `[COUNSEL: ...]`
+brackets in `privacy-notice.md`'s processor section. **This risk must be resolved before the
+production flag is switched on**, not before Track 2: unlike 2.1 and 2.2, switching it on is a
+discrete, reversible act entirely under our control, so there is no reason to accept it in the
+meantime. Tracked at assurance-register row **O-125**, added with this assessment. O-123 and
+O-124 are switch-on preconditions for the same feature but are not substitutes for it: they ask
+whether the *evidence* a verification produces is sound (which vendor environment, which permitted
+methods), while this one asks whether the *disclosure* that produces the evidence is lawful at all.
+
 ## 3. Consultation
 
 No formal consultation with data subjects (guardians) has been performed for this DPIA draft;
@@ -226,10 +279,14 @@ expected before this DPIA can be considered complete, given the scale caveat abo
 ## 4. Overall conclusion (draft)
 
 The processing is proportionate to its stated purpose, with data minimization doing most of
-the structural risk-reduction work. Two items carry genuine residual risk and should be
-resolved before Track 2 public launch increases scale: **2.1** (semantic PII gap in free
-text, G-13) and **2.2** (counsel confirmation of the VPC method). Everything else assessed
-here is Low residual risk given the mitigations already shipped.
+the structural risk-reduction work. Three items carry genuine residual risk, and they do not
+share a deadline. **2.1** (semantic PII gap in free text, G-13) and **2.2** (the VPC method,
+now an accepted exception rather than an open question) should be resolved before Track 2
+public launch increases scale. **2.8** (disclosing a guardian's email to a new processor with
+no executed DPA) has an earlier and firmer trigger: it must be resolved before the production
+KWS flag is switched on, which is a discrete act under our own control rather than a
+scale-driven horizon. Everything else assessed here is Low residual risk given the mitigations
+already shipped.
 
 [COUNSEL: this conclusion is a draft synthesis, not a sign-off. Please review each section,
 resolve the bracketed items, and record your own conclusion before this DPIA is treated as
@@ -242,5 +299,7 @@ complete for Article 35 purposes.]
 | `records-of-processing-activities.md` | Source for Section 1.1's activity inventory. |
 | `information-security-program.md` | Source for Section 1.1's scale statement and the general security-measures inventory this DPIA's mitigations draw from. |
 | `coppa-gdpr-remediation-plan.md` | Phase 7b, whose completion this document is; Section 2's items map to specific remediation-plan phases/findings as cited inline. |
-| `privacy-notice.md` | The guardian-facing document describing the same processing this DPIA assesses internally; both carry the same `[COUNSEL: ...]` flag on the VPC method question (2.2). |
-| ADR-018 | D1's VPC decision is the direct subject of Section 2.2. |
+| `privacy-notice.md` | The guardian-facing document describing the same processing this DPIA assesses internally; both carry the same `[COUNSEL: ...]` flag on the VPC method question (2.2), and the processor-table brackets added for the KWS disclosure are the guardian-facing face of Section 2.8. |
+| ADR-018 | D1's VPC decision is the direct subject of Section 2.2, and the KWS gate built under it is the subject of Section 2.8. |
+| `docs/security/assurance-register.md` | Rows O-122 (VPC method, accepted exception) and O-125 (KWS processor disclosure, added with Section 2.8) are where these risks are tracked to closure; O-123 and O-124 are the adjacent switch-on preconditions. |
+| `processor-dpa-checklist.md` | Has no Epic/KWS row; that absence is the first of Section 2.8's three unresolved fronts. |

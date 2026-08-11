@@ -95,7 +95,7 @@ government contract clauses.
 | Regime | Why | Register rows |
 | --- | --- | --- |
 | **FTC Act §5** | Any consumer-facing product. Security and privacy claims in the notice become enforceable representations | O-38, O-62, O-94 |
-| **COPPA** (compliance date 22 Apr 2026, therefore live) | Children under 13, child-directed service | O-35, O-36, O-61, O-62, O-31, O-122, O-123, O-124 |
+| **COPPA** (compliance date 22 Apr 2026, therefore live) | Children under 13, child-directed service | O-35, O-36, O-61, O-62, O-31, O-122, O-123, O-124, O-125 |
 | **State breach notification** | The regime attaches with the first non-household user; the notice duty itself fires on discovery of a qualifying breach | O-92 |
 | **ADA / WCAG** | Consumer-facing; also overlaps the age-appropriate-design duty to be understandable | O-95 |
 
@@ -111,7 +111,7 @@ discovery. This is the same treatment GDPR gets: written down before it binds.
 | **State information-security statutes** (NY SHIELD Act, Massachusetts 201 CMR 17.00) | Not residency alone: both statutes key on a defined data class (NY GBL 899-aa(1) "private information"; MA 201 CMR 17.02 "personal information"), each a name plus a specific sensitive identifier: SSN, driver's license/state-ID number, or a financial-account, credit-card, or debit-card number, **with or without** an accompanying security code, access code, PIN, or password (neither statute requires the credential; a bare card or account number combined with a name is already covered), plus biometric data, or, for NY only, a username/email combined with a password or security question and answer. T1 records no SSN/DL/financial-account/card/biometric data; T1's guardian email and auth identity is the one class that plausibly meets NY's username-plus-credential prong, an open question O-120 records rather than resolves. "First NY or MA resident outside the operator's household" is this project's own internal readiness marker, not a statutory threshold; neither statute has a company-size or record-count floor | O-120. Distinct from O-97's comprehensive-privacy/design-code determination and from O-61's COPPA-scoped, children-only security program: SHIELD and 201 CMR protect residents' private/personal information as each statute defines it, not "all" data about them |
 | **App store accountability acts** (TX SB 2420, UT, LA, AL) | Store distribution at R2/R3. Duties land on the **developer**: age rating, ingest store age and consent signals, re-trigger consent on significant change | O-98 |
 | **App store policies** (Apple Kids, Google Play Families) | Store submission | O-99 |
-| **GDPR / UK GDPR** | First EU or UK child or guardian | O-57 to O-60, O-93, O-34, O-121 (Art. 8 child-consent age, added post-2026-08-02) |
+| **GDPR / UK GDPR** | First EU or UK child or guardian | O-57 to O-60, O-93, O-34, O-121 (Art. 8 child-consent age, added post-2026-08-02), O-125 (Art. 28/44-49, added 2026-08-10) |
 | **DSA Art. 28** | Analysed: does not engage, the service is not an Art. 3(i) online platform. Re-open if any O-118 structure changes | O-118 |
 | **EU AI Act** transparency | EU market entry; generated content disclosure | O-74 |
 | **CRA** | Placing the product on the EU market | Deferred |
@@ -371,8 +371,8 @@ active", and the lifecycle section separately recorded a decision to accept "81 
 figures were wrong, and the error was load-bearing rather than cosmetic: it presented the register
 as six rows over a review ceiling it is actually fifty-three rows over, and it recorded a
 row-budget decision whose stated purpose was to prevent a budget being silently exceeded. The
-authoritative count is a count of `#### O-<digits>` headings within this section: 121 rows, IDs
-running O-01 to O-124 with O-63, O-64, and O-65 unassigned. Recount with
+authoritative count is a count of `#### O-<digits>` headings within this section: 122 rows, IDs
+running O-01 to O-125 with O-63, O-64, and O-65 unassigned. Recount with
 `grep -cE '^#### O-[0-9]+$'`. Note that O-117 and O-119 also appear as the first cell of the
 initial-build commitments table below; those are cross-references to rows defined here, not
 additional rows, and the heading-anchored pattern above deliberately excludes them.
@@ -2903,6 +2903,52 @@ posture at a trust boundary must be verified from outside that boundary.
 - **Check:** Records of processing are maintained with purposes, recipients, transfers, deletion
   periods, and a description of security measures
 
+#### O-125
+
+- **Category:** SP-12
+- **Framework ref:** not determined
+- **Legal ref:** GDPR Art. 28 (processor engaged only under a contract), Art. 44-49 (transfers),
+  Art. 13(1)(e)-(f) (recipients and transfers must be disclosed at the point of collection)
+- **Class:** MANUAL
+- **Protected property:** No adult's email address is disclosed to Kids Web Services from a tier
+  serving real families until a DPA is executed with the receiving Epic entity, the transfer
+  mechanism for that entity is recorded, and the disclosure is stated to the guardian before they
+  trigger it.
+- **Verification target:** The executed Epic/KWS DPA and its named counterparty entity;
+  `processor-dpa-checklist.md`'s row for that vendor; the guardian-facing copy on
+  `GuardianVerificationPage` and the processor table in `privacy-notice.md`; and
+  `KWS_VERIFICATION_REQUIRED` on each deployed tier.
+- **Failure oracle:** `KWS_VERIFICATION_REQUIRED` is true on a tier serving real families while
+  any of the three preconditions is unmet. Equivalently: a `kws_verification` row exists for a
+  real guardian and `processor-dpa-checklist.md` has no executed Epic entry.
+- **Negative control:** none, and this is the honest state rather than an oversight. The
+  precondition is contractual and editorial, so there is nothing in the code that could refuse;
+  the only mechanical lever is the flag itself, which defaults false
+  (`tests/unit/test_config.py::TestKwsEvidenceSettings::test_verification_is_not_required_by_default`)
+  and therefore fails safe without proving anything about this row.
+- **Trigger:** Before the first production switch-on of `KWS_VERIFICATION_REQUIRED`, and on any
+  change to the receiving Epic entity or to the KWS request payload.
+- **Existing coverage:** partial, on the minimisation side only. The outbound body carries the
+  adult's email, country, language, and an opaque reference and nothing else; `kws_verification`
+  has **no** email column under any name, enforced by an AST-based source guard, so the address is
+  transmitted and not retained by us. None of that touches the three gaps this row is about.
+  **Distinct from O-123 and O-124**, which govern *which* KWS environment and *which* methods a
+  verification relied on: those ask whether the evidence is sound, this asks whether the
+  disclosure that produces the evidence is lawful at all. All three are switch-on preconditions
+  and none substitutes for another.
+- **Recorded 2026-08-10**, when the gate was built and wired on staging against the vendor's Test
+  environment. The disclosure is inherent to the design and not deferrable: the address is sent
+  when the check *starts*, so an applicant who is refused, who abandons, or who never creates a
+  child profile has still had their address disclosed. This is the only processor in the RoPA that
+  receives data about people who never become users.
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** An executed DPA, a recorded transfer mechanism for the named receiving entity, and
+  pre-send guardian disclosure all exist before any real family's email address reaches Kids Web
+  Services
+
 ### SP-13 Protected-Population Duties and Age-Appropriate Design
 
 #### O-35
@@ -3919,8 +3965,10 @@ different question.
    vendor sandbox/production partition), and O-124 (the send-time snapshot of permitted verification
    methods), moving the count to 121 rows, 118 active. Those three closed a gap worth naming: the
    register cited COPPA against five rows, none of which asked *by what method* consent is verified,
-   and the word "verifiable" appeared nowhere in the file. Reopened: decide whether the active count,
-   now 118, is accepted, or trim to the ~60 ceiling. This is the maintainer's call and is deliberately left open rather than re-decided here;
+   and the word "verifiable" appeared nowhere in the file. Building that verification gate on
+   2026-08-10 then added O-125 (the processor disclosure the gate performs, as distinct from the
+   evidence it produces), moving the count to 122 rows, 119 active. Reopened: decide whether the
+   active count, now 119, is accepted, or trim to the ~60 ceiling. This is the maintainer's call and is deliberately left open rather than re-decided here;
    the point of recording each new addition here is so the next person who reopens this item
    recounts rather than trusts any historical figure.
 7. **Promote the spine.** `assurance-spine.md` is written to be lifted into whatever global
