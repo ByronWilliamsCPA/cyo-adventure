@@ -2,11 +2,13 @@
 
 Two purge paths are covered:
 
-- The on-publish path: ``publishing.service.approve`` nulls the originating
-  ``GenerationJob.report`` in the same transaction as the publish write.
-  Exercised the same Docker-independent way as
-  ``tests/unit/test_publishing_service_unit.py``: a mocked ``AsyncSession``,
-  no real database.
+- The on-publish path, which no longer purges. ``publishing.service.approve``
+  used to null the originating ``GenerationJob.report`` in the same transaction
+  as the publish write; ADR-007's 2026-08-11 amendment removed that, because it
+  defeated the approve half of the exemption below. The tests here now assert
+  the *absence* of any UPDATE on that path. Exercised the same
+  Docker-independent way as ``tests/unit/test_publishing_service_unit.py``: a
+  mocked ``AsyncSession``, no real database.
 - The 30-day scheduled path: a pg_cron job registered by
   ``supabase/migrations/20260718000000_add_report_retention_purge.sql`` and
   amended by ``20260810000000_exempt_reviewed_generation_job_report_from_purge.sql``
@@ -25,7 +27,6 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from sqlalchemy import Update
-from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from cyo_adventure.api.deps import Principal
@@ -87,12 +88,20 @@ def _scalar_result(value: object) -> MagicMock:
 
 
 @pytest.mark.asyncio
-async def test_approve_nulls_generation_job_report() -> None:
-    """approve() issues an UPDATE that nulls report for the published job.
+async def test_approve_does_not_purge_generation_job_report() -> None:
+    """approve() issues no UPDATE, so the published job's report survives.
 
-    The UPDATE must target generation_job rows matching this storybook's id
-    and the specific version being published (not every job ever run for the
-    storybook), and only rows where report is currently non-null.
+    ADR-007's 2026-08-11 amendment removed the on-publish purge. It had
+    defeated the approve half of the migration's reviewed-storybook exemption
+    outright: the sweep spares a job whose storybook reached "published", and
+    approve() had already nulled that job's report before the sweep could ever
+    see it, so no approval could reach the calibration corpus the exemption
+    exists to build.
+
+    Asserting on the absence of any UPDATE, rather than on the report column,
+    is deliberate: a mocked session records statements but has no rows, so the
+    statement stream is the only observable. It is also the assertion that
+    fails loudly if a purge is reintroduced in any shape.
     """
     story = _story("in_review")
     version_row = StorybookVersion(
@@ -109,41 +118,29 @@ async def test_approve_nulls_generation_job_report() -> None:
 
     await service.approve(session, principal, story, 1)
 
-    # Find the report-nulling UPDATE among the calls made to session.execute
-    # (record_event's internal flush does not go through session.execute, so
-    # this should be the sole call, but search by shape rather than assuming
-    # position for robustness against future additions).
     update_calls = [
         call
         for call in session.execute.await_args_list
         if isinstance(call.args[0], Update)
     ]
-    assert len(update_calls) == 1, (
-        "expected exactly one UPDATE statement against session.execute"
+    assert update_calls == [], (
+        "approve() must issue no UPDATE: retention for a reviewed job is decided "
+        "solely by the purge predicate in "
+        "20260810000000_exempt_reviewed_generation_job_report_from_purge.sql. "
+        f"Got {[str(c.args[0]) for c in update_calls]}"
     )
-    stmt = update_calls[0].args[0]
-    compiled = str(
-        stmt.compile(
-            dialect=postgresql.dialect(), compile_kwargs={"literal_binds": True}
-        )
-    )
-    assert "generation_job" in compiled
-    assert "SET report=NULL" in compiled or "SET report = NULL" in compiled.replace(
-        "  ", " "
-    )
-    assert "storybook_id = 's1'" in compiled or "storybook_id='s1'" in compiled
-    assert "version = 1" in compiled or "version=1" in compiled
-    assert "report IS NOT NULL" in compiled
 
 
 @pytest.mark.asyncio
-async def test_approve_report_purge_runs_before_publish_flushes() -> None:
-    """The purge UPDATE and the publish status write share one transaction.
+async def test_approve_issues_no_update_statements() -> None:
+    """The publish write still shares one transaction with the caller.
 
-    approve() never calls session.commit() (the request unit-of-work owns
-    that per api/deps.py), so asserting commit was never awaited is a proxy
-    for "the purge and the publish are still uncommitted together" -- a
-    caller-level rollback would undo both.
+    approve() never calls session.commit() (the request unit-of-work owns that
+    per api/deps.py), so asserting commit was never awaited is a proxy for "the
+    publish is still uncommitted" and a caller-level rollback would undo it.
+    Re-asserted at a second version because the removed purge was the only
+    statement that had been version-scoped, and nothing else on this path may
+    quietly become one.
     """
     story = _story("in_review")
     version_row = StorybookVersion(
@@ -160,7 +157,9 @@ async def test_approve_report_purge_runs_before_publish_flushes() -> None:
     await service.approve(session, _principal("admin"), story, 2)
 
     session.commit.assert_not_awaited()
-    session.execute.assert_awaited()
+    assert not any(
+        isinstance(call.args[0], Update) for call in session.execute.await_args_list
+    ), "approve() must remain free of UPDATE statements at every version"
 
 
 def test_migration_file_exists() -> None:

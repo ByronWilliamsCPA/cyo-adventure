@@ -52,18 +52,24 @@ here.
 
 ## 2. The retention schedule
 
-**This table governs.** The first eight rows reproduce, without modification, the
-category-by-category schedule resolved 2026-07-20 in `coppa-gdpr-remediation-plan.md` Section 5
-("Resolved 2026-07-20: accepted as drafted"). The remaining rows adopt the additional categories
-that `docs/planning/unscheduled-work-register.md` row UW-N07 identifies as omitted from that
+**This table governs.** The first eight rows reproduce the category-by-category schedule
+resolved 2026-07-20 in `coppa-gdpr-remediation-plan.md` Section 5 ("Resolved 2026-07-20:
+accepted as drafted"). The remaining rows adopt the additional categories that
+`docs/planning/unscheduled-work-register.md` row UW-N07 identifies as omitted from that
 resolved schedule.
+
+**One row has since been deliberately amended and no longer matches the 2026-07-20 text:**
+`generation_job.report`, by ADR-007's amendments of 2026-08-10 (a human-decided job is exempt
+from the 30-day sweep) and 2026-08-11 (the immediate on-publish purge is removed). The row
+below states the amended policy; the remediation plan's Section 5 copy is the historical
+resolution, not the live rule.
 
 | Data class | What it is | Retention window | Business need justifying retention | Deletion mechanism / status |
 |---|---|---|---|---|
 | Active profile/reading data | `reading_state`, `completion`, and `rating` rows for a child profile | Life of the active profile, plus **90 days** after deactivation before purge | Grace period covers accidental deactivation/reactivation without permanent data loss | Enforced. Three `pg_cron` jobs (`purge_stale_deactivated_profile_activity`, `_completions`, `_ratings`, migration `supabase/migrations/20260720150000_add_retention_purge_jobs.sql`) delete rows for any profile deactivated more than 90 days ago. The 2026-07-20 schedule expressed this as a 30-90 day range; 90 days is the committed hard deadline and the only value any job enforces, so the range is not restated here. |
 | Approved/published story requests and their stories | The `story_request` row and its resulting `storybook`/`storybook_version` rows, once approved and published | Life of the active account | Matches the product's core value; this is delivered content the guardian and child use, not incidental collection | On-demand only. Cascades away via `DELETE /api/v1/profiles/{profile_id}` (`src/cyo_adventure/api/profiles.py::delete_profile`) or `DELETE /api/v1/me/family` (`src/cyo_adventure/api/me.py::delete_my_family`); no scheduled purge job exists because deletion is guardian-triggered, not time-triggered. |
 | Blocked or declined story requests (raw `request_text`) | The `story_request.request_text` column on rows with `status IN ('blocked', 'declined')` | 30 days from decision (`COALESCE(reviewed_at, created_at)`), then the raw text is overwritten and only the redacted category/verdict remains | Short window covers guardian review/appeal; raw declined text has no ongoing purpose after that | Enforced. `pg_cron` job `purge_blocked_declined_story_request_text` (migration `20260720150000_add_retention_purge_jobs.sql`), daily at 03:00, overwrites `request_text` with a fixed placeholder. |
-| `generation_job.report` (raw LLM output) | The raw model output column on a generation job | 30 days, or immediately on publish, whichever comes first | ADR-007's original design; the raw output has no purpose once its content is either published or discarded | Enforced. `pg_cron` job scheduled in `supabase/migrations/20260718000000_add_report_retention_purge.sql`. |
+| `generation_job.report` (raw LLM output) | The raw model output column on a generation job | 30 days from the job's `updated_at`, **unless a human reached a review decision about the storybook it produced**, in which case the report is retained for the life of that storybook | ADR-007's original design was "no purpose once published or discarded". Its 2026-08-10 amendment narrowed that: a review-scorecard calibration corpus needs the raw output paired with the human decision made about it, in either direction (approved, or sent back with a reason). Machine-only outcomes are not exempt, so nothing is retained without a human judgment attached to justify it | Enforced. `pg_cron` job scheduled in `supabase/migrations/20260718000000_add_report_retention_purge.sql`, predicate amended in place by `20260810000000_exempt_reviewed_generation_job_report_from_purge.sql` (exempt when the storybook status is `published`/`archived`, or a `sent_back` `pipeline_event` exists for it). **The separate immediate on-publish purge in `publishing/service.py::approve` was removed on 2026-08-11** (ADR-007's 2026-08-11 amendment): it nulled the just-published version's own report before the exemption could ever apply to it, so the approve half of the exemption preserved nothing. The nightly predicate is now the only thing that decides this column's retention. |
 | Moderation reports | Classifier verdicts, scores, and reviewer decisions recorded during safety review | 1-2 years | Balances safety/audit value (a pattern of prior flags on a request source) against indefinite retention | **Policy-only, not enforced.** No `pg_cron` job, scheduled task, or application code was found that purges moderation-report rows on any schedule (verified by grepping `supabase/migrations/` and `src/cyo_adventure/` for `purge`/`retention`/`pg_cron`, 2026-08-06). See Section 4. |
 | `pipeline_event` audit log | The append-only accountability log written by `events/writer.py::record_event` (`db/models.py::PipelineEvent`) | No fixed purge; retained under a documented Article 17(3)/312.10 safety-and-integrity justification | Already PII-scrubbed by a closed-vocabulary allowlist contract (never free text, per `events/writer.py`), so the retention-risk profile is much lower than raw free text; the full balancing test is in `coppa-gdpr-remediation-plan.md`'s "4d artifact" section and `dpia.md` Section 2.5 | By design. No deletion path exists, and none is intended; this row survives a profile/family erasure request as a documented exception (see Section 3). |
 | Erasure request: response to the guardian | The obligation to communicate what action was taken on an erasure request | Acknowledge and respond within 1 month of the request (GDPR Article 12(3)); may be extended by up to 2 further months for complex/numerous requests, but only if the guardian is notified of the extension and the reason within the initial 1-month window | This is the deadline to communicate *what action was taken*, a distinct obligation from the deletion itself | Process obligation; see Section 3. No automated tracking of this clock was found in the codebase (manual/support-channel process today). |
@@ -121,7 +127,12 @@ specific files cited.
   `supabase/migrations/20260720150000_add_retention_purge_jobs.sql`.
 - Blocked/declined `request_text` purge: `pg_cron` job in the same migration.
 - `generation_job.report` purge: `pg_cron` job in
-  `supabase/migrations/20260718000000_add_report_retention_purge.sql`.
+  `supabase/migrations/20260718000000_add_report_retention_purge.sql`, with its predicate
+  amended in place by `20260810000000_exempt_reviewed_generation_job_report_from_purge.sql`.
+  This nightly job is the *only* enforcement path for this column as of 2026-08-11; the
+  second, immediate on-publish purge that `publishing/service.py::approve` used to perform
+  was removed that day, so a human-reviewed report is now genuinely retained rather than
+  nulled a moment after approval.
 - `story_request.interpretation` element purge:
   `supabase/migrations/20260720000000_add_story_request_interpretation.sql` (an additional
   purge job not itemized as its own row in Section 2's table because it is a sub-field of the

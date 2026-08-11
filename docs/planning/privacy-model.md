@@ -127,15 +127,23 @@ text sent to the provider are admin-only (ADR-007 as amended 2026-07-16) and sho
 - **Raw generation outputs**: stored in `generation_job.report`, a Postgres JSONB column
   (not object storage; there is no `raw_output_ref` field), only as long as needed for
   debugging and repair-pass analysis. The retention window is defined (ADR-007): purge 30
-  days after job completion or on publish, whichever comes first, via a `pg_cron` job
-  (ADR-009). The purge worker is a Phase 5 deliverable and is not yet built.
+  days after job completion, via a `pg_cron` job (ADR-009), **except** where a human
+  reached a review decision about the storybook the job produced, which ADR-007's
+  2026-08-10 amendment exempts so the raw output can be paired with the reviewer's
+  decision. ADR-007's 2026-08-11 amendment withdrew the original "or on publish, whichever
+  comes first" leg: publishing is now an exemption from the purge rather than a trigger for
+  it, because the immediate on-publish null in `publishing/service.py::approve` fired before
+  the approve half of the exemption could ever apply. The `pg_cron` job is built and
+  scheduled (`20260718000000_add_report_retention_purge.sql`, predicate amended by
+  `20260810000000_exempt_reviewed_generation_job_report_from_purge.sql`); it is no longer
+  the unbuilt Phase 5 deliverable this section once described.
 
   ```python
   # #CRITICAL: data integrity: generation_job.report holds raw LLM output that may
   #            carry child-derived detail; it must be purged and never leaked.
-  # #VERIFY: the pg_cron purge job (30 days post-completion or on-publish, whichever
-  #          first) is implemented and scheduled before the public tier goes live;
-  #          confirm report stays off child-facing endpoints and the job-list endpoint.
+  # #VERIFY: the pg_cron purge job (30 days post-completion, minus the human-decided
+  #          exemption) is scheduled before the public tier goes live; confirm report
+  #          stays off child-facing endpoints and the job-list endpoint.
   ```
 
 - **Access control**: `generation_job.report` is returned by `GET /generation-jobs/{id}`
