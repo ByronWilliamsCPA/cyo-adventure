@@ -35,7 +35,8 @@ type ActionDialog = null | 'approve' | 'sendback' | 'archive' | 'rescreen'
 /**
  * Send-back reason codes, in display order, paired with a short reviewer-
  * facing label. Mirrors SendBackReasonCodeLiteral in
- * src/cyo_adventure/api/schemas.py; the API is the source of truth, this is
+ * src/cyo_adventure/publishing/reason_codes.py; the API is the source of
+ * truth for the wire contract and the domain module owns the vocabulary, this is
  * just the console's presentation of the same closed vocabulary.
  */
 const SEND_BACK_REASON_CODES: ReadonlyArray<{ value: SendBackReasonCode; label: string }> = [

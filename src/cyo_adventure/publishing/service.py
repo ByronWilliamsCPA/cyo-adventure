@@ -31,6 +31,7 @@ from cyo_adventure.db.models import (
     StoryRequest,
 )
 from cyo_adventure.events import Actor, EventType, record_event
+from cyo_adventure.publishing.reason_codes import validate_reason_code
 from cyo_adventure.publishing.state_machine import (
     Action,
     Status,
@@ -497,16 +498,18 @@ async def send_back(
         storybook: The story being returned.
         reason: Why it was sent back (free text; logged, not persisted).
         reason_code: Calibration code for why it was sent back, persisted on
-            the SENT_BACK pipeline event so it is queryable later. Typed
-            ``str`` here on purpose: the closed vocabulary is
-            ``api.schemas.SendBackReasonCodeLiteral`` and is enforced at the
-            API boundary, because ``publishing`` must not import from ``api``.
-            **This function does not validate it**, so a non-API caller can
-            persist a code outside the vocabulary.
+            the SENT_BACK pipeline event so it is queryable later. Must be a
+            member of ``reason_codes.SEND_BACK_REASON_CODES``; this function
+            validates it, so the closed vocabulary holds for every caller and
+            not only for requests that arrive through the API boundary.
 
     Raises:
         StateTransitionError: If the story is not in ``in_review``.
+        ValidationError: If ``reason_code`` is outside the closed vocabulary.
     """
+    # Validate before the state transition, so a bad code cannot leave the
+    # storybook in needs_revision with no event written to explain it.
+    checked_reason_code = validate_reason_code(reason_code)
     # #ASSUME: data integrity: the free-text reason is logged (not persisted)
     # as before; reason_code is the structured calibration signal, persisted
     # below on the event row.
@@ -518,7 +521,7 @@ async def send_back(
         "storybook_sent_back",
         storybook_id=storybook.id,
         reason=reason,
-        reason_code=reason_code,
+        reason_code=checked_reason_code,
         actor=str(principal.user_id),
     )
     # #CRITICAL: data-integrity: reason_code is the review-scorecard
@@ -544,7 +547,7 @@ async def send_back(
         event_type=EventType.SENT_BACK,
         from_state="in_review",
         to_state="needs_revision",
-        payload={"reason_code": reason_code},
+        payload={"reason_code": checked_reason_code},
     )
 
 
