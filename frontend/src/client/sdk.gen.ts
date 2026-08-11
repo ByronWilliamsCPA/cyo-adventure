@@ -2324,7 +2324,8 @@ export const onboardApiV1OnboardingPost = <ThrowOnError extends boolean = false>
  * ConfigurationError: If KWS is not configured on this tier (400).
  * BusinessLogicError: If the caller has no ``User`` row yet, or no email
  * address to send to (400).
- * AuthorizationError: If the caller is a child account (403).
+ * AuthorizationError: If the caller is a child account, or the account
+ * is in a state that may not send (403).
  * StateTransitionError: If an unresolved attempt is still recent (409).
  * RateLimitedError: If the caller's hourly attempt cap is spent (429).
  */
