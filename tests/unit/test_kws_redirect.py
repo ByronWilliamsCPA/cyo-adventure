@@ -11,6 +11,7 @@ from __future__ import annotations
 import ast
 import hmac
 import inspect
+import re
 from hashlib import sha256
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
@@ -72,9 +73,19 @@ def _modules_imported(module: ModuleType) -> set[str]:
 _SECRET = "test-verification-secret-not-a-real-credential"
 _URL = "/api/v1/consent/kws/return"
 
-# The literal the page renders, asserted as bytes rather than read back off
-# the route module: what matters is what reaches the parent's browser.
+# The literal the page renders, declared here rather than imported from the
+# route module: what matters is what reaches the parent's browser, so the
+# assertions below read it back off the rendered ``response.text``.
 _LANDING_PATH = "/guardian"
+
+# Matched rather than substring-searched, so the pin survives Prettier's quote
+# style, spacing, and a later type annotation. None of those is a route rename,
+# and a pin that breaks on formatting gets weakened by the next person to hit
+# it. Extract-and-compare is the pattern
+# tests/unit/test_sentinel_pattern_frontend_pin.py already uses for this job.
+_GUARDIAN_CONSOLE_DECL = re.compile(
+    r"GUARDIAN_CONSOLE_PATH\s*(?::[^=]+)?=\s*['\"](?P<path>[^'\"]+)['\"]"
+)
 
 _VERIFIED_STATUS = '{"verified": true, "transactionId": "tx-1"}'
 _UNVERIFIED_STATUS = '{"verified": false}'
@@ -470,15 +481,52 @@ class TestLanding:
         verification went, and the two non-success pages are the ones that ask
         the parent to start again.
 
-        Covering the rejection page here also keeps the three structurally
-        alike: an offer present on success and absent on refusal would hand
-        back exactly the discriminator ``TestDisclosure`` exists to deny.
+        The rejection page is covered too, so all three stay alike. That
+        symmetry is not what makes the refusals non-disclosing, though: success
+        and failure already differ by their headings, by design, and what
+        ``TestDisclosure`` denies is discrimination among the four rejection
+        causes. The link is on every page because a dead end is bad on every
+        outcome.
         """
         response = client.get(_URL, params=params)
 
         assert response.status_code == expected_status
         assert f'href="{_LANDING_PATH}"' in response.text
         assert "Return to CYO Adventure" in response.text
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize(
+        ("params", "expected_status"),
+        [
+            (_params(), 200),
+            (_params(_UNVERIFIED_STATUS), 200),
+            ({"status": _VERIFIED_STATUS, "externalPayload": _EXTERNAL}, 400),
+        ],
+        ids=["verified", "not-verified", "unconfirmed"],
+    )
+    def test_the_way_back_sends_no_referrer(
+        self,
+        client: TestClient,
+        params: dict[str, str],
+        expected_status: int,
+    ) -> None:
+        """This page's own URL must not travel with the parent into the app.
+
+        The return URL is a replayable signed credential, and the global
+        ``Referrer-Policy: strict-origin-when-cross-origin`` drops the path and
+        query only when the destination is a *different* origin. The app is the
+        same origin, so a plain link would put the whole URL, signature
+        included, into the ``Referer`` header and from there into whatever
+        access log serves the app.
+        """
+        response = client.get(_URL, params=params)
+
+        assert response.status_code == expected_status
+        anchor = re.search(r"<a\s[^>]*>", response.text)
+
+        assert anchor is not None, "the page renders no link back into the app"
+        assert f'href="{_LANDING_PATH}"' in anchor.group()
+        assert 'rel="noreferrer"' in anchor.group()
 
     @pytest.mark.unit
     def test_the_landing_path_matches_the_app_route(self) -> None:
@@ -493,9 +541,15 @@ class TestLanding:
         routes = Path(__file__).resolve().parents[2] / "frontend" / "src" / "routes.ts"
 
         assert routes.is_file(), f"expected the SPA route table at {routes}"
-        assert f"GUARDIAN_CONSOLE_PATH = '{_LANDING_PATH}'" in routes.read_text(
-            encoding="utf-8"
-        ), f"the SPA no longer routes {_LANDING_PATH} to the guardian console"
+        declaration = _GUARDIAN_CONSOLE_DECL.search(routes.read_text(encoding="utf-8"))
+
+        assert declaration is not None, (
+            f"no GUARDIAN_CONSOLE_PATH declaration found in {routes}"
+        )
+        assert declaration.group("path") == _LANDING_PATH, (
+            f"the SPA routes {declaration.group('path')!r} to the guardian "
+            f"console, but this page links to {_LANDING_PATH!r}"
+        )
 
 
 class TestRefusalToRun:

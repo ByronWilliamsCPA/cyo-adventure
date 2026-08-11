@@ -107,7 +107,9 @@ class _RedirectStatus(BaseModel):
 # frontend/src/routes.ts. Nothing links the two, so moving the console route
 # there lands a parent on the app's 404 page here.
 # #VERIFY: tests/unit/test_kws_redirect.py::TestLanding::
-# test_every_page_offers_a_way_back_into_the_app.
+# test_the_landing_path_matches_the_app_route, which reads the constant the SPA
+# router actually uses. The sibling test_every_page_offers_a_way_back_into_the_app
+# only proves a link is present, so it cannot catch a rename on the other side.
 _APP_PATH = "/guardian"
 _APP_LINK_LABEL = "Return to CYO Adventure"
 
@@ -120,10 +122,15 @@ def _render(*, title: str, heading: str, body: str) -> str:
     caller-controlled text on the page to escape.
 
     The link back into the app is rendered on every page rather than only on
-    the success page, which keeps all three outcomes structurally identical:
-    the rejection page must not become distinguishable by what it offers, and
-    a parent whose verification did not complete is exactly the one who most
-    needs a route back to try again.
+    the success page, because a parent whose verification did not complete is
+    exactly the one who most needs a route back to try again.
+
+    Note what that does not buy. Success and failure are already fully
+    distinguishable by their headings, by design, so no non-disclosure property
+    rests on the link being present in both. What ``TestDisclosure`` denies is
+    discrimination among the four REJECTION causes, and those four already
+    collapse onto one page; the link is symmetric because a dead end is bad on
+    every outcome, not because an oracle depends on it.
 
     Args:
         title: The document title.
@@ -150,8 +157,15 @@ def _render(*, title: str, heading: str, body: str) -> str:
         # The app's own parchment surface and amber accent, copied as literals
         # rather than imported: this page must render with no stylesheet, no
         # font, and no script fetched from anywhere.
+        #
+        # Ink on the amber fill, not white. frontend/design-system/src/tokens.css
+        # records amber-deep against white at 3.42:1, under the 4.5:1 WCAG AA
+        # floor for normal text (1rem at weight 600 is not "large text"), and
+        # prescribes ink on the fill instead; guardian.css's
+        # `.intake-request__assign` is the in-app precedent. Do not restore a
+        # light foreground here.
         "a { display: inline-block; margin-top: 1.75rem; padding: 0.7rem 1.2rem;\n"
-        "    border-radius: 0.5rem; background: #c17b2a; color: #fff;\n"
+        "    border-radius: 0.5rem; background: #c17b2a; color: #1b1b1f;\n"
         "    font-size: 1rem; font-weight: 600; text-decoration: none; }\n"
         "a:focus-visible { outline: 3px solid #1b1b1f; outline-offset: 3px; }\n"
         "</style>\n"
@@ -160,7 +174,15 @@ def _render(*, title: str, heading: str, body: str) -> str:
         "<main>\n"
         f"<h1>{heading}</h1>\n"
         f"<p>{body}</p>\n"
-        f'<a href="{_APP_PATH}">{_APP_LINK_LABEL}</a>\n'
+        # #CRITICAL: security: rel="noreferrer" because the URL of THIS page is
+        # itself a replayable signed credential (see the module docstring). The
+        # global Referrer-Policy is strict-origin-when-cross-origin, which drops
+        # the path and query only on CROSS-origin navigations; `/guardian` is
+        # same-origin, so without this the full return URL, signature and all,
+        # is sent as `Referer` and lands in whatever access log serves the app.
+        # #VERIFY: tests/unit/test_kws_redirect.py::TestLanding::
+        # test_the_way_back_sends_no_referrer.
+        f'<a href="{_APP_PATH}" rel="noreferrer">{_APP_LINK_LABEL}</a>\n'
         "</main>\n"
         "</body>\n"
         "</html>\n"
