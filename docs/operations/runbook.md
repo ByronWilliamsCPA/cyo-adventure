@@ -576,10 +576,21 @@ surfaced as the non-gating `kws_verification` check on `/api/v1/health/ready`, a
 reads that endpoint. It holds no database credential of its own.
 
 A stuck count alone would be useless, because a parent who never opens their email leaves a `sent`
-row forever. The check fires only on the conjunction *stuck attempts exist* **and** *sends went out
-in the last 24h* **and** *nothing resolved in the last 24h*, which is not reachable by parent
-behaviour: it requires the return path itself to be broken. A resolution counts whether the
+row forever. The check compares two timestamps instead: it fires when **nothing has resolved since
+the most recent attempt that is still waiting** (once that attempt is older than 24h, so a parent
+still reading their inbox is not mistaken for an outage). A resolution counts whether the
 verification succeeded or was refused, since either one proves deliveries are arriving.
+
+Two properties of that rule are worth knowing before you read an alarm:
+
+- The anchor is the **newest** waiting attempt, not the oldest. One attempt abandoned months ago
+  stays the oldest forever, so anchoring on it would let every resolution since then vouch for the
+  leg and a fresh outage would never surface.
+- A lone abandoned attempt on a tier with no other traffic **does** keep alarming, and that is the
+  accepted cost. On the evidence available it is indistinguishable from a broken leg. The remedy is
+  to resolve the row, not to widen the rule; the previous rule bought silence here by also requiring
+  fresh sends, which made it quietest on exactly the low-traffic tiers where an outage is hardest to
+  notice by other means.
 
 Triage, in order, when the marker issue appears with a `degraded` state:
 
@@ -587,6 +598,11 @@ Triage, in order, when the marker issue appears with a `degraded` state:
    application log is evidence of nothing. Read Cloudflare's Security Events for the webhook path.
 2. Check the KWS status page and vendor console for a sending-side outage.
 3. Read the `requested_at` spread of the rows still in `sent`; it dates the start of the outage.
+4. If the error says **nothing has ever resolved**, suspect wiring rather than an outage: a webhook
+   URL that was never reachable from the vendor's side produces exactly this, and it has no start
+   date because there was never a working state to leave.
+5. If the rows still in `sent` are all months old and the leg is otherwise fine, this is the
+   abandonment case above. Resolve them rather than muting the check.
 
 A `missing` state means the deployed build carries no `kws_verification` check at all, so nothing is
 watching that tier. That is reported as a failure on purpose: a probe that treats an absent key as

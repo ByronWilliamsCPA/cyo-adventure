@@ -83,21 +83,25 @@ Verify with `tests/unit/test_kws_verification_service.py::test_a_test_environmen
 The same function supplies both the gate's answer and the evidence link recorded against the profile, so
 the two cannot disagree. Check that this is still true if you refactor it.
 
-### 3.2 The stuck-delivery alarm is a conjunction, not a count
+### 3.2 The stuck-delivery alarm is a timestamp comparison, not a count
 
-`src/cyo_adventure/api/health.py` reports degraded only when
-`stuck > 0 AND sent_in_window > 0 AND resolved_in_window == 0`. A plain "N rows stuck" alarm would fire
-forever on abandoned attempts, because a parent who starts verification and never finishes leaves a stuck
-row behind permanently and that is not an incident.
+`src/cyo_adventure/api/health.py` reports degraded when nothing has resolved since the most recent
+attempt that is still waiting, once that attempt is older than `_KWS_STUCK_AFTER` (24h). A plain
+"N rows stuck" alarm would fire forever on abandoned attempts; a count-and-window conjunction (the
+shape this started as) goes blind on a quiet tier, because a blocked inbound leg does not produce the
+fresh sends such a rule requires.
 
-`stuck_after` and the observation window are both 24 hours, deliberately equal, so the two sets are
-disjoint and a single verifying parent cannot be both the stuck row and the recent send. If someone tunes
-one of those constants without the other, the alarm silently becomes either noisy or blind.
+Two things to preserve if you touch it. The anchor is the **newest** waiting attempt: anchoring on the
+oldest lets one long-abandoned row absorb every later resolution and mask a fresh outage. And a lone
+abandoned attempt on a silent tier keeps alarming on purpose, because that state is not
+distinguishable from a broken leg on the evidence the table holds; resolve the row rather than
+widening the rule.
 
-Verify with `TestCheckKwsVerification` (line 1650), particularly
-`::test_reports_ok_while_resolutions_are_still_arriving` and
-`::test_reports_degraded_with_the_counts_an_operator_needs`. `TestReadinessKwsDoesNotGate` (line 1807)
-confirms the check is published even with the flag off and never gates readiness.
+Verify with `TestVerificationDeliveryHealth` in `tests/unit/test_kws_verification_service.py`,
+particularly `::test_an_old_abandoned_row_does_not_mask_a_fresh_outage` and
+`::test_an_outage_on_a_quiet_tier_still_alarms`, plus `TestCheckKwsVerification` for what the
+published message says. `TestReadinessKwsDoesNotGate` confirms the check is published even with the
+flag off and never gates readiness.
 
 ### 3.3 No email address is stored
 

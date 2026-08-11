@@ -83,17 +83,15 @@ _RECENT_FAILED_WINDOW = timedelta(hours=24)
 RECENT_FAILED_DEGRADED_THRESHOLD = 3
 
 # #ASSUME: timing dependencies: how long an unresolved KWS attempt may sit
-# before check_kws_verification counts it as stuck, and how far back that
-# check looks for sends and resolutions. 24 hours for both, and the value is
-# doing less work than it looks: the alarm is a CONJUNCTION (see
-# consent/service.py::VerificationDeliveryHealth.deliveries_have_stopped), so
-# this threshold only decides how quickly a genuine outage surfaces, not
-# whether abandonment is mistaken for one. A full day also puts the two terms
-# on disjoint sets of rows, which is what stops one slow-but-eventually-
-# verifying parent from being both the stuck row and the recent send.
+# before check_kws_verification counts it as stuck. This is now the ONLY
+# tuning knob on the alarm (see
+# consent/service.py::VerificationDeliveryHealth.deliveries_have_stopped),
+# and it trades detection latency against tolerance for a parent who opens
+# the email slowly: below it, a parent still reading their inbox would be
+# treated as evidence the leg is broken. 24 hours is generous on that side,
+# which is the right way to be wrong for a check whose job is to be believed.
 # #VERIFY: tests/unit/test_health.py::TestCheckKwsVerification.
 _KWS_STUCK_AFTER = timedelta(hours=24)
-_KWS_DELIVERY_WINDOW = timedelta(hours=24)
 
 
 class HealthStatus(BaseModel):
@@ -559,13 +557,14 @@ async def check_kws_verification() -> ReadinessCheck:
     reporting them as degraded would be a permanent false alarm on a feature
     that is switched off.
 
-    The degraded condition is a conjunction of three terms rather than a
-    stuck count, for the reason
+    The degraded condition compares two timestamps rather than counting
+    rows: it fires when nothing has come back since the most recent attempt
+    that is still waiting. See
     ``consent/service.py::VerificationDeliveryHealth.deliveries_have_stopped``
-    documents: ordinary abandonment (a parent who never opens the email)
-    leaves a stuck row behind forever and is not an incident. All four counts
-    are reported either way, so an operator reading the payload sees the same
-    numbers the condition was computed from.
+    for why the anchor is the newest such attempt and for what that
+    deliberately does not exclude. The error string carries both timestamps,
+    so an operator reading the payload sees the comparison the verdict was
+    computed from rather than having to trust it.
 
     Deliberately non-gating (absent from ``_CRITICAL_READINESS_CHECKS``),
     matching check_cache and check_generation_queue: a broken inbound KWS leg
@@ -573,7 +572,7 @@ async def check_kws_verification() -> ReadinessCheck:
     who are already reading, and 503-ing the pod out of rotation would turn a
     sign-up outage into a whole-app one.
 
-    The response exposes four integers and no PII, on an already
+    The response exposes a count, two timestamps, and no PII, on an already
     unauthenticated endpoint. That is deliberate rather than incidental: the
     table it counts has no email column at all (see
     ``db/models.py::KwsVerification``), so there is no address here to leak
@@ -598,30 +597,37 @@ async def check_kws_verification() -> ReadinessCheck:
 
         async with get_session() as session:
             health = await verification_delivery_health(
-                session,
-                stuck_after=_KWS_STUCK_AFTER,
-                window=_KWS_DELIVERY_WINDOW,
+                session, stuck_after=_KWS_STUCK_AFTER
             )
 
         latency_ms = round((time.time() - start) * 1000, 2)
         if health.deliveries_have_stopped:
             oldest = health.oldest_stuck_requested_at
-            # `oldest` is non-None whenever stuck > 0, which the conjunction
-            # already required; the guard is for the type checker, not for a
-            # case that can occur.
+            # `oldest` is non-None whenever anything is stuck, which
+            # `deliveries_have_stopped` already required; the guard is for the
+            # type checker, not for a case that can occur.
             oldest_note = (
                 "" if oldest is None else f" (oldest sent {oldest.isoformat()})"
             )
-            window_hours = int(_KWS_DELIVERY_WINDOW.total_seconds() // 3600)
+            last = health.last_resolved_at
+            # The two branches are a real distinction for triage, not a
+            # formatting nicety: "nothing has EVER come back" on a tier that
+            # has been sending is a wiring fault (a webhook URL that was never
+            # reachable), while a date is an outage that started, and the date
+            # is when it started.
+            last_note = (
+                "nothing has ever resolved"
+                if last is None
+                else f"last resolution {last.isoformat()}"
+            )
             return ReadinessCheck(
                 name="kws_verification",
                 status=False,
                 latency_ms=latency_ms,
                 error=(
                     f"{health.stuck} KWS verification(s) stuck unresolved"
-                    f"{oldest_note}; {health.sent_in_window} sent and "
-                    f"{health.resolved_in_window} resolved in the last "
-                    f"{window_hours}h"
+                    f"{oldest_note}; {last_note}, which is before the most "
+                    f"recent attempt still waiting"
                 ),
                 state="degraded",
             )

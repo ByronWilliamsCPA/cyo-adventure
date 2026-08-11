@@ -15,10 +15,12 @@
 --      construction rather than by planner choice.
 --
 -- Leading column kws_environment because that is the equality term and the only one
--- present on every deployment; requested_at second because two of the four aggregate
--- terms range over it (the stuck cutoff and the window start). resolved_at is
--- deliberately NOT a third column: a composite's third column cannot be used for a
--- range once the second one already is, so it would add write cost and no read benefit.
+-- present on every deployment; requested_at second because the stuck cutoff ranges over
+-- it. The index deliberately stops there and does not try to COVER the query: the
+-- aggregate's FILTER also reads status, so an index-only scan would need status and
+-- resolved_at as third and fourth columns, and that write cost is not worth paying on a
+-- table that gains exactly one row per verification email. Bounding the scan to one
+-- environment is the whole benefit being bought here.
 --
 -- Not CONCURRENTLY: the Supabase CLI runs each migration inside a transaction and
 -- CREATE INDEX CONCURRENTLY cannot run in one. The table is small enough at this scale

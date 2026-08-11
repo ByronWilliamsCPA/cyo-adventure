@@ -467,57 +467,81 @@ async def attempts_since(
 
 @dataclass(frozen=True, slots=True)
 class VerificationDeliveryHealth:
-    """Four counts that, together, say whether resolutions are still arriving.
+    """When the stuck attempts were sent, and when the leg last proved itself.
 
-    None of them means anything alone, which is the reason this is one object
-    and one query rather than four call sites. See
-    :func:`verification_delivery_health` for what the combination is for.
+    The two timestamps are the alarm; the count is for the operator reading
+    it. They come back in one object and one query because comparing them is
+    the whole measurement. See :func:`verification_delivery_health`.
 
     Attributes:
         stuck: Attempts still in ``sent`` whose ``requested_at`` is older than
-            the caller's staleness threshold.
+            the caller's staleness threshold. Reported, not tested against:
+            one stuck attempt and fifty are the same verdict.
         oldest_stuck_requested_at: When the oldest of those was sent, or None
             when ``stuck`` is 0. Reported so an alert can say how long the
             longest-waiting parent has been waiting.
-        sent_in_window: Attempts started inside the caller's window,
-            regardless of status. This is the "are we still emailing parents"
-            term.
-        resolved_in_window: Attempts a delivery resolved inside the window,
-            verified or failed alike. A ``failed`` resolution still proves the
-            inbound leg works, which is what this counts.
+        newest_stuck_requested_at: When the most recent of those was sent, or
+            None when ``stuck`` is 0. This is the discriminating one: see
+            :attr:`deliveries_have_stopped`.
+        last_resolved_at: The most recent ``resolved_at`` in this environment,
+            verified or failed alike, or None when nothing has ever resolved.
+            A ``failed`` resolution is still a delivery that reached us, which
+            is exactly what this is evidence of.
     """
 
     stuck: int
     oldest_stuck_requested_at: datetime | None
-    sent_in_window: int
-    resolved_in_window: int
+    newest_stuck_requested_at: datetime | None
+    last_resolved_at: datetime | None
 
     @property
     def deliveries_have_stopped(self) -> bool:
         """Whether the inbound leg looks broken rather than merely quiet.
 
-        All three terms are load-bearing, and each one excludes a specific
-        false positive that the other two let through:
+        The question is answered by ordering two timestamps: did anything
+        come back AFTER the most recent attempt that is still waiting.
 
-        - ``resolved_in_window == 0`` alone fires on any quiet period.
-        - ``stuck`` alone fires on ordinary abandonment. A parent who never
-          opens the email leaves a ``sent`` row behind forever, and that is
-          normal behaviour, not an incident.
-        - ``sent_in_window`` is what separates the two. An abandoned attempt
-          from last month sits stuck with no new traffic beside it; a broken
-          inbound leg shows fresh sends going out while nothing at all comes
-          back.
+        - Nothing stuck: no attempt has been outstanding long enough to be
+          evidence of anything, so there is no alarm to raise.
+        - Something stuck, and a delivery landed after it was sent: the leg
+          demonstrably works, and what is outstanding is a parent who has not
+          acted yet. Ordinary abandonment lives here.
+        - Something stuck, and nothing has come back since it was sent: the
+          leg has had a chance to prove itself and has not. That is the
+          alarm.
+
+        #CRITICAL: external resources: the anchor is the NEWEST stuck attempt,
+        not the oldest, and the difference is a masked outage rather than a
+        style choice. One abandoned attempt from months ago stays the oldest
+        stuck row forever; anchoring on it would mean every resolution since
+        then reads as "the leg works", so a fresh outage arriving today would
+        be answered by evidence from months ago and never alarm. Anchoring on
+        the newest makes the freshest waiting attempt the thing the leg has to
+        answer for.
+        #VERIFY: tests/unit/test_kws_verification_service.py::
+        TestVerificationDeliveryHealth::
+        test_an_old_abandoned_row_does_not_mask_a_fresh_outage.
+
+        Note what this deliberately does NOT exclude: a single abandoned
+        attempt on a tier with no other traffic keeps alarming, because on
+        the evidence available that state is indistinguishable from a broken
+        leg. The predecessor of this rule excluded it by also requiring fresh
+        sends, and the price was silence during exactly the outage this
+        exists to catch: a blocked inbound leg suppresses the sends that
+        would have satisfied that term, so the quieter the tier, the less
+        the alarm worked. The remedy for the noise is to resolve the row,
+        not to widen the rule until it stops speaking.
         """
-        return (
-            self.stuck > 0 and self.sent_in_window > 0 and self.resolved_in_window == 0
-        )
+        newest_stuck = self.newest_stuck_requested_at
+        if newest_stuck is None:
+            return False
+        return self.last_resolved_at is None or self.last_resolved_at < newest_stuck
 
 
 async def verification_delivery_health(
     session: AsyncSession,
     *,
     stuck_after: timedelta,
-    window: timedelta,
 ) -> VerificationDeliveryHealth:
     """Measure whether KWS deliveries are still reaching us at all.
 
@@ -529,33 +553,39 @@ async def verification_delivery_health(
     this system is rows that stay ``sent``, which is why the alarm has to be a
     query over the table rather than a rule over the logs.
     #VERIFY: tests/unit/test_kws_verification_service.py::
-    TestVerificationDeliveryHealth covers the healthy, stopped, abandoned and
+    TestVerificationDeliveryHealth covers the healthy, stopped, masking and
     quiet cases; api/health.py::check_kws_verification publishes it.
+
+    There is no lookback window, on purpose. A window bounds how far back the
+    evidence may come from, and the evidence that matters here is the single
+    most recent resolution however old it is: if the last thing KWS delivered
+    was six weeks ago and an attempt has been waiting since yesterday, the
+    leg has not answered, and a 24-hour window would have reported that as
+    "quiet" rather than as the outage it is.
 
     Scoped to ``settings.kws_environment``, matching
     :func:`open_attempt_started_at`: each deployment watches the environment
     it is itself configured for, so staging's Test rows never mask or inflate
     production's, and the two tiers alarm independently.
 
-    #ASSUME: data-integrity: a resolution is counted by ``resolved_at`` being
-    non-NULL inside the window rather than by status, which is sound only
+    #ASSUME: data-integrity: stuckness is read from ``status`` while
+    resolution is read from ``resolved_at``, and mixing the two is sound only
     because ``ck_kws_verification_resolution_pairing`` makes
     ``status = 'sent'`` and ``resolved_at IS NULL`` the same condition at
-    rest. Without that CHECK this would need a status filter as well.
+    rest. Without that CHECK the resolution term would need a status filter
+    as well, and a row could be counted on both sides at once.
     #VERIFY: tests/unit/test_kws_verification_model.py::
     test_resolution_pairing_is_constrained_at_rest.
 
     Args:
         session: The caller's session. This function only reads.
         stuck_after: How old an unresolved attempt must be to count as stuck.
-        window: How far back to look for sends and resolutions.
 
     Returns:
-        VerificationDeliveryHealth: The four counts, in one round trip.
+        VerificationDeliveryHealth: The count and the three timestamps, in one
+        round trip.
     """
-    now = datetime.now(UTC)
-    stuck_cutoff = now - stuck_after
-    window_start = now - window
+    stuck_cutoff = datetime.now(UTC) - stuck_after
     is_stuck = (
         KwsVerification.status == KWS_VERIFICATION_STATUS_SENT,
         KwsVerification.requested_at < stuck_cutoff,
@@ -564,12 +594,8 @@ async def verification_delivery_health(
         select(
             func.count().filter(*is_stuck).label("stuck"),
             func.min(KwsVerification.requested_at).filter(*is_stuck).label("oldest"),
-            func.count()
-            .filter(KwsVerification.requested_at >= window_start)
-            .label("sent_in_window"),
-            func.count()
-            .filter(KwsVerification.resolved_at >= window_start)
-            .label("resolved_in_window"),
+            func.max(KwsVerification.requested_at).filter(*is_stuck).label("newest"),
+            func.max(KwsVerification.resolved_at).label("last_resolved"),
         )
         .select_from(KwsVerification)
         .where(KwsVerification.kws_environment == settings.kws_environment)
@@ -578,8 +604,8 @@ async def verification_delivery_health(
     return VerificationDeliveryHealth(
         stuck=int(row.stuck or 0),
         oldest_stuck_requested_at=row.oldest,
-        sent_in_window=int(row.sent_in_window or 0),
-        resolved_in_window=int(row.resolved_in_window or 0),
+        newest_stuck_requested_at=row.newest,
+        last_resolved_at=row.last_resolved,
     )
 
 

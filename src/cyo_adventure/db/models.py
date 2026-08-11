@@ -2881,12 +2881,16 @@ class KwsVerification(Base):
         ),
         # #ASSUME: external resources: the delivery-health aggregate
         # (consent/service.py::verification_delivery_health) filters this whole
-        # table on kws_environment and ranges over requested_at, and it is
-        # reached from the PUBLIC, UNAUTHENTICATED readiness endpoint
-        # (api/health.py::check_kws_verification). Rows here are never deleted,
-        # so without this index the scan grows without a ceiling; the only other
-        # index on the table is the user_id one, which has kws_environment
-        # nowhere in it and cannot serve the predicate at all.
+        # table on kws_environment and aggregates over requested_at and
+        # resolved_at, and it is reached from the PUBLIC, UNAUTHENTICATED
+        # readiness endpoint (api/health.py::check_kws_verification). Rows here
+        # are never deleted, so without this index the scan grows without a
+        # ceiling; the only other index on the table is the user_id one, which
+        # has kws_environment nowhere in it and cannot serve the predicate at
+        # all. Its job is to bound the scan to one environment, NOT to cover
+        # the query: the aggregate's FILTER also reads status, so an index-only
+        # scan would need a four-column index, which is not worth the write
+        # cost on a table that gains one row per verification email.
         # #VERIFY: keep in step with supabase/migrations/
         # 20260810180000_add_kws_verification_delivery_health_index.sql;
         # tests/integration/test_schema_parity.py compares the two databases the

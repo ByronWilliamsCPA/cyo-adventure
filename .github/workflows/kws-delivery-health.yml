@@ -9,8 +9,9 @@
 # the DATABASE, not about the logs.
 #
 # The backend publishes that fact as the non-gating `kws_verification` readiness
-# check (src/cyo_adventure/api/health.py::check_kws_verification), computed from
-# the three-term conjunction in consent/service.py::VerificationDeliveryHealth.
+# check (src/cyo_adventure/api/health.py::check_kws_verification), computed by
+# consent/service.py::VerificationDeliveryHealth, which asks whether anything
+# has come back since the most recent attempt that is still waiting.
 # This workflow is only the alarm bell: it reads the already-public, already-
 # unauthenticated readiness endpoint. That is deliberate, and is why this job
 # holds NO database credential: one detection implementation, one place it can
@@ -27,8 +28,11 @@
 #   E2E_STAGING_BASE_URL   (`staging` environment) Staging origin. No literal
 #                          fallback exists, so an absent secret SKIPS the
 #                          staging leg with a visible notice.
-#   E2E_PROD_BASE_URL      (`production` environment) Optional; falls back to
-#                          the public production origin, matching
+#   E2E_PROD_BASE_URL      Optional, and as of 2026-08-10 defined in NO
+#                          environment, which is why the production leg can
+#                          name `production-e2e` (an environment holding
+#                          nothing it needs) rather than `production`. Falls
+#                          back to the public production origin, matching
 #                          frontend/e2e-prod/support/prod-env.ts.
 #
 # Failure alerting mirrors supabase-backup.yml and notification-digest.yml:
@@ -41,8 +45,8 @@ on:
     # 11:00 UTC daily, spreading scheduled jobs across the day (supabase-backup
     # 08:00, notification-digest 09:00, e2e-staging 13:00). Cadence is matched
     # to the check's own 24h staleness threshold: probing more often cannot
-    # surface an outage sooner, because the underlying counts only move once a
-    # row ages past that threshold.
+    # surface an outage sooner, because no attempt counts as waiting until it
+    # has aged past that threshold.
     - cron: "0 11 * * *"
   workflow_dispatch: {}
 
@@ -305,9 +309,9 @@ jobs:
                   '',
                   'The triage below diverges by state, so read the table first.',
                   '',
-                  '**If the state was `degraded`**, verification emails are going out and',
-                  'nothing is coming back. Parents are stuck on the wait screen and cannot',
-                  'create child profiles. Check, in this order:',
+                  '**If the state was `degraded`**, an attempt has been waiting more than',
+                  '24h and nothing has come back since it was sent. Parents are stuck on the',
+                  'wait screen and cannot create child profiles. Check, in this order:',
                   '',
                   '1. **The edge, before the origin.** A Cloudflare custom rule blocking the',
                   '   webhook path leaves ZERO origin log lines, so an empty origin log is',
@@ -316,6 +320,12 @@ jobs:
                   '2. The KWS status page and the vendor console, for a sending-side outage.',
                   '3. `kws_verification` rows still in `sent`: their `requested_at` spread',
                   '   dates the start of the outage.',
+                  '4. If the error says nothing has EVER resolved, suspect wiring rather than',
+                  '   an outage: a webhook URL the vendor could never reach looks exactly like',
+                  '   this, and has no start date because there was never a working state.',
+                  '5. If every waiting row is months old and the leg is otherwise fine, this is',
+                  '   an abandoned attempt, which this check reports rather than guesses about.',
+                  '   Resolve the row; do not mute the check.',
                   '',
                   '**If the state was `missing`**, the deployed build has no `kws_verification`',
                   'readiness check, so nothing is watching that tier. Redeploy, or confirm the',

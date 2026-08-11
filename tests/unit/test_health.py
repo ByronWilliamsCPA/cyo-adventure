@@ -1628,22 +1628,26 @@ class TestCheckExternalServiceExceptBranch:
 
 
 def _fake_health(
-    *, stuck: int, sent_in_window: int, resolved_in_window: int, oldest: datetime | None
+    *,
+    stuck: int,
+    oldest: datetime | None,
+    newest: datetime | None,
+    last_resolved: datetime | None,
 ) -> Any:
     """Build a real VerificationDeliveryHealth, not a mock of one.
 
-    The check branches on ``deliveries_have_stopped``, which is the whole
-    conjunction; substituting a mocked boolean would leave the branch under
-    test reading a value this suite invented rather than the one the service
-    computes.
+    The check branches on ``deliveries_have_stopped``, which is the timestamp
+    comparison itself; substituting a mocked boolean would leave the branch
+    under test reading a value this suite invented rather than the one the
+    service computes.
     """
     from cyo_adventure.consent.service import VerificationDeliveryHealth
 
     return VerificationDeliveryHealth(
         stuck=stuck,
         oldest_stuck_requested_at=oldest,
-        sent_in_window=sent_in_window,
-        resolved_in_window=resolved_in_window,
+        newest_stuck_requested_at=newest,
+        last_resolved_at=last_resolved,
     )
 
 
@@ -1708,9 +1712,9 @@ class TestCheckKwsVerification:
                 AsyncMock(
                     return_value=_fake_health(
                         stuck=3,
-                        sent_in_window=5,
-                        resolved_in_window=2,
-                        oldest=datetime.now(UTC) - timedelta(days=2),
+                        oldest=datetime.now(UTC) - timedelta(days=9),
+                        newest=datetime.now(UTC) - timedelta(days=2),
+                        last_resolved=datetime.now(UTC) - timedelta(hours=3),
                     )
                 ),
             ),
@@ -1723,19 +1727,21 @@ class TestCheckKwsVerification:
 
     @pytest.mark.unit
     @pytest.mark.asyncio
-    async def test_reports_degraded_with_the_counts_an_operator_needs(self) -> None:
+    async def test_reports_degraded_with_the_facts_an_operator_needs(self) -> None:
         """The degraded message must name what stopped, not just that something did.
 
         Whoever reads this alarm has to decide between "the vendor is down",
-        "our edge is blocking them", and "nobody used the tier today", and the
-        three counts plus the oldest timestamp are what separates those. A
-        bare "degraded" would send them back to the logs, which is exactly
-        where this failure mode leaves no trace.
+        "our edge is blocking them", and "this was never wired up", and the
+        two timestamps are what separates those: when the longest-waiting
+        parent was mailed, and when the leg last delivered anything. A bare
+        "degraded" would send them back to the logs, which is exactly where
+        this failure mode leaves no trace.
         """
         from cyo_adventure.api.health import check_kws_verification
 
         mock_session = AsyncMock(spec=AsyncSession)
         oldest = datetime(2026, 8, 9, 12, 0, tzinfo=UTC)
+        last_resolved = datetime(2026, 8, 1, 9, 30, tzinfo=UTC)
 
         @asynccontextmanager
         async def _fake_get_session() -> AsyncGenerator[AsyncMock, None]:
@@ -1754,9 +1760,9 @@ class TestCheckKwsVerification:
                 AsyncMock(
                     return_value=_fake_health(
                         stuck=4,
-                        sent_in_window=4,
-                        resolved_in_window=0,
                         oldest=oldest,
+                        newest=datetime(2026, 8, 10, 6, 0, tzinfo=UTC),
+                        last_resolved=last_resolved,
                     )
                 ),
             ),
@@ -1768,6 +1774,7 @@ class TestCheckKwsVerification:
         assert result.error is not None
         assert "4" in result.error
         assert oldest.isoformat() in result.error
+        assert last_resolved.isoformat() in result.error
 
     @pytest.mark.unit
     @pytest.mark.asyncio
@@ -1835,9 +1842,9 @@ class TestReadinessKwsDoesNotGate:
                 AsyncMock(
                     return_value=_fake_health(
                         stuck=4,
-                        sent_in_window=4,
-                        resolved_in_window=0,
                         oldest=datetime(2026, 8, 9, 12, 0, tzinfo=UTC),
+                        newest=datetime(2026, 8, 10, 6, 0, tzinfo=UTC),
+                        last_resolved=datetime(2026, 8, 1, 9, 30, tzinfo=UTC),
                     )
                 ),
             ),
