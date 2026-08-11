@@ -295,8 +295,24 @@ proves.
   image built at `21:51Z`, but staging pins `VERSION=latest`, a mutable tag, so what is deployed depends
   on when the stack was last restarted. Against a pre-#675 container the answer is knowably "no" and
   proves nothing about the fix.
-- **Distinguish three outcomes, not two.** Any row with `status <> 'sent'` clears the fact. Only `sent`
-  rows means no delivery has ever been accepted. **Zero rows** is a third and different failure: the row
-  is INSERTed and committed before the outbound call precisely so this cannot be ambiguous, so an empty
-  table means no send was ever recorded rather than that none was accepted. Expect
-  `kws_environment = 'test'` on staging, which is correct there and is deliberately not usable evidence.
+- **Distinguish four outcomes, not two, and do not reach for `status <> 'sent'`.** That predicate was
+  correct against a three-value enum and stopped being correct when `20260810190000` added a fourth.
+  `send_failed` satisfies it while proving the opposite of what is being asked: per that migration,
+  "`send_failed` is our own outbound call giving up and says nothing whatever about the parent." The
+  same migration rules out the other shortcut, `resolved_at IS NOT NULL`, because the resolution-pairing
+  CHECK forces a `send_failed` row to carry a `resolved_at` too. So:
+  - a `verified` or `failed` row **clears the fact**; those statuses are only reachable over the webhook;
+  - only `send_failed` means the send never left, so the return path was never exercised and this says
+    nothing about #675; it points at the outbound call or the edge, not the webhook;
+  - only `sent` means sends left and nothing ever came back, the failure this check exists to detect;
+  - **zero rows** is a fourth and different failure: the row is INSERTed and committed before the
+    outbound call precisely so this cannot be ambiguous, so an empty table means no send was ever
+    recorded rather than that none was accepted.
+
+  Group by `status` and select `count(*) FILTER (WHERE transaction_id IS NOT NULL)` alongside it: a
+  `sent` row with a transaction id is genuinely waiting on a delivery, one without never got that far.
+  Expect `kws_environment = 'test'` on staging, which is correct there and is deliberately not usable
+  evidence.
+- **Resolve the version threshold rather than reading `latest`.** #675 merged as `1c5e26fe` and first
+  shipped in tag `v0.74.1`, so `GET /health` reporting a `version` at or above `v0.74.1` is what
+  establishes the deployed container carries the fix.
