@@ -15,6 +15,7 @@
 '
 ' Source files:
 '   src/cyo_adventure/consent/service.py       (start_parent_verification,
+'                                                _resolve_as_send_failed,
 '                                                record_parent_verified)
 '   src/cyo_adventure/consent/kws_client.py     (token mint + send-email;
 '                                                _TOKEN_PATH is a Keycloak
@@ -69,8 +70,10 @@ note right of db
   reintroduces the hole by a longer route: the
   very error the ordering exists to survive
   rolls the row back.
-  The reverse failure (a ``sent`` row for an
-  email that never went) is cheap and self-heals.
+  The reverse failure (a row for an email that
+  never went) is the cheap one, and the
+  ``send_failed`` branch below is what keeps it
+  cheap for the guardian as well as for us.
 end note
 db --> service : "committed"
 service -> client : "send_verification_email(\n  parent_email, externalPayload=id)"
@@ -85,10 +88,38 @@ note right of client
     parent email**, in Test and production alike
   * ``externalPayload`` caps at 250 chars
 end note
-kws_api --> client : "202 accepted"
-client --> service : "ok"
-service --> console : "VerificationCorrelation(attempt_id)"
-kws_api -> parent : "verification email"
+alt "202 accepted"
+  kws_api --> client : "202 accepted"
+  client --> service : "ok"
+  service --> console : "VerificationCorrelation(attempt_id)"
+  kws_api -> parent : "verification email"
+else "send raises (timeout, 5xx, 403, rate limit)"
+  client --> service : "ExternalServiceError"
+  service -> db : "own session again:\nSELECT ... FOR UPDATE, and only\nif still 'sent' set status='send_failed',\nresolved_at=now()"
+  note right of db
+    ``send_failed`` is NOT ``failed``. ``failed``
+    is KWS's answer ABOUT A PARENT over the
+    webhook; ``send_failed`` is our own outbound
+    leg giving up and says nothing about the
+    parent at all.
+    Two consequences follow. The resend guard
+    (``open_attempt_started_at``) counts only
+    ``sent``, so the guardian may retry at once
+    instead of waiting out a cooldown for an
+    email that never left. And the delivery-health
+    alarm counts only ``verified``/``failed`` as
+    "the return path works", so our own timeout
+    handler can never make a broken webhook look
+    healthy.
+    A bookkeeping failure here is logged and
+    swallowed: it must not replace the send error
+    the guardian's status code is derived from.
+    The cost of swallowing is one row left
+    ``sent``, which is the state this branch is an
+    improvement on rather than a prerequisite for.
+  end note
+  service --> console : "raise (the send error, unmasked)"
+end
 
 ' ========== Leg 2: REDIRECT (display only) ==========
 note over parent,kws_api: REDIRECT return (parent's browser -> us) - DISPLAY ONLY, writes NOTHING

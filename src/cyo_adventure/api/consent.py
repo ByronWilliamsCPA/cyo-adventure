@@ -253,6 +253,31 @@ async def start_kws_verification(
         msg = "too many verification emails have been sent for this account recently"
         raise RateLimitedError(msg, rule="kws_start_hourly_cap")
 
+    # #ASSUME: concurrency: the `user` row lock taken above is still held here
+    # and stays held across this outbound call, because it is released only
+    # when the request unit of work commits. That is deliberate, not an
+    # oversight: the lock is what makes the two limit checks above mean
+    # anything, so dropping it before the send would reopen the exact race they
+    # exist to close, and the send is what the second request must not
+    # duplicate. The cost is the hold duration. kws_client.py budgets
+    # _MAX_ATTEMPTS=3 attempts, each with _TIMEOUT_SECONDS=10.0 on both the
+    # token leg and the POST, plus 0.5s + 1.0s of backoff, so a fully
+    # unresponsive vendor host can hold this row for roughly a minute before
+    # the error propagates.
+    #
+    # Bounded blast radius is what makes that acceptable. The lock is on ONE
+    # row, the caller's own `user`, so the only request that can queue behind
+    # it is another start for the same adult, which is precisely the request
+    # that must not proceed. No other endpoint takes a conflicting mode on
+    # `user` (the webhook leg writes `kws_verification`, never this table), so
+    # a stalled send cannot delay resolving an attempt or block an unrelated
+    # guardian. Connection-pool pressure is the residual risk, and it scales
+    # with concurrent starts per adult, which the hourly cap already bounds.
+    # #VERIFY: revisit if `user` ever acquires a hot writer, or if the endpoint
+    # gains a caller that is not one adult acting for themselves; either would
+    # turn a one-row hold into contention. tests/integration/test_consent_api.py
+    # ::test_two_concurrent_starts_do_not_both_send pins the behaviour the hold
+    # buys.
     correlation = await start_parent_verification(
         VerificationStartRequest(
             user_id=user.id,

@@ -44,14 +44,29 @@ const TOO_MANY =
 /**
  * Copy for the refusals that retrying cannot clear.
  *
- * 400 covers all three of the endpoint's permanent 400s (KWS not configured on
- * this deployment, no `User` row yet, no email address on file) and 403 covers
- * its two authorization refusals. None of them changes on a second attempt, so
- * START_ERROR's "Please try again" is actively wrong here: it sends a parent
- * into a retry loop that cannot terminate, and hides the fact that somebody
- * else has to act. The message stays deliberately non-specific about which of
- * the five it was, because the distinctions are operator-facing and the
- * response body does not carry the rule code to the browser anyway.
+ * 400 covers the endpoint's three permanent 400s (KWS not configured on this
+ * deployment, no `User` row yet, no email address on file) and 403 covers its
+ * two authorization refusals. None of those changes on a second attempt, so
+ * START_ERROR's "Please try again" is actively wrong for them: it sends a
+ * parent into a retry loop that cannot terminate, and hides the fact that
+ * somebody else has to act. The message stays deliberately non-specific about
+ * which of the five it was, because the distinctions are operator-facing and
+ * the response body does not carry the rule code to the browser anyway.
+ *
+ * #ASSUME: external resources: 400 is NOT purely permanent. An
+ * `ExternalServiceError` from a KWS outage is unlisted in app.py's status
+ * table and so falls through to the same 400, and that one clears on its own;
+ * since the backend now closes such an attempt out as `send_failed`, a retry
+ * is even allowed immediately. This copy therefore tells a parent caught in a
+ * vendor outage to contact support when waiting would have done. That is the
+ * deliberate side to err on while the two cases are indistinguishable here:
+ * the opposite default loops a parent forever against a condition only an
+ * operator can clear, on the page gating a COPPA flow. Splitting them needs a
+ * discriminator the response does not carry today, either a machine-readable
+ * rule code in the body or a distinct upstream status.
+ * #VERIFY: give `ExternalServiceError` its own status (502) in app.py's
+ * `_STATUS_BY_EXCEPTION` and map it here to START_ERROR; that is a repo-wide
+ * contract change, so it is tracked separately rather than done inline.
  */
 const CANNOT_SEND =
   'We are not able to send a verification email for this account. Trying again will not help, so please contact support.'

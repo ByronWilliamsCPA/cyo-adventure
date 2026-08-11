@@ -477,7 +477,41 @@ class TestStartLimits:
         assert resp.status_code == 400
         rows = await _attempts(sessions, user_id)
         assert len(rows) == 1
-        assert rows[0].status == "sent"
+        assert rows[0].status == "send_failed"
+        assert rows[0].resolved_at is not None
+
+    async def test_a_send_failure_does_not_block_an_immediate_retry(
+        self,
+        client: AsyncClient,
+        sessions: async_sessionmaker[AsyncSession],
+        seed: Seed,
+        sends: _SendRecorder,
+    ) -> None:
+        """The whole point of ``send_failed`` having its own status.
+
+        The resend guard refuses while an attempt is open, which is right for
+        an email in flight and wrong for one that never left: the guardian
+        could do nothing but wait out the cooldown for a failure that was ours.
+        Closing the row out re-opens the retry immediately. The hourly cap is
+        deliberately NOT refunded, so this stays bounded: the retry is allowed,
+        an unbounded loop of them is not.
+        """
+        _ = seed
+        user_id = await _provision(client)
+        sends.fail_with = ExternalServiceError("KWS is down", service_name="kws")
+        failed = await client.post(_START, json=_BODY)
+        assert failed.status_code == 400
+
+        sends.fail_with = None
+        retry = await client.post(_START, json=_BODY)
+
+        assert retry.status_code == 202
+        rows = await _attempts(sessions, user_id)
+        assert sorted(row.status for row in rows) == ["send_failed", "sent"]
+        # Both attempts reached the send seam. The first one's failure was the
+        # send itself, not a refusal upstream of it, so this distinguishes the
+        # fix from a resend guard that merely let the second request past.
+        assert sends.emails == [_EMAIL, _EMAIL]
 
     async def test_two_concurrent_starts_do_not_both_send(
         self,

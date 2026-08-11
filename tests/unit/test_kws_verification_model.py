@@ -24,6 +24,7 @@ from cyo_adventure.db.models import (
     _KWS_ENVIRONMENT_VALUES,
     _KWS_VERIFICATION_STATUS_VALUES,
     KWS_VERIFICATION_STATUS_FAILED,
+    KWS_VERIFICATION_STATUS_SEND_FAILED,
     KWS_VERIFICATION_STATUS_SENT,
     KWS_VERIFICATION_STATUS_VERIFIED,
     KwsVerification,
@@ -52,6 +53,27 @@ def _creating_migration() -> str:
         if f'CREATE TABLE IF NOT EXISTS "public"."{_TABLE}"' in path.read_text("utf-8")
     )
     assert candidates, f"no migration under {_MIGRATIONS_DIR} creates {_TABLE}"
+    sql = candidates[-1].read_text("utf-8")
+    return "\n".join(
+        line for line in sql.splitlines() if not line.strip().startswith("--")
+    )
+
+
+def _latest_status_check_migration() -> str:
+    """Return the DDL of the migration that most recently (re)defines the status CHECK.
+
+    The creating migration is no longer the whole story: the vocabulary was
+    widened later, and comparing the ORM against the CREATE TABLE alone would
+    have this test insist on the OLD set forever. Comment lines are stripped
+    first, for the reason ``_creating_migration`` documents.
+    """
+    needle = re.compile(r'CONSTRAINT "?ck_kws_verification_status"?\s*\n?\s*CHECK')
+    candidates = sorted(
+        path
+        for path in _MIGRATIONS_DIR.glob("*.sql")
+        if needle.search(path.read_text("utf-8"))
+    )
+    assert candidates, f"no migration under {_MIGRATIONS_DIR} defines the status CHECK"
     sql = candidates[-1].read_text("utf-8")
     return "\n".join(
         line for line in sql.splitlines() if not line.strip().startswith("--")
@@ -100,6 +122,7 @@ def test_status_and_environment_are_constrained_at_rest() -> None:
         KWS_VERIFICATION_STATUS_SENT,
         KWS_VERIFICATION_STATUS_VERIFIED,
         KWS_VERIFICATION_STATUS_FAILED,
+        KWS_VERIFICATION_STATUS_SEND_FAILED,
     }
     ddl = _creating_migration()
 
@@ -110,6 +133,17 @@ def test_status_and_environment_are_constrained_at_rest() -> None:
     ) == _parse_sql_string_list(_KWS_ENVIRONMENT_VALUES)
     assert "CONSTRAINT ck_kws_verification_status" in ddl
     assert "CONSTRAINT ck_kws_verification_environment" in ddl
+    # The SQL side is checked against whichever migration last defined the
+    # constraint, not against CREATE TABLE: a widening that never shipped as a
+    # migration would leave the deployed database rejecting a status the
+    # application writes, on the one attempt it was recording.
+    latest = _latest_status_check_migration()
+    status_clause = re.search(
+        r"CONSTRAINT \"?ck_kws_verification_status\"?\s*\n?\s*CHECK \(status IN \(([^)]*)\)",
+        latest,
+    )
+    assert status_clause is not None, "the status CHECK's value list was not parseable"
+    assert _parse_sql_string_list(status_clause.group(1)) == statuses
 
 
 @pytest.mark.unit

@@ -255,7 +255,7 @@ _PERSONALIZATION_RING2_SLOT_TYPE_VALUES = (
     "'home_type'"
 )
 
-# ADR-018: the three states one KWS parent-verification attempt can be in, and
+# ADR-018: the four states one KWS parent-verification attempt can be in, and
 # the two KWS environments an attempt can have run against. Exported (no
 # leading underscore) because ``consent/service.py`` writes these exact strings
 # and must not spell them a second time: a service-side typo would otherwise be
@@ -263,7 +263,25 @@ _PERSONALIZATION_RING2_SLOT_TYPE_VALUES = (
 KWS_VERIFICATION_STATUS_SENT = "sent"
 KWS_VERIFICATION_STATUS_VERIFIED = "verified"
 KWS_VERIFICATION_STATUS_FAILED = "failed"
-_KWS_VERIFICATION_STATUS_VALUES = "'sent', 'verified', 'failed'"
+# #CRITICAL: data integrity: `send_failed` and `failed` are different facts and
+# collapsing them loses a compliance-relevant one. `failed` is KWS's answer
+# about a parent, delivered inbound: this adult was not verified. `send_failed`
+# is our own outbound leg giving up, and says nothing at all about the parent.
+# Reading a `send_failed` row as a refusal would record a false negative about
+# an adult nobody ever asked; counting it as an inbound delivery would tell the
+# delivery-health alarm the return path works when only our own timeout code
+# ran.
+# #VERIFY: tests/unit/test_kws_verification_service.py::
+# test_a_send_failure_is_not_counted_as_a_delivery.
+KWS_VERIFICATION_STATUS_SEND_FAILED = "send_failed"
+_KWS_VERIFICATION_STATUS_VALUES = "'sent', 'verified', 'failed', 'send_failed'"
+# The statuses that mean a delivery from KWS actually reached us. A refusal
+# counts: it travelled the same inbound path a success does, which is what
+# consent/service.py::verification_delivery_health is asking about.
+KWS_VERIFICATION_DELIVERED_STATUSES = (
+    KWS_VERIFICATION_STATUS_VERIFIED,
+    KWS_VERIFICATION_STATUS_FAILED,
+)
 # Mirrors the Literal on ``core.config.Settings.kws_environment``. Hand-written
 # rather than derived from that Literal for the same reason
 # _SECURITY_EVENT_TYPE_VALUES is hand-written: importing core.config here would
@@ -2830,9 +2848,14 @@ class KwsVerification(Base):
         kws_environment: Which KWS environment produced it, ``test`` or
             ``production``.
         status: ``sent`` until a delivery resolves it to ``verified`` or
-            ``failed``.
+            ``failed``, or until the outbound send itself gives up and leaves
+            it ``send_failed``. Only the first two are facts about the parent.
         requested_at: When the send was attempted (UTC, TIMESTAMPTZ).
-        resolved_at: When a delivery resolved it, or ``None`` while ``sent``.
+        resolved_at: When the attempt stopped being open, or ``None`` while
+            ``sent``. For ``verified`` and ``failed`` that is when the delivery
+            landed; for ``send_failed`` it is when we gave up sending. The
+            pairing CHECK forces the column to carry both, so a reader that
+            means "a delivery arrived" must filter on status as well.
         transaction_id: KWS's opaque id for the verification, ``None`` until a
             delivery reports one.
         enabled_methods: ``settings.kws_enabled_methods`` as it stood at send

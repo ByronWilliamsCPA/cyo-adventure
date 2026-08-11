@@ -26,6 +26,7 @@ from unittest.mock import MagicMock, patch
 import httpx
 import pytest
 from pydantic import SecretStr
+from sqlalchemy.exc import SQLAlchemyError
 
 from cyo_adventure.consent import KwsClient
 from cyo_adventure.consent.service import (
@@ -265,38 +266,96 @@ class TestStartOrdering:
         this row is the only thing that will ever match the webhook.
         """
         recorder = _SendRecorder(mock_async_session, send_status=400)
+        mock_async_session.get.side_effect = lambda *_a, **_k: _added_row(
+            mock_async_session
+        )
         client = _client(recorder)
 
         with pytest.raises(ExternalServiceError):
             await start_parent_verification(_START, client=client)
 
         assert mock_async_session.add.call_count == 1
-        assert mock_async_session.commit.await_count == 1
         assert mock_async_session.rollback.await_count == 0
+        # Two commits: the attempt row before the send, and the send-failure
+        # bookkeeping after it. The first is the one under test here, and
+        # ``recorder.commits_at_send`` is what proves it landed BEFORE the
+        # outbound call rather than merely earlier in program order.
+        assert recorder.commits_at_send == 1
+        assert mock_async_session.commit.await_count == 2
 
     @pytest.mark.unit
     @pytest.mark.asyncio
-    async def test_a_failed_send_leaves_the_attempt_unresolved(
+    async def test_a_failed_send_resolves_the_attempt_as_send_failed(
         self, mock_async_session: AsyncMock
     ) -> None:
-        """A failed send must not be recorded as a failed VERIFICATION.
+        """A failed send is recorded as OUR failure, not as the parent's.
 
-        The two are different claims and only one of them is known. If KWS
-        delivered the email before failing us, the parent can still verify and
-        the webhook will still arrive; marking the row ``failed`` here would
-        record a false negative about that parent AND make the resolution guard
-        refuse the real answer when it came. ``sent`` means "unresolved", which
-        is exactly what is true.
+        ``failed`` is KWS's answer about an adult, and writing it here would
+        record a refusal nobody ever gave. Leaving the row ``sent`` is the
+        opposite error: that is the state the resend guard reads as an email
+        in flight, so the guardian waits out a cooldown for a send that never
+        happened. ``send_failed`` is neither claim, which is what makes it the
+        true one.
         """
         recorder = _SendRecorder(mock_async_session, send_status=500)
+        mock_async_session.get.side_effect = lambda *_a, **_k: _added_row(
+            mock_async_session
+        )
         client = _client(recorder)
 
         with pytest.raises(ExternalServiceError):
             await start_parent_verification(_START, client=client)
 
         row = _added_row(mock_async_session)
-        assert row.status == "sent"
-        assert row.resolved_at is None
+        assert row.status == "send_failed"
+        assert row.status != "failed"
+        assert row.resolved_at is not None
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_a_delivery_that_beat_the_failure_handler_is_left_alone(
+        self, mock_async_session: AsyncMock
+    ) -> None:
+        """A resolved row outranks anything the send's error handler knows.
+
+        A 5xx after KWS accepted the request can race the parent completing
+        verification. The webhook's answer is a fact about an adult; the send
+        failure is a fact about our transport, and must never overwrite it.
+        """
+        recorder = _SendRecorder(mock_async_session, send_status=500)
+        resolved = _sent_row(
+            status="verified",
+            resolved_at=datetime(2026, 8, 9, 12, 0, tzinfo=UTC),
+            transaction_id="tx-1",
+        )
+        mock_async_session.get.side_effect = lambda *_a, **_k: resolved
+        client = _client(recorder)
+
+        with pytest.raises(ExternalServiceError):
+            await start_parent_verification(_START, client=client)
+
+        assert resolved.status == "verified"
+        assert resolved.resolved_at == datetime(2026, 8, 9, 12, 0, tzinfo=UTC)
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_a_bookkeeping_failure_does_not_mask_the_send_error(
+        self, mock_async_session: AsyncMock
+    ) -> None:
+        """The caller must see why the SEND failed, not why the tidy-up did.
+
+        The send error is what the endpoint turns into the status code a
+        guardian sees. A database failure while closing the row out would
+        otherwise surface in its place and describe an entirely different
+        outage, and the row it failed to write is the state the old code left
+        behind anyway.
+        """
+        recorder = _SendRecorder(mock_async_session, send_status=500)
+        mock_async_session.get.side_effect = SQLAlchemyError("connection lost")
+        client = _client(recorder)
+
+        with pytest.raises(ExternalServiceError):
+            await start_parent_verification(_START, client=client)
 
 
 @pytest.mark.usefixtures("_configured", "own_session")
@@ -471,6 +530,37 @@ class TestRecordParentVerified:
         assert handled is True
         assert row.transaction_id == "tx-first"
         assert row.resolved_at == resolved_at
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_a_delivery_still_resolves_an_attempt_whose_send_failed(
+        self, mock_async_session: AsyncMock
+    ) -> None:
+        """``send_failed`` closes the row for OUR purposes, not against KWS.
+
+        Our outbound call can fail after KWS already accepted the request and
+        mailed the parent, so a delivery quoting such an attempt is a real
+        answer about a real adult. A guard written as ``status != 'sent'``
+        would discard it on the strength of our own transport error, which is
+        why the guard is an allowlist of the statuses a DELIVERY produces.
+        """
+        row = _sent_row(
+            status="send_failed",
+            resolved_at=datetime(2026, 8, 9, 12, 0, tzinfo=UTC),
+        )
+        mock_async_session.get.return_value = row
+
+        handled = await record_parent_verified(
+            mock_async_session,
+            ParentVerifiedOutcome(
+                attempt_id=row.id, verified=True, transaction_id="tx-late"
+            ),
+        )
+
+        assert handled is True
+        assert row.status == "verified"
+        assert row.transaction_id == "tx-late"
+        assert row.resolved_at != datetime(2026, 8, 9, 12, 0, tzinfo=UTC)
 
     @pytest.mark.unit
     @pytest.mark.asyncio
@@ -1010,16 +1100,43 @@ class TestVerificationDeliveryHealth:
     @pytest.mark.unit
     @pytest.mark.asyncio
     async def test_a_failed_resolution_still_counts_as_the_leg_working(
+        self, mock_async_session: AsyncMock
+    ) -> None:
+        """A REFUSED verification is still a delivery that reached us.
+
+        It travelled the same inbound path a success does, so it is evidence
+        the leg works and must clear the alarm exactly as a success does.
+        Driven through the property rather than through the SQL, because what
+        matters is the verdict, not which statuses appear in the query.
+        """
+        now = datetime.now(UTC)
+        _delivery_row(
+            mock_async_session,
+            stuck=1,
+            oldest=now - timedelta(days=3),
+            newest=now - timedelta(days=3),
+            last_resolved=now - timedelta(hours=2),
+        )
+
+        health = await verification_delivery_health(
+            mock_async_session, stuck_after=timedelta(hours=24)
+        )
+
+        assert health.deliveries_have_stopped is False
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_a_send_failure_is_not_counted_as_a_delivery(
         self, mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        """Resolutions are read from ``resolved_at``, with no status filter.
+        """``resolved_at IS NOT NULL`` is not the same question as "it arrived".
 
-        A KWS delivery reporting a REFUSED verification is still a delivery
-        that reached us, so it is evidence the inbound leg works and must
-        clear the alarm exactly as a success does. Asserted on the compiled
-        parameters because the property is the ABSENCE of a status filter on
-        that term: only ``sent`` (from the stuck filter) and the environment
-        may be bound.
+        A ``send_failed`` row carries a ``resolved_at`` too, because the
+        pairing CHECK gives it no choice, and that timestamp records our own
+        outbound call giving up. Counting it would let a broken inbound leg be
+        vouched for by the very timeout handler that ran because nothing was
+        working. The term is therefore an ALLOWLIST, asserted here on the
+        compiled parameters: both delivery statuses bound, ``send_failed`` not.
         """
         monkeypatch.setattr(settings, "kws_environment", "production")
         _delivery_row(mock_async_session, stuck=0)
@@ -1028,11 +1145,21 @@ class TestVerificationDeliveryHealth:
             mock_async_session, stuck_after=timedelta(hours=24)
         )
 
-        bound = list(
+        # Flattened, because ``IN`` compiles to ONE expanding parameter whose
+        # value is the whole list: asserting against the unflattened values
+        # would pass for any list at all, including an empty one.
+        bound: set[str] = set()
+        for value in (
             mock_async_session.execute.await_args.args[0].compile().params.values()
-        )
-        assert "verified" not in bound
-        assert "failed" not in bound
+        ):
+            if isinstance(value, str):
+                bound.add(value)
+            elif isinstance(value, (list, tuple)):
+                bound.update(item for item in value if isinstance(item, str))
+
+        assert "verified" in bound
+        assert "failed" in bound
+        assert "send_failed" not in bound
 
     @pytest.mark.unit
     @pytest.mark.asyncio

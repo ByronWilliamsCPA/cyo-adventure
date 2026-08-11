@@ -591,12 +591,21 @@ Two properties of that rule are worth knowing before you read an alarm:
   to resolve the row, not to widen the rule; the previous rule bought silence here by also requiring
   fresh sends, which made it quietest on exactly the low-traffic tiers where an outage is hardest to
   notice by other means.
+- An attempt whose **outbound** send failed resolves to `send_failed` and is neither a waiting
+  attempt nor a resolution. It is not waiting, because no email went out and nothing is coming back
+  for it; and it is not a resolution, because only our own timeout handler ran, so counting it would
+  let a broken return path look healthy. The consequence to know: this check watches the **inbound**
+  leg only. A tier where every send fails outright has no waiting attempts at all and so reports
+  `ok` here, while every guardian gets a 400 from `POST /api/v1/consent/kws/start`. That outage is
+  loud in the application logs and in the guardian's face; this check is not the instrument for it.
 
 Triage, in order, when the marker issue appears with a `degraded` state:
 
 1. **Check the edge before the origin.** An edge block leaves zero origin log lines, so an empty
    application log is evidence of nothing. Read Cloudflare's Security Events for the webhook path.
-2. Check the KWS status page and vendor console for a sending-side outage.
+2. Check the KWS status page and vendor console for a sending-side outage. `send_failed` rows date
+   any outbound trouble independently; a burst of them alongside stuck `sent` rows points at the
+   vendor rather than at our webhook path.
 3. Read the `requested_at` spread of the rows still in `sent`; it dates the start of the outage.
 4. If the error says **nothing has ever resolved**, suspect wiring rather than an outage: a webhook
    URL that was never reachable from the vendor's side produces exactly this, and it has no start

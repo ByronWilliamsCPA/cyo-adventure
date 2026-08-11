@@ -9,8 +9,8 @@ Ordering, which is the whole point
 ----------------------------------
 The record is INSERTed before the outbound send, never after. The two orderings
 fail differently and only one of the failures is survivable: insert-then-send
-can leave a ``sent`` row for an email that never went, which is a row nobody
-will ever resolve and nothing worse; send-then-insert can put a real email in
+can leave a row for an email that never went, which the send's own error
+handler closes out as ``send_failed``; send-then-insert can put a real email in
 front of a real parent with no record of it at all, which is permanently
 unattributable when the webhook arrives quoting an id we never stored.
 
@@ -39,6 +39,7 @@ from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING, Literal
 
 from sqlalchemy import func, select
+from sqlalchemy.exc import SQLAlchemyError
 
 from cyo_adventure.consent.external_payload import (
     VerificationCorrelation,
@@ -47,9 +48,12 @@ from cyo_adventure.consent.external_payload import (
 from cyo_adventure.consent.kws_client import KwsClient, VerificationEmailRequest
 from cyo_adventure.core.config import settings
 from cyo_adventure.core.database import get_session
+from cyo_adventure.core.exceptions import ProjectBaseError
 from cyo_adventure.db.models import (
     KWS_ENVIRONMENT_TEST,
+    KWS_VERIFICATION_DELIVERED_STATUSES,
     KWS_VERIFICATION_STATUS_FAILED,
+    KWS_VERIFICATION_STATUS_SEND_FAILED,
     KWS_VERIFICATION_STATUS_SENT,
     KWS_VERIFICATION_STATUS_VERIFIED,
     KwsVerification,
@@ -128,15 +132,30 @@ async def start_parent_verification(
     test_the_row_is_committed_before_the_outbound_call and
     ::test_a_failed_send_leaves_the_row_committed.
 
-    #EDGE: external resources: a failed send deliberately leaves the row
-    ``sent`` rather than marking it ``failed``. ``sent`` means "unresolved",
-    which is the truth: if KWS did deliver the email before failing us, the
-    parent can still complete verification and the webhook still finds a row to
-    resolve. Marking it ``failed`` here would record a false negative about a
-    parent who went on to verify, and the resolution guard would then refuse
-    the real answer.
+    #CRITICAL: external resources: a failed send resolves the row to
+    ``send_failed``, and the status is a THIRD value rather than ``failed`` on
+    purpose. ``failed`` is KWS's answer about a parent; ``send_failed`` is our
+    own outbound leg giving up and says nothing about the parent at all.
+    Writing ``failed`` here would record a refusal nobody ever gave, and would
+    make the delivery-health alarm read our own timeout handler as proof the
+    inbound leg works. Leaving it ``sent``, which is what this used to do, is
+    the opposite error: ``sent`` is what the resend guard treats as an email in
+    flight, so a guardian whose send failed outright was locked out of retrying
+    for the full cooldown on account of an email that never left.
     #VERIFY: tests/unit/test_kws_verification_service.py::
-    test_a_failed_send_leaves_the_attempt_unresolved.
+    test_a_failed_send_resolves_the_attempt_as_send_failed, and
+    tests/integration/test_consent_api.py::
+    test_a_send_failure_does_not_block_an_immediate_retry for the guardian-
+    visible half (the retry is accepted rather than 409'd).
+
+    #EDGE: external resources: ``send_failed`` is not final against a later
+    delivery. A 5xx or a timeout can arrive after KWS already accepted the
+    request and mailed the parent, so :func:`record_parent_verified` still
+    resolves a ``send_failed`` row when a real delivery quotes it. Refusing
+    that would discard a genuine verification of a real adult on the strength
+    of our own transport error.
+    #VERIFY: tests/unit/test_kws_verification_service.py::
+    test_a_delivery_still_resolves_an_attempt_whose_send_failed.
 
     Args:
         request: The guardian, the email, the child's location, the language.
@@ -187,15 +206,66 @@ async def start_parent_verification(
     )
 
     sender = client if client is not None else KwsClient()
-    await sender.send_verification_email(
-        VerificationEmailRequest(
-            email=request.email,
-            location=request.location,
-            language=request.language,
-        ),
-        correlation=correlation,
-    )
+    try:
+        await sender.send_verification_email(
+            VerificationEmailRequest(
+                email=request.email,
+                location=request.location,
+                language=request.language,
+            ),
+            correlation=correlation,
+        )
+    except ProjectBaseError:
+        await _resolve_as_send_failed(correlation.attempt_id)
+        raise
     return correlation
+
+
+async def _resolve_as_send_failed(attempt_id: uuid.UUID) -> None:
+    """Close out an attempt whose outbound send raised.
+
+    On its own session for the same reason the INSERT was: the caller is about
+    to let the send's error propagate, and a write flushed into the caller's
+    unit of work would be rolled back by exactly the failure it exists to
+    record.
+
+    #CRITICAL: external resources: this must never replace the caller's
+    exception. The send error is what the endpoint turns into the status code
+    a guardian sees; a database failure while tidying up would otherwise
+    surface in its place and describe the wrong outage entirely. A failure here
+    is therefore logged and swallowed, and the cost of swallowing it is one row
+    left ``sent``, which is exactly the state this function is an improvement
+    on rather than a prerequisite for.
+    #VERIFY: tests/unit/test_kws_verification_service.py::
+    test_a_bookkeeping_failure_does_not_mask_the_send_error.
+
+    Args:
+        attempt_id: The attempt whose send failed.
+    """
+    try:
+        async with get_session() as session:
+            record = await session.get(
+                KwsVerification, attempt_id, with_for_update=True
+            )
+            # Only a still-open row is ours to close. A delivery that beat us
+            # here has said something true about the parent, and this function
+            # knows nothing that outranks it.
+            if record is None or record.status != KWS_VERIFICATION_STATUS_SENT:
+                return
+            record.status = KWS_VERIFICATION_STATUS_SEND_FAILED
+            record.resolved_at = datetime.now(UTC)
+            await session.commit()
+            logger.info(
+                "kws_verification_send_failed",
+                attempt_id=str(attempt_id),
+                kws_environment=settings.kws_environment,
+            )
+    except SQLAlchemyError as exc:
+        logger.warning(
+            "kws_verification_send_failure_not_recorded",
+            attempt_id=str(attempt_id),
+            error=str(exc),
+        )
 
 
 async def record_parent_verified(
@@ -206,13 +276,21 @@ async def record_parent_verified(
     #CRITICAL: data integrity: KWS retries deliveries, so this must be
     idempotent. Two guards make it so. The attempt id is the PRIMARY KEY, so a
     replay can never fan out into a second row; and the row is loaded
-    ``FOR UPDATE`` and only written while it is still ``sent``, so a second
-    delivery (or a simultaneous one on another worker) leaves the first
+    ``FOR UPDATE`` and only written while no delivery has resolved it yet, so a
+    second delivery (or a simultaneous one on another worker) leaves the first
     resolution's ``resolved_at`` and ``transaction_id`` exactly as they were
     rather than overwriting them with a later clock reading.
+
+    The guard is an ALLOWLIST of statuses a delivery has already answered
+    (``KWS_VERIFICATION_DELIVERED_STATUSES``), not ``status != 'sent'``.
+    ``send_failed`` is the difference: our outbound call can fail after KWS
+    already accepted the request and mailed the parent, so a delivery quoting
+    such an attempt is a real answer about a real adult, and a ``!= 'sent'``
+    guard would discard it on the strength of our own transport error.
     #VERIFY: tests/unit/test_kws_verification_service.py::
-    test_a_replayed_delivery_does_not_rewrite_the_resolution and
-    ::test_the_row_is_locked_for_update_before_it_is_resolved.
+    test_a_replayed_delivery_does_not_rewrite_the_resolution,
+    ::test_the_row_is_locked_for_update_before_it_is_resolved and
+    ::test_a_delivery_still_resolves_an_attempt_whose_send_failed.
 
     #CRITICAL: security: the attempt id arrives from a third party and is only
     ever a lookup key. Finding no row, or finding one from the other KWS
@@ -254,7 +332,7 @@ async def record_parent_verified(
         )
         return False
 
-    if record.status != KWS_VERIFICATION_STATUS_SENT:
+    if record.status in KWS_VERIFICATION_DELIVERED_STATUSES:
         logger.info(
             "kws_verification_already_resolved",
             attempt_id=str(outcome.attempt_id),
@@ -568,14 +646,18 @@ async def verification_delivery_health(
     it is itself configured for, so staging's Test rows never mask or inflate
     production's, and the two tiers alarm independently.
 
-    #ASSUME: data-integrity: stuckness is read from ``status`` while
-    resolution is read from ``resolved_at``, and mixing the two is sound only
-    because ``ck_kws_verification_resolution_pairing`` makes
-    ``status = 'sent'`` and ``resolved_at IS NULL`` the same condition at
-    rest. Without that CHECK the resolution term would need a status filter
-    as well, and a row could be counted on both sides at once.
-    #VERIFY: tests/unit/test_kws_verification_model.py::
-    test_resolution_pairing_is_constrained_at_rest.
+    #CRITICAL: data-integrity: the resolution term is an ALLOWLIST of the two
+    statuses a delivery produces, not "``resolved_at`` is not null".
+    ``send_failed`` also carries a ``resolved_at`` (the pairing CHECK gives it
+    no choice), and that timestamp records our own outbound call giving up.
+    Counting it would let a broken inbound leg be vouched for by the very
+    timeout handler that ran because nothing was working, which is the exact
+    blindness this alarm exists to remove.
+    #VERIFY: tests/unit/test_kws_verification_service.py::
+    test_a_send_failure_is_not_counted_as_a_delivery;
+    tests/unit/test_kws_verification_model.py::
+    test_resolution_pairing_is_constrained_at_rest pins the CHECK that forces
+    the overload.
 
     Args:
         session: The caller's session. This function only reads.
@@ -595,7 +677,9 @@ async def verification_delivery_health(
             func.count().filter(*is_stuck).label("stuck"),
             func.min(KwsVerification.requested_at).filter(*is_stuck).label("oldest"),
             func.max(KwsVerification.requested_at).filter(*is_stuck).label("newest"),
-            func.max(KwsVerification.resolved_at).label("last_resolved"),
+            func.max(KwsVerification.resolved_at)
+            .filter(KwsVerification.status.in_(KWS_VERIFICATION_DELIVERED_STATUSES))
+            .label("last_resolved"),
         )
         .select_from(KwsVerification)
         .where(KwsVerification.kws_environment == settings.kws_environment)
