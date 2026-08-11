@@ -2,8 +2,8 @@
 purpose: Hand the CYO generation diversity-research round to a review team, separating what merged and is
   citable from what is still open, still contradicted inside the repository, or blocked on something outside
   this workstream
-component: docs/planning/cyo-generation-research-brief-2026-08-10.md, docs/planning/evidence/, scripts/ guard
-  set, src/cyo_adventure/publishing/service.py, docs/compliance/data-retention-policy.md
+component: docs/planning/cyo-generation-research-brief-2026-08-10.md, docs/planning/evidence/, scripts/,
+  src/cyo_adventure/publishing/service.py, docs/compliance/data-retention-policy.md
 source: session 2026-08-11, branch claude/skeleton-story-review-3zy6tq, PRs #682 (closed), #684, #685, #687
 ---
 
@@ -117,9 +117,10 @@ real decision.
 #684 added a migration exempting **reviewed** generation jobs from the 30-day report purge, on the reasoning
 that a report a human has acted on is evidence of that decision.
 
-`publishing/service.py::approve` still nulls `GenerationJob.report` unconditionally at publish time
-(`src/cyo_adventure/publishing/service.py`, the UPDATE at roughly line 444). So the exemption is defeated on
-the approve path: the pg_cron job will now spare a reviewed report, and `approve()` deletes it anyway.
+`publishing/service.py::approve` still nulls `GenerationJob.report` unconditionally at publish time: it runs
+an UPDATE setting `GenerationJob.report` to NULL for the storybook and version being approved, filtered only
+on the report being non-null and not on whether the job was reviewed. So the exemption is defeated on the
+approve path: the pg_cron job will now spare a reviewed report, and `approve()` deletes it anyway.
 
 Separately, [the data-retention policy](../compliance/data-retention-policy.md) still describes the
 `generation_job.report` rule as "30 days, or immediately on publish, whichever comes first" and marks it
