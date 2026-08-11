@@ -66,8 +66,10 @@ section 2 should be discarded rather than defended.
 ### 2.1 D-6 reported, and it corrects section 2 rather than confirming it
 
 D-6 has since run. Constraint B survives: holding graph, bindings, model and isolation constant and
-changing only whether two arms read one contract or two moves convergence from 2.9 to 16.9 shared
-four-grams per 1000, against a budget of 4.0. Sharing a plan does make books converge.
+changing only whether two arms read one contract or two moves convergence from 2.9 to 17.2 shared
+four-grams per 1000, against a budget of 4.0. Sharing a plan does make books converge. (17.2 is the
+figure re-derived from the artifacts on 2026-08-11; this document was written against the 16.9 first
+published, and the conclusion is unchanged either way.)
 
 **But the stratification above is necessary and demonstrably not sufficient, and the reason is that
 section 2 put the leak in the wrong place.** Tracing shared grams to the contract field they draw
