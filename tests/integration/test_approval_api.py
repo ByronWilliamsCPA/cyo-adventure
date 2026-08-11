@@ -277,7 +277,7 @@ async def test_illegal_transition_returns_409(
     await client.post(
         f"/api/v1/storybooks/{story_id}/send-back",
         headers=auth("admin-a"),
-        json={"reason": "revise"},
+        json={"reason": "revise", "reason_code": "other"},
     )
     resp = await client.post(
         f"/api/v1/storybooks/{story_id}/approve", headers=auth("admin-a")
@@ -363,17 +363,49 @@ async def test_non_admin_on_missing_story_returns_403_not_404(
 async def test_submit_and_send_back_flow(
     client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
 ) -> None:
-    """send-back echoes the reason and moves the story to needs_revision."""
+    """send-back echoes the reason and reason_code, moving to needs_revision."""
+    story_id = await _seed_in_review(sessions)
+    resp = await client.post(
+        f"/api/v1/storybooks/{story_id}/send-back",
+        headers=auth("admin-a"),
+        json={"reason": "too scary for 6yo", "reason_code": "safety_concern"},
+    )
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["status"] == "needs_revision"
+    assert body["reason"] == "too scary for 6yo"
+    assert body["reason_code"] == "safety_concern"
+
+
+async def test_send_back_requires_reason_code(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """send-back without reason_code is rejected (422), not silently accepted.
+
+    Calibration-corpus requirement: every send-back must carry the closed-
+    vocabulary reason code, so omitting it is a client error, not a legal
+    request with a missing signal.
+    """
     story_id = await _seed_in_review(sessions)
     resp = await client.post(
         f"/api/v1/storybooks/{story_id}/send-back",
         headers=auth("admin-a"),
         json={"reason": "too scary for 6yo"},
     )
-    assert resp.status_code == 200
-    body = resp.json()
-    assert body["status"] == "needs_revision"
-    assert body["reason"] == "too scary for 6yo"
+    assert resp.status_code == 422
+
+
+async def test_send_back_rejects_unknown_reason_code(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """send-back with a reason_code outside the closed vocabulary is rejected."""
+    story_id = await _seed_in_review(sessions)
+    resp = await client.post(
+        f"/api/v1/storybooks/{story_id}/send-back",
+        headers=auth("admin-a"),
+        json={"reason": "too scary for 6yo", "reason_code": "not_a_real_code"},
+    )
+    assert resp.status_code == 422
 
 
 async def test_admin_submits_draft_story(
@@ -443,7 +475,7 @@ async def test_child_cannot_send_back(
     resp = await client.post(
         f"/api/v1/storybooks/{story_id}/send-back",
         headers=auth("child-a"),
-        json={"reason": "x"},
+        json={"reason": "x", "reason_code": "other"},
     )
     assert resp.status_code == 403
 
@@ -456,7 +488,7 @@ async def test_guardian_cannot_send_back(
     resp = await client.post(
         f"/api/v1/storybooks/{story_id}/send-back",
         headers=auth("guardian-a"),
-        json={"reason": "x"},
+        json={"reason": "x", "reason_code": "other"},
     )
     assert resp.status_code == 403
 

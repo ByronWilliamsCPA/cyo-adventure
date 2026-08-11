@@ -8,10 +8,13 @@ Two purge paths are covered:
   ``tests/unit/test_publishing_service_unit.py``: a mocked ``AsyncSession``,
   no real database.
 - The 30-day scheduled path: a pg_cron job registered by
-  ``supabase/migrations/20260718000000_add_report_retention_purge.sql``.
-  pg_cron cannot run inside a unit test, so this module asserts on the
-  migration file's text content instead (job name, 30-day interval, target
-  table/column, and idempotent unschedule-then-schedule shape).
+  ``supabase/migrations/20260718000000_add_report_retention_purge.sql`` and
+  amended by ``20260810000000_exempt_reviewed_generation_job_report_from_purge.sql``
+  (2026-08-10, review-scorecard calibration corpus). pg_cron cannot run
+  inside a unit test, so this module asserts on the migration files' text
+  content instead (job name, 30-day interval, target table/column, idempotent
+  unschedule-then-schedule shape, and, for the amendment, the reviewed-
+  storybook exemption clause).
 """
 
 from __future__ import annotations
@@ -37,6 +40,13 @@ _MIGRATION_PATH = (
     / "supabase"
     / "migrations"
     / "20260718000000_add_report_retention_purge.sql"
+)
+
+_AMENDMENT_MIGRATION_PATH = (
+    Path(__file__).resolve().parents[2]
+    / "supabase"
+    / "migrations"
+    / "20260810000000_exempt_reviewed_generation_job_report_from_purge.sql"
 )
 
 
@@ -232,4 +242,119 @@ def test_migration_guards_pg_cron_availability() -> None:
 def test_migration_has_no_em_dash() -> None:
     """House style (root CLAUDE.md): never use U+2014 in any project output."""
     sql = _MIGRATION_PATH.read_text(encoding="utf-8")
+    assert "—" not in sql
+
+
+# ---------------------------------------------------------------------------
+# 2026-08-10 amendment: exempt a reviewed storybook's generation jobs
+# ---------------------------------------------------------------------------
+
+
+def test_amendment_migration_file_exists() -> None:
+    """The review-scorecard calibration exemption migration is present."""
+    assert _AMENDMENT_MIGRATION_PATH.is_file(), (
+        f"expected migration at {_AMENDMENT_MIGRATION_PATH}, amending "
+        "20260718000000_add_report_retention_purge.sql per ADR-007's "
+        "2026-08-10 amendment"
+    )
+
+
+def test_amendment_migration_reschedules_same_job_name() -> None:
+    """The amendment targets the SAME job name (in-place predicate change).
+
+    Task requirement: amend the purge predicate rather than replacing the
+    job wholesale -- a second job under a different name would leave the
+    original, unqualified sweep still running alongside it.
+    """
+    sql = _AMENDMENT_MIGRATION_PATH.read_text(encoding="utf-8")
+    assert "purge_generation_job_report" in sql
+    assert "cron.schedule(" in sql
+
+
+def test_amendment_migration_unschedules_before_scheduling() -> None:
+    """Idempotent by job name: unschedule-then-schedule, not schedule-only."""
+    sql = _AMENDMENT_MIGRATION_PATH.read_text(encoding="utf-8")
+    unschedule_idx = sql.index("cron.unschedule(")
+    schedule_idx = sql.index("cron.schedule(")
+    assert unschedule_idx < schedule_idx, (
+        "expected cron.unschedule(...) to appear before cron.schedule(...) "
+        "so re-applying this migration replaces rather than duplicates the job"
+    )
+
+
+def test_amendment_migration_keeps_thirty_day_default_and_terminal_statuses() -> None:
+    """The default 30-day window and terminal-status filter survive unchanged.
+
+    Task requirement: the exemption must be narrow; jobs that never reached a
+    human still purge on the original schedule.
+    """
+    sql = _AMENDMENT_MIGRATION_PATH.read_text(encoding="utf-8")
+    assert "interval '30 days'" in sql
+    job_body = sql.split("$job$")[1]
+    assert "'passed', 'needs_review', 'failed'" in job_body
+    assert "'queued'" not in job_body
+    assert "'running'" not in job_body
+    assert "'awaiting_manual_fill'" not in job_body
+
+
+def test_amendment_migration_exempts_human_approved_storybooks() -> None:
+    """The approve half of the exemption keys on published/archived status."""
+    sql = _AMENDMENT_MIGRATION_PATH.read_text(encoding="utf-8")
+    job_body = sql.split("$job$")[1]
+    assert "NOT EXISTS" in job_body
+    assert '"public"."storybook"' in job_body
+    assert "'published', 'archived'" in job_body
+    # The undecided statuses must NOT appear in the exemption's status list,
+    # so a draft or still-in-review storybook's job keeps purging on schedule.
+    assert "'draft'" not in job_body
+    assert "'in_review'" not in job_body
+
+
+def test_amendment_migration_exempts_send_back_via_event_not_status() -> None:
+    """The send-back half must key on the event, never on needs_revision.
+
+    A story reaches ``needs_revision`` without a human ever seeing it via the
+    ``draft --auto_reject--> needs_revision`` hop that
+    ``moderation/pipeline.py`` drives on a hard classifier BLOCK. Exempting on
+    that status would preserve every machine-rejected story's raw output
+    indefinitely: it widens ADR-007's retention window with no human decision
+    to justify it, and fills the calibration corpus with rows carrying no
+    reviewer judgment. Only ``publishing/service.py::send_back`` writes a
+    SENT_BACK pipeline event, so the event is the human-only marker.
+    """
+    sql = _AMENDMENT_MIGRATION_PATH.read_text(encoding="utf-8")
+    job_body = sql.split("$job$")[1]
+    assert '"public"."pipeline_event"' in job_body
+    assert "'sent_back'" in job_body
+    assert "'storybook'" in job_body
+    # The regression this guards: needs_revision must never gate the exemption.
+    assert "needs_revision" not in job_body
+
+
+def test_amendment_migration_indexes_the_event_lookup() -> None:
+    """The pipeline_event probe is indexed, not a nightly sequential scan."""
+    sql = _AMENDMENT_MIGRATION_PATH.read_text(encoding="utf-8")
+    assert "ix_pipeline_event_entity_event_type" in sql
+    assert '"entity_type", "entity_id", "event_type"' in sql
+
+
+def test_amendment_migration_still_only_targets_report_column() -> None:
+    """The amended UPDATE still nulls only generation_job.report."""
+    sql = _AMENDMENT_MIGRATION_PATH.read_text(encoding="utf-8")
+    assert '"public"."generation_job"' in sql
+    assert 'SET "report" = NULL' in sql
+
+
+def test_amendment_migration_guards_pg_cron_availability() -> None:
+    """The amendment never hard-fails on a Postgres without pg_cron."""
+    sql = _AMENDMENT_MIGRATION_PATH.read_text(encoding="utf-8")
+    assert "CREATE EXTENSION IF NOT EXISTS pg_cron" in sql
+    assert "EXCEPTION WHEN OTHERS THEN" in sql
+    assert "RAISE NOTICE" in sql
+    assert "FROM pg_extension WHERE extname = 'pg_cron'" in sql
+
+
+def test_amendment_migration_has_no_em_dash() -> None:
+    """House style (root CLAUDE.md): never use U+2014 in any project output."""
+    sql = _AMENDMENT_MIGRATION_PATH.read_text(encoding="utf-8")
     assert "—" not in sql

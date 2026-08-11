@@ -248,7 +248,9 @@ async def test_submit_then_send_back(
         principal = _principal(guardian_id, book.family_id)
         await approval_service.submit(session, book)
         assert book.status == "in_review"
-        await approval_service.send_back(session, principal, book, "too scary")
+        await approval_service.send_back(
+            session, principal, book, "too scary", reason_code="safety_concern"
+        )
         assert book.status == "needs_revision"
 
 
