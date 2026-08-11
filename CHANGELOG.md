@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.77.0] - 2026-08-11
+
+### Features
+
+- **a11y**: Codify WCAG 2.1 AA standard, add lint-time and weekly checks
+  ([#683](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/683),
+  [`fe2ad8b`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/fe2ad8be9551e075517f0403720eec3d46120192))
+
+
 ## [0.76.0] - 2026-08-11
 
 ### Features
@@ -3384,6 +3393,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.77.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.76.0...v0.77.0
 [0.76.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.75.0...v0.76.0
 [0.75.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.74.3...v0.75.0
 [0.74.3]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.74.2...v0.74.3
