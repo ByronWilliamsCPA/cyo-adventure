@@ -1,0 +1,306 @@
+{
+ "stratum": "decisional",
+ "fact_readings": {
+  "archive_beckons": "The pattern room's browsable stacks of old bell records pull at the reader with a genuine, non-urgent temptation to stay and read rather than press on to the dial.",
+  "at_the_dial": "The reader is now standing before the tower's setting dial, hands ready to try the cipher for real.",
+  "challenge_accepted": "The friends agree together to actually attempt the sealed tower's trial rather than just admire it from outside.",
+  "challenge_posted": "The town's standing dare, that whoever can read Josiah Vane's bell code may enter his sealed tower, has just been spoken aloud to the reader.",
+  "composure_kept": "Even when a path ends in a setback, the reader and friends stay level-headed and unshaken, no tears, no panic, no shame.",
+  "crossing_dares_them": "The slick catwalk between the swinging bell cradles openly invites a nervy crossing, and everyone feels the pull of it.",
+  "dial_test_live": "The dial's mechanism has been engaged and is now actively waiting on an input, so whatever happens next is a real attempt, not a rehearsal.",
+  "friends_committed_together": "The reader's friends are in this as a group from the start, choosing the tower trial side by side rather than one person going it alone.",
+  "keeper_intervenes": "The old bell-ringer's evening rounds bring him to the vault at the exact moment to catch the reader mid-return and steer things right.",
+  "keeper_offer_earned": "By satisfying the bell-ringer's test of them, the reader earns his offer to walk them into the tower himself.",
+  "keeper_tested_them": "The last bell-ringer sizes the friends up with a pointed question or small task before deciding whether they deserve his help.",
+  "logic_earned": "The reader has picked up one working piece of the peal-cipher's logic, enough to actually attempt a setting on the dial.",
+  "maker_motive_understood": "The reader comes to understand why Josiah Vane built this trial into his own tower in the first place.",
+  "passing_kept_private": "The reader chooses to keep their success and what they found to themselves and their friends rather than tell the town.",
+  "passing_made_public": "The reader chooses to tell the settlement what they found and let Josiah Vane's story be known again.",
+  "past_the_seal": "The reader has physically crossed from outside the locked tower to inside it, whichever door or window let them through.",
+  "patience_proven": "Taking the time to sit with the note and work out its meaning, rather than rushing at the tower, is what proves the reader's patience.",
+  "record_set_straight": "The keeper uses the moment of being caught to correct what the town has believed about Josiah Vane, rather than to punish.",
+  "reward_glimpsed": "From partway across the catwalk, the reader catches a glimpse of what waits past it, enough to know the risk has a real payoff.",
+  "route_named_by_note": "Decoding the note reveals exactly where a way into the tower is hidden.",
+  "sanctum_entered": "The reader has stepped inside the small room at the tower's heart where Josiah Vane kept what mattered most to him.",
+  "sanctum_seen": "The reader has actually laid eyes on what the vault holds, not just reached its door.",
+  "second_test_found": "Behind the clockface's back panel, the reader finds that Josiah Vane built a second, hidden test besides the obvious dial.",
+  "self_reliance_shown": "Finding the concealed latch through their own noticing, without note or escort, is what proves the reader can rely on themselves.",
+  "stewardship_earned": "Josiah Vane's own instructions name whoever finds his hidden loft as its new steward, and the reader takes up that role.",
+  "test_forced": "The dial jams honestly on a fair attempt, forcing the reader to find the mechanism's own way back before they can try again.",
+  "test_passed": "The reader sets the dial correctly and the peal-cipher mechanism accepts it, opening the way to the vault.",
+  "tower_sealed": "The clocktower has stood locked and off-limits since Josiah Vane's time, its trial untried by anyone in living memory.",
+  "trial_reopens": "A setback doesn't lock the tower for good; the trial is still there, waiting whenever the reader is ready to try again.",
+  "trial_rooms_known": "Standing inside, the reader can now see that the tower offers several different rooms, each its own way to learn the cipher.",
+  "trust_bond_formed": "A real trust grows between the reader and either the keeper or Josiah Vane's memory, earned rather than assumed.",
+  "workshop_found": "Behind the second test lies Josiah Vane's actual working loft, tools laid out mid-project as though he only just stepped away."
+ },
+ "premise": {
+  "engine": "bell-peal-cipher-trial",
+  "dramatic_question": "Can the reader learn to read Josiah Vane's bell-peal cipher well enough to earn honest passage into his sealed vault, and then choose rightly what to do with what they find there?",
+  "resolution_space": [
+   "Drawn into the pattern room's own records, the reader chooses to stay and read rather than press toward the dial, and leaves with a copied page of the note to keep working on at home.",
+   "A slick plank on the bell-frame catwalk gives just enough warning that the reader chooses, calmly and without shame, to turn back before the crossing rather than push a shaken attempt.",
+   "Guessing at the dial without the logic to back it up trips one of Josiah Vane's own built-in safeguards, and the setting locks itself until the keeper comes to reset it.",
+   "The honest fix for the jammed dial calls for a small tool from Vane's own kit that the reader doesn't have on hand, so the attempt waits for a better-prepared return trip.",
+   "The clockface's hidden second test opens not onto the vault but into Josiah Vane's actual working loft, and his own notes name whoever finds it steward, a role the reader quietly accepts.",
+   "Inside the vault, the reader chooses to carry what they found back out into the open, and the settlement finally learns and honors the truth of who Josiah Vane was.",
+   "Standing in the vault, the reader decides the discovery belongs to no one but the group who earned it, and leaves everything exactly as found, keeping only the story.",
+   "A hand straying too close to the vault's contents trips a warning bell, and the keeper's evening rounds find the reader already setting things right, turning near-trouble into the town's real story about Vane."
+  ]
+ },
+ "nodes": {
+  "n_open": {
+   "choice_semantics": {
+    "c_open": "Stepping up to the tower's posted dare instead of walking past it means choosing to actually take on Josiah Vane's trial."
+   },
+   "beat_hint": "The friends stand at the foot of the long-sealed clocktower and hear the town's standing dare, that whoever can read Vane's bells may enter, and decide together this is the day they try.",
+   "affect": {
+    "target": "hushed anticipation at a dare just heard aloud",
+    "forbid": ["despair", "hopelessness", "terror", "humiliation", "cruel_mockery"]
+   }
+  },
+  "n_start": {
+   "choice_semantics": {
+    "c_examine": "Choosing to sit with the folded note first means trusting careful reading over immediate action.",
+    "c_door": "Choosing to search the tower's own walls for a way in means trusting your own eyes and hands over any clue or any person.",
+    "c_keeper": "Choosing to seek out the last bell-ringer means trusting a person's judgment of you over a puzzle or a door."
+   },
+   "beat_hint": "Facing three ways to begin, an old note, the tower itself, or the keeper who still tends it, the friends decide which kind of trial to take on first.",
+   "affect": {
+    "target": "the pleasant weight of an open choice",
+    "forbid": ["despair", "hopelessness", "terror", "humiliation", "cruel_mockery"]
+   }
+  },
+  "n_note": {
+   "choice_semantics": {
+    "c_note_key": "Choosing to go retrieve the actual hidden key first means confirming your reading of the note before acting on it.",
+    "c_note_inside": "Choosing to head straight for the tower on the strength of the note alone means trusting your translation completely, unverified."
+   },
+   "beat_hint": "Working through the note's long and short pulls slowly, patiently, spells out exactly where a spare foundry key waits behind a loose flue grate.",
+   "affect": {
+    "target": "quiet satisfaction of a code coming clear",
+    "forbid": ["despair", "hopelessness", "terror", "humiliation", "cruel_mockery"]
+   }
+  },
+  "n_door": {
+   "choice_semantics": {
+    "c_door_force": "Choosing to use the concealed latch you found means trusting the tower's own hidden mechanism to let you in properly.",
+    "c_door_window": "Choosing to climb up and in through a high window instead means trading the tidy latch for a bolder, riskier way past the seal."
+   },
+   "beat_hint": "Running hands along the tower's base, the reader notices a catch hidden under the tuning board's lip, a way in nobody bothered to seal shut.",
+   "affect": {
+    "target": "the small thrill of noticing what others missed",
+    "forbid": ["despair", "hopelessness", "terror", "humiliation", "cruel_mockery"]
+   }
+  },
+  "n_keeper": {
+   "choice_semantics": {
+    "c_keeper_enter": "Accepting the bell-ringer's offer to walk you in right away means moving forward on the trust you've just earned.",
+    "c_keeper_story": "Asking to hear more before going in means valuing understanding the trial over simply getting through it fastest."
+   },
+   "beat_hint": "The last bell-ringer studies the friends for a long moment, asks them something that tests whether they're here for the right reasons, and, satisfied, offers to walk them in through the casting floor door himself.",
+   "affect": {
+    "target": "being quietly measured and then trusted",
+    "forbid": ["despair", "hopelessness", "terror", "humiliation", "cruel_mockery"]
+   }
+  },
+  "n_keyhunt": {
+   "choice_semantics": {
+    "c_keyhunt_in": "Carrying the recovered key to the tower means the reading is confirmed and it's time to use what patience earned."
+   },
+   "beat_hint": "Behind the loose flue grate, exactly where the note's fold pointed, the spare foundry key is waiting, real proof the translation was right.",
+   "affect": {
+    "target": "the click of a hunch confirmed",
+    "forbid": ["despair", "hopelessness", "terror", "humiliation", "cruel_mockery"]
+   }
+  },
+  "n_keeper_story": {
+   "choice_semantics": {
+    "c_story_in": "Heading in now that you understand why Vane built this trial means entering with real reason instead of curiosity alone."
+   },
+   "beat_hint": "The bell-ringer tells them plainly why Josiah Vane locked his own tower behind a puzzle, not to keep people out, but to make sure whoever got in had earned it.",
+   "affect": {
+    "target": "understanding settling into resolve",
+    "forbid": ["despair", "hopelessness", "terror", "humiliation", "cruel_mockery"]
+   }
+  },
+  "n_window": {
+   "choice_semantics": {
+    "c_window_in": "Committing to the climb through the window means finishing the nervy entry you chose over the tidy latch."
+   },
+   "beat_hint": "Fingers finding old handholds worn smooth by decades of weather, the reader works their way up and through a high window, the tower's seal broken by nerve rather than a key.",
+   "affect": {
+    "target": "controlled nerve mixed with wonder at the height",
+    "forbid": ["despair", "hopelessness", "terror", "humiliation", "cruel_mockery"]
+   }
+  },
+  "n_inside": {
+   "choice_semantics": {
+    "c_inside_stairs": "Choosing the stairs means learning the cipher through steady, patient physical effort, one landing at a time.",
+    "c_inside_study": "Choosing the study means learning the cipher through Vane's own written notes and records.",
+    "c_inside_pendulum": "Choosing the pendulum room means learning the cipher by daring the moving bell-frame itself.",
+    "c_inside_basement": "Choosing the basement means learning the cipher by sitting still and letting light and shadow do the work."
+   },
+   "beat_hint": "Standing on the tower's casting floor for the first time, the reader sees four ways forward, stairs, study, pendulum room, basement, each holding its own piece of Vane's bell logic.",
+   "affect": {
+    "target": "wide-eyed orientation with many doors at once",
+    "forbid": ["despair", "hopelessness", "terror", "humiliation", "cruel_mockery"]
+   }
+  },
+  "n_stairs": {
+   "choice_semantics": {
+    "c_stairs_face": "Carrying the fork rack's lesson up to the clockface means it's time to try what the climb taught."
+   },
+   "beat_hint": "Pausing halfway up the spiral stairs, the reader finds a rack of tuning forks sorted low to high, each labeled with a pull count, and beside it Vane's own first, crooked hand bell, kept as a private joke on himself.",
+   "affect": {
+    "target": "effort rewarded, a maker's humor discovered",
+    "forbid": ["despair", "hopelessness", "terror", "humiliation", "cruel_mockery"]
+   }
+  },
+  "n_study": {
+   "choice_semantics": {
+    "c_study_face": "Taking the annotated hammer's lesson straight to the clockface means choosing to press on toward the dial.",
+    "c_study_logs": "Staying to read through the pattern room's records instead means choosing the archive's own quiet pull over the trial ahead."
+   },
+   "beat_hint": "Sunlight through the coloured transom scatters bell-shaped light across the pattern room, where a tuning hammer scratched with Vane's own notes teaches the richest single piece of the cipher, and shelves of old records sit open, genuinely worth a whole evening.",
+   "affect": {
+    "target": "warm, unhurried curiosity",
+    "forbid": ["despair", "hopelessness", "terror", "humiliation", "cruel_mockery"]
+   }
+  },
+  "n_pendulum": {
+   "choice_semantics": {
+    "c_pendulum_oil": "Finishing the crossing to the calibration scale means the reader's nerve holds and they carry the last piece of logic on to the dial.",
+    "c_pendulum_giveup": "Turning back before finishing the crossing means judging, clearly and without panic, that this particular risk isn't the one worth taking today."
+   },
+   "beat_hint": "The brass calibration scale that would finish the cipher sits bolted by the mould bench, reachable only by a narrow catwalk slick with tallow, crossed one handhold at a time between the swinging bell cradles; partway across, the far side offers a glimpse of what waits beyond.",
+   "affect": {
+    "target": "held breath at a real but survivable risk",
+    "forbid": ["despair", "hopelessness", "terror", "humiliation", "cruel_mockery"]
+   }
+  },
+  "n_basement": {
+   "choice_semantics": {
+    "c_basement_face": "Carrying the shadow-plank's count up to the clockface means the dark, patient wait below has paid off."
+   },
+   "beat_hint": "Down among the tower's roots, the reader waits out the quiet dark until noon light through the belfry louvers falls exactly across a marked floor plank, and beside it hangs Josiah Vane's own leather apron, pockets still shaped to his tools.",
+   "affect": {
+    "target": "patient stillness rewarded",
+    "forbid": ["despair", "hopelessness", "terror", "humiliation", "cruel_mockery"]
+   }
+  },
+  "n_clockface": {
+   "choice_semantics": {
+    "c_face_correct": "Setting the dial slowly, checking each pull against what you learned, means trusting the specific logic you earned over speed.",
+    "c_face_jam": "Setting the dial quickly and by feel means trusting instinct and momentum over double-checking, and risking an honest jam.",
+    "c_face_panel": "Turning attention to the clockface's back panel before touching the dial at all means trusting your curiosity that there's more here than one test.",
+    "c_face_random": "Trying settings by guesswork means choosing not to rely on the specific logic earned in the tower's rooms at all."
+   },
+   "beat_hint": "Standing at last before the tower's great control dial, the reader has to decide how to actually use what the climb, the study, the crossing, or the dark taught them.",
+   "affect": {
+    "target": "focused suspense at the moment of truth",
+    "forbid": ["despair", "hopelessness", "terror", "humiliation", "cruel_mockery"]
+   }
+  },
+  "n_setcorrect": {
+   "choice_semantics": {
+    "c_correct_vault": "Following the dial's click through to the opening vault door means claiming the success that was earned."
+   },
+   "beat_hint": "The pulls fall into place exactly as the rooms taught, gears turn somewhere deep in the tower, and a door the reader hadn't even noticed swings open.",
+   "affect": {
+    "target": "clean, earned triumph",
+    "forbid": ["despair", "hopelessness", "terror", "humiliation", "cruel_mockery"]
+   }
+  },
+  "n_setjam": {
+   "choice_semantics": {
+    "c_jam_oil": "Releasing the cradle's safety catch and easing it back to rest means fixing the jam the honest way, on the mechanism's own terms.",
+    "c_jam_stuck": "Finding the linkage bent past what bare hands can fix means accepting that this jam needs a tool nobody brought today."
+   },
+   "beat_hint": "The dial catches halfway through the setting, not broken, just honestly stuck, and any fix has to be the tower's own way back, not force.",
+   "affect": {
+    "target": "steady problem-solving under a little pressure",
+    "forbid": ["despair", "hopelessness", "terror", "humiliation", "cruel_mockery"]
+   }
+  },
+  "n_backpanel": {
+   "choice_semantics": {
+    "c_panel_vault": "Reading the back panel's hidden test as another route to the vault means following it onward to the same goal by a different door.",
+    "c_panel_secret": "Reading the back panel's hidden test as leading somewhere else entirely means following curiosity into whatever Vane hid there instead of the vault."
+   },
+   "beat_hint": "Behind the clockface's plain back panel is a second, smaller test Vane built for no one but the truly curious, and it doesn't obviously lead where the dial does.",
+   "affect": {
+    "target": "delighted surprise at a maker's private joke",
+    "forbid": ["despair", "hopelessness", "terror", "humiliation", "cruel_mockery"]
+   }
+  },
+  "n_vault": {
+   "choice_semantics": {
+    "c_vault_share": "Choosing to carry what's found back out to the settlement means deciding Vane's story belongs to everyone, not just the reader.",
+    "c_vault_keep": "Choosing to leave everything exactly as found means deciding the story is enough, and the objects themselves aren't the reader's to take.",
+    "c_vault_grab": "Reaching to pocket something from the vault means treating the discovery as something to own rather than something to honor."
+   },
+   "beat_hint": "Past the door, a small room holds what Josiah Vane kept closest, his own marking chisel among them, still oiled as though he meant to come back for it, and the reader has to decide what to do with what they've found.",
+   "affect": {
+    "target": "reverent wonder at a private, unguarded space",
+    "forbid": ["despair", "hopelessness", "terror", "humiliation", "cruel_mockery"]
+   }
+  },
+  "n_end_library": {
+   "beat_hint": "The reader stays behind in the pattern room, and among the old bound records finds a copied page of the very note that started everything, tucked away to keep decoding at home.",
+   "affect": {
+    "target": "settled, curious contentment",
+    "forbid": ["despair", "hopelessness", "terror", "humiliation", "cruel_mockery"]
+   }
+  },
+  "n_end_giveup": {
+   "beat_hint": "A boot skids on the tallow-slick plank, just enough to make the point; the reader steadies themselves, decides the crossing can wait, and the group climbs back down together, unshaken.",
+   "affect": {
+    "target": "calm relief in a clear-headed choice",
+    "forbid": ["despair", "hopelessness", "terror", "humiliation", "cruel_mockery"]
+   }
+  },
+  "n_end_timeout": {
+   "beat_hint": "Guesses at the dial trip one of Vane's own quiet safeguards, and the setting freezes fast until the keeper comes by later to reset it; the tower is simply closed again, not broken.",
+   "affect": {
+    "target": "wry, good-humored letdown",
+    "forbid": ["despair", "hopelessness", "terror", "humiliation", "cruel_mockery"]
+   }
+  },
+  "n_end_stuck": {
+   "beat_hint": "The reset needs a small tool from Vane's own kit, exactly the kind he always kept on hand, and the friends don't have it with them; they mark the spot and head back down, already planning the next visit.",
+   "affect": {
+    "target": "patient determination over unfinished business",
+    "forbid": ["despair", "hopelessness", "terror", "humiliation", "cruel_mockery"]
+   }
+  },
+  "n_end_secret": {
+   "beat_hint": "The hidden route behind the panel opens onto Josiah Vane's actual loft, tools racked and labeled for a workday that never resumed, and his own notes name whoever finds this room its steward; the reader quietly accepts.",
+   "affect": {
+    "target": "hushed wonder at being trusted with something private",
+    "forbid": ["despair", "hopelessness", "terror", "humiliation", "cruel_mockery"]
+   }
+  },
+  "n_end_hero": {
+   "beat_hint": "What the reader carries out of the vault becomes the true story the settlement tells about Josiah Vane from now on, and the tower's trial passes into memory as something the reader helped set right.",
+   "affect": {
+    "target": "warm, public-facing pride",
+    "forbid": ["despair", "hopelessness", "terror", "humiliation", "cruel_mockery"]
+   }
+  },
+  "n_end_keepsake": {
+   "beat_hint": "Everything in the vault stays exactly where Vane left it; the reader and friends carry out only the story, sworn between themselves as something private and true.",
+   "affect": {
+    "target": "quiet, private satisfaction",
+    "forbid": ["despair", "hopelessness", "terror", "humiliation", "cruel_mockery"]
+   }
+  },
+  "n_end_caught": {
+   "beat_hint": "A hand drifting too close to the vault's contents trips a trip-wired hand bell, and by the time the keeper's evening rounds find them, the reader is already setting the chisel back; instead of trouble, the moment becomes the real story about Vane getting told straight.",
+   "affect": {
+    "target": "sheepish relief settling into understanding",
+    "forbid": ["despair", "hopelessness", "terror", "humiliation", "cruel_mockery"]
+   }
+  }
+ }
+}
