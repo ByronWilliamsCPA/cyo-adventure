@@ -593,6 +593,16 @@ watching that tier. That is reported as a failure on purpose: a probe that treat
 benign is how a monitoring gap ships unnoticed. An `unconfigured` state is not a failure; it means
 `KWS_VERIFICATION_REQUIRED` is off on that tier, which is production's state until Gate 3 closes.
 
+`KWS_VERIFICATION_REQUIRED` also gates `POST /v1/consent/kws/start` itself, not just the
+child-profile checks. That endpoint hands an adult's email address to Epic, so credential presence
+is deliberately not what opens it: a tier holding credentials without having decided to run
+verification sends nothing. The one exception is `KWS_ALLOW_START_WHILE_NOT_REQUIRED`, which exists
+so staging can exercise the endpoint and its screens before the gate flips. It is refused at
+startup whenever `KWS_ENVIRONMENT=production`, so the process fails to boot rather than re-opening
+the endpoint on a tier serving real families. The Gate 1 procedure in
+[the KWS test runbook](kws-test-runbook.md) does not need it: that script calls the service
+directly and never reaches the endpoint.
+
 ## 8. Secrets and keys inventory
 
 Names only; never commit or log actual values. Source real values from a secret manager

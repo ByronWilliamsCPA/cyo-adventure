@@ -1159,6 +1159,34 @@ class Settings(BaseSettings):
     kws_verification_required: bool = Field(
         default=False, validation_alias="KWS_VERIFICATION_REQUIRED"
     )
+    # Whether POST /v1/consent/kws/start may run while the flag above is off.
+    #
+    # This exists for exactly one job: exercising the ENDPOINT and the
+    # guardian screens in front of it on staging while the gate is still off,
+    # which is how the flow is proven before it becomes a control. Note what
+    # it is NOT for: the Gate 1 procedure in docs/operations/kws-test-runbook.md
+    # runs scripts/kws_send_test_verification.py, which calls
+    # start_parent_verification directly and never reaches the endpoint, so
+    # that procedure needs nothing from this setting. What the script cannot
+    # exercise is the endpoint's own surface: its authorization allowlist, its
+    # two anti-automation limits, and the screens that consume its answers.
+    #
+    # Deliberately a SEPARATE setting rather than a wider reading of
+    # kws_configured. Credential presence is a fact about the deployment;
+    # "this tier is allowed to email real people about a flow that gates
+    # nothing" is a decision, and the two must be separately auditable.
+    #
+    # #CRITICAL: security: the start endpoint discloses an adult's email
+    # address to Epic (ADR-018 D1, O-125), so its control has to be the same
+    # flag the ADR names, not the incidental presence of credentials. This
+    # escape hatch is refused outright against Production KWS
+    # (_reject_start_override_against_production_kws), so widening the
+    # endpoint can never be something a copied staging env file does.
+    # #VERIFY: tests/unit/test_config.py::TestKwsStartOverride::
+    # test_the_start_override_is_refused_against_production_kws.
+    kws_allow_start_while_not_required: bool = Field(
+        default=False, validation_alias="KWS_ALLOW_START_WHILE_NOT_REQUIRED"
+    )
     # How long an unresolved attempt blocks a fresh send for the same adult.
     #
     # This is the double-click and retry-loop guard, and its size is a
@@ -1202,6 +1230,7 @@ class Settings(BaseSettings):
         "kws_start_max_attempts_per_hour",
         "kws_accept_test_evidence",
         "kws_verification_required",
+        "kws_allow_start_while_not_required",
         "kws_environment_label",
         "kws_organization_id",
         "kws_product_id",
@@ -1960,6 +1989,49 @@ class Settings(BaseSettings):
                 "sandbox event, not evidence about a real parent, and the "
                 "combination can only mean a staging variable reached a "
                 "production tier."
+            )
+            raise ConfigurationError(msg)
+        return self
+
+    @model_validator(mode="after")
+    def _reject_start_override_against_production_kws(self) -> Settings:
+        """Refuse the start-endpoint escape hatch while pointed at Production KWS.
+
+        ``kws_allow_start_while_not_required`` exists so staging can exercise
+        the endpoint and its screens while the gate is still off. Against
+        Production KWS that combination has no legitimate reading: it would
+        mean real parents' email addresses are being disclosed to Epic by a
+        flow that no gate depends on, which is the exact posture O-125 is open
+        about.
+
+        Keyed on ``kws_environment`` for the same reason
+        ``_reject_test_evidence_against_production_kws`` is: staging declares
+        ``ENVIRONMENT=production``, so an ``environment``-shaped guard cannot
+        tell the two tiers apart and would be a control in name only.
+
+        #CRITICAL: security: refusal to boot is the control. A tier that
+        acquires this variable by copying staging's env file stops, rather
+        than quietly re-opening an endpoint whose whole gate this PR moved.
+        #VERIFY: tests/unit/test_config.py::TestKwsStartOverride::
+        test_the_start_override_is_refused_against_production_kws and
+        ::test_the_start_override_is_allowed_against_test_kws. Cite the pair:
+        the refusal alone passes for a guard written against ``environment``,
+        because the allow-case is what pins the ``kws_environment`` keying.
+
+        Raises:
+            ConfigurationError: when ``kws_allow_start_while_not_required`` is
+                set while ``kws_environment`` is ``"production"``.
+        """
+        if (
+            self.kws_allow_start_while_not_required
+            and self.kws_environment == "production"
+        ):
+            msg = (
+                "KWS_ALLOW_START_WHILE_NOT_REQUIRED=true is refused while "
+                "KWS_ENVIRONMENT='production': it would disclose real "
+                "parents' email addresses to Epic for a flow that gates "
+                "nothing on this tier. Set KWS_VERIFICATION_REQUIRED=true "
+                "instead, or unset this variable."
             )
             raise ConfigurationError(msg)
         return self

@@ -125,6 +125,11 @@ def sends(
     monkeypatch.setattr(settings, "kws_client_id", str(uuid.uuid4()))
     monkeypatch.setattr(settings, "kws_api_key", SecretStr("not-a-real-kws-key"))
     monkeypatch.setattr(settings, "kws_enabled_methods", ["credit_card"])
+    # The endpoint is gated on this flag, not on credential presence: a tier
+    # holding credentials is not thereby a tier that runs verification. Every
+    # test below except the two that pin the gate itself describes a tier that
+    # does, so it is set here rather than repeated in each of them.
+    monkeypatch.setattr(settings, "kws_verification_required", True)
     recorder = _SendRecorder()
     monkeypatch.setattr("cyo_adventure.consent.service.KwsClient", recorder)
     return recorder
@@ -223,6 +228,73 @@ async def _add_attempts(
                 )
             )
         await session.commit()
+
+
+@pytest.mark.usefixtures("as_guardian")
+class TestStartIsGatedOnTheFlag:
+    """What decides whether this tier may email a parent at all.
+
+    Credential presence is a fact about the deployment; running verification
+    is a decision. These two tests are the only ones in this file that
+    describe a tier which holds KWS credentials without having made that
+    decision, which is why they undo the ``sends`` fixture's flag.
+    """
+
+    async def test_start_is_refused_while_verification_is_not_required(
+        self,
+        client: AsyncClient,
+        monkeypatch: pytest.MonkeyPatch,
+        sessions: async_sessionmaker[AsyncSession],
+        seed: Seed,
+        sends: _SendRecorder,
+    ) -> None:
+        """Credentials alone must not open an endpoint that discloses an email.
+
+        The endpoint hands an adult's address to Epic (ADR-018 D1, O-125). On
+        a tier where ``kws_verification_required`` is off nothing consumes the
+        answer, so the disclosure buys nothing and must not happen. Nothing is
+        sent AND no row is written: a refusal that still burned the hourly cap
+        would be a denial-of-service on the guardian.
+        """
+        _ = seed
+        user_id = await _provision(client)
+        monkeypatch.setattr(settings, "kws_verification_required", False)
+
+        resp = await client.post(_START, json=_BODY)
+
+        assert resp.status_code == 400
+        assert sends.emails == []
+        assert await _attempts(sessions, user_id) == []
+
+    async def test_the_test_plan_override_re_opens_start_while_not_required(
+        self,
+        client: AsyncClient,
+        monkeypatch: pytest.MonkeyPatch,
+        seed: Seed,
+        sends: _SendRecorder,
+    ) -> None:
+        """Staging can still prove the endpoint, and only via its own flag.
+
+        Proving the flow before it becomes a control means sending a real
+        email on a tier where verification gates nothing. That is the one
+        legitimate reading of the combination, so it gets its own separately
+        auditable setting rather than a wider reading of ``kws_configured``.
+        ``config.py`` refuses this variable outright against Production KWS.
+
+        Note the narrow scope: the Gate 1 runbook procedure calls
+        ``start_parent_verification`` directly and never reaches this
+        endpoint, so what this flag buys is the endpoint's own surface (its
+        allowlist, its two limits) and the screens that consume it.
+        """
+        _ = seed
+        _ = await _provision(client)
+        monkeypatch.setattr(settings, "kws_verification_required", False)
+        monkeypatch.setattr(settings, "kws_allow_start_while_not_required", True)
+
+        resp = await client.post(_START, json=_BODY)
+
+        assert resp.status_code == 202
+        assert sends.emails == [_EMAIL]
 
 
 @pytest.mark.usefixtures("as_guardian")

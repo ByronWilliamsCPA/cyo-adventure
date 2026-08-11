@@ -2059,6 +2059,96 @@ class TestKwsEvidenceSettings:
         assert settings.kws_environment == "test"
 
 
+class TestKwsStartOverride:
+    """The escape hatch that re-opens the start endpoint on an ungated tier.
+
+    ``POST /v1/consent/kws/start`` is gated on ``kws_verification_required``,
+    because that is the flag ADR-018 D1 names as the control and the endpoint
+    discloses an adult's email address to Epic. Staging still has to be able
+    to exercise that endpoint and its screens before the gate flips, so that
+    one case gets its own setting rather than a wider reading of
+    ``kws_configured``, and refusal to boot is what keeps it off production.
+    """
+
+    @pytest.fixture(autouse=True)
+    def _clear_kws_env(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Keep a developer's own KWS_* exports out of these assertions."""
+        for name in (
+            "KWS_ENVIRONMENT",
+            "KWS_VERIFICATION_REQUIRED",
+            "KWS_ALLOW_START_WHILE_NOT_REQUIRED",
+        ):
+            monkeypatch.delenv(name, raising=False)
+
+    @pytest.mark.unit
+    def test_the_start_override_is_off_by_default(self) -> None:
+        """An unset variable must not widen the endpoint."""
+        from cyo_adventure.core.config import Settings
+
+        assert Settings().kws_allow_start_while_not_required is False
+
+    @pytest.mark.unit
+    def test_the_start_override_is_refused_against_production_kws(self) -> None:
+        """Real parents' addresses must not be disclosed for a flow that gates nothing.
+
+        The combination has no legitimate reading against Production KWS, and
+        it is exactly what a copied staging env file produces, so the process
+        refuses to start rather than quietly re-opening the endpoint.
+        """
+        from cyo_adventure.core.config import Settings
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        with pytest.raises(
+            ConfigurationError, match="KWS_ALLOW_START_WHILE_NOT_REQUIRED"
+        ):
+            Settings(
+                environment="production",
+                kws_environment="production",
+                kws_allow_start_while_not_required=True,
+                database_url=_PROD_DB_URL,
+                oidc_issuer="https://project.supabase.co/auth/v1",
+                oidc_jwks_url=(
+                    "https://project.supabase.co/auth/v1/.well-known/jwks.json"
+                ),
+                child_session_secret=_CHILD_SECRET,
+                device_grant_secret=_DEVICE_SECRET,
+                allow_mock_review=True,
+                kws_enabled_methods=_KWS_METHODS,
+                **_KWS_CREDS,
+            )
+
+    @pytest.mark.unit
+    def test_the_start_override_is_allowed_against_test_kws(self) -> None:
+        """The staging shape must boot, and it is the shape that pins the keying.
+
+        Deliberately the MISMATCHED pair: ``environment="production"`` with
+        ``kws_environment="test"``, which is what staging actually deploys
+        (``docs/operations/runbook.md``). A guard rewritten against
+        ``self.environment`` would raise here and take staging down, and no
+        lockstep pair of tests could tell. Without this case the setting would
+        also have no legal use at all.
+        """
+        from cyo_adventure.core.config import Settings
+
+        settings = Settings(
+            environment="production",
+            kws_environment="test",
+            kws_allow_start_while_not_required=True,
+            database_url=_PROD_DB_URL,
+            oidc_issuer="https://project.supabase.co/auth/v1",
+            oidc_jwks_url="https://project.supabase.co/auth/v1/.well-known/jwks.json",
+            child_session_secret=_CHILD_SECRET,
+            device_grant_secret=_DEVICE_SECRET,
+            allow_mock_review=True,
+            kws_enabled_methods=_KWS_METHODS,
+            **_KWS_CREDS,
+        )
+
+        assert settings.kws_allow_start_while_not_required is True
+        assert settings.environment == "production"
+        assert settings.kws_environment == "test"
+
+
 class TestKwsStartLimits:
     """The two anti-automation bounds on ``POST /api/v1/consent/kws/start``.
 

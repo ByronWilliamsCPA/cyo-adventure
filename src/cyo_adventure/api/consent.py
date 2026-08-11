@@ -144,6 +144,33 @@ async def start_kws_verification(
         )
         raise ConfigurationError(msg)
 
+    # #CRITICAL: security: credential presence is NOT the control. This
+    # endpoint discloses an adult's email address to Epic (ADR-018 D1, O-125),
+    # and the flag that decides whether this tier runs verification at all is
+    # kws_verification_required, so that is what has to gate it. Gating on
+    # kws_configured alone left the endpoint live on any tier that merely held
+    # credentials, including one where nothing depends on the answer.
+    #
+    # kws_allow_start_while_not_required is the single, separately-named,
+    # separately-auditable escape that lets staging exercise this endpoint and
+    # the screens in front of it while the gate is still off. The Gate 1
+    # procedure itself does not need it: scripts/kws_send_test_verification.py
+    # calls start_parent_verification directly and never reaches here.
+    # config.py refuses that variable outright against Production KWS, so the
+    # override cannot widen the production endpoint even if it is set there.
+    # #VERIFY: tests/integration/test_consent_api.py::
+    # test_start_is_refused_while_verification_is_not_required and
+    # ::test_the_test_plan_override_re_opens_start_while_not_required.
+    if not (
+        settings.kws_verification_required
+        or settings.kws_allow_start_while_not_required
+    ):
+        msg = (
+            "parent verification is not in use on this deployment; "
+            "no verification email can be sent"
+        )
+        raise ConfigurationError(msg)
+
     # #CRITICAL: concurrency: the caller's own row is locked, which is what
     # makes the two limit checks below mean anything. Without it, two requests
     # arriving together both read a count of zero and both send, so the cap
