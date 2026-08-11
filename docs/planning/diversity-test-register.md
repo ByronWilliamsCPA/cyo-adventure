@@ -74,8 +74,8 @@ plus the shared-gram guard, both deterministic and both already built.
 | D-3c | Confirm D-3b with a second blind annotator | Is D-3b reproducible, and does it survive a subset fixed in advance? | Second independent annotator, same three bundles, same brief. Analysis pre-registered below before the labels exist. | 1 annotator over 3 plans | The second annotator's `reasoning_kind` does not separate the pairs in the readers' direction over the pre-registered fork subset. Did not fire, but the margin nearly vanished. | **done, PARTIAL** |
 | D-4 | Solution-transfer metric | Is the item that actually discriminated computable from a plan, rather than only ratable by a reader? | Formalise "these two puzzles resolve by the same operation to the same answer" against the three existing contracts, and check it reproduces the raters' Q6 ordering (4,4 against 3,3). Scored against **three** rated pairs rather than the one the row asked for, since D-5 supplied a second ordering. | deterministic, no model | Did not fire. Reproduces all three orderings strictly, and does so on the tier that uses no taxonomy. | **done, POSITIVE but narrow** |
 | D-6 | Which repair unblocks D-2 | `AL-208` says D-2 converged because its arms shared one contract. That is a diagnosis nothing has tested, and three candidate repairs were proposed with no way to choose between them. | One contract, two bindings held constant, three conditions (`verbatim`, `neutral`, `diverge`), six independent 26-node fills. Outcome is the guard battery itself, so no rater is needed. | 6 fills, 0 raters | First falsifier did not fire: `verbatim` reaches 16.9 per 1000 against the pilot's 2.9, so contract sharing is confirmed as a cause. **Second falsifier substantially fired**: the best repair reaches 11.4, still roughly 3x budget and 4x the pilot. | **done, MIXED: diagnosis confirmed, neither tested repair sufficient** |
-| D-7 | Stratified plan: wordless shared structure, per-book decisional stratum | `AL-208`'s last untested repair, and the central claim of the architecture re-specification. | One structural stratum, two decisional strata authored without sight of each other, two bindings held constant, two fills. Outcome is the guard battery, no rater. | 2 strata, 2 fills, 0 raters | **Fired.** 12.9 per 1000 against a predicted 4.0, identical to D-6's `diverge`. 62 percent of shared grams trace to the shared fact definitions, which the stratum kept and which are prose. | **done, NEGATIVE** |
-| D-7b | Same, with the fact glosses removed | D-7 traced 62 percent of its leak to the 32 one-line fact definitions its stratum still carried. Is a genuinely wordless shared plan enough? | One variable changed from D-7: `facts` becomes bare names, each arm writing its own readings. Every other key verified byte-identical. | 2 strata, 2 fills, 0 raters | Neither falsifier fired. **3.2 per 1000**, under the 4.0 budget and at the 3.3 floor, from removing 422 words. And bare names still bound both authors to the same story: 0 of 32 identical readings, 0 of 35 identical semantics, agreement in meaning throughout. | **done, POSITIVE** |
+| D-7 | Stratified plan: wordless shared structure, per-book decisional stratum | `AL-208`'s last untested repair, and the central claim of the architecture re-specification. | One structural stratum, two decisional strata authored without sight of each other, two bindings held constant, two fills. Outcome is the guard battery, no rater. | 2 strata, 2 fills, 0 raters | **Fired.** 12.9 per 1000 against a predicted 4.0, identical to D-6's `diverge`. The leak was first attributed 62 percent to the shared fact definitions, which the stratum kept and which are prose. **That attribution is retracted**: a strict re-trace puts **5 of the 40** shared grams on the deleted glosses, 12.5 percent, roughly a fivefold overstatement, and the 62 percent method was never documented. See the research brief Part III section 21. | **done, NEGATIVE** |
+| D-7b | Same, with the fact glosses removed | D-7 attributed its leak to the 32 one-line fact definitions its stratum still carried (62 percent then, 5 of 40 on the strict re-trace). Is removing them enough? | One variable changed from D-7: `facts` becomes bare names, each arm writing its own readings. Every other key verified byte-identical. | 2 strata, 2 fills, 0 raters | Neither falsifier fired. **3.2 per 1000**, under the 4.0 budget and at the 3.3 floor, from removing 422 words. And bare names still bound both authors to the same story: 0 of 32 identical readings, 0 of 35 identical semantics, agreement in meaning throughout. **The passing stratum is not wordless**: it still carries 473 words of binding-process free text, so what this arm shows is that fact-gloss prose drove the convergence, not that all prose does. | **done, POSITIVE, claim narrowed** |
 | D-5 | Rate the discarded contaminated arm as a negative control | Does the six-question instrument correctly detect a pair we know is contaminated? | The 14-of-24 shared-prop binding is preserved. Feed `filled_V5b` to fresh blind raters and confirm it scores worse than `filled_V5c` on Q6. | 2 raters | Did not fire. Both raters, opposite orders, scored the contaminated pair Q6 = 5 and the clean pair Q6 = 2, and both chose the contaminated pair as more similar at high confidence. A three-point gap on the item that matters. **Re-run independently 2026-08-10 because the original result was not produced here: two fresh raters in opposite orders reproduced it exactly, Q6 = 5 for the contaminated pair against 2 for the clean one, both choosing the contaminated pair at high confidence.** The instrument detects a known-bad pair, so the ratings in section 13 stand. | **done, PASS, replicated** |
 
 ### D-4 result: solution transfer is computable from a plan, but only its taxonomy-free half
@@ -891,9 +891,23 @@ drives convergence, no wordless plan exists at all." Tracing the shared grams:
 | shared node `function` | 8 | |
 | none of the shared parts (generator idiom) | 12 | 30% |
 
+> [!WARNING]
+> **Correction, 2026-08-11: the 62 percent is retracted.** Re-tracing the same arm under a strict
+> attribution puts **5 of the 40** shared grams on the deleted glosses, 12.5 percent, roughly a
+> fivefold overstatement. The method behind the 62 percent was never written down, so it can be
+> neither reproduced nor repaired; the table above stays as the claim that was published, not as a
+> finding. The re-trace is in the research brief Part III section 21, and its consequence is worse
+> than the arithmetic: deleting 422 words removed thirty-three shared grams that were **not copied
+> from those words**, so the mechanism is not copying but convergent elaboration, two authors primed
+> by the same gloss writing different sentences about the same idea and converging anyway. Anything
+> that primes two authors identically will do this, and an enumerated category primes without being
+> prose at all. The measurements either side of the trace are unaffected: 12.9 per 1000 with the
+> glosses, 3.2 without.
+
 **So the stratum was never wordless.** It carried 32 one-line prose glosses, one per fact, and both
 authors read all of them: "the clocktower stands sealed, and the seal reads like a test rather than
-an accident". I called that structure. It is prose, and it is 62 percent of the leak.
+an accident". I called that structure. It is prose, and deleting it is what moved the measurement;
+how much of the leak it *carried* is the part now retracted.
 
 **The margin this leaves is the real finding.** The budget is 4.0 and the generator floor is 3.3, so
 **a shared artifact has 0.7 per 1000 of room in total**. Every result in this programme falls either
@@ -901,12 +915,14 @@ at the floor (nothing shared, 2.9) or at three to fifteen times budget (any plan
 ever landed in between, and D-7 was the most careful attempt to find that middle.
 
 Removing the definitions and leaving bare fact names would, on a linear reading of the trace, land
-near 4.8: still over budget, and an estimate rather than a measurement. That is D-7b, below.
+near 4.8: still over budget, an estimate rather than a measurement, and resting on the attribution
+retracted above. That is D-7b, below.
 
-### D-7b result: a shareable plan exists, and the shared artifact has to be genuinely wordless
+### D-7b result: a shareable plan exists, and what it excludes is fact-gloss prose, not all prose
 
-D-7's leak traced 62 percent to the fact definitions its "structural" stratum still carried. D-7b
-changes exactly one thing: `facts` becomes a list of names with no glosses, each arm writing its own
+D-7's leak was attributed to the fact definitions its "structural" stratum still carried, 62 percent
+then and 5 of 40 on the strict re-trace above. D-7b changes exactly one thing: `facts` becomes a
+list of names with no glosses, each arm writing its own
 readings. Every other key was verified byte-identical to D-7's stratum, so any movement is
 attributable to the glosses alone. 422 words of prose left the shared artifact.
 
@@ -922,8 +938,27 @@ attributable to the glosses alone. 422 words of prose left the shared artifact.
 | D-2, shared contract at 101 nodes | 50.1 |
 
 **12.9 to 3.2 from removing 422 words.** Under budget, at the generator floor, and better than the
-4.8 the linear trace estimated, because the gloss-traceable grams were not independent of the rest.
+4.8 the linear trace estimated, which is one more reason the trace was not to be trusted.
 **This is the first artifact in the programme to share a plan and still land at the floor.**
+
+> [!WARNING]
+> **Correction, 2026-08-11: this arm's shared artifact is not wordless.** It was described from the
+> build script's intent instead of being checked against the artifact. The stratum published as
+> carrying no free text still carries **473 words** of it, in binding notes, per-node invention
+> notes, eight title constraints and the affect ceiling, which is **more than the 422 words the
+> experiment deleted** (895 down to 473). "No free text at all" therefore cannot be what made this
+> arm pass, because the passing arm does not satisfy it. The heading above claimed it and has been
+> corrected.
+>
+> **The measurement stands and the explanation is narrower.** 12.9 to 3.2 on deleting the 422 gloss
+> words, everything else byte-identical, is unaffected. What it supports is this: free text attached
+> to the **fact vocabulary that nodes reference** drove convergence, and free text **instructing the
+> binding process** was not isolated as a cause at this volume. Of the seven shared four-grams in
+> the passing pair, none appears verbatim in the residual 473 words and one matches only by
+> vocabulary. That is association, not a demonstration that the residual words are harmless: only an
+> arm that deletes the 473 while keeping the 422 settles which variable is operative, and that arm
+> is deprioritised rather than cancelled. See the research brief's 16l correction and Part III
+> section 21.
 
 Both arms clean on the full battery after one repair: structure clean, fill integrity ok, gate not
 blocked, prose craft 0 failures, label template ok, no em-dash, distinct titles, 2,922 and 3,044
@@ -1019,7 +1054,7 @@ and until `AL-213` is addressed it is a hand job of roughly 1.7KB per node.
 | M-4 | Stake economics | in-house, from rater testimony | Not *what* the goal is but whether failure costs anything. The treatment's goal imposed a live global constraint, a closing clock and a carrying limit and damage that persists, which re-prices every fork; the control's goal change did not. Both raters cited this unprompted, one noting that forcing is a free do-over in both control books and has a price in the treatment. | Two books, same graph, non-colliding bindings, same goal, differing only in whether failure is free. Existing rig. | The two books rate as repetitive as each other, meaning a reader does not price failure into how a choice feels. | **done, NEGATIVE on the clean round.** Round 1 (confounded by a label template and a provenance leak) had both raters agreeing the control pair was more repetitive. Round 2, with both confounds removed, splits the raters and ties Q6 at 5,5, so M-4's own falsifier fires. Caveat recorded: M-4's "same goal" requirement forces the treatment arm to share the base's premise engine while the control does not, which handicaps it. |
 | M-2 | World-graph tours | in-house | A graph is a *world*, not a book; a book is a validated subgraph tour. The catalog already holds graphs at 677, 551 and 250 nodes. | Take the largest 10-13 graph, cut two disjoint tours by hand, fill both, rate. Tests coherence as much as diversity. | **Structurally confirmed for 18 of 21 large graphs, without a single fill**: they are linear-with-decorations, not worlds, so no two disjoint tours exist to cut. Three graphs survive, one of them in-band. See below. | **partially done, DETERMINISTIC PRE-TEST; the fill-and-rate half is unblocked on exactly 3 named graphs** |
 | Q-2 | Cross-skeleton recombination | framework Q2 | Subtree grafting is the only mechanism that has ever cleared the anti-clone floor, and has never been evaluated for reader-perceived distinctness or coherence cost. | Graft subtrees between two catalog graphs, fill, rate for distinctness and for coherence damage. | Grafts read as incoherent, or as no more distinct than a plain sibling pair. | **blocked, and now on a named thing**: grafting needs narrative contracts for both source graphs, and 2 of 61 skeletons have one (`AL-213`, Q-1 below). Not exposed to D-6. Unblocked the moment contract coverage moves. |
-| Q-3 | How close is the skeleton-free path | framework Q3, brief 5.3 | Named the cheapest outstanding experiment before this programme started, and never run. **D-6 promotes it: a skeleton-free graph shares no plan by construction, so it is the only queued row that structurally cannot hit the convergence wall.** | Six graphs generated from scratch by isolated authors, format reference only, no skeleton and no validator in the loop. Score deterministically against the structural rules and the project gate. Analysis pre-registered below before the artifacts exist. | 6 generations, 0 raters | Did not fire. **6 of 6 structurally clean.** All six are nonetheless blocked by the project gate, and every blocking finding violates a constraint that was never stated to the author. | **done, POSITIVE on the pre-registered primary; see the split below** |
+| Q-3 | How close is the skeleton-free path | framework Q3, brief 5.3 | Named the cheapest outstanding experiment before this programme started, and never run. **D-6 promotes it: a skeleton-free graph shares no plan by construction, so it is the only queued row that structurally cannot hit the convergence wall.** | Six graphs generated from scratch by isolated authors, format reference only, no skeleton and no validator in the loop. Score deterministically against the structural rules and the project gate. Analysis pre-registered below before the artifacts exist. Cost: 6 generations, 0 raters. | Did not fire. **6 of 6 structurally clean.** All six are nonetheless blocked by the project gate, and every blocking finding violates a constraint that was never stated to the author. | **done, POSITIVE on the pre-registered primary; see the split below** |
 | Q-5 | Does the fill match its contract | framework Q5 | Nothing verifies finished prose against the node obligations it was written to satisfy. This is S4's unaddressed second weakness and it is independent of everything else here. | One model pass judging entailment over all 49 obligations of one book, plus a deterministic lexical triage scored against it. | Fired in the useful direction: fills do substantially satisfy their contracts, so the interesting result is that a deterministic check cannot verify it. | **done** |
 
 ### M-2 pre-test: 18 of 21 large graphs cannot supply two disjoint tours, and 3 can

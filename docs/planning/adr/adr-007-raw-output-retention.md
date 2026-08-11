@@ -55,6 +55,28 @@ exemption's practical effect is mostly for a storybook that was sent back
 (and any earlier job/version on the same storybook once any later job on it
 is decided) rather than for the version that ends up published.
 
+**What the retained label actually is.** The corpus this exemption preserves pairs raw output
+with an approve or a send-back, and that is a *decision*, not evidence that anyone read the
+book. Approval is a single state transition with no attestation, no per-passage
+acknowledgement and no reading-progress requirement (see
+`docs/planning/cyo-review-response-2026-08-11.md` Q2), so a scorecard calibrated on this
+corpus inherits whatever sampling the reviewer actually did rather than a full read.
+
+**Known ordering hazard: this change is split across two pull requests.** The migration that
+implements the exemption is in PR #684; this ADR amendment is in PR #685. Whichever merges
+first leaves `main` briefly inconsistent: either the schema skips human-decided jobs while the
+ADR still records an unqualified sweep, or the ADR records an exemption the database does not
+yet perform. Neither state is harmful, but neither is self-describing either, so read the two
+together until both have landed.
+
+**Known documentation debt: the compliance record is in neither PR.**
+`docs/compliance/data-retention-policy.md` (the `generation_job.report` row, around line 66,
+and its Section 4 "Enforced by shipped code" list) still states the unconditional 30-day
+purge and marks it **Enforced**, citing only the original
+`20260718000000_add_report_retention_purge.sql`. That file is out of scope for both PRs, so
+until it is updated the compliance record asserts an enforcement the schema no longer
+performs for human-decided jobs.
+
 ## Amendment (2026-07-17): purge implemented (Phase 5, M5 register item S10)
 
 Both halves of the purge described in the TL;DR and Decision sections below are now
@@ -100,8 +122,13 @@ admin review. Consequences:
 
 Purge `GenerationJob.report` (raw staged LLM outputs) 30 days after job
 completion or when the produced storybook version reaches `published` status,
-whichever comes first. Access to `report` is restricted to admin/system role
-only. Implementation is a Phase 5 scheduled RQ job.
+whichever comes first, **except** for a job whose storybook reached a human
+review decision (approve or send-back), which the 2026-08-10 amendment above
+exempts from the 30-day leg. Access to `report` is restricted to admin/system
+role only. Implementation shipped as a daily `pg_cron` job
+(`purge_generation_job_report`, migration `20260718000000_add_report_retention_purge.sql`),
+not as the Phase 5 RQ worker this ADR originally proposed; see the 2026-07-17
+amendment above.
 
 ## Context
 
@@ -132,6 +159,11 @@ privacy implications. Minimizing retention reduces risk.
 timestamp of the final status transition), OR when the linked
 `StorybookVersion.status` reaches `published`, whichever comes first.
 
+> **Amended 2026-08-10**: the 30-day leg no longer applies to a job whose
+> storybook reached a human review decision, in either direction. The
+> Amendment at the top of this ADR carries the exact predicate, what it
+> deliberately excludes, and why; the on-publish leg below is unchanged.
+
 **Mechanism**: A periodic RQ job (Phase 5) queries for jobs where:
 
 ```sql
@@ -140,7 +172,9 @@ AND report IS NOT NULL
 ```
 
 and sets `report = NULL` on matching rows. The job runs daily. It does not
-delete the `GenerationJob` row; only the `report` column is nulled.
+delete the `GenerationJob` row; only the `report` column is nulled. The
+predicate above is the original decision as taken; the shipped job additionally
+excludes human-decided storybooks per the 2026-08-10 amendment.
 
 **Access control**: `report` must not be exposed via guardian or child API
 endpoints. Only internal admin/system paths (e.g. a future ops dashboard or
@@ -164,12 +198,23 @@ purge reason (`expired` or `published`) at INFO level with a structured key.
 - Debugging a generation failure after 30 days is harder; `stage_log` and
   `error` columns remain, but the raw LLM output is gone.
 - Requires a scheduled worker (Phase 5); the mechanism does not exist yet.
+  **Superseded 2026-07-17**: it does exist, as a daily `pg_cron` job rather than
+  an RQ worker, so this consequence no longer holds as written.
 
 ## Implementation Notes
 
 Phase 5 task: add `generation_job_purge` to the RQ scheduler with a 24-hour
 interval. The purge query must use an index on `(updated_at, status)` to avoid
 full-table scans on large deployments.
+
+> **Superseded 2026-07-17**: shipped instead as the daily `pg_cron` job
+> `purge_generation_job_report`, so no RQ scheduler entry exists or is wanted.
+> The index shipped as `(status, updated_at)`, the reverse of the order written
+> above, which is the correct order for this predicate: `status` is matched by
+> equality against a terminal-status set and `updated_at` by range, and a
+> composite index is only usable for a range scan when the equality column comes
+> first. Read the column order above as an error in the original note, not as a
+> divergence in the migration.
 
 Interim (Phases 3-4): add the `#CRITICAL` privacy comment on the `report`
 column in `db/models.py` (done in this cleanup) and ensure no guardian/child

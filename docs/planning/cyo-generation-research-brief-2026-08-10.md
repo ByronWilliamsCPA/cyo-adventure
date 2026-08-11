@@ -887,7 +887,7 @@ supporting or negative results.
 | **The reuse problem** | **16d** | **Books built from one shared plan converge catastrophically. This was our biggest surprise.** |
 | | 16g.1 | Both cheap repairs fail. The leak has five prose channels and we had repaired one. |
 | | 16j | Independence comes from what an author is *not shown*, not from what it is told. 126.7 to 1.0 per 1000. |
-| | **16l** | **Resolved, with the mechanism restated. A plan can be shared without converging: 13.6 to 2.3 from deleting 422 words of fact glosses. The rule is not "no free text at all"; the passing kernel still carries 473 words. See the correction in 16l.** |
+| | **16l** | **Resolved, with the mechanism restated. A plan can be shared without converging: 13.6 to 2.5 from deleting 422 words of fact glosses. The rule is not "no free text at all"; the passing kernel still carries 473 words. See the correction in 16l.** |
 | **Scale and capital** | 16c, 16f | Narrative contracts exist for 2 of 61 skeletons; that, not skeleton count, is the binding cost. |
 | | 16i | A model builds structurally valid graphs unaided, 6 of 6, and fails only rules we never gave it. All six are the same story. |
 | **Negative results** | 16b, 16h, 16k | Obligation *coverage* is complete, but 5 of 49 deliver only partially and one of those is a real reader-facing defect; "graphs are worlds" is refuted for 18 of 21 graphs; stake economics returns a null. |
@@ -932,10 +932,19 @@ skeleton's own choice labels. Thirteen of thirty-five of those labels contain no
 slot, so they reach the author as fixed text from an unrelated book. The author rewrote all
 thirty-five labels and still stayed inside the frame it had been handed, turning "force the hands
 by guesswork" into "force the hands into place instead" for a story with no clock in it. Every
-guard passed. Shared four-gram density between the two books hit 28.8 per thousand words, the
-highest we have ever measured, with four choice menus opening on identical wording. Rebuilding the
-shell so that every author-controlled string is an explicit blank took the same pair to 8.9 and
-zero.
+guard passed. Shared four-gram density between the two books hit 28.8 per thousand words, with four
+choice menus opening on identical wording. Rebuilding the shell so that every author-controlled
+string is an explicit blank took the same pair to 8.9 and zero.
+
+> [!WARNING]
+> **Correction, 2026-08-11: this paragraph called 28.8 "the highest we have ever measured", and
+> later sections of this same document falsify it.** 16d reports **59.2 and 63.8** on the 101-node
+> replication, and 16l's table carries a **50.1**. 28.8 is the fourth highest figure we report, not
+> the first. The comparison against 16d is scope-valid, since 16d's own parenthetical records that
+> that round was scored with choice labels included, which is the scope 28.8 was scored under too;
+> the 50.1 is body-only and would be lower still on a label-inclusive denominator, so it clears 28.8
+> either way. The superlative was written before those rounds existed and was never revisited when
+> they landed.
 
 **Failure two: the two books shared their props.** The treatment book's binding reused fourteen of
 twenty-four concrete devices from the control base, including the code the whole book is indexed
@@ -1627,8 +1636,21 @@ shared plan" landed at 12.9. Generating the decisional half per book bought noth
 
 **Why, and it was our error rather than the idea's.** We traced every shared four-gram to the field
 it drew on. **62 percent came from the one prose our "wordless" structural half still carried: 32
-one-line definitions of what each fact name means**, read by both authors. "The clocktower stands
-sealed, and the seal reads like a test rather than an accident." We had called that structure.
+one-line definitions of what each fact name means** (that 62 percent is **retracted**, see
+immediately below), read by both authors. "The clocktower stands sealed, and the seal reads like a
+test rather than an accident." We had called that structure.
+
+> [!WARNING]
+> **Retraction, 2026-08-11: the 62 percent in the paragraph above does not reproduce.** Re-tracing
+> the failing arm under a strict attribution, only **five of its forty shared grams** come from the
+> deleted glosses. That is 12.5 percent, not 62, so the published figure overstates gloss-derived
+> convergence by a factor of five. The original number's method was never written down and we cannot
+> reconstruct it, so we withdraw it rather than repair it; read it as retracted wherever it appears.
+>
+> What survives is the deletion's effect rather than this account of it. The glosses are still the
+> only thing that differed between the two runs and the convergence still fell. The mechanism the
+> re-trace actually supports is convergent elaboration rather than copying, and it is argued in
+> section 21, which is where this retraction was made.
 
 **Second run: delete the 32 glosses, change nothing else.** Every other key verified byte-identical,
 so the difference is attributable to the glosses alone. 422 words left the shared artifact.
@@ -1656,7 +1678,7 @@ included where every other row excluded them. Recomputed consistently, all rows 
 
 | | shared four-grams per 1000, bodies only |
 | --- | --- |
-| **shared structure, bare identifiers** | **2.3** |
+| **shared structure, bare identifiers** | **2.5** |
 | our pilot, wholly separate plans | 2.9 |
 | generator idiom floor, books sharing nothing at all | 3.3 |
 | **budget** | **4.0** |
@@ -1667,15 +1689,35 @@ included where every other row excluded them. Recomputed consistently, all rows 
 | one shared plan, 101 nodes | 50.1 |
 
 The two corrected figures are the stratified designs: with glosses 13.6 rather than the 12.9 we
-first published, and without them 2.3 rather than 3.2. Only the first of those is a scope change on
+first published, and without them 2.5 rather than 3.2. Only the first of those is a scope change on
 its own. Dropping 160 label words from a 2,894-word denominator can only raise a rate, and it raises
 12.9 to 13.6 exactly; the stratified row moved the other way and further, so its correction carries a
-numerator change we have not written down here. **The direction and the conclusion are unchanged
+numerator change as well as a scope change. **The direction and the conclusion are unchanged
 under either scope**, which we checked before correcting rather than after, but the published numbers
-were mixed-scope and that was our error, caught in review. The provenance of the 2.3 is owed, and
-re-deriving it is the first thing to do before this table is cited anywhere else.
+were mixed-scope and that was our error, caught in review. The provenance of the stratified row was
+owed for a day and is now settled: section 21 supplies the numerator, the value is 2.5 rather than
+the 2.3 we published, and the derivation is in the block below. The table is safe to cite as it now
+stands.
 
-**13.6 to 2.3 from deleting 422 words**, landing under budget and below the floor. This is the first
+> [!WARNING]
+> **Correction, 2026-08-11: the stratified row is 2.5, and the 2.3 we published was label-inclusive.**
+> Section 21 traces every shared four-gram in the passing pair and so gives this row its numerator for
+> the first time: **seven**. The denominator is this section's own, the mean body word count of the
+> two books, which for the passing pair is **2,801**. That is 7 / 2,801 x 1000 = **2.5**. The 2.3 we
+> published is what the same numerator gives once the 182 label words are added back: 7 / (2,801 +
+> 182) x 1000 = 2.3. It is a label-inclusive figure, and label-inclusive is the exact scope this
+> section had already recomputed away from. No whole number of shared grams yields 2.3 body-only at
+> 2,801 words; it would take 6.44 of them.
+>
+> The glossed row is what exposed this, because it is clean: 12.9 x (2,894 + 160) / 2,894 = 13.6, so
+> that row is a pure scope change with its numerator held fixed. The stratified row could not be
+> reproduced the same way, and that mismatch was the tell.
+>
+> Nothing downstream reverses. 2.5 is still under the 4.0 budget and still below the 3.3 generator
+> idiom floor, and 16o's sensitivity band is unchanged. What moves is the ratio quoted in 16o, from
+> a sixfold range to 13.6 / 2.5 = 5.4.
+
+**13.6 to 2.5 from deleting 422 words**, landing under budget and below the floor. This is the first
 artifact in the programme to share a plan and still be indistinguishable, on this measure, from books
 that share nothing.
 
@@ -1705,7 +1747,7 @@ survived contact with our own contracts.
 > story, chosen at bind and used consistently from note to clockface to back panel."*
 >
 > **The measurement stands and the explanation does not.** Convergence still fell from 13.6 to
-> 2.3 when those 422 words were deleted with everything else held constant, and 2.3 is still
+> 2.5 when those 422 words were deleted with everything else held constant, and 2.5 is still
 > below the 3.3 generator floor. But "no free text at all" cannot be what made it pass, because
 > the passing arm does not satisfy it. The honest restatement is narrower:
 >
@@ -1857,7 +1899,7 @@ carries no weights and no taxonomy. We would ask you to read the weighted score 
 The claim in 16l, as corrected there, is that free text attached to the fact vocabulary nodes
 reference drove convergence while free text instructing the binding process did not, at this volume.
 It is stated against the 4.0 budget, so we varied the budget. The rows below are recomputed against
-the corrected body-only figures, 2.3 for the stratified pair and 13.6 for the glossed one:
+the corrected body-only figures, 2.5 for the stratified pair and 13.6 for the glossed one:
 
 | Budget | Does "the stratified plan works and the glossed one fails" still hold? |
 | --- | --- |
@@ -1865,9 +1907,14 @@ the corrected body-only figures, 2.3 for the stratified pair and 13.6 for the gl
 | **2.5 to 13.5** | **yes** |
 | 14.0 and above | no, the failing design starts passing |
 
-**The conclusion survives every budget across roughly a sixfold range**, 2.3 to 13.6, so it is not
-an artifact of the number we were handed. And there is a stronger statement that needs no budget at
-all: at 2.3 the stratified pair sits **below our measured floor of 3.3**, meaning it is not
+No cell moved when the stratified figure was corrected from 2.3 to 2.5, but the middle row is now
+exactly the boundary rather than a sampled point inside it: 2.5 is the stratified pair's own value,
+so any budget below it fails everything.
+
+**The conclusion survives every budget across roughly a fivefold range**, 2.5 to 13.6, a ratio of
+5.4, so it is not an artifact of the number we were handed. And there is a stronger statement that
+needs no budget at all: at 2.5 the stratified pair sits **below our measured floor of 3.3**, meaning
+it is not
 distinguishable from two books that share nothing whatsoever. We would rather you judged 16l on that
 than on a threshold, subject to the caveat on the floor's own provenance in the threshold table
 above: three pairs is an observation, not an established equivalence.
@@ -1989,8 +2036,10 @@ would have been publishable.**
 
 > Added 2026-08-11. Two reviewers returned architecture proposals against Part II. Rather
 > than answer their strongest objection in prose, we ran it. This part reports eight runs,
-> five of which cost no generations at all, and it corrects two Part II claims and one
-> claim made in this round.
+> five of which cost no generations at all, and it corrects two Part II claims and two
+> claims made in this round: our first reading of the solution-transfer tiers in 19, and
+> this round's own assertion in 21 that the residual-words arm was cancelled, which is
+> withdrawn there in favour of deprioritised.
 >
 > **Everything in the provenance banner at the head of this document applies here without
 > exception.** No human and no child has read any of it.
@@ -2077,8 +2126,11 @@ rather than settled, because the trace makes a null outcome likely but does not 
 
 **But the control run found something we cannot yet explain, and it matters more than the
 confirmation.** Under the same strict attribution, only five of the failing arm's forty
-shared grams trace to the deleted glosses. Deleting 422 words removed thirty-three shared
-grams that were **not copied from those words**. The mechanism is therefore not copying. It
+shared grams trace to the deleted glosses. The failing arm carried forty shared grams and the
+passing arm carries seven, so thirty-three went away; five of those were gloss-derived, which
+leaves **twenty-eight shared grams removed that were not copied from the deleted words**, still
+5.6 times the number that were. (An earlier draft of this paragraph said thirty-three, having
+subtracted nothing for the five that were copied.) The mechanism is therefore not copying. It
 is convergent elaboration: two authors read the same gloss, wrote different sentences about
 the same idea, and converged anyway.
 

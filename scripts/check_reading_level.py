@@ -140,7 +140,11 @@ def score(path: Path) -> Score | None:
 
 
 def main(argv: list[str] | None = None) -> int:
-    """CLI entry point. Returns 1 with --check when a book is too hard."""
+    """CLI entry point.
+
+    Returns 1 with --check when a book is too hard for its band, or when a book
+    holds too little prose to score at all.
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("stories", nargs="+", help="Filled storybook JSON files.")
     parser.add_argument(
@@ -159,6 +163,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     breached = False
+    unscorable: list[str] = []
     sys.stdout.write(
         f"{'book':34s} {'nodes':>5s} {'words':>6s} {'FK grade':>9s} {'in band':>8s}\n"
     )
@@ -166,6 +171,7 @@ def main(argv: list[str] | None = None) -> int:
     for raw in args.stories:
         scored = score(Path(raw).resolve())
         if scored is None:
+            unscorable.append(Path(raw).stem)
             sys.stdout.write(f"{Path(raw).stem:34s} too little prose to score\n")
             continue
         over = scored.grade > args.max_grade
@@ -186,14 +192,29 @@ def main(argv: list[str] | None = None) -> int:
                 f"the band, so the aggregate is carried by a minority\n"
             )
 
+    # #CRITICAL: data integrity: a guard that could not evaluate a book must not
+    # report it clear. score() returns None only when the WHOLE book holds fewer
+    # than the minimum scoreable words, which in a filled storybook means the
+    # fill is empty or truncated: the very defect this guard exists to catch.
+    # Skipping it left the book counted as a pass, so run_guard_battery could
+    # print a green battery for a book no reader could use.
+    # #VERIFY: test_reading_level_unscorable_book_fails_check asserts main()
+    # returns 1 under --check when a book falls below the scoreable floor.
+    if unscorable:
+        sys.stderr.write(
+            f"FAIL reading level: {len(unscorable)} book(s) hold too little prose "
+            f"to score, so this guard cannot say whether they sit in band: "
+            f"{', '.join(sorted(unscorable))}\n"
+        )
     if breached:
         sys.stderr.write(
             f"FAIL reading level: whole-book grade above {args.max_grade}, which is "
             f"the band's own upper edge. Per-node RL-13 findings are advisory and "
             f"will not catch this; the book is too hard for its age band\n"
         )
-    sys.stdout.write(f"{'FAIL' if breached else 'ok  '}: reading level\n")
-    return 1 if (breached and args.check) else 0
+    failed = breached or bool(unscorable)
+    sys.stdout.write(f"{'FAIL' if failed else 'ok  '}: reading level\n")
+    return 1 if (failed and args.check) else 0
 
 
 if __name__ == "__main__":

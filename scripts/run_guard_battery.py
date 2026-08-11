@@ -105,7 +105,13 @@ def battery(
             ("check_graph_structure.py", (book, "--check")),
             ("check_fill_integrity.py", (skeleton, book)),
             ("run_story_gate.py", (book,)),
-            ("check_prose_craft.py", (book,)),
+            # --check is what makes this one gate. Without it check_prose_craft
+            # returns 0 unconditionally (its main() is `if args.check and
+            # breached: return 1`), so recording it gating=True while invoking
+            # it bare put a guard that could not fail into the gating
+            # denominator. check_fill_integrity and run_story_gate below need
+            # no flag; they gate on `return 1 if failed else 0` already.
+            ("check_prose_craft.py", (book, "--check")),
             ("check_reading_level.py", (book, "--check")),
             ("check_label_template.py", (book, "--check")),
         ):

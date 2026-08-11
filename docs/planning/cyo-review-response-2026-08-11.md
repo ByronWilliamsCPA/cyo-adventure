@@ -215,11 +215,25 @@ skeletons, using ADR-011's band means:
 The review's "40,000 to 118,000 words" is exactly right for the top two bands; the maximum is
 118,475.
 
-The asymmetry is the point: at 16+ a guardian is shown roughly **42 times** what any single
-reading exposes. "A few minutes" is achievable only by reviewing flagged passages plus a
-sample, which is what the UI actually optimizes for and what the ADR does not say. We regard
-this as an unresolved gap between a stated safety guarantee and the implemented surface, and
-it is now the strongest argument in the review for amortized formal verification.
+**The median column does not reproduce from the brief's band table; the maxima column does.**
+Multiplying the brief's section 2 node counts by its per-band words-per-node reproduces `Largest`
+exactly in all six bands (32x40, 62x70, 191x100, 250x100, 551x140, 677x175 give 1,280 / 4,340 /
+19,100 / 25,000 / 77,140 / 118,475). The identical method reproduces the median for 3-5 (20x40),
+8-11 (121x100) and 10-13 (149x100), and misses it in the other three: 5-8 gives 3,990 against the
+3,325 above (665 low, -16.7%), 13-16 gives 38,780 against 37,100 (1,680 low, -4.3%), and 16+ gives
+43,400 against 42,700 (700 low, -1.6%). A method that reproduces six of six maxima and three of six
+medians in the same table is an internal inconsistency, not rounding, and we cannot say from here
+which column is wrong: the per-graph word counts a median would be taken over are emitted nowhere in
+the repo. We publish both columns unchanged and flag the gap rather than reconcile it by guess.
+Settling it requires emitting per-graph word counts and taking the median of those directly, instead
+of multiplying a median node count by a band constant.
+
+The asymmetry is the point: at 16+ the **median** book is roughly **15 times** what any single
+reading exposes (42,700 against 2,800), and the **largest** is roughly **42 times** (118,475 against
+2,800). The argument holds at either end. "A few minutes" is achievable only by reviewing flagged
+passages plus a sample, which is what the UI actually optimizes for and what the ADR does not
+say. We regard this as an unresolved gap between a stated safety guarantee and the implemented
+surface, and it is now the strongest argument in the review for amortized formal verification.
 
 ### Q3. What does path telemetry currently capture?
 
