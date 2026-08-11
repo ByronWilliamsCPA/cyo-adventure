@@ -30,9 +30,13 @@ from cyo_adventure.consent import KwsClient
 from cyo_adventure.consent.service import (
     ParentVerifiedOutcome,
     VerificationStartRequest,
+    attempts_since,
     has_usable_verification,
+    open_attempt_started_at,
     record_parent_verified,
+    reportable_verification_status,
     start_parent_verification,
+    verification_status,
 )
 from cyo_adventure.core.config import settings
 from cyo_adventure.core.exceptions import ExternalServiceError
@@ -624,3 +628,143 @@ class TestUsableVerification:
         assert "production" in bound
         assert "verified" in bound
         assert [_USER_ID] in bound
+
+
+class TestOpenAttemptAndAttemptCounts:
+    """The two readers the anti-automation limits on ``POST /consent/kws/start``
+    are built from.
+
+    Both are deliberately laxer than ``has_usable_verification``: that one
+    answers "may this evidence gate a child profile", these answer "has this
+    account already caused an email to be sent". An attempt that will never
+    count as evidence still consumed a real send.
+    """
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_an_open_attempt_is_reported_even_when_test_evidence_is_refused(
+        self, mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """The Test-evidence refusal must NOT be copied onto this reader.
+
+        ``has_usable_verification`` refuses a Test row because a Test
+        verification is not proof of anything. That reasoning does not carry:
+        an unresolved Test attempt still put a real message in a real mailbox,
+        so it must still suppress a second send. Copying the refusal here
+        would turn staging into an unmetered mailer.
+        """
+        monkeypatch.setattr(settings, "kws_environment", "test")
+        monkeypatch.setattr(settings, "kws_accept_test_evidence", False)
+        started = datetime.now(UTC)
+        mock_async_session.scalar.return_value = started
+
+        assert await open_attempt_started_at(mock_async_session, _USER_ID) == started
+        assert mock_async_session.scalar.await_count == 1
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_the_open_attempt_query_is_scoped_to_this_environment_and_sent(
+        self, mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Only an UNRESOLVED attempt in THIS environment blocks a fresh send.
+
+        A resolved attempt is finished business, and an attempt belonging to
+        the other KWS environment can never be resolved by this process's
+        webhook, so treating either as open would wedge the caller out of the
+        flow for the whole window with no way to clear it.
+        """
+        monkeypatch.setattr(settings, "kws_environment", "production")
+        mock_async_session.scalar.return_value = None
+
+        await open_attempt_started_at(mock_async_session, _USER_ID)
+
+        bound = mock_async_session.scalar.await_args.args[0].compile().params.values()
+        assert "production" in bound
+        assert "sent" in bound
+        assert _USER_ID in bound
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_attempts_since_counts_every_status_and_every_environment(
+        self, mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """The hourly cap counts SENDS, so no outcome may exempt an attempt.
+
+        Filtering to ``sent`` would let an attacker reset their own quota by
+        resolving each attempt, and filtering by environment would hand them a
+        second quota after a cutover. Asserted on the compiled parameters
+        because the property is the ABSENCE of those filters: only the user
+        and the window may be bound.
+        """
+        monkeypatch.setattr(settings, "kws_environment", "production")
+        mock_async_session.scalar.return_value = 4
+        since = datetime.now(UTC)
+
+        assert await attempts_since(mock_async_session, _USER_ID, since) == 4
+
+        bound = list(
+            mock_async_session.scalar.await_args.args[0].compile().params.values()
+        )
+        assert _USER_ID in bound
+        assert since in bound
+        assert "production" not in bound
+        assert "sent" not in bound
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_no_rows_counts_as_zero_rather_than_none(
+        self, mock_async_session: AsyncMock
+    ) -> None:
+        """``COUNT`` cannot return NULL, but a mocked or future reader can.
+
+        The caller compares this against a cap, and ``None >= cap`` raises
+        rather than refusing, so the coercion is load-bearing at the call
+        site even though SQL will not exercise it.
+        """
+        mock_async_session.scalar.return_value = None
+
+        assert (
+            await attempts_since(mock_async_session, _USER_ID, datetime.now(UTC)) == 0
+        )
+
+
+class TestReportedVerificationStatus:
+    """The three-valued display fact, and the flag that suppresses it."""
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_verified_outranks_an_open_attempt(
+        self, mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """An adult who verified and then started another attempt is verified.
+
+        Reporting them as pending would route a client that trusts this field
+        to a wait screen that nothing will ever move them off, since the
+        verification they are waiting for already happened.
+        """
+        monkeypatch.setattr(settings, "kws_environment", "production")
+        monkeypatch.setattr(settings, "kws_verification_required", True)
+        mock_async_session.scalar.return_value = uuid.uuid4()
+
+        assert await verification_status(mock_async_session, _USER_ID) == "verified"
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_the_flag_being_off_suppresses_the_state_entirely(
+        self, mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A tier that ran verification and switched it off stops advertising it.
+
+        The rows survive the flag, so the underlying fact would still read
+        "verified"; a surface that reported it would point clients at a flow
+        that no longer gates anything. Asserted on the query count as well,
+        because the short-circuit is what keeps the flag-off tiers paying
+        nothing for a feature they do not run.
+        """
+        monkeypatch.setattr(settings, "kws_verification_required", False)
+        mock_async_session.scalar.return_value = uuid.uuid4()
+
+        state = await reportable_verification_status(mock_async_session, _USER_ID)
+
+        assert state == "none"
+        assert mock_async_session.scalar.await_count == 0

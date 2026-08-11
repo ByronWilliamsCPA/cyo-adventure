@@ -60,7 +60,10 @@ from cyo_adventure.api.schemas import (
     OnboardingView,
     error_responses,
 )
-from cyo_adventure.consent import usable_verification_id
+from cyo_adventure.consent import (
+    reportable_verification_status,
+    usable_verification_id,
+)
 from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.db.integrity import is_authn_subject_conflict
 from cyo_adventure.db.models import (
@@ -208,10 +211,12 @@ async def _record_consent(
     logger.info("onboarding.consent_recorded", user_id=str(user.id))
 
 
-def _view(user: User, *, created: bool) -> OnboardingView:
+async def _view(session: AsyncSession, user: User, *, created: bool) -> OnboardingView:
     """Project a resolved/created user row to the onboarding response.
 
     Args:
+        session: The request unit-of-work session, read to derive the
+            verification state.
         user: The resolved or freshly-created guardian/admin user.
         created: Whether this request provisioned the row.
 
@@ -219,9 +224,14 @@ def _view(user: User, *, created: bool) -> OnboardingView:
         OnboardingView: The family/user identity, the created flag, the
         row's status (so the frontend can show a "your account is awaiting
         approval" state instead of blindly calling GET /v1/me, which
-        require_principal would reject for any non-'active' status), and
-        whether VPC consent is already recorded (Phase 2 / ADR-018 D1).
+        require_principal would reject for any non-'active' status), whether
+        VPC consent is already recorded, and the ADR-018 D1 verification
+        state (Phase 2).
     """
+    # ADR-018 D1: this endpoint, not GET /v1/me, is where a guardian learns
+    # they must verify. Verification is ordered BEFORE admin approval, and
+    # require_principal refuses any user whose status is not 'active', so the
+    # one caller who most needs the answer cannot reach /v1/me to ask for it.
     return OnboardingView(
         family_id=str(user.family_id),
         user_id=str(user.id),
@@ -229,6 +239,7 @@ def _view(user: User, *, created: bool) -> OnboardingView:
         created=created,
         status=user.status,
         consent_recorded=user.consent_accepted_at is not None,
+        verification_status=await reportable_verification_status(session, user.id),
     )
 
 
@@ -457,7 +468,7 @@ async def onboard(
         # sign-in).
         await _record_consent(session, existing, consent, client_ip)
         response.status_code = 200
-        return _view(existing, created=False)
+        return await _view(session, existing, created=False)
 
     bound = await _bind_pending_invite(session, identity)
     if bound is not None:
@@ -465,9 +476,9 @@ async def onboard(
         # same as any other already-provisioned identity.
         await _record_consent(session, bound, consent, client_ip)
         response.status_code = 200
-        return _view(bound, created=False)
+        return await _view(session, bound, created=False)
 
     user, created = await _provision_guardian(session, identity)
     await _record_consent(session, user, consent, client_ip)
     response.status_code = 201 if created else 200
-    return _view(user, created=created)
+    return await _view(session, user, created=created)

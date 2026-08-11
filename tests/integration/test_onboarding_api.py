@@ -540,6 +540,61 @@ async def test_onboarding_links_the_consent_record_to_its_verification(
     assert user.consent_verification_id == attempt_id
 
 
+async def test_onboarding_reports_the_verification_state_the_guardian_must_act_on(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """This response, not GET /v1/me, is where an unapproved guardian learns to verify.
+
+    ADR-018 D1 orders verification BEFORE admin approval, and
+    ``require_principal`` refuses any user whose status is not 'active', so
+    the guardian who most needs this answer cannot reach /v1/me to ask for
+    it. Both readings are asserted in one test on purpose: a 'none' assertion
+    alone would pass just as well against a field hard-coded to 'none', which
+    is exactly the regression this pins.
+    """
+    _ = seed
+    monkeypatch.setattr(settings, "kws_verification_required", True)
+    monkeypatch.setattr(settings, "kws_environment", "test")
+    monkeypatch.setattr(settings, "kws_accept_test_evidence", True)
+    subject = "guardian-awaiting-verification"
+
+    provisioned = await client.post(_ONBOARDING, headers=auth(subject))
+
+    assert provisioned.status_code == 201
+    body = cast("dict[str, object]", provisioned.json())
+    assert body["status"] == "awaiting_approval"
+    assert body["verification_status"] == "none"
+
+    async with sessions() as session:
+        user_id = await session.scalar(
+            select(User.id).where(User.authn_subject == subject)
+        )
+        assert user_id is not None
+        session.add(
+            KwsVerification(
+                id=uuid.uuid4(),
+                user_id=user_id,
+                kws_environment="test",
+                status="verified",
+                requested_at=datetime.now(UTC),
+                resolved_at=datetime.now(UTC),
+                enabled_methods=["credit_card"],
+                location="US",
+            )
+        )
+        await session.commit()
+
+    retried = await client.post(_ONBOARDING, headers=auth(subject))
+
+    assert retried.status_code == 200
+    assert (
+        cast("dict[str, object]", retried.json())["verification_status"] == "verified"
+    )
+
+
 async def test_onboarding_consent_without_a_verification_links_nothing(
     client: AsyncClient,
     sessions: async_sessionmaker[AsyncSession],

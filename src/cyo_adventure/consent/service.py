@@ -36,9 +36,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import UTC, datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 
 from cyo_adventure.consent.external_payload import (
     VerificationCorrelation,
@@ -370,3 +370,151 @@ async def has_usable_verification(
         bool: True when at least one of ``user_ids`` has a usable verification.
     """
     return await usable_verification_id(session, user_ids) is not None
+
+
+async def open_attempt_started_at(
+    session: AsyncSession, user_id: uuid.UUID
+) -> datetime | None:
+    """Return when this adult's most recent unresolved attempt was sent.
+
+    An unresolved attempt is one still in ``sent``: KWS was asked to email the
+    parent and has told us nothing since. The function reports the fact and
+    applies no policy to it, because its two callers want different policies
+    from the same fact. ``api/consent.py`` refuses a fresh send while the
+    attempt is recent, so a double-click cannot mail a parent twice;
+    ``api/me.py`` reports a pending state for an attempt of any age, because
+    an attempt that was never resolved genuinely is still outstanding and the
+    screen that says so is what offers the parent a resend.
+
+    #ASSUME: security: the ``test``-evidence refusal that guards
+    ``usable_verification_id`` deliberately does NOT apply here, and its
+    absence is a decision rather than an oversight. That refusal is about what
+    counts as EVIDENCE about a real parent; an open attempt is not evidence,
+    it is an email in flight, and a Test-environment email reaches a real
+    mailbox exactly as a production one does. Suppressing it here would make
+    the send guard inert on the one tier that runs against Test.
+    #VERIFY: tests/unit/test_kws_verification_service.py::
+    test_an_open_attempt_is_reported_even_when_test_evidence_is_refused.
+
+    Args:
+        session: The caller's session. This function only reads.
+        user_id: The adult whose attempts to consider.
+
+    Returns:
+        datetime | None: The ``requested_at`` of the most recent unresolved
+            attempt in the current KWS environment, or None when there is
+            none.
+    """
+    return await session.scalar(
+        select(KwsVerification.requested_at)
+        .where(
+            KwsVerification.user_id == user_id,
+            KwsVerification.status == KWS_VERIFICATION_STATUS_SENT,
+            KwsVerification.kws_environment == settings.kws_environment,
+        )
+        .order_by(KwsVerification.requested_at.desc())
+        .limit(1)
+    )
+
+
+async def attempts_since(
+    session: AsyncSession, user_id: uuid.UUID, since: datetime
+) -> int:
+    """Count this adult's verification attempts started at or after ``since``.
+
+    #CRITICAL: security: this is the counter behind the per-account send cap,
+    and it counts attempts of EVERY status and every KWS environment on
+    purpose. A failed attempt still sent an email, so excluding it would let a
+    caller loop on failures without limit; and an environment filter would
+    reset the cap for anyone who could influence which environment a row was
+    written under. The table is the counter precisely because rows are
+    inserted before the send and never deleted, so nothing a caller does
+    lowers this number.
+    #VERIFY: tests/integration/test_consent_api.py::
+    test_a_failed_attempt_still_counts_against_the_hourly_cap.
+
+    Args:
+        session: The caller's session. This function only reads.
+        user_id: The adult whose attempts to count.
+        since: The inclusive lower bound on ``requested_at``.
+
+    Returns:
+        int: The number of attempts started in the window.
+    """
+    counted = await session.scalar(
+        select(func.count())
+        .select_from(KwsVerification)
+        .where(
+            KwsVerification.user_id == user_id,
+            KwsVerification.requested_at >= since,
+        )
+    )
+    return counted or 0
+
+
+# Three values rather than a bool: "no attempt" and "an attempt nobody has
+# resolved" need different screens, the first offering a start button and the
+# second a wait-and-resend state. Declared here rather than in api/schemas.py
+# so the wire contract and the function that computes it cannot drift apart.
+VerificationStatus = Literal["verified", "pending", "none"]
+
+
+async def verification_status(
+    session: AsyncSession, user_id: uuid.UUID
+) -> VerificationStatus:
+    """Report where one adult stands in the verification flow.
+
+    ``"verified"`` outranks ``"pending"``: an adult who verified and then
+    started another attempt is verified, and reporting them as pending would
+    send a client that trusts this field to a wait screen they can never
+    leave.
+
+    This is a display fact, never an enforcement one. The gates in
+    ``api/profiles.py`` and ``api/admin_profiles.py`` re-derive what they need
+    from the database at the point of use, so a client that ignores this value
+    loses a screen, not a control.
+
+    Args:
+        session: The caller's session. This function only reads.
+        user_id: The adult to report on.
+
+    Returns:
+        VerificationStatus: ``"verified"``, ``"pending"``, or ``"none"``.
+    """
+    if await has_usable_verification(session, (user_id,)):
+        return "verified"
+    if await open_attempt_started_at(session, user_id) is not None:
+        return "pending"
+    return "none"
+
+
+async def reportable_verification_status(
+    session: AsyncSession, user_id: uuid.UUID
+) -> VerificationStatus:
+    """Report verification state the way a client-facing surface should read it.
+
+    Wraps :func:`verification_status` with the deployment-level question the
+    pure fact deliberately ignores: does this tier run verification at all.
+    With ``kws_verification_required`` off there is no verification screen to
+    route anyone to, so every adult reads ``"none"`` regardless of what rows
+    exist. A tier that ran verification and later switched it off therefore
+    stops advertising the state instead of pointing clients at a flow that no
+    longer gates anything.
+
+    Two surfaces need this same answer and they see different callers:
+    ``GET /v1/me`` serves an approved adult, and ``POST /v1/onboarding``
+    serves the one who is not approved yet and whom ``require_principal``
+    refuses. Sharing one function is what stops those two answers drifting
+    apart while a guardian moves between them.
+
+    Args:
+        session: The caller's session. This function only reads.
+        user_id: The adult to report on.
+
+    Returns:
+        VerificationStatus: ``"none"`` whenever the flag is off; otherwise
+        whatever :func:`verification_status` derives.
+    """
+    if not settings.kws_verification_required:
+        return "none"
+    return await verification_status(session, user_id)

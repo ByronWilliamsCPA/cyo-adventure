@@ -1972,3 +1972,55 @@ class TestKwsEvidenceSettings:
         )
 
         assert settings.kws_accept_test_evidence is True
+
+
+class TestKwsStartLimits:
+    """The two anti-automation bounds on ``POST /api/v1/consent/kws/start``.
+
+    That endpoint sits OUTSIDE the admin approval gate by construction: a
+    guardian must verify before an admin approves them, so the caller is an
+    unapproved account. Its limits are therefore the only thing standing
+    between a stolen-but-valid token and an unmetered mailer pointed at
+    whatever address the IdP issued.
+    """
+
+    @pytest.fixture(autouse=True)
+    def _clear_kws_env(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Keep a developer's own KWS_* exports out of these assertions."""
+        for name in ("KWS_OPEN_ATTEMPT_MINUTES", "KWS_START_MAX_ATTEMPTS_PER_HOUR"):
+            monkeypatch.delenv(name, raising=False)
+
+    @pytest.mark.unit
+    def test_the_open_attempt_window_and_hourly_cap_have_conservative_defaults(
+        self,
+    ) -> None:
+        """Both must bound a tier that never sets either variable.
+
+        Asserted as bounds rather than as exact equalities: the numbers are a
+        judgement call and may be retuned, but a default that let a caller
+        send again immediately, or that allowed a large hourly burst, would
+        make the endpoint's own configuration the vulnerability.
+        """
+        from cyo_adventure.core.config import Settings
+
+        defaults = Settings()
+
+        assert 1 <= defaults.kws_open_attempt_minutes <= 60
+        assert 1 <= defaults.kws_start_max_attempts_per_hour <= 5
+
+    @pytest.mark.unit
+    def test_neither_limit_can_be_configured_away(self) -> None:
+        """``ge=1`` on both, so no deployment can set a limit to "unbounded".
+
+        A zero window would let every request send, and a zero cap would
+        refuse every request; both are configuration mistakes that should
+        fail at startup rather than at the first parent to try to verify.
+        """
+        from pydantic import ValidationError
+
+        from cyo_adventure.core.config import Settings
+
+        with pytest.raises(ValidationError):
+            Settings(kws_open_attempt_minutes=0)
+        with pytest.raises(ValidationError):
+            Settings(kws_start_max_attempts_per_hour=0)

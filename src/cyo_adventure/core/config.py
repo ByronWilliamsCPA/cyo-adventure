@@ -1159,6 +1159,39 @@ class Settings(BaseSettings):
     kws_verification_required: bool = Field(
         default=False, validation_alias="KWS_VERIFICATION_REQUIRED"
     )
+    # How long an unresolved attempt blocks a fresh send for the same adult.
+    #
+    # This is the double-click and retry-loop guard, and its size is a
+    # trade-off between two real parents: one who clicked twice and must not
+    # receive two emails, and one whose email went to spam and needs to try
+    # again without contacting support. Minutes rather than hours because the
+    # second parent has no other recovery path, and the hourly cap below is
+    # what actually bounds the volume.
+    #
+    # #ASSUME: external resources: KWS applies its own limit of ten sends per
+    # hour per email address, so this window and the cap below must stay well
+    # under it; a vendor-side 429 is NOT retried (consent/kws_client.py) and
+    # reaches the parent as a failed attempt.
+    # #VERIFY: tests/unit/test_config.py::TestKwsStartLimits::
+    # test_the_open_attempt_window_and_hourly_cap_have_conservative_defaults.
+    kws_open_attempt_minutes: int = Field(
+        default=15, ge=1, validation_alias="KWS_OPEN_ATTEMPT_MINUTES"
+    )
+    # How many attempts one adult may start in a rolling hour.
+    #
+    # #CRITICAL: security: this is the anti-automation bound on an endpoint
+    # that causes an outbound email, and it is enforced per ACCOUNT rather
+    # than per IP because the middleware limiter (60/min/IP) is orders of
+    # magnitude too loose to protect a mailbox and cannot see who is calling.
+    # The counter is the kws_verification table itself: rows are inserted
+    # before the send and never deleted, so the count is exact, shared by
+    # every replica, and survives a restart, none of which is true of an
+    # in-process counter.
+    # #VERIFY: tests/integration/test_consent_api.py::
+    # test_start_refuses_once_the_hourly_cap_is_reached.
+    kws_start_max_attempts_per_hour: int = Field(
+        default=3, ge=1, validation_alias="KWS_START_MAX_ATTEMPTS_PER_HOUR"
+    )
 
     @field_validator(
         "kws_user_agent",

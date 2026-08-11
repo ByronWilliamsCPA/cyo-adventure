@@ -2435,6 +2435,52 @@ export type KidFlagView = {
 };
 
 /**
+ * KwsVerificationStartBody
+ *
+ * What a parent supplies to begin verification (ADR-018 D1).
+ *
+ * Note what is absent: an email address. The address KWS mails is taken from
+ * the caller's verified token claim (falling back to the address recorded on
+ * their own ``User`` row), never from this body, so the endpoint cannot be
+ * used to mail an arbitrary third party. See ``api/consent.py`` for the full
+ * reasoning.
+ */
+export type KwsVerificationStartBody = {
+    /**
+     * Location
+     */
+    location: string;
+    /**
+     * Language
+     */
+    language?: string;
+};
+
+/**
+ * KwsVerificationStartView
+ *
+ * The attempt a start request created.
+ *
+ * Carries no email address and no KWS URL: the parent receives the link by
+ * email, and the client's job after this response is to wait and poll, not
+ * to navigate anywhere.
+ */
+export type KwsVerificationStartView = {
+    /**
+     * Attempt Id
+     */
+    attempt_id: string;
+    /**
+     * Status
+     */
+    status: string;
+    /**
+     * Requested At
+     */
+    requested_at: string;
+};
+
+/**
  * Length
  *
  * The story-scale (length) tier: a total-word budget, world size.
@@ -2587,6 +2633,14 @@ export type MeResponse = {
      * Profile Ids
      */
     profile_ids: Array<string>;
+    /**
+     * Verification Required
+     */
+    verification_required: boolean;
+    /**
+     * Verification Status
+     */
+    verification_status: 'verified' | 'pending' | 'none';
 };
 
 /**
@@ -2826,6 +2880,10 @@ export type OnboardingView = {
      * Consent Recorded
      */
     consent_recorded: boolean;
+    /**
+     * Verification Status
+     */
+    verification_status: 'verified' | 'pending' | 'none';
 };
 
 /**
@@ -8204,6 +8262,51 @@ export type OnboardApiV1OnboardingPostResponses = {
 };
 
 export type OnboardApiV1OnboardingPostResponse = OnboardApiV1OnboardingPostResponses[keyof OnboardApiV1OnboardingPostResponses];
+
+export type StartKwsVerificationApiV1ConsentKwsStartPostData = {
+    body: KwsVerificationStartBody;
+    path?: never;
+    query?: never;
+    url: '/api/v1/consent/kws/start';
+};
+
+export type StartKwsVerificationApiV1ConsentKwsStartPostErrors = {
+    /**
+     * Domain rule violation (for example, an exhausted quota).
+     */
+    400: ErrorResponse;
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The action conflicts with the resource's current state.
+     */
+    409: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+    /**
+     * A per-account quota was exhausted; the action may succeed later.
+     */
+    429: ErrorResponse;
+};
+
+export type StartKwsVerificationApiV1ConsentKwsStartPostError = StartKwsVerificationApiV1ConsentKwsStartPostErrors[keyof StartKwsVerificationApiV1ConsentKwsStartPostErrors];
+
+export type StartKwsVerificationApiV1ConsentKwsStartPostResponses = {
+    /**
+     * Successful Response
+     */
+    202: KwsVerificationStartView;
+};
+
+export type StartKwsVerificationApiV1ConsentKwsStartPostResponse = StartKwsVerificationApiV1ConsentKwsStartPostResponses[keyof StartKwsVerificationApiV1ConsentKwsStartPostResponses];
 
 export type CreateFlagApiV1FlagsPostData = {
     body: KidFlagCreateBody;

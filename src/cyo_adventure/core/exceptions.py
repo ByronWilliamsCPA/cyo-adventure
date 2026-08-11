@@ -602,6 +602,28 @@ class StateTransitionError(BusinessLogicError):
     """
 
 
+class RateLimitedError(BusinessLogicError):
+    """A per-principal quota on an expensive or outbound action was exhausted.
+
+    A specialization of :class:`BusinessLogicError` for anti-automation
+    limits, mapped to HTTP 429 so a client can tell "try again later" apart
+    from "this will never work" (400) and from "the resource is in the wrong
+    state" (409). Inherits the ``BusinessLogicError`` constructor unchanged.
+
+    Distinct from ``middleware/security.py::RateLimitMiddleware``, which caps
+    requests per client IP across the whole app and never sees who the caller
+    is. This one is raised by a route that knows the principal, so it can
+    bound an action per account rather than per network path.
+
+    Example:
+        >>> raise RateLimitedError(
+        ...     "too many verification emails in the last hour",
+        ...     rule="kws_start_hourly_cap",
+        ...     context={"limit": 3},
+        ... )
+    """
+
+
 # Export all exceptions and public helpers
 __all__ = [
     "APIError",
@@ -614,6 +636,7 @@ __all__ = [
     "ExternalServiceError",
     "ProjectBaseError",
     "ProviderError",
+    "RateLimitedError",
     "ResourceNotFoundError",
     "StateTransitionError",
     "ValidationError",
