@@ -1,0 +1,299 @@
+{
+  "n_open": {
+    "tower_sealed": {
+      "verdict": "DELIVERED",
+      "evidence": "shut since the barges stopped coming, its gates chained and its windows boarded ... Nobody in town remembered why Engineer Maren Pool had sealed it so carefully",
+      "note": "\"sealed it so carefully\" plus the pinned puzzle makes the seal read as deliberate rather than accidental."
+    },
+    "challenge_posted": {
+      "verdict": "DELIVERED",
+      "evidence": "somebody had pinned a fresh sheet of paper to the door anyway: rows of small flags ... arranged like a puzzle waiting for the right eyes",
+      "note": ""
+    },
+    "friends_committed_together": {
+      "verdict": "DELIVERED",
+      "evidence": "They looked at each other and nodded. Together, then.",
+      "note": ""
+    }
+  },
+  "n_start": {
+    "challenge_accepted": {
+      "verdict": "DELIVERED",
+      "evidence": "This was Engineer Pool's puzzle, and Pool had never made anything without a reason, so tearing the note down or guessing wildly felt like the wrong kind of answer",
+      "note": ""
+    }
+  },
+  "n_note": {
+    "patience_proven": {
+      "verdict": "DELIVERED",
+      "evidence": "It had taken the better part of an hour ... but the note had rewarded exactly the kind of patience it demanded",
+      "note": "The decode is shown line by line on the page: flags to numbers, add, carry past twelve."
+    },
+    "route_named_by_note": {
+      "verdict": "DELIVERED",
+      "evidence": "the line resolved into an address more than a riddle: the dry culvert under the towpath, the one that ran dry at low water since the new channel opened",
+      "note": "A specific way in is named; \"what waits there\" is covered only by the culvert being dry and passable, which is thin but sufficient."
+    }
+  },
+  "n_door": {
+    "self_reliance_shown": {
+      "verdict": "DELIVERED",
+      "evidence": "a hatch gave a groan and swung open ... Bel felt the stiff side door shift under her palm at the same moment ... They had found that out themselves",
+      "note": "Both the high way (hatch) and the low way (side door) are opened, and the node insists no note helped."
+    }
+  },
+  "n_keeper": {
+    "keeper_tested_them": {
+      "verdict": "DELIVERED",
+      "evidence": "Issa took her time looking them over, the kind of look that weighs more than it says ... 'Asking straight is half the test, and you just passed it.'",
+      "note": ""
+    },
+    "keeper_offer_earned": {
+      "verdict": "DELIVERED",
+      "evidence": "'Come on, then. I'll row you across myself.'",
+      "note": "The way in is offered outright; the maker half arrives as volunteered knowledge ('Pool built that place to test people, not keep them out') rather than an explicit offer to tell more."
+    }
+  },
+  "n_keyhunt": {
+    "logic_earned": {
+      "verdict": "DELIVERED",
+      "evidence": "they now had proof, engraved in stone, that they understood how the tide arithmetic actually worked, not just how to copy it once",
+      "note": ""
+    }
+  },
+  "n_keeper_story": {
+    "maker_motive_understood": {
+      "verdict": "DELIVERED",
+      "evidence": "she started building little tests into everything ... to find the ones who'd actually take care of what they were given ... 'She wasn't unkind. Just particular.'",
+      "note": "Care and finder-selection are explicit; the decades-ago timeframe is implied by the past-tense history rather than stated."
+    }
+  },
+  "n_window": {
+    "past_the_seal": {
+      "verdict": "DELIVERED",
+      "evidence": "Otto caught the sill, hauled himself through ... They dropped through one after another onto the winch-loft floor, dusty and grinning, properly inside at last",
+      "note": ""
+    }
+  },
+  "n_inside": {
+    "past_the_seal": {
+      "verdict": "DELIVERED",
+      "evidence": "Inside, the lock-house smelled of rope oil and cold stone, and the tide engine breathed somewhere below",
+      "note": ""
+    },
+    "trial_rooms_known": {
+      "verdict": "DELIVERED",
+      "evidence": "Four ways led off the entry hall, each one plainly a test of its own kind. A spiral stair ... a room lined with charts and ledgers ... a narrow catwalk ... a ladder dropped down into a basement",
+      "note": "Climb, study, crossing and descent all named and sensory; none is ranked."
+    }
+  },
+  "n_stairs": {
+    "logic_earned": {
+      "verdict": "PARTIAL",
+      "evidence": "the weir gates below, sluicing in a steady run, long, long, short, long, long, short ... It matched the flags on the door exactly ... they had the pattern memorized cold",
+      "note": "What is earned is a rhythm that matches the door's flags, not the moon-day-plus-posted-hour, carry-past-twelve arithmetic the dial actually tests. A reader who came up the stairs without reading the note carries a memorized rhythm and no way to convert it, so the grasp is not yet working for the dial. The node's own constraint (hint sufficient on its own) is not met."
+    }
+  },
+  "n_study": {
+    "logic_earned": {
+      "verdict": "DELIVERED",
+      "evidence": "hoist levers along the back wall, each stamped with an hour, one through twelve, their handles worn bright wherever a pull lined up with today's moon day carried past twelve",
+      "note": "The wear pattern states the full rule, so the dial is attemptable from this room alone."
+    },
+    "archive_beckons": {
+      "verdict": "DELIVERED",
+      "evidence": "stacked to the ceiling with river charts, decades of them ... Bel could have stayed a week just tracing channels that didn't exist anymore",
+      "note": "The pull is honest and the stay-or-press-on question is live in the choices."
+    }
+  },
+  "n_pendulum": {
+    "logic_earned": {
+      "verdict": "PARTIAL",
+      "evidence": "Depth figures were stamped up the entrance posts, climbing the same way the hoists carried, a number for every step in",
+      "note": "The only link to the cipher is an oblique comparison to the hoists, which live in a different room this path never visits, and the figures are used for pacing in the dark rather than understood. Nothing here states or demonstrates the carry-past-twelve rule, and no moment of grasping it occurs."
+    },
+    "crossing_dares_them": {
+      "verdict": "DELIVERED",
+      "evidence": "Of the four rooms, this one didn't bother hiding what it was asking: cross, or don't",
+      "note": ""
+    },
+    "reward_glimpsed": {
+      "verdict": "DELIVERED",
+      "evidence": "something glinting on a shelf at the far side, small and deliberately placed, clearly set aside for whoever proved brave enough to reach it",
+      "note": ""
+    }
+  },
+  "n_basement": {
+    "logic_earned": {
+      "verdict": "DELIVERED",
+      "evidence": "its margins crowded with scrawled sums, moon days added to hours, carried past twelve ... Ash traced the working with one finger until it made sense",
+      "note": ""
+    }
+  },
+  "n_clockface": {
+    "at_the_dial": {
+      "verdict": "DELIVERED",
+      "evidence": "The great tide board took up most of the top room: a broad brass dial, ringed with twelve hour-marks ... Whoever answered correctly would feel the mechanism agree",
+      "note": "The examiner role is explicit in how the board responds to right answers and to force."
+    },
+    "dial_test_live": {
+      "verdict": "PARTIAL",
+      "evidence": "A hand-lettered plate beneath both rings spelled it out plainly ... add the moon day to the posted hour, carry past twelve, and set the hands there",
+      "note": "What to set is stated plainly by the dial's own plate. The other half, that guessing has a cost, is not on the markings: it is narration that the board 'gave no sign that hoping had ever once worked,' which is futility, not a cost. The stated cost belongs to forcing, a different bet."
+    }
+  },
+  "n_setcorrect": {
+    "test_passed": {
+      "verdict": "DELIVERED",
+      "evidence": "the whole board gave a firm, satisfied click ... Whatever this trial had wanted from them, it had just admitted they'd given it",
+      "note": "The sum is worked on the page from the plate and the posted slip, so it holds on paths that never read the note."
+    }
+  },
+  "n_setjam": {
+    "test_forced": {
+      "verdict": "DELIVERED",
+      "evidence": "Otto put both hands on the crank and heaved without waiting on any sum ... It just locked, hands frozen half a turn short, gears grinding to a dead stop",
+      "note": ""
+    }
+  },
+  "n_backpanel": {
+    "second_test_found": {
+      "verdict": "DELIVERED",
+      "evidence": "Behind it sat a second, smaller plate, its own miniature ring of hour-marks no wider than a coin ... just condensed",
+      "note": ""
+    }
+  },
+  "n_vault": {
+    "sanctum_entered": {
+      "verdict": "DELIVERED",
+      "evidence": "Past the seam, the strongroom was small and dry, built to survive any flood the river ever threw at it",
+      "note": "Written as already through, without naming which test opened it."
+    },
+    "sanctum_seen": {
+      "verdict": "DELIVERED",
+      "evidence": "Maren Pool's last workbook sat open on a stand, ending mid-page in a letter ... a model of the lock-house itself ... a rank of narrow pipes",
+      "note": "Letter plus modest things are all seen; that they are meant for everyone is carried by 'keep the river honest' and 'Nothing here was worth carrying off,' implied rather than stated."
+    }
+  },
+  "n_end_library": {
+    "composure_kept": {
+      "verdict": "DELIVERED",
+      "evidence": "nobody wanted to leave, and the tide board upstairs sat untouched and unbothered by it",
+      "note": "Staying is framed as absorption, never as failure or shaming."
+    },
+    "trial_reopens": {
+      "verdict": "DELIVERED",
+      "evidence": "The trial would still be there tomorrow, patient as everything else Pool had built, and so would they",
+      "note": ""
+    }
+  },
+  "n_end_giveup": {
+    "composure_kept": {
+      "verdict": "DELIVERED",
+      "evidence": "They didn't call it giving up ... nobody looked over their shoulder twice",
+      "note": "Otto's swallowed argument reads as agreement, not quarrel or shame."
+    },
+    "trial_reopens": {
+      "verdict": "DELIVERED",
+      "evidence": "The lock-house wasn't going anywhere, and neither was that shelf",
+      "note": ""
+    }
+  },
+  "n_end_timeout": {
+    "composure_kept": {
+      "verdict": "DELIVERED",
+      "evidence": "'That old thing hates being spun,' she said, not unkindly ... She waited while they collected themselves, in no hurry to send them off scolded",
+      "note": ""
+    },
+    "trial_reopens": {
+      "verdict": "DELIVERED",
+      "evidence": "The board sat still and patient behind her, exactly as unsolved as it had been five minutes earlier, waiting for someone willing to work it out properly",
+      "note": ""
+    }
+  },
+  "n_end_stuck": {
+    "composure_kept": {
+      "verdict": "DELIVERED",
+      "evidence": "'It's not us,' Ash said, more statement than question, and Otto had to agree",
+      "note": "No blame lands on whoever forced it; they leave planning the retake."
+    },
+    "trial_reopens": {
+      "verdict": "DELIVERED",
+      "evidence": "The dial stayed latched and settled, exactly as they'd found it, while Bel, Otto, and Ash started down the stairs already comparing notes on what a proper toolkit for a return trip ought to hold",
+      "note": "Nothing is used up and a second attempt is explicitly planned, though the same paragraph first has the gears 'locking solid again,' which sits awkwardly against 'exactly as they'd found it.'"
+    }
+  },
+  "n_end_secret": {
+    "workshop_found": {
+      "verdict": "DELIVERED",
+      "evidence": "up into a narrow room tucked under the roofline ... a little garden of reeds ... fed drop by drop from a cistern rigged decades ago and somehow, impossibly, still dripping true",
+      "note": "Reached from behind the hidden plate, and alive rather than preserved."
+    },
+    "stewardship_earned": {
+      "verdict": "DELIVERED",
+      "evidence": "the model gate had three new fittings it hadn't had an hour before, and three new hands that already knew where the fourth one went",
+      "note": "The ongoing role is shown by their taking up the unfinished work and knowing the next piece, rather than being named as a duty; the continuation is unmistakable."
+    },
+    "trust_bond_formed": {
+      "verdict": "PARTIAL",
+      "evidence": "Otto found the next piece almost by instinct, and Ash the one after that",
+      "note": "The wordless three-way work gestures at a bond, but nothing in the node frames the shared trial as having forged a trust between them, or as lasting. The node's attention is on the room and the work."
+    }
+  },
+  "n_end_hero": {
+    "passing_made_public": {
+      "verdict": "DELIVERED",
+      "evidence": "By the next tide, the whole of Eelgate knew three kids had cracked Pool's old test, and the harbor master rang the flood pipes' six notes off the strongroom wall",
+      "note": ""
+    },
+    "test_passed": {
+      "verdict": "DELIVERED",
+      "evidence": "the whole of Eelgate knew three kids had cracked Pool's old test",
+      "note": "Established by this node rather than carried in, which matters because two of the three routes into n_vault (the jam remedy and the hidden panel) never passed the dial on its own terms."
+    },
+    "maker_motive_understood": {
+      "verdict": "DELIVERED",
+      "evidence": "this lock-house was never meant to guard treasure, only to sort out who could be trusted with the machinery that kept the river honest",
+      "note": "Stated by the letter itself, so it holds on paths that never met the keeper."
+    },
+    "trust_bond_formed": {
+      "verdict": "PARTIAL",
+      "evidence": "Bel, Otto, and Ash looked at each other, not needing to say anything",
+      "note": "One line of wordless understanding is all the friends get; the trust the node actually dramatizes is Issa's trust in them (the spare key), which is keeper trust, not a lasting bond among the three."
+    }
+  },
+  "n_end_keepsake": {
+    "passing_kept_private": {
+      "verdict": "DELIVERED",
+      "evidence": "'Nobody else needs to know we did this,' Bel said, and it wasn't a question",
+      "note": "Reads as guardianship: the letter and pipes are left, the model returned, the panel resealed."
+    },
+    "trust_bond_formed": {
+      "verdict": "DELIVERED",
+      "evidence": "shook on it right there on the towpath, solemn as a courtroom, and then ruined the moment laughing about who'd flinched first crossing the seam",
+      "note": "A sworn pact over the keepsake, with the ease of old friends behind it."
+    }
+  },
+  "n_end_caught": {
+    "record_set_straight": {
+      "verdict": "DELIVERED",
+      "evidence": "Otto handed the model back without being asked twice ... just waited while he returned it to its shelf, exactly where it belonged",
+      "note": "Owning it is done by action in front of the keeper, without excuse, after his own 'It's not stealing' convinces nobody."
+    },
+    "keeper_intervenes": {
+      "verdict": "DELIVERED",
+      "evidence": "They made it as far as the winch loft before Warden Issa met them on the ladder, arms crossed, entirely unsurprised",
+      "note": ""
+    },
+    "composure_kept": {
+      "verdict": "DELIVERED",
+      "evidence": "Issa didn't make a speech out of it ... 'Come back and do it properly sometime,'",
+      "note": "Firm, brief, no lecture and no shaming."
+    },
+    "trial_reopens": {
+      "verdict": "DELIVERED",
+      "evidence": "'Come back and do it properly sometime,' she said, already heading down the ladder",
+      "note": ""
+    }
+  }
+}

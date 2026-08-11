@@ -1,0 +1,318 @@
+{
+ "schema_version": "2.0",
+ "id": "graph_E",
+ "version": 1,
+ "title": "The Kite That Remembered",
+ "metadata": {
+  "age_band": "10-13",
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 5.5,
+   "tolerance": 1.5
+  },
+  "tier": 1,
+  "themes": [
+   "friendship",
+   "mystery",
+   "community",
+   "ingenuity"
+  ],
+  "estimated_minutes": 20,
+  "ending_count": 7,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "mild"
+  },
+  "topology": "branch_and_bottleneck",
+  "production_eligible": false
+ },
+ "variables": [],
+ "start_node": "n_start",
+ "nodes": [
+  {
+   "id": "n_start",
+   "body": "Every October, the town of Thistledown turns its whole hillside over to kites. Tents ring Meadow Hill, banners snap in the wind, and paper dragons bob over the grass. You have come with your two best friends, Priya and Ben, though right now they have wandered off toward the food stalls. A gust catches your sleeve and tugs you toward a striped tent at the edge of the field, its flaps painted with spirals and stars. At the same time, a loudspeaker crackles that kite-flying contest signups close at noon, and someone has dropped a folded paper map right at your feet. Where do you go first?",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_tent", "label": "Peer into the striped tent", "target": "n_tent"},
+    {"id": "c_signup", "label": "Hurry to sign up for the contest", "target": "n_signup"},
+    {"id": "c_map", "label": "Pick up the dropped map", "target": "n_map"}
+   ]
+  },
+  {
+   "id": "n_tent",
+   "body": "Inside the tent, shelves sag under spools of string, bent wire frames, and jars of buttons. An old woman with silver braids and ink-stained fingers looks up from a half-built box kite. She introduces herself as Aunt Odette, the festival's oldest kite-maker, and asks what brings you in. When you mention the wind pulled you here, she laughs and says the wind has always had opinions in this town. She nods toward a dusty photograph pinned to a post: a walled garden, its gate wrapped in vines, that nobody in Thistledown seems to remember anymore. She looks like she is waiting for you to ask about it.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_ask_legend", "label": "Ask her about the garden in the photograph", "target": "n_legend"},
+    {"id": "c_offer_help", "label": "Offer to help her finish the box kite", "target": "n_fixkite"}
+   ]
+  },
+  {
+   "id": "n_signup",
+   "body": "The signup table is a folding desk staffed by a harried volunteer checking names off a clipboard. Just ahead of you, twins named Jaz and Theo are arguing about whether to enter as a pair or separately, their matching red kites tucked under their arms. The volunteer tells you contestants can register solo or find a partner before noon, and either way you will need practice time on the flying field before the afternoon heat. Jaz catches your eye and asks, only half-joking, whether you would rather team up with them or go it alone and risk losing to their spectacular dive maneuver.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_partner", "label": "Team up with Jaz and Theo", "target": "n_partner"},
+    {"id": "c_solo", "label": "Register and practice on your own", "target": "n_solo"}
+   ]
+  },
+  {
+   "id": "n_map",
+   "body": "The map is hand-drawn in faded pencil, showing Meadow Hill, a narrow footbridge over Thistle Creek, and a shape marked only with a question mark near an old windmill. Someone has scrawled a note in the corner: \"Ask the librarian if you get stuck.\" You turn the paper over, but there is nothing else, no name, no date, just careful lines like someone once cared very much about this exact route. The footbridge is visible from where you stand, its planks silvery with age. The library tent, striped blue and white, sits closer, near the food stalls where Priya and Ben disappeared earlier.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_cross_bridge", "label": "Head straight for the footbridge", "target": "n_bridge"},
+    {"id": "c_ask_town", "label": "Take the map to the library tent first", "target": "n_asktown"}
+   ]
+  },
+  {
+   "id": "n_legend",
+   "body": "Aunt Odette's voice drops, like she is telling a favorite story rather than town history. Decades ago, her older sister Maren kept a garden behind the windmill, famous for roses that only bloomed when the autumn kites flew. When Maren moved away, the garden gate was locked, and slowly the town simply forgot it was there, the way people forget a song they used to hum. Odette still has the spare key somewhere, she says, patting her pockets uselessly, but she remembers a riddle carved into an old kite spar that once hung by the gate, something about shadows and the hour the wind turns.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_solve_riddle", "label": "Ask her to recite the riddle", "target": "n_riddle"},
+    {"id": "c_go_windmill", "label": "Head straight to the windmill to see for yourself", "target": "n_windmill"}
+   ]
+  },
+  {
+   "id": "n_fixkite",
+   "body": "You spend the next half hour threading string through Odette's box kite frame while she talks. Her hands shake slightly these days, she admits, which makes the fine knots difficult. When the kite is finally sturdy, she turns it over in her hands, satisfied, and presses a small brass charm shaped like a spiral into your palm. It came off her sister Maren's old kite years ago, she says, and it always seemed to point toward something, though she never figured out what. She mentions, almost offhand, that there used to be a riddle carved near the old windmill gate, back when the garden was still tended.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_show_charm", "label": "Ask her to explain the riddle she remembers", "target": "n_riddle"},
+    {"id": "c_go_windmill2", "label": "Head to the windmill with the charm", "target": "n_windmill"}
+   ]
+  },
+  {
+   "id": "n_partner",
+   "body": "Jaz and Theo turn out to be easier to like than you expected, trading you tips on wind reading in exchange for your steadier hands with knots. Between practice throws, Theo mentions that their grandmother used to talk about a hidden garden somewhere past the windmill, back before it got so overgrown nobody could find the gate. Jaz rolls their eyes at the old story, but you cannot stop thinking about it. The practice field stretches out ahead, full of dipping kites and shouted advice, and the windmill's broken sails are just visible on the ridge beyond it, turning slowly in the wind.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_practice", "label": "Focus on kite practice with your new team", "target": "n_kitefield"},
+    {"id": "c_curious_legend", "label": "Ask Aunt Odette about the garden legend", "target": "n_legend"}
+   ]
+  },
+  {
+   "id": "n_solo",
+   "body": "Flying solo means no one to blame but yourself when your kite nosedives into the grass, but it also means you can wander wherever the wind pulls you. After your third crash, you notice Aunt Odette's striped tent nearby, its flap open, and hear the soft clink of tools. She looks like she could use an extra pair of hands, and it occurs to you that helping her might teach you more about kites than any amount of solo practice. Or you could keep at it here on the open field, where the contest judges are already starting to time the early flyers.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_practice2", "label": "Keep practicing alone on the field", "target": "n_kitefield"},
+    {"id": "c_help_odette", "label": "Go help Aunt Odette in her tent", "target": "n_fixkite"}
+   ]
+  },
+  {
+   "id": "n_bridge",
+   "body": "The footbridge groans under your feet, though it holds steady, planks silvered and creek water chattering below. Halfway across, you spot Thistle Creek bending away toward a stand of birch trees, and, on the far bank, a trail that looks barely used. A woman with a cart of paperback books is setting up near the bridge's near end, calling out that she is heading back to the library tent if anyone wants directions read aloud. You could keep crossing toward the creek trail, or turn back and follow her to ask about the mysterious question mark on your map.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_cross_now", "label": "Keep crossing toward the creek trail", "target": "n_creek"},
+    {"id": "c_backtrack_town", "label": "Turn back and ask about the map", "target": "n_asktown"}
+   ]
+  },
+  {
+   "id": "n_asktown",
+   "body": "The library tent smells like old paper and cider. A librarian named Ms. Whitfield examines your map through half-moon glasses and taps the question mark near the windmill. \"That's the old Alders garden,\" she murmurs, \"though I haven't heard anyone mention it in years.\" Before she can say more, a shopkeeper from the stall next door, Mr. Dutta, leans in, overhearing, and insists he knows a shortcut through the creek path that Ms. Whitfield's directions always miss. The two of them start good-naturedly arguing about which route is faster, leaving you to decide whose advice to actually follow.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_librarian", "label": "Follow Ms. Whitfield's directions", "target": "n_librarian"},
+    {"id": "c_shopkeeper", "label": "Follow Mr. Dutta's shortcut", "target": "n_shopkeeper"}
+   ]
+  },
+  {
+   "id": "n_shopkeeper",
+   "body": "Mr. Dutta leads you along a shortcut behind the stalls, chatting the whole way about how his grandfather used to trade vegetables for roses grown behind the windmill, back when the garden gate still opened. He is fuzzy on details but certain about one thing: the gate always opened easiest right as the afternoon wind turned, whatever that means. The path splits ahead, one branch dropping down to Thistle Creek, the other climbing straight toward the windmill's turning sails on the ridge. Mr. Dutta shrugs and says both get you there eventually, so the choice is yours.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_shop_creek", "label": "Follow the path down to the creek", "target": "n_creek"},
+    {"id": "c_shop_windmill", "label": "Climb straight toward the windmill", "target": "n_windmill"}
+   ]
+  },
+  {
+   "id": "n_riddle",
+   "body": "The riddle, once you hear it whole, sounds almost like a nursery rhyme: \"When the tall sail's shadow touches the stone, and the wind swings round from east to west, seek the door that no one else has shown, and the garden will forgive the rest.\" It is not much to go on, but the windmill's sails do cast long shadows in the afternoon, and the wind at Thistledown is famous for shifting right before the contest each year. You could head straight for the windmill to test the riddle's timing, or first find Priya and Ben, since a mystery like this seems better solved with friends.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_windmill3", "label": "Head to the windmill to test the riddle", "target": "n_windmill"},
+    {"id": "c_gather_friends", "label": "Go find Priya and Ben first", "target": "n_findfriends"}
+   ]
+  },
+  {
+   "id": "n_windmill",
+   "body": "The windmill looms at the top of the ridge, its sails cracked but still turning lazily, wood silvered by years of salt wind. Ivy has swallowed most of the base, and a heavy door, bound in flaking iron, sits shut beneath a stone lintel carved with a faded spiral, the same shape as Odette's charm. There is no visible lock, only a thick tangle of ivy that might be hiding something, and a narrow path around back where you can hear someone humming, off-key but cheerful, like a person used to working alone. Whatever is behind that door, you are close enough now to find out.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_search_ivy", "label": "Search through the ivy for a hidden latch", "target": "n_ivy_key"},
+    {"id": "c_knock_door", "label": "Follow the humming around back", "target": "n_millkeeper"}
+   ]
+  },
+  {
+   "id": "n_kitefield",
+   "body": "Back on the open field, the wind has real opinions today, gusting hard enough to make even steady flyers stumble. Your kite catches a sudden updraft and yanks the spool right out of your hands, string spooling out fast toward the ridge. You could chase it, which would take you straight toward the old windmill, or let it go and hustle back to make the contest's afternoon slot before the sign-up sheet closes. Somewhere behind you, a horn sounds, the two-minute warning for late entries, sharp and sudden over the noise of flapping fabric and cheering families.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_enter_contest", "label": "Race back to make the contest slot", "target": "n_contestday"},
+    {"id": "c_windy_gust", "label": "Chase your kite toward the windmill", "target": "n_windmill"}
+   ]
+  },
+  {
+   "id": "n_librarian",
+   "body": "Ms. Whitfield walks briskly, still talking, explaining that the Alders windmill and its garden belonged to a family that left Thistledown generations ago, though she remembers her own grandmother mentioning a hidden entrance \"shy of the front gate.\" She is not sure what that means exactly, only that the family liked riddles more than plain directions. At a fork in the path, she points one way toward Thistle Creek, saying it loops around to the garden's back wall, and the other way straight up toward the windmill itself, where, she admits, she has not actually been in years.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_creek2", "label": "Follow the creek path around back", "target": "n_creek"},
+    {"id": "c_windmill4", "label": "Climb straight up to the windmill", "target": "n_windmill"}
+   ]
+  },
+  {
+   "id": "n_creek",
+   "body": "Thistle Creek burbles over smooth stones, some of them clearly placed on purpose, forming stepping stones that spell out a faint, weathered rhyme when you squint at the shapes: something about following water to find what waits. Downstream, the creek curves out of sight past a stand of birches, a hidden path suggested by trampled grass. Upstream, you can hear voices, laughter you recognize immediately as Priya and Ben, probably skipping stones somewhere near the bank. You could follow the creek further to see where the rhyme leads, or go find your friends and bring them along for whatever happens next.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_hiddenpath", "label": "Follow the creek further downstream", "target": "n_hiddenpath"},
+    {"id": "c_findfriends2", "label": "Go find Priya and Ben", "target": "n_findfriends"}
+   ]
+  },
+  {
+   "id": "n_ivy_key",
+   "body": "You part the ivy carefully, mindful of the bees droning somewhere nearby, and your fingers find something cold and metal tangled in the leaves: an old iron key, spotted with rust but still solid, hanging from a loop of wire someone tied to a root ages ago. It fits, just barely, into a keyhole hidden beneath the stone lintel's spiral carving. The door groans as it gives way, swinging inward on hinges that clearly have not moved in years, revealing a dim, dusty room stacked with gears, wood shavings, and the unmistakable smell of old paper.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_open_door1", "label": "Step inside the windmill", "target": "n_secretroom"}
+   ]
+  },
+  {
+   "id": "n_millkeeper",
+   "body": "Around back, you find an elderly man in a canvas apron carefully oiling a gear the size of a dinner plate, humming to himself. He introduces himself as Mr. Alders, and when you mention the ivy-covered door, his eyebrows shoot up; he has kept this windmill running for thirty years and never once gotten that door open himself. Curious now, he sets down his oil can and leads you around front, produces a battered ring of keys from his apron, and after a few tries, one clicks. The door swings open onto a dim room full of gears and dust, and he grins like a kid.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_open_door2", "label": "Step inside with Mr. Alders", "target": "n_secretroom"}
+   ]
+  },
+  {
+   "id": "n_contestday",
+   "body": "The contest field buzzes with nervous energy as judges walk the line, checking string tension and asking each flyer to demonstrate a launch. When your turn comes, the wind cooperates beautifully, lifting your kite into a clean, high arc that draws a few appreciative claps. Just as you settle into a rhythm, you notice Jaz, a few spots down, wrestling with a badly tangled line, their kite dipping dangerously close to the ground while Theo tries and fails to help. You have maybe thirty seconds before the judges reach your spot to score your flight. Do you keep your kite steady and focused, or cross over to help untangle theirs?",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_fly_best", "label": "Keep your kite steady for the judges", "target": "n_end_contest_win"},
+    {"id": "c_help_rival", "label": "Cross over to help untangle their line", "target": "n_end_contest_kindness"}
+   ]
+  },
+  {
+   "id": "n_hiddenpath",
+   "body": "The path downstream narrows, brushing past ferns and the papery bark of birch trees, until it opens onto a mossy clearing where a low stone wall runs along the edge of the woods. Birds you do not recognize flit between the branches, and a family of rabbits freezes, then bolts, at the edge of the clearing. Half-hidden in the wall, a wooden gate sits slightly ajar, vines curling through its slats, clearly the same garden from Odette's old photograph. You could slip through and finally see it for yourself, or linger here, notebook in hand, cataloguing all the wildlife this quiet, forgotten corner has kept safe.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_naturalist", "label": "Stay and catalogue the clearing's wildlife", "target": "n_end_naturalist"},
+    {"id": "c_gate1", "label": "Slip through the gate into the garden", "target": "n_gardengate"}
+   ]
+  },
+  {
+   "id": "n_secretroom",
+   "body": "Inside, the windmill's gears fill most of the round room, still and silent except for dust motes drifting in a shaft of light from a high window. Shelves along the wall hold rolled papers, a rusted watering can, and a wooden box carved with the same spiral as the charm in your pocket. Through the high window, you can just make out a patch of green beyond the windmill's base, walls of ivy-covered stone enclosing something the rest of the town seems to have forgotten entirely. On the workbench, half-buried under sawdust, a set of blueprints shows a kite frame wired strangely, like it was built to do more than fly.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_look_window", "label": "Peer through the high window at the garden", "target": "n_gardenview"},
+    {"id": "c_take_blueprint", "label": "Study the strange blueprint on the workbench", "target": "n_blueprint"}
+   ]
+  },
+  {
+   "id": "n_gardenview",
+   "body": "From the high window, the garden spreads out below in tangled greens and one stubborn patch of roses still clinging to a trellis, exactly like the photograph in Odette's tent. It is real, not just a story, overgrown but unmistakably alive, waiting behind walls nobody has bothered to climb in years. You could climb down and find your way to whatever gate leads inside, or you could run and fetch Aunt Odette first, since it seems wrong somehow to be the one who finds her sister's garden without her standing there to see it for herself.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_go_garden", "label": "Climb down and find the garden gate", "target": "n_gardengate"},
+    {"id": "c_tell_odette1", "label": "Run and bring Aunt Odette to see", "target": "n_tellodette"}
+   ]
+  },
+  {
+   "id": "n_blueprint",
+   "body": "The blueprint shows a box kite rigged with small bells along its spine and a tail weighted just so, designed, according to careful handwriting in the margin, to \"ring the garden awake\" when flown at the right hour. It looks like exactly the kind of project Odette would love, half engineering and half magic trick. You could gather the parts scattered around the workshop and build the kite right now, following the plan to the letter, or you could bring the blueprint straight to Odette, since it is clearly her sister's handwriting in the margins, and she deserves to be the one who understands it first.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_build_kite", "label": "Build the bell kite following the blueprint", "target": "n_end_garden_open"},
+    {"id": "c_tell_odette2", "label": "Bring the blueprint to Aunt Odette", "target": "n_tellodette"}
+   ]
+  },
+  {
+   "id": "n_tellodette",
+   "body": "Odette follows you back to the windmill at a pace much quicker than her cane suggests she should manage, and when she sees the garden through the gap in the wall, she goes very quiet. This was Maren's, she says finally, voice thick, and she never thought she would see it again in her lifetime. She traces the spiral on the old blueprint, or the charm, whichever you brought her, with a shaking finger, and for a moment looks decades younger. She could use your help easing the gate open together, both of you working the rusted latch, or she might prefer a quiet moment here alone first, gathering herself before she goes any further.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_open_together", "label": "Help her open the gate together", "target": "n_gardengate"},
+    {"id": "c_odette_alone", "label": "Give her a quiet moment, and let her go alone", "target": "n_end_odette"}
+   ]
+  },
+  {
+   "id": "n_gardengate",
+   "body": "The garden gate is exactly where the riddle promised, wedged into the stone wall, its wood soft with age but still holding together under a mat of vines. A rusted latch keeps it shut, and beneath it, faintly, someone has carved musical notes alongside the spiral symbol, as though the gate always answered to more than just a key. The afternoon wind picks up right on schedule, swinging around from east to west exactly as the old rhyme promised, rustling every leaf in the wall at once. You could try whistling the simple tune carved beside the latch, or put your shoulder into the gate and force it open by hand.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_whistle", "label": "Whistle the tune carved beside the latch", "target": "n_end_gardenfound"},
+    {"id": "c_force_gate", "label": "Push hard and try to force the gate open", "target": "n_stuckgate"}
+   ]
+  },
+  {
+   "id": "n_stuckgate",
+   "body": "The gate does not budge for brute force alone, the old wood swollen tight in its frame and the rusted latch refusing to give an inch no matter how you shove. You could step back, catch your breath, and simply wait, since the wind is still swinging steadily toward evening and the rhyme did mention the hour the wind turns. Or you could try the rusty iron key from the ivy, or the brass charm from Odette's pocket, whichever you happen to be carrying, working it gently into the old latch to see if either was ever meant to fit there after all.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_wait_wind", "label": "Step back and wait for the evening wind", "target": "n_end_wind"},
+    {"id": "c_try_key", "label": "Try working your key or charm into the latch", "target": "n_end_gardenfound"}
+   ]
+  },
+  {
+   "id": "n_findfriends",
+   "body": "You find Priya and Ben exactly where you expected, sprawled in the grass near the creek, arguing cheerfully about whose paper airplane flies farther. They perk up the moment you mention a hidden garden and a locked windmill, both talking over each other with questions before you have even finished explaining. Priya grabs her bag, already certain this beats the food stalls, and Ben starts sketching a rough map of the ridge on the back of a napkin, just in case. With the three of you together, the windmill on the hill and the garden wall past the creek both suddenly feel like places worth heading toward right now.",
+   "is_ending": false,
+   "choices": [
+    {"id": "c_windmill5", "label": "Lead your friends up to the windmill", "target": "n_windmill"},
+    {"id": "c_gate2", "label": "Lead your friends to the garden gate", "target": "n_gardengate"}
+   ]
+  },
+  {
+   "id": "n_end_garden_open",
+   "body": "You and whoever helped gather the parts spend the rest of the afternoon assembling the bell kite exactly as the blueprint shows, tying each small bell with careful knots. When you finally launch it from the windmill's ridge, the wind catches it perfectly, and the bells ring out clear and bright over the garden wall. Somewhere below, the old latch trembles loose, as if it had simply been waiting to hear that sound again. By evening, half of Thistledown has wandered up the hill to see roses blooming behind a wall nobody remembered, and Aunt Odette stands at the center of it, laughing, both hands pressed to her cheeks.",
+   "is_ending": true,
+   "ending": {"title": "The Garden Wakes"}
+  },
+  {
+   "id": "n_end_odette",
+   "body": "You wait outside while Odette steps through the gap in the wall alone, her footsteps slow and careful among the overgrown roses. When she finally calls you in, her eyes are red but her smile is wide and real. She tells you stories the whole walk back down the hill, about her sister Maren, about roses that only bloomed for kite season, about a childhood you can almost picture from the way she describes it. By the time you reach the festival again, she has already decided to reopen the garden properly, with your help, as Thistledown's newest, oldest tradition.",
+   "is_ending": true,
+   "ending": {"title": "Maren's Garden"}
+  },
+  {
+   "id": "n_end_gardenfound",
+   "body": "The tune comes out a little wobbly at first, but on the third try the notes land clean, and the old latch answers with a soft click that seems almost too polite for such a stubborn gate. It swings open on its own, unhurried, revealing the garden in full: roses tangled with ivy, a stone bench half swallowed by moss, and afternoon light slanting gold through the leaves. Word spreads fast across Meadow Hill, and by sunset half the festival has wandered up to see it, tracking mud and wonder through the grass. Thistledown, it turns out, was very good at forgetting, and even better at remembering.",
+   "is_ending": true,
+   "ending": {"title": "The Whistled Gate"}
+  },
+  {
+   "id": "n_end_wind",
+   "body": "You settle onto the grass just outside the wall and wait, watching the light shift slowly gold as the afternoon wears on. Right on schedule, the wind swings around, sweeping down off the ridge and rattling every leaf on the vines at once, exactly the way the old rhyme promised. The latch gives with a soft creak, no key needed at all, just patience and the season doing what it has always done. You step through into a quiet garden bathed in low sun, roses nodding in the breeze, and for a moment it feels like the whole hillside is holding its breath alongside you.",
+   "is_ending": true,
+   "ending": {"title": "Waiting for the Turn"}
+  },
+  {
+   "id": "n_end_contest_win",
+   "body": "Your kite holds its arc perfectly as the judges reach you, dipping and rising with a steadiness that draws a small crowd of onlookers. When the scores are read out that evening from the stage, your name comes first, and the crowd's applause feels louder than anything you expected. Priya and Ben cheer loud enough to embarrass you, and even Jaz, tangled line finally sorted out, claps and admits your flight deserved it. You walk home with a ribbon pinned to your jacket and Meadow Hill glowing gold behind you, already planning next year's kite before this one has even landed.",
+   "is_ending": true,
+   "ending": {"title": "Best Flight of the Day"}
+  },
+  {
+   "id": "n_end_contest_kindness",
+   "body": "You cross the field fast, catching Jaz's tangled line before it snaps, and the two of you work the knots loose together while Theo calls out directions. By the time the line is clear, the judges have moved on, and your own scoring window has quietly closed. Jaz looks stricken, insisting you should not have given up your shot, but their kite lifts clean and steady a moment later, and their grin makes it hard to feel much regret. The contest ribbon goes to someone else this year, but Jaz and Theo insist on sharing their victory snacks with you anyway, and it turns out that is plenty.",
+   "is_ending": true,
+   "ending": {"title": "A Better Kind of Win"}
+  },
+  {
+   "id": "n_end_naturalist",
+   "body": "You settle onto the mossy wall with your notebook, and the longer you stay quiet, the more the clearing reveals: a woodpecker working steadily at a birch trunk, a fox that pauses just long enough to study you before vanishing, dragonflies stitching patterns over the creek. You fill page after page with sketches and notes, and by the time the festival horn sounds far below, you have documented more wildlife than you knew Thistledown even had. You never do open the garden gate today, but you leave certain you will be back, notebook ready, to see what else this quiet corner has been keeping safe.",
+   "is_ending": true,
+   "ending": {"title": "The Hidden Clearing"}
+  }
+ ]
+}

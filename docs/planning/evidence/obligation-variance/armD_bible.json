@@ -1,0 +1,84 @@
+{
+  "bible_version": 1,
+  "skeleton_slug": "the-clocktower-cipher",
+  "binding": "bell-foundry",
+  "world": {
+    "name": "the shuttered bell foundry at Thistledown, dark since its founder stopped answering the door",
+    "scale": "one evening, one foundry and its casting yard",
+    "physics_notes": [
+      "the foundry keeps its own time in strikes and pulls, not clock hands",
+      "cast metal holds the day's warmth long after the fires go cold",
+      "the peal mechanism stores a pull and spends it as a swing, gently"
+    ]
+  },
+  "cast": [
+    {
+      "role": "HEROES",
+      "name": "Nora, Sam, and Idris",
+      "kind": "three foundry-row friends",
+      "affordances": {"moves": ["climb the frame ladders", "read pull marks", "count changes aloud"], "reach": "kid-high plus a leg-up"}
+    },
+    {
+      "role": "KEEPER",
+      "name": "Old Weaver",
+      "kind": "the last bell-ringer",
+      "affordances": {"moves": ["climbs", "unlocks", "recalls peals by year"], "manner": "short-spoken, watchful, warm underneath"}
+    },
+    {
+      "role": "MAKER",
+      "name": "Founder Josiah Vane",
+      "kind": "the foundry's bell-founder, gone from Thistledown for decades",
+      "affordances": {"presence": "moulds, tuning marks, and bells cast true", "manner": "exacting, dry-humored, careful of the metal"}
+    }
+  ],
+  "props": {
+    "OPENER": {"name": "the belfry hatch winch", "affordances": {"opens": "the belfry hatch", "two_handed": true}},
+    "CIPHER_TOOL": {"name": "the ringing-pattern primer", "affordances": {"decodes": "peal code", "hand_sized": true}},
+    "REMEDY": {"name": "the bent-nail tuning key", "affordances": {"frees": "seized pull pins", "hand_sized": true}}
+  },
+  "device_vocabulary": {
+    "cipher_forms": [
+      {"text": "peal changes: read each pull as long or short and let the repeating phrase spell out the setting", "kind": "rhythm_code"}
+    ],
+    "access_details": [
+      {"text": "a spare foundry key hung on a nail behind the loose flue grate, exactly where the note's fold points", "kind": "hidden_key"},
+      {"text": "a catch hidden under the tuning board's lip trips the side door open if you know where to press", "kind": "concealed_latch"},
+      {"text": "the last bell-ringer walks them in through the casting floor door, keys jingling on his belt", "kind": "trusted_escort"}
+    ],
+    "cipher_hint_carriers": [
+      {"text": "a tuning hammer with the founder's own notes scratched along the handle, each mark keyed to a pull", "kind": "annotated_tool"},
+      {"text": "a brass calibration scale bolted by the mould bench, its notches climbing by the same carry the peals use", "kind": "calibration_scale"},
+      {"text": "a rack of tuning forks sorted low to high, each one labeled with a pull count", "kind": "sorted_collection"},
+      {"text": "noon light through the belfry louvers falls across a marked floor plank, lining up with the peal's count", "kind": "shadow_alignment"}
+    ],
+    "room_curiosities": [
+      {"text": "Josiah Vane's own leather apron, still hanging by the casting floor, pockets worn to the shape of his tools", "kind": "maker_relic"},
+      {"text": "a small hand bell cast crooked on purpose, the founder's first failed attempt kept as a joke", "kind": "handmade_keepsake"},
+      {"text": "a fingernail-sized model of the belfry frame, every bell set true in its place", "kind": "scale_model"},
+      {"text": "sun through the coloured glass transom scatters bell-shaped light across the pattern room floor", "kind": "light_play"}
+    ],
+    "vault_contents": [
+      {"text": "the founding charter of Thistledown's bell, signed by the town and the founder both", "kind": "heritage_document"},
+      {"text": "a ledger of every wedding and homecoming the bell has rung for, kept faithfully for a century", "kind": "community_memory"},
+      {"text": "Josiah Vane's own marking chisel, kept oiled as though he'd be back for it", "kind": "maker_relic"}
+    ],
+    "obstacle_kinds": [
+      {"text": "the bell-frame catwalk, planks slick with tallow, crossed one handhold at a time between the swinging cradles", "kind": "narrow_crossing"},
+      {"text": "the bell-frame catwalk clears only between strikes, so crossing means timing each dash to the swing", "kind": "timed_passage"}
+    ],
+    "safeguards": [
+      {"text": "a trip-wire strung to a hand bell rings the yard the moment a hand strays near the vault", "kind": "sound_alarm"},
+      {"text": "the vault's counterweighted door swings shut on its own the instant it opens without the right sequence", "kind": "self_closing"}
+    ],
+    "remedies": [
+      {"text": "a tuning key improvised from a bent nail walks a seized pin back to true", "kind": "tool_improvised"},
+      {"text": "releasing the cradle's safety catch and easing it back to rest resets the jammed pull", "kind": "mechanism_reset"}
+    ],
+    "loft_signatures": [
+      {"text": "a half-finished mould still cooling on the bench, waiting for hands that never came back", "kind": "unfinished_work"},
+      {"text": "every casting tool racked and labeled, ready for a workday that never resumed", "kind": "tools_in_order"}
+    ]
+  },
+  "motifs": ["the bell keeps the town's count", "small true notes outlast big loud ones", "work done right rings clean"],
+  "prohibitions": ["never stand under a swinging cradle", "never touch a mould before it has cooled", "the frame moves only with the ringer's word"]
+}

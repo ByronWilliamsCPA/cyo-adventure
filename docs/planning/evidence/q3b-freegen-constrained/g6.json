@@ -1,0 +1,261 @@
+{
+  "schema_version": 1,
+  "id": "freegen-g6",
+  "version": 1,
+  "title": "The Bell of Whistling Cove",
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "Milo, Priya, and Zeke sat on the wet sand of Whistling Cove after a wild storm. Seaweed and driftwood covered the beach. Milo spotted something glinting near a rock. It was a glass bottle, sealed tight with wax. Inside was half of an old paper map, torn along one edge. The map showed the coastline and a shape like the town's lighthouse. Faded words read: FOLLOW THE BELL. Priya pointed north, toward the cliffs. Zeke pointed the other way, toward the crooked lanes of Gull Alley. The three friends had to choose a direction before the tide rolled back in.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_take_shore", "label": "Follow the shoreline north", "target": "n_shore1"},
+        {"id": "c_take_alley", "label": "Cut through Gull Alley", "target": "n_alley1"}
+      ]
+    },
+    {
+      "id": "n_shore1",
+      "body": "The three friends walked along the shoreline, the map held tight in Priya's hand. Waves hissed and pulled back over smooth stones. Gulls cried above the cliffs. Soon the path split. To the left, a cluster of tide pools sparkled between the rocks, full of orange starfish and tiny darting fish. Straight ahead, the sandy path kept climbing toward the lighthouse. Zeke wanted to peek at the tide pools. Priya worried they would lose daylight if they stopped. Milo checked the map again. The bell symbol was still far away. They had to decide whether to explore or keep moving north.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_shore_continue1", "label": "Keep walking north", "target": "n_shore2"},
+        {"id": "c_visit_tidepools", "label": "Stop at the tide pools", "target": "n_tidepools_node"}
+      ]
+    },
+    {
+      "id": "n_tidepools_node",
+      "body": "The friends crouched by the tide pools and watched a small crab scuttle under a rock. Priya found a purple sea star and gently touched its bumpy skin. Zeke tried to catch a minnow in his cupped hands and laughed when it slipped free. Milo unfolded the map, but the bell symbol seemed suddenly far away. The wind picked up and clouds rolled over the sun. Bright starfish and cold spray were fun, but the lighthouse was still a long walk off. The three of them looked at each other. It was time to decide: stay here longer, or head back toward town.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_leave_tidepools", "label": "Head back toward town", "target": "n_e_tidepools"}
+      ]
+    },
+    {
+      "id": "n_shore2",
+      "body": "Back on the main path, the friends kept walking north. The cliffs grew taller, and the sound of waves grew louder below. Soon they spotted the broken ribs of an old shipwreck poking out of the sand, half buried and covered in barnacles. Zeke wanted to climb inside and look for treasure. Priya reminded him the tide was still coming in fast around the wreck. Milo checked the map. The wreck wasn't marked at all, but the bell symbol was getting closer. They needed to choose. Would they explore the mysterious wreck, or stay on the safer path toward the lighthouse?",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_shore_continue2", "label": "Stay on the safer path", "target": "n_shore3"},
+        {"id": "c_explore_wreck", "label": "Climb into the shipwreck", "target": "n_wreck_node"}
+      ]
+    },
+    {
+      "id": "n_wreck_node",
+      "body": "Zeke could not resist. He scrambled over slippery rocks toward the old wreck, and Milo and Priya followed close behind. Inside the broken hull, they found rusted chains and a crab's nest tucked in a corner. Suddenly a wave crashed higher than before, filling the hull with cold water up to their ankles. Priya shouted that the tide was turning fast. They needed to get out immediately, before the gap in the rocks disappeared underwater. Milo grabbed Zeke's sleeve and pulled him toward the exit. The wreck had looked exciting, but now it felt like a trap closing in around them.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_scramble_exit", "label": "Scramble for the exit", "target": "n_e_shipwreck"}
+      ]
+    },
+    {
+      "id": "n_shore3",
+      "body": "Leaving the shipwreck behind, or choosing not to explore it at all, the friends pressed on along the shoreline. The path grew narrower here, squeezed between the cliff wall and the crashing surf. Small crabs skittered out of their way. Overhead, a pair of gulls wheeled and screamed, as if warning them onward. Priya kept the map angled so the wind would not tear it further. Milo counted their steps against the distance marked on the paper. According to the map, the lighthouse stood just past the next bend in the cliffs. Zeke jogged ahead eagerly, eyes fixed on the gray tower rising in the distance.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_shore_continue3", "label": "Round the bend in the cliffs", "target": "n_shore4"}
+      ]
+    },
+    {
+      "id": "n_shore4",
+      "body": "Around the bend, the lighthouse came fully into view, tall and white against the gray sky, its glass lantern room glinting faintly even without a lit lamp. A narrow set of stone stairs had been carved into the cliffside long ago, leading up toward the lighthouse grounds. Waves crashed against the rocks far below the stairs. Priya checked the map one more time. The bell symbol sat right on top of the little drawing of the lighthouse. Zeke grinned and cracked his knuckles, ready for the climb. Milo took a deep breath and looked up at the long, winding staircase ahead of them.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_shore_continue4", "label": "Start up the cliff stairs", "target": "n_cliffstairs"}
+      ]
+    },
+    {
+      "id": "n_cliffstairs",
+      "body": "The stairs were old and uneven, worn smooth by decades of wind and rain. The friends climbed carefully, one hand always on the rough stone railing. Halfway up, Zeke paused to catch his breath and look out at the wide gray ocean stretching to the horizon. Priya spotted a rusty plaque bolted into the rock, its letters worn almost away, something about a keeper named Old Fenwick who once lived here. Milo wondered if that name meant anything. At the top of the stairs stood a low iron gate, and beyond it, the lighthouse itself, its heavy wooden door shut tight against the wind.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_climb_stairs", "label": "Push through the iron gate", "target": "n_lighthousedoor"}
+      ]
+    },
+    {
+      "id": "n_lighthousedoor",
+      "body": "The lighthouse door was unlocked, creaking open with a push from Milo's shoulder. Inside, the air smelled of salt and old paint. A spiral staircase wound upward into shadow, while another narrow doorway led down into darkness, probably toward a basement or storeroom. Priya's flashlight beam swept across both openings. The map showed the bell symbol high up, near the top of the drawing, but Zeke noticed strange scratch marks near the basement door, almost like someone had tried to claw their way out. They had to choose quickly: climb up toward the tower, or investigate the mysterious basement first.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_enter_lighthouse", "label": "Climb the spiral stairs", "target": "n_lighthouseinside"},
+        {"id": "c_check_basement", "label": "Investigate the basement", "target": "n_basement_node"}
+      ]
+    },
+    {
+      "id": "n_basement_node",
+      "body": "Curiosity won, and the friends crept down the narrow stairs into the basement. It was cramped and full of old crates, coils of rope, and broken lanterns covered in dust. Zeke's flashlight flickered as they explored deeper. Suddenly, a gust of wind slammed the door at the top of the stairs shut with a heavy thud. Priya rushed up and pulled at the handle, but it would not budge. Milo pounded on the old wood, shouting for help, but the thick stone walls swallowed the sound. The three of them looked at each other, trapped in the cold, dusty dark.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_search_basement", "label": "Search for another way out", "target": "n_e_basement"}
+      ]
+    },
+    {
+      "id": "n_lighthouseinside",
+      "body": "Deciding the basement could wait, the friends turned instead toward the spiral staircase, its iron steps ringing faintly under their sneakers. Faded photographs on the wall showed the lighthouse long ago, with ships passing safely by its beam. One picture showed an old keeper standing beside a large bronze bell, the very one from the map. Priya traced her finger along the staircase railing, spiraling up into darkness above. Zeke's flashlight caught cobwebs strung between the steps like silver threads. Milo folded the map carefully into his pocket. Whatever waited at the top, they were close now, closer than they had ever been.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_go_up_tower", "label": "Climb the spiral staircase", "target": "n_towerstairs"}
+      ]
+    },
+    {
+      "id": "n_towerstairs",
+      "body": "Up and up the spiral staircase they climbed, their footsteps echoing off the curved stone walls. The wind grew louder the higher they went, whistling through cracks in old windows. Zeke counted the steps out loud until he lost track somewhere past one hundred. Priya's legs burned, but she kept climbing, thinking about the bell waiting somewhere above. Milo paused at a small window and looked down at the tiny shapes of the beach and the shipwreck far below. It made his stomach flip. A final short stretch of stairs curved upward toward a wooden trapdoor set into the ceiling above them.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_climb_tower", "label": "Push through the trapdoor", "target": "n_towertop"}
+      ]
+    },
+    {
+      "id": "n_towertop",
+      "body": "Milo pushed the trapdoor open, and the three friends climbed out into the lantern room at the very top of the lighthouse. Wind rushed around them, and the whole gray ocean spread out below in every direction. In the center of the round room stood a huge, dusty bronze bell, exactly like the one drawn on the map. A thick rope hung from its top, swaying gently in the breeze. Faded words were carved into its side: RING ME TO KEEP THE COVE SAFE. Priya looked at Milo and Zeke, both grinning. After everything, the legendary bell was finally right in front of them.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_enter_bellchamber", "label": "Pull the rope together", "target": "n_e_bell"}
+      ]
+    },
+    {
+      "id": "n_alley1",
+      "body": "Milo, Priya, and Zeke ducked into Gull Alley, a narrow lane winding between old shops with crooked shutters. The smell of fresh bread drifted from somewhere nearby. An old man sat on a bench, feeding crumbs to a circle of pigeons. He wore a faded blue coat and squinted at the kids with sharp eyes. A sign nearby named him Old Fenwick, the last lighthouse keeper. Priya wondered if he might know something about the map. Zeke was eager to keep moving toward the lighthouse. They had to decide: stop and speak with the strange old man, or hurry on past him.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_alley_continue1", "label": "Hurry on past the bench", "target": "n_alley2"},
+        {"id": "c_talk_fenwick", "label": "Stop and talk to Fenwick", "target": "n_fenwick_node"}
+      ]
+    },
+    {
+      "id": "n_fenwick_node",
+      "body": "They approached the bench, and Old Fenwick looked up with a knowing smile, as if he had been expecting them. He told them the bronze bell had a partner, a smaller silver one hidden long ago beneath the old bakery, and that some treasures are better left resting. He handed Priya a small brass key with no explanation, then went back to feeding his pigeons, humming an old tune. The friends looked at each other, unsure what to make of the strange meeting. Whatever the key opened, it seemed like a new mystery entirely, one that would have to wait for another day.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_take_the_key", "label": "Take the brass key and go", "target": "n_e_discovery"}
+      ]
+    },
+    {
+      "id": "n_alley2",
+      "body": "Leaving the bench behind, or hurrying past Fenwick without stopping, the friends continued down Gull Alley. Warm, buttery smells grew stronger near a small bakery with a crooked sign reading SEASIDE BUNS. Steam curled from its open window, and a tray of golden rolls sat cooling on the sill. Zeke's stomach growled loudly. Priya reminded everyone they had a map to follow and a mystery to solve. Milo glanced at the sun; there was still plenty of daylight left. Should they stop for a snack at the bakery, or keep pushing toward the docks and the lighthouse beyond them?",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_alley_continue2", "label": "Push on toward the docks", "target": "n_alley3"},
+        {"id": "c_visit_bakery", "label": "Stop at the bakery", "target": "n_bakery_node"}
+      ]
+    },
+    {
+      "id": "n_bakery_node",
+      "body": "They stepped inside, and the baker, a cheerful woman with flour on her apron, gave them each a warm roll for free when she heard about their storm-washed bottle. While they ate, she told them stories about the old lighthouse and a keeper who vanished one foggy night, leaving behind more questions than answers. Time slipped by pleasantly as they listened, full and warm, forgetting to watch the clock. By the time they stepped back outside, the light had shifted, and the day felt different, quieter, softer, like the mystery could wait until tomorrow, when they might come back better fed.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_listen_to_baker", "label": "Thank the baker and head home", "target": "n_e_discovery"}
+      ]
+    },
+    {
+      "id": "n_alley3",
+      "body": "Deciding the mystery mattered more than snacks, or finishing their treats first, the friends pushed on through Gull Alley toward the sound of gulls and creaking boats. The lane opened onto a small square with a dry stone fountain in the middle, shaped like a leaping fish. Faded bunting from some old festival still hung between the lampposts. Priya checked the map again; the docks were marked clearly now, close to where the coastline met the harbor. Milo felt his heart beat a little faster. They were getting closer to wherever this old, torn map wanted to lead three curious kids from Whistling Cove.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_alley_continue3", "label": "Cross the square toward the docks", "target": "n_alley4"}
+      ]
+    },
+    {
+      "id": "n_alley4",
+      "body": "Past the fountain, the lane sloped gently downhill toward the smell of salt and fish. Fishing nets hung drying between wooden posts, and gulls squabbled loudly over scraps near the harbor wall. A row of small boats bobbed gently at their moorings. Zeke pointed out a weathered sign reading TIDE CAVES: ENTER AT LOW TIDE ONLY. Priya frowned at the map, tracing the coastline toward a small cave symbol she had not noticed before. Milo checked the position of the sun and guessed the tide was still going out. If they hurried, the caves might just be safe enough to explore.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_alley_continue4", "label": "Head down to the docks", "target": "n_docks"}
+      ]
+    },
+    {
+      "id": "n_docks",
+      "body": "At the docks, an old wooden rope bridge stretched out toward a rocky little island, creaking gently in the breeze. On the other side, a narrow trail curved down toward the mouth of the tide caves marked on the map. A fisherman mending nets nearby warned them the bridge was rickety and not to be trusted, though he'd used it himself for years. Priya wanted to take the safer path straight to the caves. Zeke thought the bridge looked like an adventure worth trying. Milo looked between the swaying bridge and the dark cave mouth, unsure which risk was smaller.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_enter_tidecave", "label": "Head straight for the tide caves", "target": "n_tidecave"},
+        {"id": "c_cross_ropebridge", "label": "Try crossing the rope bridge", "target": "n_ropebridge_node"}
+      ]
+    },
+    {
+      "id": "n_ropebridge_node",
+      "body": "They stepped onto the rope bridge, and it swayed alarmingly with every step, the boards creaking under their sneakers. Halfway across, a gust of wind shook the whole bridge, and Zeke grabbed the rope railing tight, his knuckles turning white. Priya called out that this was a bad idea, and for once, nobody argued with her. Carefully, slowly, they backed off the bridge and returned to solid ground, hearts pounding. The little rocky island would stay unexplored for today. Shaken but unhurt, the friends decided some adventures were better left for a calmer, less windy afternoon at Whistling Cove.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_retreat_from_bridge", "label": "Back off the bridge to safety", "target": "n_e_tidepools"}
+      ]
+    },
+    {
+      "id": "n_tidecave",
+      "body": "Choosing the safer path, or having backed away from the rope bridge, the friends followed the narrow trail down to the mouth of the tide caves. Cool, damp air drifted out of the dark opening, smelling of salt and stone. Water dripped steadily somewhere inside, echoing faintly. Priya switched on her flashlight, and the beam caught glittering mineral streaks along the cave walls. The map showed a winding path through the caves leading toward a symbol that looked like a small silver star. Zeke ducked his head under the low rocky entrance first, eager to see what waited in the darkness ahead.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_cave_continue1", "label": "Follow the path deeper in", "target": "n_tidecave2"}
+      ]
+    },
+    {
+      "id": "n_tidecave2",
+      "body": "Inside, the cave opened into a wider chamber, with a shallow pool of seawater trapped by the low tide. The path split again: one route continued along a wide, dry ledge, and the other crossed a narrow, slippery shelf of rock just above the dark water. Priya's flashlight showed the narrow ledge looked shorter, maybe a faster way toward wherever the map was leading. Zeke wanted to try the shortcut. Milo worried about slipping into the cold water below. They needed to decide quickly, because somewhere deeper in the cave, they could hear the faint, steady drip of the incoming tide.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_cave_continue2", "label": "Stay on the wide, dry ledge", "target": "n_cave3"},
+        {"id": "c_try_risky_ledge", "label": "Try the narrow shortcut", "target": "n_risky_node"}
+      ]
+    },
+    {
+      "id": "n_risky_node",
+      "body": "Zeke went first onto the narrow ledge, arms out for balance, sneakers scraping against wet stone. Halfway across, his foot slipped on a patch of slick seaweed, and he splashed down hard into the shallow pool below. Priya and Milo rushed to help him up, both now soaked from wading in after him. The flashlight sputtered and went dim, dropped somewhere in the confusion. Cold, wet, and a little scared in the dim cave, they agreed it was time to turn back toward daylight. The risky shortcut had cost them their flashlight, their dry clothes, and a shot at reaching the star today.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_climb_back_out", "label": "Climb back out toward daylight", "target": "n_e_shipwreck"}
+      ]
+    },
+    {
+      "id": "n_cave3",
+      "body": "Taking the safer, wider ledge, or having climbed out of the water and given up on the shortcut, the friends pressed onward through the tide cave. The passage narrowed, then opened again into a small chamber lit by a shaft of daylight from a crack far above. Barnacles and old rope were tangled around a half-buried wooden post, worn smooth by decades of tides. Priya studied the map closely; the silver star symbol was almost directly above them now. Milo felt his pulse quicken. Zeke grinned in the dim light, certain they were finally close to whatever secret the tide caves were hiding.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_cave_continue3", "label": "Climb toward the shaft of light", "target": "n_cave4"}
+      ]
+    },
+    {
+      "id": "n_cave4",
+      "body": "Following the shaft of light, the friends climbed over the old wooden post and squeezed through a final narrow gap in the rock. It opened onto a hidden ledge overlooking the harbor, where a small bronze plaque was bolted into the stone, engraved with a star and the words KEEPERS OF THE COVE. Beneath it sat a weatherproof box, clearly placed there recently by the town historical society, holding a logbook of everyone who had ever found this secret spot. Priya's hands trembled with excitement as she reached for the logbook. Whatever they wrote next would join a hidden piece of Whistling Cove's history.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_open_the_box", "label": "Open the logbook and sign it", "target": "n_e_success"}
+      ]
+    },
+    {
+      "id": "n_e_bell",
+      "body": "Together, the three friends grabbed the old rope and pulled. The bronze bell swung and rang out, a deep, clear sound that rolled across the whole cove below. Fishing boats in the harbor sounded their horns in reply, and people on the beach looked up, smiling and waving at the lighthouse. Later, the town historian explained that the bell had been silent for fifty years, ever since Old Fenwick disappeared. Now Whistling Cove had its voice back, thanks to three kids and a bottle washed up by a storm. Milo, Priya, and Zeke walked home as heroes, already dreaming up their next adventure.",
+      "is_ending": true,
+      "ending": {"id": "e_bell", "valence": "positive", "kind": "completion", "title": "The Bell Rings Again"}
+    },
+    {
+      "id": "n_e_success",
+      "body": "Priya opened the logbook and found dozens of names going back decades, each with a short note about their discovery. With a proud smile, Milo signed all three of their names together, adding a line about the storm, the bottle, and the torn map that had led them there. Zeke tucked a small shell into the box as a gift for whoever found it next. Climbing back out of the tide caves into the late afternoon sun, the three friends felt like real explorers, part of a secret chain stretching back through Whistling Cove's history. They had not rung the bell, but they had found something just as special.",
+      "is_ending": true,
+      "ending": {"id": "e_success", "valence": "positive", "kind": "success", "title": "Keepers of the Cove"}
+    },
+    {
+      "id": "n_e_tidepools",
+      "body": "Sometimes the smartest choice is knowing when to stop. The friends made their way back toward the familiar sand of Whistling Cove, the mystery of the bell still unsolved for now. The wind was picking up, and the light was starting to fade, but nobody felt too disappointed. Priya tucked the torn map carefully into her backpack, safe and dry, ready for another day. Zeke said the whole afternoon still counted as an adventure, bridge or no bridge, bell or no bell. Milo agreed. As they walked home along the shore, they were already making plans to come back soon.",
+      "is_ending": true,
+      "ending": {"id": "e_tidepools", "valence": "neutral", "kind": "retreat", "title": "Back to the Sand"}
+    },
+    {
+      "id": "n_e_discovery",
+      "body": "Curious about the brass key, or full of warm bread and new stories, the friends spent the rest of the afternoon asking around Gull Alley about silver bells and hidden locks. Nobody had clear answers, only old rumors and half-remembered stories. They never made it to the lighthouse that day, but they found something else: a whole town full of mysteries they had never noticed before. Priya kept the brass key on a string around her neck, a promise of adventures still waiting to be found. They walked home slowly, already planning their next mystery in Whistling Cove.",
+      "is_ending": true,
+      "ending": {"id": "e_discovery", "valence": "neutral", "kind": "discovery", "title": "A Different Kind of Treasure"}
+    },
+    {
+      "id": "n_e_shipwreck",
+      "body": "Getting caught off guard by the sea is a lesson every explorer learns eventually. Wet, cold, and missing a shoe or a flashlight, the friends made their way back to solid ground and then home, the mystery of the bell still unsolved. Their parents were more relieved than angry to see them safe, though there was plenty of scolding about being more careful near the water. Priya's map survived, a little damp around the edges. Zeke insisted the story was worth it, even soaked to the bone. As they dried off that evening, all three were already plotting a smarter, drier way back to Whistling Cove's secrets.",
+      "is_ending": true,
+      "ending": {"id": "e_shipwreck", "valence": "negative", "kind": "setback", "title": "Caught by the Tide"}
+    },
+    {
+      "id": "n_e_basement",
+      "body": "They pounded and shouted for what felt like hours until, finally, a passing fisherman heard the noise and pried the swollen door open with a crowbar. Blinking in the sudden light, the friends stumbled out, dusty and relieved. The bell, the map, and the whole mystery would have to wait, because their parents were furious about the missed dinner and the scare. Priya tucked the torn map away, promising herself she would come back better prepared. Zeke joked that at least they had a great story to tell at school. Tired and a little shaken, the three of them headed straight home.",
+      "is_ending": true,
+      "ending": {"id": "e_basement", "valence": "negative", "kind": "retreat", "title": "Locked In"}
+    }
+  ]
+}

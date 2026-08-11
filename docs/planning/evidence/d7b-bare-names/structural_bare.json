@@ -1,0 +1,892 @@
+{
+ "narrative_version": 1,
+ "skeleton_slug": "the-clocktower-cipher",
+ "age_band": "10-13",
+ "facts": [
+  "archive_beckons",
+  "at_the_dial",
+  "challenge_accepted",
+  "challenge_posted",
+  "composure_kept",
+  "crossing_dares_them",
+  "dial_test_live",
+  "friends_committed_together",
+  "keeper_intervenes",
+  "keeper_offer_earned",
+  "keeper_tested_them",
+  "logic_earned",
+  "maker_motive_understood",
+  "passing_kept_private",
+  "passing_made_public",
+  "past_the_seal",
+  "patience_proven",
+  "record_set_straight",
+  "reward_glimpsed",
+  "route_named_by_note",
+  "sanctum_entered",
+  "sanctum_seen",
+  "second_test_found",
+  "self_reliance_shown",
+  "stewardship_earned",
+  "test_forced",
+  "test_passed",
+  "tower_sealed",
+  "trial_reopens",
+  "trial_rooms_known",
+  "trust_bond_formed",
+  "workshop_found"
+ ],
+ "safety_envelope": {
+  "affect_ceiling": "suspense with wonder and mild urgency; tension may tighten but never tips into threat",
+  "forbid_affect": [
+   "despair",
+   "hopelessness",
+   "terror",
+   "humiliation",
+   "cruel_mockery"
+  ],
+  "forbid_facts": [
+   "anyone_injured",
+   "friends_turn_on_each_other",
+   "adult_menaces_children",
+   "theft_rewarded",
+   "gore_of_any_kind"
+  ],
+  "permitted_device_kinds": [
+   "symbol_substitution",
+   "clock_arithmetic",
+   "pictogram_code",
+   "rhythm_code",
+   "tally_cipher",
+   "hidden_key",
+   "forgotten_entrance",
+   "trusted_escort",
+   "concealed_latch",
+   "timed_opening",
+   "service_route",
+   "mechanism_operated",
+   "engraved_numbers",
+   "maker_diagram",
+   "pattern_in_mechanism",
+   "annotated_tool",
+   "calibration_scale",
+   "sorted_collection",
+   "wear_pattern",
+   "shadow_alignment",
+   "maker_relic",
+   "working_mechanism",
+   "written_record",
+   "acoustic_wonder",
+   "scale_model",
+   "light_play",
+   "resident_creature",
+   "heritage_document",
+   "handmade_keepsake",
+   "community_memory",
+   "stiff_mechanism",
+   "narrow_crossing",
+   "timed_passage",
+   "dark_passage",
+   "heavy_barrier",
+   "slick_traverse",
+   "time_pressure",
+   "sound_alarm",
+   "weight_sense",
+   "light_signal",
+   "messenger_creature",
+   "self_closing",
+   "tell_tale_mark",
+   "patience_ritual",
+   "tool_improvised",
+   "consumable_applied",
+   "mechanism_reset",
+   "knowledge_applied",
+   "shared_effort",
+   "unfinished_work",
+   "living_thing_tended",
+   "letter_waiting",
+   "tools_in_order",
+   "season_preserved",
+   "provisions_laid"
+  ],
+  "forbidden_device_kinds": [
+   "weapon",
+   "gore",
+   "cruelty",
+   "theft_rewarded",
+   "adult_menace"
+  ]
+ },
+ "world_recipe": {
+  "requires": {
+   "cipher_forms": {
+    "count": 1,
+    "kinds": [
+     "symbol_substitution",
+     "clock_arithmetic",
+     "pictogram_code",
+     "rhythm_code",
+     "tally_cipher"
+    ],
+    "note": "one cipher form per story, chosen at bind and used consistently from note to clockface to back panel"
+   },
+   "access_details": {
+    "count": 3,
+    "kinds": [
+     "hidden_key",
+     "forgotten_entrance",
+     "trusted_escort",
+     "concealed_latch",
+     "timed_opening",
+     "service_route",
+     "mechanism_operated"
+    ],
+    "note": "one concrete way in per approach branch: the note's decoded route and the building's own weak point draw freely; the keeper's branch stays person-mediated"
+   },
+   "cipher_hint_carriers": {
+    "count": 4,
+    "kinds": [
+     "engraved_numbers",
+     "maker_diagram",
+     "pattern_in_mechanism",
+     "annotated_tool",
+     "calibration_scale",
+     "sorted_collection",
+     "wear_pattern",
+     "shadow_alignment"
+    ],
+    "note": "one per exploration room, drawn freely; unique_within_story gives each book four different carriers, and each carries enough logic that any single room makes the dial attemptable"
+   },
+   "room_curiosities": {
+    "count": 4,
+    "kinds": [
+     "maker_relic",
+     "working_mechanism",
+     "written_record",
+     "acoustic_wonder",
+     "handmade_keepsake",
+     "scale_model",
+     "light_play",
+     "community_memory",
+     "resident_creature"
+    ],
+    "note": "what makes each room distinct and worth the visit beyond its hint"
+   },
+   "vault_contents": {
+    "count": 3,
+    "kinds": [
+     "heritage_document",
+     "handmade_keepsake",
+     "community_memory",
+     "written_record",
+     "maker_relic",
+     "acoustic_wonder"
+    ],
+    "note": "the vault protects knowledge, heritage, and wonder; any treasure is modest and communal, never loot"
+   },
+   "obstacle_kinds": {
+    "count": 1,
+    "kinds": [
+     "narrow_crossing",
+     "timed_passage",
+     "slick_traverse",
+     "dark_passage",
+     "heavy_barrier",
+     "stiff_mechanism"
+    ],
+    "note": "physical difficulty stays honest and non-injurious; failure costs time or access, never safety"
+   },
+   "safeguards": {
+    "count": 1,
+    "kinds": [
+     "sound_alarm",
+     "weight_sense",
+     "light_signal",
+     "messenger_creature",
+     "self_closing",
+     "tell_tale_mark"
+    ],
+    "note": "the maker's anti-taking measure; gentle and funny, it embarrasses no one and hurts no one"
+   },
+   "remedies": {
+    "count": 1,
+    "kinds": [
+     "patience_ritual",
+     "tool_improvised",
+     "consumable_applied",
+     "mechanism_reset",
+     "knowledge_applied",
+     "shared_effort"
+    ],
+    "note": "the honest way back from a jam, on the machine's own terms; care, patience, or wit, never strength"
+   },
+   "loft_signatures": {
+    "count": 1,
+    "kinds": [
+     "unfinished_work",
+     "living_thing_tended",
+     "letter_waiting",
+     "tools_in_order",
+     "season_preserved",
+     "provisions_laid"
+    ],
+    "note": "the one detail that makes the maker's hidden room feel currently alive rather than preserved"
+   }
+  },
+  "identity_roles": [
+   "HEROES",
+   "KEEPER",
+   "MAKER",
+   "CIPHER",
+   "SETTLEMENT",
+   "VAULT"
+  ],
+  "texture_roles": [
+   "THRESHOLD",
+   "ACCESS_LOW",
+   "ACCESS_HIGH",
+   "OPENER",
+   "STUDY",
+   "HAZARD",
+   "LANDMARK_FACE",
+   "TOKEN",
+   "CIPHER_TOOL",
+   "ARCHIVE",
+   "REMEDY",
+   "MACHINERY",
+   "SECRET_ROOM",
+   "KEEPSAKE",
+   "CLOSING_SIGN",
+   "MECHANISM",
+   "CRAFT"
+  ]
+ },
+ "nodes": {
+  "n_open": {
+   "tier": "open",
+   "function": "pose-the-trial",
+   "entry_state": [],
+   "establishes": [
+    "tower_sealed",
+    "challenge_posted",
+    "friends_committed_together"
+   ],
+   "forbids": [
+    "past_the_seal",
+    "patience_proven",
+    "keeper_tested_them"
+   ],
+   "invention": {
+    "cipher_form": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.cipher_forms",
+     "category": "cipher_forms",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the story's one cipher form; every later test-beat renders it consistently"
+    }
+   }
+  },
+  "n_start": {
+   "tier": "open",
+   "function": "offer-virtues",
+   "entry_state": [
+    "challenge_posted",
+    "friends_committed_together"
+   ],
+   "establishes": [
+    "challenge_accepted"
+   ],
+   "forbids": [
+    "patience_proven",
+    "past_the_seal"
+   ]
+  },
+  "n_note": {
+   "tier": "open",
+   "function": "reward-patience",
+   "entry_state": [
+    "challenge_posted",
+    "challenge_accepted",
+    "friends_committed_together"
+   ],
+   "establishes": [
+    "patience_proven",
+    "route_named_by_note"
+   ],
+   "forbids": [
+    "past_the_seal"
+   ],
+   "invention": {
+    "access_route": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.access_details",
+     "category": "access_details",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the proven line names one concrete way in: where it hides or how it works, plus a plain first step"
+    }
+   }
+  },
+  "n_door": {
+   "tier": "open",
+   "function": "prove-self-reliance",
+   "entry_state": [
+    "tower_sealed",
+    "challenge_accepted"
+   ],
+   "establishes": [
+    "self_reliance_shown"
+   ],
+   "forbids": [
+    "patience_proven",
+    "past_the_seal"
+   ],
+   "invention": {
+    "access_route": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.access_details",
+     "category": "access_details",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the building's own overlooked way in; using it reads as self-reliance, never as damage"
+    }
+   }
+  },
+  "n_keeper": {
+   "tier": "open",
+   "function": "earn-the-keepers-trust",
+   "entry_state": [
+    "challenge_accepted",
+    "friends_committed_together"
+   ],
+   "establishes": [
+    "keeper_tested_them",
+    "keeper_offer_earned"
+   ],
+   "forbids": [
+    "patience_proven",
+    "past_the_seal"
+   ],
+   "invention": {
+    "access_route": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.access_details",
+     "category": "access_details",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "kept person-mediated on purpose: this branch's whole meaning is passing a person's judgment, not a trick",
+     "kind_must_be": "trusted_escort"
+    }
+   }
+  },
+  "n_keyhunt": {
+   "tier": "open",
+   "function": "confirm-the-proof",
+   "entry_state": [
+    "patience_proven",
+    "route_named_by_note"
+   ],
+   "establishes": [
+    "logic_earned"
+   ],
+   "forbids": [
+    "past_the_seal"
+   ]
+  },
+  "n_keeper_story": {
+   "tier": "open",
+   "function": "learn-the-tests-purpose",
+   "entry_state": [
+    "keeper_tested_them",
+    "keeper_offer_earned"
+   ],
+   "establishes": [
+    "maker_motive_understood"
+   ],
+   "forbids": [
+    "past_the_seal",
+    "patience_proven"
+   ]
+  },
+  "n_window": {
+   "tier": "open",
+   "function": "earn-entry-by-nerve",
+   "entry_state": [
+    "self_reliance_shown",
+    "challenge_accepted"
+   ],
+   "establishes": [
+    "past_the_seal"
+   ],
+   "forbids": [
+    "anyone_injured"
+   ]
+  },
+  "n_inside": {
+   "tier": "open",
+   "function": "stand-past-the-seal",
+   "entry_state": [
+    "challenge_posted",
+    "challenge_accepted",
+    "friends_committed_together"
+   ],
+   "establishes": [
+    "past_the_seal",
+    "trial_rooms_known"
+   ],
+   "forbids": [
+    "at_the_dial",
+    "sanctum_entered"
+   ]
+  },
+  "n_stairs": {
+   "tier": "open",
+   "function": "pass-the-endurance-test",
+   "entry_state": [
+    "past_the_seal",
+    "trial_rooms_known"
+   ],
+   "establishes": [
+    "logic_earned"
+   ],
+   "forbids": [
+    "at_the_dial",
+    "sanctum_entered"
+   ],
+   "invention": {
+    "hint_carrier": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.cipher_hint_carriers",
+     "category": "cipher_hint_carriers",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "something met on the climb that teaches a usable piece of the dial's logic"
+    },
+    "curiosity": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.room_curiosities",
+     "category": "room_curiosities",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "a small token of the maker's found along the stair; personal, pocketable, easily missed"
+    }
+   }
+  },
+  "n_study": {
+   "tier": "open",
+   "function": "pass-the-scholarship-test",
+   "entry_state": [
+    "past_the_seal",
+    "trial_rooms_known"
+   ],
+   "establishes": [
+    "logic_earned",
+    "archive_beckons"
+   ],
+   "forbids": [
+    "at_the_dial",
+    "sanctum_entered"
+   ],
+   "invention": {
+    "hint_carrier": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.cipher_hint_carriers",
+     "category": "cipher_hint_carriers",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "whatever in the maker's own room teaches the test most directly; the study's hint runs richest of the four"
+    },
+    "curiosity": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.room_curiosities",
+     "category": "room_curiosities",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the archive whose pull is genuine: something browsable enough to fill an evening; staying is a legitimate answer"
+    }
+   }
+  },
+  "n_pendulum": {
+   "tier": "open",
+   "function": "pass-the-nerve-test",
+   "entry_state": [
+    "past_the_seal",
+    "trial_rooms_known"
+   ],
+   "establishes": [
+    "logic_earned",
+    "crossing_dares_them",
+    "reward_glimpsed"
+   ],
+   "forbids": [
+    "anyone_injured",
+    "at_the_dial"
+   ],
+   "invention": {
+    "hint_carrier": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.cipher_hint_carriers",
+     "category": "cipher_hint_carriers",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "something about the moving works, legible from a safe spot, that teaches a piece of the dial's logic"
+    },
+    "obstacle": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.obstacle_kinds",
+     "category": "obstacle_kinds",
+     "assigned_at": "bind",
+     "note": "a traversal with real, legible, survivable risk; the far side holds something worth the daring"
+    }
+   }
+  },
+  "n_basement": {
+   "tier": "open",
+   "function": "pass-the-steadiness-test",
+   "entry_state": [
+    "past_the_seal",
+    "trial_rooms_known"
+   ],
+   "establishes": [
+    "logic_earned"
+   ],
+   "forbids": [
+    "at_the_dial",
+    "sanctum_entered"
+   ],
+   "invention": {
+    "hint_carrier": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.cipher_hint_carriers",
+     "category": "cipher_hint_carriers",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "something down among the machine's roots that teaches a piece of the dial's logic from below"
+    },
+    "curiosity": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.room_curiosities",
+     "category": "room_curiosities",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "what makes the deepest room a spectacle worth the dark; the straight way up is the room's parting gift"
+    }
+   }
+  },
+  "n_clockface": {
+   "tier": "open",
+   "function": "face-the-final-test",
+   "entry_state": [
+    "past_the_seal",
+    "logic_earned"
+   ],
+   "establishes": [
+    "at_the_dial",
+    "dial_test_live"
+   ],
+   "forbids": [
+    "sanctum_entered",
+    "test_passed"
+   ]
+  },
+  "n_setcorrect": {
+   "tier": "open",
+   "function": "pass-the-final-test",
+   "entry_state": [
+    "at_the_dial",
+    "dial_test_live",
+    "logic_earned"
+   ],
+   "establishes": [
+    "test_passed"
+   ],
+   "forbids": [
+    "test_forced"
+   ]
+  },
+  "n_setjam": {
+   "tier": "open",
+   "function": "fail-the-test-honestly",
+   "entry_state": [
+    "at_the_dial",
+    "dial_test_live"
+   ],
+   "establishes": [
+    "test_forced"
+   ],
+   "forbids": [
+    "anyone_injured",
+    "test_passed"
+   ],
+   "invention": {
+    "remedy": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.remedies",
+     "category": "remedies",
+     "assigned_at": "bind",
+     "note": "the machine's own honest way back from the jam, supplied entirely by the bible"
+    }
+   }
+  },
+  "n_backpanel": {
+   "tier": "open",
+   "function": "find-the-hidden-test",
+   "entry_state": [
+    "at_the_dial",
+    "dial_test_live"
+   ],
+   "establishes": [
+    "second_test_found"
+   ],
+   "forbids": [
+    "test_forced",
+    "sanctum_entered"
+   ]
+  },
+  "n_vault": {
+   "tier": "open",
+   "function": "pose-the-trials-verdict",
+   "entry_state": [
+    "at_the_dial",
+    "logic_earned"
+   ],
+   "establishes": [
+    "sanctum_entered",
+    "sanctum_seen"
+   ],
+   "forbids": [
+    "anyone_injured"
+   ],
+   "invention": {
+    "contents": {
+     "pick": 3,
+     "from": "bible.device_vocabulary.vault_contents",
+     "category": "vault_contents",
+     "assigned_at": "bind",
+     "note": "the maker's letter, the keepsake, and a modest heritage treasure; the letter's voice is kind and asks nothing"
+    }
+   }
+  },
+  "n_end_library": {
+   "tier": "locked_outcome",
+   "function": "payoff-choosing-depth",
+   "entry_state": [
+    "past_the_seal",
+    "archive_beckons"
+   ],
+   "establishes": [
+    "composure_kept",
+    "trial_reopens"
+   ],
+   "forbids": [
+    "shame",
+    "regret_dominant"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   }
+  },
+  "n_end_giveup": {
+   "tier": "locked_outcome",
+   "function": "payoff-declining-a-test",
+   "entry_state": [
+    "crossing_dares_them",
+    "reward_glimpsed"
+   ],
+   "establishes": [
+    "composure_kept",
+    "trial_reopens"
+   ],
+   "forbids": [
+    "cowardice_implied",
+    "mockery"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   }
+  },
+  "n_end_timeout": {
+   "tier": "locked_outcome",
+   "function": "payoff-failing-honestly",
+   "entry_state": [
+    "at_the_dial",
+    "dial_test_live"
+   ],
+   "establishes": [
+    "composure_kept",
+    "trial_reopens"
+   ],
+   "forbids": [
+    "humiliation",
+    "permanent_damage"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   }
+  },
+  "n_end_stuck": {
+   "tier": "locked_outcome",
+   "function": "payoff-retaking-the-test",
+   "entry_state": [
+    "test_forced"
+   ],
+   "establishes": [
+    "composure_kept",
+    "trial_reopens"
+   ],
+   "forbids": [
+    "blame",
+    "permanent_damage"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   }
+  },
+  "n_end_secret": {
+   "tier": "locked_outcome",
+   "function": "payoff-the-hidden-tests-reward",
+   "entry_state": [
+    "second_test_found"
+   ],
+   "establishes": [
+    "workshop_found",
+    "stewardship_earned",
+    "trust_bond_formed"
+   ],
+   "forbids": [
+    "exploitation_of_find"
+   ],
+   "invention": {
+    "loft_signature": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.loft_signatures",
+     "category": "loft_signatures",
+     "assigned_at": "bind",
+     "note": "the one detail that makes the maker's space feel currently alive and mid-thought rather than preserved"
+    }
+   },
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   }
+  },
+  "n_end_hero": {
+   "tier": "locked_outcome",
+   "function": "payoff-going-public",
+   "entry_state": [
+    "sanctum_entered",
+    "sanctum_seen"
+   ],
+   "establishes": [
+    "passing_made_public",
+    "test_passed",
+    "maker_motive_understood",
+    "trust_bond_formed"
+   ],
+   "forbids": [
+    "reward_as_riches"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   }
+  },
+  "n_end_keepsake": {
+   "tier": "locked_outcome",
+   "function": "payoff-a-private-verdict",
+   "entry_state": [
+    "sanctum_entered",
+    "sanctum_seen"
+   ],
+   "establishes": [
+    "passing_kept_private",
+    "trust_bond_formed"
+   ],
+   "forbids": [
+    "selfishness_implied"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   }
+  },
+  "n_end_caught": {
+   "tier": "locked_outcome",
+   "function": "payoff-failing-the-real-test",
+   "entry_state": [
+    "sanctum_entered",
+    "sanctum_seen"
+   ],
+   "establishes": [
+    "record_set_straight",
+    "keeper_intervenes",
+    "composure_kept",
+    "trial_reopens"
+   ],
+   "forbids": [
+    "humiliation",
+    "punishment_beyond_returning",
+    "theft_rewarded"
+   ],
+   "invention": {
+    "safeguard": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.safeguards",
+     "category": "safeguards",
+     "assigned_at": "bind",
+     "note": "the maker anticipated this exact impulse; whatever form it takes, the safeguard is gentle, funny, and impossible to be hurt by"
+    }
+   },
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   }
+  }
+ },
+ "stratum": "structural-bare"
+}

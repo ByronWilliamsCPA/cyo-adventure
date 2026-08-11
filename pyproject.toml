@@ -187,6 +187,11 @@ exclude = [
     "build",
     "migrations",
     "out",
+    # Archived experiment fixtures under docs/planning/evidence/. These are the
+    # exact builder scripts a pilot ran, kept verbatim so a result can be
+    # re-derived; they are never imported by the package and linting them would
+    # invite editing evidence after the fact.
+    "docs/planning/evidence",
     # Vulture's generated dead-code baseline. It is parsed by vulture, never
     # imported or executed, and its bare undefined names are the mechanism
     # rather than a defect (see the file's own docstring). Excluded, not

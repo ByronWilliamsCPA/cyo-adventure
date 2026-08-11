@@ -1,0 +1,423 @@
+{
+ "schema_version": "2.0",
+ "id": "sk_clocktower_cipher",
+ "version": 1,
+ "title": "<<FILL book_title>>",
+ "metadata": {
+  "age_band": "10-13",
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 5.5,
+   "tolerance": 1.5
+  },
+  "tier": 1,
+  "themes": [
+   "mystery",
+   "puzzles",
+   "friendship",
+   "history"
+  ],
+  "estimated_minutes": 18,
+  "ending_count": 8,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "mild",
+   "peril": "mild"
+  },
+  "topology": "branch_and_bottleneck",
+  "production_eligible": false
+ },
+ "variables": [],
+ "start_node": "n_open",
+ "nodes": [
+  {
+   "id": "n_open",
+   "body": "<<FILL role=setup words=100 tier=open contract='n_open'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_open",
+     "label": "<<FILL label contract='n_open.c_open'>>",
+     "target": "n_start"
+    }
+   ]
+  },
+  {
+   "id": "n_start",
+   "body": "<<FILL role=choice words=100 tier=open contract='n_start'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_examine",
+     "label": "<<FILL label contract='n_start.c_examine'>>",
+     "target": "n_note"
+    },
+    {
+     "id": "c_door",
+     "label": "<<FILL label contract='n_start.c_door'>>",
+     "target": "n_door"
+    },
+    {
+     "id": "c_keeper",
+     "label": "<<FILL label contract='n_start.c_keeper'>>",
+     "target": "n_keeper"
+    }
+   ]
+  },
+  {
+   "id": "n_note",
+   "body": "<<FILL role=rising words=100 tier=open contract='n_note'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_note_key",
+     "label": "<<FILL label contract='n_note.c_note_key'>>",
+     "target": "n_keyhunt"
+    },
+    {
+     "id": "c_note_inside",
+     "label": "<<FILL label contract='n_note.c_note_inside'>>",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_door",
+   "body": "<<FILL role=rising words=100 tier=open contract='n_door'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_door_force",
+     "label": "<<FILL label contract='n_door.c_door_force'>>",
+     "target": "n_inside"
+    },
+    {
+     "id": "c_door_window",
+     "label": "<<FILL label contract='n_door.c_door_window'>>",
+     "target": "n_window"
+    }
+   ]
+  },
+  {
+   "id": "n_keeper",
+   "body": "<<FILL role=rising words=100 tier=open contract='n_keeper'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_keeper_enter",
+     "label": "<<FILL label contract='n_keeper.c_keeper_enter'>>",
+     "target": "n_inside"
+    },
+    {
+     "id": "c_keeper_story",
+     "label": "<<FILL label contract='n_keeper.c_keeper_story'>>",
+     "target": "n_keeper_story"
+    }
+   ]
+  },
+  {
+   "id": "n_keyhunt",
+   "body": "<<FILL role=rising words=100 tier=open contract='n_keyhunt'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_keyhunt_in",
+     "label": "<<FILL label contract='n_keyhunt.c_keyhunt_in'>>",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_keeper_story",
+   "body": "<<FILL role=rising words=100 tier=open contract='n_keeper_story'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_story_in",
+     "label": "<<FILL label contract='n_keeper_story.c_story_in'>>",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_window",
+   "body": "<<FILL role=rising words=100 tier=open contract='n_window'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_window_in",
+     "label": "<<FILL label contract='n_window.c_window_in'>>",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_inside",
+   "body": "<<FILL role=choice words=100 tier=open contract='n_inside'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_inside_stairs",
+     "label": "<<FILL label contract='n_inside.c_inside_stairs'>>",
+     "target": "n_stairs"
+    },
+    {
+     "id": "c_inside_study",
+     "label": "<<FILL label contract='n_inside.c_inside_study'>>",
+     "target": "n_study"
+    },
+    {
+     "id": "c_inside_pendulum",
+     "label": "<<FILL label contract='n_inside.c_inside_pendulum'>>",
+     "target": "n_pendulum"
+    },
+    {
+     "id": "c_inside_basement",
+     "label": "<<FILL label contract='n_inside.c_inside_basement'>>",
+     "target": "n_basement"
+    }
+   ]
+  },
+  {
+   "id": "n_stairs",
+   "body": "<<FILL role=rising words=100 tier=open contract='n_stairs'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_stairs_face",
+     "label": "<<FILL label contract='n_stairs.c_stairs_face'>>",
+     "target": "n_clockface"
+    }
+   ]
+  },
+  {
+   "id": "n_study",
+   "body": "<<FILL role=rising words=100 tier=open contract='n_study'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_study_face",
+     "label": "<<FILL label contract='n_study.c_study_face'>>",
+     "target": "n_clockface"
+    },
+    {
+     "id": "c_study_logs",
+     "label": "<<FILL label contract='n_study.c_study_logs'>>",
+     "target": "n_end_library"
+    }
+   ]
+  },
+  {
+   "id": "n_pendulum",
+   "body": "<<FILL role=rising words=100 tier=open contract='n_pendulum'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_pendulum_oil",
+     "label": "<<FILL label contract='n_pendulum.c_pendulum_oil'>>",
+     "target": "n_clockface"
+    },
+    {
+     "id": "c_pendulum_giveup",
+     "label": "<<FILL label contract='n_pendulum.c_pendulum_giveup'>>",
+     "target": "n_end_giveup"
+    }
+   ]
+  },
+  {
+   "id": "n_basement",
+   "body": "<<FILL role=rising words=100 tier=open contract='n_basement'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_basement_face",
+     "label": "<<FILL label contract='n_basement.c_basement_face'>>",
+     "target": "n_clockface"
+    }
+   ]
+  },
+  {
+   "id": "n_clockface",
+   "body": "<<FILL role=choice words=100 tier=open contract='n_clockface'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_face_correct",
+     "label": "<<FILL label contract='n_clockface.c_face_correct'>>",
+     "target": "n_setcorrect"
+    },
+    {
+     "id": "c_face_jam",
+     "label": "<<FILL label contract='n_clockface.c_face_jam'>>",
+     "target": "n_setjam"
+    },
+    {
+     "id": "c_face_panel",
+     "label": "<<FILL label contract='n_clockface.c_face_panel'>>",
+     "target": "n_backpanel"
+    },
+    {
+     "id": "c_face_random",
+     "label": "<<FILL label contract='n_clockface.c_face_random'>>",
+     "target": "n_end_timeout"
+    }
+   ]
+  },
+  {
+   "id": "n_setcorrect",
+   "body": "<<FILL role=climax words=100 tier=open contract='n_setcorrect'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_correct_vault",
+     "label": "<<FILL label contract='n_setcorrect.c_correct_vault'>>",
+     "target": "n_vault"
+    }
+   ]
+  },
+  {
+   "id": "n_setjam",
+   "body": "<<FILL role=climax words=100 tier=open contract='n_setjam'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_jam_oil",
+     "label": "<<FILL label contract='n_setjam.c_jam_oil'>>",
+     "target": "n_vault"
+    },
+    {
+     "id": "c_jam_stuck",
+     "label": "<<FILL label contract='n_setjam.c_jam_stuck'>>",
+     "target": "n_end_stuck"
+    }
+   ]
+  },
+  {
+   "id": "n_backpanel",
+   "body": "<<FILL role=rising words=100 tier=open contract='n_backpanel'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_panel_vault",
+     "label": "<<FILL label contract='n_backpanel.c_panel_vault'>>",
+     "target": "n_vault"
+    },
+    {
+     "id": "c_panel_secret",
+     "label": "<<FILL label contract='n_backpanel.c_panel_secret'>>",
+     "target": "n_end_secret"
+    }
+   ]
+  },
+  {
+   "id": "n_vault",
+   "body": "<<FILL role=choice words=100 tier=open contract='n_vault'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_vault_share",
+     "label": "<<FILL label contract='n_vault.c_vault_share'>>",
+     "target": "n_end_hero"
+    },
+    {
+     "id": "c_vault_keep",
+     "label": "<<FILL label contract='n_vault.c_vault_keep'>>",
+     "target": "n_end_keepsake"
+    },
+    {
+     "id": "c_vault_grab",
+     "label": "<<FILL label contract='n_vault.c_vault_grab'>>",
+     "target": "n_end_caught"
+    }
+   ]
+  },
+  {
+   "id": "n_end_library",
+   "body": "<<FILL role=failure words=160 beats='Lost in the {ARCHIVE}, the friends look up to find the tower closing for the night; they leave clever but empty-handed, free to return; non-death, gentle'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_library",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "<<FILL ending_title>>"
+   }
+  },
+  {
+   "id": "n_end_giveup",
+   "body": "<<FILL role=failure words=160 beats='Backing away from {HAZARD}, they decide some risks are not worth it; they go home safe, the {CIPHER} unsolved for now; non-death'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_giveup",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "<<FILL ending_title>>"
+   }
+  },
+  {
+   "id": "n_end_timeout",
+   "body": "<<FILL role=failure words=160 beats='Random settings jam the whole mechanism; {CLOSING_SIGN} ring and they must leave; the tower keeps its secret; non-death, a learning beat'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_timeout",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "<<FILL ending_title>>"
+   }
+  },
+  {
+   "id": "n_end_stuck",
+   "body": "<<FILL role=failure words=160 beats='The forced gears stay jammed; the friends leave for the night, planning to come back with the right tools; non-death'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_stuck",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "<<FILL ending_title>>"
+   }
+  },
+  {
+   "id": "n_end_secret",
+   "body": "<<FILL role=completion words=170 beats='Beyond the panel, {SECRET_ROOM} is a wonder of half-finished {CRAFT}; they become its quiet keepers; a warm, satisfying discovery'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_secret",
+    "valence": "positive",
+    "kind": "success",
+    "title": "<<FILL ending_title>>"
+   }
+  },
+  {
+   "id": "n_end_hero",
+   "body": "<<FILL role=completion words=170 beats='The decoded message restores something lost to {SETTLEMENT}; the friends are quiet heroes and the {MECHANISM} runs true again; the main triumphant, series-advancing ending'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_hero",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "<<FILL ending_title>>"
+   }
+  },
+  {
+   "id": "n_end_keepsake",
+   "body": "<<FILL role=completion words=170 beats='They keep the secret among themselves, a bond that is theirs alone; a happy, private ending'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_keepsake",
+    "valence": "positive",
+    "kind": "success",
+    "title": "<<FILL ending_title>>"
+   }
+  },
+  {
+   "id": "n_end_caught",
+   "body": "<<FILL role=failure words=160 beats='Grabbing the treasure springs a harmless cage of jingling bells; {KEEPER} finds them and they sheepishly put it all back; comic, non-death failure'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_caught",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "<<FILL ending_title>>"
+   }
+  }
+ ]
+}

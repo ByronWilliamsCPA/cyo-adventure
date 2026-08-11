@@ -1,0 +1,1470 @@
+{
+ "schema_version": "2.0",
+ "id": "sk_midnight_frequency",
+ "version": 1,
+ "title": "The Midnight Frequency",
+ "metadata": {
+  "age_band": "10-13",
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 5.5,
+   "tolerance": 1.5
+  },
+  "tier": 1,
+  "themes": [
+   "mystery",
+   "codes",
+   "family",
+   "legacy"
+  ],
+  "estimated_minutes": 7,
+  "ending_count": 18,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "mild",
+   "peril": "moderate"
+  },
+  "topology": "open_map",
+  "length": "short",
+  "narrative_style": "prose",
+  "production_eligible": true
+ },
+ "variables": [],
+ "start_node": "n_start",
+ "nodes": [
+  {
+   "id": "n_start",
+   "body": "Sela Hale woke to a voice she knew. It came from the old direction finder on her shelf, dials and a swinging needle in a case scuffed pale at the corners. Gran Edie had left it to her, and it had sat silent for a year. Now it hummed on its own, and a calm voice read numbers into the dark: rows of two-letter references, coming through steady between the pips. That was Gran's voice. Gran, who had died last spring. Sela was not frightened, only astonished, the hair rising on her arms as she reached for a pencil. Somebody had recorded this long ago and set it to wake tonight, on purpose. She copied the groups down fast, exactly as they landed, and knew at once she could not do this by herself.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_start_teo",
+     "label": "Go and wake Kip.",
+     "target": "n_teo"
+    }
+   ]
+  },
+  {
+   "id": "n_teo",
+   "body": "Sela shook her brother Kip awake. He grumbled, then saw the pencil marks crowding her page and sat up. Together they crept to their mother's room. Ruth Hale listened to the receiver through the wall, and her face changed at her own mother's handwriting inside the worn logbook, Gran's key and margin notes still tucked inside its cover. Mum did not send them back to bed. She said yes, on her own terms: stay together, stay on their bikes, and be home by quarter past five, when the broadcast ended. Kip pulled on his coat before she'd finished talking. They had a mystery, a book, and permission.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_teo_decode",
+     "label": "Sit down and decode it.",
+     "target": "n_decode"
+    }
+   ]
+  },
+  {
+   "id": "n_decode",
+   "body": "At the kitchen table, Kip found the answer taped inside the logbook's own cover: a square grid, rows lettered down one side, numbers marching across the top. Find the row, find the column, read the letter where they crossed. Sela called out pairs from her page and Kip hunted them down, letter after letter, until the numbers turned into words. Slowly five places in Wrenfield stood out between them, each with its own short coded hint still waiting to be cracked. Under them all sat one closing line, five words the club had always ended on. Meanwhile the direction finder's needle held steady the whole time, pointing the same way no matter which way Sela turned: east, dead east, toward something none of the five places explained.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_decode_ride",
+     "label": "Grab the bikes and go.",
+     "target": "n_hub"
+    }
+   ]
+  },
+  {
+   "id": "n_hub",
+   "body": "Outside, Wrenfield lay empty and silver under the streetlamps, and the market square felt like the safest place in the world to stand and choose. Sela and Kip straddled their bikes there with the logbook, the receiver, and its steady needle. Five places waited across town, each holding a short hint, and none of them was more right than the others. They could pedal for the standpipe, the shut-up old theatre, the working waterfront, the reading room, or the fire tower above the valley. Or they could ignore all five and simply follow the needle east, straight toward whatever it pointed at. The square would still be here whichever way they went, and so would the direction they had not yet chosen.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hub_tower",
+     "label": "Ride for the standpipe.",
+     "target": "wt_lane"
+    },
+    {
+     "id": "c_hub_cinema",
+     "label": "Ride for the Lyric Hall.",
+     "target": "cn_marquee"
+    },
+    {
+     "id": "c_hub_harbor",
+     "label": "Ride for the ropewalk.",
+     "target": "hb_road"
+    },
+    {
+     "id": "c_hub_library",
+     "label": "Ride for the Reading Room.",
+     "target": "lb_green"
+    },
+    {
+     "id": "c_hub_mast",
+     "label": "Ride for the fire tower.",
+     "target": "bh_path"
+    },
+    {
+     "id": "c_hub_nest",
+     "label": "Follow the bearing east.",
+     "target": "fin_bearing"
+    }
+   ]
+  },
+  {
+   "id": "wt_lane",
+   "body": "The lane up Gill Bank climbed steeply, and the reservoir standpipe came up out of the dark ahead of them, a single round column taller than any house nearby. By day it was just plumbing. By night it looked enormous, ringed all the way up its side with five identical iron rungs bolted on like a ladder built for giants. Sela free-wheeled the last stretch and stopped, catching her breath. Kip parked beside her and looked the column up and down, working out where the fence gave way to old wire. The standpipe stood there patiently, holding whatever the hint had promised.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wt_lane_on",
+     "label": "Head for the standpipe's fence.",
+     "target": "wt_gap"
+    }
+   ]
+  },
+  {
+   "id": "wt_gap",
+   "body": "A gap sagged in the wire along the standpipe's fence, low enough to duck through and worn smooth by years of other feet. Every kid in Wrenfield knew about it; Kip said their own mother had probably used it thirty years before them. Sela ducked first, holding the wire up for her brother, and then they were standing inside, under the standpipe itself, with the column rising over them like a lighthouse someone had forgotten to paint. Nothing was cut, nothing was forced. They were simply standing where generations of curious kids had always stood.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wt_gap_lot",
+     "label": "Slip through the gap.",
+     "target": "wt_gate"
+    }
+   ]
+  },
+  {
+   "id": "wt_gate",
+   "body": "Kip found the site's own hint in the pages Sela had copied and read the coordinates off against the logbook's grid: E-three, B-three, B-seven, letter by letter, until three plain words sat on the page. REACH LOW RUNG. Sela frowned up at the standpipe. Reach could mean the little store built onto its base. Low could mean the rungs themselves, five of them, identical as far as anyone could tell. Or it could mean the instruction was wrong, and the real answer waited higher up, past the frost, where nobody sensible would bother looking. Kip turned the coded words over twice, then looked at his sister to see which way she wanted to try first.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wt_gate_shed",
+     "label": "Search the store hut.",
+     "target": "wt_shed"
+    },
+    {
+     "id": "c_wt_gate_legs",
+     "label": "Check the five rungs.",
+     "target": "wt_legs"
+    },
+    {
+     "id": "c_wt_gate_ladder",
+     "label": "Size up the high rungs.",
+     "target": "wt_ladder"
+    }
+   ]
+  },
+  {
+   "id": "wt_ladder",
+   "body": "The instruction had said low, plainly, but the standpipe's outer rungs still called to Kip. He put a hand on the nearest one and felt frost on it at once, a thin skin of ice settled since midnight. Every rung above wore the same cold sheen, and the top one besides was visibly bent, as though it had taken a knock years ago. Nobody had written REACH LOW RUNG by accident, and nobody who wrote it had ever asked anyone to climb. Still, the high way was right there, daring him. He looked down at the frost, then up at the bend, and made his choice.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wt_ladder_climb",
+     "label": "Climb the frozen rungs anyway.",
+     "target": "e_wt_climb"
+    },
+    {
+     "id": "c_wt_ladder_legs",
+     "label": "Go back to the five rungs.",
+     "target": "wt_legs"
+    }
+   ]
+  },
+  {
+   "id": "wt_legs",
+   "body": "Five identical iron rungs ran up the standpipe's side, bolted at the same spacing, painted the same flat grey. If the hint meant what it said, one of the five had to differ, whatever REACH LOW RUNG had been trying to tell them. Sela crouched by the lowest one and laid her palm against the cold metal. Kip crouched beside her with the torch, turning it along each rung, looking for anything that broke the pattern. Sound or sight, both were honest ways to test five things that looked exactly alike.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wt_legs_tap",
+     "label": "Listen to each rung.",
+     "target": "wt_tap"
+    },
+    {
+     "id": "c_wt_legs_marks",
+     "label": "Look over each rung.",
+     "target": "wt_marks"
+    }
+   ]
+  },
+  {
+   "id": "wt_tap",
+   "body": "Sela rapped her knuckle against the first rung and got a flat, dull clank, the sound of ordinary iron. She worked her way up: clank, clank, clank. Then, on the fourth rung, the sound changed completely. It rang out bright and clear, almost musical, nothing like the others at all. She rapped it again to be sure, and Kip grinned in the torchlight. Whatever made that rung sing instead of clank, it sat right where the hint had promised, exactly at reach height, waiting to be opened.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wt_tap_box",
+     "label": "Open the ringing rung.",
+     "target": "wt_box"
+    }
+   ]
+  },
+  {
+   "id": "wt_marks",
+   "body": "Kip ran the torch beam slowly along each rung, looking for anything a stranger would miss. The first three were plain iron, and the fifth was plain too. On the fourth, low down where a hand would naturally rest, a tiny mark had been painted: a small spiral with one dot at its centre. Sela's breath caught. She flipped open the logbook, and there in the margin, drawn small in the same hand, was the exact same spiral and dot. Somebody had left themselves a signature on this rung, on purpose, long before tonight.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wt_marks_box",
+     "label": "Open the marked rung.",
+     "target": "wt_box"
+    }
+   ]
+  },
+  {
+   "id": "wt_box",
+   "body": "The marked rung's bracket held a small hinged inspection door, the kind meant for a maintenance crew, not a letterbox. Sela worked it open. Inside, instead of any tool, sat a torn corner of graph paper, folded once. She smoothed it flat: a hand-ruled diagram of racks and shelving, one number circled twice in pencil. It was not a prize. It was a message, aimed at whoever got this far, pointing them toward a store room they had not thought to search yet. Somebody had planned this rung, this door, this exact note, long before either of them was born.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wt_box_shed",
+     "label": "Head for the store hut now.",
+     "target": "wt_shed"
+    },
+    {
+     "id": "c_wt_box_card",
+     "label": "Study the drawing first.",
+     "target": "wt_card"
+    }
+   ]
+  },
+  {
+   "id": "wt_card",
+   "body": "Kip held the torn corner of graph paper close and turned it in the light. The diagram showed shelving, roughly drawn, with one shape circled twice hard enough to tear the paper a little. He reasoned it out loud for Sela: this was a store room, somewhere with shelves like these, and whatever they were hunting sat on one particular shelf inside it. It made the whole rung, the whole climb, suddenly make sense, like a person had stood right here deciding exactly what a finder would need. Sela nodded, already picturing the standpipe's own little store hut against the fence.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wt_card_shed",
+     "label": "Carry the drawing indoors.",
+     "target": "wt_shed"
+    }
+   ]
+  },
+  {
+   "id": "wt_shed",
+   "body": "The standpipe's own store hut stood unlocked against the fence, its door swollen and easy to shoulder open. Inside, a single bulb on a pull-cord lit a room stacked with old fittings, coiled hose, and a workbench nobody had tidied in years. Shelves lined one wall, crowded with tins and boxes. Above the bench, a yellowed group snapshot hung pinned to a corkboard, its corners curled hard with age, showing a dozen people Sela did not recognize. She could search the shelf first, or look at the people first, and either way the little room felt safe, ordinary, and entirely theirs to explore.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wt_shed_cans",
+     "label": "Search the shelf first.",
+     "target": "wt_cans"
+    },
+    {
+     "id": "c_wt_shed_photo",
+     "label": "Look at the old photograph.",
+     "target": "wt_photo"
+    }
+   ]
+  },
+  {
+   "id": "wt_photo",
+   "body": "Up close, the caption under the photograph read Reservoir Watch, Wrenfield, 1959, in faded ink, and under it a row of names. Third from the left, laughing at something out of frame, stood a young woman labelled Edie Marsh. Sela stared. That was Gran, years before she was anyone's grandmother, mid-laugh with a paintbrush in one hand and her sleeves rolled up. It felt like Gran had just stepped out of the room for a moment. One corner of the photograph had been tucked under a shelf label, pointing, quite helpfully, straight down at a row of tins below it.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wt_photo_cans",
+     "label": "Follow the photo back to the shelf.",
+     "target": "wt_cans"
+    }
+   ]
+  },
+  {
+   "id": "wt_cans",
+   "body": "The shelf held a dozen tins that all looked the same, oil and grease and old cleaning fluid, dusty and forgotten. One, though, was labelled EMPTY, SPARE in blunt block capitals, and when Sela lifted it, it came up far too easily, weightless as an empty crisp packet when it should have clunked with rust and residue. She shook it once. Something small shifted inside, light and dry, nothing like oil at all. Kip leaned in as she worked the lid free, both of them certain now that nothing in this room had ended up where it was by accident.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wt_cans_open",
+     "label": "Open the labelled tin.",
+     "target": "wt_cache"
+    }
+   ]
+  },
+  {
+   "id": "wt_cache",
+   "body": "Inside the tin sat a small engraved washer, its rim gone green with age, one word stamped across its face: THE. Under it lay a folded slip in Gran's own handwriting. She had climbed this standpipe every spring to check the rungs herself, it said, long after the town had stopped asking her to, just because she liked knowing they were sound. The slip ended, as Sela now expected, with five familiar words: the club's old sign-off, the same one waiting at the end of the whole hunt. Sela tucked the washer into her pocket beside the others still to come. They could bank this and keep searching, or leave the rest of the sites behind and follow the needle east instead.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wt_cache_hub",
+     "label": "Head back to the square.",
+     "target": "n_hub"
+    },
+    {
+     "id": "c_wt_cache_nest",
+     "label": "Follow the bearing east.",
+     "target": "fin_bearing"
+    }
+   ]
+  },
+  {
+   "id": "e_wt_climb",
+   "body": "Kip's boot found the second rung, then his hand slipped on the frost coating the third, and nothing was under his foot at all. Then Sela had his elbow, hauling until his boot found the ladder again. They sat down hard in the cold grass and let their hearts slow. The bent top rung waited above them, useless as the hint had warned. Whoever wrote REACH LOW RUNG never meant for anybody to be up here. Sela didn't scold him. They rode home under a paling sky, the hint still unsolved.",
+   "is_ending": true,
+   "ending": {
+    "id": "end_wt_climb",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Frost on the Ladder"
+   }
+  },
+  {
+   "id": "cn_marquee",
+   "body": "Cooper's Row was silver and empty, and the Lyric Hall stood boarded at its centre, dark windows and a ticket booth still chalked with a matinee price nobody had paid in years. It looked sad in the way of any shut-up building. Kip worked the coded hint against the grid: D-two, F-nine, F-one, F-five, until the words came clear. SEAT J NINE, THEN WHERE THE LIGHT LIVES. Sela looked from the boarded doors to the alley down the side. Gran's logbook already knew the way in, and it was not through the front.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cn_marquee_alley",
+     "label": "Slip down the side alley.",
+     "target": "cn_alley"
+    }
+   ]
+  },
+  {
+   "id": "cn_alley",
+   "body": "The side door gave the moment Kip tried the handle, exactly as the logbook's notes had promised. Inside, the Lyric's great hall opened up around them, sheeted rows of seats running back into the dark like a sleeping crowd, dust hanging soft in the torch beam. A narrow stair climbed away to their left, disappearing toward whatever the riddle had meant by where the light lives. They could go straight into the hall and find seat J nine as the hint instructed, or trust their own reading of the riddle and head upstairs at once.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cn_alley_stalls",
+     "label": "Walk into the main hall.",
+     "target": "cn_stalls"
+    },
+    {
+     "id": "c_cn_alley_stairs",
+     "label": "Climb straight for the stairs.",
+     "target": "cn_boothstairs"
+    }
+   ]
+  },
+  {
+   "id": "cn_stalls",
+   "body": "The hall smelled of dust and old velvet, rows and rows of sheeted seats standing at attention with nobody to sit in them. It was strange, Sela thought, how a room built for a crowd could feel this quiet, this asleep rather than abandoned. Down at the front, half-visible past the seat backs, stood the shapes of something bulkier than furniture, equipment the club must have used once, still parked where it had been left. They could go straight to seat J nine, exactly as the hint had told them, or drift down front first and see what that old equipment actually was. The second way had its own honest risk, visible even from here.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cn_stalls_rowj",
+     "label": "Count your way to Row J.",
+     "target": "cn_rowj"
+    },
+    {
+     "id": "c_cn_stalls_stage",
+     "label": "Go look at the old equipment.",
+     "target": "cn_stage"
+    }
+   ]
+  },
+  {
+   "id": "cn_rowj",
+   "body": "Row J counted out easily along the aisle, and seat nine sat exactly where it should, sheeted like all the rest. Sela pulled the dust cover back. Every seat around it wore decades of neglect, cracked leather and sagging springs, but this one had a small brass fitting underneath that somebody had clearly kept polishing. She could get down and search it from underneath, awkward but hidden, or tip the seat forward and look at the fitting from the front, loud but open.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cn_rowj_under",
+     "label": "Search underneath the seat.",
+     "target": "cn_under"
+    },
+    {
+     "id": "c_cn_rowj_tip",
+     "label": "Tip the seat forward.",
+     "target": "cn_tip"
+    }
+   ]
+  },
+  {
+   "id": "cn_under",
+   "body": "Sela got down and reached up under the seat, past old gum and rusted springs, until her fingers found the fitting Kip had spotted. It wasn't glued or screwed tight the way old fittings usually were. It gave under her thumb, turning smoothly, as if a hundred hands before hers had undone it the same way. Somebody had built this to be opened, by fingers meant for fingers, not any tool. She worked it loose and felt it come free in her palm.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cn_under_plate",
+     "label": "Work the fastening loose.",
+     "target": "cn_plate"
+    }
+   ]
+  },
+  {
+   "id": "cn_tip",
+   "body": "Kip hooked his fingers under the seat's edge and tipped it forward. It dropped with a loud clap that rolled away through the empty hall and came rustling back as an echo. Nothing answered it; the Lyric was as empty as it looked. On the seat's front, catching the torchlight, the fitting sat proud of its frame, rocking under his fingertip, clearly not fixed down the way the rest of the seat was. He worked it free with a twist and it came away easily.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cn_tip_plate",
+     "label": "Work the fastening loose.",
+     "target": "cn_plate"
+    }
+   ]
+  },
+  {
+   "id": "cn_plate",
+   "body": "Behind the loosened fitting sat a small hollow, chiselled neat and dry into the wood, plainly shaped by hand rather than by any machine. Inside it, instead of the prize they had half expected, was a folded note. Sela read it twice before it made sense. The riddle had never meant this seat held anything at all; it meant this seat proved they were in the right building, and sent them on to the one place in the whole hall where the light actually lived. She looked up toward the stage and the wings beyond it, understanding now exactly where that meant.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cn_plate_stairs",
+     "label": "Head for the stairs.",
+     "target": "cn_boothstairs"
+    }
+   ]
+  },
+  {
+   "id": "cn_stage",
+   "body": "The way to the stage crossed the old orchestra pit cover, wooden panels laid flat over the sunken pit below. One board groaned sharply under Kip's toe, a wrong sound that made them both stop. In the torchlight they could see it clearly: one panel had rotted through in the middle, while a plank walkway ran around the edge, solid and still sound. Crossing the safe way would only cost a few extra seconds. Kip looked at the walkway, then at the straight line across the middle, weighing patience against speed.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cn_stage_edge",
+     "label": "Take the sound walkway.",
+     "target": "cn_horns"
+    },
+    {
+     "id": "c_cn_stage_rush",
+     "label": "Rush straight across.",
+     "target": "e_cn_boards"
+    }
+   ]
+  },
+  {
+   "id": "cn_horns",
+   "body": "Along the safe edge, the torch beam swung into the wings and found the Lyric's old speaker horns, stacked in a jumble, brass bells gone green and pointed every which way like a herd caught mid-stampede. They must once have filled this hall with sound. On the nearest horn, painted where a hand would rest, sat the same spiral and dot Sela had already found on the standpipe, with one word chalked beside it, pointing toward the stairs and the room above.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cn_horns_stairs",
+     "label": "Follow the mark to the stairs.",
+     "target": "cn_boothstairs"
+    }
+   ]
+  },
+  {
+   "id": "cn_boothstairs",
+   "body": "A narrow private stair climbed up from the wings toward a single door, standing ajar on darkness at the top. Beside it, a small window let anyone climb the last few steps and look in before going any further. Sela reached the landing first and stopped there, one hand on the door, feeling the pull of whatever waited behind it. They could push straight in and see for themselves, or spend one careful moment looking through the glass first. Neither way would cost them anything but a breath.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cn_stairs_in",
+     "label": "Go straight into the booth.",
+     "target": "cn_booth"
+    },
+    {
+     "id": "c_cn_stairs_port",
+     "label": "Look through the window first.",
+     "target": "cn_port"
+    }
+   ]
+  },
+  {
+   "id": "cn_port",
+   "body": "Through the little window, the projection room lay in neat rows: reels stacked on shelving, labelled tins lined up like soldiers, everything covered in the same undisturbed dust. Sela let her eyes travel the shelf slowly, and then she saw it: one tin turned the wrong way round, facing out instead of in, exactly as if someone had wanted it noticed by anyone who bothered to look. She had her target picked out before she had even touched the door. Whatever it held, she already knew which shelf to go straight for.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cn_port_in",
+     "label": "Go in for the odd tin.",
+     "target": "cn_booth"
+    }
+   ]
+  },
+  {
+   "id": "cn_booth",
+   "body": "Inside, the projection room smelled of cold oil and old dust, everything sat ready, as though somebody had left it prepared and never come back. A tobacco tin was wedged into the rack, taped shut, one word lettered dark on the lid. Beside it stood the old projector, already threaded, a reel labelled in grease pencil: Lyric, Closing Night. Sela could open the tin and carry on with the hunt, or Kip could throw the switch and spend the rest of the night on one shared showing instead. Both felt like the right thing.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cn_booth_open",
+     "label": "Open the sealed tin.",
+     "target": "cn_cache"
+    },
+    {
+     "id": "c_cn_booth_thread",
+     "label": "Run the old reel instead.",
+     "target": "e_cn_reel"
+    }
+   ]
+  },
+  {
+   "id": "cn_cache",
+   "body": "The tin held a small punched fibre disc, warm in Sela's hand despite the cold room, with one word stamped into it: NET. Underneath sat a folded caption, the sort that might once have sat under a photograph in a local paper. Gran had sold tickets at the Lyric Hall for six winters, it said, and had known every regular by the coat they wore, long before anyone here knew her as a grandmother. It ended, like the last one, with the club's five closing words. Sela slid the disc into her pocket next to the washer already there. The hunt could go on from here, or the two of them could leave the rest for another night and follow the needle east instead.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cn_cache_hub",
+     "label": "Head back to the square.",
+     "target": "n_hub"
+    },
+    {
+     "id": "c_cn_cache_nest",
+     "label": "Follow the bearing east.",
+     "target": "fin_bearing"
+    }
+   ]
+  },
+  {
+   "id": "e_cn_boards",
+   "body": "Kip went for speed instead of the safe edge, and the rotten panel gave with a crack that rang round the empty hall. His leg dropped through to the knee before Sela had both arms around him, hauling until he was out, sitting on solid boards, a scraped shin the whole cost of it. They crawled the rest of the way round on the safe edge, slower than crossing properly would have taken. On the ride home Kip said the rule himself: no prize was worth that. The hint stayed unsolved, and the Lyric would still be standing tomorrow.",
+   "is_ending": true,
+   "ending": {
+    "id": "end_cn_boards",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Floor That Gave"
+   }
+  },
+  {
+   "id": "e_cn_reel",
+   "body": "The old projector caught, clattering into life, and light spilled across the boarded-up hall exactly the way it must have decades ago. The reel gave them the club's last closing night whole: a packed room, laughing faces, and somewhere in the crowd Gran's own voice calling out between acts, young and delighted. Sela and Kip sat together on the dusty stage steps and watched it, the tin still unopened beside them. When the light clicked off, the hall felt warmer, as if it remembered what it was for. They had traded the rest of the hunt for one hour, and neither minded.",
+   "is_ending": true,
+   "ending": {
+    "id": "end_cn_reel",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "One Shared Reel"
+   }
+  },
+  {
+   "id": "hb_road",
+   "body": "The road down to Gull Quay ran between dark warehouses, and the ropewalk store came into view low and long against the water, stacked floor to roof with coiled line and old retired winches. Out past the harbour mouth, a channel buoy tolled once, then again after a long pause, a slow rhythm the whole valley seemed to breathe along with. One window down the front sat lit, small and yellow against the dark. Somebody was awake out here, and that felt like a comfort. Sela and Kip freewheeled the last stretch toward it.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hb_road_wall",
+     "label": "Walk the harbour wall.",
+     "target": "hb_wall"
+    }
+   ]
+  },
+  {
+   "id": "hb_wall",
+   "body": "The walk along the harbour wall was long, lit in patches by old lamps with wide dark gaps between. Nothing waited in those gaps but more dark; the water beyond the wall breathed in and out, black and patient, and the buoy kept its slow rhythm somewhere past the moorings. Sela kept close to Kip without meaning to, the two of them small under such a wide sky. By the time the store's doors came into view, the lit window was a little further along, close enough to see somebody moving behind the glass.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hb_wall_quay",
+     "label": "Close in on the ropewalk store.",
+     "target": "hb_quay"
+    }
+   ]
+  },
+  {
+   "id": "hb_quay",
+   "body": "The ropewalk store's doors were shut fast with a serious padlock, and there was no obvious way through without a key. Down at the steps, a flat-bottomed punt sat chained to a ring, a crack up one side plugged with old rag, clearly not fit to trust their weight to. The lit window sat a little further on, close enough to hear a radio muttering behind it. They could walk up and ask whoever was awake for help, study the padlock and the doors first, or climb into that patched punt and paddle round to some other way in. Only one of those ideas looked genuinely bad.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hb_quay_office",
+     "label": "Ask at the lit window.",
+     "target": "hb_office"
+    },
+    {
+     "id": "c_hb_quay_doors",
+     "label": "Study the padlocked doors.",
+     "target": "hb_doors"
+    },
+    {
+     "id": "c_hb_quay_dinghy",
+     "label": "Take the patched punt.",
+     "target": "e_hb_dinghy"
+    }
+   ]
+  },
+  {
+   "id": "hb_doors",
+   "body": "The padlock held fast, solid steel with no give, and the doors were bolted top and bottom besides. There was no gap here for two children to slip through. Sela ran her fingers along the stencilled numbers on the barrier and stopped: worked in among the official lettering was the same small spiral and dot from the standpipe, painted by a different hand entirely. They were in the right place, whatever happened next. She could peer through some gap in the boards first, or accept what the padlock had told them and go and knock on that lit window.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hb_doors_peek",
+     "label": "Peek through the boards.",
+     "target": "hb_peek"
+    },
+    {
+     "id": "c_hb_doors_office",
+     "label": "Go and ask for help.",
+     "target": "hb_office"
+    }
+   ]
+  },
+  {
+   "id": "hb_peek",
+   "body": "A gap between two boards let Sela press one eye close and look in. Even without torchlight she could make out shapes: a whole herd of retired equipment standing shoulder to shoulder in the dark, winches and capstans gone quiet years ago. At the very back, one shape caught what little light there was in a way the others didn't. She couldn't reach it or properly see it, but she knew which one mattered now. Satisfied, she nodded at Kip, ready to go and ask for the way in properly.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hb_peek_office",
+     "label": "Go and ask for the way in.",
+     "target": "hb_office"
+    }
+   ]
+  },
+  {
+   "id": "hb_office",
+   "body": "The lit window belonged to a small office, and the man inside looked up before they had even knocked, as if children at his door at this hour was nothing new. A transistor radio muttered on the shelf beside his tea, and Sela noticed, with a jolt, a pad of paper next to it covered in the same two-letter groups she had been copying all night, in a neat, old-fashioned hand. He waved them in without asking a single question first. She could show him what she and Kip had worked out, or ask him first what exactly he was copying.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hb_office_show",
+     "label": "Show him the decoded page.",
+     "target": "hb_show"
+    },
+    {
+     "id": "c_hb_office_pad",
+     "label": "Ask about his own pad.",
+     "target": "hb_pad"
+    }
+   ]
+  },
+  {
+   "id": "hb_show",
+   "body": "Sela laid the decoded page on the counter and explained, plainly, what the numbers had turned into and where it was leading. The man went very still, reading it twice. Then he looked at the handwriting in the logbook and said a name out loud, quiet and certain: Edie's system. He had been the youngest in her club once, he told them, and would know that grid key anywhere. He didn't hand over anything that wasn't his to give, and didn't leave his post. He simply reached for a ring of keys, treating the two of them like colleagues.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hb_show_key",
+     "label": "Take the key he offers.",
+     "target": "hb_key"
+    }
+   ]
+  },
+  {
+   "id": "hb_pad",
+   "body": "Sela nodded at the pad of numbers by his tea and asked what he was listening to. His face changed, quiet pride replacing surprise. Under tonight's fresh sheet sat a stack of his own old stock-books, and he flipped one open to show her a margin where two initials sat beside an old delivery date, the same spiral and dot doodled next to them. The club had been the night shift of a working town, he explained, and her grandmother had been the best of them. He didn't wait to be asked; he was already reaching for his keys.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hb_pad_key",
+     "label": "Take the key he offers.",
+     "target": "hb_key"
+    }
+   ]
+  },
+  {
+   "id": "hb_key",
+   "body": "He pressed a key into Sela's palm, still warm from his pocket, and nodded toward the store's doors. Whatever they were looking for, he said, they should go find it properly and come back and tell him after. The kettle had just clicked off, and the radio kept muttering numbers into the small warm room. Sela could feel the clock still running, quarter past five somewhere ahead in the dark. She could take the key and go do the thing they came for, or sit and let this kind stranger keep talking about a grandmother she had never properly known.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hb_key_shed",
+     "label": "Go open the store.",
+     "target": "hb_shed"
+    },
+    {
+     "id": "c_hb_key_stories",
+     "label": "Stay and hear his stories.",
+     "target": "e_hb_stories"
+    }
+   ]
+  },
+  {
+   "id": "hb_shed",
+   "body": "The key turned smooth in the lock, and inside the store smelled of iron, salt, and old tar. Retired winches loomed on every side, huge dark shapes the torch beam only half revealed. Kip worked the hint against the grid key, letter by letter, until the words sat plain: THE ONE THAT STILL SPEAKS. Somewhere among these silent machines, one still had a voice. They could try turning the nearest winch the way it was built to be turned, or read the surfaces of each one closely, looking for whatever somebody had added by hand.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hb_shed_ring",
+     "label": "Turn the old winch.",
+     "target": "hb_bell"
+    },
+    {
+     "id": "c_hb_shed_cage",
+     "label": "Read the winch's surface.",
+     "target": "hb_cage"
+    }
+   ]
+  },
+  {
+   "id": "hb_bell",
+   "body": "Kip found a winch near the back and gave its drum a gentle turn, just enough to test it. It answered with one long, round note, deep and enormous, filling the whole shed the way a struck bell fills a church. Sela laughed out loud before she could stop herself. Underneath that huge soft note, something else rattled, small and out of place, shifting inside the drum where nothing loose should have been. Kip turned it again, listening carefully this time, and the rattle answered right on cue, exactly where the sound had promised something would be.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hb_bell_capsule",
+     "label": "Take what the note gave away.",
+     "target": "hb_cache"
+    }
+   ]
+  },
+  {
+   "id": "hb_cage",
+   "body": "Sela ran her torch slowly along the nearest winch's frame, looking for anything that didn't belong. Fifty years of salt and weather had dulled every surface to the same flat grey, until, low on one bracket, her light caught something brighter: a patch of fresher paint under the grime. She rubbed a thumb across it and the spiral and dot came up clear, an arrow drawn small beside it, pointing up into the winch's own works. Somebody had marked this exact machine, on purpose, and told her exactly where to look next.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hb_cage_capsule",
+     "label": "Take what the mark pointed to.",
+     "target": "hb_cache"
+    }
+   ]
+  },
+  {
+   "id": "hb_cache",
+   "body": "Wedged into the winch's drum, where a bearing should have sat and plainly didn't, was a narrow capsule. Sela worked it free and twisted it open. Inside lay a small cast medallion, cool and heavy in her palm, one word on its face: STAYS. Folded beside it was a page from an old stock log, in Gran's hand, margins noting the nights she had covered for the night watchman so he could sleep, and the club's five closing words underneath it all. Sela thought of the buoy bell outside, and understood why a voice ringing into the dark had always mattered so much to her grandmother. She could bank this and search on, or follow the needle east.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hb_cache_hub",
+     "label": "Head back to the square.",
+     "target": "n_hub"
+    },
+    {
+     "id": "c_hb_cache_nest",
+     "label": "Follow the bearing east.",
+     "target": "fin_bearing"
+    }
+   ]
+  },
+  {
+   "id": "e_hb_dinghy",
+   "body": "The patched punt took on water almost the moment Kip pushed off, cold seeping in fast around the old rag plugging the crack. Two pulls of the oar and it was already ankle-deep. He turned it straight back, and both of them squelched onto the steps a boat's length later, soaked and laughing despite themselves. Out past the harbour mouth the buoy kept tolling, patient and unbothered. Sela remembered, later, a line in the logbook's margins that said almost this, word for word, about that very boat. They wrung out their socks and decided the ropewalk could wait for a drier night.",
+   "is_ending": true,
+   "ending": {
+    "id": "end_hb_dinghy",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Wet Boots, Wise Retreat"
+   }
+  },
+  {
+   "id": "e_hb_stories",
+   "body": "Sela and Kip stayed, and the kettle went on again. The night porter's stories ran long, and the ropewalk's history came alive in the telling in a way no tin could have managed. He talked about her grandmother the way you'd talk about somebody brilliant and ordinary at once, and the sky began to turn from black to pearl. Neither noticed the site had never been opened until it was too late to matter. When the day relief arrived, the man shook both their hands like colleagues and promised to be listening next time. They rode home with cocoa warm in their stomachs and the club more real than any keepsake.",
+   "is_ending": true,
+   "ending": {
+    "id": "end_hb_stories",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Stories Over Cocoa"
+   }
+  },
+  {
+   "id": "lb_green",
+   "body": "The Reading Room sat dark on Parish Lane except for one green-shaded lamp, left burning over the newspaper table, the only light on in the chapel. It felt less like an expedition and more like a quick errand, the kind their mother sent them on in daylight. Kip worked the hint through the grid key: ROOM CHART FIFTY-NINE, MIND THE BELL. It named the room, pointed toward a record filed by year, and warned about something noisy at the door. Sela led the way toward the side entrance the town had always used after hours.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_lb_green_porch",
+     "label": "Head for the side door.",
+     "target": "lb_porch"
+    }
+   ]
+  },
+  {
+   "id": "lb_porch",
+   "body": "A set of tin cans hung wired above the side door, strung to rattle loudly at the first careless push, exactly the warning the hint had promised. Sela crouched and felt under the step, where a bent nail held a spare key looped on it, the same key half the grandmothers in Wrenfield probably knew about. It wasn't hidden from them; it was simply where it had always been for anyone who needed it properly. They could lift the key free and let themselves in the quiet, patient way the hint clearly wanted, or they could ignore all of that and just try the handle, cans and all.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_lb_porch_owl",
+     "label": "Fetch the spare key quietly.",
+     "target": "lb_key"
+    },
+    {
+     "id": "c_lb_porch_handle",
+     "label": "Just try the handle.",
+     "target": "e_lb_alarm"
+    }
+   ]
+  },
+  {
+   "id": "lb_key",
+   "body": "The spare key turned in the lock as if it had been expecting them, smooth and quiet, and the door swung open without a single can so much as swaying. Sela eased it shut just as carefully. Nothing about this felt like sneaking; it felt like using something the town had left ready for exactly this errand. Kip grinned at her in the dark hallway, pleased with how easy it had been, and they moved on into the Reading Room proper, the cans still hanging silent behind them.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_lb_key_hall",
+     "label": "Slip inside quietly.",
+     "target": "lb_hall"
+    }
+   ]
+  },
+  {
+   "id": "lb_hall",
+   "body": "Moonlight lay in silver bars across the reading room floor, between dark stacks of shelving that ran back into shadow. Far at the end sat the room the hint had named, the target waiting quietly in the dark. Partway there, though, one table sat lit by that single green-shaded lamp somebody had left burning, papers spread out under it like an invitation. They could keep the errand tight and walk straight to the room they needed, or let that one lit table pull them off course for a minute first. Either choice would still get them where they were going.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_lb_hall_maproom",
+     "label": "Go straight to the map room.",
+     "target": "lb_maproom"
+    },
+    {
+     "id": "c_lb_hall_table",
+     "label": "Stop at the lit table.",
+     "target": "lb_table"
+    }
+   ]
+  },
+  {
+   "id": "lb_table",
+   "body": "Under the lamp sat a half-finished display, a card reading The Wrenfield Valley Net, established 1960, above a photograph of a dozen night-shift faces crowded together. Sela recognized none of them and felt, all the same, like she was looking at family. Kip read the date twice, filing it away: the hint's own number, fifty-nine, must mean the year before, when the group was still meeting informally, ahead of going properly official. It told them precisely when to start looking. They left the lamp burning and carried on toward the target room.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_lb_table_maproom",
+     "label": "Carry the date to the map room.",
+     "target": "lb_maproom"
+    }
+   ]
+  },
+  {
+   "id": "lb_maproom",
+   "body": "The map room held cabinet after cabinet of year-labelled drawers, a hundred slices of the town's paper history stacked floor to ceiling. Most of the labels were neatly typed, uniform and official. One, though, near the middle of a row, carried a small hand-painted mark instead of type: the same spiral and dot from the standpipe and the ropewalk both. Sela could trust that mark completely and go straight for it, or Kip could work the drawers methodically, year by year, until the right one turned up on its own. Either way would land on exactly the same record in the end.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_lb_maproom_diamond",
+     "label": "Trust the painted mark.",
+     "target": "lb_drawer"
+    },
+    {
+     "id": "c_lb_maproom_hunt",
+     "label": "Search the drawers by year.",
+     "target": "lb_hunt"
+    }
+   ]
+  },
+  {
+   "id": "lb_hunt",
+   "body": "Kip worked along the row steadily, sliding drawer after drawer, checking each year without any real hurry. It was almost pleasant, the rhythm of it, cabinet after cabinet giving way under the torch. Then the beam caught something that wasn't type at all: the same small spiral and dot, painted by hand where every other label carried only print. It sat bright under decades of old varnish, exactly the mark Sela had already found twice tonight.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_lb_hunt_drawer",
+     "label": "Open the marked drawer.",
+     "target": "lb_drawer"
+    }
+   ]
+  },
+  {
+   "id": "lb_drawer",
+   "body": "The marked drawer slid open to show a capsule taped flat along its runner, where a filing hand would rest every time the drawer was used. Inside, a stamped luggage tag read OPEN, its string knotted the exact way Gran must have tied it. Beneath the tag lay a pencil sketch: a supper table set in a ring, place cards at every seat, hers at the head. Under it all sat one more thing: a hand-drawn map of the valley, five circles marked across it, pencil lines running from each one to a single spot east of everything. It matched the needle exactly. Sela folded it back into the drawer. They could bank this and keep the night open, or follow what the paper and the needle agreed on now.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_lb_drawer_hub",
+     "label": "Head back to the square.",
+     "target": "n_hub"
+    },
+    {
+     "id": "c_lb_drawer_nest",
+     "label": "Follow the bearing east.",
+     "target": "fin_bearing"
+    }
+   ]
+  },
+  {
+   "id": "e_lb_alarm",
+   "body": "Kip tried the handle instead of the key, and the cans went off at once, a clattering tin thunderstorm loud in the silent street. A light came on across the way almost at once. Rather than run, the two of them stood their ground, the right instinct. The caretaker who appeared, cardigan pulled over her nightgown, was more curious than angry once she'd heard it. She set terms instead of a telling-off: come back in daylight, with her, and tell their mother what had happened. They walked home red-faced, the hint unsolved.",
+   "is_ending": true,
+   "ending": {
+    "id": "end_lb_alarm",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Tin Can Alarm"
+   }
+  },
+  {
+   "id": "bh_path",
+   "body": "Cross Fell rose dark above the town, and high on its shoulder stood the old fire-spotting tower, a wooden cab perched on iron stilts above the heather, one slow red light pulsing somewhere near its top. Two ways led up from where the bikes stopped. A proper switchback path climbed patiently around the hill, long but certain. Beside it, a slide of loose shale dropped more directly, and it was visibly moving even now, shifting a little on its own with nobody near it yet. Older kids bragged about that shortcut, Kip said, but the difference in how safe each way looked was plain from right where they stood.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_bh_path_switch",
+     "label": "Take the switchback path.",
+     "target": "bh_climb"
+    },
+    {
+     "id": "c_bh_path_scree",
+     "label": "Try the loose shortcut.",
+     "target": "e_bh_scree"
+    }
+   ]
+  },
+  {
+   "id": "bh_climb",
+   "body": "The switchback path climbed steadily through gorse and heather, and Sela felt her legs working properly for the first time all night. Below them, Wrenfield kept shrinking, streetlamps turning into a scatter of small orange dots, the harbour a dark curve at the edge of it all. It was honest work, breath and effort traded straight for a view that got better with every turn. Kip led at a steady pace, glancing back now and then to check on her, and the red light at the tower's top drew slowly, patiently nearer with every switchback they climbed.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_bh_climb_wind",
+     "label": "Climb on into the wind.",
+     "target": "bh_wind"
+    }
+   ]
+  },
+  {
+   "id": "bh_wind",
+   "body": "Near the shoulder of the hill the wind picked up hard, and the tower's guy cables began to hum, each one at its own pitch, so the whole structure seemed to sing one long chord over the valley. Sela had never heard a hillside make music before. Kip worked the hint against the grid, letter by letter, until it settled: WIRES HUM SECOND POST. The singing cables were the clue, and one post among them, the second, was the answer waiting to be found. They followed the sound the rest of the way up.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_bh_wind_summit",
+     "label": "Follow the singing wires up.",
+     "target": "bh_summit"
+    }
+   ]
+  },
+  {
+   "id": "bh_summit",
+   "body": "The tower stood fenced off at the top, plainly out of bounds, its ladder locked and its cab dark and silent above them. Neither of them so much as touched the fence. Everything the hint had named, though, lived outside it anyway: the guy cables ran down from the tower's height to a row of concrete anchorages sunk into the open ground, well clear of any locked gate. Obeying the fence, it turned out, was also the whole solution. They could get straight down to searching the anchorages, or stand still a moment first and let the hilltop and its singing wires settle over them properly before doing anything at all.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_bh_summit_anchors",
+     "label": "Get straight to searching.",
+     "target": "bh_anchors"
+    },
+    {
+     "id": "c_bh_summit_listen",
+     "label": "Stand still and listen.",
+     "target": "bh_listen"
+    }
+   ]
+  },
+  {
+   "id": "bh_listen",
+   "body": "They stood still and let the whole hilltop become one instrument, every cable holding its own note while the gusts turned the chord underneath them. Neither said it out loud, but both knew, without needing proof, that Gran had stood in this exact spot, listening to this exact sound. The wires sloped down from the tower like the strings of something enormous, and following them with her eyes, Sela saw they all led somewhere specific: down to the anchorages in the bracken, pointing the way as plainly as any arrow.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_bh_listen_anchors",
+     "label": "Let the wires point the way.",
+     "target": "bh_anchors"
+    }
+   ]
+  },
+  {
+   "id": "bh_anchors",
+   "body": "Three concrete anchorages sat in the bracken below the tower, squat grey shoulders holding the guy cables taut against the wind. Two stood close together, but the third sat a little apart from the others, exactly the one the hint had pointed to. Beside it, a small official survey marker poked up out of the heather, half-hidden by grass. They could search the anchorage's own fixtures directly, following the hint's plain instruction, or search the landmark planted right beside it instead. Neither idea was cleverer than the other; both led straight at the same patch of ground.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_bh_anchors_plate",
+     "label": "Search the anchorage itself.",
+     "target": "bh_plate"
+    },
+    {
+     "id": "c_bh_anchors_pillar",
+     "label": "Search the survey marker.",
+     "target": "bh_pillar"
+    }
+   ]
+  },
+  {
+   "id": "bh_plate",
+   "body": "A ring of weathered fastenings held the anchorage's cable plate in place, most of them rusted stiff with decades of salt wind. One, though, sat cleaner than the rest, faintly greased, a mark painted small beside it that had never been part of the original fitting at all. Sela put two fingers to it and it turned easily under her touch, willing in a way nothing else out here had been. Somebody had kept this one fastening working, on purpose, for a very long time, waiting for exactly this moment to matter.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_bh_plate_hollow",
+     "label": "Open the greased fastening.",
+     "target": "bh_hollow"
+    }
+   ]
+  },
+  {
+   "id": "bh_pillar",
+   "body": "The official survey marker stood plain and official, stamped with numbers nobody but a surveyor would ever need. Ringed around it, though, in a hand that was anything but official, sat a scatter of small private marks, and one scratched line ran off from the ring straight toward a single fastening on the anchorage nearby. Kip followed it with a finger and found the fastening exactly where the line pointed, cleaner than its neighbours and clearly cared for. He gave it a careful turn, and it moved at once, easy and willing under his hand.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_bh_pillar_hollow",
+     "label": "Follow the scratched line.",
+     "target": "bh_hollow"
+    }
+   ]
+  },
+  {
+   "id": "bh_hollow",
+   "body": "The fastening drew a small cover away with it, and behind that cover sat a dry pocket, built right into the anchorage's own footing, closed with a stone shaped precisely to fit the gap. This hadn't been added afterward. It had been built in on purpose when the whole structure went up, decades before either of them was born, which meant somebody had been thinking about a finder long before there was any hunt to find. Sela eased the fitted stone free and set it carefully aside, and a small sealed container sat waiting in the dark space behind it.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_bh_hollow_open",
+     "label": "Open the hidden hollow.",
+     "target": "bh_cache"
+    }
+   ]
+  },
+  {
+   "id": "bh_cache",
+   "body": "Inside the sealed container sat a second engraved washer, smaller than the first, one word cut into its face: TONIGHT. Folded beneath it was another slip in Gran's own hand, telling how she had once talked a stranded trawler home by voice alone, all the way through a bad night, and had written the whole exchange out afterward, word for word, so she would never forget how it went. It closed, like every one before it, on the club's five familiar words. Sela slid the second washer in beside the first, feeling the weight of the whole night finally starting to add up in her pocket. Above them, the wind kept humming through the wires, patient as ever.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_bh_cache_view",
+     "label": "Stand up and take in the view.",
+     "target": "bh_view"
+    }
+   ]
+  },
+  {
+   "id": "bh_view",
+   "body": "They stood up and looked out properly, for the first time, at what the height was good for. Wrenfield lay spread below them, streetlamps starting to go out as the automatic timers clicked off across town. Sela turned the direction finder until its needle steadied, and this time, from up here, the bearing resolved into something real: one small amber window, far past the edge of town, exactly where the needle pointed. No street map could have shown her that from down below. They could climb back down with what they now knew, or head straight for that light while it was still burning.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_bh_view_hub",
+     "label": "Ride back to the square.",
+     "target": "n_hub"
+    },
+    {
+     "id": "c_bh_view_nest",
+     "label": "Go straight for the light.",
+     "target": "fin_bearing"
+    }
+   ]
+  },
+  {
+   "id": "e_bh_scree",
+   "body": "Kip tried the shortcut, and the loose shale gave way under him at once, carrying him down the slope sitting up, arms out for balance, faster than he'd meant to go. He landed hard at the bottom, and Sela scrambled down after, checking him over. It was skin, nothing worse: grazed palms and a torn knee, nothing a plaster wouldn't fix. They did the arithmetic out loud together. The hill wasn't going anywhere. They picked their way back to the bikes, the tower's red light pulsing above them, the safe path waiting for tomorrow.",
+   "is_ending": true,
+   "ending": {
+    "id": "end_bh_scree",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Slope That Slid"
+   }
+  },
+  {
+   "id": "fin_bearing",
+   "body": "East of town, past the last houses, the old goods yard opened into scrub and silence, and there, exactly where the needle had pointed all night, stood the abandoned Wrenfield Junction ticket office. A single lamp burned behind its shuttered booking window, and a thin wire looped from the roof to a birch tree, strung up like something built on purpose. As they got close, the numbers from the direction finder in Sela's pocket and the same faint voice from the building itself arrived a half-beat apart, the same broadcast twice over. The hair rose on both their arms. Whatever this night had been leading to, it had been leading here.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_finb_rails",
+     "label": "Close the last distance.",
+     "target": "fin_gate"
+    }
+   ]
+  },
+  {
+   "id": "fin_gate",
+   "body": "A small sign by the door confirmed it, faded but legible: Wrenfield Junction, and underneath, in newer paint, the club's own name. There was no doubt this was the place the refrain had meant by home. The booking window was boarded from the inside, well out of safe reach even if it hadn't been, and the door below was properly locked. Inside, faint but steady, the voice went on reading its numbers to nobody. Sela looked at the window, then the lock, then Kip. They could think their way in the way whoever built this would want, try for that window anyway, or stop right here and listen a while.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fing_key",
+     "label": "Think like the builder.",
+     "target": "fin_search"
+    },
+    {
+     "id": "c_fing_window",
+     "label": "Reach for the boarded window.",
+     "target": "e_fin_window"
+    },
+    {
+     "id": "c_fing_listen",
+     "label": "Stop and listen at the door.",
+     "target": "fin_door_listen"
+    }
+   ]
+  },
+  {
+   "id": "fin_door_listen",
+   "body": "They pressed close to the door and listened properly. Through the old wood came the click of relays, the hiss of moving tape, and, steady as a heartbeat, the tick of a clock counting down. Nobody was in there. It was the machine itself keeping an appointment, alone, exactly as it was built to. That should have felt strange, but instead it felt like wonder, standing outside something enormous and patient. There was still a deadline running behind that door, real and near. They could go work out the honest way in, or decide that hearing this much was already enough.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_finl_search",
+     "label": "Go find the honest way in.",
+     "target": "fin_search"
+    },
+    {
+     "id": "c_finl_stay",
+     "label": "Stay right where you are.",
+     "target": "e_fin_listen"
+    }
+   ]
+  },
+  {
+   "id": "fin_search",
+   "body": "Whoever built this station would need a key close to hand, somewhere passed every time they came to tend the aerial. Kip turned the thought over, narrowing it fast. A radio person, he reasoned, would leave a key somewhere weatherproof, near the wire itself, not tucked away out of habit like most houses did. Two spots stood out: a little box wired near the aerial mast, and the old stone lintel over the door, the ordinary hiding place any house might use. Sela looked between the two, deciding whether to back the guess or check the obvious place first.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fins_wrenbox",
+     "label": "Check the aerial mast box.",
+     "target": "fin_wrenbox"
+    },
+    {
+     "id": "c_fins_lintel",
+     "label": "Check the ordinary lintel first.",
+     "target": "fin_lintel"
+    }
+   ]
+  },
+  {
+   "id": "fin_lintel",
+   "body": "Sela ran her fingers along the top of the lintel, on tiptoe to reach it. Nothing sat there but old paint flakes and a startled spider, no key, nothing at all. It was a fair guess and an honest dead end, and she laughed at the spider's expense. From up on her toes, though, she had a better view of the aerial mast and the box wired to it, and even from here it looked newer, better cared for than the rest of the building around it.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_flin_box",
+     "label": "Try the aerial mast box.",
+     "target": "fin_wrenbox"
+    }
+   ]
+  },
+  {
+   "id": "fin_wrenbox",
+   "body": "The little weatherproofed box wired to the aerial mast opened on a tiny hinge, and inside, dry and untouched by the weather outside, sat a key wrapped in a twist of brown paper. Sela unwrapped it carefully. Whoever had left it there had labelled the paper simply: for whoever is still listening. It wasn't addressed to her by name, and it didn't need to be. It was an invitation, plainly meant for exactly this moment, for exactly somebody like her, and using it would be nothing at all like breaking in.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_finw_door",
+     "label": "Use the key at the door.",
+     "target": "fin_door"
+    }
+   ]
+  },
+  {
+   "id": "fin_door",
+   "body": "The key slid into the lock and turned easily, oiled and cared for despite everything else out here looking abandoned. The door swung inward on warm light, not cold darkness, and the recorded voice that had been muffled through the wood was suddenly close and clear, filling the doorway around them both. Nobody had forced anything. Nobody had broken a single thing to get this far. Sela stood on the threshold a moment, letting it sink in that they had just been let in, properly, by someone who had wanted exactly this to happen one day.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_find_in",
+     "label": "Step through the door.",
+     "target": "fin_threshold"
+    }
+   ]
+  },
+  {
+   "id": "fin_threshold",
+   "body": "From the doorway, the little room looked less like a ruin and more like a workshop somebody had just stepped out of. A clockwork timer ticked down behind curved glass, its hands closing toward a marked hour. Beside it a tape deck spooled quietly on its own, and a hand crank sat clipped to the housing, waiting for somebody to use it. The floor was swept clean. Everything worked. Nothing here had rotted the way the rest of the ticket office plainly had, and that told them every part of tonight had been planned.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fint_in",
+     "label": "Go all the way in.",
+     "target": "fin_inside"
+    }
+   ]
+  },
+  {
+   "id": "fin_inside",
+   "body": "Inside, three things pulled at Sela at once. Along one wall hung a chart of the club's old members, names and notes pinned in neat rows. On the desk, Gran's own logbook lay open, as if she had just set it down. And filling the far corner stood the station itself, dials glowing softly, the timer's hands still closing toward the hour it was built to reach. Outside, the sky had begun to change from black toward grey, the first hint that dawn was coming. Sela could go at it through the people who built all this, through what Gran wrote down, or skip straight to the machine itself.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fini_wall",
+     "label": "Go to the wall of members.",
+     "target": "fin_wall"
+    },
+    {
+     "id": "c_fini_log",
+     "label": "Go to Gran's open logbook.",
+     "target": "fin_log"
+    },
+    {
+     "id": "c_fini_rack",
+     "label": "Go straight to the machine.",
+     "target": "fin_rack"
+    }
+   ]
+  },
+  {
+   "id": "fin_wall",
+   "body": "The chart held call letters in one column, a note beside every name, and Gran's own entry near the top with more written beside it than the others. Sela read down the list slowly. At the bottom, typed and pinned to the board, sat one card that explained everything at once: the club had scattered years ago, when the work that held it together had gone, and Gran had built this station, this hunt, so the town would keep one more net running through it. It felt like the truest thing Sela had learned all night. But the timer kept closing, and reading every name would cost time draining away.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fwall_linger",
+     "label": "Keep reading every name.",
+     "target": "e_fin_late"
+    },
+    {
+     "id": "c_fwall_turn",
+     "label": "Turn to the machine now.",
+     "target": "fin_rack"
+    }
+   ]
+  },
+  {
+   "id": "fin_log",
+   "body": "The logbook's last page was addressed, plainly, to whoever was reading it now. Gran had named three things a finder might rightly do here, and written beside each that any of the three was right, whichever they chose. There was no ranking, no hidden correct answer, just permission, freely given. Underneath ran a list of names and telephone numbers, the club's old contacts, most crossed neatly through, a few not crossed at all. Sela read the entry twice, feeling something settle in her chest. Whatever she chose next, Gran had already said it would be right.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_finlog_rack",
+     "label": "Carry her permission to the machine.",
+     "target": "fin_rack"
+    }
+   ]
+  },
+  {
+   "id": "fin_rack",
+   "body": "The station stood glowing quietly, its timer's spring wound down almost to its last notch, a microphone clipped beside it and waiting. Outside, the sky kept paling, the deadline arriving whether anyone was ready or not. Three futures sat right there, labelled plainly on the machine itself, so nobody needed the wall or the logbook to see them. They could speak back into the pause the voice kept leaving open. They could make sure the thing didn't stop when tonight stopped. Or they could give the station away, to the town it had been built from. None of the three was more right than the others, and the machine waited, patiently, for Sela to pick one.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_finr_answer",
+     "label": "Speak back into the pause.",
+     "target": "fin_answer"
+    },
+    {
+     "id": "c_finr_keep",
+     "label": "Keep the station running.",
+     "target": "fin_keep"
+    },
+    {
+     "id": "c_finr_share",
+     "label": "Give the station away.",
+     "target": "fin_share"
+    }
+   ]
+  },
+  {
+   "id": "fin_answer",
+   "body": "Kip threw the switch the timer's panel showed him, and the tape began taking as well as giving, spooling forward with a soft new hum. A pause opened in the broadcast, wide and waiting, exactly the kind of gap built for somebody to speak into. Sela understood, all at once, that the station had been designed for this from the start: not just to send Gran's voice out, but to bring one back. She could say something entirely her own, plain and unpolished, or read the words Gran had written to be read here. Both felt brave, and neither felt like the easy choice.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fina_own",
+     "label": "Say something of your own.",
+     "target": "f_answer_own"
+    },
+    {
+     "id": "c_fina_script",
+     "label": "Read the words she wrote.",
+     "target": "f_answer_script"
+    }
+   ]
+  },
+  {
+   "id": "f_answer_own",
+   "body": "Sela leaned close to the microphone and said her own name, plain and a little shaky, whose grandchild she was, and that the town was still listening, even now. That was all. No speech, no polish, nothing anybody had coached her to say. Her voice went out onto the same tape that already held Gran's, the two of them recorded together for the first time, years apart and finally in the same room. Kip squeezed her shoulder once she'd finished. She could sit quietly and wait to hear whether anything answered back, or put her name to the moment and let the watch finish.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fao_listen",
+     "label": "Wait to hear an answer.",
+     "target": "e_win_net"
+    },
+    {
+     "id": "c_fao_sign",
+     "label": "Sign your name and finish.",
+     "target": "e_win_answer"
+    }
+   ]
+  },
+  {
+   "id": "f_answer_script",
+   "body": "Ruled out along the cover of the logbook, in Gran's own steady hand, sat the club's old closing form, ending in five words the grid's last coordinates had spelled out letter by letter all night long: THE NET STAYS OPEN TONIGHT. Whether or not a finder had gathered every one of those words from every site, they landed here as the night's own last sentence, complete and beautiful on their own. Sela could read it exactly as written, letting Gran have the very last word after everything. Or she could read it through and then add one line of her own before the spring finally ran down and the machine closed for good.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fas_written",
+     "label": "Let her have the last word.",
+     "target": "e_win_signoff"
+    },
+    {
+     "id": "c_fas_promise",
+     "label": "Add a promise of your own.",
+     "target": "e_win_encore"
+    }
+   ]
+  },
+  {
+   "id": "fin_keep",
+   "body": "Beside the station sat a folder, diagrams numbered one to ten inside it, written in plain, patient steps for somebody who had never done any of this before. Gran had meant this to be learnable, Sela realized, not just by an expert but by exactly the kind of beginner standing here right now. Two ways forward sat open in front of her. She could follow the diagrams tonight, right now, and simply make sure the spring got wound before they left. Or she could decide, then and there, to learn the whole thing properly over time, slowly, the way a real apprentice would. Neither one asked for money or equipment they didn't already have.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fink_wind",
+     "label": "Wind the spring tonight.",
+     "target": "f_keep_wind"
+    },
+    {
+     "id": "c_fink_learn",
+     "label": "Plan to learn it properly.",
+     "target": "f_keep_learn"
+    }
+   ]
+  },
+  {
+   "id": "f_keep_wind",
+   "body": "Following the folder's numbered steps, Kip held the crank while Sela turned it, working together until the spring sat firm and the timer reset to a year from tonight. They checked the diagram twice, then closed the housing and stepped back to watch it settle into its countdown. Before they left, Sela carried the key back to its weatherproof box and wrapped it exactly the way she had found it, ready for whoever came next. It felt like a promise, made with their hands instead of only their words.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fkw_end",
+     "label": "Make it a promise together.",
+     "target": "e_win_keepers"
+    }
+   ]
+  },
+  {
+   "id": "f_keep_learn",
+   "body": "Kip copied the station's settings down carefully from the folder, while Sela went through the logbook's last list of names, picking out the handful not crossed through. Those were the ones still reachable, people who might actually teach them this properly. A real plan started building itself at the desk: Saturdays, lessons, the diagrams worked through slowly until it made sense from the inside. It was bigger than one night could finish, and that was the point. They were not keeping the station alive by accident anymore. They were choosing to become the people who understood it.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fkl_end",
+     "label": "Start the long apprenticeship.",
+     "target": "e_win_apprentice"
+    }
+   ]
+  },
+  {
+   "id": "fin_share",
+   "body": "A page of old telephone numbers sat in the logbook, and in Sela's pocket her mother's mobile, charged and ready, exactly as promised. Gran's station, Kip said slowly, had never really been about the equipment. It had been made out of people, and giving it away wasn't the same as losing it at all. Two roads opened up in the minutes they had left. They could reach for the people who were still alive right now and bring them into this room before it closed for the night. Or they could use the station's own voice, one last time, to hand the whole thing forward to whichever children came looking next.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fsh_family",
+     "label": "Call the family in.",
+     "target": "f_share_family"
+    },
+    {
+     "id": "c_fsh_hunt",
+     "label": "Record it for the next finders.",
+     "target": "f_share_hunt"
+    }
+   ]
+  },
+  {
+   "id": "f_share_family",
+   "body": "Sela dialled her mother's number with fingers that weren't quite steady, and Ruth Hale picked up before the second ring, already half awake. She didn't scold, didn't ask why it had taken so long. She simply said she was coming, and headlights swung up the lane a few minutes later, faster than Sela would have thought possible. Ruth stepped through the door and stopped dead at the sight of her own mother's handwriting open on the desk, one hand pressed against her mouth. Then she crossed the room and stood between her children, all three fitting in front of the desk together, exactly in time.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fsf_end",
+     "label": "Stand together for the ending.",
+     "target": "e_win_family"
+    }
+   ]
+  },
+  {
+   "id": "f_share_hunt",
+   "body": "With the microphone still open, Sela and Kip whispered out five brand new places, quick and half-invented, chosen fast with the clock leaving no room to overthink it. Kip read the coordinates in while Sela worked the grid backward, turning each place into its own letters and numbers, recording it straight onto Gran's tape, right behind her voice. They promised, out loud and on the record, that the station would call again. Whoever found this broadcast next would have a brand new hunt waiting, built by two kids who had just finished one of their own.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fshu_end",
+     "label": "Put your names to the tape.",
+     "target": "e_win_passiton"
+    }
+   ]
+  },
+  {
+   "id": "e_fin_window",
+   "body": "Kip stretched for the boarded window anyway, boots scrabbling on brick, and got nowhere. The reach was longer than it looked, and the boards behind the glass had been sealed shut years before either was born. His foot slipped, and Sela had his arm before it went further, hauling him back to solid ground. They stood a second, catching their breath, then said the obvious thing together: nobody breaks into a place that belongs to their own family. The lamp still burned behind the window as they turned the bikes for home, planning to come back with better ideas, in daylight.",
+   "is_ending": true,
+   "ending": {
+    "id": "end_fin_window",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Window Too Far"
+   }
+  },
+  {
+   "id": "e_fin_late",
+   "body": "Sela lingered at the wall one caption too long, and the sign-off began before she turned around. The machine finished exactly on time, the reels winding down while they were still six feet from the desk. She didn't get to speak or sign anything. But she had heard every word of the goodnight, close enough to feel it in the floor, and Kip's hand found hers without needing to say why. They locked the station up softly, left the key where they'd found it, and walked home already working out how to tell it, because most of the night had still been theirs.",
+   "is_ending": true,
+   "ending": {
+    "id": "end_fin_late",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Goodnight, Six Feet Away"
+   }
+  },
+  {
+   "id": "e_fin_listen",
+   "body": "They chose the step over the door, sitting shoulder to shoulder on the worn wood, and let the broadcast finish where it was, unopened. Through the weathered timber, the last groups came clear enough to follow, and then the goodnight arrived, in the voice they both knew best. The first birds were starting up behind them. Neither reached for the handle. Some things, Kip said quietly, you go into, and some you just get to witness. A light clicked off inside as the last reel wound down, and they rode home with the whole of it, saved for daylight and for their mother.",
+   "is_ending": true,
+   "ending": {
+    "id": "end_fin_listen",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Goodnight Through the Door"
+   }
+  },
+  {
+   "id": "e_win_net",
+   "body": "The pause held a moment after Sela's voice stopped, hissing static and nothing else, and then, out of nowhere, a voice answered. Then another, further off, then one more, old members of the club checking in, having heard the same closing broadcast go out that they had. Sela sat frozen at first, then began taking each one down the way she imagined her grandmother must have, name after name, while the window filled slowly with real morning light. The network everyone thought had gone quiet had simply been waiting for somebody to sit at this desk and say something into the dark. It hadn't needed a single keepsake. It had only needed a voice.",
+   "is_ending": true,
+   "ending": {
+    "id": "end_win_net",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Voices Answer the Net"
+   }
+  },
+  {
+   "id": "e_win_answer",
+   "body": "Sela picked up the pen beside the open logbook and signed her own name underneath Gran's last entry, grandchild under grandmother, in the same worn book. The machine read its final group, said its own quiet goodnight, and stopped, her answer safely recorded inside the same archive as the woman who had started it all. Nothing was left hanging in the little room. Sela closed the logbook and slid the key into her pocket, and the two of them stepped out into a morning that had properly arrived, carrying the story home to breakfast through birdsong that seemed, for once, to mean something.",
+   "is_ending": true,
+   "ending": {
+    "id": "end_win_answer",
+    "valence": "positive",
+    "kind": "success",
+    "title": "A Name Under Hers"
+   }
+  },
+  {
+   "id": "e_win_signoff",
+   "body": "Sela read the closing exactly as written, ending on the five words the grid had spelled out letter by letter all night: THE NET STAYS OPEN TONIGHT. The timer's spring tripped on cue, right on the beat it was built to close on, and the station's glow banked down like embers settling in a grate. Whether she had five keepsakes in her pocket or none at all, the phrase landed as the night's last sentence, in a voice from her own family carrying it to the end. The watch was over, ended precisely the way its builder had designed it, and precisely on time.",
+   "is_ending": true,
+   "ending": {
+    "id": "end_win_signoff",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Net Stays Open Tonight"
+   }
+  },
+  {
+   "id": "e_win_encore",
+   "body": "Sela read the closing through exactly as written, and then, before the spring could finish its last notch, she added one line of her own: a promise to be back next year to hear it again. Kip was already reaching for the crank, and together they wound the timer forward, firm for the same hour, twelve months from tonight. Nothing of Gran's had been overwritten; her words came first, exactly as she'd left them, and theirs simply followed. They walked home in the growing light already keeping a secret with a date attached, quietly proud of a promise that was already true.",
+   "is_ending": true,
+   "ending": {
+    "id": "end_win_encore",
+    "valence": "positive",
+    "kind": "success",
+    "title": "One More Year Promised"
+   }
+  },
+  {
+   "id": "e_win_keepers",
+   "body": "With the timer wound and the key back in its box, the station's future was already decided, and there was nothing left to argue over. It became, from that morning on, simply theirs to look after: quiet visits through the year, dusting the dials, winding the spring, learning the room by heart one Saturday at a time. When the station next woke the town, a year later, two more voices sat recorded on the tape, welcoming whoever found it next. Nobody had handed them ownership of anything. What they had was a duty, gladly taken, and a key now properly theirs to carry.",
+   "is_ending": true,
+   "ending": {
+    "id": "end_win_keepers",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Two New Keepers"
+   }
+  },
+  {
+   "id": "e_win_apprentice",
+   "body": "The plan Kip and Sela built that night became real, Saturday by Saturday, through a year of lessons from the handful of old members whose names had never been crossed out. They worked through the diagrams properly, valve by valve, learning not just how to keep the station running but how it worked underneath. By the following spring, two small certificates hung framed on the wall beneath Gran's photographs, names matching the ones written fresh into the club's book. They hadn't kept the machine alive by luck. They had become the crew who understood it, taught by people who had once called her their best.",
+   "is_ending": true,
+   "ending": {
+    "id": "end_win_apprentice",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Apprentices of the Net"
+   }
+  },
+  {
+   "id": "e_win_family",
+   "body": "Ruth arrived with minutes still on the clock, and the three of them crowded in front of the little desk for the last set of groups, close enough that nobody needed to say anything. The goodnight, when it came, arrived in a voice all three knew better than any other, and none of them looked away while it played. Ruth signed the book underneath her children's names once it was over, her hand a little unsteady, and then the three of them stepped out together into a morning that had properly broken. The inheritance had been handed over in time, whole, shared exactly the way it was meant to be.",
+   "is_ending": true,
+   "ending": {
+    "id": "end_win_family",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Three Voices, One Desk"
+   }
+  },
+  {
+   "id": "e_win_passiton",
+   "body": "A year later, other windows around Wrenfield started lighting up at midnight for the same reason. The five new places Sela and Kip had whispered into the microphone became real over a summer of family workdays and borrowed ladders, hidden the way the first five had been. When the station next woke, it opened, as always, in Gran's own voice reading her old familiar groups, and closed, for the first time ever, in Sela's, guiding some other town kid the last stretch home. The hunt no longer belonged to one family. It belonged to whichever children in Wrenfield were curious enough to go looking.",
+   "is_ending": true,
+   "ending": {
+    "id": "end_win_passiton",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Hunt Passed On"
+   }
+  }
+ ]
+}

@@ -1,0 +1,423 @@
+{
+ "schema_version": "2.0",
+ "id": "d6",
+ "version": 1,
+ "title": "The Tide Tower Trial",
+ "metadata": {
+  "age_band": "10-13",
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 5.5,
+   "tolerance": 1.5
+  },
+  "tier": 1,
+  "themes": [
+   "mystery",
+   "puzzles",
+   "friendship",
+   "history"
+  ],
+  "estimated_minutes": 18,
+  "ending_count": 8,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "mild",
+   "peril": "mild"
+  },
+  "topology": "branch_and_bottleneck",
+  "production_eligible": false
+ },
+ "variables": [],
+ "start_node": "n_open",
+ "nodes": [
+  {
+   "id": "n_open",
+   "body": "The tide tower had stood sealed for as long as anyone could remember, its iron door bolted and its window shutters latched tight. Today something new hung there: a single sheet of paper, pinned dead center, covered in rows of numbers instead of words. Four friends stood reading it together, close enough that their shoulders touched. No one reached for the door yet. The numbers looked like a puzzle built by someone who wanted an answer, not a trespasser. One friend traced a line with a finger. Another counted the rows twice. Without saying much, all four agreed: whoever posted this note meant for someone to solve it. They just had to decide how.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_open",
+     "label": "Take the Dare",
+     "target": "n_start"
+    }
+   ]
+  },
+  {
+   "id": "n_start",
+   "body": "Up close, the sealed tower gave the friends three ways to answer its dare. The coded note pinned to the door promised an answer to anyone patient enough to work it out line by line. The tower's outer wall, weathered and windowless in places, might hide a gap nobody had noticed in years. And down by the water, the tower's keeper kept a small boathouse, someone who probably knew more about this place than any note or wall ever could. None of the three felt like the wrong choice. The friends looked at each other, weighing patience against persistence against simply asking. Whichever they picked, the tower's challenge was now officially theirs.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_examine",
+     "label": "Study the Note",
+     "target": "n_note"
+    },
+    {
+     "id": "c_door",
+     "label": "Check the Walls",
+     "target": "n_door"
+    },
+    {
+     "id": "c_keeper",
+     "label": "Find the Keeper",
+     "target": "n_keeper"
+    }
+   ]
+  },
+  {
+   "id": "n_note",
+   "body": "The note's numbers turned out to be tide arithmetic: add the moon day to the posted hour, then carry anything past twelve around again. Line by line, the friends worked through it, checking each other's sums before moving to the next row. It took a long, quiet stretch of trying and starting over. Then the last line resolved into plain words: the sluice culvert, dry at low water since the new channel carried the flow elsewhere. It named a way in that had nothing to do with force. The friends sat back, tired but sure of themselves. The note had asked for patience, and patience had paid off. Now they had to decide how much they trusted their own answer.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_note_key",
+     "label": "Confirm the Culvert",
+     "target": "n_keyhunt"
+    },
+    {
+     "id": "c_note_inside",
+     "label": "Trust the Note",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_door",
+   "body": "Skipping the note, the friends circled the tower's base, running their hands along stone nobody had bothered checking in years. Near the waterline they found a low hatch, chained shut but linked to a rusted counterweight wheel. A hand-painted mark showed how high the weight needed to wind before the hatch would lift. Higher up, past a drainpipe and a ledge, a window stood without any shutter at all. Two ways past a wall the maker never actually sealed, both missed by anyone who only looked at the front door. The friends traded a grin. Nobody had told them about either one. Now came the harder question: the patient hatch, or the risky window.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_door_force",
+     "label": "Wind the Counterweight",
+     "target": "n_inside"
+    },
+    {
+     "id": "c_door_window",
+     "label": "Climb to the Window",
+     "target": "n_window"
+    }
+   ]
+  },
+  {
+   "id": "n_keeper",
+   "body": "The lock-warden's boathouse sat just past the tide gates, oars stacked neat against the wall. He looked up when the friends explained the note pinned to the tower door, but he didn't answer right away. Instead he studied them, one at a time, the way someone checks a knot before trusting it. He asked why they wanted in, and listened to every answer without interrupting. Whatever he was testing for, the friends must have passed it, because he finally nodded and reached for an oar. He wasn't handing out favors to just anyone who wandered by. Getting a straight answer out of him had taken patience of its own kind, and it had worked.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_keeper_enter",
+     "label": "Accept the Offer",
+     "target": "n_inside"
+    },
+    {
+     "id": "c_keeper_story",
+     "label": "Ask Why First",
+     "target": "n_keeper_story"
+    }
+   ]
+  },
+  {
+   "id": "n_keyhunt",
+   "body": "Before trusting the note completely, the friends walked down to check it with their own feet. The tide was out, and the sluice culvert sat exactly as dry as the numbers had promised, its floor cracked mud instead of running water. Carved along one wall were more numbers, the same tide-arithmetic pattern from the note, worn but still readable. Matching the carved figures against the note's method confirmed it worked, and taught the friends exactly how to carry the sum forward when bigger numbers came along. What had been a guess was now a method they trusted completely. They stepped toward the tower's dark opening, sure for the first time that their arithmetic could carry them the whole way.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_keyhunt_in",
+     "label": "Step Into the Tower",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_keeper_story",
+   "body": "Before rowing them across, the lock-warden settled onto the boathouse bench and told the friends why the tower tested anyone at all. Decades ago, the engineer who built it wasn't trying to keep people out, he said. She was trying to find the right kind of person to let in: someone patient enough to work a problem instead of forcing it. Every lock and cipher in that tower was built to notice the difference. The friends listened, surprised at how kind the reason turned out to be. It changed how the challenge felt, less like a wall and more like an invitation. Satisfied they understood, the lock-warden finally stood and reached for the oars.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_story_in",
+     "label": "Thank the Keeper",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_window",
+   "body": "The climb to the high window asked for steady nerves more than strong arms. The old drainpipe held firm, and worn grooves in the stone gave good footing the whole way up, like other hands had climbed this same route before. At the ledge, the friends took turns reaching for the windowsill and swinging their legs through one at a time, careful and unhurried. The last one through pulled the window shut behind them out of habit. Inside, the air smelled like dust and old rope. For a moment nobody spoke, catching their breath on solid floorboards. They had done it themselves, no note and no lock-warden needed. The tower's seal was behind them now.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_window_in",
+     "label": "Drop Into the Tower",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_inside",
+   "body": "Whichever way they'd come in, the inside of the tower greeted the friends the same way: four doors opening off a round landing, each one clearly its own kind of test. A stairwell spiraled upward into shadow. A study door stood ajar, shelves visible beyond it. A gallery held something huge and slow, swinging back and forth in the dark. A last door led down, cool air drifting up from below. Nothing about the tower explained itself further than that. Whichever room they picked, the friends understood they'd be learning something the great dial upstairs would eventually ask them to use. They looked at each other, then picked a door.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_inside_stairs",
+     "label": "Take the Stairs",
+     "target": "n_stairs"
+    },
+    {
+     "id": "c_inside_study",
+     "label": "Search the Study",
+     "target": "n_study"
+    },
+    {
+     "id": "c_inside_pendulum",
+     "label": "Watch the Pendulum",
+     "target": "n_pendulum"
+    },
+    {
+     "id": "c_inside_basement",
+     "label": "Head to the Basement",
+     "target": "n_basement"
+    }
+   ]
+  },
+  {
+   "id": "n_stairs",
+   "body": "The stairwell wound past a row of narrow windows overlooking the weir gates below. Every so often the gates released water in the same repeating rhythm: long, long, short, then a pause before it ran again. It matched a line from the note exactly, the same pattern spelled out in numbers instead of sound. Partway up, a shelf held toll ledgers in waterproof bindings, eighty years of cargo counts and flood levels ruled neat in red ink. Nobody stopped long to read them, but the sight said something about the kind of person who built this place. By the top step, legs tired but minds clearer, the friends had the gate's rhythm memorized for the dial ahead.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_stairs_face",
+     "label": "Bring the Pattern Up",
+     "target": "n_clockface"
+    }
+   ]
+  },
+  {
+   "id": "n_study",
+   "body": "The maker's old study still smelled faintly of oil and paper. A row of hoist levers lined one wall, each worn smooth by hands, but some far more than others. The deepest polish marked exactly which pulls mattered and which were rarely touched, a lesson written into the metal without a single number on it. Near the door, a wooden frame was scratched shoulder-high with initials, generations of keepers who had stood in this same spot over the years. It was the kind of thing easy to read for an entire evening. The friends studied the levers long enough to grasp their meaning, but the initials tugged at them, quietly asking whether tonight had to end at the dial.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_study_face",
+     "label": "Head for the Dial",
+     "target": "n_clockface"
+    },
+    {
+     "id": "c_study_logs",
+     "label": "Linger Over the Names",
+     "target": "n_end_library"
+    }
+   ]
+  },
+  {
+   "id": "n_pendulum",
+   "body": "The pendulum gallery held a huge shadow swinging steady overhead, keeping time the way it had for a hundred years. Beside the engine racks, numbers were stamped in a climbing row, depth figures that carried upward using the exact same method as the tide arithmetic on the note. Reading them from a safe spot taught the friends another piece of the pattern. But the room's real test waited across an unlit tail-race tunnel, dry underfoot but pitch dark, broken only by faint light wells spaced far apart. Something the maker had left waited at the far end, visible only as a pale shape in the gloom. Counting paces between each patch of light was the only way across.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_pendulum_oil",
+     "label": "Cross the Dark Tunnel",
+     "target": "n_clockface"
+    },
+    {
+     "id": "c_pendulum_giveup",
+     "label": "Turn Back Tonight",
+     "target": "n_end_giveup"
+    }
+   ]
+  },
+  {
+   "id": "n_basement",
+   "body": "Down among the machine's roots, the basement felt cool and close, thick with the smell of river mud. Pinned to one wall was a gate cross-section, a diagram of the tower's own machinery, its margins crowded with worked tide sums beside each hoist it labeled. Patient enough to read it line by line, the friends found it explained the arithmetic more plainly than anything upstairs had. A grey heron stood watch on the gate beam outside a low window, unbothered by visitors, still as a carving. Nobody rushed the reading. When the sums finally made sense, the friends climbed back toward the stairs, carrying the diagram's logic with them and ready for whatever the dial would ask.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_basement_face",
+     "label": "Climb Back Up",
+     "target": "n_clockface"
+    }
+   ]
+  },
+  {
+   "id": "n_clockface",
+   "body": "The great dial filled the top room from floor to rafters, its face ringed with hoists instead of hands. Engraved letters beneath it stated the test plainly: work the tide arithmetic, set each hoist to its answer, and know that guessing carries a cost the mechanism won't forgive kindly. A narrow panel sat at the dial's back, unlabeled and easy to miss. Everything the friends had learned in the rooms below, the gate rhythm, the worn levers, the stamped depths, the pinned diagram, pointed toward one careful answer. They could work the sum properly, force the hoists past where they wanted to stop, check that back panel first, or simply guess and hope. The dial was waiting either way.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_face_correct",
+     "label": "Work the Sum",
+     "target": "n_setcorrect"
+    },
+    {
+     "id": "c_face_jam",
+     "label": "Force the Dial",
+     "target": "n_setjam"
+    },
+    {
+     "id": "c_face_panel",
+     "label": "Check the Back Panel",
+     "target": "n_backpanel"
+    },
+    {
+     "id": "c_face_random",
+     "label": "Gamble on a Guess",
+     "target": "n_end_timeout"
+    }
+   ]
+  },
+  {
+   "id": "n_setcorrect",
+   "body": "Working the tide arithmetic through from the start, the friends set each hoist one at a time, checking every sum before moving to the next. The gate rhythm from the stairs, the worn levers from the study, the stamped depths from the pendulum room, and the pinned diagram from the basement all agreed with each other. When the final hoist clicked into its mark, the whole dial let out a long, satisfied groan and began to turn. No forcing, no guessing, just the answer the maker had actually asked for. A hidden seam opened at the dial's base, revealing a narrow stair spiraling down into darkness. The strongroom the dial had guarded was finally within reach.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_correct_vault",
+     "label": "Go Down to the Vault",
+     "target": "n_vault"
+    }
+   ]
+  },
+  {
+   "id": "n_setjam",
+   "body": "Impatient with the arithmetic, one friend leaned into a hoist and forced it past where it wanted to stop. The dial answered with a grinding shudder and locked hard, refusing to turn any further. For a moment the friends just stared at it, worried they'd broken something for good. Then someone spotted a small plate bolted near the racks, a posted rule from the maker herself: ease back a quarter turn before ever asking for a full one. It wasn't a punishment, just an honest set of instructions for this mistake. Carefully, they eased the jammed hoist backward, testing the give before trying anything more. Whether it would answer to that patience was still an open question.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_jam_oil",
+     "label": "Ease It Back",
+     "target": "n_vault"
+    },
+    {
+     "id": "c_jam_stuck",
+     "label": "Force It Again",
+     "target": "n_end_stuck"
+    }
+   ]
+  },
+  {
+   "id": "n_backpanel",
+   "body": "Instead of touching the hoists, the friends worked the unlabeled panel at the dial's back loose with careful fingers. Behind it sat a second test, smaller than the dial's but built on the same tide arithmetic, tucked where only someone curious enough would ever find it. It took only a few minutes to work through, far quicker than the front dial promised. But its answer didn't point down toward the strongroom at all. It pointed sideways, toward a narrow service ladder the friends hadn't noticed, one that seemed to lead somewhere the main test never mentioned. The maker had clearly built two doors into this one room. The friends had to choose which one mattered to them tonight.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_panel_vault",
+     "label": "Solve It Quickly",
+     "target": "n_vault"
+    },
+    {
+     "id": "c_panel_secret",
+     "label": "Chase the Hidden Path",
+     "target": "n_end_secret"
+    }
+   ]
+  },
+  {
+   "id": "n_vault",
+   "body": "The strongroom beyond the dial was smaller than expected, and quieter. A single letter sat propped on a shelf, addressed simply to whoever finally made it this far. Around it sat modest, ordinary things: worn tools, old drawings, and a tiny working river model with fingernail gates that opened right along with a true tide. Nothing looked like treasure exactly, but everything looked cared for. Reading the letter, the friends understood the whole tower had been built for this moment, not for riches but for whoever proved patient enough to reach it. The real test, it turned out, wasn't the dial at all. It was what they chose to do now that they'd passed it.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_vault_share",
+     "label": "Tell the Settlement",
+     "target": "n_end_hero"
+    },
+    {
+     "id": "c_vault_keep",
+     "label": "Keep It Private",
+     "target": "n_end_keepsake"
+    },
+    {
+     "id": "c_vault_grab",
+     "label": "Reach for the Model",
+     "target": "n_end_caught"
+    }
+   ]
+  },
+  {
+   "id": "n_end_library",
+   "body": "The friends chose the study's archive over the climb to the dial, and the evening slipped away faster than anyone expected. Reading initial after initial scratched into that doorframe, they traced keepers back decades, some names appearing again and again over long careers. By the time they noticed the light outside had gone gray, the dial felt like a problem for another night. They closed the study door behind them and climbed back down the way they'd come. Walking home, one friend mapped out loud exactly how the hoist levers ought to work, now certain of a method the archive had only sharpened. The tower would still be sealed tomorrow, waiting exactly where they'd left it.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_library",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Study's Archive"
+   }
+  },
+  {
+   "id": "n_end_giveup",
+   "body": "At the tail-race tunnel's black mouth, one friend finally said what everyone was already thinking: crossing it tonight, blind and counting paces, wasn't worth the risk. Nobody argued. The pale shape waiting at the far end would still be there another day, and the dial upstairs wasn't going anywhere either. They turned back together, retracing their steps past the swinging pendulum and out through the gallery door. Nobody teased anyone for saying it first. Outside, the evening air felt easier to breathe than the tunnel ever would have. Behind them, the tower stood dark and patient, its dial exactly where they'd left it, waiting for whichever night they decided to come back.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_giveup",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Tunnel's Black Mouth"
+   }
+  },
+  {
+   "id": "n_end_timeout",
+   "body": "Tired of working the arithmetic, the friends set the hoists to a guess instead, hoping luck would cover what patience hadn't. The dial accepted the wrong numbers for exactly two seconds before the whole mechanism began to clatter, gears grinding against each other in a racket that echoed down the stairwell. Feet pounded up from below almost immediately: the lock-warden, alarmed but not angry, hauling on a lever that finally quieted the noise. He looked the guessed numbers over, then looked at the friends, and didn't need to say much. Guessing had cost them the rest of the night, nothing more. They filed back down the stairs, a little sheepish, already talking about the sum they'd get right next time.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_timeout",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Guessed Hoist"
+   }
+  },
+  {
+   "id": "n_end_stuck",
+   "body": "Forcing the jammed hoist a second time only settled it deeper, the gears biting down until nothing budged in either direction. The friends checked every trick they knew: easing back, working it gently, waiting for it to loosen on its own. None of it made a difference tonight. The tide outside had already turned, and with it went whatever slack the mechanism had been willing to give. Nobody blamed anybody else for reaching for muscle before arithmetic. They simply gathered their things, checked the jammed hoist one last time out of habit, and headed for the stairs. The dial would need a slower tide and steadier hands, and both would still be there tomorrow.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_stuck",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Jammed Dial"
+   }
+  },
+  {
+   "id": "n_end_secret",
+   "body": "The service ladder behind the small hidden test climbed up past the dial entirely, ending at a low door that opened onto the engineer's own workshop. Tools sat exactly where hands had left them, and a half-finished model waited on the bench, clearly meant to be picked back up. On the roof outside, a garden of reeds grew green and healthy, kept alive by a cistern drip the engineer had rigged to last long after she stopped tending it herself. The friends stood together in the quiet room, understanding without saying it that someone needed to keep this place going now. They agreed on the spot, all four of them, and started sorting through the unfinished work on the bench.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_secret",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Living Workshop"
+   }
+  },
+  {
+   "id": "n_end_hero",
+   "body": "News of the passed trial moved through the settlement faster than the friends expected, carried first by the lock-warden and then by everyone he told. People stopped them on the path to ask what the dial's arithmetic had been, and the friends found themselves explaining tide sums to neighbors who'd walked past the sealed tower their whole lives without a second look. The lock-warden treated them differently after that, less like visitors and more like people worth trusting with a key. He told them the tower's door would be open whenever they wanted to come back, no note or test required this time. Four friends had solved a maker's decades-old puzzle, and the whole settlement now knew their names.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_hero",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Settlement's Praise"
+   }
+  },
+  {
+   "id": "n_end_keepsake",
+   "body": "Standing over the tiny river model, its fingernail gates still opening and closing with the pull of some hidden tide, the friends made a quiet decision together. Tonight would stay theirs. No settlement announcement, no explaining the arithmetic to neighbors, just the four of them and whatever they'd figured out about the maker and her tower. They shook on it right there in the strongroom, a plain promise instead of anything formal. Climbing back out through the dial, they agreed on a story for anyone who asked where they'd been: exploring, nothing more. The tower's letter and its little river model stayed exactly where the maker had left them, waiting for the next visitor patient enough to earn a look.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_keepsake",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The River Model's Pact"
+   }
+  },
+  {
+   "id": "n_end_caught",
+   "body": "Reaching to carry the little river model past the strongroom's threshold, one friend didn't notice the floor underfoot: fine river silt, dusted there on purpose, holding every footprint clean and clear. It wasn't an alarm or a trap, just a quiet record of who had stepped where and carrying what. By the time the friends climbed down, the lock-warden was already waiting, having read the marks the moment he checked the tower that morning. Nobody yelled. The friends admitted what they'd tried to do, set the model back on its shelf, and helped tidy the room they'd left in a hurry. The lock-warden studied the footprints once more, then nodded them toward the door, the trial still there for whenever they tried it properly.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_caught",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Footprints in the Silt"
+   }
+  }
+ ]
+}

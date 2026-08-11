@@ -1,0 +1,423 @@
+{
+ "schema_version": "2.0",
+ "id": "d6",
+ "version": 1,
+ "title": "The Vane Tower Trial",
+ "metadata": {
+  "age_band": "10-13",
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 5.5,
+   "tolerance": 1.5
+  },
+  "tier": 1,
+  "themes": [
+   "mystery",
+   "puzzles",
+   "friendship",
+   "history"
+  ],
+  "estimated_minutes": 18,
+  "ending_count": 8,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "mild",
+   "peril": "mild"
+  },
+  "topology": "branch_and_bottleneck",
+  "production_eligible": false
+ },
+ "variables": [],
+ "start_node": "n_open",
+ "nodes": [
+  {
+   "id": "n_open",
+   "body": "The clocktower has stood locked for years. Josiah Vane died a long time ago, and his bells went silent with him. Today the whole square is talking about an old dare. It is painted, faded now, across the tower's door. Whoever reads Vane's bell-code may walk inside. The code is just long and short pulls, rung out across his life. Nobody in town has cracked it in living memory. We stand at the tower's base and stare up. The clock hands are frozen at ten past two. Someone laughs first, nervous. Then we are all grinning. We are not walking past this one. Today, together, we try it.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_open",
+     "label": "We take the dare.",
+     "target": "n_start"
+    }
+   ]
+  },
+  {
+   "id": "n_start",
+   "body": "Getting inside will take more than nerve. Beside the door, wedged in a crack, is a note folded soft with age. Dots and dashes cover it, maybe Vane's own hand. Further along, the tower wall runs rough and mossy. Somewhere in that stone might be a way in nobody sealed. Across the square, sweeping the church steps, is the town's last bell-ringer. He is the only person left who ever knew Vane. Three ways to start sit in front of us. We can sit with the note. We can search the stone ourselves. We can go ask the old man what he remembers. We have to pick one.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_examine",
+     "label": "The note comes first.",
+     "target": "n_note"
+    },
+    {
+     "id": "c_door",
+     "label": "We search the stones ourselves.",
+     "target": "n_door"
+    },
+    {
+     "id": "c_keeper",
+     "label": "Ask the bell-ringer instead.",
+     "target": "n_keeper"
+    }
+   ]
+  },
+  {
+   "id": "n_note",
+   "body": "We sit on the curb and spread the note across our knees. Long marks and short marks fill it, in small clumped groups. It looks like nonsense at first. Then someone notices the groups repeat, the same shape every few lines. It is like a phrase rung again and again on a bell. We read long as one beat and short as two, the way peal-ringers count changes. Letter by letter, the phrase spells itself out. Flue. Grate. Key. We look up at the chimney running along the tower's side. Behind that loose grate, near the top, Vane left a spare foundry key. Patience got us this far.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_note_key",
+     "label": "First, we get the key.",
+     "target": "n_keyhunt"
+    },
+    {
+     "id": "c_note_inside",
+     "label": "Straight to the tower now.",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_door",
+   "body": "We skip the note and go straight to the stone. We run our hands along the tower's base, feeling for anything that does not match. Cracks. Seams. Loose mortar. Most of the wall gives nothing back. Then, low near a warped wooden board bolted to the foundation, a finger catches on an edge. It is a tuning board, the kind foundries use to test a bell's pitch. Under its lip is a small catch, cold and stiff with disuse. Nobody else in town seems to have found it. We press it, and something inside the wall gives, just slightly. A way in, found with nothing but our own hands.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_door_force",
+     "label": "Trip the hidden catch.",
+     "target": "n_inside"
+    },
+    {
+     "id": "c_door_window",
+     "label": "Climb through the window instead.",
+     "target": "n_window"
+    }
+   ]
+  },
+  {
+   "id": "n_keeper",
+   "body": "We cross the square to the bell-ringer. He keeps sweeping even as we get close, like he already knows why we are here. When we ask about the tower, he stops. He looks each of us over, slow, like he is weighing something. 'Why do you want in,' he says, not unkindly. The answer seems to matter more than we expected. We tell him the truth. We want to see what Vane left, not to prove anything to the town. He studies us a moment longer, then nods, satisfied. From his belt he pulls a ring of keys, jingling as he walks us toward a door on the casting floor side, one hardly anyone remembers. 'Earn the rest yourselves,' he says.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_keeper_enter",
+     "label": "Go in with him now.",
+     "target": "n_inside"
+    },
+    {
+     "id": "c_keeper_story",
+     "label": "Hear his story first.",
+     "target": "n_keeper_story"
+    }
+   ]
+  },
+  {
+   "id": "n_keyhunt",
+   "body": "The chimney stack is easier to climb than it looks. Foothold after foothold has been worn smooth by decades of weather. Near the top, exactly where the note's fold points, one grate hangs looser than the rest, held by a single bent nail. Behind it, hanging from that nail, is a key. It is heavy and cold, its foundry mark stamped plain on the bow. We hold it up in the light, hardly believing the note means something real. Whoever hides this trusts that someone will be patient enough to read it right. Patience gets us here. We climb back down, the key warm in a fist. The tower's door is not locked anymore.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_keyhunt_in",
+     "label": "Key in hand, we go.",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_keeper_story",
+   "body": "Before he leads us anywhere, the bell-ringer sits down on the church steps. He asks if we have a minute. Vane never locked this place out of spite, he tells us. He locked it because people always underestimated him. A foundry worker was not supposed to have a mind for puzzles. So he wanted whoever got in to earn it the same hard way he earned everything else. The bell-code was his answer to every doubter he ever met. Hearing this changes how the tower looks to us. It seems less like a locked door now. It looks more like an invitation only some people bother to notice. We understand now, and we are ready.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_story_in",
+     "label": "Now we understand; we go.",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_window",
+   "body": "Instead of trying the catch, we look up. A row of narrow windows rings the tower partway up. Their shutters rotted off long ago. The stone below them is rough enough to climb if we are careful. One by one we find old handholds, worn smooth by wind and rain. Hands, feet, hands again, we work our way up the wall. Finally the nearest sill is in reach. We haul ourselves through, scraping shins but nothing worse, and drop onto a dusty floor inside. For a second nobody says anything. The tower's seal, whole for longer than any of us have been alive, is broken now. Not by a key. Not by a latch. Just by nerve and our own arms.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_window_in",
+     "label": "Finish the climb inside.",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_inside",
+   "body": "Whichever way we came through, we are standing on the tower's casting floor now. The door behind us settles shut with a soft, final sound. Dust hangs in shafts of light from somewhere above. Four ways lead off this room. A spiral stair curls upward. A study door stands ajar. An open archway leads toward the pendulum room, its shadow swinging slow overhead. A dark stairwell drops down into the basement. Vane built this floor like a crossroads. Each direction seems to hold some piece of the puzzle we still need. We could learn his bell-code climbing, reading, daring, or waiting. All of it leads toward the same locked dial somewhere above. We pick a door.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_inside_stairs",
+     "label": "Take the stairs.",
+     "target": "n_stairs"
+    },
+    {
+     "id": "c_inside_study",
+     "label": "Try the study.",
+     "target": "n_study"
+    },
+    {
+     "id": "c_inside_pendulum",
+     "label": "Dare the pendulum room.",
+     "target": "n_pendulum"
+    },
+    {
+     "id": "c_inside_basement",
+     "label": "Head down to the basement.",
+     "target": "n_basement"
+    }
+   ]
+  },
+  {
+   "id": "n_stairs",
+   "body": "The spiral stairs climb longer than they look from below. Landing after landing, our legs start to burn. Halfway up, tucked into a stone alcove, is a rack of tuning forks. They are lined up smallest to largest, each one stamped with a number, a count of pulls. We strike them one by one, listening to how the pitch climbs with the count. Something about the pattern starts to make sense, a rhythm we could use on a locked dial. Beside the rack hangs a small bell, cast crookedly on purpose. A card underneath calls it 'my first, and my favorite failure.' Even Vane laughed at himself sometimes. We keep climbing, forks and failure both carried with us now.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_stairs_face",
+     "label": "Forks in hand, face the dial.",
+     "target": "n_clockface"
+    }
+   ]
+  },
+  {
+   "id": "n_study",
+   "body": "Sun comes through a coloured glass transom above the study door. It scatters small bell-shaped patches of light across the floor. The room is stacked with record books, floor to ceiling. What catches our eye first is a tuning hammer lying on the desk. Its handle is scratched all over with tiny notes in Vane's own hand, each mark keyed to a pull of the peal. Reading it is like reading his thinking directly, the clearest lesson in the whole tower. Behind us, shelves of old logs and letters sit open, the kind of place a person could lose a whole evening happily. We could take the hammer's lesson to the clockface, or let the records keep us here a while longer.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_study_face",
+     "label": "Hammer's lesson to the dial.",
+     "target": "n_clockface"
+    },
+    {
+     "id": "c_study_logs",
+     "label": "Stay and read the logs.",
+     "target": "n_end_library"
+    }
+   ]
+  },
+  {
+   "id": "n_pendulum",
+   "body": "Overhead, the great bell cradles swing slow and heavy on their beams. The only way across, where a brass calibration scale is bolted beside the mould bench, is a narrow catwalk slick with tallow. We can see the scale's notches climbing in the same pattern the peals use. Real proof waits there if we can reach it. Crossing means going hand over hand between the swinging cradles, timing each step to the swing. Partway across, one bell swoops close enough to feel the air move. Beyond it, we catch a glimpse of what waits on the far side, close enough now to know this risk has a real payoff. Do we finish the crossing, or is this the moment to turn back?",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_pendulum_oil",
+     "label": "Finish the crossing.",
+     "target": "n_clockface"
+    },
+    {
+     "id": "c_pendulum_giveup",
+     "label": "Turn back now.",
+     "target": "n_end_giveup"
+    }
+   ]
+  },
+  {
+   "id": "n_basement",
+   "body": "Down here the air is cool and close. For a long while there is nothing to do but wait in the dark. Then, right on noon, thin lines of light slip through the belfry louvers far above. They creep slowly across the floor until they land square on a plank someone marked years ago with a chisel line. The light lines up exactly with the count the peals use. Waiting pays off down here same as anywhere. Hanging on a nail beside the plank is a leather apron, Vane's own, pockets still worn into the shape of tools that used to live in them. We take the light's lesson and climb back toward the stairs.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_basement_face",
+     "label": "Carry the light's count up.",
+     "target": "n_clockface"
+    }
+   ]
+  },
+  {
+   "id": "n_clockface",
+   "body": "The stairs open onto a small platform level with the tower's great clockface. Its dial is studded with pegs and levers instead of numbers, waiting for the right setting. This is the test the whole town talks about, and nobody living has passed it. Everything we picked up below, the forks, the hammer's notes, the scale, the marked plank, points toward the same answer, if we use it carefully. We could set the pegs slow, checking each pull. We could go faster, trusting feel over certainty. A plain back panel sits on the dial's frame, one nobody mentions in any story. Or we could just start turning things and see. How do we want to do this?",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_face_correct",
+     "label": "Set it slow and careful.",
+     "target": "n_setcorrect"
+    },
+    {
+     "id": "c_face_jam",
+     "label": "Set it fast, by feel.",
+     "target": "n_setjam"
+    },
+    {
+     "id": "c_face_panel",
+     "label": "Check the back panel first.",
+     "target": "n_backpanel"
+    },
+    {
+     "id": "c_face_random",
+     "label": "Just guess and see.",
+     "target": "n_end_timeout"
+    }
+   ]
+  },
+  {
+   "id": "n_setcorrect",
+   "body": "We work the pegs slowly, checking each one against what the tower taught us. The forks' rising counts, the hammer's marks, the scale's notches, the plank's patient light. Long, short, long again, each pull matched before we move to the next. Halfway through, something deep in the wall shifts, a sound like a held breath let out. We finish the last pull and step back. For a moment nothing happens. Then, behind the clockface, gears turn that have not turned in decades. A section of wall we had not noticed swings inward on silent hinges. A dark opening waits where solid stone stood a second ago. Every hour spent below led exactly here.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_correct_vault",
+     "label": "Follow the opening door.",
+     "target": "n_vault"
+    }
+   ]
+  },
+  {
+   "id": "n_setjam",
+   "body": "We move fast, trusting feel more than careful counting, pull after pull set by instinct. Halfway through the sequence, the dial catches hard and stops dead. It is not broken, we realize after a moment. It is honestly stuck, the way any machine sticks when pushed a little too quickly. Pulling harder only makes it worse. Somewhere above, one of the bell cradles has locked against its own safety catch. No amount of force down here will fix that. The tower is not punishing us. It is just telling us, plainly, that this needs care instead of speed. We could climb up and ease the catch back ourselves, or admit the linkage is bent worse than hands can manage today.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_jam_oil",
+     "label": "Ease the safety catch back.",
+     "target": "n_vault"
+    },
+    {
+     "id": "c_jam_stuck",
+     "label": "Admit the linkage is bent.",
+     "target": "n_end_stuck"
+    }
+   ]
+  },
+  {
+   "id": "n_backpanel",
+   "body": "Before touching a single peg, we pop the plain back panel off the clockface frame, just curious what is behind it. Instead of more machinery, there is a second, smaller dial. It is half the size of the main one, tucked away where only someone curious would ever find it. It does not seem connected to the main mechanism at all. No gears link the two. It just sits there, its own quiet puzzle, like a private joke Vane left behind. We can almost hear him laughing at whoever assumed the big dial was the only test. This smaller one might lead to the same vault the town keeps talking about. Or it might lead somewhere nobody has ever mentioned at all.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_panel_vault",
+     "label": "Follow it to the vault.",
+     "target": "n_vault"
+    },
+    {
+     "id": "c_panel_secret",
+     "label": "Follow it somewhere else.",
+     "target": "n_end_secret"
+    }
+   ]
+  },
+  {
+   "id": "n_vault",
+   "body": "Past the opening, the room is smaller than we expected, and quieter. It feels private rather than hidden. Vane's own marking chisel lies on a low bench, blade still oiled, handle worn smooth, as if he set it down yesterday meaning to pick it back up. Around it sit the ordinary, precious things of a life: papers, a few tools, small reminders of a man the town got wrong for years. Nothing here is locked or guarded further. It is just waiting, the way it has waited since he left it. We could carry what we found out and tell the town the truth about him. We could leave everything as it sits and keep only the story. Or we could reach for the chisel itself. What do we do?",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_vault_share",
+     "label": "Carry it out to town.",
+     "target": "n_end_hero"
+    },
+    {
+     "id": "c_vault_keep",
+     "label": "Leave it all as found.",
+     "target": "n_end_keepsake"
+    },
+    {
+     "id": "c_vault_grab",
+     "label": "Reach for the chisel.",
+     "target": "n_end_caught"
+    }
+   ]
+  },
+  {
+   "id": "n_end_library",
+   "body": "We stay. The dial can wait; these shelves will not open like this again for who knows how long. Hour after hour we work through Vane's old logs. Near the bottom of a forgotten box, we find something better than expected. It is a second copy of the very note that started this whole search. Its dots and dashes are clearer than the first. We fold it carefully and tuck it into a pocket. Outside, the light has gone gold and low. The tower's dial waits behind us, unclaimed, still locked, still there for whenever we come back. The copied note rides home folded against a hip, already halfway read again by the time we reach the square.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_library",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Note We Kept"
+   }
+  },
+  {
+   "id": "n_end_giveup",
+   "body": "A boot skids on the tallow-slick plank, just for a second, just enough. We catch the rail and steady ourselves. The calibration scale sits right there, close enough to touch. So is the drop, and the swinging cradles are not slowing down for anyone. We look at each other and, without much discussion, agree: not today. Hand over hand, careful now instead of daring, we work our way back across the plank until solid floor is under our boots again. Nobody says a word about turning back like it was a mistake, because it was not. Below, the casting floor waits exactly where we left it, dust hanging gold in the light. We climb down, boots scuffed, already talking about trying again.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_giveup",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Steady on the Catwalk"
+   }
+  },
+  {
+   "id": "n_end_timeout",
+   "body": "We start turning pegs almost at random, hoping something will click before we think too hard. Nothing does. Three pulls in, the whole dial locks tight with a soft, final clunk. The pegs freeze mid-turn, like a jaw clamped shut. We push, gently, and get nothing. This is exactly what Vane built the dial to do to guesses. It freezes them out politely instead of letting anyone force their way through by luck. It is not broken, just closed to us for now. We leave a note explaining what happened where the bell-ringer will find it, and head back down the stairs, already trading theories about what we got wrong. The tower will open again once someone resets it.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_timeout",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Locked by a Guess"
+   }
+  },
+  {
+   "id": "n_end_stuck",
+   "body": "Up at the bell cradle, the safety catch is not just stuck. It is bent, twisted just enough that easing it back needs a proper tool, something narrow and exact, the kind Vane always kept in his own kit. None of us thought to bring one today. We look the linkage over from every angle. There is no faking this one, and nobody blames anybody. It was a fair jam, the kind that happens to a machine this old no matter how careful you are. We mark the spot with a scrap of chalk so we can find it again, then head down the stairs, already planning what tool to bring next time. The dial stays exactly as it is, half-set, waiting.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_stuck",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Bent Linkage"
+   }
+  },
+  {
+   "id": "n_end_secret",
+   "body": "The little back-panel dial turns easy, almost eager. The wall behind it swings open, not onto the vault, but onto a room none of the stories ever mentioned: Vane's actual working loft. Every tool sits racked and labeled along the wall, ready for a workday that never came, as though he stepped out for a moment and simply never made it back. On the workbench, pinned under a paperweight, is a short note in his own hand, naming whoever finds this room its next steward. We look at each other, then at the tools. Something settles into place, quiet and certain. We pick up the nearest rag and start wiping forty years of dust off a bench about to get used again.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_secret",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Steward of the Loft"
+   }
+  },
+  {
+   "id": "n_end_hero",
+   "body": "We carry what we found straight to the square and lay it out for anyone who will stop and look. The chisel. The story. The truth about a man the town spent decades getting wrong. Word spreads fast. By evening half the town has heard some version of it. By the next morning the bell-ringer is telling the real one properly, the way Vane deserved all along. He was a foundry worker with a mind sharp enough to build a puzzle nobody could crack for generations. Nobody asks what we are keeping for ourselves, because we are not keeping anything. The clocktower's door stays open now, propped with a stone. People walk up and read the plaque someone has already started painting.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_hero",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "His Name Restored"
+   }
+  },
+  {
+   "id": "n_end_keepsake",
+   "body": "We set the chisel back down exactly where it was, blade angled the same way, handle facing the same direction, as if we had never touched it. None of it leaves the room with us. Vane kept this space private his whole life. Walking out, we swear each other to keeping it between us, just the story, nothing else. The door swings shut behind us, and the tower goes quiet again. We walk home slower than usual, retelling every room out loud: the forks, the light, the crossing, all the way to our own front doors.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_keepsake",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Only the Story"
+   }
+  },
+  {
+   "id": "n_end_caught",
+   "body": "A hand drifts a little too close to the bench, just testing the weight of the chisel. A thin wire catches against a knuckle. Somewhere past the tower, a hand bell rings out clear across the yard, an alarm Vane rigged decades ago for exactly this moment. The hand pulls back fast, chisel already going down, and by the time footsteps reach the stairs, the bench looks untouched. It is the bell-ringer, making his evening rounds early because something felt off. He does not shout. He just looks at the room, and at us, and says quietly that Vane built that bell for the doubt in people's own hands, not to catch thieves. Then he tells us the true story himself, right there.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_caught",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Caught by His Bell"
+   }
+  }
+ ]
+}

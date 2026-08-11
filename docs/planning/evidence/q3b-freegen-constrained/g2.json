@@ -1,0 +1,228 @@
+{
+  "schema_version": 1,
+  "id": "freegen-g2",
+  "version": 1,
+  "title": "The Kite Race of Windmere",
+  "start_node": "n_windmill_door",
+  "nodes": [
+    {
+      "id": "n_windmill_door",
+      "body": "Mira ducked under the broken windmill sash and found a door that should not exist. It was small and round, painted sky blue, with a brass handle shaped like a kite. She turned the handle. Wind rushed out, warm and smelling like rain. Beyond the door, she saw floating islands strung together with rope bridges and colorful kites. A carved sign read Windmere Gate beside a stone archway. Another path curved right along a rickety rope bridge toward a sign that read Market Cliffs. Mira's heart thumped. She had to choose which way to step first.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_001", "label": "Walk through the stone archway", "target": "n_gate_square"},
+        {"id": "c_002", "label": "Cross the rope bridge to Market Cliffs", "target": "n_market_cliffs"}
+      ]
+    },
+    {
+      "id": "n_gate_square",
+      "body": "Mira stepped through the archway onto a floating square of packed clay. Kites of every color snapped overhead, tied to lampposts like pets on leashes. A small round man with goggles waved at her. New arrival, he said. I'm Pip, the gatekeeper. Windmere is sinking, you know. Someone stole our Windstone, and without it the islands drift apart. He pointed down a lane toward the Sky Council hall. He also nodded toward a narrow alley where kids were racing kites for coins. Mira could head straight to the Council, or watch the kite race first to learn more.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_003", "label": "Go straight to the Sky Council", "target": "n_council_hall"},
+        {"id": "c_004", "label": "Watch the kite race first", "target": "n_kite_race"}
+      ]
+    },
+    {
+      "id": "n_council_hall",
+      "body": "The Sky Council hall was a round room with a hole in the floor, so councilors could watch the clouds below. An old woman named Councilor Wren told Mira the Windstone had been stolen three days ago by a trader named Corvin. He fled toward the Storm Wall, Wren said. If the islands drift into the Storm Wall, they will break apart forever. She offered Mira a choice: take the fast skiff straight after Corvin, or first visit the Cloud Market to trade for a working compass. A compass would help, but Corvin's trail was growing colder every minute.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_005", "label": "Chase Corvin immediately", "target": "n_skiff_launch"},
+        {"id": "c_006", "label": "Visit the Cloud Market for a compass", "target": "n_cloud_market"}
+      ]
+    },
+    {
+      "id": "n_skiff_launch",
+      "body": "Mira climbed into a wooden skiff tied to a floating dock. Pip untied the rope and gave it a push. Wind filled the little sail, and the skiff lurched forward between two drifting islands. Below, she could see clouds stacked like cotton, and far below that, a hint of green farmland. The skiff creaked as it picked up speed, following a trail of scattered blue feathers, Corvin's calling card. Mira gripped the rail. The Storm Wall loomed ahead, a wall of dark clouds crackling with lightning, and somewhere inside it was the stolen Windstone.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_007", "label": "Steer toward the feather trail", "target": "n_feather_trail"}
+      ]
+    },
+    {
+      "id": "n_feather_trail",
+      "body": "The blue feathers led Mira past a garden island where pumpkins grew as big as houses, tied down with netting so they would not float away. A farmer waved and shouted a warning about pirates near the Storm Wall. Mira's skiff wobbled in a sudden gust. She saw two paths ahead: a narrow channel between two cliffs, marked with warning flags, or a longer loop around a quiet lagoon where a strange humming came from underwater caves. Both paths led toward the Storm Wall eventually, but one was faster and one seemed safer.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_008", "label": "Take the narrow channel", "target": "n_narrow_channel"},
+        {"id": "c_009", "label": "Loop around the humming lagoon", "target": "n_lagoon_loop"}
+      ]
+    },
+    {
+      "id": "n_narrow_channel",
+      "body": "Mira steered into the narrow channel. Rocks jutted out like teeth on both sides, and the wind howled between them. A rope ladder dangled from one cliff, left by someone who had climbed up recently, maybe Corvin himself. Mira could tie up and climb the ladder to scout ahead on foot, or keep sailing straight through the channel to save time. The channel walls shook as thunder rolled somewhere close. She needed to decide quickly before the current pulled her skiff sideways into the rocks.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_010", "label": "Sail straight through", "target": "n_storm_edge"},
+        {"id": "c_011", "label": "Climb the rope ladder to scout", "target": "n_ladder_climb"}
+      ]
+    },
+    {
+      "id": "n_storm_edge",
+      "body": "The channel spat Mira's skiff out at the edge of the Storm Wall. Lightning flickered inside the dark clouds like a heartbeat. A battered raft floated nearby, tied to a post, definitely Corvin's. Mira could dock beside the raft and search it for clues, or push straight into the storm clouds where she thought she heard someone shouting for help. The wind screamed louder now, tugging at her sail. Whatever she chose next would decide how the rest of her journey through the storm would go.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_012", "label": "Search Corvin's raft first", "target": "n_raft_search"},
+        {"id": "c_013", "label": "Push into the storm toward the shout", "target": "n_storm_push"}
+      ]
+    },
+    {
+      "id": "n_raft_search",
+      "body": "Mira tied her skiff beside the raft and climbed aboard. Inside a crate, she found a torn map with a red circle around a cave deep in the Storm Wall. Muddy footprints led toward a crack in the clouds shaped like a doorway. She also found a spare rope and a small lantern, both useful for what came next. Thunder rumbled overhead, closer now. Mira tucked the map into her pocket, grabbed the lantern, and turned toward the crack in the clouds where the footprints disappeared.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_014", "label": "Follow the footprints into the cloud doorway", "target": "n_cloud_cave"}
+      ]
+    },
+    {
+      "id": "n_cloud_cave",
+      "body": "Inside the cloud doorway, Mira found a hidden cave glowing with a soft silver light. Corvin knelt beside a glowing stone, the Windstone, muttering about selling it to pay off a debt. He looked startled to see her. I was going to bring it back, he said quietly, once I found a way to fix things without it. Mira saw two ways forward: she could try to reason with Corvin and convince him to return the stone peacefully, or grab the moment when he looked away and snatch the stone herself before he changed his mind.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_015", "label": "Reason with Corvin", "target": "n_windstone_returned"},
+        {"id": "c_016", "label": "Snatch the Windstone quickly", "target": "n_snatch_stone"}
+      ]
+    },
+    {
+      "id": "n_windstone_returned",
+      "body": "Mira sat down across from Corvin and listened. He had borrowed money to fix his broken boat and panicked when he could not pay it back. Mira promised the Sky Council would help him if he returned the stone honestly. Corvin's shoulders dropped with relief, and together they carried the Windstone back through the storm to Windmere. The islands stopped drifting the moment the stone was set back in its cradle at the Council hall. Councilor Wren thanked Mira, and Pip threw the biggest kite festival Windmere had ever seen, with Mira's kite flying highest of all.",
+      "is_ending": true,
+      "ending": {"id": "e_windstone_returned", "valence": "positive", "kind": "completion", "title": "Windmere Made Whole"}
+    },
+    {
+      "id": "n_snatch_stone",
+      "body": "Mira lunged and grabbed the Windstone from its stand before Corvin could react. It hummed warmly in her hands, and silver light poured through the cave. Corvin shouted and reached for her, but the stone's glow pushed him back gently, like a soft gust of wind. Mira sprinted for her skiff with the stone tucked under her arm. Behind her, she heard Corvin's raft creak away into the storm clouds, alone. Her heart pounded the whole way home, part excitement, part guilt, as Windmere's rooftops finally came into view ahead.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_025", "label": "Bring the stone home to the Council", "target": "n_stone_recovered"}
+      ]
+    },
+    {
+      "id": "n_stone_recovered",
+      "body": "Mira burst into the Sky Council hall, breathless, and set the Windstone back in its cradle. The islands shuddered and settled, safe once more. Councilor Wren praised her courage but frowned slightly at how the stone was recovered. Corvin still owes us answers, she said, but Windmere is saved today because of you. Pip cheered loudest of all and tied a small kite shaped like the Windstone to Mira's belt as a badge of honor. Mira smiled, tired and proud, though she wondered what had happened to Corvin, drifting alone somewhere past the Storm Wall.",
+      "is_ending": true,
+      "ending": {"id": "e_stone_recovered", "valence": "positive", "kind": "success", "title": "A Hero's Return"}
+    },
+    {
+      "id": "n_market_cliffs",
+      "body": "Mira crossed the rickety rope bridge toward the Market Cliffs. Stalls balanced on wooden platforms bolted into the cliffside, selling glowing lanterns, kite string, and jars of bottled wind. A vendor with a parrot on her shoulder called out, Lost, dearie? You look new to Windmere. Mira explained she had just arrived and needed to find whoever was in charge. The vendor pointed down a winding stair carved into the cliff, saying it led toward the Sky Council square eventually, though it wound past a cave full of old maps first.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_017", "label": "Follow the winding stair", "target": "n_map_cave"}
+      ]
+    },
+    {
+      "id": "n_map_cave",
+      "body": "The stair curled past a small cave stuffed with old maps and dusty lanterns. An elderly mapmaker let Mira glance at a chart showing Windmere's islands connected like puzzle pieces, with a red X marking the Storm Wall. That's where trouble usually starts, he said. Mira thanked him and hurried down the last steps, arriving at last in the square outside the Sky Council hall, the same square Pip had pointed toward earlier. She pushed open the heavy doors, ready to learn what had gone wrong in Windmere.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_018", "label": "Enter the Sky Council hall", "target": "n_council_hall"}
+      ]
+    },
+    {
+      "id": "n_cloud_market",
+      "body": "The Cloud Market was a maze of floating carts tied together with rope, selling everything from spiced cloud fruit to tiny compasses that always pointed toward the nearest storm. Mira found a cart run by a boy her age named Ori, who traded compasses for good stories. She told him about the stolen Windstone. Ori's eyes went wide. I saw a man matching that description buy rope and a lantern yesterday, he said. He looked nervous, like he was running from something. Ori offered to trade her a compass for a favor in return.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_019", "label": "Agree to Ori's favor", "target": "n_ori_favor"}
+      ]
+    },
+    {
+      "id": "n_ori_favor",
+      "body": "Ori asked Mira to help him carry a crate of lanterns to his grandmother's stall before he would hand over the compass. Mira agreed, but the crate was heavier than it looked, and her arms ached by the time she reached the stall. By then, precious time had slipped away, and the afternoon light was fading fast. Ori's grandmother gave Mira the compass, but warned that the Storm Wall grew more dangerous after dark. Mira realized she had lost too much time trading for tools instead of chasing Corvin directly.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_020", "label": "Head out anyway, despite the lost time", "target": "n_too_late"}
+      ]
+    },
+    {
+      "id": "n_too_late",
+      "body": "By the time Mira reached the edge of Windmere with her new compass, the sky had turned the deep purple of night, and the Storm Wall was too dangerous to enter safely. Councilor Wren met her at the dock, worried, and made her turn back. We will try again at first light, Wren said gently, but tonight, Windmere drifts a little further apart. Mira watched the islands creak and separate slightly overnight, and she promised herself that tomorrow, she would not waste a single minute.",
+      "is_ending": true,
+      "ending": {"id": "e_too_late", "valence": "negative", "kind": "setback", "title": "A Night Lost"}
+    },
+    {
+      "id": "n_lagoon_loop",
+      "body": "Mira steered her skiff around the quiet lagoon instead of the narrow channel. The water below glowed faintly, and the humming grew louder, almost like singing. She spotted a ring of small caves at the waterline, and something silver flickered inside one of them. Curious, she guided the skiff closer, forgetting for a moment about Corvin and the Storm Wall entirely. The singing seemed to be coming from strange glowing fish that circled just beneath the surface, unlike anything she had ever seen before.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_021", "label": "Investigate the glowing cave", "target": "n_glowing_fish"}
+      ]
+    },
+    {
+      "id": "n_glowing_fish",
+      "body": "Mira drifted closer and watched dozens of glowing fish swirl in slow circles, lighting the cave like a lantern. They were not dangerous, just beautiful, and utterly unrelated to the Windstone or Corvin. She realized with a start that she had drifted far off course, and the sun was dipping low. Reluctantly, she turned her skiff back toward Windmere instead of the Storm Wall, deciding the mystery of the fish was not hers to solve today, though she promised herself she would return with Pip someday to study them properly.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_022", "label": "Return to Windmere", "target": "n_fish_wonder"}
+      ]
+    },
+    {
+      "id": "n_fish_wonder",
+      "body": "Mira sailed home without the Windstone, but she carried something else, a story about singing fish nobody in Windmere had ever seen. Councilor Wren listened carefully and said the lagoon might hold clues worth studying later. Pip promised to organize an expedition once the Windstone crisis was solved by someone else. Mira felt a little disappointed she had not caught Corvin, but also thrilled by her discovery. Windmere's islands drifted a little further that night, but the Council thanked Mira for the new knowledge she brought home.",
+      "is_ending": true,
+      "ending": {"id": "e_fish_wonder", "valence": "neutral", "kind": "discovery", "title": "The Singing Lagoon"}
+    },
+    {
+      "id": "n_storm_push",
+      "body": "Mira pushed her skiff straight into the swirling storm clouds, chasing the sound of shouting. Wind slammed into her sail, spinning the little boat sideways. Rain stung her face, and she could barely see past her own hands. The shouting grew louder, then suddenly stopped. Her skiff tipped dangerously, taking on water fast. She realized, heart pounding, that finding Corvin's raft first might have been the smarter choice, but it was too late to turn back now, not with the storm this fierce around her.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_023", "label": "Fight to keep the skiff steady", "target": "n_skiff_capsize"}
+      ]
+    },
+    {
+      "id": "n_skiff_capsize",
+      "body": "Mira fought the tiller with both hands, but a massive gust flipped the skiff sideways, dumping her into the churning clouds. She grabbed a floating plank and held on tight, coughing and shivering. Luckily, the current carried her back out of the Storm Wall instead of deeper in, spitting her out near a fishing boat that pulled her aboard. The fishermen wrapped her in a warm blanket and turned their boat toward Windmere, the Windstone still lost somewhere in the storm behind them.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_024", "label": "Let the fishermen carry you home", "target": "n_rescued_empty_handed"}
+      ]
+    },
+    {
+      "id": "n_rescued_empty_handed",
+      "body": "The fishing boat delivered Mira safely to Windmere's dock, cold, tired, and empty-handed. Councilor Wren wrapped her in a thicker blanket and thanked the fishermen for the rescue. The Windstone will have to wait, Wren said softly. You are safe, and that matters more. Pip brought her hot soup and promised they would plan a better, safer expedition soon. Mira watched the islands drift a little further apart that night, disappointed but alive, already thinking about what she would do differently next time.",
+      "is_ending": true,
+      "ending": {"id": "e_rescued_empty_handed", "valence": "negative", "kind": "retreat", "title": "Pulled From the Storm"}
+    },
+    {
+      "id": "n_kite_race",
+      "body": "Mira followed the sound of cheering to an alley where kids raced kites between rooftop poles, betting coins on the winner. A girl named Suri offered Mira a spare kite and a spot in the next race. Mira hesitated, thinking of the stolen Windstone, but the race looked like fun, and Suri promised the winner always learned the best island gossip. Mira took the kite, feeling its string tug eagerly in the wind, and lined up at the starting pole with the other racers.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_026", "label": "Race the kite", "target": "n_kite_finish"}
+      ]
+    },
+    {
+      "id": "n_kite_finish",
+      "body": "Mira ran and dipped her kite through three rooftop poles, laughing despite herself, and crossed the finish line in third place. Suri cheered and shared a rumor that a stranger had bought a getaway raft near Market Cliffs recently, definitely Corvin. But by the time Mira thanked Suri and hurried off, the afternoon sun had slipped low, and the Council hall would be closing its doors soon for the evening, meaning any real search would have to wait until morning.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_027", "label": "Head to the Council hall anyway", "target": "n_race_distraction"}
+      ]
+    },
+    {
+      "id": "n_race_distraction",
+      "body": "Mira reached the Sky Council hall just as Councilor Wren was locking the great doors for the night. Come back at sunrise, Wren said kindly, noticing Mira's kite string still wrapped around her wrist. Windmere will still need help tomorrow. Mira nodded, a little embarrassed that a kite race had cost her the whole afternoon, though she had made a new friend in Suri and learned a useful rumor about Corvin. She curled up in a guest room above Pip's gatehouse, determined to start fresh and faster the next morning.",
+      "is_ending": true,
+      "ending": {"id": "e_race_distraction", "valence": "neutral", "kind": "setback", "title": "A Slow Start"}
+    },
+    {
+      "id": "n_ladder_climb",
+      "body": "Mira tied her skiff to the rope ladder and climbed the cliff wall, hand over hand, wind tugging at her jacket. At the top, she found a small ledge with a cold campfire and Corvin's discarded jacket, still smelling of smoke. Footprints in the ash led along the cliff edge toward the Storm Wall itself. Mira realized Corvin must be close, maybe only minutes ahead of her now. She climbed back down carefully, eager to catch up before the trail went cold again.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_028", "label": "Climb back down and keep sailing", "target": "n_ladder_descend"}
+      ]
+    },
+    {
+      "id": "n_ladder_descend",
+      "body": "Mira scrambled back down the rope ladder to her waiting skiff, untied it, and pushed off into the current again. The information from the campfire settled her nerves; she finally knew she was on the right track, close behind Corvin. The channel walls opened ahead into wider water, and the dark clouds of the Storm Wall rose directly in front of her, crackling with distant lightning. She steadied the tiller and sailed on, more confident now than she had been all day.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_029", "label": "Sail on toward the Storm Wall", "target": "n_storm_edge"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1395 @@
+{
+ "schema_version": 1,
+ "id": "freegen-s1",
+ "version": 1,
+ "title": "The Lighthouse of Windgate Bay",
+ "start_node": "n_start",
+ "nodes": [
+  {
+   "id": "n_start",
+   "body": "The lighthouse at Windgate Bay has never once gone dark, not in a hundred years. Tonight the tall white tower stands black against the clouds. Mia grabs your sleeve. 'Something is wrong,' she says. Boats are still out past the point. Without the light they cannot find the harbor. Gray storm clouds are piling up over the water like stacked stones. You, Mia, Theo, and Priya need answers. You need them fast, before the storm rolls in tonight. Old Cal Finch keeps the light. No one has seen him since yesterday morning. Where do you start looking?",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_001",
+     "label": "Head to the docks first",
+     "target": "p_docks"
+    },
+    {
+     "id": "c_002",
+     "label": "Check the library archives",
+     "target": "p_library"
+    },
+    {
+     "id": "c_003",
+     "label": "Ask around at the market",
+     "target": "p_market"
+    }
+   ]
+  },
+  {
+   "id": "p_docks",
+   "body": "The docks smell like salt and rope. Old fishermen coil their lines and glance at the dark tower again and again. One man named Gus waves you over. 'Cal always lit that lamp by six,' he says. 'Something must have happened to him.' He tells you the boats will need the light to find the channel through the rocks tonight. You thank him and look for Mia, Theo, and Priya. They agreed to meet you by the old fish market clock before the sun goes down.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_004",
+     "label": "Hurry to meet the others",
+     "target": "p_join"
+    }
+   ]
+  },
+  {
+   "id": "p_library",
+   "body": "The library is small and quiet, with tall shelves that creak. Mrs. Alder, the librarian, already knows why you have come. 'The lighthouse,' she says softly. 'It has only gone dark once before, long ago.' She pulls a dusty book about the tide-witch of Windgate Bay from a high shelf. She tucks it under your arm. 'Read this later,' she whispers. 'Right now, go find your friends.' You tuck the book into your bag and hurry out the door toward the clock tower.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_005",
+     "label": "Rush to the meeting spot",
+     "target": "p_join"
+    }
+   ]
+  },
+  {
+   "id": "p_market",
+   "body": "The market is busy even with the storm coming. Vendors pack up their stalls early, eyeing the black tower on the point. An old woman selling shells grips your hand. 'The sea glass heart is missing from the lamp,' she whispers. 'That is why the light is dark.' You do not know what she means. Her voice makes your skin prickle. She lets go and turns away without another word. You push through the crowd, thinking hard. Then you head for the meeting spot by the clock.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_006",
+     "label": "Race to catch up with your friends",
+     "target": "p_join"
+    }
+   ]
+  },
+  {
+   "id": "p_join",
+   "body": "Mia, Theo, and Priya are waiting by the clock tower, exactly where you agreed to meet. 'The whole town is talking about the light,' Theo says, kicking a pebble. Priya holds up a folded map of the coast road. 'If Cal is missing, he might be near the lighthouse itself,' she says. The four of you agree on a plan: Follow the coast road out to the point. Then figure out what happened along the way. The wind is already picking up. The sky over the water looks bruised and heavy.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_007",
+     "label": "Start down the coast road",
+     "target": "p_walk1"
+    }
+   ]
+  },
+  {
+   "id": "p_walk1",
+   "body": "The coast road curves along the edge of the cliffs, with waves crashing far below. Seagulls cry overhead, fighting the growing wind. Theo checks his watch and frowns. 'We have maybe five hours before the storm hits,' he says. Mia nods and quickens her pace. The lighthouse looks small and far away from here, just a pale shape against the dark clouds. Nobody says it, but you are all thinking the same thing: Cal Finch needs help. So do the boats still out at sea.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_008",
+     "label": "Keep walking toward the point",
+     "target": "p_walk2"
+    }
+   ]
+  },
+  {
+   "id": "p_walk2",
+   "body": "Halfway along the road, Priya stops and points at the sand below the path. Strange footprints wind down toward the dunes, too big to be a child's and too small for a grown man. They vanish where the grass grows thick. 'Should we check those out?' Priya asks, chewing her lip. Theo shrugs and says the tower is more important. You have to choose. Time is short, and every minute matters before the storm and the dark water swallow the last of the daylight.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_009",
+     "label": "Stay on the main path",
+     "target": "p_walk3"
+    },
+    {
+     "id": "c_010",
+     "label": "Follow the strange footprints",
+     "target": "sd1_a"
+    }
+   ]
+  },
+  {
+   "id": "p_walk3",
+   "body": "You decide the footprints can wait and push on along the cliff path. The wind grows sharper here, tugging at your jacket. Below, waves smash against black rocks with a sound like thunder. Mia points out a broken fence post, its wood pale and splintered, as if something big had pushed through it recently. Nobody stops to look closely. The lighthouse is closer now, its dark windows staring out over the churning gray sea like empty eyes.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_011",
+     "label": "Push on along the cliff path",
+     "target": "p_walk4"
+    }
+   ]
+  },
+  {
+   "id": "p_walk4",
+   "body": "The path narrows and drops toward an old stone bridge that crosses a rocky gully. Water rushes underneath, swollen from days of rain. Theo tests the first stone with his foot before waving everyone across. Priya keeps one hand on the railing the whole way. On the far side, the lighthouse tower rises taller. It is close enough now to see the broken lamp room glass glinting in the last gray light. You are almost to the grounds. The storm clouds roll closer every minute.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_012",
+     "label": "Cross the old stone bridge",
+     "target": "p_walk5"
+    }
+   ]
+  },
+  {
+   "id": "p_walk5",
+   "body": "On the far side of the bridge, the path splits. One trail leads straight up toward the lighthouse grounds. The other dips down toward an old wooden boathouse, its door hanging loose on rusty hinges. Mia thinks she saw a light flicker inside it a moment ago. Theo wants to keep moving, worried about the storm. You have to decide quickly whether the boathouse is worth the detour, or whether every minute should go straight toward the tower and Cal Finch.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_013",
+     "label": "Keep to the trail",
+     "target": "p_walk6"
+    },
+    {
+     "id": "c_014",
+     "label": "Sneak toward the boathouse",
+     "target": "sd2_a"
+    }
+   ]
+  },
+  {
+   "id": "p_walk6",
+   "body": "You keep to the main trail, climbing steadily upward. The grass here is bent flat by the wind. Salt spray stings your cheeks. Somewhere below, a buoy bell clangs again and again, tossed by the rising swell. Priya checks her map one more time and folds it away. 'Almost there,' she says, though her voice shakes a little. The lighthouse tower fills more and more of the sky as you climb the last hill toward the grounds.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_015",
+     "label": "Climb the last hill",
+     "target": "p_walk7"
+    }
+   ]
+  },
+  {
+   "id": "p_walk7",
+   "body": "At the top of the hill, the wind hits you full in the face, carrying the smell of rain. A low wooden fence marks the edge of the lighthouse property, its paint peeling from years of salt spray. Beyond it, the tower looms pale and enormous, its lamp room dark and silent at the very top. Mia points to a thin trail of footprints leading along the fence line toward the front door. You follow them, hearts pounding, closer to the answers you came for.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_016",
+     "label": "Follow the fence line down",
+     "target": "p_walk8"
+    }
+   ]
+  },
+  {
+   "id": "p_walk8",
+   "body": "The fence ends at a small gate hanging open on one hinge. Beyond it, the lighthouse grounds spread out, scattered with old barrels and coiled rope. A cracked lantern lies in the grass, its glass shattered into a dozen pieces. Theo picks it up carefully and turns it over in his hands. 'This was Cal's,' he says quietly. 'He never goes anywhere without it.' The four of you step through the gate together, watching the dark tower grow taller with every step.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_017",
+     "label": "Step onto the lighthouse grounds",
+     "target": "p_gate_intro"
+    }
+   ]
+  },
+  {
+   "id": "p_gate_intro",
+   "body": "Up close, the lighthouse is bigger than it ever looked from town. Its white paint is chipped and gray with salt. The big front door stands slightly ajar. A strange greenish light seems to shimmer for a second in the tide pools near the rocks, then vanishes. Priya grabs your arm. 'Did you see that?' she whispers. Nobody answers. The wind howls around the tower's base. Somewhere far above, a loose shutter bangs again and again like a slow, patient drum.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_018",
+     "label": "Walk up to the lighthouse door",
+     "target": "p_gate"
+    }
+   ]
+  },
+  {
+   "id": "p_gate",
+   "body": "At the door, you find four clues scattered from your walk: Gus's warning about the boats, Mrs. Alder's book on the tide-witch, the old woman's words about a missing sea glass heart, and Cal's cracked lantern. Everything seems to point in different directions at once. Theo thinks you should search for the witch herself. Priya wants to climb straight to the lamp room. Mia trusts the fishing fleet. You still have Cal's own notebook to consider. The sea wall also badly needs shoring up before the storm.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_019",
+     "label": "Search for the tide-witch",
+     "target": "w01"
+    },
+    {
+     "id": "c_020",
+     "label": "Climb the lens tower",
+     "target": "t01"
+    },
+    {
+     "id": "c_021",
+     "label": "Signal the fishing fleet",
+     "target": "f01"
+    },
+    {
+     "id": "c_022",
+     "label": "Follow Cal's notebook",
+     "target": "k01"
+    },
+    {
+     "id": "c_023",
+     "label": "Help reinforce the sea wall",
+     "target": "r01"
+    }
+   ]
+  },
+  {
+   "id": "sd1_a",
+   "body": "You leave the road and follow the strange footprints down through the tall dune grass. They wind back and forth like whoever made them was searching for something in the sand. The wind picks up, flinging grit against your face. Mia keeps close behind you, glancing back toward the road every few steps. The footprints grow fainter the closer you get to the water. Soon the sand is smooth and empty, as if the trail simply stopped in the middle of nowhere.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_024",
+     "label": "Follow the footprints down the dune",
+     "target": "sd1_b"
+    }
+   ]
+  },
+  {
+   "id": "sd1_b",
+   "body": "At the bottom of the dune, the footprints vanish completely into a patch of wet sand near the tide line. You crouch down and look closer. There is nothing here except a few broken shells and a cold, salty wind. The sky darkens fast, and thunder rumbles far out over the water. Mia tugs your sleeve. 'We are wasting time,' she says, worried. Whatever made these tracks is gone. The storm is getting closer with every passing minute.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_025",
+     "label": "Look closer at the sand",
+     "target": "sd1_end"
+    }
+   ]
+  },
+  {
+   "id": "sd1_end",
+   "body": "The footprints never turn up again, no matter how far you search along the sand. Mia tugs your sleeve, worried about the darkening sky. Thunder rumbles closer, and the first fat raindrops start to fall. You give up the search and turn back toward the coast road, disappointed. By the time you reach the lighthouse grounds, your other friends are already deep into their own search. The storm is much closer now. You never learn what made those strange tracks. The mystery follows you home, unanswered, long after the night is over.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_sd1",
+    "valence": "negative",
+    "kind": "retreat",
+    "title": "Lost in the Dunes"
+   }
+  },
+  {
+   "id": "sd2_a",
+   "body": "You creep down the side path toward the old boathouse, boots sinking into soft mud. The wind rattles its loose door against the frame, over and over. Through a cracked window you can just make out shapes stacked inside: old nets, coiled rope. A shadow that might be a person, or might just be a pile of sailcloth. Your heart beats fast. Behind you, the trail back to the lighthouse feels suddenly very far away in the growing dark.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_026",
+     "label": "Peek through the boathouse window",
+     "target": "sd2_b"
+    }
+   ]
+  },
+  {
+   "id": "sd2_b",
+   "body": "You press your face close to the cracked glass. Inside, the shadow turns out to be nothing more than an old fishing net draped over a barrel. Still, on a shelf you spot a faded photograph of Cal Finch standing proudly beside the lighthouse lamp, decades younger. It tells you nothing new, but it feels important somehow. Thunder rumbles again, closer this time. Rain starts to spit from the darkening sky above the bay.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_027",
+     "label": "Step inside quietly",
+     "target": "sd2_end"
+    }
+   ]
+  },
+  {
+   "id": "sd2_end",
+   "body": "The old photograph tells you little. It stays in your mind the whole walk back. Rain begins to fall in earnest. You and Mia hurry to catch up with Theo and Priya near the tower gate. You never go back inside the boathouse again. You remember Cal's proud young smile in that faded picture. Whatever happens next at the lighthouse, you feel sure now that Cal loves this old tower more than almost anything else in Windgate Bay. That thought stays with you.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_sd2",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "An Old Photograph"
+   }
+  },
+  {
+   "id": "w01",
+   "body": "You leave the others to search the tide pools along the rocks. The old woman said the sea glass heart might have washed up. The greenish light flickers again between two stones, brighter this time. It could be the tide-witch the old book warns about, or just strange sea foam catching the last daylight. Waves slap against the rocks nearby. You have to decide how to approach whatever is glowing out there before the tide comes fully in.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_028",
+     "label": "Follow the glowing tide pools",
+     "target": "w02"
+    },
+    {
+     "id": "c_029",
+     "label": "Call out into the wind",
+     "target": "w03"
+    }
+   ]
+  },
+  {
+   "id": "w02",
+   "body": "You wade carefully between the tide pools, following the flickers of green light. Small crabs scurry away from your boots. The light seems to lead you toward a shallow cave mouth cut into the base of the cliff, half hidden behind curtains of dripping seaweed. Your heart pounds as you get closer. The wind carries a strange, low humming sound from somewhere deep inside the dark opening ahead. Somewhere behind you, footsteps splash through the shallow water.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_030",
+     "label": "Step toward the cave mouth",
+     "target": "w04"
+    }
+   ]
+  },
+  {
+   "id": "w03",
+   "body": "You cup your hands and shout out over the water, asking if anyone is there. For a long moment, only the wind answers. Then a soft voice, cracked like old rope, calls back from somewhere among the rocks. 'Careful now,' it warns. 'The tide comes fast here.' You cannot tell if the voice is friendly or if it means to scare you away from the cave entirely. The wind rises again, and you realize the tide will not wait long.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_031",
+     "label": "Move toward the voice calmly",
+     "target": "w04"
+    },
+    {
+     "id": "c_032",
+     "label": "Shout back rudely, demanding answers",
+     "target": "w05"
+    }
+   ]
+  },
+  {
+   "id": "w05",
+   "body": "Your rude shout echoes off the rocks and the friendly voice goes silent at once. A sudden gust knocks you off balance, and cold spray soaks your jacket. Whatever was willing to help does not answer again, no matter how many times you call out. The tide creeps higher around your boots. You realize, with a sinking feeling, that you have lost your only guide toward the cave. You are alone now, and the cave suddenly feels very far away.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_033",
+     "label": "Give up and turn back",
+     "target": "we_bad"
+    }
+   ]
+  },
+  {
+   "id": "w04",
+   "body": "Whether by the glowing pools or the cracked voice, you find yourself standing at the mouth of the shallow sea cave. Inside, strange green light pulses gently against wet stone walls. The humming grows louder. An old woman sits on a smooth rock near the back, wrapped in a cloak made of woven seaweed. She looks up at you with sharp, curious eyes and waits for you to speak first.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_034",
+     "label": "Trust her and ask for help",
+     "target": "w06"
+    },
+    {
+     "id": "c_035",
+     "label": "Refuse her help and search alone",
+     "target": "w07"
+    }
+   ]
+  },
+  {
+   "id": "w06",
+   "body": "You kneel and explain everything: the dark lighthouse, missing Cal, the coming storm. The old woman listens without blinking. 'The sea glass heart was never stolen,' she says slowly. 'It was borrowed, to save a drowning gull. Never returned.' She reaches into her cloak and pulls out a smooth, glowing piece of green glass. It feels warm as a coal despite the cold cave air around you both. Its glow lights up her wrinkled, weathered face.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_036",
+     "label": "Take the glowing glass from her",
+     "target": "w08"
+    }
+   ]
+  },
+  {
+   "id": "w07",
+   "body": "You thank her but decide to search the cave yourself instead of trusting a stranger. Behind loose stones near the back wall, you find a small hollow stuffed with dried kelp. Tucked inside is a smooth piece of green glass, warm to the touch, glowing faintly even in the dim cave light. The old woman watches quietly, saying nothing as you lift it carefully into your open palm. Its light glimmers faintly against your fingers as you turn to leave.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_037",
+     "label": "Lift the glowing glass carefully",
+     "target": "w08"
+    }
+   ]
+  },
+  {
+   "id": "w08",
+   "body": "However you found it, the sea glass heart now rests warm in your hand, pulsing faintly like a tiny heartbeat. Outside, thunder rumbles closer, and rain begins to patter against the rocks. You know you need to get this glass back to the lighthouse lamp before the storm fully arrives. The climb back up the cliff path looks steep, slick. Dangerous in the wind. Above you, the storm clouds are turning a deep, heavy gray.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_038",
+     "label": "Hurry straight up the cliff path",
+     "target": "w09"
+    },
+    {
+     "id": "c_039",
+     "label": "Catch your breath and check your footing first",
+     "target": "w08b"
+    }
+   ]
+  },
+  {
+   "id": "w08b",
+   "body": "You pause a moment, checking your boots and the wet rocks ahead before starting the climb. It costs you precious seconds. Your footing feels much steadier once you finally start moving. Below, the tide is rising fast, swallowing the tide pools one by one. You grip the sea glass heart tightly in your fist and begin the long climb back toward the lighthouse tower. The wind howls louder now, pushing hard against your back.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_040",
+     "label": "Begin the climb back up",
+     "target": "w09"
+    }
+   ]
+  },
+  {
+   "id": "w09",
+   "body": "You scramble up the cliff path with the sea glass heart glowing warm against your palm. Mia, Theo, and Priya are waiting anxiously near the tower door, soaked from the first hard rain. 'You found it!' Priya gasps. Together you race inside and start climbing the spiral stairs toward the lamp room. The great broken lens waits silent and dark at the very top of the tower. Everyone's clothes are soaked through completely by now.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_041",
+     "label": "Race up to fit the glass into the lamp",
+     "target": "w10"
+    },
+    {
+     "id": "c_042",
+     "label": "Stop to check on Cal Finch first",
+     "target": "w11"
+    }
+   ]
+  },
+  {
+   "id": "w10",
+   "body": "At the top of the tower, you fit the sea glass heart carefully into the empty socket at the center of the great lens. For a moment nothing happens. Then warm golden light floods the lamp room, spinning outward across the dark water in a wide, steady beam. Cheers rise faintly from the docks below as the boats spot their guiding light at last, safe and found. Far below, tiny boat lights bob steadily toward the safe harbor.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_043",
+     "label": "Watch the light sweep across the bay",
+     "target": "we1"
+    }
+   ]
+  },
+  {
+   "id": "w11",
+   "body": "Worried about Cal, you pause on the stairs to check the small storage room where he sometimes naps during long shifts. He is not there. You find his coat, still damp, hanging on a hook. Time is slipping away fast. The storm outside is growing louder, rattling the old windows with every gust of cold, salty wind. You call his name softly, but only silence answers back. Rain is falling harder now, drumming steadily on the roof above.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_044",
+     "label": "Rush the rest of the way to the lamp room",
+     "target": "w12"
+    },
+    {
+     "id": "c_045",
+     "label": "Search the tower for Cal instead",
+     "target": "w13"
+    }
+   ]
+  },
+  {
+   "id": "w12",
+   "body": "You rush the last flight of stairs and fit the sea glass heart into the lamp with shaking hands. Light floods out over the water just as the worst of the storm arrives, rain hammering the glass all around you. The boats are saved, but in your hurry you never did find Cal. The empty tower feels strangely hollow even with the lamp shining bright again. Somewhere below, thunder rumbles long and low across the churning bay.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_046",
+     "label": "Wonder where Cal Finch could be",
+     "target": "we2"
+    }
+   ]
+  },
+  {
+   "id": "w13",
+   "body": "You search room after room for Cal instead of hurrying to the lamp. Precious minutes slip away. By the time you finally reach the lamp room, the storm is already crashing against the tower. Your hands are shaking too hard to fit the glass in properly. The light sputters weakly. Somewhere out past the point, a boat's horn sounds, lost and searching in the dark. Somewhere out there, a tired captain squints hard into the dark.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_047",
+     "label": "Watch helplessly as the light struggles",
+     "target": "we3"
+    }
+   ]
+  },
+  {
+   "id": "we_bad",
+   "body": "Your rude shout ends the conversation for good. No matter how long you wait, the cracked voice never answers again. The green light in the tide pools slowly fades away. Cold spray keeps soaking through your jacket. The tide creeps higher around your boots with every passing minute. Eventually you have no choice but to climb back up the cliff path alone, empty handed and shivering. Somewhere above, your friends are still searching. You hope one of them finds better luck than you did tonight.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_wbad",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Chased Off by the Wind"
+   }
+  },
+  {
+   "id": "we1",
+   "body": "Golden light sweeps steadily across Windgate Bay. Every boat out past the point turns safely toward home. Down at the docks, cheering rises up through the rain as families spot the familiar beam again. Mia, Theo, and Priya crowd around you in the lamp room, soaked but grinning with relief. Somewhere below, Cal Finch himself climbs the last steps, safe and unharmed, to see his lighthouse shining bright once more. Windgate Bay is safe tonight, and so is everyone who loves it.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_w1",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Sea Glass Heart Restored"
+   }
+  },
+  {
+   "id": "we2",
+   "body": "The light shines steady over the bay. Every boat finds its way home safely. Still, something nags at you as you climb back down the tower stairs. Nobody ever found Cal Finch. His coat still hangs alone on its hook in the storage room. The old woman in the cave never explained why the glass had gone missing in the first place. You did what needed doing tonight. Plenty of questions about Windgate Bay's strange lighthouse still remain completely unanswered by morning.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_w2",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "A Light Without Answers"
+   }
+  },
+  {
+   "id": "we3",
+   "body": "By the time you finally reach the lamp room, the storm has already swallowed the bay in darkness and driving rain. Your hands shake too hard to fit the glass in properly. The light sputters weak and uneven instead of shining strong. Out past the point, a boat's horn sounds again, searching blindly through the wind. You did your best tonight, but your best was not quite fast enough. Windgate Bay will remember this stormy night for a long, long time.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_w3",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Too Late for the Lamp"
+   }
+  },
+  {
+   "id": "t01",
+   "body": "You decide the fastest answers will be at the very top of the tower. The great broken lens sits silent. The spiral staircase inside creaks under your feet, twisting up into darkness. A thick rope lift, usually used to haul supplies, hangs nearby, swaying gently in a draft. Climbing the stairs feels safer. The rope lift looks much faster if it still works properly. A cold draft slips past you, smelling faintly of salt and rain.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_048",
+     "label": "Climb the spiral stairs",
+     "target": "t02"
+    },
+    {
+     "id": "c_049",
+     "label": "Try the rope lift instead",
+     "target": "t03"
+    }
+   ]
+  },
+  {
+   "id": "t02",
+   "body": "You start up the spiral stairs, counting steps to keep your mind steady. The stairwell is narrow and cold, lit only by small round windows every few turns. Wind whistles through cracks in the old stone. Somewhere far above, loose glass rattles in its broken frame. Your legs burn by the halfway point. You keep climbing, one careful step after another. Your breath comes out in short, steady clouds in the chilly air.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_050",
+     "label": "Keep climbing toward the top",
+     "target": "t04"
+    }
+   ]
+  },
+  {
+   "id": "t03",
+   "body": "You climb into the wooden platform of the rope lift and pull the worn lever. With a groan, it lurches upward, swaying against the tower wall. It is faster than the stairs. Every creak of the old rope makes your stomach twist with worry. Halfway up, the lift shudders hard and stops moving completely, leaving you swinging gently over a very long drop. Below you, the ground looks impossibly small and far away.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_051",
+     "label": "Climb out onto the stairs from here",
+     "target": "t04"
+    },
+    {
+     "id": "c_052",
+     "label": "Wait and try the lever again",
+     "target": "t05"
+    }
+   ]
+  },
+  {
+   "id": "t05",
+   "body": "You wait, tugging the lever again and again. The old rope lift refuses to budge another inch. Wind rocks the little platform back and forth. Rain starts to spatter against the tower's stone wall far below. Eventually you have to admit defeat. You climb out carefully onto a narrow stair landing, shaken and cold. You have lost a good deal of precious time. Your hands are shaking now, more from nerves than from cold.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_053",
+     "label": "Climb down and start over",
+     "target": "te_bad"
+    }
+   ]
+  },
+  {
+   "id": "t04",
+   "body": "However you reach it, you finally arrive at the lamp room landing, breathless and cold. The great lens looms above, cracked and dark, its center socket empty where the sea glass heart should be. Wind howls through a broken pane of glass nearby. Somewhere below, you can hear Theo calling up the stairwell. You realize you may need his help to finish the job safely. Dust and salt hang thick in the cold tower air.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_054",
+     "label": "Try to steady the broken lens alone",
+     "target": "t06"
+    },
+    {
+     "id": "c_055",
+     "label": "Call your friends up to help",
+     "target": "t07"
+    }
+   ]
+  },
+  {
+   "id": "t06",
+   "body": "You brace your shoulder against the heavy lens frame and push with all your strength. It groans and shifts a little. It is far too heavy for one person to move safely. Your arms shake with the effort. For a moment the whole frame wobbles dangerously above the long drop to the rocks below, before finally settling back into place. Sweat drips down your forehead despite the cold, damp air.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_056",
+     "label": "Push through and finish the job",
+     "target": "t08"
+    }
+   ]
+  },
+  {
+   "id": "t07",
+   "body": "You lean over the stairwell railing and shout for Theo, Mia, and Priya. Their footsteps pound up the stairs quickly. Soon all four of you are crowded into the small lamp room together. With everyone pushing and steadying the frame at once, the heavy lens finally shifts back into place. It is ready to hold a new light. Everyone is breathing hard, but grinning with relief at the same time.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_057",
+     "label": "Guide everyone to steady the lens together",
+     "target": "t08"
+    }
+   ]
+  },
+  {
+   "id": "t08",
+   "body": "With the lens finally steady, someone still needs to bring the sea glass heart up from below to finish the repair. You lean out the broken window and squint down the cliff path, watching for any sign of Mia. Rain is starting to spit against the glass. The wind howls louder through the broken pane with every passing minute you wait. Somewhere far below, you can just hear the sea crashing on.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_058",
+     "label": "Hurry down to meet her partway",
+     "target": "t09"
+    },
+    {
+     "id": "c_059",
+     "label": "Wait and rest your tired arms first",
+     "target": "t08b"
+    }
+   ]
+  },
+  {
+   "id": "t08b",
+   "body": "You lean against the cold stone wall for a moment, shaking out your tired, aching arms before starting back down. It costs a little time. You take the slick spiral stairs more carefully because of it. Partway down, you spot Mia climbing steadily upward, the sea glass heart glowing warm and green in her careful, cupped hands. Outside, rain begins tapping steadily against the old stone walls. Your legs still ache a little from the long climb up.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_060",
+     "label": "Meet her on the stairs",
+     "target": "t09"
+    }
+   ]
+  },
+  {
+   "id": "t09",
+   "body": "However it happens, you and Mia meet on the stairs. You hurry the rest of the way up together. The sea glass heart glows warm between her cupped hands. Relief floods through both of you. All that remains now is climbing the last steps and aligning the heavy lens exactly right before the worst of the storm truly arrives outside. Her hands are cold, but her grip on the glass stays steady.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_061",
+     "label": "Align the sea glass heart carefully",
+     "target": "t10"
+    },
+    {
+     "id": "c_062",
+     "label": "Rush the alignment to save time",
+     "target": "t11"
+    }
+   ]
+  },
+  {
+   "id": "t10",
+   "body": "You take your time, turning the sea glass heart gently until it clicks into its socket with a soft, satisfying sound. Golden light bursts outward through the great lens, sweeping in a wide steady circle across the dark, churning water. Down at the docks, cheers erupt as boats spot the familiar beam again, guiding them safely home through the rising storm. Warm light spills across your face for the very first time tonight.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_063",
+     "label": "Watch the beam sweep the bay",
+     "target": "te1"
+    }
+   ]
+  },
+  {
+   "id": "t11",
+   "body": "You force the glass into place too quickly. It sits slightly crooked in the socket. Light flickers weak and uneven through the cracked lens, sweeping the water in short, broken bursts instead of one steady beam. It is better than darkness, but far from perfect. You know somewhere out on the water a boat might still miss its narrow, flickering signal. You can hear the wind screaming through the broken pane nearby.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_064",
+     "label": "Try to fix the crooked glass",
+     "target": "t12"
+    },
+    {
+     "id": "c_065",
+     "label": "Leave it and hope it is enough",
+     "target": "t13"
+    }
+   ]
+  },
+  {
+   "id": "t12",
+   "body": "You reach back in and gently nudge the glass until it finally seats properly. The flickering steadies into one strong, golden beam that sweeps smoothly across the bay. It took longer than it should have. Your hands are shaking with relief. The light now shines exactly as it should, strong and true against the darkening storm clouds outside. Your fingers ache from gripping the cold metal frame so tightly. You feel proud of the fix.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_066",
+     "label": "Watch the light finally steady",
+     "target": "te2"
+    }
+   ]
+  },
+  {
+   "id": "t13",
+   "body": "You decide the crooked light is good enough and hurry back down the stairs to find the others. Behind you, the lamp keeps flickering weakly, casting uneven flashes across the water instead of one clear beam. It is not the disaster of total darkness. It is not the steady guide the fishing boats truly need on a night like this one. Somewhere behind you, the storm keeps pressing harder against the old tower.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_067",
+     "label": "Head back down the tower",
+     "target": "te3"
+    }
+   ]
+  },
+  {
+   "id": "te_bad",
+   "body": "The old rope lift never budges again, no matter how many times you pull the stubborn lever. Wind rocks the little wooden platform back and forth over a very long drop. Rain begins to spatter hard against the tower's stone wall. Eventually you climb out onto a narrow stair landing, shaken, cold, and badly behind schedule. The climb ahead now looks twice as long. Somewhere above, the broken lens is still waiting silently in the dark for help that has not yet arrived.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_tbad",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Broken Rope Lift"
+   }
+  },
+  {
+   "id": "te1",
+   "body": "The great lens finally clicks into place. Warm golden light bursts outward across the churning water in one wide, steady sweep. Down at the docks, cheers rise through the rain as boats spot the familiar beam again. Theo pounds your shoulder proudly. Priya laughs with relief for the first time all night. Somewhere below, word spreads fast that the lighthouse is shining once more. Windgate Bay is safe tonight, thanks to steady hands and a little teamwork under pressure.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_t1",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "A Steady Golden Beam"
+   }
+  },
+  {
+   "id": "te2",
+   "body": "It takes longer than anyone hoped, but the crooked glass finally seats properly. One strong golden beam sweeps smoothly across the dark bay. Your hands ache, and your friends look exhausted in the flickering lamplight. Still, nobody found any sign of Cal Finch during the whole repair. His empty coat still hangs forgotten on its hook downstairs. The light shines bright tonight. Plenty of worried questions about the missing keeper remain long after the lamp finally steadies.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_t2",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Crooked Light Fixed"
+   }
+  },
+  {
+   "id": "te3",
+   "body": "You decide the crooked light is good enough and hurry back down without fixing it properly. Behind you, the lamp keeps flickering weakly instead of shining one clear, steady beam across the water. It helps some boats find their way. Others still struggle through the storm without a clear signal to follow. Windgate Bay makes it through the night, but just barely. Everyone agrees the lighthouse will need real repairs again as soon as the weather finally clears.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_t3",
+    "valence": "negative",
+    "kind": "retreat",
+    "title": "A Flickering Signal"
+   }
+  },
+  {
+   "id": "f01",
+   "body": "You decide the fastest way to help is finding the fishing fleet before the storm cuts them off from shore. Down at the water's edge, an old rowboat bobs against the pier. A tall signal lantern sits nearby, unlit and ready. Rowing out to meet the boats seems risky in this wind. Waving the lantern from shore might not reach far enough across the churning water. The wind tugs hard at both, as if daring you to pick one.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_068",
+     "label": "Row out to meet the boats",
+     "target": "f02"
+    },
+    {
+     "id": "c_069",
+     "label": "Signal from the pier with the lantern",
+     "target": "f03"
+    }
+   ]
+  },
+  {
+   "id": "f02",
+   "body": "You climb into the small rowboat and push off from the pier, oars biting into choppy water. Spray stings your face with every stroke. The shoreline shrinks behind you quickly. Somewhere out past the breakers, you can just make out the shapes of fishing boats. They rock hard against the swell. Their crews search anxiously for any sign of the missing lighthouse beam. Your arms burn already, but you refuse to slow down now.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_070",
+     "label": "Row harder toward the fleet",
+     "target": "f04"
+    }
+   ]
+  },
+  {
+   "id": "f03",
+   "body": "You light the tall signal lantern and swing it slowly back and forth above your head, the old fisherman's rescue signal for trouble ashore. The flame gutters in the wind but holds. Out on the water, one boat's running lights flicker in response, turning slowly toward the shore. It is working, but you will need to keep signaling steadily until every last boat notices the light. Cold spray stings your knuckles as you keep the lantern swinging.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_071",
+     "label": "Keep swinging the lantern steadily",
+     "target": "f04"
+    },
+    {
+     "id": "c_072",
+     "label": "Wave your arms and shout as well",
+     "target": "f05"
+    }
+   ]
+  },
+  {
+   "id": "f05",
+   "body": "Waving your arms and shouting makes the lantern swing wildly. A sudden gust snuffs the flame out completely. Your signal vanishes into the dark. Out on the water, the boat that had started turning toward shore drifts back off course, its lights fading into the mist. You are left standing alone on the dark, windy pier, heart sinking. Somewhere out on the water, a horn sounds once, then fades away.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_073",
+     "label": "Try to relight the lantern",
+     "target": "fe_bad"
+    }
+   ]
+  },
+  {
+   "id": "f04",
+   "body": "However you first reached them, you find yourself close enough now to guide the fishing boats through the dangerous rocks near the point. The captain of the lead boat leans over the rail, shouting that they cannot see the channel markers in this weather. Someone needs to guide them safely through. There are hidden rocks on both sides of the narrow passage ahead. Rain begins to needle sideways, stinging your cheeks and eyes.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_074",
+     "label": "Guide them through the rocks yourself",
+     "target": "f06"
+    },
+    {
+     "id": "c_075",
+     "label": "Wait for the fog to clear a little",
+     "target": "f07"
+    }
+   ]
+  },
+  {
+   "id": "f06",
+   "body": "You wave your arms wide and shout directions, pointing out the safe channel between the rocks as best you can remember from summer swims here. Your voice is nearly lost in the wind. The lead boat slowly adjusts course, following your waving arms carefully. One wrong turn now could send the whole boat crashing straight into the hidden rocks below the surface. Your throat already feels raw from shouting into the wind.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_076",
+     "label": "Keep waving them through carefully",
+     "target": "f08"
+    }
+   ]
+  },
+  {
+   "id": "f07",
+   "body": "You decide to wait a few minutes, hoping the thick fog rolling in will thin out enough to see the channel clearly. The boats bob anxiously just offshore, engines idling. You squint hard into the gray mist. It is a gamble. When the fog finally shifts, you can just make out the safe path between the rocks, faint but clear enough to follow. Cold mist beads on your eyelashes as the minutes crawl slowly by.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_077",
+     "label": "Guide them through once the fog lifts",
+     "target": "f08"
+    }
+   ]
+  },
+  {
+   "id": "f08",
+   "body": "The lead boat drifts a little too close to the rocks in the confusion. A loud scrape echoes across the water as the hull grazes stone. The captain curses but steers clear just in time. The rest of the fleet still needs guiding through. Your throat is already raw from shouting directions into the wind. Everyone on board holds their breath until the danger passes completely. Spray from the near miss soaks your sleeve completely.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_078",
+     "label": "Push on and wave the rest through now",
+     "target": "f09"
+    },
+    {
+     "id": "c_079",
+     "label": "Pause a moment to catch your breath",
+     "target": "f08b"
+    }
+   ]
+  },
+  {
+   "id": "f08b",
+   "body": "You pause just long enough to catch your breath, your throat raw from shouting into the wind. The short rest helps your next signals come out clear and strong. One by one, the last few boats follow your waving arms carefully, easing past the hidden rocks into calmer water beyond the point. Somewhere behind you, waves keep slapping hard against the old pier. Down below, the last few boats wait anxiously for your signal.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_080",
+     "label": "Guide the last boat through safely",
+     "target": "f09"
+    }
+   ]
+  },
+  {
+   "id": "f09",
+   "body": "With the fleet finally past the rocks, one last problem remains. The lighthouse itself is still dark. Without its steady beam, other boats further out may still lose their way home tonight. You remember the harbor master keeps a radio at the signal station nearby. It might reach the tower crew with news of what still needs fixing. Rain is falling harder now, drumming steadily against the wooden dock. You hope it is not too late.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_081",
+     "label": "Radio the harbor master with the last clue",
+     "target": "f10"
+    },
+    {
+     "id": "c_082",
+     "label": "Try to fix the light yourself without help",
+     "target": "f11"
+    }
+   ]
+  },
+  {
+   "id": "f10",
+   "body": "You sprint to the signal station and radio the harbor master everything you know: the missing sea glass heart, the tide-witch's cave, all of it. Within minutes, word reaches the tower crew. Finish the repair using your information. Moments later, golden light sweeps out across the bay. The whole fishing fleet cheers together as they finally spot their way safely home. Your boots squelch with every hurried step along the muddy trail.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_083",
+     "label": "Watch the fleet cheer as the light returns",
+     "target": "fe1"
+    }
+   ]
+  },
+  {
+   "id": "f11",
+   "body": "You decide to handle everything yourself and race back toward the lighthouse without calling for help. It is a long, exhausting climb. By the time you reach the tower, you are soaked through and shaking with cold. Precious minutes have slipped away that a simple radio call could have saved. The fishing fleet is still waiting anxiously out on the dark water. Somewhere far below, tired voices cheer weakly into the wind.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_084",
+     "label": "Push through and finish the repair anyway",
+     "target": "f12"
+    },
+    {
+     "id": "c_085",
+     "label": "Realize you have run out of time",
+     "target": "f13"
+    }
+   ]
+  },
+  {
+   "id": "f12",
+   "body": "Cold and exhausted, you still manage to help finish the repair just as the worst of the storm arrives. Golden light finally sweeps across the water. Far below, the fishing fleet's horns sound in grateful reply. It was closer than it should have been. Everyone makes it home safely. You collapse against the tower wall, completely worn out but relieved. Rain hammers the old stone walls without any sign of slowing down.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_086",
+     "label": "Catch your breath as the light shines on",
+     "target": "fe2"
+    }
+   ]
+  },
+  {
+   "id": "f13",
+   "body": "By the time you reach the tower, the storm has fully arrived, wind screaming around the old stone walls. There simply is not enough time left to finish the repair before the worst of the weather hits. The lamp stays dark a while longer. Out on the water, the fishing fleet has to ride out the storm without any guiding light at all. Somewhere out past the point, waves crash steadily against the dark rocks.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_087",
+     "label": "Wait out the storm and hope for the best",
+     "target": "fe3"
+    }
+   ]
+  },
+  {
+   "id": "fe_bad",
+   "body": "The lead boat's hull scrapes hard against the hidden rocks. For one terrible moment everyone fears the worst. The captain manages to steer clear just in time. The whole crew is left shaken and pale. Water leaks slowly through a small crack in the hull. The boat has to limp the rest of the way home carefully. Nobody is hurt tonight, but it was much too close. Everyone agrees the channel needs better markers before the fleet sails out again.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_fbad",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "A Close Scrape on the Rocks"
+   }
+  },
+  {
+   "id": "fe1",
+   "body": "Word reaches the tower crew just in time. Golden light finally sweeps out across the churning bay. Down on the water, the whole fishing fleet cheers together as they spot their way home at last. Engines rev steadily now, following the familiar beam through the rain toward the safe harbor. You stand soaked and shivering on the dock, watching boat after boat arrive safely. Windgate Bay's fishing families are together again tonight, thanks to a radio call and a little courage.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_f1",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Fleet Finds Its Way"
+   }
+  },
+  {
+   "id": "fe2",
+   "body": "Cold, soaked, and completely exhausted, you still manage to help finish the lighthouse repair just as the worst of the storm finally arrives. Golden light sweeps across the churning water. Far below, the fishing fleet's horns sound out in grateful reply. You collapse against the tower wall, shivering but relieved beyond words. It took every bit of strength you had tonight. Windgate Bay's boats are finally safe. So, at last, are you.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_f2",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "A Cold and Weary Victory"
+   }
+  },
+  {
+   "id": "fe3",
+   "body": "By the time you finally reach the tower, the storm has fully arrived. There simply is not enough time left to finish the repair. The lamp stays dark a while longer, rattling weakly in the howling wind. Out on the churning water, the fishing fleet has no choice but to ride out the storm without any guiding light at all. Everyone makes it home eventually, shaken and soaked. Windgate Bay will not soon forget this long, frightening night.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_f3",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "No Light, No Time"
+   }
+  },
+  {
+   "id": "k01",
+   "body": "You remember Cal always kept a battered notebook in his coat pocket, full of tide charts and scribbled notes. If he dropped it somewhere, it might explain where he has gone. You could try to puzzle out the strange map sketched on its last page. Or you could head straight to his little cottage to search for more clues. Every second feels precious now, with the storm creeping closer. Every minute matters tonight.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_088",
+     "label": "Decode the notebook's strange map",
+     "target": "k02"
+    },
+    {
+     "id": "c_089",
+     "label": "Search Cal's cottage first",
+     "target": "k03"
+    }
+   ]
+  },
+  {
+   "id": "k02",
+   "body": "You spread the notebook open on a flat rock and study the map, ignoring the wind tugging at its pages. Faint pencil lines lead from the lighthouse down to a spot marked with a small crooked star. It sits right where the cliffs meet the sea caves below. It looks like Cal marked this place for a reason. You feel sure it will lead you closer to him. Your fingers trace the faded pencil lines carefully in the fading light.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_090",
+     "label": "Follow the map toward the marked star",
+     "target": "k04"
+    }
+   ]
+  },
+  {
+   "id": "k03",
+   "body": "Cal's small cottage sits behind the tower, its door unlocked and swinging gently in the wind. Inside, you find a half-eaten breakfast, a lit candle burned down to nothing. Muddy footprints leading straight back out the door. Something clearly interrupted him mid-morning. On the kitchen table, a second scrap of paper shows the same crooked star marked near the sea caves below the cliffs. A chill runs down your spine at the sight of it all.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_091",
+     "label": "Follow the clue toward the sea caves",
+     "target": "k04"
+    }
+   ]
+  },
+  {
+   "id": "k04",
+   "body": "Either way, the clues lead you down a narrow, slippery path toward a hidden hatch built into the rock near the caves. It is almost invisible unless you know exactly where to look. Rusty hinges creak in the wind. Beyond it, darkness stretches downward into the cliff itself. You could climb down to investigate, or first find the harbor master. He has lived here longer than anyone. Cold wind whistles steadily through the narrow opening below.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_092",
+     "label": "Follow the map to the hidden hatch",
+     "target": "k05"
+    },
+    {
+     "id": "c_093",
+     "label": "Ask the harbor master for help first",
+     "target": "k06"
+    }
+   ]
+  },
+  {
+   "id": "k05",
+   "body": "You pry open the rusty hatch and climb down a narrow ladder into cool, damp darkness. Your flashlight beam catches old barrels and crates stacked along the tunnel walls, clearly untouched for years. The air smells of salt and stone. Somewhere ahead, you hear a faint, steady dripping sound. What might be the echo of someone breathing slowly in the dark. Your flashlight beam trembles slightly as you creep further inside.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_094",
+     "label": "Follow the sound deeper into the tunnel",
+     "target": "k07"
+    }
+   ]
+  },
+  {
+   "id": "k06",
+   "body": "The harbor master listens carefully to your story, his weathered face growing serious. 'That hatch leads to the old smugglers' tunnel,' he says. 'Cal always said he'd check it someday if the tide ever got low enough.' He grabs a coil of rope and a lantern. He insists on coming with you. He leads the way confidently down the narrow, slippery path toward the hidden entrance. His flashlight beam bounces steadily off the wet cave walls ahead.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_095",
+     "label": "Follow him down to the hatch",
+     "target": "k07"
+    }
+   ]
+  },
+  {
+   "id": "k07",
+   "body": "However you got here, the tunnel opens into a small, dry chamber lit faintly by a crack of daylight far above. Old crates and coils of rope are stacked neatly against one wall. Something moves in the shadows near the back. Your flashlight beam catches a familiar weathered coat and a pair of tired, startled eyes blinking back at you in surprise. Your heart pounds loudly as you take one careful step closer.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_096",
+     "label": "Rush forward, hoping it is Cal",
+     "target": "k08"
+    },
+    {
+     "id": "c_097",
+     "label": "Call out his name carefully first",
+     "target": "k09"
+    }
+   ]
+  },
+  {
+   "id": "k08",
+   "body": "It is Cal Finch, safe and sound, though clearly relieved to see you. He explains he came down here chasing strange lights and got trapped when the tide rose and blocked the tunnel entrance behind him. 'The sea glass heart,' he says urgently. 'It's still up in the lamp room. We need to get back and fix that light before the storm gets any worse.' Relief floods through you like warm sunlight breaking through storm clouds.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_098",
+     "label": "Help him climb back out",
+     "target": "ke1"
+    }
+   ]
+  },
+  {
+   "id": "k09",
+   "body": "You call out carefully. A tired voice answers from the shadows, cracked with relief. It is Cal, but something is wrong. He does not step forward right away. When you finally reach him, you see he is favoring one leg badly. He winces with every small movement in the dim tunnel light. Your stomach twists with worry at the sound of his voice. The tunnel walls seem to close in tighter around you both.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_099",
+     "label": "Help him up gently and check his leg",
+     "target": "k10"
+    },
+    {
+     "id": "c_100",
+     "label": "Notice the tide is rising fast behind you",
+     "target": "k11"
+    }
+   ]
+  },
+  {
+   "id": "k10",
+   "body": "You help Cal up slowly and check his ankle. It is swollen but thankfully not broken. Leaning on you and the harbor master, he manages the climb back up the ladder, wincing but determined. Once outside, he insists on hobbling straight to the lighthouse to help fix the lamp himself. He refuses to rest until the sea glass heart is back where it belongs. Somewhere behind you, thunder rumbles low across the darkening bay.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_101",
+     "label": "Help him climb toward the lighthouse",
+     "target": "ke2"
+    }
+   ]
+  },
+  {
+   "id": "k11",
+   "body": "Behind you, cold seawater is already creeping across the tunnel floor, rising fast with the turning tide. There is no time to check Cal's injury carefully right now. You half carry, half drag him toward the ladder. Water swirls around your ankles as you climb. Both of you are soaked and shaking by the time you reach open air again. Your lungs burn with effort by the time you reach open air.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_102",
+     "label": "Scramble out just ahead of the tide",
+     "target": "ke3"
+    }
+   ]
+  },
+  {
+   "id": "ke1",
+   "body": "Cal Finch climbs out of the old smugglers' tunnel safe and only a little shaken, blinking hard in the fading daylight. He explains everything about the strange lights and the rising tide that trapped him below. Together, you all hurry back toward the tower. The sea glass heart still waits to be fitted into the broken lamp. Windgate Bay's missing keeper is found at last. The whole town breathes a little easier knowing Cal is safe and sound tonight.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_k1",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Cal Finch, Found Safe"
+   }
+  },
+  {
+   "id": "ke2",
+   "body": "Leaning heavily on you and the harbor master, Cal Finch makes the slow climb back up into daylight, wincing with every careful step. His ankle is swollen but thankfully not broken. Relief floods his tired, weathered face. He insists on hobbling straight toward the lighthouse despite his injury, determined to help fix the lamp himself. Windgate Bay's keeper is bruised tonight, but very much alive. Grateful beyond words for the friends who came searching for him.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_k2",
+    "valence": "positive",
+    "kind": "success",
+    "title": "A Slow Climb to Safety"
+   }
+  },
+  {
+   "id": "ke3",
+   "body": "Cold seawater chases you both up the tunnel ladder, rising fast with the turning tide. You and Cal reach open air soaked, shaking. Completely out of breath, but safe. There was no time to check his injury carefully. His ankle throbs painfully with every step toward town. Still, you both escaped the rising water with moments to spare. Windgate Bay's keeper is found tonight, shaken but alive. Grateful for a very narrow escape indeed.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_k3",
+    "valence": "negative",
+    "kind": "retreat",
+    "title": "A Narrow Escape from the Tide"
+   }
+  },
+  {
+   "id": "r01",
+   "body": "You decide the town needs help right now more than any single clue does. Down near the harbor, volunteers are stacking sandbags along the old sea wall, trying to keep the rising tide from flooding the fishing sheds. You could grab a shovel and dig in immediately. Or you could first check the tide charts at the harbor office to see how bad tonight's surge will be. Somewhere out past the harbor, waves are already crashing harder than usual.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_103",
+     "label": "Grab a shovel and start stacking bags",
+     "target": "r02"
+    },
+    {
+     "id": "c_104",
+     "label": "Check the tide charts first",
+     "target": "r03"
+    }
+   ]
+  },
+  {
+   "id": "r02",
+   "body": "You grab a shovel and jump straight into the work, hauling heavy sandbags alongside tired volunteers. Your arms ache almost immediately. Every bag you stack is one more small barrier against the rising water. The wind howls harder with each passing minute. Somewhere behind you, the dark lighthouse still stands silent over the churning bay. Sweat mixes with rain, stinging your eyes as you keep working. Somewhere nearby, a rope creaks under the weight of stacked bags.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_105",
+     "label": "Keep stacking bags as fast as you can",
+     "target": "r04"
+    }
+   ]
+  },
+  {
+   "id": "r03",
+   "body": "At the harbor office, old tide charts show tonight's surge will be one of the worst in years, worse even than the volunteers currently realize. You grab the charts and hurry back to the sea wall to warn everyone. You arrive just as the first big waves start slapping hard over the stacked sandbags. Your hands shake slightly as you fold the old charts closed. Your heart pounds as you run. There is no time to lose now.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_106",
+     "label": "Warn the volunteers and start working",
+     "target": "r04"
+    }
+   ]
+  },
+  {
+   "id": "r04",
+   "body": "Either way, you are soon elbow deep in the work. You pass heavy sandbags down a long human chain toward the weakest section of the wall. Rain begins to fall harder now, soaking everyone through completely. The harbor master shouts encouragement over the wind. You can all see the water rising steadily, faster than the wall is growing taller. Somewhere down the line, a tired volunteer coughs from the cold.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_107",
+     "label": "Push through and work even faster",
+     "target": "r05"
+    },
+    {
+     "id": "c_108",
+     "label": "Call for more volunteers to help",
+     "target": "r06"
+    }
+   ]
+  },
+  {
+   "id": "r05",
+   "body": "You grit your teeth and work even harder, barely pausing to catch your breath between each heavy bag. Your shoulders burn, and your hands are raw and blistered. The wall grows taller inch by careful inch. Somewhere down the line, someone starts singing an old fishing song. Tired voices join in, the rhythm helping everyone keep working steadily together. The old fishing song echoes strangely over the roaring wind. Your legs feel heavy, but you keep going.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_109",
+     "label": "Keep working through the pain",
+     "target": "r07"
+    }
+   ]
+  },
+  {
+   "id": "r06",
+   "body": "You cup your hands and shout toward town. Soon more neighbors come running with shovels and extra sandbags, answering the call for help. With more hands working together, the human chain grows longer and much faster. Bags stack higher along the crumbling wall with every passing minute of steady effort. Their footsteps thud steadily closer through the darkening evening rain. Extra shovels clang together as more helpers grab what they can.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_110",
+     "label": "Keep the chain moving with everyone helping",
+     "target": "r07"
+    }
+   ]
+  },
+  {
+   "id": "r07",
+   "body": "However it happened, the sea wall finally reaches a height that should hold against tonight's surge, at least for now. Waves crash hard against the new sandbags. For one tense moment everyone watches to see whether the wall will hold or crumble. Water sprays high into the air. The crowd falls silent, waiting to find out. Everyone's eyes stay fixed on the churning gray water below. Your own heart pounds loudly along with the crashing waves.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_111",
+     "label": "Watch the wall hold steady",
+     "target": "r08"
+    },
+    {
+     "id": "c_112",
+     "label": "Notice a weak spot starting to give way",
+     "target": "r09"
+    }
+   ]
+  },
+  {
+   "id": "r08",
+   "body": "The wall holds. Wave after wave crashes against it and simply rolls back, spraying salty foam into the air but leaving the sandbags firmly in place. Cheers rise up and down the line of exhausted, soaked volunteers. The fishing sheds behind the wall stay dry. Somewhere out past the harbor, you finally notice a warm glow spreading across the water from the lighthouse tower. Somewhere out past the wall, the storm keeps roaring steadily onward.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_113",
+     "label": "Cheer with the exhausted volunteers",
+     "target": "re1"
+    }
+   ]
+  },
+  {
+   "id": "r09",
+   "body": "Just as everyone starts to relax, you spot a weak spot near the far end of the wall. Water is already trickling dangerously through a gap between two sandbags. There is no time to call for more help. You have to decide fast whether to grab bags yourself and plug the gap, or shout a warning and pull everyone back to safety instead. Cold water splashes across your boots as you make your choice.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_114",
+     "label": "Rush to plug the gap yourself",
+     "target": "r10"
+    },
+    {
+     "id": "c_115",
+     "label": "Shout a warning and pull everyone back",
+     "target": "r11"
+    }
+   ]
+  },
+  {
+   "id": "r10",
+   "body": "You grab the nearest bags and shove them hard into the gap, bracing your whole body against the pressure of the water. Two other volunteers see what you are doing and rush over to help immediately. Together you manage to seal the weak spot just in time. The sea wall holds firm through the worst of the storm's fury. Your arms ache fiercely, but the gap finally holds steady. Everyone lets out a tired, happy breath.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_116",
+     "label": "Watch the sea wall hold firm at last",
+     "target": "re2"
+    }
+   ]
+  },
+  {
+   "id": "r11",
+   "body": "You shout a warning. Everyone scrambles back just as the weak section finally gives way completely, water rushing through in a sudden gray flood. The fishing sheds behind the wall take on some water. Tools and crates float free in the shallow flood. Nobody is hurt, but the damage will take days of hard work to fully clean up and repair. Cold water swirls around your ankles as everyone scrambles to safety.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_117",
+     "label": "Help everyone reach higher ground safely",
+     "target": "re3"
+    }
+   ]
+  },
+  {
+   "id": "re1",
+   "body": "Wave after wave crashes against the new sandbags and simply rolls back, spraying salty foam into the air. Cheers rise up and down the exhausted line of soaked volunteers as the sea wall holds firm through the worst of the storm. The fishing sheds behind it stay completely dry, safe from the rising tide. Far off across the water, warm golden light finally spreads from the lighthouse tower. Windgate Bay stands strong tonight, thanks to tired arms and a lot of teamwork.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_r1",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Sea Wall Holds"
+   }
+  },
+  {
+   "id": "re2",
+   "body": "You and two other volunteers brace hard against the rushing water, shoving sandbags into the gap just before it can widen. The sea wall holds firm through the worst of the storm's fury, protecting the fishing sheds and boats stored safely behind it. Exhausted, soaked, and shaking with relief, you collapse against the cool, wet sandbags. Somewhere across the water, the lighthouse beam sweeps steadily through the rain. Windgate Bay made it through tonight, thanks to one quick decision.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_r2",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Sealing the Gap Just in Time"
+   }
+  },
+  {
+   "id": "re3",
+   "body": "The weak section finally gives way. Cold gray water rushes through in a sudden flood. Tools and crates float free while soaked volunteers scramble back to higher, safer ground. Nobody is hurt, which everyone agrees is the most important thing tonight. Still, the fishing sheds take on water. Cleanup will take days of hard, tiring work. Somewhere across the bay, the lighthouse beam finally begins to shine, a small bright comfort on a very difficult night.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_r3",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "A Flooded Harbor"
+   }
+  }
+ ]
+}

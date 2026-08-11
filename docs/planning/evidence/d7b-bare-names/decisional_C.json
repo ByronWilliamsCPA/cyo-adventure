@@ -1,0 +1,306 @@
+{
+ "stratum": "decisional",
+ "fact_readings": {
+  "archive_beckons": "The keepers' logbooks and toll ledgers in the study pull hard enough that lingering to read them is a real, tempting choice, not a throwaway detail.",
+  "at_the_dial": "The friends are standing directly in front of the tide dial, hands ready, having reached the tower's final test.",
+  "challenge_accepted": "The four friends agree together, out loud, that they are going to attempt the tower's trial rather than just admire it.",
+  "challenge_posted": "The town has long known the tower carries a standing dare: solve its tide dial, or leave the tower be.",
+  "composure_kept": "Whatever the outcome of this particular attempt, the friends stay steady and good-humored about it rather than falling apart.",
+  "crossing_dares_them": "The blacked-out tail-race tunnel presents a dare whose danger is plainly visible and honestly weighed, never hidden or exaggerated.",
+  "dial_test_live": "The tide dial has been woken and is actively counting, so the final test is now underway rather than merely possible.",
+  "friends_committed_together": "The group commits to the attempt as a unit from the very first page, nobody going it alone or being left behind.",
+  "keeper_intervenes": "The lock-warden personally steps in to stop the grab at the strongroom and set things right without punishing beyond returning what was taken.",
+  "keeper_offer_earned": "The lock-warden decides, based on how the friends conduct themselves, to offer them a ride and a way in.",
+  "keeper_tested_them": "The lock-warden quietly sizes the friends up, watching how they treat the boat and each other, before deciding whether to help.",
+  "logic_earned": "The friends have collected one real, usable piece of the tide arithmetic needed to set the dial correctly.",
+  "maker_motive_understood": "The friends learn that the tower's engineer built the trial to find people worth trusting with the machine's care, not to keep everyone out.",
+  "passing_kept_private": "The friends decide their success at the dial belongs only to the four of them, sworn to keep it quiet.",
+  "passing_made_public": "The friends choose to tell the lock-warden what happened and let their success become part of the tower's known record.",
+  "past_the_seal": "The friends are physically inside the tower, past the locked hatch, door, or window that has kept everyone else out.",
+  "patience_proven": "The friends prove they can wait out the tide rather than force anything, and that waiting turns out to be the thing that pays off.",
+  "record_set_straight": "The lock-warden makes sure the true account of what the friends attempted is told plainly, without exaggeration, blame, or cover-up.",
+  "reward_glimpsed": "The friends catch sight of what waits on the far side of the dark crossing, just enough to know it is worth wanting.",
+  "route_named_by_note": "A found marker or scrap of writing spells out, in plain terms, one concrete way into the tower.",
+  "sanctum_entered": "The friends step across the threshold into the strongroom that the whole trial exists to protect.",
+  "sanctum_seen": "The friends actually see what the strongroom holds, not just its doorway.",
+  "second_test_found": "The friends notice that the dial's back panel hides a second, quieter test the posted trial never mentions.",
+  "self_reliance_shown": "The friends work the tower's own counterweight themselves, with no note and no escort, and get somewhere real by it.",
+  "stewardship_earned": "The friends are trusted with the maker's hidden workshop on an ongoing basis, not just for one visit.",
+  "test_forced": "Someone pushes the dial past what the earned logic supports, and it jams honestly rather than yielding to force.",
+  "test_passed": "The friends read the tide arithmetic correctly, hoist by hoist, and the dial turns clean.",
+  "tower_sealed": "The tower starts the story locked and posted off-limits, unopened by anyone in living memory.",
+  "trial_reopens": "An ending that isn't full success still leaves the tower's trial standing exactly as it was, open to try again another day.",
+  "trial_rooms_known": "Once inside, the friends can see there are four distinct rooms, each teaching a different piece of the dial's logic.",
+  "trust_bond_formed": "A real bond of trust, either between the friends and the lock-warden or among the four friends themselves, is sealed by how the night ends.",
+  "workshop_found": "The friends discover the maker's hidden loft workshop, reached only through the dial's second, hidden test."
+ },
+ "premise": {
+  "engine": "three-doors-one-dial",
+  "dramatic_question": "Can four friends earn a real way into the sealed tide tower, whether by patience, self-reliance, or trust, and then face its final dial honestly instead of forcing or stealing their way past it?",
+  "resolution_space": [
+   "The reader lingers in the keepers' study long enough that the toll ledgers, not the dial, become the night's real prize.",
+   "The reader has a friend name the dark tail-race crossing as not worth it, and the group turns back together before ever reaching the dial.",
+   "The reader stalls at the dial without real tide arithmetic behind the guess, and the strained mechanism brings the lock-warden up to end the night.",
+   "The reader forces the dial past what has actually been earned, and even the posted remedy can't free it before the night runs out.",
+   "The reader follows the dial's hidden back-panel test all the way to the maker's still-living workshop and is handed its ongoing care.",
+   "The reader passes the dial cleanly, then tells the lock-warden everything, trading a private win for open trust and a standing welcome back.",
+   "The reader passes the dial cleanly, then chooses to keep the passing a secret sealed only among the four friends.",
+   "The reader passes the dial but reaches for something to carry out of the strongroom, and the maker's silt safeguard gives the attempt away."
+  ]
+ },
+ "nodes": {
+  "n_open": {
+   "choice_semantics": {
+    "c_open": "Choosing to actually read and take up the tower's old posted dare, rather than walk past it like everyone else does."
+   },
+   "beat_hint": "The friends stand at the foot of the sealed tide tower and read the posted dare naming the tide dial's trial, then decide together to take it on.",
+   "affect": {
+    "target": "hushed excitement, a dare finally within reach",
+    "forbid": ["dread", "boredom"]
+   }
+  },
+  "n_start": {
+   "choice_semantics": {
+    "c_examine": "Choosing to slow down and study the tide markers first, trusting patient watching over immediate action.",
+    "c_door": "Choosing to find their own physical way in through the tower's own machinery, trusting themselves over anyone's help.",
+    "c_keeper": "Choosing to go ask the lock-warden directly, trusting a person's judgment over solving anything alone."
+   },
+   "beat_hint": "At the tower's base the friends weigh how to try getting in: watch and wait, work the mechanism themselves, or ask the lock-warden.",
+   "affect": {
+    "target": "eager deliberation among equals",
+    "forbid": ["rivalry", "anxiety"]
+   }
+  },
+  "n_note": {
+   "choice_semantics": {
+    "c_note_key": "Choosing to go physically confirm the note's route against something real before trusting it completely.",
+    "c_note_inside": "Choosing to trust the note's route outright and walk straight in through the culvert it names."
+   },
+   "beat_hint": "Watching the tide markers pays off: once the water drops, a scrap of writing spells out the dry sluice culvert as a way in.",
+   "affect": {
+    "target": "the satisfaction of patience paying off",
+    "forbid": ["impatience", "boredom"]
+   }
+  },
+  "n_door": {
+   "choice_semantics": {
+    "c_door_force": "Choosing to push straight through the hatch gap they just made, taking the opening on the spot.",
+    "c_door_window": "Choosing to use the wound hatch as a boost toward a higher window instead, trading the easy gap for a bolder climb."
+   },
+   "beat_hint": "The friends find the tide engine's counterweight and wind it themselves until the winch loft hatch lifts just ajar.",
+   "affect": {
+    "target": "scrappy pride in figuring it out alone",
+    "forbid": ["frustration", "recklessness"]
+   }
+  },
+  "n_keeper": {
+   "choice_semantics": {
+    "c_keeper_enter": "Choosing to accept the lock-warden's offered ride in right away, ready to get started.",
+    "c_keeper_story": "Choosing to pause and ask the lock-warden why the tower keeps this trial at all before going any further."
+   },
+   "beat_hint": "The lock-warden watches how the friends handle the boat and each other on the crossing, then offers to bring them in through the winch loft.",
+   "affect": {
+    "target": "being quietly sized up and then welcomed",
+    "forbid": ["suspicion", "intimidation"]
+   }
+  },
+  "n_keyhunt": {
+   "choice_semantics": {
+    "c_keyhunt_in": "Choosing to go on inside now that the route and their reading of it have actually checked out."
+   },
+   "beat_hint": "Following the culvert, the friends match the note's route to a real marker underfoot, and the match teaches them their first working piece of tide arithmetic.",
+   "affect": {
+    "target": "the click of a hunch confirmed",
+    "forbid": ["doubt", "tedium"]
+   }
+  },
+  "n_keeper_story": {
+   "choice_semantics": {
+    "c_story_in": "Choosing to head in now carrying an understanding of why the trial exists at all."
+   },
+   "beat_hint": "The lock-warden explains that the tower's engineer built the trial to find people worth trusting with the machine's care, not to shut anyone out.",
+   "affect": {
+    "target": "growing respect for the maker's reasons",
+    "forbid": ["pity", "boredom"]
+   }
+  },
+  "n_window": {
+   "choice_semantics": {
+    "c_window_in": "Choosing to finish the climb and drop down inside once the window is reached."
+   },
+   "beat_hint": "The friends climb the outside ledge to the high window, a careful, steady climb that takes nerve but never risks a real fall.",
+   "affect": {
+    "target": "steady nerve, focus over fear",
+    "forbid": ["panic", "recklessness"]
+   }
+  },
+  "n_inside": {
+   "choice_semantics": {
+    "c_inside_stairs": "Choosing the stairs, betting on endurance and whatever the toll ledgers along the climb can teach.",
+    "c_inside_study": "Choosing the keepers' study, betting on reading and what past keepers left behind.",
+    "c_inside_pendulum": "Choosing the pendulum works, betting on nerve and the dark tail-race crossing.",
+    "c_inside_basement": "Choosing the basement machinery, betting on staying steady in the dark and cold."
+   },
+   "beat_hint": "Standing inside the tower for the first time, the friends see four different ways up and around, each promising a piece of the dial's logic.",
+   "affect": {
+    "target": "wide-eyed arrival, many paths opening at once",
+    "forbid": ["overwhelm", "dread"]
+   }
+  },
+  "n_stairs": {
+   "choice_semantics": {
+    "c_stairs_face": "Choosing to carry the rhythm they just learned straight to the dial without lingering."
+   },
+   "beat_hint": "Climbing past the toll ledgers, the friends notice the weir gates below sluicing in a repeating long-long-short run that matches the flag code.",
+   "affect": {
+    "target": "the burn of effort paying off in rhythm",
+    "forbid": ["fatigue", "boredom"]
+   }
+  },
+  "n_study": {
+   "choice_semantics": {
+    "c_study_face": "Choosing to take the lesson from the worn levers and move on to the dial.",
+    "c_study_logs": "Choosing to stay in the study and read the ledgers instead of pressing on tonight."
+   },
+   "beat_hint": "In the keepers' study, wear on the hoist levers shows which pulls actually get used, while old initials on the doorframe and a shelf of ledgers make staying tempting.",
+   "affect": {
+    "target": "cozy curiosity, the pull of an archive",
+    "forbid": ["guilt", "urgency"]
+   }
+  },
+  "n_pendulum": {
+   "choice_semantics": {
+    "c_pendulum_oil": "Choosing to steady themselves and make the crossing carefully, keeping the glimpsed reward in reach.",
+    "c_pendulum_giveup": "Choosing to say plainly that this crossing isn't worth the dark and turning back."
+   },
+   "beat_hint": "Depth figures stamped up the pendulum works teach the carry-arithmetic, but reaching them means counting paces through the unlit tail-race tunnel toward a glimpsed reward.",
+   "affect": {
+    "target": "thrilling, legible danger",
+    "forbid": ["terror", "recklessness"]
+   }
+  },
+  "n_basement": {
+   "choice_semantics": {
+    "c_basement_face": "Choosing to carry that calm and the diagram's lesson straight up to the dial."
+   },
+   "beat_hint": "Down among the machine's roots, a heron keeps its unbothered watch while a pinned gate diagram works out tide sums in its margins.",
+   "affect": {
+    "target": "calm attentiveness in the dark",
+    "forbid": ["fear", "claustrophobia"]
+   }
+  },
+  "n_clockface": {
+   "choice_semantics": {
+    "c_face_correct": "Choosing to set the dial by the tide arithmetic they've actually earned, hoist by hoist.",
+    "c_face_jam": "Choosing to force a setting past what the earned logic actually supports.",
+    "c_face_panel": "Choosing to step back from the dial and check its back panel for another way in first.",
+    "c_face_random": "Choosing to guess at the dial without real logic behind it and let the attempt run out the clock."
+   },
+   "beat_hint": "Facing the tide dial at last, hoists waiting, the friends must decide how to use everything they've learned, or whether to trust it at all.",
+   "affect": {
+    "target": "focused suspense, the test finally real",
+    "forbid": ["panic", "overconfidence"]
+   }
+  },
+  "n_setcorrect": {
+   "choice_semantics": {
+    "c_correct_vault": "Choosing to step through into the strongroom the passed test has just opened."
+   },
+   "beat_hint": "Hoist by hoist, the correct tide-arithmetic setting lands, and the dial turns clean as the strongroom's own lock gives way beneath it.",
+   "affect": {
+    "target": "the click of something earned working right",
+    "forbid": ["smugness", "complacency"]
+   }
+  },
+  "n_setjam": {
+   "choice_semantics": {
+    "c_jam_oil": "Choosing to follow the posted rule, easing off, and trying again honestly until the dial answers.",
+    "c_jam_stuck": "Accepting that the jam is holding fast despite the try, with nothing on hand tonight to free it."
+   },
+   "beat_hint": "The forced hoist jams, but a posted rule at the racks says to ease back a quarter turn before asking a full one.",
+   "affect": {
+    "target": "steady problem-solving after a stumble",
+    "forbid": ["frustration", "blame"]
+   }
+  },
+  "n_backpanel": {
+   "choice_semantics": {
+    "c_panel_vault": "Choosing to solve the hidden test and then still make for the strongroom by the front route.",
+    "c_panel_secret": "Choosing to follow the hidden test all the way to wherever it actually leads, instead of the strongroom."
+   },
+   "beat_hint": "Behind the dial's face, a second, quieter test is built into a back panel, one the posted trial never mentions.",
+   "affect": {
+    "target": "delighted surprise at a second puzzle",
+    "forbid": ["greed", "impatience"]
+   }
+  },
+  "n_vault": {
+   "choice_semantics": {
+    "c_vault_share": "Choosing to tell the lock-warden what they found and let the town know they passed.",
+    "c_vault_keep": "Choosing to keep what happened between the four of them, sworn to secrecy.",
+    "c_vault_grab": "Choosing to try carrying something out of the strongroom rather than just witnessing it."
+   },
+   "beat_hint": "Inside the strongroom sits the maker's letter, a modest heritage keepsake, and a tiny working river model whose fingernail gates open on a true tide.",
+   "affect": {
+    "target": "reverence for what the trial was protecting",
+    "forbid": ["greed", "entitlement"]
+   }
+  },
+  "n_end_library": {
+   "beat_hint": "The friends settle into the study with the toll ledgers, and reading them explains exactly what the dial's test was checking for, arming a wiser attempt next time.",
+   "affect": {
+    "target": "quiet satisfaction in learning, unhurried",
+    "forbid": ["disappointment", "boredom"]
+   }
+  },
+  "n_end_giveup": {
+   "beat_hint": "One friend says plainly that the dark crossing isn't worth it, the others agree without pushback, and turning back together feels like passing a different, quieter test.",
+   "affect": {
+    "target": "pride in a sound, shared decision",
+    "forbid": ["shame", "regret"]
+   }
+  },
+  "n_end_timeout": {
+   "beat_hint": "The overworked dial mechanism raises a polite clatter and whistle, and the lock-warden climbs up to gently call the attempt for the night before anything is forced.",
+   "affect": {
+    "target": "a friendly, unembarrassed end to the night",
+    "forbid": ["humiliation", "panic"]
+   }
+  },
+  "n_end_stuck": {
+   "beat_hint": "The forced dial has bound itself fast, and no tool or trick the friends are carrying tonight will free it, so the four head home to try again another day.",
+   "affect": {
+    "target": "resigned good humor",
+    "forbid": ["blame", "despair"]
+   }
+  },
+  "n_end_secret": {
+   "beat_hint": "Past the hidden back-panel test, the friends find the maker's actual loft workshop, its rooftop reed garden still green from a rigged cistern drip, unfinished work waiting for hands, and the lock-warden hands them the standing job of keeping it that way.",
+   "affect": {
+    "target": "wonder at a living, ongoing secret",
+    "forbid": ["greed", "smugness"]
+   }
+  },
+  "n_end_hero": {
+   "beat_hint": "The friends tell the lock-warden everything, who in turn explains why the trial existed, and they earn an open invitation back to the tower whenever they like.",
+   "affect": {
+    "target": "warm, public pride",
+    "forbid": ["arrogance", "boastfulness"]
+   }
+  },
+  "n_end_keepsake": {
+   "beat_hint": "Over the tiny river model, the four friends swear a private pact, holding what they did between themselves as something only they will ever fully know.",
+   "affect": {
+    "target": "close, private belonging",
+    "forbid": ["guilt", "loneliness"]
+   }
+  },
+  "n_end_caught": {
+   "beat_hint": "The moment a hand closes on something to carry out, silt on the strongroom floor gives away every footprint, and the lock-warden arrives not to punish but to set the record straight.",
+   "affect": {
+    "target": "sheepish relief at being caught fairly",
+    "forbid": ["humiliation", "dread"]
+   }
+  }
+ }
+}

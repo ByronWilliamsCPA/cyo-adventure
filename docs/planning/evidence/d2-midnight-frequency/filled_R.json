@@ -1,0 +1,1470 @@
+{
+ "schema_version": "2.0",
+ "id": "sk_midnight_frequency",
+ "version": 1,
+ "title": "The Midnight Frequency",
+ "metadata": {
+  "age_band": "10-13",
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 5.5,
+   "tolerance": 1.5
+  },
+  "tier": 1,
+  "themes": [
+   "mystery",
+   "codes",
+   "family",
+   "legacy"
+  ],
+  "estimated_minutes": 7,
+  "ending_count": 18,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "mild",
+   "peril": "moderate"
+  },
+  "topology": "open_map",
+  "length": "short",
+  "narrative_style": "prose",
+  "production_eligible": true
+ },
+ "variables": [],
+ "start_node": "n_start",
+ "nodes": [
+  {
+   "id": "n_start",
+   "body": "Nora Finch woke to a voice she knew. It came from the shelf above her desk, out of the old case that had belonged to her grandmother. Grandma Lou had died in the spring, and the case had sat quiet ever since, its loop aerial dusty, its little window dark. Now the window glowed. Small hand-drawn icons stepped across the glass, timed to a calm, familiar voice reading into the dark room. It was not frightening. It was Grandma Lou's own voice, warm and unhurried, exactly as Nora remembered it. She grabbed a pencil and copied each icon as it appeared. Her hand shook, not with fear, but because some part of her understood this had been left running on purpose, and it would not run forever. She needed someone who would believe her.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_start_teo",
+     "label": "Go and wake Teo.",
+     "target": "n_teo"
+    }
+   ]
+  },
+  {
+   "id": "n_teo",
+   "body": "Teo believed her before she finished the sentence. He was older, and steadier, and he came straight to her room in his socks, listening hard while the recording clicked through another icon. Together they woke their mother. She recognized the leather case at once, and her hand went straight to her mouth when she saw Grandma Lou's old logbook waiting on Nora's desk. She did not tell them to go back to bed. She sat down at the kitchen table with them, found Grandma Lou's own key page tucked into the back cover, and laid out her rules instead: stay together, stay in Fenbrook, be home before the sky changed color, and take the logbook. Then she said yes.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_teo_decode",
+     "label": "Take it to the table.",
+     "target": "n_decode"
+    }
+   ]
+  },
+  {
+   "id": "n_decode",
+   "body": "Grandma Lou's key page turned the icons into words, one match at a time. A hand meant tower. A tank meant water. A reel of film meant a picture show. Slowly the icons spelled out five places around Fenbrook: the water tower, the old Empress Playhouse, the harbor's net shed, the town archive, and the signal mast on Beacon Hill. At the end came a short line, repeated twice, plain enough to learn by heart: Fenbrook is still listening. Come home to the Halt. While they worked, nobody touched the case's needle, and yet it had settled, steady as anything, pointing east no matter which way the table turned. Wherever the five places sent them, something past the edge of town was waiting too.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_decode_ride",
+     "label": "Get on your bikes.",
+     "target": "n_hub"
+    }
+   ]
+  },
+  {
+   "id": "n_hub",
+   "body": "The town square sat empty and silver under the streetlights, every shop shuttered, every window dark. Nora and Teo stood over their bikes with the logbook zipped into a jacket pocket and the direction-finder's needle leaning steadily east. From here, five ways led off into Fenbrook, and one plain fact sat underneath all of them: whichever way they went, or however many, the night was theirs to spend. They could climb into the water tower's iron legs. They could try the shuttered playhouse on Fitch Street. They could walk out along the working harbor. They could slip into the archive on Assembly Green. They could climb Beacon Hill for the widest view in town. Or they could stop collecting and simply follow the needle east.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hub_tower",
+     "label": "Climb the water tower.",
+     "target": "wt_lane"
+    },
+    {
+     "id": "c_hub_cinema",
+     "label": "Slip into the old playhouse.",
+     "target": "cn_marquee"
+    },
+    {
+     "id": "c_hub_harbor",
+     "label": "Walk down to the harbor.",
+     "target": "hb_road"
+    },
+    {
+     "id": "c_hub_library",
+     "label": "Duck into the archive.",
+     "target": "lb_green"
+    },
+    {
+     "id": "c_hub_mast",
+     "label": "Climb Beacon Hill.",
+     "target": "bh_path"
+    },
+    {
+     "id": "c_hub_nest",
+     "label": "Follow the needle east.",
+     "target": "fin_bearing"
+    }
+   ]
+  },
+  {
+   "id": "wt_lane",
+   "body": "The water tower stood above Cutter's Rise, four identical riveted legs holding up a green tank with FENBROOK painted in tall white letters around its middle. By day it was just the tower everyone used to find their way home. By night it looked enormous, its legs disappearing into darkness, its tank catching what little moonlight there was. Nora tipped her head back and felt the whole shape of it settle into her memory. Nothing moved up there. Nothing needed to. It was simply waiting, the way it had waited for however many years since anyone last climbed it on purpose.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wt_lane_on",
+     "label": "Walk up to the fence.",
+     "target": "wt_gap"
+    }
+   ]
+  },
+  {
+   "id": "wt_gap",
+   "body": "A gap in the chain-link had been there longer than either had been alive, pulled wide by every kid in Fenbrook who wanted a closer look at the tower. Teo held it open and Nora ducked through, then held it for him. Nobody had cut anything. The ground beyond was packed hard and bare in a ring around the tower's legs, worn smooth by feet that stood exactly where theirs stood now. The tower rose overhead, close enough that its shadow swallowed them both, and the fence behind them was already a line they had stopped noticing.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wt_gap_lot",
+     "label": "Duck under the tower.",
+     "target": "wt_gate"
+    }
+   ]
+  },
+  {
+   "id": "wt_gate",
+   "body": "Under the tank, Grandma Lou's icons waited for them again, this time scratched small and careful into a strip of the logbook's own margin, keyed to this exact spot. Nora matched them one by one the way they had at the kitchen table: a hand held at shoulder height, an arrow pointing down, a little drawing of one tower leg. Put together, the icons spelled it plainly. CHECK EACH LEG DOWN LOW. Teo read it twice and looked up anyway, toward the ladder vanishing into the dark above them. Nora looked at the four identical legs standing all around, at reach height, exactly as the instruction said. There were three honest ways to answer a clue that plain.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wt_gate_shed",
+     "label": "Search the store shed first.",
+     "target": "wt_shed"
+    },
+    {
+     "id": "c_wt_gate_legs",
+     "label": "Check the four legs, like it says.",
+     "target": "wt_legs"
+    },
+    {
+     "id": "c_wt_gate_ladder",
+     "label": "Size up the ladder anyway.",
+     "target": "wt_ladder"
+    }
+   ]
+  },
+  {
+   "id": "wt_ladder",
+   "body": "CHECK EACH LEG DOWN LOW, the icons had said, plain as anything, but the ladder kept pulling at Teo's eye. He put a hand on the first rung and felt it, slick and cold under his glove. The torch beam found ice glazing every rung, all the way to a padlock at the base nobody had opened in years. It looked climbable, the way dares always look climbable from the ground. It also looked exactly like the kind of thing a grandmother who wrote CHECK EACH LEG DOWN LOW would never have meant. Teo weighed the two truths, one boot still on the bottom rung.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wt_ladder_climb",
+     "label": "Climb anyway.",
+     "target": "e_wt_climb"
+    },
+    {
+     "id": "c_wt_ladder_legs",
+     "label": "Trust the instruction and climb down.",
+     "target": "wt_legs"
+    }
+   ]
+  },
+  {
+   "id": "wt_legs",
+   "body": "Four legs stood around them, identical in every way Nora could see, each one riveted the same, painted the same, planted the same distance from the tank above. Grandma Lou's instruction had promised one of them would answer differently, and the only question was how to prove it. Teo balled his fist, ready to knock on each leg and listen for what came back. Nora crouched instead, running the torch slowly down each one, looking for anything that broke the pattern before a knuckle touched metal. Both ways made sense. Somewhere among four identical supports, exactly one was going to give itself away.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wt_legs_tap",
+     "label": "Tap each leg and listen.",
+     "target": "wt_tap"
+    },
+    {
+     "id": "c_wt_legs_marks",
+     "label": "Look each leg over first.",
+     "target": "wt_marks"
+    }
+   ]
+  },
+  {
+   "id": "wt_tap",
+   "body": "Teo knuckled the first leg and got back a flat, dead thud, the sound of solid iron and nothing else. The second leg answered the same. So did the third. He almost stopped, sure the idea had been a waste of time, but he tried the fourth anyway, out of stubbornness more than hope. It rang. A clear, bright note rose out of the metal, nothing like the thuds before it, unmistakably hollow where the others had been solid. Nora grinned and swung the torch up the fourth leg, to reach height, to whatever was singing back at them.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wt_tap_box",
+     "label": "Open up what's ringing.",
+     "target": "wt_box"
+    }
+   ]
+  },
+  {
+   "id": "wt_marks",
+   "body": "Nora went leg to leg with the torch instead, close enough to see every rivet. The first three were plain iron, weathered the same dull gray. On the fourth, near reach height, a small mark had been scratched into the paint years ago: a triangle with a short tail, like a little paper boat. She had seen that shape before, dozens of times, doodled in the margins of Grandma Lou's logbook. She flipped the book open, and there it was again, the same little triangle, the same little tail. The fourth leg was the one that mattered.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wt_marks_box",
+     "label": "Open up what the mark found.",
+     "target": "wt_box"
+    }
+   ]
+  },
+  {
+   "id": "wt_box",
+   "body": "Set into the marked leg's collar was a small hinged plate, plain maintenance hardware that somebody had quietly turned into a letterbox. It swung open on a stiff hinge. Wedged inside was a scrap of card, and on it three tiny icons in a row, drawn small and sure, pointing like arrows toward the shed across the lot. It was not treasure. It was a message, left by somebody who had known exactly who might find it one day. Teo held the card up to the torchlight, turning it slightly, and said he wanted to look closer before they moved another step.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wt_box_shed",
+     "label": "Follow the pointer to the shed.",
+     "target": "wt_shed"
+    },
+    {
+     "id": "c_wt_box_card",
+     "label": "Study the card first.",
+     "target": "wt_card"
+    }
+   ]
+  },
+  {
+   "id": "wt_card",
+   "body": "Teo turned the card toward the light and traced each icon with a finger. The first was a door, plain and small. The second was a shelf, three lines stacked flat. The third, shaded darker than the rest, looked like a can standing upright. He worked it through out loud: whoever left this wanted a finder to walk into that shed, go straight to a shelf, and look at something ordinary enough to be overlooked. It made sense the moment he said it. Grandma Lou had built a whole shed's worth of a search into one small drawing.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wt_card_shed",
+     "label": "Head for the shed shelf.",
+     "target": "wt_shed"
+    }
+   ]
+  },
+  {
+   "id": "wt_shed",
+   "body": "The store shed's door was never locked, not really, just latched against the wind, and it swung open onto a small room that smelled of oil and old rope. A single shelf ran along one wall, crowded with paint cans, coiled wire, and tools nobody had used in years. Above the shelf, propped against the wall, a dog-eared group photograph sat where somebody had left it long ago, its frame held together with a strip of yellowed tape. Nothing in the room was locked away or hidden. It was simply a place where a town kept its ordinary work, and tonight it offered two different things worth looking at.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wt_shed_cans",
+     "label": "Go straight for the shelf.",
+     "target": "wt_cans"
+    },
+    {
+     "id": "c_wt_shed_photo",
+     "label": "Look at the old photo first.",
+     "target": "wt_photo"
+    }
+   ]
+  },
+  {
+   "id": "wt_photo",
+   "body": "Nora tipped the photograph toward the torch. Underneath it, someone had written in careful pencil: Tower Watch, Fenbrook, 1962. A dozen people stood grinning in front of the very tower outside the shed door, arms slung over each other's shoulders, and beside one laughing face someone had inked a tiny star. It took Nora a second look, and then she was sure. It was Grandma Lou, years and years younger, laughing at whoever held the camera. A small arrow beside the star pointed off the photo, back toward the shelf, as if she were still pointing the way herself.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wt_photo_cans",
+     "label": "Follow her pointer to the shelf.",
+     "target": "wt_cans"
+    }
+   ]
+  },
+  {
+   "id": "wt_cans",
+   "body": "The shelf held a dozen paint cans, all crusted shut, all heavy with old paint nobody would ever use again. One stood apart, its label peeled away and replaced with a single hand-drawn nail, inked small and neat. Nora lifted it and nearly dropped it in surprise, because it weighed almost nothing at all, light as an empty tin pretending to be full. She set it down carefully and worked the lid with her fingers until it gave, and popped free with a small, dry sound. Whatever was inside had been waiting in plain sight, disguised as the dullest object on the whole shelf.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wt_cans_open",
+     "label": "Open the can.",
+     "target": "wt_cache"
+    }
+   ]
+  },
+  {
+   "id": "wt_cache",
+   "body": "Inside the can, wrapped in a scrap of cloth, sat a small cast iron medallion, painted over and scraped clean again so many times the single word stamped across it, SIGN, stood out sharp against the metal. Folded beneath it was a note in Grandma Lou's own hand. Every year, she had written, I climbed up here and scratched a little fish beside the rivet count, just to see whether anyone would ever ask why. Nobody ever had. It ended the way the icons at the kitchen table had promised it would: Fenbrook is still listening. Come home to the Halt. Nora slipped the medallion into her pocket, and it sat there warm, heavier with meaning than it was with metal.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wt_cache_hub",
+     "label": "Head back to the square.",
+     "target": "n_hub"
+    },
+    {
+     "id": "c_wt_cache_nest",
+     "label": "Follow the needle east instead.",
+     "target": "fin_bearing"
+    }
+   ]
+  },
+  {
+   "id": "e_wt_climb",
+   "body": "Teo's boot went out from under him on the second rung, the ice giving way at once, and Nora had a fistful of his jacket before he had time to be scared. He came down light, more startled than hurt, and they sat on the cold ground getting their breath back. The instruction, Nora pointed out, had never once mentioned climbing. It had said down low, plainly, and somebody who wrote that never meant anyone up a frozen ladder at midnight. They laughed about it, brushed off, and rode home under a paling sky, the whole hunt still ahead another night.",
+   "is_ending": true,
+   "ending": {
+    "id": "end_wt_climb",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Ice on the Ladder"
+   }
+  },
+  {
+   "id": "cn_marquee",
+   "body": "Fitch Street was empty all the way down, every shopfront dark, and at the end of it the Empress Playhouse still wore its marquee like it had somewhere to be. The bulbs were long dead, but the letters spelled out the title of whatever picture had played on its very last night. Nora matched a fresh set of icons scratched onto the doorframe: a drawn seat, the letters ROW J, and a small lamp, meaning WHERE THE LIGHT STAYS. Grandma Lou's logbook already knew the way in. A note in the margin pointed down the side alley instead of the boarded front doors.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cn_marquee_alley",
+     "label": "Follow the note to the side alley.",
+     "target": "cn_alley"
+    }
+   ]
+  },
+  {
+   "id": "cn_alley",
+   "body": "The side door gave easily under Teo's hand, exactly where the logbook said it would, unlocked and a little swollen with damp. Inside, the Empress opened up around them, bigger in the dark than it had any right to be. A wide hall stretched ahead, rows of sheeted seats standing shoulder to shoulder like a sleeping crowd. To one side, a narrow staircase climbed toward a landing they could not see the top of. Row J waited somewhere out in that hall, exactly as the icons promised. WHERE THE LIGHT STAYS felt like it belonged upstairs, closer to whatever had once thrown that light.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cn_alley_stalls",
+     "label": "Head into the hall for Row J.",
+     "target": "cn_stalls"
+    },
+    {
+     "id": "c_cn_alley_stairs",
+     "label": "Go straight upstairs instead.",
+     "target": "cn_boothstairs"
+    }
+   ]
+  },
+  {
+   "id": "cn_stalls",
+   "body": "Sheeted seats ran in long straight rows under the torchlight, each one shaped like it was still waiting for somebody to sit down. Nora counted her way toward the letter J stenciled faintly on the aisle end, exactly where the icons had told her to look. Up at the front, past the last row, the dust sheets fell away from something bigger, angled shapes that had to be the club's old sound equipment, still standing where it had been left decades ago. Getting up there meant crossing the stage itself, and even from here Nora could see one square of the front boards sitting a shade darker than the rest.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cn_stalls_rowj",
+     "label": "Go straight to Row J.",
+     "target": "cn_rowj"
+    },
+    {
+     "id": "c_cn_stalls_stage",
+     "label": "Go look at the old equipment first.",
+     "target": "cn_stage"
+    }
+   ]
+  },
+  {
+   "id": "cn_rowj",
+   "body": "Row J turned out to be an ordinary row, sheeted like all the others, until Nora reached the seat itself. Everything around it wore the same thick coat of dust, but this one seat's small brass fitting gleamed, polished by hands that had come back to it again and again over the years. Somebody had gone on caring for exactly this one seat long after the Empress stopped caring about anything. Teo crouched to look at it from underneath, where the mechanism hid in shadow. Nora reached for the seat itself instead, ready to tip it forward and see what the fitting looked like from the front.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cn_rowj_under",
+     "label": "Check it from underneath.",
+     "target": "cn_under"
+    },
+    {
+     "id": "c_cn_rowj_tip",
+     "label": "Tip the seat up and look.",
+     "target": "cn_tip"
+    }
+   ]
+  },
+  {
+   "id": "cn_under",
+   "body": "Teo got down on his knees and reached up under the seat, fingers finding old gum and springs before anything useful. Then his fingertips caught on two small fastenings, and they gave at once, smooth and easy, the way something gives when it has been opened and closed a hundred times before by somebody who knew it well. He worked them loose without a tool, without a scrape, and felt the whole fitting shift under his hand. Whoever built this had built it to be found by feel, by someone patient enough to reach.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cn_under_plate",
+     "label": "Undo the fastenings.",
+     "target": "cn_plate"
+    }
+   ]
+  },
+  {
+   "id": "cn_tip",
+   "body": "Nora tipped the seat forward and it dropped with a hollow clap that rolled around the empty hall, loud enough to make her freeze before she remembered nobody was there to hear it but Teo. Nothing waited underneath, just old springs and dust. But on top, the small brass fitting sat proud of the wood, not quite flush the way the others were, rocking under her fingertip when she pressed it. It was the kind of thing that stood out only once you were looking straight at it, which was the whole point of hiding it there.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cn_tip_plate",
+     "label": "Work the fitting loose.",
+     "target": "cn_plate"
+    }
+   ]
+  },
+  {
+   "id": "cn_plate",
+   "body": "Behind the loosened fitting sat a shallow pocket, carved into the wood itself, its edges worn smooth by a careful hand. It was empty except for a single folded slip. On it, in Grandma Lou's writing, the riddle turned itself inside out: WHERE THE LIGHT STAYS was never the seat at all. It was the booth, up above the last row, where the projector's beam had always come from. Nora read it twice, half laughing at how plainly it had been sitting there the whole time. They were in exactly the right building. They just needed to go up.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cn_plate_stairs",
+     "label": "Head for the booth upstairs.",
+     "target": "cn_boothstairs"
+    }
+   ]
+  },
+  {
+   "id": "cn_stage",
+   "body": "The stage apron ran the width of the hall, and Nora put one foot onto it before the wood answered with a low, unhappy groan. She looked down. One square of board, close to the edge, sat visibly darker and softer than the boards on either side of it, sagging just slightly under her weight. The rest of the crossing looked solid enough, if she kept to the far side, away from that one weak patch. It would only cost her a few extra steps to go around it properly. Speed would cost nothing either, if the boards happened to hold.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cn_stage_edge",
+     "label": "Go the long way round the weak spot.",
+     "target": "cn_horns"
+    },
+    {
+     "id": "c_cn_stage_rush",
+     "label": "Cross quickly, straight across.",
+     "target": "e_cn_boards"
+    }
+   ]
+  },
+  {
+   "id": "cn_horns",
+   "body": "Around the weak patch and past the curtain, Nora found the club's old sound equipment stacked in the dark, a row of enormous horn speakers with mouths wide enough to swallow the whole hall's worth of noise. Each one wore a small painted symbol on its bell, faded but careful work. On the last horn, low where a hand could reach, sat the little triangle with its short tail, and beside it a single painted sentence: TRY THE BOOTH. Teo ran a hand along the cold metal, imagining the sound it must have made once, filling this whole room with a voice.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cn_horns_stairs",
+     "label": "Head for the booth.",
+     "target": "cn_boothstairs"
+    }
+   ]
+  },
+  {
+   "id": "cn_boothstairs",
+   "body": "The private stair climbed steep and narrow, opening onto a small landing where a single door stood a few inches ajar. Warm dust and old machine oil drifted out through the gap. Whatever waited inside was staying exactly where it was, neither hiding nor calling them forward, just waiting the way it must have waited for years. Beside the door, a thin strip of glass let a person look in before ever touching the handle. Nora put a hand on the door, then hesitated, glancing at the little window instead, weighing whether to look first or simply go in.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cn_stairs_in",
+     "label": "Go straight in.",
+     "target": "cn_booth"
+    },
+    {
+     "id": "c_cn_stairs_port",
+     "label": "Look through the glass first.",
+     "target": "cn_port"
+    }
+   ]
+  },
+  {
+   "id": "cn_port",
+   "body": "Through the little strip of glass, the projection booth looked almost tidy, a rack of round film tins standing in neat, even rows, all facing the same careful way. All except one. Near the middle of the rack, a single tin sat turned backward, its label facing the wall instead of the room, as out of place as a crooked picture on an otherwise straight wall. Nora traced it with the torch beam until she was certain, then pulled her eye back from the glass, already sure exactly which tin she wanted the moment the door opened.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cn_port_in",
+     "label": "Go in for that one tin.",
+     "target": "cn_booth"
+    }
+   ]
+  },
+  {
+   "id": "cn_booth",
+   "body": "The booth held a projector standing patient under its own dust sheet, and a rack of film tins along the wall, one of them turned the wrong way round exactly as the glass had shown. Its lid carried no writing at all, only a small drawn projector, scratched in by hand. Right beside it, the room's real projector sat already threaded and loaded, as if somebody had left it ready on purpose for one more showing that never came. Teo looked from the tin to the machine and back again, and Nora felt the whole night narrow down to a choice between two entirely different kinds of finding something.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cn_booth_open",
+     "label": "Open the marked tin.",
+     "target": "cn_cache"
+    },
+    {
+     "id": "c_cn_booth_thread",
+     "label": "Run the projector instead.",
+     "target": "e_cn_reel"
+    }
+   ]
+  },
+  {
+   "id": "cn_cache",
+   "body": "Inside the marked tin, instead of film, sat a small aluminium disc, punched clean through with the single word OFF, light enough to spin on a fingertip. Underneath it lay a photograph, its edge inked with a caption in Grandma Lou's careful hand. I painted the scenery flats for the Empress one whole summer, it said, and hid a tiny mark in every backdrop, just to see who might notice. Nobody in the audience ever had. It ended the way it always did now: Fenbrook is still listening. Come home to the Halt. Nora pocketed the disc, grinning at the thought of her grandmother up a ladder with a paintbrush, leaving jokes nobody would find for sixty years.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cn_cache_hub",
+     "label": "Head back to the square.",
+     "target": "n_hub"
+    },
+    {
+     "id": "c_cn_cache_nest",
+     "label": "Follow the needle east instead.",
+     "target": "fin_bearing"
+    }
+   ]
+  },
+  {
+   "id": "e_cn_boards",
+   "body": "Nora went for speed instead of the long way round, and two steps in, the weak board gave with a soft crack. Her leg dropped through to the knee before Teo had both arms around her, hauling her back onto solid wood before the fear caught up. The damage turned out to be a scraped shin and one ruined sock, nothing worse. The careful crawl back off the stage took longer than the long way round would have. On the ride home, they said the rule out loud together: no prize in an empty building is worth a leg through the floor.",
+   "is_ending": true,
+   "ending": {
+    "id": "end_cn_boards",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Floor Gives"
+   }
+  },
+  {
+   "id": "e_cn_reel",
+   "body": "Teo threw the switch and the old projector clattered to life, throwing a shaking square of light onto the screen below. The Empress's last full house came back to them in flickering black and white: rows of real people, laughing at something neither of them could hear, and somewhere among them a young woman who was unmistakably Grandma Lou. Nora and Teo sat down together and watched the whole reel through, start to finish, until the light stuttered out and the window above the balcony had gone from black to gray. They had traded the rest of the hunt for one whole night nobody else would ever see again.",
+   "is_ending": true,
+   "ending": {
+    "id": "end_cn_reel",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "One More Showing"
+   }
+  },
+  {
+   "id": "hb_road",
+   "body": "The road down to Cannery Wharf ran between dark warehouses, and the air changed the closer they got, turning salty and cool off the water. Out past the breakwater, a bell buoy tolled low and slow, a sound the whole waterfront seemed to have learned to sleep through. Fishing boats sat tied up along the pier, masts ticking gently against each other. Somewhere ahead stood the net-and-tackle shed, where the harbourmaster kept everything the working fleet had retired. It was a long walk yet, the tide breathing against the pilings, patient as the buoy's slow bell.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hb_road_wall",
+     "label": "Walk the rest of the way out.",
+     "target": "hb_wall"
+    }
+   ]
+  },
+  {
+   "id": "hb_wall",
+   "body": "Lamps stood along the harbor wall in wide, uneven spacing, throwing pools of yellow light with long dark gaps between them. Nora and Teo walked from pool to pool, the gaps never lasting long enough to feel like anything but a short walk between friends. Out in the channel, the bell buoy kept its slow rhythm, patient and unbothered. Above them the sky had turned that deep blue that comes right before the darkest part of the night lets go. Ahead, the net-and-tackle shed grew larger with every lamp they passed, its outline sharpening against the water.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hb_wall_quay",
+     "label": "Close in on the shed.",
+     "target": "hb_quay"
+    }
+   ]
+  },
+  {
+   "id": "hb_quay",
+   "body": "The shed's big doors were shut tight with a serious padlock, the kind that meant business. A little farther along the quay, one window glowed yellow, somebody plainly awake at this hour. Right at Nora's feet, though, sat a patched skiff turned over on the steps, its old repair peeling at one corner in a way that promised trouble the second it hit water. It would have gotten them in without asking anyone a single question. It would also, almost certainly, have gotten them wet. Between the lock, the light, and the boat, only two of the three options looked like they belonged to sensible people.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hb_quay_office",
+     "label": "Go ask at the lit window.",
+     "target": "hb_office"
+    },
+    {
+     "id": "c_hb_quay_doors",
+     "label": "Check the doors first.",
+     "target": "hb_doors"
+    },
+    {
+     "id": "c_hb_quay_dinghy",
+     "label": "Take the skiff out.",
+     "target": "e_hb_dinghy"
+    }
+   ]
+  },
+  {
+   "id": "hb_doors",
+   "body": "Up close, the padlock was even more serious than it had looked, bolted through steel that had clearly never given way to anyone in a hurry. Teo checked every hinge and every gap along the frame and found nothing a person could work with, not without tools they hadn't brought. He was about to give up when Nora's torch caught something small among the faded stencilling near the lock: a little triangle with a short tail, inked rather than stamped, the same mark from the logbook. They were in the right place. They just could not get in alone.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hb_doors_peek",
+     "label": "Get a look inside first.",
+     "target": "hb_peek"
+    },
+    {
+     "id": "c_hb_doors_office",
+     "label": "Go ask for help.",
+     "target": "hb_office"
+    }
+   ]
+  },
+  {
+   "id": "hb_peek",
+   "body": "A gap between two boards let Nora press the torch to the wood and squint through into the shed. Inside, retired equipment stood shoulder to shoulder in the dark, coiled cable and rusted winches and shapes she couldn't name. Toward the back, one old thing sat apart from the rest, rounder and stranger than anything around it, catching the beam for a second before the gap swallowed the light again. She couldn't reach it. She couldn't even properly see it. But she knew exactly what she wanted the moment the door opened.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hb_peek_office",
+     "label": "Go ask about getting in now.",
+     "target": "hb_office"
+    }
+   ]
+  },
+  {
+   "id": "hb_office",
+   "body": "The lit window belonged to a small office at the end of the quay, where an older man sat under a gooseneck lamp with a kettle steaming on a hot plate beside him. He looked up when Nora knocked, not startled at all, more like he had been half expecting somebody. His own logbook lay open on the counter, a pad of tonight's number groups already copied down in a neat, old-fashioned hand, the very same groups from the radio still playing softly on the shelf behind him. He waved them both in before either of them managed a single word of explanation.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hb_office_show",
+     "label": "Show him the decoded page.",
+     "target": "hb_show"
+    },
+    {
+     "id": "c_hb_office_pad",
+     "label": "Ask him about his own pad first.",
+     "target": "hb_pad"
+    }
+   ]
+  },
+  {
+   "id": "hb_show",
+   "body": "Nora laid the decoded page on the counter, and the man went very still, reading it twice before he said a word. He knew that handwriting, he told them quietly. He had been the youngest one in Grandma Lou's club, forty years back, the last to join and the last still listening most nights out of habit. He looked at Nora for a long moment, then at the page again, and something in his face settled into certainty. Whatever they were chasing tonight, he said, standing up and reaching for a ring of keys, he wasn't about to be the reason it stopped.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hb_show_key",
+     "label": "Take the key he's offering.",
+     "target": "hb_key"
+    }
+   ]
+  },
+  {
+   "id": "hb_pad",
+   "body": "Nora asked about the pad instead, and the man's whole face brightened. He pulled out a battered folder stuffed with decades of his own listening sheets, one for nearly every night he could remember, each headed with a small drawn symbol instead of a date. Down in one margin, doodled small the way people doodle without noticing, sat the little triangle with its short tail, the exact mark from Grandma Lou's book. He had been copying her habits without ever knowing why, he admitted, laughing a little. Whatever brought them here tonight, he said, reaching for his keys, he wanted to see it through with them.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hb_pad_key",
+     "label": "Accept the key he's offering.",
+     "target": "hb_key"
+    }
+   ]
+  },
+  {
+   "id": "hb_key",
+   "body": "He pressed the key into Nora's hand, still warm from his pocket, and told them to take their time inside. The kettle behind him had just clicked off the boil, and for a second the whole office smelled like cocoa and old paper. Part of Nora wanted to go straight out and use the key while the night was still theirs to spend. Another part of her wanted to stay right here, at this counter, and let this kind stranger who had known her grandmother keep talking for as long as he wanted to talk. Both of those things felt like exactly the right thing to do.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hb_key_shed",
+     "label": "Go and use the key now.",
+     "target": "hb_shed"
+    },
+    {
+     "id": "c_hb_key_stories",
+     "label": "Stay and listen a while longer.",
+     "target": "e_hb_stories"
+    }
+   ]
+  },
+  {
+   "id": "hb_shed",
+   "body": "The key turned smooth and easy, and the shed opened up around them, smelling of iron, salt, and old tar. Retired equipment loomed everywhere in the torchlight, winches and anchors and coiled chain nobody used anymore. Fresh icons were scratched near the door, waiting to be matched: a bell drawn beside a picture of one lone object. Grandma Lou's key page turned it into words fast. THE ONE THAT STILL RINGS. Somewhere in this crowd stood the one that remembered, the same round shape Nora had glimpsed through the gap in the boards. They could ring it and listen, or read what somebody had added to it by hand.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hb_shed_ring",
+     "label": "Ring it and listen.",
+     "target": "hb_bell"
+    },
+    {
+     "id": "c_hb_shed_cage",
+     "label": "Read its surface for marks.",
+     "target": "hb_cage"
+    }
+   ]
+  },
+  {
+   "id": "hb_bell",
+   "body": "It turned out to be an old ship's bell, retired from some boat long since scrapped, hanging loose from a beam near the back wall. Nora gave it the gentlest tap she could manage, and the whole shed answered anyway, one enormous round note swelling out and filling every corner before it slowly faded. Underneath the note, something else rattled faintly inside the bell's curve, small and loose, shaken free by the ringing. Teo reached up carefully and felt along the inside rim until his fingers found it, tucked where the sound itself had been hiding it all along.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hb_bell_capsule",
+     "label": "Take out what's rattling.",
+     "target": "hb_cache"
+    }
+   ]
+  },
+  {
+   "id": "hb_cage",
+   "body": "Nora ran her fingers along the old bell's frame instead of ringing it, feeling for anything that broke the pattern of fifty years of weather. Near the base, under a layer of grime, the paint felt different, smoother and newer than everything around it. She scraped gently with a fingernail until the little triangle with its short tail showed through, an arrow drawn beside it pointing up into the bell's own curve. Whoever had painted over it wanted it found, not hidden, once somebody knew to look close enough and touch instead of just see.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hb_cage_capsule",
+     "label": "Follow the arrow inside.",
+     "target": "hb_cache"
+    }
+   ]
+  },
+  {
+   "id": "hb_cache",
+   "body": "The capsule slid free from the bell's works, a slim cylinder marked only with a tiny scratched wave. Inside sat an engraved shell-casing token, STAND stamped clean across it, drilled through for a cord. With it came a folded chart, her own careful drawings of this retired foghorn's parts, each one labelled with a small picture instead of a word. Beneath the drawings, in her familiar hand, was one line about the club ringing answers out into fog thick enough to swallow a boat, so nobody out on the water ever felt alone. It closed, as it always did now: Fenbrook is still listening. Come home to the Halt.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hb_cache_hub",
+     "label": "Head back to the square.",
+     "target": "n_hub"
+    },
+    {
+     "id": "c_hb_cache_nest",
+     "label": "Follow the needle east instead.",
+     "target": "fin_bearing"
+    }
+   ]
+  },
+  {
+   "id": "e_hb_dinghy",
+   "body": "The skiff took on water almost the moment it left the steps, cold and sudden through both their sneakers before they'd gone more than a few pulls out. Teo turned them back around, and they scrambled onto the quay dripping and laughing at how fast the plan had gone wrong. Out past the breakwater, the bell buoy kept tolling, patient and unbothered by two soaked children. On the walk home, Nora remembered a line from the logbook's margins, a rule in Grandma Lou's own hand: never trust a patched boat after dark. Their socks squelched the whole way back.",
+   "is_ending": true,
+   "ending": {
+    "id": "end_hb_dinghy",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Wet Socks, Warm Laughs"
+   }
+  },
+  {
+   "id": "e_hb_stories",
+   "body": "They never did use the key. The kettle got poured out into three mugs of cocoa, and the wharf keeper talked until the sky outside his window went from black to pearl gray, telling them about foggy nights and impossible catches and a young woman who could copy code faster than anyone else in the club. Grandma Lou came alive in the telling in a way no container in that shed could have matched. Gulls started up somewhere along the pier as the night finally let go. When they left, he shook both their hands like colleagues rather than kids, and told them he would be listening again next time the frequency woke up.",
+   "is_ending": true,
+   "ending": {
+    "id": "end_hb_stories",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Cocoa and Callsigns"
+   }
+  },
+  {
+   "id": "lb_green",
+   "body": "The Fenbrook Town Archive sat squat and brick on Assembly Green, dark except for one small brass lamp burning on a desk near the door, the only light in the whole building. Icons waited near the bike rack, scratched into the logbook's margin: a room, a calendar page marked with a year, a little owl. Grandma Lou's key turned it into three instructions at once. Find the room. Find the record by its year. Mind the warning over the door. This felt less like a search and more like a quick errand somebody trusted them to finish.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_lb_green_porch",
+     "label": "Go straight to the door.",
+     "target": "lb_porch"
+    }
+   ]
+  },
+  {
+   "id": "lb_porch",
+   "body": "The back door had a string of bells looped over its handle, ready to jangle the second anyone tried it carelessly. That was the owl's warning, plain as day, right there for anyone to see before they touched a thing. Underneath the porch board, though, where half the grandmothers in Fenbrook had always known to look, a nail waited with the after-hours key hanging from it. It was not a secret. It was common town knowledge, kept there on purpose for exactly this kind of errand. Nora crouched by the loose board, and Teo eyed the door handle, weighing patience against a shortcut neither of them actually needed.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_lb_porch_owl",
+     "label": "Get the key from under the porch.",
+     "target": "lb_key"
+    },
+    {
+     "id": "c_lb_porch_handle",
+     "label": "Just try the handle.",
+     "target": "e_lb_alarm"
+    }
+   ]
+  },
+  {
+   "id": "lb_key",
+   "body": "The nail gave up the key easily, cool and a little dusty. It slid into the back door's lock and turned like the door had been expecting exactly this key, no force needed. The string of bells hung untouched and silent above the handle. Nora eased the door open an inch at a time, more out of respect than fear, and stepped into the dark hall without a single jingle following her in. It felt less like sneaking and more like being let in, the way you're let into a house you already half belong to.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_lb_key_hall",
+     "label": "Slip inside quietly.",
+     "target": "lb_hall"
+    }
+   ]
+  },
+  {
+   "id": "lb_hall",
+   "body": "Moonlight fell in long silver stripes across the archive's main hall, catching the polish on the floor and the dust on a hundred quiet shelves. The room the icons named waited at the far end, a plain door with a hand-lettered sign. Partway there, though, one desk lamp was still burning over what looked like a half-finished display, cut paper letters spread out under the light like somebody had walked away mid-project. Nora kept walking toward the target room without slowing. Teo's steps slowed on their own, pulled sideways by whatever that lit desk was quietly offering to show him.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_lb_hall_maproom",
+     "label": "Go straight to the target room.",
+     "target": "lb_maproom"
+    },
+    {
+     "id": "c_lb_hall_table",
+     "label": "Stop at the lit desk first.",
+     "target": "lb_table"
+    }
+   ]
+  },
+  {
+   "id": "lb_table",
+   "body": "The desk held a half-finished display, cut paper letters spelling out THE FENBROOK LISTENING CLUB, one letter still loose and unglued beside the rest. Underneath, a card gave the club's founding year in plain print, along with a photograph of a dozen serious faces standing in front of the very tower Nora had climbed that same night. She read the year twice to be sure, then said it aloud so Teo would remember it too. It was exactly the kind of number the archive's own hint had been pointing at all along, without ever spelling it out.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_lb_table_maproom",
+     "label": "Head to the target room with the year.",
+     "target": "lb_maproom"
+    }
+   ]
+  },
+  {
+   "id": "lb_maproom",
+   "body": "The map room held cabinet after cabinet of labelled records, drawers stacked floor to ceiling, one for nearly every year the town had kept count of itself. A hundred typed labels ran in neat rows down the fronts. Among all of them, exactly one carried a mark that had nothing to do with the archive's own filing system: the little triangle with its short tail, inked by hand where no official label belonged. Nora could trust that mark and go straight to it, or work her way patiently through the drawers by year until the right one turned up on its own.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_lb_maproom_diamond",
+     "label": "Trust the mark and go straight to it.",
+     "target": "lb_drawer"
+    },
+    {
+     "id": "c_lb_maproom_hunt",
+     "label": "Search the drawers by year.",
+     "target": "lb_hunt"
+    }
+   ]
+  },
+  {
+   "id": "lb_hunt",
+   "body": "Teo worked along the cabinets year by year, sliding each drawer open, checking, sliding it shut again, patient as a librarian on the night shift. It was slower than trusting a hunch, but not unpleasant, each drawer giving its little click in the quiet room. When he reached the year the display card had mentioned, his torch beam snagged on something and stopped. There, inked by hand where nothing official belonged, sat the same small triangle with its short tail Nora had described. His patient search had landed on the exact same drawer.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_lb_hunt_drawer",
+     "label": "Open that drawer.",
+     "target": "lb_drawer"
+    }
+   ]
+  },
+  {
+   "id": "lb_drawer",
+   "body": "Inside the record folder's spine, taped flat where no one would think to check, sat a small capsule marked with a tiny drawn magnifying glass. It held a stamped ration tag, its corner clipped square, the word WATCH pressed clean into the metal. Folded with it was a drawn card, a row of small icons standing in for the club's founding members, one of them unmistakably a hunched, familiar set of shoulders. Beneath it, in Grandma Lou's hand, a memory of the night the club was founded, closing the way it always closed now: Fenbrook is still listening. Come home to the Halt. Tucked behind it lay one more sheet, a hand-drawn map of the town, five circles marked and every pencil line running to one spot east of everything.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_lb_drawer_hub",
+     "label": "Head back to the square.",
+     "target": "n_hub"
+    },
+    {
+     "id": "c_lb_drawer_nest",
+     "label": "Follow the map and the needle east.",
+     "target": "fin_bearing"
+    }
+   ]
+  },
+  {
+   "id": "e_lb_alarm",
+   "body": "Teo tried the handle without waiting for the key, and the string of bells woke up all at once, a tin thunderstorm rattling across the quiet green. A light snapped on next door almost immediately. Neither of them ran. They stood right where they were, waiting to be found, which turned out to matter. The caretaker came shuffling down in her slippers, more curious than angry once she heard the story, and she was firm about the one rule that mattered without raising her voice. Come back properly, in daylight, with her, and tell your own mother yourselves. They agreed to both.",
+   "is_ending": true,
+   "ending": {
+    "id": "end_lb_alarm",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Caught by the Bells"
+   }
+  },
+  {
+   "id": "bh_path",
+   "body": "Beacon Hill rose dark above Fenbrook, a slow red light pulsing at its top where the old signal mast stood fenced off and guyed down against the wind. Two ways led up. A proper trail switched back and forth across the slope, longer but solid the whole way. Beside it ran a straight run of loose gravel, the shortcut every older kid in town liked to brag about, stones visibly sliding under their own weight even as they stood there looking at it. One of those two ways up was actually a route. The other just looked like it might be faster.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_bh_path_switch",
+     "label": "Take the switchback trail.",
+     "target": "bh_climb"
+    },
+    {
+     "id": "c_bh_path_scree",
+     "label": "Try the gravel shortcut.",
+     "target": "e_bh_scree"
+    }
+   ]
+  },
+  {
+   "id": "bh_climb",
+   "body": "The switchbacks pulled hard at their legs, steep enough that both were breathing heavy within a few turns, but the view kept paying them back for it. Every switch brought the town a little further below, its streetlights arranging into neat, small rows, the harbor a dark smear beyond the rooftops. Gorse brushed at their ankles where the trail narrowed. Neither talked much, saving their breath for the climb, but neither wanted to stop either. Above them, the red pulse on the mast grew steadily closer with every switchback they finished.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_bh_climb_wind",
+     "label": "Keep climbing toward the mast.",
+     "target": "bh_wind"
+    }
+   ]
+  },
+  {
+   "id": "bh_wind",
+   "body": "Near the shoulder of the hill, the wind found the mast's guy wires and every one answered with its own low note, the whole hillside humming like some enormous, tuneless instrument. Nora almost missed the icons scratched into a fence post at the trail's edge, small against all that sound. She matched them anyway. WIRES SING, the first said plainly, and beside it sat a numeral three, drawn in a small triangular shape matching nothing else on the page. Somewhere ahead, among however many identical anchorages held the wires down, exactly one was the third.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_bh_wind_summit",
+     "label": "Follow the sound to the top.",
+     "target": "bh_summit"
+    }
+   ]
+  },
+  {
+   "id": "bh_summit",
+   "body": "At the top, the mast itself stood well inside its own fence, humming and huge, clearly not a thing anyone was meant to touch. Nora and Teo kept their distance without needing to be told twice. Everything the icons had named, though, sat outside that fence in the open ground: three squat anchorages planted in the bracken where the guy wires met the earth, each one plainly reachable without going anywhere near the wire or the fence line. The whole town spread out below them, lights scattered wide in the dark. They could get straight to work searching, or they could stand still a moment first and simply take the height in.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_bh_summit_anchors",
+     "label": "Get to work on the anchorages.",
+     "target": "bh_anchors"
+    },
+    {
+     "id": "c_bh_summit_listen",
+     "label": "Stand still and take it in.",
+     "target": "bh_listen"
+    }
+   ]
+  },
+  {
+   "id": "bh_listen",
+   "body": "They stood without talking, letting the chord of wind and wire wash over them, every wire holding its own note, shifting with each gust. Nora realized she was hearing the hill the way somebody who loved this place once must have heard it, standing right here. Following the wires with her eyes, she saw it plainly: every one sloped down toward the anchorages, like strings pointing at the thing they had climbed all this way to find. Neither needed to say her name out loud for both of them to feel it.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_bh_listen_anchors",
+     "label": "Follow the wires down.",
+     "target": "bh_anchors"
+    }
+   ]
+  },
+  {
+   "id": "bh_anchors",
+   "body": "Three anchorages stood planted in the bracken, squat concrete shoulders holding the guy wires taut against the wind. Two sat close together. The third stood a little apart, near a small survey marker somebody had planted beside it years before. The icons had named the third one specifically, but they had also mentioned a landmark, and that survey marker was the only landmark up here worth the name. Nora could search the anchorage the hint pointed at directly, or search the little marker planted right beside it. Either felt like a reasonable place to start looking closely.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_bh_anchors_plate",
+     "label": "Search the anchorage itself.",
+     "target": "bh_plate"
+    },
+    {
+     "id": "c_bh_anchors_pillar",
+     "label": "Search the marker beside it.",
+     "target": "bh_pillar"
+    }
+   ]
+  },
+  {
+   "id": "bh_plate",
+   "body": "A ring of fastenings circled the anchorage where it met the ground, every one dull and pitted from decades of weather. Nora checked them one by one, expecting nothing, until her fingers found one that felt different, cleaner under the grime, faintly greased. She scraped a thumbnail across it and found the little triangle with its short tail scratched clear underneath. It turned under her hand without a fight, easy in a way none of the others would have been, kept working by somebody who never wanted it to seize up in fifty years of salt wind.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_bh_plate_hollow",
+     "label": "Open what turns easily.",
+     "target": "bh_hollow"
+    }
+   ]
+  },
+  {
+   "id": "bh_pillar",
+   "body": "The survey marker was official, stamped with numbers Nora didn't understand, but somebody had added their own marks around its edge long after the surveyors left. Right there sat the little triangle with its short tail, and beside it a scratched line pointing toward the anchorage a few feet away. Nora followed the line until it landed on one particular fastening among the weathered set, the only one the arrow seemed to care about. It felt less like a survey marker now and more like a note left for exactly this moment.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_bh_pillar_hollow",
+     "label": "Follow the line to the fastening.",
+     "target": "bh_hollow"
+    }
+   ]
+  },
+  {
+   "id": "bh_hollow",
+   "body": "The fastening turned all the way and drew a small cover with it, hinged so smoothly it barely made a sound. Behind it sat a dry hollow, cast right into the anchorage itself when the concrete was still wet, decades before either of them was born. Its cover carried one small drawn star, worn nearly smooth by weather but still visible if you knew to look. Nora understood, looking at it, that this had never been added after the fact. Somebody had planned for a finder from the very moment this whole structure was built, patient enough to wait fifty years for the right person to come along.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_bh_hollow_open",
+     "label": "Open the hollow.",
+     "target": "bh_cache"
+    }
+   ]
+  },
+  {
+   "id": "bh_cache",
+   "body": "Wrapped inside the hollow sat a second cast medallion, thinner than the first, the word NOW pressed clean across its face. A folded note came with it, in the same careful hand as before. Once, she had written, she drew the whole coastline from memory on the back of a chart, marking every listening station with its own little sign, just to prove she still remembered every one by heart. From up here she had heard ships, and once, on a very clear night, something from the far side of the world. The note ended, as they always ended: Fenbrook is still listening. Come home to the Halt. Nora tucked it away carefully, next to the others.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_bh_cache_view",
+     "label": "Stand up and take in the view.",
+     "target": "bh_view"
+    }
+   ]
+  },
+  {
+   "id": "bh_view",
+   "body": "Nora stood and let her eyes follow the direction the needle had leaned all night, out past the last streetlight, past the edge of town entirely. From up here, and only from up here, that direction resolved into something real: one small amber window, burning steady in the dark countryside beyond Fenbrook, exactly where the bearing had always pointed. Nobody could have picked it out from the streets below. Teo saw it the moment she pointed, and neither of them needed to say what it probably was. They could climb back down with everything they had learned tonight, or they could go straight toward that one small light instead.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_bh_view_hub",
+     "label": "Climb back down to the square.",
+     "target": "n_hub"
+    },
+    {
+     "id": "c_bh_view_nest",
+     "label": "Head straight for that light.",
+     "target": "fin_bearing"
+    }
+   ]
+  },
+  {
+   "id": "e_bh_scree",
+   "body": "The gravel shortcut moved the second Teo put his weight on it, sliding him down and sitting him hard before he'd gained any real height. Nora skidded after him, more startled than hurt, both ending up with stinging palms and gritty knees. Teo had packed a small first aid kit, sensible as always, and they cleaned the scrapes at the base of the hill. The hill isn't going anywhere, Nora said, working a bandage loose, and skin only grows back so fast. They agreed the switchback trail could wait for another night, and turned their bikes toward town.",
+   "is_ending": true,
+   "ending": {
+    "id": "end_bh_scree",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Long Way Down"
+   }
+  },
+  {
+   "id": "fin_bearing",
+   "body": "East of town, past the level crossing, the old Fenbrook Halt signal box stood with one upstairs window lit, a thin aerial wire strung from its chimney to a fence post like a single drawn line connecting two points. As they got close, Grandma Lou's voice reached them from two directions at once, a half beat apart: faint from the direction-finder still riding in Nora's pocket, and clear and close from somewhere inside that lit window ahead. The skin on Nora's arms prickled at the sound of it doubled like that. This was it. Whatever had been calling them all night had been calling from right here the entire time.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_finb_rails",
+     "label": "Walk the last stretch to the signal box.",
+     "target": "fin_gate"
+    }
+   ]
+  },
+  {
+   "id": "fin_gate",
+   "body": "A small painted sign by the door named the building plainly: FENBROOK HALT, and underneath, in newer paint, THE FENBROOK LISTENING CLUB, EST. The place the refrain had promised all night, right down to its name. The door itself was locked. A side window sat higher up, sealed shut under decades of paint, close enough to look reachable and far enough that reaching for it looked like a bad idea. Inside, Grandma Lou's voice kept reading on, steady and unbothered, into a room with nobody in it. Nora could think it through like the radio person who built this place, or take the shortcut at the window, or simply stop right here and listen first.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fing_key",
+     "label": "Think like a radio person about the way in.",
+     "target": "fin_search"
+    },
+    {
+     "id": "c_fing_window",
+     "label": "Reach for the sealed window.",
+     "target": "e_fin_window"
+    },
+    {
+     "id": "c_fing_listen",
+     "label": "Stop and listen at the door.",
+     "target": "fin_door_listen"
+    }
+   ]
+  },
+  {
+   "id": "fin_door_listen",
+   "body": "Through the old wood, past the reading of another group of icons-turned-words, Nora could hear it clearly now: not a person at all, but relays clicking, tape moving steadily through some unseen mechanism, a clock ticking down toward whatever hour it had been built to reach. Nobody had sat at that microphone in a long time. The machine had simply been keeping an appointment, alone, for who knew how many years running, and it would keep it whether or not anyone ever came to answer. That understanding settled something in Nora's chest, replacing the last of her nerves with something closer to wonder.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_finl_search",
+     "label": "Go find the honest way in.",
+     "target": "fin_search"
+    },
+    {
+     "id": "c_finl_stay",
+     "label": "Stay right here and listen it out.",
+     "target": "e_fin_listen"
+    }
+   ]
+  },
+  {
+   "id": "fin_search",
+   "body": "Nora thought about who would have built a place like this. Somebody who tended an aerial regularly, who walked past the same two or three spots without fail. That narrowed it to a lintel worn smooth by decades of hands, and a small weatherproofed box nailed to the aerial post, the kind built for birds but sitting oddly close to a wire only a radio person would climb to check. One of those two spots had almost certainly been touched more recently. It was worth checking the obvious place first, or trusting the guess about the box.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fins_wrenbox",
+     "label": "Check the box on the aerial post.",
+     "target": "fin_wrenbox"
+    },
+    {
+     "id": "c_fins_lintel",
+     "label": "Check the lintel first.",
+     "target": "fin_lintel"
+    }
+   ]
+  },
+  {
+   "id": "fin_lintel",
+   "body": "Nora ran her hand along the lintel and found nothing but old paint and, disturbingly, one very startled spider. She laughed despite herself, wiping her hand on her jeans. But standing this close to the door gave her a clear line of sight up the aerial post, and from here the little wooden box at its base looked freshly cared for, its wood a shade or two lighter than the weathered post it hung from. Whatever she hadn't found at the lintel, she had at least found a much better guess.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_flin_box",
+     "label": "Try the box on the post instead.",
+     "target": "fin_wrenbox"
+    }
+   ]
+  },
+  {
+   "id": "fin_wrenbox",
+   "body": "The little box's hinged lid opened easily under Nora's fingers, and inside, wrapped in a scrap of cloth, sat a key with a small drawn arrow marking the cloth. There was no name on it, nothing that said Nora or Teo or Finch. It was addressed, as far as either could tell, to whoever was still listening, whoever had followed the whole trail this far and deserved to be let in properly. Teo turned the key over once in his palm before handing it to Nora, letting her carry it the last few steps to the door.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_finw_door",
+     "label": "Carry the key to the door.",
+     "target": "fin_door"
+    }
+   ]
+  },
+  {
+   "id": "fin_door",
+   "body": "The key slid into the lock and turned with a smoothness that surprised her, no grinding, no sticking, the mechanism clearly oiled and cared for despite the building's tired paint. The door swung inward on warm light, and all at once Grandma Lou's voice was no longer a recording heard through wood. It was right there in the room with them, close and clear and unmistakably hers. Nora stood on the threshold, key still in her hand, feeling less like she had broken into anything and more like she had finally been let in.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_find_in",
+     "label": "Step inside.",
+     "target": "fin_threshold"
+    }
+   ]
+  },
+  {
+   "id": "fin_threshold",
+   "body": "From the doorway, the little room looked nothing like the dusty, forgotten place Nora had half expected. A tape reel spun steadily on a shelf, feeding the recording out into the air. Beside it, a spring-driven timer counted down its last notches, patient and mechanical. A hand crank sat resting against the wall where it belonged, ready for whenever the spring needed winding again. Every surface had been swept. Every cover had been folded neatly. Somebody had planned every part of this night, down to the last detail, long before either of them was ever born to find it.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fint_in",
+     "label": "Go all the way inside.",
+     "target": "fin_inside"
+    }
+   ]
+  },
+  {
+   "id": "fin_inside",
+   "body": "Three things pulled at Nora all at once. Along one wall hung a whole gallery of small drawings, one per club member, simple icons standing in for faces she would never get to meet. On the desk beneath the window, Grandma Lou's own logbook lay open, its last entry facing up as if she had left it that way on purpose. And in the middle of the room, the machine itself kept turning, counting down toward whatever hour it had been built to reach, the sky outside just beginning to lighten at its edges. Nora could learn the people first, or read what her grandmother had written, or go straight at the machine and see what it wanted.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fini_wall",
+     "label": "Look at the wall of members.",
+     "target": "fin_wall"
+    },
+    {
+     "id": "c_fini_log",
+     "label": "Read the open logbook.",
+     "target": "fin_log"
+    },
+    {
+     "id": "c_fini_rack",
+     "label": "Go straight to the machine.",
+     "target": "fin_rack"
+    }
+   ]
+  },
+  {
+   "id": "fin_wall",
+   "body": "Nora studied the wall, one small drawn face at a time, each icon standing in for somebody who had once sat up nights listening with Grandma Lou. Standing there, both of them could feel exactly where she used to stand, without anything strange about it. Near the bottom hung a single typed card, plain and unshowy, explaining everything at once. The club had scattered years ago, its members grown old or moved away, the work that brought them together long since finished. Grandma Lou had built this station, and the night's hunt besides, so Fenbrook would keep one more net in it after she was gone. Reading every word would cost minutes she might not have left.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fwall_linger",
+     "label": "Keep reading every word.",
+     "target": "e_fin_late"
+    },
+    {
+     "id": "c_fwall_turn",
+     "label": "Break off and turn to the machine.",
+     "target": "fin_rack"
+    }
+   ]
+  },
+  {
+   "id": "fin_log",
+   "body": "Grandma Lou's last entry was not written to a stranger. It was written the way she wrote everything, plain and warm, and it named three things a finder might rightly do once they reached this room: answer, keep, or share, any of them exactly right, none of them better than the others. Below it, on the final page, a list of the old club's names and numbers ran down the margin, most crossed neatly through, but a handful left standing, still current, still hers to hand on. It felt less like reading somebody's private book and more like being spoken to directly, on purpose, across however many years had passed.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_finlog_rack",
+     "label": "Take her words to the machine.",
+     "target": "fin_rack"
+    }
+   ]
+  },
+  {
+   "id": "fin_rack",
+   "body": "The machine itself made all three futures plain without Nora needing to have read a single word elsewhere. A small brass switch, labelled ANSWER, sat beside a microphone plainly built to record as well as play. A hand crank rested near a spring gauge, labelled in smaller letters, KEEP RUNNING. And a spare reel sat threaded and waiting beside a third label: SHARE. The spring itself sat nearly at its last notch, the tape running down toward whatever hour it had been wound to reach. Whatever they chose here, none of it was wrong, and all of it had to happen before the spring gave out completely. Nora looked at Teo, and Teo looked back at her, waiting.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_finr_answer",
+     "label": "Speak back into the microphone.",
+     "target": "fin_answer"
+    },
+    {
+     "id": "c_finr_keep",
+     "label": "Make sure it keeps running.",
+     "target": "fin_keep"
+    },
+    {
+     "id": "c_finr_share",
+     "label": "Give it away to the town.",
+     "target": "fin_share"
+    }
+   ]
+  },
+  {
+   "id": "fin_answer",
+   "body": "Nora flipped the small brass switch, and the tape began taking sound as well as giving it, a fresh reel turning quietly beside the old one. The machine had been built to record whoever finally answered, which meant Grandma Lou had always expected somebody to be standing exactly where Nora was standing now. A pause opened up in the recording, wide and waiting, the kind of silence built on purpose for a reply. On the desk beside the microphone sat a printed card, the club's own closing words laid out in full. Nora could speak whatever she wanted into that pause, or she could read what her grandmother had already written for this exact moment.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fina_own",
+     "label": "Say something in your own words.",
+     "target": "f_answer_own"
+    },
+    {
+     "id": "c_fina_script",
+     "label": "Read her closing words instead.",
+     "target": "f_answer_script"
+    }
+   ]
+  },
+  {
+   "id": "f_answer_own",
+   "body": "Nora leaned toward the microphone and said the simplest true thing she could think of: her name, whose granddaughter she was, and that Fenbrook was still listening, exactly the way the refrain had promised all night. Her voice sounded small in the quiet room, and steadier than she expected. Nothing about it was polished or planned, and that turned out to be exactly right. It went onto the same tape as Grandma Lou's, two voices from two different years sitting side by side on the same reel. Now that she had spoken, she could wait to hear whether the pause brought anything back, or she could close the watch properly with her own name.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fao_listen",
+     "label": "Wait and see if anyone answers.",
+     "target": "e_win_net"
+    },
+    {
+     "id": "c_fao_sign",
+     "label": "Sign your name and finish it.",
+     "target": "e_win_answer"
+    }
+   ]
+  },
+  {
+   "id": "f_answer_script",
+   "body": "The printed card held the club's closing form in full, ending in five words Nora recognized the instant she read them, matched icon by icon to the words the drawings had always meant: SIGN OFF STAND WATCH NOW. It was the same phrase, whole and complete, whether or not a single keepsake sat in her pocket tonight. She read it through once to herself before speaking it aloud, feeling the weight of getting somebody else's words exactly right. The spring eased another notch toward its end while she held the card steady. She could read it precisely as written, or add one small promise of her own before the machine closed.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fas_written",
+     "label": "Read it exactly as written.",
+     "target": "e_win_signoff"
+    },
+    {
+     "id": "c_fas_promise",
+     "label": "Add one promise of your own after.",
+     "target": "e_win_encore"
+    }
+   ]
+  },
+  {
+   "id": "fin_keep",
+   "body": "Tucked beside the machine sat a folder of Grandma Lou's own diagrams, drawn rather than written out, each step a small picture instead of a paragraph of instructions. It was, Nora realized, built for exactly this moment, simple enough that two children standing in a signal box at dawn could actually follow it. There were two ways to make sure the station didn't simply stop tonight. They could wind it up right now, the simplest and most immediate promise they could make. Or they could commit to something bigger, learning the whole station properly over months instead of one single morning.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fink_wind",
+     "label": "Wind it up right now.",
+     "target": "f_keep_wind"
+    },
+    {
+     "id": "c_fink_learn",
+     "label": "Commit to learning it properly.",
+     "target": "f_keep_learn"
+    }
+   ]
+  },
+  {
+   "id": "f_keep_wind",
+   "body": "Together they followed the diagram step by step, Teo turning the hand crank while Nora watched the spring gauge climb back up toward firm. It took both of them, and it took longer than either expected, but the machine answered every turn exactly the way the drawing promised it would. When the gauge finally read full, they reset the timer for the same hour, one year from tonight, and carried the key back out to the little box on the aerial post where the next listener would find it waiting. It felt like a promise made with their whole bodies instead of just their words.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fkw_end",
+     "label": "Close it up together.",
+     "target": "e_win_keepers"
+    }
+   ]
+  },
+  {
+   "id": "f_keep_learn",
+   "body": "Nora and Teo sat down with the diagrams, the spring gauge, and the last page of the logbook spread out in front of them, and started copying down everything that mattered. The settings for the timer. The steps for the crank. And, at the bottom of the logbook's final page, the handful of names never crossed through, people who might still remember how this worked and might teach two kids properly. By the time they finished writing, the plan had grown well past tonight, into Saturdays and phone calls and a whole slow apprenticeship neither had expected to want this badly.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fkl_end",
+     "label": "Start the long apprenticeship.",
+     "target": "e_win_apprentice"
+    }
+   ]
+  },
+  {
+   "id": "fin_share",
+   "body": "The station, Nora realized, had never really been built out of machinery. It had been built out of people, which meant giving it away wasn't the same as losing it. Two ways to do that sat right in front of her. A page of old telephone numbers lay in the logbook, and Teo's phone still had a little charge left in it, enough for one call home. Or the machine itself could carry the giving forward, its own voice handing the whole hunt on to whoever came next, the way Grandma Lou's had handed it to them. Both roads fit inside the few minutes the spring still had left.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fsh_family",
+     "label": "Call the family in.",
+     "target": "f_share_family"
+    },
+    {
+     "id": "c_fsh_hunt",
+     "label": "Record a new hunt for someone else.",
+     "target": "f_share_hunt"
+    }
+   ]
+  },
+  {
+   "id": "f_share_family",
+   "body": "Teo's call brought their mother out the door before he'd even finished explaining where they were. Headlights swung up the lane a few minutes later, and she came in fast, then stopped hard in the doorway at the sight of the little room, one hand rising to cover her mouth at all of her own mother's handwriting spread out around her. She didn't scold them, not once. She crossed the room and stood between her two children, and the three of them fit in front of the desk exactly, as if the space had been left for that purpose all along.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fsf_end",
+     "label": "Stand together for the last groups.",
+     "target": "e_win_family"
+    }
+   ]
+  },
+  {
+   "id": "f_share_hunt",
+   "body": "Nora and Teo bent over the microphone together, whispering fast, inventing five brand new places worth finding, nowhere they had visited tonight, all of them real spots around Fenbrook that some other kid might actually reach by bike. They recorded the groups in their own two voices, laughing under their breath at how strange it felt to be the ones leaving a trail instead of following one. At the end, Nora added a promise the recording would call again, someday, to whoever was listening this time. The reel kept turning, carrying their voices forward the same way it had once carried Grandma Lou's.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fshu_end",
+     "label": "Put your names to the new hunt.",
+     "target": "e_win_passiton"
+    }
+   ]
+  },
+  {
+   "id": "e_fin_window",
+   "body": "Nora reached for the sealed window and found the gap wider than it looked from the ground, her foot slipping on the old sill before she'd gotten close. Teo caught her arm before the slip turned into anything worse than a barked shin, and they stood there a second, hearts going fast. The window, it turned out, had been painted shut for years anyway. Sitting on the cold steps afterward, they said the obvious thing together: nobody breaks into a place that already belongs to their own family. They walked home to come back properly, with a better plan.",
+   "is_ending": true,
+   "ending": {
+    "id": "end_fin_window",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Overreach at the Window"
+   }
+  },
+  {
+   "id": "e_fin_late",
+   "body": "Nora read one caption too many at the wall, lost in a face she almost recognized, and the sign-off began before she finished the line. The machine kept its promise exactly, the reels winding down whether or not anyone reached the desk in time. They stood together and heard it finish from a few feet away, close enough to hear every word clearly. It was a real loss, but it wasn't a disaster. They had been in the right room, the right hour, and heard her say goodnight. They locked up softly, left the key for the next listener, and walked home working out how to tell it.",
+   "is_ending": true,
+   "ending": {
+    "id": "end_fin_late",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Six Feet Away"
+   }
+  },
+  {
+   "id": "e_fin_listen",
+   "body": "Nora and Teo sat down on the old wooden steps, shoulders touching, and let the last of the broadcast play out through the door without opening it. Grandma Lou's voice read on, steady and unhurried, right to the end, and the goodnight arrived on time, in the voice they knew best, heard through weathered wood while the first birds started up behind them. They decided the question of the key could wait for daylight, and for their mother. Nothing about the night felt unfinished. Some doors you open, and some watches you simply witness through to the end, and this one had been exactly enough.",
+   "is_ending": true,
+   "ending": {
+    "id": "end_fin_listen",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Goodnight Through the Door"
+   }
+  },
+  {
+   "id": "e_win_net",
+   "body": "For a long moment after Nora spoke, the radio gave back nothing but soft static, and she almost thought the pause had closed for good. Then a voice answered, close by, giving a name and a quiet hello. Another followed, farther off. Then another, farther still, the coast waking up one call at a time, old members of a club nobody had heard from in years, checking in the way they must have checked in a hundred times before. Nora took each one down, name by name, the way she imagined her grandmother once had, while the window filled with light. The network had never really closed. It had only been waiting for somebody to sit at this desk again.",
+   "is_ending": true,
+   "ending": {
+    "id": "end_win_net",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Voices Out of Static"
+   }
+  },
+  {
+   "id": "e_win_answer",
+   "body": "Nora picked up the pen and signed her own name beneath Grandma Lou's last entry, grandchild under grandmother, the two signatures sitting together for the first time. The machine read out its final group and gave its goodnight, then went quiet, her answer safely folded into the same archive that held sixty years of everyone else's. Teo pocketed the key, and the two of them stepped into a morning that had properly arrived while they weren't watching, birdsong loud along the lane. They carried the whole story home to breakfast, nothing left hanging in that small warm room.",
+   "is_ending": true,
+   "ending": {
+    "id": "end_win_answer",
+    "valence": "positive",
+    "kind": "success",
+    "title": "A Name Under Hers"
+   }
+  },
+  {
+   "id": "e_win_signoff",
+   "body": "Nora read the club's closing words exactly as they were printed, her voice steady all the way through to the end. SIGN. OFF. STAND. WATCH. NOW. Five words, spoken clean and whole, landing as the night's true last sentence. The machine closed precisely on the beat it had been built to close on, the spring easing home with a soft, final click, the reels settling still. She put the key back where the next listener would find it and signed the logbook underneath her grandmother's own hand. The quiet that followed wasn't empty. It was part of the gift too, the sound of a whole night's watch finished exactly as it was meant to finish.",
+   "is_ending": true,
+   "ending": {
+    "id": "end_win_signoff",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Sign Off Stand Watch Now"
+   }
+  },
+  {
+   "id": "e_win_encore",
+   "body": "Nora read the closing words exactly as written, and then, with the spring still easing toward its last notch, added one line of her own: we'll be back next year, we promise. She reached for the crank before the machine could close on her words alone, and turned it steadily until the gauge read full again, making the promise true with her own two hands instead of just her voice. Teo helped guide the last few turns. They left the station exactly as they found it, wound for another year, and walked home already carrying a secret with a date attached to it, one neither of them planned on breaking.",
+   "is_ending": true,
+   "ending": {
+    "id": "end_win_encore",
+    "valence": "positive",
+    "kind": "success",
+    "title": "One More Year Wound"
+   }
+  },
+  {
+   "id": "e_win_keepers",
+   "body": "Before they left, they shook hands over the newly wound spring, an odd, formal little gesture that felt exactly right for the moment. Nobody had asked them to keep coming back, but the way they had cared for the room already made them its keepers, and both of them knew it without needing to say so out loud. The year that followed was quiet Saturday visits, dusting shelves, checking the timer, learning the little room by heart one small task at a time. When the station woke Fenbrook again the following year, two more voices had been added to the welcome, ready for whoever found it next.",
+   "is_ending": true,
+   "ending": {
+    "id": "end_win_keepers",
+    "valence": "positive",
+    "kind": "success",
+    "title": "New Keepers of Fenbrook"
+   }
+  },
+  {
+   "id": "e_win_apprentice",
+   "body": "The plan they wrote down that morning turned into months of real Saturdays. The uncrossed names from the logbook's last page became actual people, old club members who remembered Grandma Lou fondly and were glad for an excuse to teach two kids properly, over mugs of cocoa and long careful explanations. By the following spring, Nora and Teo weren't just keeping the station alive anymore. They understood it, piece by piece, the way somebody who had built it themselves might have understood it. Their own certificates went up on the wall eventually, framed beneath Grandma Lou's old photographs, two new names added to a club that had never entirely stopped.",
+   "is_ending": true,
+   "ending": {
+    "id": "end_win_apprentice",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Learning It Properly"
+   }
+  },
+  {
+   "id": "e_win_family",
+   "body": "Their mother arrived with minutes to spare, and the three of them stood together in front of the desk for the very last groups, nobody saying anything because nothing needed saying. The goodnight, when it came, arrived in a voice all three of them knew better than any other voice in the world. Their mother reached past them afterward and signed the logbook herself, right beneath her children's names, adding one more Finch to a page that already held two. Together they turned off the last lamp and walked out into a morning bright enough to see the whole road home, carrying the same inheritance between the three of them now instead of just two.",
+   "is_ending": true,
+   "ending": {
+    "id": "end_win_family",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Three at the Desk"
+   }
+  },
+  {
+   "id": "e_win_passiton",
+   "body": "A year later, other windows around Fenbrook started lighting up at midnight, one after another, kids waking to a familiar voice reading number groups into their own dark bedrooms. The new sites had taken a whole summer to build, family workdays and borrowed ladders and a lot of careful hiding, but they were real now, waiting for whoever found them next. When the broadcast played, it opened in Grandma Lou's voice, exactly as it always had, and closed in Nora's, a living voice at each end of the night. The hunt had stopped belonging only to one family. It belonged to the whole town now, the way it was always meant to.",
+   "is_ending": true,
+   "ending": {
+    "id": "end_win_passiton",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Five New Groups"
+   }
+  }
+ ]
+}

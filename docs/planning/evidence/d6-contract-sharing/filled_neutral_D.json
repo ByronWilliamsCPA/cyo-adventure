@@ -1,0 +1,423 @@
+{
+ "schema_version": "2.0",
+ "id": "d6",
+ "version": 1,
+ "title": "The Foundry's Last Peal",
+ "metadata": {
+  "age_band": "10-13",
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 5.5,
+   "tolerance": 1.5
+  },
+  "tier": 1,
+  "themes": [
+   "mystery",
+   "puzzles",
+   "friendship",
+   "history"
+  ],
+  "estimated_minutes": 18,
+  "ending_count": 8,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "mild",
+   "peril": "mild"
+  },
+  "topology": "branch_and_bottleneck",
+  "production_eligible": false
+ },
+ "variables": [],
+ "start_node": "n_open",
+ "nodes": [
+  {
+   "id": "n_open",
+   "body": "Vane's Bell Foundry had stood shut for thirty years. Chains crossed the big doors, and moss climbed the tower stone behind them. Pinned at eye level was a strip of paper, its edges curled and soft. A row of marks ran across it: some long, some short, like a peal rung out in ink instead of bells. Nadia read it twice. Cole leaned close. Priya traced a finger along the pattern.\n'It's a test,' Nadia said. 'Josiah Vane wanted someone to earn their way in.'\nNobody argued. They looked at each other and nodded, the same thought passing between them: whatever this took, they would take it on together.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_open",
+     "label": "We face the foundry door together",
+     "target": "n_start"
+    }
+   ]
+  },
+  {
+   "id": "n_start",
+   "body": "Up close, the foundry door was even older than it looked. Rust flaked from the hinges. Somewhere behind the tower, a dog barked once and went quiet.\n'We could work out what the note says,' Priya said, tapping the strip of pulls. 'Line by line, careful.'\n'Or we find our own way in,' Cole said, already eyeing the low gap under the loading door.\n'Or,' Nadia said, nodding toward a cottage across the yard where smoke curled from a chimney, 'we ask whoever lives there. That's Fenn's place. He rings the bells that are left standing.'\nThree paths. Nobody rushed to pick.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_examine",
+     "label": "We work on the note",
+     "target": "n_note"
+    },
+    {
+     "id": "c_door",
+     "label": "We look for another way in",
+     "target": "n_door"
+    },
+    {
+     "id": "c_keeper",
+     "label": "We ask Fenn for help",
+     "target": "n_keeper"
+    }
+   ]
+  },
+  {
+   "id": "n_note",
+   "body": "Priya spread the strip flat on a stone and started counting. Long pull, short, short, long: that was one letter. She matched each group against the pull-count chart scratched faintly beside the pattern. It was slow work. Twice she lost her place and started the line over.\n'F... L... U...' she read aloud, letter by letter. 'Flue. Grate. Key.'\nThe first line, decoded at last, pointed plainly: a spare key hung on a nail behind the loose flue grate, exactly where the fold in the paper pointed. Patience had paid off. Two lines still waited below it, unread.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_note_key",
+     "label": "We go where the note points",
+     "target": "n_keyhunt"
+    },
+    {
+     "id": "c_note_inside",
+     "label": "We use the note right now",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_door",
+   "body": "Cole didn't bother with the note. He circled the building instead, running a hand along every board and sill. Down by the old tuning shed, a warped tuning board leaned against the foundry wall, propped there like it had been for years.\nHe crouched and felt underneath its lip. There: a catch, hidden and stiff with rust. He worked it loose with his thumbnail.\n'Found something,' he called.\nNadia and Priya came running. Under Cole's hand, a low gap door groaned open an inch, showing black inside. Above it, a window sat higher up, its old latch broken. Two ways in, and neither one needed a single word of code.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_door_force",
+     "label": "We squeeze through the low gap",
+     "target": "n_inside"
+    },
+    {
+     "id": "c_door_window",
+     "label": "We climb to the high window",
+     "target": "n_window"
+    }
+   ]
+  },
+  {
+   "id": "n_keeper",
+   "body": "Fenn opened his door before they finished knocking. He looked the three of them over, arms crossed, saying nothing for a long moment.\n'Come about the foundry, have you.' It wasn't a question.\n'We wanted to ask first,' Nadia said. 'Before we tried anything.'\nSomething in Fenn's face eased. 'Most don't ask. Most just climb the wall and hope.' He reached for a ring of keys by the door. 'Vane built that puzzle to test more than cleverness. Asking counts for something too.'\nHe led them across the yard, keys jingling on his belt, toward a door on the casting floor side of the tower. 'I can get you in,' he said. 'Whether you're ready is yours to prove.'",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_keeper_enter",
+     "label": "We take Fenn's offer and go in",
+     "target": "n_inside"
+    },
+    {
+     "id": "c_keeper_story",
+     "label": "We stay and hear his story",
+     "target": "n_keeper_story"
+    }
+   ]
+  },
+  {
+   "id": "n_keyhunt",
+   "body": "They found the flue grate exactly where the note said it would be, low on the tower's north wall, half hidden by ivy. The grate came loose with one firm tug. Behind it, just as decoded, hung a small iron key on a bent nail, dulled with thirty years of dust.\nPriya turned it over in her palm. 'It's real. The note was telling the truth the whole time.'\nCole grinned. 'Patience beats guessing.'\nThe key fit the flue door's lock with a stiff click. Careful, patient work had read this building correctly, and that much, at least, they now trusted completely.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_keyhunt_in",
+     "label": "We go in through the flue",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_keeper_story",
+   "body": "Before he opened the door, Fenn sat them down on an overturned bell mould. 'Josiah Vane cast bells finer than any founder in the county,' he said. 'But he cared more about who'd carry the work on than about the bells themselves.'\nHe nodded toward the tower. 'That puzzle isn't spite. It's a sieve. Vane wanted to know: would whoever solved it be patient, or bullheaded, or humble enough to ask? He built tests for all three, so nobody could cheat their way to being the right kind of finder.'\n'What's inside?' Cole asked.\nFenn only smiled. 'That part you earn by going and seeing. Come on, then.'",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_story_in",
+     "label": "We go in now",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_window",
+   "body": "The high window sat only a little above head height, its sill wide and its old iron bracket solid under Cole's boot. Priya laced her fingers together for a step, and Nadia braced against the wall.\n'Up first, then the rest of us,' Cole said, and climbed. The bracket held. His fingers found the sill easily, and he swung a leg over.\nOne by one, Priya spotting from below and Nadia steadying each foot, the three of them made it up and through, dropping the short distance to a dusty floor inside. No one so much as scraped a knuckle. The dare was answered, together, the way they meant to answer everything else.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_window_in",
+     "label": "We drop down inside",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_inside",
+   "body": "Inside, the foundry smelled of cold metal and old dust. Sound climbed and echoed strangely, bouncing off unseen walls above them. Their eyes adjusted, and the shape of the place came clear: a stair spiraling up into the belfry, a low doorway into a paper-cluttered pattern room, a narrow catwalk strung across open air toward the swinging bell-frames, and a dark stair leading down to the casting floor.\n'Four ways,' Nadia said, turning slowly. 'Up, sideways, across, or down.'\nNone of them looked easier than the others. Each one, somehow, felt like it was watching to see what they'd choose. They were past the sealed door now. The real trial waited ahead.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_inside_stairs",
+     "label": "We climb the belfry stairs",
+     "target": "n_stairs"
+    },
+    {
+     "id": "c_inside_study",
+     "label": "We head to the pattern room",
+     "target": "n_study"
+    },
+    {
+     "id": "c_inside_pendulum",
+     "label": "We cross the bell-frame catwalk",
+     "target": "n_pendulum"
+    },
+    {
+     "id": "c_inside_basement",
+     "label": "We head down to the casting floor",
+     "target": "n_basement"
+    }
+   ]
+  },
+  {
+   "id": "n_stairs",
+   "body": "The belfry stair wound up and up, legs burning by the third turn. Halfway, a landing opened onto a narrow room lined with tuning forks, racked smallest to largest, each one tagged with a number: a pull count.\nPriya tapped the smallest fork. It rang a short, bright note. The largest rang low and long.\n'Short pulls, long pulls,' she said. 'It's the same code as the note.'\nOn a shelf nearby sat a small hand bell, cast crooked on purpose, a founder's old joke kept for thirty years. Cole turned it over, smiling, then set it back gently. They climbed on, legs aching, minds clearer than when they'd started.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_stairs_face",
+     "label": "We go on to the dial",
+     "target": "n_clockface"
+    }
+   ]
+  },
+  {
+   "id": "n_study",
+   "body": "The pattern room was crowded with shelves of rolled paper patterns, stacked to the rafters. Sunlight through a coloured glass transom scattered bell-shaped patches of color across the floorboards, sliding slowly as the sun moved.\nOn a workbench lay a tuning hammer, its wooden handle scratched with Vane's own tally marks, each one keyed to a single pull. Nadia ran her thumb over the marks and worked out the pattern in minutes; it read cleaner than anything on the note.\nStacked nearby were shelves of foundry ledgers, decades of casting records nobody had opened in years. 'We could stay and read every page of this,' Priya said, and meant it.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_study_face",
+     "label": "We go on to the dial",
+     "target": "n_clockface"
+    },
+    {
+     "id": "c_study_logs",
+     "label": "We stay and read the records",
+     "target": "n_end_library"
+    }
+   ]
+  },
+  {
+   "id": "n_pendulum",
+   "body": "The catwalk stretched over open air, planks slick with old tallow, strung between the tower's great swinging bell-cradles. Down by the mould bench, a brass calibration scale climbed in notches, the same long-short carry as the note's code, and Cole read it twice to be sure he had it.\nAcross the catwalk, tucked in a niche, something small caught the light: whatever Vane had set aside, waiting for whoever crossed.\n'One handhold at a time,' Nadia said. 'No rushing.'\nIt was the boldest room by far, plank after narrow plank over a long drop, nothing worse waiting below than a bruise and a long walk home if a foot slipped.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_pendulum_oil",
+     "label": "We cross and take what's waiting",
+     "target": "n_clockface"
+    },
+    {
+     "id": "c_pendulum_giveup",
+     "label": "We turn back from the crossing",
+     "target": "n_end_giveup"
+    }
+   ]
+  },
+  {
+   "id": "n_basement",
+   "body": "Down on the casting floor, the air turned cool and still. Dim light filtered through the belfry louvers far above, falling in thin stripes across the stone. Cole noticed one stripe landing square on a marked floor plank, and when he counted its width against the note's pattern, the count matched perfectly.\nAgainst the far wall hung a leather apron, worn soft, its pockets shaped by thirty years of the same tools going in and out. Nobody touched it. It felt like Vane might still come looking for it.\nThe room asked for nothing but calm, patient eyes, and staying steady in the near-dark had paid off.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_basement_face",
+     "label": "We head up to the dial",
+     "target": "n_clockface"
+    }
+   ]
+  },
+  {
+   "id": "n_clockface",
+   "body": "At the top of the tower stood the great peal dial, a wide brass face ringed with pegs instead of numbers, each peg carved with a short groove or a long one. A plate below it read plainly: SET THE PEAL, OR FORCE IT, OR FIND ANOTHER WAY. GUESSING HAS A COST.\nThe three of them studied the ring of pegs. Whatever each of them had learned, on their own climb through the tower, lined up with the marks in front of them now.\n'We could push the pegs to match the code,' Priya said. 'Or force it. Or look for another door. Or just guess.'\nFour choices. Only one felt honest.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_face_correct",
+     "label": "We set the dial with the code",
+     "target": "n_setcorrect"
+    },
+    {
+     "id": "c_face_jam",
+     "label": "We force the dial",
+     "target": "n_setjam"
+    },
+    {
+     "id": "c_face_panel",
+     "label": "We check behind the dial",
+     "target": "n_backpanel"
+    },
+    {
+     "id": "c_face_random",
+     "label": "We just guess a setting",
+     "target": "n_end_timeout"
+    }
+   ]
+  },
+  {
+   "id": "n_setcorrect",
+   "body": "Working from what they'd learned, they matched each peg to the note's pattern: long groove pushed in, short groove left out, one at a time around the ring. Two pegs from the end, the pattern almost broke; Cole caught it, backed up, and reset the last two in the right order.\nThe final peg clicked home. Somewhere deep in the tower, a hidden bolt drew back with a low, satisfied thunk. A section of the dial's brass face swung open like a hatch, showing a narrow stair leading down into the dark.\nNadia let out a breath she hadn't known she was holding. 'We passed,' she said. 'It actually worked.'",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_correct_vault",
+     "label": "We step through the opened way",
+     "target": "n_vault"
+    }
+   ]
+  },
+  {
+   "id": "n_setjam",
+   "body": "Cole leaned his weight on the dial's central peg instead of working the pattern, and for a second it seemed to give. Then something inside caught with a grinding clunk, and the whole ring locked stiff.\n'It jammed,' he said, wincing. 'Sorry.'\n'It's not broken,' Priya said, crouching to look. 'It's protecting itself.' Down by the dial's base, a small cradle held the mechanism's safety catch, sprung tight. She eased it free and let the cradle settle back to rest. The ring loosened under her hand, free again to turn.\n'Forcing it never was going to work,' Nadia said, not unkindly. 'Good thing it just wants a proper try instead.'",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_jam_oil",
+     "label": "We fix the jam and try again",
+     "target": "n_vault"
+    },
+    {
+     "id": "c_jam_stuck",
+     "label": "We stop for tonight",
+     "target": "n_end_stuck"
+    }
+   ]
+  },
+  {
+   "id": "n_backpanel",
+   "body": "Instead of touching the pegs, Nadia crouched and ran her hand along the dial's brass rim. Low on the back, a thin seam marked a hidden panel. It swung open on a stiff hinge, revealing a second, smaller ring of pegs tucked inside, no bigger than a saucer.\nA short row of marks ran beside it, long and short, plainly the same code, just fewer of them. Cole worked it out fast with what he already knew.\n'Vane built two tests,' Priya said, grinning. 'One for anyone who looks, one for anyone who looks twice.'\nBehind the little panel, two passages led onward, both waiting to be chosen.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_panel_vault",
+     "label": "We take the way to the strongroom",
+     "target": "n_vault"
+    },
+    {
+     "id": "c_panel_secret",
+     "label": "We take the way to the hidden room",
+     "target": "n_end_secret"
+    }
+   ]
+  },
+  {
+   "id": "n_vault",
+   "body": "The stair ended in a small stone chamber, quiet and cool. On a plain table sat a folded letter addressed to nobody in particular, and beside it, Josiah Vane's own marking chisel, still oiled as though he meant to use it again tomorrow.\nNadia unfolded the letter carefully. It was short, warm, and asked nothing of whoever read it: only that they decide what to do with what they'd found.\n'We could bring this to town,' Cole said slowly. 'Or keep it between us. Or...' He didn't finish that thought out loud.\nThe trial, it turned out, hadn't ended at the dial. This last question was theirs alone to answer.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_vault_share",
+     "label": "We bring the letter to town",
+     "target": "n_end_hero"
+    },
+    {
+     "id": "c_vault_keep",
+     "label": "We keep the letter just between us",
+     "target": "n_end_keepsake"
+    },
+    {
+     "id": "c_vault_grab",
+     "label": "We take it all for ourselves",
+     "target": "n_end_caught"
+    }
+   ]
+  },
+  {
+   "id": "n_end_library",
+   "body": "They stayed. Hour by hour, the ledgers gave up their secrets: casting weights, peal patterns, notes in Vane's own hand about bells never finished. Sunlight through the coloured transom crept across the floor and finally faded to dusk.\nNear the bottom of one stack, Priya found a folded page: a full copy of the very note pinned to the door outside, clean and uncreased.\n'We can take this home,' she said. 'Work the whole thing out properly, no rushing.'\nNobody minded leaving the dial for another day. The pattern room had taught them plenty, and the tower, sealed again behind them, would still be waiting whenever they came back.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_library",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Words Worth Waiting For"
+   }
+  },
+  {
+   "id": "n_end_giveup",
+   "body": "Halfway across the catwalk, Cole's boot skidded on a slick plank. He caught the rail, breath sharp, and went still.\n'That's enough,' Nadia said from the near side. 'We don't have to prove anything today.'\nCole nodded and inched carefully back the way he'd come, testing each board before trusting it. Nobody laughed. Nobody called it failing.\nPriya looked back at the swinging bell-cradles, the tallow-slick planks catching the last of the light. 'Reading it right and walking away,' she said, 'that's its own kind of passing.'\nThey left the catwalk behind, unhurried, already talking about trying it again another day, better prepared.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_giveup",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "A Passed Retreat"
+   }
+  },
+  {
+   "id": "n_end_timeout",
+   "body": "Priya spun the pegs at random, hoping for luck instead of logic. The ring turned easily, too easily, until every peg locked at once with a soft, final click.\nNothing swung open. A tiny flag popped up on the dial's face, red and unmistakable.\n'It's frozen,' Cole said, tugging gently. The ring wouldn't budge.\nFenn's voice carried up the stair a minute later, unbothered, like he'd expected this exact thing. 'Guessing trips the safeguard every time. Only I can reset it now.'\nThey climbed down, a little sheepish, already agreeing: next time, they'd read the code properly instead of hoping the dial wouldn't notice.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_timeout",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Frozen Dial"
+   }
+  },
+  {
+   "id": "n_end_stuck",
+   "body": "Even after the safety catch reset, the dial's ring wouldn't turn true. Something inside had bent when Cole forced it, just enough to bind.\n'It needs a proper tool,' Nadia said, peering into the mechanism. 'Something none of us brought.'\nCole didn't argue. 'My fault. We'll come back with the right one.'\nNo one blamed him twice. They climbed back down through the quiet tower, already listing what they'd need: a small wrench, patience, and a plan that didn't involve forcing anything.\nThe dial would still be there tomorrow, unhurried by their leaving, waiting for a second attempt done properly.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_stuck",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Tomorrow's Proper Try"
+   }
+  },
+  {
+   "id": "n_end_secret",
+   "body": "The unlisted passage opened into a small workshop, untouched since the day Vane locked the tower. Every casting tool hung racked and labeled, oiled and ready, as if he'd only stepped out for lunch thirty years ago.\nOn the bench lay a short note in his handwriting: whoever found this room, it said, should keep it running.\n'He was waiting for someone,' Priya said quietly.\nThey looked at each other, then at the ready tools, and understood what the room was actually asking. Not to take anything. To come back.\nThey swept the floor before they left, already planning their next visit, caretakers of a workshop that felt wide awake again.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_secret",
+    "valence": "positive",
+    "kind": "success",
+    "title": "A Room Wide Awake"
+   }
+  },
+  {
+   "id": "n_end_hero",
+   "body": "They carried the letter down to town themselves, straight to the square where old-timers still remembered the sound of Vane's bells. Fenn read it aloud from the foundry steps, his voice steadier than usual.\nThe letter named names, thanked a whole town for years of trust, and asked only that the bells be remembered kindly. By evening, word had traveled to every house in earshot.\nPeople stopped the three of them in the street for days after, wanting to hear it again. Nobody offered them a reward, and nobody needed to. Vane's foundry, and Vane himself, belonged to the whole town again, properly remembered at last.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_hero",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Town Remembers"
+   }
+  },
+  {
+   "id": "n_end_keepsake",
+   "body": "They read the letter together, once, twice, then folded it back exactly as they'd found it and set it back on the table. The chisel stayed too, oiled and waiting, beside it.\n'Nobody needs to know we were even here,' Nadia said. 'We know. That's enough.'\nThey locked the chamber door behind them and left the tower quiet, the way Vane had left it. Walking home in the last of the daylight, none of them said much. They didn't need to.\nWhatever passing that dial meant, it belonged to the three of them now, a private kind of proof, sworn without a single word.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_keepsake",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Proof Kept Quiet"
+   }
+  },
+  {
+   "id": "n_end_caught",
+   "body": "Cole reached for the chisel, meaning to pocket it, just for a closer look. His fingers brushed a thin wire strung low across the table, and out in the yard a hand bell rang, sudden and clear.\nThe three of them froze, then Cole thought better of it and set the chisel back down himself, hands a little unsteady. They were still putting the letter straight when footsteps crossed the yard. Fenn stepped into the doorway, unsurprised, arms folded.\n'Rigged that trip thirty years back,' he said. 'For exactly this.'\nSheepish, they finished setting everything right while he watched. 'Test's not over till you put it back,' Fenn said. 'You just did.'",
+   "is_ending": true,
+   "ending": {
+    "id": "e_caught",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Rung Out in Time"
+   }
+  }
+ ]
+}

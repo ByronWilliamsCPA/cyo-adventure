@@ -1,0 +1,111 @@
+{
+ "n_keeper": {
+  "access_route": {
+   "text": "the lock-warden rows them across and lets them in through the winch loft, oar over shoulder",
+   "kind": "trusted_escort"
+  }
+ },
+ "n_open": {
+  "cipher_form": {
+   "text": "tide arithmetic: add the moon day to the posted hour and carry past twelve to read each hoist",
+   "kind": "clock_arithmetic"
+  }
+ },
+ "n_note": {
+  "access_route": {
+   "text": "the dry sluice culvert, walkable at low water since the new channel took the flow",
+   "kind": "service_route"
+  }
+ },
+ "n_door": {
+  "access_route": {
+   "text": "winding the tide engine's counterweight to its top mark lifts the winch loft hatch ajar",
+   "kind": "mechanism_operated"
+  }
+ },
+ "n_stairs": {
+  "curiosity": {
+   "text": "toll ledgers in waterproof bindings, every cargo and flood of eighty years ruled in red",
+   "kind": "written_record"
+  },
+  "hint_carrier": {
+   "text": "the weir gates sluice in a repeating run, long, long, short, the same run the flags spell",
+   "kind": "pattern_in_mechanism"
+  }
+ },
+ "n_study": {
+  "curiosity": {
+   "text": "generations of keepers' initials scratched shoulder-high along the catwalk door frame",
+   "kind": "community_memory"
+  },
+  "hint_carrier": {
+   "text": "hand-polish on the hoist levers, deepest where the right pulls land, faint where they never do",
+   "kind": "wear_pattern"
+  }
+ },
+ "n_pendulum": {
+  "hint_carrier": {
+   "text": "depth figures stamped up the engine racks, climbing by the same carry the hoists use",
+   "kind": "engraved_numbers"
+  },
+  "obstacle": {
+   "text": "the unlit tail-race tunnel, dry underfoot and black, walked by counting paces between light wells",
+   "kind": "dark_passage"
+  }
+ },
+ "n_basement": {
+  "curiosity": {
+   "text": "a grey heron that keeps evening watch from the gate beam and minds visitors not at all",
+   "kind": "resident_creature"
+  },
+  "hint_carrier": {
+   "text": "a gate cross-section pinned in the winch loft, its margins working tide sums beside each hoist",
+   "kind": "maker_diagram"
+  }
+ },
+ "n_setjam": {
+  "remedy": {
+   "text": "the posted rule at the racks: ease back a quarter turn before asking a full one",
+   "kind": "knowledge_applied"
+  }
+ },
+ "n_vault": {
+  "contents": {
+   "text": "a tiny working river model, its fingernail gates opening on a true tide",
+   "kind": "handmade_keepsake"
+  }
+ },
+ "n_end_secret": {
+  "loft_signature": {
+   "text": "a rooftop reed garden still green, watered by a cistern drip the engineer rigged to last",
+   "kind": "living_thing_tended"
+  },
+  "mechanism": "some unfinished work in the room invites their hands, and finishing it becomes their standing assignment"
+ },
+ "n_end_caught": {
+  "safeguard": {
+   "text": "fine river silt dusted on the strongroom floor keeps every footprint for the warden's morning read",
+   "kind": "tell_tale_mark"
+  },
+  "mechanism": "what they try to carry out is exactly what the trial was built to catch on the way down"
+ },
+ "n_end_library": {
+  "mechanism": "the archive teaches them what the trial was really testing, arming a wiser second attempt"
+ },
+ "n_end_giveup": {
+  "mechanism": "one friend names the real risk aloud and the others agree without argument, calling it a passed test of judgment"
+ },
+ "n_end_timeout": {
+  "mechanism": "the overworked mechanism raises a polite fuss that brings the keeper up to end the attempt for the night"
+ },
+ "n_end_stuck": {
+  "mechanism": "the forced dial binds fast, and nothing they carry tonight will answer for it"
+ },
+ "n_end_hero": {
+  "mechanism": "the passing earns the keeper's open trust and a standing invitation back to the tower"
+ },
+ "n_end_keepsake": {
+  "mechanism": "a pact sworn over the keepsake binds the friends as the trial's private graduates"
+ },
+ "label_style": "terse imperatives, three words where possible"
+}
