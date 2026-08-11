@@ -4197,6 +4197,13 @@ validator treats a missing entry there as a build failure.</p>
 <td>5</td>
 <td>unscheduled</td>
 </tr>
+<tr>
+<td>UW-A56</td>
+<td><strong>Two designs exist for ADR-018's 16 CFR 312.5&copy; consent record, and the narrower one shipped by default rather than by decision.</strong> What is live on <code>main</code> is <code>kws_verification</code> (migration <code>20260809130000</code>), a KWS-specific table: status set <code>sent</code>/<code>verified</code>/<code>failed</code>, vendor config captured as a single <code>enabled_methods</code> JSONB, one resolution-pairing constraint, and no column naming which verification method produced the row. PR #681 builds on it, adding <code>user.consent_verification_id</code> whose foreign key points at <code>kws_verification(id)</code>; the column name therefore promises a generality the referenced table does not have, which is the specific thing that will mislead the next reader. The alternative was authored and never opened as a PR: a method-agnostic <code>consent_verification</code> table carrying <code>method</code> constrained to <code>typed_name_legacy</code>/<code>kws_pv</code>/<code>stripe_card</code>, a four-value status adding <code>pending</code> and <code>expired</code>, and the evidence columns a consent record actually needs under 312.5&copy; (<code>method_config_snapshot</code>, <code>config_version</code>, <code>policy_version</code>, <code>evidence</code>), plus two constraints the shipped table has no equivalent of: completion pairing, and snapshot-required-when-verified. <strong>Nothing is broken today and nothing is blocked</strong>; the cost lands the moment a second verification method is added, because the shipped shape has no column to distinguish one method's rows from another's and no place to record the configuration that produced a given verification. <strong>To decide</strong>: whether <code>kws_verification</code> is the permanent model, whether the generalized table replaces it, or whether the shipped table is widened in place; and, if either of the latter, the shipped <code>consent_verification_id</code> column name and its FK target must be reconciled at the same time. Two mechanical constraints for whoever rules: the parked migration is stamped <code>20260808000000</code>, which sorts before four migrations already applied on <code>main</code>, so adopting it as authored means an out-of-order migration and it must be restamped; and the parked branch is local-only, preserved at tag <code>archive/consent-verification-record</code> (<code>f45c91be</code>) rather than on a remote. Owner to rule: the project owner, jointly with whoever holds the privacy-compliance role, alongside the still-open VPC method decision that <code>UW-N02</code> and <code>UW-A52</code> already track, since the method set that decision produces is exactly what the <code>method</code> column would have to enumerate.</td>
+<td>018</td>
+<td>7</td>
+<td>decision</td>
+</tr>
 </tbody>
 </table>
 <h2 id="cluster-b-debt-register-phase-linkage">Cluster B: debt-register phase linkage<a class="headerlink" href="#cluster-b-debt-register-phase-linkage" title="Permanent link">&para;</a></h2>
@@ -7152,7 +7159,7 @@ have to re-derive them.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 11, 2026 16:36:17 UTC">August 11, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 11, 2026 17:19:30 UTC">August 11, 2026</span>
   </span>
 
     
