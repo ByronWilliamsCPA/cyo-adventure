@@ -42,6 +42,21 @@ const TOO_MANY =
   'That is as many verification emails as we can send for now. Please check your inbox, including spam, and try again later.'
 
 /**
+ * Copy for the refusals that retrying cannot clear.
+ *
+ * 400 covers all three of the endpoint's permanent 400s (KWS not configured on
+ * this deployment, no `User` row yet, no email address on file) and 403 covers
+ * its two authorization refusals. None of them changes on a second attempt, so
+ * START_ERROR's "Please try again" is actively wrong here: it sends a parent
+ * into a retry loop that cannot terminate, and hides the fact that somebody
+ * else has to act. The message stays deliberately non-specific about which of
+ * the five it was, because the distinctions are operator-facing and the
+ * response body does not carry the rule code to the browser anyway.
+ */
+const CANNOT_SEND =
+  'We are not able to send a verification email for this account. Trying again will not help, so please contact support.'
+
+/**
  * The KWS parent-verification interstitial (ADR-018 D1), shown to an adult in
  * AuthStatus 'needs-verification'. Two faces behind one route:
  *
@@ -147,6 +162,19 @@ export function GuardianVerificationPage() {
     } catch (err) {
       console.error('verification start failed:', err instanceof Error ? err.message : err)
       setError(messageForStartError(err))
+    } finally {
+      // #ASSUME: ui-state: cleared in `finally`, not only in `catch`. On the
+      // happy path this component re-renders into its waiting face, so nothing
+      // reads `busy` again and the extra set is a no-op; the branch that
+      // matters is a start that resolves WITHOUT verificationStatus becoming
+      // 'pending' (a re-resolve that read a stale answer, or an onboarding
+      // round trip that failed after the send already succeeded). Clearing
+      // only in `catch` leaves that parent on a form frozen at 'Sending…'
+      // forever, with no error text and no way to retry. The component is
+      // still mounted at this point in both branches, so this is not a
+      // set-after-unmount.
+      // #VERIFY: GuardianVerificationPage.test.tsx
+      // 'a start that does not move the status leaves the form usable'.
       setBusy(false)
     }
   }
@@ -224,21 +252,31 @@ export function GuardianVerificationPage() {
 /**
  * Turns a failed start into something a waiting parent can act on.
  *
- * 409 and 429 are the endpoint's deliberate refusals, not faults, and both
- * mean an email either is already on its way or has been recently. Reporting
- * the generic "could not send" for them is the specific failure worth
- * avoiding here: it tells a parent to expect nothing, so they stop watching
- * the inbox that already holds their link.
+ * Every status this diverts is a deliberate refusal rather than a fault, and
+ * each one is misreported by the generic "could not send. Please try again":
+ *
+ * - 409 and 429 mean an email either is already on its way or has been sent
+ *   recently. Telling a parent to expect nothing is the specific failure worth
+ *   avoiding, because they stop watching the inbox that already holds their
+ *   link.
+ * - 400 and 403 mean no email is coming from this account at all, ever. Here
+ *   the harm runs the other way: "try again" invites an unbounded retry loop
+ *   against a condition only an operator can clear.
+ *
+ * Everything else falls through to classifyApiError, which is the right home
+ * for genuinely transient faults; those are the only cases where retrying is
+ * honest advice.
  *
  * #ASSUME: data-integrity: reads the status code off an axios-shaped error
  * without narrowing the type, because classifyApiError already owns the
- * type-safe fallback for everything else; this only diverts the two codes it
+ * type-safe fallback for everything else; this only diverts the codes it
  * recognises and hands the rest straight back.
- * #VERIFY: GuardianVerificationPage.test.tsx 409/429/500 message cases.
+ * #VERIFY: GuardianVerificationPage.test.tsx 400/403/409/429/500 message cases.
  */
 function messageForStartError(err: unknown): string {
   const status = (err as { response?: { status?: number } }).response?.status
   if (status === 409) return ALREADY_SENT
   if (status === 429) return TOO_MANY
+  if (status === 400 || status === 403) return CANNOT_SEND
   return classifyApiError(err, { transient: START_ERROR, server: START_ERROR }).message
 }

@@ -185,6 +185,48 @@ describe('GuardianVerificationPage start form', () => {
     const alert = await screen.findByRole('alert')
     expect(alert).not.toHaveTextContent(/already emailed you/i)
     expect(alert).not.toHaveTextContent(/as many verification emails/i)
+    // Positively assert the retry advice. Without this the case is satisfied
+    // by any message at all, including the permanent-refusal copy below, which
+    // would be exactly wrong for a fault that a second attempt may well clear.
+    expect(alert).toHaveTextContent(/try again/i)
+  })
+
+  it.each([400, 403])(
+    'does not invite a retry the endpoint will refuse again (%i)',
+    async (status) => {
+      // Neither status changes on a second attempt: 400 is an unconfigured
+      // tier or an account with no row and no address, 403 is a child or
+      // deactivated caller. "Please try again" would send a parent into a
+      // retry loop that cannot terminate and hide that somebody else has to
+      // act.
+      mockStartVerification.mockRejectedValue(refusal(status))
+      renderWithRouter()
+      chooseCountry()
+
+      fireEvent.click(screen.getByRole('button', { name: 'Email me a verification link' }))
+
+      const alert = await screen.findByRole('alert')
+      expect(alert).toHaveTextContent(/trying again will not help/i)
+      expect(alert).not.toHaveTextContent(/please try again\./i)
+    }
+  )
+
+  it('leaves the form usable when a start resolves without moving the status', async () => {
+    // The gap that `finally` closes. startVerification resolves, so nothing
+    // is thrown, but verificationStatus stays 'none' (a re-resolve that read
+    // a stale answer, or an onboarding round trip that failed after the send
+    // succeeded), so the component never re-renders into its waiting face.
+    // Clearing `busy` only in `catch` freezes this parent on 'Sending…'
+    // forever, with no error text and no way to retry.
+    mockStartVerification.mockResolvedValue(undefined)
+    renderWithRouter()
+    chooseCountry()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Email me a verification link' }))
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Email me a verification link' })).toBeEnabled()
+    })
   })
 
   it('re-enables the button after a refusal so the parent can retry', async () => {
