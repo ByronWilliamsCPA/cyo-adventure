@@ -103,11 +103,21 @@ jobs:
         id: probe
         env:
           TIER: ${{ matrix.tier }}
+          # Both secrets are passed through and the tier is selected in shell,
+          # deliberately, rather than with a `matrix.tier == 'staging' && A ||
+          # B` expression. GitHub's `&&`/`||` are value-returning, not boolean:
+          # when the left operand is truthy but A is an EMPTY string, the
+          # expression falls through to B. So the ternary form silently hands
+          # the STAGING leg the PRODUCTION URL the moment
+          # E2E_STAGING_BASE_URL is unset, renamed, or scoped to an
+          # environment this job did not name. The probe then reports
+          # production's health under the staging tier and the `-z` guard
+          # below can never fire, which is the worst failure a monitor has:
+          # confidently green about a tier nobody looked at.
+          STAGING_BASE_URL: ${{ secrets.E2E_STAGING_BASE_URL }}
           # Staging has no public literal to fall back to; production does.
-          BASE_URL: >-
-            ${{ matrix.tier == 'staging'
-                && secrets.E2E_STAGING_BASE_URL
-                || (secrets.E2E_PROD_BASE_URL || 'https://cyo.williamshome.family') }}
+          PROD_BASE_URL: ${{ secrets.E2E_PROD_BASE_URL }}
+          PROD_FALLBACK_URL: https://cyo.williamshome.family
           # Until when a `missing` check on production is a notice rather than
           # a failure. Production runs a build that predates the
           # kws_verification readiness check, and nothing in this PR pairs
@@ -135,6 +145,15 @@ jobs:
           record() {
             printf '%s\t%s\t%s\n' "${TIER}" "$1" "${2:-}" > "outcome-${TIER}.tsv"
           }
+
+          # No cross-tier fallback: staging resolves to staging's secret or to
+          # nothing at all, so an unset secret reaches the skip branch below
+          # instead of quietly probing the other tier.
+          if [ "${TIER}" = "staging" ]; then
+            BASE_URL="${STAGING_BASE_URL}"
+          else
+            BASE_URL="${PROD_BASE_URL:-${PROD_FALLBACK_URL}}"
+          fi
 
           if [ -z "${BASE_URL}" ]; then
             record no-base-url "no base URL configured"
