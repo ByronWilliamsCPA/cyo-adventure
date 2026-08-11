@@ -70,6 +70,25 @@ def _load(path: str) -> dict[str, Any] | None:
     return data
 
 
+def _defers_titles(skeleton: dict[str, Any]) -> bool:
+    """Return whether the skeleton wrote any title as a FILL directive.
+
+    Args:
+        skeleton: The decoded skeleton.
+
+    Returns:
+        True when the storybook title or any ending title is an unfilled
+        directive, meaning the fill is expected to author it.
+    """
+    if "<<FILL" in str(skeleton.get("title") or ""):
+        return True
+    return any(
+        "<<FILL"
+        in str(cast("dict[str, Any]", node.get("ending") or {}).get("title") or "")
+        for node in cast("list[dict[str, Any]]", skeleton.get("nodes") or [])
+    )
+
+
 def _strip_leaf_fields(
     story: dict[str, Any], *, allow_title_rewrite: bool = False
 ) -> dict[str, Any]:
@@ -183,12 +202,27 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     failed = False
 
+    # A field the skeleton itself wrote as a FILL directive is fillable by
+    # definition, so titles must not be compared when the skeleton defers them.
+    # Every shell in the diversity programme has deferred its title since a
+    # skeleton `id` leaked one book title into three arms (AL-207), and this
+    # checker reported a structural FAIL on every correct fill until the flag
+    # was passed by hand, which read like a serious defect and was not one
+    # (AL-224). Deriving it removes a step nobody can be relied on to remember.
+    defers_titles = _defers_titles(skeleton)
+    allow_title_rewrite = args.allow_title_rewrite or defers_titles
+    if defers_titles and not args.allow_title_rewrite:
+        sys.stdout.write(
+            "note  titles: the skeleton defers its title as a FILL directive, so "
+            "title differences are expected and are not compared\n"
+        )
+
     canonical_skeleton = json.dumps(
-        _strip_leaf_fields(skeleton, allow_title_rewrite=args.allow_title_rewrite),
+        _strip_leaf_fields(skeleton, allow_title_rewrite=allow_title_rewrite),
         sort_keys=True,
     )
     canonical_filled = json.dumps(
-        _strip_leaf_fields(filled, allow_title_rewrite=args.allow_title_rewrite),
+        _strip_leaf_fields(filled, allow_title_rewrite=allow_title_rewrite),
         sort_keys=True,
     )
     if canonical_skeleton != canonical_filled:
