@@ -1,0 +1,423 @@
+{
+ "schema_version": "2.0",
+ "id": "d6",
+ "version": 1,
+ "title": "One Satchel, One Night",
+ "metadata": {
+  "age_band": "10-13",
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 5.5,
+   "tolerance": 1.5
+  },
+  "tier": 1,
+  "themes": [
+   "mystery",
+   "puzzles",
+   "friendship",
+   "history"
+  ],
+  "estimated_minutes": 18,
+  "ending_count": 8,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "mild",
+   "peril": "mild"
+  },
+  "topology": "branch_and_bottleneck",
+  "production_eligible": false
+ },
+ "variables": [],
+ "start_node": "n_open",
+ "nodes": [
+  {
+   "id": "n_open",
+   "body": "The old Bellhollow Playhouse has stood shuttered for years. Boards cover its windows, and dust covers the boards. Its stage door still wears cracked green paint, but the chalk marks across it look new. Priya, Dez, and Wyn stop to read them. It is a dare, signed with one small drawn knot instead of a name. Everyone in town knows that knot; it belonged to Corrin Vane, the puppet-maker who once ran this stage. Beside the dare hangs a plain wooden sign. It says the doors close when the Hollow Bell tolls nine, and not one minute after. The three friends look at each other and shake on it. Whatever the dare costs tonight, they will pay it together.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_open",
+     "label": "Spend the night, take the dare",
+     "target": "n_start"
+    }
+   ]
+  },
+  {
+   "id": "n_start",
+   "body": "The dare is easy to accept and hard to start. Above the chalk, faded playbill pages sit pinned under glass, their edges scrawled with tiny notes. Beside the stage door, a side door sits swollen shut in its frame. Down the lane, a small window glows: the caretaker, Nan Ferris, is still awake. Priya wants to read the notes first. Dez wants to try the stuck door alone. Wyn wants to knock and ask. Each path spends something different: time on the notes, effort on the door, or pride on the ask. Above the square, the Hollow Bell has already started its slow count toward nine.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_examine",
+     "label": "Spend time, trust the notes",
+     "target": "n_note"
+    },
+    {
+     "id": "c_door",
+     "label": "Spend effort, force it alone",
+     "target": "n_door"
+    },
+    {
+     "id": "c_keeper",
+     "label": "Spend pride, ask for help",
+     "target": "n_keeper"
+    }
+   ]
+  },
+  {
+   "id": "n_note",
+   "body": "Priya works the playbill notes line by line. Someone, long ago, tied tiny knots into thread and pinned them beside the printed words: three loops, one hitch, two loops. It is Vane's knot-code, and the first line reads plain once she slows down: brick, third from the ground, behind the ivy. That single line names a real spot, a loose brick hiding a small brass key. The friends pack their one shared satchel for the climb ahead. It has room for the key and little else. Wyn's spare notebook pages stay on the shelf by the door; there is no space to carry paper they will not need tonight.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_note_key",
+     "label": "Spend the last minutes, be certain",
+     "target": "n_keyhunt"
+    },
+    {
+     "id": "c_note_inside",
+     "label": "Spend certainty, move now",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_door",
+   "body": "Dez plants both hands on the side door and pushes. It is swollen shut, not locked, just stuck fast in a warped frame after years of rain. No knot-code, no notes, just muscle and patience. The door groans, then gives an inch, then two. Whatever opens it will be Dez's own work, nobody else's. The friends fill their one satchel for whatever waits behind it, and the crowbar Dez packed stays leaning on the shelf outside; a door built to be pushed does not need to be pried. The Hollow Bell tolls once, marking the half hour, and the door has still not opened.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_door_force",
+     "label": "Spend one more shove, finish it",
+     "target": "n_inside"
+    },
+    {
+     "id": "c_door_window",
+     "label": "Spend the door, try the window instead",
+     "target": "n_window"
+    }
+   ]
+  },
+  {
+   "id": "n_keeper",
+   "body": "Wyn knocks on the caretaker's window. Nan Ferris opens it, arms crossed, and looks the three of them over slowly. \"You want the dare,\" she says, not a question. She asks three sharp questions about why, and Wyn answers straight, no bragging. Something in Nan's face eases. She fetches a ring of keys and a spare lantern, but she only offers the one lantern; the second stays hooked on her wall, and the friends leave it there. \"I'll walk you to the door myself,\" she says. \"That's the only way in I'll give you.\" Behind them, the Hollow Bell tolls the half hour.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_keeper_enter",
+     "label": "Spend nothing more, go now",
+     "target": "n_inside"
+    },
+    {
+     "id": "c_keeper_story",
+     "label": "Spend a few minutes, hear her out",
+     "target": "n_keeper_story"
+    }
+   ]
+  },
+  {
+   "id": "n_keyhunt",
+   "body": "The brick is exactly where the knot-code said: third from the ground, cool under a curl of ivy. Behind it sits a small brass key, worn smooth by other hands long ago. Priya turns it over once. The marginalia's toll was real: minutes spent reading, paid in full, and now the key proves it was not wasted. She fits the key against a hidden panel by the stage door, and it turns clean. That is the last of the errand's spare minutes gone, but the friends step through knowing, for certain, that their patience worked. Behind them, the Hollow Bell tolls the half hour.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_keyhunt_in",
+     "label": "Spend the key, step through",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_keeper_story",
+   "body": "Nan leans against the doorframe and tells it plain. Corrin Vane built these dares years ago, not to trick anyone, but to find people worth trusting with his stage. \"He always said a dare tests patience more than nerve,\" she says. \"He wanted finders, not showoffs.\" She does not say what waits past the stage door, only that Vane meant it kindly. The story costs real time; the Hollow Bell has already tolled the half hour, and Nan's voice is unhurried in a way the clock is not. When she finishes, she nods toward the door. \"Go on, then. You've earned the asking.\"",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_story_in",
+     "label": "Spend the story's minutes, step through",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_window",
+   "body": "Dez studies the high window above the stuck door. It sits over a stack of old crates, close enough to reach in three careful steps. Priya braces the bottom crate; Wyn spots from below with both hands ready. Dez climbs, tests each hold, and swings a leg over the sill. It works, but it is slow going, careful going, and every careful second belongs to the Hollow Bell now, not to them. Dez drops down inside and unbolts the door from within. Grit proved itself, the way Dez meant it to, at the cost of nearly all the time patience would have saved.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_window_in",
+     "label": "Spend the climb, land inside",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_inside",
+   "body": "Backstage, the air smells like dust and old rope. The one shared satchel already holds what it took to get this far, and little else fits easily. Ahead, four ways open into the dark: a rigging loft climbing straight up, a playbill archive lined with shelves, a narrow catwalk crossing high overhead, and a stairway down into the understage. Each one tests something different: stamina, patience, nerve, or steadiness. Each one will spend some of the night to prove it. The Hollow Bell has already tolled the half hour. The choosing itself is free; everything after it costs something.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_inside_stairs",
+     "label": "Spend stamina, climb the loft",
+     "target": "n_stairs"
+    },
+    {
+     "id": "c_inside_study",
+     "label": "Spend time, read the archive",
+     "target": "n_study"
+    },
+    {
+     "id": "c_inside_pendulum",
+     "label": "Spend nerve, cross the catwalk",
+     "target": "n_pendulum"
+    },
+    {
+     "id": "c_inside_basement",
+     "label": "Spend composure, walk the dark",
+     "target": "n_basement"
+    }
+   ]
+  },
+  {
+   "id": "n_stairs",
+   "body": "The rigging loft climbs in tight wooden switchbacks. Halfway up, a diagram of the loft's rigging hangs pinned to the wall, its ropes and pulleys marked in knot-code: which rope moves which lever below. Priya traces it with a finger until the pattern makes sense. Tucked in the rafters above, a small hand-carved wooden mask watches the stairs, one of Vane's own, forgotten mid-project. Wyn pockets nothing; looking is enough. The climb tires their legs and takes real time. By the top step, the Hollow Bell has tolled twice more, and the night is noticeably shorter than when they started. Still, they carry a working sense of the code now, earned the hard way.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_stairs_face",
+     "label": "Spend the climb's proof, face the bridge",
+     "target": "n_clockface"
+    }
+   ]
+  },
+  {
+   "id": "n_study",
+   "body": "The playbill archive is cool and quiet, shelves packed floor to ceiling. An old rehearsal ledger lies open on the reading table, its margins dense with knot-code notes: the richest key in the whole playhouse. Dez reads it twice to be sure. On a side shelf, a small music box sits still wound, ready to play if anyone lifts the lid. It would be easy to stay here all night; the archive is genuinely worth losing an hour to. The Hollow Bell tolls again, closer now. Reading the ledger already spent real minutes, and every minute more spent here is one the bridge will not get back.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_study_face",
+     "label": "Spend what's left, leave for the bridge",
+     "target": "n_clockface"
+    },
+    {
+     "id": "c_study_logs",
+     "label": "Spend the rest of the hour here",
+     "target": "n_end_library"
+    }
+   ]
+  },
+  {
+   "id": "n_pendulum",
+   "body": "The narrow catwalk runs high above the stage, just wide enough for careful feet, with a rail on one side only. Along that rail, years of hands have worn the paint down into a pattern: knot-code, pressed into the wood by hundreds of careful crossings. Wyn reads it from the safe end, no need to cross yet. At the far side, something small and bright sits balanced on the last rail post, clearly left there on purpose. Crossing means real risk, a wobble, maybe a long walk back if nerve fails, nothing worse. It also means more time spent and more nerve spent, on a rail already this high above a night already running short.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_pendulum_oil",
+     "label": "Spend nerve and time, cross for it",
+     "target": "n_clockface"
+    },
+    {
+     "id": "c_pendulum_giveup",
+     "label": "Spend nothing more, turn back now",
+     "target": "n_end_giveup"
+    }
+   ]
+  },
+  {
+   "id": "n_basement",
+   "body": "The understage is dim and close, lit only by a crack of gray light from above. Down among the floor joists, the wood is cut in a careful, repeating pattern of pegs and notches: knot-code again, worked right into the beams themselves. Dez reads it by feel as much as sight. In the corner, a large pale moth clings to a support post, its wings dusted silver, utterly still. Wyn watches it a moment, then lets it be. The dark asks for steadiness, not speed, and steadiness still takes time to hold. When they finally climb back toward the light, the Hollow Bell has tolled again, closer than before.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_basement_face",
+     "label": "Spend the dark's proof, face the bridge",
+     "target": "n_clockface"
+    }
+   ]
+  },
+  {
+   "id": "n_clockface",
+   "body": "The control bridge spans the stage below, a narrow walkway lined with levers. Each lever is stamped with a small knot, and the friends' working sense of the code lines up with the marks, if they read carefully. A hand-lettered plate reads: set them true, or pay for setting them wrong. Forcing a lever might work fast, but it might also snap something no amount of time tonight can fix. A side panel, half-hidden, hints at another way through, slower and stranger. The Hollow Bell tolls again, close now, only a few tolls left before nine. Whatever they choose next, the bridge will grade it honestly.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_face_correct",
+     "label": "Spend focus, set them true",
+     "target": "n_setcorrect"
+    },
+    {
+     "id": "c_face_jam",
+     "label": "Spend force, bet on muscle",
+     "target": "n_setjam"
+    },
+    {
+     "id": "c_face_panel",
+     "label": "Spend the last minutes, search instead",
+     "target": "n_backpanel"
+    },
+    {
+     "id": "c_face_random",
+     "label": "Spend a guess, hope the bell is slow",
+     "target": "n_end_timeout"
+    }
+   ]
+  },
+  {
+   "id": "n_setcorrect",
+   "body": "Priya reads the first lever's knot, matches it to the pattern from the loft, and sets it true. Dez does the second, checking it against the ledger's margin notes. Wyn sets the third, slow and certain. Each lever clicks into place with a small, solid sound, no force needed, nothing straining against itself. A hidden catch releases somewhere below the walkway, quiet as a held breath let go. The bridge recognizes them; nothing about it had to break to let them through. Getting it right cost only care and the minutes already spent earning it, and every one of those minutes was worth this exact click.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_correct_vault",
+     "label": "Spend nothing more, step through",
+     "target": "n_vault"
+    }
+   ]
+  },
+  {
+   "id": "n_setjam",
+   "body": "Impatient, Dez leans hard on the second lever instead of reading it. For a second it seems to work. Then something inside the mechanism gives with a sharp crack, and the lever goes loose in Dez's hand. It will not reset, not tonight, not with any amount of trying. The friends stand still a moment, more surprised than scared. Priya finds a coil of spare cord and splices it carefully into the broken linkage, the way the loft's diagram showed. The splice holds. It steadies the bridge enough to keep going, but the lever still shows the break, and it always will, however well the splice was tied.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_jam_oil",
+     "label": "Spend the fix, try it properly",
+     "target": "n_vault"
+    },
+    {
+     "id": "c_jam_stuck",
+     "label": "Spend no more tonight, leave it broken",
+     "target": "n_end_stuck"
+    }
+   ]
+  },
+  {
+   "id": "n_backpanel",
+   "body": "Wyn notices the side panel is not just decoration; it has its own small latch, marked with one more knot. It is a smaller question than the bridge's, quick to answer with what they already know. The panel swings open onto two paths: one leads straight toward wherever the bridge was guarding, the other toward a plain door nobody mentioned, tucked off to the side. Vane clearly built this for careful searchers, not lucky ones. Choosing either path still costs time; the Hollow Bell is close to nine now, and there is no third option that costs nothing.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_panel_vault",
+     "label": "Spend the last patience, go toward the prize",
+     "target": "n_vault"
+    },
+    {
+     "id": "c_panel_secret",
+     "label": "Spend the visit on curiosity instead",
+     "target": "n_end_secret"
+    }
+   ]
+  },
+  {
+   "id": "n_vault",
+   "body": "Past the bridge, a small room holds exactly what Vane meant to protect. On the desk sits his own letter, sealed with wax and a small knot. Beside it, a small carved wooden token rests in a shallow dish, worn smooth like a favorite coin. On the shelf, a faded program lists names from decades of Bellhollow Playhouse shows, some still familiar around town. Nothing here is treasure; all of it is memory. The one satchel is nearly full already, and it plainly cannot hold everything in this room. What the friends choose to carry out, and what they choose to leave, says more about tonight than the bridge ever did.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_vault_share",
+     "label": "Spend privacy, tell the whole town",
+     "target": "n_end_hero"
+    },
+    {
+     "id": "c_vault_keep",
+     "label": "Spend nothing more, keep it close",
+     "target": "n_end_keepsake"
+    },
+    {
+     "id": "c_vault_grab",
+     "label": "Spend the satchel's limit, reach for more",
+     "target": "n_end_caught"
+    }
+   ]
+  },
+  {
+   "id": "n_end_library",
+   "body": "The rehearsal ledger turns out to hold hours more worth reading, and the friends let it. Dez copies one careful page into the satchel, in place of anything else it might have carried tonight; the rest stays on the shelf where it belongs. The Hollow Bell tolls nine, right on schedule, and Nan Ferris finds them still bent over the table. She does not scold. She simply holds the door and walks them out, the copied page safe in Priya's hands. The dare is not finished, but it waits, unbothered, for another night. Tonight's hour went to the archive, and none of them call that a loss.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_library",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Archive Wins"
+   }
+  },
+  {
+   "id": "n_end_giveup",
+   "body": "Wyn looks hard at the narrow catwalk and says what the others are thinking: tonight is not the night to cross it. Nobody argues. The keepsake at the far rail stays where it is, glinting a little in the dim light. Backing away costs them the prize, but it costs nothing else; their nerve and their time both stay theirs, spent on nothing riskier than good sense. The Hollow Bell tolls nine somewhere above the playhouse roof as they head back the way they came. The dare stays open for another night, and saying the risk out loud, together, feels like passing something quieter than a test.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_giveup",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Nerve Saved for Later"
+   }
+  },
+  {
+   "id": "n_end_timeout",
+   "body": "Out of time and out of certainty, Dez guesses at the third lever anyway. It is a fair guess, even a good one, but a guess all the same. Before anyone can check it against the code, the Hollow Bell tolls nine, full and final, and a small safeguard catches the unfinished setting, locking the bridge gently where it stands. Nothing breaks. Nothing is lost but the attempt itself. The friends stand a moment in the settling quiet, more amused than upset. A guess was never going to beat a puzzle built to reward reasoning, and the bell simply arrived first tonight.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_timeout",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Beaten by the Bell"
+   }
+  },
+  {
+   "id": "n_end_stuck",
+   "body": "The snapped lever stays snapped, splice and all; some breaks do not fully unbreak in one night. Outside, the Hollow Bell tolls nine, ending the attempt before the honest fix can finish properly. The friends find Nan Ferris and tell her exactly what happened, no part of it left out. She listens, nods once, and says the bridge has broken before and always gets mended. Nobody is blamed; nobody is scolded. Nan writes the broken lever into her repair book, right under tonight's date, and closes the cover slowly. The dare waits, worse for wear, for another try.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_stuck",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Lever That Broke"
+   }
+  },
+  {
+   "id": "n_end_secret",
+   "body": "Behind the second dare, a small loft opens up, warm with recent use. A workbench sits littered with wood shavings still faintly warm, as if someone had only just stepped away. Vane's own notes, pinned above the bench, name whoever finds this room its keeper, no conditions attached. The friends look at each other, then at the unfinished work waiting on the bench. It is an invitation, not a prize: a standing job, not a haul to carry off. They agree, right there, to come back and finish what was started. The hour it took to find this place is gone either way, but what it bought them keeps going.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_secret",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Keepers of the Loft"
+   }
+  },
+  {
+   "id": "n_end_hero",
+   "body": "The friends carry Vane's letter back into Bellhollow, and within a day, the whole town knows what it says: a small, forgotten piece of the playhouse's history, finally set right. The clearing of the dare is announced properly, and people turn out to hear it. Nan Ferris tells them the playhouse door stays open to them from now on, earned fair. Nothing about the reward is riches; it is trust, made public, which somehow feels bigger. Telling cost them privacy, the one thing that was fully theirs to spend, and they spent it on a truth worth more people knowing.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_hero",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "A Dare Gone Public"
+   }
+  },
+  {
+   "id": "n_end_keepsake",
+   "body": "The friends put everything back exactly where it stood: the letter, the token, the program, each returned to its place. Only the answer leaves with them. Over the small carved token, before setting it back down, they make a quiet promise to each other, sealing the night as fully theirs. Vane's letter had left the choosing to whoever found it, and they choose to keep the passing close, just among the three of them. Nothing is lost by staying quiet; if anything, the quiet is the point. Keeping the secret costs them a story they could have told, and they decide that cost is worth it.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_keepsake",
+    "valence": "positive",
+    "kind": "success",
+    "title": "A Promise Kept Quiet"
+   }
+  },
+  {
+   "id": "n_end_caught",
+   "body": "Dez reaches for one thing too many, more than the satchel was ever built to hold, and a small chime rigged to the counterweights rings out, soft and clear and utterly undramatic. Nan Ferris is at the door before the sound even fades; she was already on her rounds, and the chime just confirmed it. Nobody is shouted at. Everything goes back to its shelf, item by item, while Nan watches with her arms crossed and one eyebrow raised. The real last test was never the bridge; it was knowing when to stop reaching, and tonight, that is the one they failed, kindly and completely.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_caught",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Caught by the Chime"
+   }
+  }
+ ]
+}

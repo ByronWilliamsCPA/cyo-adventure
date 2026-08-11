@@ -1,0 +1,512 @@
+{
+ "schema_version": "2.0",
+ "id": "graph_D",
+ "version": 1,
+ "title": "The Moonbloom Grove",
+ "metadata": {
+  "age_band": "10-13",
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 5.5,
+   "tolerance": 1.5
+  },
+  "tier": 1,
+  "themes": [
+   "nature",
+   "friendship",
+   "mystery",
+   "discovery"
+  ],
+  "estimated_minutes": 20,
+  "ending_count": 7,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "none"
+  },
+  "topology": "branch_and_bottleneck",
+  "production_eligible": false
+ },
+ "variables": [],
+ "start_node": "n_open",
+ "nodes": [
+  {
+   "id": "n_open",
+   "body": "You've just arrived at Camp Pinehollow for the first time, duffel bag slung over one shoulder, when your cabin mate Jules grabs your arm and points past the mess hall. Beyond the tree line, a stretch of forest called the Whispering Grove glows faintly gold in the late afternoon light. The camp director mentioned it briefly at check-in: off-limits after dark, home to some rare plant nobody's photographed in decades, and full of old stories nobody quite agrees on. Jules grins. 'Everyone says something different about what's really out there. Want to find out for ourselves this week?' You nod, already curious. Orientation starts in ten minutes, and you head that way together.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_open",
+     "label": "Head to orientation",
+     "target": "n_orientation"
+    }
+   ]
+  },
+  {
+   "id": "n_orientation",
+   "body": "The counselor, a cheerful high schooler named Priya, gathers your group under the flagpole and lays out the week's options. 'The grove trail is open during daylight hours if you want to explore, but bring a buddy,' she says. 'Camp library has old logbooks from campers going back fifty years, if you're the reading type. Or you could talk to Mr. Alvarez, the groundskeeper. He's worked here longer than anyone and knows every path on this property.' Jules elbows you, clearly ready to pick something. You glance between the trailhead sign, the squat little library building, and Mr. Alvarez raking leaves nearby, trying to decide where your first afternoon should go.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_trail",
+     "label": "Head for the grove trailhead",
+     "target": "n_trailhead"
+    },
+    {
+     "id": "c_lib",
+     "label": "Duck into the camp library",
+     "target": "n_library"
+    },
+    {
+     "id": "c_ground",
+     "label": "Go talk to Mr. Alvarez",
+     "target": "n_groundskeeper"
+    }
+   ]
+  },
+  {
+   "id": "n_trailhead",
+   "body": "The trailhead sign is weathered, its painted arrow pointing into a stand of tall pines. Two routes split off almost immediately: a narrow dirt track scuffed with deer prints, and a wider path that follows the sound of running water downhill. Jules crouches to examine the deer tracks while you listen for the stream. 'Either way gets us closer to the grove eventually,' Jules says, standing back up and brushing pine needles off their knees. 'The deer path looks like it cuts straight through, though. Might be faster.' You weigh speed against curiosity, since the stream sounds like it could lead somewhere interesting of its own.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_deer",
+     "label": "Follow the deer path",
+     "target": "n_deerpath"
+    },
+    {
+     "id": "c_stream",
+     "label": "Follow the stream",
+     "target": "n_streampath"
+    }
+   ]
+  },
+  {
+   "id": "n_library",
+   "body": "The camp library smells like old paper and pine sap. Shelves of dog-eared paperbacks line one wall, but what catches your eye is a locked glass case near the window, stuffed with spiral-bound logbooks going back decades. A librarian named Mr. Foster looks up from his desk. 'Those are camper journals,' he says. 'Kids used to write down everything, including grove sightings. I can pull one out if you're curious, or you can just ask me. I've read most of them twice.' Jules is already tapping the glass case, clearly hoping for the journals themselves rather than a summary, but either choice seems promising.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_journal",
+     "label": "Ask to see an old journal",
+     "target": "n_journal"
+    },
+    {
+     "id": "c_ask",
+     "label": "Ask Mr. Foster what he remembers",
+     "target": "n_librarian"
+    }
+   ]
+  },
+  {
+   "id": "n_groundskeeper",
+   "body": "Mr. Alvarez keeps raking even as you approach, though he clearly notices you. Up close, he's got kind, sun-creased eyes and dirt under his fingernails from forty summers of camp gardens. 'Grove's got a story if you want it,' he says without looking up, 'or you could grab a rake and help me finish this pile before dinner. Working alongside me, I might just tell you more than I would to somebody just standing there asking.' Jules is already reaching for a spare rake leaning against the shed, clearly leaning toward option two, but you notice Mr. Alvarez's eyes crinkle like he's got a good story ready either way.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_story",
+     "label": "Ask him about the grove",
+     "target": "n_groundstory"
+    },
+    {
+     "id": "c_help",
+     "label": "Help him rake leaves",
+     "target": "n_chores"
+    }
+   ]
+  },
+  {
+   "id": "n_deerpath",
+   "body": "The deer path winds tight between tree trunks, low branches brushing your shoulders. It's quieter here, just birdsong and the crunch of dry needles underfoot. After a few minutes you spot something carved into a birch trunk: a small crescent moon, weathered but deliberate, definitely not a natural bark pattern. Jules traces it with one finger. 'Someone marked this on purpose,' they whisper. Following the direction the crescent seems to point, the path bends and the trees start to thin ahead, sunlight pooling in patches on the ground. Whatever's up ahead, the deer path is clearly leading you somewhere specific rather than just wandering.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_edge1",
+     "label": "Keep following the marked path",
+     "target": "n_grove_edge"
+    }
+   ]
+  },
+  {
+   "id": "n_streampath",
+   "body": "The stream path is easier walking, flat stones laid like stepping points along the bank. Water bugs skate across calm pools, and somewhere ahead you can hear the stream narrow and pick up speed. Jules points to a fallen log spanning the water where it narrows: a makeshift bridge, clearly used often given how smooth and packed the dirt is on both ends. 'That has to lead somewhere people actually go,' Jules says. Crossing looks a little wobbly but manageable, and it's the only way to keep following the water instead of turning back the way you came.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_bridge",
+     "label": "Cross the log bridge",
+     "target": "n_bridge"
+    }
+   ]
+  },
+  {
+   "id": "n_bridge",
+   "body": "The log is wider than it looked from a distance, and someone has nailed a thin plank along the top to flatten it out, an old repair job holding up better than you'd expect. You cross carefully, arms out for balance, with Jules right behind you. On the far bank, the stream path picks up again, but so does a fainter trail branching off toward denser trees. A weathered wooden post, half swallowed by moss, has an arrow scratched into it pointing toward the thicker growth. Between the stream and that mossy arrow, it's obvious which way holds more mystery, and you follow the arrow into the shade.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_edge2",
+     "label": "Follow the mossy arrow",
+     "target": "n_grove_edge"
+    }
+   ]
+  },
+  {
+   "id": "n_journal",
+   "body": "Mr. Foster unlocks the case and hands you a journal from 1974, its cover soft with age. Flipping through, you find sketches of a strange flower with silvery petals, notes about it 'only opening under a full moon,' and a rough hand-drawn map with an X near a cluster of stones. The last entry simply reads: 'Found it. Didn't take it. Some things should stay wild.' Jules is practically vibrating with excitement, already memorizing the map's landmarks. Whoever wrote this knew the grove well, and the map, though faded, seems detailed enough to actually follow if you head out there yourselves this afternoon.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_edge3",
+     "label": "Head to the grove using the old map",
+     "target": "n_grove_edge"
+    }
+   ]
+  },
+  {
+   "id": "n_librarian",
+   "body": "Mr. Foster leans back in his chair, clearly happy to have an audience. 'Campers have been talking about a rare flower out there for as long as I've worked here. Moonbloom, they call it. Blooms once a year, so the story goes, and only for one night.' He pulls a faded camp map from a drawer and taps a spot near some old stones. 'This is roughly where the last few groups said they saw it. Can't promise it's still true, but the grove hasn't changed much in fifty years.' He hands you the map, and Jules folds it carefully into a pocket, already planning the route out there.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_map",
+     "label": "Take the map and head out",
+     "target": "n_oldmap"
+    }
+   ]
+  },
+  {
+   "id": "n_oldmap",
+   "body": "Out on the trail, the map turns out to be more useful than fancy: simple landmarks, a dotted line, and small notes in different handwriting from over the years, like campers kept adding to it. You and Jules follow the dotted line past a lightning-split oak and a boulder shaped like a sleeping bear, checking off each landmark as you pass. The trail eventually opens into a wider clearing at the grove's edge, exactly where the map said it would. Whoever kept updating this map clearly wanted future campers to find their way here without getting lost, and it worked perfectly for you two.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_edge4",
+     "label": "Enter the grove clearing",
+     "target": "n_grove_edge"
+    }
+   ]
+  },
+  {
+   "id": "n_groundstory",
+   "body": "Mr. Alvarez sets down his rake and finally looks at you directly. 'I've worked this land since before your parents were born,' he says. 'There's a flower out there, moonbloom, blooms once a year. I've seen it twice myself. Both times, I left it exactly as I found it.' He points toward a gap in the trees. 'Follow that gap past the old stones, keep your eyes open, and don't trample anything you don't understand.' There's something serious but not scary in his voice, like he's handing you a responsibility rather than just directions. Jules nods solemnly, and you both thank him before heading toward the gap he pointed out.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_edge5",
+     "label": "Head toward the gap in the trees",
+     "target": "n_grove_edge"
+    }
+   ]
+  },
+  {
+   "id": "n_chores",
+   "body": "Raking with Mr. Alvarez turns out to be oddly peaceful. He hums while he works and doesn't say much until the leaf pile is nearly cabin-sized. Then he wipes his forehead and nods toward the toolshed. 'Grab that old lantern off the hook in there, the battery one. You'll want it if you're headed toward the grove later; the trees get thick enough to dim the light early.' Jules is already halfway to the shed door, clearly thrilled to have earned actual gear rather than just directions. Whatever waits out in the grove, at least you'll be walking in with a proper lantern in hand.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_shed",
+     "label": "Get the lantern from the toolshed",
+     "target": "n_toolshed"
+    }
+   ]
+  },
+  {
+   "id": "n_toolshed",
+   "body": "The toolshed is cluttered but organized in its own way, shovels and coiled hoses along one wall. The lantern hangs exactly where Mr. Alvarez said, its metal casing dented but the switch still clicking on with a solid, reassuring light. Tucked behind it, you notice a small hand-drawn sketch pinned to the wall: stones arranged in a rough circle, with a note reading 'Grove marker, don't disturb.' Jules photographs it on a camp tablet before you head out, lantern in hand, toward the trees Mr. Alvarez pointed to earlier. Between the lantern and the sketch, you feel more prepared than when you started raking.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_edge6",
+     "label": "Head to the grove with the lantern",
+     "target": "n_grove_edge"
+    }
+   ]
+  },
+  {
+   "id": "n_grove_edge",
+   "body": "However you got here, the Whispering Grove edge looks the same: older, thicker trees standing in a loose ring, their canopy letting through scattered coins of late sunlight. It's quieter than the rest of the forest, almost like the wind itself slows down at the boundary. Ahead, you can make out three things worth checking: a cluster of flat stones arranged in a rough circle, a massive hollow tree with a dark opening at its base, and a small still pond reflecting the canopy like glass. Jules looks at you, waiting for a decision. 'Grove's not going anywhere,' they say, 'but we should probably pick one thing at a time.'",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_stones",
+     "label": "Examine the ring of stones",
+     "target": "n_stones"
+    },
+    {
+     "id": "c_tree",
+     "label": "Check out the hollow tree",
+     "target": "n_hollowtree"
+    },
+    {
+     "id": "c_pond",
+     "label": "Walk over to the still pond",
+     "target": "n_pond"
+    }
+   ]
+  },
+  {
+   "id": "n_stones",
+   "body": "Up close, the stones are clearly arranged on purpose, not scattered by nature: a rough circle about ten feet across, each stone flat-topped and etched with faint carvings worn smooth by decades of rain. Some carvings look like moon phases; others look like simple trail markers. Jules crouches to trace one pattern with a finger while you consider walking the full circle to see if the carvings tell a bigger story together. 'These could be a map, or a message, or just old graffiti,' Jules says. 'Only one way to find out which.' You'll need to pick a direction: study the pattern closely, or walk the circle's edge.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_pattern",
+     "label": "Study the carved pattern closely",
+     "target": "n_pattern"
+    },
+    {
+     "id": "c_circle",
+     "label": "Walk the full circle",
+     "target": "n_circle"
+    }
+   ]
+  },
+  {
+   "id": "n_hollowtree",
+   "body": "The hollow tree is enormous, its trunk wide enough that three kids could probably fit inside standing up. The opening at its base is dark, but a faint light seems to filter down from somewhere higher, like the trunk is hollow clear up to a gap in the bark above. Jules peers into the opening at ground level while you glance upward, noticing what might be old handholds notched into the wood, worn smooth like a ladder. 'We could climb up toward that light,' Jules offers, 'or just peek inside from down here first and see what's actually in there before doing anything risky.'",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_climb",
+     "label": "Climb up toward the light",
+     "target": "n_climb"
+    },
+    {
+     "id": "c_peek",
+     "label": "Peek inside from ground level",
+     "target": "n_peek"
+    }
+   ]
+  },
+  {
+   "id": "n_pond",
+   "body": "The pond is small but perfectly still, dark water mirroring the canopy so precisely it's almost dizzying to look at directly. Lily pads cluster along the far edge, broad green platforms with something pale glinting between a few of them. Jules leans over the near edge, captivated by their own reflection rippling slightly with each breath. 'Something's tucked in with those lily pads,' you say, pointing. 'Worth a closer look, or we could just sit here a second, it's actually really calming.' The choice feels smaller than the others, but even small choices in the grove seem to matter, somehow.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_lily",
+     "label": "Wade closer to the lily pads",
+     "target": "n_lilypads"
+    },
+    {
+     "id": "c_reflect",
+     "label": "Sit and watch the reflection",
+     "target": "n_reflection"
+    }
+   ]
+  },
+  {
+   "id": "n_pattern",
+   "body": "Following the carvings stone by stone, you realize they're not random at all: each one shows a slightly different moon phase, arranged in order around the circle, ending at a single stone carved with a full moon pointing straight toward the hollow tree and, past it, a patch of ground where late sunlight pools brightest. Jules gasps and grabs your sleeve. 'That's not just decoration, that's directions.' Following the full-moon stone's angle exactly, the two of you walk past the hollow tree's roots toward that sunlit patch, where something pale and silvery seems to be growing low against the ground, half-hidden by ferns.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_toflower1",
+     "label": "Follow the carving toward the light",
+     "target": "n_moonbloom"
+    }
+   ]
+  },
+  {
+   "id": "n_circle",
+   "body": "Walking the stone circle's full edge takes longer than expected, since the carvings blur together and a few stones are tilted at odd, confusing angles. Somewhere around the fourth or fifth stone, you and Jules realize you've lost track of which direction you originally came from. The light is starting to slant lower through the canopy, and Priya's earlier warning about buddy pairs and daylight hours suddenly feels a lot more relevant. 'We should head back before it gets tricky to see the trail,' Jules says, and you agree, marking the stone circle in your memory to return to another day, better prepared.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_back1",
+     "label": "Head back toward camp",
+     "target": "n_end_lost"
+    }
+   ]
+  },
+  {
+   "id": "n_climb",
+   "body": "The handholds are sturdy, worn smooth by countless hands before yours, and the climb is easier than it looks from the ground. Partway up, the trunk opens into a wide gap where the tree split long ago and healed crooked, letting sunlight pour straight down inside. From this height, you can see over the grove's low canopy toward a sunlit clearing not far off, where something pale glimmers against green ferns. Jules climbs up beside you, breathless. 'There, past the ferns,' they whisper, pointing. Climbing back down carefully, you both head straight for that clearing, the glimmer pulling you forward like a promise.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_toflower2",
+     "label": "Head toward the glimmer you spotted",
+     "target": "n_moonbloom"
+    }
+   ]
+  },
+  {
+   "id": "n_peek",
+   "body": "Peering into the hollow base, your eyes adjust to find not treasure or clues, but a small owl nestled in a mossy hollow, blinking sleepily back at you. It doesn't fly off, just watches with wide, calm eyes, clearly used to sharing its home with curious creatures. Jules holds perfectly still beside you, grinning without saying a word. Neither of you wants to disturb it further, and after a long, quiet moment, you both back away slowly, leaving the owl to its afternoon nap. Something about the encounter feels like enough of a discovery on its own, even without finding whatever else the grove might be hiding.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_back2",
+     "label": "Leave the owl in peace",
+     "target": "n_end_shy"
+    }
+   ]
+  },
+  {
+   "id": "n_lilypads",
+   "body": "Wading carefully to the pond's edge, you reach between two lily pads and find not trash or a lost toy, but a single pale, silvery petal floating on the surface, cool and slightly waxy to the touch. It matches nothing you've ever seen growing around camp. Jules examines it closely. 'This has to be from that moonbloom flower everyone keeps mentioning,' they say, 'which means the real thing is close by.' Following the direction the petal seems to have drifted from, upstream along a thin trickle feeding the pond, the two of you head deeper into the grove, spirits high with the discovery.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_toflower3",
+     "label": "Follow the petal's trail",
+     "target": "n_moonbloom"
+    }
+   ]
+  },
+  {
+   "id": "n_reflection",
+   "body": "Sitting at the pond's edge, you watch the canopy's reflection ripple gently with the breeze, and for a few minutes neither you nor Jules says anything at all. It's the kind of quiet that's hard to find back at camp, between activities and cabin noise. Jules eventually breaks the silence. 'I don't think we need to find some rare flower to make this a good afternoon,' they say, tossing a small leaf onto the water and watching it spin slowly. You agree, and the two of you sit a while longer before heading back toward camp, already planning to return to this exact spot tomorrow.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_back3",
+     "label": "Head back, already planning to return",
+     "target": "n_end_wish"
+    }
+   ]
+  },
+  {
+   "id": "n_moonbloom",
+   "body": "There it is: the moonbloom, low to the ground and half-shielded by ferns, its silvery petals catching the light in a way that seems almost to glow from within. Beneath it, mostly buried but visible at one edge, sits a small metal box, rusted but intact, clearly placed there deliberately rather than lost. Jules kneels down slowly, careful not to crush anything nearby. 'It's real,' they whisper. 'What do we do?' The flower itself seems delicate but not fragile exactly, more like it's trusting you to be careful. Between the box, the flower, and the quiet grove around you, there's a lot to decide in this one spot.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_openbox",
+     "label": "Carefully dig up the small box",
+     "target": "n_open_box"
+    },
+    {
+     "id": "c_photo",
+     "label": "Photograph the flower and leave it be",
+     "target": "n_photograph"
+    },
+    {
+     "id": "c_leave",
+     "label": "Step back and leave everything untouched",
+     "target": "n_leave_alone"
+    }
+   ]
+  },
+  {
+   "id": "n_open_box",
+   "body": "The box comes free from the soil with gentle effort, its hinges stiff but workable. Inside, wrapped in a plastic bag gone slightly cloudy with age, is a folded letter and a small brass key. The letter, dated decades back, describes the moonbloom's yearly bloom and asks whoever finds this to 'keep its secret, but not selfishly; share the wonder, not the exact spot.' Jules reads over your shoulder, clearly moved. 'We could bring this back to camp and tell everyone the wonder part,' they say, 'or just keep it between us as our own secret discovery.' Either way, the letter's advice seems worth taking seriously.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_share",
+     "label": "Bring the letter back and share the story",
+     "target": "n_end_hero"
+    },
+    {
+     "id": "c_keep",
+     "label": "Keep the discovery just between you and Jules",
+     "target": "n_end_keepsake"
+    }
+   ]
+  },
+  {
+   "id": "n_photograph",
+   "body": "Rather than disturb anything, you snap a few careful photos of the moonbloom from a respectful distance, making sure not to step too close to its roots. The silvery petals catch the camera flash beautifully, and Jules takes a few more from a different angle, already imagining these in the camp newsletter. Neither of you touches the flower or the box beneath it; the pictures feel like enough proof that you actually found what generations of campers had only heard about secondhand. Walking back toward camp with the photos safely saved, you both agree this might be the best afternoon of the whole summer, box or no box.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_toend_disc",
+     "label": "Head back to share the photos",
+     "target": "n_end_discovery"
+    }
+   ]
+  },
+  {
+   "id": "n_leave_alone",
+   "body": "Something about kneeling this close to the moonbloom makes you want to leave it exactly as you found it, box and all. Jules seems to feel the same way, nodding slowly when you suggest it. 'Some things are better as a secret we keep by not touching them,' they say. You take one last long look, memorizing the way the light catches the petals, then carefully back away without disturbing the ferns or the soil around the box. It feels less like giving something up and more like making a quiet promise to the grove itself, one you both intend to keep for as long as you're campers here.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_toend_guard",
+     "label": "Walk back, keeping the grove's secret safe",
+     "target": "n_end_guardian"
+    }
+   ]
+  },
+  {
+   "id": "n_end_lost",
+   "body": "You and Jules make it back to camp just as the dinner bell rings, a little dusty and more than a little annoyed at yourselves for losing the trail. Priya laughs when you explain, not unkindly. 'Happens to almost everyone their first week. The grove circle confuses grown adults too.' She promises to walk the trail with your group properly later in the session. It's not the discovery you were hoping for today, but Jules is already sketching out the stone circle from memory, determined to figure it out next time. Some adventures just need a second attempt, and this one clearly isn't over yet.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_lost",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "Turned Around"
+   }
+  },
+  {
+   "id": "n_end_shy",
+   "body": "Back at camp, you tell Priya about the owl, and her eyes light up. 'That hollow's been an owl nest for years,' she says. 'Not many campers are patient enough to actually spot her without scaring her off.' She adds your sighting to a little chalkboard list of grove wildlife near the mess hall, right below a raccoon family and a woodpecker. It's not the legendary flower, but something about being trusted enough by a wild creature to just sit there quietly feels like its own kind of reward. Jules agrees, already planning to bring a sketchbook next time to draw her properly.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_shy",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Grove's Quiet Neighbor"
+   }
+  },
+  {
+   "id": "n_end_wish",
+   "body": "That evening at the campfire, you and Jules don't say much about the grove, just trade a look that says you'll be back tomorrow. Priya notices you both seem unusually calm and happy for two kids who came back empty-handed. 'Sounds like you found something anyway,' she says when you describe the pond. She's not wrong. Not every good afternoon needs a rare flower or a hidden box at the end of it; sometimes just sitting quietly with a friend somewhere beautiful is the whole point. You fall asleep that night already looking forward to going back, no plan required.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_wish",
+    "valence": "positive",
+    "kind": "reflection",
+    "title": "Worth Returning To"
+   }
+  },
+  {
+   "id": "n_end_hero",
+   "body": "The next morning, you and Jules bring the letter to Priya and Mr. Alvarez together. Mr. Alvarez reads it slowly, then smiles for the first time all week. 'Fifty years, and someone finally opened it right,' he says. That evening, the whole camp gathers to hear the story: the moonbloom, the letter, the promise to share wonder without giving away the exact spot. Kids who've never spoken to you before ask a dozen questions at dinner. You and Jules become, unofficially, the camp's newest grove experts, trusted with a secret worth protecting instead of one worth hoarding. It's the best kind of famous to be.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_hero",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Camp's Newest Legend"
+   }
+  },
+  {
+   "id": "n_end_keepsake",
+   "body": "You and Jules rebury the box exactly where you found it, keeping only the memory and a single pressed fern leaf as a souvenir. Walking back to camp, you make a pact: this stays your secret, something just between the two of you, a story you'll tell each other's kids someday if you're still friends that far into the future. It's a quieter ending than announcing a discovery to the whole camp, but somehow that suits the moonbloom better, a flower that only blooms once a year for whoever's patient and lucky enough to be there. Some treasures are better kept than shown.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_keepsake",
+    "valence": "positive",
+    "kind": "success",
+    "title": "A Secret Worth Keeping"
+   }
+  },
+  {
+   "id": "n_end_discovery",
+   "body": "The photos turn out even better than you'd hoped, the moonbloom's silvery petals glowing almost unreal in the evening light. Priya insists on printing one for the camp newsletter, crediting you and Jules as 'this summer's grove explorers.' Mr. Foster asks permission to copy the photo into the camp's logbook collection, right alongside the old journal entries you might have read yourself. It isn't a physical treasure to hold onto, but it's proof, shared responsibly, that the grove's oldest story was true all along. By the end of the week, half the camp is asking you where exactly you found it, and you get to decide how much to tell.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_discovery",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Proof for the Newsletter"
+   }
+  },
+  {
+   "id": "n_end_guardian",
+   "body": "You never tell anyone exactly where the moonbloom grows, not even Priya, though you do mention that you found it safe and untouched. Something about protecting it feels more important than getting credit for finding it. Over the rest of the summer, you and Jules quietly check on it every few days, making sure the ferns around it stay undisturbed. By the time camp ends, it feels less like a secret you're keeping and more like a responsibility you've taken on, the kind Mr. Alvarez has clearly carried for decades himself. Next summer, you already know exactly where you'll go first, and why it matters.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_guardian",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Grove Guardian"
+   }
+  }
+ ]
+}

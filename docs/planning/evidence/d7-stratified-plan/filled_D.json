@@ -1,0 +1,423 @@
+{
+ "schema_version": "2.0",
+ "id": "d6",
+ "version": 1,
+ "title": "The Long and Short of It",
+ "metadata": {
+  "age_band": "10-13",
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 5.5,
+   "tolerance": 1.5
+  },
+  "tier": 1,
+  "themes": [
+   "mystery",
+   "puzzles",
+   "friendship",
+   "history"
+  ],
+  "estimated_minutes": 18,
+  "ending_count": 8,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "mild",
+   "peril": "mild"
+  },
+  "topology": "branch_and_bottleneck",
+  "production_eligible": false
+ },
+ "variables": [],
+ "start_node": "n_open",
+ "nodes": [
+  {
+   "id": "n_open",
+   "body": "The clocktower at the edge of town had stood sealed for as long as anyone could remember: iron door bolted, dial gone still, ivy climbing its stone like a slow green lock. Nora spotted it first, then Sam, then Priya, all three stopping at the bottom step. Pinned to the door was a square of paper, rows of short marks and long marks running in patterns, like bell peals written down. Above it, a line of neat handwriting called it a challenge, not a warning. Nobody had solved it in years. The three of them looked at each other, and without a single word, decided together: they were staying.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_open",
+     "label": "Read the note as our invitation",
+     "target": "n_start"
+    }
+   ]
+  },
+  {
+   "id": "n_start",
+   "body": "Priya knelt to look closer at the note while Sam eyed the tower's stone face and Nora glanced back toward the lane. Whoever had left this challenge, a man named Josiah Vane according to the plaque below the marks, clearly meant for someone to answer it. The question was how. They could sit with the note itself and work out its rhythm of long and short pulls. They could search the tower's own walls for a way in the builder might have left. Or they could find whoever still tended this old place and simply ask. All three felt the same pull: they were doing this, and doing it properly.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_examine",
+     "label": "Sit with the note before we touch stone",
+     "target": "n_note"
+    },
+    {
+     "id": "c_door",
+     "label": "Run our hands over the tower's stones",
+     "target": "n_door"
+    },
+    {
+     "id": "c_keeper",
+     "label": "Ask the keeper straight out",
+     "target": "n_keeper"
+    }
+   ]
+  },
+  {
+   "id": "n_note",
+   "body": "Priya read the marks aloud, tapping each short pulse and long pulse against her knee. Long, long, short. Long, short, short. It took real patience: the same phrase kept repeating, and only on the fourth pass did the pattern resolve into words instead of noise. The note wasn't naming the dial at all, not yet. It was pointing somewhere else: a spare foundry key, it said, waiting behind a loose flue grate near the tower's base. Sam grinned. Nora traced the fold in the paper, checking it twice. The rhythm had given up its answer honestly, pull by pull, and the tower suddenly felt like it might actually let them in.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_note_key",
+     "label": "Fetch the key the note named for us",
+     "target": "n_keyhunt"
+    },
+    {
+     "id": "c_note_inside",
+     "label": "Trust the note and head for the opening",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_door",
+   "body": "Sam decided the note could wait and started along the tower's base instead, running his palm over every seam in the stone. Nora joined him, checking hinges and sills while Priya tapped the mortar for hollow spots. It took a long, scraped-knuckle while before Sam's fingers found it: a small catch tucked under the lip of an old tuning board bolted to the wall, easy to miss unless you were looking with your hands and not just your eyes. He pressed it, and somewhere inside, a bolt gave a soft clunk. Nobody had pointed them here. They had found the latch themselves, and now they had a choice to make about it.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_door_force",
+     "label": "Work the latch we found ourselves",
+     "target": "n_inside"
+    },
+    {
+     "id": "c_door_window",
+     "label": "Climb for the high window instead",
+     "target": "n_window"
+    }
+   ]
+  },
+  {
+   "id": "n_keeper",
+   "body": "They found him behind the chandlery, an old man named Holt, coiling rope with hands that clearly knew the tower better than anyone living. Nora asked plainly if he'd help them understand the challenge, no tricks, no pretending they already knew more than they did. Holt studied all three of them for a long moment, the kind of look that weighs whether you're worth the trouble. Whatever he saw, it satisfied him. He set the rope down, pulled a ring of keys from his belt, and said the tower had been waiting long enough. If they wanted in, he'd walk them through the casting floor door himself.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_keeper_enter",
+     "label": "Follow him in through the casting floor",
+     "target": "n_inside"
+    },
+    {
+     "id": "c_keeper_story",
+     "label": "Ask what he knows before we go in",
+     "target": "n_keeper_story"
+    }
+   ]
+  },
+  {
+   "id": "n_keyhunt",
+   "body": "Behind the tower, exactly where the note's rhythm had pointed, a rusted flue grate sat loose in its frame. Priya worked her fingers under the edge and lifted it free. There, hanging on a bent nail, was an old foundry key, dark with age but solid in the hand. Nora turned it over, comparing its shape to the shadow scratched faintly on the wall behind it: a match. The cipher hadn't just sounded right. It had been right, all the way down to a key sitting in the dark, waiting for someone patient enough to find it. Sam took it carefully, and the three of them turned toward the tower's side door together.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_keyhunt_in",
+     "label": "Take the proven key inside with us",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_keeper_story",
+   "body": "Before he led them anywhere, Holt sat down on the chandlery step and told them about Josiah Vane, the bell-founder who'd built this tower and sealed it himself, decades back. He hadn't done it to keep people out, Holt said. He'd built the tests to find the right kind of person to let in: patient, honest, willing to work for an answer instead of grabbing at one. Vane had never gotten to see if his tower worked the way he'd hoped. Holt had watched a lot of visitors give up at the door. Something in how these three had asked told him this time might be different.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_story_in",
+     "label": "Follow him in, now that we understand",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_window",
+   "body": "The low latch was there if they wanted it, but Sam pointed up instead, at a narrow window two floors above, its shutter hanging loose on one hinge. Nora tested the first handhold, a jutting cornerstone, and found it solid. Priya went next, calling out each grip so the others could follow the same safe line. It was slow, careful climbing, not a dare, and they stopped twice to catch their breath and check their footing. At the window, Sam eased the shutter open, ducked through, and dropped lightly onto a dusty floor inside. One by one, the others followed. They were in, and nobody had so much as scraped a knee.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_window_in",
+     "label": "Ease ourselves down through the window",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_inside",
+   "body": "Inside, the tower opened up into a wide room hung with silent gears and dust-furred beams. However they'd gotten past the seal, the three of them stood together now, past it for good. Four ways led onward. A tight stairwell spiraled up into shadow. A door stood ajar on a room lined with shelves and papers. A gap opened onto a walkway threading past the great swinging pendulum works. And worn steps dropped down into darkness below the casting floor. Each way looked like a different test, and each one waited. They had to pick just one, for now.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_inside_stairs",
+     "label": "Choose the climbing stair",
+     "target": "n_stairs"
+    },
+    {
+     "id": "c_inside_study",
+     "label": "Choose the pattern room instead",
+     "target": "n_study"
+    },
+    {
+     "id": "c_inside_pendulum",
+     "label": "Head for the pendulum works",
+     "target": "n_pendulum"
+    },
+    {
+     "id": "c_inside_basement",
+     "label": "Head down into the dark below",
+     "target": "n_basement"
+    }
+   ]
+  },
+  {
+   "id": "n_stairs",
+   "body": "The stairwell wound up tight and narrow, and by the third turn all three were breathing hard. Nora spotted a wooden rack bolted to the wall, holding tuning forks sorted from smallest to largest, each stamped with a number: a pull count. Two steps higher, tucked in a niche, sat a small hand bell, cast slightly crooked on purpose, a label beneath it calling it Vane's first failed casting, kept as a joke on himself. Between the sorted forks and the lopsided bell, a pattern started to make sense: how many pulls, counted low to high. Tired legs and all, they climbed the rest of the way certain they'd learned something useful.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_stairs_face",
+     "label": "Carry our count up to the dial",
+     "target": "n_clockface"
+    }
+   ]
+  },
+  {
+   "id": "n_study",
+   "body": "The pattern room smelled of old paper and warm dust. Sunlight came through a coloured glass transom overhead, scattering bell-shaped patches of light across the floorboards and the shelves beyond. On a workbench lay a tuning hammer, its wooden handle scratched all over with small notes, each one keyed to a particular pull. Priya turned it over slowly, reading the marks like a sentence. The logic clicked faster here than anywhere else in the tower. Past the bench, though, shelves of the founder's own records stretched into the shadows, thick with the kind of history that could swallow an entire evening if you let it.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_study_face",
+     "label": "Carry the hammer's logic to the dial",
+     "target": "n_clockface"
+    },
+    {
+     "id": "c_study_logs",
+     "label": "Stay and read the founder's records",
+     "target": "n_end_library"
+    }
+   ]
+  },
+  {
+   "id": "n_pendulum",
+   "body": "By the mould bench, a brass calibration scale climbed in notches, and Sam realized with a jolt that the spacing matched the peal's own counting exactly. Past the bench, though, the room's real test waited: the bell-frame catwalk, its planks slick with tallow, threading one handhold at a time between the great swinging cradles overhead. On the far side, half hidden in shadow, something glinted, worth a closer look if anyone was brave enough to cross. Nora gripped the first rail and tested her footing. It felt solid, if slow going. The choice sat plainly in front of them: cross carefully, or turn back toward the stairs they'd already climbed.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_pendulum_oil",
+     "label": "Cross the slick catwalk together",
+     "target": "n_clockface"
+    },
+    {
+     "id": "c_pendulum_giveup",
+     "label": "Turn back from the crossing",
+     "target": "n_end_giveup"
+    }
+   ]
+  },
+  {
+   "id": "n_basement",
+   "body": "The steps down were steep, and the casting floor below sat cool and quiet in near dark. Priya found a lantern hook and got a small light going. Against the wall hung a leather apron, Vane's own by the look of it, its pockets worn into the exact shape of tools that weren't there anymore. Just then, a shaft of noon light slipped through a belfry louver far above and landed square on a marked plank in the floor, lining up perfectly with the peal's counting rhythm from the note. Nora crouched to check the mark twice, making sure. Whatever the dial needed, this room had just handed them another piece of it.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_basement_face",
+     "label": "Climb back up with what we learned",
+     "target": "n_clockface"
+    }
+   ]
+  },
+  {
+   "id": "n_clockface",
+   "body": "At the top of the tower, the great dial waited, its face ringed with pulls that could be set long or short, just like the note. Engraved beneath it, in Vane's own neat hand, were the instructions plainly written out: set the pulls correctly, and the mechanism opens the way. Guess wrong, and it costs you something. Nora ran through what they'd learned; Sam eyed the pulls, itching to just try one; Priya noticed a seam at the base of the dial's frame that might be a panel. Whatever logic they'd earned in the rooms below, this was where it would be tested for real.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_face_correct",
+     "label": "Set the dial with the logic we earned",
+     "target": "n_setcorrect"
+    },
+    {
+     "id": "c_face_jam",
+     "label": "Force the stubborn pull",
+     "target": "n_setjam"
+    },
+    {
+     "id": "c_face_panel",
+     "label": "Check behind the dial's face",
+     "target": "n_backpanel"
+    },
+    {
+     "id": "c_face_random",
+     "label": "Guess at the setting",
+     "target": "n_end_timeout"
+    }
+   ]
+  },
+  {
+   "id": "n_setcorrect",
+   "body": "Working together, they set each pull the way their earned logic said: long, short, short, long, matching the rhythm from the note against what they'd learned in the rooms below. One pull resisted, and Priya adjusted it a notch, checking the calibration marks again before easing it into place. The last pull clicked home, and somewhere deep in the wall a mechanism turned over, gears meshing smoothly instead of grinding. A seam of light appeared where solid stone had been a moment before, widening into a doorway. Nobody cheered. They just looked at each other, quietly certain they'd earned exactly this.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_correct_vault",
+     "label": "Step through the opening we earned",
+     "target": "n_vault"
+    }
+   ]
+  },
+  {
+   "id": "n_setjam",
+   "body": "Sam decided logic could wait and shoved one of the pulls hard, betting brute force would do the job faster. It didn't. The pull jammed halfway, and somewhere behind the dial's face a spring locked tight with a metallic groan. Nobody panicked, and nobody blamed Sam either; the mechanism had simply done what it was built to do when pushed instead of solved. Nora spotted a small safety catch near the jammed cradle, half hidden behind the frame. If they could reach it and release it carefully, the pull might ease back to rest on its own. It was worth trying, one careful hand at a time.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_jam_oil",
+     "label": "Release the cradle's safety catch",
+     "target": "n_vault"
+    },
+    {
+     "id": "c_jam_stuck",
+     "label": "Accept the jam and stop here",
+     "target": "n_end_stuck"
+    }
+   ]
+  },
+  {
+   "id": "n_backpanel",
+   "body": "Priya's seam turned out to be a small panel set into the dial's frame, easy to miss unless you were looking for it. Behind it sat a second mechanism, smaller and plainer than the great dial, with its own short row of pulls waiting to be set. Nobody had mentioned this one. It felt like something meant only for someone curious enough to check behind the obvious answer. Nora grinned and Sam leaned in for a closer look. They could work this hidden test just enough to reach the same door the main dial would have opened, or follow its own separate logic wherever that led instead.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_panel_vault",
+     "label": "Solve it just enough to reach the vault",
+     "target": "n_vault"
+    },
+    {
+     "id": "c_panel_secret",
+     "label": "Follow the hidden logic further",
+     "target": "n_end_secret"
+    }
+   ]
+  },
+  {
+   "id": "n_vault",
+   "body": "Beyond the door, the room was small and plain, nothing like the treasure chamber Sam had half expected. A letter sat propped against the wall in Josiah Vane's own careful hand. Beside it lay his marking chisel, kept oiled all these years as though he meant to come back for it any day. A few modest, ordinary things sat nearby: nothing built to dazzle, everything built to matter to whoever earned the room. Nora read the letter twice, quiet. It didn't ask for anything. It just thanked them for being patient enough to get here. Now came the real question: what would they do with what they'd found?",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_vault_share",
+     "label": "Tell the settlement what we found",
+     "target": "n_end_hero"
+    },
+    {
+     "id": "c_vault_keep",
+     "label": "Keep tonight between the three of us",
+     "target": "n_end_keepsake"
+    },
+    {
+     "id": "c_vault_grab",
+     "label": "Reach for something to keep",
+     "target": "n_end_caught"
+    }
+   ]
+  },
+  {
+   "id": "n_end_library",
+   "body": "They decided the dial could wait. The pattern room's shelves held decades of the founder's own notes, and once they started reading, none of them wanted to stop. Tucked between two ledgers, Priya found a full page holding a careful copy of the very note pinned to the door outside, along with scribbled attempts at translating it. She folded it gently and tucked it into her bag. There would be other days to finish the cipher properly, and the tower wasn't going anywhere. Sam latched the window they'd come through, and the three of them headed home with the borrowed page, already planning when they'd come back to try again.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_library",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "A Page for Later"
+   }
+  },
+  {
+   "id": "n_end_giveup",
+   "body": "Nora's foot slipped on the tallow-slick plank, just for a second, and her hand shot out to steady herself on the rail. That was enough. She looked back at Sam and Priya, and without needing to say much, they agreed: whatever waited on the far side could stay there a while longer. They backed off the catwalk one careful step at a time, nobody rushing, nobody blaming anyone for the slip. Down in the main room, Sam glanced back up at the pendulum works one more time. The tower would still be standing next week, and so would they, all in one piece and already talking about trying the crossing again.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_giveup",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Careful Retreat"
+   }
+  },
+  {
+   "id": "n_end_timeout",
+   "body": "Priya got impatient and set the pulls at random, betting a lucky guess might beat working it out properly. It didn't. The dial gave a soft click, and every pull locked stiff under her fingers, refusing to budge in either direction. A small brass plate slid into view: a note from Vane himself, calm and unbothered, explaining that guessing would freeze the mechanism until someone with the proper key came to reset it. Nobody felt foolish exactly, more like they'd been caught by a rule that was actually fair. Holt could reset it easily enough, he'd told them as much. They'd just have to come back and earn it properly next time.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_timeout",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Frozen Setting"
+   }
+  },
+  {
+   "id": "n_end_stuck",
+   "body": "The safety catch was there, just where Nora had spotted it, but the linkage behind it had bent slightly under Sam's shove, and freeing it needed a narrow spanner none of them had thought to bring. Sam checked twice, hoping he'd missed something. He hadn't. Nobody was upset with him; the jam was an honest result of an honest mistake, nothing more. Priya remembered seeing a rack of exactly that kind of tool down in the casting floor workshop, neatly kept and waiting. This attempt was over for today, but the mechanism wasn't broken, only stuck, and stuck things could always be freed on a better-prepared afternoon.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_stuck",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Missing Tool"
+   }
+  },
+  {
+   "id": "n_end_secret",
+   "body": "The hidden mechanism's own logic led somewhere the main dial never would have: a small workshop tucked behind the tower's bones, every casting tool still racked and labeled, ready for a workday that had simply never resumed. A short note pinned above the bench named whoever found this room its steward, asking them to keep it in order and visit when they could. Nora read it aloud twice. Sam ran a hand along the neat row of tools, none of them out of place after all these years. Priya looked at the two of them and nodded: they'd take care of this together, starting with sweeping the dust off the bench.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_secret",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Waiting Workshop"
+   }
+  },
+  {
+   "id": "n_end_hero",
+   "body": "They carried the letter down into town and read it aloud on the steps of the old meeting hall, with Holt standing quietly at the back of the small crowd that gathered. Josiah Vane hadn't hidden his tower to keep anyone out; he'd built it to test for patience and honesty, and these three had proven both. By evening, people who'd walked past the sealed tower their whole lives were asking Holt to tell them about its founder again. Nora, Sam, and Priya stood at the edge of it all, watching a name that had gone quiet get spoken again, again and again, until it didn't feel forgotten anymore.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_hero",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "His Name Again"
+   }
+  },
+  {
+   "id": "n_end_keepsake",
+   "body": "They talked it over quietly and decided the room didn't need the whole town knowing about it, not yet, maybe not ever. The letter went back exactly where it had been propped. The chisel stayed by it, still oiled, still waiting for a maker who wasn't coming back. What they kept instead was the memory of standing there together, three of them and no one else, seeing something nobody had seen in decades. Sam eased the door shut behind them as they left, careful not to disturb a thing. Outside, the evening was ordinary again, and the three of them walked home already trading the same private smile.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_keepsake",
+    "valence": "positive",
+    "kind": "success",
+    "title": "A Private Answer"
+   }
+  },
+  {
+   "id": "n_end_caught",
+   "body": "Sam's hand drifted toward the marking chisel before he'd really decided to take it, and the moment his fingers brushed a thin wire near the shelf, a hand bell somewhere outside rang out sharp across the yard. He froze, chisel barely lifted, and put it straight back down. Second thoughts caught up with all three of them fast. By the time they'd stepped back outside, sheepish, Holt was already crossing the yard on his evening rounds, drawn by the bell. Nora explained everything honestly, right down to the reaching. Holt just nodded, unsurprised, and said the tower had a way of testing that particular question too. Everything went back exactly where it belonged.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_caught",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Caught by the Bell"
+   }
+  }
+ ]
+}

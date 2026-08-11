@@ -1,0 +1,73 @@
+{
+  "n_open": {
+    "c_open": {"action": "accept_the_sealed_doors_challenge", "action_family": "INFORMATION", "target_role": "INFORMATION", "tradeoff": "NONE", "consequence": "ACCESS"}
+  },
+  "n_start": {
+    "c_examine": {"action": "sit_with_the_note_until_it_yields", "action_family": "INFORMATION", "target_role": "INFORMATION", "tradeoff": "SPEED_VS_INFO", "consequence": "KNOWLEDGE"},
+    "c_door": {"action": "find_your_own_way_past_the_wall", "action_family": "NAVIGATION", "target_role": "BARRIER", "tradeoff": "PRIDE_VS_HELP", "consequence": "ACCESS"},
+    "c_keeper": {"action": "ask_someone_who_already_passed", "action_family": "SOCIAL", "target_role": "PERSON", "tradeoff": "PRIDE_VS_HELP", "consequence": "RELATIONSHIP"}
+  },
+  "n_note": {
+    "c_note_key": {"action": "hunt_exactly_where_the_proof_points", "action_family": "INFORMATION", "target_role": "INFORMATION", "tradeoff": "SPEED_VS_INFO", "consequence": "KNOWLEDGE"},
+    "c_note_inside": {"action": "act_on_the_plain_reading_now", "action_family": "NAVIGATION", "target_role": "BARRIER", "tradeoff": "SPEED_VS_INFO", "consequence": "ACCESS"}
+  },
+  "n_door": {
+    "c_door_force": {"action": "push_through_the_overlooked_gap", "action_family": "NAVIGATION", "target_role": "BARRIER", "tradeoff": "NONE", "consequence": "ACCESS"},
+    "c_door_window": {"action": "climb_to_the_high_window_alone", "action_family": "NAVIGATION", "target_role": "BARRIER", "tradeoff": "SAFETY_VS_REWARD", "consequence": "ACCESS"}
+  },
+  "n_keeper": {
+    "c_keeper_enter": {"action": "take_the_earned_offer_and_go", "action_family": "NAVIGATION", "target_role": "BARRIER", "tradeoff": "SPEED_VS_INFO", "consequence": "ACCESS"},
+    "c_keeper_story": {"action": "spend_earned_trust_on_the_makers_story", "action_family": "INFORMATION", "target_role": "INFORMATION", "tradeoff": "SPEED_VS_INFO", "consequence": "KNOWLEDGE"}
+  },
+  "n_keyhunt": {
+    "c_keyhunt_in": {"action": "enter_via_the_confirmed_way", "action_family": "NAVIGATION", "target_role": "BARRIER", "tradeoff": "NONE", "consequence": "ACCESS"}
+  },
+  "n_keeper_story": {
+    "c_story_in": {"action": "enter_having_passed_the_keepers_test", "action_family": "NAVIGATION", "target_role": "BARRIER", "tradeoff": "NONE", "consequence": "ACCESS"}
+  },
+  "n_window": {
+    "c_window_in": {"action": "drop_to_prove_the_route_true", "action_family": "PHYSICAL_RISK", "target_role": "BARRIER", "tradeoff": "NONE", "consequence": "ACCESS"}
+  },
+  "n_inside": {
+    "c_inside_stairs": {"action": "choose_the_climb", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "NONE", "consequence": "LOCATION"},
+    "c_inside_study": {"action": "choose_the_study", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "NONE", "consequence": "LOCATION"},
+    "c_inside_pendulum": {"action": "choose_the_crossing", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "NONE", "consequence": "LOCATION"},
+    "c_inside_basement": {"action": "choose_the_descent", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "NONE", "consequence": "LOCATION"}
+  },
+  "n_stairs": {
+    "c_stairs_face": {"action": "carry_the_earned_proof_up_to_the_dial", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "NONE", "consequence": "LOCATION"}
+  },
+  "n_study": {
+    "c_study_face": {"action": "press_on_to_the_dial", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "EFFORT_VS_SHORTCUT", "consequence": "LOCATION"},
+    "c_study_logs": {"action": "choose_depth_over_speed_in_the_archive", "action_family": "INFORMATION", "target_role": "INFORMATION", "tradeoff": "EFFORT_VS_SHORTCUT", "consequence": "KNOWLEDGE"}
+  },
+  "n_pendulum": {
+    "c_pendulum_oil": {"action": "cross_with_care_for_the_reward", "action_family": "PHYSICAL_RISK", "target_role": "BARRIER", "tradeoff": "SAFETY_VS_REWARD", "consequence": "RESOURCE"},
+    "c_pendulum_giveup": {"action": "judge_the_test_and_decline_it", "action_family": "MORAL", "target_role": "BARRIER", "tradeoff": "SAFETY_VS_REWARD", "consequence": "SAFETY"}
+  },
+  "n_basement": {
+    "c_basement_face": {"action": "carry_the_earned_proof_straight_up", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "NONE", "consequence": "LOCATION"}
+  },
+  "n_clockface": {
+    "c_face_correct": {"action": "answer_the_test_deliberately", "action_family": "CRAFT", "target_role": "MECHANISM", "tradeoff": "NONE", "consequence": "ACCESS"},
+    "c_face_jam": {"action": "muscle_past_the_test", "action_family": "CRAFT", "target_role": "MECHANISM", "tradeoff": "EFFORT_VS_SHORTCUT", "consequence": "ACCESS"},
+    "c_face_panel": {"action": "look_for_a_way_around_the_test", "action_family": "INFORMATION", "target_role": "INFORMATION", "tradeoff": "SPEED_VS_INFO", "consequence": "KNOWLEDGE"},
+    "c_face_random": {"action": "guess_and_hope_its_lenient", "action_family": "CRAFT", "target_role": "MECHANISM", "tradeoff": "CERTAINTY_VS_TIME", "consequence": "ACCESS"}
+  },
+  "n_setcorrect": {
+    "c_correct_vault": {"action": "step_through_what_the_trial_protected", "action_family": "NAVIGATION", "target_role": "BARRIER", "tradeoff": "NONE", "consequence": "ACCESS"}
+  },
+  "n_setjam": {
+    "c_jam_oil": {"action": "find_the_honest_fix_and_retake_the_test", "action_family": "CRAFT", "target_role": "MECHANISM", "tradeoff": "NONE", "consequence": "ACCESS"},
+    "c_jam_stuck": {"action": "accept_the_test_was_failed_tonight", "action_family": "TEMPORAL", "target_role": "SELF", "tradeoff": "NONE", "consequence": "SAFETY"}
+  },
+  "n_backpanel": {
+    "c_panel_vault": {"action": "follow_the_hidden_test_to_the_goal", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "NONE", "consequence": "ACCESS"},
+    "c_panel_secret": {"action": "follow_the_hidden_test_to_the_unknown_room", "action_family": "NAVIGATION", "target_role": "LOCATION", "tradeoff": "NONE", "consequence": "ACCESS"}
+  },
+  "n_vault": {
+    "c_vault_share": {"action": "bring_the_letter_to_the_settlement", "action_family": "MORAL", "target_role": "OBJECT", "tradeoff": "NONE", "consequence": "REPUTATION"},
+    "c_vault_keep": {"action": "keep_the_passing_grade_private", "action_family": "MORAL", "target_role": "OBJECT", "tradeoff": "NONE", "consequence": "RELATIONSHIP"},
+    "c_vault_grab": {"action": "loot_the_trial_instead_of_honoring_it", "action_family": "MORAL", "target_role": "OBJECT", "tradeoff": "EFFORT_VS_SHORTCUT", "consequence": "RESOURCE"}
+  }
+}

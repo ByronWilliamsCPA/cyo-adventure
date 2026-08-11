@@ -1,0 +1,423 @@
+{
+ "schema_version": "2.0",
+ "id": "d6",
+ "version": 1,
+ "title": "The Tide House Trial",
+ "metadata": {
+  "age_band": "10-13",
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 5.5,
+   "tolerance": 1.5
+  },
+  "tier": 1,
+  "themes": [
+   "mystery",
+   "puzzles",
+   "friendship",
+   "history"
+  ],
+  "estimated_minutes": 18,
+  "ending_count": 8,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "mild",
+   "peril": "mild"
+  },
+  "topology": "branch_and_bottleneck",
+  "production_eligible": false
+ },
+ "variables": [],
+ "start_node": "n_open",
+ "nodes": [
+  {
+   "id": "n_open",
+   "body": "The tide house had stood locked since before Priya's grandmother was a girl. Its iron door was rusted shut, and a brass plate beside it held a single riddle: add the moon day to the posted hour, and carry any number past twelve. Whatever came out named a hoist, somewhere on the old gates. Sam traced the numbers with one finger. Theo read them twice. Nobody in Fenbridge had solved it in eighty years, not since the engineer Josiah Vane built the place and sealed it behind him. Priya looked at her two best friends. 'We're not leaving until we crack this,' she said. They agreed, together, right there on the step.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_open",
+     "label": "Take the Challenge",
+     "target": "n_start"
+    }
+   ]
+  },
+  {
+   "id": "n_start",
+   "body": "Three ways to start pulled at them. Priya wanted to sit with the riddle on the door until the numbers made sense. Sam wanted to walk the tide house wall and find a way in nobody else had noticed. Theo thought of the old lock-warden who minded the gates downstream, and figured a straight question might get them further than either. None of them could say which way was smarter. The riddle asked for patience. The wall asked for nerve. The warden asked for nothing but honesty. They looked at each other, then split up the choosing, each ready to try their own way first.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_examine",
+     "label": "Study the Posting",
+     "target": "n_note"
+    },
+    {
+     "id": "c_door",
+     "label": "Scout the Building",
+     "target": "n_door"
+    },
+    {
+     "id": "c_keeper",
+     "label": "Find the Warden",
+     "target": "n_keeper"
+    }
+   ]
+  },
+  {
+   "id": "n_note",
+   "body": "Priya read the riddle again, slower this time. The card gave a moon day of four and a posted hour of nine. Four plus nine made thirteen, and thirteen carried past twelve left one. Hoist One. She checked the old gate map bolted beside the door: Hoist One sat over the dry sluice culvert, the ditch that used to carry floodwater before the new channel opened. At low tide, that culvert would be dry and walkable, right under the wall. It had taken twenty minutes of quiet counting, but the numbers had actually told her something true. Sam whistled, impressed despite himself. The note had paid off.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_note_key",
+     "label": "Follow the Route",
+     "target": "n_keyhunt"
+    },
+    {
+     "id": "c_note_inside",
+     "label": "Enter Right Away",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_door",
+   "body": "Sam skipped the riddle altogether and walked the tide house wall instead, kicking through weeds nobody had touched in years. Near the base, a rusted counterweight chain hung loose from the old tide engine. Sam gave it a hard wind, and somewhere above, a winch loft hatch creaked open an inch. That was one way in, low and stubborn. Higher up, a narrow window sat cracked open too, the kind you'd only spot if you were looking for it. Theo grinned. 'Told you the note wasn't the only trick,' he said. Neither of them had read a single line of the riddle, and neither cared. They'd found their own way in, fair and square.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_door_force",
+     "label": "Wind the Counterweight",
+     "target": "n_inside"
+    },
+    {
+     "id": "c_door_window",
+     "label": "Scale the Wall",
+     "target": "n_window"
+    }
+   ]
+  },
+  {
+   "id": "n_keeper",
+   "body": "Theo found the lock-warden down at the gates, oiling a chain that didn't need it. He asked straight out: could she help them get into the old tide house? The warden looked the three of them over for a long moment, arms crossed. 'Why do you want in there?' she asked, not unkindly. Theo told her about the riddle on the door, and how they meant to solve it themselves, not just break in for fun. Something in her face eased. 'Fair enough,' she said, and reached for her oar. 'I'll row you across and let you in through the winch loft. The rest is yours to work out.'",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_keeper_enter",
+     "label": "Board the Boat",
+     "target": "n_inside"
+    },
+    {
+     "id": "c_keeper_story",
+     "label": "Ask About Vane",
+     "target": "n_keeper_story"
+    }
+   ]
+  },
+  {
+   "id": "n_keyhunt",
+   "body": "They walked the riverbank until they found it: the old sluice culvert, exactly where the numbers had said it would be. The tide was out, and the ditch lay dry and open, just as Priya predicted. Sam ducked in first, boots crunching on dry silt, and found the passage led straight under the tide house wall. It felt strange, almost unfair, how well the riddle's answer matched the real world. But that was the point, Priya realized. The tide house wasn't testing luck. It was testing whether you'd actually do the work. They had, and the culvert proved it, plain as the ground under their feet.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_keyhunt_in",
+     "label": "Take the Culvert",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_keeper_story",
+   "body": "Before they boarded the boat, the friends asked the warden about the man who built the tide house. She sat back against a post. 'Josiah Vane,' she said. 'Built half the gates on this river, and this tower besides. He didn't lock it up to keep folks out. He locked it to find the right folks to let in, ones patient enough, clever enough, kind enough to deserve what's inside.' She wouldn't say more than that, not what waited past the door, not how the tests worked. 'You'll find out yourselves,' she said, standing. 'That's rather the point of the thing.' They understood him a little better now.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_story_in",
+     "label": "Row Across Now",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_window",
+   "body": "The window sat just above head height, an easy reach once Theo laced his fingers into a step for Sam's boot. Sam caught the sill, found good handholds in the old stone, and pulled through with Priya steadying from below. It wasn't far to fall, and nobody came close to falling anyway; the ledge inside was wide and dusty and waiting. One by one, they climbed through, quiet and careful, spotting each other the whole way. When the last of them dropped down inside, dust rising around their shoes, the dare was done. They'd proven it: no note, no warden, just their own two hands.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_window_in",
+     "label": "Take the Window",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_inside",
+   "body": "Inside, the tide house opened into one tall shadowed room, ropes and gears hanging still overhead. Dust hung thick in a shaft of light. Straight ahead, a spiral stair wound up into the dark. To one side, a study door stood ajar, shelves crowding the gap. Somewhere past a narrow walkway came the slow creak of something swinging. And down a stone stair, cool air drifted up from below. Four ways, four rooms, each waiting to be tried. Priya felt her pulse pick up, not with worry, but with the feeling of a test finally, actually starting. 'Which one first?' Theo whispered.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_inside_stairs",
+     "label": "Take the Stairs",
+     "target": "n_stairs"
+    },
+    {
+     "id": "c_inside_study",
+     "label": "Search the Shelves",
+     "target": "n_study"
+    },
+    {
+     "id": "c_inside_pendulum",
+     "label": "Brave the Tunnel",
+     "target": "n_pendulum"
+    },
+    {
+     "id": "c_inside_basement",
+     "label": "Head Below",
+     "target": "n_basement"
+    }
+   ]
+  },
+  {
+   "id": "n_stairs",
+   "body": "The stairs spiraled up past shelf after shelf of waterproof ledgers, eighty years of floods and cargo ruled out in red ink. Theo's legs burned by the third turn, but he kept climbing, one hand trailing the cold rail. Near the top, a slot in the wall let him watch the weir gates far below, sluicing water in a steady pattern: long, long, short. He counted it three times to be sure. That same pattern, he realized, matched the flags painted around the great dial upstairs. The climb had worn him out, but it had also handed him something worth carrying: proof the numbers weren't random at all.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_stairs_face",
+     "label": "Reach the Top Chamber",
+     "target": "n_clockface"
+    }
+   ]
+  },
+  {
+   "id": "n_study",
+   "body": "The study smelled like old paper and river damp. Priya ran her hand along a row of hoist levers mounted on the wall, worn smooth in some spots and barely touched in others. The wear told its own story: whichever levers got pulled the most were the right answers, over and over, for eighty years of keepers. Near the door, initials were scratched into the frame at shoulder height, generation after generation of names left by whoever passed through. A shelf of logbooks sat open, practically begging to be read cover to cover. Priya could have stayed all night. She had to decide: press on with what she'd learned, or let the shelves win.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_study_face",
+     "label": "Leave for the Chamber",
+     "target": "n_clockface"
+    },
+    {
+     "id": "c_study_logs",
+     "label": "Stay and Read",
+     "target": "n_end_library"
+    }
+   ]
+  },
+  {
+   "id": "n_pendulum",
+   "body": "Past the walkway, the room opened onto the old tail-race tunnel, dry and pitch black, running off under the building. Numbers were stamped up the engine racks beside it, climbing by the same carry the hoists used, one more piece of the puzzle if you cared to read them. Sam peered into the dark. Somewhere at the far end, a thin gleam suggested something set out on purpose, waiting. The tunnel wasn't dangerous, just dark; you could count your steps between the light wells and never lose your way. Still, walking into black nothing took nerve. Sam felt the pull of it, and the worry, both at once.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_pendulum_oil",
+     "label": "Walk the Dark Tunnel",
+     "target": "n_vault"
+    },
+    {
+     "id": "c_pendulum_giveup",
+     "label": "Turn Back Now",
+     "target": "n_end_giveup"
+    }
+   ]
+  },
+  {
+   "id": "n_basement",
+   "body": "The basement was cool and dim, lit by whatever daylight leaked through the grates above. A grey heron stood watch on a beam near the old gate, entirely unbothered by visitors. Pinned to a post near the machine's roots, Priya found a diagram of a gate cross-section, its margins crowded with small sums worked out in a neat hand, the same tide arithmetic as the riddle on the door. She read it slowly by the dim light, careful not to rush. Down here, nothing asked for speed. It asked for calm hands and patient eyes, and by the time she'd finished, she understood the numbers a little better.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_basement_face",
+     "label": "Climb Back Up",
+     "target": "n_clockface"
+    }
+   ]
+  },
+  {
+   "id": "n_clockface",
+   "body": "At the top of the tower stood a huge brass dial, ringed with twelve numbers like hours on a clock, each linked to a lever and a gate somewhere below. Faint marks around the rim matched the same tide arithmetic from the door: moon day plus hour, carried past twelve. Whatever they'd learned in their own room, it was enough to make sense of this dial too. A small plate warned that forcing a lever without solving the sum could jam the whole mechanism, and guessing wrong might trip something worse. They stood before it together, the whole climb behind them, one choice left to make.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_face_correct",
+     "label": "Solve It Carefully",
+     "target": "n_setcorrect"
+    },
+    {
+     "id": "c_face_jam",
+     "label": "Force the Lever",
+     "target": "n_setjam"
+    },
+    {
+     "id": "c_face_panel",
+     "label": "Check the Back",
+     "target": "n_backpanel"
+    },
+    {
+     "id": "c_face_random",
+     "label": "Pick Any Number",
+     "target": "n_end_timeout"
+    }
+   ]
+  },
+  {
+   "id": "n_setcorrect",
+   "body": "Priya read the numbers stamped near the dial's rim: moon day six, posted hour eleven. Six plus eleven made seventeen; carried past twelve, that left five. Hoist Five. She turned the great handle slowly, watching the needle swing around to rest exactly on the five. For a second, nothing happened. Then, deep in the tower, something released with a heavy, satisfied clunk, and a section of the wall beside the dial swung inward, unlocked at last. Sam let out a breath he'd been holding. It wasn't luck. The numbers had worked because they were supposed to work, and the tower knew it too.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_correct_vault",
+     "label": "Enter the Strongroom",
+     "target": "n_vault"
+    }
+   ]
+  },
+  {
+   "id": "n_setjam",
+   "body": "Theo grabbed the lever and hauled it around without working out a single sum. It resisted, then locked hard, stuck fast between numbers. Somewhere in the wall, gears ground and stopped. Nobody yelled at him for it; the dial simply refused to be rushed. A small plate near the racks below spelled out the fix, plain as anything: ease the lever back a quarter turn before asking it for a full one. It wasn't punishment. It was just how the machine worked, and now they knew it. Theo eased the lever, feeling it give, ready to try the sum properly this time.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_jam_oil",
+     "label": "Loosen the Lever",
+     "target": "n_vault"
+    },
+    {
+     "id": "c_jam_stuck",
+     "label": "Head Home Now",
+     "target": "n_end_stuck"
+    }
+   ]
+  },
+  {
+   "id": "n_backpanel",
+   "body": "Instead of touching the dial, Sam crouched and checked the panel behind it, the plain metal backing nobody else bothered to look at. A tiny second riddle was etched into the corner, the same kind of tide sum, just shorter: moon day two, hour three. Two plus three made five, no carrying needed at all. Sam grinned. This wasn't a shortcut around the real test; it was a second one, tucked away for whoever looked past the obvious answer. A thin seam in the panel shifted under a light push, opening just enough to show two directions leading off from a hidden hinge.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_panel_vault",
+     "label": "Open the Strongroom",
+     "target": "n_vault"
+    },
+    {
+     "id": "c_panel_secret",
+     "label": "Climb Toward the Loft",
+     "target": "n_end_secret"
+    }
+   ]
+  },
+  {
+   "id": "n_vault",
+   "body": "Past the opening, the strongroom was smaller than any of them expected, lined with plain wooden shelves. A folded letter sat waiting under a paperweight, addressed to whoever made it this far. Beside it sat a tiny working river model, its fingernail gates opening and closing on a slow, true tide, powered by some hidden trickle of water. There was no pile of gold, no chest of jewels, just quiet, careful things a person had made and kept. The friends stood together, looking at what eighty years of sealing had protected. It wasn't riches. It was proof that someone, once, had cared enough to test them fairly. Now came the real question: what to do with it.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_vault_share",
+     "label": "Carry the News Home",
+     "target": "n_end_hero"
+    },
+    {
+     "id": "c_vault_keep",
+     "label": "Keep It Between Us",
+     "target": "n_end_keepsake"
+    },
+    {
+     "id": "c_vault_grab",
+     "label": "Grab the Model",
+     "target": "n_end_caught"
+    }
+   ]
+  },
+  {
+   "id": "n_end_library",
+   "body": "Priya stayed with the logbooks long after the others might have wandered off. Page by page, the old entries revealed exactly what the dial upstairs was built to test: not speed, not memory, but the plain willingness to check your work twice. She read late into the evening, until an old keeper found her still there and gently walked her out, promising the shelf would still be there tomorrow. Priya didn't feel like she'd failed anything. She'd learned the shape of the real test, and next time she climbed those stairs, she'd know exactly what the dial wanted from her. The tide house wasn't going anywhere.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_library",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Shelf Waits"
+   }
+  },
+  {
+   "id": "n_end_giveup",
+   "body": "At the mouth of the dark tunnel, Sam stopped. 'If one of us trips back there with no light, we're not finding our way out fast,' Sam said. Nobody argued. Priya nodded, and Theo backed up without a word of complaint. It wasn't fear talking, not really; it was three friends looking at a real risk and calling it correctly. They turned back toward the walkway, the far gleam in the tunnel still unclaimed, and none of them felt like they'd lost anything. Reading a danger right and choosing not to chase a reward through it, that was its own kind of passing, and they knew it.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_giveup",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Right Call"
+   }
+  },
+  {
+   "id": "n_end_timeout",
+   "body": "Theo picked a number at random and turned the handle before anyone could stop him. The dial groaned, gears slipping against each other in a way that clearly wasn't right. Somewhere below, a bell clanged twice, loud enough that Warden Pell came hurrying up the stairs, more amused than angry. 'That old thing complains when you rush it,' she said, resetting the lever herself. 'Come back another night and actually work it out.' Theo felt his face go warm, but nobody laughed at him for long. Guessing had never really been a fair shot at a dial built to reward careful thinking, and he knew that now.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_timeout",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Dial Complains"
+   }
+  },
+  {
+   "id": "n_end_stuck",
+   "body": "Even after easing the lever back, it wouldn't budge past its jam, not tonight. Whatever the fix needed, it wasn't anything the three of them had brought with them. Theo let go of the handle, more disappointed than defeated. 'We'll come back with the right tools,' Priya said, and nobody argued. They climbed back down together, already talking through what they'd do differently: read the numbers slower, check twice before touching anything. The tide house wasn't punishing them for trying. It was just telling them, plainly, that tonight wasn't the night. There would be other nights, and they'd be ready for them.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_stuck",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Not Tonight"
+   }
+  },
+  {
+   "id": "n_end_secret",
+   "body": "The other path from the panel led up, not down, to a small rooftop room full of tools and half-finished sketches. A garden of reeds grew in shallow troughs along the rail, kept green by a cistern drip some careful hand had rigged to last for decades. One workbench held a model gate, only half built, waiting for someone to finish the last gears. Priya picked up a tool without quite deciding to. It just felt right in her hand. This wasn't treasure. It was Josiah Vane's unfinished work, left for whoever found it with patience enough to notice. The three of them looked at each other and understood: this was theirs to keep tending now.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_secret",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Unfinished Loft"
+   }
+  },
+  {
+   "id": "n_end_hero",
+   "body": "They carried the letter down to the warden first, and then to the whole town gathered by the locks. Word spread fast: three kids had solved Josiah Vane's old riddle, the one nobody in Fenbridge had cracked in eighty years. Warden Pell read the letter aloud, and when she finished, she looked at the three of them with something new in her eyes, real trust, not just approval. 'The tide house is open to you three whenever you like,' she said, handing back the key ring. 'You earned that.' Priya, Sam, and Theo grinned at each other. Whatever Vane had built the tower to test, they'd passed it, and everyone knew now.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_hero",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Warden's Trust"
+   }
+  },
+  {
+   "id": "n_end_keepsake",
+   "body": "They put everything back exactly as they'd found it: the letter under its paperweight, the tiny river model set gently back on its shelf, gates still ticking open and shut on their own slow tide. Nothing left the strongroom that wasn't already theirs to take, which was just the fact of having passed. Outside, under the dark, the three of them made a quiet promise: this stayed between them. Not because anyone told them to hide it, but because some things mean more kept close. Nobody in Fenbridge would ever know the three of them had solved Josiah Vane's test. That was exactly how they wanted it, a secret held, not a prize won.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_keepsake",
+    "valence": "positive",
+    "kind": "success",
+    "title": "A Secret Kept"
+   }
+  },
+  {
+   "id": "n_end_caught",
+   "body": "Theo tucked the little river model under his jacket, thinking no one would ever know. He didn't notice the floor, dusted with fine river silt that caught every footprint clean as ink. By the time they reached the winch loft, Warden Pell was already waiting, arms crossed, not angry so much as unsurprised. 'The tower always tells on you,' she said, nodding at his boots. 'That's the last test, and the easiest one to fail.' Theo handed the model back, cheeks burning, and she just laughed, not unkindly, and reset the silt with a broom. Nobody was punished beyond putting it back. They walked home lighter, having failed the one test that actually mattered, kindly.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_caught",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Caught by the Silt"
+   }
+  }
+ ]
+}

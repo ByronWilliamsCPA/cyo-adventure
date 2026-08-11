@@ -1,0 +1,423 @@
+{
+ "schema_version": "2.0",
+ "id": "d6",
+ "version": 1,
+ "title": "The Tide-Lock Trial",
+ "metadata": {
+  "age_band": "10-13",
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 5.5,
+   "tolerance": 1.5
+  },
+  "tier": 1,
+  "themes": [
+   "mystery",
+   "puzzles",
+   "friendship",
+   "history"
+  ],
+  "estimated_minutes": 18,
+  "ending_count": 8,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "mild",
+   "peril": "mild"
+  },
+  "topology": "branch_and_bottleneck",
+  "production_eligible": false
+ },
+ "variables": [],
+ "start_node": "n_open",
+ "nodes": [
+  {
+   "id": "n_open",
+   "body": "The old lock tower had stood sealed above Fenbridge for longer than anyone could remember. Thick chains crossed its river door. A brass plate beside the chains carried a strange sum instead of a warning: add the moon day to the posted hour, and carry past twelve to read each hoist. Mara traced the numbers with one finger. Theo read them twice, lips moving. Josie just grinned at the puzzle of it. The tower looked less like a ruin and more like a question, built for someone patient enough to answer it. The three of them had come together, and they meant to solve it together too.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_open",
+     "label": "Face the Chains",
+     "target": "n_start"
+    }
+   ]
+  },
+  {
+   "id": "n_start",
+   "body": "Up close, the chains would not budge, and the plate's sum was not going to solve itself while they stood still. 'We could work the note first,' Mara said, tapping the brass plate. 'Slow and careful.' Theo was already walking the tower's base, eyes on the stonework. 'Or we find our own way in. No note needed.' Josie looked toward the ferry landing, where an old lock-warden was coiling rope. 'Or we just ask him.' None of the three ideas was wrong, and none of them was obviously right. They agreed on one thing only: whichever way they chose, they would choose it together.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_examine",
+     "label": "Study the Note",
+     "target": "n_note"
+    },
+    {
+     "id": "c_door",
+     "label": "Find Another Way",
+     "target": "n_door"
+    },
+    {
+     "id": "c_keeper",
+     "label": "Ask the Warden",
+     "target": "n_keeper"
+    }
+   ]
+  },
+  {
+   "id": "n_note",
+   "body": "Mara knelt by the door and worked the note slowly, line by line. The moon day was chiseled beside the chains: seven. The plate's posted hour read six. Seven plus six made thirteen, and carrying past twelve left one. Hoist one, the first line said, was marked low on the tower's south wall. They walked the wall until they found it: a dry sluice culvert, walkable now that the new channel had taken the river's flow. The number had not lied. Patience had done exactly what patience does. Now came a choice: walk down and prove the culvert was real, or trust the note enough to go in without checking.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_note_key",
+     "label": "Follow the Note",
+     "target": "n_keyhunt"
+    },
+    {
+     "id": "c_note_inside",
+     "label": "Use It Now",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_door",
+   "body": "Theo left the note to the others and circled the tower, reading the building itself rather than any page. Low along the foundation, where two stones had slumped apart, he found a gap just wide enough to squeeze through. Higher up, an old tide engine still turned. He hauled its counterweight chain up to the scratched top mark, and gears groaned somewhere inside the wall. A window shutter, long swollen shut, eased open a crack. Two ways in, found by nothing but persistence: one low, one high. Theo grinned. No note, no numbers, just the tower giving up its secrets to whoever bothered to look hard enough.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_door_force",
+     "label": "Squeeze the Low Gap",
+     "target": "n_inside"
+    },
+    {
+     "id": "c_door_window",
+     "label": "Climb the High Window",
+     "target": "n_window"
+    }
+   ]
+  },
+  {
+   "id": "n_keeper",
+   "body": "Josie walked straight down to the ferry landing, where the lock-warden was coiling rope with hands like old leather. 'We want to try the tower,' she said. He looked at the three of them for a long moment, not unkindly, just weighing. 'Most kids just want the story,' he said. 'You're asking to try it.' Josie held his gaze and didn't look away. Something in his face eased. He picked up an oar. 'Get in, then. I'll row you across and let you in through the winch loft myself. But the solving is yours, not mine.' He hadn't handed them anything but a door. That, it turned out, was exactly the point.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_keeper_enter",
+     "label": "Take the Offer",
+     "target": "n_inside"
+    },
+    {
+     "id": "c_keeper_story",
+     "label": "Hear the Story",
+     "target": "n_keeper_story"
+    }
+   ]
+  },
+  {
+   "id": "n_keyhunt",
+   "body": "They followed the tower wall to the spot the note had promised: a low arch, dry underfoot, where a sluice channel once ran before the river changed course. It matched the line exactly, hoist one, marked low on the south wall. Mara laughed out loud. Some part of her had expected a trick, a dead end, a puzzle inside the puzzle. There wasn't one. The tower had made a fair promise and kept it. Ducking through the culvert, they understood something bigger than the route itself: the whole tide arithmetic worked the same way, plainly, honestly, for anyone willing to do the adding. That confidence would matter later, at the dial.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_keyhunt_in",
+     "label": "Take the Culvert",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_keeper_story",
+   "body": "Before they crossed, Josie asked, 'Who even built this place?' The lock-warden sat back on the gunwale. 'An engineer, long before my time. Built the whole tide works, and hid tests all through it, on purpose.' 'Why?' Theo asked. 'She wanted to find people who'd take a puzzle seriously,' the warden said. 'Not the smartest. Not the fastest. Just the patient, careful kind. Folks worth trusting with what she left behind.' He didn't say what that was. His eyes just went distant, remembering someone. 'You three,' he added, 'you're already doing fine.' Then he stood, picked up his oar, and nodded toward the tower.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_story_in",
+     "label": "Follow the Warden In",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_window",
+   "body": "Theo went for the window. The shutter's crack was just wide enough for fingers, and the old stone below it was rough with easy holds. Mara braced his boot from below while Josie called out each foothold from the ground, steady and calm. It was a short climb, more careful than daring, and every hold felt solid under his weight. At the top, Theo worked the shutter wider and swung one leg over the sill. 'Come on,' he called down, already halfway inside. One by one they climbed after him, spotting each other the whole way, until all three stood together past the seal at last.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_window_in",
+     "label": "Drop Down Inside",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_inside",
+   "body": "Inside, the tower opened up around them, all timber and iron and old river light. Dust hung still in the air. Whatever had brought them this far, they stood now on the same worn floorboards, past the seal at last, and the trial proper began. Four ways led on from the entry hall. A stair spiraled up into the height of the tower. A study door stood ajar, shelves visible beyond it. A narrow crossing led off into darkness and motion below. A ladder dropped down into the depth of a lit basement. Each led to its own kind of test. None of the four looked like the wrong choice.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_inside_stairs",
+     "label": "Climb the Stairs",
+     "target": "n_stairs"
+    },
+    {
+     "id": "c_inside_study",
+     "label": "Enter the Study",
+     "target": "n_study"
+    },
+    {
+     "id": "c_inside_pendulum",
+     "label": "Cross the Tunnel",
+     "target": "n_pendulum"
+    },
+    {
+     "id": "c_inside_basement",
+     "label": "Go Below",
+     "target": "n_basement"
+    }
+   ]
+  },
+  {
+   "id": "n_stairs",
+   "body": "The stairs wound up past shelf after shelf of toll ledgers, waterproof-bound, eighty years of cargo and flood ruled neatly in red ink. Mara paused to flip through one, amazed at how much a tower could remember. Higher up, through a slit window, she heard the weir gates below, sluicing in a steady run: long, long, short, long, long, short. She counted it three times to be sure. It was the same rhythm stamped on the flags posted by the tower's dial, she realized, a pattern the gates themselves had been teaching all along. By the top step, legs burning, she understood enough of the tide sums to try the dial herself.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_stairs_face",
+     "label": "Go to the Dial",
+     "target": "n_clockface"
+    }
+   ]
+  },
+  {
+   "id": "n_study",
+   "body": "The study smelled of dust and river damp. Rows of hoist levers lined one wall, each worn smooth by decades of hands, deepest where the right pulls landed, faint where they never did. Theo ran his thumb along the polish and understood, without anyone teaching him, which pulls mattered most for the tide sums. Along the catwalk door frame, generations of keepers had scratched their initials, shoulder-high, a quiet roll call stretching back further than the ledgers upstairs. Theo could have stayed all evening just reading names and guessing their stories. Shelves of old logbooks waited too, thick with the tower's whole history, tempting him to sit right down and start.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_study_face",
+     "label": "Go to the Dial",
+     "target": "n_clockface"
+    },
+    {
+     "id": "c_study_logs",
+     "label": "Read the Records",
+     "target": "n_end_library"
+    }
+   ]
+  },
+  {
+   "id": "n_pendulum",
+   "body": "Josie found the tail-race tunnel: dry underfoot, black as a closed eye, running off under the tower floor. Depth figures were stamped up an engine rack beside it, climbing in the same carry-past-twelve pattern as the hoists above. She traced them with a finger, working out the rhythm. Ahead, a row of light wells pierced the tunnel roof, small circles of daylight spaced out in the dark. Someone had once set something aside at the far end, waiting for whoever crossed. Josie counted the paces between light wells: safe, steady, no worse than a stumble and a long walk home if she misjudged one. It was the tower's most honest dare yet.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_pendulum_oil",
+     "label": "Cross and Claim It",
+     "target": "n_clockface"
+    },
+    {
+     "id": "c_pendulum_giveup",
+     "label": "Turn Back Now",
+     "target": "n_end_giveup"
+    }
+   ]
+  },
+  {
+   "id": "n_basement",
+   "body": "The basement was dim and cool, lit by a single lantern hook. Down among the tide engine's roots, a diagram of the gate's cross-section hung pinned to a post, its margins scrawled with tide sums worked out beside each hoist number. Theo traced the tidy handwriting, working it out. A grey heron stood watch on the gate beam overhead, unbothered by visitors, one leg tucked up, patient as the tower itself. Theo worked through the diagram's sums slowly, matching each margin note to a hoist. By the time he climbed back toward the light, he carried the same carry-past-twelve logic the others had earned upstairs, just learned in the dark instead.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_basement_face",
+     "label": "Climb to the Dial",
+     "target": "n_clockface"
+    }
+   ]
+  },
+  {
+   "id": "n_clockface",
+   "body": "All four ways led here, to a room with one great dial in the center, ringed with twelve numbered hoist positions like the face of an enormous clock. Chiseled beneath it, plain as the plate at the door: add the moon day to the posted hour, carry past twelve, and set the dial true. A smaller line, sharper in tone, added a warning: forcing the mechanism answers nothing but the mechanism itself. Whatever each of them had learned on the way up, it all pointed here now. They could work the sum and set it properly. They could force it. They could search behind it instead. Or they could simply guess.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_face_correct",
+     "label": "Set the Dial",
+     "target": "n_setcorrect"
+    },
+    {
+     "id": "c_face_jam",
+     "label": "Force the Dial",
+     "target": "n_setjam"
+    },
+    {
+     "id": "c_face_panel",
+     "label": "Check Behind It",
+     "target": "n_backpanel"
+    },
+    {
+     "id": "c_face_random",
+     "label": "Guess a Number",
+     "target": "n_end_timeout"
+    }
+   ]
+  },
+  {
+   "id": "n_setcorrect",
+   "body": "Mara found the moon day chalked fresh on a slate by the dial: nine. The posted hour, painted right on the rim, read four. Nine plus four made thirteen. Carried past twelve, that left one. Together they turned the great wheel, notch by notch, until the pointer sat square on hoist one. For a breath, nothing happened. Then, deep in the wall, something released with a long, satisfied clunk, gears finding their proper rest after decades of waiting. A narrow door swung open beside the dial, quiet as a held breath finally let go. They had done the sum honestly, and the tower had recognized it.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_correct_vault",
+     "label": "Step Through",
+     "target": "n_vault"
+    }
+   ]
+  },
+  {
+   "id": "n_setjam",
+   "body": "Theo, impatient, hauled the wheel around without working the sum first. It turned half a notch, caught hard, and stopped dead, gears grinding somewhere deep in the wall. Nobody was hurt, but the dial would not budge another inch. Mara spotted a small brass plate bolted near the racks, a posted rule none of them had read yet: ease back a quarter turn before asking for a full one. 'That's on me,' Theo admitted, not proud but not ashamed either. The tower hadn't punished him. It had just told him, plainly, how to try again properly. The rule was right there. All he had to do was follow it.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_jam_oil",
+     "label": "Ease It Back",
+     "target": "n_vault"
+    },
+    {
+     "id": "c_jam_stuck",
+     "label": "Stop for Tonight",
+     "target": "n_end_stuck"
+    }
+   ]
+  },
+  {
+   "id": "n_backpanel",
+   "body": "Instead of touching the wheel, Josie ran her hands along the dial's wooden case and found a seam, nearly invisible, at the back. A small panel swung open on a hidden hinge, revealing a second, smaller dial no bigger than her palm. Beside it, a tiny plate carried its own short sum, the same tide arithmetic, just faster to work. Josie solved it in seconds using the same trick from the hoists upstairs. The little dial clicked around and something shifted behind the wall. Two passages opened where there had only been stone: one leading toward what felt like a strongroom, the other toward somewhere the map of the tower had never shown at all.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_panel_vault",
+     "label": "Head to the Strongroom",
+     "target": "n_vault"
+    },
+    {
+     "id": "c_panel_secret",
+     "label": "Follow the Hidden Path",
+     "target": "n_end_secret"
+    }
+   ]
+  },
+  {
+   "id": "n_vault",
+   "body": "The strongroom was small and dry, lined with cedar shelves. Most of it was plain: old letters, a few maps, nothing that glittered. On the center shelf sat a tiny working river model, no bigger than a shoebox, its fingernail-sized gates opening and closing on a true miniature tide. Beside it lay a letter in careful handwriting, addressed to whoever finally worked the sums right. Passing the dial's test had felt like the whole point. Standing here now, they understood it wasn't. What they did next, with what the tower had trusted them to find, was its own kind of question. And nobody was going to answer it for them.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_vault_share",
+     "label": "Bring It to Fenbridge",
+     "target": "n_end_hero"
+    },
+    {
+     "id": "c_vault_keep",
+     "label": "Keep It Between Us",
+     "target": "n_end_keepsake"
+    },
+    {
+     "id": "c_vault_grab",
+     "label": "Take It All",
+     "target": "n_end_caught"
+    }
+   ]
+  },
+  {
+   "id": "n_end_library",
+   "body": "Theo stayed in the study long after the others had gone on, working through logbook after logbook by lamplight. The records weren't just numbers. They were the whole shape of the tide arithmetic laid out plainly, decade after decade, everything the dial would ever ask of him. By the time the light through the high window turned gold, he understood the sums better than he ever would have guessed one at a time under pressure. He hadn't passed the dial's test tonight. He'd done something better: learned exactly what it was really testing. Next time, he told himself, closing the last ledger gently, he'd walk up to that wheel already knowing everything it needed.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_library",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "A Page Well Spent"
+   }
+  },
+  {
+   "id": "n_end_giveup",
+   "body": "Halfway along the light wells, Josie stopped counting paces and just listened to the dark ahead. 'If one of us slips in there,' she said quietly, 'that's a long way to fall for a prize we haven't even seen yet.' Nobody argued. Mara nodded slowly, and Theo let out a breath he hadn't noticed holding. They turned back together, unhurried, feeling their way past each light well toward the entry hall. It didn't feel like losing. Reading a risk correctly and choosing not to take it, all three of them agreed later, was its own kind of passing grade, maybe the hardest one the tower had offered all night.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_giveup",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Wise Retreat"
+   }
+  },
+  {
+   "id": "n_end_timeout",
+   "body": "Mara spun the dial to a number she liked the look of, just to see. Somewhere deep in the wall, a bell began to ring, patient and unhurried, more like a polite cough than an alarm. Footsteps sounded on the stairs below a few minutes later: the lock-warden, lantern in hand, not angry, just amused. 'She built it to know the difference between a sum and a shrug,' he said, easing the dial back himself. 'Come back when you've done the adding.' They walked out into the cool night air a little sheepish, already talking through where they'd gone wrong. The dial, it turned out, had never once been fooled by a guess.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_timeout",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "A Guess Too Soon"
+   }
+  },
+  {
+   "id": "n_end_stuck",
+   "body": "They tried the quarter-turn rule twice more, but the jam had set deep this time, past what easing back could fix. The dial simply would not move, not tonight, not with anything the three of them had brought with them. Theo sat back on his heels and let out a long breath. 'We'll come back better prepared,' he said, and meant it. Mara was already sketching the wheel's teeth in the dust, working out what tool might free it next time. Nobody blamed Theo for forcing it first. The tower wasn't going anywhere, and neither was their nerve. They left the way they'd come, already planning the second attempt.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_stuck",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Dial Holds Fast"
+   }
+  },
+  {
+   "id": "n_end_secret",
+   "body": "The unlisted path climbed, not down, up onto the roof, where the engineer's old workshop sat open to the sky. A reed garden grew there still, green and thriving, fed by a cistern drip rigged decades ago to outlast its builder. On the workbench lay a half-finished gate model, tools laid out exactly as she'd left them, waiting for hands that never came back. Josie picked up a small file, almost without thinking, and started smoothing the model's rough edge. Nobody discussed it. They simply understood, all three of them at once, that the workshop had just quietly become theirs to tend, sums and all, for as long as they wanted it.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_secret",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Keepers of the Loft"
+   }
+  },
+  {
+   "id": "n_end_hero",
+   "body": "They carried the letter down to the ferry landing themselves and read it aloud to the lock-warden right there on the dock. His face changed as he listened, something in it loosening after what looked like years of waiting. Word traveled through Fenbridge fast after that: the old tower's sums had finally been solved, honestly, by three kids who'd simply done the work. Nobody handed them a reward. What they got instead was better, an open door: the warden's own key, a standing invitation back to the tower whenever they liked. Mara understood, finally, exactly what the engineer had spent decades testing for. It wasn't cleverness. It was people worth trusting.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_hero",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Warden's Trust"
+   }
+  },
+  {
+   "id": "n_end_keepsake",
+   "body": "They left the room exactly as they'd found it, the tiny river model still sitting on its cedar shelf, gates opening on their small true tide. But the letter, addressed to whoever finally worked the sums right, was theirs to keep, so they kept it. On the walk home, the three of them made a promise over it: this stayed between them. Not a secret to boast about, just something quietly theirs. Mara shook on it first, then Theo, then Josie. They reset the panel behind them and pulled the tower door shut just as they'd found it, three friends carrying a passing grade nobody else needed to hear about.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_keepsake",
+    "valence": "positive",
+    "kind": "success",
+    "title": "A Quiet Pact"
+   }
+  },
+  {
+   "id": "n_end_caught",
+   "body": "Josie scooped the little river model into her jacket, meaning to take just this one thing home. She didn't notice the fine river silt dusted across the strongroom floor, or the perfect trail of footprints she left crossing it. Down at the winch loft hatch, the lock-warden was already waiting, arms crossed, not angry so much as unsurprised. 'Silt tells on everyone eventually,' he said, holding out one hand. Cheeks burning, Josie handed the model back, and they walked it up to its shelf together while he explained, gently, exactly what the silt was for. Nobody yelled. Nobody was punished beyond putting things right. It was, Mara realized later, the one test all three of them had almost failed.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_caught",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Footprints in the Silt"
+   }
+  }
+ ]
+}

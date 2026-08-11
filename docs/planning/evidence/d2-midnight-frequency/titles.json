@@ -1,0 +1,21 @@
+{
+  "P": {
+    "book_title": "Vera's Last Broadcast",
+    "endings": {
+      "e_fin_listen": "Sitting On The Steps"
+    }
+  },
+  "Q": {
+    "book_title": "The Wrenfield Net",
+    "endings": {
+      "e_win_answer": "The Same Worn Book"
+    }
+  },
+  "R": {
+    "book_title": "Lou's Last Broadcast",
+    "endings": {
+      "e_fin_listen": "Exactly Enough",
+      "e_cn_reel": "One Night Just Theirs"
+    }
+  }
+}

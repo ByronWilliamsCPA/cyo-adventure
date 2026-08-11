@@ -1,0 +1,425 @@
+{
+ "schema_version": "2.0",
+ "id": "graph_F",
+ "version": 1,
+ "title": "The Lighthouse Frequency",
+ "metadata": {
+  "age_band": "10-13",
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 6.0,
+   "tolerance": 1.5
+  },
+  "tier": 1,
+  "themes": [
+   "mystery",
+   "history",
+   "friendship",
+   "courage"
+  ],
+  "estimated_minutes": 20,
+  "ending_count": 8,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "mild",
+   "peril": "mild"
+  },
+  "topology": "branch_and_bottleneck",
+  "production_eligible": false
+ },
+ "variables": [],
+ "start_node": "n_open",
+ "nodes": [
+  {
+   "id": "n_open",
+   "body": "Mira Alvarez spends every August at her aunt's cottage in Gull Harbor, but this summer her cousin Theo comes too, and together they find the town more interesting than ever. On their first evening, Mira flips through a water-stained book from the cottage's shelf and a folded scrap of paper slips out: a page torn from a logbook, dated the night of a terrible 1962 storm, with a string of numbers and the words 'the lighthouse answered.' No one in Gull Harbor has ever explained the old story of a rescue signal nobody could trace. Mira looks at Theo, and Theo looks at the darkening lighthouse across the bay.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_open",
+     "label": "Wake up ready to chase the mystery",
+     "target": "n_start"
+    }
+   ]
+  },
+  {
+   "id": "n_start",
+   "body": "The next morning, Mira and Theo lay the torn page on the kitchen table and study it over toast. The numbers could be a code, a date, or nothing at all. Aunt Rosa mentions three things almost by accident: the lighthouse has stood empty since the seventies, the town archive keeps every issue of the Gull Harbor Beacon back to 1940, and the tide pools below the bluff sometimes wash up items lost from old shipwrecks. Any of the three could hold a clue, but the cousins cannot search everywhere before lunch. They spread the page flat one more time and decide where their search will begin.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_go_lighthouse",
+     "label": "Head straight for the old lighthouse",
+     "target": "n_lighthouse"
+    },
+    {
+     "id": "c_go_archive",
+     "label": "Dig through the newspaper archive",
+     "target": "n_archive"
+    },
+    {
+     "id": "c_go_tidepools",
+     "label": "Search the tide pools below the bluff",
+     "target": "n_tidepools"
+    }
+   ]
+  },
+  {
+   "id": "n_lighthouse",
+   "body": "The lighthouse gate hangs open on one hinge, and the tower rises white and peeling above the rocks. A hand-painted sign warns visitors to stay off the stairs, but the door at the base is ajar. Beside the tower sits a small stone cottage with smoke curling from its chimney, curtains fluttering in an open window. Someone clearly still lives here, keeping an eye on the old light. Theo points up at the spiral stairs visible through the doorway, dust motes drifting in a shaft of sun. Mira glances at the cottage instead, wondering if whoever lives there might know more about the storm than any book does.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_light_climb",
+     "label": "Climb the spiral stairs to the top",
+     "target": "n_towertop"
+    },
+    {
+     "id": "c_light_door",
+     "label": "Knock on the keeper's cottage door",
+     "target": "n_keeper2"
+    }
+   ]
+  },
+  {
+   "id": "n_towertop",
+   "body": "The stairs creak but hold, spiraling past dusty windows streaked with salt. At the top, the old lamp room is empty except for cobwebs and a stack of folding chairs, but a low humming sound seems to come from somewhere below the floor, not above it. Mira presses her ear to the boards and feels a faint vibration, steady as a heartbeat. Theo finds a thin seam in the floorboards, almost invisible unless the light hits it right, shaped like a trapdoor that has not been opened in years. The humming grows slightly louder when they crouch beside it, as if something below is still, somehow, switched on.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_top_down",
+     "label": "Follow the humming sound through the hidden trapdoor",
+     "target": "n_radioroom"
+    }
+   ]
+  },
+  {
+   "id": "n_keeper2",
+   "body": "A boy about Theo's age answers the cottage door, a screwdriver still in one hand. He introduces himself as Sam and explains that his grandmother used to be the lighthouse keeper, so his family still checks on the old building even though the town owns it now. When Mira shows him the torn logbook page, Sam's eyebrows shoot up. He knows that handwriting, he says, though he will not say whose it is yet. He glances back at the tower, then at the cousins, clearly deciding how much to tell two strangers he just met.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_keeper_join",
+     "label": "Ask Sam to show you inside the lighthouse",
+     "target": "n_radioroom"
+    },
+    {
+     "id": "c_keeper_story",
+     "label": "Ask Sam what he knows about the storm",
+     "target": "n_samstory"
+    }
+   ]
+  },
+  {
+   "id": "n_samstory",
+   "body": "Sam leans against the doorframe and tells them what his grandmother always said: during the worst storm anyone in Gull Harbor remembers, a fishing boat called the Merion lost its bearings in the dark, and somehow a signal from the lighthouse guided it home, even though the official radio had been broken for weeks. The harbor master never found out who sent it. Sam's grandmother gets quiet whenever it comes up, which Sam has always found strange for a story everyone treats as a happy ending. He grabs the cottage key off its hook and nods toward the tower. 'Might as well show you the room nobody talks about.'",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_samstory_join",
+     "label": "Follow Sam inside to see for yourself",
+     "target": "n_radioroom"
+    }
+   ]
+  },
+  {
+   "id": "n_archive",
+   "body": "The Gull Harbor archive occupies one cramped room above the library, shelves sagging under bound volumes of the town's weekly newspaper. A hand-lettered index promises everything is filed by year, though the dust suggests few people check anymore. Mira finds the reel for 1962 while Theo searches for anyone who might explain how the filing system actually works. A woman behind the reference desk looks up from her cataloguing, clearly the person most likely to know this collection by heart. Between the microfilm reader and the librarian's memory, the cousins have two ways to chase the same thread.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_archive_read",
+     "label": "Search the old newspaper microfilm",
+     "target": "n_oldnews"
+    },
+    {
+     "id": "c_archive_librarian",
+     "label": "Ask the librarian for help",
+     "target": "n_librarian"
+    }
+   ]
+  },
+  {
+   "id": "n_oldnews",
+   "body": "The microfilm reader hums and flickers as Mira scrolls through brittle front pages until one headline stops her: STORM SPARES FISHING FLEET, MYSTERY SIGNAL CREDITED. The article describes the Merion's crew hearing a clear voice over their radio giving exact bearings home, though the harbor master's official log showed no transmission that night. A blurry photograph shows the lighthouse silhouetted against storm clouds. The reporter notes that the lighthouse keeper at the time, a Mrs. Eleanor Hale, declined to comment. Theo leans over Mira's shoulder to read the name twice, already wondering if that name connects to anyone still living in Gull Harbor today.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_news_lighthouse",
+     "label": "Head to the lighthouse to check the story",
+     "target": "n_radioroom"
+    }
+   ]
+  },
+  {
+   "id": "n_librarian",
+   "body": "The librarian, Mrs. Okafor, brightens at the mention of the 1962 storm. She pulls a hand-drawn map from a folder of local history donations, made decades ago by a keeper's daughter who used to volunteer at the library. The map shows the lighthouse's original floor plan, including a small room behind the lamp house marked only 'radio, private.' Mrs. Okafor explains that the room was sealed off when the light was automated in the seventies, and as far as she knows, nobody has opened it since. She traces the route with one finger, then slides the map across the desk, clearly hoping the cousins will finish the story she never could.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_librarian_map",
+     "label": "Follow the map to the lighthouse",
+     "target": "n_radioroom"
+    }
+   ]
+  },
+  {
+   "id": "n_tidepools",
+   "body": "The tide pools below the bluff glitter with orange starfish and darting minnows, and Mira and Theo pick their way carefully across the slick rocks. Near the waterline, something catches the light: a corked glass bottle wedged between two stones, its label long since dissolved. Further along, past a tangle of kelp, stands a weathered wooden shed marked STORM WATCH in faded paint, its door hanging loose on rusted hinges. Both look like they might hold pieces of the old story, and the tide is starting to creep back in, which means there is only time to properly explore one before the rocks disappear underwater.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_tide_find",
+     "label": "Pick up the glass bottle wedged in the rocks",
+     "target": "n_bottle"
+    },
+    {
+     "id": "c_tide_storm",
+     "label": "Duck into the old storm-watch shed",
+     "target": "n_stormwatch"
+    }
+   ]
+  },
+  {
+   "id": "n_bottle",
+   "body": "The bottle is heavier than it looks, and when Mira works the swollen cork free, a tightly rolled strip of paper slides out. It is water-warped but legible: a list of numbers matching the ones from the torn logbook page, along with three words, 'ask the light.' Theo turns the bottle over, looking for any other clue, but finds only a faint engraving on the glass: a lighthouse and the initials E.H. Whoever sent this bottle out to sea clearly wanted someone, someday, to connect it back to the tower on the bluff. The tide is rising fast now, so there is no time to linger.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_bottle_lighthouse",
+     "label": "Carry the bottle up to the lighthouse",
+     "target": "n_radioroom"
+    }
+   ]
+  },
+  {
+   "id": "n_stormwatch",
+   "body": "Inside the shed, shelves of rusted equipment line the walls: flare guns, coils of rope, and a logbook so swollen with damp it has fused nearly shut. Theo manages to peel back the cover, revealing a single legible entry from the night of the storm, written in a shaky hand: 'Boat off course. Radio down. Going to the light. E.H.' Mira recognizes the initials from the torn page in her pocket. Outside, waves are already lapping at the shed's threshold, and a gust rattles the loose door. Whatever E.H. did that night, the answer seems to be waiting up at the lighthouse, not down here.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_storm_lighthouse",
+     "label": "Hurry across the point to the lighthouse",
+     "target": "n_radioroom"
+    }
+   ]
+  },
+  {
+   "id": "n_radioroom",
+   "body": "However they arrived, the hidden room behind the lamp house takes their breath away. Dust sheets cover an old radio set, its dials tarnished but intact, beside a shelf holding a leather logbook and a handwritten diary. A faded photograph pinned to the wall shows a young woman at these very controls, headphones pressed to one ear. Sam murmurs that the woman is his grandmother, decades younger. The room feels frozen in the exact moment the storm ended: a coffee cup, a pencil resting mid-sentence, papers covered in the same numeric code from the torn page. Everything the cousins have gathered all day finally points to one small, dusty room, and one obvious question: what happened here?",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_radio_decode",
+     "label": "Try to decode the numeric code in the log",
+     "target": "n_decode"
+    },
+    {
+     "id": "c_radio_log",
+     "label": "Read the keeper's diary instead",
+     "target": "n_end_notebook"
+    },
+    {
+     "id": "c_radio_dial",
+     "label": "Turn the old radio dial and listen",
+     "target": "n_dial"
+    },
+    {
+     "id": "c_radio_leave",
+     "label": "Decide this is too big a discovery to keep exploring alone",
+     "target": "n_end_curious"
+    }
+   ]
+  },
+  {
+   "id": "n_decode",
+   "body": "Mira spreads the logbook flat and lines the numbers up against the torn page from home. Slowly, a pattern emerges: each number matches a letter's position on an old signal chart tucked into the back cover. Theo calls out numbers while Mira writes down letters, and after several false starts a message takes shape across a scrap of paper. It is short, plainly written, and clearly meant to be understood quickly by whoever heard it. Sam watches over their shoulders without saying a word, though his hands have gone very still, as though he already half-suspects what the message is going to say once they finish.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_decode_message",
+     "label": "Finish decoding the last line of the message",
+     "target": "n_message"
+    }
+   ]
+  },
+  {
+   "id": "n_dial",
+   "body": "The old radio crackles to life when Theo flips a switch nobody expected to still work, static hissing through a speaker gone slightly furry with age. Sam explains his grandmother rigged the set to an emergency battery years ago and never had the heart to disconnect it. Slowly turning the dial produces waves of noise, but somewhere in the middle a faint, rhythmic tone rises above the static, on almost the exact frequency written on the torn page. It could be an old recording still looping somewhere, or interference from a passing boat, or something else entirely. The dial keeps sliding under Theo's fingers, choices in either direction.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_dial_static",
+     "label": "Keep spinning the dial past the tone, chasing something clearer",
+     "target": "n_end_lost"
+    },
+    {
+     "id": "c_dial_findstation",
+     "label": "Hold the dial steady exactly on that tone",
+     "target": "n_message"
+    }
+   ]
+  },
+  {
+   "id": "n_message",
+   "body": "Between the decoded numbers and the steady tone on the radio, one thing becomes clear: on the night of the storm, someone at this exact station guided the Merion home, using a homemade code because the official channel was dead. The decoded message names a route through the rocks and signs off with the initials E.H. It is proof, finally, of the story Gull Harbor has told for decades without ever confirming it. Sam sits down hard on an overturned crate. Mira and Theo look at each other, both thinking the same thing: they have found something real, and now they have to decide what, exactly, to do with it.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_message_call",
+     "label": "Try to raise anyone still listening on the radio",
+     "target": "n_contact"
+    },
+    {
+     "id": "c_message_notebook",
+     "label": "Cross-reference the initials with the keeper's diary",
+     "target": "n_notebook"
+    },
+    {
+     "id": "c_message_wait",
+     "label": "Agree to think it over and tell someone tomorrow",
+     "target": "n_end_wait"
+    }
+   ]
+  },
+  {
+   "id": "n_contact",
+   "body": "Theo keys the old microphone and speaks slowly into it, more out of curiosity than expectation, giving Gull Harbor's name and today's date. To everyone's surprise, a scratchy voice answers within a minute: a retired harbor radio operator two towns over, who still monitors this old frequency out of habit and has wondered for years why it occasionally clicks on by itself. When Mira explains what they found, the operator goes quiet, then says he remembers Eleanor Hale, and that she is very much alive, living with her daughter not far from here. He offers to pass along a message, if the cousins want to send one.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_contact_meet",
+     "label": "Ask him to arrange a meeting with Eleanor Hale",
+     "target": "n_reveal"
+    }
+   ]
+  },
+  {
+   "id": "n_notebook",
+   "body": "The keeper's diary, once Mira works out Eleanor's slanted handwriting, fills in the rest: frightened, seventeen-year-old Eleanor took over the emergency set the night her father fell ill, terrified she would be blamed if anything went wrong, and never told the harbor master what she had done. The final entry, written the morning after the storm, simply reads, 'They made it home. I will never tell anyone it was me.' Sam goes very still reading over Mira's shoulder; he had never heard this part of his grandmother's story. Between the diary and Sam's own family, there is now a clear way to find Eleanor and finally close the loop she left open.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_notebook_names",
+     "label": "Ask Sam to help find his grandmother today",
+     "target": "n_reveal"
+    }
+   ]
+  },
+  {
+   "id": "n_reveal",
+   "body": "By the end of the afternoon, all three of them are sitting on Sam's porch across from Eleanor Hale herself, eighty years old and startled speechless by the sight of her own logbook. She admits she has spent sixty years half-hoping and half-dreading that someone would find that hidden room. Now that the truth is finally out, Eleanor, Sam, Mira, and Theo have to decide together what happens next: whether the whole town should know, whether the log belongs somewhere more permanent than a locked room, or whether some stories are better kept quietly among the people who lived them. Eleanor looks at the cousins as if the choice, this time, should partly be theirs.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_reveal_share",
+     "label": "Help Eleanor tell the whole town the true story",
+     "target": "n_end_hero"
+    },
+    {
+     "id": "c_reveal_museum",
+     "label": "Suggest donating the logbook to the county maritime museum",
+     "target": "n_end_museum"
+    },
+    {
+     "id": "c_reveal_keep",
+     "label": "Agree the story can stay a quiet family keepsake",
+     "target": "n_end_keepsake"
+    },
+    {
+     "id": "c_reveal_family",
+     "label": "Help Eleanor reconnect with the Merion crew's descendants",
+     "target": "n_end_family"
+    }
+   ]
+  },
+  {
+   "id": "n_end_notebook",
+   "body": "Instead of chasing the code, Mira and Theo curl up on the dusty floor and read Eleanor's diary from the first page to the last. It turns out to be less a mystery and more a portrait: years of quiet notes about weather, gull migrations, and a young keeper's daughter's daydreams, with the storm barely mentioned at all. They never do crack the numeric code that afternoon, but they leave the lighthouse knowing something better, a real sense of who lived and worked in this small stone tower. Sam promises to help them figure out the numbers another day, once summer slows down and there is no tide to race.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_notebook",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Keeper's Diary"
+   }
+  },
+  {
+   "id": "n_end_curious",
+   "body": "Standing in the dusty radio room, Mira suddenly feels how big this discovery actually is, bigger than two kids and a curious afternoon. She convinces Theo that whatever this room holds, it deserves someone who actually knows local history, not just guesswork. They carefully photograph the room with Sam's phone, leave everything exactly as they found it, and head straight to tell Aunt Rosa and Mrs. Okafor at the library. It is not the ending they imagined that morning, but walking away from a mystery they are not ready to solve alone turns out to be its own kind of good decision, one Sam clearly respects.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_curious",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Knowing When to Ask for Help"
+   }
+  },
+  {
+   "id": "n_end_lost",
+   "body": "Theo keeps turning the dial past the steady tone, chasing something even clearer, and the signal dissolves back into ordinary static. He turns it back the other way, then further, but the exact spot is gone, lost somewhere among a hundred identical clicks. Sam sighs and admits the old set has always been finicky about landing on that frequency twice. They spend the rest of the afternoon trying to find it again without any luck, and eventually the light outside starts to fade. The mystery is still there, waiting, but today's chance to hear it clearly has slipped through their fingers along with the tuning dial.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_lost",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Static and Silence"
+   }
+  },
+  {
+   "id": "n_end_wait",
+   "body": "Everyone agrees that a discovery this big deserves careful thought, so they cover the radio, lock the hidden room, and promise to sort it all out tomorrow. But by breakfast, a work crew has arrived to finally demolish the crumbling lamp house, a project the town approved months ago and nobody thought to mention. Sam races up the bluff, but he is too late; the little room, log and all, is already gone. The three of them stand in the rubble feeling sick about the one night they chose to wait. Some mysteries, it turns out, do not wait patiently for anyone to be ready.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_wait",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Morning That Waited"
+   }
+  },
+  {
+   "id": "n_end_hero",
+   "body": "With Eleanor's blessing, the cousins help organize a small town meeting at the library, where Eleanor finally tells the true story of the storm to a room full of neighbors, several of them descendants of the Merion's crew. People who grew up on the same half-finished legend listen in complete silence, then break into applause that makes Eleanor blush for the first time all summer. The town votes on the spot to rename the bluff path Hale's Watch in her honor. Mira and Theo watch from the back of the room, proud of a whole summer's work, knowing Gull Harbor will tell this story correctly from now on.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_hero",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Town Remembers"
+   }
+  },
+  {
+   "id": "n_end_museum",
+   "body": "The county maritime museum sends a curator out within the week, and together with Eleanor, the cousins carefully pack the logbook, the diary, and the old radio set for transport. The curator promises a proper display case, complete with a placard crediting Eleanor Hale by name at last. Weeks later, a letter arrives inviting the whole group to the exhibit's opening, where Mira and Theo see their own names quietly thanked in the museum credits. Eleanor stands in front of the glass case for a long time, looking at her seventeen-year-old handwriting preserved under careful lighting, finally able to see her own story treated as something worth keeping.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_museum",
+    "valence": "positive",
+    "kind": "success",
+    "title": "A Place in the Museum"
+   }
+  },
+  {
+   "id": "n_end_keepsake",
+   "body": "In the end, Eleanor asks to keep the logbook exactly where it has always been, tucked safely in the radio room she quietly reopens with Sam's help. She is not ready for the whole town to know, and everyone respects that. Instead, the four of them become an unlikely little club, meeting at the lighthouse on quiet afternoons to hear more of Eleanor's stories and slowly restore the old radio equipment just for fun. Mira and Theo head home at the end of summer with something better than a museum credit: a real friendship, and a standing invitation to come back next year and hear whatever Eleanor decides to tell them next.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_keepsake",
+    "valence": "positive",
+    "kind": "success",
+    "title": "A Secret Kept Safe"
+   }
+  },
+  {
+   "id": "n_end_family",
+   "body": "Working from the crew list in Eleanor's diary, Sam's family helps track down two grandchildren of Merion sailors still living within driving distance. A small reunion gathers at the lighthouse a month later, three families who owe each other a debt sixty years old finally standing in the same room. Eleanor walks them through the radio room, explaining exactly what she did and why she never told anyone, while the sailors' grandchildren listen with tears and laughter in equal measure. Mira and Theo stand near the door, watching a story that started with one torn page finally reach everyone it was always meant to reach.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_family",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Voices Across the Years"
+   }
+  }
+ ]
+}

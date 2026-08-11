@@ -1,0 +1,249 @@
+{
+  "schema_version": 1,
+  "id": "freegen-g1",
+  "version": 1,
+  "title": "The Lighthouse of the Whispering Bell",
+  "start_node": "n1",
+  "nodes": [
+    {
+      "id": "n1",
+      "body": "Salthaven's Tide Lantern Festival is tonight. But a strange storm has circled the bay for three days. It will not break. Old Mrs. Finch says only the Whispering Bell can calm the sea. It is lost in the broken lighthouse on Gull Rock. You grab your rain boots and a notebook of old legends. Your best friend Ori waits at the harbor wall, tying on a life jacket. The tide is dropping fast. New paths will open along the shore soon. You have until sunset before the festival boats launch. Where do you start your search for a way to Gull Rock?",
+      "is_ending": false,
+      "choices": [
+        {"id": "c1", "label": "Search the tide pools", "target": "n2"},
+        {"id": "c2", "label": "Cut through Whisper Woods", "target": "n3"},
+        {"id": "c3", "label": "Ask at the fishing docks", "target": "n4"}
+      ]
+    },
+    {
+      "id": "n2",
+      "body": "The tide pools glitter like scattered coins. Ori crouches to watch a hermit crab dart into a crack. Past the pools, the shore splits two ways. A smooth sandy path hugs the cliff. A wall of wet black rocks rises steep and slick with green weed. Gulls wheel overhead, screeching at the dark clouds. Far off, you hear festival bells being tested at the harbor. The sea is rising fast behind you. There is no time to stand here and watch the crabs all afternoon. You have to pick a way forward, and pick it now.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c4", "label": "Take the shoreline path", "target": "n5"},
+        {"id": "c5", "label": "Climb the slick rocks", "target": "n6"}
+      ]
+    },
+    {
+      "id": "n3",
+      "body": "Whisper Woods is cooler than the beach. Salt-bent pines lean together and rustle, even without wind. That is how the woods got their name. A narrow trail forks ahead. One branch follows fresh fox tracks deeper into the trees. The other loops back toward the safe, sandy beach. Far above, a rope of dark cloud tightens around the sky. Ori tugs your sleeve, unsure which way to go. You check your notebook, but the old map is torn here. It looks like someone ripped away the rest of the woods on purpose, long ago.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c6", "label": "Follow the fox tracks", "target": "n9"},
+        {"id": "c7", "label": "Turn back toward the beach", "target": "n19"}
+      ]
+    },
+    {
+      "id": "n4",
+      "body": "The docks smell of salt and diesel. Fishing boats knock against the pilings while sailors tie down crates before the storm. An old woman named Pip mends a net by her boat, humming softly. Down the dock sits a small skiff, untied, its oars resting inside. It looks tempting, and completely empty. You could ask Pip for advice. She has fished these waters longer than anyone else in Salthaven. Or you could climb into the skiff right now. You could row straight out toward Gull Rock before anyone notices you are gone.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c8", "label": "Talk to old Pip", "target": "n10"},
+        {"id": "c9", "label": "Row straight out to Gull Rock", "target": "n11"}
+      ]
+    },
+    {
+      "id": "n5",
+      "body": "The sandy path curves along the base of the cliff, damp and firm under your boots. Small waves lap at your ankles as you walk. Ahead, a rope bridge sways between two rocky points, stretched out toward Gull Rock itself. The wind picks up, tugging hard at your jacket. Ori squints at the darkening horizon and says nothing. Part of you wants to keep going. Part of you remembers your mother's warning about storms that come in fast. The bridge looks old and shaky. It also looks like the only way forward from here.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c10", "label": "Cross toward the rope bridge", "target": "n8"},
+        {"id": "c11", "label": "Turn back, the tide pools were enough", "target": "n27"}
+      ]
+    },
+    {
+      "id": "n6",
+      "body": "The rocks are colder than they look, slick with weed and spray. You grip a jagged edge and pull yourself up. Your boot slips once before finding a hold. Ori climbs just behind you, breathing hard. Halfway up, you spot a narrow ledge of gray driftwood wedged between two boulders. It looks like a shortcut around the worst of the climb. But your fingers are already tired and cold. The sea below looks colder every second that passes. You could reach for the ledge, or keep pushing straight up the rock face.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c12", "label": "Reach for the driftwood ledge", "target": "n7"},
+        {"id": "c13", "label": "Keep climbing straight up", "target": "n28"}
+      ]
+    },
+    {
+      "id": "n7",
+      "body": "You stretch out and grab the driftwood ledge just as your foot slips off the rock. For one heartbeat you hang there, heart pounding, until your boot finds a new hold. Ori grabs your arm and hauls you the rest of the way up. From the ledge, you can see the whole shoreline stretched out below. A rope bridge sways in the distance, right where the sandy path was headed all along. Shaky but safe, you climb down the far side of the ledge. You land back on solid sand, closer to the bridge than before.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c14", "label": "Head for the rope bridge", "target": "n8"}
+      ]
+    },
+    {
+      "id": "n8",
+      "body": "The rope bridge creaks under your first step. It swings gently over a channel of churning green water. Ori grips the rope rails, knuckles white, but nods for you to keep going. Partway across, you spot a narrow gap in the cliff below the bridge. It is the dark mouth of a sea cave, half hidden by hanging vines. Above, Gull Rock rises steep and gray. The broken lighthouse is just visible through the mist. You could finish crossing toward the lighthouse. Or you could climb down and explore the cave first, before the tide seals it shut.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c15", "label": "Cross to Gull Rock", "target": "n11"},
+        {"id": "c16", "label": "Climb down to the sea cave", "target": "n12"}
+      ]
+    },
+    {
+      "id": "n9",
+      "body": "The fox tracks lead you deeper into Whisper Woods. You pass trees hung with old fishing floats that clink softly like tiny bells. The trail climbs a low ridge. Through a gap in the branches, you spot the gray shape of the lighthouse on Gull Rock, far across the water. The path forks again here. One way follows the ridge toward a cliff path leading toward the sea. The other dips into a quiet hollow, where sunlight barely reaches. It looks strange, and it was never part of your plan at all.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c17", "label": "Follow the ridge toward the cliff path", "target": "n17"},
+        {"id": "c18", "label": "Explore the quiet hollow instead", "target": "n30"}
+      ]
+    },
+    {
+      "id": "n10",
+      "body": "Pip squints at you over her mending needle. 'Gull Rock, is it,' she says, more a statement than a question. She digs through a wooden box and presses a small brass whistle into your hand, worn smooth by years of salt air. 'Blow it once you reach the lantern room,' she says. 'The bell answers whistles better than hands, if the old stories are true.' She waves you toward her own skiff, already untied and bobbing gently by the dock. You thank her twice, tuck the whistle safely into your pocket, and climb aboard, Ori right behind you.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c19", "label": "Row out to Gull Rock", "target": "n11"}
+      ]
+    },
+    {
+      "id": "n11",
+      "body": "The skiff, or the bridge, finally brings you to Gull Rock's rocky shore. Waves slap hard against black stones. The wind smells sharply of salt and coming rain. Above you, the broken lighthouse leans against the darkening sky, its door hanging crooked on one hinge. A worn path climbs straight up toward that door. To your left, an old wooden dock juts into the water. A bench sits there, looking like a good place to rest before the climb. Thunder rolls somewhere far out at sea. The storm is getting closer by the minute.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c20", "label": "Climb straight to the lighthouse door", "target": "n14"},
+        {"id": "c21", "label": "Rest at the old dock first", "target": "n15"}
+      ]
+    },
+    {
+      "id": "n12",
+      "body": "Climbing down from the bridge, you duck into the sea cave, the air suddenly cool and damp. Water drips somewhere in the dark, echoing softly. Ori pulls out a small flashlight and clicks it on, sweeping the beam across wet stone walls. Near the back of the cave, something pale catches the light: broken wood, half buried in sand, shaped like the ribs of an old boat. It looks like nobody has stepped foot in here for a very long time. The tide is already creeping back in around your boots, so you will need to be quick.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c22", "label": "Look closer at the wreck", "target": "n13"}
+      ]
+    },
+    {
+      "id": "n13",
+      "body": "Kneeling by the broken wood, you brush away wet sand and find a small, hidden hollow tucked beneath the old ribs. Ori shines the flashlight closer while you reach inside, careful of splinters. Your fingers close around something cold and hard, and something soft and swollen with water. Outside the cave mouth, waves are already lapping higher against the rocks, filling the entrance with foamy white water. Whatever you found, there is no time left to search for more. You need to climb back out to the bridge right now, before the tide cuts off your only way out.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c23", "label": "Hurry back out before the tide rises", "target": "n29"}
+      ]
+    },
+    {
+      "id": "n14",
+      "body": "Up close, the lighthouse door is heavier than it looks, swollen with old rain and salt. You and Ori lean your shoulders against it together, and it groans open just wide enough to slip through. Inside, the air smells of dust and cold stone. A spiral staircase winds up into the dark, its iron rail rusty but solid under your hand. Somewhere far above, you think you hear a faint, low hum, almost like a note held in the wind. The storm outside grows louder, rattling the shutters, urging you to hurry up the stairs.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c24", "label": "Climb the spiral stairs", "target": "n18"}
+      ]
+    },
+    {
+      "id": "n15",
+      "body": "You sit on the bench and let your legs stop shaking. A gull lands nearby, one wing bent slightly, watching you with a bright orange eye. It hops closer, unafraid. You notice a thin strip of cloth tangled tight around its leg. Gently, carefully, you and Ori work the cloth free. The gull shakes out its wings and lets out a sharp cry. It flaps up onto a fence post, then higher up the cliff, almost like it wants you to follow. Whatever just happened, you feel oddly lighter now, ready for the climb ahead.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c25", "label": "Follow the gull up the cliff path", "target": "n16"}
+      ]
+    },
+    {
+      "id": "n16",
+      "body": "The gull leads you along a narrow path you would have missed on your own. It hugs the cliff edge, high above the crashing waves. The bird stays just ahead of you the whole way, wings catching the wind, guiding you higher and higher toward the lighthouse. Ori laughs, out of breath, saying the gull acts like it has done this before. At the top, it circles once above the broken tower, cries out loudly, and vanishes into the gray sky. You are standing right at the lighthouse door. Storm clouds press low and heavy above you both.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c26", "label": "Go inside the lighthouse", "target": "n17"}
+      ]
+    },
+    {
+      "id": "n17",
+      "body": "The cliff path levels out here, close enough to the lighthouse that you can hear wind moaning through its broken windows. Rain starts falling in fat, cold drops. Thunder cracks somewhere out over the water. Ori points toward the crooked door hanging just ahead. There is no other way forward now, except straight into the old lighthouse. You square your shoulders and take one breath of salty air. Then you walk the last few steps toward the entrance, ready at last to search for the Whispering Bell hidden somewhere inside.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c27", "label": "Enter the lighthouse", "target": "n14"}
+      ]
+    },
+    {
+      "id": "n18",
+      "body": "The stairs spiral up tightly, each step creaking under your boots. Ori counts them under his breath to keep from thinking about the height. Old lanterns, long unlit, hang from hooks along the curved wall. They sway slightly whenever the wind gusts outside. Near the top, weak gray light spills down from an open hatch. That same low hum grows a little clearer now, almost like a bell breathing instead of ringing. Your legs feel tired, but you are close now. Close enough that turning back does not even feel possible anymore.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c28", "label": "Climb through the hatch to the lantern room", "target": "n20"}
+      ]
+    },
+    {
+      "id": "n19",
+      "body": "You and Ori look at each other and decide the fox tracks can wait for a calmer day. You back carefully out of Whisper Woods, following the familiar trail down toward the safe, sandy beach. The trees rustle quietly behind you the whole way down. By the time you reach open sand, the wind has picked up sharply. The sky has turned the color of wet slate. It was probably the smart choice. But as you walk home, you cannot help wondering what you might have found deeper in those woods, on a braver, calmer afternoon.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c29", "label": "Head home before the storm gets worse", "target": "n27"}
+      ]
+    },
+    {
+      "id": "n20",
+      "body": "You climb through the hatch into the lantern room, and the wind hits you full force. Rain whips sideways through broken glass panes. From up here you can see all of Salthaven, tiny harbor lights glowing bravely against the storm. In the center of the round room stands an old iron frame. It is empty except for thick cobwebs and a shape half hidden under a canvas tarp. Ori pulls the tarp back slowly, and you both go very quiet. Something has been waiting up here alone, for longer than either of you have been alive.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c30", "label": "Step closer and look", "target": "n21"}
+      ]
+    },
+    {
+      "id": "n21",
+      "body": "Under the tarp sits the Whispering Bell, smaller than you imagined, green with age. Tiny waves and stars are carved all around its sides. A thin layer of dust covers strange markings near its rim, half worn away by time. You could look closely at those markings before doing anything else. Or you could simply reach out and try the bell right now, while the storm outside sounds loud enough to feel urgent. Ori looks at you and waits for your choice, rain hammering hard against the broken windows all around you both.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c31", "label": "Examine the bell up close", "target": "n22"},
+        {"id": "c32", "label": "Explore the keeper's quarters instead", "target": "n30"}
+      ]
+    },
+    {
+      "id": "n22",
+      "body": "You crouch beside the bell, and now you see the worn markings clearly. Tiny painted waves circle the rim, and beside them sit faint letters that once spelled real words. Part of the message has flaked away completely. Wind screams through the broken windows. Somewhere far below, you picture the festival boats bobbing anxiously at the harbor, waiting for the storm to break. You could ring the bell right now, with whatever strength you have. Or you could take a careful moment first, and wipe away the grime to read what remains.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c33", "label": "Ring the bell now", "target": "n23"},
+        {"id": "c34", "label": "Wipe away the grime and read the inscription", "target": "n24"}
+      ]
+    },
+    {
+      "id": "n23",
+      "body": "You grab the worn rope hanging from the bell's clapper and pull hard. The bell gives one deep, rolling note that shakes dust from the rafters. For a moment, nothing happens, and your heart sinks. Then, slowly, the wind outside begins to soften. The driving rain eases into a drizzle. Far out over the water, a thin line of gold light breaks through the gray clouds. Ori whoops and grabs your arm tight. Whatever the old stories meant, the bell has heard you. The storm is finally, truly letting go.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c35", "label": "Watch the storm break from the lantern room", "target": "n25"}
+      ]
+    },
+    {
+      "id": "n24",
+      "body": "Wiping away the grime, you find the old words carved near the rim: 'Ring me gently, three times slow, and name the tide you wish to go.' You take a steady breath. You pull the rope three careful times, and each time whisper the same words: 'Calm tide, safe harbor.' The bell answers with three low, rolling notes that seem to travel out across the whole bay. Almost at once, the wind drops to nothing. The clouds part in a wide, clean circle. Sunlight pours down over Gull Rock, the harbor, and the tiny festival boats waiting far below.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c36", "label": "Watch the harbor light up with sunset gold", "target": "n26"}
+      ]
+    },
+    {
+      "id": "n25",
+      "body": "By the time you and Ori climb back down to the shore, the storm has broken completely. Salthaven's harbor glows under a clean evening sky. Boats glide out for the Tide Lantern Festival right on schedule, lanterns bobbing like a river of gold across the water. News of the ringing bell spreads fast. By the time you reach the docks, half the town already knows your names. You feel tired, salty, and enormously proud. The Whispering Bell worked, and the festival is saved. Somewhere above Gull Rock, the old lighthouse stands quiet again, its work done for another year.",
+      "is_ending": true,
+      "ending": {"id": "e1", "valence": "positive", "kind": "completion", "title": "The Bell Rings True"}
+    },
+    {
+      "id": "n26",
+      "body": "Word of what happened on Gull Rock spreads through Salthaven before you even reach the harbor. Fishermen say the storm broke the moment three low notes rolled across the bay, exactly like the old stories promised. Pip meets you at the dock, grinning, and rests her hand warmly on your shoulder without needing to say a word about her whistle. The Tide Lantern Festival goes ahead perfectly, every boat afloat and every lantern lit. Mrs. Finch declares that you and Ori will be remembered as the harbor's true heroes. For once, the old legends turn out to be exactly, wonderfully true.",
+      "is_ending": true,
+      "ending": {"id": "e2", "valence": "positive", "kind": "success", "title": "Hero of the Harbor"}
+    },
+    {
+      "id": "n27",
+      "body": "You make it home just as the first heavy drops of rain begin to fall. You watch the storm roll in from the safety of your kitchen window. The Tide Lantern Festival is postponed, the harbor boats staying tied up tight until the weather clears. Nobody blames you for turning back. It was the sensible thing to do. Still, lying in bed that night, you listen to the wind and wonder about the Whispering Bell. You wonder if it is really out there on Gull Rock, waiting for someone braver, or luckier, to finally ring it.",
+      "is_ending": true,
+      "ending": {"id": "e5", "valence": "negative", "kind": "retreat", "title": "Turning Back"}
+    },
+    {
+      "id": "n28",
+      "body": "Your fingers slip on the wet rock, and this time there is no driftwood ledge to catch you. You tumble into a shallow tide pool with a splash, more startled than hurt, soaked clean through. Ori scrambles down after you, worried, and together you agree the rocks have won for today. Shivering, you trudge back toward town just as the storm finally breaks overhead, rain hammering the empty beach behind you. The festival boats stay docked that night. Gull Rock remains exactly as mysterious and unreachable as it was this morning, its secrets still untouched.",
+      "is_ending": true,
+      "ending": {"id": "e4", "valence": "negative", "kind": "setback", "title": "Caught by the Storm"}
+    },
+    {
+      "id": "n29",
+      "body": "The sea cave is cool and dim, lit only by a thin shaft of gray daylight from above. Tucked in a dry crack, you find the broken remains of an old shipwreck: a brass compass, a rusty lantern, and a soggy logbook whose pages have turned to pulp. You cannot read a single word of it, but you tuck the little compass into your pocket anyway. The tide is rising fast now, curling into the cave mouth. You and Ori hurry back out and up, the lighthouse still waiting, unreached, somewhere above you on the rock.",
+      "is_ending": true,
+      "ending": {"id": "e3", "valence": "neutral", "kind": "discovery", "title": "The Secret Keeper"}
+    },
+    {
+      "id": "n30",
+      "body": "Whether it is the quiet hollow in Whisper Woods, or the dusty keeper's room in the old lighthouse, you find yourself somewhere the map never mentioned. Somehow, that feels like enough for today. You find small, forgotten things: a faded photograph, a child's drawing of a bell, a pressed flower gone brittle with age. You never do ring the Whispering Bell yourself. But you carry these small discoveries home carefully, turning them over in your hands. Later, you hear that the storm broke on its own that evening, right on time, bell or no bell.",
+      "is_ending": true,
+      "ending": {"id": "e6", "valence": "neutral", "kind": "discovery", "title": "A Different Adventure"}
+    }
+  ]
+}

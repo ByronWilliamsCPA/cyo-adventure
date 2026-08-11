@@ -1,0 +1,409 @@
+{
+ "n_start": {
+  "code_form": {
+   "text": "a page of small hand-drawn icons instead of numbers, each one plainly copied down as it appears",
+   "kind": "pictogram_code"
+  },
+  "receiver": {
+   "text": "her direction-finding set, a small case with a loop aerial and a needle that swings steady to one side",
+   "kind": "direction_finder"
+  }
+ },
+ "n_decode": {
+  "code_form": {
+   "text": "the logbook's key page: a column of little drawings, each paired with the word it stands for, so an icon is simply matched to its twin",
+   "kind": "pictogram_code"
+  }
+ },
+ "wt_lane": {
+  "landmark": {
+   "text": "the Fenbrook water tower above Cutter's Rise, four identical riveted legs holding up a green tank with FENBROOK painted around it",
+   "kind": "waterworks_landmark"
+  }
+ },
+ "wt_gate": {
+  "code_form": {
+   "text": "the drawn icons match to a hand at shoulder height, a downward arrow, and a little tower-leg mark, spelling out CHECK EACH LEG DOWN LOW",
+   "kind": "pictogram_code"
+  }
+ },
+ "wt_ladder": {
+  "obstacle": {
+   "text": "the tower's service ladder, each rung glazed with black ice under the torch beam and padlocked at the base",
+   "kind": "frozen_climb"
+  }
+ },
+ "wt_tap": {
+  "wonder_detail": {
+   "text": "the marked leg answers a light knuckle-tap with a clear, ringing note where the others only thud",
+   "kind": "resonant_note"
+  }
+ },
+ "wt_marks": {
+  "waypoint_mark": {
+   "text": "a small inked triangle with a short tail, like a paper boat, matching the same small mark kept in the logbook's margins",
+   "kind": "inked_symbol"
+  }
+ },
+ "wt_box": {
+  "cache_container": {
+   "text": "a small hinged plate on the marked leg's collar, ordinary hardware turned into a letterbox",
+   "kind": "hinged_fitting"
+  },
+  "memory_carrier": {
+   "text": "a scrap of card wedged in the fixture, three tiny drawings in a row pointing like arrows toward the shed door",
+   "kind": "drawn_card"
+  }
+ },
+ "wt_shed": {
+  "club_relic": {
+   "text": "a dog-eared group snapshot propped on the store shelf, its frame held together with tape",
+   "kind": "photograph_caption"
+  }
+ },
+ "wt_photo": {
+  "club_relic": {
+   "text": "the same photograph tipped to the torch: 'Tower Watch, Fenbrook, 1962', a small drawn star inked beside one face",
+   "kind": "photograph_caption"
+  }
+ },
+ "wt_cans": {
+  "cache_container": {
+   "text": "an old paint can up on the shelf, its label replaced with a single drawn nail, weighing next to nothing",
+   "kind": "mislabelled_container"
+  }
+ },
+ "wt_cache": {
+  "keepsake_token": {
+   "text": "a cast iron medallion stamped SIGN, painted over and scraped clean again",
+   "kind": "cast_medallion"
+  },
+  "memory_slip": {
+   "text": "a handwritten note: she scratched a little fish beside the tower's rivet count every year, just to see if anyone would ask why",
+   "kind": "handwritten_slip"
+  }
+ },
+ "cn_marquee": {
+  "landmark": {
+   "text": "the shuttered Empress Playhouse on Fitch Street, its marquee still spelling out the title of the last picture it ever showed",
+   "kind": "shuttered_playhouse"
+  },
+  "code_form": {
+   "text": "the drawn icons match to SEAT, ROW J, then a lamp icon meaning WHERE THE LIGHT STAYS",
+   "kind": "pictogram_code"
+  }
+ },
+ "cn_stage": {
+  "obstacle": {
+   "text": "the Empress's front apron boards, one square clearly gone soft and dark beside the firm boards around it",
+   "kind": "weak_floor"
+  }
+ },
+ "cn_horns": {
+  "wonder_detail": {
+   "text": "the torch finds a row of the club's old horn speakers stacked behind the curtain, each one wearing a small painted symbol on its bell",
+   "kind": "night_view"
+  }
+ },
+ "cn_plate": {
+  "cache_container": {
+   "text": "a shallow pocket carved behind the seat's fitting, its edges smoothed by a careful hand",
+   "kind": "cast_cavity"
+  }
+ },
+ "cn_booth": {
+  "cache_container": {
+   "text": "a round tin in the rack, its lid inked with a small drawn projector instead of any writing",
+   "kind": "sealed_tin"
+  },
+  "club_relic": {
+   "text": "a reel of old film in a tin, a small drawn icon of a projector scratched into the lid instead of any writing",
+   "kind": "film_reel"
+  }
+ },
+ "cn_cache": {
+  "keepsake_token": {
+   "text": "a punched aluminium disc reading OFF, light enough to spin on a fingertip",
+   "kind": "punched_disc"
+  },
+  "memory_slip": {
+   "text": "a photograph caption: she painted the scenery flats for the Empress one whole summer and hid a tiny mark in every backdrop",
+   "kind": "photograph_caption"
+  }
+ },
+ "hb_road": {
+  "landmark": {
+   "text": "the net-and-tackle shed on Cannery Wharf, where the harbourmaster stores everything the fishing fleet has retired",
+   "kind": "working_waterfront"
+  },
+  "wonder_detail": {
+   "text": "somewhere past the breakwater a bell buoy tolls low and slow, a sound the whole waterfront seems to have learned to sleep through",
+   "kind": "distant_bell"
+  }
+ },
+ "hb_quay": {
+  "obstacle": {
+   "text": "a patched skiff turned over by the steps, its patch peeling and clearly not fit to float tonight",
+   "kind": "unfit_boat"
+  }
+ },
+ "hb_doors": {
+  "waypoint_mark": {
+   "text": "tucked among the barrier's old stencilling, the same small triangle-with-a-tail, inked rather than stamped",
+   "kind": "inked_symbol"
+  }
+ },
+ "hb_office": {
+  "night_keeper": {
+   "text": "the wharf's night keeper, logbook of his own open on the counter under a gooseneck lamp",
+   "kind": "night_watch_adult"
+  }
+ },
+ "hb_pad": {
+  "club_relic": {
+   "text": "decades of his own listening sheets, each headed with a tiny drawn symbol instead of a date, hers among the earliest",
+   "kind": "old_logsheets"
+  },
+  "waypoint_mark": {
+   "text": "the triangle-with-a-tail, inked once into a margin of his own listening sheets",
+   "kind": "inked_symbol"
+  }
+ },
+ "hb_shed": {
+  "code_form": {
+   "text": "the drawn icons match to THE ONE THAT STILL RINGS - a little bell drawn beside a picture of the one retired object",
+   "kind": "pictogram_code"
+  }
+ },
+ "hb_cage": {
+  "waypoint_mark": {
+   "text": "the torch picks the triangle-with-a-tail out of fresher paint, an arrow drawn beside it",
+   "kind": "inked_symbol"
+  }
+ },
+ "hb_cache": {
+  "cache_container": {
+   "text": "a slim capsule swaged deep into the old foghorn's bellows, marked only with a tiny scratched wave",
+   "kind": "swaged_capsule"
+  },
+  "keepsake_token": {
+   "text": "an engraved shell-casing token reading STAND, drilled through for a cord",
+   "kind": "engraved_token"
+  },
+  "memory_slip": {
+   "text": "an annotated chart: her own drawings of the retired foghorn's parts, each one labelled with a little picture instead of a word",
+   "kind": "annotated_chart"
+  }
+ },
+ "lb_green": {
+  "landmark": {
+   "text": "the Fenbrook Town Archive on Assembly Green, a squat brick records hall with a bicycle rack out front",
+   "kind": "civic_archive"
+  },
+  "wonder_detail": {
+   "text": "one small brass lamp left burning on the desk nearest the door, the only light left on in the whole archive",
+   "kind": "lamp_left_burning"
+  },
+  "code_form": {
+   "text": "the drawn icons match to ROOM, a small calendar page for the record's year, and an owl for the door's warning",
+   "kind": "pictogram_code"
+  }
+ },
+ "lb_porch": {
+  "obstacle": {
+   "text": "a string of bells looped over the archive's back door handle, ready to jangle if it's tried carelessly",
+   "kind": "night_alarm"
+  },
+  "key_place": {
+   "text": "a nail under the archive's porch board, the spare after-hours key resting there out of long town habit",
+   "kind": "hidden_nail"
+  }
+ },
+ "lb_maproom": {
+  "waypoint_mark": {
+   "text": "among a hundred typed labels, one drawer alone carries the triangle-with-a-tail in ink",
+   "kind": "inked_symbol"
+  }
+ },
+ "lb_hunt": {
+  "waypoint_mark": {
+   "text": "the beam catches the same triangle-with-a-tail, small and certain on a drawer's edge",
+   "kind": "inked_symbol"
+  }
+ },
+ "lb_table": {
+  "club_relic": {
+   "text": "a half-built display card showing 'The Fenbrook Listening Club' spelled out in cut paper letters, one still unglued",
+   "kind": "display_card"
+  }
+ },
+ "lb_drawer": {
+  "cache_container": {
+   "text": "a small capsule fixed with tape inside the record folder's spine, its edge marked with a tiny drawn magnifying glass",
+   "kind": "taped_capsule"
+  },
+  "keepsake_token": {
+   "text": "a stamped ration tag reading WATCH, its corner clipped square",
+   "kind": "stamped_tag"
+  },
+  "memory_slip": {
+   "text": "a drawn card: a row of small icons standing in for the founding members, one of them unmistakably her own hunched shoulders",
+   "kind": "drawn_card"
+  }
+ },
+ "bh_path": {
+  "landmark": {
+   "text": "the old signal mast on Beacon Hill, fenced off and guyed down with cables that catch the wind",
+   "kind": "hilltop_installation"
+  },
+  "obstacle": {
+   "text": "a run of loose gravel cutting straight up beside the switchbacks, stones visibly sliding under their own weight",
+   "kind": "loose_slope"
+  }
+ },
+ "bh_wind": {
+  "wonder_detail": {
+   "text": "the wind gets into the rigging and every wire answers with its own note, the hillside itself humming",
+   "kind": "wind_music"
+  },
+  "code_form": {
+   "text": "the drawn icons match to WIRES SING, and a small numeral drawn in the third anchorage's own shape",
+   "kind": "pictogram_code"
+  }
+ },
+ "bh_plate": {
+  "waypoint_mark": {
+   "text": "one fastening alone carries an inked triangle-with-a-tail that was never factory-marked",
+   "kind": "inked_symbol"
+  }
+ },
+ "bh_pillar": {
+  "waypoint_mark": {
+   "text": "the triangle-with-a-tail sits beside the survey plate, one inked line pointing off it",
+   "kind": "inked_symbol"
+  }
+ },
+ "bh_hollow": {
+  "cache_container": {
+   "text": "a dry hollow built into the anchorage itself when it was cast, its cover carrying one small drawn star",
+   "kind": "cast_cavity"
+  }
+ },
+ "bh_cache": {
+  "keepsake_token": {
+   "text": "a second cast medallion, thinner, reading NOW",
+   "kind": "cast_medallion"
+  },
+  "memory_slip": {
+   "text": "a second handwritten note: she once drew the whole coastline from memory on the back of a chart, marking every station with its own little sign",
+   "kind": "handwritten_slip"
+  }
+ },
+ "fin_bearing": {
+  "destination": {
+   "text": "the old Fenbrook Halt signal box east of the level crossing, one upstairs window lit and a thin aerial wire strung from its chimney to a fence post",
+   "kind": "disused_railway_building"
+  }
+ },
+ "fin_gate": {
+  "obstacle": {
+   "text": "the signal box's side window, sealed shut with decades of paint and set too high to reach safely",
+   "kind": "painted_shut_window"
+  }
+ },
+ "fin_lintel": {
+  "key_place": {
+   "text": "the signal box's lintel, run a hand along and found bare",
+   "kind": "under_lintel"
+  }
+ },
+ "fin_wrenbox": {
+  "key_place": {
+   "text": "a weatherproofed bird box nailed to the aerial post, its hinged lid holding a key done up in cloth and marked with a small drawn arrow",
+   "kind": "weatherproof_box"
+  }
+ },
+ "fin_threshold": {
+  "station_workings": {
+   "text": "a spring-driven timer counting down its last notches, a tape reel spinning on its own beside it, and a hand crank resting where the spring needs winding",
+   "kind": "clockwork_timer"
+  }
+ },
+ "fin_wall": {
+  "club_relic": {
+   "text": "a wall of small drawings, one per member, each a simple icon standing in for a face, closing on a single typed card that sets down why the station keeps running",
+   "kind": "annotated_chart"
+  }
+ },
+ "fin_keep": {
+  "documentation": {
+   "text": "a folder of her own diagrams, drawn rather than written, each step a small picture instead of a sentence",
+   "kind": "maintenance_folder"
+  }
+ },
+ "f_answer_script": {
+  "code_form": {
+   "text": "the drawn icons on the last page match, one by one, to the five words that close every one of the club's nights: SIGN OFF STAND WATCH NOW",
+   "kind": "pictogram_code"
+  }
+ },
+ "e_win_signoff": {
+  "code_form": {
+   "text": "the five words the drawings matched, spoken in the order the small icons handed them over",
+   "kind": "pictogram_code"
+  },
+  "mechanism": "the drawings are matched all the way through and read aloud whole, SIGN OFF STAND WATCH NOW, and the machine closes precisely as its small icons always promised it would"
+ },
+ "e_wt_climb": {
+  "mechanism": "a foot goes on the black ice glazing the service ladder and a sibling has her by the jacket before the padlock is even reached, the tower's drawn icons left for a daylight try"
+ },
+ "e_cn_boards": {
+  "mechanism": "the Empress's soft front-apron board dips underfoot and a sibling's arm is already there before it becomes more than a lurch, the drawn-icon hunt left for another night"
+ },
+ "e_cn_reel": {
+  "mechanism": "the tin's small drawn projector proves apt: what plays back is the Empress's last full house, watched together until daylight leaks in under the doors"
+ },
+ "e_hb_dinghy": {
+  "mechanism": "the patched skiff takes on water almost at once, and the retreat is quick and undignified, boots wrung out on the steps while the bell buoy tolls on past the breakwater"
+ },
+ "e_hb_stories": {
+  "mechanism": "the wharf keeper's own stories, drawn diagrams and all, run past the window going pale, and he sends them off with a handshake and a standing invitation back"
+ },
+ "e_lb_alarm": {
+  "mechanism": "the looped bells jangle under a careless hand, and the pair stand still on the step, waiting for the caretaker who shuffles down in his slippers, generous about the why of it and unbending only on the one rule that matters"
+ },
+ "e_bh_scree": {
+  "mechanism": "the loose gravel run slips out from under their feet and sits them down at the bottom of the switchbacks, hands stinging and the long safe way still climbing above them tomorrow"
+ },
+ "e_fin_window": {
+  "mechanism": "the lean toward the signal box's sealed side window goes further than it should, and a sibling's hand closes on her sleeve before the paint-stuck frame is even properly tested"
+ },
+ "e_fin_late": {
+  "mechanism": "one drawing too many studied on the club's wall of icons, and the sign-off starts while they are still tracing the last small face"
+ },
+ "e_fin_listen": {
+  "mechanism": "the last of the drawn-icon groups carries out past the shut door of the signal box, and the goodnight arrives right on schedule with nobody needing to go in"
+ },
+ "e_win_net": {
+  "mechanism": "the spoken pause is met by voice after voice out of the hiss, each one a name the drawn-icon key never needed to explain"
+ },
+ "e_win_answer": {
+  "mechanism": "her name goes beneath the last drawn icon in the logbook, and the machine falls silent with her voice sitting on the tape right beside her grandmother's"
+ },
+ "e_win_encore": {
+  "mechanism": "the drawn closing icons are matched through to the end, then one small promise is added in their own words, and the crank is turned until the spring sits firm again"
+ },
+ "e_win_keepers": {
+  "mechanism": "hands are shaken over the wound spring, and two new keepers set about learning every icon on the drawn maintenance folder"
+ },
+ "e_win_apprentice": {
+  "mechanism": "the drawn-diagram folder gets followed step by picture, and in time two apprentices sign their names beneath drawings of their own making"
+ },
+ "e_win_family": {
+  "mechanism": "the parent arrives through the door with minutes to spare after one phone call, and three of them watch the last small icons scroll past together"
+ },
+ "e_win_passiton": {
+  "mechanism": "five new sets of drawn icons go onto the tape in their own hand, and by next year other Fenbrook children are matching pictures to places just as they once did"
+ },
+ "label_style": "physical verbs for physical legs, quiet verbs for the choices about people"
+}

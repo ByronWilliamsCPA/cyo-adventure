@@ -1,0 +1,254 @@
+{
+  "schema_version": 1,
+  "id": "freegen-g3",
+  "version": 1,
+  "title": "The Lantern Keeper's Apprentice",
+  "start_node": "n01",
+  "nodes": [
+    {
+      "id": "n01",
+      "body": "Mara steps off the ferry onto Foggy Point, the wind smelling of salt and rain. Her great-uncle Desmond waits by the lighthouse gate, his coat flapping. Behind him, Foghollow Lighthouse blinks weakly instead of shining strong and steady. 'The old lamp has been sputtering for three nights,' he says, worry creasing his face. 'A supply ship is due tonight, and without a strong light, the rocks out there are deadly.' Mara looks from the tower to the rocky shore below, unsure where to start helping. Desmond waits for her answer, ready to lead the way, whichever path she chooses first.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_n01a", "label": "Follow Uncle Desmond up the tower stairs", "target": "n02"},
+        {"id": "c_n01b", "label": "Climb down to the tide pools instead", "target": "n03"}
+      ]
+    },
+    {
+      "id": "n02",
+      "body": "The stairs spiral up inside cold stone walls, Mara's footsteps echoing. Desmond talks as they climb. 'The lamp itself is fine,' he says, 'but something below is starving it of power.' He explains that Foghollow's light does not run on electricity alone. Deep under the tower, glowing sea creatures called lumens circle a mechanism that feeds the beam. Mara has never heard of lumens before. Desmond stops at a dusty bookshelf built into the wall and taps it twice. 'There is a door hidden here,' he says quietly. 'Only keepers know about it. Tonight, I think we need to use it.'",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_n02a", "label": "Ask to see the hidden door", "target": "n04"}
+      ]
+    },
+    {
+      "id": "n03",
+      "body": "Mara climbs down slick rocks to the tide pools instead of following Desmond. Small crabs scatter as her shadow passes over the water. Something catches her eye: a faint blue-green glow clinging to a clump of seaweed. She pulls it free and finds a tiny brass gear tangled inside, warm to the touch and humming softly. It looks nothing like anything from a normal machine. The glow pulses once, twice, then fades like a heartbeat slowing down. Mara turns the gear over in her palm, certain it matters. Whatever it belongs to, it is clearly not supposed to be out here.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_n03a", "label": "Bring the gear straight to Uncle Desmond", "target": "n05"},
+        {"id": "c_n03b", "label": "Follow the glowing trail alone", "target": "n06"}
+      ]
+    },
+    {
+      "id": "n04",
+      "body": "Desmond leads Mara to the dusty bookshelf and slides it sideways on hidden rails. Behind it sits a small brass door, cool salty air drifting through its cracks. 'This door leads down to the lumen caves,' he explains, 'where the lighthouse gets its true power.' He has not gone down in years, not since his knees got bad. Mara feels a flutter of excitement and nerves together. 'The light will die completely by midnight if nothing changes,' Desmond adds. He looks at her, then at the door. Someone needs to check on the lumens soon, before the fog rolls in for good.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_n04a", "label": "Step through the brass door together", "target": "n07"}
+      ]
+    },
+    {
+      "id": "n05",
+      "body": "Mara hurries back up with the strange gear cupped in her hands. Desmond turns it over carefully, his eyebrows rising. 'This is from the heart-lantern mechanism,' he mutters, 'the one deep under the tower.' He explains that lumens, glowing sea creatures, power the lighthouse from caves below. If a gear like this washed loose, something down there is broken. He leads Mara to a dusty bookshelf and slides it aside, revealing a small brass door. Cool, salty air breathes out from the darkness beyond. 'We need to see what happened,' Desmond says. 'Before the light goes out completely.'",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_n05a", "label": "Step through the brass door together", "target": "n07"}
+      ]
+    },
+    {
+      "id": "n06",
+      "body": "Mara decides to follow the glow herself, scrambling along wet rocks below the cliffs. The trail of blue-green light leads her further from the lighthouse than she meant to go. Waves crash louder, and she realizes the tide is creeping in fast, swallowing the path behind her. Cold water swirls around her ankles. Ahead, a narrow rock ledge rises above the waterline, the only dry way forward. Behind her, the safe route back to the lighthouse has already vanished under foaming water. Mara's heart pounds. She has to choose quickly, before the sea decides for her instead.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_n06a", "label": "Climb the rock ledge to escape the tide", "target": "n21"}
+      ]
+    },
+    {
+      "id": "n07",
+      "body": "The brass door swings open onto a spiral stone staircase, lit by a soft blue-green glow from somewhere far below. Salty, humming air rises to meet them. Mara counts the steps as they descend, one hand trailing the damp wall. Partway down, a faded chart is bolted to the stone, covered in gears and arrows she doesn't fully understand. The hum grows louder, like a chorus of tiny voices singing underwater. Somewhere ahead lies the cavern where the lumens live, and whatever has gone wrong with Foghollow's light. Mara takes a breath and keeps her eyes on the steps.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_n07a", "label": "Hurry straight down the stairs", "target": "n08"},
+        {"id": "c_n07b", "label": "Pause to study the old gear-map", "target": "n09"}
+      ]
+    },
+    {
+      "id": "n08",
+      "body": "Mara hurries down the last of the spiral stairs, eager to see the cavern for herself. It opens up huge and glowing, a ring of soft lights circling a still, dark pool. But something is wrong: many of the lights flicker weakly, and some have gone out completely, leaving gaps like missing teeth in a smile. The cold sea wind smells of salt and old iron. A narrow stone bridge crosses the pool toward the center, where a much bigger light should be blazing but barely glimmers instead. Mara grips the rail and steps out onto the bridge.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_n08a", "label": "Cross the narrow stone bridge", "target": "n10"}
+      ]
+    },
+    {
+      "id": "n09",
+      "body": "Before heading down, Mara studies the faded chart on the wall a little longer. It shows lumens arranged in a wide ring, each one linked by thin lines to a bigger shape at the center, labeled 'heart-lantern' in tiny, careful letters. If the heart-lantern struggles, the whole ring dims with it, just like Desmond described upstairs. Small notes are scratched beside it about kelp, gears, and channels. The chart makes the cave feel less like a mystery and more like a puzzle with real parts. Mara traces the lines with her finger, trying to memorize the shape before going further.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_n09a", "label": "Head down to check the heart-lantern", "target": "n10"},
+        {"id": "c_n09b", "label": "Give up on the map and turn back", "target": "n22"}
+      ]
+    },
+    {
+      "id": "n10",
+      "body": "The cavern spreads out below, ringed with dim, flickering lumens clinging to the rock like glowing barnacles. In the shallow water near the base, thick kelp has wrapped itself around old brass gears, jamming them still. Without turning gears, nothing in the ring can properly shine. The air smells of salt and cold stone, and somewhere water drips steadily, echoing. Mara studies the tangled mess, unsure exactly how deep the kelp goes. It looks like careful, patient work, not something to rush. She rolls up her sleeves, ready to wade in and start pulling the slippery strands free.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_n10a", "label": "Wade in to clear the tangled kelp", "target": "n11"}
+      ]
+    },
+    {
+      "id": "n11",
+      "body": "Mara wades into the shallow, chilly water and starts tugging kelp away from the jammed gears. Bit by bit, the mechanism creaks, straining to turn again. Then the water shifts strangely nearby, a slow ripple moving against the current. Something long and pale slides closer beneath the surface, easily as long as a rowboat. Mara freezes, gear half-cleared in her hands. Two large, gentle eyes rise just above the waterline, watching her without blinking. It doesn't look angry, exactly, more curious, like it's guarding something precious and wondering what she's doing here in its quiet, glowing home.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_n11a", "label": "Speak calmly to the creature", "target": "n12"},
+        {"id": "c_n11b", "label": "Back away and keep working", "target": "n13"}
+      ]
+    },
+    {
+      "id": "n12",
+      "body": "Mara lowers her hands slowly and speaks in a soft, steady voice, the way she'd talk to a nervous dog. 'I'm not here to hurt anything,' she says. 'I just want to help the lights.' The creature, long and silver-pale like an enormous eel, drifts closer instead of away. It nudges a loose gear gently with its nose, then turns and swims toward a narrow side channel, glancing back as if checking she's following. Mara realizes with a jolt that it's trying to show her something important, something the chart upstairs never mentioned. She wades carefully after it.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_n12a", "label": "Follow the creature to the channel", "target": "n14"}
+      ]
+    },
+    {
+      "id": "n13",
+      "body": "Mara decides not to risk getting close to the strange creature and keeps working on the gears instead, hands trembling slightly. She frees more kelp, and the mechanism groans, turning just a little more freely than before. The pale creature lingers nearby, watching but not approaching again. Without its guidance, Mara has no clue what else might be wrong deeper in the cave. Time is slipping by; the flicker above must be growing weaker while she works alone down here. She wipes salt water from her eyes and starts searching along the channel herself, hoping to spot the real problem.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_n13a", "label": "Search for the blockage alone", "target": "n14"}
+      ]
+    },
+    {
+      "id": "n14",
+      "body": "Following the narrow channel, Mara finds the trouble: a fallen boulder wedged tight, blocking the glowing water that should feed straight into the heart-lantern chamber. Without that flow, the whole system stays starved no matter how much kelp gets cleared elsewhere. The boulder looks heavy, slick with algae, wedged between two walls of rock. Water pools uselessly behind it instead of rushing forward. Mara nudges it and feels it shift just slightly, enough to know it isn't stuck forever. But moving it alone, in a dim, echoing cave, feels like exactly the kind of risk grown-ups warn kids about.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_n14a", "label": "Try to shift the boulder", "target": "n15"},
+        {"id": "c_n14b", "label": "Turn back, it's too risky", "target": "n23"}
+      ]
+    },
+    {
+      "id": "n15",
+      "body": "With careful bracing and a good, hard shove, the boulder finally grinds loose and rolls aside with a splash. Glowing water rushes past instantly, surging down the channel toward the heart-lantern chamber. Along the walls, dim lumens flicker, then steady, brightening as the flow reaches them one by one. Mara laughs out loud, relief flooding through her chest. The cavern hums louder now, almost cheerful. But the tide outside won't wait forever, and neither will the fading light upstairs. She wipes wet hands on her shorts and starts moving quickly toward where the chart said the heart-lantern waits.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_n15a", "label": "Hurry to the heart-lantern chamber", "target": "n16"}
+      ]
+    },
+    {
+      "id": "n16",
+      "body": "The heart-lantern chamber opens up ahead, smaller than the main cavern but far more important. A huge glass globe sits at its center, crusted with salt and grime, pulsing weakly like a tired heartbeat. This single light feeds the entire ring outside, and through it, the beam far above the sea. Thick dust muffles most of its glow, and beside it sits an old brass mechanism, gears frozen mid-turn. Mara can tell two things need fixing at once: the dirty glass, and whatever makes the mechanism actually run. She glances around the chamber, deciding where to start first.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_n16a", "label": "Polish the crusted glass", "target": "n17"},
+        {"id": "c_n16b", "label": "Search for the winding key first", "target": "n18"}
+      ]
+    },
+    {
+      "id": "n17",
+      "body": "Mara rubs her sleeve against the crusted glass, wiping away layers of dried salt in slow, careful circles. Underneath, the light brightens noticeably, glowing warmer and steadier than before. It feels like uncovering a window that's been painted shut for years. Still, the gears beside the globe sit frozen, untouched by her polishing. A light this bright deserves a mechanism that actually turns, sending power properly up through the tower. Mara steps back, satisfied but not finished, and looks around the chamber for whatever piece might get those old brass gears moving again.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_n17a", "label": "Look for the winding key", "target": "n19"}
+      ]
+    },
+    {
+      "id": "n18",
+      "body": "Mara searches the chamber's edges, running her hands along cold, damp stone. Tucked in a shallow alcove, she finds a heavy brass key, shaped oddly like a tiny anchor, clearly meant for winding something important. Right beside it, though, a second passage curves away into darkness, glowing faintly at its far end with a softer, gentler light than anywhere else she's seen. It looks nothing like the machinery-filled cavern behind her. Curiosity tugs at her almost as strongly as duty does. Mara holds the key tightly, glancing between the winding mechanism waiting behind her and the mysterious glow ahead.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_n18a", "label": "Bring the key back to the lantern", "target": "n19"},
+        {"id": "c_n18b", "label": "Follow the passage toward the soft glow", "target": "n24"}
+      ]
+    },
+    {
+      "id": "n19",
+      "body": "Key in hand, Mara hurries back to the heart-lantern and finds the matching slot near its base, shaped exactly like the little anchor. She slides the key in and feels it click satisfyingly into place. The old brass gears shudder, as if waking from a long, cold sleep. A low hum builds beneath her feet, vibrating up through the stone floor. The glass globe, already polished bright, begins pulsing faster and stronger with every passing second. Mara steps back, heart racing, both hands still resting lightly on the cool metal casing, waiting for whatever happens next when she finally turns it.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_n19a", "label": "Turn the key and wind the mechanism", "target": "n20"}
+      ]
+    },
+    {
+      "id": "n20",
+      "body": "Mara grips the key firmly and turns it, slow and steady, the way Desmond once showed her with an old clock. Gears lock together with a satisfying clunk, and the heart-lantern flares brilliant white-gold, light pouring outward in every direction. The hum rises into something like singing, echoing through the whole cavern system at once. Above her, far up through stone and iron, she imagines the tower beam sweeping strong across the dark water again. The chamber glows brighter than she's ever seen anything glow. Mara wants to see it from the top, but part of her wants to stay and watch a moment longer.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_n20a", "label": "Race upstairs to see the beam shine", "target": "n31"},
+        {"id": "c_n20b", "label": "Stay to check every lumen first", "target": "n25"}
+      ]
+    },
+    {
+      "id": "n21",
+      "body": "The ledge holds, but barely, as cold waves slap against the rock below Mara's feet. She shouts as loud as she can, voice cracking over the roar of the sea, until finally a fishing boat's spotlight swings her way. Ropes and steady hands haul her up, soaked and shivering but whole. Desmond meets her at the dock, face pale with worry, wrapping her in a scratchy wool blanket. Behind them, Foghollow's beam stays dark and silent against the fog. Mara did not mean to end up stranded, and she knows now that the caves will have to wait for daylight instead.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_n21a", "label": "Shout for help from the rocks", "target": "n26"}
+      ]
+    },
+    {
+      "id": "n22",
+      "body": "Mara studies the chart until the lines blur together, gears and channels tangling in her mind like the kelp Desmond warned her about. 'I don't understand any of this,' she finally admits, frustration prickling behind her eyes. Desmond nods slowly, unsurprised. 'Then we wait,' he says gently. 'The harbor engineer comes at dawn, and this isn't something to guess at in the dark.' They climb back up together, leaving the humming cavern behind them, unsolved for tonight. Fog thickens outside the tower windows as they climb, the lighthouse beam staying dim behind them, patient until morning finally comes.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_n22a", "label": "Climb back up to wait for morning", "target": "n27"}
+      ]
+    },
+    {
+      "id": "n23",
+      "body": "The boulder looks far too heavy and the cave far too echoing and lonely for Mara to risk moving it alone. She backs away carefully, deciding some jobs need more than one pair of hands and a working flashlight. Climbing back toward the stairs, she finds Desmond waiting, and together they agree to call the harbor engineer first thing tomorrow, with proper tools and rope. The lighthouse beam stays half-lit through the night, weak but steady enough to warn most ships away from the rocks. Nobody gets hurt, though Mara can't help wondering what might have happened if she'd pushed harder.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_n23a", "label": "Head back up to call for help", "target": "n28"}
+      ]
+    },
+    {
+      "id": "n24",
+      "body": "Curiosity wins, and Mara follows the softer glow down the second passage instead of hurrying back with the key. It opens into a small, hidden pool where dozens of baby lumens drift lazily, glowing gently like tiny paper lanterns underwater. She has never seen anything so quietly beautiful, and she stays far longer than she means to, watching them pulse in slow, sleepy rhythms. By the time she remembers the key still in her pocket, the tide outside has shifted, and climbing back seems risky in the dark. The heart-lantern waits, unwound, its secret nursery finally found instead.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_n24a", "label": "Stay and watch the baby lumens", "target": "n29"}
+      ]
+    },
+    {
+      "id": "n25",
+      "body": "Before rushing upstairs, Mara walks the ring one more time, checking each lumen glowing steadily now along the walls. Strangely, she can almost feel which ones still need a gentle nudge, as if the light speaks to her fingertips somehow. Desmond appears at the tunnel mouth, watching her work with a look she's never seen on his face before, something like pride mixed with surprise. 'You've got a knack for this,' he says quietly, 'a real one.' Behind them, the heart-lantern hums warm and steady, filling the whole cavern with golden light, patient while she finishes her careful, quiet rounds.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_n25a", "label": "Finish the careful rounds", "target": "n30"}
+      ]
+    },
+    {
+      "id": "n26",
+      "body": "Wrapped in the scratchy blanket, Mara watches the dark tower from the dock, disappointed the beam never turned bright tonight. A supply ship radios in trouble near the rocks, forced to creep past slowly and carefully instead of sailing safely through. No one is hurt, but everyone aboard has a rough, frightening crossing. Desmond squeezes her shoulder. 'Tomorrow, we go down properly, together, with rope and lights,' he says. Mara nods, jaw tight, already planning. The caves are still down there, waiting, and so is the mystery of the broken heart-lantern. She isn't finished, not by a long way.",
+      "is_ending": true,
+      "ending": {"id": "e_3", "valence": "negative", "kind": "setback", "title": "Caught by the Tide"}
+    },
+    {
+      "id": "n27",
+      "body": "Morning finally comes gray and foggy, the lighthouse beam still weak after a long, dim night. The harbor engineer arrives with proper tools and a patient smile, ready to climb down where Mara and Desmond turned back. No ships were lost, though several captains grumbled about the poor light. Mara feels a small twist of disappointment watching someone else head for the brass door. 'Some jobs need grown-up hands and grown-up tools,' Desmond reminds her gently. She knows he's right, mostly. Still, she can't help wishing she'd understood that chart just a little better, just in time.",
+      "is_ending": true,
+      "ending": {"id": "e_4", "valence": "negative", "kind": "retreat", "title": "Waiting for Morning"}
+    },
+    {
+      "id": "n28",
+      "body": "By morning, the harbor engineer arrives with heavy tools and steady ropes, exactly what the stubborn boulder needed all along. The lighthouse beam, dim but steady through the night, kept every ship safely away from the rocks regardless. Mara watches from the tower window as the engineer disappears through the brass door she and Desmond once stood before. 'You made the right call,' Desmond tells her. 'Knowing when to wait is its own kind of brave.' Mara isn't entirely sure she believes him yet, but the light comes back on properly by lunchtime, and that, at least, feels like enough.",
+      "is_ending": true,
+      "ending": {"id": "e_5", "valence": "neutral", "kind": "retreat", "title": "The Right Call"}
+    },
+    {
+      "id": "n29",
+      "body": "By the time Mara climbs back to the tower, the fog has thickened and the beam still glows only faintly behind her. Desmond isn't angry, just curious, when she tells him breathlessly about the hidden nursery glowing softly underground. Out at sea, the storm that worried him all evening curves away at the last moment, sparing every ship without any help from the lighthouse at all. 'Lucky,' Desmond murmurs, though his eyes stay thoughtful. Mara knows the heart-lantern still needs fixing properly, soon. But she also knows something wonderful now lives down there, glowing quietly, waiting for her to return.",
+      "is_ending": true,
+      "ending": {"id": "e_6", "valence": "neutral", "kind": "discovery", "title": "The Hidden Nursery"}
+    },
+    {
+      "id": "n30",
+      "body": "Desmond kneels beside her, voice warm with something like wonder. 'Foghollow hasn't had a real apprentice keeper in thirty years,' he says. 'I think it just found one.' Above them, the beam sweeps strong and golden across the water, exactly as it should. Mara realizes her hands are still tingling faintly, as if the lumens are still humming quietly through her fingers. She grins, salt-damp and tired but glowing herself, almost. Desmond offers her the little brass key to keep, promising to teach her everything about the caves this summer. Mara closes her fingers around it, already looking forward to next time.",
+      "is_ending": true,
+      "ending": {"id": "e_2", "valence": "positive", "kind": "success", "title": "The New Apprentice"}
+    },
+    {
+      "id": "n31",
+      "body": "Mara races up the spiral stairs two at a time, salt air rushing past her face. Bursting into the lamp room, she finds the great lens already spinning, throwing a strong, steady beam far out across the dark water. Desmond laughs with relief, pulling her into a hug. Far offshore, a ship's horn sounds twice, grateful and clear, safely finding its way past the rocks. Fog swirls but cannot hide the light now. Mara watches the beam sweep the darkness, again and again, knowing she helped bring it back to life. Foghollow Lighthouse shines steady until morning, exactly as it should.",
+      "is_ending": true,
+      "ending": {"id": "e_1", "valence": "positive", "kind": "completion", "title": "Light Restored"}
+    }
+  ]
+}

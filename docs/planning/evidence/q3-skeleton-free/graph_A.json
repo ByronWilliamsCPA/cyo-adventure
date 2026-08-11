@@ -1,0 +1,457 @@
+{
+ "schema_version": "2.0",
+ "id": "q3-graph-a",
+ "version": 1,
+ "title": "The Time Capsule of Widow's Watch",
+ "metadata": {
+  "age_band": "10-13",
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 5.5,
+   "tolerance": 1.5
+  },
+  "tier": 1,
+  "themes": [
+   "mystery",
+   "friendship",
+   "history",
+   "nature"
+  ],
+  "estimated_minutes": 20,
+  "ending_count": 7,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "mild",
+   "peril": "mild"
+  },
+  "topology": "branch_and_bottleneck",
+  "production_eligible": false
+ },
+ "variables": [],
+ "start_node": "n_start",
+ "nodes": [
+  {
+   "id": "n_start",
+   "body": "Summer at Camp Alder Cove always ends with one more mystery. Ever since your counselor Jax first pointed across Lake Wren to Widow's Watch Island, you have wanted to see the old fire tower rising above its trees. Rumor says a cabin group buried a time capsule there back in 1975, right before a storm forced them to leave in a hurry. Nobody ever paddled back to dig it up. Today's schedule has a free afternoon before campfire, and your friends Priya and Sam are already talking about the island. You grab your camp hat and head toward the common area to find them and make a plan.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_start_common",
+     "label": "Head to the camp common area to find your friends",
+     "target": "n_camp"
+    }
+   ]
+  },
+  {
+   "id": "n_camp",
+   "body": "The common area buzzes with the last free afternoon of camp. Priya waves at you from the porch, holding a dusty yearbook she found in the lodge attic; she says it mentions the 1975 capsule. Down by the water, Sam is checking canoe straps at the dock, ready to paddle out the moment you say the word. Under the big oak tree, counselor Jax sits sharpening pencils, happy to share the whole legend of Widow's Watch or lend useful gear for the hike. You have time to visit one of them before the group needs to leave. Where do you go first?",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_go_attic",
+     "label": "Climb up to the lodge attic to see Priya's yearbook",
+     "target": "n_attic"
+    },
+    {
+     "id": "c_go_dock",
+     "label": "Head down to the dock to talk with Sam",
+     "target": "n_dock"
+    },
+    {
+     "id": "c_go_counselor",
+     "label": "Sit with counselor Jax under the oak tree",
+     "target": "n_counselor"
+    }
+   ]
+  },
+  {
+   "id": "n_attic",
+   "body": "The lodge attic smells like cedar and old paper. Priya sits cross-legged among stacked yearbooks, pointing to a water-stained page. A faded photo shows five campers grinning beside a metal box, and beneath it someone wrote, in careful pencil, 'Buried under the twisted birch, 1975, do not forget us.' A hand-drawn map in the margin shows the fire tower and a crooked tree nearby. Priya copies the sketch onto a scrap of paper so you can bring it along. Excited, you both climb back down the narrow attic stairs, ready to find Sam and head toward the gathering circle by the boathouse.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_attic_gather",
+     "label": "Head down to the gathering circle with the map",
+     "target": "n_gather"
+    }
+   ]
+  },
+  {
+   "id": "n_dock",
+   "body": "Down at the dock, Sam is stacking orange life jackets by the canoe rack. 'We need to sign one out properly,' Sam says, nodding toward lifeguard Nora, who is checking straps on the last canoe in line. You could wait your turn behind two other cabins already signed up, or step up now while Nora has a free moment between checks. The lake looks calm today, but clouds are starting to build over the far shore, so timing might matter. Sam looks at you, waiting for a decision before the afternoon slips away.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_signout_now",
+     "label": "Ask Nora to sign your canoe out right now",
+     "target": "n_borrow"
+    },
+    {
+     "id": "c_wait_turn",
+     "label": "Wait patiently behind the other cabins",
+     "target": "n_waitline"
+    }
+   ]
+  },
+  {
+   "id": "n_borrow",
+   "body": "Nora checks your life jacket straps twice and hands you a bright orange whistle just in case. 'Stay close to shore on the way back if the wind picks up,' she says, marking your names in the logbook. Sam grins and grabs two paddles while you steady the canoe against the dock. It only takes a few minutes, and soon you are free to head back and gather everyone else before setting out. The lake still looks calm, though the clouds over the far shore have grown a little darker while you were signing in.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_borrow_gather",
+     "label": "Head to the gathering circle to meet the others",
+     "target": "n_gather"
+    }
+   ]
+  },
+  {
+   "id": "n_waitline",
+   "body": "You and Sam wait behind two cabins already checking out canoes. While you wait, one of the older campers mentions that the fire tower door has been rusted shut for years, so nobody expects to get inside anyway. Another camper says her cousin once paddled near the island and swore she heard an owl calling in daylight. The line moves slower than you hoped, but Nora finally waves you forward, checks your gear, and hands you paddles. By the time you are done, the clouds over the far shore look thicker, but there is still time before the group needs to leave.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_waitline_gather",
+     "label": "Hurry to the gathering circle with your paddles",
+     "target": "n_gather"
+    }
+   ]
+  },
+  {
+   "id": "n_counselor",
+   "body": "Counselor Jax pats the ground beside the oak tree. 'I can tell you the whole story of Widow's Watch, or I can dig up some gear that might help out there,' Jax offers, gesturing toward a supply bin nearby. A lantern handle pokes out from under a folded tarp. You glance toward the lake, where the sky is still mostly clear, then back at Jax. Either choice sounds useful, and there is time for only one before you need to meet Priya and Sam at the gathering circle by the boathouse.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hear_story",
+     "label": "Ask Jax to tell the full legend",
+     "target": "n_story"
+    },
+    {
+     "id": "c_get_supplies",
+     "label": "Ask Jax for helpful gear instead",
+     "target": "n_supplies"
+    }
+   ]
+  },
+  {
+   "id": "n_story",
+   "body": "Jax leans back against the oak and begins. In the summer of 1975, five campers from Birch Cabin paddled out to the island for an overnight adventure. They buried a metal box under a twisted birch tree, planning to return for it the next week. That night a fast storm rolled in, and camp staff evacuated everyone early. The campers went home, grew up, and the box was never dug up again. 'Some say the tower still creaks like someone's climbing it,' Jax adds with a wink, 'but that's probably just old wood.' You thank Jax and head off to find your friends.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_story_gather",
+     "label": "Head to the gathering circle to share what you learned",
+     "target": "n_gather"
+    }
+   ]
+  },
+  {
+   "id": "n_supplies",
+   "body": "Jax digs through the bin and hands you a small battery lantern, a coil of twine, and a bag of trail mix. 'The reeds get thick near the island's marshy side this time of year,' Jax warns, 'and it gets dim under the trees by late afternoon.' You tuck the lantern into your backpack alongside the twine, already imagining squeezing through overgrown paths. Jax waves you off with a reminder to stick together and be back before the dinner bell. You jog off toward the boathouse, gear rattling in your bag, eager to meet Priya and Sam at the gathering circle.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_supplies_gather",
+     "label": "Hurry to the gathering circle with your gear",
+     "target": "n_gather"
+    }
+   ]
+  },
+  {
+   "id": "n_gather",
+   "body": "At the gathering circle, Priya and Sam are waiting with the canoe already tugged halfway onto the sand. You compare notes: the sketched map, the legend, and whatever gear you collected along the way. Everyone is ready to paddle out to Widow's Watch Island, but the clouds over the far shore have thickened into a gray wall, and a light wind ripples the water. Priya checks her watch. 'We could still make it across if we leave now,' she says, 'or we wait until the storm passes completely and try another day.' The choice is yours to make together.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_paddle_now",
+     "label": "Paddle out now while there's still a window",
+     "target": "n_paddle"
+    },
+    {
+     "id": "c_wait_storm",
+     "label": "Wait for the storm to pass completely",
+     "target": "n_end_missed"
+    }
+   ]
+  },
+  {
+   "id": "n_paddle",
+   "body": "You push off from the sand, and the canoe glides smoothly across the calm water. Sam paddles up front, you steady the middle, and Priya calls out directions from the back using the sketched map. Wind ruffles the surface but never turns choppy, and within twenty minutes the dark shape of Widow's Watch Island grows from a smudge into real trees and rocks. The old fire tower peeks above the canopy, rustier than you expected. You steer toward a narrow strip of sand, and the canoe scrapes gently onto shore. Hearts pounding with excitement, the three of you climb out and look around.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_paddle_island",
+     "label": "Step onto the island and look for a way in",
+     "target": "n_island"
+    }
+   ]
+  },
+  {
+   "id": "n_island",
+   "body": "Standing on the sand, you see three ways forward. To the left, a rocky shoreline curves past crumbling wooden pilings toward the trees. Straight ahead, a shadowy gap between two boulders leads into a shallow cave. To the right, thick green reeds rustle at the marshy edge of the island, taller than your knees. Somewhere beyond all three, the fire tower waits with its secret. Priya unfolds the sketched map again, but it only shows the birch tree, not the exact path there. You and your friends will have to explore to find your way toward the twisted birch.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_go_shore",
+     "label": "Follow the rocky shoreline toward the pilings",
+     "target": "n_shore"
+    },
+    {
+     "id": "c_go_cave",
+     "label": "Duck into the shallow cave between the boulders",
+     "target": "n_cave"
+    },
+    {
+     "id": "c_go_reeds",
+     "label": "Push through the reeds along the marshy edge",
+     "target": "n_reeds"
+    }
+   ]
+  },
+  {
+   "id": "n_shore",
+   "body": "The rocky shoreline leads you to the remains of an old wooden dock, its pilings gray and splintered above the waterline. Beyond it, a narrow path disappears into the trees, probably heading toward the tower. You crouch to look closer at the pilings first and notice faint carved marks near the waterline, almost hidden by moss. Sam points out that following the woods path might get you to the birch tree faster, while checking the carvings could reveal a clue about exactly where to look. Priya glances between both options, waiting to see which one you want to try first.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_check_pilings",
+     "label": "Examine the carved marks on the old pilings",
+     "target": "n_olddock"
+    },
+    {
+     "id": "c_take_path",
+     "label": "Follow the path into the woods",
+     "target": "n_path"
+    }
+   ]
+  },
+  {
+   "id": "n_cave",
+   "body": "The cave mouth is cool and smells like wet stone. Sunlight only reaches a few steps inside before the passage curves into shadow. Sam pulls the lantern from the backpack, if you grabbed one earlier, or squints uncertainly into the dark if you did not. Priya taps your shoulder. 'We could go deeper and see where it leads,' she says, 'or head back out and try the shoreline instead, since it's getting harder to see.' Something about the quiet dark makes you both pause and think it over carefully before choosing which way to go from here.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cave_deeper",
+     "label": "Venture deeper into the cave",
+     "target": "n_cavedeep"
+    },
+    {
+     "id": "c_cave_back",
+     "label": "Turn back and explore the shoreline instead",
+     "target": "n_end_cavewait"
+    }
+   ]
+  },
+  {
+   "id": "n_reeds",
+   "body": "The reeds close in around you, taller than expected and rustling softly in the breeze. A few steps in, Sam freezes and points: a heron stands motionless in a shallow pool, feeding two fuzzy chicks tucked into a nest of woven grass. Nobody moves, afraid of scaring the birds away. Priya whispers that you could stay and watch for a while, since moments like this are rare, or keep pushing through the reeds toward the clearing where the tower probably stands. The heron dips its long beak again, patient and graceful, waiting for you to decide which way your afternoon will go.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_watch_heron",
+     "label": "Stay quietly and watch the heron with its chicks",
+     "target": "n_birdnest"
+    },
+    {
+     "id": "c_push_reeds",
+     "label": "Push on through the reeds toward the clearing",
+     "target": "n_clearing"
+    }
+   ]
+  },
+  {
+   "id": "n_olddock",
+   "body": "Kneeling by the mossy pilings, you rub away grime with your sleeve and find carved letters: '1975' and an arrow scratched into the wood, pointing toward the trees. Someone clearly marked this spot on purpose, maybe one of the original campers hoping a future explorer would notice. Sam snaps a photo with the camp's disposable camera while Priya sketches the arrow's angle onto the map. Following that direction feels like the safest bet, since it lines up with the legend Jax told earlier. You stand, brush off your knees, and turn to follow where the carved arrow points, deeper into the island.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_olddock_tower",
+     "label": "Follow the carved arrow toward the birch trees",
+     "target": "n_towerchest"
+    }
+   ]
+  },
+  {
+   "id": "n_path",
+   "body": "The woods path winds between ferns and fallen logs, cool and shady under a thick canopy. Birdsong echoes overhead, and your sneakers crunch softly over dry leaves. After a few minutes of climbing a gentle slope, you spot rusted metal legs poking above the treetops ahead: the fire tower, closer than you expected. Priya checks the sketched map again and grins, since the twisted birch should be somewhere near the tower's base. Sam quickens the pace, and you all jog the last stretch, weaving between tree trunks until the small clearing around the tower comes into view just ahead.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_path_tower",
+     "label": "Head into the clearing at the base of the tower",
+     "target": "n_towerchest"
+    }
+   ]
+  },
+  {
+   "id": "n_cavedeep",
+   "body": "Deeper inside, the cave opens into a small chamber where a crack in the rock overhead lets in a thin beam of daylight. Carved into the wall beside the crack, you find another small arrow, weathered but still clear, pointing toward a narrow side passage. Cool air drifts through it, carrying the smell of leaves and outside. Priya traces the carving with her finger. 'Someone really wanted this to be found,' she whispers. You duck through the passage, following its gentle upward slope, until daylight grows brighter ahead and you step out into a small clearing at the base of the old tower.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cavedeep_tower",
+     "label": "Step out into the clearing by the tower",
+     "target": "n_towerchest"
+    }
+   ]
+  },
+  {
+   "id": "n_clearing",
+   "body": "Pushing through the last stretch of reeds, you stumble out into a small sunny clearing dotted with wildflowers. A path of flattened grass leads onward, clearly used by animals or maybe old campers long ago. Sam brushes seeds off their shirt while Priya checks the sketch again, comparing it to the shape of the land around you. In the distance, past a stand of birch trees, the rusted legs of the fire tower rise above the canopy. Energized by how close you must be, you head toward it, weaving between the pale birch trunks until the clearing at its base opens up ahead.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_clearing_tower",
+     "label": "Head toward the fire tower through the birch trees",
+     "target": "n_towerchest"
+    }
+   ]
+  },
+  {
+   "id": "n_towerchest",
+   "body": "You arrive at the base of the fire tower together, wherever your path led you. Rusted legs rise overhead, and at their center, half-buried under one particular twisted birch tree, a patch of ground looks disturbed, older roots grown around something metal beneath. This has to be it: the 1975 time capsule. Priya kneels to brush away leaves and dirt, revealing the corner of a rusted box. Sam looks around nervously. 'Should we open it ourselves,' Sam asks, 'go get Jax first, or just leave it buried, since it's not really ours?' All three of you look at each other, waiting for a decision.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_open_now",
+     "label": "Carefully open the capsule yourselves",
+     "target": "n_open_chest"
+    },
+    {
+     "id": "c_get_jax",
+     "label": "Hike back to bring Jax along",
+     "target": "n_call_counselor"
+    },
+    {
+     "id": "c_leave_buried",
+     "label": "Decide to leave the capsule buried and undisturbed",
+     "target": "n_end_untouched"
+    }
+   ]
+  },
+  {
+   "id": "n_open_chest",
+   "body": "Priya works the rusted latch gently while Sam holds the lid steady. With a soft creak, it finally gives way. Inside, wrapped in a stiff piece of oiled cloth, you find a bundle of photographs, a cassette tape labeled in faded marker, a woven friendship bracelet, and a folded letter addressed 'To whoever finds this.' Careful not to tear the old paper, you unfold it together. The letter, signed by five names, asks whoever discovers the box to remember Camp Alder Cove fondly and to add something of their own before passing the story along. You all look at each other, thinking hard about what to do next.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_open_decide",
+     "label": "Decide together what to do with the capsule",
+     "target": "n_capsule"
+    }
+   ]
+  },
+  {
+   "id": "n_call_counselor",
+   "body": "You leave the capsule buried and hurry back through the woods to find Jax, who is exactly where you left them, refilling the lantern bin. Jax's eyes go wide at your story, and together you all hike back to the twisted birch. Jax kneels beside the box, gently working the rusted latch with a careful hand, until the lid creaks open. Inside, wrapped in oiled cloth, are old photographs, a cassette tape, a friendship bracelet, and a folded letter signed by five names, asking the finder to remember camp fondly and pass the story onward. Jax looks at the three of you, smiling. 'Well, what do you want to do?'",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_councelor_decide",
+     "label": "Decide together what to do with the capsule",
+     "target": "n_capsule"
+    }
+   ]
+  },
+  {
+   "id": "n_capsule",
+   "body": "Sitting in the clearing with the open capsule between you, the letter's words settle in: remember us, and pass the story along. You could carry everything back to share with the whole camp at tonight's campfire, so everyone hears about the 1975 campers. You could ask Jax to contact the county historical society, so the tower and capsule get properly preserved as a real piece of local history. Or each of you could take one small keepsake, like the friendship bracelet, and reseal the rest with a brand new letter of your own, ready for whoever finds it next. Priya looks at you both. 'What feels right?'",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_share_camp",
+     "label": "Bring the capsule back to share with the whole camp",
+     "target": "n_end_share"
+    },
+    {
+     "id": "c_call_historical",
+     "label": "Ask Jax to contact the county historical society",
+     "target": "n_end_museum"
+    },
+    {
+     "id": "c_keep_reseal",
+     "label": "Take a small keepsake and reseal the rest for the future",
+     "target": "n_end_keep"
+    }
+   ]
+  },
+  {
+   "id": "n_end_missed",
+   "body": "You decide the storm isn't worth the risk. Within minutes, fat raindrops start tapping the boathouse roof, and camp staff call off all water activities for the rest of the day. You, Priya, and Sam duck into the lodge instead, spread out a board game on the rug, and spend the afternoon laughing over spilled dice and burnt popcorn. Through the window, lightning flickers over the lake exactly where you would have been paddling. 'Tomorrow,' Priya says, tapping the folded map, 'first thing after breakfast.' You nod, already planning the route, glad you waited for a safer, clearer day to explore.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_missed",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "A Rainy Day Postponed"
+   }
+  },
+  {
+   "id": "n_end_cavewait",
+   "body": "You decide the cave feels a little too dark for exploring without better light, so you and your friends back out into the sunshine instead. Following the shoreline the other direction, you discover a cluster of tidepools tucked between smooth rocks, full of tiny darting fish and a hermit crab that makes Priya laugh out loud. Sam collects a handful of frosted sea glass while you crouch to watch a starfish inch along a rock. The tower and its buried secret can wait for another visit. Right now, this quiet, sparkling corner of the island feels like its own small treasure.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_cavewait",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Tidepool Afternoon"
+   }
+  },
+  {
+   "id": "n_birdnest",
+   "body": "You crouch low and stay perfectly still, watching the heron feed its chicks for what feels like a long, peaceful while. Nobody talks. Sam eventually points out a dragonfly resting on a reed, and Priya quietly counts the chicks: three, all fuzzy and hungry. The afternoon slips by gently, and by the time you finally creep back out of the reeds, the light has turned gold and soft over the water. You never do reach the tower today, but none of you mind. Some adventures are about buried treasure, and some are simply about sitting still long enough to notice something wonderful.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_heron",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Heron's Nest"
+   }
+  },
+  {
+   "id": "n_end_untouched",
+   "body": "Looking at the half-buried box, you all agree it feels wrong to dig up someone else's memory without them knowing. Instead, you carefully brush the dirt back over the corner you uncovered, tucking a few leaves on top the way you found it. Priya suggests telling Jax about the discovery so the camp can decide together what to do, maybe even inviting the original 1975 campers back someday to open it themselves. Walking back to the canoe, you feel oddly proud, not for finding treasure, but for choosing to respect it. Some mysteries, you decide, are more special when they stay a little bit unsolved.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_untouched",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Some Things Stay Buried"
+   }
+  },
+  {
+   "id": "n_end_share",
+   "body": "That night at campfire, you and Priya and Sam tell the whole camp about Widow's Watch, passing around the old photographs while the cassette tape crackles through a borrowed player, filled with laughing 1975 voices singing camp songs. Everyone leans in close, and even the youngest campers go quiet, imagining the five kids who buried this box fifty years ago. Jax announces that the capsule will sit in the lodge display case all summer, so every cabin can visit it. By the time you head to bed, half the camp is already planning what they might bury for someone to find fifty years from now.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_share",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Whole Camp Remembers"
+   }
+  },
+  {
+   "id": "n_end_museum",
+   "body": "Jax makes a call to the county historical society the very next morning, and within a week, a friendly historian named Ms. Alvarez visits camp to see the tower and the capsule for herself. She explains that the fire tower is older than anyone realized and deserves proper protection, along with the box and its contents. Camp Alder Cove agrees to fence off the twisted birch and post a small plaque explaining the story, with your names, Priya's, and Sam's listed as the ones who found it. Watching Ms. Alvarez carefully photograph each photograph, you feel proud knowing Widow's Watch will be remembered correctly for a long time to come.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_museum",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Keepers of Widow's Watch"
+   }
+  },
+  {
+   "id": "n_end_keep",
+   "body": "After a long talk, you agree on the perfect plan. Priya keeps one photograph, Sam takes the cassette tape to see if the lodge still has a player that works, and you carefully take the friendship bracelet, tying it onto your backpack strap. Then, together, you write a brand new letter, describing this summer, your names, and a small drawing of the canoe that brought you here. You reseal the box, tuck it back under the twisted birch, and cover it with fresh leaves. Walking back toward the canoe, you already wonder who might find it next, maybe fifty years from now, in 2076.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_keep",
+    "valence": "positive",
+    "kind": "success",
+    "title": "A New Letter for 2076"
+   }
+  }
+ ]
+}

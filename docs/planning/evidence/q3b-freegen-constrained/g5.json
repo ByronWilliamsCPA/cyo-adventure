@@ -1,0 +1,265 @@
+{
+  "schema_version": 1,
+  "id": "freegen-g5",
+  "version": 1,
+  "title": "The Lantern of Fogbound Marsh",
+  "start_node": "n_01",
+  "nodes": [
+    {
+      "id": "n_01",
+      "body": "You and your cousin Jules pitch a tent at Fogbound Marsh campground. Grandpa Ray warned you about the marsh at night, but he also told a story: fifty years ago, a keeper vanished, and ever since, a green lantern light drifts through the reeds at dusk. Locals say it guides lost travelers home. Tonight, through the fog, you both see it flicker, low and steady, deep in the marsh. Jules grabs a flashlight. \"Reed path is quiet, but the boardwalk is faster,\" she whispers. Ducks scatter somewhere in the dark. You have to choose a way in before the light disappears again.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c1", "label": "Take the quiet reed path", "target": "n_02"},
+        {"id": "c2", "label": "Take the fast boardwalk", "target": "n_03"}
+      ]
+    },
+    {
+      "id": "n_02",
+      "body": "The reed path is barely wider than your sneakers. Mud sucks at your boots, and tall grass brushes your arms like whispering hands. Jules holds the flashlight steady while you push branches aside. Somewhere ahead, frogs stop croaking all at once, the way they do when something bigger moves nearby. The green light flickers again, closer now, beyond a stand of cattails. The path splits: one trail curves deeper into the marsh toward higher ground, and a soft rustling comes from a thick patch of cattails just off the trail. You pause, deciding whether to investigate the sound or keep moving.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c3", "label": "Follow the trail deeper", "target": "n_04"},
+        {"id": "c4", "label": "Check the rustling cattails", "target": "n_05"}
+      ]
+    },
+    {
+      "id": "n_03",
+      "body": "The boardwalk creaks under your feet, loud enough to wake half the marsh. A heron shrieks from a fence post and flaps away, annoyed. Jules laughs nervously. The wood is slick with dew, and some boards are missing planks entirely, so you both step carefully. Ahead, the boardwalk forks: one direction leads to an old wooden dock stretching over dark water, and the other leads to a leaning boat shed with a crooked door. The green light seems to pulse somewhere past both. You can hear water lapping gently, and somewhere a rope knocks against a post in the wind.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c5", "label": "Head to the dock", "target": "n_06"},
+        {"id": "c6", "label": "Check the boat shed", "target": "n_07"}
+      ]
+    },
+    {
+      "id": "n_04",
+      "body": "The trail narrows to a single log bridge crossing a shallow, muddy channel. It's slick with moss, and it wobbles slightly when you press a foot onto it. Jules goes first, arms out for balance, boots squelching. Below, small fish dart between reeds. Halfway across, a plank shifts under your weight and your stomach drops. You could take a slow, careful shuffle-step across the rest of the log, or you could try a quick hop to solid ground before it tips further. Either way, you need to decide fast, because the log is definitely not as sturdy as it looked from the bank.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c7", "label": "Shuffle carefully across", "target": "n_08"},
+        {"id": "c8", "label": "Hop for solid ground", "target": "n_25"}
+      ]
+    },
+    {
+      "id": "n_05",
+      "body": "You crouch by the cattails and part the stalks. A small river otter is tangled in fishing line, wriggling and squeaking, eyes wide with fright. Jules kneels beside you, and together you work the line loose, gentle and slow, careful not to spook it further. When it's free, the otter doesn't dash away immediately. Instead, it circles your ankles once, chirps, then bounds off toward the higher ground trail, looking back as if it wants you to follow. Or, you could ignore it and keep pushing toward the light on your own, since daylight is fading fast and the marsh gets colder by the minute.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c9", "label": "Follow the otter's lead", "target": "n_08"},
+        {"id": "c10", "label": "Keep going without it", "target": "n_09"}
+      ]
+    },
+    {
+      "id": "n_06",
+      "body": "The dock stretches long and gray over black water, its posts wrapped in old rope and dripping moss. A small rowboat bumps gently against one post, half full of rainwater. You could climb in and row toward the island where the light seems to be coming from, or you could test the dock boards first, since a few look soft and gray with rot. Jules taps one board with her boot, and it groans in a way that makes you both step back. The green light flickers again, further out on the water, patient, like it's waiting for you to decide.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c11", "label": "Climb into the rowboat", "target": "n_09"},
+        {"id": "c12", "label": "Test the boards first", "target": "n_26"}
+      ]
+    },
+    {
+      "id": "n_07",
+      "body": "The boat shed door hangs on one hinge, and it creaks open at a push. Inside, spiderwebs stretch across old fishing nets, and dust floats in your flashlight beam. On a shelf, you spot two things: a rolled-up paper that looks like an old hand-drawn map, and a small brass compass with a cracked glass face. You can't carry both comfortably while also watching your footing outside. Jules picks up the compass and turns it over in her hands. \"Which one do we trust?\" she asks, only half joking, while somewhere outside a heron calls out into the darkening marsh.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c13", "label": "Take the old map", "target": "n_09"},
+        {"id": "c14", "label": "Take the broken compass", "target": "n_10"}
+      ]
+    },
+    {
+      "id": "n_08",
+      "body": "With careful, steady steps, you make it across whatever obstacle stood in your way, boots finally hitting solid, muddy ground on the other side. Jules lets out a breath she'd been holding. The green light pulses again, closer now, past a stretch of low, silvery grass swaying in the evening breeze. Somewhere nearby, water laps against something wooden, and the air smells like salt and old rain. You both start walking toward the glow, following it the way moths follow a porch light, curious and a little nervous, knowing that whatever made that lantern flicker for fifty years is close.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c15", "label": "Head toward the light", "target": "n_11"}
+      ]
+    },
+    {
+      "id": "n_09",
+      "body": "You push onward, following either the compass, the map, or your own gut feeling, toward the spot where the green light keeps appearing and fading like slow breathing. The ground grows firmer, then sandier, and reeds give way to low dunes dotted with sea grass. Somewhere behind you, a splash suggests the otter, or something else, is still nearby. Jules checks whatever you're using to navigate and points ahead. \"There,\" she says. \"That has to be the island.\" Fog curls low across the water, but through a gap in it, you can just make out a dark shape rising from the marsh.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c16", "label": "Press toward the island", "target": "n_11"},
+        {"id": "c17", "label": "Take the longer, drier route", "target": "n_12"}
+      ]
+    },
+    {
+      "id": "n_10",
+      "body": "The compass needle spins lazily, refusing to settle on north, which makes it useless for real navigation, but Jules insists it's pointing you somewhere on purpose. You follow it more out of curiosity than trust, picking your way along a drier ridge above the marsh grass. The ground here is firmer, and walking is easier, even if you're both fairly sure you're going the long way around. Fog drifts between old, twisted trees. Eventually, the ridge curves back toward the water, and you spot the same dark island shape Jules described earlier, now much closer, with the green light glowing steadily above it.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c18", "label": "Head down toward the island", "target": "n_12"}
+      ]
+    },
+    {
+      "id": "n_11",
+      "body": "The island rises out of the fog like a sleeping animal, low and dark, with a single crooked shape at its highest point that might be a lighthouse, or the ruins of one. The green light comes from up there, flickering in a slow, steady rhythm, almost like breathing. Reeds give way to sand, then to old, cracked stone steps leading upward. Your shoes are soaked through, and the marsh air smells like salt and rust. Jules grabs your sleeve. \"We're really close,\" she whispers, and for a second, neither of you says anything else, just listens to the light hum faintly overhead.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c19", "label": "Climb the stone steps", "target": "n_13"}
+      ]
+    },
+    {
+      "id": "n_12",
+      "body": "You take the longer route around a stretch of soft, sucking mud that neither of you trusts. It costs time, and daylight is nearly gone now, replaced by a heavy, gray fog that rolls in off the water in slow waves. For a while, you can't see more than a few steps ahead, and even the green light seems to vanish behind the mist. Jules stops walking. \"Do you still see it?\" she asks, voice tight. You strain your eyes into the fog, unsure whether to keep pushing forward on faith or admit that you might be completely lost out here.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c20", "label": "Push forward on faith", "target": "n_13"},
+        {"id": "c21", "label": "Admit you're lost", "target": "n_27"}
+      ]
+    },
+    {
+      "id": "n_13",
+      "body": "The fog thins just enough to reveal the island properly: a rocky little hill topped by the crumbling shell of a lighthouse keeper's cabin, roof half caved in, walls streaked green with old moss. The green light pulses from somewhere near the top, though you still can't see its exact source. A narrow, overgrown path splits in two directions: one leads straight to the cabin's broken door, and the other curves around the cliffside, following the glow itself. Jules looks at you, waiting. Whatever happened to the keeper fifty years ago, the answer is probably somewhere close, in one direction or the other.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c22", "label": "Explore the cabin", "target": "n_14"},
+        {"id": "c23", "label": "Follow the cliff path", "target": "n_15"}
+      ]
+    },
+    {
+      "id": "n_14",
+      "body": "Inside, the cabin is smaller than it looked, just one room, with a rusted stove, a rotted cot, and shelves of moldy, unreadable books. Dust and dead leaves cover everything. On the wall, a faded photograph shows a woman in a keeper's coat, smiling beside a much brighter, working lantern. Jules brushes off a shelf and finds a leather logbook, its pages swollen with damp but still mostly readable. It mentions a mechanism, gears, and something about the light needing \"tending\" every single night without fail. Outside, the green glow flickers again, patient, waiting for whoever finds it next to keep going.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c24", "label": "Head toward the light", "target": "n_16"}
+      ]
+    },
+    {
+      "id": "n_15",
+      "body": "The cliff path is narrow and slick, with a steep drop to rocky water on one side. You move slowly, one hand brushing the stone wall for balance, while the green light grows brighter with every step, casting long shadows across the cliffside. Below, waves crash softly against dark rocks. Partway along, the path opens into a small clearing where you can either continue straight toward the light's source at the cliff's edge, or duck into a narrow gap in the rocks that seems to lead toward the same place from underneath, through what might be a short, damp tunnel.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c25", "label": "Continue along the cliff", "target": "n_16"},
+        {"id": "c26", "label": "Duck through the rock tunnel", "target": "n_17"}
+      ]
+    },
+    {
+      "id": "n_16",
+      "body": "You round a final bend and finally see it clearly: an old iron lantern housing, perched on a stone platform, its glass panels cracked but somehow still glowing that same steady green. It isn't magic, not exactly, you realize as you get closer. Gears click faintly inside a rusted metal casing beneath the light, turning slower and slower, like a clock winding down after fifty years of nobody caring for it. Jules crouches beside the mechanism, fascinated. \"It's still working,\" she breathes. \"Barely.\" The fog around the platform seems to hold its breath, waiting to see what you'll do about it.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c27", "label": "Examine the mechanism closely", "target": "n_18"}
+      ]
+    },
+    {
+      "id": "n_17",
+      "body": "The tunnel is short and damp, but it opens right beneath the lantern platform, giving you a clear view of the whole mechanism from below: gears, a small oil reservoir, and a hand crank, all rusted but intact. Jules climbs up beside you, impressed by the shortcut. Tucked into a crevice near the gears, you spot a small waterproof journal, newer than the cabin's logbook, left by a park ranger who apparently found this same spot years ago and never told anyone. Reading it, you both realize you could turn back now with proof of what you found, or keep going and try to fix the light yourselves.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c28", "label": "Keep going and fix the light", "target": "n_18"},
+        {"id": "c29", "label": "Turn back with the journal", "target": "n_28"}
+      ]
+    },
+    {
+      "id": "n_18",
+      "body": "Up close, the lantern's mechanism looks like a giant pocket watch crossed with a birdcage: brass gears, a coiled spring, and a small basin that once held oil to keep the flame burning bright and steady. Most of it is rusted stiff, but a few gears still turn slowly, which explains the weak, flickering glow. Jules traces a groove worn smooth by fifty years of someone's hands. To get it working properly again, you'll need either real tools, or you'll have to try forcing the gears by hand, which could easily snap something that's already this fragile and old.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c30", "label": "Search the cabin for tools", "target": "n_19"},
+        {"id": "c31", "label": "Try forcing it by hand", "target": "n_20"}
+      ]
+    },
+    {
+      "id": "n_19",
+      "body": "Back near the cabin ruins, you dig through a fallen shelf and a rusted tin trunk until you find it: a small leather toolbox, surprisingly dry inside, with oil, a wrench, and a stiff wire brush, all exactly what the old logbook described needing. Jules whoops quietly and carries it back to the platform herself, careful not to drop anything on the climb. The green light flickers weakly overhead, as if it knows help is finally coming. Your hands are cold and a little shaky, but for the first time since you left camp, you feel like you actually know what to do next.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c32", "label": "Bring the tools to the mechanism", "target": "n_21"}
+      ]
+    },
+    {
+      "id": "n_20",
+      "body": "You decide there's no time to search for tools, so you brace the biggest gear with both hands and push, hard, feeling rust flake against your palms. It groans, shifts an inch, then grinds to a stop again, stuck worse than before. Jules winces. \"Maybe that wasn't the best idea,\" she says, and you have to agree, shaking out your sore hands. The light dims further, sputtering. You could keep forcing it and risk breaking it completely, or admit this approach isn't working and go find proper tools back at the cabin instead, even though it means losing precious time.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c33", "label": "Go find proper tools instead", "target": "n_21"},
+        {"id": "c34", "label": "Keep forcing the gear", "target": "n_29"}
+      ]
+    },
+    {
+      "id": "n_21",
+      "body": "With real tools finally in hand, working the lantern's gears is slow, careful work, but it makes sense now. You brush away rust, Jules oils each joint, and together you turn the crank bit by bit until something inside clicks free and spins smoothly for the first time in fifty years. The green glow steadies, brightening just slightly, like a held breath finally let out. Fog swirls around the platform, and somewhere far off across the water, you think you hear a small boat's engine, faint and struggling. You both look at each other, realizing the lantern might matter more tonight than you thought.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c35", "label": "Light it now, right away", "target": "n_22"},
+        {"id": "c36", "label": "Wait and listen for the boat", "target": "n_23"}
+      ]
+    },
+    {
+      "id": "n_22",
+      "body": "You don't wait. Jules strikes a match from the old tin she found in the cabin, ready to light the lantern's freshly oiled wick right now, before anything else can go wrong. Fog swirls thick around the platform, and somewhere out on the black water, you're almost sure you can hear a small, struggling engine. Your hands are shaking, half from cold and half from nerves, but Jules just nods at you, match ready. This is it, the moment fifty years of darkness ends or doesn't. You reach out and steady the lantern's glass housing while she brings the flame close to the wick.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c37", "label": "Light the lantern", "target": "n_30"}
+      ]
+    },
+    {
+      "id": "n_23",
+      "body": "Instead of lighting the lantern immediately, you and Jules wait, straining to listen across the water. The faint engine sound grows clearer: a small boat, definitely struggling somewhere out in the fog, probably lost the same way travelers always were before the lantern went dark fifty years ago. You cup your hands and shout, waving your flashlight in slow arcs, until you're sure the boat has spotted your light. Off to the side, half-buried in grime, you also notice something else: an old fog bell, rusted but intact, that nobody has ever fixed. Jules looks at you. There might be time for one more thing tonight.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c38", "label": "Light the lantern now", "target": "n_31"},
+        {"id": "c39", "label": "Fix the old fog bell too", "target": "n_24"}
+      ]
+    },
+    {
+      "id": "n_24",
+      "body": "Before lighting the lantern, you decide there's time for one more thing. You and Jules climb to the small fog bell mounted near the platform's edge. Its rope is rotted, but the iron bell itself is solid underneath decades of grime. Using rope salvaged from the boat shed, you rig a new pull and give it one hard test tug. The clang rings out clear across the fog. Now, with the bell ready and the boat's engine still humming somewhere out on the water, only one thing is left to do: light the lantern itself and let both signals guide the way home together.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c40", "label": "Light the lantern", "target": "n_32"}
+      ]
+    },
+    {
+      "id": "n_25",
+      "body": "Your foot slips on the tipping log, and you go down hard into the shallow, muddy channel below. It isn't deep, but it's cold, and your ankle twists awkwardly beneath you as you land. Jules scrambles down to help, worry written across her face in the dim flashlight beam. Standing up hurts, and walking hurts more. The green light flickers on, distant now, unreachable tonight. Together, you limp back toward camp, using a fallen branch as a makeshift cane, the mystery of the lantern left for another day. Grandpa Ray meets you at the tent, and for once, he doesn't say \"I told you so.\"",
+      "is_ending": true,
+      "ending": {"id": "e_1", "valence": "negative", "kind": "setback", "title": "A Twisted Ankle"}
+    },
+    {
+      "id": "n_26",
+      "body": "The dock board splinters the instant Jules puts her weight on it, and a whole section sags toward the black water with a groaning crack. You both jump back just in time, hearts hammering, boots scraping on damp wood. The rowboat bumps gently against the broken post, completely out of reach now behind the collapsed section. Jules grabs your arm. \"Not tonight,\" she says, and for once you don't argue. You pick your way carefully back along the boardwalk toward camp, the green light still flickering faintly behind you, patient as ever, waiting for two braver, or luckier, explorers to try again.",
+      "is_ending": true,
+      "ending": {"id": "e_2", "valence": "negative", "kind": "retreat", "title": "Not Tonight"}
+    },
+    {
+      "id": "n_27",
+      "body": "The fog rolls in thick and gray, swallowing the island shape whole, swallowing the green light too, until you honestly can't tell which direction you came from anymore. Jules's voice wavers when she admits she's turned around as well. You both stand still, the way Grandpa Ray always said to when lost, and eventually spot a faint string of camp lights glowing weakly through the mist, back the way you started. Following them feels like giving up, but it also feels like the only smart choice. You reach camp shivering and disappointed, the lantern's mystery still unsolved, waiting patiently for another, clearer night.",
+      "is_ending": true,
+      "ending": {"id": "e_3", "valence": "negative", "kind": "setback", "title": "Turned Around"}
+    },
+    {
+      "id": "n_28",
+      "body": "You decide the journal is proof enough for one night. Climbing back through the damp tunnel and down the cliff path, you carry it carefully, wrapped in your jacket to keep it dry. Back at camp, Grandpa Ray reads the ranger's notes by flashlight, eyebrows rising higher with every page. \"Nobody's seen this in years,\" he murmurs. You didn't fix the lantern, and you didn't reach the very top, but you found real proof of what's been happening out there, something rangers can finally investigate properly. Jules looks a little disappointed, then grins. \"We'll come back and finish the job,\" she says.",
+      "is_ending": true,
+      "ending": {"id": "e_4", "valence": "neutral", "kind": "discovery", "title": "Proof in a Jacket Pocket"}
+    },
+    {
+      "id": "n_29",
+      "body": "You keep forcing the stuck gear, gritting your teeth, until something inside the mechanism gives way with a sharp, final-sounding snap. The weak green glow gutters and dies completely, plunging the platform into total darkness except for your flashlight. Jules groans. \"We broke it,\" she says quietly. There's nothing to do now but pick your way back down through the fog, disappointed and a little guilty, the lantern darker tonight than it's been in fifty years. Grandpa Ray promises you can tell the park rangers everything tomorrow, but tonight, the marsh stays without its light, and that feels like the wrong way to end things.",
+      "is_ending": true,
+      "ending": {"id": "e_5", "valence": "neutral", "kind": "retreat", "title": "One Snap Too Many"}
+    },
+    {
+      "id": "n_30",
+      "body": "The flame catches, and the whole mechanism shudders to life at once, gears spinning smoothly for the first time in fifty years. The weak flicker swells into a steady, brilliant green beam that sweeps slow and sure across the fog-covered water. Far out, a small fishing boat that had been circling, lost and low on fuel, turns sharply toward shore, guided straight home by the light. You and Jules watch it come in, cold, muddy, and completely amazed. Grandpa Ray will never believe this story, you think, except he will, because you're bringing back proof: a working lantern, lit for the first time in half a century.",
+      "is_ending": true,
+      "ending": {"id": "e_6", "valence": "positive", "kind": "success", "title": "Guided Home"}
+    },
+    {
+      "id": "n_31",
+      "body": "The timing couldn't be better. Just as the boat's engine sputters weakly through the fog, Jules touches the match to the wick, and the lantern roars gently to life, its green beam sweeping wide and steady across the dark water. The boat's course corrects almost immediately, turning straight toward the light, straight toward safety. You watch it come in slow and careful, guided the whole way by a beacon that sat broken and forgotten for fifty years until tonight. Cold, soaked, and grinning, you and Jules sit on the platform and watch the light do exactly what it was always built to do.",
+      "is_ending": true,
+      "ending": {"id": "e_7", "valence": "positive", "kind": "completion", "title": "Perfect Timing"}
+    },
+    {
+      "id": "n_32",
+      "body": "Jules strikes the match, and the lantern catches at last, its green beam sweeping wide across the water in perfect rhythm with the bell's steady clang. Together, light and sound cut straight through the fog toward the struggling boat, which turns sharply and heads straight for shore. You watch it dock safely, engine sputtering with relief. No boat will get lost out here again, not with both signals working. Jules grins at you, soaked, exhausted, and thrilled. Tomorrow, the whole town is going to hear about the two kids who brought Fogbound Marsh's lantern, and its bell, back to life after fifty years of silence.",
+      "is_ending": true,
+      "ending": {"id": "e_8", "valence": "positive", "kind": "success", "title": "The Bell and the Beam"}
+    }
+  ]
+}

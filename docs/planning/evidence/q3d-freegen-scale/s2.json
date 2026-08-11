@@ -1,0 +1,1361 @@
+{
+ "schema_version": 1,
+ "id": "freegen-s2",
+ "version": 1,
+ "title": "The Lantern Keeper's Apprentice",
+ "start_node": "n_start",
+ "nodes": [
+  {
+   "id": "n_start",
+   "body": "Mira Quill lived beside the sea, in a cottage under the Lumen Spire. Her grandmother kept the great lantern lit every night. Its beam held back the Long Dark, a creeping fog full of shadow shapes. Tonight Gran collapsed on the stairs, too weak to climb. Four beacon towers along the coast also needed lighting before dusk, or the fog would roll in past the cliffs. Mira grabbed her lantern satchel, hands shaking a little. She had to decide fast. The Whispering Wood was one way in. The Cliff Road was another. Or she could run for old Sella first.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_start_wood",
+     "label": "Take the Whispering Wood",
+     "target": "n_w1"
+    },
+    {
+     "id": "c_start_cliff",
+     "label": "Take the Cliff Road",
+     "target": "n_c1"
+    },
+    {
+     "id": "c_start_elder",
+     "label": "Run to fetch Elder Sella",
+     "target": "n_elder1"
+    }
+   ]
+  },
+  {
+   "id": "n_elder1",
+   "body": "Mira sprinted through the village lanes to Sella's cottage, lungs burning from the run. Smoke curled from the chimney, but no one answered her knock. She banged again, louder this time, calling Sella's name. A cat yowled and darted off the porch, startling her. Every minute she waited was a minute closer to dark. She could keep waiting on the cold step, or give up and head straight for the wood herself. A folded note was pinned to the door, half torn by the wind. Mira peeled it back carefully to read what it said, heart pounding.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_e1_wait",
+     "label": "Wait for Sella to come home",
+     "target": "n_elder_wait1"
+    },
+    {
+     "id": "c_e1_clue",
+     "label": "Read the note on the door",
+     "target": "n_clue1"
+    }
+   ]
+  },
+  {
+   "id": "n_elder_wait1",
+   "body": "Mira settled onto the cold stone step to wait, tucking her knees up against the evening chill. A neighbor's cat wound once around her ankles, then wandered off into the shadows without a sound. Somewhere down the lane a door creaked shut. She strained her ears for footsteps, for anything at all, but the village stayed quiet and still around her, holding its breath along with everyone else waiting on this strange, uncertain evening.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_ewait1_go",
+     "label": "Keep waiting a little longer",
+     "target": "n_elder_wait2"
+    }
+   ]
+  },
+  {
+   "id": "n_elder_wait2",
+   "body": "A lamp flickered on in a window across the lane, then another further down, small warm squares of light against the coming dark. Mira hugged her knees tighter and watched them, counting each one as it appeared. The village was settling in for the night around her, unaware of the beacons still waiting unlit along the coast, unaware of how much she wished someone would simply hurry up and come home.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_ewait2_go",
+     "label": "Keep waiting on the step",
+     "target": "n_elder_wait3"
+    }
+   ]
+  },
+  {
+   "id": "n_elder_wait3",
+   "body": "A gust of cold wind rattled the shutters overhead, and Mira pulled her coat tighter around her shoulders, shivering slightly in the growing dark. Far off, she thought she heard the faint cry of a gull circling the harbor, lonely and distant over the water. She kept her eyes fixed hard on the end of the lane, willing Sella's familiar shape to appear out of the shadows at last, wishing the waiting would simply end already.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_ewait3_go",
+     "label": "Keep watching the empty lane",
+     "target": "n_e_setback0"
+    }
+   ]
+  },
+  {
+   "id": "n_e_setback0",
+   "body": "Mira sat on the step and counted the seconds, one by one, until her legs went numb from the cold. By the time Sella finally shuffled up the lane, the sky had gone fully dark. Mira walked home slowly, feeling the chill roll in from the sea. Through her window she watched thin fog curl along the garden wall, quiet and patient. Gran would be disappointed, but not angry, not really. There would be other nights, Gran always said, and other chances to be brave again. Still, Mira lay awake a long time, wishing she had run faster, sooner, toward the wood instead of waiting on a cold, empty step.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_1",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Left Behind"
+   }
+  },
+  {
+   "id": "n_clue1",
+   "body": "The note was in Gran's handwriting, shaky but clear enough to read. It said: follow the fox path through the wood, not the main trail. The fox path was faster, and the old keepers had always used it in a hurry. Mira folded the note carefully into her pocket. Whatever had happened to Sella, this note felt like a sign, almost like Gran had known she would need it. She turned toward the trees at the edge of the village and began to walk quickly, the paper crinkling with every hopeful step she took toward the shadowed trail ahead.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_clue_go",
+     "label": "Follow the note into the wood",
+     "target": "n_clue2"
+    }
+   ]
+  },
+  {
+   "id": "n_clue2",
+   "body": "The fox path was barely visible in the near dark, just a thin line of pressed grass winding between the roots. Mira followed it slowly, checking the note against every fork she came to, careful not to lose her way in the gathering shadows. Small sounds drifted from the trees around her, rustling leaves and distant birdsong, but nothing that felt unfriendly at all. The path wound on, patient and quiet, leading her deeper into the wood.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_clue2_go",
+     "label": "Keep following the fox path",
+     "target": "n_clue3"
+    }
+   ]
+  },
+  {
+   "id": "n_clue3",
+   "body": "The trees opened suddenly onto a small hollow ringed with smooth stones, moonlight pooling silver across the grass at its quiet center. Mira paused, breath catching, struck by how peaceful it felt after the tangled path behind her. Somewhere nearby, unseen, a root gave a soft, deliberate creak, almost like the wood itself was settling in to watch her explore this quiet, hidden place at last, patient and unhurried in the moonlight.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_clue3_go",
+     "label": "Step into the hollow",
+     "target": "n_clue4"
+    }
+   ]
+  },
+  {
+   "id": "n_clue4",
+   "body": "At the center of the hollow, half buried beneath old fallen leaves, Mira spotted the small wooden box the note had promised, waiting patiently exactly where Gran had said it would be. Her hands trembled slightly as she brushed the leaves carefully away, moonlight catching on its carved lid. Whatever was inside, she felt certain now, had been waiting a very long time for someone to finally find it again.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_clue4_go",
+     "label": "Open the box carefully",
+     "target": "n_clue5"
+    }
+   ]
+  },
+  {
+   "id": "n_clue5",
+   "body": "The lid lifted with a soft, dry creak, hinges stiff from years of disuse out in the damp night air. Inside, wrapped carefully in old cloth, lay a stack of folded papers, their edges worn soft with age and handling. Mira lifted the top one out gently, moonlight just bright enough to make out faint lines drawn carefully across its surface, waiting to be read at last. Her breath caught as she looked closer at what it showed.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_clue5_go",
+     "label": "Unfold the first paper",
+     "target": "n_e_discovery9"
+    }
+   ]
+  },
+  {
+   "id": "n_e_discovery9",
+   "body": "Mira unfolded the papers and found old maps of the coast, drawn decades ago, long before half the village was even built. She never did reach the beacons before dark, but she carried the box home like treasure instead, arms aching but happy. Gran, weak but smiling, told stories about every single map until the candle burned low and sleep finally won. It was not the night Mira had planned for herself, but it turned out to be a good one all the same, warm and full of family stories.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_2",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Gran's Old Map"
+   }
+  },
+  {
+   "id": "n_w1",
+   "body": "The Whispering Wood rose up dark and tangled at the edge of the village. Leaves rustled softly even though there was no wind at all. Mira had walked this path with Gran a hundred times before, but never alone, and never in such a hurry. The trees seemed taller tonight, and the shadows deeper between them. Something glinted near a root just off the trail, catching the last light. She could stop for a quick look, or keep moving straight toward the first beacon tower without any delay at all.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_w1_go",
+     "label": "Keep walking",
+     "target": "n_w2"
+    },
+    {
+     "id": "c_w1_shiny",
+     "label": "Look at the shiny object",
+     "target": "n_shiny1"
+    }
+   ]
+  },
+  {
+   "id": "n_shiny1",
+   "body": "Mira knelt down and brushed away the damp leaves with careful fingers. A small brass button sat half buried in the dirt, worn smooth and strangely warm to the touch. It did not look like anything special at first glance, but it felt important somehow, almost like it was waiting just for her. Curiosity won out completely, and she picked it up slowly to look closer at the strange little marking pressed into its surface.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_shiny_take",
+     "label": "Pick it up and look closer",
+     "target": "n_shiny2"
+    }
+   ]
+  },
+  {
+   "id": "n_shiny2",
+   "body": "The button was etched with a tiny wave, just like the mark on Gran's old lantern back home. Mira turned it over in her palm, and warmth spread slowly up her arm. It seemed to hum, very faintly, like a single held musical note. She tucked it carefully into her satchel and kept walking, feeling braver already, as if the wood itself had offered her a small piece of luck for the long night ahead.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_shiny2_go",
+     "label": "Keep walking with the charm",
+     "target": "n_shiny3"
+    }
+   ]
+  },
+  {
+   "id": "n_shiny3",
+   "body": "The faint hum from the button seemed to grow just a little stronger with every step Mira took deeper into the wood. She followed the feeling almost without thinking, drawn past a bent old oak and down a slope thick with soft, silver moss. The trees here felt older somehow, quieter, as though they had been waiting a very long time for someone to wander this way again. Somewhere close by, water dripped slowly from leaf to leaf.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_shiny3_go",
+     "label": "Follow the hum a little further",
+     "target": "n_shiny4"
+    }
+   ]
+  },
+  {
+   "id": "n_shiny4",
+   "body": "The slope leveled out into a small dip in the earth, ringed round by mossy stones that seemed to lean in close, listening. The hum grew steady here, warm and constant, filling the quiet clearing with something Mira could almost, but not quite, call music. She stood very still, letting it wash over her, in no hurry now to leave this strange, gentle place. She breathed slowly, in no rush at all to move on now.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_shiny4_go",
+     "label": "Stay and listen a while",
+     "target": "n_shiny5"
+    }
+   ]
+  },
+  {
+   "id": "n_shiny5",
+   "body": "One by one, the mossy stones around the dip seemed to catch the faint hum and echo it softly back, until the whole hollow felt alive with the same gentle note. Mira laughed quietly, delighted, and turned in a slow circle just to hear the sound follow her around the clearing. It felt like the safest, strangest place she had ever stood in her whole life. It was the kind of moment she wanted to remember always.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_shiny5_go",
+     "label": "Turn once more and listen",
+     "target": "n_shiny6"
+    }
+   ]
+  },
+  {
+   "id": "n_shiny6",
+   "body": "Slowly, almost reluctantly, the hum began to fade as the moon climbed higher above the treetops, the little clearing settling back into ordinary forest quiet. Mira gave the ring of posts one last long look, memorizing every detail she could, before turning back toward the path that would lead her home. The button in her pocket still felt warm, a small promise she meant to keep. She smiled once more and started the walk back home.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_shiny6_go",
+     "label": "Head back toward home",
+     "target": "n_e_discovery6"
+    }
+   ]
+  },
+  {
+   "id": "n_e_discovery6",
+   "body": "Mira never did reach the beacons that particular night. Instead she spent the evening following the little brass button deeper into the wood, past mossy stones that hummed that same faint note. She found a whole ring of old lantern posts, long dark now, circling a quiet, silver pool. It felt like a secret only she now knew, tucked away safe in the trees. She walked home under starlight, the button warm in her pocket, already planning to come back soon and learn what the ring of posts had once been built for, long ago.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_3",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Lucky Charm"
+   }
+  },
+  {
+   "id": "n_w2",
+   "body": "The path narrowed as the trees closed in tight overhead, blocking out most of the fading light. Somewhere off to the left, twigs snapped, quick and light, like small careful feet. Mira paused, listening hard, one hand resting on a nearby trunk. It was probably nothing at all, just a rabbit or a bird settling in for the night. Still, curiosity tugged at her almost as much as the beacons did, and she had to choose which to follow.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_w2_go",
+     "label": "Ignore it and keep going",
+     "target": "n_w3"
+    }
+   ]
+  },
+  {
+   "id": "n_w3",
+   "body": "The trail split three separate ways ahead of Mira, each one looking just as likely as the next. A wide, well-worn path led straight on toward a distant clearing. A narrow, mossy gap opened to the left, half hidden by tall ferns. To the right, a small pond glinted between the trees, calm and silver in the fading light. She had to choose quickly now, before the last of the daylight slipped away and left her stumbling in the dark.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_w3_main",
+     "label": "Take the main trail",
+     "target": "n_hubA"
+    },
+    {
+     "id": "c_w3_short",
+     "label": "Try the mossy shortcut",
+     "target": "n_w_short1"
+    }
+   ]
+  },
+  {
+   "id": "n_w_short1",
+   "body": "The mossy gap looked like a handy shortcut, but the ground grew soft and wet with every single step she took. Roots tangled underfoot, hidden beneath thick, dark leaves. Mira pushed on anyway, trusting her own sense of direction, ducking under low branches that brushed against her hair and shoulders. The trail bent and twisted far more than she had expected, and soon she could not tell which way was which at all.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wshort_push",
+     "label": "Push on through the fading light",
+     "target": "n_wshort2"
+    }
+   ]
+  },
+  {
+   "id": "n_wshort2",
+   "body": "Mira stopped for a moment, turning in a slow circle, trying to spot anything at all that looked familiar in the tangled green shadows. Every direction looked exactly the same now, roots and moss and leaning trees stretching off into the dark. Her heart beat a little faster. She picked a direction that felt roughly right and pushed onward, hoping hard that her instincts had not led her badly astray.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wshort2_push",
+     "label": "Keep pushing through the tangle",
+     "target": "n_wshort3"
+    }
+   ]
+  },
+  {
+   "id": "n_wshort3",
+   "body": "Brambles caught at her sleeves now, thin thorns snagging the fabric with every step she took forward. Mira pushed a low branch aside and ducked underneath, boots sinking deeper into the soft, wet ground beneath the moss. Somewhere ahead, or maybe behind her now, she genuinely could not tell anymore, an owl called once, long and low, into the gathering dark. Somewhere far off, water dripped steadily from an unseen leaf.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wshort3_push",
+     "label": "Keep pushing forward blindly",
+     "target": "n_wshort4"
+    }
+   ]
+  },
+  {
+   "id": "n_wshort4",
+   "body": "Her foot caught on a hidden root, and Mira stumbled hard, catching herself against a tree trunk just in time to avoid a fall. Dirt smeared across her palms, and her heart pounded fast in her chest. She straightened up slowly, breathing hard, and realized with a sinking feeling that she had absolutely no idea anymore which direction led back to the main trail. She forced herself to breathe slowly and think clearly again.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wshort4_push",
+     "label": "Keep stumbling forward regardless",
+     "target": "n_e_setback15"
+    }
+   ]
+  },
+  {
+   "id": "n_e_setback15",
+   "body": "Mira pushed on through the tangled shortcut long after the light had faded completely away. The mossy gap led nowhere useful at all, just deeper mud and thicker roots that caught at her boots with every step. Cold and turned around, she finally admitted the shortcut had beaten her tonight. She traced her own footprints back to the main trail and walked slowly home, disappointed but safe, already planning to try the wider path next time instead.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_4",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Mossy Shortcut"
+   }
+  },
+  {
+   "id": "n_c1",
+   "body": "The Cliff Road climbed steeply above the crashing waves, salt spray stinging Mira's face with every strong gust of wind. Gulls wheeled overhead, crying sharply into the darkening sky. The path was much faster than the wood, but it was also far more exposed to the weather. Near the first turn, the ground dropped away sharply on one side, and Mira could just make out the churning sea far below, pale and restless in the last of the light.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c1_go",
+     "label": "Keep to the path",
+     "target": "n_c2"
+    }
+   ]
+  },
+  {
+   "id": "n_c2",
+   "body": "The wind picked up sharply, whistling through the tall grass along the cliff top. A bird called out from a nearby rock, its cry echoing strangely over the churning water below. Mira kept moving steadily, boots crunching on the loose gravel, eyes fixed on the trail ahead where it curved out of sight around the bend. The salty air felt cold now that evening had fully arrived. Somewhere far below, the waves kept up their steady rhythm.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c2_go",
+     "label": "Keep walking",
+     "target": "n_c3"
+    }
+   ]
+  },
+  {
+   "id": "n_c3",
+   "body": "Ahead, the Cliff Road curved around a wide, safe ledge that led on toward the clearing beyond. Loose gravel crunched steadily under Mira's boots as she followed the bend. Far below, waves kept smashing against the rocks, sending up cold bursts of salty spray that caught in her hair. She quickened her pace, eager now to reach the clearing before the last light faded completely from the sky. Her legs already ached, but she kept a brisk, steady pace.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c3_main",
+     "label": "Follow the ledge onward",
+     "target": "n_hubA"
+    }
+   ]
+  },
+  {
+   "id": "n_hubA",
+   "body": "Both trails opened onto the same wide clearing above the sea, where the first beacon tower stood dark and silent, waiting for her flame. A soft rustle came from the underbrush nearby, and a small red fox stepped calmly into view, its eyes far too clever for an ordinary animal. Nearby, a quiet stream trickled over smooth stones, inviting Mira to rest a moment before the long climb ahead. Night was falling fast now, and choices had to be made.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hubA_pim",
+     "label": "Trust the fox and follow it",
+     "target": "n_pim1"
+    },
+    {
+     "id": "c_hubA_alone",
+     "label": "Go on alone",
+     "target": "n_alone1"
+    },
+    {
+     "id": "c_hubA_rest",
+     "label": "Rest by the stream first",
+     "target": "n_rest1"
+    }
+   ]
+  },
+  {
+   "id": "n_pim1",
+   "body": "The fox spoke, and its voice was dry and warm, like sun on old stone. It said its name was Pim, keeper of the small paths, and that it had watched over this coast far longer than any lighthouse ever had. Pim offered to guide Mira safely to every beacon before the fog could roll fully in, trotting ahead along trails she had never once noticed before. Mira had a hundred questions bubbling up inside her, but time was terribly short tonight, so she hurried to keep pace beside the clever little fox.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_pim1_go",
+     "label": "Follow Pim toward the beacons",
+     "target": "n_hubB"
+    },
+    {
+     "id": "c_pim1_ask",
+     "label": "Ask Pim one quick question",
+     "target": "n_ask_pim1"
+    }
+   ]
+  },
+  {
+   "id": "n_ask_pim1",
+   "body": "Mira asked how long exactly Pim had guarded this stretch of coast. The fox's eyes glinted with old, quiet amusement at the question. Long enough to remember the very first keeper, Pim said, a woman who lit the very first beacon with nothing but a spark and two steady hands. The story sent a small shiver of wonder through Mira, and she felt lighter for hearing it, more ready to carry on with new purpose toward the dark towers ahead.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_askpim_go",
+     "label": "Thank Pim and listen close",
+     "target": "n_askpim2"
+    }
+   ]
+  },
+  {
+   "id": "n_askpim2",
+   "body": "Pim settled down onto the grass, tail curled neatly around its paws, clearly in no hurry at all despite the fading light. Mira sat down too, forgetting for a moment about beacons and storms and everything else waiting for her. The fox's voice grew soft and low, the kind of voice made for telling old stories properly, one careful word at a time under the darkening sky. Even the wind seemed to settle down to listen with her.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_askpim2_go",
+     "label": "Settle in and listen",
+     "target": "n_askpim3"
+    }
+   ]
+  },
+  {
+   "id": "n_askpim3",
+   "body": "A soft breeze moved through the clearing as Pim began to speak, carrying the smell of salt and distant rain. Mira leaned in closer, chin resting on her knees, completely caught up in the telling. The fox's words seemed to paint pictures in the air between them, of storms and spark and one small, stubborn light that had refused, night after night, to ever go out completely. Mira barely noticed the cold creeping in around her boots.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_askpim3_go",
+     "label": "Listen to the very end",
+     "target": "n_askpim4"
+    }
+   ]
+  },
+  {
+   "id": "n_askpim4",
+   "body": "As the story wound toward its close, Pim's voice dropped even softer, almost a whisper against the darkening sky above them both. The very first keeper, Pim said, had never once doubted herself, not really, not even in the worst of storms. Mira thought quietly about that, turning the idea over in her mind like the little brass button in her pocket. She would remember this story for a very long time.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_askpim4_go",
+     "label": "Sit quietly with the story",
+     "target": "n_e_discovery7"
+    }
+   ]
+  },
+  {
+   "id": "n_e_discovery7",
+   "body": "Pim told the whole tale of the first keeper, right there in the quiet clearing, while long shadows lengthened slowly around them both. It was a story of courage, patience, and one small spark that grew into a light strong enough to guard an entire coastline for generations. Mira listened until the very last word, forgetting the beacons entirely for a while. When she finally walked home, the story stayed with her, warm as a lantern, long after the stars came out above the quiet, sleeping village.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_6",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Legend of the First Keeper"
+   }
+  },
+  {
+   "id": "n_alone1",
+   "body": "Mira decided to trust her own two feet instead of a talking fox, however friendly and clever it seemed to be. She struck out along the trail completely alone, the clearing falling silent behind her with every quiet step. Wind hissed softly through the tall grass on either side. She pressed on steadily toward the sound of distant surf, the beacon tower rising faintly ahead through the trees, dark against the darker sky beyond it.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_alone1_press",
+     "label": "Press on quietly toward the sea",
+     "target": "n_hubB"
+    }
+   ]
+  },
+  {
+   "id": "n_rest1",
+   "body": "The stream water was cold and perfectly clear, and Mira cupped her hands together to drink from it. Small fish darted quickly away from her shadow as it fell across the water. For one long moment, everything felt calm and unhurried, as if the whole quiet forest was holding its breath right alongside her, waiting for what came next. Somewhere overhead, a single early star had already begun to show its soft light.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_rest1_go",
+     "label": "Rest a moment longer",
+     "target": "n_rest2"
+    }
+   ]
+  },
+  {
+   "id": "n_rest2",
+   "body": "Mira sat back on a smooth, sun-warmed rock and watched thin clouds drift slowly over the treetops, pink with the very last light of sunset. She could close her eyes for one small, quiet nap, or simply watch the clouds a while longer before moving on toward the beacons that still waited unlit along the dark coast, patient and cold. The whole clearing felt hushed, as if it too were resting.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_rest2_nap",
+     "label": "Close your eyes for a moment",
+     "target": "n_rest_nap1"
+    },
+    {
+     "id": "c_rest2_clouds",
+     "label": "Watch the clouds drift by",
+     "target": "n_rest_nap1"
+    }
+   ]
+  },
+  {
+   "id": "n_rest_nap1",
+   "body": "Her eyelids grew heavier with every passing second, the sound of the stream trickling softly beside her like a lullaby. Mira told herself she would rest just a minute more, only a minute, before getting back up to finish her work. The warm rock beneath her, the cool evening air, and the gentle rush of water all worked together, pulling her slowly and surely down toward sleep. Her thoughts grew soft and slow, drifting like the water.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_restnap1_go",
+     "label": "Let your eyes close completely",
+     "target": "n_rest_nap2"
+    }
+   ]
+  },
+  {
+   "id": "n_rest_nap2",
+   "body": "Somewhere between waking and sleeping, Mira thought she heard the stream humming an old, familiar tune, one Gran used to sing while tending the lantern. It felt like being wrapped in something warm and safe, far from beacons and storms and all her worries. Her breathing slowed, deep and even, and the whole quiet forest seemed to settle in gently around her, patient and unhurried. Nothing else in the whole wide world seemed to matter.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_restnap2_go",
+     "label": "Drift fully off to sleep",
+     "target": "n_rest_nap3"
+    }
+   ]
+  },
+  {
+   "id": "n_rest_nap3",
+   "body": "In the hazy edge of her dream, Mira thought she saw the beacons lighting themselves, one after another, small golden flames climbing each dark tower without her help at all. It felt silly even in the dream, but comforting too, like a promise that things would work out fine either way. The stream kept trickling on beside her, patient and steady, all through the quiet night. Whatever came next could wait until she was truly ready.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_restnap3_go",
+     "label": "Sleep on peacefully until morning",
+     "target": "n_e_discovery1"
+    }
+   ]
+  },
+  {
+   "id": "n_e_discovery1",
+   "body": "Mira had meant to rest for only a moment, but the quiet stream and soft grass pulled her slowly into a light doze. When she finally woke, stars had filled the whole sky and the beacons stood unlit far in the distance. She was not scared, though, not really. The fog had not come after all, held back by some other keeper's careful watch that night. Mira walked home slowly under the bright stars, deciding that tomorrow she would ask Gran to teach her properly, from the very beginning, so she would never be caught unprepared again like this.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_7",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "A Nap by the Water"
+   }
+  },
+  {
+   "id": "n_hubB",
+   "body": "The trail led Mira down to a wide bend in the coast road, where the path split apart again. One way continued straight on toward the beacon gate, guarded by an old stone warden set into the rock. The other curved back toward the village, an easy retreat if her nerve had finally run out tonight. A carved stone waited quietly at the very center of the bend. A gull cried once, far off, over the darkening water below.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hubB_on",
+     "label": "Continue toward the beacon gate",
+     "target": "n_gate1"
+    },
+    {
+     "id": "c_hubB_back",
+     "label": "Turn back toward home",
+     "target": "n_turnback1"
+    }
+   ]
+  },
+  {
+   "id": "n_turnback1",
+   "body": "Mira's steps slowed as she thought hard about turning around and going home. It would be so easy to walk back, curl up by the warm fire, and let the grown ups sort everything out somehow, some way. Her tired feet turned toward the village lights glowing softly in the distance, and she let them carry her that quiet way instead of forward into the dark. Part of her already regretted the choice, even as she made it.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_turnback_walk",
+     "label": "Keep walking home",
+     "target": "n_turnback2"
+    }
+   ]
+  },
+  {
+   "id": "n_turnback2",
+   "body": "The path back toward the village felt shorter somehow than the way out had, familiar landmarks sliding past one after another in the dusk. Mira passed the old well, the crooked fence, the bakery with its dark windows, each one a small, comforting sign that home was close now. Her heart still ached a little over the unlit beacons, but her tired legs were glad for the shorter walk. Each step felt heavier, though the way itself was easy enough.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_turnback2_go",
+     "label": "Keep walking toward the lights",
+     "target": "n_turnback3"
+    }
+   ]
+  },
+  {
+   "id": "n_turnback3",
+   "body": "A neighbor waved from her porch as Mira passed, calling out a friendly greeting into the dusk. Mira waved back, throat tight, not quite ready to explain where she had been or why she was coming home without the beacons lit. The cottage door was close now, warm light spilling out through the window onto the darkened path ahead of her tired, aching feet. She kept her eyes down, focused only on the path ahead.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_turnback3_go",
+     "label": "Walk the last stretch home",
+     "target": "n_turnback4"
+    }
+   ]
+  },
+  {
+   "id": "n_turnback4",
+   "body": "Mira paused at the garden gate, one hand resting on the cool metal latch, and looked back once toward the dark coastline behind her. Somewhere out there, beacons still waited unlit, patient in the growing dark. She sighed, pushed the gate open, and stepped into the small, familiar garden, letting the smell of home wrap gently around her. The latch clicked softly shut behind her at last, safe and sound at home.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_turnback4_go",
+     "label": "Go inside and see Gran",
+     "target": "n_e_retreat1"
+    }
+   ]
+  },
+  {
+   "id": "n_e_retreat1",
+   "body": "Mira walked slowly back through the darkening village, past shuttered windows and quiet, sleeping gardens. She told herself the beacons would simply be someone else's job tonight, and that was all right. At home, she found Gran propped up in bed, tired but smiling, glad simply to see her granddaughter safe and sound again. Mira curled up beside her, and though the fog crept in a little that night, the village survived just fine, as it always somehow found a way to do.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_8",
+    "valence": "neutral",
+    "kind": "retreat",
+    "title": "The Long Walk Home"
+   }
+  },
+  {
+   "id": "n_gate1",
+   "body": "A tall stone archway marked the beacon gate, carved all over with faces worn smooth by centuries of salt wind and rain. A low voice rumbled from within the stone itself, offering Mira a riddle to prove her worth, or a small gift she might trade instead for safe passage. Carved words also ran along the door frame, half hidden by thick green moss. Salt wind gusted once, rattling the old iron hinges nearby.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_gate1_riddle",
+     "label": "Answer the riddle",
+     "target": "n_gate2"
+    },
+    {
+     "id": "c_gate1_gift",
+     "label": "Offer a gift instead",
+     "target": "n_gate_gift1"
+    },
+    {
+     "id": "c_gate1_examine",
+     "label": "Examine the carved words",
+     "target": "n_examine1"
+    }
+   ]
+  },
+  {
+   "id": "n_examine1",
+   "body": "Mira brushed the thick moss away and read the old carved words slowly, one letter at a time. They spoke of a keeper's promise: that the light must always be carried forward, hand to hand, and never left to simple chance. Something about the careful words settled her nerves completely, and she felt ready now to face whatever waited for her past the old stone gate. The stone beneath her fingers felt strangely warm to the touch.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_examine_go",
+     "label": "Step toward the gate, steadied",
+     "target": "n_gate_pass"
+    }
+   ]
+  },
+  {
+   "id": "n_gate2",
+   "body": "The stone voice asked its riddle slowly, letting each word hang in the salty air: I grow when fed but shrink when still, I light the dark against my will, what am I? Mira thought at once of Gran's old lantern, always hungry for oil, always pushing steadily back the night. She opened her mouth carefully to answer, hoping with all her heart that she had it exactly right. Somewhere behind the stone, something seemed to hold its breath.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_gate2_correct",
+     "label": "Answer: a flame",
+     "target": "n_gate_pass"
+    },
+    {
+     "id": "c_gate2_wrong",
+     "label": "Answer: the moon",
+     "target": "n_e_setback4"
+    }
+   ]
+  },
+  {
+   "id": "n_e_setback4",
+   "body": "The stone voice sighed, low and clearly disappointed, and the archway sealed itself firmly shut with a heavy grinding sound. No amount of pushing would open it again tonight, no matter how hard she tried. Mira sat down hard on the cold ground, frustrated with herself. She would have to find another way, another night, to reach the beacons past this gate. For now, she turned back toward home, already thinking hard about flames, and moons, and everything in between the two.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_9",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Wrong Answer"
+   }
+  },
+  {
+   "id": "n_gate_gift1",
+   "body": "Mira offered the only gift she carried with her: a small round shell from the harbor, warm now from sitting in her pocket. The stone voice hummed with quiet, gentle approval, plainly pleased by the simple offering. Slowly, with a low grinding sound, the archway shifted open, revealing the shadowy path beyond and the tower waiting further along the coast. The shell rolled once against the stone before settling still.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_gift_go",
+     "label": "Step through the open gate",
+     "target": "n_gate_pass"
+    }
+   ]
+  },
+  {
+   "id": "n_gate_pass",
+   "body": "Past the gate, the first beacon tower rose steep and narrow above the wet rocks, dark against the clouded sky. A knotted rope hung down one side, and a rickety old ladder leaned against the other. Nearby, an old warden sat resting quietly on a stone bench, watching Mira with tired but kind eyes as she caught her breath. Somewhere close by, the sea kept up its steady, restless rhythm.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_pass_rope",
+     "label": "Climb the knotted rope",
+     "target": "n_b1_success"
+    },
+    {
+     "id": "c_pass_ask",
+     "label": "Ask the warden for help",
+     "target": "n_ask1"
+    }
+   ]
+  },
+  {
+   "id": "n_ask1",
+   "body": "The old warden creaked slowly to his feet and offered to share his own story while Mira finally caught her breath. He had guarded this particular tower for forty long years, he said, watching young keepers come and go, each one braver than the last in their own small, quiet way. His voice was rough but kind, like old rope. Mira sat down gratefully, glad for the short rest at last.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_ask1_go",
+     "label": "Listen to his story",
+     "target": "n_ask2"
+    }
+   ]
+  },
+  {
+   "id": "n_ask2",
+   "body": "He spoke of terrible storms weathered, of beacons relit again and again, and of one long winter when the fog very nearly won for good. Mira listened, completely spellbound, forgetting about the climb entirely for a few precious minutes. When he finally finished, he smiled warmly and wished her well, though the tower behind him stayed dark and unlit the whole time they talked. The tower loomed quiet and patient above them both the whole time.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_ask2_go",
+     "label": "Thank him and listen a while longer",
+     "target": "n_ask3"
+    }
+   ]
+  },
+  {
+   "id": "n_ask3",
+   "body": "The warden pulled a small, battered tin from his coat and offered Mira a warm biscuit, still faintly steaming from a little fire hidden behind the bench. She accepted gratefully, sitting down beside him on the cold stone. Above them, the first beacon glowed steady in the dark, and for a while neither of them said anything at all, content just to watch it burn together in comfortable silence. Neither of them was in any hurry to end the quiet moment.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_ask3_go",
+     "label": "Sit with him a while longer",
+     "target": "n_e_discovery2"
+    }
+   ]
+  },
+  {
+   "id": "n_e_discovery2",
+   "body": "Mira spent the rest of the whole evening listening to the old warden's stories, one after another, each one better than the last. The beacon stayed unlit that night, but something else was lit instead, a small spark of understanding about just how much history stood quiet watch along this coast. She walked home slowly, full of stories to tell Gran, who would surely know every single one of them already, and love hearing them again anyway.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_10",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Warden's Story"
+   }
+  },
+  {
+   "id": "n_b1_success",
+   "body": "Mira reached the very top of the first tower, breathless but triumphant, and struck her flint hard against the waiting wick. Flame caught with a soft whoosh of warm air, and light spread out quickly across the rocks below. One beacon down, three still to go. Ahead, the coast forked toward a dark, narrow sea cave and a wide stretch of tide pools, both leading onward toward the next waiting tower.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_b1_cave",
+     "label": "Head through the sea cave",
+     "target": "n_b2_cave1"
+    },
+    {
+     "id": "c_b1_tide",
+     "label": "Cross the tide pools",
+     "target": "n_b2_tide1"
+    },
+    {
+     "id": "c_b1_explore",
+     "label": "Peek into a nearby tidepool cave",
+     "target": "n_explore1"
+    }
+   ]
+  },
+  {
+   "id": "n_explore1",
+   "body": "Mira ducked into a small, sheltered hollow near the base of the tower, where seawater pooled quietly between the rocks. Tiny crabs skittered around and glowed faintly blue in the dark, like scattered fallen stars. She crouched down low, watching them dart and flicker for a long, quiet moment, entirely forgetting about the beacons for a while, lost in the small wonder of it. The little hollow smelled of salt and cool, damp stone.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_explore_go",
+     "label": "Watch the glowing crabs a while longer",
+     "target": "n_explore2"
+    }
+   ]
+  },
+  {
+   "id": "n_explore2",
+   "body": "One of the tiny crabs scuttled boldly right up onto the toe of Mira's boot, glowing softly blue against the leather, seemingly unafraid of the giant visitor. She held very still, hardly breathing, watching it wave one small claw before scuttling off again to rejoin the others. It felt like being trusted with a small, quiet secret that the sea only rarely chose to share with anyone at all. She almost laughed out loud at the small, delighted feeling.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_explore2_go",
+     "label": "Stay a little longer and watch",
+     "target": "n_e_discovery3"
+    }
+   ]
+  },
+  {
+   "id": "n_e_discovery3",
+   "body": "The glowing crabs kept Mira quiet company long after the light outside had faded completely away. She never made it to the second beacon that particular night, but she carried the memory of that small blue glow home with her, tucked away safe like a secret. Some nights, she decided, the smallest wonders were worth far more than any hurry. Gran, when told the story, only smiled softly and said the sea always kept a few good secrets for patient eyes.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_11",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Tiny Glowing Crabs"
+   }
+  },
+  {
+   "id": "n_b2_cave1",
+   "body": "The sea cave was cool and dim inside, water dripping steadily somewhere deep within the rock. Mira's careful footsteps echoed strangely off the damp walls, bouncing back much louder than she had expected them to. She hurried quickly through toward the far exit, boots splashing through shallow puddles the whole way, eager to reach the daylight waiting on the other side. Somewhere ahead, faint daylight marked the promise of an exit.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cave1_go",
+     "label": "Hurry through the cave",
+     "target": "n_b2_success"
+    }
+   ]
+  },
+  {
+   "id": "n_b2_tide1",
+   "body": "The tide pools stretched wide and shallow between the dark rocks, water creeping steadily higher with the rising evening tide. Mira could wait patiently for a safer gap between the waves, or rush straight across while there was still time left, before the climbing water grew too deep and too dangerous to cross safely on foot. Somewhere out past the rocks, a lone gull wheeled low over the darkening waves.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_tide1_wait",
+     "label": "Wait for a safer gap",
+     "target": "n_b2_success"
+    },
+    {
+     "id": "c_tide1_rush",
+     "label": "Rush across right now",
+     "target": "n_b2_success"
+    }
+   ]
+  },
+  {
+   "id": "n_b2_success",
+   "body": "The second beacon caught quickly under her flint, its flame leaping up bright against the darkening evening sky. Two towers lit now, two still waiting patiently in the dark. Ahead, the coast climbed toward rocky cliffs on one side and opened into a quiet, silver meadow on the other, while a strange, soft light flickered somewhere further along the shore. The flame crackled steadily, bright against the darkening evening sky.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_b2_cliff",
+     "label": "Take the cliffside path",
+     "target": "n_b3_cliff1"
+    },
+    {
+     "id": "c_b2_meadow",
+     "label": "Cross through the meadow",
+     "target": "n_b3_meadow1"
+    },
+    {
+     "id": "c_b2_light",
+     "label": "Follow the strange light",
+     "target": "n_light1"
+    }
+   ]
+  },
+  {
+   "id": "n_light1",
+   "body": "The soft light bobbed and flickered gently among the dune grass, leading Mira slightly off her main path. She followed it curiously, boots sinking into the soft, cool sand, until it finally settled over a half buried wooden box wedged between two rocks near the waterline. It seemed to be waiting for her, patient and quiet. The soft glow felt oddly familiar, though she could not quite say why at first.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_light_go",
+     "label": "Dig out the buried box",
+     "target": "n_light2"
+    }
+   ]
+  },
+  {
+   "id": "n_light2",
+   "body": "Inside the box, wrapped carefully in old oilcloth, lay a thick journal, its pages soft and yellowed with age. Mira opened it slowly and recognized the neat handwriting almost at once, from old pictures back home. It was the journal of the very first keeper, full of maps, notes, and small secrets about every single beacon along this whole coast. Her fingers traced the old, careful handwriting on the very first page.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_light2_take",
+     "label": "Pick it up and read a while",
+     "target": "n_light3"
+    }
+   ]
+  },
+  {
+   "id": "n_light3",
+   "body": "Mira turned the fragile pages carefully, one at a time, careful not to tear the old, brittle paper in the wind. Little sketches filled the margins, tiny drawings of gulls and waves and towers long since fallen into the sea. Each page felt like a small window into a life lived entirely by lantern light, patient and quiet, watching over this same stretch of coast. She would treasure this small discovery for a very long time.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_light3_go",
+     "label": "Keep reading by the last light of dusk",
+     "target": "n_e_discovery4"
+    }
+   ]
+  },
+  {
+   "id": "n_e_discovery4",
+   "body": "Mira sat right there in the sand, reading the old keeper's journal by the very last light of dusk. It described every single beacon, every shortcut, every trick of wind and tide along this whole coast. She never reached the third tower that particular night, but she walked home with something even better than a lit beacon: a guide for every beacon night still to come. Gran wept happy tears when she saw it, and the journal found a new home on the mantel beside the lantern, kept safe forever.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_13",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Old Keeper's Journal"
+   }
+  },
+  {
+   "id": "n_b3_cliff1",
+   "body": "The cliffside path climbed steadily above the crashing waves, wind tugging hard at Mira's coat with every gust. A hawk circled high overhead, riding the evening air currents with barely a flap of its wide wings. Mira watched it for a moment before pressing on toward the waiting tower ahead, legs burning from the long climb. Salt spray drifted steadily upward from the wet rocks far below her tired, aching boots.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cliff1_go",
+     "label": "Continue toward the tower",
+     "target": "n_b3_success"
+    }
+   ]
+  },
+  {
+   "id": "n_b3_meadow1",
+   "body": "The meadow was soft and quiet, tall grass silvered by the rising moon above. Ahead, Mira spotted Corwin, another apprentice keeper from a neighboring village, struggling hard to free his boot from a patch of thick, sucking mud. Pale wildflowers dotted the grass nearby, glowing faintly in the dusk light like tiny fallen lamps. Somewhere close by, a night bird called out softly once into the quiet, settling evening dusk.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_meadow1_help",
+     "label": "Help Corwin out of the mud",
+     "target": "n_b3_success"
+    },
+    {
+     "id": "c_meadow1_race",
+     "label": "Race past him toward the tower",
+     "target": "n_e_setback7"
+    }
+   ]
+  },
+  {
+   "id": "n_e_setback7",
+   "body": "Mira ran past Corwin without looking back, focused only on the waiting tower ahead. Behind her, she heard him call out sharply, then a wet, sliding sound, followed by sudden silence. Guilt stopped her cold halfway up the path. She turned back at once to help him, but precious time had already slipped away, and the storm clouds rolling in now looked far too close for comfort. Together they sheltered under a rocky outcrop, watching the unlit tower and waiting for the storm to finally pass overhead.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_14",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Left Behind in the Storm"
+   }
+  },
+  {
+   "id": "n_b3_success",
+   "body": "The third beacon roared quickly to life under Mira's careful flame, joining the other two in a bright, steady line along the dark coast. Only the great Lumen Spire itself remained unlit now, tall and looming against the heavy, clouded sky. Mira's legs ached badly from all the climbing, but the last climb ahead still called to her all the same, urgent and important. Only one dark tower remained now, tall against the clouded sky.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_b3_climb",
+     "label": "Climb toward the Spire",
+     "target": "n_spire1"
+    }
+   ]
+  },
+  {
+   "id": "n_spire1",
+   "body": "The Lumen Spire rose huge and dark above the rocks, storm clouds gathering thick and heavy overhead. Three ways led up toward the top: a spiral stone staircase inside the tower, an old service ladder bolted firmly to its outer wall, and a narrow secret passage hidden behind a fallen slab of rock. Thunder rumbled somewhere out over the churning sea, closer now than before. Somewhere far below, the sea crashed on, restless and unseen.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_spire1_stairs",
+     "label": "Take the spiral staircase",
+     "target": "n_stairs1"
+    },
+    {
+     "id": "c_spire1_ladder",
+     "label": "Climb the service ladder",
+     "target": "n_ladder2"
+    },
+    {
+     "id": "c_spire1_secret",
+     "label": "Slip through the secret passage",
+     "target": "n_secret1"
+    }
+   ]
+  },
+  {
+   "id": "n_stairs1",
+   "body": "The stone staircase spiraled steeply up into darkness, worn smooth by generations of hurrying keepers before her. Mira could take the steps two at a time to save precious minutes, or climb slowly and steadily to keep her footing sure in the dim, flickering light. Either way, the wind moaned faintly through cracks in the old stone walls. Dust and old salt air hung thick and heavy in the narrow stone stairwell.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_stairs1_fast",
+     "label": "Climb fast, two steps at a time",
+     "target": "n_stairs2"
+    },
+    {
+     "id": "c_stairs1_steady",
+     "label": "Climb steady and sure",
+     "target": "n_stairs2"
+    }
+   ]
+  },
+  {
+   "id": "n_stairs2",
+   "body": "Mira reached a small landing partway up the stairs, a narrow window cut into the stone beside her. Through it she glimpsed the whole coast laid out far below, three small beacons burning bright against the growing dark. Thunder cracked again, closer now, and she pressed steadily on toward the top without stopping to rest, legs burning with every step. Her legs burned steadily now with every single step she climbed.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_stairs2_go",
+     "label": "Press on toward the top",
+     "target": "n_towerHub"
+    }
+   ]
+  },
+  {
+   "id": "n_ladder2",
+   "body": "The service ladder was cold and slick with sea spray, bolted tight against the tower's outer stone wall. Wind gusted hard, tugging sharply at Mira's coat as she reached carefully for the first rung. She gripped tight with both hands, or her fingers slipped before she found a proper hold on the wet metal. Somewhere far below, the restless sea churned steadily on, endless and unseen in the storm dark.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_ladder2_grip",
+     "label": "Grip firm and climb steady",
+     "target": "n_ladder3"
+    },
+    {
+     "id": "c_ladder2_slip",
+     "label": "Reach quickly, hands slip",
+     "target": "n_ladder3"
+    }
+   ]
+  },
+  {
+   "id": "n_ladder3",
+   "body": "Mira climbed steadily, rung after rung, cold wind roaring loudly in her ears the whole way up. Near the top, she risked one glance down at the churning sea far below, dizzying and vast in the flickering storm light. She steadied herself against the rail and kept climbing toward the small wooden door waiting patiently above her. Her arms ached badly now, but she refused to slow down even a little.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_ladder3_go",
+     "label": "Keep climbing toward the door",
+     "target": "n_towerHub"
+    }
+   ]
+  },
+  {
+   "id": "n_secret1",
+   "body": "Behind the fallen stone slab, a narrow passage led away into cool, quiet darkness. A small side room opened just off the main tunnel, faint light flickering somewhere within its shadows. Mira could duck into the side room to take a closer look, or hurry straight on toward the tower's heart without stopping, or stop first to listen for any sound. Dust hung thick in the still, quiet air of the tunnel.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_secret1_side",
+     "label": "Duck into the side room",
+     "target": "n_secret_side1"
+    },
+    {
+     "id": "c_secret1_straight",
+     "label": "Hurry straight on",
+     "target": "n_secret2"
+    }
+   ]
+  },
+  {
+   "id": "n_secret_side1",
+   "body": "The small side room held an old wooden desk, and on it sat a thick leather ledger stuffed full with names and dates going back many generations. Every keeper who had ever served the great Spire seemed to have signed their name here, page after page of careful handwriting stretching far back into the past. Dust lay thick over everything. Somewhere above, the storm rattled faintly at the old stone walls.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_side_read",
+     "label": "Read the ledger by candlelight",
+     "target": "n_e_discovery5"
+    }
+   ]
+  },
+  {
+   "id": "n_e_discovery5",
+   "body": "Mira read late into the raging storm, tracing names back through decades and decades of keepers, each one adding a small note about their own night on watch. She found Gran's name near the middle of one page, and further back still, names she didn't recognize but somehow still felt connected to. The Spire's own beacon stayed dark that night, tended by someone else entirely, but Mira walked home certain she now belonged to something far larger than just one small lantern.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_15",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Ledger in the Wall"
+   }
+  },
+  {
+   "id": "n_secret2",
+   "body": "The passage narrowed slowly, then opened out onto a small landing near the tower's base. An old folded map lay tucked into a crack in the stone wall nearby, half forgotten by whoever left it there. Mira could grab it quickly for a look, or hurry on without slowing down at all, saving every precious second she could. Her footsteps echoed softly along the narrow, quiet stone passage ahead of her.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_secret2_hurry",
+     "label": "Hurry on toward the top",
+     "target": "n_towerHub"
+    }
+   ]
+  },
+  {
+   "id": "n_towerHub",
+   "body": "All three paths met at last near the very top of the Spire, where a narrow stair led on up to the lantern room above. Thunder rolled closer now, and cold rain had begun to spatter hard against the stone all around her. An old bell hung silent nearby, and Mira felt a sudden urge to call out loudly for Gran, even knowing full well she was still far below.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_towerHub_climb",
+     "label": "Climb the final stairs",
+     "target": "n_final1"
+    },
+    {
+     "id": "c_towerHub_shout",
+     "label": "Shout down for Gran",
+     "target": "n_shout1"
+    },
+    {
+     "id": "c_towerHub_bell",
+     "label": "Check the old silent bell",
+     "target": "n_bell1"
+    }
+   ]
+  },
+  {
+   "id": "n_bell1",
+   "body": "The old bell was cracked but still hung true and steady on its wooden beam. Mira gave the thick rope a careful pull, and a low, warm note rolled out over the whole storm, a sound the entire coast could surely hear. It felt like calling out that help was already coming, even before the great lantern itself was lit. The rope felt rough and solid beneath her cold fingers.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_bell_go",
+     "label": "Let the note ring out and listen",
+     "target": "n_e_success3"
+    }
+   ]
+  },
+  {
+   "id": "n_e_success3",
+   "body": "The old bell's note rolled out over the whole coast, low and clear despite the raging storm. Down in the village, people looked up, startled at first, then hopeful, recognizing the sound from old stories their own grandparents used to tell. Boats turned toward shore, and lanterns were lit in windows all along the busy harbor, guiding each other safely home together. Mira never reached the very top of the Spire that particular night, but the whole village found its way safely regardless, bell and lanterns working together just fine.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_16",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Old Bell Rings"
+   }
+  },
+  {
+   "id": "n_shout1",
+   "body": "Mira leaned far over the railing and called down into the storm, her small voice lost almost completely against the howling wind. For a long moment, only cold rain answered her call, and no one came. Her courage finally gave out completely, just steps from the very top. She sank down against the cold stone wall, tears mixing freely with the rain on her cheeks, unable to make herself move on any further tonight.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_shout_lose",
+     "label": "Give in and turn back",
+     "target": "n_e_retreat3"
+    }
+   ]
+  },
+  {
+   "id": "n_e_retreat3",
+   "body": "It was all right, Mira told herself firmly, to not finish everything in just one single night. She wiped her eyes, took a slow breath, and made her way back down the winding stairs, carefully, one step at a time. At the bottom she found Pim waiting patiently, exactly as promised, ready to walk her the rest of the long way home through the storm without a single word of blame.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_17",
+    "valence": "neutral",
+    "kind": "retreat",
+    "title": "Turning Back at the Top"
+   }
+  },
+  {
+   "id": "n_final1",
+   "body": "The lantern room at last, cold wind screaming outside the thick glass windows all around her. The great lamp sat cold and dark at the very center of the room, patiently waiting. Pim's small ember glowed faintly in a little jar nearby, or Mira could strike her own flint alone instead. Fear rose sudden and sharp in her chest, freezing her boots to the floor for one long, terrible second.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_final1_pim",
+     "label": "Light it with Pim's ember",
+     "target": "n_finalA1"
+    },
+    {
+     "id": "c_final1_flint",
+     "label": "Strike your own flint alone",
+     "target": "n_finalB1"
+    },
+    {
+     "id": "c_final1_freeze",
+     "label": "Freeze in fear for a moment",
+     "target": "n_freeze1"
+    }
+   ]
+  },
+  {
+   "id": "n_freeze1",
+   "body": "Mira's hands trembled badly, unable to move for what felt like a small eternity in the dark room. Cold rain lashed hard against the windows. She could shake off the fear completely and reach for Pim's ember after all, or let the fear win this time and stay frozen exactly where she stood, boots stuck to the floor. Somewhere below, she could almost hear Pim waiting patiently and quietly for her.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_freeze_shake",
+     "label": "Shake it off and reach for the ember",
+     "target": "n_finalA1"
+    },
+    {
+     "id": "c_freeze_stay",
+     "label": "Stay frozen where you stand",
+     "target": "n_e_setback12"
+    }
+   ]
+  },
+  {
+   "id": "n_e_setback12",
+   "body": "Mira's fear held her fast in place, and the minutes slipped away one by one, unstoppable. The lantern stayed dark, cold glass rattling under the storm's full and heavy weight. Down in the village, people lit small candles in their windows instead, a smaller, warmer answer to the fog creeping in at the edges of town. It was not the ending Mira had wanted for herself, but the village held on, patient and stubborn, waiting for a calmer night to try the great lamp again.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_18",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Beam Stays Dark"
+   }
+  },
+  {
+   "id": "n_finalA1",
+   "body": "Pim's small ember glowed warm inside its little jar, steady despite the raging storm outside the thick glass. Mira lifted it carefully in both hands, feeling its gentle, patient heat against her cold skin. She pictured Gran's steady hands doing this exact same task a thousand times before, and trusted the ember completely as she turned toward the great, waiting lamp. The little jar felt impossibly warm against her cold, shaking hands.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_finalA1_trust",
+     "label": "Trust the ember and move to the lamp",
+     "target": "n_finalA2"
+    }
+   ]
+  },
+  {
+   "id": "n_finalA2",
+   "body": "Mira touched the glowing ember carefully to the lamp's waiting wick. Flame caught slowly at first, then surged quickly upward, filling the great glass lens with brilliant golden light. She could raise the lantern high with one triumphant push, or ease it upward slowly and gently instead, letting the light grow at its own steady, patient pace. Her heart pounded steadily as the golden light grew brighter with every passing second.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_finalA2_high",
+     "label": "Raise the lantern high and proud",
+     "target": "n_e_completion1"
+    },
+    {
+     "id": "c_finalA2_gentle",
+     "label": "Ease the lantern up gently",
+     "target": "n_e_completion2"
+    }
+   ]
+  },
+  {
+   "id": "n_e_completion1",
+   "body": "The great beam blazed out across the whole storm, bright and completely unwavering, sweeping the fog back from the cliffs in one long, triumphant wave. Down below, all four beacons and the Spire itself burned together in a perfect, glowing line along the coast. Village lights answered warmly from every window in reply. Gran, watching from her sickbed through the cottage window, smiled wide enough to light the whole room herself. Mira had truly done it, every single beacon lit, the whole coast safe now until morning.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_19",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Beam Blazes On"
+   }
+  },
+  {
+   "id": "n_e_completion2",
+   "body": "The great beam rose slowly and gently, spreading warm gold light across the storm-tossed sea like a sunrise arriving early. The fog hesitated right at the edge of the light, then rolled quietly back out to sea, as if it too respected such a careful, patient flame. Mira stood at the tall window a long while, watching her own work hold steady against the storm, proud in a calm, quiet way that felt entirely her own, hard earned and true.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_20",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "A Gentle Dawn Light"
+   }
+  },
+  {
+   "id": "n_finalB1",
+   "body": "Mira decided firmly to strike her own flint, wanting badly to prove she could manage this final task all by herself. She pulled it slowly from her satchel, fingers cold and clumsy from the long climb up. She could check the small flint box carefully first, or strike right away without waiting a second longer. The old flint felt far heavier now than she remembered it feeling back home during practice.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_finalB1_strike",
+     "label": "Strike the flint right away",
+     "target": "n_finalB2"
+    }
+   ]
+  },
+  {
+   "id": "n_finalB2",
+   "body": "Sparks flew bright from the old flint, one, two, three quick strikes against the storm's roaring backdrop outside. On the fourth strike, a small flame finally caught and held steady, trembling but alive against the wind rattling hard at the windows all around the room. Mira held her breath completely, watching it flicker. Outside, the storm howled steadily on and on, rattling hard against the old, thick glass windows all around the small, cold stone room.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_finalB2_catch",
+     "label": "Cup the flame and it catches",
+     "target": "n_e_success1"
+    },
+    {
+     "id": "c_finalB2_fail",
+     "label": "The flame gutters and fails",
+     "target": "n_finalB3"
+    }
+   ]
+  },
+  {
+   "id": "n_e_success1",
+   "body": "The small flame steadied slowly in Mira's cupped hands, then caught fully against the wick, spreading warm light up through the great glass lens. The beam swept out across the storm, a little smaller and less grand than the old legends promised, but hers, entirely hers, struck alone with nothing but flint and stubborn determination. The fog retreated all the same, and down in the village, no one could tell the difference between her flame and any keeper's before her.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_21",
+    "valence": "positive",
+    "kind": "success",
+    "title": "A Flame Alone"
+   }
+  },
+  {
+   "id": "n_finalB3",
+   "body": "The small flame died in a thin curl of gray smoke, and Mira's stomach dropped hard with worry. She had only one strip of flint left, worn thin from all her earlier use. Her hands shook badly as she lined it up carefully and struck it hard with everything she had left inside her. A spark leapt, caught, and held, small but fierce, growing steadily brighter with every passing second. She fed it carefully, cupping both hands tight against the wind, coaxing it patiently toward the wick just inches away.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_finalB3_again",
+     "label": "Coax the flame to the wick",
+     "target": "n_e_success2"
+    }
+   ]
+  },
+  {
+   "id": "n_e_success2",
+   "body": "The flame finally caught the wick and roared upward, filling the great glass lens with light just as the storm reached its very fiercest howl. Mira sagged against the cold stone wall, hands shaking, heart pounding, but the beam held steady, sweeping the fog back inch by careful inch. It had taken every last try she had left in her, but the light was burning now, bright and true, and that was all that mattered as dawn crept slowly over the horizon.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_22",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Just Barely, Just in Time"
+   }
+  }
+ ]
+}

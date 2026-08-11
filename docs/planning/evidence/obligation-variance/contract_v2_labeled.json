@@ -1,0 +1,1625 @@
+{
+ "narrative_version": 1,
+ "skeleton_slug": "the-clocktower-cipher",
+ "age_band": "10-13",
+ "premise": {
+  "engine": "prove-and-earn",
+  "dramatic_question": "Will {HEROES} prove they have what the {MAKER} was testing for, and earn what the {CIPHER} was built to protect?",
+  "resolution_space": [
+   "the archive teaches them what the trial was really testing, arming a wiser second attempt",
+   "a passage in the archive holds a copy of the challenge, carried home to study on their own time",
+   "closing time arrives mid-page and the keeper gently walks them out with a promise to lend the book",
+   "a level look at the crossing convinces them that passing this test today would cost more than it proves",
+   "one friend names the real risk aloud and the others agree without argument, calling it a passed test of judgment",
+   "a slip caught in time turns the attempt into a calm, deliberate retreat, and retreat reads as the right answer",
+   "random guessing trips a safeguard built for exactly this shortcut, freezing the dial until a keeper resets it",
+   "the closing signal sounds before any guess lands, and the test must wait for another day",
+   "the overworked mechanism raises a polite fuss that brings the keeper up to end the attempt for the night",
+   "the forced dial binds fast, and nothing they carry tonight will answer for it",
+   "a bent linkage needs a tool the trial clearly expects, and nobody brought one",
+   "the keeper's posted rule ends forcing attempts at nightfall, and they honor the rule as part of the test",
+   "the workshop adopts them as its quiet caretakers, the reward for a test nobody told them they were taking",
+   "some unfinished work in the room invites their hands, and finishing it becomes their standing assignment",
+   "the maker's notes name whoever finds the room its steward, and the friends accept the appointment",
+   "the passing is announced and celebrated by the settlement, the trial's public verdict at last",
+   "the passing quietly restores something the settlement lost, proof enough without an announcement",
+   "the passing earns the keeper's open trust and a standing invitation back to the tower",
+   "a pact sworn over the keepsake binds the friends as the trial's private graduates",
+   "they reset everything exactly as found, keeping the verdict and leaving the rest untouched",
+   "the maker's letter asks its finders to choose, and they choose to let the passing stay quiet",
+   "the trial's true safeguard announces the grab, and the keeper arrives before the door does",
+   "what they try to carry out is exactly what the trial was built to catch on the way down",
+   "second thoughts slow them just enough for the keeper's evening rounds to catch them mid-return, the test's last question answered honestly after all"
+  ]
+ },
+ "label_styles": [
+  "terse imperatives, three words where possible",
+  "first-person plural resolves: what we do next",
+  "sensory verb first, object second",
+  "question-forms at decisions, statements at continues",
+  "name the place or thing, let the action stay implied"
+ ],
+ "facts": {
+  "tower_sealed": "the clocktower stands sealed, and the seal reads like a test rather than an accident",
+  "challenge_posted": "a coded challenge is pinned to the door, clearly meant to be attempted by whoever finds it",
+  "friends_committed_together": "the friends face the challenge as a group; no one takes it alone",
+  "challenge_accepted": "the friends have chosen to take the maker's challenge seriously",
+  "patience_proven": "working the note's cipher line by line proves patience is the price of its first answer",
+  "route_named_by_note": "the proven line names a specific way in and what waits there",
+  "self_reliance_shown": "two overlooked ways in, a low gap and a high window, have been found by the friends' own persistence",
+  "keeper_tested_them": "the keeper has watched the friends and reads as gruff but fair, testing more than warning",
+  "keeper_offer_earned": "the keeper, satisfied, offers both a way in and what he knows of the maker",
+  "maker_motive_understood": "the maker built the tower's tests decades ago out of care, to find the right kind of finder",
+  "past_the_seal": "the friends stand past the tower's seal, however they earned it",
+  "trial_rooms_known": "four testing rooms are known: a climb, a study, a crossing, and a descent",
+  "logic_earned": "the friends carry a working grasp of the cipher's logic, earned by clearing some room's test",
+  "archive_beckons": "the study's archive poses its own quiet test: stay for it, or press on",
+  "crossing_dares_them": "the crossing room is the tower's most direct test of nerve",
+  "reward_glimpsed": "something the maker set aside for whoever passes waits at the crossing's far end",
+  "at_the_dial": "the friends stand at the great dial, the tower's final examiner",
+  "dial_test_live": "the dial's own markings state its test plainly: what to set, and that guessing has a cost",
+  "test_passed": "the friends passed the dial's test on the maker's own terms",
+  "test_forced": "forcing the dial fails its test and jams the mechanism instead",
+  "second_test_found": "a second, smaller test is found behind the dial",
+  "sanctum_entered": "the friends stand inside what the trial protected",
+  "sanctum_seen": "what the trial protected is seen: the maker's letter and modest things meant for everyone",
+  "composure_kept": "the friends leave with their composure intact; the outcome is a result, never a shaming",
+  "trial_reopens": "the tower's trial can be attempted again; nothing about it is used up",
+  "record_set_straight": "whatever was disturbed is put back and owned honestly to the keeper",
+  "workshop_found": "the maker's living workshop is found past the second test",
+  "stewardship_earned": "the friends earn ongoing responsibility for what they found",
+  "passing_made_public": "the friends' passing of the trial is shared with the settlement",
+  "passing_kept_private": "the friends' passing of the trial stays a private matter among them",
+  "trust_bond_formed": "the shared trial forges a lasting trust between the friends",
+  "keeper_intervenes": "the keeper turns up in the moment of temptation, mid-test whether the friends know it or not"
+ },
+ "safety_envelope": {
+  "affect_ceiling": "suspense with wonder and mild urgency; tension may tighten but never tips into threat",
+  "forbid_affect": [
+   "despair",
+   "hopelessness",
+   "terror",
+   "humiliation",
+   "cruel_mockery"
+  ],
+  "forbid_facts": [
+   "anyone_injured",
+   "friends_turn_on_each_other",
+   "adult_menaces_children",
+   "theft_rewarded",
+   "gore_of_any_kind"
+  ],
+  "permitted_device_kinds": [
+   "symbol_substitution",
+   "clock_arithmetic",
+   "pictogram_code",
+   "rhythm_code",
+   "tally_cipher",
+   "hidden_key",
+   "forgotten_entrance",
+   "trusted_escort",
+   "concealed_latch",
+   "timed_opening",
+   "service_route",
+   "mechanism_operated",
+   "engraved_numbers",
+   "maker_diagram",
+   "pattern_in_mechanism",
+   "annotated_tool",
+   "calibration_scale",
+   "sorted_collection",
+   "wear_pattern",
+   "shadow_alignment",
+   "maker_relic",
+   "working_mechanism",
+   "written_record",
+   "acoustic_wonder",
+   "scale_model",
+   "light_play",
+   "resident_creature",
+   "heritage_document",
+   "handmade_keepsake",
+   "community_memory",
+   "stiff_mechanism",
+   "narrow_crossing",
+   "timed_passage",
+   "dark_passage",
+   "heavy_barrier",
+   "slick_traverse",
+   "time_pressure",
+   "sound_alarm",
+   "weight_sense",
+   "light_signal",
+   "messenger_creature",
+   "self_closing",
+   "tell_tale_mark",
+   "patience_ritual",
+   "tool_improvised",
+   "consumable_applied",
+   "mechanism_reset",
+   "knowledge_applied",
+   "shared_effort",
+   "unfinished_work",
+   "living_thing_tended",
+   "letter_waiting",
+   "tools_in_order",
+   "season_preserved",
+   "provisions_laid"
+  ],
+  "forbidden_device_kinds": [
+   "weapon",
+   "gore",
+   "cruelty",
+   "theft_rewarded",
+   "adult_menace"
+  ]
+ },
+ "world_recipe": {
+  "requires": {
+   "cipher_forms": {
+    "count": 1,
+    "kinds": [
+     "symbol_substitution",
+     "clock_arithmetic",
+     "pictogram_code",
+     "rhythm_code",
+     "tally_cipher"
+    ],
+    "note": "one cipher form per story, chosen at bind and used consistently from note to clockface to back panel"
+   },
+   "access_details": {
+    "count": 3,
+    "kinds": [
+     "hidden_key",
+     "forgotten_entrance",
+     "trusted_escort",
+     "concealed_latch",
+     "timed_opening",
+     "service_route",
+     "mechanism_operated"
+    ],
+    "note": "one concrete way in per approach branch: the note's decoded route and the building's own weak point draw freely; the keeper's branch stays person-mediated"
+   },
+   "cipher_hint_carriers": {
+    "count": 4,
+    "kinds": [
+     "engraved_numbers",
+     "maker_diagram",
+     "pattern_in_mechanism",
+     "annotated_tool",
+     "calibration_scale",
+     "sorted_collection",
+     "wear_pattern",
+     "shadow_alignment"
+    ],
+    "note": "one per exploration room, drawn freely; unique_within_story gives each book four different carriers, and each carries enough logic that any single room makes the dial attemptable"
+   },
+   "room_curiosities": {
+    "count": 4,
+    "kinds": [
+     "maker_relic",
+     "working_mechanism",
+     "written_record",
+     "acoustic_wonder",
+     "handmade_keepsake",
+     "scale_model",
+     "light_play",
+     "community_memory",
+     "resident_creature"
+    ],
+    "note": "what makes each room distinct and worth the visit beyond its hint"
+   },
+   "vault_contents": {
+    "count": 3,
+    "kinds": [
+     "heritage_document",
+     "handmade_keepsake",
+     "community_memory",
+     "written_record",
+     "maker_relic",
+     "acoustic_wonder"
+    ],
+    "note": "the vault protects knowledge, heritage, and wonder; any treasure is modest and communal, never loot"
+   },
+   "obstacle_kinds": {
+    "count": 1,
+    "kinds": [
+     "narrow_crossing",
+     "timed_passage",
+     "slick_traverse",
+     "dark_passage",
+     "heavy_barrier",
+     "stiff_mechanism"
+    ],
+    "note": "physical difficulty stays honest and non-injurious; failure costs time or access, never safety"
+   },
+   "safeguards": {
+    "count": 1,
+    "kinds": [
+     "sound_alarm",
+     "weight_sense",
+     "light_signal",
+     "messenger_creature",
+     "self_closing",
+     "tell_tale_mark"
+    ],
+    "note": "the maker's anti-taking measure; gentle and funny, it embarrasses no one and hurts no one"
+   },
+   "remedies": {
+    "count": 1,
+    "kinds": [
+     "patience_ritual",
+     "tool_improvised",
+     "consumable_applied",
+     "mechanism_reset",
+     "knowledge_applied",
+     "shared_effort"
+    ],
+    "note": "the honest way back from a jam, on the machine's own terms; care, patience, or wit, never strength"
+   },
+   "loft_signatures": {
+    "count": 1,
+    "kinds": [
+     "unfinished_work",
+     "living_thing_tended",
+     "letter_waiting",
+     "tools_in_order",
+     "season_preserved",
+     "provisions_laid"
+    ],
+    "note": "the one detail that makes the maker's hidden room feel currently alive rather than preserved"
+   }
+  },
+  "identity_roles": [
+   "HEROES",
+   "KEEPER",
+   "MAKER",
+   "CIPHER",
+   "SETTLEMENT",
+   "VAULT"
+  ],
+  "texture_roles": [
+   "THRESHOLD",
+   "ACCESS_LOW",
+   "ACCESS_HIGH",
+   "OPENER",
+   "STUDY",
+   "HAZARD",
+   "LANDMARK_FACE",
+   "TOKEN",
+   "CIPHER_TOOL",
+   "ARCHIVE",
+   "REMEDY",
+   "MACHINERY",
+   "SECRET_ROOM",
+   "KEEPSAKE",
+   "CLOSING_SIGN",
+   "MECHANISM",
+   "CRAFT"
+  ]
+ },
+ "nodes": {
+  "n_open": {
+   "tier": "open",
+   "function": "pose-the-trial",
+   "entry_state": [],
+   "establishes": [
+    "tower_sealed",
+    "challenge_posted",
+    "friends_committed_together"
+   ],
+   "forbids": [
+    "past_the_seal",
+    "patience_proven",
+    "keeper_tested_them"
+   ],
+   "affect": {
+    "target": "quiet resolve, the thrill of being tested",
+    "forbid": [
+     "dread",
+     "urgency"
+    ]
+   },
+   "invention": {
+    "cipher_form": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.cipher_forms",
+     "category": "cipher_forms",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the story's one cipher form; every later test-beat renders it consistently"
+    }
+   },
+   "choice_semantics": {
+    "c_open": "accept that the sealed door is asking something of them, and answer it together"
+   },
+   "beat_hint": "the sealed building poses its challenge before anyone touches the door, and the friends accept it as one.",
+   "decisions": {
+    "c_open": {
+     "action": "read_a_posted_note_together",
+     "action_family": "INFORMATION",
+     "target_role": "INFORMATION",
+     "tradeoff": "NONE",
+     "consequence": "KNOWLEDGE"
+    }
+   }
+  },
+  "n_start": {
+   "tier": "open",
+   "function": "offer-virtues",
+   "entry_state": [
+    "challenge_posted",
+    "friends_committed_together"
+   ],
+   "establishes": [
+    "challenge_accepted"
+   ],
+   "forbids": [
+    "patience_proven",
+    "past_the_seal"
+   ],
+   "affect": {
+    "target": "quiet resolve, sizing up which test to take first",
+    "forbid": [
+     "quarrel",
+     "dread"
+    ]
+   },
+   "constraints": {
+    "offers_must_be": "three genuinely different virtues to lead with: patience, self-reliance, humility; no option is the smart one",
+    "must_not": "resolve any test here; the split happens before anyone passes anything"
+   },
+   "choice_semantics": {
+    "c_examine": "lead with patience: sit with the note until it yields",
+    "c_door": "lead with self-reliance: find your own way past the wall",
+    "c_keeper": "lead with humility: ask someone who already passed"
+   },
+   "beat_hint": "three virtues compete for who leads first: patience, self-reliance, or asking for help.",
+   "decisions": {
+    "c_examine": {
+     "action": "decode_a_written_clue",
+     "action_family": "INFORMATION",
+     "target_role": "INFORMATION",
+     "tradeoff": "CERTAINTY_VS_TIME",
+     "consequence": "KNOWLEDGE"
+    },
+    "c_door": {
+     "action": "search_for_a_hidden_entrance",
+     "action_family": "NAVIGATION",
+     "target_role": "BARRIER",
+     "tradeoff": "EFFORT_VS_SHORTCUT",
+     "consequence": "ACCESS"
+    },
+    "c_keeper": {
+     "action": "ask_an_adult_for_help",
+     "action_family": "SOCIAL",
+     "target_role": "PERSON",
+     "tradeoff": "PRIDE_VS_HELP",
+     "consequence": "RELATIONSHIP"
+    }
+   }
+  },
+  "n_note": {
+   "tier": "open",
+   "function": "reward-patience",
+   "entry_state": [
+    "challenge_posted",
+    "challenge_accepted",
+    "friends_committed_together"
+   ],
+   "establishes": [
+    "patience_proven",
+    "route_named_by_note"
+   ],
+   "forbids": [
+    "past_the_seal"
+   ],
+   "affect": {
+    "target": "the settle of proof that patience was the right bet",
+    "forbid": [
+     "frustration",
+     "dread"
+    ]
+   },
+   "invention": {
+    "access_route": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.access_details",
+     "category": "access_details",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the proven line names one concrete way in: where it hides or how it works, plus a plain first step"
+    }
+   },
+   "constraints": {
+    "decode_must_be": "shown on the page in the story's one cipher form, so a reader can play along; first line only",
+    "must_not": "make patience trivial or make the other virtues look foolish for not trying it"
+   },
+   "choice_semantics": {
+    "c_note_key": "honor the proof fully: go hunt exactly where it points",
+    "c_note_inside": "trust the proof enough to act on its plainest reading now"
+   },
+   "beat_hint": "working the note slowly turns patience into proof, and that proof points to two different leads.",
+   "decisions": {
+    "c_note_key": {
+     "action": "search_for_a_hidden_key",
+     "action_family": "RESOURCE",
+     "target_role": "OBJECT",
+     "tradeoff": "CERTAINTY_VS_TIME",
+     "consequence": "RESOURCE"
+    },
+    "c_note_inside": {
+     "action": "attempt_the_indicated_entrance",
+     "action_family": "NAVIGATION",
+     "target_role": "BARRIER",
+     "tradeoff": "SPEED_VS_INFO",
+     "consequence": "ACCESS"
+    }
+   }
+  },
+  "n_door": {
+   "tier": "open",
+   "function": "prove-self-reliance",
+   "entry_state": [
+    "tower_sealed",
+    "challenge_accepted"
+   ],
+   "establishes": [
+    "self_reliance_shown"
+   ],
+   "forbids": [
+    "patience_proven",
+    "past_the_seal"
+   ],
+   "affect": {
+    "target": "stubborn pride in finding your own way",
+    "forbid": [
+     "danger",
+     "guilt"
+    ]
+   },
+   "invention": {
+    "access_route": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.access_details",
+     "category": "access_details",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the building's own overlooked way in; using it reads as self-reliance, never as damage"
+    }
+   },
+   "constraints": {
+    "entry_must_read": "as clever, independent use of a neglected building, not as break-in",
+    "must_not": "carry any cipher knowledge; this branch has not read the note closely"
+   },
+   "choice_semantics": {
+    "c_door_force": "prove it the hard way: push through the overlooked gap yourself",
+    "c_door_window": "prove it the bold way: climb to the high window on your own"
+   },
+   "beat_hint": "solving the building's own puzzle without any help is the whole point of this branch, twice over.",
+   "decisions": {
+    "c_door_force": {
+     "action": "force_open_a_stiff_door",
+     "action_family": "NAVIGATION",
+     "target_role": "BARRIER",
+     "tradeoff": "EFFORT_VS_SHORTCUT",
+     "consequence": "ACCESS"
+    },
+    "c_door_window": {
+     "action": "climb_through_a_high_window",
+     "action_family": "NAVIGATION",
+     "target_role": "BARRIER",
+     "tradeoff": "SAFETY_VS_REWARD",
+     "consequence": "ACCESS"
+    }
+   }
+  },
+  "n_keeper": {
+   "tier": "open",
+   "function": "earn-the-keepers-trust",
+   "entry_state": [
+    "challenge_accepted",
+    "friends_committed_together"
+   ],
+   "establishes": [
+    "keeper_tested_them",
+    "keeper_offer_earned"
+   ],
+   "forbids": [
+    "patience_proven",
+    "past_the_seal"
+   ],
+   "affect": {
+    "target": "the nerves of being sized up, then relief at passing",
+    "forbid": [
+     "menace",
+     "condescension"
+    ]
+   },
+   "invention": {
+    "access_route": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.access_details",
+     "category": "access_details",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "kept person-mediated on purpose: this branch's whole meaning is passing a person's judgment, not a trick",
+     "kind_must_be": "trusted_escort"
+    }
+   },
+   "constraints": {
+    "keeper_must_be": "gruff on the surface, glad underneath that someone finally asked; an adult who takes kids seriously",
+    "must_not": "have the keeper solve the challenge for them or forbid the attempt"
+   },
+   "choice_semantics": {
+    "c_keeper_enter": "take the earned offer and go now",
+    "c_keeper_story": "spend the earned trust on the maker's story instead of speed"
+   },
+   "beat_hint": "an adult is quietly grading how the friends ask for help, and a real offer is the passing grade.",
+   "decisions": {
+    "c_keeper_enter": {
+     "action": "accept_the_keepers_offer_of_entry",
+     "action_family": "SOCIAL",
+     "target_role": "PERSON",
+     "tradeoff": "SPEED_VS_INFO",
+     "consequence": "ACCESS"
+    },
+    "c_keeper_story": {
+     "action": "ask_the_keeper_about_the_maker",
+     "action_family": "INFORMATION",
+     "target_role": "PERSON",
+     "tradeoff": "SPEED_VS_INFO",
+     "consequence": "KNOWLEDGE"
+    }
+   }
+  },
+  "n_keyhunt": {
+   "tier": "open",
+   "function": "confirm-the-proof",
+   "entry_state": [
+    "patience_proven",
+    "route_named_by_note"
+   ],
+   "establishes": [
+    "logic_earned"
+   ],
+   "forbids": [
+    "past_the_seal"
+   ],
+   "affect": {
+    "target": "satisfaction of a test that checks out in the real world",
+    "forbid": [
+     "frustration",
+     "dread"
+    ]
+   },
+   "constraints": {
+    "payoff_must_be": "the way in exactly where the proven line promised; the world confirms the test was fair",
+    "must_not": "introduce a second puzzle here; this beat is confirmation, not complication"
+   },
+   "choice_semantics": {
+    "c_keyhunt_in": "use what the test earned and go in the confirmed way"
+   },
+   "beat_hint": "the world checks the patient friends' work and confirms the test they passed was real.",
+   "decisions": {
+    "c_keyhunt_in": {
+     "action": "unlock_the_door_with_the_found_key",
+     "action_family": "NAVIGATION",
+     "target_role": "BARRIER",
+     "tradeoff": "NONE",
+     "consequence": "ACCESS"
+    }
+   }
+  },
+  "n_keeper_story": {
+   "tier": "open",
+   "function": "learn-the-tests-purpose",
+   "entry_state": [
+    "keeper_tested_them",
+    "keeper_offer_earned"
+   ],
+   "establishes": [
+    "maker_motive_understood"
+   ],
+   "forbids": [
+    "past_the_seal",
+    "patience_proven"
+   ],
+   "affect": {
+    "target": "hushed listening, respect replacing suspicion",
+    "forbid": [
+     "grief",
+     "dread"
+    ]
+   },
+   "constraints": {
+    "history_must_be": "warm and specific: the maker tested people out of care, not cruelty; motive stays kind while details stay secret",
+    "must_not": "reveal what the sanctum holds or how the dial's test resolves"
+   },
+   "choice_semantics": {
+    "c_story_in": "carry the understood purpose inside, entering having passed the keeper's real test"
+   },
+   "beat_hint": "earned trust buys the friends an explanation of why any of this was ever a test.",
+   "decisions": {
+    "c_story_in": {
+     "action": "enter_the_tower_with_new_knowledge",
+     "action_family": "NAVIGATION",
+     "target_role": "LOCATION",
+     "tradeoff": "NONE",
+     "consequence": "ACCESS"
+    }
+   }
+  },
+  "n_window": {
+   "tier": "open",
+   "function": "earn-entry-by-nerve",
+   "entry_state": [
+    "self_reliance_shown",
+    "challenge_accepted"
+   ],
+   "establishes": [
+    "past_the_seal"
+   ],
+   "forbids": [
+    "anyone_injured"
+   ],
+   "affect": {
+    "target": "a dare answered, then the hush of having proven it",
+    "forbid": [
+     "real_peril",
+     "panic"
+    ]
+   },
+   "constraints": {
+    "climb_must_be": "exciting but visibly safe: short height, good holds, friends spotting each other",
+    "must_not": "injure anyone or play the climb as recklessness"
+   },
+   "choice_semantics": {
+    "c_window_in": "commit to the drop, prove the self-reliant route true"
+   },
+   "beat_hint": "a physical dare stands between self-reliance claimed and self-reliance proven, and clearing it settles the question.",
+   "decisions": {
+    "c_window_in": {
+     "action": "drop_down_into_the_tower",
+     "action_family": "PHYSICAL_RISK",
+     "target_role": "SELF",
+     "tradeoff": "SAFETY_VS_REWARD",
+     "consequence": "ACCESS"
+    }
+   }
+  },
+  "n_inside": {
+   "tier": "open",
+   "function": "stand-past-the-seal",
+   "entry_state": [
+    "challenge_posted",
+    "challenge_accepted",
+    "friends_committed_together"
+   ],
+   "establishes": [
+    "past_the_seal",
+    "trial_rooms_known"
+   ],
+   "forbids": [
+    "at_the_dial",
+    "sanctum_entered"
+   ],
+   "affect": {
+    "target": "held-breath resolve: the trial proper begins now",
+    "forbid": [
+     "dread",
+     "claustrophobia"
+    ]
+   },
+   "merge_note": "NC-1: six parents (n_note, n_door, n_keeper, n_keyhunt, n_keeper_story, n_window) arrive by different routes carrying different proofs. Presuppose only the intersection: the challenge exists, the friends accepted it and are together. Do NOT reference how they got in, which virtue they led with, or whether the keeper is present. Write arrival generically: they are past the seal, the trial proper begins.",
+   "constraints": {
+    "offers_must_be": "four sensory, distinct tests matching the four rooms: height, paper, motion, depth; each stands alone",
+    "must_not": "rank the tests or hint one is the correct one"
+   },
+   "choice_semantics": {
+    "c_inside_stairs": "choose the climb: prove endurance",
+    "c_inside_study": "choose the study: prove scholarship",
+    "c_inside_pendulum": "choose the crossing: prove nerve",
+    "c_inside_basement": "choose the descent: prove steadiness"
+   },
+   "beat_hint": "having cleared the first test, the friends now see four more waiting, each grading something different.",
+   "decisions": {
+    "c_inside_stairs": {
+     "action": "climb_the_spiral_stair",
+     "action_family": "PHYSICAL_RISK",
+     "target_role": "LOCATION",
+     "tradeoff": "NONE",
+     "consequence": "LOCATION"
+    },
+    "c_inside_study": {
+     "action": "enter_the_map_study",
+     "action_family": "INFORMATION",
+     "target_role": "LOCATION",
+     "tradeoff": "NONE",
+     "consequence": "LOCATION"
+    },
+    "c_inside_pendulum": {
+     "action": "cross_the_narrow_hazard",
+     "action_family": "PHYSICAL_RISK",
+     "target_role": "LOCATION",
+     "tradeoff": "NONE",
+     "consequence": "LOCATION"
+    },
+    "c_inside_basement": {
+     "action": "descend_to_the_basement",
+     "action_family": "PHYSICAL_RISK",
+     "target_role": "LOCATION",
+     "tradeoff": "NONE",
+     "consequence": "LOCATION"
+    }
+   }
+  },
+  "n_stairs": {
+   "tier": "open",
+   "function": "pass-the-endurance-test",
+   "entry_state": [
+    "past_the_seal",
+    "trial_rooms_known"
+   ],
+   "establishes": [
+    "logic_earned"
+   ],
+   "forbids": [
+    "at_the_dial",
+    "sanctum_entered"
+   ],
+   "affect": {
+    "target": "the burn of effort turning into quiet pride",
+    "forbid": [
+     "exhaustion",
+     "dread"
+    ]
+   },
+   "invention": {
+    "hint_carrier": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.cipher_hint_carriers",
+     "category": "cipher_hint_carriers",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "something met on the climb that teaches a usable piece of the dial's logic"
+    },
+    "curiosity": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.room_curiosities",
+     "category": "room_curiosities",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "a small token of the maker's found along the stair; personal, pocketable, easily missed"
+    }
+   },
+   "constraints": {
+    "hint_must_be": "sufficient on its own to make the dial's test attemptable for a reader who never read the note",
+    "must_not": "presuppose the note's test is already passed"
+   },
+   "choice_semantics": {
+    "c_stairs_face": "carry the earned proof up to the dial"
+   },
+   "beat_hint": "the climb itself is the test here, and finishing it earns the next piece of proof.",
+   "decisions": {
+    "c_stairs_face": {
+     "action": "climb_to_the_clockface",
+     "action_family": "NAVIGATION",
+     "target_role": "LOCATION",
+     "tradeoff": "NONE",
+     "consequence": "LOCATION"
+    }
+   }
+  },
+  "n_study": {
+   "tier": "open",
+   "function": "pass-the-scholarship-test",
+   "entry_state": [
+    "past_the_seal",
+    "trial_rooms_known"
+   ],
+   "establishes": [
+    "logic_earned",
+    "archive_beckons"
+   ],
+   "forbids": [
+    "at_the_dial",
+    "sanctum_entered"
+   ],
+   "affect": {
+    "target": "the pull of a test that rewards staying as much as leaving",
+    "forbid": [
+     "boredom",
+     "dread"
+    ]
+   },
+   "invention": {
+    "hint_carrier": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.cipher_hint_carriers",
+     "category": "cipher_hint_carriers",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "whatever in the maker's own room teaches the test most directly; the study's hint runs richest of the four"
+    },
+    "curiosity": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.room_curiosities",
+     "category": "room_curiosities",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "the archive whose pull is genuine: something browsable enough to fill an evening; staying is a legitimate answer"
+    }
+   },
+   "constraints": {
+    "temptation_must_be": "honest: the archive really is fascinating, and choosing it is a legitimate reader identity, not a failure",
+    "must_not": "frame staying to read as laziness or failure"
+   },
+   "choice_semantics": {
+    "c_study_face": "take the proof earned and press on to the dial",
+    "c_study_logs": "let the archive's own test win: choose depth over speed"
+   },
+   "beat_hint": "the room grades curiosity, and passing well means resisting the urge to just keep reading.",
+   "decisions": {
+    "c_study_face": {
+     "action": "carry_the_cipher_tool_to_the_clockface",
+     "action_family": "RESOURCE",
+     "target_role": "OBJECT",
+     "tradeoff": "SPEED_VS_INFO",
+     "consequence": "LOCATION"
+    },
+    "c_study_logs": {
+     "action": "linger_in_the_archive",
+     "action_family": "INFORMATION",
+     "target_role": "INFORMATION",
+     "tradeoff": "SPEED_VS_INFO",
+     "consequence": "KNOWLEDGE"
+    }
+   }
+  },
+  "n_pendulum": {
+   "tier": "open",
+   "function": "pass-the-nerve-test",
+   "entry_state": [
+    "past_the_seal",
+    "trial_rooms_known"
+   ],
+   "establishes": [
+    "logic_earned",
+    "crossing_dares_them",
+    "reward_glimpsed"
+   ],
+   "forbids": [
+    "anyone_injured",
+    "at_the_dial"
+   ],
+   "affect": {
+    "target": "focused suspense: this is the test that asks the most",
+    "forbid": [
+     "terror",
+     "recklessness_glorified"
+    ]
+   },
+   "invention": {
+    "hint_carrier": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.cipher_hint_carriers",
+     "category": "cipher_hint_carriers",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "something about the moving works, legible from a safe spot, that teaches a piece of the dial's logic"
+    },
+    "obstacle": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.obstacle_kinds",
+     "category": "obstacle_kinds",
+     "assigned_at": "bind",
+     "note": "a traversal with real, legible, survivable risk; the far side holds something worth the daring"
+    }
+   },
+   "constraints": {
+    "peril_must_be": "mild and legible: the worst case is a bruise and a long walk home; the traverse rewards care, not daring",
+    "must_not": "punish the reader for either crossing or declining; both are respectable answers to the test"
+   },
+   "choice_semantics": {
+    "c_pendulum_oil": "cross with care and claim the maker's set-aside reward",
+    "c_pendulum_giveup": "judge the test honestly and decline it"
+   },
+   "beat_hint": "of the four, this test asks the most nerve, and a visible reward waits for whoever clears it.",
+   "decisions": {
+    "c_pendulum_oil": {
+     "action": "cross_the_catwalk_and_grab_the_reward",
+     "action_family": "PHYSICAL_RISK",
+     "target_role": "OBJECT",
+     "tradeoff": "SAFETY_VS_REWARD",
+     "consequence": "RESOURCE"
+    },
+    "c_pendulum_giveup": {
+     "action": "decline_the_risky_crossing",
+     "action_family": "MORAL",
+     "target_role": "SELF",
+     "tradeoff": "SAFETY_VS_REWARD",
+     "consequence": "SAFETY"
+    }
+   }
+  },
+  "n_basement": {
+   "tier": "open",
+   "function": "pass-the-steadiness-test",
+   "entry_state": [
+    "past_the_seal",
+    "trial_rooms_known"
+   ],
+   "establishes": [
+    "logic_earned"
+   ],
+   "forbids": [
+    "at_the_dial",
+    "sanctum_entered"
+   ],
+   "affect": {
+    "target": "dim-lit calm, steadiness rewarded in the dark",
+    "forbid": [
+     "dread",
+     "claustrophobia"
+    ]
+   },
+   "invention": {
+    "hint_carrier": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.cipher_hint_carriers",
+     "category": "cipher_hint_carriers",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "something down among the machine's roots that teaches a piece of the dial's logic from below"
+    },
+    "curiosity": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.room_curiosities",
+     "category": "room_curiosities",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "note": "what makes the deepest room a spectacle worth the dark; the straight way up is the room's parting gift"
+    }
+   },
+   "constraints": {
+    "darkness_must_be": "atmosphere, not threat; the basement is dim and strange, never menacing",
+    "must_not": "presuppose the note's test is already passed"
+   },
+   "choice_semantics": {
+    "c_basement_face": "carry the earned proof straight up to the dial"
+   },
+   "beat_hint": "in the dark, the test is composure, not cleverness, and staying steady is what it grades.",
+   "decisions": {
+    "c_basement_face": {
+     "action": "climb_the_service_ladder_to_the_clockface",
+     "action_family": "NAVIGATION",
+     "target_role": "LOCATION",
+     "tradeoff": "NONE",
+     "consequence": "LOCATION"
+    }
+   }
+  },
+  "n_clockface": {
+   "tier": "open",
+   "function": "face-the-final-test",
+   "entry_state": [
+    "past_the_seal",
+    "logic_earned"
+   ],
+   "establishes": [
+    "at_the_dial",
+    "dial_test_live"
+   ],
+   "forbids": [
+    "sanctum_entered",
+    "test_passed"
+   ],
+   "affect": {
+    "target": "peak suspense; every earlier test narrows to this one dial",
+    "forbid": [
+     "despair",
+     "panic"
+    ]
+   },
+   "merge_note": "NC-1: four parents (n_stairs, n_study, n_pendulum, n_basement), each of which supplied logic_earned by a DIFFERENT test. Presuppose logic_earned generically: the friends have a working grasp of the dial's logic, source unnamed. Do NOT presuppose which test was taken, any object carried from any room, or any specific room. The dial itself must restate its test: its own markings echo the cipher form, so the correct-setting choice is honest on every path.",
+   "constraints": {
+    "puzzle_must_be": "self-teaching at the dial: the markings rhyme with the logic the reader carries, so passing feels earned, not lucky",
+    "stakes_must_be": "clear before choosing: answering, forcing, searching, and guessing are visibly different bets",
+    "must_not": "reference any carried object or any room's device; the dial's own markings and controls carry the whole beat"
+   },
+   "choice_semantics": {
+    "c_face_correct": "answer the test on its own terms, set it deliberately",
+    "c_face_jam": "try to muscle past the test instead of answering it",
+    "c_face_panel": "distrust the test, look for a way around it",
+    "c_face_random": "gamble on the test: guess and hope it's lenient"
+   },
+   "beat_hint": "all four tests funnel into one last examiner, and each friend answers its challenge on their own terms.",
+   "decisions": {
+    "c_face_correct": {
+     "action": "set_the_dial_using_the_cipher",
+     "action_family": "CRAFT",
+     "target_role": "MECHANISM",
+     "tradeoff": "CERTAINTY_VS_TIME",
+     "consequence": "ACCESS"
+    },
+    "c_face_jam": {
+     "action": "force_the_dial_by_guesswork",
+     "action_family": "PHYSICAL_RISK",
+     "target_role": "MECHANISM",
+     "tradeoff": "EFFORT_VS_SHORTCUT",
+     "consequence": "ACCESS"
+    },
+    "c_face_panel": {
+     "action": "search_for_a_hidden_panel",
+     "action_family": "INFORMATION",
+     "target_role": "MECHANISM",
+     "tradeoff": "EFFORT_VS_SHORTCUT",
+     "consequence": "ACCESS"
+    },
+    "c_face_random": {
+     "action": "spin_the_dial_at_random",
+     "action_family": "PHYSICAL_RISK",
+     "target_role": "MECHANISM",
+     "tradeoff": "SPEED_VS_INFO",
+     "consequence": "ACCESS"
+    }
+   }
+  },
+  "n_setcorrect": {
+   "tier": "open",
+   "function": "pass-the-final-test",
+   "entry_state": [
+    "at_the_dial",
+    "dial_test_live",
+    "logic_earned"
+   ],
+   "establishes": [
+    "test_passed"
+   ],
+   "forbids": [
+    "test_forced"
+   ],
+   "affect": {
+    "target": "triumphant release: the test recognizes them",
+    "forbid": [
+     "anticlimax"
+    ]
+   },
+   "constraints": {
+    "solution_must_be": "shown, not skipped: the setting follows the logic the reader carries, in the story's one cipher form",
+    "must_not": "presuppose the note branch or any specific room; the reasoning works from the generic hint plus the dial's own markings"
+   },
+   "choice_semantics": {
+    "c_correct_vault": "step through into what the trial was protecting"
+   },
+   "beat_hint": "the answer is graded on the spot, and getting it right is the moment the trial recognizes them.",
+   "decisions": {
+    "c_correct_vault": {
+     "action": "step_through_into_the_vault",
+     "action_family": "NAVIGATION",
+     "target_role": "LOCATION",
+     "tradeoff": "NONE",
+     "consequence": "ACCESS"
+    }
+   }
+  },
+  "n_setjam": {
+   "tier": "open",
+   "function": "fail-the-test-honestly",
+   "entry_state": [
+    "at_the_dial",
+    "dial_test_live"
+   ],
+   "establishes": [
+    "test_forced"
+   ],
+   "forbids": [
+    "anyone_injured",
+    "test_passed"
+   ],
+   "affect": {
+    "target": "wince of a test declined honestly, then resolve to try it properly",
+    "forbid": [
+     "despair",
+     "blame"
+    ]
+   },
+   "invention": {
+    "remedy": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.remedies",
+     "category": "remedies",
+     "assigned_at": "bind",
+     "note": "the machine's own honest way back from the jam, supplied entirely by the bible"
+    }
+   },
+   "constraints": {
+    "remedy_must_be": "workable at the scene on every path, presupposing nothing carried from any other room",
+    "jam_must_read": "as the test protecting itself, a fair consequence of forcing, not a punishment of the friends",
+    "must_not": "shame whoever forced the setting"
+   },
+   "choice_semantics": {
+    "c_jam_oil": "work the problem: find the honest way back and retake the test properly",
+    "c_jam_stuck": "accept the test was failed tonight"
+   },
+   "beat_hint": "muscling through the answer fails outright, and the only honest fix is a proper second attempt.",
+   "decisions": {
+    "c_jam_oil": {
+     "action": "free_the_jammed_gears_with_the_remedy",
+     "action_family": "CRAFT",
+     "target_role": "MECHANISM",
+     "tradeoff": "EFFORT_VS_SHORTCUT",
+     "consequence": "ACCESS"
+    },
+    "c_jam_stuck": {
+     "action": "accept_the_jam_and_stop",
+     "action_family": "MORAL",
+     "target_role": "SELF",
+     "tradeoff": "NONE",
+     "consequence": "SAFETY"
+    }
+   }
+  },
+  "n_backpanel": {
+   "tier": "open",
+   "function": "find-the-hidden-test",
+   "entry_state": [
+    "at_the_dial",
+    "dial_test_live"
+   ],
+   "establishes": [
+    "second_test_found"
+   ],
+   "forbids": [
+    "test_forced",
+    "sanctum_entered"
+   ],
+   "affect": {
+    "target": "sly delight at finding a test within the test",
+    "forbid": [
+     "dread"
+    ]
+   },
+   "constraints": {
+    "panel_cipher_must_be": "the same cipher form as the story's note, smaller and quicker; solving it uses the hint carried, never the full proof",
+    "must_not": "make this route feel like cheating; the maker built it on purpose for careful searchers"
+   },
+   "choice_semantics": {
+    "c_panel_vault": "solve the hidden test toward what everyone came for",
+    "c_panel_secret": "follow the hidden test the other way, toward a room no one mentioned"
+   },
+   "beat_hint": "careful searchers discover the trial had a second, smaller question waiting behind the obvious one.",
+   "decisions": {
+    "c_panel_vault": {
+     "action": "solve_the_panel_toward_the_vault",
+     "action_family": "CRAFT",
+     "target_role": "MECHANISM",
+     "tradeoff": "NONE",
+     "consequence": "ACCESS"
+    },
+    "c_panel_secret": {
+     "action": "slip_into_the_hidden_room",
+     "action_family": "NAVIGATION",
+     "target_role": "LOCATION",
+     "tradeoff": "NONE",
+     "consequence": "ACCESS"
+    }
+   }
+  },
+  "n_vault": {
+   "tier": "open",
+   "function": "pose-the-trials-verdict",
+   "entry_state": [
+    "at_the_dial",
+    "logic_earned"
+   ],
+   "establishes": [
+    "sanctum_entered",
+    "sanctum_seen"
+   ],
+   "forbids": [
+    "anyone_injured"
+   ],
+   "affect": {
+    "target": "awed quiet; the trial is over, and now a verdict about what passing means",
+    "forbid": [
+     "greed_glamorized",
+     "dread"
+    ]
+   },
+   "merge_note": "NC-1: three parents (n_setcorrect, n_setjam, n_backpanel) opened the way by different means. Presuppose only that they stand past the dial with the trial's logic in hand; write the sanctum's opening as already behind them without re-describing which test yielded it.",
+   "invention": {
+    "contents": {
+     "pick": 3,
+     "from": "bible.device_vocabulary.vault_contents",
+     "category": "vault_contents",
+     "assigned_at": "bind",
+     "note": "the maker's letter, the keepsake, and a modest heritage treasure; the letter's voice is kind and asks nothing"
+    }
+   },
+   "constraints": {
+    "contents_must_be": "knowledge, heritage, and wonder; the treasure is modest and clearly the settlement's, which is what makes the grab choice legible as a failed test",
+    "choice_must_be": "a genuine three-way question of character with no narrator's thumb on the scale before the outcome"
+   },
+   "choice_semantics": {
+    "c_vault_share": "let the trial's verdict be public: bring the letter to the settlement",
+    "c_vault_keep": "let the trial's verdict stay private: the passing belongs to the friends alone",
+    "c_vault_grab": "treat the trial as a prize to loot instead of a test to honor"
+   },
+   "beat_hint": "passing the trial was never the last question; what to do with a passing grade is.",
+   "decisions": {
+    "c_vault_share": {
+     "action": "bring_the_makers_message_to_the_settlement",
+     "action_family": "SOCIAL",
+     "target_role": "PERSON",
+     "tradeoff": "LOYALTY_VS_TRUTH",
+     "consequence": "REPUTATION"
+    },
+    "c_vault_keep": {
+     "action": "keep_the_makers_secret_among_friends",
+     "action_family": "SOCIAL",
+     "target_role": "PERSON",
+     "tradeoff": "LOYALTY_VS_TRUTH",
+     "consequence": "RELATIONSHIP"
+    },
+    "c_vault_grab": {
+     "action": "grab_the_treasure_and_run",
+     "action_family": "MORAL",
+     "target_role": "OBJECT",
+     "tradeoff": "SAFETY_VS_REWARD",
+     "consequence": "RESOURCE"
+    }
+   }
+  },
+  "n_end_library": {
+   "tier": "locked_outcome",
+   "function": "payoff-choosing-depth",
+   "entry_state": [
+    "past_the_seal",
+    "archive_beckons"
+   ],
+   "establishes": [
+    "composure_kept",
+    "trial_reopens"
+   ],
+   "forbids": [
+    "shame",
+    "regret_dominant"
+   ],
+   "affect": {
+    "target": "contented absorption; choosing depth was its own kind of passing",
+    "forbid": [
+     "despair",
+     "mockery"
+    ]
+   },
+   "mechanisms": [
+    "the archive teaches them what the trial was really testing, arming a wiser second attempt",
+    "a passage in the archive holds a copy of the challenge, carried home to study on their own time",
+    "closing time arrives mid-page and the keeper gently walks them out with a promise to lend the book"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "ending_must_read": "as a different kind of pass: they chose depth over the clock and the choice is honored; the trial waits, richer for what they now know"
+   },
+   "beat_hint": "the archive wins this round, and staying to read counts as a legitimate choice, not a retreat."
+  },
+  "n_end_giveup": {
+   "tier": "locked_outcome",
+   "function": "payoff-declining-a-test",
+   "entry_state": [
+    "crossing_dares_them",
+    "reward_glimpsed"
+   ],
+   "establishes": [
+    "composure_kept",
+    "trial_reopens"
+   ],
+   "forbids": [
+    "cowardice_implied",
+    "mockery"
+   ],
+   "affect": {
+    "target": "sober pride in judging a test correctly by not taking it",
+    "forbid": [
+     "despair",
+     "shame"
+    ]
+   },
+   "mechanisms": [
+    "a level look at the crossing convinces them that passing this test today would cost more than it proves",
+    "one friend names the real risk aloud and the others agree without argument, calling it a passed test of judgment",
+    "a slip caught in time turns the attempt into a calm, deliberate retreat, and retreat reads as the right answer"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "ending_must_read": "as judgment, not fear: reading a test correctly and declining is itself a passed test"
+   },
+   "beat_hint": "reading the risk correctly and walking away from it is graded as a pass, not a failure."
+  },
+  "n_end_timeout": {
+   "tier": "locked_outcome",
+   "function": "payoff-failing-honestly",
+   "entry_state": [
+    "at_the_dial",
+    "dial_test_live"
+   ],
+   "establishes": [
+    "composure_kept",
+    "trial_reopens"
+   ],
+   "forbids": [
+    "humiliation",
+    "permanent_damage"
+   ],
+   "affect": {
+    "target": "rueful acceptance that guessing was never going to pass the test",
+    "forbid": [
+     "despair",
+     "punishing_tone"
+    ]
+   },
+   "mechanisms": [
+    "random guessing trips a safeguard built for exactly this shortcut, freezing the dial until a keeper resets it",
+    "the closing signal sounds before any guess lands, and the test must wait for another day",
+    "the overworked mechanism raises a polite fuss that brings the keeper up to end the attempt for the night"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "ending_must_read": "as the fair cost of guessing at a thing built to be reasoned through; the lesson is theirs to use next time"
+   },
+   "beat_hint": "a guess was never going to satisfy an examiner built to reward reasoning instead."
+  },
+  "n_end_stuck": {
+   "tier": "locked_outcome",
+   "function": "payoff-retaking-the-test",
+   "entry_state": [
+    "test_forced"
+   ],
+   "establishes": [
+    "composure_kept",
+    "trial_reopens"
+   ],
+   "forbids": [
+    "blame",
+    "permanent_damage"
+   ],
+   "affect": {
+    "target": "determined resolve to retake the test properly",
+    "forbid": [
+     "despair",
+     "defeat_as_identity"
+    ]
+   },
+   "mechanisms": [
+    "the forced dial binds fast, and nothing they carry tonight will answer for it",
+    "a bent linkage needs a tool the trial clearly expects, and nobody brought one",
+    "the keeper's posted rule ends forcing attempts at nightfall, and they honor the rule as part of the test"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "ending_must_read": "as a pause, not a verdict: the friends leave already planning the retake with the right approach"
+   },
+   "beat_hint": "tonight's test gets the better of them, and the friends walk away already sketching a second attempt."
+  },
+  "n_end_secret": {
+   "tier": "locked_outcome",
+   "function": "payoff-the-hidden-tests-reward",
+   "entry_state": [
+    "second_test_found"
+   ],
+   "establishes": [
+    "workshop_found",
+    "stewardship_earned",
+    "trust_bond_formed"
+   ],
+   "forbids": [
+    "exploitation_of_find"
+   ],
+   "affect": {
+    "target": "hushed wonder at a test that rewards curiosity as much as courage",
+    "forbid": [
+     "greed",
+     "anticlimax"
+    ]
+   },
+   "invention": {
+    "loft_signature": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.loft_signatures",
+     "category": "loft_signatures",
+     "assigned_at": "bind",
+     "note": "the one detail that makes the maker's space feel currently alive and mid-thought rather than preserved"
+    }
+   },
+   "mechanisms": [
+    "the workshop adopts them as its quiet caretakers, the reward for a test nobody told them they were taking",
+    "some unfinished work in the room invites their hands, and finishing it becomes their standing assignment",
+    "the maker's notes name whoever finds the room its steward, and the friends accept the appointment"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "room_must_be": "a working room alive with the maker's presence; the reward is responsibility and access, never possession"
+   },
+   "beat_hint": "the hidden question's real reward turns out to be a standing role, not an answer."
+  },
+  "n_end_hero": {
+   "tier": "locked_outcome",
+   "function": "payoff-going-public",
+   "entry_state": [
+    "sanctum_entered",
+    "sanctum_seen"
+   ],
+   "establishes": [
+    "passing_made_public",
+    "test_passed",
+    "maker_motive_understood",
+    "trust_bond_formed"
+   ],
+   "forbids": [
+    "reward_as_riches"
+   ],
+   "affect": {
+    "target": "quiet pride; the trial's verdict recognized by the whole settlement",
+    "forbid": [
+     "gloating",
+     "anticlimax"
+    ]
+   },
+   "mechanisms": [
+    "the passing is announced and celebrated by the settlement, the trial's public verdict at last",
+    "the passing quietly restores something the settlement lost, proof enough without an announcement",
+    "the passing earns the keeper's open trust and a standing invitation back to the tower"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "restoration_must_be": "concrete and communal: the decoded message gives the settlement back something real, and the trial's outcome is publicly honored"
+   },
+   "beat_hint": "the friends' passing grade becomes public record, and the whole settlement benefits from it."
+  },
+  "n_end_keepsake": {
+   "tier": "locked_outcome",
+   "function": "payoff-a-private-verdict",
+   "entry_state": [
+    "sanctum_entered",
+    "sanctum_seen"
+   ],
+   "establishes": [
+    "passing_kept_private",
+    "trust_bond_formed"
+   ],
+   "forbids": [
+    "selfishness_implied"
+   ],
+   "affect": {
+    "target": "warm quiet pride, kept just among themselves",
+    "forbid": [
+     "guilt",
+     "anticlimax"
+    ]
+   },
+   "mechanisms": [
+    "a pact sworn over the keepsake binds the friends as the trial's private graduates",
+    "they reset everything exactly as found, keeping the verdict and leaving the rest untouched",
+    "the maker's letter asks its finders to choose, and they choose to let the passing stay quiet"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "keeping_must_read": "as guardianship, not hoarding: nothing leaves the sanctum that belongs to the settlement; what the friends keep is the passing, and each other"
+   },
+   "beat_hint": "some passing grades are worth more kept quiet, shared only among the friends who earned them."
+  },
+  "n_end_caught": {
+   "tier": "locked_outcome",
+   "function": "payoff-failing-the-real-test",
+   "entry_state": [
+    "sanctum_entered",
+    "sanctum_seen"
+   ],
+   "establishes": [
+    "record_set_straight",
+    "keeper_intervenes",
+    "composure_kept",
+    "trial_reopens"
+   ],
+   "forbids": [
+    "humiliation",
+    "punishment_beyond_returning",
+    "theft_rewarded"
+   ],
+   "affect": {
+    "target": "comic sheepishness at failing the one test that mattered most",
+    "forbid": [
+     "menace",
+     "despair",
+     "shaming"
+    ]
+   },
+   "invention": {
+    "safeguard": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.safeguards",
+     "category": "safeguards",
+     "assigned_at": "bind",
+     "note": "the maker anticipated this exact impulse; whatever form it takes, the safeguard is gentle, funny, and impossible to be hurt by"
+    }
+   },
+   "mechanisms": [
+    "the trial's true safeguard announces the grab, and the keeper arrives before the door does",
+    "what they try to carry out is exactly what the trial was built to catch on the way down",
+    "second thoughts slow them just enough for the keeper's evening rounds to catch them mid-return, the test's last question answered honestly after all"
+   ],
+   "title_contract": {
+    "from": [
+     "motif",
+     "mechanism",
+     "device"
+    ],
+    "words_max": 4,
+    "must_not": "reuse the skeleton's literal title"
+   },
+   "constraints": {
+    "correction_must_be": "fair and complete without cruelty: everything goes back, the keeper is firm but kind, and the friends leave lighter for having failed the last test kindly",
+    "must_not": "threaten, lecture at length, or bar the friends from the tower forever"
+   },
+   "beat_hint": "the real final test was never the puzzle, and grabbing at treasure is the answer that fails it."
+  }
+ }
+}

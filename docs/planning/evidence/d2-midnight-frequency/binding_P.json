@@ -1,0 +1,409 @@
+{
+ "n_start": {
+  "code_form": {
+   "text": "groups of three-digit numbers read out steadily between the pips, the pencil catching one group after another",
+   "kind": "number_group_code"
+  },
+  "receiver": {
+   "text": "her old direction-finding receiver, a hand-sized set with a rotating loop aerial on top, humming to life on its own",
+   "kind": "direction_finder"
+  }
+ },
+ "n_decode": {
+  "code_form": {
+   "text": "the logbook's key card: subtract nine from each number, then count that many letters from the start of the alphabet to get the group's letter",
+   "kind": "number_group_code"
+  }
+ },
+ "wt_lane": {
+  "landmark": {
+   "text": "the Fenbrook water tower above Cutter's Rise, four identical riveted legs holding up a green tank with FENBROOK painted around it",
+   "kind": "waterworks_landmark"
+  }
+ },
+ "wt_gate": {
+  "code_form": {
+   "text": "the water tower's decoded groups spell REACH LOW LEG, naming the answer's height and the legs to search",
+   "kind": "number_group_code"
+  }
+ },
+ "wt_ladder": {
+  "obstacle": {
+   "text": "the water tower's maintenance ladder, rungs furred with frost and locked off with a chain at head height",
+   "kind": "frozen_climb"
+  }
+ },
+ "wt_tap": {
+  "wonder_detail": {
+   "text": "the marked tower leg rings a single low, hollow note when tapped, utterly unlike the dead thud of the others",
+   "kind": "resonant_note"
+  }
+ },
+ "wt_marks": {
+  "waypoint_mark": {
+   "text": "a small five-pointed star scratched into the metal, one point drawn out into a line like a compass needle, the same mark inked in the logbook's margins",
+   "kind": "scratched_shape"
+  }
+ },
+ "wt_box": {
+  "cache_container": {
+   "text": "a maintenance hatch on the marked leg, hinged and ordinary-looking, repurposed as a little letterbox",
+   "kind": "hinged_fitting"
+  },
+  "memory_carrier": {
+   "text": "a small drawn card tucked in the fixture, a rough map of the shed shelf with one container circled twice",
+   "kind": "drawn_card"
+  }
+ },
+ "wt_shed": {
+  "club_relic": {
+   "text": "a curling group photograph tacked to the store wall, too faded to make out from the doorway",
+   "kind": "photograph_caption"
+  }
+ },
+ "wt_photo": {
+  "club_relic": {
+   "text": "the same photograph up close: 'Night Watch, Fenbrook Water Board, 1961', a laughing young woman named third from the left",
+   "kind": "photograph_caption"
+  }
+ },
+ "wt_cans": {
+  "cache_container": {
+   "text": "a paint tin on the shelf hand-labelled 'PRIMER, DO NOT USE', absurdly light the moment it's lifted",
+   "kind": "mislabelled_container"
+  }
+ },
+ "wt_cache": {
+  "keepsake_token": {
+   "text": "a stamped tin tag reading COME, punched to hang off a keyring",
+   "kind": "stamped_tag"
+  },
+  "memory_slip": {
+   "text": "a handwritten slip: she used to climb the tower every August to paint the tank number, and swore the view was worth the rust on her palms",
+   "kind": "handwritten_slip"
+  }
+ },
+ "cn_marquee": {
+  "landmark": {
+   "text": "the shuttered Empress Playhouse on Fitch Street, its marquee still spelling out the title of the last picture it ever showed",
+   "kind": "shuttered_playhouse"
+  },
+  "code_form": {
+   "text": "the playhouse's decoded groups spell SEAT ROW J, then LIGHT LIVES WHERE, sending the search toward the projection room",
+   "kind": "number_group_code"
+  }
+ },
+ "cn_stage": {
+  "obstacle": {
+   "text": "the Empress's raised stage floor, one board visibly soft and sprung underfoot beside a sound, solid apron",
+   "kind": "weak_floor"
+  }
+ },
+ "cn_horns": {
+  "wonder_detail": {
+   "text": "torchlight opens up the old flytower crammed with the club's retired horn speakers, mouths open to the dark like a small silent choir",
+   "kind": "night_view"
+  }
+ },
+ "cn_plate": {
+  "cache_container": {
+   "text": "a shallow hollow cut by hand into the wood behind the seat's kept fitting",
+   "kind": "cast_cavity"
+  }
+ },
+ "cn_booth": {
+  "cache_container": {
+   "text": "a biscuit tin on the rack, sealed with tape and hand-inked with a single word",
+   "kind": "sealed_tin"
+  },
+  "club_relic": {
+   "text": "a reel of the club's own film, hand-labelled 'EMPRESS NIGHT - OURS' in the same pencil hand as the logbook",
+   "kind": "film_reel"
+  }
+ },
+ "cn_cache": {
+  "keepsake_token": {
+   "text": "a small engraved token reading HOME, its edges worn smooth by handling",
+   "kind": "engraved_token"
+  },
+  "memory_slip": {
+   "text": "a photograph caption, pasted below a picture of the packed house: she ran the follow-spot for the Empress's last season and never missed a cue",
+   "kind": "photograph_caption"
+  }
+ },
+ "hb_road": {
+  "landmark": {
+   "text": "the net-and-tackle shed on Cannery Wharf, where the harbourmaster stores everything the fishing fleet has retired",
+   "kind": "working_waterfront"
+  },
+  "wonder_detail": {
+   "text": "a foghorn far out past the point, giving one patient low note every half minute that the whole town seems to sleep to",
+   "kind": "distant_bell"
+  }
+ },
+ "hb_quay": {
+  "obstacle": {
+   "text": "a rowing dinghy tied at the steps, its bottom boards clearly swollen and sitting low in the black water",
+   "kind": "unfit_boat"
+  }
+ },
+ "hb_doors": {
+  "waypoint_mark": {
+   "text": "half lost among the door's official stampings, the same star-with-a-tail, scratched faint but deliberate",
+   "kind": "scratched_shape"
+  }
+ },
+ "hb_office": {
+  "night_keeper": {
+   "text": "the harbour's night watchman, kettle going, parked in his hut with a headset around his neck",
+   "kind": "night_watch_adult"
+  }
+ },
+ "hb_pad": {
+  "club_relic": {
+   "text": "a stack of his own old logsheets under tonight's, decades of listening entries in the same steady hand, her mark doodled once in a margin",
+   "kind": "old_logsheets"
+  },
+  "waypoint_mark": {
+   "text": "the star-with-a-tail, doodled once in a margin of his own decades-old sheets",
+   "kind": "scratched_shape"
+  }
+ },
+ "hb_shed": {
+  "code_form": {
+   "text": "the wharf shed's decoded groups spell THE ONE THAT STILL RINGS, pointing at the one retired object among many that still answers",
+   "kind": "number_group_code"
+  }
+ },
+ "hb_cage": {
+  "waypoint_mark": {
+   "text": "fresher paint under the torch resolves into the star-with-a-tail and an arrow pointing up",
+   "kind": "scratched_shape"
+  }
+ },
+ "hb_cache": {
+  "cache_container": {
+   "text": "a small metal capsule swaged into the retired foghorn's own bellows mechanism, where nothing like it belongs",
+   "kind": "swaged_capsule"
+  },
+  "keepsake_token": {
+   "text": "a punched brass disc reading AND, the letters cut clean through the metal",
+   "kind": "punched_disc"
+  },
+  "memory_slip": {
+   "text": "an annotated chart: her own tide table, margins full of notes about which nights the foghorn kept the whole wharf company",
+   "kind": "annotated_chart"
+  }
+ },
+ "lb_green": {
+  "landmark": {
+   "text": "the Fenbrook Town Archive on Assembly Green, a squat brick records hall with a bicycle rack out front",
+   "kind": "civic_archive"
+  },
+  "wonder_detail": {
+   "text": "one reading lamp left lit at a table just inside, the only warm light in an otherwise dark public room",
+   "kind": "lamp_left_burning"
+  },
+  "code_form": {
+   "text": "the archive's decoded groups spell ROOM MAP NINETEEN, MIND THE OWL, naming the room, the record's year, and the door's noise-maker",
+   "kind": "number_group_code"
+  }
+ },
+ "lb_porch": {
+  "obstacle": {
+   "text": "a wind-up door bell wired above the archive's service door, coiled tight and ready to go off",
+   "kind": "night_alarm"
+  },
+  "key_place": {
+   "text": "a nail bent flat under the porch rail, the after-hours key hung there since before anyone can remember",
+   "kind": "hidden_nail"
+  }
+ },
+ "lb_maproom": {
+  "waypoint_mark": {
+   "text": "a hand-inked star-with-a-tail on one drawer label among a hundred plain ones",
+   "kind": "scratched_shape"
+  }
+ },
+ "lb_hunt": {
+  "waypoint_mark": {
+   "text": "the beam snags on the same star-with-a-tail, small and sure on a drawer edge",
+   "kind": "scratched_shape"
+  }
+ },
+ "lb_table": {
+  "club_relic": {
+   "text": "a half-finished display card behind glass, naming 'The Fenbrook Listening Club, founded 1958' with a date still being pencilled in",
+   "kind": "display_card"
+  }
+ },
+ "lb_drawer": {
+  "cache_container": {
+   "text": "a capsule taped inside the record's own cardboard housing, tucked where only the person who filed it would think to look",
+   "kind": "taped_capsule"
+  },
+  "keepsake_token": {
+   "text": "a cast lead medallion reading KEEP, heavier than it looks",
+   "kind": "cast_medallion"
+  },
+  "memory_slip": {
+   "text": "a drawn card: a little sketch of the founding meeting, twelve chairs in a circle, her initials pencilled under the twelfth",
+   "kind": "drawn_card"
+  }
+ },
+ "bh_path": {
+  "landmark": {
+   "text": "the old signal mast on Beacon Hill, fenced off and guyed down with cables that catch the wind",
+   "kind": "hilltop_installation"
+  },
+  "obstacle": {
+   "text": "a scree slope shortcut beside the switchback path, loose stone visibly shifting even in the still air",
+   "kind": "loose_slope"
+  }
+ },
+ "bh_wind": {
+  "wonder_detail": {
+   "text": "the guy-wires catch the night wind and sing, each one its own note, the whole rigging turning into a chord",
+   "kind": "wind_music"
+  },
+  "code_form": {
+   "text": "the mast's decoded groups spell WIRES SING THIRD ANCHOR, naming the singing rigging and which anchorage to search",
+   "kind": "number_group_code"
+  }
+ },
+ "bh_plate": {
+  "waypoint_mark": {
+   "text": "one fastening carries a scratched star-with-a-tail that no official hand put there",
+   "kind": "scratched_shape"
+  }
+ },
+ "bh_pillar": {
+  "waypoint_mark": {
+   "text": "the star-with-a-tail sits beside the official marker, one scratched line pointing off it",
+   "kind": "scratched_shape"
+  }
+ },
+ "bh_hollow": {
+  "cache_container": {
+   "text": "a dry cavity cast right into the anchorage's concrete when it was poured, sealed with a fitted cover",
+   "kind": "cast_cavity"
+  }
+ },
+ "bh_cache": {
+  "keepsake_token": {
+   "text": "a second stamped tag, this one reading LISTENING, its edge scorched faintly at one corner",
+   "kind": "stamped_tag"
+  },
+  "memory_slip": {
+   "text": "a second handwritten slip: from the mast she once raised a station in Argentina and stayed up till dawn just to say so",
+   "kind": "handwritten_slip"
+  }
+ },
+ "fin_bearing": {
+  "destination": {
+   "text": "the old Fenbrook Halt signal box east of the level crossing, one upstairs window lit and a thin aerial wire strung from its chimney to a fence post",
+   "kind": "disused_railway_building"
+  }
+ },
+ "fin_gate": {
+  "obstacle": {
+   "text": "the signal box's ground-floor window, painted shut decades ago and plainly out of honest reach anyway",
+   "kind": "painted_shut_window"
+  }
+ },
+ "fin_lintel": {
+  "key_place": {
+   "text": "the signal box's lintel, checked and found bare but for a spider's web",
+   "kind": "under_lintel"
+  }
+ },
+ "fin_wrenbox": {
+  "key_place": {
+   "text": "a weatherproofed wren box screwed to the aerial post, its little hinged front keeping a key wound in oilcloth safe from the weather",
+   "kind": "weatherproof_box"
+  }
+ },
+ "fin_threshold": {
+  "station_workings": {
+   "text": "a clockwork timer ticking down on the desk, a reel-to-reel machine spooling steadily beside it, and a hand crank waiting on the wall for when the spring runs low",
+   "kind": "clockwork_timer"
+  }
+ },
+ "fin_wall": {
+  "club_relic": {
+   "text": "the club's own roster chart on the wall, names in a column with small notes pencilled beside each one, closing on one plain typed card that puts into words why the station is still running",
+   "kind": "annotated_chart"
+  }
+ },
+ "fin_keep": {
+  "documentation": {
+   "text": "a maintenance folder in her own hand, numbered steps simple enough for a first attempt",
+   "kind": "maintenance_folder"
+  }
+ },
+ "f_answer_script": {
+  "code_form": {
+   "text": "the closing groups decode, letter by letter, into the club's five-word sign-off, printed under the logbook's last page: COME HOME AND KEEP LISTENING",
+   "kind": "number_group_code"
+  }
+ },
+ "e_win_signoff": {
+  "code_form": {
+   "text": "the five decoded words are read aloud exactly as the numbers gave them up, and the machine closes on the last one",
+   "kind": "number_group_code"
+  },
+  "mechanism": "the closing form is read exactly as the numbers gave it up, COME HOME AND KEEP LISTENING, and the spring trips on the beat it was built to trip on"
+ },
+ "e_wt_climb": {
+  "mechanism": "a boot skids on the frost-furred rungs and a sibling's hand is already at her collar, the chained ladder abandoned two rungs up for a ride home with the tower's legs still unsearched below"
+ },
+ "e_cn_boards": {
+  "mechanism": "the Empress's soft stage board gives underfoot and an arm catches her before the sprung plank does more than dip, the crawl back to the solid apron taking longer than the crossing would have"
+ },
+ "e_cn_reel": {
+  "mechanism": "the loaded reel runs and the Empress fills with the club's own recorded audience, the two of them staying in the dark hall until the tape ends and the window goes gray"
+ },
+ "e_hb_dinghy": {
+  "mechanism": "the rowing dinghy takes water over the gunwale two pulls from the steps, and the retreat is a hurried, dripping scramble back with the foghorn still sounding, unbothered, out past the point"
+ },
+ "e_hb_stories": {
+  "mechanism": "the kettle stays on and the watchman's stories run long, the club coming alive in the telling until the window pales and he shakes both their hands like colleagues"
+ },
+ "e_lb_alarm": {
+  "mechanism": "the wind-up door bell goes off under an impatient hand, and the two of them stand still in the porch light until she is found, her dressing gown belted over slippers, firm about the rule and kind about the reason"
+ },
+ "e_bh_scree": {
+  "mechanism": "the scree shortcut walks out from under them and delivers both of them sitting down hard at the bottom, skin the only damage and the long switchback path still there for tomorrow"
+ },
+ "e_fin_window": {
+  "mechanism": "the reach for the signal box's painted-shut window turns out longer than it looked, and a sibling's grip ends the attempt before it becomes anything worse than a barked shin on the sill"
+ },
+ "e_fin_late": {
+  "mechanism": "one caption too many at the club's roster wall, and the sign-off begins in her grandmother's own voice while they are still two steps from the desk"
+ },
+ "e_fin_listen": {
+  "mechanism": "the last broadcast carries clean out through the shut signal box door, the direction finder's needle finally still and the goodnight landing exactly on time"
+ },
+ "e_win_net": {
+  "mechanism": "into the pause left open at the desk, old members' voices surface one at a time out of the static, callsigns coming up like windows lighting along a whole dark coast"
+ },
+ "e_win_answer": {
+  "mechanism": "she signs the logbook beneath her grandmother's last entry, and the direction finder's needle settles as the tape closes on her own voice, safely archived"
+ },
+ "e_win_encore": {
+  "mechanism": "her closing words are read whole, then one line of their own is added before the machine can close, and the hand crank makes the promise true for another year"
+ },
+ "e_win_keepers": {
+  "mechanism": "hands are shaken over the newly wound spring, and the direction finder gets two more keepers who mean to learn every dial by heart"
+ },
+ "e_win_apprentice": {
+  "mechanism": "the maintenance folder's steps get followed properly over months of Saturdays, and two new names go into the logbook as trained keepers of the direction finder and the tape machine both"
+ },
+ "e_win_family": {
+  "mechanism": "a phone call brings the parent up the lane in minutes, and three of them stand in front of the desk for the last groups, her hand over her mouth at her own mother's voice"
+ },
+ "e_win_passiton": {
+  "mechanism": "five new number groups go onto the tape in the children's own voices, and a year later other windows in Fenbrook start waking up the same way theirs did"
+ },
+ "label_style": "imperative and verb-first: what we do next, said out loud"
+}

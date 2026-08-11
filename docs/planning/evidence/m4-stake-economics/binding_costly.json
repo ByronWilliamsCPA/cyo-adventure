@@ -1,0 +1,113 @@
+{
+ "label_style": "name the cost before the reward",
+ "n_open": {
+  "code_form": {
+   "kind": "knot_notation",
+   "text": "Corrin Vane's own code: small knots tied into loops of cord, or chalked as knot-shapes, each pattern standing for a letter, used on ledgers, panels, and levers throughout the playhouse."
+  }
+ },
+ "n_note": {
+  "access_route": {
+   "kind": "backstage_key_niche",
+   "text": "A loose brick three courses up on the alley wall hides a shallow niche where a small brass stage key is tucked behind a curl of ivy."
+  },
+  "shelved_item": {
+   "kind": "spare_pages_declined",
+   "text": "A handful of blank notebook pages packed for taking notes; once the marginalia's line is decoded there is nothing left to jot down, so the pages stay on the shelf by the door."
+  }
+ },
+ "n_door": {
+  "access_route": {
+   "kind": "loose_side_door",
+   "text": "A warped wooden side door beside the main stage door, swollen shut in its frame but not locked, openable with a good steady push."
+  },
+  "shelved_item": {
+   "kind": "tool_left_on_shelf",
+   "text": "A small crowbar packed in case the door needed prying; once bare hands prove enough to shove it open, the crowbar stays behind on the shelf."
+  }
+ },
+ "n_keeper": {
+  "access_route": {
+   "kind": "escort_by_caretaker",
+   "text": "Nan Ferris, the playhouse's caretaker, personally walking the friends in through her own side entrance after judging them fit to try the dare."
+  },
+  "shelved_item": {
+   "kind": "second_lantern_declined",
+   "text": "A second oil lantern Nan offers from the hook by her door; the friends already have one lantern between them, so the spare stays hanging on her wall."
+  }
+ },
+ "n_stairs": {
+  "hint_carrier": {
+   "kind": "rigging_diagram",
+   "text": "A hand-drawn diagram of the loft's rigging pinned to the stairwell wall, its ropes and pulleys labeled in small knot-code marks."
+  },
+  "wonder": {
+   "kind": "hand_carved_mask",
+   "text": "A small hand-carved wooden mask, one of Vane's own, left forgotten in the rafters above the topmost stair."
+  }
+ },
+ "n_study": {
+  "hint_carrier": {
+   "kind": "rehearsal_ledger",
+   "text": "A thick rehearsal ledger open on the archive's reading table, its margins dense with knot-code notes explaining the control bridge's levers in detail."
+  },
+  "wonder": {
+   "kind": "music_box_still_wound",
+   "text": "A small music box on a side shelf, still wound tight, ready to play a soft tune the moment its lid is lifted."
+  }
+ },
+ "n_pendulum": {
+  "hint_carrier": {
+   "kind": "paint_wear_mark",
+   "text": "Years of hands sliding along the catwalk rail have worn its old paint into a pattern of knot-code shapes, legible from the safe end of the walk."
+  },
+  "obstacle": {
+   "kind": "narrow_catwalk",
+   "text": "A narrow wooden catwalk strung high above the stage, just wide enough for careful footsteps, with a low rail on one side only."
+  }
+ },
+ "n_basement": {
+  "hint_carrier": {
+   "kind": "joint_pattern",
+   "text": "A repeating pattern cut into the understage's floor joists, small pegs and notches that spell out knot-code when read by touch in the dim light."
+  },
+  "wonder": {
+   "kind": "resident_moth",
+   "text": "A large pale moth that lives permanently in the understage, its wings dusted with silvery powder, clinging still and calm to a support post."
+  }
+ },
+ "n_setjam": {
+  "remedy": {
+   "kind": "rope_splice",
+   "text": "A short coil of spare cord, spliced carefully into the lever's broken linkage the way the rigging diagram showed, to steady it without pretending it isn't broken."
+  }
+ },
+ "n_vault": {
+  "contents": [
+   {
+    "kind": "makers_letter",
+    "text": "Corrin Vane's own letter, sealed with wax and a small knot, resting on the workshop desk."
+   },
+   {
+    "kind": "carved_token",
+    "text": "A small carved wooden token, worn smooth as a favorite coin, sitting in a shallow dish."
+   },
+   {
+    "kind": "town_program",
+    "text": "A faded program listing decades of Bellhollow Playhouse shows, some names on it still familiar around town."
+   }
+  ]
+ },
+ "n_end_secret": {
+  "loft_signature": {
+   "kind": "workbench_still_warm",
+   "text": "A workbench scattered with fresh wood shavings that are still faintly warm, as though Corrin Vane had only just stepped away from it."
+  }
+ },
+ "n_end_caught": {
+  "safeguard": {
+   "kind": "counterweight_chime",
+   "text": "A small chime rigged to the stage's counterweights that rings softly whenever they are loaded past their proper balance, the puppet-maker's own gentle alarm for overreaching hands."
+  }
+ }
+}

@@ -1,0 +1,423 @@
+{
+ "schema_version": "2.0",
+ "id": "sk_clocktower_cipher",
+ "version": 1,
+ "title": "The River Keeps Time",
+ "metadata": {
+  "age_band": "10-13",
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 5.5,
+   "tolerance": 1.5
+  },
+  "tier": 1,
+  "themes": [
+   "mystery",
+   "puzzles",
+   "friendship",
+   "history"
+  ],
+  "estimated_minutes": 18,
+  "ending_count": 8,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "mild",
+   "peril": "mild"
+  },
+  "topology": "branch_and_bottleneck",
+  "production_eligible": false
+ },
+ "variables": [],
+ "start_node": "n_open",
+ "nodes": [
+  {
+   "id": "n_open",
+   "body": "The old lock-house at Eelgate had been shut since the barges stopped coming, its gates chained and its windows boarded like a fist closed around a secret. Nobody in town remembered why Engineer Maren Pool had sealed it so carefully, but somebody had pinned a fresh sheet of paper to the door anyway: rows of small flags, drawn in careful ink, arranged like a puzzle waiting for the right eyes. Bel read it twice. Otto tested the chain without much hope. Ash just grinned. Whoever had left this note wanted it solved, not ignored, and Bel, Otto, and Ash were the ones standing in front of it. They looked at each other and nodded. Together, then.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_open",
+     "label": "Look at the note together.",
+     "target": "n_start"
+    }
+   ]
+  },
+  {
+   "id": "n_start",
+   "body": "'We could just stand here,' Ash said, 'or we could actually do something.' That settled it. This was Engineer Pool's puzzle, and Pool had never made anything without a reason, so tearing the note down or guessing wildly felt like the wrong kind of answer. Otto wanted to prove they didn't need instructions and started eyeing the walls for a way in nobody had noticed. Bel wanted to sit with the flags until the pattern gave itself up. Ash thought the smartest move was finding the person who actually knew this building, if anyone still did. None of the three were wrong. Somebody just needed to go first.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_examine",
+     "label": "Sit with the flags a while longer.",
+     "target": "n_note"
+    },
+    {
+     "id": "c_door",
+     "label": "Hunt the walls for a way in.",
+     "target": "n_door"
+    },
+    {
+     "id": "c_keeper",
+     "label": "Go find someone who knows this place.",
+     "target": "n_keeper"
+    }
+   ]
+  },
+  {
+   "id": "n_note",
+   "body": "Bel wouldn't let it go. Working by touch as much as sight, she matched each flag to its number in the primer pinned beside it: moon day nine, posted hour six, add them, fifteen, carry past twelve and read three. Three flags down the row spelled a word, then another, until the line resolved into an address more than a riddle: the dry culvert under the towpath, the one that ran dry at low water since the new channel opened. Otto whistled, impressed despite himself. It had taken the better part of an hour, sitting cross-legged in the grass while the light went gold, but the note had rewarded exactly the kind of patience it demanded, and now they knew precisely where to walk.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_note_key",
+     "label": "Go straight to the culvert, exactly as told.",
+     "target": "n_keyhunt"
+    },
+    {
+     "id": "c_note_inside",
+     "label": "Trust the note and walk in now.",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_door",
+   "body": "If the note wanted patience, fine, Otto would try something else. He circled the lock-house twice, running his hand along the stone until he found it: a counterweight chain bolted to the old tide engine, slack and rusted but still moving. He hauled it hand over hand toward its top mark, and somewhere above, a hatch gave a groan and swung open on its own weight. Bel felt the stiff side door shift under her palm at the same moment, like the whole building had exhaled. Nobody had told them the tower's own machinery could be turned against its lock. They had found that out themselves, standing in the weeds with grease on their hands and no note to thank for it.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_door_force",
+     "label": "Shoulder the loosened door yourself.",
+     "target": "n_inside"
+    },
+    {
+     "id": "c_door_window",
+     "label": "Climb up through the open hatch.",
+     "target": "n_window"
+    }
+   ]
+  },
+  {
+   "id": "n_keeper",
+   "body": "Warden Issa was mending a net on the jetty and didn't look up right away. 'You're the three been staring at Pool's door all week,' she said. It wasn't a question. Ash explained, plainly, that they didn't know the building and didn't want to break anything figuring it out blind. Issa took her time looking them over, the kind of look that weighs more than it says. Then she set down the net. 'Pool built that place to test people, not keep them out,' she said, standing. 'Asking straight is half the test, and you just passed it.' She reached for the oar. 'Come on, then. I'll row you across myself.'",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_keeper_enter",
+     "label": "Take the oar and go now.",
+     "target": "n_inside"
+    },
+    {
+     "id": "c_keeper_story",
+     "label": "Ask her about Engineer Pool first.",
+     "target": "n_keeper_story"
+    }
+   ]
+  },
+  {
+   "id": "n_keyhunt",
+   "body": "Just as the flags had promised, the culvert mouth sat low and dry at the bend, its brick lined with tide marks none of them would ever have thought to add up on their own. Bel checked the numbers against the note one more time: moon day, posted hour, carry past twelve, same as before. Every mark matched. That was the part that mattered most, more than finding the tunnel itself; they now had proof, engraved in stone, that they understood how the tide arithmetic actually worked, not just how to copy it once. Otto leaned into the tunnel mouth to check for spiders and pronounced it clear. Ash grinned. They had earned the logic. Now all that was left was using it.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_keyhunt_in",
+     "label": "Duck through into the lock-house.",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_keeper_story",
+   "body": "Issa let the boat rock a while before she answered. 'Maren Pool built half the machinery on this river and trusted almost none of the people running it,' she said. 'Not out of spite. She'd seen careless hands ruin good engines, so she started building little tests into everything, this lock-house most of all, to find the ones who'd actually take care of what they were given.' She didn't say what waited past the tide board, only that Pool had never once let her past it, not properly. 'She wasn't unkind. Just particular.' Issa picked the oar back up. Whatever came next, they'd earned the chance to find it out themselves.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_story_in",
+     "label": "Carry that with you inside.",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_window",
+   "body": "The hatch had swung open onto a low sill, not much higher than Otto's own head once he got a boot on the drainpipe bracket. Bel laced her fingers into a step and boosted him the last bit; Ash stood below with both arms out of pure habit, ready for nothing that was going to happen. Otto caught the sill, hauled himself through, and popped back out grinning to help the others up one at a time, slow and steady, nobody rushing. It took longer than jumping the fence would have. It also meant nobody skinned a knee. They dropped through one after another onto the winch-loft floor, dusty and grinning, properly inside at last.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_window_in",
+     "label": "Drop down into the loft below.",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_inside",
+   "body": "Inside, the lock-house smelled of rope oil and cold stone, and the tide engine breathed somewhere below, a slow mechanical inhale that never quite stopped. Four ways led off the entry hall, each one plainly a test of its own kind. A spiral stair wound up into the dark toward wherever the great tide board hung. A door stood ajar on a room lined with charts and ledgers. A narrow catwalk crossed the roar of the weir-race, rope rail and all. A ladder dropped down into a basement lit only by whatever daylight found its way through the grates. Nobody said which to choose first. They just looked at each other and picked.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_inside_stairs",
+     "label": "Wind up the tower stair to the tide board.",
+     "target": "n_stairs"
+    },
+    {
+     "id": "c_inside_study",
+     "label": "Duck into the chart-room.",
+     "target": "n_study"
+    },
+    {
+     "id": "c_inside_pendulum",
+     "label": "Edge out onto the catwalk.",
+     "target": "n_pendulum"
+    },
+    {
+     "id": "c_inside_basement",
+     "label": "Head down the ladder.",
+     "target": "n_basement"
+    }
+   ]
+  },
+  {
+   "id": "n_stairs",
+   "body": "The spiral stair went up and up, past narrow windows and the smell of tar rope, until Ash's legs burned and she started counting steps just to keep moving. Halfway up, a landing held rows of waterproof ledgers, eighty years of cargo and flood dates ruled in red ink, patient and thorough as the man who never once threw one away. But it was the sound reaching up through the stairwell that mattered more: the weir gates below, sluicing in a steady run, long, long, short, long, long, short, over and over. Otto caught the rhythm without meaning to. It matched the flags on the door exactly. By the top step, legs aching, they had the pattern memorized cold.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_stairs_face",
+     "label": "Bring the rhythm up to the tide board.",
+     "target": "n_clockface"
+    }
+   ]
+  },
+  {
+   "id": "n_study",
+   "body": "The map room was stacked to the ceiling with river charts, decades of them, curling at the edges and smelling of dust and linen. Bel could have stayed a week just tracing channels that didn't exist anymore. By the doorway, generations of keepers had scratched their initials into the frame, a crowded little history nobody had bothered to erase. Otto found something better: hoist levers along the back wall, each stamped with an hour, one through twelve, their handles worn bright wherever a pull lined up with today's moon day carried past twelve, and left pale everywhere else. Someone who'd worked this room for years hadn't needed any note. The answer was pressed straight into the wood, plain as a worn stair tread.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_study_face",
+     "label": "Leave the charts and climb to the tide board.",
+     "target": "n_clockface"
+    },
+    {
+     "id": "c_study_logs",
+     "label": "Stay here and keep reading.",
+     "target": "n_end_library"
+    }
+   ]
+  },
+  {
+   "id": "n_pendulum",
+   "body": "The catwalk crossed high over the weir-race and fed straight into a tunnel with no light in it at all, just the tail-race running unseen and loud below. Of the four rooms, this one didn't bother hiding what it was asking: cross, or don't. Depth figures were stamped up the entrance posts, climbing the same way the hoists carried, a number for every step in. Bel read them by touch and counted paces out loud so nobody lost the light wells' spacing in the dark. Halfway across, Otto's light caught something glinting on a shelf at the far side, small and deliberately placed, clearly set aside for whoever proved brave enough to reach it. It wasn't a long fall if you slipped, just a wet, muddy, embarrassing one. Still, nobody wanted to find that out.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_pendulum_oil",
+     "label": "Pick your way across and claim the prize.",
+     "target": "n_clockface"
+    },
+    {
+     "id": "c_pendulum_giveup",
+     "label": "Call it too risky and turn back.",
+     "target": "n_end_giveup"
+    }
+   ]
+  },
+  {
+   "id": "n_basement",
+   "body": "The basement was dim and cool, lit only by thin grates overhead where daylight leaked down in long stripes. Something grey and patient stood utterly still on a beam near the outer gate, visible through the grating: a heron, apparently unbothered by three kids picking their way past the machine roots below. Pinned to a support post, half-curled with damp, hung a cross-section drawing of the gate itself, its margins crowded with scrawled sums, moon days added to hours, carried past twelve, over and over in a steady hand. Ash traced the working with one finger until it made sense. The room asked for nothing but calm feet and patient eyes, and by the time they'd read every sum, both had paid off.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_basement_face",
+     "label": "Climb straight up to the tide board.",
+     "target": "n_clockface"
+    }
+   ]
+  },
+  {
+   "id": "n_clockface",
+   "body": "The great tide board took up most of the top room: a broad brass dial, ringed with twelve hour-marks, sitting above a smaller ring stamped with the days of the moon. A hand-lettered plate beneath both rings spelled it out plainly, for anyone who hadn't already worked it out: add the moon day to the posted hour, carry past twelve, and set the hands there. Whoever answered correctly would feel the mechanism agree with a firm, deliberate click. Whoever forced it without answering would feel it fight back instead. A seam ran along one edge of the housing, easy to miss unless you were looking for it. And a reader with no patience at all could always just spin the hands and hope, though the board gave no sign that hoping had ever once worked.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_face_correct",
+     "label": "Work the sum and set it properly.",
+     "target": "n_setcorrect"
+    },
+    {
+     "id": "c_face_jam",
+     "label": "Force the hands with muscle.",
+     "target": "n_setjam"
+    },
+    {
+     "id": "c_face_panel",
+     "label": "Check that seam for a hidden way.",
+     "target": "n_backpanel"
+    },
+    {
+     "id": "c_face_random",
+     "label": "Spin the hands and hope.",
+     "target": "n_end_timeout"
+    }
+   ]
+  },
+  {
+   "id": "n_setcorrect",
+   "body": "Today's moon day was nine. The posted hour, stamped fresh on a slip beside the plate, read six. Nine and six made fifteen, and fifteen carried past twelve left three. Otto set the small hand to three, slow and sure, while Bel double-checked the sum out loud one more time before he let go. For a breath, nothing happened. Then the whole board gave a firm, satisfied click, gears turning somewhere deep in the wall like a held breath finally let out. A seam that hadn't been visible a second earlier now stood open a crack, dark and waiting. Ash grinned so wide it hurt. Whatever this trial had wanted from them, it had just admitted they'd given it.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_correct_vault",
+     "label": "Step through the open seam.",
+     "target": "n_vault"
+    }
+   ]
+  },
+  {
+   "id": "n_setjam",
+   "body": "Otto put both hands on the crank and heaved without waiting on any sum. The board didn't argue, exactly. It just locked, hands frozen half a turn short, gears grinding to a dead stop with a sound like a held breath cut off. Nobody panicked. A small plate near the racks, easy to have missed in the rush, spelled out the fix plain as anything: ease back a quarter turn before asking a full one. That was fair, Bel thought. The dial wasn't punishing them for guessing wrong; it was just refusing to be muscled past, the same as it would have refused anyone. Otto exhaled, embarrassed but not ashamed, and reached for the crank a second time, slower now.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_jam_oil",
+     "label": "Work it loose and take a second try.",
+     "target": "n_vault"
+    },
+    {
+     "id": "c_jam_stuck",
+     "label": "Admit tonight isn't the night.",
+     "target": "n_end_stuck"
+    }
+   ]
+  },
+  {
+   "id": "n_backpanel",
+   "body": "The seam ran along the board's brass housing, thin as a hairline, and it took Ash's fingernail and a good deal of patience to work it open. Behind it sat a second, smaller plate, its own miniature ring of hour-marks no wider than a coin, clearly built to the same tide arithmetic as everything else in the building, just condensed. It didn't need the whole sum, only the same carry-past-twelve trick they already knew by heart. This wasn't a shortcut somebody had left by accident. The careful joinery around the hidden plate said the opposite: whoever built this had wanted exactly this kind of looking, and had built a small reward in for it.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_panel_vault",
+     "label": "Solve it toward the strongroom.",
+     "target": "n_vault"
+    },
+    {
+     "id": "c_panel_secret",
+     "label": "Follow it toward the quiet loft instead.",
+     "target": "n_end_secret"
+    }
+   ]
+  },
+  {
+   "id": "n_vault",
+   "body": "Past the seam, the strongroom was small and dry, built to survive any flood the river ever threw at it. Maren Pool's last workbook sat open on a stand, ending mid-page in a letter that asked its finder for exactly one thing: keep the river honest. Beside it stood a model of the lock-house itself, no bigger than a shoebox, its fingernail gates swinging open on a tide too small to see. And along the back wall, a rank of narrow pipes waited, tuned to play six notes whenever the real engine outside ran true. Nothing here was worth carrying off and everything here was worth having found. Bel looked at Otto. Otto looked at Ash. The trial they'd just passed, it turned out, had one more question waiting in this quiet room: what would they do with what they'd found.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_vault_share",
+     "label": "Carry the letter back to Eelgate.",
+     "target": "n_end_hero"
+    },
+    {
+     "id": "c_vault_keep",
+     "label": "Let this stay a secret among friends.",
+     "target": "n_end_keepsake"
+    },
+    {
+     "id": "c_vault_grab",
+     "label": "Grab what you can and go.",
+     "target": "n_end_caught"
+    }
+   ]
+  },
+  {
+   "id": "n_end_library",
+   "body": "They stayed. One chart led to another, then to a page of old lever numbers scrawled in the margin, numbers that lined up with the levers two floors up better than anything Otto had traced by hand. By the time the light through the high windows went the color of the river at dusk, nobody wanted to leave, and the tide board upstairs sat untouched and unbothered by it. Ash dog-eared a page without thinking and then apologized to a room that couldn't hear her. Bel was already sketching a faster way through the sums for next time. The trial would still be there tomorrow, patient as everything else Pool had built, and so would they.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_library",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "A Night Among Charts"
+   }
+  },
+  {
+   "id": "n_end_giveup",
+   "body": "Ash said it first. 'If one of us slips in there in the dark, getting help means somebody else crossing back through it blind. That's not worth whatever's on that shelf.' Otto opened his mouth to argue, then didn't, because she wasn't wrong. Bel had already backed off the catwalk before either of them finished talking. They didn't call it giving up. They walked back the way they'd come, the last glint of torchlight sliding off whatever waited on the far shelf, and nobody looked over their shoulder twice. Outside, the evening was cool and the towpath was solid under their boots, and that, for tonight, was plenty. The lock-house wasn't going anywhere, and neither was that shelf.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_giveup",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Reading the Water Right"
+   }
+  },
+  {
+   "id": "n_end_timeout",
+   "body": "Otto spun the hands and let them go, more hope than plan. The board didn't jam and it didn't click. It just complained, gears whirring loud and cross, a rising clatter that echoed down the stairwell until, a minute later, footsteps came up two at a time and Warden Issa's head appeared in the doorway, eyebrows raised. 'That old thing hates being spun,' she said, not unkindly, easing a lever back into place until the racket quieted. 'Tells on you every time.' She waited while they collected themselves, in no hurry to send them off scolded. The board sat still and patient behind her, exactly as unsolved as it had been five minutes earlier, waiting for someone willing to work it out properly.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_timeout",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Gears Cry Foul"
+   }
+  },
+  {
+   "id": "n_end_stuck",
+   "body": "The second try jammed worse than the first. Otto eased the crank back exactly the quarter turn the plate had promised, but the gears only ground half an inch before locking solid again, tight as a fist. Bel checked their pockets: nothing sharp enough, nothing long enough, nothing that was going to talk this particular mechanism into moving tonight. 'It's not us,' Ash said, more statement than question, and Otto had to agree; they'd done everything the little plate asked. The dial stayed latched and settled, exactly as they'd found it, while Bel, Otto, and Ash started down the stairs already comparing notes on what a proper toolkit for a return trip ought to hold.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_stuck",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Tight As a Fist"
+   }
+  },
+  {
+   "id": "n_end_secret",
+   "body": "The passage behind the hidden plate climbed, not descended, up into a narrow room tucked under the roofline that nobody in Eelgate had ever mentioned. Sunlight came in green through a little garden of reeds growing along the sill, fed drop by drop from a cistern rigged decades ago and somehow, impossibly, still dripping true. On the workbench sat a half-finished model gate, its fittings laid out in careful rows, exactly where its builder had set them down one evening and never come back to pick them up again. Bel picked up the smallest fitting without quite deciding to. It fit the model perfectly. Otto found the next piece almost by instinct, and Ash the one after that. Nobody suggested leaving. By the time they thought to check the hour, the model gate had three new fittings it hadn't had an hour before, and three new hands that already knew where the fourth one went.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_secret",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Reeds Above the Loft"
+   }
+  },
+  {
+   "id": "n_end_hero",
+   "body": "The letter was short, in Maren Pool's own hand: this lock-house was never meant to guard treasure, only to sort out who could be trusted with the machinery that kept the river honest. Warden Issa read it twice when they carried it down to her, and something in her face loosened that hadn't been loose in years. By the next tide, the whole of Eelgate knew three kids had cracked Pool's old test, and the harbor master rang the flood pipes' six notes off the strongroom wall for anyone who wanted to hear what the river's own arithmetic sounded like. Bel, Otto, and Ash looked at each other, not needing to say anything. Issa handed Otto a spare key before they left. 'Come back whenever the gates need minding,' she said. 'You've more than earned it.'",
+   "is_ending": true,
+   "ending": {
+    "id": "e_hero",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Six Notes for Eelgate"
+   }
+  },
+  {
+   "id": "n_end_keepsake",
+   "body": "They left the letter exactly where they'd found it and the flood pipes untouched, but the little river model came out just long enough to sit on the strongroom step while each of them held it in turn, watching its fingernail gates swing on a tide too small to see. 'Nobody else needs to know we did this,' Bel said, and it wasn't a question. Otto returned the model to its place on the shelf, careful as anything, before they sealed the panel again. Full dark had settled over the yard by the time they climbed out, and Bel, Otto, and Ash shook on it right there on the towpath, solemn as a courtroom, and then ruined the moment laughing about who'd flinched first crossing the seam.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_keepsake",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Sworn Over the Model"
+   }
+  },
+  {
+   "id": "n_end_caught",
+   "body": "Otto had the little river model half into his jacket before Bel even noticed what he was doing. 'It's not stealing if nobody's using it,' he tried, which convinced nobody, least of all himself. They made it as far as the winch loft before Warden Issa met them on the ladder, arms crossed, entirely unsurprised. 'Silt on that floor keeps every footprint since Tuesday,' she said. 'Did you think three new sets walking out with something extra wouldn't show?' Otto handed the model back without being asked twice. Issa didn't make a speech out of it, just waited while he returned it to its shelf, exactly where it belonged. 'Come back and do it properly sometime,' she said, already heading down the ladder.",
+   "is_ending": true,
+   "ending": {
+    "id": "e_caught",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Footprints Since Tuesday"
+   }
+  }
+ ]
+}

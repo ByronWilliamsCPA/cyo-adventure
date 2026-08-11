@@ -1,0 +1,249 @@
+{
+  "schema_version": 1,
+  "id": "freegen-g4",
+  "version": 1,
+  "title": "The Light of Salt Hollow",
+  "start_node": "n1",
+  "nodes": [
+    {
+      "id": "n1",
+      "body": "Nora and her best friend Theo stood at the bottom of the old Salt Hollow lighthouse. Wind rattled the shutters, and gray storm clouds piled up over the sea. Nora's grandfather used to keep this light burning, but nobody had lit it in years. Tonight, three fishing boats were due home before dark, and without the lamp, they might crash on the rocks. Theo pointed at a crack in the stone wall near the base. \"There's a tunnel,\" he whispered. Nora looked up at the spiral stairs instead, which led toward the bell tower. They had to choose a way in, and fast.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c1", "label": "Go into the tunnel", "target": "n2"},
+        {"id": "c2", "label": "Climb the stairs", "target": "n3"}
+      ]
+    },
+    {
+      "id": "n2",
+      "body": "The tunnel smelled like salt and old rain. Nora ducked under a low stone arch, her flashlight bouncing off wet walls. Water dripped somewhere ahead, slow and steady like a clock ticking. Small crabs skittered away from the light. Theo squeezed in behind her, bumping his head on a low beam. A narrow path led deeper into the dark, but off to the side, another opening showed a strip of gray daylight and the churning sea beyond. The tide was already creeping higher over the rocks. Nora had to decide whether to press on or step back toward the light.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c3", "label": "Follow the tunnel deeper", "target": "n4"},
+        {"id": "c4", "label": "Turn back before the tide rises", "target": "n_end_soaked"}
+      ]
+    },
+    {
+      "id": "n3",
+      "body": "The spiral stairs groaned under Nora's sneakers. Each step was slick with sea spray blown in through a broken window. Halfway up, the wind howled louder, rattling a loose shutter like a drum. Theo grabbed the railing to keep his balance. Above them, the stairs kept twisting up toward a small door, but a side passage branched off toward what looked like an old keeper's room, its door hanging open. Nora could smell dust and old paper drifting from inside. She had to pick one path before the storm rolled in any closer over the water.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c27", "label": "Keep climbing the spiral stairs", "target": "n5"},
+        {"id": "c28", "label": "Turn back before the tide rises", "target": "n_end_soaked"}
+      ]
+    },
+    {
+      "id": "n4",
+      "body": "The tunnel narrowed. Nora had to turn sideways to slide past a rusty pipe wrapped in old rope. Ahead, she spotted a huge iron gear wedged sideways across the path, its teeth caked with rust and dried seaweed. It looked like part of the lighthouse's old clockwork machine, the kind that used to spin the lamp around and around. Theo tugged at it, testing how loose it was. If they yanked it hard, it might come free, but old metal like this could also jam tight or snap. Somewhere far above, thunder rumbled, low and far away, but coming closer.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c5", "label": "Carefully work the gear loose", "target": "n6"},
+        {"id": "c6", "label": "Yank it hard and rush past", "target": "n_end_gearjam"}
+      ]
+    },
+    {
+      "id": "n5",
+      "body": "At the top of the first flight, Nora found a small landing with a faded map painted right onto the stone wall. It showed the whole lighthouse: the tunnel below, the bell tower above, and a little attic room tucked under the roof. Someone had drawn three stars in red paint, marking spots where a brass key might be hidden. Theo traced the lines with his finger, whispering the old rhyme painted beside it: \"Tide, bell, and dusty beam, one holds the key to make light gleam.\" Rain began tapping harder on the roof above them.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c29", "label": "Keep climbing toward the bell tower", "target": "n7"},
+        {"id": "c30", "label": "This feels too risky, turn back", "target": "n_end_retreat"}
+      ]
+    },
+    {
+      "id": "n6",
+      "body": "With careful hands, Nora and Theo worked the old gear loose, rocking it gently instead of forcing it. It finally gave way with a groan and rolled aside, revealing a narrow crawlspace beyond. Cool, salty air rushed out to meet them. Somewhere deep in the tunnel, they could hear the soft clink of metal, almost like tiny bells. Theo shone his flashlight down the new opening. It led toward a room they couldn't quite see the end of. The storm outside was getting louder, drumming against the cliffside far above their heads, reminding them that time was running short.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c7", "label": "Crawl through into the deeper room", "target": "n8"},
+        {"id": "c8", "label": "It's too tight, better turn back", "target": "n_end_retreat"}
+      ]
+    },
+    {
+      "id": "n7",
+      "body": "The bell tower door was stuck, swollen shut from years of sea damp. Theo threw his shoulder against it while Nora pried at the edge with a stick she'd found. Above the door hung a second, smaller iron gear, twin to the one in the tunnel below, connected to a chain that vanished up into the dark. If they forced the door too hard, the old chain might snap and send the gear crashing down. If they worked slowly, it would take longer, but the wind outside was already screaming through the tower's cracks.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c31", "label": "Pry the door open slowly", "target": "n9"},
+        {"id": "c32", "label": "Force it open fast", "target": "n_end_gearjam"}
+      ]
+    },
+    {
+      "id": "n8",
+      "body": "Beyond the crawlspace, Nora and Theo found a round stone room lit by a strange blue-green glow. Tide pools filled shallow basins carved into the floor, and tiny glowing creatures drifted in the water like scattered stars. On the far wall, a brass plate showed three levers, each shaped like a wave, a bell, and a lamp. Water was already trickling in from a crack near the ceiling, and the pools were rising slowly. Theo's shoes were already getting wet. They needed to decide quickly whether to explore further or get out before the water rose too high.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c9", "label": "Explore the tide room further", "target": "n10"},
+        {"id": "c10", "label": "Get out before the water rises", "target": "n_end_soaked"}
+      ]
+    },
+    {
+      "id": "n9",
+      "body": "The bell tower door finally creaked open. Inside, a huge bronze bell hung silent, streaked green with age. Ropes and pulleys crisscrossed the ceiling, connecting to gears Nora recognized from the tunnel below. On a small shelf sat a leather notebook, its pages curling from years of damp air. Nora's grandfather's initials were carved into its cover. Theo reached for it, curious what secrets it held, while Nora looked past it toward a ladder leading further up, maybe toward the lamp room itself, or maybe toward the hidden attic the map had marked.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c33", "label": "Climb the ladder further up", "target": "n11"},
+        {"id": "c34", "label": "Stop and read the notebook", "target": "n_end_notebook"}
+      ]
+    },
+    {
+      "id": "n10",
+      "body": "Nora pressed a lever shaped like a wave, and somewhere beneath the floor, gears began to turn with a low grinding sound. Water drained slowly from one of the tide pools, revealing a small metal box wedged in the stone. Theo knelt to pry it open while the room rumbled around them. If the mechanism jammed now, they might get trapped inside with the rising water. Nora held her breath, watching the gears spin faster, praying the old machine still remembered how to work after all these silent years.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c11", "label": "Keep working the mechanism carefully", "target": "n12"},
+        {"id": "c12", "label": "Force the box open quickly", "target": "n_end_gearjam"}
+      ]
+    },
+    {
+      "id": "n11",
+      "body": "The ladder led to a narrow landing high above the bell. Wind screamed through gaps in the stone, and Nora could see the gray sea churning far below, whitecaps racing toward the rocks. A door here led up toward the lamp room at the very top of the lighthouse. Another, smaller door was marked with a faded star, matching the map they'd seen, likely the hidden attic. Theo shivered, gripping the rail tightly. The storm was close now, and every choice felt heavier the higher they climbed.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c35", "label": "Head toward the lamp room", "target": "n13"},
+        {"id": "c36", "label": "This is too dangerous, climb back down", "target": "n_end_retreat"}
+      ]
+    },
+    {
+      "id": "n12",
+      "body": "The little box popped open to reveal a rusted brass key, exactly like the one drawn on the old map. Nora's heart thudded with excitement. But the tide pool room was groaning now, stone grinding against stone as unseen gears kept turning somewhere below their feet. Theo tugged her sleeve, pointing toward a stairway spiraling up through a crack in the ceiling, the only way out of the tide room and up toward the lamp itself. Water lapped at their ankles as they hesitated at the bottom of the steps.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c13", "label": "Climb up toward the lamp room", "target": "n14"},
+        {"id": "c14", "label": "It's too risky, turn back now", "target": "n_end_retreat"}
+      ]
+    },
+    {
+      "id": "n13",
+      "body": "Nora and Theo pushed through the door toward the lamp room stairs. The steps spiraled up tightly, slick with rain blowing in through narrow slit windows. Below them, the sea roared louder with every step, waves smashing against the rocks in white bursts. A gust of wind nearly knocked Theo off balance, and for a second, the whole tower seemed to sway. They gripped the rail and kept climbing, the top of the lighthouse finally visible just a little further above them now.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c37", "label": "Keep pushing upward", "target": "n15"},
+        {"id": "c38", "label": "Turn back before the tide rises", "target": "n_end_soaked"}
+      ]
+    },
+    {
+      "id": "n14",
+      "body": "With the brass key clenched in her fist, Nora climbed the narrow stairway out of the tide room. The steps opened into a small landing lit by one flickering bulb. A heavy wooden door stood ahead, marked with a carving of a lighthouse beam. Beside it sat a dusty shelf holding an old logbook, its pages filled with her grandfather's careful handwriting about storms he'd weathered here long ago. Theo wanted to stop and read every page, but Nora could hear the wind picking up outside, urgent and wild.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c15", "label": "Push on through the door", "target": "n16"},
+        {"id": "c16", "label": "Stop and read the logbook first", "target": "n_end_notebook"}
+      ]
+    },
+    {
+      "id": "n15",
+      "body": "At the top of the stairs, Nora and Theo reached a small landing just below the lamp room. Rain lashed sideways through a cracked window, and the whole tower vibrated with each roll of thunder. A rope ladder led up through a trapdoor toward the great lamp itself. Nearby, a small brass horn was mounted on the wall, once used to signal boats before the lamp was built. Theo eyed it curiously, wondering if sounding it now might be enough, or if only the lamp's light could truly save the boats out on the water.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c39", "label": "Climb through the trapdoor to the lamp", "target": "n17"},
+        {"id": "c40", "label": "Sound the horn and rest here instead", "target": "n_end_notebook"}
+      ]
+    },
+    {
+      "id": "n16",
+      "body": "Nora pushed through the heavy door and stepped into the lamp room at last. The huge glass lens stood dark and silent in the center, surrounded by a ring of gears just like the ones from the tunnel below. Rain streaked the windows, and far below, she could just make out three fishing boats fighting through the waves, headed straight for the rocks without any light to guide them home. Theo held up the brass key. One gear looked cracked near its base, and the whole mechanism seemed like it might only get one real chance to work.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c17", "label": "Light the lamp right away", "target": "n18"},
+        {"id": "c18", "label": "Fix the cracked lens first", "target": "n20"}
+      ]
+    },
+    {
+      "id": "n17",
+      "body": "Nora and Theo climbed through the trapdoor into the open lamp room, wind screaming around them. The great glass lens stood dark, and beyond the windows, three fishing boats tossed on the black water, dangerously close to the jagged rocks. A brass horn sat within reach, its cord frayed but usable. If they sounded it now, the boats might hear the warning and steer away, even without the lamp lit. But Nora's grandfather always said the light could guide them all the way home safely, not just warn them of danger.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c41", "label": "Sound the horn to warn the boats now", "target": "n_end_success"},
+        {"id": "c42", "label": "Try to light the lamp as well", "target": "n19"}
+      ]
+    },
+    {
+      "id": "n18",
+      "body": "Nora fit the brass key into the old lock at the base of the lens. With a deep groan, the gears began to turn, slow at first, then faster, spinning the great lamp around. Light burst out across the storm, sweeping over the churning sea in a bright golden beam. Far below, one of the fishing boats turned sharply away from the rocks, its crew waving lanterns back in thanks. Theo whooped and hugged Nora tight. But the gear Theo had noticed earlier still looked wobbly, grinding faintly with every turn, worrying Nora just a little.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c19", "label": "Trust the lamp and celebrate", "target": "n_end_triumph"},
+        {"id": "c20", "label": "Check the wobbly gear before celebrating", "target": "n22"}
+      ]
+    },
+    {
+      "id": "n19",
+      "body": "Together, Nora and Theo worked the old mechanism, sounding the horn while wrestling the lamp's stiff switch at the same time. Slowly, both came alive together: the horn's low call rolling out over the waves, and moments later, a golden beam sweeping across the dark water. The fishing boats turned as one, steering safely away from the rocks toward the harbor lights. Rain still poured, but the danger was passing. Theo laughed with relief, soaked through but grinning, while Nora watched the beam turn steadily, exactly the way her grandfather always described it.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c43", "label": "Celebrate the lamp's return to life", "target": "n_end_triumph"},
+        {"id": "c44", "label": "Explore the lamp room for grandfather's notes", "target": "n_end_discovery_good"}
+      ]
+    },
+    {
+      "id": "n20",
+      "body": "Instead of lighting the lamp right away, Nora knelt to examine the cracked lens more closely. A thin line ran through the glass, and behind it, she spotted a small hidden compartment built into the frame, something her grandfather must have added long ago. Inside sat a folded chart marked with safe passages through the rocks, drawn just for stormy nights like this one. Theo's eyes went wide. This could help boats find their way in even better than the light alone. But the storm outside was still worsening, and the lamp itself remained dark and silent.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c23", "label": "Use the hidden chart to guide the boats", "target": "n_end_discovery_good"},
+        {"id": "c24", "label": "Still try to light the lamp too", "target": "n24"}
+      ]
+    },
+    {
+      "id": "n22",
+      "body": "Nora and Theo studied the wobbly gear closely. One of its teeth was cracked clean through, worn down by decades of salt and rust. If it broke free while the lamp was spinning, the whole mechanism might seize up in the middle of the storm. Working quickly, Theo wedged a strip of metal from his tool kit against the weak spot, bracing it just enough to hold. Nora held her breath as the lamp kept turning steadily, its beam sweeping wide and strong across the dark, churning sea below them.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c21", "label": "The brace holds, celebrate together", "target": "n_end_success"},
+        {"id": "c22", "label": "It's still risky, brace for the worst", "target": "n_end_soaked"}
+      ]
+    },
+    {
+      "id": "n24",
+      "body": "With the hidden chart tucked safely in her jacket, Nora hurried to the lamp anyway, determined to give the boats every chance. She turned the brass key, and the old gears groaned into motion one more time. Light swept out across the water just as the boats reached the chart's marked safe passage, guided by both the beam and grandfather's careful old drawings. Theo cheered from the window, watching the boats turn safely toward home together, lit by a golden light that hadn't shone in years, warm against the gray storm.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c25", "label": "Watch the boats reach safety", "target": "n_end_triumph"},
+        {"id": "c26", "label": "Look through grandfather's old notes once more", "target": "n_end_notebook"}
+      ]
+    },
+    {
+      "id": "n_end_triumph",
+      "body": "The lamp turned steadily above Salt Hollow, its golden beam sweeping across the storm-tossed sea. One by one, the fishing boats found their way past the rocks and into the calm harbor beyond. Villagers gathered on the docks with lanterns, cheering as the boats came home safe. Nora's grandfather's old lighthouse was burning bright again, just like it used to. Soaked and tired, Nora and Theo climbed down at last, Biscuit barking happily at the door. The storm rolled on past them, but Salt Hollow's light kept turning, faithful and strong, exactly the way it always had before.",
+      "is_ending": true,
+      "ending": {"id": "e1", "valence": "positive", "kind": "completion", "title": "The Light Returns"}
+    },
+    {
+      "id": "n_end_success",
+      "body": "The boats heard the horn's call and saw the brace hold the old gear steady. One by one, they turned away from the rocks and steered safely toward the harbor lights glowing in the distance. Nora and Theo watched from the lamp room window, soaked but grinning, as the last boat slipped safely into calm water. It hadn't been perfect. The lamp flickered and the gear groaned the whole time. But it had been enough. Salt Hollow's light, patched and stubborn, had done its job one more time, and everyone made it safely home.",
+      "is_ending": true,
+      "ending": {"id": "e2", "valence": "positive", "kind": "success", "title": "Enough to Get Them Home"}
+    },
+    {
+      "id": "n_end_discovery_good",
+      "body": "Nora spread grandfather's old chart across the lamp room floor, tracing the safe passage he'd marked through the rocks years ago. Using the chart and the horn together, she and Theo guided the boats safely around the danger, one careful signal at a time. Later, they found more notes hidden behind loose stones all through the lighthouse, a whole secret history of storms grandfather had weathered. Salt Hollow held more mysteries than they'd ever guessed. Wet, tired, and thrilled, Nora tucked the chart safely away, already dreaming about what else they might discover next time.",
+      "is_ending": true,
+      "ending": {"id": "e3", "valence": "positive", "kind": "discovery", "title": "Grandfather's Secret Chart"}
+    },
+    {
+      "id": "n_end_notebook",
+      "body": "Instead of racing on, Nora and Theo sat together and read grandfather's old notebook by flashlight. Its pages were full of storms he'd survived, boats he'd guided home, and small sketches of the lighthouse's stubborn old gears. Outside, the storm eventually passed on its own, and the fishing boats found their way home using the harbor's other lights. The lamp stayed dark that night, but Nora felt like she understood her grandfather a little better now. Some adventures, she realized, were about what you learned, not just what you managed to fix.",
+      "is_ending": true,
+      "ending": {"id": "e4", "valence": "neutral", "kind": "discovery", "title": "Grandfather's Notebook"}
+    },
+    {
+      "id": "n_end_retreat",
+      "body": "The path ahead felt too dangerous to risk any further. Nora and Theo carefully made their way back the way they'd come, climbing out just as the first heavy sheets of rain began to fall. They told the harbor master what they'd found, and he sent an experienced crew to check the lighthouse properly the next morning. It wasn't the ending Nora had imagined, but she knew they'd made the smart choice. Sometimes, she thought, knowing when to turn back was its own kind of brave, even if it didn't feel exciting at the time.",
+      "is_ending": true,
+      "ending": {"id": "e5", "valence": "neutral", "kind": "retreat", "title": "Turning Back"}
+    },
+    {
+      "id": "n_end_gearjam",
+      "body": "Rushing forward, Nora and Theo forced the old gear too hard, and it seized with a horrible grinding crunch. Dust and rust rained down as the mechanism locked tight, refusing to budge another inch. Whatever chance the old lighthouse had of lighting up tonight was gone, jammed shut by their own hurry. They climbed back out into the storm, disappointed and a little scared, watching distant boat lights bob uncertainly on the dark water. The harbor master would need real tools and real time to fix what they'd broken. Some machines, Nora learned, needed patience more than speed.",
+      "is_ending": true,
+      "ending": {"id": "e6", "valence": "negative", "kind": "setback", "title": "Jammed Gears"}
+    },
+    {
+      "id": "n_end_soaked",
+      "body": "The tide rose faster than Nora expected, rushing in through the cracks and low openings all around them. Cold water soaked their shoes, then their knees, forcing them to scramble back the way they'd come before the passage flooded completely. Outside, thunder cracked overhead as they climbed to safety, soaked and shivering, the lighthouse still dark behind them. The fishing boats would have to find their own way home tonight, without any help from Salt Hollow's lamp. Nora promised herself they would come back better prepared, with rope, boots, and more time before the next storm.",
+      "is_ending": true,
+      "ending": {"id": "e7", "valence": "negative", "kind": "setback", "title": "Caught by the Tide"}
+    }
+  ]
+}

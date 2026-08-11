@@ -1,0 +1,283 @@
+{
+  "n_open": {
+    "c_open": {
+      "action": "commit_to_the_challenge_together",
+      "action_family": "SOCIAL",
+      "target_role": "SELF",
+      "tradeoff": "NONE",
+      "consequence": "RELATIONSHIP"
+    }
+  },
+  "n_start": {
+    "c_examine": {
+      "action": "decode_a_written_note",
+      "action_family": "INFORMATION",
+      "target_role": "INFORMATION",
+      "tradeoff": "SPEED_VS_INFO",
+      "consequence": "KNOWLEDGE"
+    },
+    "c_door": {
+      "action": "find_an_unofficial_way_past_the_wall",
+      "action_family": "NAVIGATION",
+      "target_role": "BARRIER",
+      "tradeoff": "PRIDE_VS_HELP",
+      "consequence": "ACCESS"
+    },
+    "c_keeper": {
+      "action": "ask_a_person_for_help",
+      "action_family": "SOCIAL",
+      "target_role": "PERSON",
+      "tradeoff": "PRIDE_VS_HELP",
+      "consequence": "RELATIONSHIP"
+    }
+  },
+  "n_note": {
+    "c_note_key": {
+      "action": "follow_the_decoded_lead_to_its_place",
+      "action_family": "NAVIGATION",
+      "target_role": "LOCATION",
+      "tradeoff": "CERTAINTY_VS_TIME",
+      "consequence": "ACCESS"
+    },
+    "c_note_inside": {
+      "action": "act_on_the_decoded_lead_and_go_in",
+      "action_family": "NAVIGATION",
+      "target_role": "LOCATION",
+      "tradeoff": "CERTAINTY_VS_TIME",
+      "consequence": "ACCESS"
+    }
+  },
+  "n_door": {
+    "c_door_force": {
+      "action": "push_through_a_low_gap",
+      "action_family": "PHYSICAL_RISK",
+      "target_role": "BARRIER",
+      "tradeoff": "EFFORT_VS_SHORTCUT",
+      "consequence": "ACCESS"
+    },
+    "c_door_window": {
+      "action": "climb_to_a_high_opening",
+      "action_family": "PHYSICAL_RISK",
+      "target_role": "BARRIER",
+      "tradeoff": "SAFETY_VS_REWARD",
+      "consequence": "ACCESS"
+    }
+  },
+  "n_keeper": {
+    "c_keeper_enter": {
+      "action": "take_the_offered_way_in_now",
+      "action_family": "NAVIGATION",
+      "target_role": "LOCATION",
+      "tradeoff": "SPEED_VS_INFO",
+      "consequence": "ACCESS"
+    },
+    "c_keeper_story": {
+      "action": "ask_a_person_for_their_account",
+      "action_family": "SOCIAL",
+      "target_role": "PERSON",
+      "tradeoff": "SPEED_VS_INFO",
+      "consequence": "KNOWLEDGE"
+    }
+  },
+  "n_keyhunt": {
+    "c_keyhunt_in": {
+      "action": "enter_by_the_confirmed_way",
+      "action_family": "NAVIGATION",
+      "target_role": "LOCATION",
+      "tradeoff": "NONE",
+      "consequence": "ACCESS"
+    }
+  },
+  "n_keeper_story": {
+    "c_story_in": {
+      "action": "go_inside_carrying_what_was_learned",
+      "action_family": "NAVIGATION",
+      "target_role": "LOCATION",
+      "tradeoff": "NONE",
+      "consequence": "ACCESS"
+    }
+  },
+  "n_window": {
+    "c_window_in": {
+      "action": "drop_down_into_the_building",
+      "action_family": "PHYSICAL_RISK",
+      "target_role": "BARRIER",
+      "tradeoff": "SAFETY_VS_REWARD",
+      "consequence": "ACCESS"
+    }
+  },
+  "n_inside": {
+    "c_inside_stairs": {
+      "action": "enter_one_of_the_tower_rooms",
+      "action_family": "NAVIGATION",
+      "target_role": "LOCATION",
+      "tradeoff": "NONE",
+      "consequence": "LOCATION"
+    },
+    "c_inside_study": {
+      "action": "enter_one_of_the_tower_rooms",
+      "action_family": "NAVIGATION",
+      "target_role": "LOCATION",
+      "tradeoff": "NONE",
+      "consequence": "LOCATION"
+    },
+    "c_inside_pendulum": {
+      "action": "enter_one_of_the_tower_rooms",
+      "action_family": "NAVIGATION",
+      "target_role": "LOCATION",
+      "tradeoff": "NONE",
+      "consequence": "LOCATION"
+    },
+    "c_inside_basement": {
+      "action": "enter_one_of_the_tower_rooms",
+      "action_family": "NAVIGATION",
+      "target_role": "LOCATION",
+      "tradeoff": "NONE",
+      "consequence": "LOCATION"
+    }
+  },
+  "n_stairs": {
+    "c_stairs_face": {
+      "action": "move_on_to_the_clockface",
+      "action_family": "NAVIGATION",
+      "target_role": "LOCATION",
+      "tradeoff": "NONE",
+      "consequence": "LOCATION"
+    }
+  },
+  "n_study": {
+    "c_study_face": {
+      "action": "move_on_to_the_clockface",
+      "action_family": "NAVIGATION",
+      "target_role": "LOCATION",
+      "tradeoff": "SPEED_VS_INFO",
+      "consequence": "LOCATION"
+    },
+    "c_study_logs": {
+      "action": "stay_and_read_the_archive",
+      "action_family": "INFORMATION",
+      "target_role": "INFORMATION",
+      "tradeoff": "SPEED_VS_INFO",
+      "consequence": "KNOWLEDGE"
+    }
+  },
+  "n_pendulum": {
+    "c_pendulum_oil": {
+      "action": "cross_a_risky_traverse",
+      "action_family": "PHYSICAL_RISK",
+      "target_role": "BARRIER",
+      "tradeoff": "SAFETY_VS_REWARD",
+      "consequence": "RESOURCE"
+    },
+    "c_pendulum_giveup": {
+      "action": "decline_a_risky_traverse",
+      "action_family": "PHYSICAL_RISK",
+      "target_role": "SELF",
+      "tradeoff": "SAFETY_VS_REWARD",
+      "consequence": "SAFETY"
+    }
+  },
+  "n_basement": {
+    "c_basement_face": {
+      "action": "move_on_to_the_clockface",
+      "action_family": "NAVIGATION",
+      "target_role": "LOCATION",
+      "tradeoff": "NONE",
+      "consequence": "LOCATION"
+    }
+  },
+  "n_clockface": {
+    "c_face_correct": {
+      "action": "set_the_dial_by_reasoning",
+      "action_family": "CRAFT",
+      "target_role": "MECHANISM",
+      "tradeoff": "CERTAINTY_VS_TIME",
+      "consequence": "ACCESS"
+    },
+    "c_face_jam": {
+      "action": "force_the_dial",
+      "action_family": "PHYSICAL_RISK",
+      "target_role": "MECHANISM",
+      "tradeoff": "EFFORT_VS_SHORTCUT",
+      "consequence": "ACCESS"
+    },
+    "c_face_panel": {
+      "action": "search_behind_the_dial_for_another_way",
+      "action_family": "INFORMATION",
+      "target_role": "MECHANISM",
+      "tradeoff": "SPEED_VS_INFO",
+      "consequence": "KNOWLEDGE"
+    },
+    "c_face_random": {
+      "action": "set_the_dial_by_guessing",
+      "action_family": "CRAFT",
+      "target_role": "MECHANISM",
+      "tradeoff": "CERTAINTY_VS_TIME",
+      "consequence": "ACCESS"
+    }
+  },
+  "n_setcorrect": {
+    "c_correct_vault": {
+      "action": "step_into_the_opened_room",
+      "action_family": "NAVIGATION",
+      "target_role": "LOCATION",
+      "tradeoff": "NONE",
+      "consequence": "LOCATION"
+    }
+  },
+  "n_setjam": {
+    "c_jam_oil": {
+      "action": "free_the_jammed_mechanism",
+      "action_family": "CRAFT",
+      "target_role": "MECHANISM",
+      "tradeoff": "EFFORT_VS_SHORTCUT",
+      "consequence": "ACCESS"
+    },
+    "c_jam_stuck": {
+      "action": "stop_the_attempt_for_the_night",
+      "action_family": "TEMPORAL",
+      "target_role": "SELF",
+      "tradeoff": "EFFORT_VS_SHORTCUT",
+      "consequence": "SAFETY"
+    }
+  },
+  "n_backpanel": {
+    "c_panel_vault": {
+      "action": "follow_the_hidden_route_to_a_chosen_room",
+      "action_family": "NAVIGATION",
+      "target_role": "LOCATION",
+      "tradeoff": "NONE",
+      "consequence": "LOCATION"
+    },
+    "c_panel_secret": {
+      "action": "follow_the_hidden_route_to_a_chosen_room",
+      "action_family": "NAVIGATION",
+      "target_role": "LOCATION",
+      "tradeoff": "NONE",
+      "consequence": "LOCATION"
+    }
+  },
+  "n_vault": {
+    "c_vault_share": {
+      "action": "give_the_find_to_the_community",
+      "action_family": "MORAL",
+      "target_role": "OBJECT",
+      "tradeoff": "NONE",
+      "consequence": "REPUTATION"
+    },
+    "c_vault_keep": {
+      "action": "keep_the_find_among_friends",
+      "action_family": "MORAL",
+      "target_role": "OBJECT",
+      "tradeoff": "NONE",
+      "consequence": "RELATIONSHIP"
+    },
+    "c_vault_grab": {
+      "action": "take_the_treasure_for_yourselves",
+      "action_family": "MORAL",
+      "target_role": "OBJECT",
+      "tradeoff": "SAFETY_VS_REWARD",
+      "consequence": "RESOURCE"
+    }
+  }
+}

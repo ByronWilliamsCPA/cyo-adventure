@@ -1,0 +1,423 @@
+{
+ "schema_version": "2.0",
+ "id": "sk_clocktower_cipher",
+ "version": 1,
+ "title": "The Clocktower Cipher",
+ "metadata": {
+  "age_band": "10-13",
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 5.5,
+   "tolerance": 1.5
+  },
+  "tier": 1,
+  "themes": [
+   "mystery",
+   "puzzles",
+   "friendship",
+   "history"
+  ],
+  "estimated_minutes": 18,
+  "ending_count": 8,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "mild",
+   "peril": "mild"
+  },
+  "topology": "branch_and_bottleneck",
+  "production_eligible": false
+ },
+ "variables": [],
+ "start_node": "n_open",
+ "nodes": [
+  {
+   "id": "n_open",
+   "body": "<<FILL role=setup words=100 tier=open contract='n_open'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_open",
+     "label": "Read the note again, together.",
+     "target": "n_start"
+    }
+   ]
+  },
+  {
+   "id": "n_start",
+   "body": "<<FILL role=choice words=100 tier=open contract='n_start'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_examine",
+     "label": "Examine the peal code note pinned to the door.",
+     "target": "n_note"
+    },
+    {
+     "id": "c_door",
+     "label": "Search the building for another way in.",
+     "target": "n_door"
+    },
+    {
+     "id": "c_keeper",
+     "label": "Find the last bell-ringer and ask for help.",
+     "target": "n_keeper"
+    }
+   ]
+  },
+  {
+   "id": "n_note",
+   "body": "<<FILL role=rising words=100 tier=open contract='n_note'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_note_key",
+     "label": "Follow the clue to hunt for the hidden key.",
+     "target": "n_keyhunt"
+    },
+    {
+     "id": "c_note_inside",
+     "label": "Try the old flue tunnel the note mentions.",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_door",
+   "body": "<<FILL role=rising words=100 tier=open contract='n_door'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_door_force",
+     "label": "Shoulder the stiff side door open.",
+     "target": "n_inside"
+    },
+    {
+     "id": "c_door_window",
+     "label": "Climb up to the belfry hatch.",
+     "target": "n_window"
+    }
+   ]
+  },
+  {
+   "id": "n_keeper",
+   "body": "<<FILL role=rising words=100 tier=open contract='n_keeper'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_keeper_enter",
+     "label": "Go inside with the last bell-ringer.",
+     "target": "n_inside"
+    },
+    {
+     "id": "c_keeper_story",
+     "label": "Ask who built the peal code.",
+     "target": "n_keeper_story"
+    }
+   ]
+  },
+  {
+   "id": "n_keyhunt",
+   "body": "<<FILL role=rising words=100 tier=open contract='n_keyhunt'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_keyhunt_in",
+     "label": "Unlock the front door with the brass foundry key.",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_keeper_story",
+   "body": "<<FILL role=rising words=100 tier=open contract='n_keeper_story'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_story_in",
+     "label": "Head inside with what you have learned.",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_window",
+   "body": "<<FILL role=rising words=100 tier=open contract='n_window'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_window_in",
+     "label": "Drop down into the tower.",
+     "target": "n_inside"
+    }
+   ]
+  },
+  {
+   "id": "n_inside",
+   "body": "<<FILL role=choice words=100 tier=open contract='n_inside'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_inside_stairs",
+     "label": "Climb the spiral stair.",
+     "target": "n_stairs"
+    },
+    {
+     "id": "c_inside_study",
+     "label": "Open the founder's pattern room.",
+     "target": "n_study"
+    },
+    {
+     "id": "c_inside_pendulum",
+     "label": "Edge along the bell-frame catwalk.",
+     "target": "n_pendulum"
+    },
+    {
+     "id": "c_inside_basement",
+     "label": "Go down to the basement.",
+     "target": "n_basement"
+    }
+   ]
+  },
+  {
+   "id": "n_stairs",
+   "body": "<<FILL role=rising words=100 tier=open contract='n_stairs'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_stairs_face",
+     "label": "Climb up to the great tuning board.",
+     "target": "n_clockface"
+    }
+   ]
+  },
+  {
+   "id": "n_study",
+   "body": "<<FILL role=rising words=100 tier=open contract='n_study'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_study_face",
+     "label": "Take the ringing-pattern primer up to the great tuning board.",
+     "target": "n_clockface"
+    },
+    {
+     "id": "c_study_logs",
+     "label": "Stay and read the fascinating peal logs.",
+     "target": "n_end_library"
+    }
+   ]
+  },
+  {
+   "id": "n_pendulum",
+   "body": "<<FILL role=rising words=100 tier=open contract='n_pendulum'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_pendulum_oil",
+     "label": "Cross carefully and grab the graphite dressing.",
+     "target": "n_clockface"
+    },
+    {
+     "id": "c_pendulum_giveup",
+     "label": "Decide the ledge is too risky and back out.",
+     "target": "n_end_giveup"
+    }
+   ]
+  },
+  {
+   "id": "n_basement",
+   "body": "<<FILL role=rising words=100 tier=open contract='n_basement'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_basement_face",
+     "label": "Take the service ladder up to the great tuning board.",
+     "target": "n_clockface"
+    }
+   ]
+  },
+  {
+   "id": "n_clockface",
+   "body": "<<FILL role=choice words=100 tier=open contract='n_clockface'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_face_correct",
+     "label": "Set the hands using the peal code.",
+     "target": "n_setcorrect"
+    },
+    {
+     "id": "c_face_jam",
+     "label": "Force the hands by guesswork.",
+     "target": "n_setjam"
+    },
+    {
+     "id": "c_face_panel",
+     "label": "Search for a back panel behind the great tuning board.",
+     "target": "n_backpanel"
+    },
+    {
+     "id": "c_face_random",
+     "label": "Spin the hands at random and hope.",
+     "target": "n_end_timeout"
+    }
+   ]
+  },
+  {
+   "id": "n_setcorrect",
+   "body": "<<FILL role=climax words=100 tier=open contract='n_setcorrect'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_correct_vault",
+     "label": "Step through to the casting vault.",
+     "target": "n_vault"
+    }
+   ]
+  },
+  {
+   "id": "n_setjam",
+   "body": "<<FILL role=climax words=100 tier=open contract='n_setjam'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_jam_oil",
+     "label": "Free the jammed gears with the graphite dressing.",
+     "target": "n_vault"
+    },
+    {
+     "id": "c_jam_stuck",
+     "label": "Give up; the gears will not move.",
+     "target": "n_end_stuck"
+    }
+   ]
+  },
+  {
+   "id": "n_backpanel",
+   "body": "<<FILL role=rising words=100 tier=open contract='n_backpanel'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_panel_vault",
+     "label": "Open the panel into the casting vault.",
+     "target": "n_vault"
+    },
+    {
+     "id": "c_panel_secret",
+     "label": "Slip into the founder's hidden mould loft.",
+     "target": "n_end_secret"
+    }
+   ]
+  },
+  {
+   "id": "n_vault",
+   "body": "<<FILL role=choice words=100 tier=open contract='n_vault'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_vault_share",
+     "label": "Decode the final message and bring it to Thistledown.",
+     "target": "n_end_hero"
+    },
+    {
+     "id": "c_vault_keep",
+     "label": "Keep Founder Josiah Vane's secret among friends.",
+     "target": "n_end_keepsake"
+    },
+    {
+     "id": "c_vault_grab",
+     "label": "Stuff the treasure in your bag and run.",
+     "target": "n_end_caught"
+    }
+   ]
+  },
+  {
+   "id": "n_end_library",
+   "body": "<<FILL role=failure words=100 tier=locked_outcome contract='n_end_library'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_library",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Lost in the Peal Logs"
+   }
+  },
+  {
+   "id": "n_end_giveup",
+   "body": "<<FILL role=failure words=100 tier=locked_outcome contract='n_end_giveup'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_giveup",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Too Risky"
+   }
+  },
+  {
+   "id": "n_end_timeout",
+   "body": "<<FILL role=failure words=100 tier=locked_outcome contract='n_end_timeout'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_timeout",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Out of Time"
+   }
+  },
+  {
+   "id": "n_end_stuck",
+   "body": "<<FILL role=failure words=100 tier=locked_outcome contract='n_end_stuck'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_stuck",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Locked Out for the Night"
+   }
+  },
+  {
+   "id": "n_end_secret",
+   "body": "<<FILL role=completion words=100 tier=locked_outcome contract='n_end_secret'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_secret",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Hidden Mould Loft"
+   }
+  },
+  {
+   "id": "n_end_hero",
+   "body": "<<FILL role=completion words=100 tier=locked_outcome contract='n_end_hero'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_hero",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Bell Remembers"
+   }
+  },
+  {
+   "id": "n_end_keepsake",
+   "body": "<<FILL role=completion words=100 tier=locked_outcome contract='n_end_keepsake'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_keepsake",
+    "valence": "positive",
+    "kind": "success",
+    "title": "A Secret Kept"
+   }
+  },
+  {
+   "id": "n_end_caught",
+   "body": "<<FILL role=failure words=100 tier=locked_outcome contract='n_end_caught'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_caught",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Caught Red-Handed"
+   }
+  }
+ ]
+}
