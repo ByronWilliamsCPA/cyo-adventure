@@ -12,31 +12,27 @@
         <meta name="author" content="Byron Williams">
       
       
-        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/adr/">
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/adr/adr-029-web-accessibility-conformance/">
       
       
-        <link rel="prev" href="../roadmap/">
-      
-      
-        <link rel="next" href="adr-001-story-format-json-storybook/">
       
       
         
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
-        <title>Architecture Decision Records - CYO Adventure</title>
+        <title>ADR-029: Web accessibility conformance target and testing strategy - CYO Adventure</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -55,9 +51,9 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
   
@@ -92,7 +88,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#what-are-adrs" class="md-skip">
+        <a href="#adr-029-web-accessibility-conformance-target-and-testing-strategy" class="md-skip">
           Skip to content
         </a>
       
@@ -106,7 +102,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -126,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Architecture Decision Records
+              ADR-029: Web accessibility conformance target and testing strategy
             
           </span>
         </div>
@@ -239,7 +235,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../.." class="md-tabs__link">
+      <a href="../../.." class="md-tabs__link">
         
   
   
@@ -260,7 +256,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../guides/overview/" class="md-tabs__link">
+        <a href="../../../guides/overview/" class="md-tabs__link">
           
   
   
@@ -282,7 +278,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../api-reference/" class="md-tabs__link">
+        <a href="../../../api-reference/" class="md-tabs__link">
           
   
   
@@ -304,7 +300,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../operations/runbook/" class="md-tabs__link">
+        <a href="../../../operations/runbook/" class="md-tabs__link">
           
   
   
@@ -326,7 +322,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../architecture/" class="md-tabs__link">
+        <a href="../../../architecture/" class="md-tabs__link">
           
   
   
@@ -348,7 +344,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../security/assurance-spine/" class="md-tabs__link">
+        <a href="../../../security/assurance-spine/" class="md-tabs__link">
           
   
   
@@ -370,7 +366,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../development/architecture/" class="md-tabs__link">
+        <a href="../../../development/architecture/" class="md-tabs__link">
           
   
   
@@ -392,7 +388,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../project/roadmap/" class="md-tabs__link">
+        <a href="../../../project/roadmap/" class="md-tabs__link">
           
   
   
@@ -410,13 +406,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../" class="md-tabs__link">
           
   
   
@@ -438,7 +432,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../PROJECT_SETUP/" class="md-tabs__link">
+        <a href="../../../PROJECT_SETUP/" class="md-tabs__link">
           
   
   
@@ -460,7 +454,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../ADRs/" class="md-tabs__link">
+        <a href="../../../ADRs/" class="md-tabs__link">
           
   
   
@@ -496,7 +490,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -526,7 +520,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href="../../.." class="md-nav__link">
         
   
   
@@ -624,7 +618,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/overview/" class="md-nav__link">
+      <a href="../../../guides/overview/" class="md-nav__link">
         
   
   
@@ -659,7 +653,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/configuration/" class="md-nav__link">
+      <a href="../../../guides/configuration/" class="md-nav__link">
         
   
   
@@ -694,7 +688,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/usage/" class="md-nav__link">
+      <a href="../../../guides/usage/" class="md-nav__link">
         
   
   
@@ -729,7 +723,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/supabase-environments/" class="md-nav__link">
+      <a href="../../../guides/supabase-environments/" class="md-nav__link">
         
   
   
@@ -829,7 +823,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api-reference/" class="md-nav__link">
+      <a href="../../../api-reference/" class="md-nav__link">
         
   
   
@@ -935,7 +929,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../operations/runbook/" class="md-nav__link">
+      <a href="../../../operations/runbook/" class="md-nav__link">
         
   
   
@@ -970,7 +964,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../operations/kws-test-runbook/" class="md-nav__link">
+      <a href="../../../operations/kws-test-runbook/" class="md-nav__link">
         
   
   
@@ -1005,7 +999,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../operations/authoring-guide/" class="md-nav__link">
+      <a href="../../../operations/authoring-guide/" class="md-nav__link">
         
   
   
@@ -1040,7 +1034,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../operations/security-events/" class="md-nav__link">
+      <a href="../../../operations/security-events/" class="md-nav__link">
         
   
   
@@ -1119,7 +1113,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../architecture/" class="md-nav__link ">
+            <a href="../../../architecture/" class="md-nav__link ">
               
   
   
@@ -1170,7 +1164,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/user-journeys/" class="md-nav__link">
+      <a href="../../../architecture/user-journeys/" class="md-nav__link">
         
   
   
@@ -1205,7 +1199,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/system-overview/" class="md-nav__link">
+      <a href="../../../architecture/system-overview/" class="md-nav__link">
         
   
   
@@ -1240,7 +1234,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/generation-pipeline/" class="md-nav__link">
+      <a href="../../../architecture/generation-pipeline/" class="md-nav__link">
         
   
   
@@ -1275,7 +1269,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/validation-and-player/" class="md-nav__link">
+      <a href="../../../architecture/validation-and-player/" class="md-nav__link">
         
   
   
@@ -1310,7 +1304,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/data-model/" class="md-nav__link">
+      <a href="../../../architecture/data-model/" class="md-nav__link">
         
   
   
@@ -1345,7 +1339,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/deployment/" class="md-nav__link">
+      <a href="../../../architecture/deployment/" class="md-nav__link">
         
   
   
@@ -1453,7 +1447,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../security/assurance-spine/" class="md-nav__link">
+      <a href="../../../security/assurance-spine/" class="md-nav__link">
         
   
   
@@ -1488,7 +1482,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../security/assurance-register/" class="md-nav__link">
+      <a href="../../../security/assurance-register/" class="md-nav__link">
         
   
   
@@ -1523,7 +1517,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../security/control-inheritance/" class="md-nav__link">
+      <a href="../../../security/control-inheritance/" class="md-nav__link">
         
   
   
@@ -1558,7 +1552,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../security/crypto-inventory/" class="md-nav__link">
+      <a href="../../../security/crypto-inventory/" class="md-nav__link">
         
   
   
@@ -1593,7 +1587,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../security/red-team-design-review-2026-07/" class="md-nav__link">
+      <a href="../../../security/red-team-design-review-2026-07/" class="md-nav__link">
         
   
   
@@ -1668,7 +1662,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../api/" class="md-nav__link ">
+            <a href="../../../api/" class="md-nav__link ">
               
   
   
@@ -1717,7 +1711,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/architecture/" class="md-nav__link">
+      <a href="../../../development/architecture/" class="md-nav__link">
         
   
   
@@ -1752,7 +1746,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/testing/" class="md-nav__link">
+      <a href="../../../development/testing/" class="md-nav__link">
         
   
   
@@ -1789,7 +1783,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/code-quality/" class="md-nav__link">
+      <a href="../../../development/code-quality/" class="md-nav__link">
         
   
   
@@ -1824,7 +1818,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/contributing/" class="md-nav__link">
+      <a href="../../../development/contributing/" class="md-nav__link">
         
   
   
@@ -1928,7 +1922,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../project/roadmap/" class="md-nav__link">
+      <a href="../../../project/roadmap/" class="md-nav__link">
         
   
   
@@ -1963,7 +1957,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../project/changelog/" class="md-nav__link">
+      <a href="../../../project/changelog/" class="md-nav__link">
         
   
   
@@ -1998,7 +1992,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../project/license/" class="md-nav__link">
+      <a href="../../../project/license/" class="md-nav__link">
         
   
   
@@ -2037,8 +2031,6 @@
       
   
   
-    
-  
   
   
     
@@ -2064,23 +2056,22 @@
     
     
       
-        
-        
-      
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../" class="md-nav__link ">
+            <a href="../../" class="md-nav__link ">
               
   
   
@@ -2105,13 +2096,13 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="">
+              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_9">
             <span class="md-nav__icon md-icon"></span>
             
@@ -2131,7 +2122,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../project-vision/" class="md-nav__link">
+      <a href="../../project-vision/" class="md-nav__link">
         
   
   
@@ -2166,7 +2157,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tech-spec/" class="md-nav__link">
+      <a href="../../tech-spec/" class="md-nav__link">
         
   
   
@@ -2201,7 +2192,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../PROJECT-PLAN/" class="md-nav__link">
+      <a href="../../PROJECT-PLAN/" class="md-nav__link">
         
   
   
@@ -2236,7 +2227,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../roadmap/" class="md-nav__link">
+      <a href="../../roadmap/" class="md-nav__link">
         
   
   
@@ -2268,8 +2259,6 @@
                 
   
   
-    
-  
   
   
     
@@ -2307,21 +2296,20 @@
       
       
         
-          
-          
-        
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9_6" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9_6" >
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="./" class="md-nav__link md-nav__link--active">
+            <a href="../" class="md-nav__link ">
               
   
   
@@ -2346,13 +2334,13 @@
             </a>
             
               
-              <label class="md-nav__link md-nav__link--active" for="__nav_9_6" id="__nav_9_6_label" tabindex="">
+              <label class="md-nav__link " for="__nav_9_6" id="__nav_9_6_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_6_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_9_6">
             <span class="md-nav__icon md-icon"></span>
             
@@ -2372,7 +2360,7 @@
   
   
     <li class="md-nav__item">
-      <a href="adr-001-story-format-json-storybook/" class="md-nav__link">
+      <a href="../adr-001-story-format-json-storybook/" class="md-nav__link">
         
   
   
@@ -2407,7 +2395,7 @@
   
   
     <li class="md-nav__item">
-      <a href="adr-002-client-pwa/" class="md-nav__link">
+      <a href="../adr-002-client-pwa/" class="md-nav__link">
         
   
   
@@ -2442,7 +2430,7 @@
   
   
     <li class="md-nav__item">
-      <a href="adr-003-frontier-llm-generation/" class="md-nav__link">
+      <a href="../adr-003-frontier-llm-generation/" class="md-nav__link">
         
   
   
@@ -2477,7 +2465,7 @@
   
   
     <li class="md-nav__item">
-      <a href="adr-004-homelab-first-deployment/" class="md-nav__link">
+      <a href="../adr-004-homelab-first-deployment/" class="md-nav__link">
         
   
   
@@ -2512,7 +2500,7 @@
   
   
     <li class="md-nav__item">
-      <a href="adr-005-mandatory-human-approval/" class="md-nav__link">
+      <a href="../adr-005-mandatory-human-approval/" class="md-nav__link">
         
   
   
@@ -2547,7 +2535,7 @@
   
   
     <li class="md-nav__item">
-      <a href="adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+      <a href="../adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
         
   
   
@@ -2582,7 +2570,7 @@
   
   
     <li class="md-nav__item">
-      <a href="adr-007-raw-output-retention/" class="md-nav__link">
+      <a href="../adr-007-raw-output-retention/" class="md-nav__link">
         
   
   
@@ -2617,7 +2605,7 @@
   
   
     <li class="md-nav__item">
-      <a href="adr-008-public-app-store-launch/" class="md-nav__link">
+      <a href="../adr-008-public-app-store-launch/" class="md-nav__link">
         
   
   
@@ -2652,7 +2640,7 @@
   
   
     <li class="md-nav__item">
-      <a href="adr-009-supabase-platform/" class="md-nav__link">
+      <a href="../adr-009-supabase-platform/" class="md-nav__link">
         
   
   
@@ -2687,7 +2675,7 @@
   
   
     <li class="md-nav__item">
-      <a href="adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+      <a href="../adr-010-modal-review-and-gated-generation/" class="md-nav__link">
         
   
   
@@ -2722,7 +2710,7 @@
   
   
     <li class="md-nav__item">
-      <a href="adr-011-story-scale-framework/" class="md-nav__link">
+      <a href="../adr-011-story-scale-framework/" class="md-nav__link">
         
   
   
@@ -2783,13 +2771,10 @@
       
       
         
-          
-          
-        
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
@@ -2799,7 +2784,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../research/" class="md-nav__link ">
+            <a href="../../research/" class="md-nav__link ">
               
   
   
@@ -2824,7 +2809,7 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_9_7" id="__nav_9_7_label" tabindex="">
+              <label class="md-nav__link " for="__nav_9_7" id="__nav_9_7_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
@@ -2848,7 +2833,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../story-structure-diversity-critical-analysis/" class="md-nav__link">
+      <a href="../../story-structure-diversity-critical-analysis/" class="md-nav__link">
         
   
   
@@ -2883,7 +2868,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../story-structure-improvement-plan/" class="md-nav__link">
+      <a href="../../story-structure-improvement-plan/" class="md-nav__link">
         
   
   
@@ -2918,7 +2903,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../story-structure-implementation-briefs/" class="md-nav__link">
+      <a href="../../story-structure-implementation-briefs/" class="md-nav__link">
         
   
   
@@ -3032,7 +3017,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../PROJECT_SETUP/" class="md-nav__link">
+      <a href="../../../PROJECT_SETUP/" class="md-nav__link">
         
   
   
@@ -3067,7 +3052,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../OPENSSF_COMPLIANCE/" class="md-nav__link">
+      <a href="../../../OPENSSF_COMPLIANCE/" class="md-nav__link">
         
   
   
@@ -3102,7 +3087,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../PYTHON_COMPATIBILITY/" class="md-nav__link">
+      <a href="../../../PYTHON_COMPATIBILITY/" class="md-nav__link">
         
   
   
@@ -3171,7 +3156,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../ADRs/" class="md-nav__link ">
+            <a href="../../../ADRs/" class="md-nav__link ">
               
   
   
@@ -3222,7 +3207,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../ADRs/adr-template/" class="md-nav__link">
+      <a href="../../../ADRs/adr-template/" class="md-nav__link">
         
   
   
@@ -3274,6 +3259,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -3282,10 +3269,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#what-are-adrs" class="md-nav__link">
+  <a href="#tldr" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What Are ADRs?
+        TL;DR
       
     </span>
   </a>
@@ -3293,33 +3280,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#adr-index" class="md-nav__link">
+  <a href="#context" class="md-nav__link">
     <span class="md-ellipsis">
       
-        ADR Index
+        Context
       
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#creating-adrs" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Creating ADRs
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Creating ADRs">
+    <nav class="md-nav" aria-label="Context">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#automatic-generation" class="md-nav__link">
+  <a href="#problem" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Automatic Generation
+        Problem
       
     </span>
   </a>
@@ -3327,10 +3303,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#manual-creation" class="md-nav__link">
+  <a href="#constraints" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Manual Creation
+        Constraints
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#significance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Significance
       
     </span>
   </a>
@@ -3343,10 +3330,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#naming-convention" class="md-nav__link">
+  <a href="#decision" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Naming Convention
+        Decision
       
     </span>
   </a>
@@ -3354,54 +3341,60 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#when-to-create-an-adr" class="md-nav__link">
+  <a href="#consequences" class="md-nav__link">
     <span class="md-ellipsis">
       
-        When to Create an ADR
+        Consequences
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Consequences">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#positive" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Positive
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#adr-lifecycle" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#trade-offs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        ADR Lifecycle
+        Trade-offs
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#follow-on-work-is-part-of-the-adr-required-for-new-and-amended-adrs" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#technical-debt" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Follow-on work is part of the ADR (required for new and amended ADRs)
+        Technical debt
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#template-reference" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Template Reference
-      
-    </span>
-  </a>
+        
+      </ul>
+    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#more-information" class="md-nav__link">
+  <a href="#follow-on-work" class="md-nav__link">
     <span class="md-ellipsis">
       
-        More Information
+        Follow-on work
       
     </span>
   </a>
@@ -3428,269 +3421,188 @@
   
 
 
-  <h1>Overview</h1>
-
-<p>This directory contains Architecture Decision Records (ADRs) for CYO Adventure.</p>
-<h2 id="what-are-adrs">What Are ADRs?<a class="headerlink" href="#what-are-adrs" title="Permanent link">&para;</a></h2>
-<p>ADRs document significant architectural decisions along with their context and consequences. They help:</p>
+<h1 id="adr-029-web-accessibility-conformance-target-and-testing-strategy">ADR-029: Web accessibility conformance target and testing strategy<a class="headerlink" href="#adr-029-web-accessibility-conformance-target-and-testing-strategy" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>Status</strong>: Accepted (2026-08-11)
+<strong>Date</strong>: 2026-08-11
+<strong>Relates to</strong>: <a href="../adr-018-childrens-privacy-compliance/">ADR-018</a> (the other
+compliance-shaped ADR in this project; distinct concern, same "name it as a requirement"
+discipline)</p>
+</blockquote>
+<h2 id="tldr">TL;DR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h2>
+<p>WCAG 2.1 Level AA is this project's stated web-accessibility conformance target, effective now.
+The automated testing strategy that already existed in code but nowhere in the planning docs
+(axe-core via Playwright, scoped to WCAG tags, gating every PR) is the Tier 1 floor; a new Tier 2
+(<code>A11Y_EXTENDED=1</code>, WCAG 2.2 plus axe's best-practice rules) runs weekly against <code>main</code>, never
+per-PR, because the owner ruled the blocking <code>frontend-e2e</code> job should not grow in scope or run
+time. <code>eslint-plugin-jsx-a11y</code> is added at lint time as a third, even-earlier layer. This ADR does
+not claim conformance is complete; it names the target, states what already verifies it, and gives
+the open gaps a home.</p>
+<h2 id="context">Context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h2>
+<h3 id="problem">Problem<a class="headerlink" href="#problem" title="Permanent link">&para;</a></h3>
+<p>An external prompt (a small-business ADA-lawsuit-risk article) triggered an audit of this
+project's web-accessibility posture. The audit found substantial, actively-maintained engineering
+already in place: axe-core WCAG scans as a required, blocking CI check
+(<code>frontend/e2e/a11y.spec.ts</code>); a tested keyboard focus-trap contract citing WCAG 2.1.1 by number
+(<code>design-system/src/components/Dialog/Dialog.tsx</code>, <code>frontend/e2e/keyboard-nav.spec.ts</code>); WCAG
+2.5.5 tap-target regression tests; and widespread ARIA/semantic-HTML use (<code>grep -lE
+'aria-[a-z]+=|role="|&lt;button|&lt;label|htmlFor=' -r src --include='*.tsx' | grep -v
+'\.test\.tsx$' | wc -l</code> finds 69 of 92 non-test component files, a lower bound: the pattern is
+narrow by design so the count stays honestly reproducible rather than impressive). None of this
+was named as a project standard anywhere: CLAUDE.md, <code>project-vision.md</code>, <code>tech-spec.md</code>, and the
+capability register are silent on accessibility, and <code>roadmap.md</code>'s Phase 5 line item still reads
+as an open, unchecked deliverable ("Performance pass, offline-edge hardening, accessibility (WCAG
+AA basics)"). Good practice with no named standard is not durable: it depends on whoever wrote
+those tests, not on anything a future contributor, or an auditor, would find documented.</p>
+<p><strong>The axe-core scan's own coverage is narrower than "every page" and needs stating precisely,
+since overstating it in the one document meant to be citable evidence is worse than saying
+nothing.</strong> <code>a11y.spec.ts</code> visits 15 distinct routes. Cross-referenced against <code>router.tsx</code>, 11
+routes are scanned at neither tier: <code>/admin/library</code>, <code>/admin/users</code>, <code>/admin/audit</code>,
+<code>/guardian/review/:storybookId</code>, <code>/guardian/reading</code>, <code>/guardian/connections</code>,
+<code>/guardian/devices</code>, <code>/guardian/privacy</code>, <code>/guardian/preview/:profileId</code>, <code>/privacy</code>, and
+<code>/support</code>. Two of those are pages this very PR edits for accessibility:
+<code>legal/PrivacyPolicyPage.tsx</code> (the <code>role="region"</code> scrollable-table pattern motivating the
+project-wide lint override below) and <code>guardian/PrivacyPage.tsx</code> (the <code>role="list"</code>
+suppression), and neither has ever been axe-scanned. Closing this gap is <code>UW-F29</code> below.</p>
+<h3 id="constraints">Constraints<a class="headerlink" href="#constraints" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Prevent architectural drift during AI-assisted development</li>
-<li>Provide rationale for technical choices</li>
-<li>Enable future developers to understand why decisions were made</li>
-<li>Maintain consistency across coding sessions</li>
+<li><strong>Technical</strong>: <code>@axe-core/playwright</code> (bundled axe-core 4.12.1) supports WCAG 2.1 and WCAG 2.2
+  tags plus a non-normative "best-practice" rule set. <code>eslint-plugin-jsx-a11y</code>'s latest release
+  (6.10.2) declares a peer range of <code>eslint@^3..^9</code>; this project runs <code>eslint@10.8.0</code>. This is
+  the exact precondition that <code>UW-I06</code>/remediation-plan <code>P14</code> deferred the plugin on
+  (2026-07-17); it is still unmet upstream, and shipping anyway reproduced the named risk once
+  before landing: a first attempt installed the plugin with <code>npm install --force</code>, which
+  succeeded locally but produced a lockfile that a plain <code>npm ci</code> (what every CI job actually
+  runs) rejected with <code>ERESOLVE</code>, breaking every frontend job on this PR's first push. The fix,
+  not a workaround: a <code>package.json</code> <code>overrides</code> entry
+  (<code>"eslint-plugin-jsx-a11y": { "eslint": "$eslint" }</code>) that pins the plugin's peer check to this
+  project's own resolved <code>eslint</code> version. The plugin is pure AST analysis (<code>jsx-ast-utils</code>,
+  <code>aria-query</code>, <code>axobject-query</code>) with no dependency on ESLint's own runtime internals, and its
+  flat-config export (<code>flatConfigs.recommended</code>) ran clean end-to-end (<code>npm run lint</code>, full tree,
+  and a clean <code>npm ci</code> from the regenerated lockfile) once the override was in place. This
+  override is a <strong>permanent</strong> peer-check silence, not a temporary one: unlike this project's other
+  <code>overrides</code> entries (which bump a transitive package past a known CVE and are self-evidently
+  temporary), this one removes the signal that would otherwise prompt revisiting it. See
+  Technical debt.</li>
+<li><strong>Business</strong>: the per-PR <code>frontend-e2e</code> job is measured, not estimated: this PR's own run took
+  3m58s (<code>Frontend E2E (Playwright, mocked tier)</code>, 2026-08-11). <strong>Ruling (2026-08-11, this PR's
+  authoring conversation)</strong>: the project owner directed that new or expanded accessibility
+  compliance scanning run on a scheduled, non-blocking cadence against <code>main</code>, not inside the
+  per-PR gate, so that gate does not grow in scope or run time. This is the primary source for
+  that ruling; every other reference to it in this repository (CLAUDE.md, the weekly workflow's
+  header comment, Decision item 2 below) points back to this paragraph rather than restating it
+  as free-standing fact.</li>
 </ul>
-<h2 id="adr-index">ADR Index<a class="headerlink" href="#adr-index" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>ADR</th>
-<th>Title</th>
-<th>Status</th>
-<th>Date</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><a href="adr-001-story-format-json-storybook/">ADR-001</a></td>
-<td>Story format is a versioned JSON Storybook graph</td>
-<td>Accepted</td>
-<td>2026-06-20</td>
-</tr>
-<tr>
-<td><a href="adr-002-client-pwa/">ADR-002</a></td>
-<td>Client is a Progressive Web App</td>
-<td>Accepted</td>
-<td>2026-06-20</td>
-</tr>
-<tr>
-<td><a href="adr-003-frontier-llm-generation/">ADR-003</a></td>
-<td>Frontier LLM for generation, local model as fallback</td>
-<td>Accepted</td>
-<td>2026-06-20</td>
-</tr>
-<tr>
-<td><a href="adr-004-homelab-first-deployment/">ADR-004</a></td>
-<td>Homelab-first deployment, Azure as the scale-out alternative</td>
-<td>Accepted</td>
-<td>2026-06-20</td>
-</tr>
-<tr>
-<td><a href="adr-005-mandatory-human-approval/">ADR-005</a></td>
-<td>Mandatory human approval before any story reaches a child</td>
-<td>Accepted</td>
-<td>2026-06-20</td>
-</tr>
-<tr>
-<td><a href="adr-006-conditions-inhouse-evaluator/">ADR-006</a></td>
-<td>Conditions use the JSONLogic shape with an in-house whitelisted evaluator</td>
-<td>Accepted</td>
-<td>2026-06-20</td>
-</tr>
-<tr>
-<td><a href="adr-007-raw-output-retention/">ADR-007</a></td>
-<td>Raw LLM output retention policy for GenerationJob.report</td>
-<td>Accepted</td>
-<td>2026-06-29</td>
-</tr>
-<tr>
-<td><a href="adr-008-public-app-store-launch/">ADR-008</a></td>
-<td>Public App Store launch with tiered subscription monetization</td>
-<td>Proposed</td>
-<td>2026-07-02</td>
-</tr>
-<tr>
-<td><a href="adr-009-supabase-platform/">ADR-009</a></td>
-<td>Supabase as the managed platform for auth, database, and storage</td>
-<td>Accepted</td>
-<td>2026-07-02</td>
-</tr>
-<tr>
-<td><a href="adr-010-modal-review-and-gated-generation/">ADR-010</a></td>
-<td>Modal for moderation review and an evidence-gated generation leg</td>
-<td>Proposed</td>
-<td>2026-07-02</td>
-</tr>
-<tr>
-<td><a href="adr-011-story-scale-framework/">ADR-011</a></td>
-<td>Story-scale framework (reading band x length x style)</td>
-<td>Accepted</td>
-<td>2026-07-02</td>
-</tr>
-<tr>
-<td><a href="adr-012-supabase-cli-migrations/">ADR-012</a></td>
-<td>Supabase CLI SQL migrations replace Alembic</td>
-<td>Accepted</td>
-<td>2026-07-10</td>
-</tr>
-<tr>
-<td><a href="adr-013-hybrid-pqc-readiness/">ADR-013</a></td>
-<td>Hybrid post-quantum cryptography readiness</td>
-<td>Accepted</td>
-<td>2026-07-11</td>
-</tr>
-<tr>
-<td><a href="adr-014-device-authorized-kid-access/">ADR-014</a></td>
-<td>Device-authorized kid access</td>
-<td>Accepted</td>
-<td>2026-07-13</td>
-</tr>
-<tr>
-<td><a href="adr-015-story-request-initiation-and-gating/">ADR-015</a></td>
-<td>Universal story initiation with a guardian cost gate and an admin safety gate</td>
-<td>Accepted</td>
-<td>2026-07-16</td>
-</tr>
-<tr>
-<td><a href="adr-016-recommendation-sharing-social-boundary/">ADR-016</a></td>
-<td>Recommendation sharing and the social boundary (three rings)</td>
-<td>Accepted</td>
-<td>2026-07-16</td>
-</tr>
-<tr>
-<td><a href="adr-017-ai-cover-art/">ADR-017</a></td>
-<td>AI cover art per storybook version</td>
-<td>Accepted</td>
-<td>2026-07-16</td>
-</tr>
-<tr>
-<td><a href="adr-018-childrens-privacy-compliance/">ADR-018</a></td>
-<td>Children's-privacy compliance architecture (COPPA, GDPR-K, AADC)</td>
-<td>Proposed</td>
-<td>2026-07-16</td>
-</tr>
-<tr>
-<td><a href="adr-019-parameterized-skeletons-theme-contracts/">ADR-019</a></td>
-<td>Parameterized skeletons and machine-readable theme contracts</td>
-<td>Accepted</td>
-<td>2026-07-19</td>
-</tr>
-<tr>
-<td><a href="adr-020-mutation-derived-skeletons-and-catalog-growth/">ADR-020</a></td>
-<td>Mutation-derived skeletons and catalog growth</td>
-<td>Accepted</td>
-<td>2026-07-20</td>
-</tr>
-<tr>
-<td><a href="adr-021-service-account-rls-and-worker-deployment/">ADR-021</a></td>
-<td>Dedicated least-privilege service accounts, enforced RLS, and in-repo worker deployment</td>
-<td>Accepted</td>
-<td>2026-07-20</td>
-</tr>
-<tr>
-<td><a href="adr-022-tiered-rls-scoping/">ADR-022</a></td>
-<td>Tiered RLS scoping (flat per-family enforcement on the high-sensitivity tables)</td>
-<td>Proposed</td>
-<td>2026-07-24</td>
-</tr>
-<tr>
-<td><a href="adr-023-story-personalization-slots/">ADR-023</a></td>
-<td>Guardian opt-in story personalization (render-time slot substitution)</td>
-<td>Accepted</td>
-<td>2026-07-29</td>
-</tr>
-<tr>
-<td><a href="adr-024-bounded-backtracking-path-replay/">ADR-024</a></td>
-<td>Bounded backtracking by forward path replay</td>
-<td>Accepted</td>
-<td>2026-07-26</td>
-</tr>
-<tr>
-<td><a href="adr-025-additive-storybook-schema-versioning/">ADR-025</a></td>
-<td>Additive minor versioning for the Storybook schema</td>
-<td>Accepted</td>
-<td>2026-08-01</td>
-</tr>
-<tr>
-<td><a href="adr-026-rendered-stop-flow/">ADR-026</a></td>
-<td>Rendered-stop flow of linear passages</td>
-<td>Accepted</td>
-<td>2026-08-01</td>
-</tr>
-<tr>
-<td><a href="adr-027-in-story-illustration/">ADR-027</a></td>
-<td>In-story illustration (3-5 pilot)</td>
-<td>Accepted</td>
-<td>2026-08-01</td>
-</tr>
-<tr>
-<td><a href="adr-028-persistent-reader-characters/">ADR-028</a></td>
-<td>Persistent reader characters</td>
-<td>Accepted</td>
-<td>2026-08-06</td>
-</tr>
-<tr>
-<td><a href="adr-029-web-accessibility-conformance/">ADR-029</a></td>
-<td>Web accessibility conformance target and testing strategy</td>
-<td>Accepted</td>
-<td>2026-08-11</td>
-</tr>
-</tbody>
-</table>
-<h2 id="creating-adrs">Creating ADRs<a class="headerlink" href="#creating-adrs" title="Permanent link">&para;</a></h2>
-<h3 id="automatic-generation">Automatic Generation<a class="headerlink" href="#automatic-generation" title="Permanent link">&para;</a></h3>
-<p>Run <code>/plan &lt;project description&gt;</code> to generate initial ADRs alongside other planning documents.</p>
-<h3 id="manual-creation">Manual Creation<a class="headerlink" href="#manual-creation" title="Permanent link">&para;</a></h3>
-<p>When making a new architectural decision:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Create an ADR for [decision topic].
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>Use template: .claude/skills/project-planning/templates/adr-template.md
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>Save to: docs/planning/adr/adr-NNN-[decision-slug].md
-</span></code></pre></div>
-<h2 id="naming-convention">Naming Convention<a class="headerlink" href="#naming-convention" title="Permanent link">&para;</a></h2>
-<p>ADRs follow this naming pattern:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>adr-NNN-short-description.md
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>Examples:
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>- adr-001-database-choice.md
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>- adr-002-auth-strategy.md
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>- adr-003-api-design.md
-</span></code></pre></div>
-<h2 id="when-to-create-an-adr">When to Create an ADR<a class="headerlink" href="#when-to-create-an-adr" title="Permanent link">&para;</a></h2>
-<p>Create an ADR when:</p>
+<h3 id="significance">Significance<a class="headerlink" href="#significance" title="Permanent link">&para;</a></h3>
+<p>This is the kind of decision that is cheap to get right now and expensive to reconstruct later:
+naming a conformance target and pointing at what verifies it is a few hours of work today, versus
+reconstructing "what did we actually test, and when" during an active legal demand letter. The
+audit's own conclusion: automated scanning plus a real due-diligence testing history is a
+materially stronger position than most ADA Title III defendants have at the time of a claim, but
+only if it is documented as a standing practice rather than left as undocumented tribal knowledge.</p>
+<h2 id="decision">Decision<a class="headerlink" href="#decision" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Conformance target</strong>: WCAG 2.1 Level AA. This matches what <code>frontend/e2e/a11y.spec.ts</code>
+   already gates on (<code>wcag2a</code>, <code>wcag2aa</code>, <code>wcag21a</code>, <code>wcag21aa</code>) and what
+   <code>docs/testing/coverage-matrix.md</code> already documents as that suite's scope; this ADR is what
+   makes it a stated project requirement rather than an implicit one.</li>
+<li><strong>Three-layer testing strategy</strong>, all now named here for the first time:</li>
+<li><strong>Lint time</strong>: <code>eslint-plugin-jsx-a11y</code>'s recommended flat config, added to
+     <code>frontend/eslint.config.js</code> alongside the existing <code>react-hooks</code>/<code>react-refresh</code> plugins.
+     Catches missing <code>alt</code>, invalid ARIA usage, and non-interactive-elements-with-handlers before
+     a PR is even opened. One project-wide rule override,
+     <code>jsx-a11y/no-noninteractive-tabindex</code> with <code>roles: ['region']</code>, accommodates the
+     scrollable-region pattern (<code>tabIndex=0</code> + <code>role="region"</code>) already used in
+     <code>legal/PrivacyPolicyPage.tsx</code>'s table wrappers, which is the WAI-ARIA APG's own recommended
+     technique (SCR26) for a horizontally-scrollable region, not a lint gap.</li>
+<li><strong>Tier 1, per-PR (required, unchanged in scope)</strong>: <code>frontend/e2e/a11y.spec.ts</code> and
+     <code>frontend/e2e/keyboard-nav.spec.ts</code>, run by the existing <code>frontend-e2e</code> job in <code>ci.yml</code>.
+     Scoped to WCAG 2.1 A/AA tags only, by design, to stay fast and non-noisy on every PR.</li>
+<li><strong>Tier 2, weekly, non-blocking (new)</strong>: the same <code>a11y.spec.ts</code> suite, re-run with the new
+     <code>A11Y_EXTENDED=1</code> environment variable, by the new
+     <code>.github/workflows/accessibility-compliance-weekly.yml</code>. This widens the axe tag scope to
+     WCAG 2.2 A/AA (both <code>wcag22a</code> and <code>wcag22aa</code>: axe's WCAG tags are additive per level, so
+     <code>wcag22aa</code> alone would silently skip the 2.2 Level A criteria, the exact pitfall
+     <code>UW-N04</code> names) plus axe's non-normative "best-practice" rules (missing landmark/heading
+     structure, redundant roles, and similar). Kept off Tier 1 both because best-practice findings
+     are not WCAG conformance failures and per the Business ruling in Constraints above.</li>
+<li><strong>Manual verification remains a named, open gap, not a silent one.</strong> Automated scanning (axe
+   included) only catches programmatically detectable issues by construction; there is no evidence
+   in this repository of a manual screen-reader pass (VoiceOver/NVDA/JAWS), a published
+   accessibility statement, or a VPAT/ACR. These are recorded as open work below rather than
+   implied to be covered by the two automated tiers.</li>
+<li><strong>Skip-links added</strong> to the three persistent-nav shells (<code>KidShell</code>, <code>GuardianShell</code>,
+   <code>AdminShell</code>) via a new shared <code>SkipLink</code> design-system component
+   (<code>design-system/src/components/SkipLink/</code>), closing a WCAG 2.4.1 (Bypass Blocks) gap the audit
+   found (no "skip to main content" affordance existed anywhere in the app). <code>LandingPage</code> was
+   deliberately left out: its nav <em>is</em> the page's primary content (the kid/guardian door choice),
+   not a repeated block to bypass.</li>
+</ol>
+<h2 id="consequences">Consequences<a class="headerlink" href="#consequences" title="Permanent link">&para;</a></h2>
+<h3 id="positive">Positive<a class="headerlink" href="#positive" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Choosing technology stack or framework</li>
-<li>Deciding on architectural patterns</li>
-<li>Selecting third-party services or libraries</li>
-<li>Making security or performance trade-offs</li>
-<li>Any decision that would be expensive to reverse</li>
+<li>Accessibility is now a named, citable project standard instead of undocumented practice; a
+  future contributor, or an external auditor, has a document to point to.</li>
+<li>The new Tier 2 scan found real value on its first correct run: 13 test-case failures tracing to
+  four distinct structural defects (tracked as <code>UW-F27</code>), invisible to the Tier 1 WCAG-only scan
+  because they are axe best-practice rules, not WCAG conformance rules.</li>
+<li><code>eslint-plugin-jsx-a11y</code> moves detection earlier (write time) for a meaningful class of defects
+  at effectively zero added CI time (verified: <code>npm run lint</code> on the full tree stayed clean and
+  fast after enabling it; only 4 real findings surfaced across the whole app, two of them
+  already-justified deliberate choices needing only a documented lint exception).</li>
 </ul>
-<h2 id="adr-lifecycle">ADR Lifecycle<a class="headerlink" href="#adr-lifecycle" title="Permanent link">&para;</a></h2>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>Proposed → Accepted → [Deprecated | Superseded]
-</span></code></pre></div>
+<h3 id="trade-offs">Trade-offs<a class="headerlink" href="#trade-offs" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>Proposed</strong>: Under discussion</li>
-<li><strong>Accepted</strong>: Decision made and in use</li>
-<li><strong>Deprecated</strong>: No longer relevant</li>
-<li><strong>Superseded</strong>: Replaced by another ADR</li>
+<li>Tier 2's WCAG 2.2 and best-practice coverage is real but non-blocking: a regression there does
+  not fail a PR, so it depends on someone reading the weekly run (or its eventual findings landing
+  as <code>UW-*</code> rows, as <code>UW-F27</code> already does) rather than a red PR check forcing immediate attention.</li>
+<li>Naming WCAG 2.1 AA as the target while <code>roadmap.md</code> Phase 5 still lists the item as an open
+  checkbox is not a contradiction this ADR resolves outright: substantial conformance work exists,
+  but full conformance (including the still-open manual-audit gap) is not claimed as complete. See
+  Follow-on work.</li>
 </ul>
-<h2 id="follow-on-work-is-part-of-the-adr-required-for-new-and-amended-adrs">Follow-on work is part of the ADR (required for new and amended ADRs)<a class="headerlink" href="#follow-on-work-is-part-of-the-adr-required-for-new-and-amended-adrs" title="Permanent link">&para;</a></h2>
-<p>Every ADR that is <code>Proposed</code> or <code>Accepted</code> must state what work it creates, and every such item must
-already have a home before the ADR merges. An ADR that decides something without scheduling its
-consequences is how work goes missing: the 2026-07-28 sweep found 41 unscheduled items in this
-directory alone, more than any other source.</p>
-<p>Each ADR therefore carries a <strong>Follow-on work</strong> section listing every consequent item, and each item
-must cite one of:</p>
+<h3 id="technical-debt">Technical debt<a class="headerlink" href="#technical-debt" title="Permanent link">&para;</a></h3>
 <ul>
-<li>a phase in <a href="../roadmap/">roadmap.md</a> or <a href="../PROJECT-PLAN/">PROJECT-PLAN.md</a>,</li>
-<li>a <code>UW-*</code> row in the <a href="../unscheduled-work-register/">unscheduled work register</a>, or</li>
-<li>a GitHub issue.</li>
+<li><code>eslint-plugin-jsx-a11y</code>'s peer-dependency range does not yet include <code>eslint@10</code>, and the
+  <code>overrides</code> entry silences the ERESOLVE warning permanently rather than temporarily, which
+  removes the signal that would otherwise prompt revisiting it (finding surfaced in this PR's own
+  review). Tracked as <code>UW-F30</code> below rather than left to memory, since a <code>Technical debt</code> bullet
+  with no register row is exactly the pattern this project's ADR discipline exists to close.</li>
+<li>Tier 2's first run surfaced findings (<code>UW-F27</code>) that remain unfixed as of this ADR; Tier 2 exists
+  to keep finding drift like this, not to fix it inline.</li>
 </ul>
-<p>"Deferred", "future work", and "to be decided" are not homes. If the work genuinely cannot be
-scheduled yet, add a <code>UW-*</code> row with status <code>blocked</code> and name the blocker; that is a real state and
-the register is built to hold it. What is not acceptable is prose that directs work nowhere.</p>
-<p>This rule is enforced going forward, on any ADR merged or materially amended from 2026-07-28
-onward: PR review is the enforcement point, not automation. <code>scripts/check_work_linkage.py</code> does
-not read <code>docs/planning/adr/</code>, so it cannot and does not check for a <strong>Follow-on work</strong> section;
-what it does enforce is that a follow-on item, once it exists as a <code>UW-*</code> row, resolves to a real
-disposition (see the <a href="../unscheduled-work-register/#the-linkage-contract">linkage contract</a>).
-None of the 24 ADRs that predate this rule (including the two the 2026-07-28 sweep itself touched,
-ADR-007 and ADR-021) carry a <strong>Follow-on work</strong> section yet; backfilling them is tracked as
-<code>UW-A42</code> rather than implied by this paragraph.</p>
-<h2 id="template-reference">Template Reference<a class="headerlink" href="#template-reference" title="Permanent link">&para;</a></h2>
-<p>For the full ADR template, see the ADR template documentation in the Reference section, or refer to <code>.claude/skills/project-planning/templates/adr-template.md</code> in the project repository.</p>
-<h2 id="more-information">More Information<a class="headerlink" href="#more-information" title="Permanent link">&para;</a></h2>
+<h2 id="follow-on-work">Follow-on work<a class="headerlink" href="#follow-on-work" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Document Guide: See <code>.claude/skills/project-planning/reference/document-guide.md</code> in the project repository</li>
-<li>Prompting Patterns: See <code>.claude/skills/project-planning/reference/prompting-patterns.md</code> in the project repository</li>
+<li><strong><code>UW-F27</code></strong> (Cluster F, phase 5, unscheduled): fix the four distinct defects behind Tier 2's
+  first correct run (13 failing test cases in total, reconciled here: nested <code>&lt;main&gt;</code> landmarks on
+  admin pages, missing <code>&lt;h1&gt;</code> on two pages, <code>guardian/LoginPage.tsx</code>'s missing <code>&lt;main&gt;</code> landmark,
+  and a heading-order skip on the admin review detail page). The nested-<code>&lt;main&gt;</code> defect is
+  code-confirmed on all six admin pages named in that row, but Tier 2 only ever axe-<em>scans</em> four of
+  them (<code>AuthoringQueuePage</code>, <code>ModerationDashboardPage</code>, <code>ModerationThresholdsPage</code>,
+  <code>ProviderAllowlistPage</code>); <code>AuditPage</code> (<code>/admin/audit</code>) and <code>UserManagementPage</code>
+  (<code>/admin/users</code>) share the identical pattern by code inspection but are never navigated to at
+  either tier (the same 11-route gap named above, <code>UW-F29</code>), so those two are unconfirmed by any
+  running test.</li>
+<li><strong><code>UW-F29</code></strong> (Cluster F, phase 5, unscheduled, new): axe-scan the 11 routes named in Context
+  that neither tier visits today, starting with <code>legal/PrivacyPolicyPage.tsx</code> (<code>/privacy</code>) and
+  <code>guardian/PrivacyPage.tsx</code> (<code>/guardian/privacy</code>) since this PR edits both for accessibility
+  without ever scanning either, and <code>/admin/audit</code>/<code>/admin/users</code> since <code>UW-F27</code> depends on them.</li>
+<li><strong><code>UW-F30</code></strong> (Cluster F, phase 5, unscheduled, new): re-verify (or replace) the
+  <code>eslint-plugin-jsx-a11y</code> peer-dependency override on the plugin's next release, since the
+  override silences the ERESOLVE signal permanently rather than temporarily. See Technical debt.</li>
+<li><strong><code>UW-N04</code></strong> (Cluster N, phase 5, unscheduled, updated by this ADR): WCAG 2.2 scanning now runs,
+  but on the new weekly Tier 2 job rather than the per-PR gate. Widening the <em>blocking</em> gate itself
+  to WCAG 2.2, if ever wanted, is still that row's open work.</li>
+<li><strong><code>UW-F28</code></strong> (Cluster F, phase 5, decision): a manual screen-reader audit (VoiceOver + NVDA
+  minimum, on the core flows: profile picker, reader, guardian intake, admin review), and a
+  published accessibility statement naming the WCAG 2.1 AA target and a contact/remediation path.
+  Both wait on an owner ruling (scope/budget for the audit, and what the statement commits to)
+  before either is schedulable.</li>
+<li><strong><code>UW-I06</code>/remediation-plan <code>P14</code></strong>: this ADR ships <code>eslint-plugin-jsx-a11y</code> despite <code>P14</code>'s
+  deferral precondition (an eslint-10-compatible peer range) still being unmet upstream. The
+  override above is the mitigation, verified against a clean <code>npm ci</code>, not a claim that the
+  precondition is satisfied. Both rows are updated alongside this ADR to record that the plugin
+  shipped anyway and why.</li>
 </ul>
 
 
@@ -3724,7 +3636,7 @@ ADR-007 and ADR-021) carry a <strong>Follow-on work</strong> section yet; backfi
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 21, 2026 03:49:04 UTC">June 21, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 11, 2026 16:36:17 UTC">August 11, 2026</span>
   </span>
 
     
@@ -3801,10 +3713,10 @@ ADR-007 and ADR-021) carry a <strong>Follow-on work</strong> section yet; backfi
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>
