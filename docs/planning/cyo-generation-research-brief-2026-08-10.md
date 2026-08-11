@@ -1777,6 +1777,22 @@ except where the row says otherwise.
 **Gating guards.** All are deterministic, all run before any human reads a book, and all are
 runnable in one command.
 
+> [!WARNING]
+> **Correction, 2026-08-11 (post-circulation review).** "Runnable in one command" describes the
+> research harness this programme ran locally, not the repository a reader can check out. An audit
+> against `src/` and `scripts/` on `main` found only two of the guards below committed: the shared
+> four-gram check (`scripts/check_sibling_fills.py`) and the per-node reading-level check
+> (`validator/reading_level.py`, RL-13), and the latter is still unconditionally advisory
+> (`report.ok` is always `True`) rather than the blocking whole-book check at grade 7.0 this section
+> and 16d describe. The graph-structure, fill-integrity, story-gate and prose-craft rows have
+> production analogues elsewhere in `validator/`; the device-collision, label-template, and
+> promise-discharge guards, and the whole-book (as opposed to per-node) reading-level aggregation,
+> do not exist anywhere in the committed tree. Every number in this appendix was produced by tooling
+> that ran, but most of that tooling was never committed, which is the exact failure named in
+> `AL-186` the day before this brief's Part I was posted. Recorded as `AL-188` /
+> [`UW-C126`](./unscheduled-work-register.md); either commit the missing guards or stop describing
+> them as shipped.
+
 | Guard | Measures | Threshold | Where it came from |
 | --- | --- | --- | --- |
 | graph structure | dangling targets, unreachable nodes, sinks, endings with choices, trapped cycles, missing start | zero of each | properties a reader hits directly; 0 false positives on 3 known-good graphs, all 6 classes caught on a constructed bad one |
