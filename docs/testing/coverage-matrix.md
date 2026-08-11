@@ -817,16 +817,30 @@ in their journey sections instead.
   absent Storage API resolves false, and it skips the `persist()` request when
   storage is already persisted)
 - Service-worker navigation fallback (which paths the SPA shell may answer):
-  `frontend/src/pwa/navigateFallbackDenylist.test.ts` (the `^/api/` and `^/v1/`
-  patterns Workbox's NavigationRoute must not claim, checked in both directions:
+  `frontend/src/pwa/navigateFallbackDenylist.test.ts` (every pattern Workbox's
+  NavigationRoute must not claim, one case each, checked in both directions:
   against the paths the backend server-renders on this same origin, including
-  the KWS verification return page, and against the real SPA routes, so widening
-  the denylist cannot silently break client-side routing). Not tied to one
-  journey because the service worker intercepts every top-level navigation on
-  the origin. **No tier above component can see this**: curl, Postman, and every
-  Playwright project run without a service worker, so a path swallowed by the
-  fallback looks healthy from every vantage point except a real browser that has
-  loaded the app before
+  the KWS verification return page and the root-mounted `/health` probes, and
+  against the real SPA routes plus paths that merely start like a server path,
+  so widening the denylist cannot silently break client-side routing). The
+  wiring from that array into the emitted `dist/sw.js` is a separate,
+  artifact-level check: `frontend/scripts/check-sw-denylist.mjs`, run as npm's
+  `postbuild` so every `npm run build` covers it. The split is deliberate. The
+  unit test proves the array is correct; only the built artifact proves Workbox
+  was ever told about it, and a clean removal of the `vite.config.ts` wiring
+  leaves `tsc -b`, eslint, and all of the unit tests green.
+  Not tied to one journey because the service worker intercepts every top-level
+  navigation on the origin. **The component tier is the only tier that sees this
+  today**, but not for the reason you would guess: curl and Postman run no
+  service worker, and `playwright.config.ts` sets `serviceWorkers: 'block'`, so
+  none of those can observe it. The staging, staging-sweep, and prod configs
+  leave `serviceWorkers` unset and so default to `'allow'`, meaning they *could*
+  observe it; what stops them is that no spec in them navigates a
+  server-rendered path in a browser (`e2e-prod/health-probe.spec.ts` reaches
+  `/health/ready` through the `request` fixture, which bypasses the service
+  worker entirely). A path swallowed by the fallback therefore still looks
+  healthy from every vantage point except a real browser that has loaded the app
+  before
 
 ## Keeping this matrix current
 
