@@ -498,6 +498,27 @@ class User(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
             "AND (residence_country IS NULL OR consent_accepted_at IS NOT NULL)",
             name="ck_user_residence_adulthood_pairing",
         ),
+        # #ASSUME: data-integrity: Postgres indexes the REFERENCED side of a
+        # foreign key, never the referencing side, so without this
+        # fk_user_consent_verification_id's ON DELETE SET NULL makes the
+        # referential-integrity trigger sequentially scan "user" once per
+        # deleted kws_verification row. Erasure is the path that hurts:
+        # api/families.py's delete-my-family removes a family's verification
+        # rows, and a COPPA/GDPR subject-erasure request does the same in
+        # bulk, which is many deletes each re-scanning the same table.
+        # Partial because the column is NULL for everyone who has not
+        # completed a KWS-corroborated consent; the trigger's lookup is an
+        # equality, which implies IS NOT NULL, so the planner can still use
+        # it.
+        # #VERIFY: keep in step with supabase/migrations/
+        # 20260811150000_index_user_consent_verification_id.sql;
+        # tests/integration/test_schema_parity.py compares the two databases
+        # the two paths build, so dropping either half fails there.
+        Index(
+            "ix_user_consent_verification_id",
+            "consent_verification_id",
+            postgresql_where=text("consent_verification_id IS NOT NULL"),
+        ),
     )
 
     # #CRITICAL: data-integrity: CASCADE (Phase 3a, GDPR/COPPA erasure): every
