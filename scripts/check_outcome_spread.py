@@ -33,7 +33,7 @@ import sys
 from pathlib import Path
 from typing import Any, cast
 
-from cyo_adventure.generation.skeleton import is_sidecar
+from cyo_adventure.generation.skeleton import is_production_eligible, is_sidecar
 
 _SKELETONS_ROOT = Path(__file__).resolve().parent.parent / "skeletons"
 
@@ -67,13 +67,21 @@ def outcome_signature(story: dict[str, Any]) -> tuple[float, ...] | None:
         ending = node.get("ending")
         if not isinstance(ending, dict):
             continue
-        total += 1
         kind = str(ending.get("kind"))
         valence = str(ending.get("valence"))
-        if kind in kinds:
-            kinds[kind] += 1
-        if valence in valences:
-            valences[valence] += 1
+        if kind not in kinds or valence not in valences:
+            # Counting an unrecognized value in `total` without a bucket makes
+            # the shares sum to less than 1.0, pulling the signature toward the
+            # origin and understating every distance, which produces false
+            # passes in --check. Surface it instead of absorbing it.
+            msg = (
+                f"unknown ending kind/valence {kind!r}/{valence!r} in node "
+                f"{node.get('id')!r}"
+            )
+            raise ValueError(msg)
+        total += 1
+        kinds[kind] += 1
+        valences[valence] += 1
     if total == 0:
         return None
     return tuple(kinds[k] / total for k in _KINDS) + tuple(
@@ -100,22 +108,48 @@ def signature_distance(a: tuple[float, ...], b: tuple[float, ...]) -> float:
     return (tv_kind + tv_val) / 2
 
 
+def _load_skeleton(path: Path) -> dict[str, Any] | None:
+    """Load a skeleton JSON object from path, or report and return None.
+
+    Args:
+        path: File path to read.
+
+    Returns:
+        The decoded object, or None on any load failure.
+    """
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        sys.stderr.write(f"error: cannot load {path}: {exc}\n")
+        return None
+    return cast("dict[str, Any]", data)
+
+
 def _load_cells() -> dict[tuple[str, str, str], list[tuple[str, tuple[float, ...]]]]:
     """Group production skeleton signatures by (band, length, style) cell."""
     cells: dict[tuple[str, str, str], list[tuple[str, tuple[float, ...]]]] = {}
     for path in sorted(_SKELETONS_ROOT.glob("*/*.json")):
         if is_sidecar(path):
             continue
-        story = cast("dict[str, Any]", json.loads(path.read_text(encoding="utf-8")))
+        story = _load_skeleton(path)
+        if story is None:
+            continue
         metadata = cast("dict[str, Any]", story.get("metadata") or {})
+        band = metadata.get("age_band")
         length = metadata.get("length")
         style = metadata.get("narrative_style")
-        if not isinstance(length, str) or not isinstance(style, str):
-            continue  # MVP seed: declares no cell, audits nothing
+        if (
+            not isinstance(band, str)
+            or not isinstance(length, str)
+            or not isinstance(style, str)
+        ):
+            continue  # metadata-shape: MVP seed declares no cell, audits nothing
+        if not is_production_eligible(story):
+            continue  # explicit production_eligible: False, audits nothing
         signature = outcome_signature(story)
         if signature is None:
             continue
-        cell = (str(metadata.get("age_band")), length, style)
+        cell = (band, length, style)
         cells.setdefault(cell, []).append((path.stem, signature))
     return cells
 
@@ -142,6 +176,9 @@ def main(argv: list[str] | None = None) -> int:
         help=f"Breach threshold (default {DEFAULT_TAU}).",
     )
     args = parser.parse_args(argv)
+    if not 0.0 <= args.tau <= 1.0:
+        sys.stderr.write(f"error: --tau must be within [0.0, 1.0], got {args.tau}\n")
+        return 2
     pairs: list[tuple[float, tuple[str, str, str], str, str]] = []
     for cell, members in sorted(_load_cells().items()):
         for i, (slug_a, sig_a) in enumerate(members):

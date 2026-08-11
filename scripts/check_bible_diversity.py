@@ -21,15 +21,6 @@ heavily (token Jaccard above 0.5) are flagged as near-noun-swaps (warning).
 Calibration anchor: the first pilot's three bibles score MD 0.0 on the
 clue-channel category (identical kind multisets), exactly the failure the
 scene rater found downstream.
-
-Worst-unit note (2026-08-10 external review): unlike the other three
-checkers this program is retrofitting, this one was already gating
-correctly. ``--check`` fails as soon as any single pair's MD sits below
-``--tau``, i.e. on the worst pair, never on a mean across pairs; a bible
-set with nine clean pairs and one collapsed pair already fails today. No
-gating change was needed here. The only addition is an explicit "worst
-pair" summary line so that fact is visible in the output itself rather
-than only true by construction of the loop below.
 """
 
 from __future__ import annotations
@@ -43,7 +34,11 @@ from itertools import combinations
 from pathlib import Path
 from typing import Any, cast
 
-_WORD_RE = re.compile(r"[a-z']+")
+_WORD_RE = re.compile(r"[\w']+", re.UNICODE)
+
+# Above this token Jaccard, two same-kind entries read as one device with a
+# different noun (the AL-158 noun-swap failure).
+_NOUN_SWAP_JACCARD = 0.5
 
 
 def _kind_multisets(bible: dict[str, Any]) -> dict[str, Counter[str]]:
@@ -61,7 +56,10 @@ def _kind_multisets(bible: dict[str, Any]) -> dict[str, Counter[str]]:
 def _jaccard_multiset(a: Counter[str], b: Counter[str]) -> float:
     union = sum((a | b).values())
     if union == 0:
-        return 0.0
+        # Two empty multisets are identical, not disjoint. Returning 0.0 here
+        # credited 1.0 of divergence for a category with no content, which
+        # inflated MD and could mask a real breach below tau.
+        return 1.0
     return sum((a & b).values()) / union
 
 
@@ -102,9 +100,29 @@ def near_noun_swaps(
                 if not tokens_a or not tokens_b:
                     continue
                 jaccard = len(tokens_a & tokens_b) / len(tokens_a | tokens_b)
-                if jaccard > 0.5:
+                if jaccard > _NOUN_SWAP_JACCARD:
                     swaps.append((category, str(ea.get("text")), str(eb.get("text"))))
     return swaps
+
+
+def _load_json_object(path: str) -> dict[str, Any] | None:
+    """Load a JSON object from path, or report and return None.
+
+    Args:
+        path: File path to read.
+
+    Returns:
+        The decoded object, or None on any load failure.
+    """
+    try:
+        data = json.loads(Path(path).read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        sys.stderr.write(f"error: cannot load {path}: {exc}\n")
+        return None
+    if not isinstance(data, dict):
+        sys.stderr.write(f"error: expected a JSON object in {path}\n")
+        return None
+    return cast("dict[str, Any]", data)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -125,15 +143,23 @@ def main(argv: list[str] | None = None) -> int:
     if len(args.bibles) < 2:
         sys.stderr.write("need at least two bibles\n")
         return 2
-    loaded = {
-        path: cast("dict[str, Any]", json.loads(Path(path).read_text(encoding="utf-8")))
-        for path in args.bibles
-    }
+    if len(set(args.bibles)) != len(args.bibles):
+        dupes = sorted({p for p in args.bibles if args.bibles.count(p) > 1})
+        sys.stderr.write(f"error: duplicate bible path(s): {', '.join(dupes)}\n")
+        return 2
+    if not 0.0 <= args.tau <= 1.0:
+        sys.stderr.write(f"error: --tau must be within [0.0, 1.0], got {args.tau}\n")
+        return 2
+    loaded: dict[str, dict[str, Any]] = {}
+    for path in args.bibles:
+        bible = _load_json_object(path)
+        if bible is None:
+            return 2
+        loaded[path] = bible
     if args.contract:
-        contract = cast(
-            "dict[str, Any]",
-            json.loads(Path(args.contract).read_text(encoding="utf-8")),
-        )
+        contract = _load_json_object(args.contract)
+        if contract is None:
+            return 2
         forced: dict[str, set[str]] = {}
         for entry in cast("dict[str, Any]", contract.get("nodes") or {}).values():
             for spec in cast(
@@ -145,8 +171,15 @@ def main(argv: list[str] | None = None) -> int:
                 if category and must:
                     forced.setdefault(str(category), set()).add(str(must))
         sys.stdout.write("per-category kind headroom (forced kinds cannot diverge):\n")
-        sample = next(iter(loaded.values()))
-        for category, kinds in sorted(_kind_multisets(sample).items()):
+        # Union the category set across every loaded bible: deriving it from
+        # only the first bible (``next(iter(loaded.values()))``) silently
+        # dropped any category that first appears in a later sibling, making
+        # --contract report a falsely-clean table for it.
+        aggregate_kinds: dict[str, Counter[str]] = {}
+        for bible in loaded.values():
+            for category, counter in _kind_multisets(bible).items():
+                aggregate_kinds.setdefault(category, Counter()).update(counter)
+        for category, kinds in sorted(aggregate_kinds.items()):
             frozen = sorted(forced.get(category, set()))
             free = sum(
                 c for k, c in kinds.items() if k not in forced.get(category, set())
@@ -156,10 +189,6 @@ def main(argv: list[str] | None = None) -> int:
                 f"{frozen or 'none'}, free entries {free}\n"
             )
     breaches = 0
-    # #ASSUME: data-integrity: worst-pair tracking assumes at least one pair
-    # exists, guaranteed above by the len(args.bibles) < 2 early return.
-    # #VERIFY: worst is always assigned inside the loop below before use.
-    worst_pair: tuple[float, str, str] | None = None
     for (path_a, bible_a), (path_b, bible_b) in combinations(loaded.items(), 2):
         divergence = mechanic_divergence(bible_a, bible_b)
         marker = "FAIL" if divergence < args.tau else "ok  "
@@ -173,16 +202,6 @@ def main(argv: list[str] | None = None) -> int:
             sys.stdout.write(
                 f"     WARNING near-noun-swap [{category}]: {text_a!r} ~ {text_b!r}\n"
             )
-        if worst_pair is None or divergence < worst_pair[0]:
-            worst_pair = (divergence, Path(path_a).name, Path(path_b).name)
-    if worst_pair is not None:
-        worst_md, worst_a, worst_b = worst_pair
-        worst_marker = "FAIL" if worst_md < args.tau else "ok  "
-        sys.stdout.write(
-            f"worst pair: {worst_marker} MD={worst_md:.3f}  {worst_a} vs {worst_b} "
-            f"(lowest divergence = most similar; --check already gates on this "
-            f"pair, not a mean, so a set otherwise clean cannot outvote it)\n"
-        )
     if args.check and breaches:
         return 1
     return 0

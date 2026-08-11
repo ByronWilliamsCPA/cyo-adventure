@@ -75,6 +75,15 @@
 # moves. The mocked tier failed with 1056 pixels (ratio 0.01) different on
 # reader-page.png and no other baseline changed, consistent with a single new
 # control in the reader chrome rather than a layout shift.
+#
+# Baseline bump 2026-08-10: the landing page gained a persistent footer carrying
+# the Privacy and Support links (PR #668), so landing-page.png legitimately
+# moves and it should be the ONLY one that does. The mocked tier failed on
+# visual.spec.ts:39 with 1 failed / 254 passed, which is the signature of a
+# single element added to one page rather than a shared-layout change. Review
+# the diff for two underlined links appearing under the landing hero and
+# nothing else moving; the footer sits inside the existing .landing flex column
+# so it should not shift the elements above it.
 name: Update Visual Snapshots
 
 on:

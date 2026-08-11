@@ -53,9 +53,9 @@ it?"** The survey answers that precisely, and the answers are smaller than expec
 
 1. **It is validated by a much weaker bar than skeletons are.** The strict bar this session
    built (satisfying-walk floors, max-indegree caps, depth-qualified endings) lives in
-   `scripts/check_skeleton.py:230-393`, is `--strict`-only, and carries no rule id in the
-   validator catalog. **It never runs on generated stories.** Skeletons are held to a
-   standard generated stories are not.
+   `scripts/check_skeleton.py:230-401`, merged to `main` as `4e1a08bc` (2026-08-10). It is
+   `--strict`-only, and it carries no rule id in the validator catalog. **It never runs on
+   generated stories.** Skeletons are held to a standard generated stories are not.
 2. **Structural targets are bounds, not distributions.** `band_profile.py` gives min/max
    envelopes; the only midpoint anyone picks is `story_requests/brief.py:207`
    (`node_count = round((min_nodes + max_nodes) / 2)`), a one-line heuristic feeding a
@@ -124,33 +124,40 @@ Two consequences follow immediately.
    so a flat per-band catalog is the wrong shape. The current catalog is roughly flat, and
    the production cells at 10-13 hold three to four candidates each.
 2. **Family-scoped history is an architectural mismatch, not just a measurement one.** The
-   anti-repetition machinery reads `load_family_history` (`diversity/history.py`), which is
-   family-scoped with a window of 20 and carries only a theme signature, no skeleton
-   identity. If that is the only history the selector sees, then a household with K
-   children burns the recency window K times faster, degrading protection for each child,
-   while simultaneously penalizing skeletons a given child has never read, wasting catalog
-   that child could still consume. Both failure modes point the same way: **per-reader
-   skeleton history is likely a prerequisite for any catalog-scaling answer, and it is a
-   much smaller build than any arm in section 6.**
+   anti-repetition machinery reads `load_family_history` (`diversity/history.py`), which
+   does carry skeleton identity (`skeleton_slug: str | None` at `history.py:60`, populated
+   on each `HistoryEntry` at `:210`); the defect is scoping, not missing identity. It is
+   family-scoped, filtering on `Storybook.family_id` (`:191`), with a window of 20
+   (`_DEFAULT_WINDOW = 20` at `:36`). If that is the only history the selector sees, then a
+   household with K children burns the recency window K times faster, degrading protection
+   for each child, while simultaneously penalizing skeletons a given child has never read,
+   wasting catalog that child could still consume. Both failure modes point the same way:
+   **per-reader skeleton history is likely a prerequisite for any catalog-scaling answer,
+   and it is a much smaller build than any arm in section 6.**
 
 **This is the measurement that gates the entire program**, and it costs no generation
-tokens. It has now been run (`scripts/analyze_sibling_exposure.py`), and the answer is
-decisive.
+tokens. It has now been run (`scripts/analyze_sibling_exposure.py`, merged to `main` as
+`4e1a08bc`), and the answer is decisive.
 
 ### 2b.1 Measured answer
 
-**Exposure is not merely common, it is certain.** Every populated production cell holds 3
-or 4 skeletons (verified through the shipped `candidates_for_cell`, all 6 bands, min 3,
-median 3, max 4, and 4 cells empty). A child therefore **exhausts a cell by their 4th
-request in it**, after which every further story in that cell is, with probability 1, a
-tree they have already read. A repeat becomes more likely than not at the 3rd or 4th
-request:
+**Exposure is not merely common, it is certain.** All 18 production cells are populated,
+but only thinly: 3 or 4 skeletons each (verified through the shipped `candidates_for_cell`
+and `band_profile.py:184-203`'s `_PRODUCTION_CELLS`, all 6 bands, min 3, median 3, max 4,
+zero empty cells). A child therefore **exhausts a cell by their 4th request in it**, after
+which every further story in that cell is, with probability 1, a tree they have already
+read. A repeat becomes more likely than not at the 3rd or 4th request:
 
 | Cell (pool) | P(repeat by 2nd) | by 3rd | by 4th | First likely repeat |
 | --- | --- | --- | --- | --- |
 | 10-13 short (4) | 0.14 | 0.43 | 0.77 | request 4 |
 | 10-13 medium (3) | 0.20 | 0.61 | 1.00 | request 3 |
 | 3-5 short (3) | 0.20 | 0.61 | 1.00 | request 3 |
+
+This table's figures are a pool-size-only calculation; the household scoping they assume
+(single reader versus family-shared history) is not recorded in this document, and at pool
+3 the 0.20 second-request figure here does not match the 0.09 single-reader figure quoted
+in section 2b.2. See the note there: the two are not reconciled in this document.
 
 Rotating across all three length cells at 10-13 (10 skeletons) buys about two extra
 requests, not an order of magnitude, and reaches certainty by request 11.
@@ -166,16 +173,26 @@ with a 20-row window. The per-child evidence needed already exists and is unused
 read gate.
 
 The consequences are measurable and entirely attributable to the scoping choice, not to
-pool size. At pool 3, P(repeat by the child's 2nd request) is 0.09 for one reader, 0.19 at
-two children, and 0.29 at three; a counterfactual child-scoped history with three readers
-reproduces the single-reader curve to within noise. The shared 20-row window also hides
+pool size. At pool 3, P(repeat by the child's 2nd request) is 0.09 for a single-reader
+household (the child-scoped baseline, one child, no siblings sharing the window), 0.19 for
+a family-scoped two-child household, and 0.29 for a family-scoped three-child household; a
+counterfactual child-scoped history with three readers reproduces the single-reader curve
+to within noise. **This 0.09/0.19/0.29 family-size progression is not the same figure as
+the 0.20 second-request value the section 2b.1 table gives at pool 3; the two are not
+reconciled in this document, and the basis of the table's 0.20 (in particular, what
+household scoping it assumes) needs to be published before either number is used as a
+target.** The 0.09/0.29 pair, not the table's 0.20, is what section 11.2 carries into the
+recommended path. The shared 20-row window also hides
 **81%** of a child's own band reading in a three-child household at one story per month.
 A third leak is unmeasured: `visibility='catalog'` books from another family are readable,
 but recency filters on the owning family, so a child can read a catalog story and then be
 served a fresh fill of that same skeleton at full weight.
 
-Scoping the anti-repeat history to the requesting child recovers **25 to 30% of the
-required pool** at N=10 and N=25 for no new content.
+Scoping the anti-repeat history to the requesting child recovers a meaningful share of the
+required pool for no new content, but the range is wider than a prior revision of this
+document stated: from the pool figures below (19 to 36 skeletons for a single child, or 35
+to 46 under today's family scoping), the reduction is **(35-19)/35 = 46% at the N=10
+target and (46-36)/46 = 22% at the N=25 target**, that is, 22% to 46%, not 25% to 30%.
 
 ### 2b.3 Catalog sizing, and what it costs
 
@@ -192,11 +209,19 @@ cells, independent of user count.
 | 4.0 | 816 | 57 |
 
 (Corrected 2026-08-09: an earlier revision of this section quoted "about 130 at 0.5, 408
-at 1, 816 at 2", which was off by one rate step. The 408 and 816 figures are the 2 and 4
-per-month columns.)
+at 1, 816 at 2." Two separate changes produced the table above, not one. The 408 and 816
+figures are explained by a one-rate-step shift: they are the correct values for the 2.0 and
+4.0 per-month columns, not for 1.0 and 2.0 as the earlier revision implied. The 130-to-106
+change at the 0.5 row is a second, independent correction that the rate-step shift does not
+explain. **Note also that the table is not linear across its first step while being exactly
+linear above it**: 204, 408, and 816 double cleanly at each step from 1.0 upward, but
+106 x 2 = 212, not 204, so the 0.5 row is not exactly half the 1.0 row. No mechanism for
+that non-linearity is recorded in this document, and none should be assumed; the 0.5
+figure's derivation needs to be published before it is used as a catalog target.)
 
-To keep a repeat less likely than not through a child's 10th request in one cell, that cell
-needs 19 to 36 skeletons for a single child, or 35 to 46 under today's family scoping.
+To keep a repeat less likely than not through a child's Nth request in one cell, that cell
+needs 19 skeletons at N=10 and 36 at N=25 for a single child, or 35 at N=10 and 46 at N=25
+under today's family scoping.
 
 **The number that decides everything here is per-child stories per month, and it is not
 measured in this deployment.** That is the one product metric worth instrumenting before
@@ -301,11 +326,18 @@ document overstated that. `validator/policy.py:67-74`, `choice_grammar.py:81-86`
 PL-19 and PL-23 read a skeleton's *declared* word target where they read a generated
 story's *actual* words, and RL-13 skips FILL bodies outright. The comment at
 `policy.py:71` documents an avoided *import*, not an avoided dependency. Gate strictness is
-also caller-parameterized: `enforce_grammar` defaults to False and `worker.py:2326` calls
-`generate_story` without overriding it, so **generated stories never run CG-1 through
-CG-4** while the skeleton promotion path opts in. Two of the gate's knobs are set
-differently for the two paths being compared, so "the gate guarantees validity" cannot
-carry the full weight of a cross-path comparison.
+also caller-parameterized: `enforce_grammar` defaults to False, and no caller anywhere in
+`src/` passes `enforce_grammar=True`, so **generated stories never run CG-1 through CG-4**;
+`worker.py:2326` calling `generate_story` without overriding it is one instance of a default
+that holds across the whole runtime path. `4e1a08bc` (merged to `main` 2026-08-10) changed
+only the skeleton side of this: `scripts/check_skeleton.py:504` passes
+`enforce_grammar=bool(args.strict)`, so CG-1 through CG-4 run against a skeleton only when
+`--strict` is passed explicitly, not as an inherent part of promotion. This weakens the
+comparison originally drawn here: the asymmetry is opt-in, present only when a promoter
+remembers to pass `--strict`, and absent by default on both sides. "The gate guarantees
+validity" still cannot carry the full weight of a cross-path comparison, but the reason is
+that grammar enforcement is opt-in rather than that one path enforces it unconditionally
+and the other does not.
 
 One invariant listed below is weaker than it appears: `validator/safety.py:41` is a
 Phase-2 stub returning an empty report unconditionally, so SAFE-14 cannot produce a
@@ -518,8 +550,9 @@ Divergence.
 **Structural variety**: `diversity/structure.py` already provides `structure_fingerprint`,
 `structure_features`, and `structural_distance` as public library code. This corrects an
 earlier draft of this document, which claimed a new instrument was required; it is not,
-though the strict-bar fitness functions in `scripts/check_skeleton.py` do need promoting to
-library code (gap 3 in section 2) before they can score generated graphs.
+though the strict-bar fitness functions in `scripts/check_skeleton.py` (merged to `main` as
+`4e1a08bc`; gap 1 in section 2) do need promoting from script to library code before they
+can score generated graphs.
 
 **Rater-based** (blind, comparative, using rubrics already written): the six-dimension
 craft rubric with a ship verdict; scene-inventory device distinctness; recognition landing
@@ -532,7 +565,7 @@ node plus the five-point score.
 | Outcome | Margin | Current skeleton path |
 | --- | --- | --- |
 | First-pass gate not blocked | 3/3 | 3/3 (met) |
-| Strict bar (walk floors, indegree caps, depth-qualified endings) | see note | **2 of 61 catalog skeletons pass; 0 of 11 at 10-13** |
+| Strict bar (walk/indegree/depth floors; `4e1a08bc`) | see note | **2 of 61 catalog skeletons pass; 0 of 11 at 10-13** |
 | Blind craft mean | >= 4.0 (the shipping bar) | 4.9 frontier, 4.0 Sonnet |
 | Recognition landing | past the hub node, or no landing | FAILED twice (node 2, node 4) |
 | Sibling grams per 1000 | <= 4.0 after at most one revision round | 1.2 (met) |
@@ -545,12 +578,14 @@ nothing.
 
 **Two margin rows are known defective and must be rebuilt before use.** The strict-bar row
 cannot be a pass/fail margin when the shipped catalog meets it 2 times in 61 (measured
-2026-08-09 across all bands, 0 of 11 at 10-13). That bar gates *newly drafted* skeletons
-only; the catalog is grandfathered (`scripts/check_skeleton.py:63-66`). Promoting it to a
-blocking library rule would retire 97% of the catalog, which is a product decision, not a
-scoring prerequisite. Separately, "safety flags" must be struck from the bench entirely
-(SAFE-14 is a stub, see section 3), and the "portability = passes at Sonnet" row conflicts
-with this project's own conclusion that gate-clean is not publishable.
+2026-08-09 across all bands, 0 of 11 at 10-13, using the strict-bar tooling now on `main` as
+`4e1a08bc`, run against the shipped catalog; re-verified against merged `main` 2026-08-10,
+unchanged). That bar gates *newly drafted* skeletons only when `--strict` is passed; the
+catalog is grandfathered (`scripts/check_skeleton.py:62-68`). Promoting it to a blocking
+library rule would retire 97% of the catalog, which is a product decision, not a scoring
+prerequisite. Separately, "safety flags" must be struck from the bench entirely (SAFE-14 is
+a stub, see section 3), and the "portability = passes at Sonnet" row conflicts with this
+project's own conclusion that gate-clean is not publishable.
 
 **The baseline anchors are also weaker than stated.** Every number in the right-hand column
 comes from pilots run on `the-clocktower-cipher`, which is the catalog's single
@@ -649,7 +684,7 @@ term at 1. The recommended path attacks both, ordered by cost.**
 ### 11.2 Layer 0: scoping (near-free, do first)
 
 Scope anti-repeat history and weighting to the requesting child rather than the family
-(`UW-C108`). Family scoping alone triples the second-request repeat rate at three children
+(`UW-C112`). Family scoping alone triples the second-request repeat rate at three children
 (0.287 versus 0.089), and a child-scoped counterfactual reproduces the single-reader curve
 to within noise. The data is already indexed. This also recovers 25 to 30% of the required
 catalog for no new content. Widen or drop the 20-row window and close the
@@ -682,21 +717,36 @@ Author against measured demand rather than filling cells evenly: the first 6 to 
 skeletons of each band's budget go entirely to its medium cell (section 2b.3a). Cells are
 hard partitions, so this is the only spend that reaches the binding constraint.
 
-### 11.5 Layer 3: mutation as a catalog multiplier (highest potential, one experiment away)
+### 11.5 Layer 3: mutation as a catalog multiplier, tested and withdrawn (2026-08-09)
 
-**This is the largest unexploited lever in the system, and the machinery already exists.**
-`mutation/` ships five registered operators (M1 sibling-subtree swap, M2 ending remap,
-M3 prune/graft, M4 vary-decisions, M5 state variation), an acceptance ladder, and
-calibrated anti-clone floors. It is used today only offline, to grow the catalog.
+**Result, stated up front: the multiplier does not exist.** The experiment in section
+11.5.1 found that every bounded mutant tried cleared the structural anti-clone floor by
+orders of magnitude too little, and the one mutant that did clear it did so only by
+grafting material from a *different* parent skeleton, which is recombination, not
+multiplication. A same-book reader verdict landed at reading position 3 on two of the
+bounded mutants. **Layer 3 is withdrawn.** Layers 0, 1, and 2 stand, and Layer 2 (catalog
+depth) becomes more important rather than less, because there is no cheap structural
+substitute for authoring. The reasoning below is retained as **prior reasoning**: it is
+what motivated running the experiment, and it explains why cross-skeleton hybridization
+(section 11.5.1's "one finding points somewhere real") remains a genuinely open, untested
+question even though same-parent mutation does not.
 
-Applied per request to a matched skeleton, mutation **multiplies** the effective armature
-pool rather than adding to it: if one parent yields k accepted mutants that clear the
-anti-clone floors, a 3-skeleton cell becomes a 3k-armature cell. At k=5 that moves a
-child's first likely repeat from request 3 or 4 to beyond request 10, which is the same
-outcome as authoring 12 to 15 new skeletons per cell, for a fraction of the cost. Nothing
-else in the analysis offers a multiplier.
+**Prior reasoning, before the experiment (overturned by 11.5.1 below).** The working
+hypothesis going in was that this was the largest unexploited lever in the system, because
+the machinery already exists: `mutation/` ships five registered operators (M1
+sibling-subtree swap, M2 ending remap, M3 prune/graft, M4 vary-decisions, M5 state
+variation), an acceptance ladder, and calibrated anti-clone floors. It is used today only
+offline, to grow the catalog.
 
-### 11.5.1 Result: the multiplier does not exist (2026-08-09)
+The reasoning was that, applied per request to a matched skeleton, mutation would
+**multiply** the effective armature pool rather than add to it: if one parent yielded k
+accepted mutants that cleared the anti-clone floors, a 3-skeleton cell would become a
+3k-armature cell. At k=5 that would move a child's first likely repeat from request 3 or 4
+to beyond request 10, the same outcome as authoring 12 to 15 new skeletons per cell, for a
+fraction of the cost. Nothing else in the analysis appeared to offer a multiplier. The
+experiment below tested this directly.
+
+### 11.5.1 The experiment
 
 The experiment was run on `the-midnight-museum` (10-13 short prose,
 production-eligible, Tier 1). Three accepted mutants, all `accepted/held`:
@@ -727,8 +777,9 @@ content cannot change what the reader recognizes.
 A rater pass on two fills of mutants S and D (different bindings, the production
 configuration) landed the same-book verdict at **reading position 3, scoring
 2.0**, with the structural difference not visible until position 8, five
-positions after recognition. The deterministic bench agreed: 70.4 shared grams
-per 1000 and perceived similarity 0.9970.
+positions after recognition. The deterministic bench also reported 70.4 shared
+grams per 1000 and perceived similarity 0.9970; the caveats below explain why
+that figure does not corroborate the verdict independently.
 
 **One finding points somewhere real.** Mutant X was the only one to clear the
 floor, and it did so by grafting 32 nodes from a *different* catalog skeleton.
@@ -745,27 +796,50 @@ exoneration.
 
 **Caveats.** One parent, one rated pair, one pass, and the rating was
 author-scored rather than blind (this environment could not spawn an isolated
-rater). The distance and beat-preservation numbers are deterministic and will
-replicate on any parent; the recognition number is n=1. This parent also sits at
+rater). **The 70.4-shared-grams-per-1000 figure cited above cannot serve as
+independent corroboration and the claim that it "will replicate on any parent"
+is wrong.** Per `AL-185` and `UW-C120` (both added by this PR), sibling-convergence
+measurements are invalid when one author writes both arms of a comparison, because
+the number measures the author's de-convergence effort rather than the condition
+under test: the same author who filled mutants S and D produced 302 shared grams
+per 1000 on a first draft and drove it down to 70.4 only after two deliberate
+de-convergence passes. That figure is therefore contaminated by the single-author
+confound and carries no evidentiary weight beyond what the author already knew
+going in. What the withdrawal verdict actually rests on is different evidence that
+does not share this confound: the **structural distances** (0.0000 to 0.0064
+against the `TAU_CELL = 0.05` floor), which are computed from the graphs
+themselves and do not depend on who wrote the fills, so they should replicate on
+any parent; and the single same-book **reader verdict** at reading position 3,
+which is n=1 but is not author-scored on the recognition question itself in the
+way the grams figure is on the prose-distance question. This parent also sits at
 14 decisions on its longest path, which constrained M4's reconvergence targets;
-an `open_map` or `sorting_hat` parent may give it more room.
+an `open_map` or `sorting_hat` parent may give it more room. None of these
+caveats reverses the withdrawal: the structural numbers alone already show every
+bounded mutant sitting two orders of magnitude below the anti-clone floor, which
+is sufficient on its own to conclude same-parent mutation is not a multiplier;
+the point of this caveat is to stop leaning on the contaminated grams figure as
+if it were independent confirmation.
 
 **Consequence for the recommended path: Layer 3 is withdrawn.** Layers 0, 1, and
 2 stand, and Layer 2 (catalog depth) becomes more important rather than less,
 because there is no cheap structural substitute for authoring.
 
-**The original open question, retained for the record.** M1 and M2 are
-shape-preserving by design (M1 "preserves every aggregate shape feature"), so a mutant may
-be structurally distinct by the committed floors and still read as the same book. Only M4,
-particularly its `reconvergence` variant, changes global shape. So the experiment is: fill
-two mutants of the same parent and run the recognition protocol on the pair. If they read
-as different books, mutation is the highest-leverage path available. If they read as the
-same book, the floors are measuring something readers do not perceive, which is itself the
-finding, and it also invalidates using `structural_distance` as a diversity gate, since
-that metric is order-blind and cannot see the position-identity channel the raters named.
-
-Note that this experiment is cheap (two fills plus one rater pass), it reuses the existing
-protocol, and it is the single highest-information test remaining in this document.
+**The original open question, now answered by the experiment above.** M1 and M2 are
+shape-preserving by design (M1 "preserves every aggregate shape feature"), so the
+question going in was whether a mutant might be structurally distinct by the committed
+floors and still read as the same book. Only M4, particularly its `reconvergence`
+variant, changes global shape. The experiment this section anticipated is exactly the
+one section 11.5.1 ran: fill two mutants of the same parent (S and D) and run the
+recognition protocol on the pair. They read as the same book, at reading position 3, so
+the floors are measuring something readers do not perceive at these mutation
+magnitudes; that is itself the finding, and it also invalidates using
+`structural_distance` as a diversity gate at this scale, since that metric is
+order-blind and cannot see the position-identity channel the raters named. No further
+run of this specific experiment is warranted. The open question that remains is
+whether cross-skeleton hybridization (mutant X's path, "one finding points somewhere
+real" above) behaves differently; that is untested and would be the next
+highest-information test in this area, not a repeat of the same-parent comparison
+already run.
 
 ### 11.6 What not to do
 
@@ -777,9 +851,9 @@ mandate that Layer 1 addresses for free.
 ### 11.7 Quality guards as diversity rises
 
 More variety means more surface for defects, so two protections should land alongside:
-the fill-vs-contract fact audit (`UW-C103`), since nothing today verifies that prose honors
+the fill-vs-contract fact audit (`UW-C107`), since nothing today verifies that prose honors
 the obligations the contract declares; and the prose-craft detectors, kept advisory until
-validated out of sample (`UW-C107`).
+validated out of sample (`UW-C111`).
 
 ### 11.8 The two numbers that gate all of it
 

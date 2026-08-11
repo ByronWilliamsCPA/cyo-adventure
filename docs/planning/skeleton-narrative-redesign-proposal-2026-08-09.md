@@ -136,7 +136,7 @@ stage that reads intent semantics.
    Fix via a bindable-metadata allowlist checked outside the fingerprint (no digest
    rotation), not via stripping (which rotates every stored manifest). This one fix moves
    the same-skeleton PS floor from 0.50 to 0.30, worth more than any prose improvement
-   measured so far. Refines AL-152's proposed change.
+   measured so far. Refines AL-156's proposed change.
 3. **Variant/selection fingerprint persistence**: `storybook_version` has no variant
    column and the family guard cannot be expressed with persisted data. One nullable
    `variant_fingerprint` column, stamped at fill, carried on `HistoryEntry`, consumed as a
@@ -197,7 +197,7 @@ budgets where B does not, the dial is at B and that is the pre-registered result
    rather than the program. The alternative sequencing (pools first as a full stage) costs
    more authoring and defers the diversity mechanism; the pilot's arm structure answers the
    dial question empirically either way.
-2. The UW-C85 calibration rulings (review Part 8) interact: `words=lo-hi` ranges and the
+2. The UW-C89 calibration rulings (review Part 8) interact: `words=lo-hi` ranges and the
    CG-3 posture should be ruled with this proposal so the new format is calibrated once.
 3. Accept the review-load transfer: deterministic checks widen, but the single human
    approver sees more flagged inventions at first. The pilot measures review minutes per
@@ -222,7 +222,7 @@ passed 184- and 251-node skeletons with zero findings in the hardest cells. Tool
 agentic generation holds global invariants that zero-shot generation cannot; the structure
 floor is therefore set by the automated review surface, not by LLM capability. The pilot's
 adversarial critics were also LLMs, and their findings are largely convertible into
-deterministic checks (UW-C81..C83), so the review side automates the same way.
+deterministic checks (UW-C85..C83), so the review side automates the same way.
 
 **End-state**: the skeleton becomes a generated, verified artifact. The fixed layer shrinks
 to what encodes child-development policy rather than story content: cell contracts (budgets,

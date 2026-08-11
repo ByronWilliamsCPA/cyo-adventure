@@ -65,6 +65,22 @@ entity "user" as user_t #E3F2FD {
   CHECK (residence_country/adulthood_attested_at\nboth NULL or both set with consent)
 }
 
+entity "kws_verification" as kws_verification #E3F2FD {
+  * id : UUID <<PK>> [IS the correlation;\nno default, caller supplies]
+  --
+  * user_id : UUID <<FK user.id, ON DELETE CASCADE>>
+  kws_environment : VARCHAR(16) [test | production]
+  status : VARCHAR(16) [sent | verified | failed]
+  requested_at : TIMESTAMPTZ
+  resolved_at : TIMESTAMPTZ NULL
+  transaction_id : VARCHAR(128) NULL [KWS's opaque id]
+  enabled_methods : JSONB [snapshot at send time,\nnever a live read]
+  --
+  CHECK (status IN (sent, verified, failed))
+  CHECK (kws_environment IN (test, production))
+  CHECK ((status='sent') = (resolved_at IS NULL))
+}
+
 entity "child_profile" as child_profile #FFF3E0 {
   * id : UUID <<PK>>
   --
@@ -563,6 +579,7 @@ child_profile ||--o{ story_request : "1 profile\nmany requests\n(NULL = profile-
 concept ||--o{ generation_job : "1 concept\nmany job attempts"
 concept |o--o| story_request : "created on approval\n(concept_id)"
 user_t ||--o{ device_grant : "authorized_by\n1 guardian mints\nmany device grants"
+user_t ||--o{ kws_verification : "user_id\n1 guardian, many\nverification attempts;\nON DELETE CASCADE"
 family ||--o{ kid_flag : "1 family\nhas many kid flags\n(K15)"
 child_profile ||--o{ kid_flag : "1 profile\nmany flags"
 storybook ||--o{ kid_flag : "storybook_id\n(flagged book)"

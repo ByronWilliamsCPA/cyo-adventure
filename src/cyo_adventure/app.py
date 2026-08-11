@@ -32,6 +32,8 @@ from cyo_adventure.api import (
     flags,
     generation,
     health,
+    kws_redirect,
+    kws_webhook,
     library,
     me,
     moderation_dashboard,
@@ -761,6 +763,12 @@ def create_app() -> FastAPI:
     app.include_router(admin_profiles.router)
     app.include_router(family_connections.router)
     app.include_router(recommendations.router)
+    # Machine-to-machine, include_in_schema=False on the route itself so the
+    # committed frontend client does not churn for an endpoint no browser hits.
+    app.include_router(kws_webhook.router)
+    # Browser-facing and display-only, also include_in_schema=False on the
+    # route: a landing page no SPA calls has no place in the generated client.
+    app.include_router(kws_redirect.router)
     app.include_router(personalization.router)
     app.include_router(progress.router)
     app.include_router(reading_time.router)

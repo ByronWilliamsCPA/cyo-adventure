@@ -36,8 +36,8 @@ Automated verifications run report-only: they write a status and a scheduled sum
 zero. Every automated check enters at status *mechanism unproven* and leaves only once a negative
 control has tripped it.
 
-Applied to this document as it currently stands, that contract convicts it: **every one of the 118
-rows carries `Phase home: unassigned`, so by the register's own definition all 118 are open
+Applied to this document as it currently stands, that contract convicts it: **every one of the 121
+rows carries `Phase home: unassigned`, so by the register's own definition all 121 are open
 defects.** This is stated rather than left to be inferred, because a register that defines a defect
 and then quietly exhibits it everywhere is the hollow artifact SP-17 is about. It is not a reason
 to soften the definition. Nothing can be assigned a phase home until the `UW-*` linkage in
@@ -95,7 +95,7 @@ government contract clauses.
 | Regime | Why | Register rows |
 | --- | --- | --- |
 | **FTC Act §5** | Any consumer-facing product. Security and privacy claims in the notice become enforceable representations | O-38, O-62, O-94 |
-| **COPPA** (compliance date 22 Apr 2026, therefore live) | Children under 13, child-directed service | O-35, O-36, O-61, O-62, O-31 |
+| **COPPA** (compliance date 22 Apr 2026, therefore live) | Children under 13, child-directed service | O-35, O-36, O-61, O-62, O-31, O-122, O-123, O-124 |
 | **State breach notification** | The regime attaches with the first non-household user; the notice duty itself fires on discovery of a qualifying breach | O-92 |
 | **ADA / WCAG** | Consumer-facing; also overlaps the age-appropriate-design duty to be understandable | O-95 |
 
@@ -371,8 +371,8 @@ active", and the lifecycle section separately recorded a decision to accept "81 
 figures were wrong, and the error was load-bearing rather than cosmetic: it presented the register
 as six rows over a review ceiling it is actually fifty-three rows over, and it recorded a
 row-budget decision whose stated purpose was to prevent a budget being silently exceeded. The
-authoritative count is a count of `#### O-<digits>` headings within this section: 118 rows, IDs
-running O-01 to O-121 with O-63, O-64, and O-65 unassigned. Recount with
+authoritative count is a count of `#### O-<digits>` headings within this section: 121 rows, IDs
+running O-01 to O-124 with O-63, O-64, and O-65 unassigned. Recount with
 `grep -cE '^#### O-[0-9]+$'`. Note that O-117 and O-119 also appear as the first cell of the
 initial-build commitments table below; those are cross-references to rows defined here, not
 additional rows, and the heading-anchored pattern above deliberately excludes them.
@@ -3349,6 +3349,287 @@ posture at a trust boundary must be verified from outside that boundary.
   offering the service directly to that child (GDPR/UK GDPR Art. 8), in place before the first EU
   or UK child or guardian is onboarded. Does not gate processing under any other lawful basis
 
+#### O-122
+
+- **Category:** SP-13
+- **Framework ref:** not determined
+- **Legal ref:** 16 CFR 312.5(a)(1) (consent gates collection), 312.5(b)(1) (the general standard:
+  any method must be "reasonably calculated, in light of available technology, to ensure that the
+  person providing consent is the child's parent"), 312.5(b)(2) (the enumerated methods),
+  312.5(b)(3) (an FTC-approved Safe Harbor program may approve a method not enumerated in (b)(2)
+  that meets the (b)(1) standard)
+- **Class:** MANUAL
+- **Protected property:** The verifiable-parental-consent method the product actually relies on is
+  either an enumerated 312.5(b)(2) method, or a non-enumerated method approved under 312.5(b)(3) by
+  an FTC-approved Safe Harbor program, and the register names which one.
+- **Verification target:** The shipped consent flow as built, not as described: the typed
+  full-legal-name attestation captured by `frontend/src/auth/GuardianConsentPage.tsx` and persisted
+  through `api/onboarding.py::_record_consent` to `user.consent_accepted_at`,
+  `consent_policy_version`, `consent_signer_name`, `consent_ip`, mapped against the (b)(2) list
+  provision by provision.
+- **Failure oracle:** The relied-on method matches no 312.5(b)(2) provision and carries no Safe
+  Harbor approval under 312.5(b)(3), while children's personal information is being collected.
+- **Negative control:** not determined. A negative control here would have to be an adversarial
+  mapping attempt (an independent reader asked to defeat, not confirm, the claimed provision match),
+  because the failure mode this row exists to catch is a plausible-sounding citation that nobody
+  opened.
+- **Trigger:** Any change to how consent is captured, and any change to the enumerated list.
+- **Existing coverage:** none, and this row is the register's first coverage of the VPC mechanism
+  itself. Until it was added the register cited COPPA against O-35, O-36, O-61, O-62, and O-31, none
+  of which asks *by what method* consent is verified; the word "verifiable" did not appear in the
+  file. **A defect is already recorded against this row, in ADR-018 D1**: three documents asserted
+  the shipped flow targets a "sign and submit electronically" method at 312.5(b)(2)(i). Reading the
+  rule text directly on 2026-08-08 found no such method: (i) describes a *return channel*, a form
+  signed away from the service and returned by postal mail, facsimile, or electronic scan. An
+  electronic signature captured inside our own application may therefore not be an enumerated method
+  **at all**, which is a strictly larger question than "is our signature good enough", and it makes
+  312.5(b)(3) Safe Harbor a candidate mechanism for legality rather than an optional cost-saver.
+  Note also what the flow is not: it captures a **typed name only**. There is no drawn signature;
+  `GuardianConsentPage.tsx` has one text input, two checkboxes, and one select, with no `<canvas>`,
+  no `getContext`, and no `toDataURL`, though several documents described a canvas that was
+  considered in the 2026-07-20 framing and never built. Two of the cheaper enumerated routes,
+  "email plus" (312.5(b)(2)(viii)) and its neighbour (ix), require no disclosure of the child's
+  information to third parties, and a child's free-text story wish reaches third-party classifiers.
+  **Corrected 2026-08-09: that is a conditional bar, not a foreclosure, and an earlier draft of
+  this row overstated it.**
+
+  **Verified against the current rule text on 2026-08-09** via eCFR's renderer API, after the
+  section's HTML page proved bot-blocked. The amended Rule was published 90 FR (April 22, 2025),
+  effective 2025-06-23, with full compliance required by 2026-04-22, a date that has now passed, so
+  the text below binds. Four findings, three confirming what this register already said and one
+  changing it:
+
+  - **(b)(2)(i) reads "postal mail, facsimile, or electronic scan."** There is still no "sign and
+    submit electronically" method. The 2026-08-08 finding survives contact with current text.
+  - **(b)(2)(ii) reads "in connection with a transaction", not "monetary transaction"**, confirming
+    the payment-card withdrawal was right. The second limb is verbatim: the card or payment system
+    must "provide notification of each discrete transaction to the primary account holder". A
+    zero-charge authorisation generating no cardholder notification is therefore an open question
+    about the *method*, not a quibble, which is why Gate 1's Q2 is load-bearing.
+  - **The list runs (i) through (ix), and (ix) is a text-message method**, the sibling of (viii)
+    email-plus. This register's lettering was correct, and "text plus" is a real route, not a
+    colloquialism.
+  - **The condition on (viii) and (ix) is narrower than "we only use data internally."** The rule
+    conditions both on an operator that does not "disclose" **as that term is defined at § 312.2**.
+    That definition carves out release to "a person who provides support for the internal
+    operations", and § 312.2 then defines *that* phrase with a **closed enumerated list**: maintain
+    or analyze functioning; perform network communications; authenticate users or personalize
+    content; serve contextual advertising or cap frequency; protect security or integrity; ensure
+    legal or regulatory compliance; and fulfil a child's request per § 312.5(c)(3) and (4). It
+    carries a second limb of its own: the information "cannot be used or disclosed to contact a
+    specific individual ... to amass a profile ... or for any other purpose", which the "Third
+    party" definition restates.
+
+  **What that means for this project, and it is not what the earlier draft implied.** The *purpose*
+  limb is the easier one: story generation from a child's typed wish reads plausibly as
+  "personalize content" or "fulfil a child's request", and moderation reads plausibly as "protect
+  security or integrity" and "ensure legal or regulatory compliance". The binding constraint is the
+  *second* limb, that no recipient use the data for any other purpose, and that is an **execution
+  problem rather than an interpretive one**: it is closed by paperwork, not by architecture.
+  `processor-dpa-checklist.md` records it as open on exactly the vendors that would matter
+  (OpenRouter's Zero Data Retention coverage of the downstream model providers it routes to, which
+  Anthropic terms tier this account sits on, and whether Google Perspective specifically falls under
+  the Cloud DPA). Question 1B remains the live counsel ask on the characterisation; the DPAs are the
+  owner-side work that has to land regardless of how 1B is answered. Until both limbs hold,
+  email-plus and text-plus are unavailable; neither is permanently unavailable.
+- **Acceptance record (2026-08-09).** The owner ruled that the approach as built meets the
+  requirement and withdrew parts 1C and 1D from the counsel engagement
+  (`docs/compliance/counsel-engagement-brief.md` Sections 1.0, 1.3, 6). Recording the three things
+  the spine requires of an accepted exception, so the acceptance is a decision rather than a
+  disappearance:
+  - **Risk accepted.** That the in-app typed-name flow is neither an enumerated 312.5(b)(2) method
+    nor defensible under the 312.5(b)(1) general standard. The specific adverse authority is the
+    FTC's **January 2015 AgeCheq** decision, which declined to approve a structurally analogous
+    method (a signature artifact plus a step binding it to a real adult) on the ground that it was
+    not reasonably calculated to ensure the consenting person was the parent, and which noted that
+    the 2013 Rule **excluded digital signatures** from the enumerated methods because a digital
+    signature alone is not a reliable means of obtaining consent. This authority was identified by
+    the operator against the operator's own position and is retained verbatim in the brief; it is
+    not disputed here, it is accepted. Its force is not confined to the enumerated list: it is an
+    application of 312.5(b)(1) itself, so it bears on the fallback as well.
+  - **Compensating controls.** (a) Exposure is bounded by population: T2 records one household plus
+    invited families, with the public consumer population arriving only at R2/R3. (b) The flow logs
+    more than a signature: a typed legal name, an adulthood attestation, a guardianship attestation,
+    a residence country, a consent-language version, an IP address, a timestamp, and an OAuth-bound
+    account identity, which is the combination the 312.5(b)(1) argument rests on. (c) Two
+    independent enforcement gates refuse child-data collection without a consent record
+    (`api/profiles.py::_require_consent` on the caller's record,
+    `api/admin_profiles.py::_require_family_consent` on the target family's), so the accepted risk
+    is about the *quality* of consent, never about its *absence*. (d) The KWS evaluation at O-123
+    and O-124 is a live route to a stronger mechanism and is not foreclosed by this acceptance.
+  - **Expiry.** R2, the first distribution beyond the operator's household and invited families,
+    whichever comes first with any change to how consent is captured. **The intended retirement
+    mechanism, recorded 2026-08-09, is a KWS card or debit-card verification required at every
+    guardian signup**, which reaches the enumerated method at 312.5(b)(2)(ii) and makes the
+    AgeCheq authority beside the point rather than answered. That reframes this exception as an
+    interim covering the population verified between now and KWS reaching the enforcement path,
+    not as a permanent posture. **It is not yet earned**: the (b)(2)(ii) text requires the card be
+    used "in connection with a transaction" *and* that the card "provides notification of each
+    discrete transaction to the primary account holder", so a zero-charge authorisation that
+    generates no cardholder notification may not land inside the method. Gate 1's question Q2
+    (`docs/operations/kws-test-runbook.md`) is what settles it, and it is now the highest-value
+    experiment in the gate because the retirement plan rests on its answer. Two further events
+    retire the exception earlier rather than renewing it: a counsel answer to Section 1.6 (whether
+    a separate signature step is required at all) that removes the need for the step, or a counsel
+    answer to Question 1B that opens "email plus" at 312.5(b)(2)(viii). Both remain live asks.
+- **Superseded 2026-08-10, and the acceptance record above is preserved rather than edited.** The
+  owner ruled that KWS card or debit verification is the **sole** VPC method and that **no parent is
+  verified until it is active**. A risk the owner has decided to eliminate before first real use is
+  scheduled remediation, not an exception being carried, so the status moves off `accepted
+  exception`. What that changes, and what it does not:
+  - **The typed-name attestation is retained in a different role**, as the record of what the parent
+    agreed to under 312.5(a)(1) and 312.4. 312.5(b)(2) establishes that the consenting person is a
+    parent; it does not capture the agreement. This row's Verification target therefore still points
+    at that flow, but the property it protects is now "the method **relied on** is enumerated",
+    which the attestation no longer claims to satisfy.
+  - **The retirement mechanism named on 2026-08-09 is now the only mechanism**, so its unearned
+    status is more consequential, not less. Gate 1's Q2 is promoted from the highest-value
+    experiment to the **viability gate**: a zero-charge authorisation generating no cardholder
+    notification leaves (b)(2)(ii)'s second limb unmet with no fallback behind it.
+  - **The ruling is not yet a control.** `api/profiles.py::_require_consent` and
+    `api/admin_profiles.py::_require_family_consent` still read `user.consent_*` and nothing else,
+    and nothing reads a `kws_verification` row for any decision, so the typed-name path remains
+    fully reachable in production. Until the gates require a KWS-verified record, this is a policy
+    the operator holds, not a mechanism. That gate change has a precondition at **O-123**, which is
+    promoted accordingly: without a refusal of `kws_environment = 'test'`, a staging-era row could
+    satisfy a production consent decision.
+  - **Compensating control (c) is unaffected** and remains the reason this is a quality question
+    rather than an absence question: both gates still refuse child-data collection without a consent
+    record.
+  - **Question 1A now bears only on the installed base.** Any child profile already created behind
+    the typed-name gate was collected under a mechanism the product declines to rely on going
+    forward. Whether that set is non-empty, and whether every member is the operator's own household,
+    is **not established**; establishing it is a precondition for closing 1A rather than narrowing
+    it, and it is a read-only query against the production project, not an inference.
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified. **Neither an accepted exception nor a decision to remediate is a
+  verification**: nothing below has been checked against the rule text by anyone qualified to do so.
+  The 2026-08-09 record says who decided to carry the risk and on what basis; the 2026-08-10 record
+  says who decided to eliminate it and by what mechanism. Neither converts the open question into a
+  closed one.
+- **Status:** finding open
+- **Check:** The VPC method relied on is named, and is either an enumerated 16 CFR 312.5(b)(2)
+  method identified by provision, or a non-enumerated method carrying a 312.5(b)(3) Safe Harbor
+  approval. "An electronic signature is captured" is not an answer to this check
+
+#### O-123
+
+- **Category:** SP-13
+- **Framework ref:** not determined
+- **Legal ref:** 16 CFR 312.5(a)(1), 312.5(b)(1)
+- **Class:** RUNTIME-CONFIG
+- **Protected property:** No verification performed against a vendor's **sandbox** environment is
+  ever relied on as evidence that a real parent consented, and no deployed tier that serves real
+  families is wired to one.
+- **Verification target:** The KWS configuration actually in force on each deployed tier
+  (`KWS_ENVIRONMENT` plus the four all-or-none API credentials), and the `kws_environment` column on
+  every `kws_verification` row treated as consent evidence.
+- **Failure oracle:** A tier serving real families holds `kws_environment = 'test'` while its
+  verifications are treated as VPC evidence, or any consent decision cites a `kws_verification` row
+  whose `kws_environment` is `test`.
+- **Negative control:** partial, and one-directional by design. `core/config.py::
+  _reject_production_kws_from_a_local_app` refuses to boot when `kws_environment == "production"`
+  and `environment == "local"`, proven by
+  `tests/unit/test_config.py::TestKwsSettings::test_production_kws_environment_rejected_from_a_local_app`.
+  **The opposite direction has no control at all, deliberately**: a deployed tier pointed at the
+  Test environment boots normally, because that is the intended staging posture. That decision is
+  correct for staging and is exactly the uncovered case for production, and it cannot be closed by
+  reusing the same guard, because the app's own `ENVIRONMENT` does not distinguish the tiers:
+  **staging declares `ENVIRONMENT=production`**, so every `environment == "local"` predicate is inert
+  on both deployed tiers.
+- **Trigger:** Any KWS configuration change on any tier, and the first production KWS wiring.
+- **Existing coverage:** partial. The `kws_environment` column exists, is `CHECK`-constrained to
+  `test | production` at rest, and is stamped per row at send time, so the partition is legible
+  afterwards; that legibility is load-bearing because the KWS API reports nothing that would let the
+  environment be re-derived later. What has no mechanism is the *reliance* rule: nothing refuses to
+  treat a `test` row as evidence, because nothing yet consumes these rows for a consent decision at
+  all. **Live state, 2026-08-09**: the integration is wired on staging against the KWS **Test**
+  environment; production's compose (`services/cyo-adventure/docker-compose.yml`) contains zero
+  `KWS_*` references, so KWS credentials present in production's Portainer stack environment are
+  inert **by coincidence of sequencing, not by any control**, and would be picked up silently by the
+  deploy that first lands the KWS block in that compose file. Removing them is the cheap mitigation
+  and needs no production redeploy.
+- **Promoted 2026-08-10 from follow-on work to a precondition.** The owner ruling recorded at O-122
+  makes KWS the sole VPC method, which means the consent gates must stop reading `user.consent_*`
+  and start requiring a `kws_verification` row. The moment that consumer exists, the gap this row
+  describes stops being theoretical: a `test` row becomes capable of satisfying a production consent
+  decision, and no deployed tier can detect it, because `_reject_production_kws_from_a_local_app`
+  fires only when `environment == "local"` and **staging declares `ENVIRONMENT=production`**. The
+  refusal to treat a `test` row as evidence must therefore ship **in the same change as the
+  consumer**, not after it. Shipping the consumer first would create, for the duration of the gap, a
+  production consent path satisfiable by a staging artifact, which is a worse posture than the one
+  the ruling was made to improve.
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** evidence invalid
+- **Check:** Every deployed tier's KWS environment is the one appropriate to that tier, and no
+  `kws_verification` row carrying `kws_environment = 'test'` is relied on as evidence that a real
+  parent consented
+
+#### O-124
+
+- **Category:** SP-13
+- **Framework ref:** not determined
+- **Legal ref:** 16 CFR 312.5(b)(1) (the method must be reasonably calculated to ensure the person
+  is the parent, which presupposes knowing what the method was)
+- **Class:** RUNTIME-CONFIG
+- **Protected property:** For every parent verification obtained through a third-party service, a
+  non-retroactive record exists of which verification methods that service was permitted to use at
+  the moment the verification was requested.
+- **Verification target:** The `kws_verification.enabled_methods` value on each row, and the
+  boot-time validator that requires the declaration to be non-empty whenever the credentials are
+  complete.
+- **Failure oracle:** A verification is recorded with an empty or absent `enabled_methods`, or the
+  stored value changes when an operator changes the current setting.
+- **Negative control:** **tripped in the field on 2026-08-09**, not in a drill.
+  `core/config.py::_require_declared_kws_methods_when_configured` refused to start the staging
+  backend the moment KWS was switched on with `KWS_ENABLED_METHODS` empty, raising
+  `ConfigurationError: KWS is configured but KWS_ENABLED_METHODS is empty`. That is a genuine
+  demonstration that the check can fail, and it is worth recording that it stayed dormant through
+  every prior redeploy: the predicate is `kws_configured and not kws_enabled_methods`, so it can only
+  fire once all four credentials are present. A control whose first firing is an outage has proven it
+  can fail, but has not proven anyone rehearsed it. Unit coverage:
+  `tests/unit/test_config.py::TestKwsEnabledMethods::test_configured_kws_requires_declared_methods`.
+- **Trigger:** Any change to the enabled-methods declaration or to the vendor's Control Panel
+  configuration.
+- **Existing coverage:** yes, and this row exists because the vendor forecloses the obvious
+  alternative. The `parent-verified` callback reports **no verification method at all**, and KWS's
+  AgeGraph branch can verify a parent by inheritance from a different KWS-enabled service, so the
+  product cannot evidence *how* a given parent was verified from anything the vendor sends. The
+  operator's own declaration is therefore the only bound that will ever exist on it, which is why
+  `consent/service.py` copies `list(settings.kws_enabled_methods)` into the row at send time rather
+  than holding a reference: a shared reference would make a past row's evidence mutate with a present
+  setting, which is precisely the retroactivity this row forbids. **The declaration is asserted, not
+  reconciled**: there is no KWS API to read the Control Panel's own configuration from, so nothing
+  can detect an operator whose declaration and Control Panel disagree. That is a known limit of this
+  control, stated here rather than left for a reader to discover.
+- **Confirmed from vendor documentation, 2026-08-10.** The premise this row rests on was previously
+  inferred from the callback schema. Epic's Developer Portal pages now state it directly: the
+  `parent-verified` payload carries `parentEmail`, `externalPayload`, and a `status` object holding
+  `verified` and `transactionId`, alongside envelope fields `name`, `time`, `orgId`, and
+  `productId`. There is no method field anywhere in it. The same pages describe the pre-verified
+  AgeGraph path as one where the parent "doesn't receive a verification request" at all, so on that
+  branch no method runs for us even in principle. Both readings strengthen this row rather than
+  changing it: the operator's send-time declaration remains the only bound that will ever exist, and
+  on the inheritance branch it is a bound on a method that was never exercised. The declaration
+  should be read as *what we permitted*, never as *what happened*, and any surface that renders it
+  to a human must not imply otherwise.
+- **Available hardening, not yet taken:** the payload's `productId` is checkable, and
+  `api/kws_webhook.py` already compares it against `settings.kws_product_id`. That comparison is
+  vacuously true today because `KWS_PRODUCT_ID` is unset on staging, so a delivery naming any
+  product passes. The value is visible in the Developer Portal and can be pinned whenever the
+  branding work takes an operator there.
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** 2026-08-09 (staging only; the control has never run on a tier serving real
+  families, because production has no KWS wiring)
+- **Status:** verification scheduled
+- **Check:** Every third-party parent verification carries a send-time snapshot of the verification
+  methods the vendor was permitted to use, and that snapshot does not change when the current
+  setting does
+
 ### SP-16 Availability, Resilience, Recovery
 
 #### O-44
@@ -3634,8 +3915,12 @@ different question.
    exceeded after all, by the very entry written to prevent it. A subsequent compliance-verification
    pass added O-120 (state information-security statutes) and O-121 (GDPR Art. 8 child-consent-age
    table), both absent from every applicability table until then, moving the count to 118 rows, 115
-   active. Reopened: decide whether the active count, now 115, is accepted, or trim to the ~60
-   ceiling. This is the maintainer's call and is deliberately left open rather than re-decided here;
+   active. A further pass on 2026-08-09 added O-122 (which VPC method is relied on), O-123 (the
+   vendor sandbox/production partition), and O-124 (the send-time snapshot of permitted verification
+   methods), moving the count to 121 rows, 118 active. Those three closed a gap worth naming: the
+   register cited COPPA against five rows, none of which asked *by what method* consent is verified,
+   and the word "verifiable" appeared nowhere in the file. Reopened: decide whether the active count,
+   now 118, is accepted, or trim to the ~60 ceiling. This is the maintainer's call and is deliberately left open rather than re-decided here;
    the point of recording each new addition here is so the next person who reopens this item
    recounts rather than trusts any historical figure.
 7. **Promote the spine.** `assurance-spine.md` is written to be lifted into whatever global

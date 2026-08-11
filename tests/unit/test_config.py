@@ -32,6 +32,19 @@ _CHILD_SECRET = "test-child-session-secret-0123456789abcd"
 # every non-local environment (see the _require_device_grant_secret_outside_local
 # validator, ADR-014). Must be distinct from _CHILD_SECRET.
 _DEVICE_SECRET = "test-device-grant-secret-0123456789abcdef"
+# The four values needed before any KWS API call can be made. Not real
+# credentials: the ids are placeholder UUIDs and the host is the documented
+# one, so a secrets scanner has nothing to match.
+_KWS_CREDS = {
+    "kws_organization_id": "00000000-0000-4000-8000-000000000001",
+    "kws_api_origin": "https://api.kidswebservices.com",
+    "kws_client_id": "00000000-0000-4000-8000-000000000002",
+    "kws_api_key": "test-kws-api-key-not-a-real-secret",
+}
+# The two methods currently switched on in the Control Panel, and the only two
+# a configured integration can be constructed with (an empty declaration is
+# refused; see _require_declared_kws_methods_when_configured).
+_KWS_METHODS = ["credit_card", "debit_card"]
 
 
 class TestSettingsDefaults:
@@ -1514,3 +1527,359 @@ class TestRateLimitRedisBounds:
 
         assert timeout_settings.rate_limit_redis_timeout_seconds == 0.0
         assert cooldown_settings.rate_limit_redis_cooldown_seconds == 0.0
+
+
+class TestKwsSettings:
+    """Tests for the Parent Verification Service (KWS, Epic; ADR-018) settings.
+
+    KWS verifies that an adult is an adult. It is not, by Epic's own
+    documentation, a COPPA consent or direct-notice mechanism, so nothing here
+    asserts anything about 16 CFR 312.5 being satisfied; these tests cover the
+    configuration invariants only.
+    """
+
+    @pytest.fixture(autouse=True)
+    def _clear_kws_env(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Keep a developer's own KWS_* exports out of these assertions."""
+        for name in (
+            "KWS_ENVIRONMENT",
+            "KWS_ENVIRONMENT_LABEL",
+            "KWS_ORGANIZATION_ID",
+            "KWS_PRODUCT_ID",
+            "KWS_API_ORIGIN",
+            "KWS_AUTH_ORIGIN",
+            "KWS_CLIENT_ID",
+            "KWS_API_KEY",
+            "KWS_USER_AGENT",
+            "KWS_WEBHOOK_SECRET",
+            "KWS_VERIFICATION_SECRET",
+            "KWS_WEBHOOK_MAX_SKEW_SECONDS",
+            "KWS_ENABLED_METHODS",
+        ):
+            monkeypatch.delenv(name, raising=False)
+
+    @pytest.mark.unit
+    def test_kws_environment_defaults_to_test(self) -> None:
+        """The default is the sandbox, because the failure modes are asymmetric."""
+        from cyo_adventure.core.config import Settings
+
+        assert Settings().kws_environment == "test"
+
+    @pytest.mark.unit
+    def test_unconfigured_by_default(self) -> None:
+        """No credentials means no KWS call is ever made; there is no enable flag."""
+        from cyo_adventure.core.config import Settings
+
+        assert Settings().kws_configured is False
+
+    @pytest.mark.unit
+    def test_complete_kws_credentials_are_accepted(self) -> None:
+        """All four present is the only configured state."""
+        from cyo_adventure.core.config import Settings
+
+        assert Settings(kws_enabled_methods=_KWS_METHODS, **_KWS_CREDS).kws_configured
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize("omitted", list(_KWS_CREDS))
+    def test_partial_kws_credentials_are_rejected(self, omitted: str) -> None:
+        """Omitting any one of the four fails at startup, naming the gap.
+
+        Every single-omission case is covered rather than one representative,
+        because the point of the validator is that no partial set boots.
+        """
+        from cyo_adventure.core.config import Settings
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        partial = {k: v for k, v in _KWS_CREDS.items() if k != omitted}
+
+        with pytest.raises(ConfigurationError, match="partially configured"):
+            Settings(**partial)
+
+    @pytest.mark.unit
+    def test_empty_string_kws_credentials_count_as_unset(self) -> None:
+        """Compose injects "" for an unset variable; that must read as absent.
+
+        ``${KWS_API_KEY:-}`` interpolates to an empty string rather than
+        leaving the variable unset, so an all-empty set is a fully
+        unconfigured integration, not four configured-but-empty credentials.
+        """
+        from cyo_adventure.core.config import Settings
+
+        settings = Settings(**dict.fromkeys(_KWS_CREDS, ""))
+
+        assert settings.kws_configured is False
+
+    @pytest.mark.unit
+    def test_one_empty_string_credential_is_still_partial(self) -> None:
+        """An empty value among three real ones is the partial case, not opt-out."""
+        from cyo_adventure.core.config import Settings
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        with pytest.raises(ConfigurationError, match="KWS_API_KEY"):
+            Settings(**{**_KWS_CREDS, "kws_api_key": ""})
+
+    @pytest.mark.unit
+    def test_empty_kws_user_agent_falls_back_to_the_default(self) -> None:
+        """An empty override must not defeat the non-empty constraint.
+
+        This is the deployment case, not a theoretical one: ``${VAR:-}`` is the
+        house compose idiom for an optional variable and injects ``""``. With
+        ``min_length=1`` and no coercion, that string is a ValidationError at
+        settings construction, so the container never starts. Falling back to
+        the default keeps a real User-Agent on the wire, which KWS requires:
+        an empty one is answered with 403 "Request blocked".
+        """
+        from cyo_adventure.core.config import Settings
+
+        assert Settings(kws_user_agent="").kws_user_agent == "cyo-adventure"
+
+    @pytest.mark.unit
+    def test_empty_kws_skew_seconds_falls_back_to_the_default(self) -> None:
+        """Same idiom, same failure: "" is not an int and would refuse to boot."""
+        from cyo_adventure.core.config import Settings
+
+        assert (
+            Settings(kws_webhook_max_skew_seconds="").kws_webhook_max_skew_seconds
+            == 300
+        )
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize(
+        "field",
+        [
+            "kws_environment_label",
+            "kws_organization_id",
+            "kws_product_id",
+            "kws_api_origin",
+            "kws_client_id",
+        ],
+    )
+    def test_empty_kws_identifier_is_unset_not_a_value(self, field: str) -> None:
+        """``""`` must be indistinguishable from unset for every identifier.
+
+        The same ``${VAR:-}`` idiom that would refuse to boot on a constrained
+        field fails silently on these: they default to None to mean "not pinned
+        yet", and their consumers test that with ``is None``. An empty string
+        is not None, so the escape hatch closes and the field becomes a value
+        nothing can ever equal.
+
+        That is not hypothetical. On 2026-08-10 a correctly signed, one-second-
+        old ``parent-verified`` delivery was ignored with ``200 handled=False``
+        because ``kws_product_id`` was ``""`` and ``_product_matches`` compared
+        against it instead of skipping the check. Nothing raised and nothing
+        retried, so ``is None`` is asserted here rather than falsiness: only
+        the former is what the consumers actually branch on.
+        """
+        from cyo_adventure.core.config import Settings
+
+        assert getattr(Settings(**{field: ""}), field) is None
+
+    @pytest.mark.unit
+    def test_a_real_kws_user_agent_override_still_wins(self) -> None:
+        """The fallback must be scoped to emptiness, not swallow real values."""
+        from cyo_adventure.core.config import Settings
+
+        assert Settings(kws_user_agent="cyo/1.2").kws_user_agent == "cyo/1.2"
+
+    @pytest.mark.unit
+    def test_a_real_kws_product_id_still_pins_the_check(self) -> None:
+        """Normalising emptiness must not disable the guard it protects.
+
+        The point of tolerating ``""`` is to keep the *unpinned* state
+        reachable, not to make the pinned state unreachable. A real value has
+        to survive, or the fix would trade a guard that never passes for one
+        that never fires.
+        """
+        from cyo_adventure.core.config import Settings
+
+        assert Settings(kws_product_id="prod-1").kws_product_id == "prod-1"
+
+    @pytest.mark.unit
+    def test_a_real_kws_skew_override_still_wins(self) -> None:
+        """A configured window must survive the empty-string coercion."""
+        from cyo_adventure.core.config import Settings
+
+        assert (
+            Settings(kws_webhook_max_skew_seconds=120).kws_webhook_max_skew_seconds
+            == 120
+        )
+
+    @pytest.mark.unit
+    def test_production_kws_environment_rejected_from_a_local_app(self) -> None:
+        """A developer machine must not mint records indistinguishable from real ones."""
+        from cyo_adventure.core.config import Settings
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        with pytest.raises(ConfigurationError, match="KWS_ENVIRONMENT='production'"):
+            Settings(
+                environment="local",
+                kws_environment="production",
+                kws_enabled_methods=_KWS_METHODS,
+                **_KWS_CREDS,
+            )
+
+    @pytest.mark.unit
+    def test_test_kws_environment_allowed_in_a_deployed_tier(self) -> None:
+        """The guard is one-directional: staging against the sandbox is normal."""
+        from cyo_adventure.core.config import Settings
+
+        settings = Settings(
+            environment="staging",
+            kws_environment="test",
+            database_url=_PROD_DB_URL,
+            oidc_issuer="https://project.supabase.co/auth/v1",
+            oidc_jwks_url="https://project.supabase.co/auth/v1/.well-known/jwks.json",
+            child_session_secret=_CHILD_SECRET,
+            device_grant_secret=_DEVICE_SECRET,
+            allow_mock_review=True,
+            kws_enabled_methods=_KWS_METHODS,
+            **_KWS_CREDS,
+        )
+
+        assert settings.kws_environment == "test"
+
+    @pytest.mark.unit
+    def test_kws_secrets_are_secretstr(self) -> None:
+        """The API key must not surface in a repr, log line, or error message."""
+        from cyo_adventure.core.config import Settings
+
+        settings = Settings(kws_enabled_methods=_KWS_METHODS, **_KWS_CREDS)
+        api_key = settings.kws_api_key
+
+        assert api_key is not None
+        assert api_key.get_secret_value() == _KWS_CREDS["kws_api_key"]
+        assert _KWS_CREDS["kws_api_key"] not in repr(settings)
+
+    @pytest.mark.unit
+    def test_kws_user_agent_defaults_non_empty(self) -> None:
+        """KWS answers 403 "Request blocked" to a missing or empty user-agent.
+
+        Defaulting rather than leaving it None means that failure mode cannot
+        be reached by omission.
+        """
+        from cyo_adventure.core.config import Settings
+
+        assert Settings().kws_user_agent
+
+    @pytest.mark.unit
+    def test_the_resolved_kws_user_agent_is_never_empty(self) -> None:
+        """The durable invariant: an empty user-agent never reaches KWS.
+
+        This test previously asserted that ``kws_user_agent=""`` raises, which
+        enforced the same invariant by refusing to construct settings at all.
+        That was changed deliberately: the empty string's realistic source is
+        ``${KWS_USER_AGENT:-}`` in compose, not an operator typing an empty
+        value, and refusing to boot over an optional variable with a perfectly
+        good default trades a 403 on one API call for a dead container. The
+        property being protected is unchanged and is what this asserts: the
+        field cannot HOLD an empty value by any route.
+        """
+        from cyo_adventure.core.config import Settings
+
+        assert Settings().kws_user_agent
+        assert Settings(kws_user_agent="").kws_user_agent
+        assert Settings(kws_user_agent="   ").kws_user_agent
+
+    @pytest.mark.unit
+    def test_auth_origin_defaults_to_the_documented_keycloak_host(self) -> None:
+        """The token endpoint is on a different host from the service API.
+
+        Pinning the documented default keeps a single-base-URL assumption from
+        being reintroduced; the two hosts are genuinely distinct.
+        """
+        from cyo_adventure.core.config import Settings
+
+        settings = Settings()
+
+        assert settings.kws_auth_origin == "https://auth.kidswebservices.com"
+        assert settings.kws_auth_origin != settings.kws_api_origin
+
+
+class TestKwsEnabledMethods:
+    """Tests for the declared KWS verification-method set.
+
+    The declaration is evidence rather than a preference: the parent-verified
+    webhook reports no method, so the enabled set at the time of verification
+    is the only bound on which method could have run, and it cannot be
+    reconstructed afterwards.
+    """
+
+    @pytest.fixture(autouse=True)
+    def _clear_kws_env(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Keep a developer's own KWS_* exports out of these assertions."""
+        for name in ("KWS_ENABLED_METHODS", "KWS_ORGANIZATION_ID", "KWS_API_ORIGIN"):
+            monkeypatch.delenv(name, raising=False)
+
+    @pytest.mark.unit
+    def test_defaults_to_empty(self) -> None:
+        """Unconfigured means nothing to declare."""
+        from cyo_adventure.core.config import Settings
+
+        assert Settings().kws_enabled_methods == []
+
+    @pytest.mark.unit
+    def test_parsed_from_a_comma_separated_env_value(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Operators mirror the Control Panel, not a JSON array.
+
+        NoDecode is what makes this work; without it pydantic-settings would
+        try to json.loads the value and fail on a bare comma-separated list.
+        """
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.setenv("KWS_ENABLED_METHODS", "credit_card, debit_card")
+
+        assert Settings().kws_enabled_methods == ["credit_card", "debit_card"]
+
+    @pytest.mark.unit
+    def test_canonicalized_by_dedupe_and_sort(self) -> None:
+        """Two spellings of the same declaration must compare equal."""
+        from cyo_adventure.core.config import Settings
+
+        one = Settings(kws_enabled_methods=["debit_card", "credit_card"])
+        two = Settings(kws_enabled_methods=["credit_card", "debit_card", "credit_card"])
+
+        assert one.kws_enabled_methods == two.kws_enabled_methods
+        assert one.kws_enabled_methods == ["credit_card", "debit_card"]
+
+    @pytest.mark.unit
+    def test_unknown_method_rejected(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """A typo is a startup error, not a silently wrong claim on a record."""
+        from pydantic import ValidationError
+
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.setenv("KWS_ENABLED_METHODS", "credit_card,creditcard")
+
+        with pytest.raises(ValidationError):
+            Settings()
+
+    @pytest.mark.unit
+    def test_configured_kws_requires_declared_methods(self) -> None:
+        """Credentials without a declaration would write unbounded records."""
+        from cyo_adventure.core.config import Settings
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        with pytest.raises(ConfigurationError, match="KWS_ENABLED_METHODS is empty"):
+            Settings(**_KWS_CREDS)
+
+    @pytest.mark.unit
+    def test_configured_kws_with_declared_methods_accepted(self) -> None:
+        """The complete, declared configuration is the one that boots."""
+        from cyo_adventure.core.config import Settings
+
+        settings = Settings(kws_enabled_methods=_KWS_METHODS, **_KWS_CREDS)
+
+        assert settings.kws_configured is True
+        assert settings.kws_enabled_methods == ["credit_card", "debit_card"]
+
+    @pytest.mark.unit
+    def test_unconfigured_kws_may_declare_nothing(self) -> None:
+        """The requirement is scoped to a configured integration, not to every boot."""
+        from cyo_adventure.core.config import Settings
+
+        settings = Settings()
+
+        assert settings.kws_configured is False
+        assert settings.kws_enabled_methods == []

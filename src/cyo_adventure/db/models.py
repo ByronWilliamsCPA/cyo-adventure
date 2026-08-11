@@ -255,6 +255,23 @@ _PERSONALIZATION_RING2_SLOT_TYPE_VALUES = (
     "'home_type'"
 )
 
+# ADR-018: the three states one KWS parent-verification attempt can be in, and
+# the two KWS environments an attempt can have run against. Exported (no
+# leading underscore) because ``consent/service.py`` writes these exact strings
+# and must not spell them a second time: a service-side typo would otherwise be
+# caught only at INSERT time, by the CHECK constraints below, in production.
+KWS_VERIFICATION_STATUS_SENT = "sent"
+KWS_VERIFICATION_STATUS_VERIFIED = "verified"
+KWS_VERIFICATION_STATUS_FAILED = "failed"
+_KWS_VERIFICATION_STATUS_VALUES = "'sent', 'verified', 'failed'"
+# Mirrors the Literal on ``core.config.Settings.kws_environment``. Hand-written
+# rather than derived from that Literal for the same reason
+# _SECURITY_EVENT_TYPE_VALUES is hand-written: importing core.config here would
+# add an import edge from the ORM layer into settings for one two-element list.
+# tests/unit/test_kws_verification_model.py::
+# test_at_rest_environment_vocabulary_matches_the_setting guards the drift.
+_KWS_ENVIRONMENT_VALUES = "'test', 'production'"
+
 
 class UUIDPrimaryKeyMixin:
     """A UUID surrogate primary key, client-side defaulted via ``uuid.uuid4``.
@@ -2739,3 +2756,100 @@ class KidFlag(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     )
     resolved_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
     resolution: Mapped[str | None] = mapped_column(String(16), default=None)
+
+
+class KwsVerification(Base):
+    """One KWS parent-verification attempt, from send to resolution (ADR-018).
+
+    The row is written by ``consent/service.py::start_parent_verification``
+    BEFORE the outbound send-email call, and resolved later by
+    ``consent/service.py::record_parent_verified`` when the authenticated
+    ``parent-verified`` webhook quotes our ``externalPayload`` back.
+
+    Scope, since the class name invites a wrong reading: KWS establishes that
+    an adult is an adult. A ``verified`` row here is corroborating evidence
+    beside the 16 CFR 312.5 consent record on ``User.consent_*``, never a
+    replacement for it (see ``consent/__init__.py``).
+
+    #CRITICAL: security: there is deliberately NO ``parent_email`` column, and
+    none may be added under any name. Avoiding the parent's address as a join
+    key is the entire reason the opaque per-attempt correlation exists
+    (``consent/external_payload.py``); a column here would reintroduce the most
+    sensitive field in the delivery as this table's natural key, and it would
+    not survive a guardian changing their address either.
+    #VERIFY: tests/unit/test_kws_verification_model.py::
+    test_the_table_has_no_email_column.
+
+    Attributes:
+        id: The minted attempt id, which IS the correlation. Not a separate
+            surrogate key: the value we hand KWS in ``externalPayload`` and the
+            value we look a delivery up by must be the same value, or the
+            lookup needs a second index and a second chance to disagree.
+        user_id: The guardian this attempt attributes to.
+        kws_environment: Which KWS environment produced it, ``test`` or
+            ``production``.
+        status: ``sent`` until a delivery resolves it to ``verified`` or
+            ``failed``.
+        requested_at: When the send was attempted (UTC, TIMESTAMPTZ).
+        resolved_at: When a delivery resolved it, or ``None`` while ``sent``.
+        transaction_id: KWS's opaque id for the verification, ``None`` until a
+            delivery reports one.
+        enabled_methods: ``settings.kws_enabled_methods`` as it stood at send
+            time.
+    """
+
+    __tablename__ = "kws_verification"
+    # #CRITICAL: data integrity: both vocabularies are constrained AT REST, not
+    # just at the writer. kws_environment in particular is the only thing that
+    # distinguishes a sandbox verification from evidence about a real parent
+    # (the KWS API reports nothing that identifies which environment answered),
+    # so an unmodeled value here would be an unreadable record rather than a
+    # cosmetic defect. The pairing CHECK is the same shape as
+    # ck_kid_flag_resolved_pairing: it keeps a "still waiting" filter
+    # (status = 'sent') from ever disagreeing with resolved_at IS NULL.
+    # #VERIFY: tests/unit/test_kws_verification_model.py::
+    # test_status_and_environment_are_constrained_at_rest and
+    # ::test_resolution_pairing_is_constrained_at_rest.
+    __table_args__ = (
+        CheckConstraint(
+            f"status IN ({_KWS_VERIFICATION_STATUS_VALUES})",
+            name="ck_kws_verification_status",
+        ),
+        CheckConstraint(
+            f"kws_environment IN ({_KWS_ENVIRONMENT_VALUES})",
+            name="ck_kws_verification_environment",
+        ),
+        CheckConstraint(
+            "(status = 'sent') = (resolved_at IS NULL)",
+            name="ck_kws_verification_resolution_pairing",
+        ),
+    )
+
+    # No ``UUIDPrimaryKeyMixin``, and no default: the mixin's ``uuid.uuid4``
+    # default would silently mint a SECOND id for a caller that forgot to pass
+    # the one it gave KWS, and that row could never be matched to a delivery.
+    # Requiring the value makes the omission a NOT NULL failure instead.
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True)
+    # #CRITICAL: data-integrity: CASCADE (Phase 3a, GDPR/COPPA erasure): a
+    # verification attempt is personal data about the guardian who started it,
+    # so it goes when their user row does.
+    # #VERIFY: tests/integration/test_deletion_drill.py.
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey(_FK_USER, ondelete="CASCADE"), index=True
+    )
+    kws_environment: Mapped[str] = mapped_column(String(16))
+    status: Mapped[str] = mapped_column(
+        String(16), default=KWS_VERIFICATION_STATUS_SENT
+    )
+    requested_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
+    resolved_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
+    transaction_id: Mapped[str | None] = mapped_column(String(128), default=None)
+    # #CRITICAL: data integrity: a SNAPSHOT, never a live read. The
+    # parent-verified event reports no verification method at all, so the set
+    # enabled at send time is the only bound that will ever exist on how this
+    # parent was verified, and the vendor cannot supply one afterwards. Read
+    # live instead of copied, that bound would evaporate retroactively for
+    # every row the instant anyone toggled a row in the Control Panel.
+    # #VERIFY: tests/unit/test_kws_verification_service.py::
+    # test_the_enabled_methods_snapshot_is_copied_not_referenced.
+    enabled_methods: Mapped[list[str]] = mapped_column(JSONB)

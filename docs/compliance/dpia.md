@@ -123,9 +123,13 @@ to reach than an intercepted text message.
 If the reading is wrong, every consent recorded under it is defective, which could mean every
 child profile created since launch was created without valid VPC.
 
-**Mitigation**: this is the top item in the counsel engagement
-(`counsel-engagement-brief.md` Section 1.3), and `privacy-notice.md` carries the same flag.
-Two things limit the blast radius:
+**Mitigation**: **changed 2026-08-09.** This was the top item in the counsel engagement. The
+owner ruled that the approach as built meets the requirement and withdrew it from the engagement
+(`counsel-engagement-brief.md` Sections 1.0, 1.3, 6). It is now carried as an **accepted
+exception** at assurance-register row **O-122**, with the AgeCheq authority above recorded as the
+residual risk, compensating controls named, and an expiry at R2. An acceptance changes who carries
+this risk, not how large it is; the severity below is unchanged and deliberately so. Two things
+limit the blast radius:
 
 - **The consent record survives a change of method.** Typed name, timestamp, IP, policy
   version, residence country, and adulthood attestation, all tied to the authenticated OAuth
@@ -135,11 +139,16 @@ Two things limit the blast radius:
   on an unenumerated method meeting 312.5(b)(1) without FTC approval; the 312.5(b)(3) Safe
   Harbor route buys certainty, not permission. This is risk reduction, not authorisation.
 
-**Residual risk**: High until counsel confirms or the method is strengthened. This is the
-single highest-priority open item this DPIA surfaces. Neither mitigation reaches the core
-exposure: consent cannot be obtained retroactively for collection that has already happened,
-so if counsel concludes the method is defective, re-consenting the existing population is the
-remedy and the prior collection stays defective.
+**Residual risk**: **High, and now accepted rather than pending.** It stays High: the 2026-08-09
+owner ruling withdrew the question from counsel, which removes the route by which the risk would
+have been resolved, not the risk. This remains the single highest-priority open item this DPIA
+surfaces. Neither mitigation reaches the core exposure: consent cannot be obtained retroactively
+for collection that has already happened, so if the method is in fact defective, re-consenting
+the existing population is the remedy and the prior collection stays defective. Two live counsel
+questions could still retire the exception rather than defend it, and both are cheaper than
+re-consenting later: `counsel-engagement-brief.md` Section 1.6 (whether a separate signature step
+is required at all) and Question 1B (whether "email plus" at 312.5(b)(2)(viii) is open to us).
+Tracked at assurance-register row O-122; expiry R2.
 
 ### 2.3 Cross-family disclosure without adequate control (Low, resolved)
 

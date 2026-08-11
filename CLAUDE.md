@@ -600,14 +600,16 @@ React frontend (frontend/)
    |  npm run generate-client                  committed to git, CI fails on drift
    v  reads  http://localhost:8000/openapi.json
 FastAPI backend (src/cyo_adventure/)
-   - api/            28 routers (health, library, reading, reading_history,
-                      recommendations, flags, notifications, generation,
-                      profiles, families, ratings, assignments, approval,
-                      node_edit, rescreen, audit, covers,
+   - api/            36 routers (health, library, reading, reading_history,
+                      reading_time, progress, recommendations, flags,
+                      notifications, generation, profiles, personalization,
+                      characters, families, ratings, assignments, approval,
+                      node_edit, rescreen, remoderate, audit, covers,
                       moderation_thresholds, moderation_dashboard,
                       provider_allowlist, me, story_requests, child_sessions,
-                      device_grants, onboarding, admin_users, admin_profiles,
-                      family_connections)
+                      device_grants, offline_downloads, onboarding,
+                      admin_users, admin_profiles, family_connections,
+                      kws_webhook, kws_redirect)
    - core/           config.py, database.py (async SQLAlchemy), exceptions.py
    - middleware/     correlation.py, security.py (OWASP headers),
                       unit_of_work.py (commits the request UoW pre-response)
@@ -626,6 +628,9 @@ FastAPI backend (src/cyo_adventure/)
                       moderation pipeline (moderation/leaf_diversity.py), and in
                       flywheel/ (strategy.py, trigger.py)
    - publishing/      guardian approve-and-publish state machine
+   - consent/         ADR-018 D1: KWS parent verification. kws_client.py (send),
+                      service.py (start/record), external_payload.py (correlation).
+                      Only the parent-verified webhook writes consent state
    - covers/          AI cover-art generation (nano banana), storage, optimization
    - player/          reading/replay state engine
    - events/          append-only pipeline event log
@@ -673,6 +678,18 @@ shared code.
 6. **`utils/financial.py` has been removed.** It was unused template
    scaffolding for Decimal helpers with no domain relevance to a kids' reading
    app; this is documented in `docs/template_feedback.md`. Do not recreate it.
+7. **KWS parent verification has three legs and only one of them may write
+   consent state.** `consent/` (ADR-018 D1) talks to Kids Web Services: an
+   outbound OAuth2 send, a redirect return the parent's browser makes, and a
+   webhook KWS makes. The redirect's HMAC covers `f"{status}:{external_payload}"`
+   with no timestamp and no nonce, so a link a parent once received replays
+   forever; `api/kws_redirect.py` is therefore display-only. Only
+   `api/kws_webhook.py` resolves a `kws_verification` row. The row is INSERTed
+   and COMMITTED on its own session *before* the outbound call, because KWS will
+   not replay a delivery and an unmatched email is unattributable forever. See
+   `docs/architecture/diagrams/seq-kws-verification.puml`. As of 2026-08-09 this
+   is wired on staging against the KWS **Test** environment only; a Test
+   verification is not a valid VPC.
 
 ## Project Structure
 
@@ -680,16 +697,19 @@ shared code.
 src/cyo_adventure/
 ├── __init__.py
 ├── app.py                  # FastAPI app; wires all routers via include_router
-├── api/                     # FastAPI routers (28): health, library, reading,
-│                            # reading_history, recommendations, flags,
-│                            # notifications, generation, profiles, families,
+├── api/                     # FastAPI routers (36): health, library, reading,
+│                            # reading_history, reading_time, progress,
+│                            # recommendations, flags, notifications, generation,
+│                            # profiles, personalization, characters, families,
 │                            # ratings, assignments, approval, node_edit,
-│                            # rescreen, audit, covers, moderation_thresholds,
-│                            # moderation_dashboard, provider_allowlist, me,
-│                            # story_requests, child_sessions, device_grants,
+│                            # rescreen, remoderate, audit, covers,
+│                            # moderation_thresholds, moderation_dashboard,
+│                            # provider_allowlist, me, story_requests,
+│                            # child_sessions, device_grants, offline_downloads,
 │                            # onboarding, admin_users, admin_profiles,
-│                            # family_connections; support modules (not routers):
-│                            # schemas, deps, review_surface
+│                            # family_connections, kws_webhook, kws_redirect;
+│                            # support modules (not routers): schemas, deps,
+│                            # review_surface
 ├── core/                    # config.py, database.py, exceptions.py
 ├── middleware/              # security.py, correlation.py, unit_of_work.py
 ├── db/                      # SQLAlchemy ORM models.py (domain: stories, profiles,
@@ -710,8 +730,20 @@ src/cyo_adventure/
 │                            # CLI, run via scripts/mutate_skeleton.py; never imported
 │                            # by app.py or any router; not part of the deployed service
 ├── publishing/               # service.py, state_machine.py (approve -> publish)
+├── consent/                  # ADR-018 D1: KWS parent verification. kws_client.py
+│                            # (OAuth2 send), kws_signature.py (HMAC for both
+│                            # inbound legs), external_payload.py (correlation),
+│                            # service.py (start/record). Only the parent-verified
+│                            # webhook writes consent state; the redirect return is
+│                            # replayable by construction and is display-only
 ├── covers/                   # AI cover-art: prompt, provider, service, storage,
 │                            # optimize, worker
+├── characters/               # progression.py, seeding.py (persistent characters)
+├── progress/                 # badges.py, blob.py, models.py (reader progress)
+├── notifications/            # digest.py, models.py, registry.py, service.py
+├── measurement/              # fixtures.py, reinsertion.py, report.py, taxonomy.py
+├── flywheel/                 # cadence.py, ledger.py, reguide_draft.py, strategy.py,
+│                            # trigger.py (catalog-growth loop)
 ├── player/                   # engine.py, replay.py, state.py (reading state)
 ├── events/                   # models.py, writer.py (append-only pipeline log)
 └── utils/                    # __init__.py, logging.py only

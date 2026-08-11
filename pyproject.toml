@@ -3,7 +3,7 @@
 # UV uses standard PEP 621 pyproject.toml format with uv.lock for reproducible builds.
 [project]
 name = "cyo-adventure"
-version = "0.70.0"
+version = "0.74.2"
 description = "A choose-your-own-adventure reading app for kids"
 authors = [
     {name = "Byron Williams", email = "byronawilliams@gmail.com"}
@@ -352,6 +352,9 @@ known-first-party = ["cyo_adventure"]
 "**/api/notifications.py" = ["TC001"]
 "**/api/rescreen.py" = ["TC001"]
 "**/api/remoderate.py" = ["TC001"]
+# kws_webhook.py imports DbSession (the same kind of Annotated[..., Depends()]
+# alias) on an import line of its own, for the same startup-resolution reason.
+"**/api/kws_webhook.py" = ["TC001"]
 # provider_allowlist.py imports Context alone (TC001, same reasoning as above)
 # and types its path params directly as uuid.UUID (TC003): with `from __future__
 # import annotations`, FastAPI resolves that annotation string via

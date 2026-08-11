@@ -47,13 +47,14 @@ cataloged in [../story-skeletons.md](../story-skeletons.md).
 | Reading-State PUT | [seq-reading-state.puml](seq-reading-state.puml) / [.svg](seq-reading-state.svg) | `api/reading.py`, `api/schemas.py`, `db/models.py` | Optimistic concurrency, 409 reconciliation |
 | Offline and Reconnect | [seq-offline.puml](seq-offline.puml) / [.svg](seq-offline.svg) | `frontend/src/offline/sync.ts`, `db.ts`, `reader/ReaderPage.tsx`, `hooks/useReplayOnReconnect.ts` | IndexedDB queue, replay, conflict |
 | Device Grant Sequence | [seq-device-grant.puml](seq-device-grant.puml) / [.svg](seq-device-grant.svg) | `core/device_grant.py`, `core/child_session.py`, `core/pin.py`, `core/token_audience.py`, `api/device_grants.py`, `deps.py`, `child_sessions.py`, `frontend/src/auth/deviceGrant.ts`, `DeviceAuthorizedRoute.tsx` | ADR-014: mint / verify / revoke |
+| KWS Parent Verification | [seq-kws-verification.puml](seq-kws-verification.puml) / [.svg](seq-kws-verification.svg) | `consent/service.py`, `consent/kws_client.py`, `consent/external_payload.py`, `api/kws_webhook.py`, `api/kws_redirect.py`, `core/config.py`, `db/models.py` | ADR-018 D1: three legs, three trust properties. Only the webhook may write consent state; the redirect return is replayable by construction and is display-only |
 
 ## Data
 
 | Diagram | Files | Primary sources | Description |
 | ------- | ----- | --------------- | ----------- |
-| ER Diagram | [er-diagram.puml](er-diagram.puml) / [.svg](er-diagram.svg) | `db/models.py` | All 26 ORM tables and FK relationships |
-| ER Diagram (Mermaid) | [er-diagram.mmd](er-diagram.mmd), embedded in [../data-model.md](../data-model.md) | `db/models.py` | Same 26 tables/relationships as `er-diagram.puml`, in Mermaid for inline rendering on GitHub. Hand-maintained companion, not covered by `tools/generate_diagram_svgs.py`; update alongside `er-diagram.puml` when the schema changes. |
+| ER Diagram | [er-diagram.puml](er-diagram.puml) / [.svg](er-diagram.svg) | `db/models.py` | All 31 ORM tables and FK relationships |
+| ER Diagram (Mermaid) | [er-diagram.mmd](er-diagram.mmd), embedded in [../data-model.md](../data-model.md) | `db/models.py` | Same 31 tables/relationships as `er-diagram.puml`, in Mermaid for inline rendering on GitHub. Hand-maintained companion, not covered by `tools/generate_diagram_svgs.py`; update alongside `er-diagram.puml` when the schema changes. |
 
 ## Deployment and routing
 

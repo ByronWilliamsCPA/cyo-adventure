@@ -245,7 +245,11 @@ def satisfying_walk_probability(story: dict[str, Any]) -> float:
 
     Returns:
         float: The satisfying-outcome probability from the start node, in
-            [0, 1]; 0.0 when the start node cannot be resolved.
+            [0, 1]; 0.0 when the story has no nodes at all. When
+            ``start_node`` is set but does not resolve to a known node, this
+            does not return 0.0; it falls back to the first node in
+            ``nodes`` document order (``next(iter(nodes))``) and reports
+            that node's probability instead.
     """
     nodes_raw = story.get("nodes")
     nodes: dict[str, dict[str, Any]] = {
@@ -266,15 +270,37 @@ def satisfying_walk_probability(story: dict[str, Any]) -> float:
             )
         else:
             prob[node_id] = 0.0
-    # Termination: the walk's transition graph is absorbing (the gate's
-    # reachability/termination layers guarantee every node reaches an ending),
-    # so value iteration converges geometrically; the iteration cap is a
-    # safety net for malformed input, not the expected exit.
+    # #ASSUME: data-integrity: the walk's transition graph is absorbing (the
+    # gate's reachability/termination layers guarantee every node reaches an
+    # ending), so value iteration converges geometrically well inside 10,000
+    # iterations for any catalog-sized skeleton; the cap is a safety net for
+    # malformed input, not the expected exit. If a future skeleton is large
+    # or cyclic enough to still be mid-convergence at the cap, this silently
+    # returns whatever partial estimate `prob` holds at iteration 10,000,
+    # not the true fixed point, with no signal that convergence failed.
+    # #VERIFY: if this ever needs to run on the largest skeletons in the
+    # catalog, log `delta` on exit and assert it is still below 1e-9;
+    # a caller relying on this for a walk-floor check must not trust a
+    # result that exits the loop without having converged.
     for _ in range(10_000):
         delta = 0.0
         for node_id, node in nodes.items():
             if node_id in ending_ids:
                 continue
+            # #ASSUME: data-integrity: two modelling simplifications, both
+            # conservative. (1) Choice `condition` gating is ignored, so
+            # every choice counts as always available; a Tier-2 reader who
+            # actually sees fewer choices (some condition-gated closed) has
+            # odds at least this good, never worse. (2) A choice whose
+            # `target` id is not a known node is silently dropped from the
+            # denominator instead of counted as a dead end; the gate's
+            # reference checks make an unresolved target unreachable for a
+            # shell that already loaded, but a caller that skips the gate
+            # would get a probability computed over fewer, easier choices
+            # than the story actually offers.
+            # #VERIFY: only call this on a story that already passed
+            # `load_skeleton`'s reference checks; otherwise treat the
+            # result as an upper bound, not the true walk probability.
             targets = [
                 str(c.get("target"))
                 for c in cast("list[Any]", node.get("choices") or [])

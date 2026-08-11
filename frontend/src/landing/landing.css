@@ -145,3 +145,44 @@
   outline: 2px solid var(--color-amber-deep, #c17b2a);
   outline-offset: 2px;
 }
+
+/*
+  Footer links to the two public legal/support pages. Quiet by design: the
+  landing page's job is the two doors above, and a parent who needs the privacy
+  policy is looking for it rather than being sold it. They are real links in a
+  real <nav> rather than small print, because Epic's KWS registration points at
+  these URLs and a policy has to be findable from the site to count as
+  published.
+*/
+.landing__footer {
+  margin-top: var(--space-6, 2rem);
+}
+
+.landing__footer nav {
+  display: flex;
+  gap: var(--space-4, 1rem);
+  justify-content: center;
+}
+
+.landing__footer-link {
+  color: var(--color-ink-muted, rgba(44, 26, 14, 0.7));
+  font-size: 0.85rem;
+  text-decoration: underline;
+}
+
+.landing__footer-link:hover {
+  color: var(--color-ink, #2c1a0e);
+}
+
+/*
+  Focus gets its own rule rather than sharing the hover one. A colour shift
+  alone is not a focus indicator: it fails WCAG 2.4.11 on its own, and these
+  two links are the entire keyboard path to the privacy policy from the
+  landing page.
+*/
+.landing__footer-link:focus-visible {
+  color: var(--color-ink, #2c1a0e);
+  outline: 2px solid var(--color-ink, #2c1a0e);
+  outline-offset: 3px;
+  border-radius: 2px;
+}

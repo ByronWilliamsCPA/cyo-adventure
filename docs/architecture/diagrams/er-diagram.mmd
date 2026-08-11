@@ -42,6 +42,7 @@ erDiagram
     concept ||--o{ generation_job : "attempts"
     concept |o--o| story_request : "created on approval"
     user ||--o{ device_grant : "mints"
+    user ||--o{ kws_verification : "attempts"
     family ||--o{ kid_flag : "has flags"
     child_profile ||--o{ kid_flag : "flags"
     storybook ||--o{ kid_flag : "flagged in"
@@ -80,6 +81,17 @@ erDiagram
         varchar(64) consent_ip "NULL; evidentiary only"
         varchar(2) residence_country "NULL; ISO 3166-1 alpha-2; O-117 jurisdiction signal"
         timestamptz adulthood_attested_at "NULL; O-119 self-declared adult attestation"
+    }
+
+    kws_verification {
+        uuid id PK "IS the correlation; no default, caller supplies"
+        uuid user_id FK "ON DELETE CASCADE"
+        varchar(16) kws_environment "test or production"
+        varchar(16) status "sent, verified, or failed"
+        timestamptz requested_at
+        timestamptz resolved_at "NULL while sent"
+        varchar(128) transaction_id "NULL; KWS's opaque id"
+        jsonb enabled_methods "snapshot at send time, never a live read"
     }
 
     child_profile {

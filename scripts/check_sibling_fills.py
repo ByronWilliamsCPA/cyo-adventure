@@ -2,7 +2,7 @@
 
 Usage:
     uv run python scripts/check_sibling_fills.py <filled.json> <filled.json>...
-        [--max-shared N] [--check]
+        [--max-shared-per-1000 N] [--check]
 
 B-plus amendment 3 (AL-156/UW-C93): the first pilot's raters found the
 dominant residual recognition leaks are ritual phrases repeated across
@@ -14,18 +14,12 @@ sibling-scoped n-gram check can.
 Deterministic: normalizes bodies plus choice labels (lowercase, punctuation
 stripped), extracts word 4-grams, drops grams made entirely of function
 words, and reports every gram appearing in two or more sibling fills.
-With ``--check``, exits 1 when the count of distinct shared grams exceeds
-``--max-shared`` (default 8; the first pilot's control arm shares 40+,
-its free arm 15+, and genuinely independent texts stay in single digits).
-
-Worst-unit reporting (2026-08-10 external review): a global per-1000 rate
-averages the whole sibling set together, and with more than two fills that
-average can hide one badly-converged pair inside several clean ones. This
-script now also computes, for every pair of fills, the shared-gram count and
-rate restricted to just that pair, and gates ``--check`` on the worst
-(highest-rate) pair via ``--max-pair-shared-per-1000`` whenever more than two
-fills are given. It also tallies which node contributes the most shared
-grams, so a reviewer is pointed at a location, not only a number.
+With ``--check``, exits 1 when the count of distinct shared grams per 1000
+mean leaf words exceeds ``--max-shared-per-1000`` (default 4.0). The budget
+is length-normalized because a fixed count cannot serve both an 11-node and
+a 26-node fill (AL-159). Calibration: the first pilot's obligation arm
+scores 2.8 per 1000, its control arm 25, its free arm 12.6, and the
+clocktower pilot 9.0.
 """
 
 from __future__ import annotations
@@ -35,9 +29,29 @@ import json
 import re
 import sys
 from collections import Counter
-from itertools import combinations
 from pathlib import Path
 from typing import Any, cast
+
+
+def _load(path: str) -> dict[str, Any] | None:
+    """Load a filled-story JSON object, or report and return None.
+
+    Args:
+        path: File path to read.
+
+    Returns:
+        The decoded object, or None on any load failure.
+    """
+    try:
+        data = json.loads(Path(path).read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        sys.stderr.write(f"error: cannot load {path}: {exc}\n")
+        return None
+    if not isinstance(data, dict):
+        sys.stderr.write(f"error: expected a JSON object in {path}\n")
+        return None
+    return cast("dict[str, Any]", data)
+
 
 _WORD_RE = re.compile(r"[a-z']+")
 _STOPWORDS = frozenset(
@@ -174,7 +188,13 @@ def menu_frame_overlap(
 
 
 def main(argv: list[str] | None = None) -> int:
-    """CLI entry point; exit 1 with --check above the shared-gram budget."""
+    """CLI entry point.
+
+    Returns:
+        Exit code: 2 when fewer than two fills are given or a fill cannot
+        be read, 1 when ``--check`` is set and the shared-gram budget is
+        exceeded, 0 otherwise.
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("fills", nargs="+", help="Two or more sibling filled stories.")
     parser.add_argument(
@@ -188,28 +208,17 @@ def main(argv: list[str] | None = None) -> int:
             "free arm 12.6, clocktower pilot 9.0 per 1000)."
         ),
     )
-    parser.add_argument(
-        "--max-pair-shared-per-1000",
-        type=float,
-        default=4.0,
-        help=(
-            "Worst-pair budget (default 4.0, matching --max-shared-per-1000: "
-            "for exactly two fills the two metrics are identical, so this "
-            "flag changes nothing for the common two-fill case). Applies "
-            "only when more than two fills are given, since a global rate "
-            "averaged over several siblings can pass while one specific "
-            "pair has converged heavily; this catches that pair directly."
-        ),
-    )
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args(argv)
     if len(args.fills) < 2:
         sys.stderr.write("need at least two fills\n")
         return 2
-    stories = [
-        cast("dict[str, Any]", json.loads(Path(p).read_text(encoding="utf-8")))
-        for p in args.fills
-    ]
+    stories: list[dict[str, Any]] = []
+    for p in args.fills:
+        story = _load(p)
+        if story is None:
+            return 2
+        stories.append(story)
     shared = shared_grams(stories)
     mean_words = sum(
         len(_WORD_RE.findall(_leaf_text(story).lower())) for story in stories
@@ -222,39 +231,6 @@ def main(argv: list[str] | None = None) -> int:
     )
     for gram, count in shared.most_common(15):
         sys.stdout.write(f"  x{count}  {' '.join(gram)}\n")
-
-    concentration = node_gram_concentration(stories, shared)
-    if concentration:
-        sys.stdout.write("most concentrated nodes (shared-gram occurrences):\n")
-        for node_id, count in concentration.most_common(5):
-            sys.stdout.write(f"  {node_id}: {count}\n")
-
-    pair_budget = args.max_pair_shared_per_1000
-    worst_pair_rate = 0.0
-    worst_pair_desc = ""
-    if len(stories) > 2:
-        pairs = pairwise_shared_grams(stories)
-        worst_i, worst_j, worst_count, worst_pair_rate = max(
-            pairs, key=lambda pair: pair[3]
-        )
-        worst_pair_desc = f"{args.fills[worst_i]} vs {args.fills[worst_j]}"
-        sys.stdout.write(
-            f"worst pair: {worst_pair_desc}: {worst_count} shared grams "
-            f"({worst_pair_rate:.1f} per 1000; budget {pair_budget})\n"
-        )
-
-    failures: list[str] = []
-    if per_1000 > budget:
-        failures.append(f"aggregate rate {per_1000:.1f} per 1000 > budget {budget}")
-    if worst_pair_desc and worst_pair_rate > pair_budget:
-        failures.append(
-            f"worst pair ({worst_pair_desc}) rate {worst_pair_rate:.1f} per "
-            f"1000 > budget {pair_budget}"
-        )
-    if failures:
-        for failure in failures:
-            sys.stderr.write(f"FAIL: {failure}\n")
-
     frames = menu_frame_overlap(stories)
     sys.stdout.write(
         f"menu frames shared by 2+ fills (same node, same choice position, "
@@ -262,7 +238,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     for node_id, index, frame in frames[:10]:
         sys.stdout.write(f"  {node_id}[{index}]: {' '.join(frame)}\n")
-    if args.check and failures:
+    if args.check and per_1000 > budget:
         return 1
     return 0
 

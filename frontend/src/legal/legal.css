@@ -1,0 +1,118 @@
+/*
+  Styling for the two PUBLIC legal/support pages (/privacy and /support).
+
+  Deliberately a separate stylesheet from guardian.css, which is where the
+  signed-in `.privacy` trust-surface styles live. These routes sit in the root
+  subtree alongside the landing page, outside both KidShell and the guardian
+  AuthProvider chunk, and the whole point of that placement is that a visitor
+  (or Epic's KWS, following our registered Privacy Policy URL) reaches them
+  without pulling the guardian bundle. Importing guardian.css here would undo
+  that for a few rules' worth of convenience.
+
+  Tokens and the `.cyo-card` / `.cyo-text-muted` utilities come from the design
+  system, which index.css loads globally, so nothing here needs to redefine
+  colour or spacing primitives.
+*/
+
+.legal {
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: var(--space-6, 2rem) var(--space-4, 1rem) var(--space-8, 3rem);
+  color: var(--color-ink, #2c1a0e);
+}
+
+.legal__back {
+  display: inline-block;
+  margin-bottom: var(--space-4, 1rem);
+  font-size: 0.9rem;
+}
+
+.legal h1 {
+  margin: 0 0 var(--space-2, 0.5rem);
+  font-size: 1.75rem;
+  line-height: 1.2;
+}
+
+.legal h2 {
+  margin: var(--space-6, 2rem) 0 var(--space-2, 0.5rem);
+  font-size: 1.2rem;
+  line-height: 1.3;
+}
+
+.legal h3 {
+  margin: var(--space-4, 1rem) 0 var(--space-1, 0.25rem);
+  font-size: 1rem;
+}
+
+.legal p,
+.legal li {
+  line-height: 1.65;
+}
+
+.legal__updated {
+  margin: 0 0 var(--space-5, 1.5rem);
+  font-size: 0.9rem;
+}
+
+.legal__summary {
+  margin-bottom: var(--space-5, 1.5rem);
+}
+
+.legal__summary h2 {
+  margin-top: 0;
+}
+
+/*
+  Wide content must scroll inside its own container rather than making the
+  page scroll sideways: these tables have three and four columns and are read
+  on phones at least as often as on desktop.
+*/
+.legal__table-wrap {
+  overflow-x: auto;
+  margin: var(--space-3, 0.75rem) 0;
+}
+
+/*
+  The wrapper carries tabindex so a keyboard user can scroll it, which means it
+  can receive focus and therefore must show that it has.
+*/
+.legal__table-wrap:focus-visible {
+  outline: 2px solid var(--color-ink, #2c1a0e);
+  outline-offset: 2px;
+}
+
+.legal__table {
+  width: 100%;
+  min-width: 32rem;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+.legal__table th,
+.legal__table td {
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  vertical-align: top;
+  /* --color-border-soft, not --color-border: only the former is defined in the
+     design system's tokens.css, so the latter silently fell through to its
+     fallback in both themes and the dark-mode value never applied. */
+  border-bottom: 1px solid var(--color-border-soft, rgba(44, 26, 14, 0.15));
+}
+
+.legal__table th {
+  font-weight: 600;
+}
+
+.legal__faq dt {
+  margin-top: var(--space-4, 1rem);
+  font-weight: 600;
+}
+
+.legal__faq dd {
+  margin: var(--space-1, 0.25rem) 0 0;
+  line-height: 1.65;
+}
+
+.legal__contact {
+  margin-top: var(--space-6, 2rem);
+}

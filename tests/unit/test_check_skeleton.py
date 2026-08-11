@@ -65,7 +65,8 @@ def test_headroom_is_opt_in(capsys: pytest.CaptureFixture[str]) -> None:
 # Gate findings surfaced + --strict (2026-08-09 review, sections 2.2 / Part 3)
 # ---------------------------------------------------------------------------
 
-_DEMO_SHELL = Path("tests/fixtures/skeletons/demo_shell.json")
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+_DEMO_SHELL = _REPO_ROOT / "tests" / "fixtures" / "skeletons" / "demo_shell.json"
 
 
 @pytest.mark.unit

@@ -7,6 +7,60 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.74.2] - 2026-08-10
+
+### Bug Fixes
+
+- **consent**: Treat an empty KWS identifier as unset, not as a value
+  ([#677](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/677),
+  [`0463fdd`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/0463fdd678ae98dfb45e514c31add23a66ca34d9))
+
+
+## [0.74.1] - 2026-08-10
+
+### Bug Fixes
+
+- **consent**: Read the KWS webhook timestamp in the unit KWS sends
+  ([#675](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/675),
+  [`1c5e26f`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/1c5e26fe8bd66d020c324ef65a9baeffaf7502e2))
+
+
+## [0.74.0] - 2026-08-10
+
+### Features
+
+- **consent**: Add KWS skew diagnostics and the Gate 1 Test runbook
+  ([#670](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/670),
+  [`eeb4407`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/eeb440761d325cf12d73236db3ad4c24b970e196))
+
+
+## [0.73.0] - 2026-08-10
+
+### Features
+
+- **frontend**: Publish public privacy and support pages
+  ([#668](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/668),
+  [`d1907a8`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/d1907a82777ca63293c7ea3c92ee3720033c3f6f))
+
+
+## [0.72.0] - 2026-08-10
+
+### Features
+
+- **consent**: Add the KWS parent-verification integration (ADR-018)
+  ([#664](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/664),
+  [`0d7c42c`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/0d7c42c121ec7e8ebff86263686be92956e20683))
+
+
+## [0.71.0] - 2026-08-10
+
+### Features
+
+- **validator**: Story-diversity checkers and strict skeleton bar
+  ([#661](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/661),
+  [`4e1a08b`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/4e1a08bcf261abf8fa5baa39111f73621410047a))
+
+
 ## [0.70.0] - 2026-08-09
 
 ### Features
@@ -3303,6 +3357,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.74.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.74.1...v0.74.2
+[0.74.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.74.0...v0.74.1
+[0.74.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.73.0...v0.74.0
+[0.73.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.72.0...v0.73.0
+[0.72.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.71.0...v0.72.0
+[0.71.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.70.0...v0.71.0
 [0.70.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.69.1...v0.70.0
 [0.69.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.69.0...v0.69.1
 [0.69.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.68.4...v0.69.0

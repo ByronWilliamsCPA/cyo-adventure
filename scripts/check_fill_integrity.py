@@ -30,7 +30,7 @@ import argparse
 import json
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from cyo_adventure.validator.band_profile import words_per_node_profile
 
@@ -68,25 +68,6 @@ def _load(path: str) -> dict[str, Any] | None:
         sys.stderr.write(f"error: expected a JSON object in {path}\n")
         return None
     return data
-
-
-def _defers_titles(skeleton: dict[str, Any]) -> bool:
-    """Return whether the skeleton wrote any title as a FILL directive.
-
-    Args:
-        skeleton: The decoded skeleton.
-
-    Returns:
-        True when the storybook title or any ending title is an unfilled
-        directive, meaning the fill is expected to author it.
-    """
-    if "<<FILL" in str(skeleton.get("title") or ""):
-        return True
-    return any(
-        "<<FILL"
-        in str(cast("dict[str, Any]", node.get("ending") or {}).get("title") or "")
-        for node in cast("list[dict[str, Any]]", skeleton.get("nodes") or [])
-    )
 
 
 def _strip_leaf_fields(
@@ -154,6 +135,25 @@ def _word_stats(filled: dict[str, Any]) -> tuple[list[tuple[str, int]], float]:
     return counts, mean
 
 
+def _defers_titles(skeleton: dict[str, Any]) -> bool:
+    """Return whether the skeleton wrote any title as a FILL directive.
+
+    Args:
+        skeleton: The decoded skeleton.
+
+    Returns:
+        True when the storybook title or any ending title is an unfilled
+        directive, meaning the fill is expected to author it.
+    """
+    if "<<FILL" in str(skeleton.get("title") or ""):
+        return True
+    return any(
+        "<<FILL"
+        in str(cast("dict[str, Any]", node.get("ending") or {}).get("title") or "")
+        for node in cast("list[dict[str, Any]]", skeleton.get("nodes") or [])
+    )
+
+
 def main(argv: list[str] | None = None) -> int:
     """Run all integrity checks for one skeleton/filled pair.
 
@@ -170,7 +170,8 @@ def main(argv: list[str] | None = None) -> int:
         "--allow-title-rewrite",
         action="store_true",
         help=(
-            "Permit ending titles to differ (title-contract fills; titles are "
+            "Permit the storybook title and ending titles to differ "
+            "(title-contract fills; titles are "
             "leaf content per WS-0, AL-161)."
         ),
     )
@@ -202,13 +203,10 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     failed = False
 
-    # A field the skeleton itself wrote as a FILL directive is fillable by
-    # definition, so titles must not be compared when the skeleton defers them.
-    # Every shell in the diversity programme has deferred its title since a
-    # skeleton `id` leaked one book title into three arms (AL-207), and this
-    # checker reported a structural FAIL on every correct fill until the flag
-    # was passed by hand, which read like a serious defect and was not one
-    # (AL-224). Deriving it removes a step nobody can be relied on to remember.
+    # Derived rather than remembered: a skeleton that writes its title as a FILL
+    # directive expects the fill to author it, so comparing titles reports a
+    # structural failure that is not one. This previously depended on the flag
+    # being passed by hand (AL-224 on this branch, renumbered in the merge).
     defers_titles = _defers_titles(skeleton)
     allow_title_rewrite = args.allow_title_rewrite or defers_titles
     if defers_titles and not args.allow_title_rewrite:

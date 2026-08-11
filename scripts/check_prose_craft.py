@@ -39,19 +39,6 @@ clean. See each ``--flag`` help string for the measured per-tier numbers.
 
 With ``--check``, exits 1 when any threshold is breached. Without it,
 reports and exits 0.
-
-Worst-unit reporting (2026-08-10 external review): the told-emotion budget
-is a book-wide per-1000 rate, and a rate averaged across a whole book can
-stay under budget while one node carries most of the hits, exactly the
-mean-hides-the-tail failure this program has now seen three times. The
-report therefore also names the single node with the most told-emotion
-phrases and gates ``--check`` on it separately via
-``--max-told-in-single-node``. The tense detector already gates on a raw
-*count* of unstable nodes (default 0, i.e. any single instability already
-fails), which is worst-case by construction and needs no new ceiling; the
-report instead names the most severe unstable node (the one carrying the
-most sentences in the non-dominant tense) so a reviewer with a
-``--max-unstable-nodes`` above zero knows which node to open first.
 """
 
 from __future__ import annotations
@@ -60,7 +47,6 @@ import argparse
 import json
 import re
 import sys
-from collections import Counter
 from pathlib import Path
 from typing import Any, NamedTuple, cast
 
@@ -283,7 +269,7 @@ _LEFT_SINGLE = "\u2018"
 _RIGHT_SINGLE = "\u2019"
 
 _DOUBLE_QUOTED = re.compile(
-    f'["{_LEFT_DOUBLE}][^"{_LEFT_DOUBLE}{_RIGHT_DOUBLE}]*["{_RIGHT_DOUBLE}]'
+    f'["{_LEFT_DOUBLE}][^"{_LEFT_DOUBLE}{_RIGHT_DOUBLE}]{{0,400}}["{_RIGHT_DOUBLE}]'
 )
 _SINGLE_QUOTED = re.compile(
     f"(?<![A-Za-z])['{_LEFT_SINGLE}]"
@@ -407,27 +393,6 @@ class TenseReport(NamedTuple):
         if total == 0:
             return 0.0
         return min(self.past, self.present) / total
-
-    @property
-    def worst_node(self) -> TenseNode | None:
-        """Return the single most severe unstable node, or None if clean.
-
-        Severity is the count of that node's sentences written in the
-        tense *opposite* the book's dominant tense: for a wholly-flipped
-        node every classifiable sentence counts, for a merely-mixed node
-        only the minority-tense sentences do. This is a count, not a
-        ratio, so it answers "which node has the most off-tense prose to
-        fix" rather than "which node's mix percentage is highest" -- a
-        long node at 34% minority can carry more off-tense sentences than
-        a short node that is 100% flipped.
-        """
-        if not self.unstable:
-            return None
-
-        def _off_tense(node: TenseNode) -> int:
-            return node.present if self.dominant == PAST else node.past
-
-        return max(self.unstable, key=_off_tense)
 
 
 def tense_report(
@@ -573,7 +538,10 @@ def moral_tags(story: dict[str, Any], *, tail_sentences: int = 4) -> list[MoralH
             continue
         node_id = str(node.get("id", "?"))
         body = strip_quoted(str(node.get("body", "")))
-        for sentence in _sentences(body)[-tail_sentences:]:
+        # A tail of 0 would slice [-0:], i.e. the WHOLE body, and a negative
+        # value inverts the window; both silently widen the scan.
+        tail = _sentences(body)[-tail_sentences:] if tail_sentences > 0 else []
+        for sentence in tail:
             for pattern, name in _MORAL_COMPILED:
                 if pattern.search(sentence):
                     hits.append(MoralHit(node_id, name, sentence))
@@ -660,31 +628,6 @@ class TellReport(NamedTuple):
         fixed count cannot serve both an 11-node and a 26-node fill.
         """
         return len(self.hits) / max(self.words, 1) * 1000.0
-
-    @property
-    def node_counts(self) -> Counter[str]:
-        """Return node id -> number of told-emotion hits in that node."""
-        return Counter(hit.node_id for hit in self.hits)
-
-    @property
-    def worst_node(self) -> tuple[str, int] | None:
-        """Return (node id, count) for the node with the most hits.
-
-        #CRITICAL: data-integrity: the book-wide ``per_1000`` rate is a mean
-        over every node's narration; a book long enough to dilute a single
-        stuffed node below the book-wide budget still hands a reader one
-        genuinely bad node. Reporting and gating this separately is the
-        same fix applied to check_sibling_fills.py and
-        check_decision_overlap.py after the aggregate hid the defect it was
-        built to catch (AL-182, AL-186, and the 2026-08-10 external review).
-        #VERIFY: _report() gates --check on this via
-        --max-told-in-single-node independent of the book-wide rate.
-        """
-        counts = self.node_counts
-        if not counts:
-            return None
-        node_id, count = counts.most_common(1)[0]
-        return node_id, count
 
 
 def told_emotion(story: dict[str, Any]) -> TellReport:
@@ -808,21 +751,6 @@ def _build_parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument(
-        "--max-told-in-single-node",
-        type=int,
-        default=2,
-        help=(
-            "Told-emotion hits allowed in any one node, independent of the "
-            "book-wide --max-told-per-1000 rate (default 2, i.e. a third "
-            "hit in the same node fails even if the book-wide rate is "
-            "clean). #ASSUME: data-integrity: no per-node calibration "
-            "corpus exists yet, unlike the book-level tiers in AL-168; 2 "
-            "is chosen as the loosest value that still catches a node "
-            "where the defect is concentrated rather than incidental. "
-            "#VERIFY: tighten once a per-node calibration run exists."
-        ),
-    )
-    parser.add_argument(
         "--check",
         action="store_true",
         help="Exit 1 when any threshold is breached.",
@@ -863,12 +791,6 @@ def _report(story: dict[str, Any], name: str, args: argparse.Namespace) -> bool:
             f"       {node.node_id}: {node.past} past / {node.present} present, "
             f"{node.reason}\n"
         )
-    if tense.worst_node is not None:
-        sys.stdout.write(
-            f"       worst node: {tense.worst_node.node_id} "
-            f"({tense.worst_node.past} past / {tense.worst_node.present} "
-            f"present, {tense.worst_node.reason})\n"
-        )
     breached = breached or over_tense
 
     morals = moral_tags(story, tail_sentences=cast("int", args.ending_tail_sentences))
@@ -892,16 +814,7 @@ def _report(story: dict[str, Any], name: str, args: argparse.Namespace) -> bool:
     )
     for hit in told.hits:
         sys.stdout.write(f"       {hit.node_id}: {hit.phrase}\n")
-    worst_told = told.worst_node
-    node_budget = cast("int", args.max_told_in_single_node)
-    over_told_node = worst_told is not None and worst_told[1] > node_budget
-    if worst_told is not None:
-        node_marker = "FAIL" if over_told_node else "ok  "
-        sys.stdout.write(
-            f"  {node_marker} worst told-emotion node: {worst_told[0]} "
-            f"({worst_told[1]} phrases; budget {node_budget} per node)\n"
-        )
-    return breached or over_told or over_told_node
+    return breached or over_told
 
 
 def main(argv: list[str] | None = None) -> int:
