@@ -421,6 +421,7 @@ substantially the same work under different headings. Do not triple-book.
 | UW-C171 | `AL-237` The brief uses 151 (catalog median) and 149 (10-13 band median) interchangeably without distinguishing them. Label every median with its population at the point of use. | now | unscheduled |
 | UW-C172 | `AL-238` Constraint-stated generation reached 6 of 6 structural validity with zero repair rounds and eliminated the band-budget failure class, while 5 of 6 books missed the reading-level target stated in the same prompt. Split constraint sets by self-verifiability, and build the per-node reading-level repair loop as a prerequisite for any model-drafted pipeline. | now | unscheduled |
 | UW-C173 | `AL-239` Six authors sharing nothing produced five coastal lighthouse stories with an elder keeper, at a median 1.56 shared four-grams per 1000. Premise scheduling from a curated enumerated space is mandatory in every candidate architecture; withholding buys wording independence only. | now | unscheduled |
+| UW-C174 | `AL-240` Two independent instances of one model invented the same place name, titling their stories "The Lantern Under Marrow Hill" and "The Lantern Beneath Marrow Hill"; 8 of 10 generations across three tiers centre on a beacon object. Premise allocation from a curated enumerated space becomes a precondition for every architecture, and a genuine cross-vendor replication is needed before any idiom floor is quoted as general. | now | unscheduled |
 
 ## Cluster D: untracked GitHub issues
 
