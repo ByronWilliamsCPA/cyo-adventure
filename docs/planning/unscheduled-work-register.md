@@ -419,6 +419,8 @@ substantially the same work under different headings. Do not triple-book.
 | UW-C169 | `AL-235` The brief describes model raters as "blind human annotation" in section 14 while Part I's appendix calls them rater agents. Correct it, add a single provenance statement covering every rated result in both parts, and name the rater's nature at each reporting site. | now | unscheduled |
 | UW-C170 | `AL-236` The 16l pair passes the lexical gates and scores worst of four available pairs on shared cognitive operation (0.500), with 11 of 35 aligned choices sharing an act. Stop reporting 16l as distinctness, add a per-fork reasoning-kind schedule to the exclusion rule, and validate the advisory operation tier against a known-bad battery before it gates. | now | unscheduled |
 | UW-C171 | `AL-237` The brief uses 151 (catalog median) and 149 (10-13 band median) interchangeably without distinguishing them. Label every median with its population at the point of use. | now | unscheduled |
+| UW-C172 | `AL-238` Constraint-stated generation reached 6 of 6 structural validity with zero repair rounds and eliminated the band-budget failure class, while 5 of 6 books missed the reading-level target stated in the same prompt. Split constraint sets by self-verifiability, and build the per-node reading-level repair loop as a prerequisite for any model-drafted pipeline. | now | unscheduled |
+| UW-C173 | `AL-239` Six authors sharing nothing produced five coastal lighthouse stories with an elder keeper, at a median 1.56 shared four-grams per 1000. Premise scheduling from a curated enumerated space is mandatory in every candidate architecture; withholding buys wording independence only. | now | unscheduled |
 
 ## Cluster D: untracked GitHub issues
 
