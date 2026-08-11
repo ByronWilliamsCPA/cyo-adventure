@@ -417,6 +417,8 @@ substantially the same work under different headings. Do not triple-book.
 | UW-C167 | `AL-233` Two authors given bare fact names, node functions and their own bindings agreed in meaning on every fact while sharing zero sentences. Drop glosses from the shared stratum and require per-book `fact_readings`, making interpretation drift measurable rather than assumed. | now | unscheduled |
 | UW-C168 | `AL-234` The D-7b shared kernel published as carrying "no free text at all" still contains 473 free-text words, more than the 422 the experiment deleted. Restate the rule around fact-vocabulary text against binding-process text, run the third arm that separates the two, and assert artifact claims programmatically before publishing them. | now | unscheduled |
 | UW-C169 | `AL-235` The brief describes model raters as "blind human annotation" in section 14 while Part I's appendix calls them rater agents. Correct it, add a single provenance statement covering every rated result in both parts, and name the rater's nature at each reporting site. | now | unscheduled |
+| UW-C170 | `AL-236` The 16l pair passes the lexical gates and scores worst of four available pairs on shared cognitive operation (0.500), with 11 of 35 aligned choices sharing an act. Stop reporting 16l as distinctness, add a per-fork reasoning-kind schedule to the exclusion rule, and validate the advisory operation tier against a known-bad battery before it gates. | now | unscheduled |
+| UW-C171 | `AL-237` The brief uses 151 (catalog median) and 149 (10-13 band median) interchangeably without distinguishing them. Label every median with its population at the point of use. | now | unscheduled |
 
 ## Cluster D: untracked GitHub issues
 
