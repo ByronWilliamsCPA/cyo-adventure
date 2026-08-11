@@ -857,7 +857,7 @@ supporting or negative results.
 | **The reuse problem** | **16d** | **Books built from one shared plan converge catastrophically. This was our biggest surprise.** |
 | | 16g.1 | Both cheap repairs fail. The leak has five prose channels and we had repaired one. |
 | | 16j | Independence comes from what an author is *not shown*, not from what it is told. 126.7 to 1.0 per 1000. |
-| | **16l** | **Resolved. A plan can be shared if the shared half contains no free text at all: 12.9 to 3.2 from deleting 422 words.** |
+| | **16l** | **Resolved. A plan can be shared if the shared half contains no free text at all: 13.6 to 2.3 from deleting 422 words.** |
 | **Scale and capital** | 16c, 16f | Narrative contracts exist for 2 of 61 skeletons; that, not skeleton count, is the binding cost. |
 | | 16i | A model builds structurally valid graphs unaided, 6 of 6, and fails only rules we never gave it. |
 | **Negative results** | 16b, 16h, 16k | Obligation delivery is fine; "graphs are worlds" is refuted for 18 of 21 graphs; stake economics returns a null. |
@@ -999,11 +999,13 @@ We report this because a reader is entitled to ask whether the six questions mea
 the one case where the answer is known in advance, they separate it by three points on the item
 that matters, unanimously. That is the evidence the 13.1 result rests on.
 
-It also settles the fate of two questions. **"Same kinds of actions" and "repeated sequence" have
-now saturated in three consecutive runs**, scoring 5 for every pair, because every book sits on one
-graph. Both raters warned, unprompted and in nearly the same words, that an evaluator scoring on
-fork shape alone would report a null result and be wrong. Anyone reusing this instrument should
-drop both from the score and keep them only as a description of the condition.
+It also settles the fate of one question. **"Repeated sequence" has now scored 5 for every pair in
+three consecutive runs**, because every book sits on one graph. "Same kinds of actions" runs high
+but does vary and does separate the pairs, so it stays; an earlier draft of this paragraph condemned
+both, and our own audit in 16m contradicts that for the second. Both raters warned, unprompted and
+in nearly the same words, that an evaluator scoring on fork shape alone would report a null result
+and be wrong. Anyone reusing this instrument should drop the sequence item from the score and keep
+it only as a description of the condition.
 
 ## 14. The main finding: our measurement instrument ranks the pairs backwards
 
@@ -1113,12 +1115,12 @@ We had one book judged blind against all 49 of its obligations.
 | Missing | 0 |
 | Contradicted | 0 |
 
-**The assumption holds.** Nothing missing, nothing contradicted, including the structurally awkward
+**Nothing was missing and nothing was contradicted**, including the structurally awkward
 cases: the two merge points where several paths converge and the node may only assume what every
 path guarantees, and all eight endings.
 
-One of the five partials is a genuine reader-facing defect and would not have been found any other
-way. The book's finale requires a grasp of its code, and two of its four exploration rooms teach
+**That is coverage, not delivery, and the five partials are the difference.** One of them is a
+genuine reader-facing defect and would not have been found any other way. The book's finale requires a grasp of its code, and two of its four exploration rooms teach
 that code while the other two do not. A child entering the finale through the wrong two rooms
 arrives holding a pattern with no way to use it. **That is path-dependent under-preparation, and no
 whole-book measure can see it**, because the book as a whole plainly does teach the code.
@@ -1184,6 +1186,11 @@ words each. The books are structurally sound and the design was realised exactly
 | treatment pair | **63.8** | **41** of 131 |
 | the pilot's clean pair | 1.8 to 2.7 | 0 |
 
+*(That 1.8 to 2.7 range is the per-pair spread across the pilot's sibling set, scored with choice
+labels included, which is how this round was originally run. Scored body-only, as every later
+section is, the pilot's clean pair is 2.9. The two figures are the same books under two scopes, and
+16l states the scope we standardised on.)*
+
 Between forty and fifty choice menus open with the same words in two books whose authors could not
 see each other's work.
 
@@ -1212,8 +1219,10 @@ plan per book, which is what our pilot did without realising that was the load-b
 
 **A second finding from the same battery.** All three books landed at whole-book Flesch-Kincaid
 8.14 to 8.41 against a 5.5 target with 1.5 tolerance, with only 16 to 20 of 101 nodes inside the
-band, and our gate passed all three because every reading-level finding is advisory. Reading level
-degrades at scale and our gate cannot currently stop it.
+band, and our gate passed all three because at that time every reading-level finding was advisory.
+Reading level degrades at scale and nothing was watching the book. **We have since added a blocking
+whole-book check at grade 7.0** (appendix 16n), which rejects all three of these; the result above
+is what the gate did before that check existed, not a description of the gate today.
 
 ## 16e. Your first subsidiary question, answered: solution transfer is computable, halfway
 
@@ -1279,7 +1288,7 @@ counting had never actually been done, so we did it:
 The exhaustion premise holds. But the shelf we were counting is the wrong one. Every measure in
 this programme, and every architecture proposed to us, runs off a narrative contract, and 3 percent
 of the catalog has one; a contract costs roughly 1.7KB per node of hand-authored specification, so
-the catalog's 11,458 nodes represent about 17MB of writing that does not exist.
+the catalog's 11,458 nodes represent about 19.5MB of writing that does not exist.
 
 **And 16d decides the unit that has to be bought.** If a contract can be shared across the books of
 a series, this is a bounded one-time cost per skeleton. If it cannot, the unit is one contract per
@@ -1296,8 +1305,10 @@ pilot scale, where the baseline is known: one contract, two bindings held consta
 conditions differing only in how the choice semantics reach the author (verbatim, deliberately
 flattened, and verbatim-plus-an-instruction-to-diverge), six independently authored books.
 
-The outcome measure is the convergence guard itself, so no rater is involved and the result cannot
-be argued with. We have fixed the prediction and the falsifiers before authoring: if the verbatim
+The outcome measure is the convergence guard itself, so no rater is involved and the scoring is
+repeatable. That is a claim about reproducibility and not about validity: the guard counts verbatim
+overlap, and whether verbatim overlap tracks a reader's sense of repetition is exactly the
+unvalidated proxy we flag in 16o. We have fixed the prediction and the falsifiers before authoring: if the verbatim
 condition lands near the pilot's 1.8 to 2.7 per 1000, our diagnosis in 16d is wrong and the
 convergence was a scale effect.
 
@@ -1490,11 +1501,15 @@ otherwise: **our pilot's two plans are 118.4 shared four-grams per 1000, almost 
 the attempt we discarded as unusable, and their books sat at the floor, 2.9.** They share vocabulary
 heavily while sharing **zero of thirty-five choice-semantics strings**.
 
-So convergence does not scale with lexical similarity. Two authors given *the same sentence* converge
-on it; two authors given *different sentences that share vocabulary* do not, even at 118 per 1000.
-**The threshold is sentence identity, not lexical distance**, and the repair is therefore much
-cheaper than 16d implied: a per-book plan need only be separately written, which any separate
-generation gives for free.
+So convergence does not scale with lexical similarity in the way we assumed. **We state the
+conclusion as a hypothesis, because the comparison confounds two variables**: our pilot's two plans
+differ both in their sentences and in their premise, and 16d identifies the premise as the largest
+single channel. What the evidence supports is an association, that plans sharing no sentence
+produced books at the floor while plans sharing every sentence did not. **Whether sentence identity
+is the operative threshold, and whether separate generation is therefore sufficient, is not
+established.** One later arm bears on it: a plan sharing the base's premise engine and none of its
+sentences also filled at the floor. That is one observation, not the controlled test, and the
+same-premise different-sentence experiment remains unrun.
 
 One limit we cannot resolve with what we hold: our pilot's two plans also differ in *premise*, so
 sentence-difference and premise-difference are bundled in the single comparison available, and 16d
@@ -1569,18 +1584,33 @@ sealed, and the seal reads like a test rather than an accident." We had called t
 **Second run: delete the 32 glosses, change nothing else.** Every other key verified byte-identical,
 so the difference is attributable to the glosses alone. 422 words left the shared artifact.
 
-| | shared four-grams per 1000 |
+**The metric, defined once and used everywhere below.** Numerator: distinct word four-grams present
+in both books, excluding grams made entirely of function words. Denominator: the mean word count of
+the two books, per 1000. **Scope: node bodies only.** Choice labels are excluded, and they have to
+be, because the two conditions differ in how many label words they contain and a label-inclusive
+denominator therefore moves the rate even when labels share no grams at all.
+
+**Correcting our own table.** Two rows below were previously quoted at the wrong scope, with labels
+included where every other row excluded them. Recomputed consistently, all rows are body-only:
+
+| | shared four-grams per 1000, bodies only |
 | --- | --- |
+| **shared structure, bare identifiers** | **2.3** |
 | our pilot, wholly separate plans | 2.9 |
 | generator idiom floor, books sharing nothing at all | 3.3 |
-| **shared structure, bare fact names** | **3.2** |
 | **budget** | **4.0** |
 | shared plan, wording flattened | 11.4 |
-| shared structure **with** fact glosses | 12.9 |
 | shared plan, author told to diverge from it | 12.9 |
+| shared structure **with** fact glosses | 13.6 |
+| shared plan as written | 16.9 |
 | one shared plan, 101 nodes | 50.1 |
 
-**12.9 to 3.2 from deleting 422 words**, landing under budget and at the floor. This is the first
+The two corrected figures are the stratified designs: with glosses 13.6 rather than the 12.9 we
+first published, and without them 2.3 rather than 3.2. **The direction and the conclusion are
+unchanged under either scope**, which we checked before correcting rather than after, but the
+published numbers were mixed-scope and that was our error, caught in review.
+
+**13.6 to 2.3 from deleting 422 words**, landing under budget and below the floor. This is the first
 artifact in the programme to share a plan and still be indistinguishable, on this measure, from books
 that share nothing.
 
@@ -1651,7 +1681,7 @@ runnable in one command.
 | prose craft | tense stability, told emotion, moral tags in ending closings | 0 unstable nodes, 0 moral tags, 0.5 told-emotion per 1000 | pre-existing |
 | **shared four-grams** | verbatim convergence across sibling books | **4.0 per 1000** | pre-existing budget. **We later measured the generator's own floor at 3.3**, so the budget has 0.7 of headroom, and we report that rather than adjusting either number |
 | reading level | whole-book Flesch-Kincaid | **7.0**, the band's own upper edge (5.5 + 1.5) | new. Deliberately *not* chosen to make current work pass: it rejects 9 of our 22 books |
-| device collision | do sibling books share their props, across category boundaries | 0 identical or near-identical | calibrated on one known-bad pair (0.583) and one known-good (0.000) |
+| device collision | do sibling books share their props: **every bound prop of one book against every bound prop of the other**, ignoring which slot each sits in, since a relocated prop is still the same prop | **0 props that are byte-identical or whose content-word Jaccard exceeds 0.5.** A pair at exactly 0.5 passes; the comparison is strictly greater-than | calibrated on one known-bad pair (0.583 of props colliding) and one known-good (0.000) |
 | label template | is a book identifiable from its labels with the prose removed | 0.20 first-word concentration | new, after a spoiled round. The spoiled arm scored 1.000; its comparison books 0.057 and 0.171 |
 | promise discharge | a choice promising a fact its destination does not carry | zero | new. Two of its four flags on our base contract match defects blind readers reported in separate rounds |
 
@@ -1665,10 +1695,15 @@ runnable in one command.
 
 **What a green battery does not mean, stated because it would be easy to over-read.** It does not
 mean the prose delivers its obligations, that a label leads where it promises, or that a merge node
-avoids assuming a path the reader did not take. Those are entailment questions, we have twice
-measured that attempting them lexically produces false confidence, and **all three defects our blind
-readers found this round were of exactly that kind.** Every guard above passed the books those
-defects were in.
+avoids assuming a path the reader did not take. Those are entailment questions, and we have twice
+measured that attempting them lexically produces false confidence.
+
+Two defects reported by blind readers are of exactly that kind, and both were in books every guard
+above had passed: a choice reading "call the risk not worth it" whose destination has the character
+attempt the crossing and slip, and a merge node naming clues from two of four rooms when a reader
+visits one. A third, the path-dependent under-preparation in 16b, is the same class again and was
+found by a model pass rather than by a reader. We say "two readers found two" rather than a rounder
+number because the guard table only evidences those two.
 
 **One honest asymmetry.** The convergence budget is the threshold most of Part II turns on, and it
 is the one we did not set: it predates this work. What we contributed is the floor beneath it, and
@@ -1687,8 +1722,8 @@ are evidence and which are taste. Where a number is arbitrary we say so in those
 | --- | --- | --- |
 | shared four-gram budget | 4.0 per 1000 | predates this work |
 | reading-level band | grade 5.5, tolerance 1.5 | product spec |
-| annotator agreement floor | kappa 0.60 | Landis and Koch convention |
-| minimum words for a stable Flesch-Kincaid | 20 | readability literature |
+| annotator agreement floor | kappa 0.60 | Landis, J. R., & Koch, G. G. (1977). The Measurement of Observer Agreement for Categorical Data. *Biometrics* 33(1), 159-174, whose "substantial" band begins at 0.61 |
+| minimum words for a stable Flesch-Kincaid | 20 | a rule of thumb in our own validator, **not traceable to a specific source**; we inherited it and have not verified its provenance |
 
 **The first is the one most of Part II turns on and it is not ours.** We contributed the floor
 beneath it, not the budget.
@@ -1697,12 +1732,12 @@ beneath it, not the budget.
 
 | | Value | Rests on | Honest description |
 | --- | --- | --- | --- |
-| generator idiom floor | 3.3 per 1000 | **3 book pairs**, range 1.9 to 5.0 | a measurement with small n, not a threshold, but we quote it like one |
+| generator idiom floor | 3.3 per 1000 | **3 book pairs**, one model, one age band, range 1.9 to 5.0 | an observation on a small sample, not a threshold. We quote it like one, and a reader should not take 3.3 as a general property of language models, or read a single result near it as established equivalence |
 | label-template ceiling | 0.20 first-word share | 3 books: 1.000 bad, 0.057 and 0.171 good | **arbitrary within a wide gap.** Anything from about 0.25 to 0.9 separates the observed cases identically |
 | label shape advisory | 0.65 | none | **arbitrary.** Advisory only, never gates |
 | whole-book reading grade | 7.0 | the inherited band's own edge | derived, not chosen, but it inherits the band's authority |
 | share of nodes in band | 0.50 | none | **arbitrary.** Advisory only |
-| device-collision Jaccard | 0.5 | 1 known-bad pair, 1 known-good | thin, and we said so when we built it |
+| device-collision Jaccard | **exceeds 0.5**, same definition as 16n | 1 known-bad pair, 1 known-good | thin, and we said so when we built it. The 0.583 and 0.000 quoted in 16n are collision *rates* over the prop set, not Jaccard values; the two numbers are different quantities and we have seen them confused |
 | rare-vocabulary signal | 3 shared words, each in at most 2 props | one worked example | **arbitrary**, and it inverted on a short chain until we fixed the corpus |
 | solution-transfer tier weights | 1.0, 0.6, 0.3 | **nothing** | **purely invented.** See below |
 | solution-transfer ceiling | 0.35 | nothing | **arbitrary** |
@@ -1771,8 +1806,9 @@ choice, and it cost us a round.
   options the same decision. The checker is a one-way screen: a high score is evidence the
   decisions repeat, a low score is no evidence they differ.
 - **3.8 understated the problem.** It said our instruments were a source of error. Section 14 shows
-  one of them was anti-correlated with the judgement it existed to predict, which is a stronger
-  claim than "noisy".
+  one of them ranked the pairs in the opposite order from the judgement it existed to predict,
+  which is a stronger claim than "noisy". With two pair conditions that is a rank reversal, not a
+  computed correlation, and we no longer describe it as anti-correlation.
 - **A product judgment we withdrew.** Both raters reported that most forks on this graph reconverge
   with no differing consequence and called it illusory choice. Our own product owner rejected the
   framing: loop-back exploration paths are a convention of the form, on the analogy that in tabletop
