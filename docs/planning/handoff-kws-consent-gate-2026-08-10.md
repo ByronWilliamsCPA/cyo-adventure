@@ -26,9 +26,9 @@ Read this document as three separate kinds of claim, because they need three dif
 A guardian cannot create a child profile until an adult identity behind their account has been verified
 through Epic's Kids Web Services. `POST /v1/consent/kws/start` sends the verification, the parent completes
 it in Epic's hosted flow, and a KWS webhook resolves the row. Three call sites read the gate
-([profiles.py:346](src/cyo_adventure/api/profiles.py#L346),
-[admin_profiles.py:131](src/cyo_adventure/api/admin_profiles.py#L131),
-[onboarding.py:182](src/cyo_adventure/api/onboarding.py#L182)); the frontend routes an unverified guardian
+(`src/cyo_adventure/api/profiles.py:346`,
+`src/cyo_adventure/api/admin_profiles.py:131`,
+`src/cyo_adventure/api/onboarding.py:182`); the frontend routes an unverified guardian
 to a start page and then a polling wait page.
 
 **KWS establishes that an adult is an adult. It does not obtain consent.** Epic's own Parent Verification
@@ -53,11 +53,11 @@ Seven commits, in order:
 | `bc6080b5` | Close Gate 1 questions Q2 and Q3 |
 
 Totals: 57 files, roughly +5,160/-95. The code additions concentrate in
-[consent/service.py](src/cyo_adventure/consent/service.py) (+370),
-[api/consent.py](src/cyo_adventure/api/consent.py) (new, +224), and
-[api/health.py](src/cyo_adventure/api/health.py) (+124), against
-[tests/integration/test_consent_api.py](tests/integration/test_consent_api.py) (new, +543) and
-[tests/unit/test_kws_verification_service.py](tests/unit/test_kws_verification_service.py) (+504).
+`src/cyo_adventure/consent/service.py` (+370),
+`src/cyo_adventure/api/consent.py` (new, +224), and
+`src/cyo_adventure/api/health.py` (+124), against
+`tests/integration/test_consent_api.py` (new, +543) and
+`tests/unit/test_kws_verification_service.py` (+504).
 
 ## 3. What to validate independently
 
@@ -65,7 +65,7 @@ These are the four places where a wrong implementation would be invisible in nor
 
 ### 3.1 The Test-environment refusal is ordered before the query
 
-`usable_verification_id` ([consent/service.py:300-354](src/cyo_adventure/consent/service.py#L300-L354))
+`usable_verification_id` (`src/cyo_adventure/consent/service.py:300-354`)
 refuses a KWS **Test** verification *before the database query runs*, and separately filters on
 `kws_environment` so the opposite direction is also closed. The ordering matters: a refusal applied to
 query results would still have let a Test row satisfy the gate through any path that did not go through
@@ -85,7 +85,7 @@ the two cannot disagree. Check that this is still true if you refactor it.
 
 ### 3.2 The stuck-delivery alarm is a conjunction, not a count
 
-[api/health.py](src/cyo_adventure/api/health.py) reports degraded only when
+`src/cyo_adventure/api/health.py` reports degraded only when
 `stuck > 0 AND sent_in_window > 0 AND resolved_in_window == 0`. A plain "N rows stuck" alarm would fire
 forever on abandoned attempts, because a parent who starts verification and never finishes leaves a stuck
 row behind permanently and that is not an incident.
@@ -104,7 +104,7 @@ confirms the check is published even with the flag off and never gates readiness
 `kws_verification` has **no `parent_email` column under any name**. The email is sent to Epic and not
 retained; the row holds an opaque reference, country, language tag, timestamps, and verdict. Both the
 webhook handler and the start endpoint log the attempt id rather than the parent email. This is recorded
-as activity 12 in [records-of-processing-activities.md](docs/compliance/records-of-processing-activities.md).
+as activity 12 in [records-of-processing-activities.md](../compliance/records-of-processing-activities.md).
 
 Grep the migration and the model before trusting this paragraph; it is the kind of property that a later
 convenience field quietly breaks.

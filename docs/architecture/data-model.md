@@ -100,6 +100,7 @@ erDiagram
         varchar(64) consent_ip "NULL; evidentiary only"
         varchar(2) residence_country "NULL; ISO 3166-1 alpha-2; O-117 jurisdiction signal"
         timestamptz adulthood_attested_at "NULL; O-119 self-declared adult attestation"
+        uuid consent_verification_id FK "NULL; which KWS attempt corroborated this consent; ON DELETE SET NULL"
     }
 
     kws_verification {
@@ -111,6 +112,7 @@ erDiagram
         timestamptz resolved_at "NULL while sent"
         varchar(128) transaction_id "NULL; KWS's opaque id"
         jsonb enabled_methods "snapshot at send time, never a live read"
+        varchar(16) location "NULL; sent to KWS, selected the offered methods"
     }
 
     child_profile {
