@@ -63,6 +63,19 @@ tags:
 > and Gate 1's Q2 becomes the viability gate rather than a retirement opportunity, because the
 > ruling removed the fallback behind it. Question 1A survives for the installed base only, and that
 > population is not yet established.
+> **Amended**: 2026-08-10, later the same day. **The consent gate the ruling implied is built**, in
+> four slices, behind a flag that is off in production: child-profile creation refuses without a
+> usable verification (guardian and admin routes both), a start endpoint with anti-automation caps,
+> a `needs-verification` auth state with its start and wait screens, and delivery-health alerting
+> that treats long-unresolved `sent` rows as a signal rather than as silence. **O-123 moves from
+> precondition to closed**: the Test refusal is evaluated before the query runs and the query is
+> environment-filtered, so neither direction of the sandbox/production confusion is reachable, and
+> the guard keys on `kws_environment` rather than `settings.environment` because staging declares
+> `ENVIRONMENT=production`. **Nothing here answers Q2's notification limb**, which remains the
+> viability gate for the chosen method. One new obligation surfaced: the check discloses an adult's
+> email address to Epic Games when it **starts**, so refused and abandoned applicants are disclosed
+> too. That is a processor relationship with no executed DPA and an unresolved counterparty entity,
+> now a switch-on precondition at assurance-register row O-125 and DPIA section 2.8.
 > **This does not flip the status.** Every decision below is an owner choice pending counsel
 > confirmation; only counsel closing D1 through D5 moves this ADR to Accepted. D1's remaining
 > counsel content is Questions 1A and 1B; its enumerated-method half is now an owner-accepted
@@ -535,6 +548,30 @@ typed-name path remains fully reachable in production; and nothing refuses a `kw
 'test'` row, so a staging-era verification could satisfy a production consent decision. The second
 is register row O-123, which this ruling promotes from follow-on work to a precondition of the gate
 change itself.
+
+**Both are now true in code, 2026-08-10.** The paragraph above is preserved as written because it
+was true on its date; what follows is the state that replaced it.
+
+- **The gate reads the verification, not only `user.consent_*`.** Both child-profile creation
+  routes, guardian (`api/profiles.py`) and admin (`api/admin_profiles.py`), refuse when
+  `settings.kws_verification_required` is set and the adult has no usable verification. The flag is
+  off in production, so the typed-name path remains reachable there until it is switched on; that
+  switch is now a configuration decision rather than a build.
+- **O-123 is closed by construction rather than by convention.** `usable_verification_id` evaluates
+  the Test refusal **first and returns before the query runs**, so no ordering of the remaining
+  conditions admits a sandbox row, and it filters on `kws_environment` as well, which closes the
+  opposite direction (a production-configured process counting a leftover Test row from before a
+  cutover). Both directions carry named tests. Critically, the guard keys on `kws_environment` and
+  never on `settings.environment`: staging declares `ENVIRONMENT=production`, so the obvious
+  `environment == "local"` shape would have been a control in name only.
+- **The same function supplies both the gate and the evidence link**, so a consent record cannot
+  cite a verification the gate would have refused. That combination, a record naming a sandbox
+  verification as its corroboration, is the failure this shape exists to make unreachable.
+
+Two things the build does **not** do, stated so the ADR does not overclaim. It does not answer Q2's
+notification limb, which remains the viability gate for the chosen method. And it does not make a
+verification meaningful in production: nothing has been wired there, and the first real send is
+gated on the processor disclosure now tracked at O-125.
 
 **The vendor independently confirms the boundary, 2026-08-10.** Epic's own PV Service documentation
 states that the service "has not been designed to obtain consent from verified parents or guardians

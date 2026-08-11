@@ -3547,6 +3547,24 @@ posture at a trust boundary must be verified from outside that boundary.
     forward. Whether that set is non-empty, and whether every member is the operator's own household,
     is **not established**; establishing it is a precondition for closing 1A rather than narrowing
     it, and it is a read-only query against the production project, not an inference.
+- **The gate is built, 2026-08-10, and the bullet above is superseded on its factual half only.**
+  Both child-profile creation routes now refuse when `settings.kws_verification_required` is set and
+  the adult holds no usable verification (`api/profiles.py`, `api/admin_profiles.py`, via
+  `consent/service.py::has_usable_verification`), and `api/onboarding.py::_record_consent` stamps the
+  corroborating verification id onto the consent record. **The flag is off in production**, so the
+  typed-name path is still fully reachable there and the ruling is still policy rather than control
+  on the tier that matters; what changed is that switching it on is now a configuration decision
+  instead of unbuilt work. Three things this does **not** change, listed because a "built" note
+  invites over-reading:
+  - **It answers nothing about the method.** Q2's notification limb still decides whether
+    (b)(2)(ii) is reachable at all, and this row's Check turns on that, not on whether a gate exists.
+  - **It adds a precondition rather than removing one.** The check discloses an adult's email to
+    Epic Games at the moment it **starts**, so refused and abandoned applicants are disclosed too,
+    to a processor with no executed DPA and an unresolved counterparty entity. That is **O-125**,
+    and it gates the switch-on independently of anything in this row.
+  - **O-123 shipped with it**, as that row required, so the gate cannot be satisfied by a sandbox
+    verification. Had the consumer landed first, this row's remediation would have opened a worse
+    hole than the one it closes.
 - **Phase home:** unassigned
 - **Owner:** core-maintainer
 - **Last verified:** not verified. **Neither an accepted exception nor a decision to remediate is a
@@ -3606,10 +3624,29 @@ posture at a trust boundary must be verified from outside that boundary.
   consumer**, not after it. Shipping the consumer first would create, for the duration of the gap, a
   production consent path satisfiable by a staging artifact, which is a worse posture than the one
   the ruling was made to improve.
+- **Reliance rule shipped with the consumer, 2026-08-10, which is what the bullet above required.**
+  `consent/service.py::usable_verification_id` is the single source of both the gate answer and the
+  evidence link, and it refuses a Test verification **before the query runs**, so there is no
+  ordering of the remaining conditions under which a sandbox row can be read as evidence. The query
+  additionally filters on `kws_environment`, closing the opposite direction: a production-configured
+  process must not count a leftover Test row from before a cutover. The guard keys on
+  `kws_environment`, never on `settings.environment`, precisely because **staging declares
+  `ENVIRONMENT=production`** and the obvious predicate would be inert on every deployed tier. Both
+  child-profile creation routes (`api/profiles.py`, `api/admin_profiles.py`) consume it, and
+  `api/onboarding.py::_record_consent` stamps the same id onto the consent record, so a record
+  cannot cite a verification the gate would have refused. Unit coverage:
+  `tests/unit/test_kws_verification_service.py::test_a_test_environment_verification_is_not_usable_by_default`
+  and `::test_the_test_refusal_never_reaches_the_database`. Two limits stay open and are the reason
+  this row does not close: the escape hatch `KWS_ACCEPT_TEST_EVIDENCE` exists and nothing outside
+  code review stops an operator setting it on a tier serving real families, and the whole mechanism
+  has never executed on such a tier, because production still has no KWS wiring.
 - **Phase home:** unassigned
 - **Owner:** core-maintainer
-- **Last verified:** not verified
-- **Status:** evidence invalid
+- **Last verified:** not verified on any tier serving real families; unit-verified 2026-08-10
+- **Status:** mechanism unproven (downgraded 2026-08-10 from *evidence invalid*: the reliance rule
+  the earlier status recorded as absent now exists and is consumed, so the invalidating gap is
+  closed; what remains is an unexercised mechanism, which is this register's entry state, not a
+  finding)
 - **Check:** Every deployed tier's KWS environment is the one appropriate to that tier, and no
   `kws_verification` row carrying `kws_environment = 'test'` is relied on as evidence that a real
   parent consented
@@ -3667,6 +3704,14 @@ posture at a trust boundary must be verified from outside that boundary.
   vacuously true today because `KWS_PRODUCT_ID` is unset on staging, so a delivery naming any
   product passes. The value is visible in the Developer Portal and can be pinned whenever the
   branding work takes an operator there.
+- **Consequence raised, not changed, 2026-08-10.** A consumer of these rows now exists: child-profile
+  creation refuses without a usable verification, and the consent record cites the verification id.
+  Nothing in that path reads `enabled_methods`, so this row's mechanism is untouched. What changed is
+  what a wrong declaration costs. Before, an inaccurate snapshot was a defect in an unread record;
+  now it is the only description of how the adult behind a live consent decision was checked, and the
+  vendor supplies no field that could contradict it. Read the stored value as *what we permitted*,
+  never as *what happened*, and hold that line hardest on the AgeGraph inheritance branch, where no
+  method ran for us at all.
 - **Phase home:** unassigned
 - **Owner:** core-maintainer
 - **Last verified:** 2026-08-09 (staging only; the control has never run on a tier serving real

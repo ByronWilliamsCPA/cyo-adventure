@@ -453,6 +453,16 @@ therefore owe a mechanism that treats a long-unresolved `sent` row as an alert r
 silence, because in production that row is the entire detection surface. Do not let a Test run's
 easy confirmation stand in for building it.
 
+**Built 2026-08-10, so this paragraph is now a description rather than a debt.** The readiness
+endpoint carries a non-gating `kws_verification` check, and a daily workflow probes it on both
+tiers and files a `ci-failure` issue when it degrades. The alarm is deliberately **not** a
+stuck-row count, which ordinary abandonment would trip forever; it is the conjunction *rows stuck
+past 24h, and sends going out in the last 24h, and nothing at all coming back in the last 24h*.
+Procedure and triage order (edge before origin, for the reason the 2026-08-09 incident taught):
+`docs/operations/runbook.md` section 7.1. What that closes is detection, not delivery: Gate 3 still
+owes a **verified** production webhook round trip, because a probe that reports "nothing has come
+back" cannot distinguish a tier that has never been wired from one that has been silenced.
+
 The state all of this documents is the one the insert-before-send ordering was built for: four
 verifications are complete as far as Epic is concerned, and this application holds zero consent
 records. Four verifications, not four adults: every run used the same operator address, which is
