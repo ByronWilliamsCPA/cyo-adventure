@@ -102,6 +102,14 @@ reviews:
     - "!**/.ruff_cache/**"
     - "!**/htmlcov/**"
     - "!**/.coverage"
+    # Experimental artifacts, not code. These are generated story graphs,
+    # bindings and contracts produced by the diversity-research runs and kept
+    # verbatim as evidence: reviewing them line by line yields nothing, and a
+    # single research round can add over a hundred of them, which alone pushed
+    # PR #682 past the reviewer's file limit and cost the runtime changes in
+    # that PR their review. The build scripts and READMEs alongside them stay
+    # in review; only the data files are excluded.
+    - "!docs/planning/evidence/**/*.json"
 
   # Path-specific instructions
   path_instructions:
