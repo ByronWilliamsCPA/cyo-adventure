@@ -164,20 +164,37 @@ test('a backend 403 on approve fails closed in the UI', async ({ page }) => {
   await expect(page).toHaveURL(/\/admin\/review\/s1$/)
 })
 
-test('send-back posts the reason and returns to the console', async ({ page }) => {
+test('send-back posts the reason and the category, and returns to the console', async ({
+  page,
+}) => {
   await mockMe(page, { role: 'admin' })
   let body: unknown = null
   await page.route('**/api/v1/storybooks/s1/send-back', (route) => {
     body = route.request().postDataJSON()
-    return route.fulfill({ json: { id: 's1', status: 'needs_revision', reason: 'too intense' } })
+    return route.fulfill({
+      json: {
+        id: 's1',
+        status: 'needs_revision',
+        reason: 'too intense',
+        reason_code: 'safety_concern',
+      },
+    })
   })
 
   await page.goto('/admin/review/s1')
   await page.getByRole('button', { name: 'Send Back' }).click()
   await expect(page.getByText('Send back for revision')).toBeVisible()
-  await page.getByLabel(/reason/i).fill('too intense for this age')
+  // Exact labels, not /reason/i: the reason-code select and the free-text
+  // textarea both match that pattern, which is a strict-mode violation.
+  await page.getByLabel('Reason category (for calibration)').selectOption('safety_concern')
+  await page.getByLabel('Reason for sending back').fill('too intense for this age')
   await page.getByRole('button', { name: 'Confirm send back' }).click()
 
   await expect(page).toHaveURL(/\/admin$/)
-  await expect.poll(() => body).toEqual({ reason: 'too intense for this age' })
+  await expect
+    .poll(() => body)
+    .toEqual({
+      reason: 'too intense for this age',
+      reason_code: 'safety_concern',
+    })
 })

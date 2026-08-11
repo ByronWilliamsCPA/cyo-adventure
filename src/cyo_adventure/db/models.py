@@ -2238,6 +2238,17 @@ class PipelineEvent(UUIDPrimaryKeyMixin, Base):
             name="ck_pipeline_event_system_actor_null",
         ),
         Index("ix_pipeline_event_entity", "entity_type", "entity_id"),
+        # The report-purge send-back exemption probes this table by
+        # (entity_type, entity_id, event_type). Without support that is a
+        # sequential scan of an append-only log on every nightly sweep. Declared
+        # here as well as in the migration because test_schema_parity compares
+        # the two and an index present in only one is drift.
+        Index(
+            "ix_pipeline_event_entity_event_type",
+            "entity_type",
+            "entity_id",
+            "event_type",
+        ),
         Index("ix_pipeline_event_event_type", "event_type"),
         Index("ix_pipeline_event_occurred_at", "occurred_at"),
     )

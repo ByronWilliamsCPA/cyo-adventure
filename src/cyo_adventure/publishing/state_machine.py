@@ -9,9 +9,20 @@ A dependency-free transition table over ``storybook.status``. No DB, no I/O.
                       v  v
                    needs_revision
 
-The ``draft --auto_reject--> needs_revision`` hop has no slice-1 caller; it
-exists so the slice-2 moderation pipeline can route a hard-blocked story
-without it ever passing through ``in_review`` or reaching a human.
+The ``draft --auto_reject--> needs_revision`` hop exists so the moderation
+pipeline can route a hard-blocked story without it ever passing through
+``in_review`` or reaching a human. It IS driven today, by
+``moderation/pipeline.py`` on a classifier hard BLOCK; this docstring
+previously said it had "no slice-1 caller", which went stale when slice 2
+landed and was then relied on by a retention predicate that would have
+preserved every machine-rejected story's raw output indefinitely.
+
+#CRITICAL: data-integrity: ``needs_revision`` therefore does NOT imply that a
+human saw the story. Anything keying on "a reviewer decided" must key on the
+``SENT_BACK`` pipeline event, which only ``publishing/service.py::send_back``
+writes, never on this status.
+#VERIFY: tests/unit/test_report_retention.py::
+test_amendment_migration_exempts_send_back_via_event_not_status.
 """
 
 from __future__ import annotations

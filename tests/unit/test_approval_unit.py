@@ -317,7 +317,7 @@ async def test_send_back_handler_echoes_reason(
     session = AsyncMock(spec=AsyncSession)
     session.execute = AsyncMock(return_value=_execute_result(book))
     ctx = _ctx("admin", session)
-    body = SendBackRequest(reason="too scary")
+    body = SendBackRequest(reason="too scary", reason_code="safety_concern")
 
     async def _send_back(*_args: object, **_kwargs: object) -> None:
         book.status = "needs_revision"
@@ -328,8 +328,9 @@ async def test_send_back_handler_echoes_reason(
     view = await approval.send_back_storybook("s1", body, ctx)
 
     assert view.reason == "too scary"
+    assert view.reason_code == "safety_concern"
     send_back_mock.assert_awaited_once_with(
-        ctx.session, ctx.principal, book, "too scary"
+        ctx.session, ctx.principal, book, "too scary", reason_code="safety_concern"
     )
 
 
@@ -394,7 +395,7 @@ async def test_send_back_handler_blocks_guardian() -> None:
     """send_back_storybook blocks a guardian principal with AuthorizationError."""
     session = AsyncMock(spec=AsyncSession)
     ctx = _ctx("guardian", session)
-    body = SendBackRequest(reason="nope")
+    body = SendBackRequest(reason="nope", reason_code="other")
 
     with pytest.raises(AuthorizationError, match="admin role required"):
         await approval.send_back_storybook("s1", body, ctx)
@@ -666,7 +667,7 @@ def test_send_back_rejects_whitespace_only_reason() -> None:
     strip_whitespace, "   " has length 3 and would pass min_length=1.
     """
     with pytest.raises(PydanticValidationError):
-        SendBackRequest(reason="   ")
+        SendBackRequest(reason="   ", reason_code="other")
 
 
 @pytest.mark.unit
@@ -674,8 +675,22 @@ def test_send_back_trims_surrounding_whitespace_in_reason() -> None:
     """A valid reason with surrounding whitespace is accepted and stored
     trimmed. Same-data positive control for the whitespace rejection above.
     """
-    body = SendBackRequest(reason="  too scary for 6yo  ")
+    body = SendBackRequest(reason="  too scary for 6yo  ", reason_code="other")
     assert body.reason == "too scary for 6yo"
+
+
+@pytest.mark.unit
+def test_send_back_requires_reason_code() -> None:
+    """reason_code is a required field; omitting it is a 422 at the boundary."""
+    with pytest.raises(PydanticValidationError):
+        SendBackRequest(reason="too scary")  # type: ignore[call-arg]
+
+
+@pytest.mark.unit
+def test_send_back_rejects_unknown_reason_code() -> None:
+    """A reason_code outside the closed vocabulary is rejected."""
+    with pytest.raises(PydanticValidationError):
+        SendBackRequest(reason="too scary", reason_code="not_a_real_code")  # type: ignore[arg-type]
 
 
 # ---------------------------------------------------------------------------

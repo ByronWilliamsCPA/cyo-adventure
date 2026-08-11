@@ -313,7 +313,7 @@ async def test_send_back_writes_sent_back_event(
     resp = await client.post(
         f"/api/v1/storybooks/{story_id}/send-back",
         headers=auth("admin-a"),
-        json={"reason": "too scary for 6yo"},
+        json={"reason": "too scary for 6yo", "reason_code": "safety_concern"},
     )
     assert resp.status_code == 200, resp.text
 
@@ -324,7 +324,7 @@ async def test_send_back_writes_sent_back_event(
         to_state="needs_revision",
         actor_role="admin",
     )
-    assert event.payload == {}
+    assert event.payload == {"reason_code": "safety_concern"}
 
 
 async def test_kid_create_writes_request_created(
@@ -612,7 +612,7 @@ async def test_dual_role_same_family_send_back_stamps_guardian(
     resp = await client.post(
         f"/api/v1/storybooks/{story_id}/send-back",
         headers=auth(seed.dual_token),
-        json={"reason": "let's soften the storm scene"},
+        json={"reason": "let's soften the storm scene", "reason_code": "prose_quality"},
     )
     assert resp.status_code == 200, resp.text
 
@@ -638,7 +638,7 @@ async def test_dual_role_foreign_family_send_back_stamps_admin(
     resp = await client.post(
         f"/api/v1/storybooks/{story_id}/send-back",
         headers=auth(seed.dual_token),
-        json={"reason": "cross-family policy check"},
+        json={"reason": "cross-family policy check", "reason_code": "other"},
     )
     assert resp.status_code == 200, resp.text
 
