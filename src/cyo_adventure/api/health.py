@@ -82,6 +82,19 @@ _RECENT_FAILED_WINDOW = timedelta(hours=24)
 # threshold boundary (at the threshold vs. one above it).
 RECENT_FAILED_DEGRADED_THRESHOLD = 3
 
+# #ASSUME: timing dependencies: how long an unresolved KWS attempt may sit
+# before check_kws_verification counts it as stuck, and how far back that
+# check looks for sends and resolutions. 24 hours for both, and the value is
+# doing less work than it looks: the alarm is a CONJUNCTION (see
+# consent/service.py::VerificationDeliveryHealth.deliveries_have_stopped), so
+# this threshold only decides how quickly a genuine outage surfaces, not
+# whether abandonment is mistaken for one. A full day also puts the two terms
+# on disjoint sets of rows, which is what stops one slow-but-eventually-
+# verifying parent from being both the stuck row and the recent send.
+# #VERIFY: tests/unit/test_health.py::TestCheckKwsVerification.
+_KWS_STUCK_AFTER = timedelta(hours=24)
+_KWS_DELIVERY_WINDOW = timedelta(hours=24)
+
 
 class HealthStatus(BaseModel):
     """Health check response model."""
@@ -524,6 +537,114 @@ async def check_generation_queue() -> ReadinessCheck:
         )
 
 
+async def check_kws_verification() -> ReadinessCheck:
+    """Check that KWS parent-verification deliveries are still arriving.
+
+    #CRITICAL: external resources: this check exists because its failure mode
+    is invisible everywhere else. On 2026-08-09 a Cloudflare custom rule
+    blocked four KWS webhook retries at the edge, so the origin logged zero
+    POSTs and every log-based view of the system was byte-identical to "KWS
+    happened not to send anything". Meanwhile the parents behind those
+    deliveries were permanently stuck: verification precedes admin approval
+    (ADR-018 D1), so an unresolved attempt is a guardian who cannot finish
+    signing up and cannot be told why. The only evidence such an outage
+    leaves is rows that never leave ``sent``, which is what this reads.
+    #VERIFY: tests/unit/test_health.py::TestCheckKwsVerification covers ok,
+    degraded, unconfigured, and the DB-error path;
+    ::TestReadinessKwsDoesNotGate proves it never flips readiness.
+
+    Reports ``state="unconfigured"`` (``status=True``, no query) when the tier
+    does not run verification (``kws_verification_required`` off). On such a
+    tier no attempt is ever started, so any rows present are historical and
+    reporting them as degraded would be a permanent false alarm on a feature
+    that is switched off.
+
+    The degraded condition is a conjunction of three terms rather than a
+    stuck count, for the reason
+    ``consent/service.py::VerificationDeliveryHealth.deliveries_have_stopped``
+    documents: ordinary abandonment (a parent who never opens the email)
+    leaves a stuck row behind forever and is not an incident. All four counts
+    are reported either way, so an operator reading the payload sees the same
+    numbers the condition was computed from.
+
+    Deliberately non-gating (absent from ``_CRITICAL_READINESS_CHECKS``),
+    matching check_cache and check_generation_queue: a broken inbound KWS leg
+    blocks new sign-ups, but it has no bearing on serving stories to children
+    who are already reading, and 503-ing the pod out of rotation would turn a
+    sign-up outage into a whole-app one.
+
+    The response exposes four integers and no PII, on an already
+    unauthenticated endpoint. That is deliberate rather than incidental: the
+    table it counts has no email column at all (see
+    ``db/models.py::KwsVerification``), so there is no address here to leak
+    even by accident.
+
+    Returns:
+        ReadinessCheck: KWS delivery status, latency, and fine-grained state
+        ("ok", "degraded", or "unconfigured").
+    """
+    start = time.time()
+    if not settings.kws_verification_required:
+        return ReadinessCheck(
+            name="kws_verification",
+            status=True,
+            latency_ms=round((time.time() - start) * 1000, 2),
+            state="unconfigured",
+        )
+    try:
+        # Import here to avoid circular dependencies, matching check_database.
+        from cyo_adventure.consent.service import verification_delivery_health
+        from cyo_adventure.core.database import get_session
+
+        async with get_session() as session:
+            health = await verification_delivery_health(
+                session,
+                stuck_after=_KWS_STUCK_AFTER,
+                window=_KWS_DELIVERY_WINDOW,
+            )
+
+        latency_ms = round((time.time() - start) * 1000, 2)
+        if health.deliveries_have_stopped:
+            oldest = health.oldest_stuck_requested_at
+            # `oldest` is non-None whenever stuck > 0, which the conjunction
+            # already required; the guard is for the type checker, not for a
+            # case that can occur.
+            oldest_note = (
+                "" if oldest is None else f" (oldest sent {oldest.isoformat()})"
+            )
+            window_hours = int(_KWS_DELIVERY_WINDOW.total_seconds() // 3600)
+            return ReadinessCheck(
+                name="kws_verification",
+                status=False,
+                latency_ms=latency_ms,
+                error=(
+                    f"{health.stuck} KWS verification(s) stuck unresolved"
+                    f"{oldest_note}; {health.sent_in_window} sent and "
+                    f"{health.resolved_in_window} resolved in the last "
+                    f"{window_hours}h"
+                ),
+                state="degraded",
+            )
+        return ReadinessCheck(
+            name="kws_verification",
+            status=True,
+            latency_ms=latency_ms,
+            state="ok",
+        )
+    except Exception as exc:
+        # #EDGE: data-integrity: parens required, not redundant (Sonar
+        # S1110 false positive); see check_database's identical comment.
+        latency_ms = (time.time() - start) * 1000  # NOSONAR
+        logger.warning(_CHECK_FAILED_LOG, check="kws_verification", error=str(exc))
+        return ReadinessCheck(
+            name="kws_verification",
+            status=False,
+            latency_ms=round(latency_ms, 2),
+            error=_CHECK_FAILED_MESSAGE,
+            state="degraded",
+        )
+
+
 async def check_external_service() -> ReadinessCheck:  # NOSONAR
     """Check external API/service connectivity.
 
@@ -592,6 +713,8 @@ async def readiness() -> ReadinessStatus:
       check_cache's docstring and the #ASSUME note below).
     - Generation-queue health (reported, does not gate readiness; see
       check_generation_queue's docstring, ADR-021 Phase 1).
+    - KWS parent-verification delivery health (reported, does not gate
+      readiness; see check_kws_verification's docstring, ADR-018 D1).
     - External service health: not wired in (check_external_service exists
       but is unused; see api/health.py module history / docs/operations/runbook.md).
 
@@ -647,6 +770,7 @@ async def readiness() -> ReadinessStatus:
 
     checks["cache"] = await check_cache()
     checks["generation_queue"] = await check_generation_queue()
+    checks["kws_verification"] = await check_kws_verification()
 
     # check_external_service remains unwired here: LLM/story-generation
     # providers are optional and provider-specific (generation_provider is

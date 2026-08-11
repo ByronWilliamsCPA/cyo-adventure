@@ -532,13 +532,17 @@ its own gap, distinct from `UW-D27`).
 
 ## 7. How you find out something broke
 
-There are two scheduled, alerting synthetic checks today, both following the same pattern: on
-failure, find-or-open a GitHub issue labeled `e2e-alert` whose title starts with a workflow-specific
-marker, and comment on it with the failing run's URL and date, rather than leaving a red run nobody
-checks the Actions tab for. The issue stays open and accumulates one comment per failing run until
-someone resolves the underlying problem and closes it (a fresh issue opens after the next failure).
-**Watch (or filter Issues by) the `e2e-alert` label** to be notified through GitHub's native issue
-notifications; there is no other outbound channel (no Slack/email/pager integration) wired up.
+Every alerting scheduled job follows the same pattern: on failure, find-or-open a GitHub issue whose
+title starts with a workflow-specific marker, and comment on it with the failing run's URL and date,
+rather than leaving a red run nobody checks the Actions tab for. The issue stays open and accumulates
+one comment per failing run until someone resolves the underlying problem and closes it (a fresh
+issue opens after the next failure). There is no other outbound channel: no Slack, email, or pager
+integration is wired up, so **watch (or filter Issues by) both labels** below to be notified through
+GitHub's native issue notifications.
+
+The label splits by what kind of job it is, which is deliberate rather than historical accident:
+`e2e-alert` for the E2E tiers, `ci-failure` for ops and quality jobs. `grep -rn "labels: '" .github/workflows/`
+lists the current producers of each; the two E2E tiers are:
 
 - **`.github/workflows/e2e-prod.yml`** ("E2E (production)"): runs the Playwright `e2e-prod` tier
   daily (`30 13 * * *` UTC) against the live production URL (`https://cyo.williamshome.family` by
@@ -551,13 +555,43 @@ notifications; there is no other outbound channel (no Slack/email/pager integrat
   devices racing a genuine 409 through the offline conflict dialog) that the mocked test suite
   cannot. Its alert marker is `[e2e-real-nightly]`.
 
-A staging counterpart (`e2e-staging.yml`) and a corresponding `[e2e-staging]`-marker alerting step
-are planned to land via PR #268 (per `e2e-prod.yml`'s own header comment) but do not exist on this
-branch yet; today staging failures only produce a Playwright trace artifact on a red CI run, with
-no issue-based alert. `docs/testing/` (a fuller test-strategy doc set) is likewise expected from
-PR #268 and is not present in this checkout; once merged, link it here instead of duplicating its
-content. For a manual, checklist-driven live verification (not automated alerting), see
+`e2e-staging.yml` ("E2E (staging)", daily at 13:00 UTC) is a third tier but is **not** on this list,
+because it has no alerting step of any kind: a staging failure leaves a red run and a Playwright
+trace artifact, and nothing opens an issue. Nobody is notified unless they look. For the wider test
+strategy see [`docs/testing/`](../testing/README.md); for a manual, checklist-driven live
+verification (not automated alerting), see
 [`docs/planning/r1-live-e2e-checklist.md`](../planning/r1-live-e2e-checklist.md).
+
+### 7.1 KWS parent-verification delivery health
+
+**`.github/workflows/kws-delivery-health.yml`** ("KWS delivery health", marker `[kws-delivery-health]`,
+label `ci-failure`) runs daily at 11:00 UTC against both staging and production. It is worth calling
+out separately because of what it watches and why nothing else can.
+
+On 2026-08-09 a Cloudflare custom rule blocked four KWS webhook retries at the edge. The origin
+logged zero POSTs, so every log-derived view of that outage read exactly like "the vendor never sent
+anything": no line to alert on, and no absence a log rule could name. The only trace it left was
+`kws_verification` rows that never moved off `sent`. The alarm is therefore a query over that table,
+surfaced as the non-gating `kws_verification` check on `/api/v1/health/ready`, and this workflow just
+reads that endpoint. It holds no database credential of its own.
+
+A stuck count alone would be useless, because a parent who never opens their email leaves a `sent`
+row forever. The check fires only on the conjunction *stuck attempts exist* **and** *sends went out
+in the last 24h* **and** *nothing resolved in the last 24h*, which is not reachable by parent
+behaviour: it requires the return path itself to be broken. A resolution counts whether the
+verification succeeded or was refused, since either one proves deliveries are arriving.
+
+Triage, in order, when the marker issue appears with a `degraded` state:
+
+1. **Check the edge before the origin.** An edge block leaves zero origin log lines, so an empty
+   application log is evidence of nothing. Read Cloudflare's Security Events for the webhook path.
+2. Check the KWS status page and vendor console for a sending-side outage.
+3. Read the `requested_at` spread of the rows still in `sent`; it dates the start of the outage.
+
+A `missing` state means the deployed build carries no `kws_verification` check at all, so nothing is
+watching that tier. That is reported as a failure on purpose: a probe that treats an absent key as
+benign is how a monitoring gap ships unnoticed. An `unconfigured` state is not a failure; it means
+`KWS_VERIFICATION_REQUIRED` is off on that tier, which is production's state until Gate 3 closes.
 
 ## 8. Secrets and keys inventory
 

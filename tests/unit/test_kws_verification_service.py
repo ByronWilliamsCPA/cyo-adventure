@@ -18,7 +18,8 @@ from __future__ import annotations
 
 import json
 import uuid
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
+from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any
 from unittest.mock import MagicMock, patch
 
@@ -36,6 +37,7 @@ from cyo_adventure.consent.service import (
     record_parent_verified,
     reportable_verification_status,
     start_parent_verification,
+    verification_delivery_health,
     verification_status,
 )
 from cyo_adventure.core.config import settings
@@ -768,3 +770,241 @@ class TestReportedVerificationStatus:
 
         assert state == "none"
         assert mock_async_session.scalar.await_count == 0
+
+
+def _delivery_counts(
+    session: AsyncMock,
+    *,
+    stuck: int,
+    oldest: datetime | None = None,
+    sent_in_window: int,
+    resolved_in_window: int,
+) -> None:
+    """Point the session's single aggregate round trip at one count row.
+
+    ``verification_delivery_health`` reads all four terms from one
+    ``COUNT(*) FILTER (WHERE ...)`` row, so the double is one ``execute()``
+    whose result yields one namespace, mirroring
+    ``tests/unit/test_health.py::_fake_session_with_queue_counts``.
+    """
+    result = MagicMock()
+    result.one.return_value = SimpleNamespace(
+        stuck=stuck,
+        oldest=oldest,
+        sent_in_window=sent_in_window,
+        resolved_in_window=resolved_in_window,
+    )
+    session.execute.return_value = result
+
+
+class TestVerificationDeliveryHealth:
+    """The only signal a blocked inbound leg produces at all.
+
+    On 2026-08-09 a Cloudflare custom rule blocked four KWS webhook retries at
+    the edge. The origin logged zero POSTs, so every log-derived view of that
+    outage was byte-identical to "the vendor never sent anything": there was no
+    line to alert on, and no absence a log-based rule could name. The one trace
+    such an outage does leave is rows that never leave ``sent``, which is why
+    the alarm is a query over the table rather than a rule over the logs.
+
+    A raw stuck count cannot be that alarm, because ordinary abandonment (a
+    parent who never opens the email) leaves a ``sent`` row forever and would
+    hold the alarm on permanently. The three tests below are the conjunction's
+    three terms, each pinning the false positive its own term excludes.
+    """
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_resolutions_still_arriving_is_not_an_alarm(
+        self, mock_async_session: AsyncMock
+    ) -> None:
+        """Stuck rows alongside fresh resolutions mean the inbound leg works.
+
+        This is the steady state, not an edge case: at any moment some parents
+        have an open attempt they have not acted on. Alarming here would mean
+        alarming permanently.
+        """
+        _delivery_counts(
+            mock_async_session,
+            stuck=3,
+            oldest=datetime.now(UTC) - timedelta(days=2),
+            sent_in_window=5,
+            resolved_in_window=2,
+        )
+
+        health = await verification_delivery_health(
+            mock_async_session,
+            stuck_after=timedelta(hours=24),
+            window=timedelta(hours=24),
+        )
+
+        assert health.deliveries_have_stopped is False
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_sends_going_out_with_nothing_coming_back_is_the_alarm(
+        self, mock_async_session: AsyncMock
+    ) -> None:
+        """The Cloudflare-shaped outage: outbound fine, inbound eaten.
+
+        Sends are leaving, attempts are piling up unresolved, and nothing has
+        come back inside the window. That combination is not reachable by
+        parent behaviour: it requires the return path itself to be broken.
+        """
+        _delivery_counts(
+            mock_async_session,
+            stuck=4,
+            oldest=datetime.now(UTC) - timedelta(days=2),
+            sent_in_window=4,
+            resolved_in_window=0,
+        )
+
+        health = await verification_delivery_health(
+            mock_async_session,
+            stuck_after=timedelta(hours=24),
+            window=timedelta(hours=24),
+        )
+
+        assert health.deliveries_have_stopped is True
+        assert health.stuck == 4
+        assert health.oldest_stuck_requested_at is not None
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_an_abandoned_attempt_does_not_alarm_forever(
+        self, mock_async_session: AsyncMock
+    ) -> None:
+        """The false positive the ``sent_in_window`` term exists to exclude.
+
+        One parent who never opened their email leaves a ``sent`` row that
+        ages without bound. Keying the alarm on the stuck count alone would
+        turn that single abandoned attempt into a permanent red check, which
+        is the failure mode that trains operators to ignore the signal, and
+        the whole point of the signal is that it fires when a real outage is
+        otherwise invisible.
+        """
+        _delivery_counts(
+            mock_async_session,
+            stuck=1,
+            oldest=datetime.now(UTC) - timedelta(days=90),
+            sent_in_window=0,
+            resolved_in_window=0,
+        )
+
+        health = await verification_delivery_health(
+            mock_async_session,
+            stuck_after=timedelta(hours=24),
+            window=timedelta(hours=24),
+        )
+
+        assert health.deliveries_have_stopped is False
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_a_quiet_window_is_not_an_alarm(
+        self, mock_async_session: AsyncMock
+    ) -> None:
+        """No traffic at all proves nothing about the inbound leg.
+
+        A tier nobody used today has zero resolutions for the same reason it
+        has zero sends. The check can only speak about a leg that was
+        exercised, so silence must read as "no evidence", never as "broken".
+        """
+        _delivery_counts(
+            mock_async_session, stuck=0, sent_in_window=0, resolved_in_window=0
+        )
+
+        health = await verification_delivery_health(
+            mock_async_session,
+            stuck_after=timedelta(hours=24),
+            window=timedelta(hours=24),
+        )
+
+        assert health.deliveries_have_stopped is False
+        assert health.oldest_stuck_requested_at is None
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_a_failed_resolution_still_counts_as_the_leg_working(
+        self, mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Resolutions are counted by ``resolved_at``, with no status filter.
+
+        A KWS delivery that reports a REFUSED verification is still a delivery
+        that reached us, so it is evidence the inbound leg works and must
+        clear the alarm exactly as a success does. Asserted on the compiled
+        parameters because the property is the ABSENCE of a status filter on
+        that term: only ``sent`` (from the stuck filter) and the environment
+        may be bound.
+        """
+        monkeypatch.setattr(settings, "kws_environment", "production")
+        _delivery_counts(
+            mock_async_session, stuck=0, sent_in_window=0, resolved_in_window=0
+        )
+
+        await verification_delivery_health(
+            mock_async_session,
+            stuck_after=timedelta(hours=24),
+            window=timedelta(hours=24),
+        )
+
+        bound = list(
+            mock_async_session.execute.await_args.args[0].compile().params.values()
+        )
+        assert "verified" not in bound
+        assert "failed" not in bound
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_the_query_is_scoped_to_this_kws_environment(
+        self, mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Staging's Test rows must not mask or manufacture a production alarm.
+
+        The two environments have separate credentials and separate webhook
+        deliveries, so a Test resolution is no evidence at all that
+        production's inbound leg works. Scoping matches
+        ``open_attempt_started_at``.
+        """
+        monkeypatch.setattr(settings, "kws_environment", "production")
+        _delivery_counts(
+            mock_async_session, stuck=0, sent_in_window=0, resolved_in_window=0
+        )
+
+        await verification_delivery_health(
+            mock_async_session,
+            stuck_after=timedelta(hours=24),
+            window=timedelta(hours=24),
+        )
+
+        bound = list(
+            mock_async_session.execute.await_args.args[0].compile().params.values()
+        )
+        assert "production" in bound
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_null_counts_coerce_to_zero(
+        self, mock_async_session: AsyncMock
+    ) -> None:
+        """``COUNT`` cannot return NULL, but the conjunction must not raise if it does.
+
+        ``None > 0`` raises rather than evaluating false, which would turn a
+        surprising row into an exception inside a health check whose whole job
+        is to report rather than to fail.
+        """
+        _delivery_counts(
+            mock_async_session,
+            stuck=None,  # pyright: ignore[reportArgumentType]
+            sent_in_window=None,  # pyright: ignore[reportArgumentType]
+            resolved_in_window=None,  # pyright: ignore[reportArgumentType]
+        )
+
+        health = await verification_delivery_health(
+            mock_async_session,
+            stuck_after=timedelta(hours=24),
+            window=timedelta(hours=24),
+        )
+
+        assert health.stuck == 0
+        assert health.deliveries_have_stopped is False

@@ -1620,3 +1620,262 @@ class TestCheckExternalServiceExceptBranch:
 
         assert internal_message not in (result.error or "")
         assert result.error == "dependency unavailable"
+
+
+# ---------------------------------------------------------------------------
+# KWS parent-verification delivery health
+# ---------------------------------------------------------------------------
+
+
+def _fake_health(
+    *, stuck: int, sent_in_window: int, resolved_in_window: int, oldest: datetime | None
+) -> Any:
+    """Build a real VerificationDeliveryHealth, not a mock of one.
+
+    The check branches on ``deliveries_have_stopped``, which is the whole
+    conjunction; substituting a mocked boolean would leave the branch under
+    test reading a value this suite invented rather than the one the service
+    computes.
+    """
+    from cyo_adventure.consent.service import VerificationDeliveryHealth
+
+    return VerificationDeliveryHealth(
+        stuck=stuck,
+        oldest_stuck_requested_at=oldest,
+        sent_in_window=sent_in_window,
+        resolved_in_window=resolved_in_window,
+    )
+
+
+class TestCheckKwsVerification:
+    """Tests for the check_kws_verification() readiness helper (ADR-018 D1).
+
+    The failure this watches for leaves no log line: on 2026-08-09 a Cloudflare
+    custom rule blocked four KWS webhook retries at the edge, so the origin saw
+    zero POSTs and every log-based view was identical to "the vendor sent
+    nothing". Publishing the table-derived signal here is what turns that
+    invisible outage into something a probe can see.
+    """
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_reports_unconfigured_without_touching_the_database(self) -> None:
+        """A tier with the flag off pays nothing for a feature it does not run.
+
+        Asserted on the session factory as well as the state: a check that
+        queried first and classified afterwards would put a per-probe round
+        trip on every deployment that has never enabled KWS.
+        """
+        from cyo_adventure.api.health import check_kws_verification
+
+        get_session = Mock()
+        with (
+            patch(
+                "cyo_adventure.api.health.settings.kws_verification_required", new=False
+            ),
+            patch("cyo_adventure.core.database.get_session", get_session),
+        ):
+            result = await check_kws_verification()
+
+        assert result.name == "kws_verification"
+        assert result.status is True
+        assert result.state == "unconfigured"
+        assert result.error is None
+        assert get_session.called is False
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_reports_ok_while_resolutions_are_still_arriving(self) -> None:
+        """Open attempts alongside fresh resolutions are the steady state."""
+        from cyo_adventure.api.health import check_kws_verification
+
+        mock_session = AsyncMock(spec=AsyncSession)
+
+        @asynccontextmanager
+        async def _fake_get_session() -> AsyncGenerator[AsyncMock, None]:
+            yield mock_session
+
+        with (
+            patch(
+                "cyo_adventure.api.health.settings.kws_verification_required", new=True
+            ),
+            patch(
+                "cyo_adventure.core.database.get_session",
+                side_effect=_fake_get_session,
+            ),
+            patch(
+                "cyo_adventure.consent.service.verification_delivery_health",
+                AsyncMock(
+                    return_value=_fake_health(
+                        stuck=3,
+                        sent_in_window=5,
+                        resolved_in_window=2,
+                        oldest=datetime.now(UTC) - timedelta(days=2),
+                    )
+                ),
+            ),
+        ):
+            result = await check_kws_verification()
+
+        assert result.status is True
+        assert result.state == "ok"
+        assert result.error is None
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_reports_degraded_with_the_counts_an_operator_needs(self) -> None:
+        """The degraded message must name what stopped, not just that something did.
+
+        Whoever reads this alarm has to decide between "the vendor is down",
+        "our edge is blocking them", and "nobody used the tier today", and the
+        three counts plus the oldest timestamp are what separates those. A
+        bare "degraded" would send them back to the logs, which is exactly
+        where this failure mode leaves no trace.
+        """
+        from cyo_adventure.api.health import check_kws_verification
+
+        mock_session = AsyncMock(spec=AsyncSession)
+        oldest = datetime(2026, 8, 9, 12, 0, tzinfo=UTC)
+
+        @asynccontextmanager
+        async def _fake_get_session() -> AsyncGenerator[AsyncMock, None]:
+            yield mock_session
+
+        with (
+            patch(
+                "cyo_adventure.api.health.settings.kws_verification_required", new=True
+            ),
+            patch(
+                "cyo_adventure.core.database.get_session",
+                side_effect=_fake_get_session,
+            ),
+            patch(
+                "cyo_adventure.consent.service.verification_delivery_health",
+                AsyncMock(
+                    return_value=_fake_health(
+                        stuck=4,
+                        sent_in_window=4,
+                        resolved_in_window=0,
+                        oldest=oldest,
+                    )
+                ),
+            ),
+        ):
+            result = await check_kws_verification()
+
+        assert result.status is False
+        assert result.state == "degraded"
+        assert result.error is not None
+        assert "4" in result.error
+        assert oldest.isoformat() in result.error
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_a_query_failure_degrades_without_leaking_the_exception(self) -> None:
+        """A broken check reports degraded, and says nothing about why.
+
+        Matches check_database and check_generation_queue: /health/ready is
+        unauthenticated, so a driver message naming a host, role, or schema
+        would be published to anyone who asks.
+        """
+        from cyo_adventure.api.health import check_kws_verification
+
+        internal_message = "connection to server at 10.0.0.5 failed: role cyo_app"
+
+        @asynccontextmanager
+        async def _failing_get_session() -> AsyncGenerator[None, None]:
+            raise RuntimeError(internal_message)
+            yield  # pragma: no cover
+
+        with (
+            patch(
+                "cyo_adventure.api.health.settings.kws_verification_required", new=True
+            ),
+            patch(
+                "cyo_adventure.core.database.get_session",
+                side_effect=_failing_get_session,
+            ),
+        ):
+            result = await check_kws_verification()
+
+        assert result.status is False
+        assert result.state == "degraded"
+        assert internal_message not in (result.error or "")
+        assert "10.0.0.5" not in (result.error or "")
+
+
+class TestReadinessKwsDoesNotGate:
+    """A degraded kws_verification check is reported but never flips readiness.
+
+    Only ``database`` is in ``_CRITICAL_READINESS_CHECKS``. A blocked webhook
+    leg stops new parents completing verification; it does not stop a child
+    reading a published book, so pulling API pods out of the load-balancer
+    rotation would convert a consent-intake outage into a whole-app outage.
+    """
+
+    @pytest.mark.unit
+    def test_readiness_returns_200_when_kws_degraded_and_database_healthy(
+        self,
+    ) -> None:
+        """A degraded kws_verification is published in the body but still 200."""
+        _, fake_get_session = _fake_session_with_queue_counts(0, 0, 0)
+
+        app = _make_app()
+        with (
+            patch(
+                "cyo_adventure.api.health.settings.kws_verification_required", new=True
+            ),
+            patch(
+                "cyo_adventure.core.database.get_session",
+                side_effect=fake_get_session,
+            ),
+            patch("cyo_adventure.api.health.settings.rate_limit_backend", "memory"),
+            patch(
+                "cyo_adventure.consent.service.verification_delivery_health",
+                AsyncMock(
+                    return_value=_fake_health(
+                        stuck=4,
+                        sent_in_window=4,
+                        resolved_in_window=0,
+                        oldest=datetime(2026, 8, 9, 12, 0, tzinfo=UTC),
+                    )
+                ),
+            ),
+        ):
+            client = TestClient(app, raise_server_exceptions=True)
+            response = client.get("/api/v1/health/ready")
+
+        body = response.json()
+        assert response.status_code == 200
+        assert body["status"] == "ok"
+        assert body["checks"]["kws_verification"]["status"] is False
+        assert body["checks"]["kws_verification"]["state"] == "degraded"
+
+    @pytest.mark.unit
+    def test_the_check_is_published_even_when_the_flag_is_off(self) -> None:
+        """The key is always present, so a probe can tell "off" from "missing".
+
+        A probe that keys on the check's absence cannot distinguish a tier
+        that has KWS switched off from a build where the check was dropped,
+        and the second of those is how a monitoring gap ships unnoticed.
+        """
+        _, fake_get_session = _fake_session_with_queue_counts(0, 0, 0)
+
+        app = _make_app()
+        with (
+            patch(
+                "cyo_adventure.api.health.settings.kws_verification_required", new=False
+            ),
+            patch(
+                "cyo_adventure.core.database.get_session",
+                side_effect=fake_get_session,
+            ),
+            patch("cyo_adventure.api.health.settings.rate_limit_backend", "memory"),
+        ):
+            client = TestClient(app, raise_server_exceptions=True)
+            response = client.get("/api/v1/health/ready")
+
+        body = response.json()
+        assert response.status_code == 200
+        assert body["checks"]["kws_verification"]["state"] == "unconfigured"
+        assert body["checks"]["kws_verification"]["status"] is True

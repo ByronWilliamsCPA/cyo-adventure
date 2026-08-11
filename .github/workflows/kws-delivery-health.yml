@@ -1,0 +1,214 @@
+# Scheduled probe for the KWS parent-verification INBOUND leg (ADR-018 D1).
+#
+# Why this exists as a scheduled job rather than a log-based alert rule: on
+# 2026-08-09 a Cloudflare custom rule blocked four KWS webhook retries at the
+# edge. The origin logged zero POSTs, so every log-derived view of that outage
+# was byte-identical to "the vendor never sent anything". There was no line to
+# alert on and no absence a log rule could name. The only trace such an outage
+# leaves is verification rows that never leave `sent`, which is a fact about
+# the DATABASE, not about the logs.
+#
+# The backend publishes that fact as the non-gating `kws_verification` readiness
+# check (src/cyo_adventure/api/health.py::check_kws_verification), computed from
+# the three-term conjunction in consent/service.py::VerificationDeliveryHealth.
+# This workflow is only the alarm bell: it reads the already-public, already-
+# unauthenticated readiness endpoint. That is deliberate, and is why this job
+# holds NO database credential: one detection implementation, one place it can
+# be wrong, and no second copy of the prod DSN to leak.
+#
+# Security note: no step interpolates any `github.event.*` value. The only
+# expressions used are matrix values and secrets, and both reach the shell
+# through `env:` rather than through `run:` interpolation.
+#
+# ---------------------------------------------------------------------------
+# Secrets (both environment-scoped, both already used by the e2e tiers):
+# ---------------------------------------------------------------------------
+#
+#   E2E_STAGING_BASE_URL   (`staging` environment) Staging origin. No literal
+#                          fallback exists, so an absent secret SKIPS the
+#                          staging leg with a visible notice.
+#   E2E_PROD_BASE_URL      (`production` environment) Optional; falls back to
+#                          the public production origin, matching
+#                          frontend/e2e-prod/support/prod-env.ts.
+#
+# Failure alerting mirrors supabase-backup.yml and notification-digest.yml:
+# file or comment on a labelled `ci-failure` issue, with a distinct marker so
+# the three never collide. Convention: docs/operations/runbook.md section 7.
+name: KWS delivery health
+
+on:
+  schedule:
+    # 11:00 UTC daily, spreading scheduled jobs across the day (supabase-backup
+    # 08:00, notification-digest 09:00, e2e-staging 13:00). Cadence is matched
+    # to the check's own 24h staleness threshold: probing more often cannot
+    # surface an outage sooner, because the underlying counts only move once a
+    # row ages past that threshold.
+    - cron: "0 11 * * *"
+  workflow_dispatch: {}
+
+permissions: {}
+
+concurrency:
+  # Read-only against a public endpoint, so an interrupted run loses nothing
+  # and the freshest answer is the only one worth having.
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  probe:
+    name: Probe ${{ matrix.tier }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: ${{ matrix.tier }}
+    permissions: {}
+    strategy:
+      # One tier must not mask the other: as of 2026-08-10 KWS is wired on
+      # staging (Test environment) only, so a matrix that stopped at the first
+      # failure could report on the tier that has nothing configured and never
+      # reach the one that does.
+      fail-fast: false
+      matrix:
+        tier: [staging, production]
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Read the readiness check
+        env:
+          TIER: ${{ matrix.tier }}
+          # Staging has no public literal to fall back to; production does.
+          BASE_URL: >-
+            ${{ matrix.tier == 'staging'
+                && secrets.E2E_STAGING_BASE_URL
+                || (secrets.E2E_PROD_BASE_URL || 'https://cyo.williamshome.family') }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${BASE_URL}" ]; then
+            echo "::notice::${TIER}: no base URL configured, nothing probed."
+            exit 0
+          fi
+
+          # Canonical /api/v1 path, not the un-prefixed loopback alias, which
+          # nginx answers with 404 from outside the container (UW-L04).
+          if ! body=$(curl -fsS --max-time 30 --retry 3 --retry-delay 5 \
+                        "${BASE_URL}/api/v1/health/ready"); then
+            echo "::error::${TIER}: /api/v1/health/ready was unreachable or returned a" \
+                 "non-2xx status. That is either a readiness 503 (the database check" \
+                 "gates the status code) or an edge/ingress problem; it says nothing" \
+                 "about KWS either way."
+            exit 1
+          fi
+
+          state=$(printf '%s' "${body}" | jq -r '.checks.kws_verification.state // "missing"')
+          detail=$(printf '%s' "${body}" | jq -r '.checks.kws_verification.error // ""')
+
+          case "${state}" in
+            ok)
+              echo "::notice::${TIER}: KWS deliveries are still resolving."
+              ;;
+            unconfigured)
+              # Not a failure: a tier with KWS_VERIFICATION_REQUIRED off is not
+              # running the flow, so there is no inbound leg to be broken. It is
+              # still worth saying out loud, because "unconfigured" and "healthy"
+              # look identical to anyone reading only the job's green tick.
+              echo "::notice::${TIER}: KWS verification is switched off here; nothing to probe."
+              ;;
+            degraded)
+              echo "::error::${TIER}: KWS deliveries appear to have STOPPED. ${detail}"
+              exit 1
+              ;;
+            missing)
+              # The check itself is gone from the response. Distinguished from
+              # `unconfigured` on purpose: a probe that treats an absent key as
+              # benign is how a monitoring gap ships unnoticed.
+              echo "::error::${TIER}: the readiness response carries no kws_verification" \
+                   "check at all. Either the deployed build predates it or the check was" \
+                   "removed; nothing is watching the inbound leg on this tier."
+              exit 1
+              ;;
+            *)
+              echo "::error::${TIER}: unrecognised kws_verification state '${state}'."
+              exit 1
+              ;;
+          esac
+
+  alert:
+    name: Alert on failure
+    needs: probe
+    if: failure()
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      issues: write
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: File or comment on the pinned issue
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const marker = '[kws-delivery-health]'
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
+            const today = new Date().toISOString().slice(0, 10)
+
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'ci-failure',
+              per_page: 100,
+            })
+            const existing = issues.find((issue) => issue.title.startsWith(marker))
+
+            if (existing) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                body: `KWS delivery-health probe failed again on ${today}. Run: ${runUrl}`,
+              })
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `${marker} KWS parent-verification deliveries may have stopped`,
+                labels: ['ci-failure'],
+                body: [
+                  'The scheduled `KWS delivery health` workflow',
+                  '(`.github/workflows/kws-delivery-health.yml`) failed. Read the job log first:',
+                  'it names the tier and prints which of the four outcomes fired.',
+                  '',
+                  '**If the state was `degraded`**, verification emails are going out and',
+                  'nothing is coming back. Parents are stuck on the wait screen and cannot',
+                  'create child profiles. Check, in this order:',
+                  '',
+                  '1. **The edge, before the origin.** A Cloudflare custom rule blocking the',
+                  '   webhook path leaves ZERO origin log lines, so an empty origin log is',
+                  '   evidence of nothing. Read the Cloudflare Security Events view for the',
+                  '   webhook path, not the application logs.',
+                  '2. The KWS status page and the vendor console, for a sending-side outage.',
+                  '3. `kws_verification` rows still in `sent`: their `requested_at` spread',
+                  '   dates the start of the outage.',
+                  '',
+                  '**If the state was `missing`**, the deployed build has no `kws_verification`',
+                  'readiness check, so nothing is watching that tier. Redeploy, or confirm the',
+                  'check was not removed.',
+                  '',
+                  '**If the endpoint was unreachable**, this is not a KWS finding at all: either',
+                  'readiness 503d on the database check or the ingress is down. Triage that first.',
+                  '',
+                  `First failing run: ${runUrl}`,
+                  `Date: ${today}`,
+                  '',
+                  'This issue stays open and accumulates one comment per failing run until',
+                  'someone resolves the underlying problem and closes it; the next failure',
+                  'after that opens a fresh issue.',
+                ].join('\n'),
+              })
+            }

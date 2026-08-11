@@ -35,7 +35,7 @@ unresolved and lets KWS retry into it.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING, Literal
 
 from sqlalchemy import func, select
@@ -450,6 +450,124 @@ async def attempts_since(
         )
     )
     return counted or 0
+
+
+@dataclass(frozen=True, slots=True)
+class VerificationDeliveryHealth:
+    """Four counts that, together, say whether resolutions are still arriving.
+
+    None of them means anything alone, which is the reason this is one object
+    and one query rather than four call sites. See
+    :func:`verification_delivery_health` for what the combination is for.
+
+    Attributes:
+        stuck: Attempts still in ``sent`` whose ``requested_at`` is older than
+            the caller's staleness threshold.
+        oldest_stuck_requested_at: When the oldest of those was sent, or None
+            when ``stuck`` is 0. Reported so an alert can say how long the
+            longest-waiting parent has been waiting.
+        sent_in_window: Attempts started inside the caller's window,
+            regardless of status. This is the "are we still emailing parents"
+            term.
+        resolved_in_window: Attempts a delivery resolved inside the window,
+            verified or failed alike. A ``failed`` resolution still proves the
+            inbound leg works, which is what this counts.
+    """
+
+    stuck: int
+    oldest_stuck_requested_at: datetime | None
+    sent_in_window: int
+    resolved_in_window: int
+
+    @property
+    def deliveries_have_stopped(self) -> bool:
+        """Whether the inbound leg looks broken rather than merely quiet.
+
+        All three terms are load-bearing, and each one excludes a specific
+        false positive that the other two let through:
+
+        - ``resolved_in_window == 0`` alone fires on any quiet period.
+        - ``stuck`` alone fires on ordinary abandonment. A parent who never
+          opens the email leaves a ``sent`` row behind forever, and that is
+          normal behaviour, not an incident.
+        - ``sent_in_window`` is what separates the two. An abandoned attempt
+          from last month sits stuck with no new traffic beside it; a broken
+          inbound leg shows fresh sends going out while nothing at all comes
+          back.
+        """
+        return (
+            self.stuck > 0 and self.sent_in_window > 0 and self.resolved_in_window == 0
+        )
+
+
+async def verification_delivery_health(
+    session: AsyncSession,
+    *,
+    stuck_after: timedelta,
+    window: timedelta,
+) -> VerificationDeliveryHealth:
+    """Measure whether KWS deliveries are still reaching us at all.
+
+    #CRITICAL: external resources: this exists because the failure it watches
+    for produces NO log line to alert on. On 2026-08-09 a Cloudflare custom
+    rule blocked four KWS webhook retries at the edge; the origin recorded
+    zero POSTs, so every log-based check read exactly like a period in which
+    KWS had simply not sent anything. The only trace such an outage leaves in
+    this system is rows that stay ``sent``, which is why the alarm has to be a
+    query over the table rather than a rule over the logs.
+    #VERIFY: tests/unit/test_kws_verification_service.py::
+    TestVerificationDeliveryHealth covers the healthy, stopped, abandoned and
+    quiet cases; api/health.py::check_kws_verification publishes it.
+
+    Scoped to ``settings.kws_environment``, matching
+    :func:`open_attempt_started_at`: each deployment watches the environment
+    it is itself configured for, so staging's Test rows never mask or inflate
+    production's, and the two tiers alarm independently.
+
+    #ASSUME: data-integrity: a resolution is counted by ``resolved_at`` being
+    non-NULL inside the window rather than by status, which is sound only
+    because ``ck_kws_verification_resolution_pairing`` makes
+    ``status = 'sent'`` and ``resolved_at IS NULL`` the same condition at
+    rest. Without that CHECK this would need a status filter as well.
+    #VERIFY: tests/unit/test_kws_verification_model.py::
+    test_resolution_pairing_is_constrained_at_rest.
+
+    Args:
+        session: The caller's session. This function only reads.
+        stuck_after: How old an unresolved attempt must be to count as stuck.
+        window: How far back to look for sends and resolutions.
+
+    Returns:
+        VerificationDeliveryHealth: The four counts, in one round trip.
+    """
+    now = datetime.now(UTC)
+    stuck_cutoff = now - stuck_after
+    window_start = now - window
+    is_stuck = (
+        KwsVerification.status == KWS_VERIFICATION_STATUS_SENT,
+        KwsVerification.requested_at < stuck_cutoff,
+    )
+    result = await session.execute(
+        select(
+            func.count().filter(*is_stuck).label("stuck"),
+            func.min(KwsVerification.requested_at).filter(*is_stuck).label("oldest"),
+            func.count()
+            .filter(KwsVerification.requested_at >= window_start)
+            .label("sent_in_window"),
+            func.count()
+            .filter(KwsVerification.resolved_at >= window_start)
+            .label("resolved_in_window"),
+        )
+        .select_from(KwsVerification)
+        .where(KwsVerification.kws_environment == settings.kws_environment)
+    )
+    row = result.one()
+    return VerificationDeliveryHealth(
+        stuck=int(row.stuck or 0),
+        oldest_stuck_requested_at=row.oldest,
+        sent_in_window=int(row.sent_in_window or 0),
+        resolved_in_window=int(row.resolved_in_window or 0),
+    )
 
 
 # Three values rather than a bool: "no attempt" and "an attempt nobody has
