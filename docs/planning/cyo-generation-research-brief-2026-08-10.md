@@ -510,7 +510,8 @@ Cataloguing what each intervention actually varied makes the gap embarrassing.
 | S8 | edges between scenes | fixed | fixed |
 | S9 | what each scene is *for*, harder | fixed | fixed |
 
-**Scene identity and action semantics were held constant in all ten designs.** They were
+**Scene identity and action semantics were held constant in the eight designs that had an authored
+skeleton, S2 through S9.** S0 and S1 had none. They were
 constant by construction from S2 onward, because a human-authored skeleton names each scene
 at authoring time and every later mechanism was built to vary things *around* that.
 
@@ -579,7 +580,7 @@ alongside as quality guards, so an intervention cannot buy distinctness by degra
 - Control and treatment were rated by *separate* model-evaluator instances; inter-model agreement is
   unmeasured. Differences under one full position should not be treated as signal.
 - The pilot graph is a 26-node outlier, chosen because it alone had both a validated contract
-  and a prior baseline. The catalog median is 151 nodes.
+  and a prior baseline. The catalog median is 151 nodes across all 61 skeletons.
 - The rater compares books back to back: the condition least favorable to formula tolerance.
 - Author and rater shared a model family, engaging the self-preference effect in [37].
 - Several automatic metrics were later shown uninformative or miscalibrated (3.8).
@@ -873,28 +874,31 @@ All entries verified against a primary source.
 
 ### How to read Part II
 
-It has grown to fifteen sections across two working days. If you are reviewing rather than
-re-reading, **the four that carry the argument are 14, 16d, 16l and 16m**, and the rest are
-supporting or negative results.
+It has grown across three working days: fifteen sections in the 16-family, twenty-four top-level
+sections in Parts II and III together. If you are reviewing rather than re-reading, **the four that
+carry the argument are 14, 16d, 16l and 16m**, and the rest are supporting or negative results.
+Part III (19 to 26) reports what a second round of reviews caused us to run, and corrects several
+figures in this part.
 
 | | Section | Result |
 | --- | --- | --- |
-| **The instrument** | 14, 15 | Our decision-signature vocabulary ranks book pairs **backwards** against readers. The property lives in the binding, not in the plan. |
+| **The instrument** | 14, 15 | Our decision-signature vocabulary ranks book pairs **backwards against the model evaluators who read the finished books**. This is a disagreement between two model-based measures, not between a metric and a reader. The property lives in the binding, not in the plan. |
 | | 16e | Solution transfer *is* computable from a plan, but only its device-identity half generalises. |
-| | **16m** | **An audit of every rating cell we hold: one instrument item has never varied in 12 of 12, and the item that carried every result has now saturated too.** |
+| | **16m** | **An audit of every rating cell we hold: one instrument item has never varied in 12 of 12, and the item that carried every result reached its ceiling in the one uncontaminated round.** |
 | **The reuse problem** | **16d** | **Books built from one shared plan converge catastrophically. This was our biggest surprise.** |
-| | 16g.1 | Both cheap repairs fail. The leak has five prose channels and we had repaired one. |
+| | 16g.1 | Both cheap repairs fail. 16g.1 identifies at least four prose channels and both repairs addressed one; an earlier version of this row said five, which that section does not support. |
 | | 16j | Independence comes from what an author is *not shown*, not from what it is told. 126.7 to 1.0 per 1000. |
 | | **16l** | **Resolved, with the mechanism restated. A plan can be shared without converging: 13.6 to 2.3 from deleting 422 words of fact glosses. The rule is not "no free text at all"; the passing kernel still carries 473 words. See the correction in 16l.** |
 | **Scale and capital** | 16c, 16f | Narrative contracts exist for 2 of 61 skeletons; that, not skeleton count, is the binding cost. |
-| | 16i | A model builds structurally valid graphs unaided, 6 of 6, and fails only rules we never gave it. |
-| **Negative results** | 16b, 16h, 16k | Obligation delivery is fine; "graphs are worlds" is refuted for 18 of 21 graphs; stake economics returns a null. |
+| | 16i | A model builds structurally valid graphs unaided, 6 of 6, and fails only rules we never gave it. **The same run's negative: the six are the same story.** |
+| **Negative results** | 16b, 16h, 16k | Obligation delivery mostly holds, with 5 of 49 partial and one a genuine reader-facing defect; "graphs are worlds" is refuted for 18 of 21 graphs; stake economics returns a null. |
 | **Our own thresholds** | **16n, 16o** | **Every guard, every threshold, which we inherited, which we invented, and a sensitivity check on the one the headline rests on.** |
 
 **The headline has changed since the first circulation.** Section 18 then asked you to resolve a
 dilemma: a plan must reach the bound device to represent what readers respond to, but every shared
 sentence makes books converge. **16l resolves it**, and the answer is duller and better than we
-expected: share structure and identifiers, share no prose, and generate the rest per book.
+expected: share structure and identifiers, do not share the prose attached to the fact vocabulary
+the nodes reference, and generate the rest per book.
 
 ## 11. What we did with the reviews
 
@@ -931,7 +935,9 @@ slot, so they reach the author as fixed text from an unrelated book. The author 
 thirty-five labels and still stayed inside the frame it had been handed, turning "force the hands
 by guesswork" into "force the hands into place instead" for a story with no clock in it. Every
 guard passed. Shared four-gram density between the two books hit 28.8 per thousand words, the
-highest we have ever measured, with four choice menus opening on identical wording. Rebuilding the
+highest we had measured at that point in the programme, with four choice menus opening on identical
+wording. Later sections exceed it: 50.1, 59.2 and 63.8 all appear below, so 28.8 is not the
+document's maximum and an earlier version of this sentence wrongly implied it was. Rebuilding the
 shell so that every author-controlled string is an explicit blank took the same pair to 8.9 and
 zero.
 
@@ -986,7 +992,7 @@ reported that two of them saturate: with all books on one graph, "same kinds of 
 "repeated sequence" are answered before a word is read. Both then proposed **the same missing
 question, without conferring**: *did solving the first book hand you the answer to the second?*
 
-We added it. On first use the two structural questions saturated exactly as predicted, contributing
+We added it. On first use the sequence question saturated exactly as predicted, contributing
 nothing, and the new question separated the pairs cleanly and consistently. Anyone building an
 instrument for this defect should start there rather than with action taxonomies.
 
@@ -1231,8 +1237,8 @@ labels included, which is how this round was originally run. Scored body-only, a
 section is, the pilot's clean pair is 2.9. The two figures are the same books under two scopes, and
 16l states the scope we standardised on.)*
 
-Between forty and fifty choice menus open with the same words in two books whose authors could not
-see each other's work.
+Fifty-one choice menus of 131 open with the same words in two books whose authors could not see
+each other's work, against 41 for the treatment pair.
 
 The obvious explanation is that our contract was lexically over-prescriptive, handing every author
 the same verbs. **We measured it and it is false.** Labels reuse a distinctive word from their own
@@ -1433,10 +1439,10 @@ hub is removed:
 
 | | Spoke sizes, regions containing endings |
 | --- | --- |
-| the-skyrail-heist, 246 nodes, **10-13** | **83, 82, 77** |
-| the-year-of-four-banners, 212 nodes | 83, 70, 56 |
-| the-tricameral-city, 240 nodes | 100, 73, 64 |
-| the-tenfold-siege, 677 nodes | **656**, 3, 3, 3, 3, 3 |
+| graph W, 246 nodes, **10-13** | **83, 82, 77** |
+| graph X, 212 nodes | 83, 70, 56 |
+| graph Y, 240 nodes | 100, 73, 64 |
+| graph Z, 677 nodes | **656**, 3, 3, 3, 3, 3 |
 | *(17 others)* | same shape: one giant region, remainder 1 to 4 nodes |
 
 **Eighteen of twenty-one put nearly every node in a single region after the hub**, with the rest
@@ -1502,7 +1508,8 @@ something that actively pushes candidates apart. Sharing less will not do it and
 If you are proposing a repulsion mechanism, the premise is a target it must include.
 
 **Limits, fixed before we looked.** Six graphs, one model, 27 to 35 nodes against a catalog median
-of 149. This is the easy end and licenses nothing about production scale.
+of 149 for the pilot's own age band; the median across all 61 skeletons is 151. This is the easy
+end and licenses nothing about production scale.
 
 ## 16j. How to get an independently worded plan: do not show the author another one
 
@@ -1603,7 +1610,7 @@ control where the same act jams reversibly. That is one node in twenty-six, whic
 of the effect the scores show. If stake economics is worth anything, our evidence says it is the
 irreversibility rather than the clock or the carrying limit.
 
-## 16l. The reuse dilemma, resolved: share the structure, share no prose
+## 16l. The reuse dilemma, resolved: share the structure, not the fact vocabulary's prose
 
 16d found that books written from one shared plan converge at three to fifteen times our budget.
 16g.1 found that both cheap repairs fail. This is the resolution, and it took two runs because the
@@ -1615,8 +1622,10 @@ hints, the bound devices) generated per book. The structural half looked safe to
 because of a weakness we had already documented: it provably does not determine what decision a fork
 asks, so sharing it cannot make the decisions repeat.
 
-**First run: it failed, at 12.9 per 1000**, which is exactly where "tell the author to diverge from
-the shared plan" landed. Generating the decisional half per book bought nothing measurable.
+**First run: it failed, at 13.6 per 1000**, which is the same neighbourhood as "tell the author to
+diverge from the shared plan". An earlier version of this sentence said 12.9 and called the match
+exact; 12.9 was the superseded figure and the coincidence it rested on does not survive the
+correction. Generating the decisional half per book bought nothing measurable.
 
 **Why, and it was our error rather than the idea's.** We traced every shared four-gram to the field
 it drew on. **62 percent came from the one prose our "wordless" structural half still carried: 32
@@ -1632,17 +1641,43 @@ the two books, per 1000. **Scope: node bodies only.**
 
 Choice labels are excluded, and they have to be. The two conditions differ in how many label words
 they contain, 160 against 182 on average, against bodies of 2,894 and 2,801, so a label-inclusive
-denominator moves the rate even when labels share no grams at all. That is not hypothetical: under
-the label-inclusive scope the two repair conditions swap places, which is why we report them as
-indistinguishable rather than ranking them.
+denominator moves the rate. Under the label-inclusive scope the two repair conditions swap places,
+which is why we report them as indistinguishable rather than ranking them.
+
+**Remeasured, because a reviewer argued the swap was arithmetically impossible.** It is not, and the
+reason it is not corrects an error in this paragraph's own reasoning. The swap does not come from
+the denominator "even when labels share no grams at all"; it comes from labels carrying shared grams:
+
+| condition | bodies only | bodies + labels |
+| --- | ---: | ---: |
+| wording flattened | 11.75, 34 shared grams | **13.43, 41 shared grams** |
+| told to diverge | **13.57, 38 shared grams** | 12.40, 37 shared grams |
+
+Labels add seven shared grams to one condition and remove one from the other, which reverses the
+order. An argument that holds the numerator fixed and moves only the denominator will conclude the
+swap cannot happen; the numerator is what moves.
+
+**A figure we cannot reconcile, reported rather than quietly dropped.** This recomputation gives
+11.75 and 13.57 body-only, against the 11.4 and 12.9 published above and throughout this document.
+Neither published value reproduces at either scope under the definition stated at the head of this
+section. The ordering and the conclusion are unaffected, since both conditions remain far above
+budget and indistinguishable from each other, but the two numbers themselves are not currently
+derivable from the artifacts and should be treated as unverified until the original computation is
+recovered.
 
 **A second measure appears in these tables and is not the same thing.** "Identical choice menus"
 counts, for each node and each choice position, whether two books' labels begin with the same two
 content-bearing words. It is a prefix match on a per-position basis, not an overlap over the label
-corpus. A pair of books can therefore share 41 menu openings while contributing **zero** shared
+corpus. A pair of books can therefore share many menu openings while contributing few or no shared
 four-grams from labels, because two shared content words are not four consecutive words: "Ask the
 warden" and "Ask the bell-ringer" share an opening and no four-gram. The two figures measure
 different surfaces and both are reported because a reader meets both.
+
+**How few is a per-pair fact, not a general one, and an earlier version of this section wrongly
+generalised it.** Measured on the two stratified arms: labels contribute **zero** shared four-grams
+to the glossed pair and **three** to the bare-names pair. The claim "labels contribute no shared
+four-grams" is therefore true of one arm and false of the other, and it must not be quoted as a
+property of the corpus.
 
 **Correcting our own table.** Two rows below were previously quoted at the wrong scope, with labels
 included where every other row excluded them. Recomputed consistently, all rows are body-only:
@@ -1663,6 +1698,22 @@ The two corrected figures are the stratified designs: with glosses 13.6 rather t
 first published, and without them 2.3 rather than 3.2. **The direction and the conclusion are
 unchanged under either scope**, which we checked before correcting rather than after, but the
 published numbers were mixed-scope and that was our error, caught in review.
+
+**A reviewer then pointed out that one stated cause cannot produce both moves, and was right.**
+Dropping label words from a denominator can only raise a rate, so 12.9 to 13.6 is a clean rescale
+while 2.3 is a 28 percent *fall* that no rescale explains. We remeasured both arms at both scopes
+rather than defend the sentence:
+
+| | bodies + labels | bodies only | what moved |
+| --- | ---: | ---: | --- |
+| glossed pair | 12.86, 40 shared grams | **13.59**, 40 shared grams | denominator only |
+| bare-names pair | 3.19, 10 shared grams | **2.33**, 7 shared grams | **numerator and denominator** |
+
+Both published figures reproduce. What was wrong is the explanation: the bare-names pair falls
+because **three of its shared four-grams live in choice labels**, and removing labels removes them,
+which outweighs the smaller denominator. The glossed pair has no such grams and moves by rescale
+alone. Calling both "the same scope correction" was sloppy, and it is the sentence rather than the
+arithmetic that needed fixing.
 
 **13.6 to 2.3 from deleting 422 words**, landing under budget and below the floor. This is the first
 artifact in the programme to share a plan and still be indistinguishable, on this measure, from books
@@ -1843,20 +1894,29 @@ carries no weights and no taxonomy. We would ask you to read the weighted score 
 
 ### Does the headline depend on any threshold? We checked
 
-The claim in 16l is that a plan can be shared if the shared half carries no prose. It is stated
-against the 4.0 budget, so we varied the budget:
+The claim in 16l is that the prose attached to a plan's fact vocabulary cannot be shared. It is
+stated against the 4.0 budget, so we varied the budget. **This table was recomputed on 2026-08-11**;
+the version first published tested the superseded 3.2 and 12.9 and three of its four rows were false
+under the corrected pair.
 
 | Budget | Does "the stratified plan works and the glossed one fails" still hold? |
 | --- | --- |
-| 2.5 | no, nothing passes |
-| 3.0 | no |
-| **3.2 to 12.8** | **yes** |
-| 13.0 and above | no, the failing designs start passing |
+| below 2.3 | no, nothing passes |
+| 2.5 | **yes**, 2.3 passes and 13.6 fails |
+| 3.0 | **yes** |
+| **2.4 to 13.5** | **yes** |
+| 13.6 and above | no, the failing design starts passing |
 
-**The conclusion survives every budget across a fourfold range**, so it is not an artifact of the
-number we were handed. And there is a stronger statement that needs no budget at all: at 3.2 the
-stratified pair sits **below our measured floor of 3.3**, meaning it is not distinguishable from two
-books that share nothing whatsoever. We would rather you judged 16l on that than on a threshold.
+**The conclusion survives every budget across a range of roughly 5.6 to one**, so it is not an
+artifact of the number we were handed. And there is a stronger statement that needs no budget at
+all: at 2.3 the stratified pair sits **below our measured floor of 3.3**, meaning it is not
+distinguishable from two books that share nothing whatsoever. We would rather you judged 16l on that
+than on a threshold.
+
+Note what the correction did to this section's own argument: the surviving band widened and the
+floor claim strengthened, so nothing here was rescued by the recomputation. It was simply wrong and
+is now right, and a reviewer was entitled to notice that a correction made at the source had not
+been carried to the section that consumes it.
 
 ### Assumptions that are not numbers
 
@@ -1871,7 +1931,8 @@ These are load-bearing and none is established by our evidence.
    owner's ruling on what a series *is*, not a finding, and our rating instrument is built on it.
 4. **That loop-back exploration is a convention rather than a flaw.** Also an owner ruling, made
    against both raters' stated view, and recorded as overriding them.
-5. **That a 26-node graph tells us anything about a 149-node one.** Our decisive results are on the
+5. **That a 26-node graph tells us anything about a 149-node one**, that being the median for the
+   pilot's band against 151 across the whole catalog. Our decisive results are on the
    26-node pilot; the one attempt at production scale halted at the guards, and reading level
    degraded badly there.
 6. **That author and rater sharing a model family is tolerable.** It engages self-preference, we
