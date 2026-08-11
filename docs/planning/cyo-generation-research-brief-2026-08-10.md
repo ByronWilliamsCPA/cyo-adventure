@@ -1983,3 +1983,256 @@ productive rule we adopted was terminating a contaminated round instead of cavea
 stake-economics result had two blind model evaluators agreeing before we removed a label template and a
 provenance leak, after which the model evaluators split and the effect vanished (16k). **The caveated version
 would have been publishable.**
+---
+
+## Part III. What we ran after the second round of reviews
+
+> Added 2026-08-11. Two reviewers returned architecture proposals against Part II. Rather
+> than answer their strongest objection in prose, we ran it. This part reports eight runs,
+> five of which cost no generations at all, and it corrects two Part II claims and one
+> claim made in this round.
+>
+> **Everything in the provenance banner at the head of this document applies here without
+> exception.** No human and no child has read any of it.
+
+### 19. The objection both reviewers raised, and what happened when we measured it
+
+Both reviewers, working independently and from different directions, made the same
+argument: **16l measures verbatim overlap, and the defect this programme exists to attack
+is decision repetition.** One reached it through the device categories our shareable layer
+still contains; the other through the plan-and-binding pair that 14 and 15 identified as
+the layer readers actually respond to. Neither had to guess whether the stratified pair had
+been tested for the second property. It had not.
+
+The books already existed, so the test cost nothing.
+
+| pair, same contract and same chain | solution transfer |
+| --- | ---: |
+| identical binding, built as a control | 1.000 |
+| same solution chain, everything else re-dressed | 1.000 |
+| the known-contaminated pair from 12 | 1.000 |
+| solution chain relocated to other nodes | 0.700 |
+| **the 16l stratified pair** | **0.467** |
+| the most distinct real pair we hold | 0.225 |
+
+**Four of the 16l pair's six chain props transfer at some tier.** That is materially short
+of clean and well short of catastrophic, and it means the headline was never a distinctness
+result. It is a convergence result, and we should have said so.
+
+Separately, on aligned choice positions across the two books: **zero identical labels and
+eleven of thirty-five choices sharing their first content word**, several of them the same
+act with a different noun. "Turn Back Together" against "Turn back now". "Stay and Read"
+against "Stay and read the logs." One reviewer argued these are the defect surfacing
+through a guard that cannot see it; four-gram measures do not reach "Ask X" against "Ask Y".
+On the evidence we now have, that reading is better supported than ours was.
+
+**A correction to this section, made the same day.** Our first reading of these numbers was
+wrong. We reported the pair as the worst we hold on operation transfer, having failed to
+notice that the tiers are exclusive and the strongest wins, so a prop matching by answer
+never counts as an operation match and a deliberately identical binding scores zero there.
+The composite is the only rankable column. The battery in 20 caught this on its first use,
+which is the argument for having built it.
+
+### 20. A battery of known-bad artifacts, because readers are not available to us
+
+We cannot recruit children in the relevant age bands. That is settled, and it has a
+consequence the programme had not drawn: **the only validation available to any new
+instrument is a deliberately constructed known-bad artifact.** Not a rated pair, not a
+model's opinion, an artifact whose defect is known because we built the defect.
+
+We constructed three by re-binding: an identical binding, a pair sharing its whole solution
+chain with everything else re-dressed, and a pair with the chain relocated to other nodes.
+The first is the ceiling. The second is the worked example this document's own problem
+statement opens with. The third is the case an earlier round found readers noticing.
+
+The ordering in 19 is that battery. The instrument places both maximal known-bads at 1.000,
+the relocation case at 0.700, and the real pairs below. **This is the first measure in the
+programme validated against anything other than another model's judgment**, and every probe
+proposed by either reviewer should be calibrated this way before it is trusted.
+
+### 21. The rule from 16l, now measured rather than asserted
+
+16l claimed a shareable plan must contain no free text at all. A reviewer objected that the
+shared kernel still carries device categories. Checking the artifact rather than our
+description of it, the objection understated the problem: **the kernel we published as
+containing no free text still carries 473 words of it**, more than the 422 the experiment
+deleted.
+
+So we traced every shared four-gram in the passing pair to its source. Of seven, **none
+appears verbatim in the residual 473 words** and one matches only by vocabulary. The
+restated rule survives contact with the artifact:
+
+> Free text attached to the **fact vocabulary that nodes reference** drove convergence. The
+> experiment did **not isolate** free text instructing the binding process as a cause at this
+> volume.
+
+The distinction matters and an earlier draft of this section blurred it. Deleting the 422 gloss
+words is what moved the measurement, and no shared gram in the passing pair traces to the 473 words
+that remained. Both are evidence of association. Neither shows the residual words are harmless, and
+only an arm that deletes them while keeping the glosses would.
+
+That arm was previously called cancelled here on the grounds that its outcome is predictable. That
+was an overstatement of what this trace licenses, and it is withdrawn: the arm is **deprioritised**
+rather than settled, because the trace makes a null outcome likely but does not establish it.
+
+**But the control run found something we cannot yet explain, and it matters more than the
+confirmation.** Under the same strict attribution, only five of the failing arm's forty
+shared grams trace to the deleted glosses. Deleting 422 words removed thirty-three shared
+grams that were **not copied from those words**. The mechanism is therefore not copying. It
+is convergent elaboration: two authors read the same gloss, wrote different sentences about
+the same idea, and converged anyway.
+
+That is worse news than plagiarism would have been, because **anything that primes two
+authors identically will do this, and an enumerated category primes without being prose at
+all.** It is the reviewer's category objection arriving by a route neither of us predicted.
+We also note that Part II reported 62 percent of the failing arm's grams as gloss-derived;
+that figure does not reproduce under the attribution above, and its method was never
+documented.
+
+### 22. The arithmetic nobody had done: when does a series run out?
+
+Both reviewers built their book-20 arguments on a quantity neither had. We computed it.
+
+The pilot contract admits **40,007,520,000 distinct bindings**. The number is worthless.
+What matters is the scarcest axis, and the scarcest axis is the one that decides the puzzle:
+
+| axis | vocabulary | picks | forced repeat by |
+| --- | ---: | ---: | --- |
+| **the cipher form, which sets the cognitive operation** | **5** | 1 | **book 6** |
+| vault contents | 6 | 3 | later |
+| room curiosities | 9 | 4 | later |
+
+**A child reading this world gets a repeated puzzle device by their sixth book**, whatever
+architecture produced it. In the youngest band the contract we hold enumerates exactly one
+obstacle kind and one help mode, so the forced repeat arrives at **book two**, and all
+variation must come from open axes where the generator's own modes operate (23).
+
+This reframes the whole programme. Device-category vocabulary is the binding constraint on
+series novelty. Not plan sharing, not prose, not topology. No architecture in either
+reviewer's proposal changes it, because all three draw from the same curated vocabulary,
+and the fix is not architectural: somebody has to write more kinds.
+
+For a baseline against that: across 105 sibling pairs we hold on a single skeleton, **83
+exceed the convergence budget** and 17 sit at or below the generator floor, with a median
+of 9.2. Most of those books were built as experimental arms deliberately sharing contracts,
+so the figure overstates production. It is nonetheless the first all-pairs number the
+programme has, and only deliberately stratified pairs reach the floor.
+
+### 23. Generation without any reusable narrative artifact
+
+One reviewer ranked constraint-free generation first for production and the other kept it
+as the yardstick every reuse design must beat. Both rankings turned on one unknown: whether
+it survives past the small pilot. We ran it at two scales, with the constraint classes the
+earlier attempt was never given.
+
+**At roughly thirty nodes, six mutually isolated authors, one pass, no repair round and no
+self-review prompt:**
+
+| | result |
+| --- | --- |
+| structurally clean | **6 of 6** |
+| repair rounds | **0** |
+| the entire band-budget failure class that sank the first attempt | **0 of 6** |
+| reading level at or under the band edge | **1 of 6** |
+
+Writing the omitted constraints down eliminated every failure they described. Two
+independent checkers agree on all six graphs.
+
+**At roughly one hundred nodes, two isolated authors:**
+
+| | first | second |
+| --- | --- | --- |
+| nodes, endings | 103, 20 | 101, 20 |
+| structural failures | **0** | **0** |
+| Flesch-Kincaid, share of nodes in band | **5.12, 84%** | **8.35, 11%** |
+| one pass | **no** | **no** |
+| approximate tokens, tool calls | 210k, 60 | 337k, 269 |
+
+**Structure survives the scale jump.** That is a real answer to the question both rankings
+depended on, and it favours generation without reuse.
+
+**Nothing else came free.** Neither author managed one pass; the first built a scripted
+build-validate-repair loop, and the second's initial draft produced a longest path of 43
+against a ceiling of 24. Cost is dominated by that loop rather than by node count, which is
+the first evidence available for pricing any of the proposed architectures and the reason
+cost instrumentation should precede the comparison rather than follow it.
+
+**And reading level split, with a cause.** Both authors were given the same explicit target
+in the same prompt. The one that added readability work to its repair loop produced the
+first book in this programme to pass reading level at production scale, against an earlier
+101-node attempt that reached 8.1 to 8.4. The one that instrumented depth and word count
+but not readability produced a book with eleven percent of its nodes in band.
+
+The generalisation covers both scales:
+
+> A model meets constraints it can verify by tracing its own artifact. It misses constraints
+> requiring a statistic it cannot compute. Stating the constraint is not merely insufficient
+> for the second class, it is a coin flip resolved by an authoring choice nobody specified.
+
+So the repair loop belongs in the harness, not the prompt. On the evidence in this part
+that is the best-supported build item the programme has.
+
+### 24. The premise, across models and across scales
+
+Part II reported that removing the shared plan does not vary the premise. This round tested
+whether that was one model's mode, holding the task and prompt fixed and varying the model.
+
+It is not. Two independent instances of one model, sharing no context and reading no file,
+invented **the same place name** and produced titles differing by a single preposition:
+*The Lantern Under Marrow Hill* against *The Lantern Beneath Marrow Hill*. Four of five
+words identical. Later, at production scale, a third author independently reproduced
+**word for word** the title of one of the thirty-node graphs, *The Lantern Keeper's
+Apprentice*.
+
+Pooled across every generation in this part: **ten of twelve independent generations, across
+three model tiers and two scales, put a light-or-signal beacon at the centre of the story**,
+most of them coastal or fog-bound, several with an elder keeper. The two exceptions were a
+kite race and a forest threatened by a shopping mall.
+
+Convergence is not lexical. Median shared four-grams across the thirty-node set was 1.56 per
+1000, with eleven of fifteen pairs at or below the generator floor. Wording independence is
+free when nothing is shared, exactly as Part II found. But four of fifteen pairs breach the
+budget and **every breach is a same-archetype pair**, the scale pair among them at 5.18.
+
+**A collision on an invented proper noun is as far below the plan layer as a collision can
+get.** No architecture that shares less can reach it. Premise allocation from a curated
+enumerated space stops being one design's feature and becomes a precondition for all of
+them.
+
+The limit on this claim must travel with it: all three tiers belong to one model family, so
+this establishes that the mode is not a per-model artifact and says nothing about whether it
+is training-distribution-level across vendors. That replication is the open version of the
+question, and until it runs, no idiom floor or diversity margin in this document should be
+quoted as general.
+
+### 25. Where this leaves the architecture question
+
+Three things are now properties every candidate must supply, rather than advantages any one
+of them has:
+
+1. **Premise allocation from a curated enumerated space** (24). Independent generation buys
+   wording independence and nothing above it.
+2. **A reading-level repair loop in the harness** (23). Not promptable, and invisible to
+   every per-node advisory check.
+3. **A wider device-category vocabulary** (22). The binding constraint on series novelty,
+   and the one problem on this list that no architecture solves.
+
+What genuinely separates the candidates has narrowed to review economics and cost, and
+neither is measurable today, because generation cost is not recorded anywhere in our system.
+The comparison should not be run until it is.
+
+One reuse-based design cleared its own cheapest kill test: the pilot contract decomposes
+into fork-to-join segments whose entry knowledge is entailed on every incoming path, with
+zero type errors across twenty-five nodes carrying declared entry states. We report it as
+weak evidence rather than a result, because that graph has eleven forks and only three
+joins, so the property was barely exercised.
+
+### 26. What we still cannot answer
+
+- **Whether any of this tracks a reader.** Unchanged and unchangeable here. Every rating in
+  this document is a model's.
+- **Whether the premise mode is a family artifact or a distribution artifact** (24).
+- **What any of it costs.** No token, cost or duration figure is recorded by our pipeline,
+  so every economic claim in Part III is an observation about two runs rather than a price.
+- **Whether structural success at one hundred nodes reaches one hundred and fifty**, which
+  is the catalog median. We tested the scale that was in dispute, not the scale we ship.
