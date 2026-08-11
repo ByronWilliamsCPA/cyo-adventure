@@ -816,6 +816,17 @@ in their journey sections instead.
   and `frontend/src/offline/persist.test.ts` (`requestPersistentStorage()`: an
   absent Storage API resolves false, and it skips the `persist()` request when
   storage is already persisted)
+- Service-worker navigation fallback (which paths the SPA shell may answer):
+  `frontend/src/pwa/navigateFallbackDenylist.test.ts` (the `^/api/` and `^/v1/`
+  patterns Workbox's NavigationRoute must not claim, checked in both directions:
+  against the paths the backend server-renders on this same origin, including
+  the KWS verification return page, and against the real SPA routes, so widening
+  the denylist cannot silently break client-side routing). Not tied to one
+  journey because the service worker intercepts every top-level navigation on
+  the origin. **No tier above component can see this**: curl, Postman, and every
+  Playwright project run without a service worker, so a path swallowed by the
+  fallback looks healthy from every vantage point except a real browser that has
+  loaded the app before
 
 ## Keeping this matrix current
 
