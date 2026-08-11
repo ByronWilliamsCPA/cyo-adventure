@@ -63,4 +63,48 @@ describe('navigate-fallback denylist', () => {
     expect(isDenied('/read/api/v1')).toBe(false)
     expect(isDenied('/library/api-adventures')).toBe(false)
   })
+
+  it('excludes every server-rendered path, not just the one that broke', () => {
+    // One case per pattern, so a typo in any single entry fails a test rather
+    // than waiting for a parent to report a 404. Without the bare `/v1/` case
+    // that entry could be misspelled `/^\/v2\//` and every other test here
+    // would still pass.
+    const serverPaths = [
+      '/api/v1/consent/kws/return',
+      '/v1/consent/kws/return',
+      // `app.py` mounts health at the origin root as well as under /api/v1.
+      '/health',
+      '/health/live',
+      '/health/ready',
+      '/health/startup',
+      '/docs',
+      '/docs/oauth2-redirect',
+      '/redoc',
+      '/openapi.json',
+    ]
+
+    for (const path of serverPaths) {
+      expect(isDenied(path), `${path} must reach the server`).toBe(true)
+    }
+  })
+
+  it('still excludes an exact path that arrives with a query string', () => {
+    // Workbox matches on pathname AND search, so an exact-path pattern closed
+    // with `$` alone would let `/health?probe=1` through: after `/health` the
+    // next character is `?`, which is neither a slash nor the end of input.
+    // This is the failure mode a bare-path test cannot see.
+    expect(isDenied('/health?probe=1')).toBe(true)
+    expect(isDenied('/openapi.json?version=3.1')).toBe(true)
+    expect(isDenied('/docs?ref=email')).toBe(true)
+  })
+
+  it('leaves SPA-owned paths that merely start like a server path', () => {
+    // The negative half of the exact-path patterns. A future route named for
+    // reading habits or in-app help must not be knocked off the shell by the
+    // `/health` or `/docs` entries.
+    expect(isDenied('/healthy-reading-habits')).toBe(false)
+    expect(isDenied('/documents')).toBe(false)
+    expect(isDenied('/redocument')).toBe(false)
+    expect(isDenied('/openapi.json.html')).toBe(false)
+  })
 })
