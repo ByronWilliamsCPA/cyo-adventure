@@ -16,6 +16,23 @@ export const GUARDIAN_LOGIN_PATH = '/guardian/login'
 export const GUARDIAN_AWAITING_APPROVAL_PATH = '/guardian/awaiting-approval'
 
 /**
+ * KWS parent-verification interstitial (AuthStatus 'needs-verification',
+ * ADR-018 D1): where an adult starts, and then waits out, Epic's Kids Web
+ * Services parent verification.
+ *
+ * This one comes FIRST of the three, before awaiting-approval and before
+ * consent, which is the ratified order and not the obvious one. Verifying
+ * that an adult is an adult is cheap, entirely self-service, and says nothing
+ * about whether we want this account; admin approval is a human judgement
+ * that should not be spent on an account that may never prove adulthood. The
+ * practical consequence runs through the whole feature: this guardian's
+ * ``User.status`` is still 'awaiting_approval', so
+ * ``api/deps.py::require_principal`` refuses them, so neither this page nor
+ * the endpoint behind it may depend on GET /v1/me.
+ */
+export const GUARDIAN_VERIFICATION_PATH = '/guardian/verify'
+
+/**
  * VPC consent-capture interstitial (AuthStatus 'needs-consent', Phase 2 /
  * ADR-018 D1): ProtectedRoute sends an approved-but-unconsented guardian
  * here before they can reach any other guardian page.

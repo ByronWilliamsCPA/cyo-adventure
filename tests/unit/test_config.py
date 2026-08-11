@@ -1781,6 +1781,53 @@ class TestKwsSettings:
         assert Settings(kws_user_agent="   ").kws_user_agent
 
     @pytest.mark.unit
+    def test_every_kws_setting_tolerates_an_empty_override(self) -> None:
+        """Enumerate the KWS block instead of pinning a list of field names.
+
+        The empty-override validator is opt-in per field, so the real defect is
+        not any single omission but the fact that adding a KWS setting and
+        forgetting the decorator is silent: no tier passes
+        ``${KWS_OPEN_ATTEMPT_MINUTES:-}`` today, so the container that dies is
+        the next one, on a machine nobody is watching. Four fields were already
+        missing when this test was written (the two rate-limit ints and the two
+        booleans), plus ``kws_environment`` and ``kws_auth_origin``.
+
+        Enumerating ``model_fields`` makes the next omission fail here rather
+        than at boot. The two carve-outs are the ones the validator's docstring
+        justifies, and naming them explicitly means widening the exclusion set
+        is a visible edit rather than a quiet one.
+        """
+        from cyo_adventure.core.config import Settings
+
+        deliberately_unnormalised = {
+            # Credentials: "" already counts as missing where it is read.
+            "kws_api_key",
+            "kws_webhook_secret",
+            "kws_verification_secret",
+            # Evidence, not configuration: refusal to boot IS the control.
+            "kws_enabled_methods",
+        }
+        kws_fields = [
+            name
+            for name in Settings.model_fields
+            if name.startswith("kws_") and name not in deliberately_unnormalised
+        ]
+
+        assert kws_fields, "the KWS block moved; this test is now vacuous"
+
+        # Compare against a bare Settings() rather than FieldInfo.get_default(),
+        # which returns PydanticUndefined for any default_factory field and
+        # would fail a future addition for the wrong reason. The observable
+        # property is "an empty override behaves exactly like no override".
+        baseline = Settings()
+
+        for name in kws_fields:
+            assert getattr(Settings(**{name: ""}), name) == getattr(baseline, name), (
+                f"{name} is missing from _empty_kws_override_means_unset; "
+                f"a ${{{name.upper()}:-}} override would not fall back"
+            )
+
+    @pytest.mark.unit
     def test_auth_origin_defaults_to_the_documented_keycloak_host(self) -> None:
         """The token endpoint is on a different host from the service API.
 
@@ -1883,3 +1930,320 @@ class TestKwsEnabledMethods:
 
         assert settings.kws_configured is False
         assert settings.kws_enabled_methods == []
+
+
+@pytest.mark.unit
+class TestKwsEvidenceSettings:
+    """The two switches that decide what a verification is allowed to prove.
+
+    Both default to the refusing value, and both tests below assert the
+    DEFAULT rather than the mechanism, because the failure these settings
+    guard against is an omission: a tier that never sets the variable at all.
+    """
+
+    @pytest.fixture(autouse=True)
+    def _clear_kws_env(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Keep a developer's own KWS_* exports out of these assertions."""
+        for name in (
+            "KWS_ENVIRONMENT",
+            "KWS_ACCEPT_TEST_EVIDENCE",
+            "KWS_VERIFICATION_REQUIRED",
+        ):
+            monkeypatch.delenv(name, raising=False)
+
+    @pytest.mark.unit
+    def test_test_evidence_is_refused_by_default(self) -> None:
+        """An unset variable must not let sandbox verifications count."""
+        from cyo_adventure.core.config import Settings
+
+        assert Settings().kws_accept_test_evidence is False
+
+    @pytest.mark.unit
+    def test_verification_is_not_required_by_default(self) -> None:
+        """The gate lands switched off, so it cannot strand an existing tier."""
+        from cyo_adventure.core.config import Settings
+
+        assert Settings().kws_verification_required is False
+
+    @pytest.mark.unit
+    def test_accepting_test_evidence_against_production_kws_is_refused(self) -> None:
+        """The combination can only be a staging variable in the wrong tier.
+
+        Keyed on ``kws_environment``, not ``environment``: staging declares
+        ``ENVIRONMENT=production`` so the app-level value cannot separate the
+        two tiers, and a guard written against it would be inert exactly where
+        it is needed.
+        """
+        from cyo_adventure.core.config import Settings
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        with pytest.raises(ConfigurationError, match="KWS_ACCEPT_TEST_EVIDENCE"):
+            Settings(
+                environment="production",
+                kws_environment="production",
+                kws_accept_test_evidence=True,
+                database_url=_PROD_DB_URL,
+                oidc_issuer="https://project.supabase.co/auth/v1",
+                oidc_jwks_url=(
+                    "https://project.supabase.co/auth/v1/.well-known/jwks.json"
+                ),
+                child_session_secret=_CHILD_SECRET,
+                device_grant_secret=_DEVICE_SECRET,
+                allow_mock_review=True,
+                kws_enabled_methods=_KWS_METHODS,
+                **_KWS_CREDS,
+            )
+
+    @pytest.mark.unit
+    def test_test_evidence_is_refused_on_production_kws_from_a_staging_app(
+        self,
+    ) -> None:
+        """The case that tells ``kws_environment`` apart from ``environment``.
+
+        The two tests either side of this one move both fields together:
+        (production, production) refuses and (staging, test) allows. A guard
+        written against ``environment`` passes both of them unchanged, so
+        together they assert nothing about which field is load-bearing, which
+        is precisely the claim the refusal test's docstring makes.
+
+        This pair is the mismatched one. ``environment="staging"`` with
+        ``kws_environment="production"`` must still raise, and an
+        ``environment``-keyed guard cannot make it, because it would read
+        "staging" and wave the combination through. That is the inert-guard
+        failure the docstrings warn about, and it is reachable rather than
+        theoretical: staging deploys with ``ENVIRONMENT=production`` today, so
+        the app-level value is not a tier discriminator on this deployment at
+        all.
+        """
+        from cyo_adventure.core.config import Settings
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        with pytest.raises(ConfigurationError, match="KWS_ACCEPT_TEST_EVIDENCE"):
+            Settings(
+                environment="staging",
+                kws_environment="production",
+                kws_accept_test_evidence=True,
+                database_url=_PROD_DB_URL,
+                oidc_issuer="https://project.supabase.co/auth/v1",
+                oidc_jwks_url=(
+                    "https://project.supabase.co/auth/v1/.well-known/jwks.json"
+                ),
+                child_session_secret=_CHILD_SECRET,
+                device_grant_secret=_DEVICE_SECRET,
+                allow_mock_review=True,
+                kws_enabled_methods=_KWS_METHODS,
+                **_KWS_CREDS,
+            )
+
+    @pytest.mark.unit
+    def test_accepting_test_evidence_against_test_kws_is_allowed(self) -> None:
+        """Staging has to be able to rely on a Test verification, or it proves nothing.
+
+        The counterpart to the refusal above: without this case the setting
+        would have no legal use at all, so this pins that the guard is scoped
+        to the Production environment rather than being a blanket ban.
+        """
+        from cyo_adventure.core.config import Settings
+
+        settings = Settings(
+            environment="staging",
+            kws_environment="test",
+            kws_accept_test_evidence=True,
+            database_url=_PROD_DB_URL,
+            oidc_issuer="https://project.supabase.co/auth/v1",
+            oidc_jwks_url="https://project.supabase.co/auth/v1/.well-known/jwks.json",
+            child_session_secret=_CHILD_SECRET,
+            device_grant_secret=_DEVICE_SECRET,
+            allow_mock_review=True,
+            kws_enabled_methods=_KWS_METHODS,
+            **_KWS_CREDS,
+        )
+
+        assert settings.kws_accept_test_evidence is True
+
+    @pytest.mark.unit
+    def test_the_real_staging_shape_is_allowed_not_just_a_staging_label(self) -> None:
+        """The allow-direction case that tells ``kws_environment`` from ``environment``.
+
+        Two of the tests above move both values together
+        (production/production and staging/test), so a guard rewritten to read
+        ``self.environment`` passes both: the first still raises, the second
+        still allows. That makes them unable to detect the exact regression
+        the docstring on ``_refuse_test_evidence_against_production_kws`` says
+        it exists to prevent.
+
+        This case covers the allow direction, and
+        ``test_test_evidence_is_refused_on_production_kws_from_a_staging_app``
+        covers the refuse direction. Both are needed: this one alone still
+        passes against a guard narrowed to require BOTH fields to read
+        ``production``, and that narrowing is the dangerous failure, since it
+        would accept sandbox evidence against Production KWS.
+
+        This is the shape staging actually deploys, and the reason the guard
+        was keyed on the KWS environment in the first place: ``ENVIRONMENT`` is
+        the literal string ``production`` there (see
+        ``docs/operations/runbook.md``), while KWS is the sandbox. An
+        ``environment``-keyed guard raises here and takes staging down; the
+        correct one allows it.
+        """
+        from cyo_adventure.core.config import Settings
+
+        settings = Settings(
+            environment="production",
+            kws_environment="test",
+            kws_accept_test_evidence=True,
+            database_url=_PROD_DB_URL,
+            oidc_issuer="https://project.supabase.co/auth/v1",
+            oidc_jwks_url="https://project.supabase.co/auth/v1/.well-known/jwks.json",
+            child_session_secret=_CHILD_SECRET,
+            device_grant_secret=_DEVICE_SECRET,
+            allow_mock_review=True,
+            kws_enabled_methods=_KWS_METHODS,
+            **_KWS_CREDS,
+        )
+
+        assert settings.kws_accept_test_evidence is True
+        assert settings.environment == "production"
+        assert settings.kws_environment == "test"
+
+
+class TestKwsStartOverride:
+    """The escape hatch that re-opens the start endpoint on an ungated tier.
+
+    ``POST /v1/consent/kws/start`` is gated on ``kws_verification_required``,
+    because that is the flag ADR-018 D1 names as the control and the endpoint
+    discloses an adult's email address to Epic. Staging still has to be able
+    to exercise that endpoint and its screens before the gate flips, so that
+    one case gets its own setting rather than a wider reading of
+    ``kws_configured``, and refusal to boot is what keeps it off production.
+    """
+
+    @pytest.fixture(autouse=True)
+    def _clear_kws_env(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Keep a developer's own KWS_* exports out of these assertions."""
+        for name in (
+            "KWS_ENVIRONMENT",
+            "KWS_VERIFICATION_REQUIRED",
+            "KWS_ALLOW_START_WHILE_NOT_REQUIRED",
+        ):
+            monkeypatch.delenv(name, raising=False)
+
+    @pytest.mark.unit
+    def test_the_start_override_is_off_by_default(self) -> None:
+        """An unset variable must not widen the endpoint."""
+        from cyo_adventure.core.config import Settings
+
+        assert Settings().kws_allow_start_while_not_required is False
+
+    @pytest.mark.unit
+    def test_the_start_override_is_refused_against_production_kws(self) -> None:
+        """Real parents' addresses must not be disclosed for a flow that gates nothing.
+
+        The combination has no legitimate reading against Production KWS, and
+        it is exactly what a copied staging env file produces, so the process
+        refuses to start rather than quietly re-opening the endpoint.
+        """
+        from cyo_adventure.core.config import Settings
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        with pytest.raises(
+            ConfigurationError, match="KWS_ALLOW_START_WHILE_NOT_REQUIRED"
+        ):
+            Settings(
+                environment="production",
+                kws_environment="production",
+                kws_allow_start_while_not_required=True,
+                database_url=_PROD_DB_URL,
+                oidc_issuer="https://project.supabase.co/auth/v1",
+                oidc_jwks_url=(
+                    "https://project.supabase.co/auth/v1/.well-known/jwks.json"
+                ),
+                child_session_secret=_CHILD_SECRET,
+                device_grant_secret=_DEVICE_SECRET,
+                allow_mock_review=True,
+                kws_enabled_methods=_KWS_METHODS,
+                **_KWS_CREDS,
+            )
+
+    @pytest.mark.unit
+    def test_the_start_override_is_allowed_against_test_kws(self) -> None:
+        """The staging shape must boot, and it is the shape that pins the keying.
+
+        Deliberately the MISMATCHED pair: ``environment="production"`` with
+        ``kws_environment="test"``, which is what staging actually deploys
+        (``docs/operations/runbook.md``). A guard rewritten against
+        ``self.environment`` would raise here and take staging down, and no
+        lockstep pair of tests could tell. Without this case the setting would
+        also have no legal use at all.
+        """
+        from cyo_adventure.core.config import Settings
+
+        settings = Settings(
+            environment="production",
+            kws_environment="test",
+            kws_allow_start_while_not_required=True,
+            database_url=_PROD_DB_URL,
+            oidc_issuer="https://project.supabase.co/auth/v1",
+            oidc_jwks_url="https://project.supabase.co/auth/v1/.well-known/jwks.json",
+            child_session_secret=_CHILD_SECRET,
+            device_grant_secret=_DEVICE_SECRET,
+            allow_mock_review=True,
+            kws_enabled_methods=_KWS_METHODS,
+            **_KWS_CREDS,
+        )
+
+        assert settings.kws_allow_start_while_not_required is True
+        assert settings.environment == "production"
+        assert settings.kws_environment == "test"
+
+
+class TestKwsStartLimits:
+    """The two anti-automation bounds on ``POST /api/v1/consent/kws/start``.
+
+    That endpoint sits OUTSIDE the admin approval gate by construction: a
+    guardian must verify before an admin approves them, so the caller is an
+    unapproved account. Its limits are therefore the only thing standing
+    between a stolen-but-valid token and an unmetered mailer pointed at
+    whatever address the IdP issued.
+    """
+
+    @pytest.fixture(autouse=True)
+    def _clear_kws_env(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Keep a developer's own KWS_* exports out of these assertions."""
+        for name in ("KWS_OPEN_ATTEMPT_MINUTES", "KWS_START_MAX_ATTEMPTS_PER_HOUR"):
+            monkeypatch.delenv(name, raising=False)
+
+    @pytest.mark.unit
+    def test_the_open_attempt_window_and_hourly_cap_have_conservative_defaults(
+        self,
+    ) -> None:
+        """Both must bound a tier that never sets either variable.
+
+        Asserted as bounds rather than as exact equalities: the numbers are a
+        judgement call and may be retuned, but a default that let a caller
+        send again immediately, or that allowed a large hourly burst, would
+        make the endpoint's own configuration the vulnerability.
+        """
+        from cyo_adventure.core.config import Settings
+
+        defaults = Settings()
+
+        assert 1 <= defaults.kws_open_attempt_minutes <= 60
+        assert 1 <= defaults.kws_start_max_attempts_per_hour <= 5
+
+    @pytest.mark.unit
+    def test_neither_limit_can_be_configured_away(self) -> None:
+        """``ge=1`` on both, so no deployment can set a limit to "unbounded".
+
+        A zero window would let every request send, and a zero cap would
+        refuse every request; both are configuration mistakes that should
+        fail at startup rather than at the first parent to try to verify.
+        """
+        from pydantic import ValidationError
+
+        from cyo_adventure.core.config import Settings
+
+        with pytest.raises(ValidationError):
+            Settings(kws_open_attempt_minutes=0)
+        with pytest.raises(ValidationError):
+            Settings(kws_start_max_attempts_per_hour=0)

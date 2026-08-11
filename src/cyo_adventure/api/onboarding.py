@@ -60,6 +60,11 @@ from cyo_adventure.api.schemas import (
     OnboardingView,
     error_responses,
 )
+from cyo_adventure.consent import (
+    reportable_verification_status,
+    usable_verification_id,
+)
+from cyo_adventure.core.config import settings
 from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.db.integrity import is_authn_subject_conflict
 from cyo_adventure.db.models import (
@@ -113,6 +118,9 @@ async def _record_consent(
     existing ``consent_*`` quartet: an existing already-consented guardian's
     row retains ``NULL`` in both new columns, since there is no
     re-consent-on-policy-change flow that would ever revisit it.
+    ``consent_verification_id`` (ADR-018 D1) joins the same envelope, and
+    ``NULL`` there is likewise permanent and meaningful: this consent event
+    was not itself backed by a KWS verification.
 
     Args:
         session: The request unit-of-work session.
@@ -136,7 +144,20 @@ async def _record_consent(
     # test_onboarding_records_consent_once_and_is_idempotent.
     if consent is None or consent.accepted is not True:
         return
-    if not consent.policy_version or not consent.signer_name:
+    # #CRITICAL: security: stripped, not truthiness-checked. A whitespace-only
+    # signer_name is truthy, so the earlier check accepted "   " and stored it,
+    # and every downstream consent gate then read that row as a recorded
+    # consent. The record is the whole evidentiary basis of the typed-name
+    # mechanism (ADR-018 D1, O-125): a blank name is not an attestation by
+    # anyone, and a padded one is not the name that was typed. Stripping here
+    # rather than on OnboardingConsent keeps the 422 field-specific, matching
+    # the residence_country/adulthood_attested check below.
+    # #VERIFY: tests/integration/test_onboarding_api.py::
+    # test_onboarding_refuses_a_whitespace_only_signer_name and
+    # ::test_onboarding_stores_the_signer_name_without_surrounding_space.
+    policy_version = (consent.policy_version or "").strip()
+    signer_name = (consent.signer_name or "").strip()
+    if not policy_version or not signer_name:
         msg = "policy_version and signer_name are both required when accepted is true"
         raise ValidationError(msg, field="consent")
     # O-117/O-119: both are required for a NEW consent submission. Checked
@@ -164,16 +185,25 @@ async def _record_consent(
     # #VERIFY: tests/unit/test_onboarding_handler.py::
     # test_record_consent_race_keeps_first_writer_values.
     now = datetime.now(UTC)
+    # ADR-018 D1: which verification, if any, corroborates THIS consent event.
+    # None is a legitimate and permanent answer, not a failure: it is what a
+    # consent recorded under the typed-name-only mechanism looks like, and it
+    # is what a tier with verification switched off records for everyone. This
+    # call decides nothing about whether consent may be recorded; the gates in
+    # api/profiles.py and api/admin_profiles.py are what require a
+    # verification, and they ask their own question.
+    verification_id = await usable_verification_id(session, (user.id,))
     result = await session.execute(
         sa_update(User)
         .where(User.id == user.id, User.consent_accepted_at.is_(None))
         .values(
             consent_accepted_at=now,
-            consent_policy_version=consent.policy_version,
-            consent_signer_name=consent.signer_name,
+            consent_policy_version=policy_version,
+            consent_signer_name=signer_name,
             consent_ip=client_ip,
             residence_country=consent.residence_country,
             adulthood_attested_at=now,
+            consent_verification_id=verification_id,
         )
         .execution_options(synchronize_session="evaluate")
         .returning(User.id)
@@ -188,16 +218,19 @@ async def _record_consent(
                 "consent_ip",
                 "residence_country",
                 "adulthood_attested_at",
+                "consent_verification_id",
             ],
         )
         return
     logger.info("onboarding.consent_recorded", user_id=str(user.id))
 
 
-def _view(user: User, *, created: bool) -> OnboardingView:
+async def _view(session: AsyncSession, user: User, *, created: bool) -> OnboardingView:
     """Project a resolved/created user row to the onboarding response.
 
     Args:
+        session: The request unit-of-work session, read to derive the
+            verification state.
         user: The resolved or freshly-created guardian/admin user.
         created: Whether this request provisioned the row.
 
@@ -205,9 +238,30 @@ def _view(user: User, *, created: bool) -> OnboardingView:
         OnboardingView: The family/user identity, the created flag, the
         row's status (so the frontend can show a "your account is awaiting
         approval" state instead of blindly calling GET /v1/me, which
-        require_principal would reject for any non-'active' status), and
-        whether VPC consent is already recorded (Phase 2 / ADR-018 D1).
+        require_principal would reject for any non-'active' status), whether
+        VPC consent is already recorded, and the ADR-018 D1 verification
+        pair (Phase 2).
     """
+    # ADR-018 D1: this endpoint, not GET /v1/me, is where a guardian learns
+    # they must verify. Verification is ordered BEFORE admin approval, and
+    # require_principal refuses any user whose status is not 'active', so the
+    # one caller who most needs the answer cannot reach /v1/me to ask for it.
+    # That is also why the flag ships alongside the status rather than only on
+    # MeResponse: "none" is what a caller reads both when the tier does not
+    # gate on verification and when they simply have not started, and this is
+    # the only response that guardian can read.
+    #
+    # #ASSUME: external resources: this projection is no longer pure. The
+    # verification field awaits a query, so a caller that used to be able to
+    # render this response without touching the database now cannot, and a
+    # database fault surfaces on the ONE endpoint an unapproved guardian can
+    # reach. That is accepted rather than defended: falling back to a literal
+    # "none" on error would tell a guardian who must verify that there is
+    # nothing to do, which is the failure mode this endpoint exists to prevent.
+    # #VERIFY: tests/integration/test_onboarding_api.py::
+    # test_onboarding_reports_the_verification_state_the_guardian_must_act_on
+    # and ::test_onboarding_reports_no_verification_requirement_while_the_flag_is_off
+    # cover both answers against a real database.
     return OnboardingView(
         family_id=str(user.family_id),
         user_id=str(user.id),
@@ -215,6 +269,8 @@ def _view(user: User, *, created: bool) -> OnboardingView:
         created=created,
         status=user.status,
         consent_recorded=user.consent_accepted_at is not None,
+        verification_required=settings.kws_verification_required,
+        verification_status=await reportable_verification_status(session, user.id),
     )
 
 
@@ -443,7 +499,7 @@ async def onboard(
         # sign-in).
         await _record_consent(session, existing, consent, client_ip)
         response.status_code = 200
-        return _view(existing, created=False)
+        return await _view(session, existing, created=False)
 
     bound = await _bind_pending_invite(session, identity)
     if bound is not None:
@@ -451,9 +507,9 @@ async def onboard(
         # same as any other already-provisioned identity.
         await _record_consent(session, bound, consent, client_ip)
         response.status_code = 200
-        return _view(bound, created=False)
+        return await _view(session, bound, created=False)
 
     user, created = await _provision_guardian(session, identity)
     await _record_consent(session, user, consent, client_ip)
     response.status_code = 201 if created else 200
-    return _view(user, created=created)
+    return await _view(session, user, created=created)

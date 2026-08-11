@@ -21,6 +21,7 @@ import {
   GUARDIAN_CONSENT_PATH,
   GUARDIAN_CONSOLE_PATH,
   GUARDIAN_UNAVAILABLE_PATH,
+  GUARDIAN_VERIFICATION_PATH,
   KID_PICKER_PATH,
 } from '../routes'
 import './guardian.css'
@@ -369,10 +370,13 @@ export function LoginPage() {
   }
 
   // A guardian who navigates straight to /guardian/login already has a real
-  // Supabase session in these two states (AuthContext resolved that far
+  // Supabase session in these three states (AuthContext resolved that far
   // before stopping short of 'signed-in'); send them to the matching
   // interstitial instead of showing a login form for a session that already
-  // exists. Mirrors ProtectedRoute's own handling of the same two statuses.
+  // exists. Mirrors ProtectedRoute's own handling of the same three statuses.
+  if (status === 'needs-verification') {
+    return <Navigate to={GUARDIAN_VERIFICATION_PATH} replace />
+  }
   if (status === 'awaiting-approval') {
     return <Navigate to={GUARDIAN_AWAITING_APPROVAL_PATH} replace />
   }

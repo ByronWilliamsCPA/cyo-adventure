@@ -21,6 +21,7 @@ import {
   GuardianConsentPage,
   GuardianReviewDetailPage,
   GuardianShell,
+  GuardianVerificationPage,
   IntakePage,
   KidShell,
   LandingPage,
@@ -52,6 +53,7 @@ import {
   GUARDIAN_CONSOLE_PATH,
   GUARDIAN_LOGIN_PATH,
   GUARDIAN_UNAVAILABLE_PATH,
+  GUARDIAN_VERIFICATION_PATH,
   KID_PICKER_PATH,
   PRIVACY_PATH,
   SUPPORT_PATH,
@@ -148,6 +150,16 @@ export const routes = [
         // rather than looping them through login or the step-up gate.
         path: GUARDIAN_AWAITING_APPROVAL_PATH,
         element: suspended(<GuardianAwaitingApprovalPage />),
+      },
+      {
+        // Same reasoning as the awaiting-approval route above, and it applies
+        // hardest here: verification is ordered FIRST of the three
+        // interstitials (ADR-018 D1), so this guardian's account is normally
+        // still 'awaiting_approval' and GET /v1/me refuses them outright.
+        // Nesting this under ProtectedRoute would send the one caller who
+        // most needs this page to login instead.
+        path: GUARDIAN_VERIFICATION_PATH,
+        element: suspended(<GuardianVerificationPage />),
       },
       {
         // Same reasoning as the awaiting-approval route above: an approved

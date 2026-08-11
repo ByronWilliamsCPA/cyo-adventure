@@ -105,10 +105,29 @@ export interface ApprovedResult {
   visibility: Visibility
 }
 
+/**
+ * Closed-vocabulary calibration code for a send-back decision, mirroring
+ * SendBackReasonCodeLiteral in src/cyo_adventure/api/schemas.py. Kept in sync
+ * by hand (this adapter is hand-typed, not generated; see the module
+ * docstring above).
+ */
+export type SendBackReasonCode =
+  | 'safety_concern'
+  | 'reading_level'
+  | 'coherence_error'
+  | 'continuity_error'
+  | 'weak_choices'
+  | 'repetitive'
+  | 'prose_quality'
+  | 'unsatisfying_ending'
+  | 'factual_error'
+  | 'other'
+
 export interface SentBackResult {
   id: string
   status: string
   reason: string
+  reason_code: SendBackReasonCode
 }
 
 /**
@@ -148,7 +167,11 @@ export interface ReviewApi {
   queue(): Promise<ReviewQueueItem[]>
   surface(storybookId: string, version?: number): Promise<ReviewSurface>
   approve(storybookId: string, visibility: Visibility): Promise<ApprovedResult>
-  sendBack(storybookId: string, reason: string): Promise<SentBackResult>
+  sendBack(
+    storybookId: string,
+    reason: string,
+    reasonCode: SendBackReasonCode
+  ): Promise<SentBackResult>
   archive(storybookId: string): Promise<ArchivedResult>
   stillProcessing(): Promise<StillProcessingItem[]>
 }
@@ -172,9 +195,14 @@ export function makeReviewApi(api: AxiosInstance): ReviewApi {
       })
       return res.data
     },
-    async sendBack(storybookId: string, reason: string): Promise<SentBackResult> {
+    async sendBack(
+      storybookId: string,
+      reason: string,
+      reasonCode: SendBackReasonCode
+    ): Promise<SentBackResult> {
       const res = await api.post<SentBackResult>(`/v1/storybooks/${storybookId}/send-back`, {
         reason,
+        reason_code: reasonCode,
       })
       return res.data
     },

@@ -25,6 +25,8 @@ from cyo_adventure.api.schemas import (
     AdminProfileView,
     error_responses,
 )
+from cyo_adventure.consent import has_usable_verification
+from cyo_adventure.core.config import settings
 from cyo_adventure.core.exceptions import (
     AuthorizationError,
     BusinessLogicError,
@@ -89,7 +91,9 @@ async def _require_family_consent(ctx: Context, family_id: uuid.UUID) -> None:
 
     Raises:
         BusinessLogicError: If no adult in the target family has a recorded
-            consent (400).
+            consent, or (when ``settings.kws_verification_required`` is on) if
+            none of the adults who consented has a usable KWS verification
+            (400).
     """
     # #CRITICAL: security: before this gate existed, POST /admin/profiles was
     # an unguarded child-data collection point: api/profiles.py::
@@ -97,21 +101,41 @@ async def _require_family_consent(ctx: Context, family_id: uuid.UUID) -> None:
     # could create a child profile in a family that had never consented.
     # #VERIFY: tests/integration/test_admin_profiles_api.py::
     # test_admin_create_requires_target_family_consent.
-    consented = await ctx.session.scalar(
-        select(User.id)
-        .where(
-            User.family_id == family_id,
-            User.role != "child",
-            User.consent_accepted_at.is_not(None),
+    # Every consented adult, not just the first one: when verification is
+    # required below, the question is whether one of THESE adults is verified,
+    # so the set has to survive the query rather than collapse to a bool.
+    consented = list(
+        await ctx.session.scalars(
+            select(User.id).where(
+                User.family_id == family_id,
+                User.role != "child",
+                User.consent_accepted_at.is_not(None),
+            )
         )
-        .limit(1)
     )
-    if consented is None:
+    if not consented:
         msg = (
             "the target family has no recorded verifiable parental consent "
             "(see POST /onboarding); a child profile cannot be created for it"
         )
         raise BusinessLogicError(msg, rule="vpc_required")
+    # #CRITICAL: security: ADR-018 D1. Scoped to the adults who actually
+    # consented, not to the family's adults generally. A verification by an
+    # adult who never consented is evidence about that adult and says nothing
+    # about the one who signed, so pairing the two questions on the same
+    # person is what makes the verification corroborate the consent rather
+    # than merely coexist with it.
+    # #VERIFY: tests/integration/test_admin_profiles_api.py::
+    # test_admin_create_requires_a_usable_verification_when_required and
+    # ::test_admin_create_ignores_a_verification_by_an_unconsented_adult.
+    if settings.kws_verification_required and not await has_usable_verification(
+        ctx.session, consented
+    ):
+        msg = (
+            "no adult in the target family has completed parent verification; "
+            "a child profile cannot be created for it"
+        )
+        raise BusinessLogicError(msg, rule="vpc_verification_required")
 
 
 def _view(row: ChildProfile) -> AdminProfileView:

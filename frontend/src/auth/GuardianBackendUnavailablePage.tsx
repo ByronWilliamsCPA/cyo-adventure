@@ -12,6 +12,7 @@ import {
   GUARDIAN_CONSENT_PATH,
   GUARDIAN_CONSOLE_PATH,
   GUARDIAN_LOGIN_PATH,
+  GUARDIAN_VERIFICATION_PATH,
 } from '../routes'
 import { useAuth } from './useAuth'
 
@@ -107,6 +108,9 @@ export function GuardianBackendUnavailablePage() {
 
   if (status === 'signed-out') {
     return <Navigate to={GUARDIAN_LOGIN_PATH} replace />
+  }
+  if (status === 'needs-verification') {
+    return <Navigate to={GUARDIAN_VERIFICATION_PATH} replace />
   }
   if (status === 'awaiting-approval') {
     return <Navigate to={GUARDIAN_AWAITING_APPROVAL_PATH} replace />

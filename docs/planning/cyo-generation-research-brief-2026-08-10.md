@@ -887,7 +887,7 @@ supporting or negative results.
 | **The reuse problem** | **16d** | **Books built from one shared plan converge catastrophically. This was our biggest surprise.** |
 | | 16g.1 | Both cheap repairs fail. The leak has five prose channels and we had repaired one. |
 | | 16j | Independence comes from what an author is *not shown*, not from what it is told. 126.7 to 1.0 per 1000. |
-| | **16l** | **Resolved, with the mechanism restated. A plan can be shared without converging: 13.6 to 2.5 from deleting 422 words of fact glosses. The rule is not "no free text at all"; the passing kernel still carries 473 words. See the correction in 16l.** |
+| | **16l** | **Resolved, with the mechanism restated. A plan can be shared without converging: 13.6 to 2.3 from deleting 422 words of fact glosses. The rule is not "no free text at all"; the passing kernel still carries 473 words. See the correction in 16l.** |
 | **Scale and capital** | 16c, 16f | Narrative contracts exist for 2 of 61 skeletons; that, not skeleton count, is the binding cost. |
 | | 16i | A model builds structurally valid graphs unaided, 6 of 6, and fails only rules we never gave it. All six are the same story. |
 | **Negative results** | 16b, 16h, 16k | Obligation *coverage* is complete, but 5 of 49 deliver only partially and one of those is a real reader-facing defect; "graphs are worlds" is refuted for 18 of 21 graphs; stake economics returns a null. |
@@ -1660,7 +1660,7 @@ in both books, excluding grams made entirely of function words. Denominator: the
 the two books, per 1000. **Scope: node bodies only.**
 
 Choice labels are excluded, and they have to be. The two conditions differ in how many label words
-they contain, 160 against 182 on average, against bodies of 2,894 and 2,801, so a label-inclusive
+they contain, 167 against 132.5 on average, against bodies of 2,943 and 3,001.5, so a label-inclusive
 denominator moves the rate even when labels share no grams at all. That is not hypothetical: under
 the label-inclusive scope the two repair conditions swap places, which is why we report them as
 indistinguishable rather than ranking them.
@@ -1678,7 +1678,7 @@ included where every other row excluded them. Recomputed consistently, all rows 
 
 | | shared four-grams per 1000, bodies only |
 | --- | --- |
-| **shared structure, bare identifiers** | **2.5** |
+| **shared structure, bare identifiers** | **2.3** |
 | our pilot, wholly separate plans | 2.9 |
 | generator idiom floor, books sharing nothing at all | 3.3 |
 | **budget** | **4.0** |
@@ -1689,35 +1689,51 @@ included where every other row excluded them. Recomputed consistently, all rows 
 | one shared plan, 101 nodes | 50.1 |
 
 The two corrected figures are the stratified designs: with glosses 13.6 rather than the 12.9 we
-first published, and without them 2.5 rather than 3.2. Only the first of those is a scope change on
-its own. Dropping 160 label words from a 2,894-word denominator can only raise a rate, and it raises
-12.9 to 13.6 exactly; the stratified row moved the other way and further, so its correction carries a
-numerator change as well as a scope change. **The direction and the conclusion are unchanged
-under either scope**, which we checked before correcting rather than after, but the published numbers
-were mixed-scope and that was our error, caught in review. The provenance of the stratified row was
-owed for a day and is now settled: section 21 supplies the numerator, the value is 2.5 rather than
-the 2.3 we published, and the derivation is in the block below. The table is safe to cite as it now
-stands.
+first published, and without them 2.3 rather than 3.2. Only the first of those is a scope change on
+its own. Dropping 167 label words from a 3,110-word label-inclusive denominator can only raise a
+rate, and it raises 12.9 to 13.6 exactly with the numerator held at 40; the stratified row moved the
+other way and further, so its correction carries a numerator change as well as a scope change, from
+ten shared grams to seven. **The direction and the conclusion are unchanged under either scope**,
+which we checked before correcting rather than after, but the published numbers were mixed-scope and
+that was our error, caught in review. The provenance of the stratified row is now settled and is in
+the block below. The table is safe to cite as it now stands.
 
 > [!WARNING]
-> **Correction, 2026-08-11: the stratified row is 2.5, and the 2.3 we published was label-inclusive.**
-> Section 21 traces every shared four-gram in the passing pair and so gives this row its numerator for
-> the first time: **seven**. The denominator is this section's own, the mean body word count of the
-> two books, which for the passing pair is **2,801**. That is 7 / 2,801 x 1000 = **2.5**. The 2.3 we
-> published is what the same numerator gives once the 182 label words are added back: 7 / (2,801 +
-> 182) x 1000 = 2.3. It is a label-inclusive figure, and label-inclusive is the exact scope this
-> section had already recomputed away from. No whole number of shared grams yields 2.3 body-only at
-> 2,801 words; it would take 6.44 of them.
+> **Correction, 2026-08-11, withdrawn the same day: the stratified row is 2.3, as first published.**
+> A correction posted earlier today raised this row to 2.5 and asserted that the 2.3 was
+> label-inclusive. Both claims were wrong, and they were wrong for one reason: the denominator was
+> taken from the surrounding prose rather than measured off the artifacts. The artifacts land in the
+> repository with PR #687, under `docs/planning/evidence/d7-stratified-plan/` and
+> `docs/planning/evidence/d7b-bare-names/`; until that merges, the paths cited here resolve only on
+> that branch. The row is re-derived below directly from those directories' `filled_C.json` and
+> `filled_D.json`, using the gram and tokenizer primitives in `scripts/check_sibling_fills.py`:
 >
-> The glossed row is what exposed this, because it is clean: 12.9 x (2,894 + 160) / 2,894 = 13.6, so
-> that row is a pure scope change with its numerator held fixed. The stratified row could not be
-> reproduced the same way, and that mismatch was the tell.
+> | | shared grams | mean words | rate |
+> | --- | --- | --- | --- |
+> | stratified, bodies only | 7 | 3,001.5 | **2.33** |
+> | stratified, label-inclusive | 10 | 3,134.0 | **3.19** |
+> | glossed, bodies only | 40 | 2,943.0 | **13.59** |
+> | glossed, label-inclusive | 40 | 3,110.0 | **12.86** |
 >
-> Nothing downstream reverses. 2.5 is still under the 4.0 budget and still below the 3.3 generator
-> idiom floor, and 16o's sensitivity band is unchanged. What moves is the ratio quoted in 16o, from
-> a sixfold range to 13.6 / 2.5 = 5.4.
+> Every published figure falls out of that table. Body-only gives 2.3 and 13.6, the two corrected
+> values; label-inclusive gives 3.2 and 12.9, the two originally published ones. So 2.3 was always
+> the body-only figure and 3.2 was always the label-inclusive one, exactly as the paragraph above
+> states, and the withdrawn correction contradicted that paragraph while sitting beside it.
+>
+> **What went wrong is worth keeping.** The withdrawn block reasoned from a body count of 2,801 for
+> the passing pair and 2,894 for the glossed one. Measured, they are 3,001.5 and 2,943. Seven grams
+> over the wrong 2,801 gives 2.5, which is where the raised figure came from. The block also treated
+> "no whole number of shared grams yields 2.3 at 2,801 words, it would take 6.44" as the tell that
+> something was off. It was a real tell, but it pointed at the denominator rather than at the rate:
+> at the measured 3,001.5, seven grams yields 2.33, a whole numerator and no anomaly left to explain.
+>
+> The label word counts were also wrong and inverted. The two conditions carry 167 and 132.5 label
+> words on average, glossed and stratified respectively; the withdrawn block used 160 and 182 and had
+> the passing arm carrying more, when it carries fewer.
+>
+> Nothing downstream reverses, and the sixfold range quoted in 16o stands: 13.59 / 2.33 = 5.8.
 
-**13.6 to 2.5 from deleting 422 words**, landing under budget and below the floor. This is the first
+**13.6 to 2.3 from deleting 422 words**, landing under budget and below the floor. This is the first
 artifact in the programme to share a plan and still be indistinguishable, on this measure, from books
 that share nothing.
 
@@ -1747,7 +1763,7 @@ survived contact with our own contracts.
 > story, chosen at bind and used consistently from note to clockface to back panel."*
 >
 > **The measurement stands and the explanation does not.** Convergence still fell from 13.6 to
-> 2.5 when those 422 words were deleted with everything else held constant, and 2.5 is still
+> 2.3 when those 422 words were deleted with everything else held constant, and 2.3 is still
 > below the 3.3 generator floor. But "no free text at all" cannot be what made it pass, because
 > the passing arm does not satisfy it. The honest restatement is narrower:
 >
@@ -1899,7 +1915,7 @@ carries no weights and no taxonomy. We would ask you to read the weighted score 
 The claim in 16l, as corrected there, is that free text attached to the fact vocabulary nodes
 reference drove convergence while free text instructing the binding process did not, at this volume.
 It is stated against the 4.0 budget, so we varied the budget. The rows below are recomputed against
-the corrected body-only figures, 2.5 for the stratified pair and 13.6 for the glossed one:
+the corrected body-only figures, 2.3 for the stratified pair and 13.6 for the glossed one:
 
 | Budget | Does "the stratified plan works and the glossed one fails" still hold? |
 | --- | --- |
@@ -1907,13 +1923,14 @@ the corrected body-only figures, 2.5 for the stratified pair and 13.6 for the gl
 | **2.5 to 13.5** | **yes** |
 | 14.0 and above | no, the failing design starts passing |
 
-No cell moved when the stratified figure was corrected from 2.3 to 2.5, but the middle row is now
-exactly the boundary rather than a sampled point inside it: 2.5 is the stratified pair's own value,
-so any budget below it fails everything.
+The middle row is a sampled band, not a boundary: the stratified pair's own value is 2.33, so a
+budget of 2.5 sits just inside it. No cell moved when the stratified figure was briefly raised to
+2.5 and then withdrawn back to 2.3, which is the useful part of that episode: the band is wide
+enough that the disputed tenth never reached a verdict.
 
-**The conclusion survives every budget across roughly a fivefold range**, 2.5 to 13.6, a ratio of
-5.4, so it is not an artifact of the number we were handed. And there is a stronger statement that
-needs no budget at all: at 2.5 the stratified pair sits **below our measured floor of 3.3**, meaning
+**The conclusion survives every budget across roughly a sixfold range**, 2.3 to 13.6, a ratio of
+5.8, so it is not an artifact of the number we were handed. And there is a stronger statement that
+needs no budget at all: at 2.3 the stratified pair sits **below our measured floor of 3.3**, meaning
 it is not
 distinguishable from two books that share nothing whatsoever. We would rather you judged 16l on that
 than on a threshold, subject to the caveat on the floor's own provenance in the threshold table

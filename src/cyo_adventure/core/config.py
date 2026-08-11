@@ -1127,10 +1127,110 @@ class Settings(BaseSettings):
     kws_enabled_methods: Annotated[list[KwsVerificationMethod], NoDecode] = Field(
         default_factory=list, validation_alias="KWS_ENABLED_METHODS"
     )
+    # Whether a verification from the Test environment counts as evidence for
+    # the child-profile gates below. Staging runs the whole flow end to end
+    # against KWS Test, so somewhere has to be allowed to rely on a Test row;
+    # this setting is that permission, made explicit and per-tier.
+    #
+    # #CRITICAL: security: the default is False, and it is False rather than
+    # True because of which mistake each default produces. Defaulted True, a
+    # tier that simply never sets the variable would quietly accept sandbox
+    # verifications as parental consent, and nothing in the record would show
+    # it later. Defaulted False, the same omission makes staging refuse to
+    # create profiles, which is loud, immediate, and harmless.
+    # #VERIFY: tests/unit/test_config.py::TestKwsEvidenceSettings::
+    # test_test_evidence_is_refused_by_default.
+    kws_accept_test_evidence: bool = Field(
+        default=False, validation_alias="KWS_ACCEPT_TEST_EVIDENCE"
+    )
+    # Whether the child-profile gates additionally require a usable
+    # verification, on top of the existing consent record.
+    #
+    # Defaults False so the gate can land ahead of the flow that satisfies it:
+    # switched on before guardians have any way to verify, it locks every
+    # existing account out of profile creation. Turning it on is therefore a
+    # deliberate per-tier act, taken once the start endpoint and its screens
+    # are deployed on that tier.
+    # #ASSUME: security: an operator who sets this True on a tier where KWS is
+    # not configured gets a hard stop on profile creation rather than a
+    # bypass. That is the intended direction of the failure.
+    # #VERIFY: tests/unit/test_config.py::TestKwsEvidenceSettings::
+    # test_verification_is_not_required_by_default.
+    kws_verification_required: bool = Field(
+        default=False, validation_alias="KWS_VERIFICATION_REQUIRED"
+    )
+    # Whether POST /v1/consent/kws/start may run while the flag above is off.
+    #
+    # This exists for exactly one job: exercising the ENDPOINT and the
+    # guardian screens in front of it on staging while the gate is still off,
+    # which is how the flow is proven before it becomes a control. Note what
+    # it is NOT for: the Gate 1 procedure in docs/operations/kws-test-runbook.md
+    # runs scripts/kws_send_test_verification.py, which calls
+    # start_parent_verification directly and never reaches the endpoint, so
+    # that procedure needs nothing from this setting. What the script cannot
+    # exercise is the endpoint's own surface: its authorization allowlist, its
+    # two anti-automation limits, and the screens that consume its answers.
+    #
+    # Deliberately a SEPARATE setting rather than a wider reading of
+    # kws_configured. Credential presence is a fact about the deployment;
+    # "this tier is allowed to email real people about a flow that gates
+    # nothing" is a decision, and the two must be separately auditable.
+    #
+    # #CRITICAL: security: the start endpoint discloses an adult's email
+    # address to Epic (ADR-018 D1, O-125), so its control has to be the same
+    # flag the ADR names, not the incidental presence of credentials. This
+    # escape hatch is refused outright against Production KWS
+    # (_reject_start_override_against_production_kws), so widening the
+    # endpoint can never be something a copied staging env file does.
+    # #VERIFY: tests/unit/test_config.py::TestKwsStartOverride::
+    # test_the_start_override_is_refused_against_production_kws.
+    kws_allow_start_while_not_required: bool = Field(
+        default=False, validation_alias="KWS_ALLOW_START_WHILE_NOT_REQUIRED"
+    )
+    # How long an unresolved attempt blocks a fresh send for the same adult.
+    #
+    # This is the double-click and retry-loop guard, and its size is a
+    # trade-off between two real parents: one who clicked twice and must not
+    # receive two emails, and one whose email went to spam and needs to try
+    # again without contacting support. Minutes rather than hours because the
+    # second parent has no other recovery path, and the hourly cap below is
+    # what actually bounds the volume.
+    #
+    # #ASSUME: external resources: KWS applies its own limit of ten sends per
+    # hour per email address, so this window and the cap below must stay well
+    # under it; a vendor-side 429 is NOT retried (consent/kws_client.py) and
+    # reaches the parent as a failed attempt.
+    # #VERIFY: tests/unit/test_config.py::TestKwsStartLimits::
+    # test_the_open_attempt_window_and_hourly_cap_have_conservative_defaults.
+    kws_open_attempt_minutes: int = Field(
+        default=15, ge=1, validation_alias="KWS_OPEN_ATTEMPT_MINUTES"
+    )
+    # How many attempts one adult may start in a rolling hour.
+    #
+    # #CRITICAL: security: this is the anti-automation bound on an endpoint
+    # that causes an outbound email, and it is enforced per ACCOUNT rather
+    # than per IP because the middleware limiter (60/min/IP) is orders of
+    # magnitude too loose to protect a mailbox and cannot see who is calling.
+    # The counter is the kws_verification table itself: rows are inserted
+    # before the send and never deleted, so the count is exact, shared by
+    # every replica, and survives a restart, none of which is true of an
+    # in-process counter.
+    # #VERIFY: tests/integration/test_consent_api.py::
+    # test_start_refuses_once_the_hourly_cap_is_reached.
+    kws_start_max_attempts_per_hour: int = Field(
+        default=3, ge=1, validation_alias="KWS_START_MAX_ATTEMPTS_PER_HOUR"
+    )
 
     @field_validator(
+        "kws_environment",
+        "kws_auth_origin",
         "kws_user_agent",
         "kws_webhook_max_skew_seconds",
+        "kws_open_attempt_minutes",
+        "kws_start_max_attempts_per_hour",
+        "kws_accept_test_evidence",
+        "kws_verification_required",
+        "kws_allow_start_while_not_required",
         "kws_environment_label",
         "kws_organization_id",
         "kws_product_id",
@@ -1149,9 +1249,10 @@ class Settings(BaseSettings):
         variable unset. That one idiom produces TWO different failures here,
         and only the loud one was covered when this validator was written.
 
-        The loud one: ``kws_user_agent`` and ``kws_webhook_max_skew_seconds``
-        are non-optional with constrained defaults (``min_length=1``,
-        ``ge=1``), so ``""`` is a hard ``ValidationError`` at ``Settings()``
+        The loud one: the constrained and enumerated fields
+        (``kws_user_agent``'s ``min_length=1``, the three ``ge=1`` ints,
+        ``kws_environment``'s ``Literal``, and the two ``bool``s) reject ``""``
+        outright, so it is a hard ``ValidationError`` at ``Settings()``
         construction and the CONTAINER DOES NOT BOOT.
 
         The quiet one is worse, and cost a KWS Test delivery on 2026-08-10 to
@@ -1166,14 +1267,32 @@ class Settings(BaseSettings):
         position is unreachable is worse than no guard, because it reads as
         protection in the code and as silence in the logs.
 
-        The four credential fields are excluded because
-        ``_kws_credential_state`` already treats ``""`` as missing. Everything
-        else in the block is normalised here, so one idiom is safe across all
-        of it.
+        The list must cover EVERY field in the KWS block, and it is easy to
+        add a field and forget this decorator: the two rate-limit ints and the
+        two booleans were all added later and all missed it, invisibly,
+        because reaching the failure needs a compose file that passes
+        ``${KWS_OPEN_ATTEMPT_MINUTES:-}`` and no tier does yet.
+        ``test_every_kws_setting_tolerates_an_empty_override`` enumerates the
+        block instead of pinning a list, so the next omission fails a test
+        rather than a deploy.
+
+        Exactly two exclusions, both deliberate:
+
+        * ``kws_api_key``, ``kws_webhook_secret`` and ``kws_verification_secret``
+          are ``SecretStr`` credentials that already treat ``""`` as missing
+          (``_kws_credential_state`` for the first, the signature verifiers for
+          the other two), so normalising them would only move the check.
+        * ``kws_enabled_methods`` is left to fail loudly. It is evidence rather
+          than configuration: the parent-verified webhook reports no method, so
+          the declared set at send time is the only bound on which method could
+          have run. Silently defaulting an empty override would mint rows whose
+          evidence field is a guess, and refusal to boot IS the control.
         #VERIFY: tests/unit/test_config.py::TestKwsSettings::
         test_empty_kws_user_agent_falls_back_to_the_default,
-        ::test_empty_kws_skew_seconds_falls_back_to_the_default and
-        ::test_empty_kws_identifier_is_unset_not_a_value.
+        ::test_empty_kws_skew_seconds_falls_back_to_the_default,
+        ::test_empty_kws_identifier_is_unset_not_a_value and
+        ::test_every_kws_setting_tolerates_an_empty_override, which
+        enumerates the block rather than pinning a fixed list.
 
         Args:
             value: The raw field input.
@@ -1826,6 +1945,93 @@ class Settings(BaseSettings):
                 "parent-verified webhook reports no method, so this "
                 "declaration is the only bound on how a parent was verified, "
                 "and it cannot be reconstructed after the record is written."
+            )
+            raise ConfigurationError(msg)
+        return self
+
+    @model_validator(mode="after")
+    def _reject_test_evidence_against_production_kws(self) -> Settings:
+        """Refuse to accept Test verifications while pointed at Production KWS.
+
+        The two settings have no legitimate combination. ``kws_environment``
+        is Production only where real parents verify, and there
+        ``kws_accept_test_evidence`` can only be a staging variable that rode
+        into the wrong tier's configuration; left standing it would widen what
+        counts as parental consent, silently and with nothing in the resulting
+        records to show for it.
+
+        Keyed on ``kws_environment`` rather than on ``environment`` on
+        purpose. Staging declares ``ENVIRONMENT=production`` (so that its
+        posture matches production's), which makes any guard written against
+        ``environment`` unable to tell the two tiers apart. ``kws_environment``
+        does tell them apart, and it is also the value the evidence is
+        recorded under, so it is the honest thing to key on.
+
+        #CRITICAL: security: this is the guard that keeps a copied staging
+        env file from turning sandbox verifications into consent evidence in
+        production.
+        #VERIFY: tests/unit/test_config.py::TestKwsEvidenceSettings::
+        test_the_real_staging_shape_is_allowed_not_just_a_staging_label. Cite
+        that one, not the refusal test: the refusal test and its allow-case
+        counterpart move ``environment`` and ``kws_environment`` in lockstep,
+        so both still pass if this guard is rewritten against ``environment``.
+        Only the mismatched pair (``environment="production"`` with
+        ``kws_environment="test"``) can observe the difference.
+
+        Raises:
+            ConfigurationError: when ``kws_accept_test_evidence`` is set while
+                ``kws_environment`` is ``"production"``.
+        """
+        if self.kws_accept_test_evidence and self.kws_environment == "production":
+            msg = (
+                "KWS_ACCEPT_TEST_EVIDENCE=true is refused while "
+                "KWS_ENVIRONMENT='production': a Test verification is a "
+                "sandbox event, not evidence about a real parent, and the "
+                "combination can only mean a staging variable reached a "
+                "production tier."
+            )
+            raise ConfigurationError(msg)
+        return self
+
+    @model_validator(mode="after")
+    def _reject_start_override_against_production_kws(self) -> Settings:
+        """Refuse the start-endpoint escape hatch while pointed at Production KWS.
+
+        ``kws_allow_start_while_not_required`` exists so staging can exercise
+        the endpoint and its screens while the gate is still off. Against
+        Production KWS that combination has no legitimate reading: it would
+        mean real parents' email addresses are being disclosed to Epic by a
+        flow that no gate depends on, which is the exact posture O-125 is open
+        about.
+
+        Keyed on ``kws_environment`` for the same reason
+        ``_reject_test_evidence_against_production_kws`` is: staging declares
+        ``ENVIRONMENT=production``, so an ``environment``-shaped guard cannot
+        tell the two tiers apart and would be a control in name only.
+
+        #CRITICAL: security: refusal to boot is the control. A tier that
+        acquires this variable by copying staging's env file stops, rather
+        than quietly re-opening an endpoint whose whole gate this PR moved.
+        #VERIFY: tests/unit/test_config.py::TestKwsStartOverride::
+        test_the_start_override_is_refused_against_production_kws and
+        ::test_the_start_override_is_allowed_against_test_kws. Cite the pair:
+        the refusal alone passes for a guard written against ``environment``,
+        because the allow-case is what pins the ``kws_environment`` keying.
+
+        Raises:
+            ConfigurationError: when ``kws_allow_start_while_not_required`` is
+                set while ``kws_environment`` is ``"production"``.
+        """
+        if (
+            self.kws_allow_start_while_not_required
+            and self.kws_environment == "production"
+        ):
+            msg = (
+                "KWS_ALLOW_START_WHILE_NOT_REQUIRED=true is refused while "
+                "KWS_ENVIRONMENT='production': it would disclose real "
+                "parents' email addresses to Epic for a flow that gates "
+                "nothing on this tier. Set KWS_VERIFICATION_REQUIRED=true "
+                "instead, or unset this variable."
             )
             raise ConfigurationError(msg)
         return self

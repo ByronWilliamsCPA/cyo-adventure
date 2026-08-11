@@ -29,6 +29,7 @@ from cyo_adventure.core.exceptions import (
     DatabaseError,
     ExternalServiceError,
     ProjectBaseError,
+    RateLimitedError,
     ResourceNotFoundError,
     StateTransitionError,
     ValidationError,
@@ -77,6 +78,18 @@ class TestStatusFor:
         """A StateTransitionError maps to 409; bare BusinessLogicError stays 400."""
         assert _status_for(StateTransitionError("illegal hop")) == 409
         assert _status_for(BusinessLogicError("conflict")) == 400
+
+    @pytest.mark.unit
+    def test_status_for_rate_limited_is_429(self) -> None:
+        """A RateLimitedError maps to 429, not to its ancestor's 400.
+
+        Both RateLimitedError and StateTransitionError are BusinessLogicError
+        subclasses, so this also pins that the lookup table matches on the
+        specific class rather than letting an ancestor entry absorb them: a
+        client must be able to tell "try again later" from "this will never
+        work" and from "wrong state".
+        """
+        assert _status_for(RateLimitedError("slow down")) == 429
 
 
 # ---------------------------------------------------------------------------

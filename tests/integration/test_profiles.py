@@ -7,12 +7,21 @@ family's rows.
 
 from __future__ import annotations
 
+import uuid
 from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING
 
 import pytest
+from sqlalchemy import select
 
-from cyo_adventure.db.models import ChildProfile, Family, StorybookAssignment, User
+from cyo_adventure.core.config import settings
+from cyo_adventure.db.models import (
+    ChildProfile,
+    Family,
+    KwsVerification,
+    StorybookAssignment,
+    User,
+)
 from tests.integration.conftest import Seed, auth, mint_device_token
 
 if TYPE_CHECKING:
@@ -160,6 +169,152 @@ async def test_create_profile_requires_recorded_consent(
         json={"display_name": "Nova", "age_band": "5-8"},
         headers=auth("unconsented-guardian"),
     )
+    assert resp.status_code == 400, resp.text
+
+
+async def _verify_guardian(
+    sessions: async_sessionmaker[AsyncSession],
+    authn_subject: str,
+    *,
+    kws_environment: str = "test",
+    status: str = "verified",
+) -> None:
+    """Write the verification row a completed KWS flow would have left behind.
+
+    Constructed directly rather than driven through the send leg: the gate
+    under test reads the row, and going through KWS would put an HTTP double
+    between these tests and the thing they are actually asserting.
+
+    Args:
+        sessions: The session factory fixture.
+        authn_subject: The guardian to attribute the attempt to.
+        kws_environment: Which environment produced it.
+        status: The attempt's resolution.
+    """
+    async with sessions() as session:
+        user_id = await session.scalar(
+            select(User.id).where(User.authn_subject == authn_subject)
+        )
+        assert user_id is not None, authn_subject
+        session.add(
+            KwsVerification(
+                id=uuid.uuid4(),
+                user_id=user_id,
+                kws_environment=kws_environment,
+                status=status,
+                requested_at=datetime.now(UTC),
+                resolved_at=(
+                    None if status == "sent" else datetime.now(UTC) - timedelta(hours=1)
+                ),
+                enabled_methods=["credit_card"],
+                location="US",
+            )
+        )
+        await session.commit()
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_create_profile_requires_a_usable_verification_when_required(
+    client: AsyncClient, seed: Seed, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A consent record alone stops being enough once verification is required.
+
+    The seeded guardians are pre-consented and have never verified, which is
+    exactly the shape of an account that predates ADR-018 D1's verification
+    leg, so this also pins what happens to the installed base when the flag
+    is switched on: blocked until they verify, never silently admitted.
+    """
+    monkeypatch.setattr(settings, "kws_verification_required", True)
+    monkeypatch.setattr(settings, "kws_accept_test_evidence", True)
+
+    resp = await client.post(
+        "/api/v1/profiles",
+        json={"display_name": "Nova", "age_band": "5-8"},
+        headers=auth(seed.guardian_token),
+    )
+
+    assert resp.status_code == 400, resp.text
+    assert "verification" in resp.text
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_create_profile_allows_a_verified_guardian(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A verified, consented guardian passes both halves of the gate."""
+    monkeypatch.setattr(settings, "kws_verification_required", True)
+    monkeypatch.setattr(settings, "kws_environment", "test")
+    monkeypatch.setattr(settings, "kws_accept_test_evidence", True)
+    await _verify_guardian(sessions, seed.guardian_token)
+
+    resp = await client.post(
+        "/api/v1/profiles",
+        json={"display_name": "Nova", "age_band": "5-8"},
+        headers=auth(seed.guardian_token),
+    )
+
+    assert resp.status_code == 201, resp.text
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_create_profile_refuses_test_evidence_that_was_not_opted_into(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The same verified row stops counting when Test evidence is not accepted.
+
+    The pair with the test above is the point: identical database state, and
+    the answer flips on ``kws_accept_test_evidence`` alone. That is what makes
+    the setting a control rather than a label, and it is the property O-123
+    requires to ship in the same change as the gate that reads it.
+    """
+    monkeypatch.setattr(settings, "kws_verification_required", True)
+    monkeypatch.setattr(settings, "kws_environment", "test")
+    monkeypatch.setattr(settings, "kws_accept_test_evidence", False)
+    await _verify_guardian(sessions, seed.guardian_token)
+
+    resp = await client.post(
+        "/api/v1/profiles",
+        json={"display_name": "Nova", "age_band": "5-8"},
+        headers=auth(seed.guardian_token),
+    )
+
+    assert resp.status_code == 400, resp.text
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_create_profile_ignores_an_unresolved_verification(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Starting a verification is not completing one.
+
+    A ``sent`` row means an email went out, nothing more; the parent may
+    never open it. Counting one would let anyone who can trigger the send
+    satisfy the gate without a verification ever happening.
+    """
+    monkeypatch.setattr(settings, "kws_verification_required", True)
+    monkeypatch.setattr(settings, "kws_environment", "test")
+    monkeypatch.setattr(settings, "kws_accept_test_evidence", True)
+    await _verify_guardian(sessions, seed.guardian_token, status="sent")
+
+    resp = await client.post(
+        "/api/v1/profiles",
+        json={"display_name": "Nova", "age_band": "5-8"},
+        headers=auth(seed.guardian_token),
+    )
+
     assert resp.status_code == 400, resp.text
 
 

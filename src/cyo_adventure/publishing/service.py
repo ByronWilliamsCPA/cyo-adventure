@@ -491,6 +491,8 @@ async def send_back(
     principal: Principal,
     storybook: Storybook,
     reason: str,
+    *,
+    reason_code: str,
 ) -> None:
     """Send an in-review story back for revision, recording the reason.
 
@@ -498,14 +500,22 @@ async def send_back(
         session: The request session (caller owns the transaction).
         principal: The admin sending it back.
         storybook: The story being returned.
-        reason: Why it was sent back (logged in slice 1; persisted in slice 2).
+        reason: Why it was sent back (free text; logged, not persisted).
+        reason_code: Calibration code for why it was sent back, persisted on
+            the SENT_BACK pipeline event so it is queryable later. Typed
+            ``str`` here on purpose: the closed vocabulary is
+            ``api.schemas.SendBackReasonCodeLiteral`` and is enforced at the
+            API boundary, because ``publishing`` must not import from ``api``.
+            **This function does not validate it**, so a non-API caller can
+            persist a code outside the vocabulary.
 
     Raises:
         StateTransitionError: If the story is not in ``in_review``.
     """
-    # #ASSUME: data integrity: the reason is logged (not persisted) in slice 1;
-    # slice 2 stores it on the moderation report.
-    # #VERIFY: structured log carries storybook_id + reason + actor.
+    # #ASSUME: data integrity: the free-text reason is logged (not persisted)
+    # as before; reason_code is the structured calibration signal, persisted
+    # below on the event row.
+    # #VERIFY: structured log carries storybook_id + reason + reason_code + actor.
     storybook.status = assert_transition(
         Status(storybook.status), Action.SEND_BACK
     ).value
@@ -513,15 +523,17 @@ async def send_back(
         "storybook_sent_back",
         storybook_id=storybook.id,
         reason=reason,
+        reason_code=reason_code,
         actor=str(principal.user_id),
     )
-    # #ASSUME: data-integrity: the send-back reason is logged above (structured
-    # log, not persisted) but deliberately NOT copied into the event payload;
-    # SENT_BACK's allowlist is empty (spec D3, PII-free payload contract), so
-    # the storybook/version entity_id is the only durable reference to this
-    # transition.
+    # #CRITICAL: data-integrity: reason_code is the review-scorecard
+    # calibration corpus's structured label (closed vocabulary, D3-compliant:
+    # an enum value, never free text), so it is persisted on the SENT_BACK
+    # event's payload, not just logged. The free-text `reason` stays
+    # log-only, unchanged from before.
     # #VERIFY: tests/integration/test_pipeline_event_instrumentation.py::
-    # test_send_back_writes_sent_back_event asserts payload == {}.
+    # test_send_back_writes_sent_back_event asserts
+    # payload == {"reason_code": ...}.
     # #CRITICAL: security: same own-family-aware persona stamping as the
     # RELEASED event above; send-back is a review action too, so an owner
     # sending back their own family's story records guardian, not admin.
@@ -537,6 +549,7 @@ async def send_back(
         event_type=EventType.SENT_BACK,
         from_state="in_review",
         to_state="needs_revision",
+        payload={"reason_code": reason_code},
     )
 
 

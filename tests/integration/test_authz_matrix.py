@@ -342,6 +342,12 @@ def _story_request_authored_body(_seed: Seed) -> dict[str, Any]:
     }
 
 
+def _kws_verification_start_body(_seed: Seed) -> dict[str, Any]:
+    # No email field exists on this body by design: the recipient comes from
+    # the caller's own verified token, never from the request.
+    return {"location": "US", "language": "en"}
+
+
 def _story_request_spec_body(_seed: Seed) -> dict[str, Any]:
     return {"age_band": "8-11", "length": "short"}
 
@@ -355,7 +361,10 @@ def _authoring_plan_body(_seed: Seed) -> dict[str, Any]:
 
 
 def _send_back_body(_seed: Seed) -> dict[str, Any]:
-    return {"reason": "authorization matrix regression check"}
+    return {
+        "reason": "authorization matrix regression check",
+        "reason_code": "other",
+    }
 
 
 def _assignment_body(seed: Seed) -> dict[str, Any]:
@@ -1069,6 +1078,24 @@ _ROUTE_SPECS: list[RouteSpec] = [
     # not the opaque child token the matrix carries; that refusal is covered in
     # test_onboarding_api.py::test_child_session_token_cannot_onboard.
     RouteSpec("POST", "/api/v1/onboarding", ALL_ROLES),
+    # -- consent.py: KWS parent verification start (ADR-018 D1) -------------
+    # Same authentication posture as onboarding, and for the same reason: it
+    # uses OnboardingIdentityDep rather than Context because verification sits
+    # BEFORE admin approval, so a caller awaiting approval (not `active`) is
+    # exactly who this endpoint exists for. Hence no role gate here.
+    #
+    # The child row IS refused (403) by the endpoint's own second gate, but not
+    # on this tier: `settings.kws_configured` is checked first and an
+    # unconfigured test deployment returns 400 before the role is ever read, so
+    # every role lands on "not (401, 403)". The child refusal is pinned where
+    # it can actually be observed, in test_consent_api.py::
+    # test_a_child_row_cannot_start_a_verification.
+    RouteSpec(
+        "POST",
+        "/api/v1/consent/kws/start",
+        ALL_ROLES,
+        json_body=_kws_verification_start_body,
+    ),
     RouteSpec(
         "POST",
         "/api/v1/story-requests/authored",

@@ -25,6 +25,7 @@ from cyo_adventure.api import (
     audit,
     characters,
     child_sessions,
+    consent,
     covers,
     device_grants,
     families,
@@ -60,6 +61,7 @@ from cyo_adventure.core.exceptions import (
     AuthenticationError,
     AuthorizationError,
     ProjectBaseError,
+    RateLimitedError,
     ResourceNotFoundError,
     StateTransitionError,
     ValidationError,
@@ -99,6 +101,21 @@ def _client_safe_error(payload: dict[str, Any]) -> dict[str, Any]:
     return safe
 
 
+# Checked in order, most specific first, so a subclass never has its status
+# taken by an ancestor listed above it. StateTransitionError and
+# RateLimitedError are both BusinessLogicError subclasses; BusinessLogicError
+# itself is deliberately absent and served by the 400 fallback below, which is
+# what keeps this table from having to be ordered against it.
+_STATUS_BY_EXCEPTION: tuple[tuple[type[ProjectBaseError], int], ...] = (
+    (AuthenticationError, 401),
+    (AuthorizationError, 403),
+    (ResourceNotFoundError, 404),
+    (ValidationError, 422),
+    (StateTransitionError, 409),
+    (RateLimitedError, 429),
+)
+
+
 def _status_for(exc: ProjectBaseError) -> int:
     """Map a core exception to its HTTP status code.
 
@@ -108,16 +125,9 @@ def _status_for(exc: ProjectBaseError) -> int:
     Returns:
         int: The HTTP status code for the response.
     """
-    if isinstance(exc, AuthenticationError):
-        return 401
-    if isinstance(exc, AuthorizationError):
-        return 403
-    if isinstance(exc, ResourceNotFoundError):
-        return 404
-    if isinstance(exc, ValidationError):
-        return 422
-    if isinstance(exc, StateTransitionError):
-        return 409
+    for exc_type, status in _STATUS_BY_EXCEPTION:
+        if isinstance(exc, exc_type):
+            return status
     return 400
 
 
@@ -350,6 +360,13 @@ _OPENAPI_TAGS: list[dict[str, str]] = [
     {
         "name": "onboarding",
         "description": "First-login guardian provisioning (idempotent family/user creation).",
+    },
+    {
+        "name": "consent",
+        "description": (
+            "Verifiable parental consent: starting KWS parent verification. "
+            "The two inbound KWS legs are excluded from the schema."
+        ),
     },
     {
         "name": "library",
@@ -756,6 +773,9 @@ def create_app() -> FastAPI:
     app.include_router(child_sessions.router)
     app.include_router(device_grants.router)
     app.include_router(onboarding.router)
+    # ADR-018 D1: the browser-facing start of parent verification. Unlike
+    # the two inbound KWS legs it IS in the schema: the SPA calls it.
+    app.include_router(consent.router)
     app.include_router(flags.router)
     app.include_router(notifications.router)
     app.include_router(offline_downloads.router)

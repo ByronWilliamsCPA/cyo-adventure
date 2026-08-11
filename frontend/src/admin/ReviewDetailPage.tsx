@@ -12,7 +12,12 @@ import { makeRescreenApi, type BookVerdictView } from './rescreenApi'
 import { FlagBadge } from '../guardian/FlagBadge'
 import { makePassageEditApi } from '../guardian/passageEditApi'
 import { Finding, passageDomId, Passage, RankedFinding } from '../guardian/ReviewPassage'
-import { makeReviewApi, type ReviewSurface, type Visibility } from '../guardian/reviewApi'
+import {
+  makeReviewApi,
+  type ReviewSurface,
+  type SendBackReasonCode,
+  type Visibility,
+} from '../guardian/reviewApi'
 import { StoryStructureSummary } from '../guardian/StoryStructureSummary'
 import { usePassageEdit } from '../guardian/usePassageEdit'
 import { buildReadThrough, pluralize } from './reviewDiff'
@@ -26,6 +31,25 @@ type LoadState =
   | { kind: 'ready'; surface: ReviewSurface }
 
 type ActionDialog = null | 'approve' | 'sendback' | 'archive' | 'rescreen'
+
+/**
+ * Send-back reason codes, in display order, paired with a short reviewer-
+ * facing label. Mirrors SendBackReasonCodeLiteral in
+ * src/cyo_adventure/api/schemas.py; the API is the source of truth, this is
+ * just the console's presentation of the same closed vocabulary.
+ */
+const SEND_BACK_REASON_CODES: ReadonlyArray<{ value: SendBackReasonCode; label: string }> = [
+  { value: 'safety_concern', label: 'Safety concern' },
+  { value: 'reading_level', label: 'Reading level' },
+  { value: 'coherence_error', label: 'Coherence error' },
+  { value: 'continuity_error', label: 'Continuity error' },
+  { value: 'weak_choices', label: 'Weak choices' },
+  { value: 'repetitive', label: 'Repetitive' },
+  { value: 'prose_quality', label: 'Prose quality' },
+  { value: 'unsatisfying_ending', label: 'Unsatisfying ending' },
+  { value: 'factual_error', label: 'Factual error' },
+  { value: 'other', label: 'Other' },
+]
 
 /**
  * Single-story re-screen trigger state (register A4's UI-only gap: the
@@ -74,6 +98,7 @@ export function ReviewDetailPage() {
   const [dialog, setDialog] = useState<ActionDialog>(null)
   const [visibility, setVisibility] = useState<Visibility>('family')
   const [reason, setReason] = useState('')
+  const [reasonCode, setReasonCode] = useState<SendBackReasonCode>('other')
   const [submitting, setSubmitting] = useState(false)
   const [actionError, setActionError] = useState(false)
   const [rescreenState, setRescreenState] = useState<RescreenState>({ kind: 'idle' })
@@ -240,6 +265,7 @@ export function ReviewDetailPage() {
   function closeDialog() {
     setActionError(false)
     setReason('')
+    setReasonCode('other')
     setRescreenState({ kind: 'idle' })
     setDialog(null)
   }
@@ -834,7 +860,9 @@ export function ReviewDetailPage() {
               <Button
                 variant="danger"
                 disabled={!reasonValid || submitting}
-                onClick={() => void runAction(() => reviewApi.sendBack(storybookId, reason.trim()))}
+                onClick={() =>
+                  void runAction(() => reviewApi.sendBack(storybookId, reason.trim(), reasonCode))
+                }
               >
                 Confirm send back
               </Button>
@@ -846,6 +874,19 @@ export function ReviewDetailPage() {
               We could not send this story back. Please try again.
             </p>
           ) : null}
+          <label className="review-detail__reason-code">
+            Reason category (for calibration)
+            <select
+              value={reasonCode}
+              onChange={(event) => setReasonCode(event.target.value as SendBackReasonCode)}
+            >
+              {SEND_BACK_REASON_CODES.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
           <label className="review-detail__reason">
             Reason for sending back
             <textarea

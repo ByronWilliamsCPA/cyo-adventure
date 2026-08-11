@@ -23,6 +23,11 @@ from pydantic import (
 )
 
 from cyo_adventure.api.residence_countries import ASSIGNED_RESIDENCE_COUNTRY_CODES
+
+# ADR-018 D1: the three-valued verification state, imported rather than
+# restated so the wire contract cannot drift from the function that
+# computes it (consent/service.py::verification_status).
+from cyo_adventure.consent import VerificationStatus
 from cyo_adventure.db.models import (
     _PERSONALIZATION_RING2_SLOT_TYPE_VALUES,
     RING_GOAL_DAYS_MAX,
@@ -1734,6 +1739,26 @@ class CharacterListView(BaseModel):
 # Approval schemas
 # ---------------------------------------------------------------------------
 
+# Closed-vocabulary calibration signal for a reviewer's send-back decision
+# (review-scorecard calibration corpus). Mirrors the KidFlagReasonLiteral
+# pattern above: named once, referenced from the request and response models
+# below so the wire contract and any future persistence stay in lockstep.
+# "other" is the deliberate escape hatch for a reason this list does not
+# anticipate; the free-text `reason` field on SendBackRequest still carries
+# the reviewer's prose for that case.
+SendBackReasonCodeLiteral = Literal[
+    "safety_concern",
+    "reading_level",
+    "coherence_error",
+    "continuity_error",
+    "weak_choices",
+    "repetitive",
+    "prose_quality",
+    "unsatisfying_ending",
+    "factual_error",
+    "other",
+]
+
 
 class SendBackRequest(BaseModel):
     """Body for the send-back endpoint."""
@@ -1749,6 +1774,24 @@ class SendBackRequest(BaseModel):
     reason: Annotated[
         str, StringConstraints(strip_whitespace=True, min_length=1, max_length=2000)
     ]
+    # #ASSUME: data integrity: required, not optional. Requiring it is what
+    # makes "every send-back has a calibration-ready reason code" hold
+    # structurally rather than by reviewer discipline. The free-text `reason`
+    # above stays alongside it, unchanged, for the prose a reviewer still
+    # wants to leave.
+    #
+    # The in-repo callers are `api/approval.py` (the admin console review
+    # dialog) and **the committed Postman collection**, which is a caller and
+    # was updated in the same change. An earlier version of this note claimed
+    # there was no caller a required field could break; the collection was
+    # exactly that, sent no reason_code, took a 422 and failed the newman job.
+    # There is no *external* integrator, which is the narrower claim that is
+    # actually true. Anyone adding a required field to this surface should
+    # treat the collection as a caller, because it does not look like one.
+    # #VERIFY: test_send_back_requires_reason_code covers requiredness (422
+    # when omitted); the **newman job** is what catches a caller this change
+    # forgot to update, which is the assumption above rather than the field.
+    reason_code: SendBackReasonCodeLiteral
 
 
 class SubmittedView(BaseModel):
@@ -1791,6 +1834,7 @@ class SentBackView(BaseModel):
     id: str
     status: Literal["needs_revision"]
     reason: str
+    reason_code: SendBackReasonCodeLiteral
 
 
 class ArchivedView(BaseModel):
@@ -2133,6 +2177,23 @@ class MeResponse(BaseModel):
     is_admin: bool
     family_id: str
     profile_ids: list[str]
+    # ADR-018 D1. Two fields rather than one because they answer independent
+    # questions: whether this tier gates child-profile creation on parent
+    # verification at all, and where this caller stands. A client needs both
+    # to decide between routing to the verification screen and leaving the
+    # guardian alone.
+    verification_required: bool
+    # #ASSUME: security: reported as "none" for every caller when
+    # ``verification_required`` is False, rather than queried and reported
+    # accurately, so this endpoint keeps costing zero database round trips on
+    # the tiers where nothing consumes the answer. It is never the basis of an
+    # enforcement decision: the gates in api/profiles.py and
+    # api/admin_profiles.py re-derive the same fact from the database at the
+    # point of use, so a client that ignores or misreads this field cannot
+    # create a child profile it should not.
+    # #VERIFY: tests/integration/test_me.py::
+    # test_me_reports_no_verification_state_while_the_flag_is_off.
+    verification_status: VerificationStatus
 
 
 class FamilyExportView(BaseModel):
@@ -2433,6 +2494,58 @@ class OnboardingView(BaseModel):
     # User.consent_accepted_at is not None; always False for a non-guardian
     # (admin/child) row, since VPC consent is a guardian-only concept.
     consent_recorded: bool
+    # ADR-018 D1: the same PAIR of fields MeResponse carries, surfaced here as
+    # well because the two responses cover different halves of the sign-in
+    # sequence and neither covers both. Verification sits BEFORE admin
+    # approval, and api/deps.py::require_principal refuses any non-"active"
+    # user, so GET /me is unreachable for exactly the guardian who needs to be
+    # told to verify. This is how that guardian's client learns it.
+    #
+    # Both fields, not just the status, for the reason MeResponse gives: with
+    # the flag off every caller reads "none", which is also what a guardian who
+    # simply has not started yet reads. Without the boolean a client cannot
+    # tell those apart, and the only other place it is published is the
+    # response this caller cannot reach.
+    verification_required: bool
+    verification_status: VerificationStatus
+
+
+class KwsVerificationStartBody(BaseModel):
+    """What a parent supplies to begin verification (ADR-018 D1).
+
+    Note what is absent: an email address. The address KWS mails is taken from
+    the caller's verified token claim (falling back to the address recorded on
+    their own ``User`` row), never from this body, so the endpoint cannot be
+    used to mail an arbitrary third party. See ``api/consent.py`` for the full
+    reasoning.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    # The location that decides which verification methods KWS offers this
+    # parent, so a compliance input rather than a preference. Reuses the
+    # ISO-membership-checked ResidenceCountry type: db/models.py's CHECK also
+    # admits an ISO 3166-2 subdivision ("US-CA"), but nothing collects one
+    # yet, and admitting a shape at the wire that no screen produces would be
+    # an untested path rather than a feature.
+    location: ResidenceCountry
+    # The parent's language for KWS's emails and web screens (ISO 639-1).
+    language: str = Field(default="en", pattern=r"^[a-z]{2}$")
+
+
+class KwsVerificationStartView(BaseModel):
+    """The attempt a start request created.
+
+    Carries no email address and no KWS URL: the parent receives the link by
+    email, and the client's job after this response is to wait and poll, not
+    to navigate anywhere.
+    """
+
+    attempt_id: str
+    # Always "sent" on this response; a resolved attempt is reported through
+    # the verification_status field of GET /me and POST /onboarding instead.
+    status: str
+    requested_at: datetime
 
 
 # ---------------------------------------------------------------------------
@@ -3186,6 +3299,7 @@ _ERROR_DESCRIPTIONS: dict[int, str] = {
     403: "Authenticated, but not permitted to act on this resource.",
     404: "The referenced resource does not exist.",
     409: "The action conflicts with the resource's current state.",
+    429: "A per-account quota was exhausted; the action may succeed later.",
 }
 
 

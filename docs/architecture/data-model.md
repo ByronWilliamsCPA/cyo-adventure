@@ -100,17 +100,19 @@ erDiagram
         varchar(64) consent_ip "NULL; evidentiary only"
         varchar(2) residence_country "NULL; ISO 3166-1 alpha-2; O-117 jurisdiction signal"
         timestamptz adulthood_attested_at "NULL; O-119 self-declared adult attestation"
+        uuid consent_verification_id FK "NULL; which KWS attempt corroborated this consent; ON DELETE SET NULL"
     }
 
     kws_verification {
         uuid id PK "IS the correlation; no default, caller supplies"
         uuid user_id FK "ON DELETE CASCADE"
         varchar(16) kws_environment "test or production"
-        varchar(16) status "sent, verified, or failed"
+        varchar(16) status "sent, verified, failed, or send_failed"
         timestamptz requested_at
         timestamptz resolved_at "NULL while sent"
         varchar(128) transaction_id "NULL; KWS's opaque id"
         jsonb enabled_methods "snapshot at send time, never a live read"
+        varchar(16) location "NULL; sent to KWS, selected the offered methods"
     }
 
     child_profile {
@@ -527,7 +529,7 @@ construction.
 | id | UUID PK | IS the correlation, not a surrogate key. No server or ORM default: the value handed to KWS in `externalPayload` and the value a delivery is looked up by must be the same value, so a caller that forgets to supply it gets a NOT NULL failure rather than a second, unmatchable id |
 | user_id | UUID FK | user.id; ON DELETE CASCADE (an attempt is personal data about the guardian who started it), indexed |
 | kws_environment | VARCHAR(16) | `test` or `production`, CHECK-constrained at rest. The KWS API reports nothing that identifies which environment answered, so this column is the only thing separating a sandbox attempt from evidence about a real parent |
-| status | VARCHAR(16) | `sent` (default), `verified`, or `failed`; CHECK-constrained at rest |
+| status | VARCHAR(16) | `sent` (default), `verified`, `failed`, or `send_failed`; CHECK-constrained at rest. The last two are not interchangeable: `failed` is KWS's answer *about a parent*, arriving over the inbound leg, while `send_failed` is our own outbound call giving up and says nothing about the parent at all. Collapsing them would record a false negative about an adult nobody ever asked, and would tell the delivery-health alarm the return path works when only our timeout handler ran |
 | requested_at | TIMESTAMPTZ | Send time, `server_default now()` |
 | resolved_at | TIMESTAMPTZ NULL | NULL while `sent`; a CHECK enforces `(status = 'sent') = (resolved_at IS NULL)` so a "still waiting" filter can never disagree with the timestamp |
 | transaction_id | VARCHAR(128) NULL | KWS's opaque id, NULL until a delivery reports one |

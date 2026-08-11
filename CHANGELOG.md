@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.76.0] - 2026-08-11
+
+### Features
+
+- **consent**: Gate child-profile creation on KWS parent verification
+  ([#681](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/681),
+  [`15a6d52`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/15a6d52079370e58142bdca918c6b0599ed6a5b8))
+
+
+## [0.75.0] - 2026-08-11
+
+### Features
+
+- **approval**: Require a structured reason code on storybook send-back
+  ([#684](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/684),
+  [`f231725`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/f2317253ff29ec8cbceaeab80d37ebee93ca2ed4))
+
+
 ## [0.74.3] - 2026-08-11
 
 ### Bug Fixes
@@ -3366,6 +3384,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.76.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.75.0...v0.76.0
+[0.75.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.74.3...v0.75.0
 [0.74.3]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.74.2...v0.74.3
 [0.74.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.74.1...v0.74.2
 [0.74.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.74.0...v0.74.1
