@@ -1,0 +1,272 @@
+{
+ "stratum": "decisional",
+ "premise": {
+  "engine": "earned-entry-gauntlet",
+  "dramatic_question": "Will the friends earn their way through every test the old bell-founder built, honestly, and choose well once they reach what he was protecting?",
+  "resolution_space": [
+   "They stay in the pattern room to read the founder's archive instead of pressing on, and a copied page of the note goes home with them for later.",
+   "They turn back from the slick catwalk crossing before the pendulum works, choosing a calm retreat over the risk of the far side.",
+   "They guess at the dial without the logic they were meant to earn, and one of the maker's own protections freezes the setting until a keeper resets it.",
+   "They force the dial, jam a pull, and the mechanism they cannot free needs a workshop tool nobody brought, ending the attempt honestly.",
+   "They follow the hidden test behind the dial to its own end and find the maker's still-lived-in workshop, accepting stewardship of it.",
+   "They pass the dial, reach the vault, and choose to carry the founder's recovered story back to the settlement so he is remembered properly.",
+   "They pass the dial, reach the vault, and choose to leave everything exactly as found, keeping the discovery a private matter among themselves.",
+   "They pass the dial, reach the vault, and reach for something to keep, tripping the maker's gentle alarm so the keeper finds them mid-return."
+  ]
+ },
+ "nodes": {
+  "n_open": {
+   "choice_semantics": {
+    "c_open": "Stepping up to read the pinned challenge as an invitation worth taking on together, not a warning to walk past."
+   },
+   "beat_hint": "The friends reach the sealed clocktower, find a coded challenge in bell-peal notation pinned to the door, and decide as a group to take it seriously rather than shrug it off.",
+   "affect": {
+    "target": "curiosity sparking into shared resolve",
+    "forbid": ["dread", "despair", "hopelessness"]
+   }
+  },
+  "n_start": {
+   "choice_semantics": {
+    "c_examine": "Sitting down with the pinned note's peal-notation and working the rhythm out line by line before touching the building at all.",
+    "c_door": "Turning away from the note to run hands over the tower's own stonework and fittings, looking for a way in the builder himself might have left.",
+    "c_keeper": "Going to find the person who tends the tower and asking outright, betting a conversation gets them further than a shortcut."
+   },
+   "beat_hint": "Standing at the sealed door, the friends decide how they will go about answering Josiah Vane's challenge: work the note, search the building, or find the keeper.",
+   "affect": {
+    "target": "eager deliberation among real options",
+    "forbid": ["anxiety", "paralysis"]
+   }
+  },
+  "n_note": {
+   "choice_semantics": {
+    "c_note_key": "Going to fetch the actual key the solved note named, checking the cipher's answer against something physical before moving further.",
+    "c_note_inside": "Trusting the solved note completely and heading straight for the opening it named, no extra confirmation needed."
+   },
+   "beat_hint": "Worked through pull by pull, the note's rhythm resolves and names a spare foundry key hidden behind a loose flue grate.",
+   "affect": {
+    "target": "quiet satisfaction of a code that finally gives",
+    "forbid": ["impatience", "boredom"]
+   }
+  },
+  "n_door": {
+   "choice_semantics": {
+    "c_door_force": "Committing to the low route: working the concealed latch they found under the tuning board's lip and squeezing through on persistence alone.",
+    "c_door_window": "Leaving the latch aside for a harder, higher route: climbing for the window instead of trusting the low gap."
+   },
+   "beat_hint": "Searching the tower's own fittings instead of the note, the friends find a concealed latch tucked under a tuning board's lip, a possible way in they found themselves.",
+   "affect": {
+    "target": "stubborn, hands-on persistence",
+    "forbid": ["frustration tipping into anger"]
+   }
+  },
+  "n_keeper": {
+   "choice_semantics": {
+    "c_keeper_enter": "Accepting the keeper's offer right away and following him in through the casting floor door.",
+    "c_keeper_story": "Holding off on going in yet to ask the keeper what he actually knows about why the tower tests people at all."
+   },
+   "beat_hint": "The friends seek out the settlement's last bell-ringer, and something honest and unhurried in how they approach him earns his measuring look, then his offer to walk them in.",
+   "affect": {
+    "target": "respectful patience being read and rewarded",
+    "forbid": ["deference curdling into fear"]
+   }
+  },
+  "n_keyhunt": {
+   "choice_semantics": {
+    "c_keyhunt_in": "Taking the confirmed key, now proven against the flue grate exactly as the note said, and going straight in with it."
+   },
+   "beat_hint": "Behind the loose flue grate, the spare foundry key waits precisely where the decoded note pointed, proving the cipher's logic sound.",
+   "affect": {
+    "target": "the click of proof landing",
+    "forbid": ["smugness"]
+   }
+  },
+  "n_keeper_story": {
+   "choice_semantics": {
+    "c_story_in": "Thanking the keeper for the story and following him in now, understanding what the tower is actually for."
+   },
+   "beat_hint": "Before leading them inside, the keeper tells them about Josiah Vane, the founder who built the tower's tests decades ago to find the right kind of finder, not to keep people out.",
+   "affect": {
+    "target": "a history landing with unexpected weight",
+    "forbid": ["pity", "sentimentality overplayed"]
+   }
+  },
+  "n_window": {
+   "choice_semantics": {
+    "c_window_in": "Finishing the climb through the high window and easing down inside, seeing the nerve route all the way through."
+   },
+   "beat_hint": "Choosing daring over the low latch, the friends climb to the high window and get themselves past the seal on nerve alone.",
+   "affect": {
+    "target": "bright, controlled daring",
+    "forbid": ["terror", "recklessness glamorized"]
+   }
+  },
+  "n_inside": {
+   "choice_semantics": {
+    "c_inside_stairs": "Choosing the climbing stair, the tower's test of endurance and patience.",
+    "c_inside_study": "Choosing the pattern room, the tower's test of close reading and scholarship.",
+    "c_inside_pendulum": "Choosing the pendulum works, the tower's test of nerve near the moving machinery.",
+    "c_inside_basement": "Choosing the descent, the tower's test of steadiness in the dark foundation."
+   },
+   "beat_hint": "However they got past the seal, the friends now stand inside and see four ways forward, each clearly its own kind of test.",
+   "affect": {
+    "target": "wonder at the tower's inner workings, weighing a real choice",
+    "forbid": ["overwhelm"]
+   }
+  },
+  "n_stairs": {
+   "choice_semantics": {
+    "c_stairs_face": "Pressing on up to the clockface with what the fork rack taught them about counting pulls."
+   },
+   "beat_hint": "Climbing the tight stairwell, the friends pass a rack of tuning forks sorted low to high, each labeled with a pull count, and a small crooked hand bell tucked on a step, the founder's own failed first casting kept as a joke; between the two, enough of the dial's counting logic comes clear to read it later.",
+   "affect": {
+    "target": "steady effort paying off in small discoveries",
+    "forbid": ["exhaustion played as suffering"]
+   }
+  },
+  "n_study": {
+   "choice_semantics": {
+    "c_study_face": "Taking what the tuning hammer's scratched notes taught and moving on to the clockface with the logic in hand.",
+    "c_study_logs": "Staying in the pattern room to read through the founder's records instead of going on to the dial at all."
+   },
+   "beat_hint": "In the pattern room, the founder's own tuning hammer, its handle scratched with notes keyed to each pull, teaches the dial's logic outright, while sunlight through the coloured glass transom scatters bell-shaped light across shelves of records that tug at the friends to linger.",
+   "affect": {
+    "target": "absorbed curiosity and the pull of a good archive",
+    "forbid": ["guilt", "restlessness"]
+   }
+  },
+  "n_pendulum": {
+   "choice_semantics": {
+    "c_pendulum_oil": "Crossing the slick catwalk handhold by handhold, past the swinging cradles, toward what waits on the far side.",
+    "c_pendulum_giveup": "Deciding the crossing isn't worth the risk and turning back the way they came instead."
+   },
+   "beat_hint": "By the mould bench, a brass calibration scale climbs in notches that match the peal's own counting, and past it the bell-frame catwalk, planks slick with tallow, threads between the swinging cradles toward something the friends can just glimpse on the far side.",
+   "affect": {
+    "target": "bright nerve held under control",
+    "forbid": ["terror", "panic"]
+   }
+  },
+  "n_basement": {
+   "choice_semantics": {
+    "c_basement_face": "Climbing back up to the clockface carrying what the aligned light and the old apron taught them about the founder's counting."
+   },
+   "beat_hint": "Down among the casting floor's roots, the friends find Josiah Vane's own leather apron still hanging, pockets worn to the shape of the tools he used daily, and watch noon light through the belfry louvers fall exactly across a marked floor plank, lining up with the peal's count.",
+   "affect": {
+    "target": "hushed wonder in the dark",
+    "forbid": ["fear of the dark played up"]
+   }
+  },
+  "n_clockface": {
+   "choice_semantics": {
+    "c_face_correct": "Setting the dial using the logic actually earned in the trial room, trusting what was worked out.",
+    "c_face_jam": "Setting the dial by force, pushing past a pull that resists instead of reasoning it through.",
+    "c_face_panel": "Stepping back from the dial's face to check whether there's another way at this test hidden around the back.",
+    "c_face_random": "Guessing at a setting without the earned logic, betting on luck instead."
+   },
+   "beat_hint": "Standing before the great dial, the friends read its own engraved instructions: what to set the pulls to, and that guessing carries a real cost.",
+   "affect": {
+    "target": "focused resolve facing a real test",
+    "forbid": ["dread", "recklessness glamorized"]
+   }
+  },
+  "n_setcorrect": {
+   "choice_semantics": {
+    "c_correct_vault": "Stepping through the opening the correctly set dial has earned them."
+   },
+   "beat_hint": "The pulls fall into place exactly as the earned logic predicted, and the dial yields on the maker's own terms.",
+   "affect": {
+    "target": "clean, earned triumph",
+    "forbid": ["smugness", "gloating"]
+   }
+  },
+  "n_setjam": {
+   "choice_semantics": {
+    "c_jam_oil": "Finding and releasing the cradle's safety catch, easing the jammed pull back to rest the way the machine itself allows.",
+    "c_jam_stuck": "Accepting that the jam cannot be freed here and this attempt ends, mechanism locked."
+   },
+   "beat_hint": "Forcing the dial jams a pull hard, and the mechanism locks rather than giving way, an honest consequence rather than a punishment.",
+   "affect": {
+    "target": "composed problem-solving under a real setback",
+    "forbid": ["blame", "humiliation"]
+   }
+  },
+  "n_backpanel": {
+   "choice_semantics": {
+    "c_panel_vault": "Solving the hidden test just enough to open the same way to the vault the front test would have given them.",
+    "c_panel_secret": "Following the hidden test's own logic further, toward whatever the maker tucked back there specifically, instead of toward the vault."
+   },
+   "beat_hint": "Behind the dial's face, the friends find a second, smaller test tucked out of sight, meant only for whoever thought to look.",
+   "affect": {
+    "target": "quiet delight at finding what wasn't advertised",
+    "forbid": ["greed", "entitlement"]
+   }
+  },
+  "n_vault": {
+   "choice_semantics": {
+    "c_vault_share": "Deciding to tell the settlement what they found and let Josiah Vane's story become public again.",
+    "c_vault_keep": "Deciding to leave the vault as found and keep what happened here a private matter among the friends.",
+    "c_vault_grab": "Reaching to take something from the vault for themselves instead of just reading and leaving it."
+   },
+   "beat_hint": "Inside, the friends find what the trial protected: a letter in Josiah Vane's own hand, his marking chisel kept oiled as though he meant to come back for it, and a few modest things meant for whoever earned the room, nothing like treasure.",
+   "affect": {
+    "target": "hushed reverence at what the trial protected",
+    "forbid": ["greed", "entitlement", "triumphalism"]
+   }
+  },
+  "n_end_library": {
+   "beat_hint": "Choosing to stay in the pattern room, the friends dig into its archive and find a page holding a copy of the maker's note, carried home so the translation can continue another day.",
+   "affect": {
+    "target": "warm, unhurried curiosity with nothing left unfinished that can't wait",
+    "forbid": ["shame", "regret"]
+   }
+  },
+  "n_end_giveup": {
+   "beat_hint": "Turning back from the slick catwalk, the moment of hesitation catches them in time and the retreat is calm and deliberate rather than a scramble.",
+   "affect": {
+    "target": "settled self-respect in choosing not to push a real risk",
+    "forbid": ["cowardice implied", "mockery"]
+   }
+  },
+  "n_end_timeout": {
+   "beat_hint": "Guessing at the dial without the earned logic trips one of the maker's own protections, freezing the setting until a keeper can reset it, a fair and un-humiliating stop.",
+   "affect": {
+    "target": "matter-of-fact acceptance of a fair consequence",
+    "forbid": ["humiliation", "permanent damage implied"]
+   }
+  },
+  "n_end_stuck": {
+   "beat_hint": "The jammed linkage needs a workshop tool nobody brought, exactly the kind the maker always kept on hand, so this attempt ends here with the door to try again left wide open.",
+   "affect": {
+    "target": "philosophical calm at an honest stopping point",
+    "forbid": ["blame", "permanent damage implied"]
+   }
+  },
+  "n_end_secret": {
+   "beat_hint": "Past the hidden test, the friends find the maker's living workshop, every tool still racked and labeled for a workday that never resumed, and his notes name whoever finds the room its steward, a responsibility they accept as if he had been waiting for them.",
+   "affect": {
+    "target": "wonder settling into quiet, earned belonging",
+    "forbid": ["exploitation of the find"]
+   }
+  },
+  "n_end_hero": {
+   "beat_hint": "Carrying the recovered story back to the settlement and sharing it openly, the friends see Josiah Vane remembered properly at last, his name spoken again where it had gone quiet.",
+   "affect": {
+    "target": "warm, communal pride",
+    "forbid": ["reward framed as riches"]
+   }
+  },
+  "n_end_keepsake": {
+   "beat_hint": "Leaving the vault exactly as they found it, the friends keep only the story of what they saw, letting the objects stay where the maker left them.",
+   "affect": {
+    "target": "private, contented satisfaction shared only among the friends",
+    "forbid": ["selfishness implied"]
+   }
+  },
+  "n_end_caught": {
+   "beat_hint": "Reaching for something in the vault trips the safeguard, a trip-wire strung to a hand bell that rings out across the yard, and second thoughts slow them just enough for the keeper's evening rounds to find them mid-return, everything set right and honestly owned.",
+   "affect": {
+    "target": "sheepish but safe relief at a consequence that costs nothing lasting",
+    "forbid": ["humiliation", "punishment beyond returning it", "theft rewarded"]
+   }
+  }
+ }
+}
