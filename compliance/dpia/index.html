@@ -3394,6 +3394,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#28-a-guardians-email-is-disclosed-to-a-new-processor-before-and-regardless-of-any-outcome-medium" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.8 A guardian's email is disclosed to a new processor before, and regardless of, any outcome (Medium)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3563,6 +3574,21 @@ limit the blast radius:</p>
   on an unenumerated method meeting 312.5(b)(1) without FTC approval; the 312.5(b)(3) Safe
   Harbor route buys certainty, not permission. This is risk reduction, not authorisation.</li>
 </ul>
+<p><strong>Update 2026-08-10</strong>: the additive layering the first bullet anticipated is now built. A Kids Web
+Services adult check gates child-profile creation ahead of the consent capture, wired on staging
+against the vendor's Test environment and switched off in production. It does not close this
+section, and this DPIA makes no claim that it does: the vendor's own documentation states that its
+Parent Verification service is not itself a COPPA consent mechanism, the consent artifact is still
+the typed name, and a Test-environment verification is not evidence of anything (O-123). What the
+gate <em>does</em> create is a new processor disclosure, assessed separately at <strong>2.8</strong>.</p>
+<p>One further owner ruling the same day, recorded here so this section is not read as more settled
+than it is: 312.5(b)(2)(ii)'s notification limb is <strong>accepted as satisfied</strong> on the reading that the
+$0.05 capture and its 8-13 business day refund post as two discrete statement entries, and the
+question is withdrawn from counsel. The structural limb was answered by observation; this limb was
+not, and could not be, because the Test environment produces no real notification by construction.
+<strong>The residual risk of this section stays High.</strong> An owner reading of rule text taken without
+counsel review is a decision about who carries the risk, not a reduction of it. Full acceptance
+record, with basis, compensating controls, and expiry: assurance-register row O-122.</p>
 <p><strong>Residual risk</strong>: <strong>High, and now accepted rather than pending.</strong> It stays High: the 2026-08-09
 owner ruling withdrew the question from counsel, which removes the route by which the risk would
 have been resolved, not the risk. This remains the single highest-priority open item this DPIA
@@ -3619,6 +3645,51 @@ stale-deactivated-profile <code>reading_state</code>/<code>completion</code>/<co
 retention table server-side, not just as a stated policy.</p>
 <p><strong>Residual risk</strong>: Low. <code>generation_job.report</code>'s purge (ADR-007) predates this DPIA; both new
 jobs mirror its idempotent, pg_cron-optional design.</p>
+<h3 id="28-a-guardians-email-is-disclosed-to-a-new-processor-before-and-regardless-of-any-outcome-medium">2.8 A guardian's email is disclosed to a new processor before, and regardless of, any outcome (Medium)<a class="headerlink" href="#28-a-guardians-email-is-disclosed-to-a-new-processor-before-and-regardless-of-any-outcome-medium" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p>Added 2026-08-10, when the KWS adult-check gate was built. Wired on the staging tier against
+the vendor's Test environment only; switched off in production. Assessed now rather than at
+switch-on, because the disclosure is inherent to the design and does not become assessable
+later.</p>
+</blockquote>
+<p><strong>Risk</strong>: to establish that an account holder is an adult, we send their email address to Kids
+Web Services, operated by Epic Games. Three properties make this different in kind from the
+other processor disclosures in 2.1:</p>
+<ul>
+<li><strong>The disclosure happens at the start of the check, not on success.</strong> An adult whose check is
+  refused, who abandons it, or who never creates a child profile has still had their address
+  disclosed. There is no ordering that confirms an adult without disclosing first.</li>
+<li><strong>It reaches people who never become users.</strong> Every other processor in the RoPA receives data
+  about someone who is already a customer. This one receives data about applicants, including
+  rejected ones.</li>
+<li><strong>It is a new processor with no executed DPA.</strong> <code>processor-dpa-checklist.md</code> carries an Epic
+  row, added alongside this section, but that row records no DPA requested, no DPA reviewed, and
+  no transfer mechanism nameable while the counterparty entity is unresolved. The gap is the
+  agreement, not the tracking: the processor-only claim asserted for every vendor in
+  <code>privacy-notice.md</code> is, for this vendor, currently unbacked.</li>
+</ul>
+<p><strong>Mitigation</strong>: the disclosure is minimised at the point of design rather than by policy. The
+outbound body carries the adult's email, the country they picked, a language tag, and an opaque
+reference number, and nothing else; <code>assert_prompt_pii_safe</code> is not involved because no child
+data is in scope to screen. The <code>kws_verification</code> table has <strong>no</strong> email column under any name,
+enforced by a source-text guard, so the address is transmitted and then not retained by us. The
+vendor tells us only confirmed or refused, never the method used, so we do not receive payment
+or identity artifacts back. Anti-automation limits (an open-attempt refusal plus an hourly cap)
+bound how many addresses one account can cause to be disclosed, which also blocks the obvious
+abuse of the endpoint as an unmetered mailer.</p>
+<p><strong>Residual risk</strong>: <strong>Medium, and unresolved on three fronts.</strong> (a) No DPA is executed, so the
+Article 28 basis for this transfer does not currently exist on paper. (b) Epic operates KWS from
+both US and EU entities and we have not established which receives our traffic, so neither the
+"all processors are US-based" statement in the privacy notice nor any transfer mechanism covers
+this row. &copy; Whether the disclosure needs surfacing to the guardian <em>before</em> they trigger the
+send, rather than only in the notice, is a live question. All three are carried as <code>[COUNSEL: ...]</code>
+brackets in <code>privacy-notice.md</code>'s processor section. <strong>This risk must be resolved before the
+production flag is switched on</strong>, not before Track 2: unlike 2.1 and 2.2, switching it on is a
+discrete, reversible act entirely under our control, so there is no reason to accept it in the
+meantime. Tracked at assurance-register row <strong>O-125</strong>, added with this assessment. O-123 and
+O-124 are switch-on preconditions for the same feature but are not substitutes for it: they ask
+whether the <em>evidence</em> a verification produces is sound (which vendor environment, which permitted
+methods), while this one asks whether the <em>disclosure</em> that produces the evidence is lawful at all.</p>
 <h2 id="3-consultation">3. Consultation<a class="headerlink" href="#3-consultation" title="Permanent link">&para;</a></h2>
 <p>No formal consultation with data subjects (guardians) has been performed for this DPIA draft;
 at this deployment scale, the controller and the primary user base substantially overlap
@@ -3626,10 +3697,14 @@ at this deployment scale, the controller and the primary user base substantially
 expected before this DPIA can be considered complete, given the scale caveat above.]</p>
 <h2 id="4-overall-conclusion-draft">4. Overall conclusion (draft)<a class="headerlink" href="#4-overall-conclusion-draft" title="Permanent link">&para;</a></h2>
 <p>The processing is proportionate to its stated purpose, with data minimization doing most of
-the structural risk-reduction work. Two items carry genuine residual risk and should be
-resolved before Track 2 public launch increases scale: <strong>2.1</strong> (semantic PII gap in free
-text, G-13) and <strong>2.2</strong> (counsel confirmation of the VPC method). Everything else assessed
-here is Low residual risk given the mitigations already shipped.</p>
+the structural risk-reduction work. Three items carry genuine residual risk, and they do not
+share a deadline. <strong>2.1</strong> (semantic PII gap in free text, G-13) and <strong>2.2</strong> (the VPC method,
+now an accepted exception rather than an open question) should be resolved before Track 2
+public launch increases scale. <strong>2.8</strong> (disclosing a guardian's email to a new processor with
+no executed DPA) has an earlier and firmer trigger: it must be resolved before the production
+KWS flag is switched on, which is a discrete act under our own control rather than a
+scale-driven horizon. Everything else assessed here is Low residual risk given the mitigations
+already shipped.</p>
 <p>[COUNSEL: this conclusion is a draft synthesis, not a sign-off. Please review each section,
 resolve the bracketed items, and record your own conclusion before this DPIA is treated as
 complete for Article 35 purposes.]</p>
@@ -3656,11 +3731,19 @@ complete for Article 35 purposes.]</p>
 </tr>
 <tr>
 <td><code>privacy-notice.md</code></td>
-<td>The guardian-facing document describing the same processing this DPIA assesses internally; both carry the same <code>[COUNSEL: ...]</code> flag on the VPC method question (2.2).</td>
+<td>The guardian-facing document describing the same processing this DPIA assesses internally; both carry the same <code>[COUNSEL: ...]</code> flag on the VPC method question (2.2), and the processor-table brackets added for the KWS disclosure are the guardian-facing face of Section 2.8.</td>
 </tr>
 <tr>
 <td>ADR-018</td>
-<td>D1's VPC decision is the direct subject of Section 2.2.</td>
+<td>D1's VPC decision is the direct subject of Section 2.2, and the KWS gate built under it is the subject of Section 2.8.</td>
+</tr>
+<tr>
+<td><code>docs/security/assurance-register.md</code></td>
+<td>Rows O-122 (VPC method, accepted exception) and O-125 (KWS processor disclosure, added with Section 2.8) are where these risks are tracked to closure; O-123 and O-124 are the adjacent switch-on preconditions.</td>
+</tr>
+<tr>
+<td><code>processor-dpa-checklist.md</code></td>
+<td>Carries the Epic/KWS row added with Section 2.8; that row's unexecuted DPA and undetermined counterparty entity are the first of Section 2.8's three unresolved fronts.</td>
 </tr>
 </tbody>
 </table>
@@ -3686,7 +3769,7 @@ complete for Article 35 purposes.]</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 10, 2026 18:04:11 UTC">August 10, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 11, 2026 16:05:55 UTC">August 11, 2026</span>
   </span>
 
     

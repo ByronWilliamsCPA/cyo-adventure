@@ -1221,6 +1221,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="7. How you find out something broke">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-kws-parent-verification-delivery-health" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 KWS parent-verification delivery health
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -3849,6 +3866,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="7. How you find out something broke">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-kws-parent-verification-delivery-health" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 KWS parent-verification delivery health
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -4444,13 +4478,16 @@ and any deviation found, and flip the roadmap's Phase 5 "backups and a tested re
 only after that drill succeeds.</p>
 </blockquote>
 <h2 id="7-how-you-find-out-something-broke">7. How you find out something broke<a class="headerlink" href="#7-how-you-find-out-something-broke" title="Permanent link">&para;</a></h2>
-<p>There are two scheduled, alerting synthetic checks today, both following the same pattern: on
-failure, find-or-open a GitHub issue labeled <code>e2e-alert</code> whose title starts with a workflow-specific
-marker, and comment on it with the failing run's URL and date, rather than leaving a red run nobody
-checks the Actions tab for. The issue stays open and accumulates one comment per failing run until
-someone resolves the underlying problem and closes it (a fresh issue opens after the next failure).
-<strong>Watch (or filter Issues by) the <code>e2e-alert</code> label</strong> to be notified through GitHub's native issue
-notifications; there is no other outbound channel (no Slack/email/pager integration) wired up.</p>
+<p>Every alerting scheduled job follows the same pattern: on failure, find-or-open a GitHub issue whose
+title starts with a workflow-specific marker, and comment on it with the failing run's URL and date,
+rather than leaving a red run nobody checks the Actions tab for. The issue stays open and accumulates
+one comment per failing run until someone resolves the underlying problem and closes it (a fresh
+issue opens after the next failure). There is no other outbound channel: no Slack, email, or pager
+integration is wired up, so <strong>watch (or filter Issues by) both labels</strong> below to be notified through
+GitHub's native issue notifications.</p>
+<p>The label splits by what kind of job it is, which is deliberate rather than historical accident:
+<code>e2e-alert</code> for the E2E tiers, <code>ci-failure</code> for ops and quality jobs. <code>grep -rn "labels: '" .github/workflows/</code>
+lists the current producers of each; the two E2E tiers are:</p>
 <ul>
 <li><strong><code>.github/workflows/e2e-prod.yml</code></strong> ("E2E (production)"): runs the Playwright <code>e2e-prod</code> tier
   daily (<code>30 13 * * *</code> UTC) against the live production URL (<code>https://cyo.williamshome.family</code> by
@@ -4463,13 +4500,98 @@ notifications; there is no other outbound channel (no Slack/email/pager integrat
   devices racing a genuine 409 through the offline conflict dialog) that the mocked test suite
   cannot. Its alert marker is <code>[e2e-real-nightly]</code>.</li>
 </ul>
-<p>A staging counterpart (<code>e2e-staging.yml</code>) and a corresponding <code>[e2e-staging]</code>-marker alerting step
-are planned to land via PR #268 (per <code>e2e-prod.yml</code>'s own header comment) but do not exist on this
-branch yet; today staging failures only produce a Playwright trace artifact on a red CI run, with
-no issue-based alert. <code>docs/testing/</code> (a fuller test-strategy doc set) is likewise expected from
-PR #268 and is not present in this checkout; once merged, link it here instead of duplicating its
-content. For a manual, checklist-driven live verification (not automated alerting), see
+<p><code>e2e-staging.yml</code> ("E2E (staging)", daily at 13:00 UTC) is a third tier but is <strong>not</strong> on this list,
+because it has no alerting step of any kind: a staging failure leaves a red run and a Playwright
+trace artifact, and nothing opens an issue. Nobody is notified unless they look. For the wider test
+strategy see <a href="../../testing/"><code>docs/testing/</code></a>; for a manual, checklist-driven live
+verification (not automated alerting), see
 <a href="../../planning/r1-live-e2e-checklist/"><code>docs/planning/r1-live-e2e-checklist.md</code></a>.</p>
+<h3 id="71-kws-parent-verification-delivery-health">7.1 KWS parent-verification delivery health<a class="headerlink" href="#71-kws-parent-verification-delivery-health" title="Permanent link">&para;</a></h3>
+<p><strong><code>.github/workflows/kws-delivery-health.yml</code></strong> ("KWS delivery health", marker <code>[kws-delivery-health]</code>,
+label <code>ci-failure</code>) runs every 6 hours (05:00, 11:00, 17:00, 23:00 UTC) against both staging and
+production. It is worth calling out separately because of what it watches and why nothing else can.</p>
+<p>On 2026-08-09 a Cloudflare custom rule blocked four KWS webhook retries at the edge. The origin
+logged zero POSTs, so every log-derived view of that outage read exactly like "the vendor never sent
+anything": no line to alert on, and no absence a log rule could name. The only trace it left was
+<code>kws_verification</code> rows that never moved off <code>sent</code>. The alarm is therefore a query over that table,
+surfaced as the non-gating <code>kws_verification</code> check on <code>/api/v1/health/ready</code>, and this workflow just
+reads that endpoint. It holds no database credential of its own.</p>
+<p>A stuck count alone would be useless, because a parent who never opens their email leaves a <code>sent</code>
+row forever. The check compares two timestamps instead: it fires when <strong>nothing has resolved since
+the most recent attempt that is still waiting</strong> (once that attempt is older than 24h, so a parent
+still reading their inbox is not mistaken for an outage). A resolution counts whether the
+verification succeeded or was refused, since either one proves deliveries are arriving.</p>
+<p><strong>Expected detection latency is up to about 30 hours</strong>, and knowing that matters when you are dating
+an outage from the alarm. It is the 24h staleness threshold, which is how long an attempt must sit
+before it counts as waiting at all, plus up to 6 hours until the next probe reads the endpoint. So
+the alarm is never evidence that the outage started recently; read the <code>requested_at</code> spread for
+that, not the time the issue was filed.</p>
+<p>Two properties of that rule are worth knowing before you read an alarm:</p>
+<ul>
+<li>The anchor is the <strong>newest</strong> waiting attempt, not the oldest. One attempt abandoned months ago
+  stays the oldest forever, so anchoring on it would let every resolution since then vouch for the
+  leg and a fresh outage would never surface.</li>
+<li>A lone abandoned attempt on a tier with no other traffic <strong>does</strong> keep alarming, and that is the
+  accepted cost. On the evidence available it is indistinguishable from a broken leg. The remedy is
+  to resolve the row, not to widen the rule; the previous rule bought silence here by also requiring
+  fresh sends, which made it quietest on exactly the low-traffic tiers where an outage is hardest to
+  notice by other means.</li>
+<li>An attempt whose <strong>outbound</strong> send failed resolves to <code>send_failed</code> and is neither a waiting
+  attempt nor a resolution. It is not waiting, because no email went out and nothing is coming back
+  for it; and it is not a resolution, because only our own timeout handler ran, so counting it would
+  let a broken return path look healthy. The consequence to know: this check watches the <strong>inbound</strong>
+  leg only. A tier where every send fails outright has no waiting attempts at all and so reports
+  <code>ok</code> here, while every guardian gets a 400 from <code>POST /api/v1/consent/kws/start</code>. That outage is
+  loud in the application logs and in the guardian's face; this check is not the instrument for it.</li>
+</ul>
+<p>Triage, in order, when the marker issue appears with a <code>degraded</code> state:</p>
+<ol>
+<li><strong>Check the edge before the origin.</strong> An edge block leaves zero origin log lines, so an empty
+   application log is evidence of nothing. Read Cloudflare's Security Events for the webhook path.</li>
+<li>Check the KWS status page and vendor console for a sending-side outage. <code>send_failed</code> rows date
+   any outbound trouble independently; a burst of them alongside stuck <code>sent</code> rows points at the
+   vendor rather than at our webhook path.</li>
+<li>Read the <code>requested_at</code> spread of the rows still in <code>sent</code>; it dates the start of the outage.</li>
+<li>If the error says <strong>nothing has ever resolved</strong>, suspect wiring rather than an outage: a webhook
+   URL that was never reachable from the vendor's side produces exactly this, and it has no start
+   date because there was never a working state to leave.</li>
+<li>If the rows still in <code>sent</code> are all months old and the leg is otherwise fine, this is the
+   abandonment case above. Resolve them rather than muting the check.</li>
+</ol>
+<p>An <code>unknown</code> state means the check ran but its aggregate query did not return, so the delivery signal
+was not measured. It is a failure, because a monitor that cannot see is not a monitor, but it is
+deliberately not <code>degraded</code> and triage goes somewhere else entirely: <strong>start at the database</strong>, not at
+KWS. Check that the backend can reach Postgres at all (the <code>database</code> check in the same readiness
+response will usually be failing too), then the app role's privileges on <code>kws_verification</code>. The
+distinction is worth keeping sharp in both directions. <code>degraded</code> is a specific claim, attempts were
+sent and stopped coming back, and it justifies paging someone toward the vendor and the webhook route.
+Reporting an unmeasured probe with that same wording sends that person hunting an outage that may not
+exist, and it spends the alarm: once this check has cried "deliveries stopped" for a broken query, a
+real stoppage reads as more of the same noise.</p>
+<p>A <code>missing</code> state means the deployed build carries no <code>kws_verification</code> check at all, so nothing is
+watching that tier. That is reported as a failure on purpose: a probe that treats an absent key as
+benign is how a monitoring gap ships unnoticed. Production has a dated exception, <code>PROD_MISSING_GRACE_UNTIL</code>
+in the workflow: until that date a <code>missing</code> production check is a notice rather than a failure,
+because production still runs a build from before the check existed and a daily marker issue for a
+known gap only teaches people to ignore the marker. The state is still recorded and still appears in
+the alert table, and the grace expires by itself rather than needing anyone to flip it back. Redeploying
+production before that date is what actually closes it.</p>
+<p>The two probe legs deliberately name different GitHub environments: <code>staging</code> (which holds
+<code>E2E_STAGING_BASE_URL</code>) and <code>production-e2e</code> (which holds nothing this workflow needs). The
+production leg must NOT name the <code>production</code> environment: its required-reviewer rule parks a
+scheduled run in <code>waiting</code> indefinitely instead of failing, so the alert job's <code>if: failure()</code> never
+fires and the whole alarm goes quiet. <code>e2e-prod.yml</code> hit this first and is why <code>production-e2e</code>
+exists. An <code>unconfigured</code> state is not a failure; it means
+<code>KWS_VERIFICATION_REQUIRED</code> is off on that tier, which is production's state until Gate 3 closes.</p>
+<p><code>KWS_VERIFICATION_REQUIRED</code> also gates <code>POST /v1/consent/kws/start</code> itself, not just the
+child-profile checks. That endpoint hands an adult's email address to Epic, so credential presence
+is deliberately not what opens it: a tier holding credentials without having decided to run
+verification sends nothing. The one exception is <code>KWS_ALLOW_START_WHILE_NOT_REQUIRED</code>, which exists
+so staging can exercise the endpoint and its screens before the gate flips. It is refused at
+startup whenever <code>KWS_ENVIRONMENT=production</code>, so the process fails to boot rather than re-opening
+the endpoint on a tier serving real families. The Gate 1 procedure in
+<a href="../kws-test-runbook/">the KWS test runbook</a> does not need it: that script calls the service
+directly and never reaches the endpoint.</p>
 <h2 id="8-secrets-and-keys-inventory">8. Secrets and keys inventory<a class="headerlink" href="#8-secrets-and-keys-inventory" title="Permanent link">&para;</a></h2>
 <p>Names only; never commit or log actual values. Source real values from a secret manager
 (Infisical is referenced in <code>README.md</code>), not from this file. Full descriptions live in
@@ -4824,7 +4946,7 @@ because that test is currently the only thing that would notice.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 5, 2026 04:02:38 UTC">August 5, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 11, 2026 16:05:55 UTC">August 11, 2026</span>
   </span>
 
     

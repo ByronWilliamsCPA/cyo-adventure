@@ -3333,6 +3333,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#guardian-kws-parent-verification-adr-018-d1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Guardian: KWS parent verification (ADR-018 D1)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#guardian-submit-story-request-intake" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4052,11 +4063,38 @@ Supabase endpoints rather than <code>/api/v1</code>.</p>
   exact <code>POST /v1/onboarding</code> consent payload and name trimming; plus the
   awaiting-approval interstitial branch)</li>
 <li>Component: <code>frontend/src/auth/GuardianConsentPage.test.tsx</code>,
-  <code>frontend/src/auth/GuardianAwaitingApprovalPage.test.tsx</code></li>
+  <code>frontend/src/auth/GuardianAwaitingApprovalPage.test.tsx</code>,
+  <code>frontend/src/auth/residenceDraft.test.ts</code> (the country answer held between the
+  consent screen and the verification step: round-trip, the empty-select value when
+  nothing was picked, forgetting on clear, that it never lands in <code>localStorage</code>, and
+  that storage being unavailable degrades rather than throws)</li>
 <li><strong>Note</strong>: the gate is driven by the <code>POST /v1/onboarding</code> response fields
   (<code>consent_recorded</code>, <code>status</code>), NOT <code>/v1/me</code>; see the spec header. This was
   every guardian's first screen yet only manually prod-verified before the
   2026-07-22 audit added the E2E above.</li>
+</ul>
+<h2 id="guardian-kws-parent-verification-adr-018-d1">Guardian: KWS parent verification (ADR-018 D1)<a class="headerlink" href="#guardian-kws-parent-verification-adr-018-d1" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Component: <code>frontend/src/auth/GuardianVerificationPage.test.tsx</code> (the screen an
+  unverified guardian is routed to: each redirect out of it, signed-out to login,
+  backend-down to the interstitial, already-verified onward to approval, approved
+  onward to consent, fully signed-in to the console, and nothing rendered while auth
+  is still loading; the send is gated on a country being picked and posts that
+  country; an already-in-flight attempt and the hourly cap each get their own
+  message rather than being reported as failures, while a real failure is reported
+  as one and re-enables the button; and the wait state polls only once an attempt
+  exists, rechecks on demand, and swallows a failed recheck rather than alarming a
+  parent mid-verification), <code>frontend/src/auth/consentApi.test.ts</code> (the start-call
+  adapter: posts the location, returns the attempt view, and propagates a refusal
+  rather than resolving)</li>
+<li><strong>Note</strong>: two tests exist specifically to pin an absence, not a behavior:
+  <code>offers no way to name the recipient</code> and <code>sends no recipient of any kind</code>. The
+  verification email goes to the account's own adult, and a recipient field would
+  turn the flow into a way to send mail to an arbitrary address.</li>
+<li><strong>Gap</strong>: no E2E tier at all, mocked or real. The full round trip needs Epic's
+  hosted flow and a webhook, so nothing below <code>e2e-staging</code> can execute it, and the
+  staging tier does not cover it yet. What is proven here is the client's behavior
+  around the call, not that a verification ever completes.</li>
 </ul>
 <h2 id="guardian-submit-story-request-intake">Guardian: submit story request (intake)<a class="headerlink" href="#guardian-submit-story-request-intake" title="Permanent link">&para;</a></h2>
 <ul>
@@ -4626,7 +4664,7 @@ closure. A companion action-level verdict for this audit lives at
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 11, 2026 05:16:35 UTC">August 11, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 11, 2026 16:05:55 UTC">August 11, 2026</span>
   </span>
 
     

@@ -4190,6 +4190,13 @@ validator treats a missing entry there as a build failure.</p>
 <td>4b</td>
 <td>decision</td>
 </tr>
+<tr>
+<td>UW-A55</td>
+<td><strong><code>ExternalServiceError</code> has no status of its own, so a KWS outage and a permanent misconfiguration are the same 400 to the browser.</strong> <code>app.py::_STATUS_BY_EXCEPTION</code> lists six exception types and <code>ExternalServiceError</code> is not among them, so it falls through to the 400 fallback alongside <code>ConfigurationError</code> and <code>BusinessLogicError</code>. On <code>POST /api/v1/consent/kws/start</code> that collapses two opposite situations: three permanent refusals (KWS unconfigured on this tier, no <code>User</code> row, no email on file) where retrying cannot help, and a vendor outage or timeout where retrying is exactly the right advice. <code>GuardianVerificationPage.tsx::messageForStartError</code> must pick one message for the merged code and picks "Trying again will not help, so please contact support", which is wrong advice for the outage case; PR #681 sharpens the cost by resolving a failed send to <code>send_failed</code>, so the retry the parent is told not to attempt would now be accepted immediately. Deliberately not fixed inline: giving <code>ExternalServiceError</code> a 502 is a repo-wide contract change touching every router that raises it, and the alternative (a machine-readable rule code in the error body) is a response-shape change with its own client-generation consequences. The failure direction chosen meanwhile is the safe one for a COPPA gate, since the opposite default loops a parent forever against a condition only an operator can clear. Marked with a <code>#ASSUME</code>/<code>#VERIFY</code> pair at the mapping site.</td>
+<td>018</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
 </tbody>
 </table>
 <h2 id="cluster-b-debt-register-phase-linkage">Cluster B: debt-register phase linkage<a class="headerlink" href="#cluster-b-debt-register-phase-linkage" title="Permanent link">&para;</a></h2>
@@ -7115,7 +7122,7 @@ have to re-derive them.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 11, 2026 14:38:55 UTC">August 11, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 11, 2026 16:05:55 UTC">August 11, 2026</span>
   </span>
 
     

@@ -3388,7 +3388,8 @@
   <h1>Records of Processing Activities (GDPR Article 30)</h1>
 
 <p>Status: living document. Owner: Byron Williams (byronawilliams@gmail.com). Last reviewed:
-2026-07-20.</p>
+2026-07-20; amended 2026-08-10 to add activity 12 (adult verification via Kids Web Services)
+and the recipient and transfer entries that follow from it.</p>
 <p>This is a synthesis of material already documented elsewhere (<code>docs/compliance/coppa-compliance-audit.md</code>,
 <code>docs/compliance/gdpr-compliance-review.md</code>, <code>docs/planning/privacy-model.md</code>,
 <code>docs/planning/capability-register.md</code>, and ADR-018), assembled into the single Article
@@ -3551,16 +3552,43 @@ undecided, rather than asserting a basis has been chosen.</p>
 <td>Supabase (auth)</td>
 <td>Life of the account/grant</td>
 </tr>
+<tr>
+<td>12</td>
+<td>Adult verification before child-profile creation (added 2026-08-10)</td>
+<td>Establish, through an independent service, that the person about to create a child profile is an adult, ahead of capturing that person's consent</td>
+<td>Sent to the vendor: the adult's <strong>email address</strong>, the country they selected, a language tag, and an opaque reference number. Stored here: the reference number, country, timestamps, and the vendor's verdict (confirmed / refused / never answered). <strong>No child data is sent, and no email address is stored in the verification table</strong> (<code>kws_verification</code> has no email column, in any form)</td>
+<td>Guardian, and adults who start a check and never become users (see the note below the table)</td>
+<td>Legal obligation (COPPA 312.5's requirement that the consenting person be a parent); GDPR Article 6(1)&copy; on the same footing as activity 1's regime-determination fields</td>
+<td><strong>Epic Games (Kids Web Services)</strong></td>
+<td>Verification record: life of the account. No purge job covers this table today; this states current behaviour, not a chosen retention policy (<code>data-retention-policy.md</code> has no row for it)</td>
+</tr>
 </tbody>
 </table>
+<p><strong>Note on activity 12's data-subject category.</strong> Every other activity above processes data about
+someone who is, or is becoming, a user. Activity 12 does not: the email address goes to the vendor
+when the check <em>starts</em>, so a person whose check is refused, or who abandons it, has still had
+their address disclosed. No ordering of the flow avoids this, because the vendor's job is to
+contact that address. It is the only activity in this record with that property, and it is why the
+DPIA assesses it separately at section 2.8 rather than folding it into the existing
+processor-disclosure analysis.</p>
+<p><strong>Deployment status of activity 12 (as of 2026-08-10).</strong> Built and wired on staging against the
+vendor's <strong>Test</strong> environment; the production feature flag is off, so no real family's address has
+reached this recipient. Switching it on is gated on the open items in Section 5 and on
+assurance-register row O-125.</p>
 <h2 id="4-categories-of-recipients-consolidated">4. Categories of recipients (consolidated)<a class="headerlink" href="#4-categories-of-recipients-consolidated" title="Permanent link">&para;</a></h2>
 <p>Every processor named in Section 3, consolidated here to match <code>information-security-program.md</code>
 Section 4's oversight table (same list, same status column — see that document for the live
 DPA/SCC execution status rather than duplicating it here):</p>
 <p>Supabase, OpenRouter (+ downstream model providers), Anthropic (direct), OpenAI Moderation,
-Google Perspective, Google Gemini, Cloudflare R2, Sentry.</p>
+Google Perspective, Google Gemini, Cloudflare R2, Sentry, Epic Games (Kids Web Services).</p>
 <p>No recipient outside this list receives personal data as of this writing. No data is sold or
 disclosed for the recipient's own independent marketing purposes.</p>
+<p>Epic Games is the newest entry and the only one that is not yet live in production. It is also the
+only one whose <strong>counterparty entity is unresolved</strong>: Epic operates Kids Web Services from both US
+and EU entities, and which one would receive our traffic has not been established. That has to be
+settled before the transfer analysis in Section 5 can say anything true about this recipient, which
+is why it is named here as an open question rather than assumed into the "every processor is
+US-hosted" sentence below.</p>
 <h2 id="5-international-transfers">5. International transfers<a class="headerlink" href="#5-international-transfers" title="Permanent link">&para;</a></h2>
 <p>Every processor above is US-hosted; the Supabase project itself runs in a US region
 (<code>gdpr-compliance-review.md</code> Section "All current users are US", already-resolved per that
@@ -3569,6 +3597,14 @@ third-country transfer requiring a transfer mechanism (Standard Contractual Clau
 self-certification per processor) — this is remediation plan Phase 5's execution tracker;
 <strong>no transfer mechanism has been confirmed executed for any processor as of this writing</strong>. This
 record does not resolve that gap; it names it so the RoPA does not imply a false completeness.</p>
+<p><strong>Carve-out added 2026-08-10.</strong> "Every processor above is US-hosted" now has one exception, and it
+is an exception of ignorance rather than of fact: for Epic Games (Kids Web Services, activity 12),
+neither the receiving entity nor its hosting location has been established, so this record cannot
+place it on either side of the line. Nothing is inferred from the vendor's US corporate identity;
+Epic operates the service from more than one entity. Until that is settled, treat the Epic row as
+having <strong>no</strong> transfer analysis rather than a US-hosted one, and do not switch the production flag
+on. Tracked at assurance-register row O-125, DPIA section 2.8, and the Epic row of
+<code>processor-dpa-checklist.md</code>.</p>
 <h2 id="6-technical-and-organisational-security-measures-summary">6. Technical and organisational security measures (summary)<a class="headerlink" href="#6-technical-and-organisational-security-measures-summary" title="Permanent link">&para;</a></h2>
 <p>Full detail lives in <code>SECURITY.md</code> and <code>docs/compliance/information-security-program.md</code>;
 summarized here per Article 30(1)(g)'s requirement for "a general description" within the
@@ -3635,10 +3671,24 @@ record itself:</p>
 </tbody>
 </table>
 <h2 id="8-open-items-this-record-surfaces">8. Open items this record surfaces<a class="headerlink" href="#8-open-items-this-record-surfaces" title="Permanent link">&para;</a></h2>
-<p><strong>Status as of 2026-07-20</strong>: Phase 2's consent-capture build and the Article 18/21 flag are now
-both DONE (built, not just decided); G-10/Phase 8b (ADR-016 consent UI) was already resolved
-(Section 3 activity 7 reflects this). Phase 5's DPA execution remains the one item still
-genuinely open below.</p>
+<p><strong>Status as of 2026-08-10</strong>: activity 12 (adult verification before child-profile creation) was
+added to Section 3 on this date, and it brings one new open item with it. The check discloses the
+<strong>adult's own email address to Epic Games when it starts</strong>, before any verdict, so refused and
+abandoned applicants are disclosed too; there is no executed DPA behind that relationship and the
+receiving Epic entity is not yet established. That is tracked as <strong>O-125</strong> in
+<code>docs/security/assurance-register.md</code> and assessed in <code>dpia.md</code> section 2.8, and it is a
+precondition of switching the gate on in production, not a follow-up to it. The gate ships behind
+<code>KWS_VERIFICATION_REQUIRED</code>, which is off in production, so activity 12 describes a built path
+rather than one currently processing real adults' data there.</p>
+<p>It also does not replace the consent mechanism below. KWS establishes that the person is an adult;
+the record of what was agreed to is still ours, captured by the typed-name attestation. Epic's own
+documentation says the same, that the service is not designed to obtain consent or address direct
+notice.</p>
+<p><strong>Status as of 2026-07-20</strong> (retained, and still accurate for the items it covers): Phase 2's
+consent-capture build and the Article 18/21 flag are now both DONE (built, not just decided);
+G-10/Phase 8b (ADR-016 consent UI) was already resolved (Section 3 activity 7 reflects this).
+Phase 5's DPA execution remains genuinely open below, and O-125 above is a second instance of
+exactly that gap rather than a separate kind of problem.</p>
 <ul>
 <li>Article 6 legal basis: a plausible basis is recorded per-activity in Section 3 above
   (was previously unrecorded, G-01); two activities (3: story generation, 4: content
@@ -3654,6 +3704,12 @@ genuinely open below.</p>
   previously a numbered finding).</li>
 <li>DPO designation: resolved — not required at current scale, reassess before Track 2 public
   launch (G-11, Phase 7c).</li>
+<li>Newly surfaced 2026-08-10 by activity 12: a <strong>new recipient with no executed DPA, no named
+  counterparty entity, and no transfer mechanism</strong>, receiving an adult's email address at the
+  moment a check starts rather than on any success condition. Unlike every other row in Phase 5's
+  DPA backlog, this one is not trailing a live integration: the production flag is off, so the gap
+  is closable before any real family's data moves. Treat it as a switch-on precondition, not a
+  to-do. Tracked at assurance-register row O-125 and DPIA section 2.8.</li>
 <li>Newly surfaced 2026-07-20, not previously tracked anywhere: a guardian self-signup
   approval gate (<code>User.status='awaiting_approval'</code>, admin approve/deny via
   <code>PATCH /admin/users/{id}</code>) -- <strong>DONE</strong>, added mid-session as a parallel access-control track
@@ -3695,7 +3751,15 @@ genuinely open below.</p>
 </tr>
 <tr>
 <td>ADR-018</td>
-<td>Already-decided items (account-scoped deletion, family-scoped consent framing) reflected in Sections 2, 3, and 7 above.</td>
+<td>Already-decided items (account-scoped deletion, family-scoped consent framing) reflected in Sections 2, 3, and 7 above. D1 is the decision activity 12 implements.</td>
+</tr>
+<tr>
+<td><code>docs/compliance/dpia.md</code></td>
+<td>Section 2.8 is the risk assessment for activity 12; this record is the inventory it assesses against.</td>
+</tr>
+<tr>
+<td><code>docs/compliance/processor-dpa-checklist.md</code></td>
+<td>The Epic Games row is the execution tracker for activity 12's recipient; Section 5's carve-out above stays open until that row closes.</td>
 </tr>
 </tbody>
 </table>
@@ -3721,7 +3785,7 @@ genuinely open below.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 3, 2026 14:07:36 UTC">August 3, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 11, 2026 16:05:55 UTC">August 11, 2026</span>
   </span>
 
     
