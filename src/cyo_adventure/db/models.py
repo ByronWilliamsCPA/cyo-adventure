@@ -2879,6 +2879,23 @@ class KwsVerification(Base):
             "location IS NULL OR location ~ '^[A-Z]{2}(-[A-Z0-9]{1,3})?$'",
             name="ck_kws_verification_location_format",
         ),
+        # #ASSUME: external resources: the delivery-health aggregate
+        # (consent/service.py::verification_delivery_health) filters this whole
+        # table on kws_environment and ranges over requested_at, and it is
+        # reached from the PUBLIC, UNAUTHENTICATED readiness endpoint
+        # (api/health.py::check_kws_verification). Rows here are never deleted,
+        # so without this index the scan grows without a ceiling; the only other
+        # index on the table is the user_id one, which has kws_environment
+        # nowhere in it and cannot serve the predicate at all.
+        # #VERIFY: keep in step with supabase/migrations/
+        # 20260810180000_add_kws_verification_delivery_health_index.sql;
+        # tests/integration/test_schema_parity.py compares the two databases the
+        # two paths build, so dropping either half fails there.
+        Index(
+            "ix_kws_verification_environment_requested_at",
+            "kws_environment",
+            "requested_at",
+        ),
     )
 
     # No ``UUIDPrimaryKeyMixin``, and no default: the mixin's ``uuid.uuid4``
