@@ -147,6 +147,15 @@ Parent Verification service is not itself a COPPA consent mechanism, the consent
 the typed name, and a Test-environment verification is not evidence of anything (O-123). What the
 gate *does* create is a new processor disclosure, assessed separately at **2.8**.
 
+One further owner ruling the same day, recorded here so this section is not read as more settled
+than it is: 312.5(b)(2)(ii)'s notification limb is **accepted as satisfied** on the reading that the
+$0.05 capture and its 8-13 business day refund post as two discrete statement entries, and the
+question is withdrawn from counsel. The structural limb was answered by observation; this limb was
+not, and could not be, because the Test environment produces no real notification by construction.
+**The residual risk of this section stays High.** An owner reading of rule text taken without
+counsel review is a decision about who carries the risk, not a reduction of it. Full acceptance
+record, with basis, compensating controls, and expiry: assurance-register row O-122.
+
 **Residual risk**: **High, and now accepted rather than pending.** It stays High: the 2026-08-09
 owner ruling withdrew the question from counsel, which removes the route by which the risk would
 have been resolved, not the risk. This remains the single highest-priority open item this DPIA

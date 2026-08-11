@@ -76,6 +76,17 @@ tags:
 > email address to Epic Games when it **starts**, so refused and abandoned applicants are disclosed
 > too. That is a processor relationship with no executed DPA and an unresolved counterparty entity,
 > now a switch-on precondition at assurance-register row O-125 and DPIA section 2.8.
+> **Amended**: 2026-08-10, later the same day. **Owner ruling on Q2's notification limb: accepted as
+> satisfied, and withdrawn from the counsel engagement.** The structural limb was answered by
+> observation (a real $0.05 PaymentIntent, not a zero-charge authorisation), and the 8-13 business
+> day refund lag makes the capture and refund **two discrete statement entries**, which the owner
+> reads as notification to the primary account holder. Recorded as a risk acceptance at O-122, not
+> as a legal conclusion: the Test environment cannot produce this evidence at all, so nothing was
+> established, a reading was adopted. **Q2 therefore leaves the Gate 1 run list**, which removes the
+> collision between the production run it would have required and the O-125 disclosure precondition,
+> since that run would itself have been the disclosure. Separately, Q3 is **answered by observation**
+> on the same day: the signature arrives in the `x-kws-signature` **header**, and the capture also
+> caught an undocumented detail, that `t=` is in **milliseconds**, fixed in #675.
 > **This does not flip the status.** Every decision below is an owner choice pending counsel
 > confirmation; only counsel closing D1 through D5 moves this ADR to Accepted. D1's remaining
 > counsel content is Questions 1A and 1B; its enumerated-method half is now an owner-accepted

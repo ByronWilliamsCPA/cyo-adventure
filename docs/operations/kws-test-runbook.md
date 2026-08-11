@@ -90,7 +90,7 @@ typed-name attestation is never relied on as the enumerated method:
 | Run | Answers | Address needed | Blocked on |
 | --- | --- | --- | --- |
 | 1 | **Q2 structural half** (done 2026-08-10); Q3 **not** answered | any org developer or admin address, or an alias of one | nothing; branding was published 2026-08-10 |
-| 2 | Q1, and Q3 if any delivery arrives | the **`+verified` alias** of the same address | webhook URL registered in the Control Panel |
+| 2 | **Q1 only** (Q3 was answered by a later delivery the same day; Q2's remaining limb was settled by owner ruling, not by a run) | the **`+verified` alias** of the same address | webhook URL registered in the Control Panel |
 | none | Q4 | none | **answered from vendor documentation 2026-08-10, confirmed by observation; no run needed** |
 
 Q2 moved to the front because the ruling removed the fallback. It was the question that could
@@ -103,6 +103,10 @@ agreed with the documentation.
 Q3 did **not** come free with run 1, contrary to what this table said before that run. It is
 answered by capturing the raw request on a real webhook delivery, and run 1 produced no delivery at
 all, so it is now carried on run 2. See "Checking whether a webhook arrived" below.
+
+**Superseded 2026-08-10, later the same day: Q3 is answered, and a delivery did arrive.** Once the
+edge rule stopped blocking inbound requests, a Test delivery landed and was captured. See the Q3
+section below for the answer and for the one thing the capture does *not* establish.
 
 **Branding was published to Test on 2026-08-10**, which cleared the block both runs previously
 carried. Before that, `send-email` answered `400 ERR_INVALID_REQUEST` with "you need to publish your
@@ -155,7 +159,7 @@ but its blast radius depends on whether we are told.
   up to two hours**, which is survivable but means no Gate 2 surface may treat the absence of a
   webhook shortly after a send as a negative result.
 
-### Q2 (structural half ANSWERED 2026-08-10; notification limb cannot be answered in Test)
+### Q2 (CLOSED 2026-08-10: structural half answered by observation, notification limb by owner ruling)
 
 16 CFR 312.5(b)(2)(ii) requires the card be used "in connection with a transaction" and that it
 "provides notification of each discrete transaction to the primary account holder." That is two
@@ -180,11 +184,15 @@ afterwards**: there is nothing there to find, by construction.
   here.
 - **Not answered, and not answerable in Test (second limb).** Whether a live $0.05 charge produces
   notification to the primary account holder cannot be observed without a live-mode charge.
-- **Ask counsel before spending a production verification on it.** The 8-13 business day refund lag
-  means the capture and the refund post as **two discrete statement entries** rather than a
-  same-day pair an issuer might net out before the statement closes. If "notification" is read as
-  the statement line item rather than an issuer push alert, the observed design already satisfies
-  the limb and no live run is needed. Put that question first; it may retire the limb outright.
+- **Owner ruling 2026-08-10: the notification limb is accepted as satisfied, and the question is
+  NOT going to counsel.** The reasoning the earlier draft offered as a counsel question is adopted
+  as the position: the 8-13 business day refund lag means the capture and the refund post as **two
+  discrete statement entries** rather than a same-day pair an issuer might net out before the
+  statement closes, and a statement line item is notification to the primary account holder. This is
+  an owner risk acceptance, not a legal conclusion, and it is recorded as one at assurance-register
+  row **O-122**. Two consequences: **no live production run is needed to answer Q2**, which removes
+  the collision between that run and the O-125 disclosure precondition; and Q2 leaves the run list
+  entirely, so run 2 exists for Q1 alone.
 - **If a live observation is required**, note what it costs: a KWS **production** verification is a
   genuine VPC event that writes real consent state, so it cannot be treated as a test. It has to
   come after the Gate 2 consumer exists, not before. Epic separately recommends an end-to-end
@@ -197,7 +205,13 @@ afterwards**: there is nothing there to find, by construction.
   reachable through the vendor without our building card handling. If it produces a zero-charge
   authorisation with no notification to the primary account holder, the second limb of (b)(2)(ii) is
   unmet and there is no fallback method behind it, because the ruling removed the one that existed.
-  Answer this before any Gate 2 work is scheduled.
+  Answer this before any Gate 2 work is scheduled. **Settled by the ruling above, and the shape of
+  the settlement is what matters for anyone re-reading this later.** The structural limb was
+  answered by observation: a real $0.05 PaymentIntent, not a zero-charge authorisation, so the
+  branch this paragraph feared did not occur. Only the notification limb was left, and it was closed
+  by an owner acceptance rather than by evidence, because the Test environment cannot produce that
+  evidence at all. Gate 2 work is therefore unblocked, but it is unblocked by a decision that
+  someone carries, not by a fact that was established.
 
 ### Q3: is the webhook signature in the header or the query string?
 
@@ -214,6 +228,23 @@ observed delivery.
   raw request to capture. A header-versus-query-string disagreement would have surfaced as a `401`
   in the log; zero inbound POSTs is a different failure and points upstream of the signature. Q3 is
   therefore carried to run 2 and stays open until some delivery lands.
+- **ANSWERED 2026-08-10, later the same day, once the edge stopped blocking inbound requests: the
+  signature is carried in the `x-kws-signature` HEADER**, in Stripe-style `t=`/`v1=` components,
+  which is the shape `consent/kws_signature.py` was built for. The query-string reading is not the
+  one KWS uses. The evidence is an observed delivery, recorded in that module rather than here:
+  `t=1786390879601`, received 0.52 seconds later.
+- **The same capture answered a question nobody had asked, which is why it was worth capturing raw.**
+  That `t=` is in **milliseconds**, and Epic documents no unit anywhere. A verifier hard-coded to
+  seconds reads it as the year 58600 and rejects **every** delivery, and the symptom is silence:
+  parents verify successfully at KWS, no consent is recorded, and nothing in a readable log says so.
+  `#675` fixed it by accepting both units, which is safe because `t=` sits inside the signed string
+  and cannot be moved between bands without breaking the MAC. It merged at 19:57Z on 2026-08-10.
+- **What the capture does NOT establish, and do not let the answer above imply it.** *Received* is
+  not *accepted*. The delivery that produced this evidence arrived **before** `#675` merged, so on
+  the then-current code its millisecond `t=` read as stale and it would have been answered `401`.
+  Whether any delivery has been **accepted** since that fix deployed is unverified, and it is the
+  next thing to check, not to assume. The check is a `kws_verification` row that has left `sent`,
+  not a log line: see "Checking whether a webhook arrived" below.
 
 ### Q4 (ANSWERED 2026-08-10, no run needed): what shape is the redirect's `status` value in?
 

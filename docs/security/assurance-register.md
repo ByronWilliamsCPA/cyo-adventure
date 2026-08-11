@@ -3565,6 +3565,33 @@ posture at a trust boundary must be verified from outside that boundary.
   - **O-123 shipped with it**, as that row required, so the gate cannot be satisfied by a sandbox
     verification. Had the consumer landed first, this row's remediation would have opened a worse
     hole than the one it closes.
+- **Owner ruling 2026-08-10, later the same day: 312.5(b)(2)(ii)'s notification limb is accepted as
+  satisfied, and the question is withdrawn from the counsel engagement.** Recording the three things
+  the spine requires, so this is a decision rather than a disappearance:
+  - **Risk accepted.** That "provides notification of each discrete transaction to the primary
+    account holder" is met by a statement line item rather than by an issuer push alert. The basis
+    is the observed design: Epic's method creates a real **PaymentIntent for $0.05** refunded in 8 to
+    13 business days, so the capture and the refund post as **two discrete statement entries** rather
+    than a same-day pair an issuer might net out before the statement closes. The structural limb
+    ("in connection with a transaction") is not accepted risk at all; it was answered by observation,
+    including a real `pi_...` identifier, and the parent-facing screen commits to the charge in
+    writing. What is accepted is the *reading* of the second limb, which no run could have settled:
+    the Test environment uses Stripe test cards, so no real notification exists there by
+    construction, and the only instrument that could produce the evidence is a production
+    verification, which is a genuine VPC event and cannot be spent as a test.
+  - **Compensating controls.** (a) The charge is real rather than a zero-amount authorisation, which
+    is the branch this limb was written to exclude. (b) The refund lag makes two entries rather than
+    one, so the notification survives an issuer that nets same-day pairs. (c) Nothing about the
+    method is built here: the card never touches this application, so the behaviour being relied on
+    is the vendor's and is uniform across its customers.
+  - **Expiry.** Reassess if Epic changes the method (a switch to a zero-amount authorisation, a
+    same-day refund, or a `SetupIntent` would each retire the basis above), and at R2 alongside this
+    row's other acceptance. **This does not convert the open question into a closed one**: it is an
+    owner reading of rule text, taken without counsel review, and the register says so rather than
+    presenting it as settled law.
+  - **What it unblocks.** Q2 leaves the Gate 1 run list, so no production verification is needed to
+    answer it. That removes a real ordering collision: the run that would have answered this limb is
+    itself a disclosure of a real adult's email to Epic, which is precisely what **O-125** gates.
 - **Phase home:** unassigned
 - **Owner:** core-maintainer
 - **Last verified:** not verified. **Neither an accepted exception nor a decision to remediate is a
