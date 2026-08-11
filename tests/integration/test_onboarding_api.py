@@ -661,6 +661,78 @@ async def test_onboarding_consent_without_a_verification_links_nothing(
     assert user.consent_verification_id is None
 
 
+async def test_onboarding_refuses_a_whitespace_only_signer_name(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+) -> None:
+    """A blank typed name is not an attestation, and must not record consent.
+
+    ``"   "`` is truthy, so a presence check alone accepted it and wrote a
+    consent record naming nobody. Every downstream gate then read that row as
+    a recorded consent, which is the whole evidentiary basis of the
+    typed-name mechanism (ADR-018 D1). The account must still be provisioned:
+    a bad consent payload records nothing, it does not fail onboarding.
+    """
+    _ = seed
+    subject = "blank-signer-guardian"
+
+    resp = await client.post(
+        _ONBOARDING,
+        headers=auth(subject),
+        json={
+            "consent": {
+                "accepted": True,
+                "policy_version": "2026-07",
+                "signer_name": "   ",
+                "residence_country": "US",
+                "adulthood_attested": True,
+            }
+        },
+    )
+    assert resp.status_code == 422
+
+    async with sessions() as session:
+        user = await session.scalar(select(User).where(User.authn_subject == subject))
+    assert user is None or user.consent_accepted_at is None
+
+
+async def test_onboarding_stores_the_signer_name_without_surrounding_space(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+) -> None:
+    """The stored name is the name that was typed, not the padding around it.
+
+    The record is never overwritten, so whatever lands here is permanent;
+    persisting ``" A. Guardian "`` would make the consent record disagree with
+    the name any later reader would compare it against.
+    """
+    _ = seed
+    subject = "padded-signer-guardian"
+
+    resp = await client.post(
+        _ONBOARDING,
+        headers=auth(subject),
+        json={
+            "consent": {
+                "accepted": True,
+                "policy_version": "  2026-07  ",
+                "signer_name": "  Padded A. Guardian  ",
+                "residence_country": "US",
+                "adulthood_attested": True,
+            }
+        },
+    )
+    assert resp.status_code == 201
+
+    async with sessions() as session:
+        user = await session.scalar(select(User).where(User.authn_subject == subject))
+    assert user is not None
+    assert user.consent_signer_name == "Padded A. Guardian"
+    assert user.consent_policy_version == "2026-07"
+
+
 async def test_onboarding_race_recovers_winner(
     sessions: async_sessionmaker[AsyncSession],
     seed: Seed,

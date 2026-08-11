@@ -144,7 +144,20 @@ async def _record_consent(
     # test_onboarding_records_consent_once_and_is_idempotent.
     if consent is None or consent.accepted is not True:
         return
-    if not consent.policy_version or not consent.signer_name:
+    # #CRITICAL: security: stripped, not truthiness-checked. A whitespace-only
+    # signer_name is truthy, so the earlier check accepted "   " and stored it,
+    # and every downstream consent gate then read that row as a recorded
+    # consent. The record is the whole evidentiary basis of the typed-name
+    # mechanism (ADR-018 D1, O-125): a blank name is not an attestation by
+    # anyone, and a padded one is not the name that was typed. Stripping here
+    # rather than on OnboardingConsent keeps the 422 field-specific, matching
+    # the residence_country/adulthood_attested check below.
+    # #VERIFY: tests/integration/test_onboarding_api.py::
+    # test_onboarding_refuses_a_whitespace_only_signer_name and
+    # ::test_onboarding_stores_the_signer_name_without_surrounding_space.
+    policy_version = (consent.policy_version or "").strip()
+    signer_name = (consent.signer_name or "").strip()
+    if not policy_version or not signer_name:
         msg = "policy_version and signer_name are both required when accepted is true"
         raise ValidationError(msg, field="consent")
     # O-117/O-119: both are required for a NEW consent submission. Checked
@@ -185,8 +198,8 @@ async def _record_consent(
         .where(User.id == user.id, User.consent_accepted_at.is_(None))
         .values(
             consent_accepted_at=now,
-            consent_policy_version=consent.policy_version,
-            consent_signer_name=consent.signer_name,
+            consent_policy_version=policy_version,
+            consent_signer_name=signer_name,
             consent_ip=client_ip,
             residence_country=consent.residence_country,
             adulthood_attested_at=now,
