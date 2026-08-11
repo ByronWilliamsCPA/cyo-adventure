@@ -2881,6 +2881,10 @@ export type OnboardingView = {
      */
     consent_recorded: boolean;
     /**
+     * Verification Required
+     */
+    verification_required: boolean;
+    /**
      * Verification Status
      */
     verification_status: 'verified' | 'pending' | 'none';

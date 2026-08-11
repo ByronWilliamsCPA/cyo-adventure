@@ -5,6 +5,7 @@ import {
   GUARDIAN_AWAITING_APPROVAL_PATH,
   GUARDIAN_CONSENT_PATH,
   GUARDIAN_UNAVAILABLE_PATH,
+  GUARDIAN_VERIFICATION_PATH,
   KID_PICKER_PATH,
 } from '../routes'
 import type { Principal, Role } from './types'
@@ -59,6 +60,13 @@ export function ProtectedRoute({
   // independent session check already passed) -- send the guardian to the
   // matching interstitial rather than looping them through login, which
   // would just re-establish the same session and land back here.
+  // Listed in sequence order (ADR-018 D1: verify, then approve, then
+  // consent). The branches are mutually exclusive so the order does not
+  // change behaviour here, unlike in AuthContext where it decides which
+  // status is set at all; it is kept aligned so the two read the same way.
+  if (status === 'needs-verification') {
+    return <Navigate to={GUARDIAN_VERIFICATION_PATH} replace />
+  }
   if (status === 'awaiting-approval') {
     return <Navigate to={GUARDIAN_AWAITING_APPROVAL_PATH} replace />
   }

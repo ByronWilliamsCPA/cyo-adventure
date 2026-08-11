@@ -567,6 +567,11 @@ async def test_onboarding_reports_the_verification_state_the_guardian_must_act_o
     body = cast("dict[str, object]", provisioned.json())
     assert body["status"] == "awaiting_approval"
     assert body["verification_status"] == "none"
+    # The pair, not the status alone: "none" here means "has not started",
+    # which is byte-identical to what a tier with the flag OFF reports. Only
+    # the flag separates them, and this caller cannot reach GET /v1/me to read
+    # it there.
+    assert body["verification_required"] is True
 
     async with sessions() as session:
         user_id = await session.scalar(
@@ -593,6 +598,30 @@ async def test_onboarding_reports_the_verification_state_the_guardian_must_act_o
     assert (
         cast("dict[str, object]", retried.json())["verification_status"] == "verified"
     )
+
+
+async def test_onboarding_reports_no_verification_requirement_while_the_flag_is_off(
+    client: AsyncClient,
+    seed: Seed,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """With the flag off the client is told not to route anyone to verification.
+
+    The companion to the test above, and the reason ``verification_required``
+    ships next to ``verification_status`` rather than the status travelling
+    alone: both tiers report ``"none"`` here, so the status by itself cannot
+    tell a guardian who has not started apart from a deployment that never
+    asks anyone to start.
+    """
+    _ = seed
+    monkeypatch.setattr(settings, "kws_verification_required", False)
+
+    resp = await client.post(_ONBOARDING, headers=auth("guardian-on-an-ungated-tier"))
+
+    assert resp.status_code == 201
+    body = cast("dict[str, object]", resp.json())
+    assert body["verification_required"] is False
+    assert body["verification_status"] == "none"
 
 
 async def test_onboarding_consent_without_a_verification_links_nothing(

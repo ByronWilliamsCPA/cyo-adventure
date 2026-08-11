@@ -2455,13 +2455,19 @@ class OnboardingView(BaseModel):
     # User.consent_accepted_at is not None; always False for a non-guardian
     # (admin/child) row, since VPC consent is a guardian-only concept.
     consent_recorded: bool
-    # ADR-018 D1: the same three-valued verification state MeResponse carries,
-    # surfaced here as well because the two responses cover different halves
-    # of the sign-in sequence and neither covers both. Verification sits
-    # BEFORE admin approval, and api/deps.py::require_principal refuses any
-    # non-"active" user, so GET /me is unreachable for exactly the guardian
-    # who needs to be told to verify. This field is how that guardian's client
-    # learns it.
+    # ADR-018 D1: the same PAIR of fields MeResponse carries, surfaced here as
+    # well because the two responses cover different halves of the sign-in
+    # sequence and neither covers both. Verification sits BEFORE admin
+    # approval, and api/deps.py::require_principal refuses any non-"active"
+    # user, so GET /me is unreachable for exactly the guardian who needs to be
+    # told to verify. This is how that guardian's client learns it.
+    #
+    # Both fields, not just the status, for the reason MeResponse gives: with
+    # the flag off every caller reads "none", which is also what a guardian who
+    # simply has not started yet reads. Without the boolean a client cannot
+    # tell those apart, and the only other place it is published is the
+    # response this caller cannot reach.
+    verification_required: bool
     verification_status: VerificationStatus
 
 

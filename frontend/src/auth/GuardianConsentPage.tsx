@@ -11,8 +11,10 @@ import {
   GUARDIAN_CONSOLE_PATH,
   GUARDIAN_LOGIN_PATH,
   GUARDIAN_UNAVAILABLE_PATH,
+  GUARDIAN_VERIFICATION_PATH,
 } from '../routes'
 import { RESIDENCE_COUNTRIES } from './residenceCountries'
+import { readResidenceDraft } from './residenceDraft'
 import { useAuth } from './useAuth'
 
 const SUBMIT_ERROR = 'That did not go through. Please try again.'
@@ -44,7 +46,13 @@ export function GuardianConsentPage() {
   const { status, principal, recordConsent } = useAuth()
   const [signerName, setSignerName] = useState('')
   const [agreed, setAgreed] = useState(false)
-  const [residenceCountry, setResidenceCountry] = useState('')
+  // Seeded from the verification screen's pick, so an adult who just chose a
+  // country two screens ago is not asked again. Read once via useState's lazy
+  // initializer rather than on every render: this is a one-time seed for a
+  // field the adult then owns, and re-reading it would fight their edits.
+  // Absent (flag off, different device, storage refused) it is '', which is
+  // exactly the empty state this select had before.
+  const [residenceCountry, setResidenceCountry] = useState(readResidenceDraft)
   const [adulthoodAttested, setAdulthoodAttested] = useState(false)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -63,6 +71,9 @@ export function GuardianConsentPage() {
   // page: the alternative is a blank screen from the catch-all below.
   if (status === 'backend-unreachable') {
     return <Navigate to={GUARDIAN_UNAVAILABLE_PATH} replace />
+  }
+  if (status === 'needs-verification') {
+    return <Navigate to={GUARDIAN_VERIFICATION_PATH} replace />
   }
   if (status === 'awaiting-approval') {
     return <Navigate to={GUARDIAN_AWAITING_APPROVAL_PATH} replace />

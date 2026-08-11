@@ -64,6 +64,7 @@ from cyo_adventure.consent import (
     reportable_verification_status,
     usable_verification_id,
 )
+from cyo_adventure.core.config import settings
 from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.db.integrity import is_authn_subject_conflict
 from cyo_adventure.db.models import (
@@ -226,12 +227,16 @@ async def _view(session: AsyncSession, user: User, *, created: bool) -> Onboardi
         approval" state instead of blindly calling GET /v1/me, which
         require_principal would reject for any non-'active' status), whether
         VPC consent is already recorded, and the ADR-018 D1 verification
-        state (Phase 2).
+        pair (Phase 2).
     """
     # ADR-018 D1: this endpoint, not GET /v1/me, is where a guardian learns
     # they must verify. Verification is ordered BEFORE admin approval, and
     # require_principal refuses any user whose status is not 'active', so the
     # one caller who most needs the answer cannot reach /v1/me to ask for it.
+    # That is also why the flag ships alongside the status rather than only on
+    # MeResponse: "none" is what a caller reads both when the tier does not
+    # gate on verification and when they simply have not started, and this is
+    # the only response that guardian can read.
     return OnboardingView(
         family_id=str(user.family_id),
         user_id=str(user.id),
@@ -239,6 +244,7 @@ async def _view(session: AsyncSession, user: User, *, created: bool) -> Onboardi
         created=created,
         status=user.status,
         consent_recorded=user.consent_accepted_at is not None,
+        verification_required=settings.kws_verification_required,
         verification_status=await reportable_verification_status(session, user.id),
     )
 

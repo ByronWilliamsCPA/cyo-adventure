@@ -12,6 +12,7 @@ import {
   GUARDIAN_CONSOLE_PATH,
   GUARDIAN_LOGIN_PATH,
   GUARDIAN_UNAVAILABLE_PATH,
+  GUARDIAN_VERIFICATION_PATH,
 } from '../routes'
 import { useAuth } from './useAuth'
 
@@ -75,6 +76,12 @@ export function GuardianAwaitingApprovalPage() {
 
   if (status === 'signed-out') {
     return <Navigate to={GUARDIAN_LOGIN_PATH} replace />
+  }
+  // Verification precedes approval, so this is a step BACKWARD: it happens
+  // when a verification lapses or is revoked while this page is open, and the
+  // poll below is what notices.
+  if (status === 'needs-verification') {
+    return <Navigate to={GUARDIAN_VERIFICATION_PATH} replace />
   }
   if (status === 'needs-consent') {
     return <Navigate to={GUARDIAN_CONSENT_PATH} replace />

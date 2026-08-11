@@ -36,6 +36,12 @@ const RESOLVED_ONBOARDING_RESPONSE = {
     created: false,
     status: 'active',
     consent_recorded: true,
+    // Present and false, not omitted: the real response always carries both,
+    // and the ADR-018 D1 branch reads them. Leaving them off would make every
+    // test below pass through that branch on `undefined` being falsy, which
+    // is the same outcome for the wrong reason.
+    verification_required: false,
+    verification_status: 'none',
   },
 }
 
@@ -98,15 +104,46 @@ vi.mock('../offline/db', () => ({
 }))
 
 function Probe() {
-  const { status, principal, authError, recovery, recoveryError } = useAuth()
+  const { status, principal, authError, verificationStatus, recovery, recoveryError } = useAuth()
   return (
     <div>
       <span data-testid="status">{status}</span>
       <span data-testid="role">{principal?.role ?? 'none'}</span>
       <span data-testid="isAdmin">{principal ? String(principal.isAdmin) : 'none'}</span>
       <span data-testid="authError">{authError ?? 'none'}</span>
+      <span data-testid="verificationStatus">{verificationStatus ?? 'null'}</span>
       <span data-testid="recovery">{String(recovery)}</span>
       <span data-testid="recoveryError">{recoveryError?.code ?? 'none'}</span>
+    </div>
+  )
+}
+
+/**
+ * Probe plus the verification start affordance, so the ADR-018 D1 start leg
+ * can be driven without pulling in GuardianVerificationPage. Records the
+ * rejected status code rather than a boolean: the two refusals this endpoint
+ * makes by design (409, 429) are distinguishable only by code, and a test
+ * that asserted merely "it threw" would pass against an implementation that
+ * mapped both to the wrong one.
+ */
+function VerificationProbe() {
+  const { verificationStatus, startVerification } = useAuth()
+  const [startError, setStartError] = useState('none')
+  return (
+    <div>
+      <span data-testid="verificationStatus">{verificationStatus ?? 'null'}</span>
+      <span data-testid="startError">{startError}</span>
+      <button
+        type="button"
+        onClick={() => {
+          void startVerification('US').catch((err: unknown) => {
+            const status = (err as { response?: { status?: number } }).response?.status
+            setStartError(String(status ?? 'unknown'))
+          })
+        }}
+      >
+        start
+      </button>
     </div>
   )
 }
@@ -354,6 +391,193 @@ describe('AuthProvider', () => {
     )
     await waitFor(() => expect(screen.getByTestId('status')).toHaveTextContent('needs-consent'))
     expect(mockGet).not.toHaveBeenCalled()
+  })
+
+  it('routes an unverified guardian to needs-verification ahead of awaiting-approval', async () => {
+    // The ordering assertion, not just the status one. This response is
+    // BOTH unverified and unapproved, which is the ordinary state of a
+    // brand-new self-signup on a gated tier, so a reader of the status alone
+    // cannot tell which branch produced it. Verification must win: an
+    // unverified guardian parked on the awaiting-approval dead end has no
+    // route forward, because no admin is going to approve an account nobody
+    // asked them to look at.
+    mockGetSession.mockResolvedValue({
+      data: { session: { access_token: 'tok-1', user: { id: 'u1' } } },
+    })
+    mockPost.mockResolvedValue({
+      data: {
+        family_id: 'fam-1',
+        user_id: 'user-1',
+        role: 'guardian',
+        created: true,
+        status: 'awaiting_approval',
+        consent_recorded: false,
+        verification_required: true,
+        verification_status: 'none',
+      },
+    })
+    render(
+      <AuthProvider>
+        <Probe />
+      </AuthProvider>
+    )
+    await waitFor(() =>
+      expect(screen.getByTestId('status')).toHaveTextContent('needs-verification')
+    )
+    expect(screen.getByTestId('verificationStatus')).toHaveTextContent('none')
+    // require_principal refuses this user outright, so calling /me would 401.
+    expect(mockGet).not.toHaveBeenCalled()
+  })
+
+  it('keeps an unverified guardian in needs-verification once an email is in flight', async () => {
+    // 'pending' is still not verified, so the status must not advance; what
+    // changes is only which face the page shows. Pinned separately because
+    // the two are one AuthStatus and a naive implementation that treated any
+    // attempt as progress would let an unverified adult through.
+    mockGetSession.mockResolvedValue({
+      data: { session: { access_token: 'tok-1', user: { id: 'u1' } } },
+    })
+    mockPost.mockResolvedValue({
+      data: {
+        family_id: 'fam-1',
+        user_id: 'user-1',
+        role: 'guardian',
+        created: false,
+        status: 'awaiting_approval',
+        consent_recorded: false,
+        verification_required: true,
+        verification_status: 'pending',
+      },
+    })
+    render(
+      <AuthProvider>
+        <Probe />
+      </AuthProvider>
+    )
+    await waitFor(() =>
+      expect(screen.getByTestId('status')).toHaveTextContent('needs-verification')
+    )
+    expect(screen.getByTestId('verificationStatus')).toHaveTextContent('pending')
+  })
+
+  it('leaves a guardian alone while the tier does not require verification', async () => {
+    // The flag-off tier reports verification_status 'none' for EVERY caller,
+    // which is byte-identical to what a gated-but-unstarted guardian reports.
+    // Keying the branch on the status alone would therefore park every
+    // guardian on every ungated deployment in front of a verification screen
+    // they can never complete. This is the test that fails if the
+    // verification_required conjunct is dropped.
+    mockGetSession.mockResolvedValue({
+      data: { session: { access_token: 'tok-1', user: { id: 'u1' } } },
+    })
+    mockPost.mockResolvedValue({
+      data: {
+        family_id: 'fam-1',
+        user_id: 'user-1',
+        role: 'guardian',
+        created: false,
+        status: 'active',
+        consent_recorded: true,
+        verification_required: false,
+        verification_status: 'none',
+      },
+    })
+    mockGet.mockResolvedValue({
+      data: {
+        subject: 'sub-1',
+        role: 'guardian',
+        is_admin: false,
+        family_id: 'fam-1',
+        profile_ids: [],
+      },
+    })
+    render(
+      <AuthProvider>
+        <Probe />
+      </AuthProvider>
+    )
+    await waitFor(() => expect(screen.getByTestId('status')).toHaveTextContent('signed-in'))
+  })
+
+  it('startVerification sends the country and re-resolves into the waiting state', async () => {
+    mockGetSession.mockResolvedValue({
+      data: { session: { access_token: 'tok-1', user: { id: 'u1' } } },
+    })
+    const unstarted = {
+      family_id: 'fam-1',
+      user_id: 'user-1',
+      role: 'guardian',
+      created: false,
+      status: 'awaiting_approval',
+      consent_recorded: false,
+      verification_required: true,
+      verification_status: 'none',
+    }
+    mockPost.mockImplementation((url: string) => {
+      if (url === '/v1/consent/kws/start') {
+        return Promise.resolve({ data: { attempt_id: 'att-1', status: 'sent' } })
+      }
+      // The onboarding read reflects the row the start call just created, so
+      // it answers 'pending' from the second call onward.
+      const started = mockPost.mock.calls.some(([called]) => called === '/v1/consent/kws/start')
+      return Promise.resolve({
+        data: { ...unstarted, verification_status: started ? 'pending' : 'none' },
+      })
+    })
+    render(
+      <AuthProvider>
+        <VerificationProbe />
+      </AuthProvider>
+    )
+    await waitFor(() => expect(screen.getByTestId('verificationStatus')).toHaveTextContent('none'))
+
+    fireEvent.click(screen.getByText('start'))
+
+    await waitFor(() =>
+      expect(screen.getByTestId('verificationStatus')).toHaveTextContent('pending')
+    )
+    // The country reaches the wire, and nothing else does: no email field is
+    // sent, because the recipient is fixed server-side.
+    expect(mockPost).toHaveBeenCalledWith('/v1/consent/kws/start', { location: 'US' })
+  })
+
+  it('startVerification rethrows a refusal and leaves the state unstarted', async () => {
+    // 409 and 429 are the endpoint's designed refusals. Swallowing either
+    // would advance the page to "check your email" for a mail that was never
+    // sent, so the rejection has to reach the caller.
+    mockGetSession.mockResolvedValue({
+      data: { session: { access_token: 'tok-1', user: { id: 'u1' } } },
+    })
+    mockPost.mockImplementation((url: string) => {
+      if (url === '/v1/consent/kws/start') {
+        return Promise.reject(
+          Object.assign(new Error('rate limited'), { response: { status: 429 } })
+        )
+      }
+      return Promise.resolve({
+        data: {
+          family_id: 'fam-1',
+          user_id: 'user-1',
+          role: 'guardian',
+          created: false,
+          status: 'awaiting_approval',
+          consent_recorded: false,
+          verification_required: true,
+          verification_status: 'none',
+        },
+      })
+    })
+    render(
+      <AuthProvider>
+        <VerificationProbe />
+      </AuthProvider>
+    )
+    await waitFor(() => expect(screen.getByTestId('verificationStatus')).toHaveTextContent('none'))
+
+    fireEvent.click(screen.getByText('start'))
+
+    await waitFor(() => expect(screen.getByTestId('startError')).toHaveTextContent('429'))
+    expect(screen.getByTestId('verificationStatus')).toHaveTextContent('none')
   })
 
   it('does not gate a non-guardian role on approval or consent', async () => {
