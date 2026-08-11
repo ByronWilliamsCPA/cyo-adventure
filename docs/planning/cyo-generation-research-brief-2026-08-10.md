@@ -838,10 +838,33 @@ All entries verified against a primary source.
 
 ## Part II. Results since this brief was circulated
 
-> Added 2026-08-10, after two external reviewers returned candidate architectures. Part I above
-> is unchanged, so it remains the document those reviews responded to. This part reports what we
-> ran, what it cost us in wasted rounds, and the two findings that change what we would ask next.
-> Like Part I it is written to be read without access to our code.
+> Added 2026-08-10 and extended 2026-08-11, after two external reviewers returned candidate
+> architectures. Part I above is unchanged, so it remains the document those reviews responded to.
+> Like Part I this is written to be read without access to our code.
+
+### How to read Part II
+
+It has grown to fifteen sections across two working days. If you are reviewing rather than
+re-reading, **the four that carry the argument are 14, 16d, 16l and 16m**, and the rest are
+supporting or negative results.
+
+| | Section | Result |
+| --- | --- | --- |
+| **The instrument** | 14, 15 | Our decision-signature vocabulary ranks book pairs **backwards** against readers. The property lives in the binding, not in the plan. |
+| | 16e | Solution transfer *is* computable from a plan, but only its device-identity half generalises. |
+| | **16m** | **An audit of every rating cell we hold: one instrument item has never varied in 12 of 12, and the item that carried every result has now saturated too.** |
+| **The reuse problem** | **16d** | **Books built from one shared plan converge catastrophically. This was our biggest surprise.** |
+| | 16g.1 | Both cheap repairs fail. The leak has five prose channels and we had repaired one. |
+| | 16j | Independence comes from what an author is *not shown*, not from what it is told. 126.7 to 1.0 per 1000. |
+| | **16l** | **Resolved. A plan can be shared if the shared half contains no free text at all: 12.9 to 3.2 from deleting 422 words.** |
+| **Scale and capital** | 16c, 16f | Narrative contracts exist for 2 of 61 skeletons; that, not skeleton count, is the binding cost. |
+| | 16i | A model builds structurally valid graphs unaided, 6 of 6, and fails only rules we never gave it. |
+| **Negative results** | 16b, 16h, 16k | Obligation delivery is fine; "graphs are worlds" is refuted for 18 of 21 graphs; stake economics returns a null. |
+
+**The headline has changed since the first circulation.** Section 18 then asked you to resolve a
+dilemma: a plan must reach the bound device to represent what readers respond to, but every shared
+sentence makes books converge. **16l resolves it**, and the answer is duller and better than we
+expected: share structure and identifiers, share no prose, and generate the rest per book.
 
 ## 11. What we did with the reviews
 
@@ -1521,6 +1544,92 @@ control where the same act jams reversibly. That is one node in twenty-six, whic
 of the effect the scores show. If stake economics is worth anything, our evidence says it is the
 irreversibility rather than the clock or the carrying limit.
 
+## 16l. The reuse dilemma, resolved: share the structure, share no prose
+
+16d found that books written from one shared plan converge at three to fifteen times our budget.
+16g.1 found that both cheap repairs fail. This is the resolution, and it took two runs because the
+first was wrong in an instructive way.
+
+**The proposal.** Split a plan in two. A **structural** half (topology, per-node obligations, fact
+names, device categories) shared freely, and a **decisional** half (premise, choice semantics, beat
+hints, the bound devices) generated per book. The structural half looked safe to share precisely
+because of a weakness we had already documented: it provably does not determine what decision a fork
+asks, so sharing it cannot make the decisions repeat.
+
+**First run: it failed, at 12.9 per 1000**, which is exactly where "tell the author to diverge from
+the shared plan" landed. Generating the decisional half per book bought nothing measurable.
+
+**Why, and it was our error rather than the idea's.** We traced every shared four-gram to the field
+it drew on. **62 percent came from the one prose our "wordless" structural half still carried: 32
+one-line definitions of what each fact name means**, read by both authors. "The clocktower stands
+sealed, and the seal reads like a test rather than an accident." We had called that structure.
+
+**Second run: delete the 32 glosses, change nothing else.** Every other key verified byte-identical,
+so the difference is attributable to the glosses alone. 422 words left the shared artifact.
+
+| | shared four-grams per 1000 |
+| --- | --- |
+| our pilot, wholly separate plans | 2.9 |
+| generator idiom floor, books sharing nothing at all | 3.3 |
+| **shared structure, bare fact names** | **3.2** |
+| **budget** | **4.0** |
+| shared plan, wording flattened | 11.4 |
+| shared structure **with** fact glosses | 12.9 |
+| shared plan, author told to diverge from it | 12.9 |
+| one shared plan, 101 nodes | 50.1 |
+
+**12.9 to 3.2 from deleting 422 words**, landing under budget and at the floor. This is the first
+artifact in the programme to share a plan and still be indistinguishable, on this measure, from books
+that share nothing.
+
+**The obvious objection, which we tested rather than argued.** A fact name without a definition might
+be too vague to bind two authors to the same story. It is not. Given only names, each node's
+declared function, and their own bound props, the two authors wrote **zero of 32 identical definition
+sentences and zero of 35 identical choice semantics**, chose different story engines, and agreed in
+meaning on every fact we sampled: `logic_earned` read as "one real, usable piece of the tide
+arithmetic needed to set the dial" against "one working piece of the peal-cipher's logic, enough to
+actually attempt a setting on the dial". A name plus a function plus a binding is a sufficient
+specification.
+
+**The rule we would now state, and the reason it is stated by exclusion.** A shareable plan may
+contain identifiers, relations and enumerated categories, and **no free text of any kind**. We tried
+twice to enumerate the prose fields instead and missed some both times, first two fields carrying
+choice semantics under other names, then the fact glosses. Exclusion is the only formulation that has
+survived contact with our own contracts.
+
+**What we cannot tell you.** Eleven of thirty-five choices share their opening verb across the two
+books ("Ask the Warden" against "Ask the bell-ringer"; "Turn Back Together" against "Turn back now").
+That is the shared structure surfacing at the label layer, and it is arguably the series contract
+working as designed, since the same acts are available at the same forks. Whether a child reads
+shared opening verbs as repetition is a reader question and no measure we have can answer it.
+
+## 16m. An audit of our own instrument, which changes what we will run next
+
+Before commissioning three more arms for the experiment that would separate our treatment's three
+bundled changes, we audited every cell the six-question instrument has produced. Three rounds with
+per-question scores, twelve cells each:
+
+| Item | At ceiling | Range | Rounds where it separated the two pairs |
+| --- | --- | --- | --- |
+| Q1 same kinds of action | 7 of 12 | 4 to 5 | 3 of 3 |
+| Q2 same tradeoffs | 6 of 12 | 3 to 5 | 3 of 3 |
+| Q3 different consequences | 0 of 12 | **2 to 3** | 2 of 3 |
+| **Q4 sequence repeats** | **12 of 12** | **5 to 5** | **0 of 3** |
+| Q5 meaningful and informed | 1 of 12 | 2 to 5 | 1 of 3 |
+| **Q6 solution transfer** | 7 of 12 | 2 to 5 | 2 of 3 |
+
+**Q4 has never varied.** Twelve cells, every one a 5, and it has never separated the pairs it exists
+to separate. Two of our raters recommended retiring it unprompted after an earlier round; we recorded
+that and did not act on it. Q3 has never left a two-point band.
+
+**And Q6, the only item that ever carried a result, tied at 5, 5 in the one uncontaminated round we
+have run** (16k). On this graph, cleanly presented, our discriminating item is at its ceiling.
+
+So we are not running that experiment. It would spend three plans and three fills to produce a null
+that is a property of the instrument rather than of the story. We record this because the temptation
+to run it anyway was strong, and because **auditing accumulated cells for ceiling effects costs
+nothing and we should have been doing it from the start**.
+
 ## 17. Corrections to Part I
 
 - **5.3's "untested cell" has been tested**, and the result is not the simple one either reading
@@ -1544,31 +1653,50 @@ irreversibility rather than the clock or the carrying limit.
 
 ## 18. What we would ask you now
 
-The question in section 8 has moved. We no longer think the primary open problem is which
-architecture to build. It is this:
+**The question we put to you last time is answered, and by us rather than by you**, so this section
+is rewritten rather than extended. We asked: at what layer must a plan be specified so the property
+readers respond to is representable in it while the plan stays reusable? We framed it as a dilemma
+with two horns, abstraction that discards what readers notice against binding that destroys reuse,
+and said no architecture proposed to us had named it.
 
-**At what layer must a story plan be specified so that the property readers respond to is
-representable in it, while the plan stays reusable across many books?** Our plans are
-device-agnostic in order to be reusable, and that abstraction discards what readers notice. Binding
-the devices into the plan restores the property and destroys the reuse. We do not know whether
-there is a middle representation, and every architecture proposed to us sits on one horn or the
-other of it without naming the dilemma.
+**16l dissolves it.** A plan may share structure, identifiers and enumerated categories freely, and
+must share no free text at all. That formulation reaches the generator's own floor while still
+binding two independent authors to the same story. The horns were an artifact of our plans mixing
+structure and prose in one object and sharing the whole thing.
 
-Two subsidiary questions we would value:
+That closes the largest thing we were stuck on. What we would now value from a reviewer, in order:
 
-1. ~~Is there a formulation of "solution transfer" computable from a plan-and-binding pair?~~
-   **Answered in 16e, partially and by ourselves.** Its device-identity half is computable,
-   generalises, and reproduces every reader ranking we have. Its operation half needs a model. The
-   question we would put in its place: **is there a plan-level representation of "the same
-   operation" that a deterministic check can read?** Ours failed on negation and polysemy, which
-   are properties of language rather than of our word list, so we suspect the answer is no and that
-   the operation has to be declared in the plan rather than inferred from it. If that is right, the
-   plan schema needs a field we have not been writing.
-2. Our treatment bundled act-kind, stake economics, and per-room payoff. If you had to spend one
-   experiment separating those three, which would you isolate first, and why?
-3. **New, and now the one we would most like an outside opinion on.** 16d found that books sharing
-   a plan converge on the plan's own prose, and 16f shows that whether a plan can be shared decides
-   whether this product's capital cost scales with the catalog or with the readership. We are
-   testing three repairs (16g). If all three fail, is there a formulation of a reusable plan that
-   carries no reusable *wording* at all, or does specifying a decision to an author inevitably
-   supply the words for it?
+1. **Attack 16l, because we have one pair of books at one graph size.** It is a single 26-node
+   graph, one model, two arms, and a deterministic measure of verbatim overlap. The specific weakness
+   we can see is that our convergence measure counts shared four-grams and our result rests on
+   landing at a floor defined by that same measure. **Is there a way this passes our check and still
+   reads as the same book?** The candidate we already found and cannot resolve is that eleven of
+   thirty-five choices share an opening verb; we think that is the series contract working, and we
+   would like to be told if it is not.
+
+2. **The premise problem, which nothing we have tried touches.** Six authors given no shared plan at
+   all still wrote the same story: children find a thing left behind by an older person and follow
+   clues to it (16i). Withholding a reference plan closes the wording channel completely and does
+   nothing to this (16j). It is the one channel where sharing less does not help and instruction does
+   not help. **Is there a formulation of premise repulsion that does not degenerate into
+   novelty-for-its-own-sake?** This is now our largest open problem and it was nobody's proposal.
+
+3. **A plan-level representation of "the same kind of thinking".** Our deterministic attempt failed
+   on negation and polysemy, which are properties of language and not of our word list, and three
+   attempts to recover the property by annotation inverted or tied (14, 16e). We think it must be
+   *declared* in the plan rather than inferred from it, which means a schema field we have never
+   written. If you disagree, the disagreement is worth more to us than agreement.
+
+4. **A measurement question, asked because 16m embarrassed us.** One item of our six-question
+   instrument has never varied in twelve cells and the item carrying every result has now saturated.
+   **What should a reader instrument for this property actually contain?** We would rather be told
+   ours is the wrong shape than keep patching it, and we are no longer confident that asking readers
+   to score a pair on six axes is the right instrument at all.
+
+**One methodological note, offered because it may be the most transferable thing here.** Of the
+results in Part II, five came from measurements taken to check a confound rather than to test a
+hypothesis, and two of those overturned a conclusion we had already written down. The single most
+productive rule we adopted was terminating a contaminated round instead of caveating it: our
+stake-economics result had two blind raters agreeing before we removed a label template and a
+provenance leak, after which the raters split and the effect vanished (16k). **The caveated version
+would have been publishable.**

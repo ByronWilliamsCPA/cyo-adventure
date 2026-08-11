@@ -75,6 +75,7 @@ plus the shared-gram guard, both deterministic and both already built.
 | D-4 | Solution-transfer metric | Is the item that actually discriminated computable from a plan, rather than only ratable by a reader? | Formalise "these two puzzles resolve by the same operation to the same answer" against the three existing contracts, and check it reproduces the raters' Q6 ordering (4,4 against 3,3). Scored against **three** rated pairs rather than the one the row asked for, since D-5 supplied a second ordering. | deterministic, no model | Did not fire. Reproduces all three orderings strictly, and does so on the tier that uses no taxonomy. | **done, POSITIVE but narrow** |
 | D-6 | Which repair unblocks D-2 | `AL-208` says D-2 converged because its arms shared one contract. That is a diagnosis nothing has tested, and three candidate repairs were proposed with no way to choose between them. | One contract, two bindings held constant, three conditions (`verbatim`, `neutral`, `diverge`), six independent 26-node fills. Outcome is the guard battery itself, so no rater is needed. | 6 fills, 0 raters | First falsifier did not fire: `verbatim` reaches 16.9 per 1000 against the pilot's 2.9, so contract sharing is confirmed as a cause. **Second falsifier substantially fired**: the best repair reaches 11.4, still roughly 3x budget and 4x the pilot. | **done, MIXED: diagnosis confirmed, neither tested repair sufficient** |
 | D-7 | Stratified plan: wordless shared structure, per-book decisional stratum | `AL-208`'s last untested repair, and the central claim of the architecture re-specification. | One structural stratum, two decisional strata authored without sight of each other, two bindings held constant, two fills. Outcome is the guard battery, no rater. | 2 strata, 2 fills, 0 raters | **Fired.** 12.9 per 1000 against a predicted 4.0, identical to D-6's `diverge`. 62 percent of shared grams trace to the shared fact definitions, which the stratum kept and which are prose. | **done, NEGATIVE** |
+| D-7b | Same, with the fact glosses removed | D-7 traced 62 percent of its leak to the 32 one-line fact definitions its stratum still carried. Is a genuinely wordless shared plan enough? | One variable changed from D-7: `facts` becomes bare names, each arm writing its own readings. Every other key verified byte-identical. | 2 strata, 2 fills, 0 raters | Neither falsifier fired. **3.2 per 1000**, under the 4.0 budget and at the 3.3 floor, from removing 422 words. And bare names still bound both authors to the same story: 0 of 32 identical readings, 0 of 35 identical semantics, agreement in meaning throughout. | **done, POSITIVE** |
 | D-5 | Rate the discarded contaminated arm as a negative control | Does the six-question instrument correctly detect a pair we know is contaminated? | The 14-of-24 shared-prop binding is preserved. Feed `filled_V5b` to fresh blind raters and confirm it scores worse than `filled_V5c` on Q6. | 2 raters | Did not fire. Both raters, opposite orders, scored the contaminated pair Q6 = 5 and the clean pair Q6 = 2, and both chose the contaminated pair as more similar at high confidence. A three-point gap on the item that matters. **Re-run independently 2026-08-10 because the original result was not produced here: two fresh raters in opposite orders reproduced it exactly, Q6 = 5 for the contaminated pair against 2 for the clean one, both choosing the contaminated pair at high confidence.** The instrument detects a known-bad pair, so the ratings in section 13 stand. | **done, PASS, replicated** |
 
 ### D-4 result: solution transfer is computable from a plan, but only its taxonomy-free half
@@ -901,6 +902,57 @@ ever landed in between, and D-7 was the most careful attempt to find that middle
 
 Removing the definitions and leaving bare fact names would, on a linear reading of the trace, land
 near 4.8: still over budget, and an estimate rather than a measurement. That is D-7b, below.
+
+### D-7b result: a shareable plan exists, and the shared artifact has to be genuinely wordless
+
+D-7's leak traced 62 percent to the fact definitions its "structural" stratum still carried. D-7b
+changes exactly one thing: `facts` becomes a list of names with no glosses, each arm writing its own
+readings. Every other key was verified byte-identical to D-7's stratum, so any movement is
+attributable to the glosses alone. 422 words of prose left the shared artifact.
+
+| | shared 4-grams per 1000 |
+| --- | --- |
+| pilot, wholly separate contracts | 2.9 |
+| generator idiom floor | 3.3 |
+| **D-7b, shared structure with bare names** | **3.2** |
+| **budget** | **4.0** |
+| D-6 `neutral` | 11.4 |
+| D-7, shared structure **with glosses** | 12.9 |
+| D-6 `diverge` | 12.9 |
+| D-2, shared contract at 101 nodes | 50.1 |
+
+**12.9 to 3.2 from removing 422 words.** Under budget, at the generator floor, and better than the
+4.8 the linear trace estimated, because the gloss-traceable grams were not independent of the rest.
+**This is the first artifact in the programme to share a plan and still land at the floor.**
+
+Both arms clean on the full battery after one repair: structure clean, fill integrity ok, gate not
+blocked, prose craft 0 failures, label template ok, no em-dash, distinct titles, 2,922 and 3,044
+words. Two shared menu frames, against D-7's 4 and D-2's 41.
+
+**The second falsifier does not fire, and this is the load-bearing half.** Bare names could have been
+too vague to bind two authors to one story. They are not:
+
+| | |
+| --- | --- |
+| identical fact-reading sentences | **0 of 32** |
+| identical `choice_semantics` sentences | **0 of 35** |
+| engines chosen | `three-doors-one-dial` against `bell-peal-cipher-trial` |
+
+And the readings agree in meaning throughout: `logic_earned` read as "one real, usable piece of the
+tide arithmetic needed to set the dial" against "one working piece of the peal-cipher's logic, enough
+to actually attempt a setting on the dial". A fact name, plus the node's `function`, plus a binding,
+pins the obligation without a gloss.
+
+**So the architecture re-specification's stratification is sound and its contents were wrong.** The
+split into a shareable structural half and a per-book decisional half works. What failed in D-7 was
+that I put 32 one-line prose glosses in the shareable half and called them structure.
+
+**One qualification recorded rather than buried.** Eleven of 35 choices share their opening verb
+across the two books ("Ask the Warden" against "Ask the bell-ringer", "Turn Back Together" against
+"Turn back now"). That is the shared structure surfacing at the label layer: the same acts are
+available at the same forks, which is the series contract working as intended rather than wording
+leaking. The gram measure sits at the floor regardless, and only 2 full menu frames match. A reader
+study would be needed to say whether shared opening verbs read as repetition; no measure here can.
 
 ### D-1 should not be run as specified, and the instrument's own record is why
 
