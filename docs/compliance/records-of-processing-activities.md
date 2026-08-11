@@ -163,10 +163,26 @@ record itself:
 
 ## 8. Open items this record surfaces
 
-**Status as of 2026-07-20**: Phase 2's consent-capture build and the Article 18/21 flag are now
-both DONE (built, not just decided); G-10/Phase 8b (ADR-016 consent UI) was already resolved
-(Section 3 activity 7 reflects this). Phase 5's DPA execution remains the one item still
-genuinely open below.
+**Status as of 2026-08-10**: activity 12 (adult verification before child-profile creation) was
+added to Section 3 on this date, and it brings one new open item with it. The check discloses the
+**adult's own email address to Epic Games when it starts**, before any verdict, so refused and
+abandoned applicants are disclosed too; there is no executed DPA behind that relationship and the
+receiving Epic entity is not yet established. That is tracked as **O-125** in
+`docs/security/assurance-register.md` and assessed in `dpia.md` section 2.8, and it is a
+precondition of switching the gate on in production, not a follow-up to it. The gate ships behind
+`KWS_VERIFICATION_REQUIRED`, which is off in production, so activity 12 describes a built path
+rather than one currently processing real adults' data there.
+
+It also does not replace the consent mechanism below. KWS establishes that the person is an adult;
+the record of what was agreed to is still ours, captured by the typed-name attestation. Epic's own
+documentation says the same, that the service is not designed to obtain consent or address direct
+notice.
+
+**Status as of 2026-07-20** (retained, and still accurate for the items it covers): Phase 2's
+consent-capture build and the Article 18/21 flag are now both DONE (built, not just decided);
+G-10/Phase 8b (ADR-016 consent UI) was already resolved (Section 3 activity 7 reflects this).
+Phase 5's DPA execution remains genuinely open below, and O-125 above is a second instance of
+exactly that gap rather than a separate kind of problem.
 
 - Article 6 legal basis: a plausible basis is recorded per-activity in Section 3 above
   (was previously unrecorded, G-01); two activities (3: story generation, 4: content

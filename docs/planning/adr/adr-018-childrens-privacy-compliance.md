@@ -586,9 +586,18 @@ was true on its date; what follows is the state that replaced it.
   verification as its corroboration, is the failure this shape exists to make unreachable.
 
 Two things the build does **not** do, stated so the ADR does not overclaim. It does not answer Q2's
-notification limb, which remains the viability gate for the chosen method. And it does not make a
-verification meaningful in production: nothing has been wired there, and the first real send is
-gated on the processor disclosure now tracked at O-125.
+notification limb. And it does not make a verification meaningful in production: nothing has been
+wired there, and the first real send is gated on the processor disclosure now tracked at O-125.
+
+> **Superseded later the same day, 2026-08-10.** The sentence above originally continued "which
+> remains the viability gate for the chosen method", and that clause is no longer true: the owner
+> ruling recorded in the amendment block at the top of this ADR accepted Q2's notification limb as
+> satisfied and **withdrew it from the Gate 1 run list**. The observation is unchanged, this build
+> still does not answer Q2, but the consequence changed: an unanswered Q2 is now a risk accepted at
+> O-122 rather than a gate the method must pass. The earlier wording is preserved here rather than
+> silently edited, because the two readings drive different production switch-on decisions and a
+> reader needs to see which one is current. The same clause also appears at two points inside the
+> amendment blocks above; those are dated historical records and are correct as written.
 
 **The vendor independently confirms the boundary, 2026-08-10.** Epic's own PV Service documentation
 states that the service "has not been designed to obtain consent from verified parents or guardians
