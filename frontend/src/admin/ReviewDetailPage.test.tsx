@@ -584,20 +584,36 @@ describe('ReviewDetailPage', () => {
     })
   })
 
-  it('requires a reason before sending back', async () => {
+  it('requires a reason before sending back, and defaults the reason code to other', async () => {
     const user = userEvent.setup()
     mockPost.mockResolvedValue({ data: { id: 's1', status: 'needs_revision' } })
     renderAt('s1')
     await user.click(await screen.findByRole('button', { name: /Send Back/i }))
     const submit = await screen.findByRole('button', { name: /Confirm send back/i })
     expect(submit).toBeDisabled()
-    await user.type(screen.getByLabelText(/reason/i), 'too intense for this age')
+    await user.type(screen.getByLabelText(/reason for sending back/i), 'too intense for this age')
     expect(submit).toBeEnabled()
     await user.click(submit)
     expect(mockPost).toHaveBeenCalledWith('/v1/storybooks/s1/send-back', {
       reason: 'too intense for this age',
+      reason_code: 'other',
     })
     expect(await screen.findByText('CONSOLE HOME')).toBeInTheDocument()
+  })
+
+  it('sends the selected reason code alongside the reason', async () => {
+    const user = userEvent.setup()
+    mockPost.mockResolvedValue({ data: { id: 's1', status: 'needs_revision' } })
+    renderAt('s1')
+    await user.click(await screen.findByRole('button', { name: /Send Back/i }))
+    await user.selectOptions(screen.getByLabelText(/reason category/i), 'reading_level')
+    await user.type(screen.getByLabelText(/reason for sending back/i), 'too advanced for band')
+    const submit = await screen.findByRole('button', { name: /Confirm send back/i })
+    await user.click(submit)
+    expect(mockPost).toHaveBeenCalledWith('/v1/storybooks/s1/send-back', {
+      reason: 'too advanced for band',
+      reason_code: 'reading_level',
+    })
   })
 
   it('keeps send back disabled for a whitespace-only reason', async () => {
@@ -606,7 +622,7 @@ describe('ReviewDetailPage', () => {
     await user.click(await screen.findByRole('button', { name: /Send Back/i }))
     const submit = await screen.findByRole('button', { name: /Confirm send back/i })
     expect(submit).toBeDisabled()
-    await user.type(screen.getByLabelText(/reason/i), '   ')
+    await user.type(screen.getByLabelText(/reason for sending back/i), '   ')
     expect(submit).toBeDisabled()
   })
 

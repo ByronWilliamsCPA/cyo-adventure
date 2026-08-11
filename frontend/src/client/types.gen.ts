@@ -4210,6 +4210,10 @@ export type SendBackRequest = {
      * Reason
      */
     reason: string;
+    /**
+     * Reason Code
+     */
+    reason_code: 'safety_concern' | 'reading_level' | 'coherence_error' | 'continuity_error' | 'weak_choices' | 'repetitive' | 'prose_quality' | 'unsatisfying_ending' | 'factual_error' | 'other';
 };
 
 /**
@@ -4230,6 +4234,10 @@ export type SentBackView = {
      * Reason
      */
     reason: string;
+    /**
+     * Reason Code
+     */
+    reason_code: 'safety_concern' | 'reading_level' | 'coherence_error' | 'continuity_error' | 'weak_choices' | 'repetitive' | 'prose_quality' | 'unsatisfying_ending' | 'factual_error' | 'other';
 };
 
 /**

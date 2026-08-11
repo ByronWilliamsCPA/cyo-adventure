@@ -184,11 +184,14 @@ async def send_back_storybook(
 ) -> SentBackView:
     """Send an in-review story back for revision with a reason (admin only)."""
     book = await _load_admin_story(ctx, storybook_id)
-    await approval_service.send_back(ctx.session, ctx.principal, book, body.reason)
+    await approval_service.send_back(
+        ctx.session, ctx.principal, book, body.reason, reason_code=body.reason_code
+    )
     return SentBackView(
         id=book.id,
         status=cast("Literal['needs_revision']", book.status),
         reason=body.reason,
+        reason_code=body.reason_code,
     )
 
 

@@ -33,11 +33,17 @@ _PAYLOAD_ALLOWLIST: dict[EventType, frozenset[str]] = {
         {"overall_verdict", "repaired", "counts"}
     ),
     EventType.REPAIR_APPLIED: frozenset({"stage"}),
-    EventType.SENT_BACK: frozenset(),
+    # Review-scorecard calibration (2026-08): the closed-vocabulary reason
+    # code a reviewer selects alongside their free-text reason
+    # (api/schemas.py::SendBackReasonCodeLiteral). An enum value, never free
+    # text, so it fits the PII-free payload contract (D3) unchanged; the
+    # free-text reason itself stays log-only, never persisted here.
+    EventType.SENT_BACK: frozenset({"reason_code"}),
     EventType.RELEASED: frozenset({"visibility"}),
     # A5 incident/pull-everywhere path: no payload needed, the
     # storybook entity_id is the only durable reference this transition
-    # requires (same empty-payload contract as SENT_BACK above).
+    # requires. SENT_BACK above used to be the comparison here and no longer
+    # is: it now carries a reason_code.
     EventType.STORYBOOK_ARCHIVED: frozenset(),
     EventType.THRESHOLD_CHANGED: frozenset(
         {"age_band", "category", "action", "min_verdict", "min_score"}

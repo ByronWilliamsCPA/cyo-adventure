@@ -53,12 +53,13 @@ describe('makeReviewApi', () => {
     })
   })
 
-  it('sends back via POST /v1/storybooks/:id/send-back with a reason', async () => {
+  it('sends back via POST /v1/storybooks/:id/send-back with a reason and reason code', async () => {
     const api = fakeAxios()
     api.post.mockResolvedValue({ data: { id: 's1', status: 'needs_revision' } })
-    await makeReviewApi(api as never).sendBack('s1', 'too scary')
+    await makeReviewApi(api as never).sendBack('s1', 'too scary', 'safety_concern')
     expect(api.post).toHaveBeenCalledWith('/v1/storybooks/s1/send-back', {
       reason: 'too scary',
+      reason_code: 'safety_concern',
     })
   })
 
