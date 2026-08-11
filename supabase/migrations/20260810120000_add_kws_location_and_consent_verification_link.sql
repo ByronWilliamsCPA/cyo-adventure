@@ -34,6 +34,19 @@
 -- Table names are schema-qualified ("public".*) because the baseline migration empties
 -- search_path for the rest of the session; "user" is additionally a reserved word and
 -- stays quoted.
+--
+-- On locking: neither the CHECK nor the FOREIGN KEY below is added NOT VALID, so both
+-- take ACCESS EXCLUSIVE on the altered table and scan it before returning (the FK also
+-- takes SHARE ROW EXCLUSIVE on kws_verification). That is deliberate at this scale and
+-- deliberately recorded rather than left to be inferred. Both constraints are added in
+-- the same migration as the column they constrain, so every pre-existing row holds NULL;
+-- a FK validation scan skips NULLs and the CHECK's first disjunct passes them, so the
+-- scan does no per-row work beyond the visit. NOT VALID buys nothing in a single-file
+-- forward-only migration either, because VALIDATE CONSTRAINT in the same transaction
+-- re-takes the lock; the lock-free version of this is two migrations, not two statements.
+-- The threshold to revisit: when "user" is large enough that an ACCESS EXCLUSIVE
+-- full-table visit is a user-visible write stall, split the ADD ... NOT VALID and the
+-- VALIDATE CONSTRAINT across two migration files.
 
 ALTER TABLE "public"."kws_verification"
     ADD COLUMN IF NOT EXISTS location VARCHAR(16);

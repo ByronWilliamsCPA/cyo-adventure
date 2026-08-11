@@ -653,8 +653,12 @@ class User(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     # one statement, so the CASCADE on kws_verification.user_id and this
     # SET NULL fire against each other inside the same command.
     # #VERIFY: tests/integration/test_deletion_drill.py::
-    # test_delete_my_family_removes_everything covers a guardian delete with
-    # this constraint in place.
+    # test_deleting_a_verification_keeps_the_consent_record (the SET NULL
+    # itself: flipping this to CASCADE fails it) and
+    # ::test_delete_my_family_removes_the_kws_verification_rows (the two
+    # constraints firing together). Do NOT cite
+    # test_delete_my_family_removes_everything: it seeds no kws_verification
+    # row at all, so it exercises neither half of this cycle.
     consent_verification_id: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey(
             "kws_verification.id",
@@ -2885,7 +2889,10 @@ class KwsVerification(Base):
     # #CRITICAL: data-integrity: CASCADE (Phase 3a, GDPR/COPPA erasure): a
     # verification attempt is personal data about the guardian who started it,
     # so it goes when their user row does.
-    # #VERIFY: tests/integration/test_deletion_drill.py.
+    # #VERIFY: tests/integration/test_deletion_drill.py::
+    # test_delete_my_family_removes_the_kws_verification_rows. Name that test,
+    # not the file: it is the only one in there that seeds a kws_verification
+    # row, so it is the only one this CASCADE can be observed by.
     user_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey(_FK_USER, ondelete="CASCADE"), index=True
     )

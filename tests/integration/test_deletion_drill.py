@@ -29,6 +29,7 @@ from cyo_adventure.db.models import (
     DeviceGrant,
     FamilyConnection,
     KidFlag,
+    KwsVerification,
     PersonalizationDisclosureConsent,
     Rating,
     ReadingActivityDay,
@@ -652,3 +653,104 @@ async def test_export_excludes_blocked_request_text(
         req for req in resp.json()["story_requests"] if req["status"] == "blocked"
     )
     assert blocked["request_text"] is None
+
+
+async def _seed_verification_backed_consent(
+    sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> tuple[uuid.UUID, uuid.UUID]:
+    """Give the fixture's guardian a KWS attempt and cite it on their consent.
+
+    Returns ``(guardian_user_id, verification_id)``. This is the shape the
+    circular foreign key exists for: ``kws_verification.user_id`` points at
+    ``user`` and ``user.consent_verification_id`` points back, so neither
+    table can be created before the other and neither can be deleted without
+    considering the other.
+    """
+    async with sessions() as s:
+        guardian = await s.scalar(
+            select(User).where(
+                User.family_id == seed.family_id,
+                User.role == "guardian",
+                User.is_admin.is_(False),
+            )
+        )
+        assert guardian is not None, "fixture no longer seeds a guardian-only adult"
+        verification = KwsVerification(
+            id=uuid.uuid4(),
+            user_id=guardian.id,
+            kws_environment="test",
+            status="verified",
+            resolved_at=datetime.now(UTC),
+            transaction_id="txn-deletion-drill",
+            enabled_methods=["credit_card"],
+            location="US",
+        )
+        s.add(verification)
+        await s.flush()
+        guardian.consent_verification_id = verification.id
+        await s.commit()
+        return guardian.id, verification.id
+
+
+async def test_delete_my_family_removes_the_kws_verification_rows(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+) -> None:
+    """A family delete takes the guardian's verification attempts with it.
+
+    ``kws_verification`` holds personal data about the adult who started the
+    attempt (Phase 3a, GDPR/COPPA erasure), so it must not survive them. This
+    is also the case the circular-FK ``#ASSUME`` in ``db/models.py`` names:
+    the user row and the verification row go in the same statement, so the
+    CASCADE on ``kws_verification.user_id`` and the SET NULL on
+    ``user.consent_verification_id`` fire against each other. If that pair
+    were mis-ordered this delete would raise rather than return 204, which is
+    why the status assertion below is load-bearing rather than incidental.
+    """
+    guardian_id, verification_id = await _seed_verification_backed_consent(
+        sessions, seed
+    )
+
+    resp = await client.delete("/api/v1/me/family", headers=auth(seed.guardian_token))
+    assert resp.status_code == 204, resp.text
+
+    async with sessions() as s:
+        assert (await s.get(User, guardian_id)) is None
+        assert (await s.get(KwsVerification, verification_id)) is None
+        assert (
+            await s.scalar(
+                select(KwsVerification).where(KwsVerification.user_id == guardian_id)
+            )
+        ) is None
+
+
+async def test_deleting_a_verification_keeps_the_consent_record(
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+) -> None:
+    """Erasing an attempt de-links the consent record instead of deleting it.
+
+    The FK is ``ON DELETE SET NULL``, not CASCADE, and the distinction is the
+    whole point: 16 CFR 312.5(c) requires the consent record itself to
+    survive. A CASCADE here would let the disposal of corroborating evidence
+    silently destroy the consent it corroborated.
+
+    Runs the delete directly rather than through an endpoint because no route
+    deletes a verification without deleting its owner; the constraint is what
+    is under test, not a caller.
+    """
+    guardian_id, verification_id = await _seed_verification_backed_consent(
+        sessions, seed
+    )
+
+    async with sessions() as s:
+        verification = await s.get(KwsVerification, verification_id)
+        assert verification is not None
+        await s.delete(verification)
+        await s.commit()
+
+    async with sessions() as s:
+        guardian = await s.get(User, guardian_id)
+        assert guardian is not None, "the consent record must outlive its evidence"
+        assert guardian.consent_verification_id is None
