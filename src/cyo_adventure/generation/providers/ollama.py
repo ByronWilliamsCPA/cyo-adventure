@@ -384,6 +384,16 @@ class OllamaProvider:
             )
         message = as_str_map(top.get("message"))
         content = message.get("content") if message is not None else None
+        # #CRITICAL: data-integrity: these counts feed a persisted spend
+        # figure, and this is a self-hosted backend whose response shape
+        # nothing upstream validates. `coerce_token_count` is what keeps an
+        # absent or non-integer count reporting None (unknown) rather than 0
+        # (free); the two must never be collapsed, because only `None`
+        # survives to `provider_unknown_calls` as a record that the figure is
+        # a lower bound. Tagged separately from `dig_usage` because Ollama
+        # uses its own field names and does not route through that helper.
+        # #VERIFY: test_ollama_reads_counts_from_the_terminal_done_chunk,
+        # test_ollama_content_chunk_does_not_blank_a_seen_count.
         return _StreamChunk(
             text=content if isinstance(content, str) else "",
             # Ollama's own names for the counts; it does not emit an OpenAI

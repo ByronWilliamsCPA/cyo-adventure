@@ -63,11 +63,16 @@ class TokenUsage:
     """What one provider call consumed.
 
     Attributes:
-        provider: The backend that served the call, as the adapter's own
-            ``name`` reports it (e.g. ``"anthropic:claude-opus-5"``). For a
-            fallback chain this is the leg that actually answered, not the
-            chain, because the leg is what was billed.
-        model: The model id the call was issued against.
+        provider: The backend that served the call, as a bare backend name
+            (``"anthropic"``, ``"openrouter"``, ``"modal"``, ``"ollama"``).
+            It never embeds the model: this string is half of the
+            ``(provider, model)`` key ``core.pricing.PRICES`` is looked up by,
+            so a combined label would miss every price entry and silently
+            make the call unpriced. For a fallback chain this is the leg that
+            actually answered, not the chain, because the leg is what was
+            billed.
+        model: The model id the call was issued against, the other half of
+            that key.
         input_tokens: Prompt tokens the backend reported, or ``None`` when it
             reported none. Not interchangeable with ``0``.
         output_tokens: Completion tokens the backend reported, or ``None``

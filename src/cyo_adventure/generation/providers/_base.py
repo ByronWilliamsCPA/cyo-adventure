@@ -118,6 +118,16 @@ def dig_usage(payload: object) -> tuple[int | None, int | None]:
         ``(input_tokens, output_tokens)``, each ``None`` when absent or
         unusable.
     """
+    # #CRITICAL: data-integrity: these counts feed a persisted spend figure,
+    # and every layer below is untrusted decoded JSON: the block can be
+    # absent, be a non-mapping, or carry a non-int count on an otherwise
+    # valid 200. Each narrowing step below must keep reporting None
+    # (unknown), never 0 (free), because a zero is indistinguishable from a
+    # genuinely free call once it reaches `cost_usd`. This is the same
+    # assumption `AnthropicProvider._usage_counts` carries; it lives here
+    # once because OpenRouter and Modal both route through this helper.
+    # #VERIFY: test_openrouter_missing_usage_block_reports_unknown,
+    # test_openrouter_malformed_usage_reports_unknown.
     top = as_str_map(payload)
     if top is None:
         return (None, None)
