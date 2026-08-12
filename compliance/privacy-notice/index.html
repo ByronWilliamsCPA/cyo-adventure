@@ -3658,8 +3658,8 @@ paperwork (<code>coppa-gdpr-remediation-plan.md</code> Phase 5) has not yet been
 <td>The decision and category are kept; the original typed text is replaced with a placeholder 30 days after the decision</td>
 </tr>
 <tr>
-<td>Raw story-generation output kept for troubleshooting</td>
-<td>30 days, or immediately once a story is published, whichever comes first</td>
+<td>Raw story-generation output (the unedited model output, before our automated checks and before an adult read it), kept for troubleshooting and to check our safety review against the decision an adult actually made</td>
+<td>Deleted 30 days after the generation run finishes, unless an adult reached a decision about that story within those 30 days. Once an adult approves/archives a story or sends it back, the raw output is kept for as long as the story exists. If nobody has decided by day 30 it is deleted anyway and a later decision does not restore it, because the exemption is checked when the nightly deletion runs rather than when the adult decides. A run still awaiting a person (<code>awaiting_manual_fill</code>) is covered by no timer at all. All of it is deleted with the family account. [COUNSEL: this row changed on 2026-08-12 and the change widens a purpose, not just a window. The original 30-day-or-on-publish rule was troubleshooting-only; ADR-007's amendment additionally retains the output indefinitely, for reviewed stories, to calibrate our safety-review scorecard. Please rule on (a) the lawful basis for that second purpose, given the output is generated for an identified child profile, and (b) whether "for as long as the story exists" is an acceptable outer bound or needs a fixed ceiling.]</td>
 </tr>
 <tr>
 <td>Records of admin safety reviews</td>
@@ -3743,7 +3743,7 @@ interim manual process.]</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 11, 2026 16:05:55 UTC">August 11, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 12, 2026 20:28:02 UTC">August 12, 2026</span>
   </span>
 
     

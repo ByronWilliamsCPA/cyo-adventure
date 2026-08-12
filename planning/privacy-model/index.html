@@ -3567,22 +3567,43 @@ counterparties for child-typed text as well as for generated prose.</p>
 <hr />
 <h2 id="raw-llm-outputs-and-prompt-text">Raw LLM Outputs and Prompt Text<a class="headerlink" href="#raw-llm-outputs-and-prompt-text" title="Permanent link">&para;</a></h2>
 <p>Raw LLM outputs (the full text returned by the provider for each stage) and the prompt
-text sent to the provider are admin-only (ADR-007 as amended 2026-07-16) and short-lived:</p>
+text sent to the provider are admin-only (ADR-007 as amended 2026-07-16). They are no longer
+uniformly short-lived: as of ADR-007's 2026-08-10 and 2026-08-11 amendments, a raw output that
+a human reached a decision about is retained for the life of the storybook, and only an
+undecided one is short-lived. The detail is in the second bullet.</p>
 <ul>
 <li><strong>Prompt text</strong>: store the prompt template version and a hash, not the full rendered
   prompt, where the rendered text could carry child-specific detail. The hash allows
   audit without persisting the content.</li>
 <li><strong>Raw generation outputs</strong>: stored in <code>generation_job.report</code>, a Postgres JSONB column
-  (not object storage; there is no <code>raw_output_ref</code> field), only as long as needed for
-  debugging and repair-pass analysis. The retention window is defined (ADR-007): purge 30
-  days after job completion or on publish, whichever comes first, via a <code>pg_cron</code> job
-  (ADR-009). The purge worker is a Phase 5 deliverable and is not yet built.</li>
+  (not object storage; there is no <code>raw_output_ref</code> field). The purpose was originally
+  debugging and repair-pass analysis alone; ADR-007's 2026-08-10 amendment added a second,
+  broader one: calibrating the review scorecard against the decision a human actually made.
+  That is a purpose change as well as a window change, and it is what justifies the longer
+  retention below rather than the debugging need, which is satisfied inside 30 days.
+  The retention window is defined (ADR-007): purge 30
+  days after job completion, via a <code>pg_cron</code> job (ADR-009), <strong>except</strong> where a human
+  reached a review decision about the storybook the job produced, which ADR-007's
+  2026-08-10 amendment exempts so the raw output can be paired with the reviewer's
+  decision. ADR-007's 2026-08-11 amendment withdrew the original "or on publish, whichever
+  comes first" leg: publishing is now an exemption from the purge rather than a trigger for
+  it, because the immediate on-publish null in <code>publishing/service.py::approve</code> fired before
+  the approve half of the exemption could ever apply. The <code>pg_cron</code> job is built and
+  scheduled (<code>20260718000000_add_report_retention_purge.sql</code>, predicate amended by
+  <code>20260810000000_exempt_reviewed_generation_job_report_from_purge.sql</code>); it is no longer
+  the unbuilt Phase 5 deliverable this section once described.</li>
 </ul>
+<p>The exemption has a boundary worth stating here rather than only in the retention policy:
+  it is evaluated when the nightly sweep runs, not when the human decides. A job whose
+  storybook is still <code>in_review</code> on day 31 is purged, and a later approval cannot restore the
+  column, so the pairing this exemption exists to enable only happens for reviews that
+  conclude inside the 30 days. See <code>docs/compliance/data-retention-policy.md</code> Section 4 and
+  <code>UW-C227</code>.</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># #CRITICAL: data integrity: generation_job.report holds raw LLM output that may</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="c1">#            carry child-derived detail; it must be purged and never leaked.</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1"># #VERIFY: the pg_cron purge job (30 days post-completion or on-publish, whichever</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1">#          first) is implemented and scheduled before the public tier goes live;</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="c1">#          confirm report stays off child-facing endpoints and the job-list endpoint.</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1"># #VERIFY: the pg_cron purge job (30 days post-completion, minus the human-decided</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1">#          exemption) is scheduled before the public tier goes live; confirm report</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="c1">#          stays off child-facing endpoints and the job-list endpoint.</span>
 </span></code></pre></div>
 <ul>
 <li><strong>Access control</strong>: <code>generation_job.report</code> is returned by <code>GET /generation-jobs/{id}</code>
@@ -3877,7 +3898,7 @@ counsel:</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 5, 2026 04:02:38 UTC">August 5, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 12, 2026 20:28:02 UTC">August 12, 2026</span>
   </span>
 
     

@@ -3724,6 +3724,43 @@ truth; Alembic is retired.</strong></p>
 <li><strong>Trigger-only behavior</strong>: see the <code>pipeline_event</code> bullet under Consequences; it is
   called out here again because it is the concrete reason the parity gate could not be
   the only test for this migration.</li>
+<li><strong><code>CONCURRENTLY</code> is usable, in a migration file holding exactly one statement</strong>
+  (established 2026-08-11 by reproduction against CLI <code>2.109.1</code>, against a throwaway
+  database). The rule is not "the CLI wraps each migration in a transaction", which is
+  what <code>20260810180000_add_kws_verification_delivery_health_index.sql</code> and
+  <code>20260811150000_index_user_consent_verification_id.sql</code> both assert in their header
+  comments; read those two claims as superseded. What actually happens is that a
+  multi-statement file is executed as a <code>pgx</code> <strong>pipeline</strong>, and a <code>CONCURRENTLY</code>
+  statement inside a pipeline fails with <code>CREATE INDEX CONCURRENTLY cannot be executed
+  within a pipeline (SQLSTATE 25001)</code>, aborting the whole <code>db push</code> and blocking the
+  deploy. A file holding one statement runs it outside a pipeline and succeeds, leaving
+  the index <code>indisvalid = true</code>. Comments are not statements, so prose is free.
+  Consequence for authors: an index on a table large enough for the build lock to matter
+  should be added as its own single-statement migration, as
+  <code>20260811170000</code>/<code>20260811170100</code> do for <code>ix_pipeline_event_entity_event_type</code>. The two
+  indexes named above are left as they are; they are already built, and rebuilding them
+  would be churn.</li>
+<li><strong>A <code>CREATE INDEX CONCURRENTLY</code> must not carry <code>if not exists</code>.</strong> The clause reads as
+  defensive and is the opposite here. A concurrent build that fails partway leaves the index
+  with <code>indisvalid = false</code>, which Postgres will not read from but will still maintain on
+  write. The CLI does not record a failed migration in <code>schema_migrations</code>, so the next
+  <code>db push</code> re-runs the file; with <code>if not exists</code> that re-run matches the invalid index by
+  name, does nothing, and the migration is then recorded as applied. The end state is an
+  index the planner ignores plus a green deploy and no signal anywhere. Omitting the clause
+  makes the re-run fail on <code>relation ... already exists</code>, which blocks the deploy until
+  someone drops the invalid index and re-pushes. Prefer the blocked deploy. <code>DROP INDEX
+  CONCURRENTLY</code> is the reverse case: <code>if exists</code> there is correct, since a database that
+  never applied the creating migration must not fail on the drop.</li>
+<li><strong>A prefix must be unclaimed across open pull requests, not just against <code>origin/main</code>.</strong>
+  The CLI keys <code>schema_migrations</code> on the 14-digit version prefix, not the filename, so two
+  concurrent branches can each hold a distinct file at the same prefix, each pass CI alone,
+  and collide with a <code>schema_migrations_pkey</code> duplicate-key error on the first <code>db push</code>
+  after the second one merges. This has now happened twice: <code>AL-072</code> (PR #494 against
+  PR #507, at <code>20260730000000</code>) and again at <code>20260811160000</code>, which is why the pair named
+  above was renumbered to <code>1700xx</code>. Note that the guard <code>AL-072</code> proposed, comparing against
+  the newest prefix on <code>origin/main</code>, would not have caught either case: both colliding
+  prefixes were greater than main's newest. The check has to read the other open branches.
+  Tracked by <code>UW-C21</code>.</li>
 </ul>
 <h3 id="testing-strategy">Testing Strategy<a class="headerlink" href="#testing-strategy" title="Permanent link">&para;</a></h3>
 <ul>
@@ -3784,7 +3821,7 @@ truth; Alembic is retired.</strong></p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 11, 2026 11:00:23 UTC">July 11, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 12, 2026 20:28:02 UTC">August 12, 2026</span>
   </span>
 
     

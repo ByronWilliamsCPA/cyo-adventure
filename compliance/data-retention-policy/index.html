@@ -3390,11 +3390,16 @@ processor's own internal retention (for example Sentry's platform-level log rete
 tracked as a vendor-oversight item in <code>information-security-program.md</code> Section 4, not restated
 here.</p>
 <h2 id="2-the-retention-schedule">2. The retention schedule<a class="headerlink" href="#2-the-retention-schedule" title="Permanent link">&para;</a></h2>
-<p><strong>This table governs.</strong> The first eight rows reproduce, without modification, the
-category-by-category schedule resolved 2026-07-20 in <code>coppa-gdpr-remediation-plan.md</code> Section 5
-("Resolved 2026-07-20: accepted as drafted"). The remaining rows adopt the additional categories
-that <code>docs/planning/unscheduled-work-register.md</code> row UW-N07 identifies as omitted from that
+<p><strong>This table governs.</strong> The first eight rows reproduce the category-by-category schedule
+resolved 2026-07-20 in <code>coppa-gdpr-remediation-plan.md</code> Section 5 ("Resolved 2026-07-20:
+accepted as drafted"). The remaining rows adopt the additional categories that
+<code>docs/planning/unscheduled-work-register.md</code> row UW-N07 identifies as omitted from that
 resolved schedule.</p>
+<p><strong>One row has since been deliberately amended and no longer matches the 2026-07-20 text:</strong>
+<code>generation_job.report</code>, by ADR-007's amendments of 2026-08-10 (a human-decided job is exempt
+from the 30-day sweep) and 2026-08-11 (the immediate on-publish purge is removed). The row
+below states the amended policy; the remediation plan's Section 5 copy is the historical
+resolution, not the live rule.</p>
 <table>
 <thead>
 <tr>
@@ -3430,9 +3435,9 @@ resolved schedule.</p>
 <tr>
 <td><code>generation_job.report</code> (raw LLM output)</td>
 <td>The raw model output column on a generation job</td>
-<td>30 days, or immediately on publish, whichever comes first</td>
-<td>ADR-007's original design; the raw output has no purpose once its content is either published or discarded</td>
-<td>Enforced. <code>pg_cron</code> job scheduled in <code>supabase/migrations/20260718000000_add_report_retention_purge.sql</code>.</td>
+<td>30 days from the job's <code>updated_at</code>, once the run has reached a terminal status (<code>passed</code>, <code>needs_review</code>, <code>failed</code>; the other three statuses are matched by no purge condition, see Section 4), and <strong>unless a human reached a review decision about the storybook it produced within those 30 days</strong>, in which case the report is retained for the life of that storybook. The 30-day qualifier is load-bearing: the exemption is evaluated when the nightly sweep runs, not when the decision is recorded, so a review still open on day 31 loses the report and a day-32 approval does not restore it (see Section 4)</td>
+<td>ADR-007's original design was "no purpose once published or discarded". Its 2026-08-10 amendment narrowed that: a review-scorecard calibration corpus needs the raw output paired with the human decision made about it, in either direction (approved, or sent back with a reason). Machine-only outcomes are not exempt, so nothing is retained without a human judgment attached to justify it</td>
+<td>Enforced. <code>pg_cron</code> job scheduled in <code>supabase/migrations/20260718000000_add_report_retention_purge.sql</code>, predicate amended in place by <code>20260810000000_exempt_reviewed_generation_job_report_from_purge.sql</code> (exempt when the storybook status is <code>published</code>/<code>archived</code>, or a <code>sent_back</code> <code>pipeline_event</code> exists for it). <strong>The separate immediate on-publish purge in <code>publishing/service.py::approve</code> was removed on 2026-08-11</strong> (ADR-007's 2026-08-11 amendment): it nulled the just-published version's own report before the exemption could ever apply to it, so the approve half of the exemption preserved nothing. The nightly predicate is now the only thing that decides this column's retention.</td>
 </tr>
 <tr>
 <td>Moderation reports</td>
@@ -3532,9 +3537,29 @@ The response clock is a communication obligation layered on top of that technica
 per Section 2's table, has no automated tracking today; it depends on a manual or support-channel
 process, which is not itself a database-purge concern but is noted here because the resolved
 schedule tracks it as part of the same policy.</p>
-<p>The one documented exception to "the data itself is purged" is the <code>pipeline_event</code> audit log
+<p>The one <em>intended</em> exception to "the data itself is purged" is the <code>pipeline_event</code> audit log
 (Section 2), which survives an erasure request under a stated Article 17(3) balancing
 justification rather than by an oversight.</p>
+<p>There is a second, unintended one, and ADR-007's 2026-08-11 amendment widened it. The two
+erasure routes are not equivalent in reach:</p>
+<ul>
+<li><strong>Family erasure</strong> (<code>DELETE /api/v1/me/family</code>) does reach <code>generation_job.report</code>. The path
+  is <code>family</code> -&gt; <code>concept.family_id</code> (<code>ON DELETE CASCADE</code>) -&gt; <code>generation_job.concept_id</code>
+  (<code>ON DELETE CASCADE</code>), so the raw output goes with the family row.</li>
+<li><strong>Per-child erasure</strong> (<code>DELETE /api/v1/profiles/{profile_id}</code>) does not. <code>concept</code> is scoped
+  by <code>family_id</code> and carries no profile foreign key, and <code>delete_profile</code> de-links that child's
+  story requests (setting <code>profile_id</code> to null) rather than deleting them, so the <code>concept</code> and
+  its <code>generation_job</code> rows, <code>report</code> included, survive the deletion of the only child the
+  content was generated for.</li>
+</ul>
+<p>Before the 2026-08-11 amendment this gap was narrow in practice: the on-publish purge in
+<code>publishing/service.py::approve</code> had already nulled a published story's report, so per-child
+erasure usually had little raw output left to strand. Removing that purge means the raw output
+for a published story now persists indefinitely, and per-child erasure still does not reach it.
+The residual is therefore: <strong>deleting one child's profile leaves the unedited model output that
+was generated for that child in place, for every story of theirs an adult decided on.</strong> Tracked
+as a Section 4 gap; it is a defect, not a balancing decision, and nothing in Section 2 or in
+<code>privacy-notice.md</code> claims otherwise.</p>
 <h2 id="4-known-gaps-between-policy-and-implementation">4. Known gaps between policy and implementation<a class="headerlink" href="#4-known-gaps-between-policy-and-implementation" title="Permanent link">&para;</a></h2>
 <p>This section states plainly which windows in Section 2 are enforced by shipped code today, and
 which are policy-only. Every claim below was verified by grepping <code>supabase/migrations/</code> and
@@ -3546,7 +3571,12 @@ specific files cited.</p>
   <code>supabase/migrations/20260720150000_add_retention_purge_jobs.sql</code>.</li>
 <li>Blocked/declined <code>request_text</code> purge: <code>pg_cron</code> job in the same migration.</li>
 <li><code>generation_job.report</code> purge: <code>pg_cron</code> job in
-  <code>supabase/migrations/20260718000000_add_report_retention_purge.sql</code>.</li>
+  <code>supabase/migrations/20260718000000_add_report_retention_purge.sql</code>, with its predicate
+  amended in place by <code>20260810000000_exempt_reviewed_generation_job_report_from_purge.sql</code>.
+  This nightly job is the <em>only</em> enforcement path for this column as of 2026-08-11; the
+  second, immediate on-publish purge that <code>publishing/service.py::approve</code> used to perform
+  was removed that day, so a human-reviewed report is now genuinely retained rather than
+  nulled a moment after approval.</li>
 <li><code>story_request.interpretation</code> element purge:
   <code>supabase/migrations/20260720000000_add_story_request_interpretation.sql</code> (an additional
   purge job not itemized as its own row in Section 2's table because it is a sub-field of the
@@ -3572,6 +3602,46 @@ specific files cited.</p>
   Section 4 states the production deployment orchestrator (<code>homelab-infra</code>) has not been
   confirmed to carry an equivalent bound at all. A size cap is not a deletion timeline: a
   low-volume log stream could retain lines well past any window this policy states.</li>
+</ul>
+<p><strong>Three gaps specific to <code>generation_job.report</code>, all verified by reading the predicate and the
+deletion routes on 2026-08-12 rather than inferred from the policy text:</strong></p>
+<ul>
+<li>
+<p><strong>The exemption does not protect a slow review.</strong> It is evaluated when the nightly sweep runs,
+  not when a human records a decision. A job at status <code>passed</code> whose storybook is still
+  <code>in_review</code> on day 31 matches every purge condition: the approve leg of the exemption keys on
+  <code>published</code>/<code>archived</code>, and the send-back leg keys on a <code>sent_back</code> <code>pipeline_event</code> a pending
+  review has not written. The report is nulled, and an approval on day 32 flips the storybook to
+  <code>published</code> against a column that is already NULL. The calibration-corpus purpose in Section 2
+  therefore holds only for reviews that conclude within 30 days of the job's last update, which
+  is why that row now carries the 30-day qualifier. This belongs to the 2026-08-10 amendment
+  rather than to the 2026-08-11 one, and closing it means either touching <code>updated_at</code> when a
+  decision is recorded or dropping the status filter for storybooks still awaiting one; both
+  change what is retained, so both are owner decisions. Raised in review of PR #703, tracked as
+  <code>UW-C227</code>, and pinned by <code>test_slow_review_report_is_purged_before_the_human_decides</code> so the
+  window cannot be quietly assumed shut.</p>
+</li>
+<li>
+<p><strong>Per-child erasure does not reach it.</strong> Section 3 states this in full. <code>concept</code> carries
+  <code>family_id</code> and no profile foreign key, so the <code>family</code> -&gt; <code>concept</code> -&gt; <code>generation_job</code> cascade
+  only fires on family deletion; <code>delete_profile</code> de-links a child's story requests instead of
+  deleting them. Deleting one child's profile therefore strands the raw model output generated
+  for that child. Removing the on-publish purge widened this from "usually nothing left to
+  strand" to "everything an adult decided on, indefinitely."</p>
+</li>
+<li><strong>Three statuses are outside the sweep entirely.</strong> The nightly predicate is gated on
+  <code>status IN ('passed', 'needs_review', 'failed')</code>. <code>generation_job.status</code> has six legal values
+  (<code>db/models.py::_GENERATION_JOB_STATUS_VALUES</code>), so <code>queued</code>, <code>running</code>, and
+  <code>awaiting_manual_fill</code> are matched by no purge condition at all and their <code>report</code> is never
+  nulled on any timer, however old. <code>queued</code> and <code>running</code> are transient and normally hold no
+  report, but <code>awaiting_manual_fill</code> is by definition a run parked waiting on a person and can
+  sit indefinitely. This is a pre-existing gap that ADR-007's 2026-08-10 amendment did not
+  introduce and its 2026-08-11 amendment did not close; it is called out here because Section 2's
+  window ("30 days from the job's <code>updated_at</code>") reads as universal and is not. <code>privacy-notice.md</code>
+  and the guardian-facing privacy page were both reworded on 2026-08-12 to say "30 days after the
+  generation run finishes" for exactly this reason. Either the predicate should widen to every
+  non-exempt status or Section 2's window should be scoped in the table itself; that is an owner
+  decision, not a cleanup.</li>
 </ul>
 <p><strong><code>security_event</code> table: verified, no retention or purge mechanism.</strong> <code>docs/planning/</code>
 <code>unscheduled-work-register.md</code> row UW-D28 asserts the <code>security_event</code> table has no retention or
@@ -3634,7 +3704,7 @@ shortfall, not a hypothetical one, and it is not yet resolved anywhere in this r
 <tbody>
 <tr>
 <td><a href="../coppa-gdpr-remediation-plan/">coppa-gdpr-remediation-plan.md</a></td>
-<td>Section 5 holds the authoritative, already-resolved per-category schedule this document reproduces in Section 2 without modification; Phase 4b is the plan item this document satisfies, and Phase 4c is the purge-job work this document's Section 4 checks against.</td>
+<td>Section 5 holds the per-category schedule resolved 2026-07-20, which Section 2 reproduces with one deliberate, flagged amendment (the <code>generation_job.report</code> row, per ADR-007's 2026-08-10 and 2026-08-11 amendments; see the note above Section 2's table). Where the two disagree, Section 2 governs and Section 5 is the historical resolution; Phase 4b is the plan item this document satisfies, and Phase 4c is the purge-job work this document's Section 4 checks against.</td>
 </tr>
 <tr>
 <td><a href="../privacy-notice/">privacy-notice.md</a></td>
@@ -3684,7 +3754,7 @@ shortfall, not a hypothetical one, and it is not yet resolved anywhere in this r
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 8, 2026 20:42:54 UTC">August 8, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 12, 2026 20:28:02 UTC">August 12, 2026</span>
   </span>
 
     

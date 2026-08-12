@@ -3800,7 +3800,7 @@ plus the shared-gram guard, both deterministic and both already built.</p>
 <td><code>AL-208</code> says D-2 converged because its arms shared one contract. That is a diagnosis nothing has tested, and three candidate repairs were proposed with no way to choose between them.</td>
 <td>One contract, two bindings held constant, three conditions (<code>verbatim</code>, <code>neutral</code>, <code>diverge</code>), six independent 26-node fills. Outcome is the guard battery itself, so no rater is needed.</td>
 <td>6 fills, 0 raters</td>
-<td>First falsifier did not fire: <code>verbatim</code> reaches 16.9 per 1000 against the pilot's 2.9, so contract sharing is confirmed as a cause. <strong>Second falsifier substantially fired</strong>: the best repair reaches 11.4, still roughly 3x budget and 4x the pilot.</td>
+<td>First falsifier did not fire: <code>verbatim</code> reaches 17.2 per 1000 against the pilot's 2.9, so contract sharing is confirmed as a cause. <strong>Second falsifier substantially fired</strong>: the best repair reaches 11.8, still roughly 3x budget and 4x the pilot. (Figures re-derived from the artifacts 2026-08-11; published as 16.9 and 11.4.)</td>
 <td><strong>done, MIXED: diagnosis confirmed, neither tested repair sufficient</strong></td>
 </tr>
 <tr>
@@ -3809,7 +3809,7 @@ plus the shared-gram guard, both deterministic and both already built.</p>
 <td><code>AL-208</code>'s last untested repair, and the central claim of the architecture re-specification.</td>
 <td>One structural stratum, two decisional strata authored without sight of each other, two bindings held constant, two fills. Outcome is the guard battery, no rater.</td>
 <td>2 strata, 2 fills, 0 raters</td>
-<td><strong>Fired.</strong> 12.9 per 1000 against a predicted 4.0, identical to D-6's <code>diverge</code>. The leak was first attributed 62 percent to the shared fact definitions, which the stratum kept and which are prose. <strong>That attribution is retracted</strong>: a strict re-trace puts <strong>5 of the 40</strong> shared grams on the deleted glosses, 12.5 percent, roughly a fivefold overstatement, and the 62 percent method was never documented. See the research brief Part III section 21.</td>
+<td><strong>Fired.</strong> 13.6 per 1000 against a predicted 4.0, identical to D-6's <code>diverge</code>. The leak was first attributed 62 percent to the shared fact definitions, which the stratum kept and which are prose. <strong>That attribution is retracted</strong>: a strict re-trace puts <strong>5 of the 40</strong> shared grams on the deleted glosses, 12.5 percent, roughly a fivefold overstatement, and the 62 percent method was never documented. See the research brief Part III section 21.</td>
 <td><strong>done, NEGATIVE</strong></td>
 </tr>
 <tr>
@@ -3818,7 +3818,7 @@ plus the shared-gram guard, both deterministic and both already built.</p>
 <td>D-7 attributed its leak to the 32 one-line fact definitions its stratum still carried (62 percent then, 5 of 40 on the strict re-trace). Is removing them enough?</td>
 <td>One variable changed from D-7: <code>facts</code> becomes bare names, each arm writing its own readings. Every other key verified byte-identical.</td>
 <td>2 strata, 2 fills, 0 raters</td>
-<td>Neither falsifier fired. <strong>3.2 per 1000</strong>, under the 4.0 budget and at the 3.3 floor, from removing 422 words. And bare names still bound both authors to the same story: 0 of 32 identical readings, 0 of 35 identical semantics, agreement in meaning throughout. <strong>The passing stratum is not wordless</strong>: it still carries 473 words of binding-process free text, so what this arm shows is that fact-gloss prose drove the convergence, not that all prose does.</td>
+<td>Neither falsifier fired. <strong>2.3 per 1000</strong>, under the 4.0 budget and <em>below</em> the 3.3 generator idiom floor, from removing 422 words. Below the floor means this arm cannot be distinguished from two books sharing nothing but the model and the age band, so the result is at the measurement's own noise floor rather than merely inside budget. (Restated 2026-08-11 from "3.2 per 1000 ... at the 3.3 floor", per the per-body-unit recount noted on <code>AL-267</code>; the earlier figure counted 4-grams straddling body boundaries and so put this arm at the floor rather than under it.) And bare names still bound both authors to the same story: 0 of 32 identical readings, 0 of 35 identical semantics, agreement in meaning throughout. <strong>The passing stratum is not wordless</strong>: it still carries 473 words of binding-process free text, so what this arm shows is that fact-gloss prose drove the convergence, not that all prose does.</td>
 <td><strong>done, POSITIVE, claim narrowed</strong></td>
 </tr>
 <tr>
@@ -4007,18 +4007,18 @@ no em-dash). Measured on <strong>bodies only</strong>, for a reason given below.
 <tbody>
 <tr>
 <td><code>verbatim</code>, one contract as written</td>
-<td><strong>16.9</strong></td>
-<td>4.2x</td>
+<td><strong>17.2</strong></td>
+<td>4.3x</td>
 </tr>
 <tr>
 <td><code>neutral</code>, wording flattened</td>
-<td><strong>11.4</strong></td>
+<td><strong>11.8</strong></td>
 <td>2.9x</td>
 </tr>
 <tr>
 <td><code>diverge</code>, told not to reuse the wording</td>
-<td><strong>12.9</strong></td>
-<td>3.2x</td>
+<td><strong>13.6</strong></td>
+<td>3.4x</td>
 </tr>
 <tr>
 <td>pilot, <strong>different</strong> contracts, same graph, same bindings</td>
@@ -4027,11 +4027,42 @@ no em-dash). Measured on <strong>bodies only</strong>, for a reason given below.
 </tr>
 </tbody>
 </table>
+<blockquote>
+<p>[!WARNING]
+<strong>Correction, 2026-08-11: the three one-contract rows are re-derived from the artifacts.</strong> They were
+published as 16.9, 11.4 and 12.9 and stated to be body-only, and they are not: measured off
+<code>docs/planning/evidence/d6-contract-sharing/</code> with the primitives in <code>scripts/check_sibling_fills.py</code>
+they are 17.2, 11.8 and 13.6. The pilot control row reproduces exactly at 2.93, which is what
+separates a wrong figure from a wrong harness. Full re-derivation, control and consequences: the
+research brief's 16g.1 correction block. Every conclusion below survives, with two arithmetic
+restatements marked inline.</p>
+</blockquote>
 <p><strong>The first falsifier did not fire, so <code>AL-208</code> is confirmed as a cause.</strong> Holding the graph, the
-two bindings, the model and the isolation constant and changing only whether the arms read one
-contract or two moves convergence from 2.9 to 16.9, a factor of 5.8.</p>
+two bindings, the model and the isolation constant, moving from two contracts to one moves
+convergence from 2.9 to 17.2, a factor of 5.9.</p>
+<p><strong>What this comparison can and cannot isolate</strong> (added 2026-08-12, in review of PR #703, after an
+external reviewer pushed back on the "changing only" framing). Two facts about the design bound the
+claim:</p>
+<ul>
+<li>The 2.9 is the <strong>pilot's</strong> rig, not a fourth arm of D-6. D-6 built three conditions and all three
+  share one contract (<code>build.py</code>: "One contract (<code>contract_v2</code>, 26 nodes), two bindings held
+  constant (<code>armC</code> and <code>armD</code>, the pilot's own)"). Graph and bindings genuinely carry over, so this
+  is not a free-floating cross-study comparison, but it is a comparison against a historical
+  baseline rather than against a control run alongside.</li>
+<li>More importantly, <strong>"shares a document" and "shares a premise" cannot be separated here</strong>, and
+  not through any oversight: two <em>separate</em> contracts necessarily differ in everything a contract
+  carries, premise included. So the 5.9x is the effect of putting two books on one plan, which
+  bundles the shared document with the shared premise, the shared obligations and the shared
+  fact set. It is not an estimate of the document-sharing channel alone.</li>
+</ul>
+<p>Neither qualification touches the direction or the magnitude, and neither rescues the repairs:
+<code>verbatim</code>, <code>neutral</code> and <code>diverge</code> are three conditions <em>within</em> one shared contract, so the
+comparisons among them (17.2 against 11.8 and 13.6) are clean one-variable manipulations and are
+where the repair conclusions come from. Separating the document channel from the premise channel
+would need an arm giving two books the same premise on separately written contracts, which has not
+been run.</p>
 <p><strong>The second falsifier substantially fired, and this is the operative result.</strong> The best repair
-lands at 11.4, a 33 percent reduction that is still roughly three times budget and four times the
+lands at 11.8, a 31.4 percent reduction that is still roughly three times budget and four times the
 pilot. <strong>Neither tested repair unblocks D-2.</strong> <code>neutral</code> and <code>diverge</code> are within noise of each
 other at n=1 per condition, and their ordering flips depending on whether labels are counted, so no
 claim is made about which is better; the claim is that neither is enough.</p>
@@ -4144,15 +4175,15 @@ and the age band, different graph, different contract, different world:</p>
 </tr>
 <tr>
 <td>D-6 <code>neutral</code>, one contract, wording flattened</td>
-<td>11.4</td>
+<td>11.8</td>
 </tr>
 <tr>
 <td>D-6 <code>diverge</code>, one contract, divergence instructed</td>
-<td>12.9</td>
+<td>13.6</td>
 </tr>
 <tr>
 <td>D-6 <code>verbatim</code>, one contract as written</td>
-<td>16.9</td>
+<td>17.2</td>
 </tr>
 <tr>
 <td>D-2 pair, one contract, 101 nodes</td>
@@ -4170,12 +4201,12 @@ and the age band, different graph, different contract, different world:</p>
    indistinguishable from two books that share nothing at all. <strong>One contract per book is not merely
    better, it is a solved problem</strong>, and the only question is whether reuse can be bought back
    without giving that up.</li>
-<li><strong>The repairs are nowhere near the floor.</strong> 11.4 is 3.5 times it, so D-6's negative result is not
+<li><strong>The repairs are nowhere near the floor.</strong> 11.8 is 3.6 times it, so D-6's negative result is not
    a story about hitting an unavoidable limit. There is a factor of three of headroom that flattening
    the wording did not touch, which is consistent with the attribution finding that the repairs
    addressed one channel of at least four.</li>
 </ol>
-<p>The floor also corroborates the attribution independently: a quarter of <code>verbatim</code>'s 16.9 is 4.2 per
+<p>The floor also corroborates the attribution independently: a quarter of <code>verbatim</code>'s 17.2 is 4.3 per
 1000, against a directly measured 3.3. Two different methods agreeing on the size of the
 unreachable component is the strongest thing in this section.</p>
 <p><strong>What that does to the repair list.</strong> <code>AL-208</code> named three repairs and D-6 tested the two that
@@ -4670,7 +4701,7 @@ lock-house), a different slug, and <strong>zero fact-name overlap</strong>.</p>
 </tr>
 </tbody>
 </table>
-<p>For scale, D-6's <em>worst</em> condition was 16.9 per 1000 and the generator floor is 3.3. The resolution
+<p>For scale, D-6's <em>worst</em> condition was 17.2 per 1000 and the generator floor is 3.3. The resolution
 entries are near-paraphrases: "a copied page from the archive goes into the satchel in place of
 anything else, carried home to study" against "a passage in the archive holds a copy of the
 challenge, carried home to study on their own time".</p>
@@ -4929,7 +4960,7 @@ what was expected:</p>
 <tr>
 <td>D-6: one shared contract, by construction</td>
 <td>identical</td>
-<td>11.4 to 16.9</td>
+<td>11.8 to 17.2</td>
 </tr>
 </tbody>
 </table>
@@ -5020,15 +5051,15 @@ authored from one shared structure by agents that never saw each other's work, s
 </tr>
 <tr>
 <td><strong>D-7, shared structure + per-book decisional stratum</strong></td>
-<td><strong>12.9</strong></td>
+<td><strong>13.6</strong></td>
 </tr>
 <tr>
 <td>D-6 <code>diverge</code>, shared contract</td>
-<td>12.9</td>
+<td>13.6</td>
 </tr>
 <tr>
 <td>D-6 <code>verbatim</code>, shared contract</td>
-<td>16.9</td>
+<td>17.2</td>
 </tr>
 <tr>
 <td>D-2, shared contract at 101 nodes</td>
@@ -5036,7 +5067,12 @@ authored from one shared structure by agents that never saw each other's work, s
 </tr>
 </tbody>
 </table>
-<p><strong>The pre-registered falsifier fires. D-7 lands exactly where D-6's <code>diverge</code> landed</strong>, 3.2 times
+<p><em>(Every row is body-only. The D-7 row was published at 12.9 label-inclusive and corrected to 13.6;
+the two D-6 rows were published at 12.9 and 16.9 and re-derived to 13.6 and 17.2. Both corrections
+are dated 2026-08-11 and are documented at the head of D-6 above and in the research brief. The two
+13.6 rows are separate measurements that coincide, 13.57 and 13.59, and nothing should be read into
+which is larger.)</em></p>
+<p><strong>The pre-registered falsifier fires. D-7 lands exactly where D-6's <code>diverge</code> landed</strong>, 3.4 times
 budget, and generating the decisional stratum per book bought nothing measurable over telling one
 shared author to diverge from it. Four identical choice menus appeared as well, where D-6 had none.</p>
 <p><strong>The diagnosis was built into the rig, and it returned its answer.</strong> Fact <em>definitions</em> were kept
@@ -5084,8 +5120,8 @@ than the arithmetic: deleting 422 words removed thirty-three shared grams that w
 from those words</strong>, so the mechanism is not copying but convergent elaboration, two authors primed
 by the same gloss writing different sentences about the same idea and converging anyway. Anything
 that primes two authors identically will do this, and an enumerated category primes without being
-prose at all. The measurements either side of the trace are unaffected: 12.9 per 1000 with the
-glosses, 3.2 without.</p>
+prose at all. The measurements either side of the trace are unaffected: 13.6 per 1000 with the
+glosses, 2.3 without, body-only (published as 12.9 and 3.2 label-inclusive, corrected 2026-08-11).</p>
 </blockquote>
 <p><strong>So the stratum was never wordless.</strong> It carried 32 one-line prose glosses, one per fact, and both
 authors read all of them: "the clocktower stands sealed, and the seal reads like a test rather than
@@ -5113,6 +5149,10 @@ attributable to the glosses alone. 422 words of prose left the shared artifact.<
 </thead>
 <tbody>
 <tr>
+<td><strong>D-7b, shared structure with bare names</strong></td>
+<td><strong>2.3</strong></td>
+</tr>
+<tr>
 <td>pilot, wholly separate contracts</td>
 <td>2.9</td>
 </tr>
@@ -5121,24 +5161,20 @@ attributable to the glosses alone. 422 words of prose left the shared artifact.<
 <td>3.3</td>
 </tr>
 <tr>
-<td><strong>D-7b, shared structure with bare names</strong></td>
-<td><strong>3.2</strong></td>
-</tr>
-<tr>
 <td><strong>budget</strong></td>
 <td><strong>4.0</strong></td>
 </tr>
 <tr>
 <td>D-6 <code>neutral</code></td>
-<td>11.4</td>
-</tr>
-<tr>
-<td>D-7, shared structure <strong>with glosses</strong></td>
-<td>12.9</td>
+<td>11.8</td>
 </tr>
 <tr>
 <td>D-6 <code>diverge</code></td>
-<td>12.9</td>
+<td>13.6</td>
+</tr>
+<tr>
+<td>D-7, shared structure <strong>with glosses</strong></td>
+<td>13.6</td>
 </tr>
 <tr>
 <td>D-2, shared contract at 101 nodes</td>
@@ -5146,9 +5182,16 @@ attributable to the glosses alone. 422 words of prose left the shared artifact.<
 </tr>
 </tbody>
 </table>
-<p><strong>12.9 to 3.2 from removing 422 words.</strong> Under budget, at the generator floor, and better than the
-4.8 the linear trace estimated, which is one more reason the trace was not to be trusted.
-<strong>This is the first artifact in the programme to share a plan and still land at the floor.</strong></p>
+<p><em>(Every row is body-only, which moved four of them on 2026-08-11. The two D-7 rows were published at
+3.2 and 12.9 label-inclusive and corrected in the research brief to 2.3 and 13.6; the two D-6 rows
+were published at 11.4 and 12.9 and re-derived to 11.8 and 13.6. D-7b now sorts below the pilot and
+the floor rather than between them.)</em></p>
+<p><strong>13.6 to 2.3 from removing 422 words.</strong> Under budget, <strong>below</strong> the generator floor, and better than
+the 4.8 the linear trace estimated, which is one more reason the trace was not to be trusted.
+<strong>This is the first artifact in the programme to share a plan and still land at or under the floor.</strong>
+At 2.3 against a floor of 3.3 it is under it, not at it, which is a stronger result than the
+sentence above claimed before the 2026-08-11 re-derivation: sharing this plan is indistinguishable
+from sharing nothing.</p>
 <blockquote>
 <p>[!WARNING]
 <strong>Correction, 2026-08-11: this arm's shared artifact is not wordless.</strong> It was described from the
@@ -5158,7 +5201,7 @@ notes, eight title constraints and the affect ceiling, which is <strong>more tha
 experiment deleted</strong> (895 down to 473). "No free text at all" therefore cannot be what made this
 arm pass, because the passing arm does not satisfy it. The heading above claimed it and has been
 corrected.</p>
-<p><strong>The measurement stands and the explanation is narrower.</strong> 12.9 to 3.2 on deleting the 422 gloss
+<p><strong>The measurement stands and the explanation is narrower.</strong> 13.6 to 2.3 on deleting the 422 gloss
 words, everything else byte-identical, is unaffected. What it supports is this: free text attached
 to the <strong>fact vocabulary that nodes reference</strong> drove convergence, and free text <strong>instructing the
 binding process</strong> was not isolated as a cause at this volume. Of the seven shared four-grams in
@@ -5841,7 +5884,7 @@ until D-6 reports.</strong></p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 11, 2026 14:38:55 UTC">August 11, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 12, 2026 20:28:02 UTC">August 12, 2026</span>
   </span>
 
     
