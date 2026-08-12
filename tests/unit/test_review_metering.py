@@ -321,3 +321,82 @@ async def test_the_stage1_gate_without_a_ledger_makes_the_same_call(
     )
 
     assert inner.calls == 1
+
+
+class _NamedProvider(_StubProvider):
+    """A provider that declares a backend label, as every real adapter does."""
+
+    name = "ollama"
+
+
+def _generator_seen_by_review_builder(
+    monkeypatch: pytest.MonkeyPatch, generation_provider: object
+) -> list[str | None]:
+    """Return the ``generator_provider`` values ``build_review_provider`` saw.
+
+    Args:
+        monkeypatch: Used to intercept ``build_review_provider`` in place.
+        generation_provider: The resolved provider handed to the pipeline.
+
+    Returns:
+        One entry per call, ``None`` for any non-string value.
+    """
+    from cyo_adventure.core.config import settings as config_settings
+    from cyo_adventure.moderation import pipeline as pipeline_mod
+    from cyo_adventure.moderation.pipeline import _build_guarded_review
+
+    seen: list[str | None] = []
+
+    def _capture(*_args: object, **kwargs: object) -> tuple[_StubProvider, bool]:
+        generator = kwargs["generator_provider"]
+        seen.append(generator if isinstance(generator, str) else None)
+        return _StubProvider(), True
+
+    monkeypatch.setattr(pipeline_mod, "build_review_provider", _capture)
+    _build_guarded_review(
+        config_settings,
+        generator_provider="anthropic",
+        generator_model="claude-opus",
+        pii=PiiContext(child_names=frozenset({_REAL_CHILD})),
+        generation_provider=generation_provider,
+    )
+    return seen
+
+
+@pytest.mark.unit
+def test_independence_is_judged_against_the_resolved_generator_backend(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A per-job provider override decides independence, not the config.
+
+    The worker can resolve a provider override before calling the pipeline, so
+    the backend that actually wrote the story is the one the resolved provider
+    declares, not ``settings.generation_provider``. Judging against the config
+    misjudges in the dangerous direction as readily as the safe one: an
+    override onto the review backend would be recorded as independent, so a
+    model would review its own output while the persisted report attested that
+    it had not.
+
+    The stub declares ``ollama`` while the configured argument says
+    ``anthropic``, so this fails if the configured value is the one that
+    reaches ``build_review_provider``.
+    """
+    assert _generator_seen_by_review_builder(monkeypatch, _NamedProvider()) == [
+        "ollama"
+    ]
+
+
+@pytest.mark.unit
+def test_the_configured_backend_is_used_when_the_provider_declares_no_name(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A label-less provider falls back to the configured name, not to ``None``.
+
+    ``build_review_provider`` accepts ``None`` and reads it as "generator
+    unknown", which would quietly weaken every independence verdict for a
+    provider that declares no label. The configured value is the better answer
+    there, because it is what the job would have run on absent an override.
+    """
+    seen = _generator_seen_by_review_builder(monkeypatch, _StubProvider())
+
+    assert seen == ["anthropic"]

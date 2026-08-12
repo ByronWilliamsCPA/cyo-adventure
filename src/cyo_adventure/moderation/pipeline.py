@@ -87,20 +87,38 @@ def _build_guarded_review(
 
     Args:
         review_settings: Review-backend settings, already resolved.
-        generator_provider: The generator's backend name, for the independence
-            comparison.
+        generator_provider: The CONFIGURED generator backend name, used only
+            when the resolved provider declares no label of its own.
         generator_model: The model that wrote the version under review.
         pii: PII context for the egress guard on every review prompt.
         generation_provider: The generation provider the caller passed in.
-            Read only for the ledger it may carry.
+            Read for the ledger it may carry and for the backend it actually
+            resolved to.
 
     Returns:
         The guarded (and, when the run is metered, metered) review provider,
         and whether the reviewer is independent of the generator.
     """
+    # #CRITICAL: security: independence must be judged against the backend the
+    # job ACTUALLY ran on, not the configured default. The worker can resolve a
+    # per-job provider override before calling this pipeline, and when it does,
+    # comparing the reviewer against `settings.generation_provider` asks about a
+    # backend that never wrote the story. That misjudges in the dangerous
+    # direction as readily as the safe one: an override onto the review backend
+    # would be persisted as `reviewer_independent=True`, so a model would review
+    # its own output and the report would attest that it had not.
+    # #VERIFY: tests/unit/test_review_metering.py::
+    # test_independence_is_judged_against_the_resolved_generator_backend and
+    # ::test_the_configured_backend_is_used_when_the_provider_declares_no_name.
+    resolved_name: object = getattr(generation_provider, "name", None)
+    effective_generator = (
+        resolved_name
+        if isinstance(resolved_name, str) and resolved_name
+        else generator_provider
+    )
     review_provider, independent = build_review_provider(
         review_settings,
-        generator_provider=generator_provider,
+        generator_provider=effective_generator,
         generator_model=generator_model,
     )
     # #CRITICAL: payment/financial: the review provider is built HERE rather
