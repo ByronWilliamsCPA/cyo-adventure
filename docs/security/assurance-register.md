@@ -2946,10 +2946,17 @@ posture at a trust boundary must be verified from outside that boundary.
   receives data about people who never become users.
 - **Third limb closed 2026-08-12: the pre-send disclosure now exists.**
   `GuardianVerificationPage` states what is sent, to whom, and when, immediately above the button
-  that sends it, enumerated against the request body in `consent/kws_client.py` (email, location,
-  language, an opaque per-attempt token, a fixed `userContext`) and asserting that nothing
-  child-derived travels. Order is asserted by test, not just presence: copy moved below the submit
-  button would satisfy a presence check while no longer being pre-send.
+  that sends it, and asserts that nothing child-derived travels. It names every field of the
+  request body in `consent/kws_client.py` that varies per guardian: email, location, language, and
+  the opaque per-attempt correlation token. The fifth key, `userContext`, is deliberately not named
+  because it is the fixed string `"parent"` on every request and says nothing about the person
+  reading the page; that omission is permitted only while the value stays constant. Two properties
+  are asserted by test rather than left to convention: **order**, since copy moved below the submit
+  button would satisfy a presence check while no longer being pre-send, and **completeness**
+  field by field, since the guard that matters is against the copy silently narrowing back to a
+  shorter list, which a substring check on its opening clause would not catch. What no frontend
+  test can assert is copy-equals-body, because the body is built server-side; that pairing is held
+  by a comment on the copy, and it is the weakest link in this limb.
   **Do not read KWS's own email as satisfying this.** Its "Verify you're an adult" message says
   "CYO Adventure will share your email address with KWS", which reads exactly like the disclosure
   this row requires, but that email is delivered *by KWS* and therefore exists only because the

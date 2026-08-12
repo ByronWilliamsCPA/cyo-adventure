@@ -252,16 +252,23 @@ export function GuardianVerificationPage() {
          * already shared, so it is post-send by construction and cannot satisfy this. This
          * paragraph is the pre-send surface, which is why it sits next to the trigger rather
          * than in the intro above.
-         * The list is exhaustive against the request body built in kws_client.py: email,
-         * location, language, an opaque per-attempt correlation token, and a fixed
-         * userContext. Nothing child-derived is in it. Keep the two in step: widening the
-         * body without widening this sentence turns a disclosure into a misstatement.
-         * #VERIFY: GuardianVerificationPage.test.tsx asserts this copy renders before submit.
+         * The request body built in kws_client.py has five keys: email, location, language,
+         * externalPayload (an opaque per-attempt correlation token), and userContext. The
+         * sentence below names the first four. It does not name userContext because that key
+         * is the fixed string "parent" on every request, identical for every guardian, so it
+         * carries nothing about the person reading this; naming it would add noise, not
+         * disclosure. That is the only permitted omission, and it is permitted only while the
+         * value stays constant. Nothing child-derived is in the body.
+         * Keep the two in step: widening the body without widening this sentence turns a
+         * disclosure into a misstatement.
+         * #VERIFY: GuardianVerificationPage.test.tsx asserts this copy renders before submit
+         * and names every field that varies per guardian.
          */}
         <p className="cyo-text-muted">
           When you continue, we send Kids Web Services your email address, the country you chose
-          above, and your language, so they can email you. We send them nothing about your child.
-          They tell us whether you verified; they never tell us how.
+          above, your language, and a reference number that lets us match their answer to this
+          attempt. We send them nothing about your child. They tell us whether you verified; they
+          never tell us how.
         </p>
         {error ? (
           <p role="alert" className="cyo-text-error">
