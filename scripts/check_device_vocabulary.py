@@ -49,7 +49,9 @@ Checks (all ERROR unless marked):
   permitted_device_kinds``, or present in ``forbidden_device_kinds``. NC-5
   checks a *bible* against the envelope; nothing checked the contract's own
   enumerations, so an out-of-envelope kind could be authored into the
-  contract and only caught one layer later.
+  contract and only caught one layer later. An ABSENT permitted list is
+  skipped (NC-5 reports the missing envelope); an explicitly empty one is
+  enforced, since it declares that nothing is permitted.
 - DV-5 declared-vs-consumed: ``count`` must equal the picks the node
   ``invention`` specs actually take from the axis. A ``count`` above the real
   consumption inflates the bible the author is asked to write and the
@@ -308,29 +310,39 @@ def _kind_list(axis_config: dict[str, Any]) -> list[str] | None:
     return [str(kind) for kind in cast("list[Any]", kinds)]
 
 
-def _envelope(contract: dict[str, Any]) -> tuple[set[str], set[str]]:
+def _envelope(contract: dict[str, Any]) -> tuple[set[str] | None, set[str]]:
     """Return the contract's permitted and forbidden device kinds.
 
     Args:
         contract: The parsed narrative contract.
 
     Returns:
-        ``(permitted, forbidden)``. An absent ``permitted`` list yields an
-        empty set, which DV-4 treats as "no envelope declared" rather than
-        "everything forbidden"; see its call site.
+        ``(permitted, forbidden)``. ``permitted`` is ``None`` when no list was
+        declared and a set when one was, so DV-4 can tell "no envelope" from
+        an explicit ``[]``. Collapsing both to an empty set made an author who
+        wrote ``"permitted_device_kinds": []`` (nothing is permitted) read as
+        one who wrote nothing (everything is permitted), which is the inverse
+        of what they said and passed every kind silently. This mirrors the
+        distinction :func:`_kinds` already draws for DV-3.
+
+        ``forbidden`` needs no such distinction: an absent list and an empty
+        one both mean nothing is forbidden.
     """
     envelope = contract.get("safety_envelope")
     if not isinstance(envelope, dict):
-        return (set(), set())
+        return (None, set())
     envelope_map = cast("dict[str, Any]", envelope)
 
-    def _as_set(key: str) -> set[str]:
+    def _as_set(key: str) -> set[str] | None:
         value = envelope_map.get(key)
         if not isinstance(value, list):
-            return set()
+            return None
         return {str(item) for item in cast("list[Any]", value)}
 
-    return (_as_set("permitted_device_kinds"), _as_set("forbidden_device_kinds"))
+    return (
+        _as_set("permitted_device_kinds"),
+        _as_set("forbidden_device_kinds") or set(),
+    )
 
 
 def _check_axis_kinds(
@@ -391,14 +403,16 @@ def _check_axis_kinds(
 
 
 def _check_envelope(
-    axis: str, kinds: list[str] | None, permitted: set[str], forbidden: set[str]
+    axis: str, kinds: list[str] | None, permitted: set[str] | None, forbidden: set[str]
 ) -> list[Finding]:
     """Run DV-4 for one axis against the contract's safety envelope.
 
     Args:
         axis: The axis name.
         kinds: Its declared kinds, or ``None``.
-        permitted: The envelope's permitted device kinds.
+        permitted: The envelope's permitted device kinds, or ``None`` when the
+            contract declared no list at all. An empty set is a declaration
+            that nothing is permitted, and is enforced as one.
         forbidden: The envelope's forbidden device kinds.
 
     Returns:
@@ -417,10 +431,12 @@ def _check_envelope(
                     f"kind {kind!r} is listed in forbidden_device_kinds",
                 )
             )
-        # An absent permitted list means no envelope was declared, which NC-5
+        # An ABSENT permitted list means no envelope was declared, which NC-5
         # reports; treating it as "everything is forbidden" here would bury
-        # that one finding under one-per-kind noise.
-        elif permitted and kind not in permitted:
+        # that one finding under one-per-kind noise. An explicitly empty list
+        # is the opposite case and is enforced: the author declared that
+        # nothing is permitted, so every kind breaches it.
+        elif permitted is not None and kind not in permitted:
             findings.append(
                 Finding(
                     "DV-4",

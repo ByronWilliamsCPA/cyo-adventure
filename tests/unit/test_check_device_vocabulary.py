@@ -145,6 +145,29 @@ def test_dv4_stays_silent_when_no_envelope_is_declared() -> None:
 
 
 @pytest.mark.unit
+def test_dv4_enforces_an_explicitly_empty_permitted_list() -> None:
+    """``"permitted_device_kinds": []`` bans everything; absent bans nothing.
+
+    The two were collapsed into the same empty set, so an author who wrote an
+    empty list (nothing is permitted) was read as one who wrote nothing
+    (everything is permitted): the exact inverse of the declaration, applied
+    silently. The distinction mirrors the one ``_kinds`` already draws for
+    DV-3, where ``"kinds": []`` likewise says something a missing key does
+    not.
+    """
+    contract = _contract(
+        {"axis": {"count": 1, "kinds": ["a", "b"]}},
+        {"n1": {"invention": {"slot": _spec("axis")}}},
+        permitted=[],
+    )
+    findings, _ = analyse(contract, 1)
+
+    breaches = [f for f in findings if f.code == "DV-4"]
+    assert len(breaches) == 2
+    assert all("absent from permitted_device_kinds" in f.message for f in breaches)
+
+
+@pytest.mark.unit
 def test_dv5_flags_a_count_above_what_the_specs_consume() -> None:
     """The 10-13 room_curiosities defect: declares 4 picks, three nodes take one."""
     contract = _contract(
