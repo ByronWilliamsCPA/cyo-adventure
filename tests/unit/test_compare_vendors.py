@@ -24,7 +24,9 @@ from scripts.compare_vendors import (
     Vendor,
     _load_briefs,  # pyright: ignore[reportPrivateUsage]
     _load_skeletons,  # pyright: ignore[reportPrivateUsage]
+    _load_vendors,  # pyright: ignore[reportPrivateUsage]
     _measure,  # pyright: ignore[reportPrivateUsage]
+    _mirror_as_mock,  # pyright: ignore[reportPrivateUsage]
     _summarize,  # pyright: ignore[reportPrivateUsage]
     _verdict,  # pyright: ignore[reportPrivateUsage]
     analyze,
@@ -72,19 +74,25 @@ def _doc(text: str, *, target: float | None = 3.0) -> dict[str, Any]:
     }
 
 
-def _record(vendor: str, brief_index: int, text: str) -> BookRecord:
+def _record(
+    vendor: str, brief_index: int, text: str, *, family: str | None = None
+) -> BookRecord:
     """Build a successful book record around one leaf body.
 
     Args:
         vendor: The vendor label.
         brief_index: The brief index the book was written from.
         text: The leaf body text.
+        family: The producing leg's lineage. Defaults to ``vendor``, which is
+            what a single-checkpoint vendor gets, so every pair between two
+            such records reads as cross-family.
 
     Returns:
         A record ready for :func:`analyze`.
     """
     return BookRecord(
         vendor=vendor,
+        family=vendor if family is None else family,
         brief_index=brief_index,
         status="passed",
         attempts=0,
@@ -194,6 +202,142 @@ def test_analyze_keeps_same_brief_convergence_out_of_the_cross_floor() -> None:
     )
 
 
+def _family_books(*, converge: bool) -> list[BookRecord]:
+    """Build two checkpoints of one lab plus an unrelated lab, over two briefs.
+
+    Six books, so fifteen pairs. Three of them are within-vendor, four are the
+    two same-family cells, and the remaining eight are genuinely cross-lab.
+
+    Args:
+        converge: When true, every book from the shared-family lab carries one
+            extra passage the other lab never uses.
+
+    Returns:
+        Six book records across three legs and two families.
+    """
+    books: list[BookRecord] = []
+    common = _filler("common", 8)
+    legs = (("a46", "anthropic"), ("a5", "anthropic"), ("xai", "xai"))
+    for vendor, family in legs:
+        for brief in (0, 1):
+            text = f"{common} {_filler(f'{vendor}{_SUFFIX[brief]}')}"
+            if converge and family == "anthropic":
+                text = f"{text} {_filler('sharedlab', 40)}"
+            books.append(_record(vendor, brief, text, family=family))
+    return books
+
+
+def test_analyze_routes_a_same_lab_pair_out_of_the_cross_vendor_floor() -> None:
+    """Two checkpoints of one lab form their own cells, not cross-vendor ones.
+
+    On a label-only split this grid would read as 6 same-brief and 6
+    different-brief cross-vendor pairs. The family axis moves two out of each,
+    which is the whole point: a version-bump pair is not evidence about vendor
+    choice and must not be averaged into the headline.
+    """
+    report = analyze(_family_books(converge=False))
+
+    assert int(report.cross_vendor["pairs"]) == 4
+    assert int(report.same_brief_cross_vendor["pairs"]) == 4
+    assert int(report.same_family_cross_model["pairs"]) == 2
+    assert int(report.same_family_same_brief["pairs"]) == 2
+
+
+def test_analyze_keeps_within_vendor_buckets_per_leg_not_per_family() -> None:
+    """Two legs of one lab still get one within-vendor bucket each."""
+    report = analyze(_family_books(converge=False))
+
+    assert sorted(report.within_vendor) == ["a46", "a5", "xai"]
+
+
+def test_analyze_keeps_same_lab_convergence_out_of_the_cross_floor() -> None:
+    """A house style shared across one lab's checkpoints cannot inflate cross."""
+    report = analyze(_family_books(converge=True))
+
+    assert (
+        report.same_family_cross_model["mean_per_1000"]
+        > report.cross_vendor["mean_per_1000"]
+    )
+
+
+def test_vendor_lineage_falls_back_to_the_label() -> None:
+    """A leg with no declared family is its own lineage, so pairs stay cross."""
+    assert Vendor(label="solo", model="m", provider_order=()).lineage() == "solo"
+
+
+def test_vendor_lineage_prefers_a_declared_family() -> None:
+    """A declared family is what two checkpoints of one lab share."""
+    vendor = Vendor(label="a5", model="m", provider_order=(), family="anthropic")
+
+    assert vendor.lineage() == "anthropic"
+
+
+def _write_vendors(tmp_path: Path, entries: list[dict[str, Any]]) -> Path:
+    """Write a vendor spec array and return its path.
+
+    Args:
+        tmp_path: Directory to write into.
+        entries: The raw vendor objects.
+
+    Returns:
+        The written path.
+    """
+    path = tmp_path / "vendors.json"
+    path.write_text(json.dumps(entries), encoding="utf-8")
+    return path
+
+
+def test_load_vendors_reads_a_declared_family(tmp_path: Path) -> None:
+    """Two legs may declare the same family, which is how the axis is set."""
+    path = _write_vendors(
+        tmp_path,
+        [
+            {"label": "a46", "model": "m1", "provider_order": ["p"], "family": "anth"},
+            {"label": "a5", "model": "m2", "provider_order": ["p"], "family": "anth"},
+        ],
+    )
+
+    assert [v.lineage() for v in _load_vendors(path)] == ["anth", "anth"]
+
+
+def test_load_vendors_rejects_a_non_string_family(tmp_path: Path) -> None:
+    """A mistyped family would silently split a lab back into two vendors."""
+    path = _write_vendors(
+        tmp_path,
+        [{"label": "a5", "model": "m", "provider_order": ["p"], "family": 7}],
+    )
+
+    with pytest.raises(SystemExit):
+        _load_vendors(path)
+
+
+def test_mirror_as_mock_preserves_the_family_layout() -> None:
+    """A dry run must rehearse the real grid, families included.
+
+    The point of a dry run is to de-risk the paid one. If it substituted its own
+    legs, a slate that split one lab across two families would look healthy up
+    to the moment the money was spent.
+    """
+    slate = [
+        Vendor(label="a46", model="m1", provider_order=("anthropic",), family="anth"),
+        Vendor(label="a5", model="m2", provider_order=("anthropic",), family="anth"),
+        Vendor(label="solo", model="m3", provider_order=("xai/zdr",)),
+    ]
+
+    mirrored = _mirror_as_mock(slate)
+
+    assert [v.lineage() for v in mirrored] == ["anth", "anth", "solo"]
+    assert {v.model for v in mirrored} == {"mock"}
+    assert all(v.provider_order == () for v in mirrored)
+
+
+def test_mirror_as_mock_marks_every_label_as_a_dry_run() -> None:
+    """Real vendor names in a saturated report would invite being quoted."""
+    mirrored = _mirror_as_mock([Vendor(label="a5", model="m", provider_order=())])
+
+    assert mirrored[0].label == "mock:a5"
+
+
 def test_analyze_drops_a_same_vendor_same_brief_pair() -> None:
     """A duplicate (vendor, brief) belongs to no floor and is not counted."""
     books = [
@@ -214,6 +358,7 @@ def test_analyze_with_one_usable_book_reports_not_measured() -> None:
         _record("alpha", 0, _SHARED),
         BookRecord(
             vendor="beta",
+            family="beta",
             brief_index=0,
             status="error",
             attempts=0,
@@ -452,6 +597,35 @@ async def test_compare_vendors_records_one_book_per_vendor_and_brief() -> None:
         ("beta", 0),
         ("beta", 1),
     ]
+
+
+@pytest.mark.asyncio
+async def test_compare_vendors_stamps_each_book_with_its_lineage() -> None:
+    """A book carries its leg's family, so ``analyze`` can bucket without the spec.
+
+    The report JSON is read long after the run; if the family lived only in the
+    vendor spec, re-analysing a saved run would silently fall back to labels and
+    fold the version-bump pair into the cross-vendor floor.
+    """
+
+    async def _stub(*_args: object, **_kwargs: object) -> object:
+        """Return a passing outcome for every call."""
+        return mock.Mock(status="passed", attempts=0, storybook=_doc(_SHARED))
+
+    with mock.patch("scripts.compare_vendors.fill_skeleton", _stub):
+        records = await run_comparison(
+            [{"id": "sk-a"}, {"id": "sk-b"}],
+            [{"setting": "a"}, {"setting": "b"}],
+            [
+                Vendor(label="a46", model="m1", provider_order=(), family="anthropic"),
+                Vendor(label="solo", model="m2", provider_order=()),
+            ],
+        )
+
+    assert {(r.vendor, r.family) for r in records} == {
+        ("a46", "anthropic"),
+        ("solo", "solo"),
+    }
 
 
 @pytest.mark.asyncio

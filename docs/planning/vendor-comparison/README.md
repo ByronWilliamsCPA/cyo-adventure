@@ -42,26 +42,55 @@ only one topology that is worth seeing.
 
 ## Why these vendors
 
-`vendors.json` pins each slug to one backend. An OpenRouter slug is not a vendor: verified on
+Six legs across five labs, approved 2026-08-12. Four labs contribute one checkpoint each; Anthropic
+contributes two, because Sonnet 5 is what the pipeline runs today and 4.6 is what it ran before, and
+whether a version bump moves the floor is a separate and cheaper question than whether a vendor
+does.
+
+| Leg | Model | Pinned backend | $/MTok in / out | 4-book cost |
+| --- | --- | --- | ---: | ---: |
+| `anthropic-sonnet-4.6` | `anthropic/claude-sonnet-4.6` | `anthropic` | 3 / 15 | $0.61 |
+| `anthropic-sonnet-5` | `anthropic/claude-sonnet-5` | `anthropic` | 2 / 10 | $0.41 |
+| `openai-gpt-5.6-sol` | `openai/gpt-5.6-sol` | `openai` | 5 / 30 | $1.19 |
+| `xai-grok-4.6` | `x-ai/grok-4.6` | `xai/zdr` | 2 / 6 | $0.28 |
+| `moonshot-kimi-k3` | `moonshotai/kimi-k3` | `moonshotai/mxfp4` | 3 / 15 | $0.61 |
+| `google-gemini-3.1-pro` | `google/gemini-3.1-pro-preview` | `google-ai-studio` | 2 / 12 | $0.47 |
+
+The two Anthropic legs declare `"family": "anthropic"`. Everything else leaves `family` unset and
+falls back to its own label, so it is its own lineage.
+
+Matching is on **tier, not price**. OpenAI's flagship costs 2.5x Anthropic's, and the cheaper
+`gpt-5.6-terra` and `-luna` exist; a surprising result from a mid-tier model could not be told apart
+from a house-style finding, so the slate compares flagships and accepts the uneven bill.
+
+### Why pin a backend at all
+
+`vendors.json` pins each slug to one provider tag. An OpenRouter slug is not a vendor: verified on
 2026-08-12 against `GET /api/v1/models/{id}/endpoints`, `anthropic/claude-sonnet-4.6` alone has
 seven endpoints across four provider names, so an unpinned run attributed to Anthropic can be
-answered by Bedrock. The adapter sends `allow_fallbacks: false` alongside the pin, so a
-substitution becomes a visible error rather than a silent one, and a pin that matches nothing fails
-on the first call rather than quietly routing elsewhere.
+answered by Bedrock. The adapter sends `allow_fallbacks: false` alongside the pin, so a substitution
+becomes a visible error rather than a silent one, and a pin that matches nothing fails on the first
+call rather than quietly routing elsewhere.
 
-Two details that the endpoint listing makes clear and the slug alone does not:
+Three details the endpoint listing makes clear and the slug alone does not:
 
-- **Every backend serves the same dated snapshot** (`anthropic/claude-4.6-sonnet-20260217`,
-  `openai/gpt-5.4-20260305`, `google/gemini-3.1-pro-preview-20260219`). The pin therefore buys a
-  single serving stack and reproducibility, not a different model. Quantization is reported as
-  `unknown` on every endpoint, so it cannot be ruled out as a difference.
+- **A closed-weight model's backends all serve the same dated snapshot**
+  (`anthropic/claude-4.6-sonnet-20260217`, `anthropic/claude-sonnet-5-20260630`,
+  `openai/gpt-5.6-sol-20260709`, `google/gemini-3.1-pro-preview-20260219`,
+  `x-ai/grok-4.6-20260810`). For those the pin buys a single serving stack and reproducibility, not
+  a different model, and every one of them reports quantization as `unknown`.
+- **An open-weight model's backends do not.** `moonshotai/kimi-k3` has **fourteen** endpoints across
+  twelve resellers at genuinely different quantizations: `morph/fp4`, `deepinfra/bf16`,
+  `baseten/fp8`, `moonshotai/mxfp4`, and five more reporting `unknown`. The default route is Morph
+  at fp4. This is the concrete case that turns "pin the provider" from a precaution into a
+  requirement, and it is why the run pins the first-party Moonshot endpoint.
 - **A provider name covers several service tiers.** `openai` alone is standard, `openai/flex` and
-  `openai/priority` sit at half and double the price. The pins target standard tiers; flex would
-  roughly halve the bill but trades latency and capacity, which is not a good trade on a sub-$2
-  run.
+  `openai/priority` sit at half and double the price for identical weights; Google and xAI do the
+  same. The pins target standard tiers, except xAI where `xai/zdr` (zero data retention) is offered
+  at the *same* price as standard and is the better default for a children's product.
 
-A `-preview` slug can be retired without notice. Re-verify the three slugs still resolve before
-spending anything.
+A `-preview` slug can be retired without notice, and Gemini is the one such slug here. Re-verify all
+six slugs resolve before spending anything.
 
 ## Running it
 
@@ -75,8 +104,16 @@ uv run python scripts/compare_vendors.py \
   --skeleton skeletons/5-8/the-school-garden-mystery.json \
   --skeleton skeletons/5-8/the-snow-day-expedition.json \
   --briefs docs/planning/vendor-comparison/briefs-5-8.json \
+  --vendors docs/planning/vendor-comparison/vendors.json \
   --mock --out out/vendor-comparison/dry-run
 ```
+
+Pass `--vendors` to the dry run too, as above. With it, the slate is loaded and validated and each
+leg is mirrored into a mock leg of the same lineage (its label prefixed `mock:` so no row can be
+misread as a real measurement), so the rehearsal reproduces the paid run's leg count and family
+layout. Without it the harness substitutes three generic legs, which exercises the analysis path but
+would not catch a slate that split one lab across two families. Check the printed pair counts against
+the table below before spending anything.
 
 The paid run is the same command with `--vendors` and a throttle:
 
@@ -93,18 +130,21 @@ uv run python scripts/compare_vendors.py \
 
 ## What it costs
 
-12 paid fills (3 vendors x 4 briefs), priced at the per-MTok rates fetched 2026-08-12:
+24 paid fills (6 legs x 4 briefs) at 39,051 input and 33,023 output tokens per leg, priced at the
+per-MTok rates fetched 2026-08-12 and listed in the vendor table above:
 
-| | input | output | cost |
-| --- | ---: | ---: | ---: |
-| `anthropic/claude-sonnet-4.6` ($3 / $15) | 39,051 | 33,023 | $0.61 |
-| `openai/gpt-5.4` ($2.5 / $15) | 39,051 | 33,023 | $0.59 |
-| `google/gemini-3.1-pro-preview` ($2 / $12) | 39,051 | 33,023 | $0.47 |
-| **total, no retries** | | | **$1.68** |
+| | cost |
+| --- | ---: |
+| Anthropic, both legs | $1.02 |
+| OpenAI | $1.19 |
+| xAI | $0.28 |
+| Moonshot | $0.61 |
+| Google | $0.47 |
+| **total, no retries** | **$3.57** |
 
-A structural repair on a third of the books puts it near $2.23; two repairs on every book, which
-would be a bad day, caps it near $5.04. Wall clock is dominated by 12 sequential long completions
-plus the throttle, so budget roughly 20 to 40 minutes.
+A structural repair on a third of the books puts it near $4.76; two repairs on every book, which
+would be a bad day, caps it near $10.71. Wall clock is dominated by 24 sequential long completions
+plus the throttle, so budget roughly 40 to 80 minutes.
 
 Per-book token cost is not reported by the harness. `GenerationProvider.complete` discards usage on
 this branch; capture lands with #701 (`feat/generation-cost-instrumentation`), which changes that
@@ -113,17 +153,27 @@ second counter that would conflict with it.
 
 ## What the pair counts will be
 
-12 books over the 3 x 4 grid, bucketed on two axes:
+24 books over the 6 x 4 grid gives 276 pairs, bucketed on three axes: same leg or not, same lab or
+not, same brief or not.
 
 | | same brief | different brief |
 | --- | --- | --- |
-| **same vendor** | not produced | 18 pairs (6 per vendor): **within-vendor floor** |
-| **cross vendor** | 12 pairs: premise convergence | 36 pairs: **cross-vendor floor** |
+| **same leg** | not produced | 36 pairs (6 per leg): **within-vendor floor** |
+| **same lab, other checkpoint** | 4 pairs: both confounds at once | 12 pairs: version-bump control |
+| **different lab** | 56 pairs: premise convergence | 168 pairs: **cross-vendor floor** |
 
-The headline is the right-hand column. Comparing a cross-vendor same-brief pair against a
-within-vendor different-brief pair would credit shared premise wording to vendor agreement, and
-that single confound would bias the result toward "model choice does not matter". The same-brief
-cell is reported separately because it answers a real but different question.
+The headline is the right-hand column's top and bottom rows. Two confounds are kept out of it:
+
+- **Premise convergence.** Comparing a cross-lab same-brief pair against a within-vendor
+  different-brief pair would credit shared premise wording to vendor agreement, biasing the result
+  toward "model choice does not matter".
+- **The same lab twice.** Sonnet 4.6 and Sonnet 5 are two legs but one training lineage. Counting
+  those 12 pairs as cross-vendor would drag the cross-vendor mean toward the within-vendor mean for
+  a reason that has nothing to do with vendor choice, again biasing toward "task-driven". They get
+  their own cell, which answers a genuinely useful question: does upgrading a checkpoint diversify
+  anything?
+
+Both off-headline cells are reported, just never averaged in.
 
 ## Reading the result
 
@@ -136,6 +186,11 @@ cell is reported separately because it answers a real but different question.
   It would mean two vendors agree with each other more than one vendor agrees with itself, which
   points at a shared training-data idiom rather than a house style.
 
+Then read the version-bump cell against those two. If it sits at the within-vendor level, a
+checkpoint upgrade buys no diversification and rotation has to cross labs to be worth anything. If
+it sits at the cross-vendor level, two checkpoints of one lab are as good as two labs, which is a
+much cheaper rotation to operate.
+
 Sample size caveat inherited from the calibration itself: 3.3 came from 3 pairs with a range of 1.9
-to 5.0. This run's 18 and 36 pairs are better, but a difference smaller than that spread is not a
-finding.
+to 5.0. This run's 36 and 168 pairs are far better, but the 12-pair version-bump cell is closer to
+the calibration's own thinness, and a difference smaller than that spread is not a finding.

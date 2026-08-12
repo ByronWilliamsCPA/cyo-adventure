@@ -28,19 +28,25 @@ Generating from concept briefs instead would let each book invent its own
 structure and confound the vendor axis, so this harness offers no brief-only
 mode.
 
-**Reading the output.** Pairs are bucketed on two axes, not one::
+**Reading the output.** Pairs are bucketed on three axes, not one::
 
-                     same brief          different brief
-    same vendor      (not produced)      WITHIN-VENDOR FLOOR
-    cross vendor     premise convergence CROSS-VENDOR FLOOR
+                                same brief          different brief
+    same leg                    (not produced)      WITHIN-VENDOR FLOOR
+    same lab, other checkpoint  both confounds      version-bump control
+    different lab               premise convergence CROSS-VENDOR FLOOR
 
-The headline comparison is the right-hand column: within-vendor versus
-cross-vendor, both over different-brief pairs only. Comparing a cross-vendor
+The headline comparison is the right-hand column's first and last rows:
+within-vendor versus cross-vendor, both over different-brief pairs only.
+
+Two confounds are held out of it deliberately. Comparing a cross-vendor
 same-brief pair against a within-vendor different-brief pair would attribute
-shared premise wording to vendor agreement, which is the one confound that
-would make this whole measurement lie. The same-brief cross-vendor cell is
-reported separately because it answers a different and also interesting
-question: how much wording two vendors converge on when handed one premise.
+shared premise wording to vendor agreement. And a run carrying two checkpoints
+of one lab (Sonnet 4.6 alongside Sonnet 5) would, on a vendor-label split
+alone, count that pair as cross-vendor and drag the headline toward
+"task-driven" for a reason that is not about vendor choice at all. A vendor
+entry's optional ``family`` marks the shared lineage; that pair becomes its own
+control, which answers a real question: does a house style survive a model
+generation, or is it per-checkpoint?
 
 **Provider pinning.** One OpenRouter slug can be served by several backends at
 different quantizations, so an unpinned run is not reproducible and is not
@@ -63,12 +69,12 @@ Dry run (no network, proves the plumbing and the analysis path)::
         --briefs <briefs.json> --mock \\
         --out out/vendor-comparison/dry-run
 
-Live run (spends money; three vendors x N briefs paid fills)::
+Live run (spends money; one paid fill per vendor leg per brief)::
 
     uv run python scripts/compare_vendors.py \\
-        --skeleton skeletons/8-11/<a>.json --skeleton skeletons/8-11/<b>.json \\
-        --skeleton skeletons/8-11/<c>.json --skeleton skeletons/8-11/<d>.json \\
-        --briefs docs/planning/vendor-comparison/briefs-8-11.json \\
+        --skeleton skeletons/5-8/<a>.json --skeleton skeletons/5-8/<b>.json \\
+        --skeleton skeletons/5-8/<c>.json --skeleton skeletons/5-8/<d>.json \\
+        --briefs docs/planning/vendor-comparison/briefs-5-8.json \\
         --vendors docs/planning/vendor-comparison/vendors.json \\
         --throttle 3 --out out/vendor-comparison/run-1
 
@@ -78,7 +84,8 @@ to the same age band, since a cross-band pair would measure band difference
 rather than vendor difference.
 
 ``--vendors`` is a JSON array of ``{"label", "model", "provider_order"}``
-objects. ``OPENROUTER_API_KEY`` is read from the environment, sourced from the
+objects, each optionally carrying ``"family"`` to mark two legs as one lab's
+lineage. ``OPENROUTER_API_KEY`` is read from the environment, sourced from the
 gitignored ``.env`` by default (``--env-file``).
 """
 
@@ -142,11 +149,27 @@ class Vendor:
         provider_order: OpenRouter backend pin, most preferred first. Empty is
             accepted (and warned about) so a mock dry run needs no pin, but a
             live run without one is not a reproducible measurement.
+        family: The training lineage this leg belongs to, defaulting to
+            ``label``. Two checkpoints from one lab (Sonnet 4.6 and Sonnet 5)
+            are different legs but the same family, and counting that pair as
+            cross-vendor would drag the headline toward "task-driven" for a
+            reason that has nothing to do with vendor choice. Same-family pairs
+            are bucketed separately as the version-bump control.
     """
 
     label: str
     model: str
     provider_order: tuple[str, ...]
+    family: str = ""
+
+    def lineage(self) -> str:
+        """Return the family this leg belongs to, falling back to its label.
+
+        Returns:
+            ``family`` when set, otherwise ``label``, so a single-checkpoint
+            vendor needs no extra configuration.
+        """
+        return self.family or self.label
 
 
 @dataclass(frozen=True, slots=True)
@@ -155,6 +178,8 @@ class BookRecord:
 
     Attributes:
         vendor: The vendor label that produced it.
+        family: The producing leg's training lineage, so two checkpoints from
+            one lab can be told apart from two genuinely different vendors.
         brief_index: 0-based index into the brief list, so pairs can be split
             by same-brief versus different-brief.
         status: ``fill_skeleton``'s outcome status, or ``"error"``.
@@ -170,6 +195,7 @@ class BookRecord:
     """
 
     vendor: str
+    family: str
     brief_index: int
     status: str
     attempts: int
@@ -190,10 +216,19 @@ class ComparisonReport:
         within_vendor: ``label -> {"pairs", "mean_per_1000", "max_per_1000"}``
             over that vendor's different-brief pairs.
         cross_vendor: The same shape, over different-brief pairs whose two
-            books came from different vendors.
+            books came from different vendor *families*. This is the headline
+            denominator, so a same-lab version pair is deliberately excluded.
         same_brief_cross_vendor: The same shape, over same-brief pairs from
-            different vendors. Reported separately because shared premise
+            different families. Reported separately because shared premise
             wording is not vendor agreement.
+        same_family_cross_model: The same shape, over different-brief pairs
+            from two checkpoints of one lab. The version-bump control: it says
+            whether a house style survives a model generation, and it belongs
+            in neither the within-vendor nor the cross-vendor cell.
+        same_family_same_brief: The same shape, over same-brief pairs from two
+            checkpoints of one lab. Carries both the premise confound and the
+            shared lineage, so it is recorded rather than dropped and is never
+            part of any headline.
         verdict: A one-line reading of within versus cross.
     """
 
@@ -201,6 +236,8 @@ class ComparisonReport:
     within_vendor: dict[str, dict[str, float]]
     cross_vendor: dict[str, float]
     same_brief_cross_vendor: dict[str, float]
+    same_family_cross_model: dict[str, float]
+    same_family_same_brief: dict[str, float]
     verdict: str
 
 
@@ -230,7 +267,9 @@ def _load_vendors(path: Path) -> list[Vendor]:
     """Load the vendor spec array.
 
     Args:
-        path: A JSON array of ``{"label", "model", "provider_order"}`` objects.
+        path: A JSON array of ``{"label", "model", "provider_order"}`` objects,
+            each optionally carrying ``"family"`` to mark two legs as two
+            checkpoints of one lab.
 
     Returns:
         The parsed vendors, in file order.
@@ -264,7 +303,13 @@ def _load_vendors(path: Path) -> list[Vendor]:
                 "are not attributable to one backend.",
                 file=sys.stderr,
             )
-        vendors.append(Vendor(label=label, model=model, provider_order=order))
+        family_raw: object = entry.get("family", "")
+        if not isinstance(family_raw, str):
+            print(f"Error: vendor #{i} family must be a string.", file=sys.stderr)
+            sys.exit(1)
+        vendors.append(
+            Vendor(label=label, model=model, provider_order=order, family=family_raw)
+        )
     if not vendors:
         print(f"Error: {path} declared no vendors.", file=sys.stderr)
         sys.exit(1)
@@ -507,6 +552,7 @@ async def run_comparison(
                 records.append(
                     BookRecord(
                         vendor=vendor.label,
+                        family=vendor.lineage(),
                         brief_index=index,
                         status="error",
                         attempts=0,
@@ -526,6 +572,7 @@ async def run_comparison(
                 records.append(
                     BookRecord(
                         vendor=vendor.label,
+                        family=vendor.lineage(),
                         brief_index=index,
                         status=outcome.status,
                         attempts=outcome.attempts,
@@ -596,6 +643,8 @@ def analyze(records: Sequence[BookRecord]) -> ComparisonReport:
             within_vendor={},
             cross_vendor=_summarize([]),
             same_brief_cross_vendor=_summarize([]),
+            same_family_cross_model=_summarize([]),
+            same_family_same_brief=_summarize([]),
             verdict="not measured: fewer than two books produced a document",
         )
 
@@ -605,20 +654,27 @@ def analyze(records: Sequence[BookRecord]) -> ComparisonReport:
     within: dict[str, list[float]] = {}
     cross: list[float] = []
     same_brief_cross: list[float] = []
+    family_cross: list[float] = []
+    family_same_brief: list[float] = []
     for i, j in combinations(range(len(usable)), 2):
         rate = rates[(i, j)]
         left, right = usable[i], usable[j]
         same_vendor = left.vendor == right.vendor
+        same_family = left.family == right.family
         same_brief = left.brief_index == right.brief_index
-        if same_vendor and not same_brief:
-            within.setdefault(left.vendor, []).append(rate)
-        elif not same_vendor and same_brief:
-            same_brief_cross.append(rate)
-        elif not same_vendor:
-            cross.append(rate)
-        # A same-vendor same-brief pair means the same brief was filled twice by
-        # one vendor. run_comparison never produces one; if a caller assembles
-        # records that do, it belongs in neither floor and is dropped here.
+        if same_vendor:
+            # A same-vendor same-brief pair means one vendor filled one brief
+            # twice. run_comparison never produces one; if a caller assembles
+            # records that do, it belongs in no floor and is dropped here.
+            if not same_brief:
+                within.setdefault(left.vendor, []).append(rate)
+        elif same_family:
+            # Two checkpoints of one lab. Neither a within-vendor floor nor a
+            # cross-vendor one: it is the version-bump control, and folding it
+            # into cross_vendor would bias the headline toward "task-driven".
+            (family_same_brief if same_brief else family_cross).append(rate)
+        else:
+            (same_brief_cross if same_brief else cross).append(rate)
 
     within_summary = {label: _summarize(vals) for label, vals in sorted(within.items())}
     cross_summary = _summarize(cross)
@@ -627,6 +683,8 @@ def analyze(records: Sequence[BookRecord]) -> ComparisonReport:
         within_vendor=within_summary,
         cross_vendor=cross_summary,
         same_brief_cross_vendor=_summarize(same_brief_cross),
+        same_family_cross_model=_summarize(family_cross),
+        same_family_same_brief=_summarize(family_same_brief),
         verdict=_verdict(within_summary, cross_summary),
     )
 
@@ -695,12 +753,19 @@ def _print_report(report: ComparisonReport, *, structure_varies: bool = True) ->
     print("=" * 72)
     print("Cross-vendor fill comparison")
     print("=" * 72)
-    print(f"{'vendor':<16}{'book':>6}{'status':>14}{'FK':>7}{'in-band':>9}{'sec':>8}")
+    # Sized to the longest label actually present rather than a constant: a
+    # descriptive slate ("anthropic-sonnet-4.6") overflows any fixed width and
+    # ragged columns are the kind of thing that gets read as a bug in the run.
+    width = max((len(r.vendor) for r in report.books), default=0)
+    width = max(width, len("vendor"))
+    print(
+        f"{'vendor':<{width}}{'book':>6}{'status':>14}{'FK':>7}{'in-band':>9}{'sec':>8}"
+    )
     for record in report.books:
         grade = "-" if record.grade is None else f"{record.grade:.2f}"
         in_band = "-" if record.in_band is None else f"{record.in_band:.0%}"
         print(
-            f"{record.vendor:<16}{record.brief_index:>6}{record.status:>14}"
+            f"{record.vendor:<{width}}{record.brief_index:>6}{record.status:>14}"
             f"{grade:>7}{in_band:>9}{record.latency_s:>8.1f}"
         )
     print()
@@ -715,23 +780,43 @@ def _print_report(report: ComparisonReport, *, structure_varies: bool = True) ->
             "  one skeleton for every brief: within-vendor pairs share "
             "structure, so these are NOT comparable to the 3.3 floor."
         )
+    # "within " is 7 characters, so padding the bucket names to 7 wider than the
+    # widest vendor label keeps both kinds of row sharing one "mean" column.
+    name_width = max([14, *(len(label) for label in report.within_vendor)]) + 7
     for label, summary in report.within_vendor.items():
         print(
-            f"  within {label:<14} mean {summary['mean_per_1000']:>6.2f}  "
+            f"  within {label:<{name_width - 7}} mean "
+            f"{summary['mean_per_1000']:>6.2f}  "
             f"max {summary['max_per_1000']:>6.2f}  ({_pairs(summary)})"
         )
     cross = report.cross_vendor
     print(
-        f"  {'cross-vendor':<21} mean {cross['mean_per_1000']:>6.2f}  "
+        f"  {'cross-vendor':<{name_width}} mean {cross['mean_per_1000']:>6.2f}  "
         f"max {cross['max_per_1000']:>6.2f}  ({_pairs(cross)})"
     )
-    same = report.same_brief_cross_vendor
+    family = report.same_family_cross_model
+    if family["pairs"] > 0:
+        print(
+            f"  {'same lab, new model':<{name_width}} mean {family['mean_per_1000']:>6.2f}  "
+            f"max {family['max_per_1000']:>6.2f}  ({_pairs(family)})"
+        )
+        print(
+            "    the version-bump control: two checkpoints of one lab, held "
+            "out of the cross-vendor floor above."
+        )
     print()
-    print("Same-brief cross-vendor (premise convergence, reported separately):")
+    print("Reported separately, never part of the headline:")
+    same = report.same_brief_cross_vendor
     print(
-        f"  {'same brief':<21} mean {same['mean_per_1000']:>6.2f}  "
-        f"max {same['max_per_1000']:>6.2f}  ({_pairs(same)})"
+        f"  {'same brief, cross lab':<{name_width}} mean {same['mean_per_1000']:>6.2f}  "
+        f"max {same['max_per_1000']:>6.2f}  ({_pairs(same)})  premise convergence"
     )
+    fsb = report.same_family_same_brief
+    if fsb["pairs"] > 0:
+        print(
+            f"  {'same brief, same lab':<{name_width}} mean {fsb['mean_per_1000']:>6.2f}  "
+            f"max {fsb['max_per_1000']:>6.2f}  ({_pairs(fsb)})  both confounds"
+        )
     print()
     print(f"Verdict: {report.verdict}")
     print(f"Cost:    not reported. {_COST_UNAVAILABLE}")
@@ -760,6 +845,7 @@ def _write_outputs(
         rows.append(
             {
                 "vendor": record.vendor,
+                "family": record.family,
                 "brief_index": record.brief_index,
                 "status": record.status,
                 "attempts": record.attempts,
@@ -844,7 +930,11 @@ def _parse_args(argv: list[str] | None) -> argparse.Namespace:
         "--vendors",
         type=Path,
         default=None,
-        help="JSON array of vendor specs. Required unless --mock.",
+        help=(
+            "JSON array of vendor specs. Required unless --mock. Passing it "
+            "with --mock too is recommended: the dry run then rehearses the "
+            "real leg count and family layout instead of a generic stand-in."
+        ),
     )
     parser.add_argument(
         "--mock",
@@ -885,6 +975,42 @@ def _mock_vendors() -> list[Vendor]:
     ]
 
 
+def _mirror_as_mock(vendors: list[Vendor]) -> list[Vendor]:
+    """Rebuild a real vendor slate as mock legs of the same shape.
+
+    A dry run that invents its own three legs cannot rehearse the grid the paid
+    run will actually produce: it would not exercise the leg count, and, more
+    importantly, it would not exercise ``family``, so a slate that accidentally
+    split one lab into two families (or merged two labs into one) would look
+    perfectly healthy right up until the money was spent. Passing ``--vendors``
+    alongside ``--mock`` therefore keeps the declared labels and families and
+    swaps only the provider.
+
+    The label is prefixed so no line of the output can be mistaken for a real
+    measurement of the vendor it names. That prefix is why ``family`` is written
+    out explicitly rather than left to default: a leg that declared no family
+    takes its lineage from its label, so renaming the label would quietly rename
+    the lineage too, and the rehearsal would stop matching the paid run.
+
+    Args:
+        vendors: The loaded slate.
+
+    Returns:
+        One mock leg per input leg, preserving order, lineage, and relative
+        labelling.
+    """
+    return [
+        replace(
+            v,
+            label=f"mock:{v.label}",
+            model="mock",
+            provider_order=(),
+            family=v.lineage(),
+        )
+        for v in vendors
+    ]
+
+
 def main(argv: list[str] | None = None) -> int:
     """CLI entry point.
 
@@ -911,7 +1037,13 @@ def main(argv: list[str] | None = None) -> int:
     skeletons = _load_skeletons(skeleton_paths, len(briefs))
 
     if mock:
-        vendors = _mock_vendors()
+        # A slate given alongside --mock is still loaded and validated, so the
+        # dry run rehearses the real grid rather than a generic stand-in.
+        vendors = (
+            _mock_vendors()
+            if args.vendors is None  # pyright: ignore[reportAny]
+            else _mirror_as_mock(_load_vendors(Path(str(args.vendors)).resolve()))  # pyright: ignore[reportAny]
+        )
         settings = Settings()
     else:
         if args.vendors is None:  # pyright: ignore[reportAny]
@@ -963,6 +1095,7 @@ def main(argv: list[str] | None = None) -> int:
                 "label": v.label,
                 "model": v.model,
                 "provider_order": list(v.provider_order),
+                "family": v.lineage(),
             }
             for v in vendors
         ],

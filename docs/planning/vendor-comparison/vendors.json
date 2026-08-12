@@ -1,23 +1,56 @@
 [
   {
-    "label": "anthropic",
+    "label": "anthropic-sonnet-4.6",
     "model": "anthropic/claude-sonnet-4.6",
     "provider_order": ["anthropic"],
+    "family": "anthropic",
     "_snapshot": "anthropic/claude-4.6-sonnet-20260217",
-    "_note": "Seven endpoints across four provider names (Anthropic, Google Vertex, Amazon Bedrock, Azure), all serving the same dated snapshot; verified 2026-08-12 via GET /api/v1/models/{id}/endpoints. Same weights everywhere, so the pin buys reproducibility and a single serving stack rather than a different model. Quantization is reported as 'unknown' on every endpoint, so it cannot be ruled out. Pinned to the first-party 'anthropic' tag at $3.00/$15.00 per MTok."
+    "_price_per_mtok": "3.00 / 15.00",
+    "_note": "Seven endpoints across Anthropic, Google Vertex, Amazon Bedrock and Azure, all serving the same dated snapshot; verified 2026-08-12 via GET /api/v1/models/{id}/endpoints. Shares the 'anthropic' family with the Sonnet 5 leg, so that pair is the version-bump control rather than a cross-vendor pair."
   },
   {
-    "label": "openai",
-    "model": "openai/gpt-5.4",
+    "label": "anthropic-sonnet-5",
+    "model": "anthropic/claude-sonnet-5",
+    "provider_order": ["anthropic"],
+    "family": "anthropic",
+    "_snapshot": "anthropic/claude-sonnet-5-20260630",
+    "_price_per_mtok": "2.00 / 10.00",
+    "_note": "Eight endpoints across Anthropic, Google, Amazon Bedrock and Azure. Cheaper than 4.6 and the checkpoint actually run locally, so it is the one a diversification strategy would be applied to."
+  },
+  {
+    "label": "openai-gpt-5.6-sol",
+    "model": "openai/gpt-5.6-sol",
     "provider_order": ["openai"],
-    "_snapshot": "openai/gpt-5.4-20260305",
-    "_note": "Six endpoints across OpenAI, Azure and Amazon Bedrock, same dated snapshot. The OpenAI name alone covers three service tiers: 'openai' at $2.50/$15.00, 'openai/flex' at $1.25/$7.50 and 'openai/priority' at $5.00/$30.00. Pinned to the standard tier; flex would roughly halve cost but trades latency and capacity, which is not worth it on a sub-$2 run."
+    "family": "openai",
+    "_snapshot": "openai/gpt-5.6-sol-20260709",
+    "_price_per_mtok": "5.00 / 30.00",
+    "_note": "Flagship of the 5.6 line; terra ($1/$6) and luna ($0.10/$0.60) are the mid and cheap tiers of the same generation. Matched on tier rather than price: an odd result on a mid tier could not be told apart from house style. Six endpoints across OpenAI, Azure and Amazon Bedrock, same dated snapshot."
   },
   {
-    "label": "google",
+    "label": "xai-grok-4.6",
+    "model": "x-ai/grok-4.6",
+    "provider_order": ["xai/zdr"],
+    "family": "xai",
+    "_snapshot": "x-ai/grok-4.6-20260810",
+    "_price_per_mtok": "2.00 / 6.00",
+    "_note": "Four endpoints, all first-party xAI: standard, priority, and zero-data-retention variants of each. Pinned to xai/zdr, which costs the same as standard and is the better default for a children's product. Cheapest output of the slate at $6/MTok."
+  },
+  {
+    "label": "moonshot-kimi-k3",
+    "model": "moonshotai/kimi-k3",
+    "provider_order": ["moonshotai/mxfp4"],
+    "family": "moonshot",
+    "_snapshot": "moonshotai/kimi-k3-20260715",
+    "_price_per_mtok": "3.00 / 15.00",
+    "_note": "The strongest case in this slate for pinning at all: an open-weight 2.8T model with FOURTEEN endpoints across twelve resellers at genuinely different quantizations (fp4, mxfp4, fp8, bf16, and five reporting unknown). The default route is Morph at fp4. Pinned to the first-party Moonshot AI endpoint so the run measures one serving of one model. Also the widest departure in training corpus from the four US labs, which is what makes a vendor effect detectable if one exists."
+  },
+  {
+    "label": "google-gemini-3.1-pro",
     "model": "google/gemini-3.1-pro-preview",
     "provider_order": ["google-ai-studio"],
+    "family": "google",
     "_snapshot": "google/gemini-3.1-pro-preview-20260219",
-    "_note": "Six endpoints across Google Vertex and Google AI Studio, same dated snapshot, each with standard/flex/priority tiers. Pinned to first-party AI Studio standard at $2.00/$12.00. Note max_completion_tokens is 65,536 here against 128,000 for the other two; the 5-8 skeletons need under 12,000 so this does not bind. A -preview slug can be retired without notice; re-verify before a run."
+    "_price_per_mtok": "2.00 / 12.00",
+    "_note": "Six endpoints across Google Vertex and Google AI Studio, each with standard/flex/priority tiers, same dated snapshot. Pinned to first-party AI Studio standard. max_completion_tokens is 65,536 here against 128,000 for the others; the 5-8 skeletons need under 12,000 so it does not bind. A -preview slug can be retired without notice; re-verify before a run."
   }
 ]
