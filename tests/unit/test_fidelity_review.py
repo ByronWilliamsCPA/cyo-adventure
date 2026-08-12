@@ -183,7 +183,7 @@ async def test_skips_node_with_valid_id_but_non_string_body() -> None:
     [_NonCompletionReviewProvider(), _NonStringTextReviewProvider()],
     ids=["not-a-completion", "completion-with-non-str-text"],
 )
-async def test_semantic_check_fails_open_on_non_string_response(
+async def test_semantic_check_provider_contract_violation_fails_open(
     provider: _NonCompletionReviewProvider | _NonStringTextReviewProvider,
 ) -> None:
     """A provider violating the contract fails open, at either boundary.

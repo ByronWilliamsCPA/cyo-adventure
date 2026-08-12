@@ -339,13 +339,13 @@ erDiagram
         varchar(120) storybook_id "NULL; NOT a FK, see note below"
         int version "NULL"
         varchar(512) error "NULL"
-        int provider_call_count "NULL = not recorded, never 0"
-        int provider_unknown_calls "NULL; calls the backend gave no counts for"
-        int input_tokens "NULL"
-        int output_tokens "NULL"
-        int provider_duration_ms "NULL"
-        numeric(12,6) cost_usd "NULL; lower bound unless cost_complete"
-        boolean cost_complete "NULL; false = a model had no price entry"
+        int provider_call_count "NULL = not recorded; never 0 once recorded"
+        int provider_unknown_calls "NULL = not recorded; 0 = every call counted"
+        int input_tokens "NULL = not recorded; 0 = recorded, none consumed"
+        int output_tokens "NULL = not recorded; 0 = recorded, none consumed"
+        int provider_duration_ms "NULL = not recorded; 0 = sub-millisecond"
+        numeric(12,6) cost_usd "NULL = not recorded; lower bound unless cost_complete"
+        boolean cost_complete "NULL = not recorded; false = usage unknown, price missing, or capped"
         timestamptz created_at
         timestamptz updated_at
     }

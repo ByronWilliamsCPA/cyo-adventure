@@ -66,7 +66,7 @@ def completion_text(returned: object) -> str | None:
     # into a pipeline outage (AttributeError on .text, or TypeError inside
     # json.loads). Callers must pass the raw return, not a narrowed binding.
     # #VERIFY: test_batch_non_string_response_falls_back_rather_than_raising,
-    # test_semantic_check_fails_open_on_non_string_response.
+    # test_semantic_check_provider_contract_violation_fails_open.
     if not isinstance(returned, Completion):
         return None
     # The cast is load-bearing for the same reason: `Completion.text` is

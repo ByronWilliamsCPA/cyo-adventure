@@ -261,7 +261,7 @@ async def run_semantic_fidelity_check(
     # via completion_text so the guards there stay live; a bare string or None
     # from a non-conforming provider must fail open, not raise an
     # AttributeError or a TypeError inside json.loads.
-    # #VERIFY: test_semantic_check_fails_open_on_non_string_response.
+    # #VERIFY: test_semantic_check_provider_contract_violation_fails_open.
     returned: object = await review_provider.complete(
         system=_FIDELITY_SYSTEM, prompt=user, max_tokens=_MAX_FIDELITY_TOKENS
     )

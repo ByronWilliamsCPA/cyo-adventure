@@ -265,3 +265,27 @@ def test_the_ledger_is_readable_through_the_wrapper() -> None:
     metered = MeteredProvider(_RecordingProvider(), ledger=ledger)
 
     assert metered.ledger is ledger
+
+
+class _MislabelledProvider(_RecordingProvider):
+    """An inner provider whose labels are the wrong type entirely."""
+
+    name = 42
+    model = ("not", "a", "string")
+
+
+@pytest.mark.unit
+def test_non_string_labels_are_forwarded_as_none() -> None:
+    """A label of the wrong type is dropped, not passed through.
+
+    ``MeteredProvider.name``/``.model`` guard with ``isinstance(..., str)``,
+    and nothing exercised the false arm: ``_LabelledProvider`` covers the
+    string case and ``_RecordingProvider`` the absent one. An unexercised
+    guard reads as dead code to the next person, and deleting it would let a
+    non-string reach the worker's ``job.provider`` column, which is
+    ``VARCHAR``: the failure would surface at COMMIT, far from its cause.
+    """
+    metered = MeteredProvider(_MislabelledProvider(), ledger=UsageLedger())
+
+    assert metered.name is None
+    assert metered.model is None
