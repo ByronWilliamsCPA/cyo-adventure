@@ -54,7 +54,15 @@ Consequences, stated plainly because this widens retention:
   all and their `report` is never nulled on any timer, decision or no decision. `queued` and
   `running` are transient and normally carry no report; `awaiting_manual_fill` is by definition a
   run parked waiting on a person and can sit indefinitely. That gap predates both amendments and
-  neither closes it. Closing it means widening the predicate to every non-exempt status, which is a
+  neither closes it.
+
+  A second, opposite gap belongs to the 2026-08-10 amendment itself: the exemption is evaluated
+  when the sweep runs, not when the decision is recorded, so it does not protect a slow review.
+  A job at status `passed` whose storybook is still `in_review` on day 31 is purged, and the
+  approval on day 32 flips the storybook to `published` against a column that is already NULL.
+  The calibration-corpus rationale below therefore holds only for reviews concluding inside 30
+  days of the job's last update. Tracked as `UW-C226` with
+  `test_slow_review_report_is_purged_before_the_human_decides` pinning the current behaviour. Closing it means widening the predicate to every non-exempt status, which is a
   separate decision with its own deletion consequences and is tracked as a known gap in
   `docs/compliance/data-retention-policy.md` Section 4 rather than assumed here.
 - **The rollback coupling is gone, and is not needed.** The old purge lived in the publish

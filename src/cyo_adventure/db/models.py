@@ -2570,9 +2570,21 @@ class GenerationJob(UUIDPrimaryKeyMixin, CreatedAtMixin, UpdatedAtMixin, Base):
     # Publishing is now an exemption from the purge, not a trigger for it: the
     # 2026-08-11 amendment removed publishing/service.py::approve's immediate
     # on-publish null, which had defeated the approve half of that exemption
-    # (approve is the only path that sets "published", and it nulled the report
-    # in the same transaction). The nightly pg_cron sweep is now the only thing
-    # that nulls this column.
+    # (within src/, approve is the only path that sets "published", and it
+    # nulled the report in the same transaction). The nightly pg_cron sweep is
+    # now the only thing that nulls this column.
+    # #CRITICAL: data integrity: the exemption is evaluated when the SWEEP runs,
+    # not when the human decides, so it does not protect a slow review. A job at
+    # status "passed" whose storybook is still "in_review" on day 31 is purged;
+    # an approval on day 32 flips the storybook to "published" but cannot restore
+    # the column. The calibration-corpus purpose therefore holds only for reviews
+    # that conclude inside 30 days of the job's last update. This is a property of
+    # the 2026-08-10 predicate, not of the 2026-08-11 amendment, and closing it
+    # means changing the predicate (an updated_at touch on decision, or dropping
+    # the status filter for undecided storybooks), which is an owner decision.
+    # #VERIFY: test_slow_review_report_is_purged_before_the_human_decides in
+    # tests/unit/test_report_retention.py pins the current behaviour so this
+    # window cannot be believed away; tracked as UW-C226.
     # ADR-007 designates this column admin/system-only. Per the 2026-07-16
     # ruling, GET /generation-jobs/{id} (api/generation.py::get_generation_job)
     # returns it only when the caller holds the admin capability

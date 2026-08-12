@@ -443,6 +443,49 @@ def test_amendment_migration_exempts_send_back_via_event_not_status() -> None:
     assert "needs_revision" not in job_body
 
 
+def test_slow_review_report_is_purged_before_the_human_decides() -> None:
+    """The exemption is evaluated at sweep time, so it does not protect a slow review.
+
+    This is a CHARACTERIZATION test: it pins behaviour that is currently
+    wrong-ish, not behaviour we want. A job at status ``passed`` whose storybook
+    is still ``in_review`` on day 31 matches every purge condition, because the
+    approve half of the exemption keys on ``published``/``archived`` and the
+    send-back half keys on a ``sent_back`` event that a still-pending review has
+    not written. The report is nulled; an approval on day 32 flips the storybook
+    to ``published`` but the column cannot be restored, so ADR-007's
+    calibration-corpus purpose holds only for reviews concluding inside 30 days.
+
+    **If this test fails because the predicate now protects pending reviews,
+    that is the fix landing, not a regression.** Delete this test, drop the
+    #CRITICAL slow-review block on ``GenerationJob.report`` in db/models.py, and
+    remove the corresponding caveat from data-retention-policy.md section 4,
+    privacy-model.md and ADR-007. Tracked as ``UW-C226``.
+
+    Raised by CodeRabbit on PR #703. The defect belongs to the 2026-08-10
+    amendment, not to this PR's removal of the on-publish null; closing it means
+    either touching ``updated_at`` when a human decision is recorded or dropping
+    the status filter for storybooks still awaiting one, both of which change
+    what gets retained and are therefore owner decisions.
+    """
+    job_body = _AMENDMENT_MIGRATION_PATH.read_text(encoding="utf-8").split("$job$")[1]
+    # 1. A "passed" job is eligible for the purge in the first place.
+    assert "'passed'" in job_body
+    # 2. Nothing in the predicate defers on a review still being open: the only
+    #    storybook statuses that exempt are the two terminal decisions.
+    assert "'published', 'archived'" in job_body
+    assert "'in_review'" not in job_body
+    # 3. The send-back leg needs an event row, which a pending review lacks.
+    assert "'sent_back'" in job_body
+    # 4. No clause reprieves a job on the grounds that a decision is expected.
+    #    These are the shapes a fix would plausibly take; if one appears, the
+    #    window may be closed and this test's premise no longer holds.
+    for pending_shape in ("awaiting", "pending", "reviewer_assigned", "claimed"):
+        assert pending_shape not in job_body.lower(), (
+            f"the purge predicate now mentions {pending_shape!r}; if the "
+            "slow-review window has been closed, see this test's docstring"
+        )
+
+
 def test_amendment_migration_indexes_the_event_lookup() -> None:
     """The pipeline_event probe is indexed, not a nightly sequential scan."""
     sql = _AMENDMENT_MIGRATION_PATH.read_text(encoding="utf-8")

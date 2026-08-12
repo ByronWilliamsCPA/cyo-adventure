@@ -72,13 +72,23 @@ import './legal.css'
  *     for family deletion; a public page promising the button would contradict
  *     a named regression test on the signed-in page.
  *   - raw-output retention scoped to "after the generation run finishes" and to
- *     an undecided story, plus "no timer on it at all" for a run parked waiting
- *     on a person. The nightly purge predicate
+ *     an undecided story, plus "no timer on it at all" for a run that never
+ *     finished. The nightly purge predicate
  *     (20260810000000_exempt_reviewed_generation_job_report_from_purge.sql) is
  *     gated on status IN ('passed','needs_review','failed') and exempts a
  *     human-decided storybook entirely, so an unqualified "30 days" and the old
  *     "or as soon as the story is published" are both false: publishing is now
  *     an exemption from deletion, not a trigger for it.
+ *   - "a later approval does not bring it back", and the "never finished" scope
+ *     on the no-timer clause. Both are forced by the same predicate: the
+ *     exemption is evaluated when the sweep runs, not when the human decides, so
+ *     a story still in review on day 31 is purged and the day-32 approval
+ *     recovers nothing. Only queued/running/awaiting_manual_fill sit outside the
+ *     status filter, and those are runs that have not finished; a run waiting on
+ *     a REVIEWER is at status "passed" and is on the clock. An earlier draft of
+ *     this row said "a run left waiting on a person has no timer on it at all",
+ *     which conflated the two and read as a promise for the reviewer case. See
+ *     UW-C226 and test_slow_review_report_is_purged_before_the_human_decides.
  *
  * Relationship to the consent record: `auth/onboardingApi.ts` holds
  * CONSENT_POLICY_VERSION, the stamp stored on `User.consent_policy_version` so
@@ -379,10 +389,13 @@ export function PrivacyPolicyPage() {
               </td>
               <td>
                 Deleted 30 days after the generation run finishes, unless an adult reached a
-                decision about that story. Once an adult approves a story or sends it back, we keep
-                the raw output for as long as the story exists, so we can check whether our safety
-                checks got that story right and improve them. A run left waiting on a person has no
-                timer on it at all. All of it goes when you delete your family account
+                decision about that story within those 30 days. Once an adult approves a story or
+                sends it back, we keep the raw output for as long as the story exists, so we can
+                check whether our safety checks got that story right and improve them. If nobody has
+                decided by day 30 we delete it anyway, and a later approval does not bring it back.
+                A run that never finished, because it is still generating or is waiting for a person
+                to fill something in, has no timer on it at all. All of it goes when you delete your
+                family account
               </td>
             </tr>
             <tr>

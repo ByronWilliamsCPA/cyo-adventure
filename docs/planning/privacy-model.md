@@ -145,6 +145,13 @@ undecided one is short-lived. The detail is in the second bullet.
   `20260810000000_exempt_reviewed_generation_job_report_from_purge.sql`); it is no longer
   the unbuilt Phase 5 deliverable this section once described.
 
+  The exemption has a boundary worth stating here rather than only in the retention policy:
+  it is evaluated when the nightly sweep runs, not when the human decides. A job whose
+  storybook is still `in_review` on day 31 is purged, and a later approval cannot restore the
+  column, so the pairing this exemption exists to enable only happens for reviews that
+  conclude inside the 30 days. See `docs/compliance/data-retention-policy.md` Section 4 and
+  `UW-C226`.
+
   ```python
   # #CRITICAL: data integrity: generation_job.report holds raw LLM output that may
   #            carry child-derived detail; it must be purged and never leaked.
