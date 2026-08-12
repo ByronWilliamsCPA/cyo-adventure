@@ -19,6 +19,7 @@ from unittest import mock
 import pytest
 
 from scripts.judge_books import (
+    _JUDGE_MAX_TOKENS,  # pyright: ignore[reportPrivateUsage]
     Judge,
     Verdict,
     _parse,  # pyright: ignore[reportPrivateUsage]
@@ -97,6 +98,55 @@ def test_parse_finds_the_object_inside_surrounding_prose() -> None:
     scores, _ = _parse(f"Here are my scores:\n{body}\nHappy to expand.")
 
     assert scores["age_fit"] == 2.0
+
+
+def test_parse_calls_a_truncated_reply_truncated_not_malformed() -> None:
+    """A cut-off completion must point at the budget, not at the judge.
+
+    This is the exact shape that silently removed one of three judges from the
+    2026-08-12 panel: the greedy object regex closes on the last *inner* brace
+    the completion managed to emit, so a truncated reply arrives at ``json.loads``
+    as an unbalanced object and every error landed at the same line and column.
+    Read as malformed JSON it looks like a judge that cannot follow a schema, and
+    the fix would be to loosen the parse. The real fix is the opposite.
+    """
+    # The observed 2026-08-12 shape: one criterion closed, the next cut mid-note.
+    truncated = (
+        '{\n  "age_fit": {\n    "score": 5,\n    "note": "Short sentences."\n  },'
+        '\n  "imagery": {\n    "score": 5,\n    "note": "The text is rich with'
+    )
+
+    with pytest.raises(ValueError, match="cut off") as excinfo:
+        _ = _parse(truncated)
+
+    assert "_JUDGE_MAX_TOKENS" in str(excinfo.value)
+
+
+def test_parse_diagnoses_a_reply_cut_off_before_any_brace_closed() -> None:
+    """The same cause with no closing brace at all must give the same guidance."""
+    with pytest.raises(ValueError, match="cut off") as excinfo:
+        _ = _parse('{\n  "age_fit": {\n    "score": 5,\n    "note": "Short sen')
+
+    assert "_JUDGE_MAX_TOKENS" in str(excinfo.value)
+
+
+def test_judge_budget_exceeds_the_measured_answer_by_a_reasoning_margin() -> None:
+    """The cap must absorb hidden reasoning, not just the seven criteria.
+
+    Measured 2026-08-12 against one 3,000-word book: the three panel judges
+    returned at most 1,530 characters of content, roughly 385 tokens. The answer
+    was never the binding constraint; a 2,000-token cap still truncated every
+    Gemini 3.1 Pro reply, because a reasoning judge spends its budget before it
+    emits a first content token. The margin below is that headroom, so this test
+    fails if someone trims the cap back toward the size of the answer.
+    """
+    measured_answer_tokens = 385
+
+    assert measured_answer_tokens * 10 <= _JUDGE_MAX_TOKENS, (
+        f"a {_JUDGE_MAX_TOKENS}-token cap leaves too little headroom over the "
+        f"measured {measured_answer_tokens}-token answer; reasoning judges "
+        "truncate mid-note and their scorings drop out of the panel silently"
+    )
 
 
 def test_parse_rejects_a_reply_carrying_no_criterion() -> None:

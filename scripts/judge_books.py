@@ -149,7 +149,17 @@ _SYSTEM: Final[str] = (
 
 # Enough for seven scores plus one short justification each, with room for a
 # reasoning judge's hidden tokens on top.
-_JUDGE_MAX_TOKENS: Final[int] = 2000
+# Completion budget per scoring. Sized to clear reasoning overhead plus the
+# answer, not the answer alone: a reasoning judge spends hidden tokens before it
+# emits anything, and whatever is left has to carry seven criteria with their
+# notes. Measured 2026-08-12 against one 3,000-word book at an 8,000-token cap,
+# the three panel judges returned 1,351, 1,530 and 1,360 characters of content
+# (roughly 340 to 385 tokens), so the content is small and the overhead is what
+# the budget must absorb. At 2,000 this truncated every Gemini 3.1 Pro reply
+# mid-note, which surfaced as a JSONDecodeError and read as a malformed answer;
+# see _parse for why that misreads. This is AL-308 recurring: size a budget by
+# what the model spends before it can answer, not by the answer.
+_JUDGE_MAX_TOKENS: Final[int] = 8000
 
 __all__ = ["Judge", "Verdict", "judge_book", "pool_scores"]
 
@@ -245,13 +255,40 @@ def _parse(raw: str) -> tuple[dict[str, float], dict[str, str]]:
         Scores and notes, keyed by criterion.
 
     Raises:
-        ValueError: If no JSON object is present or no criterion parsed.
+        ValueError: If the reply was truncated, carries no JSON object, or
+            parsed without yielding a single criterion.
     """
     match = re.search(r"\{.*\}", raw, re.DOTALL)
     if match is None:
+        # Cut off before even the first inner brace closed. Same cause as the
+        # decode failure below, different symptom, so give the same guidance.
+        if raw.lstrip().startswith("{"):
+            msg = (
+                f"the judge's reply was cut off at {len(raw)} chars before any "
+                f"JSON object closed; raise _JUDGE_MAX_TOKENS above "
+                f"{_JUDGE_MAX_TOKENS}"
+            )
+            raise ValueError(msg)
         msg = f"no JSON object in reply: {raw[:120]!r}"
         raise ValueError(msg)
-    payload = json.loads(match.group(0))
+    try:
+        payload = json.loads(match.group(0))
+    except json.JSONDecodeError as exc:
+        # A truncated reply still matches the regex above, because the greedy
+        # `\{.*\}` closes on the last *inner* brace the completion managed to
+        # emit. The result is an unbalanced object whose decode error points at
+        # that inner brace, which reads as a malformed answer from a judge that
+        # cannot follow a schema. It is not: the schema was followed and the
+        # budget ran out. The two need opposite fixes, so name the difference.
+        truncated = not raw.rstrip().endswith("}")
+        cause = (
+            f"the completion was cut off at {len(raw)} chars, so raise "
+            f"_JUDGE_MAX_TOKENS above {_JUDGE_MAX_TOKENS}"
+            if truncated
+            else "the judge emitted a complete but invalid object"
+        )
+        msg = f"could not parse the judge's JSON ({cause}): {exc}"
+        raise ValueError(msg) from exc
     scores: dict[str, float] = {}
     notes: dict[str, str] = {}
     for name in _CRITERIA:
