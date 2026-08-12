@@ -203,9 +203,19 @@ truth; Alembic is retired.**
   the index `indisvalid = true`. Comments are not statements, so prose is free.
   Consequence for authors: an index on a table large enough for the build lock to matter
   should be added as its own single-statement migration, as
-  `20260811160000`/`20260811160100` do for `ix_pipeline_event_entity_event_type`. The two
+  `20260811170000`/`20260811170100` do for `ix_pipeline_event_entity_event_type`. The two
   indexes named above are left as they are; they are already built, and rebuilding them
   would be churn.
+- **A prefix must be unclaimed across open pull requests, not just against `origin/main`.**
+  The CLI keys `schema_migrations` on the 14-digit version prefix, not the filename, so two
+  concurrent branches can each hold a distinct file at the same prefix, each pass CI alone,
+  and collide with a `schema_migrations_pkey` duplicate-key error on the first `db push`
+  after the second one merges. This has now happened twice: `AL-072` (PR #494 against
+  PR #507, at `20260730000000`) and again at `20260811160000`, which is why the pair named
+  above was renumbered to `1700xx`. Note that the guard `AL-072` proposed, comparing against
+  the newest prefix on `origin/main`, would not have caught either case: both colliding
+  prefixes were greater than main's newest. The check has to read the other open branches.
+  Tracked by `UW-C21`.
 
 ### Testing Strategy
 

@@ -119,14 +119,21 @@ counterparties for child-typed text as well as for generated prose.
 ## Raw LLM Outputs and Prompt Text
 
 Raw LLM outputs (the full text returned by the provider for each stage) and the prompt
-text sent to the provider are admin-only (ADR-007 as amended 2026-07-16) and short-lived:
+text sent to the provider are admin-only (ADR-007 as amended 2026-07-16). They are no longer
+uniformly short-lived: as of ADR-007's 2026-08-10 and 2026-08-11 amendments, a raw output that
+a human reached a decision about is retained for the life of the storybook, and only an
+undecided one is short-lived. The detail is in the second bullet.
 
 - **Prompt text**: store the prompt template version and a hash, not the full rendered
   prompt, where the rendered text could carry child-specific detail. The hash allows
   audit without persisting the content.
 - **Raw generation outputs**: stored in `generation_job.report`, a Postgres JSONB column
-  (not object storage; there is no `raw_output_ref` field), only as long as needed for
-  debugging and repair-pass analysis. The retention window is defined (ADR-007): purge 30
+  (not object storage; there is no `raw_output_ref` field). The purpose was originally
+  debugging and repair-pass analysis alone; ADR-007's 2026-08-10 amendment added a second,
+  broader one: calibrating the review scorecard against the decision a human actually made.
+  That is a purpose change as well as a window change, and it is what justifies the longer
+  retention below rather than the debugging need, which is satisfied inside 30 days.
+  The retention window is defined (ADR-007): purge 30
   days after job completion, via a `pg_cron` job (ADR-009), **except** where a human
   reached a review decision about the storybook the job produced, which ADR-007's
   2026-08-10 amendment exempts so the raw output can be paired with the reviewer's

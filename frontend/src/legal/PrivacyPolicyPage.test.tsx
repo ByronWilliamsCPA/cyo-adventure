@@ -119,6 +119,30 @@ describe('PrivacyPolicyPage', () => {
       )
     })
 
+    it('scopes raw-output retention to a finished run and an undecided story', () => {
+      // Both halves of the previous wording ("30 days, or as soon as the story
+      // is published, whichever comes first") became false on 2026-08-11:
+      // publishing/service.py::approve no longer nulls the report, and ADR-007's
+      // 2026-08-10 amendment makes a human decision an EXEMPTION from the sweep,
+      // so publishing now preserves the raw output indefinitely instead of
+      // destroying it. Two hedges here are load-bearing and are exactly what an
+      // editor tidies away:
+      //   - "after the generation run finishes": the nightly predicate is gated
+      //     on status IN ('passed','needs_review','failed'), so a job parked in
+      //     awaiting_manual_fill is matched by no purge condition at all. An
+      //     unqualified "30 days" would be a promise no job enforces.
+      //   - "no timer on it at all": states that gap outright rather than
+      //     leaving a parent to infer it.
+      // See docs/compliance/data-retention-policy.md Section 4.
+      renderPage()
+      expect(screen.getByText(/30 days after the generation run finishes/i)).toBeInTheDocument()
+      expect(screen.getByText(/no timer on it at all/i)).toBeInTheDocument()
+      // The retracted claim must not come back: publishing is now the opposite
+      // of a deletion trigger.
+      expect(screen.queryByText(/as soon as the story is published/i)).not.toBeInTheDocument()
+      expect(screen.queryByText(/whichever comes first/i)).not.toBeInTheDocument()
+    })
+
     it.each([
       ['export', /no button for this in the app yet/i],
       ['whole-family deletion', /deleting your whole family account is done by email/i],

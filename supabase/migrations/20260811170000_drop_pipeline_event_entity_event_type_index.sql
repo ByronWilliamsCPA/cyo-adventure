@@ -38,9 +38,23 @@
 -- test_pipeline_event_index_is_rebuilt_concurrently asserts this pair exists, that each
 -- file carries exactly one statement, and that both use the CONCURRENTLY form.
 --
--- Part 2 (20260811160100) recreates the index. Between the two the send-back exemption's
+-- Part 2 (20260811170100) recreates the index. Between the two the send-back exemption's
 -- nightly probe has no index support; that window is one migration long, on a nightly
 -- job, against a table of this size, so it costs nothing observable.
+--
+-- #CRITICAL: data integrity: this pair was renamed from 20260811160000/20260811160100 to
+-- 170000/170100 because PR #701 independently claimed the 20260811160000 prefix
+-- (20260811160000_add_generation_job_provider_accounting.sql). The Supabase CLI keys
+-- "schema_migrations" on the 14-digit version prefix rather than the filename, so two
+-- files sharing a prefix are each individually valid and each branch passes CI alone; the
+-- collision only surfaces as a schema_migrations_pkey duplicate-key error on the first
+-- "supabase db push" after the second branch merges. Do not renumber this pair back into
+-- the 1600xx window. Precedent: AL-072 (PR #494), guard proposed as UW-C21.
+-- #VERIFY: before adding any migration, confirm its prefix is unclaimed across all OPEN
+-- pull requests, not just against origin/main:
+--   gh pr list --state open --json number \
+--     --jq '.[].number' | xargs -I{} gh pr diff {} --name-only \
+--     | grep supabase/migrations/ | sort | uniq -d
 --
 -- Forward-only migration per this project's Supabase CLI convention (ADR-012); no down
 -- script. `if exists` makes it safe on a database that never applied 20260810000000.

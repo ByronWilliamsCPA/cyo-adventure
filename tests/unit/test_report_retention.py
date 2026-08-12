@@ -55,9 +55,9 @@ _MIGRATIONS_DIR = Path(__file__).resolve().parents[2] / "supabase" / "migrations
 # The two single-statement files that rebuild the send-back exemption's index
 # without locking pipeline_event, in the order they apply.
 _INDEX_REBUILD_MIGRATIONS = (
-    _MIGRATIONS_DIR / "20260811160000_drop_pipeline_event_entity_event_type_index.sql",
+    _MIGRATIONS_DIR / "20260811170000_drop_pipeline_event_entity_event_type_index.sql",
     _MIGRATIONS_DIR
-    / "20260811160100_create_pipeline_event_entity_event_type_index_concurrently.sql",
+    / "20260811170100_create_pipeline_event_entity_event_type_index_concurrently.sql",
 )
 
 

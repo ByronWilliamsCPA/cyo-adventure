@@ -1,6 +1,6 @@
 -- Rebuild ix_pipeline_event_entity_event_type without an exclusive lock, part 2 of 2.
 --
--- Recreates, with CONCURRENTLY, the index that 20260811160000 dropped. Column list and
+-- Recreates, with CONCURRENTLY, the index that 20260811170000 dropped. Column list and
 -- name are identical to the one 20260810000000 created, so the end state of the schema is
 -- unchanged; only the way it is built differs. See part 1 for why this is split across
 -- two single-statement files and for the measured production scale behind the change.
