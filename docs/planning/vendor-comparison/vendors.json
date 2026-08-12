@@ -1,0 +1,20 @@
+[
+  {
+    "label": "anthropic",
+    "model": "anthropic/claude-sonnet-4.6",
+    "provider_order": ["Anthropic"],
+    "_note": "Also served by Google, Amazon Bedrock and Azure; verified 2026-08-12 via GET /api/v1/models/{id}/endpoints. Without the pin a run attributed to Anthropic can be answered by Bedrock."
+  },
+  {
+    "label": "openai",
+    "model": "openai/gpt-5.4",
+    "provider_order": ["OpenAI"],
+    "_note": "Also served by Azure and Amazon Bedrock; verified 2026-08-12."
+  },
+  {
+    "label": "google",
+    "model": "google/gemini-3.1-pro-preview",
+    "provider_order": ["Google AI Studio"],
+    "_note": "Google AI Studio is the first-party backend; the bare 'Google' endpoint is Vertex. Verified 2026-08-12. A -preview slug can be retired without notice; re-verify before a run."
+  }
+]

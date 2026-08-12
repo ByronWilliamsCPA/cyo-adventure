@@ -72,6 +72,13 @@ class OpenRouterProvider:
         client: Optional injected ``httpx.AsyncClient`` (for tests). When
             provided the adapter uses it and does not close it; when ``None`` a
             fresh client is created and closed per ``complete`` call.
+        provider_order: Optional OpenRouter *backend* preference, most preferred
+            first (e.g. ``("Anthropic",)``). Empty (the default) sends no
+            ``provider`` field at all, leaving OpenRouter's own routing intact,
+            so production behaviour is unchanged. A non-empty order additionally
+            sets ``allow_fallbacks: false``, which is what makes a measurement
+            attributable to one backend rather than to whichever backend
+            happened to win the routing auction that minute.
     """
 
     def __init__(
@@ -85,6 +92,7 @@ class OpenRouterProvider:
         max_retries: int = DEFAULT_MAX_RETRIES,
         backoff_base_seconds: float = DEFAULT_BACKOFF_BASE_SECONDS,
         client: httpx.AsyncClient | None = None,
+        provider_order: tuple[str, ...] = (),
     ) -> None:
         self._api_key: Final[str] = api_key
         self._model: Final[str] = model
@@ -94,6 +102,7 @@ class OpenRouterProvider:
         self._max_retries: Final[int] = max_retries
         self._backoff_base_seconds: Final[float] = backoff_base_seconds
         self._client: Final[httpx.AsyncClient | None] = client
+        self._provider_order: Final[tuple[str, ...]] = provider_order
 
     @property
     def name(self) -> str:
@@ -162,6 +171,18 @@ class OpenRouterProvider:
         # (finish_reason=length). "off" therefore omits the param entirely.
         if self._effort != "off":
             body["reasoning"] = {"effort": self._effort}
+        # #ASSUME: external-resources: an unpinned slug can be served by several
+        # backends at different quantizations, so two runs of "the same model"
+        # are not the same measurement. When a pin is supplied we also forbid
+        # fallbacks, turning a silent substitution into a visible 404.
+        # #VERIFY: test_openrouter_provider_pin_forbids_fallbacks asserts the
+        # body, and test_openrouter_unpinned_body_has_no_provider_field asserts
+        # the default path stays byte-identical to the pre-pin request.
+        if self._provider_order:
+            body["provider"] = {
+                "order": list(self._provider_order),
+                "allow_fallbacks": False,
+            }
         headers = {
             "Authorization": f"Bearer {self._api_key}",
             "Content-Type": "application/json",
