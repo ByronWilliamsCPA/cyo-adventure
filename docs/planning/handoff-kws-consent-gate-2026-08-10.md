@@ -14,12 +14,13 @@ verification gate. **Merged to `main` on 2026-08-11 as PR #681**; the branch it 
 has never been wired at all.
 
 > **Status note, added 2026-08-11 on merge.** The body below was written before the pull request was
-> opened and describes the branch as it stood at `bc6080b5`, seven commits ahead of `main`. Three more
-> commits landed before merge: this document itself, `e8e59b81` (closing five CI gates, including the
-> repo-root-relative links mkdocs resolves against the doc's own directory), and an ER-diagram
-> re-render. The original text is corrected in place only where it would mislead a reader about what is
-> true now; where it records *method* rather than state, notably section 6, it is left as written and
-> marked. Section 7 remains unanswered.
+> opened and describes the branch as it stood at `bc6080b5`, seven commits ahead of `main`. PR #681
+> carried **35 commits** in the end, so **27 landed after this document was written**, among them
+> `e8e59b81` (closing five CI gates, including the repo-root-relative links mkdocs resolves against the
+> doc's own directory) and `683c338b`, which edited this file. The original text is corrected in place
+> only where it would mislead a reader about what is true now; where it records *method* rather than
+> state, notably section 6, it is left as written and marked. Section 7 was unanswered at merge and is
+> answered at the end of this document.
 
 Read this document as three separate kinds of claim, because they need three different kinds of review:
 
@@ -63,9 +64,15 @@ Seven commits, in order:
 | `e8e59b81` | Close the five CI gates PR #681 failed (docs links, coverage matrix, authz matrix, ER diagram) |
 | `313b58b3` | Re-render the ER diagram SVG |
 
-The last three landed after the body below was written, which is why it says seven. Both automated
-reviewers reviewed `2962b5fc`, two commits behind the merged tip, so any of their findings about the
-five gates `e8e59b81` closed are stale by construction.
+The last three landed after the body below was written, which is why the line above says seven. The
+table is not the whole PR either: **#681 merged 35 commits**, of which **27 landed after `2962b5fc`**,
+so the list above stops well short of the merged tip (`bd69e2c1` on the branch, squashed to `15a6d520`
+on `main`). One of those later commits, `683c338b`, edited this document.
+
+The two automated reviewers are not equally stale. **Copilot reviewed `2962b5fc` and never re-reviewed**,
+so its findings about the five gates `e8e59b81` closed are stale by construction. **CodeRabbit
+re-reviewed at `313b58b3`**, which is after `e8e59b81`, so that exemption does not apply to it; its
+review is nonetheless 25 commits behind the merged tip.
 
 Totals: 57 files, roughly +5,160/-95. The code additions concentrate in
 `src/cyo_adventure/consent/service.py` (+370),
@@ -194,13 +201,14 @@ only settled by decision.**
    references. A production webhook round trip must be *verified*, not assumed, and the memory of how
    staging behaved does not transfer: an edge rule once ate four webhook retries with zero origin POSTs,
    which reads exactly like "the vendor never sent."
-3. **PR #679 is unmerged, so the parent's return leg 404s in every browser.** The service worker
-   answers *every* navigation on the origin, and `api/kws_redirect.py` renders server-side, so a
-   parent who completes Epic's check lands on a 404. This does not block the *mechanism*: only the
-   webhook resolves an attempt, and it resolves it regardless. It does block switching the flag on,
-   because the last thing a real parent sees at the end of a successful adult check would be a broken
-   page, with no signal that the check in fact worked. Note the failure is invisible to every tool we
-   would reach for: curl, Postman, and CI have no service worker and all see the page fine.
+3. **Closed 2026-08-11: PR #679 merged**, so the parent's return leg no longer 404s. Until it landed,
+   the service worker answered *every* navigation on the origin, and `api/kws_redirect.py` renders
+   server-side, so a parent who completed Epic's check landed on a 404. That never blocked the
+   *mechanism*: only the webhook resolves an attempt, and it resolves it regardless. It did block
+   switching the flag on, because the last thing a real parent saw at the end of a successful adult
+   check would be a broken page, with no signal that the check in fact worked. The shape of the failure
+   is worth keeping even though the cause is fixed: it was invisible to every tool we would reach for,
+   since curl, Postman, and CI have no service worker and all saw the page fine.
 4. **The flag flip revokes existing accounts.** Every guardian who consented under typed-name-only,
    including the owner's own account, loses child-profile creation until they re-verify. Staging bites
    first. This is the intended behavior per the standing decision that verification sits *before* admin
@@ -214,13 +222,22 @@ only settled by decision.**
   "CYO Adventure"; the `US Only` Cloudflare rule also gates the redirect return URL, so a travelling or
   VPN-using parent hits a block mid-flow; the redirect leg still needs `KWS_VERIFICATION_SECRET` set and
   the return URL registered in the Control Panel.
-- **Two staging keys are present but empty, which is not the same as absent** (verified 2026-08-11 in
-  `homelab-infra/services/cyo-adventure-staging/stack.env`). `KWS_VERIFICATION_SECRET` is the redirect-leg
-  key named above. `KWS_PRODUCT_ID` is **not named anywhere else in this document and should be**: O-124
-  records that the webhook's product comparison "is vacuously true today because `KWS_PRODUCT_ID` is unset
-  on staging, so a delivery naming any product passes." Both keys go through
-  `config.py::_empty_kws_override_means_unset`, so the empty value is handled rather than crashing, and
-  the control is simply not in force.
+- **`KWS_PRODUCT_ID` is declared-but-blank in the tracked staging config, and this document should name
+  it.** What was observed on 2026-08-11 is the *tracked file*
+  `homelab-infra/services/cyo-adventure-staging/stack.env` at `origin/main`, nothing more: seven KWS keys
+  are declared there with empty values (`KWS_ORGANIZATION_ID`, `KWS_API_ORIGIN`, `KWS_CLIENT_ID`,
+  `KWS_API_KEY`, `KWS_PRODUCT_ID`, `KWS_WEBHOOK_SECRET`, `KWS_VERIFICATION_SECRET`), the last of which is
+  the redirect-leg key named above. **Deployed state was not observed, and the repo cannot observe it.**
+  A blank in config-as-code is a placeholder for a value supplied elsewhere, not evidence that the
+  running process sees an empty value; the file's own comment says to "supply all four together in
+  Portainer, or none," and staging has produced `verified` rows, which the credential keys being unset at
+  runtime would have made impossible. So the tracked file establishes only that these keys are not set
+  *from this file*. O-124 records that the webhook's product comparison "is vacuously true today because
+  `KWS_PRODUCT_ID` is unset on staging, so a delivery naming any product passes"; whether that still
+  holds is a question for the running stack's environment, and answering it needs the deployed
+  environment read directly. `config.py::_empty_kws_override_means_unset` is what keeps an empty value
+  from crashing boot, which is also why an unset key degrades the control silently rather than
+  announcing itself.
 - **Longer-standing**: ADR-018 **D4 is unsatisfied** (`UW-N07`); `data-retention-policy.md` is still
   `status: draft`; one unpushed homelab-infra commit `074c568` sits on
   `docs/kws-staging-config-corrections`. **Corrected 2026-08-11:** the count of stale bare `/v1/` paths
@@ -232,20 +249,25 @@ only settled by decision.**
 ## 6. Branch disposition, and the trap in checking it
 
 > **Superseded as state, retained as method, 2026-08-11.** Both branches named below have merged and no
-> longer exist: `feat/kws-consent-gate` as PR #681 and `feat/kws-return-landing` as PR #679 (which landed
-> at `ecc38dcf`, 6 files and +223/-7, not the `591d10b8` and 5 files and +212/-7 recorded here). The
-> stale-branch table is therefore history. What survives is the two-dot versus three-dot reasoning at the
-> end of this section, which is the reason the section exists, and the standing warning about
-> `docs/kws-adr-and-diagrams` below, which applies for as long as that branch exists anywhere.
+> longer exist: `feat/kws-consent-gate` as PR #681 (squashed to `15a6d520`) and `feat/kws-return-landing`
+> as PR #679, which merged `2026-08-11T05:25:24Z` and squashed to **`d8e8c2ce`, 8 files and +478/-7**.
+> The `591d10b8`, 5 files and +212/-7 recorded below were that branch's *second* commit and the state at
+> the time of writing; five more commits landed on it before it merged. Do not mistake `ecc38dcf` for the
+> merge commit either: it is the third of the branch's seven commits and touches only
+> `docs/testing/coverage-matrix.md` (+11). The stale-branch table is therefore history. What survives is
+> the two-dot versus three-dot reasoning at the end of this section, which is the reason the section
+> exists, and the standing warning about `docs/kws-adr-and-diagrams` below, which applies for as long as
+> that branch exists anywhere.
 
 **Only two KWS branches exist on origin**: `feat/kws-consent-gate` (`bc6080b5`, the subject of this
 document) and `feat/kws-return-landing` (`591d10b8`). Everything else in the list below is local-only.
 
-`feat/kws-return-landing` is the one genuinely additive branch not yet merged: 5 files, +212/-7, carrying
-the service-worker `navigateFallbackDenylist` plus the `kws_redirect.py` landing improvements. It already
-has its own PR, **#679**, open and green; it needs merging, not opening. The denylist matters beyond KWS:
-the service worker currently answers *every* navigation on the origin, so backend-rendered pages 404 in
-browsers while curl, Postman, and CI all see them fine. See blocker 3 in Section 5.
+`feat/kws-return-landing` was the one genuinely additive branch not yet merged when this was written:
+5 files, +212/-7, carrying the service-worker `navigateFallbackDenylist` plus the `kws_redirect.py`
+landing improvements. It already had its own PR, **#679**, open and green; it needed merging, not
+opening, and **it merged on 2026-08-11** (see the note above for the merged figures). The denylist
+matters beyond KWS: the service worker answered *every* navigation on the origin, so backend-rendered
+pages 404ed in browsers while curl, Postman, and CI all saw them fine. See blocker 3 in Section 5.
 
 Every other local KWS branch is **stale, and a PR from it would revert work already on main**:
 
@@ -265,12 +287,17 @@ the `raw_timestamp` field, the `unit` discriminator, and the `timestamp // 1000`
 whole of #675. Cherry-pick if wanted, never merge wholesale.
 
 **Corrected 2026-08-11: the residual insertions are 63 lines across 9 files, not 44 across 4.** The
-four-file list given here omits **`src/cyo_adventure/core/config.py` (13 lines)** and
-`tests/unit/test_kws_external_payload.py` (3), so anyone cherry-picking by that list drops the config
-changes silently. The full set is `consent/kws_signature.py` (17), `tests/unit/test_kws_signature.py` (13),
-`core/config.py` (13), `docs/operations/kws-test-runbook.md` (9), `api/kws_webhook.py` (5),
+four-file list that stood here (`docs/operations/kws-test-runbook.md`, `api/kws_webhook.py`,
+`consent/kws_signature.py`, `tests/unit/test_kws_signature.py`) omits **five** files. The load-bearing
+omission is **`src/cyo_adventure/core/config.py` (13 lines)**, so anyone cherry-picking by that list drops
+the config changes silently; the other four are `tests/unit/test_kws_external_payload.py` (3),
+`docs/testing/coverage-matrix.md` (1), `pyproject.toml` (1), and `uv.lock` (1). The full set is
+`consent/kws_signature.py` (17), `tests/unit/test_kws_signature.py` (13), `core/config.py` (13),
+`docs/operations/kws-test-runbook.md` (9), `api/kws_webhook.py` (5),
 `tests/unit/test_kws_external_payload.py` (3), `docs/testing/coverage-matrix.md` (1), and one line each in
-`pyproject.toml` and `uv.lock`.
+`pyproject.toml` and `uv.lock`. These counts are no longer reproducible: as of 2026-08-11 no branch named
+`docs/kws-adr-and-diagrams` exists in this clone or on origin, so read them as a record of what was seen
+rather than as something a reader can re-derive.
 
 **The method matters more than the table.** A three-dot diff (`origin/main...branch`) is structurally
 incapable of detecting squash-merged content: after a squash merge the squash commit is not an ancestor of
