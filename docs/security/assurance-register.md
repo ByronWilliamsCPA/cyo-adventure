@@ -2941,6 +2941,19 @@ posture at a trust boundary must be verified from outside that boundary.
   when the check *starts*, so an applicant who is refused, who abandons, or who never creates a
   child profile has still had their address disclosed. This is the only processor in the RoPA that
   receives data about people who never become users.
+- **Third limb closed 2026-08-12: the pre-send disclosure now exists.**
+  `GuardianVerificationPage` states what is sent, to whom, and when, immediately above the button
+  that sends it, enumerated against the request body in `consent/kws_client.py` (email, location,
+  language, an opaque per-attempt token, a fixed `userContext`) and asserting that nothing
+  child-derived travels. Order is asserted by test, not just presence: copy moved below the submit
+  button would satisfy a presence check while no longer being pre-send.
+  **Do not read KWS's own email as satisfying this.** Its "Verify you're an adult" message says
+  "CYO Adventure will share your email address with KWS", which reads exactly like the disclosure
+  this row requires, but that email is delivered *by KWS* and therefore exists only because the
+  address had already been shared. It is post-send by construction, and it was the near-miss worth
+  recording: a disclosure that arrives through the channel it is disclosing can never be prior to
+  it. **The row stays open**, because its protected property is conjunctive and the DPA and the
+  transfer mechanism are still absent; one of three parts closing does not move the gate.
 - **Phase home:** unassigned
 - **Owner:** core-maintainer
 - **Last verified:** not verified
@@ -3592,6 +3605,23 @@ posture at a trust boundary must be verified from outside that boundary.
   - **What it unblocks.** Q2 leaves the Gate 1 run list, so no production verification is needed to
     answer it. That removes a real ordering collision: the run that would have answered this limb is
     itself a disclosure of a real adult's email to Epic, which is precisely what **O-125** gates.
+  - **Corroborating artifact, 2026-08-12.** A completed Test-environment verification produced a KWS
+    email to the enrolling address, subject "You're successfully verified for CYO Adventure",
+    stating: "KWS will charge your payment card $0.05, which will be refunded within approximately
+    8-13 business days." That is the vendor's own written commitment to both facts the acceptance
+    rests on, the real charge and the refund lag, now sourced from a delivered message rather than
+    from the parent-facing screen alone. It is the artifact to re-read first if the expiry condition
+    above is ever tested, because a switch to a zero-amount authorisation or a same-day refund would
+    change this sentence before it changed anything observable in our own code. Held by the owner
+    and deliberately not reproduced here, since it is addressed to a real person.
+    **It is not evidence for the notification limb**, and reading it as such is the specific error
+    this bullet exists to prevent. The message travels from KWS to the address that *started* the
+    flow, whereas 312.5(b)(2)(ii) asks for notification from the card or payment system to the
+    **primary account holder**. Those two differ exactly where the rule does its work: a child using
+    a parent's card with their own email address receives the vendor's message and the cardholder
+    receives nothing. Test mode cannot produce the cardholder notification in any case, because
+    Stripe test cards move no funds, which is the same reason the limb was accepted rather than
+    observed.
 - **Phase home:** unassigned
 - **Owner:** core-maintainer
 - **Last verified:** not verified. **Neither an accepted exception nor a decision to remediate is a
