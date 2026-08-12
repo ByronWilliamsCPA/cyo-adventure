@@ -1,9 +1,13 @@
 """Build D-7b: strip the fact glosses, and measure what D-7 could only estimate.
 
 D-7 shared a "wordless" structural stratum and generated the decisional stratum
-per book. It landed at 12.9 shared 4-grams per 1000 against a budget of 4.0,
+per book. It landed at 13.6 shared 4-grams per 1000 against a budget of 4.0,
 exactly where D-6's `diverge` condition landed, and **62 percent of its shared
 grams trace to the one prose the stratum still carried: the fact definitions.**
+(Both figures read 12.9 when this file was written; both were re-derived on
+2026-08-11, having been published as body-only while actually label-inclusive.
+They still coincide after the correction, so the sentence above holds as written
+rather than by luck.)
 Thirty-two one-line glosses, one per fact, read by both authors: "the clocktower
 stands sealed, and the seal reads like a test rather than an accident".
 

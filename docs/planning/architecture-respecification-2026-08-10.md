@@ -75,7 +75,7 @@ published, and the conclusion is unchanged either way.)
 section 2 put the leak in the wrong place.** Tracing shared grams to the contract field they draw
 on, `choice_semantics` accounts for well under half; the `premise` carries as much or more, and
 roughly a quarter of shared grams trace to no contract field at all and are same-model idiom
-(`AL-207`). Flattening the shared wording bought a 33 percent reduction and left the result at
+(`AL-207`). Flattening the shared wording bought a 32 percent reduction and left the result at
 roughly three times budget.
 
 Three corrections follow, and they should be read as amendments to the table in section 2 rather
@@ -98,7 +98,7 @@ than as footnotes to it:
    and that was wrong. What the floor actually establishes is the opposite and more useful thing:
    the pilot's one-contract-per-book design already sits at 2.9, indistinguishable from books that
    share nothing, so **not converging is a solved problem** and the entire question is whether reuse
-   can be bought back without giving it up. D-6's repairs sit at 3.5 times the floor, so they failed
+   can be bought back without giving it up. D-6's repairs sit at 3.6 times the floor, so they failed
    with a factor of three of headroom still unclaimed.
 3. **Section 2 claimed the dilemma "dissolves". It does not; it narrows.** Stratifying removes the
    part of constraint B that comes from shared wording, which is most of the traceable part and

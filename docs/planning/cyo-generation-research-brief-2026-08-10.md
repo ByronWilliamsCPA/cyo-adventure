@@ -1460,7 +1460,7 @@ would rather state than discover later:
    the guard is achievable. The more useful thing the floor establishes is that our pilot's
    one-contract-per-book design already scores 2.9, statistically indistinguishable from books
    sharing nothing at all. **Not converging is a solved problem.** The whole question is whether
-   reuse can be bought back without giving that up, and our repairs failed at 3.5 times the floor
+   reuse can be bought back without giving that up, and our repairs failed at 3.6 times the floor
    with a factor of three of headroom unclaimed.
 3. The third repair we named in 16d, generating the plan's decisional content per book, is still
    untested, and **we now predict it will also fall short on its own**, because the premise and the

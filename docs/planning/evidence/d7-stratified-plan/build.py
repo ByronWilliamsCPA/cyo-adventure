@@ -16,10 +16,16 @@ This is the last untested repair from `AL-208` and it is the central claim of
 
 **What D-6 already settled, and what it left.** D-6 tested the two repairs that
 keep one shared decisional stratum and change its wording: flatten it
-(`neutral`, 11.4 per 1000) or tell authors to diverge from it (`diverge`, 12.9),
-against `verbatim` at 16.9, a budget of 4.0 and a measured generator floor of
+(`neutral`, 11.8 per 1000) or tell authors to diverge from it (`diverge`, 13.6),
+against `verbatim` at 17.2, a budget of 4.0 and a measured generator floor of
 3.3. Neither is close. The repair that removes the shared decisional stratum
 entirely was never run.
+
+(Those three anchors read 11.4, 12.9 and 16.9 when this file was written. They
+were re-derived on 2026-08-11: the published figures were label-inclusive while
+being described as body-only. The prediction and falsifier below were fixed
+against the old numbers and are left exactly as written, because both are
+stated as thresholds against the 4.0 budget, which did not move.)
 
 **What `AL-223` predicts.** Convergence keys on *sentence identity*, not on
 lexical similarity: two contracts sharing 118 shared 4-grams per 1000 but zero
@@ -42,7 +48,7 @@ bindings held constant, `armC` and `armD`, the pilot's own. Two fills.
 
 **Outcome is the guard battery**, so no rater is involved and the result cannot
 be argued with. Anchors on the same scale: generator floor 3.3, budget 4.0,
-pilot's separate contracts 2.9, D-6 `neutral` 11.4, D-6 `verbatim` 16.9.
+pilot's separate contracts 2.9, D-6 `neutral` 11.8, D-6 `verbatim` 17.2.
 
 **Prediction, fixed before any artifact exists:** at or under 4.0.
 
