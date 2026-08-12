@@ -8,7 +8,7 @@ its own output without that being recorded.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Protocol
+from typing import TYPE_CHECKING, Protocol, cast
 
 from cyo_adventure.core.exceptions import ConfigurationError
 from cyo_adventure.generation.provider import (
@@ -16,6 +16,7 @@ from cyo_adventure.generation.provider import (
     build_ollama_leg,
     build_openrouter_leg,
 )
+from cyo_adventure.generation.usage import Completion
 
 if TYPE_CHECKING:
     from cyo_adventure.core.config import Settings
@@ -35,9 +36,45 @@ _MOCK_RESPONSE_BUDGET = 4096
 class ReviewProvider(Protocol):
     """Structural protocol identical to ``GenerationProvider``."""
 
-    async def complete(self, *, system: str, prompt: str, max_tokens: int) -> str:
-        """Return the model's completion for a system+user prompt."""
+    async def complete(
+        self, *, system: str, prompt: str, max_tokens: int
+    ) -> Completion:
+        """Return the model's completion and usage for a system+user prompt."""
         ...
+
+
+def completion_text(returned: object) -> str | None:
+    """Read the text off a review-provider return, or ``None`` if it is unusable.
+
+    Every moderation stage fails safe on an unparseable reviewer response rather
+    than aborting the run, so the reviewer's return value must be treated as
+    untrusted at two levels, not one: that it is a ``Completion`` at all, and
+    that its ``text`` is a ``str``.
+
+    Args:
+        returned: Whatever the provider's ``complete`` actually returned.
+
+    Returns:
+        The completion text, or ``None`` when the value cannot supply one.
+    """
+    # #CRITICAL: data-integrity: ReviewProvider is a structural protocol, so a
+    # non-conforming implementation can return anything, and a real backend can
+    # hand back None on a truncated or errored completion despite its declared
+    # type. The parameter is typed `object` deliberately: annotating it
+    # `Completion` would let the type checker prove both guards dead and a
+    # future edit would then "simplify" them away, turning a degraded reviewer
+    # into a pipeline outage (AttributeError on .text, or TypeError inside
+    # json.loads). Callers must pass the raw return, not a narrowed binding.
+    # #VERIFY: test_batch_non_string_response_falls_back_rather_than_raising,
+    # test_semantic_check_fails_open_on_non_string_response.
+    if not isinstance(returned, Completion):
+        return None
+    # The cast is load-bearing for the same reason: `Completion.text` is
+    # declared `str`, and Completion is a plain dataclass with no runtime
+    # validation, so the declared type is a claim about the constructor's
+    # caller rather than about this value.
+    text = cast("object", returned.text)
+    return text if isinstance(text, str) else None
 
 
 def build_review_provider(

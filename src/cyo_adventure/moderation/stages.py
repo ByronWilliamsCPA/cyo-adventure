@@ -25,6 +25,7 @@ import re
 from typing import TYPE_CHECKING, cast
 
 from cyo_adventure.moderation.report import Finding, FindingSeverity, Source, Verdict
+from cyo_adventure.moderation.review_provider import completion_text
 from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
@@ -246,11 +247,13 @@ def _sanitize_label(node_id: str) -> str:
 # ---------------------------------------------------------------------------
 
 
-def _parse_verdict(raw: str, *, fail_safe: Verdict) -> tuple[Verdict, str, bool]:
+def _parse_verdict(raw: str | None, *, fail_safe: Verdict) -> tuple[Verdict, str, bool]:
     """Parse a model verdict JSON; map unknown or unparseable output to fail_safe.
 
     Args:
-        raw: The raw model output.
+        raw: The raw model output, or ``None`` when the provider returned
+            nothing usable. ``None`` takes the same fail-safe path as junk:
+            ``json.loads(None)`` raises TypeError, which is caught below.
         fail_safe: The verdict to return when parsing fails (``FLAG`` for hard
             gates, ``PASS`` for soft/advisory stages).
 
@@ -269,6 +272,13 @@ def _parse_verdict(raw: str, *, fail_safe: Verdict) -> tuple[Verdict, str, bool]
         "block": Verdict.BLOCK,
         "advisory": Verdict.ADVISORY,
     }
+    # A missing response takes the same fail-safe exit as an unparseable one.
+    # This is an explicit check rather than a reliance on json.loads(None)
+    # raising TypeError: the fail-safe must be the stated behaviour of this
+    # function, not an accident of what the stdlib happens to raise.
+    if raw is None:
+        _logger.warning("verdict_parse_failed", raw=_log_excerpt(raw))
+        return fail_safe, "verdict parse failed; defaulted to fail-safe", True
     try:
         # json.loads is typed -> Any; we deliberately re-bind to object and narrow
         # via isinstance below, so the reportAny here is an intentional boundary.
@@ -360,12 +370,13 @@ def _structured_verdict_from_payload(
 
 
 def _parse_structured_verdict(
-    raw: str, *, fail_safe: Verdict
+    raw: str | None, *, fail_safe: Verdict
 ) -> tuple[Verdict, str, FindingSeverity, str, bool]:
     """Parse a single-node structured verdict JSON object.
 
     Args:
-        raw: The raw model output, expected to be one JSON object.
+        raw: The raw model output, expected to be one JSON object, or ``None``
+            when the provider returned nothing usable.
         fail_safe: The verdict to return when parsing fails.
 
     Returns:
@@ -374,6 +385,19 @@ def _parse_structured_verdict(
         item 1): degraded to ``"other"`` / ``HIGH`` at this parse boundary,
         before any ``Finding`` is constructed.
     """
+    # A missing response takes the same fail-safe exit as an unparseable one.
+    # This is an explicit check rather than a reliance on json.loads(None)
+    # raising TypeError: the fail-safe must be the stated behaviour of this
+    # function, not an accident of what the stdlib happens to raise.
+    if raw is None:
+        _logger.warning("verdict_parse_failed", raw=_log_excerpt(raw))
+        return (
+            fail_safe,
+            "other",
+            FindingSeverity.HIGH,
+            "verdict parse failed; defaulted to fail-safe",
+            True,
+        )
     try:
         # json.loads is typed -> Any; we deliberately re-bind to object and
         # narrow via isinstance below, so the reportAny here is an
@@ -460,7 +484,7 @@ def _index_verdicts_by_node_id(
 
 
 def _parse_batch_verdicts(
-    raw: str, expected_ids: Sequence[str]
+    raw: str | None, expected_ids: Sequence[str]
 ) -> dict[str, dict[str, object]] | None:
     """Parse a batch response into per-node verdict payloads.
 
@@ -472,6 +496,11 @@ def _parse_batch_verdicts(
     batch that cannot be fully attributed falls back as a whole rather than
     silently reviewing a subset.
     """
+    if raw is None:
+        # Same fail-safe exit as an unparseable array: the whole batch falls
+        # back rather than being reviewed as an empty set of verdicts.
+        _logger.warning("batch_verdict_parse_failed", raw=_log_excerpt(raw))
+        return None
     items = _decode_verdict_array(raw)
     if items is None:
         return None
@@ -587,9 +616,10 @@ async def run_safety_stage(
                 f"Age band: {age_band}\n<untrusted_passage>\n"
                 f"{_sanitize_delimited(prose)}\n</untrusted_passage>"
             )
-            raw = await provider.complete(
+            returned: object = await provider.complete(
                 system=_SAFETY_SYSTEM, prompt=prompt, max_tokens=max_tokens
             )
+            raw = completion_text(returned)
             verdict, concern, severity, reason, is_fail_safe = (
                 _parse_structured_verdict(raw, fail_safe=Verdict.FLAG)
             )
@@ -614,7 +644,7 @@ async def run_safety_stage(
             for nid, prose in batch
         )
         prompt = f"Age band: {age_band}\nNodes:\n{node_lines}"
-        raw = await provider.complete(
+        batch_returned: object = await provider.complete(
             system=_SAFETY_SYSTEM_BATCH,
             prompt=prompt,
             # #ASSUME: external-resources: the per-node budget scales with batch
@@ -627,6 +657,7 @@ async def run_safety_stage(
             # #VERIFY: test_batch_max_tokens_is_clamped_for_large_batches.
             max_tokens=min(max_tokens * len(batch), _MAX_BATCH_REVIEW_TOKENS),
         )
+        raw = completion_text(batch_returned)
         by_node_id = _parse_batch_verdicts(raw, [nid for nid, _ in batch])
         if by_node_id is None:
             fail_safe_node_ids.extend(nid for nid, _ in batch)
@@ -702,10 +733,12 @@ async def run_coherence_stage(
         for nid, prose in nodes
     )
     prompt = f"Story nodes:\n{node_lines}"
-    raw = await provider.complete(
+    returned: object = await provider.complete(
         system=_COHERENCE_SYSTEM, prompt=prompt, max_tokens=max_tokens
     )
-    verdict, reason, _is_fail_safe = _parse_verdict(raw, fail_safe=Verdict.PASS)
+    verdict, reason, _is_fail_safe = _parse_verdict(
+        completion_text(returned), fail_safe=Verdict.PASS
+    )
     return [
         Finding(
             stage=3,
@@ -750,10 +783,12 @@ async def run_engagement_stage(
         for nid, prose in nodes
     )
     prompt = f"Story nodes:\n{node_lines}"
-    raw = await provider.complete(
+    returned: object = await provider.complete(
         system=_ENGAGEMENT_SYSTEM, prompt=prompt, max_tokens=max_tokens
     )
-    verdict, reason, _is_fail_safe = _parse_verdict(raw, fail_safe=Verdict.PASS)
+    verdict, reason, _is_fail_safe = _parse_verdict(
+        completion_text(returned), fail_safe=Verdict.PASS
+    )
     return [
         Finding(
             stage=4,

@@ -13,6 +13,7 @@ from cyo_adventure.generation.provider import (
     MockProvider,
     make_canned_story_response,
 )
+from cyo_adventure.generation.usage import TokenUsage
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -26,7 +27,8 @@ async def _run_via_protocol(provider: GenerationProvider, prompt: str) -> str:
     MockProvider did not satisfy GenerationProvider, BasedPyright strict
     mode would flag the assignment below.
     """
-    return await provider.complete(system="sys", prompt=prompt, max_tokens=50)
+    completion = await provider.complete(system="sys", prompt=prompt, max_tokens=50)
+    return completion.text
 
 
 # ---------------------------------------------------------------------------
@@ -43,9 +45,9 @@ async def test_complete_returns_queued_strings_in_order() -> None:
     r2 = await provider.complete(system="s", prompt="p2", max_tokens=10)
     r3 = await provider.complete(system="s", prompt="p3", max_tokens=10)
 
-    assert r1 == "first"
-    assert r2 == "second"
-    assert r3 == "third"
+    assert r1.text == "first"
+    assert r2.text == "second"
+    assert r3.text == "third"
 
 
 # ---------------------------------------------------------------------------
@@ -67,8 +69,8 @@ async def test_complete_callable_response_receives_prompt() -> None:
     r_a = await provider.complete(system="s", prompt="stage_a skeleton", max_tokens=100)
     r_b = await provider.complete(system="s", prompt="stage_b full", max_tokens=100)
 
-    assert r_a == '{"skeleton": true}'
-    assert r_b == '{"full_story": true}'
+    assert r_a.text == '{"skeleton": true}'
+    assert r_b.text == '{"full_story": true}'
 
 
 # ---------------------------------------------------------------------------
@@ -157,7 +159,7 @@ async def test_complete_accepts_system_and_max_tokens_without_error() -> None:
         max_tokens=2048,
     )
 
-    assert result == "ok"
+    assert result.text == "ok"
     # system/max_tokens not surfaced in calls; only prompt is recorded
     assert provider.calls == ["generate a story"]
 
@@ -182,9 +184,9 @@ async def test_mixed_string_and_callable_responses() -> None:
     r2 = await provider.complete(system="s", prompt="my-prompt", max_tokens=10)
     r3 = await provider.complete(system="s", prompt="ignored2", max_tokens=10)
 
-    assert r1 == "static response"
-    assert r2 == "dynamic:my-prompt"
-    assert r3 == "another static"
+    assert r1.text == "static response"
+    assert r2.text == "dynamic:my-prompt"
+    assert r3.text == "another static"
 
 
 # ---------------------------------------------------------------------------
@@ -222,13 +224,52 @@ async def test_make_canned_story_response_usable_as_queued_response() -> None:
         system="s", prompt="generate lantern", max_tokens=4096
     )
 
-    parsed = json.loads(response)
+    parsed = json.loads(response.text)
     assert parsed["id"] == "s_lantern_cave"
     assert parsed["title"] == "The Lantern Cave"
 
 
 # ---------------------------------------------------------------------------
-# 9. Empty responses list raises immediately on first call
+# 9. Reported usage
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_mock_reports_unknown_usage_by_default() -> None:
+    """The mock calls no model, so its default token counts are unknown, not zero.
+
+    Reporting ``0`` would make a mock-backed run look free rather than
+    unmeasured, and any total derived from it would read as complete.
+    """
+    provider = MockProvider(responses=["ok"])
+
+    result = await provider.complete(system="s", prompt="p", max_tokens=10)
+
+    assert result.usage.input_tokens is None
+    assert result.usage.output_tokens is None
+    assert result.usage.is_known is False
+
+
+@pytest.mark.asyncio
+async def test_mock_usage_can_be_injected() -> None:
+    """A test exercising the cost path injects real counts via ``token_usage``."""
+    usage = TokenUsage(
+        provider="openrouter",
+        model="anthropic/claude-sonnet-4.6",
+        input_tokens=1200,
+        output_tokens=340,
+        duration_ms=1500,
+    )
+    provider = MockProvider(responses=["ok"], token_usage=usage)
+
+    result = await provider.complete(system="s", prompt="p", max_tokens=10)
+
+    assert result.usage == usage
+    assert result.usage.is_known is True
+
+
+# ---------------------------------------------------------------------------
+# 10. Empty responses list raises immediately on first call
 # ---------------------------------------------------------------------------
 
 

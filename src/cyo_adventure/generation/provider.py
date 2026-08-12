@@ -27,6 +27,19 @@ from cyo_adventure.generation.providers import (
     OllamaProvider,
     OpenRouterProvider,
 )
+from cyo_adventure.generation.usage import Completion, TokenUsage
+
+# What MockProvider reports when a test does not inject its own usage: a call
+# that happened (so it is counted) but whose token cost is unknown, never zero.
+# Shared as a module constant because a frozen dataclass default has to be a
+# single immutable instance, not a per-instance factory.
+_MOCK_USAGE: Final[TokenUsage] = TokenUsage(
+    provider="mock",
+    model="mock",
+    input_tokens=None,
+    output_tokens=None,
+    duration_ms=0,
+)
 
 # #ASSUME: external-resources: concrete GenerationProvider implementations
 # perform network I/O to an LLM endpoint (timeouts, retries, authentication).
@@ -268,7 +281,7 @@ class GenerationProvider(Protocol):
         system: str,
         prompt: str,
         max_tokens: int,
-    ) -> str:
+    ) -> Completion:
         """Return the model completion for a system+user prompt pair.
 
         Args:
@@ -277,7 +290,10 @@ class GenerationProvider(Protocol):
             max_tokens: Upper bound on response length in tokens.
 
         Returns:
-            The raw text completion from the model.
+            The raw text completion from the model plus what the call
+            consumed. An implementation that cannot report token counts still
+            returns a :class:`~cyo_adventure.generation.usage.Completion`, with
+            ``None`` counts marking the usage unknown.
         """
         ...
 
@@ -297,6 +313,12 @@ class MockProvider:
             a ``str`` (returned verbatim) or a ``Callable[[str], str]``
             (called with the user prompt, return value used as response).
         calls: Accumulates every ``prompt`` argument received, in call order.
+        token_usage: The usage every completion reports. The default reports
+            ``None`` counts: the mock called no model, so its cost is unknown
+            rather than zero, and a mock-backed run is correctly summarized as
+            incomplete. A test exercising the cost aggregation injects a
+            :class:`~cyo_adventure.generation.usage.TokenUsage` with real
+            counts here.
 
     Raises:
         BusinessLogicError: When ``complete`` is called more times than there
@@ -306,9 +328,9 @@ class MockProvider:
     Example:
         >>> import asyncio
         >>> provider = MockProvider(responses=["hello", "world"])
-        >>> asyncio.run(provider.complete(system="s", prompt="p1", max_tokens=10))
+        >>> asyncio.run(provider.complete(system="s", prompt="p1", max_tokens=10)).text
         'hello'
-        >>> asyncio.run(provider.complete(system="s", prompt="p2", max_tokens=10))
+        >>> asyncio.run(provider.complete(system="s", prompt="p2", max_tokens=10)).text
         'world'
         >>> provider.calls
         ['p1', 'p2']
@@ -316,6 +338,7 @@ class MockProvider:
 
     responses: list[str | Callable[[str], str]]
     calls: list[str] = field(default_factory=list)
+    token_usage: TokenUsage = field(default=_MOCK_USAGE)
 
     # Stays async to satisfy the GenerationProvider structural protocol (line 196
     # above); every real provider awaits network I/O here, and callers
@@ -335,7 +358,7 @@ class MockProvider:
         system: str,  # noqa: ARG002  # NOSONAR(S1172)
         prompt: str,
         max_tokens: int,  # noqa: ARG002  # NOSONAR(S1172)
-    ) -> str:
+    ) -> Completion:
         """Return the next queued response, recording the prompt in ``calls``.
 
         ``system`` and ``max_tokens`` are accepted to satisfy the protocol but
@@ -349,7 +372,8 @@ class MockProvider:
             max_tokens: Accepted but unused by the mock; satisfies the protocol.
 
         Returns:
-            The next queued response string (or callable result).
+            The next queued response string (or callable result), wrapped with
+            ``self.token_usage``.
 
         Raises:
             BusinessLogicError: If the response queue is exhausted.
@@ -366,9 +390,8 @@ class MockProvider:
             raise BusinessLogicError(msg, rule="mock_provider_exhausted")
 
         response = self.responses[call_number - 1]
-        if callable(response):
-            return response(prompt)
-        return response
+        text = response(prompt) if callable(response) else response
+        return Completion(text=text, usage=self.token_usage)
 
 
 def build_openrouter_leg(settings: Settings, model: str) -> GenerationProvider:

@@ -30,6 +30,7 @@ from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
     from cyo_adventure.generation.provider import GenerationProvider
+    from cyo_adventure.generation.usage import Completion
 
 logger = get_logger(__name__)
 
@@ -74,7 +75,9 @@ class FallbackProvider:
         inner = ",".join(_leg_name(leg, i) for i, leg in enumerate(self.legs))
         return f"fallback[{inner}]"
 
-    async def complete(self, *, system: str, prompt: str, max_tokens: int) -> str:
+    async def complete(
+        self, *, system: str, prompt: str, max_tokens: int
+    ) -> Completion:
         """Try each live leg in order, failing over on ``ProviderError``.
 
         Args:
@@ -83,7 +86,12 @@ class FallbackProvider:
             max_tokens: Upper bound on response length in tokens.
 
         Returns:
-            The completion text from the first leg that succeeds.
+            The completion from the first leg that succeeds, carrying that
+            leg's own provider/model attribution rather than ``"fallback"``,
+            because the leg that answered is the one that was billed. Legs that
+            failed before it contribute nothing: a leg-fatal refusal spends no
+            tokens, and a leg that exhausted its transient retries returns no
+            usage to attribute.
 
         Raises:
             ProviderError: When every live leg has been exhausted, or the global

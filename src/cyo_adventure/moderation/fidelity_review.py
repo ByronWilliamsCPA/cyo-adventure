@@ -24,6 +24,7 @@ import json
 from typing import TYPE_CHECKING, cast
 
 from cyo_adventure.generation.fidelity import parse_fill_directive
+from cyo_adventure.moderation.review_provider import completion_text
 from cyo_adventure.storybook.sentinels import strip_sentinels
 
 if TYPE_CHECKING:
@@ -254,16 +255,18 @@ async def run_semantic_fidelity_check(
             )
         blocks.append("\n".join(lines))
     user = "\n\n".join(blocks)
-    # #ASSUME: external-resources: the review provider returns a str per the
-    # ReviewProvider.complete contract. An unparseable, empty, or non-str
-    # response fails open (returns None = "pass"), matching this module's
-    # advisory-only design (see docstring); the isinstance guard covers a
-    # contract violation (e.g. None) that json.loads would raise TypeError on.
+    # #ASSUME: external-resources: an unparseable, empty, or non-str response
+    # fails open (returns None = "pass"), matching this module's advisory-only
+    # design (see docstring). The return is bound through ``object`` and read
+    # via completion_text so the guards there stay live; a bare string or None
+    # from a non-conforming provider must fail open, not raise an
+    # AttributeError or a TypeError inside json.loads.
     # #VERIFY: test_semantic_check_fails_open_on_non_string_response.
-    raw = await review_provider.complete(
+    returned: object = await review_provider.complete(
         system=_FIDELITY_SYSTEM, prompt=user, max_tokens=_MAX_FIDELITY_TOKENS
     )
-    if not isinstance(raw, str):
+    raw = completion_text(returned)
+    if raw is None:
         return None
     try:
         parsed = json.loads(raw)

@@ -16,6 +16,7 @@ from __future__ import annotations
 import base64
 import json
 import os
+import time
 from typing import TYPE_CHECKING, Literal
 
 import anthropic as anthropic_sdk
@@ -37,6 +38,7 @@ from cyo_adventure.generation.providers import (
     OpenRouterProvider,
 )
 from cyo_adventure.generation.providers._base import strip_code_fences
+from cyo_adventure.generation.usage import Completion, TokenUsage
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -52,8 +54,16 @@ def _client(handler: Callable[[httpx.Request], httpx.Response]) -> httpx.AsyncCl
 
 
 def _openrouter_ok_body(content: str) -> dict[str, object]:
-    """Return a minimal OpenRouter chat-completions success payload."""
-    return {"choices": [{"message": {"role": "assistant", "content": content}}]}
+    """Return a minimal OpenRouter chat-completions success payload.
+
+    Carries the OpenAI-shaped ``usage`` block a real response includes, so the
+    adapters' token capture is exercised by every success-path test rather than
+    only by the dedicated usage tests.
+    """
+    return {
+        "choices": [{"message": {"role": "assistant", "content": content}}],
+        "usage": {"prompt_tokens": 12, "completion_tokens": 8},
+    }
 
 
 def _anthropic_client(
@@ -95,7 +105,8 @@ def _ollama_stream(*pieces: str, done: bool = True) -> str:
 
     Each piece becomes one chunk's ``message.content``; a terminal ``done`` marker
     (with empty content) is appended unless ``done=False``. Mirrors the real
-    ``/api/chat`` streaming response the adapter accumulates.
+    ``/api/chat`` streaming response the adapter accumulates, including the token
+    counts Ollama reports on the terminal chunk only.
     """
     lines = [
         json.dumps({"message": {"role": "assistant", "content": piece}, "done": False})
@@ -103,7 +114,14 @@ def _ollama_stream(*pieces: str, done: bool = True) -> str:
     ]
     if done:
         lines.append(
-            json.dumps({"message": {"role": "assistant", "content": ""}, "done": True})
+            json.dumps(
+                {
+                    "message": {"role": "assistant", "content": ""},
+                    "done": True,
+                    "prompt_eval_count": 26,
+                    "eval_count": 14,
+                }
+            )
         )
     return "\n".join(lines) + "\n"
 
@@ -193,7 +211,7 @@ class TestOpenRouterProvider:
 
         provider = _openrouter(handler)
         result = await provider.complete(system="s", prompt="u", max_tokens=100)
-        assert result == raw
+        assert result.text == raw
 
     @pytest.mark.asyncio
     async def test_request_sends_model_and_max_tokens(self) -> None:
@@ -340,7 +358,7 @@ class TestOpenRouterProvider:
 
         provider = _openrouter(handler)
         result = await provider.complete(system="s", prompt="u", max_tokens=100)
-        assert result == "ok"
+        assert result.text == "ok"
         assert calls == 2
 
     @pytest.mark.asyncio
@@ -376,7 +394,7 @@ class TestOpenRouterProvider:
 
         provider = _openrouter(handler)
         result = await provider.complete(system="s", prompt="u", max_tokens=100)
-        assert result == "ok"
+        assert result.text == "ok"
         assert calls == 2
 
     @pytest.mark.asyncio
@@ -432,8 +450,8 @@ class TestOpenRouterProvider:
 
         provider = _openrouter(handler)
         result = await provider.complete(system="s", prompt="u", max_tokens=100)
-        assert result == '{"schema_version": "1.0"}'
-        assert json.loads(result) == {"schema_version": "1.0"}
+        assert result.text == '{"schema_version": "1.0"}'
+        assert json.loads(result.text) == {"schema_version": "1.0"}
 
 
 class TestStripCodeFences:
@@ -473,7 +491,7 @@ class TestOllamaProvider:
 
         provider = _ollama(handler)
         result = await provider.complete(system="s", prompt="u", max_tokens=100)
-        assert result == "story"
+        assert result.text == "story"
 
     @pytest.mark.asyncio
     async def test_request_maps_max_tokens_to_num_predict(self) -> None:
@@ -535,7 +553,7 @@ class TestOllamaProvider:
 
         provider = _ollama(handler)
         result = await provider.complete(system="s", prompt="u", max_tokens=100)
-        assert result == "ok"
+        assert result.text == "ok"
         assert calls == 2
 
     @pytest.mark.asyncio
@@ -630,8 +648,8 @@ class TestOllamaProvider:
 
         provider = _ollama(handler, max_retries=2)
         result = await provider.complete(system="s", prompt="u", max_tokens=100)
-        assert result == "clean"
-        assert "PARTIAL" not in result
+        assert result.text == "clean"
+        assert "PARTIAL" not in result.text
         assert calls == 2
 
     @pytest.mark.asyncio
@@ -701,7 +719,7 @@ class TestOllamaProvider:
 
         provider = _ollama(handler, max_retries=1)
         result = await provider.complete(system="s", prompt="u", max_tokens=1)
-        assert result == content
+        assert result.text == content
 
     @pytest.mark.asyncio
     async def test_stream_over_byte_ceiling_raises_transient(self) -> None:
@@ -728,7 +746,7 @@ class TestOllamaProvider:
 
         provider = _ollama(handler, max_retries=1)
         result = await provider.complete(system="s", prompt="u", max_tokens=2)
-        assert result == content
+        assert result.text == content
 
     @pytest.mark.asyncio
     async def test_stream_byte_ceiling_configurable_multiplier(self) -> None:
@@ -759,7 +777,7 @@ class TestOllamaProvider:
         # Custom multiplier (32): the ceiling rises to 32 bytes, accept.
         provider = _ollama(handler, max_retries=1, stream_byte_multiplier=32)
         result = await provider.complete(system="s", prompt="u", max_tokens=1)
-        assert result == content
+        assert result.text == content
 
 
 # ---------------------------------------------------------------------------
@@ -782,14 +800,27 @@ class _StubLeg:
         self._outcomes = outcomes
         self.calls = 0
 
-    async def complete(self, *, system: str, prompt: str, max_tokens: int) -> str:
+    async def complete(
+        self, *, system: str, prompt: str, max_tokens: int
+    ) -> Completion:
         """Return or raise the next scripted outcome."""
         _ = (system, prompt, max_tokens)
         outcome = self._outcomes[self.calls]
         self.calls += 1
         if isinstance(outcome, Exception):
             raise outcome
-        return str(outcome)
+        # Each leg reports usage under its OWN name; the cascade must forward
+        # the winning leg's record rather than relabelling it "fallback".
+        return Completion(
+            text=str(outcome),
+            usage=TokenUsage(
+                provider=self.name,
+                model=f"{self.name}-model",
+                input_tokens=3,
+                output_tokens=4,
+                duration_ms=1,
+            ),
+        )
 
 
 class TestFallbackProvider:
@@ -802,7 +833,7 @@ class TestFallbackProvider:
         leg_b = _StubLeg("b", ["never"])
         cascade = FallbackProvider(legs=[leg_a, leg_b])
         result = await cascade.complete(system="s", prompt="u", max_tokens=10)
-        assert result == "ok"
+        assert result.text == "ok"
         assert leg_b.calls == 0
 
     @pytest.mark.asyncio
@@ -812,7 +843,7 @@ class TestFallbackProvider:
         leg_b = _StubLeg("b", ["ok"])
         cascade = FallbackProvider(legs=[leg_a, leg_b])
         result = await cascade.complete(system="s", prompt="u", max_tokens=10)
-        assert result == "ok"
+        assert result.text == "ok"
         assert leg_a.calls == 1
         assert leg_b.calls == 1
 
@@ -826,8 +857,8 @@ class TestFallbackProvider:
         first = await cascade.complete(system="s", prompt="u", max_tokens=10)
         second = await cascade.complete(system="s", prompt="u", max_tokens=10)
 
-        assert first == "first"
-        assert second == "second"
+        assert first.text == "first"
+        assert second.text == "second"
         # leg_a was tried exactly once (the leg-fatal call) and never again.
         assert leg_a.calls == 1
         assert leg_b.calls == 2
@@ -983,7 +1014,7 @@ class TestOllamaProviderBranches:
 
         provider = _ollama(handler)
         result = await provider.complete(system="s", prompt="u", max_tokens=100)
-        assert result == "hello"
+        assert result.text == "hello"
 
     @pytest.mark.asyncio
     async def test_non_dict_json_chunk_returns_empty_string(self) -> None:
@@ -1006,7 +1037,7 @@ class TestOllamaProviderBranches:
 
         provider = _ollama(handler)
         result = await provider.complete(system="s", prompt="u", max_tokens=100)
-        assert result == "ok"
+        assert result.text == "ok"
 
     @pytest.mark.asyncio
     async def test_attempt_without_injected_client_creates_own_async_client(
@@ -1032,7 +1063,7 @@ class TestOllamaProviderBranches:
             client=None,
         )
         result = await provider.complete(system="s", prompt="u", max_tokens=100)
-        assert result == "ok"
+        assert result.text == "ok"
 
 
 # ---------------------------------------------------------------------------
@@ -1145,7 +1176,7 @@ class TestOpenRouterProviderBranches:
             client=None,
         )
         result = await provider.complete(system="s", prompt="u", max_tokens=100)
-        assert result == "ok"
+        assert result.text == "ok"
 
 
 # ---------------------------------------------------------------------------
@@ -1166,7 +1197,7 @@ class TestModalProvider:
 
         provider = _modal(handler)
         result = await provider.complete(system="s", prompt="u", max_tokens=100)
-        assert result == raw
+        assert result.text == raw
 
     @pytest.mark.asyncio
     async def test_request_sends_model_and_max_tokens(self) -> None:
@@ -1288,7 +1319,7 @@ class TestModalProvider:
 
         provider = _modal(handler)
         result = await provider.complete(system="s", prompt="u", max_tokens=100)
-        assert result == "ok"
+        assert result.text == "ok"
         assert calls == 2
 
     @pytest.mark.asyncio
@@ -1323,7 +1354,7 @@ class TestModalProvider:
 
         provider = _modal(handler)
         result = await provider.complete(system="s", prompt="u", max_tokens=100)
-        assert result == "ok"
+        assert result.text == "ok"
         assert calls == 2
 
     @pytest.mark.asyncio
@@ -1336,8 +1367,8 @@ class TestModalProvider:
 
         provider = _modal(handler)
         result = await provider.complete(system="s", prompt="u", max_tokens=100)
-        assert result == '{"schema_version": "1.0"}'
-        assert json.loads(result) == {"schema_version": "1.0"}
+        assert result.text == '{"schema_version": "1.0"}'
+        assert json.loads(result.text) == {"schema_version": "1.0"}
 
     def test_name_includes_model(self) -> None:
         """The leg name combines provider and model id."""
@@ -1412,7 +1443,7 @@ class TestModalProviderBranches:
             client=None,
         )
         result = await provider.complete(system="s", prompt="u", max_tokens=100)
-        assert result == "ok"
+        assert result.text == "ok"
 
 
 # ---------------------------------------------------------------------------
@@ -1444,7 +1475,7 @@ class TestAnthropicProvider:
 
         provider = self._provider(handler)
         result = await provider.complete(system="s", prompt="p", max_tokens=100)
-        assert result == "{}"
+        assert result.text == "{}"
 
     @pytest.mark.asyncio
     async def test_name_and_model_properties(self) -> None:
@@ -1470,7 +1501,7 @@ class TestAnthropicProvider:
 
         provider = self._provider(handler)
         result = await provider.complete(system="s", prompt="p", max_tokens=10)
-        assert result == "ok"
+        assert result.text == "ok"
         assert calls["n"] == 2
 
     @pytest.mark.asyncio
@@ -1612,7 +1643,7 @@ class TestAnthropicProvider:
 
         provider = self._provider(handler)
         result = await provider.complete(system="s", prompt="p", max_tokens=10)
-        assert result == "ok"
+        assert result.text == "ok"
         assert calls["n"] == 2
 
     @pytest.mark.asyncio
@@ -1788,3 +1819,298 @@ class TestBuildAnthropicLeg:
         # ...and never surfaces in the raised error.
         assert sentinel_key not in str(exc_info.value)
         assert sentinel_key not in repr(exc_info.value)
+
+
+# ---------------------------------------------------------------------------
+# Token-usage capture (cost instrumentation)
+# ---------------------------------------------------------------------------
+
+
+class TestUsageCapture:
+    """Every adapter reports what its successful call consumed, or says unknown.
+
+    These pin the boundary the cost aggregation is built on: a backend that
+    reports counts must have them carried through untouched, and a backend that
+    reports nothing (or nonsense) must yield ``None``, never ``0``. A ``0``
+    would make an un-instrumented or malformed call look free and let a total
+    derived from it read as complete.
+    """
+
+    @pytest.mark.asyncio
+    async def test_openrouter_reports_counts_and_own_attribution(self) -> None:
+        """OpenRouter's OpenAI-shaped usage block reaches the Completion intact."""
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            _ = request
+            return httpx.Response(200, json=_openrouter_ok_body("hello"))
+
+        result = await _openrouter(handler).complete(
+            system="s", prompt="p", max_tokens=10
+        )
+
+        assert result.usage.input_tokens == 12
+        assert result.usage.output_tokens == 8
+        assert result.usage.provider == "openrouter"
+        assert result.usage.model == "anthropic/claude-sonnet-4.6"
+        assert result.usage.is_known is True
+
+    @pytest.mark.asyncio
+    async def test_openrouter_missing_usage_block_reports_unknown(self) -> None:
+        """A 200 with no usage block is unknown, not free.
+
+        Some OpenRouter-compatible gateways omit usage entirely. The call still
+        happened and still cost money, so it must be counted as unknown rather
+        than contributing zero tokens to a total that then reads as complete.
+        """
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            _ = request
+            return httpx.Response(
+                200,
+                json={"choices": [{"message": {"role": "assistant", "content": "hi"}}]},
+            )
+
+        result = await _openrouter(handler).complete(
+            system="s", prompt="p", max_tokens=10
+        )
+
+        assert result.text == "hi"
+        assert result.usage.input_tokens is None
+        assert result.usage.output_tokens is None
+        assert result.usage.is_known is False
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "usage_block",
+        [
+            {"prompt_tokens": "12", "completion_tokens": 8},
+            {"prompt_tokens": None, "completion_tokens": None},
+            {"prompt_tokens": -1, "completion_tokens": 8},
+            "not-an-object",
+        ],
+    )
+    async def test_openrouter_malformed_usage_reports_unknown(
+        self, usage_block: object
+    ) -> None:
+        """A usage block of the wrong shape never becomes a number in a total.
+
+        The body is attacker-adjacent third-party data: a stringified count, a
+        null, a negative, or a scalar where an object belongs must all degrade
+        to unknown rather than raising or, worse, being summed.
+        """
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            _ = request
+            return httpx.Response(
+                200,
+                json={
+                    "choices": [{"message": {"role": "assistant", "content": "hi"}}],
+                    "usage": usage_block,
+                },
+            )
+
+        result = await _openrouter(handler).complete(
+            system="s", prompt="p", max_tokens=10
+        )
+
+        assert result.text == "hi"
+        assert result.usage.input_tokens is None
+        assert result.usage.is_known is False
+
+    @pytest.mark.asyncio
+    async def test_modal_reports_counts_under_its_own_name(self) -> None:
+        """Modal shares OpenRouter's wire shape but must not borrow its label."""
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            _ = request
+            return httpx.Response(200, json=_openrouter_ok_body("hello"))
+
+        result = await _modal(handler).complete(system="s", prompt="p", max_tokens=10)
+
+        assert result.usage.input_tokens == 12
+        assert result.usage.output_tokens == 8
+        assert result.usage.provider == "modal"
+        assert result.usage.model == "google/gemma-4-26b-a4b-it"
+
+    @pytest.mark.asyncio
+    async def test_ollama_reads_counts_from_the_terminal_done_chunk(self) -> None:
+        """Ollama reports under its own field names, and only on the last chunk."""
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            _ = request
+            return httpx.Response(200, text=_ollama_stream("hel", "lo"))
+
+        result = await _ollama(handler).complete(system="s", prompt="p", max_tokens=10)
+
+        assert result.text == "hello"
+        assert result.usage.input_tokens == 26
+        assert result.usage.output_tokens == 14
+        assert result.usage.provider == "ollama"
+
+    @pytest.mark.asyncio
+    async def test_ollama_content_chunk_does_not_blank_a_seen_count(self) -> None:
+        """A later chunk that omits the counts must not erase ones already seen.
+
+        Ollama puts its counts on the terminal chunk today, so a naive
+        last-chunk-wins accumulator happens to work. It breaks the moment a
+        build emits them earlier, and it would break silently: the run would
+        report unknown rather than fail. The accumulator therefore keeps the
+        last non-null value per field.
+        """
+        body = (
+            json.dumps(
+                {
+                    "message": {"role": "assistant", "content": "hel"},
+                    "done": False,
+                    "prompt_eval_count": 26,
+                    "eval_count": 14,
+                }
+            )
+            + "\n"
+            + json.dumps(
+                {"message": {"role": "assistant", "content": "lo"}, "done": False}
+            )
+            + "\n"
+            + json.dumps(
+                {"message": {"role": "assistant", "content": ""}, "done": True}
+            )
+            + "\n"
+        )
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            _ = request
+            return httpx.Response(200, text=body)
+
+        result = await _ollama(handler).complete(system="s", prompt="p", max_tokens=10)
+
+        assert result.text == "hello"
+        assert result.usage.input_tokens == 26
+        assert result.usage.output_tokens == 14
+
+    @pytest.mark.asyncio
+    async def test_anthropic_reports_counts_from_the_sdk_usage_model(self) -> None:
+        """The SDK's typed Usage is read through the same coercion as raw JSON."""
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            _ = request
+            return httpx.Response(200, json=_anthropic_ok_body("hello"))
+
+        provider = AnthropicProvider(
+            api_key="test-key",
+            model="claude-sonnet-4-6",
+            base_url="https://api.anthropic.com",
+            timeout_seconds=5,
+            backoff_base_seconds=0,
+            client=_anthropic_client(handler),
+        )
+
+        result = await provider.complete(system="s", prompt="p", max_tokens=10)
+
+        assert result.usage.input_tokens == 10
+        assert result.usage.output_tokens == 5
+        assert result.usage.provider == "anthropic"
+        assert result.usage.model == "claude-sonnet-4-6"
+
+    @pytest.mark.asyncio
+    async def test_missing_usage_block_reports_unknown_tokens(self) -> None:
+        """A 200 whose usage block is absent yields unknown, not a crash.
+
+        This is the #VERIFY for AnthropicProvider._extract_usage. The SDK builds
+        Message by lenient construction, so ``usage`` is declared non-optional
+        but can be absent at runtime; reading it without a live isinstance guard
+        would either raise inside the adapter or coerce junk into a spend
+        figure.
+        """
+        body = _anthropic_ok_body("hello")
+        del body["usage"]
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            _ = request
+            return httpx.Response(200, json=body)
+
+        provider = AnthropicProvider(
+            api_key="test-key",
+            model="claude-sonnet-4-6",
+            base_url="https://api.anthropic.com",
+            timeout_seconds=5,
+            backoff_base_seconds=0,
+            client=_anthropic_client(handler),
+        )
+
+        result = await provider.complete(system="s", prompt="p", max_tokens=10)
+
+        assert result.text == "hello"
+        assert result.usage.input_tokens is None
+        assert result.usage.output_tokens is None
+        assert result.usage.is_known is False
+
+    @pytest.mark.asyncio
+    async def test_anthropic_non_integer_counts_report_unknown(self) -> None:
+        """A stringified count from a proxy degrades to unknown, never to a sum."""
+        body = _anthropic_ok_body("hello")
+        body["usage"] = {"input_tokens": "10", "output_tokens": None}
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            _ = request
+            return httpx.Response(200, json=body)
+
+        provider = AnthropicProvider(
+            api_key="test-key",
+            model="claude-sonnet-4-6",
+            base_url="https://api.anthropic.com",
+            timeout_seconds=5,
+            backoff_base_seconds=0,
+            client=_anthropic_client(handler),
+        )
+
+        result = await provider.complete(system="s", prompt="p", max_tokens=10)
+
+        assert result.usage.input_tokens is None
+        assert result.usage.output_tokens is None
+
+    @pytest.mark.asyncio
+    async def test_cascade_attributes_usage_to_the_leg_that_answered(self) -> None:
+        """A failed leg contributes nothing; the winner keeps its own name.
+
+        The whole point of per-leg attribution is that the price map is keyed on
+        (provider, model). Relabelling a winning leg "fallback" would make its
+        tokens unpriceable, and attributing them to the first leg tried would
+        price them against the wrong model.
+        """
+        first = _StubLeg("alpha", [ProviderError("boom", provider="alpha")])
+        second = _StubLeg("beta", ["ok"])
+
+        result = await FallbackProvider([first, second]).complete(
+            system="s", prompt="p", max_tokens=10
+        )
+
+        assert result.text == "ok"
+        assert result.usage.provider == "beta"
+        assert result.usage.model == "beta-model"
+
+    @pytest.mark.asyncio
+    async def test_duration_covers_only_the_successful_attempt(self) -> None:
+        """Retried transient attempts are not billed, so they are not timed.
+
+        A 429 costs nothing, so folding a retried attempt's wall-clock into the
+        record would inflate the only cost signal that is always known. The slow
+        first attempt below would push the duration past its own sleep if the
+        measurement spanned the retry loop.
+        """
+        slow_attempt_seconds = 0.15
+        attempts = {"n": 0}
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            _ = request
+            attempts["n"] += 1
+            if attempts["n"] == 1:
+                time.sleep(slow_attempt_seconds)
+                return httpx.Response(429, json={"error": {"message": "slow down"}})
+            return httpx.Response(200, json=_openrouter_ok_body("hello"))
+
+        result = await _openrouter(handler).complete(
+            system="s", prompt="p", max_tokens=10
+        )
+
+        assert attempts["n"] == 2
+        assert result.usage.duration_ms < slow_attempt_seconds * 1000

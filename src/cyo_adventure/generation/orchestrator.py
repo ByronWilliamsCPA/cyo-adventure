@@ -336,11 +336,12 @@ async def _run_one_stage(
             from :class:`~cyo_adventure.generation.guarded.PiiGuardedProvider`
             before the inner provider is called).
     """
-    raw = await provider.complete(
+    completion = await provider.complete(
         system=stage_prompt.system,
         prompt=stage_prompt.user,
         max_tokens=max_tokens,
     )
+    raw = completion.text
 
     # Parse: treat any non-dict or non-JSON as a synthetic blocked gate.
     # #CRITICAL: data integrity: `raw` is untrusted model output, and a deeply

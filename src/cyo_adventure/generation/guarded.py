@@ -22,6 +22,7 @@ from cyo_adventure.generation.pii import assert_prompt_pii_safe
 if TYPE_CHECKING:
     from cyo_adventure.generation.pii import PiiContext
     from cyo_adventure.generation.provider import GenerationProvider
+    from cyo_adventure.generation.usage import Completion
 
 __all__ = ["PiiGuardedProvider"]
 
@@ -53,7 +54,9 @@ class PiiGuardedProvider:
         self._inner = inner
         self._forbidden = forbidden
 
-    async def complete(self, *, system: str, prompt: str, max_tokens: int) -> str:
+    async def complete(
+        self, *, system: str, prompt: str, max_tokens: int
+    ) -> Completion:
         """Screen both blocks for PII, then delegate to the inner provider.
 
         Args:
@@ -62,7 +65,8 @@ class PiiGuardedProvider:
             max_tokens: Upper bound on response length in tokens.
 
         Returns:
-            The raw text completion from the inner provider.
+            The inner provider's completion, forwarded unchanged: the wrapper
+            adds no call of its own, so it has no usage to attribute.
 
         Raises:
             ValidationError: If either block contains a real-child name from
