@@ -183,6 +183,37 @@ class TestHandleProjectError:
         assert body["message"] == "cannot approve"
 
     @pytest.mark.unit
+    async def test_handle_project_error_omits_upstream_service_identity_and_status(
+        self,
+    ) -> None:
+        """The vendor's name and its HTTP answer stay out of the 502 body.
+
+        UW-A55 gave `ExternalServiceError` its own 502, which made
+        `details.service_name`/`details.status_code` a client-facing
+        disclosure of which dependency we call and exactly how it answered.
+        The status code is the whole of what a client can act on; the pair is
+        kept for the operator on the `project_error` log line, which is built
+        from the UNPRUNED payload, and that is asserted here rather than
+        assumed so a future prune of the log line fails this test.
+        """
+        request = MagicMock(spec=Request)
+        exc = ExternalServiceError(
+            "upstream refused", service_name="kws", status_code=418
+        )
+        with patch("cyo_adventure.app.logger") as mock_logger:
+            resp = await _handle_project_error(request, exc)
+        assert resp.status_code == 502
+        body = json.loads(bytes(resp.body))
+        # Nothing anywhere in the body, not merely nothing under `details`:
+        # a future handler that hoisted these keys up a level would still be
+        # a disclosure, and a `details`-scoped assertion would not see it.
+        assert "kws" not in json.dumps(body)
+        assert "418" not in json.dumps(body)
+        assert body["message"] == "upstream refused"
+        logged = mock_logger.warning.call_args.kwargs["details"]
+        assert logged == {"service_name": "kws", "status_code": 418}
+
+    @pytest.mark.unit
     async def test_non_project_error_returns_500_internal(self) -> None:
         """A plain Exception that is not a ProjectBaseError returns 500."""
         request = MagicMock()
@@ -969,6 +1000,32 @@ class TestOpenApiContract:
             assert ref == {"$ref": "#/components/schemas/ErrorResponse"}, (
                 f"PATCH /admin/users must document {status_code} with ErrorResponse"
             )
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize(
+        ("path", "method"),
+        [
+            ("/api/v1/consent/kws/start", "post"),
+            ("/api/v1/storybooks/{storybook_id}/versions/{version}/cover", "post"),
+        ],
+    )
+    def test_external_service_routes_document_502(
+        self, schema: dict[str, Any], path: str, method: str
+    ) -> None:
+        """The two routes that can raise ExternalServiceError advertise 502.
+
+        UW-A55 made 502 a status these operations really return, and the
+        generated frontend client's error union is built from exactly this
+        declaration: a route that raises the exception but omits the
+        `error_responses(502)` entry gives the client a response shape it has
+        no type for. Pinned per route rather than app-wide because most
+        operations legitimately do not declare 502.
+        """
+        responses = schema["paths"][path][method]["responses"]
+
+        assert "502" in responses, f"{method.upper()} {path} must document 502"
+        ref = responses["502"]["content"]["application/json"]["schema"]
+        assert ref == {"$ref": "#/components/schemas/ErrorResponse"}
 
     @pytest.mark.unit
     def test_reading_put_keeps_conflict_view_on_409(

@@ -83,10 +83,24 @@ logger = get_logger(__name__)
 
 _INTERNAL_ERROR = {"error": "InternalError", "message": "internal error"}
 
-# Detail keys that carry caller-supplied input (`value`) or internal state
-# (`context`, e.g. a resource's lifecycle status) and must not be disclosed in
-# the client-facing error body. They are retained in the server log only.
-_SENSITIVE_DETAIL_KEYS = frozenset({"value", "context"})
+# Detail keys that carry caller-supplied input (`value`), internal state
+# (`context`, e.g. a resource's lifecycle status), or the identity and answer
+# of a dependency the caller never addressed (`service_name`, `status_code`),
+# and must not be disclosed in the client-facing error body. They are retained
+# in the server log only.
+#
+# #CRITICAL: security: `service_name` and `status_code` are set by every
+# `ExternalServiceError` (and so by `APIError`, `DatabaseError`, and
+# `ProviderError`). Once UW-A55 gave that class its own 502, those two keys
+# would otherwise have told any caller which vendor we call and exactly how it
+# answered, which is internal topology the caller has no need for and CWE-209
+# information disclosure. The status code itself already carries everything the
+# client must act on: 502 means "retryable, on the far side of our call". The
+# operator loses nothing, because the `project_error` log line below is emitted
+# from the UNPRUNED payload.
+# #VERIFY: tests/unit/test_app.py::
+# test_handle_project_error_omits_upstream_service_identity_and_status.
+_SENSITIVE_DETAIL_KEYS = frozenset({"value", "context", "service_name", "status_code"})
 
 
 def _client_safe_error(payload: dict[str, Any]) -> dict[str, Any]:

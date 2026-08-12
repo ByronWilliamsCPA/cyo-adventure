@@ -171,9 +171,14 @@ async def start_parent_verification(
             because that instance belongs to a session this function closes.
 
     Raises:
-        ConfigurationError: When the KWS integration is not configured.
+        ConfigurationError: When the KWS integration is not configured, or
+            when KWS rejects our credentials or blocks the request. Both are
+            operator-fixable; either way the attempt is still closed out as
+            ``send_failed`` first, because the ``except ProjectBaseError``
+            below is deliberately wider than the send's own error class.
         ValidationError: When the request would be rejected by KWS.
-        ExternalServiceError: When KWS rejects or fails the call.
+        ExternalServiceError: When the call fails in a way that may clear on
+            its own (5xx, timeout, transport failure, rate limit).
     """
     correlation = mint_correlation()
     async with get_session() as session:

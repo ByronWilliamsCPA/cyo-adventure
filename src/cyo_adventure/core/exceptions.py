@@ -12,8 +12,11 @@ Exception Hierarchy:
     ├── AuthorizationError (permission/access denied)
     ├── ExternalServiceError (third-party service failures)
     │   ├── APIError (external API errors)
-    │   └── DatabaseError (database operation errors)
+    │   ├── DatabaseError (database operation errors)
+    │   └── ProviderError (generation provider/LLM backend failures)
     └── BusinessLogicError (domain/business rule violations)
+        ├── StateTransitionError (illegal lifecycle transition)
+        └── RateLimitedError (a per-account quota is spent)
 
 Usage:
     from cyo_adventure.core.exceptions import (
