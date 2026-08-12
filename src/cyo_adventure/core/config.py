@@ -1944,7 +1944,7 @@ class Settings(BaseSettings):
                 "environment (e.g. 'credit_card,debit_card'): the "
                 "parent-verified webhook reports no method, so this "
                 "declaration is the only bound on how a parent was verified, "
-                "and it cannot be reconstructed after the record is written."
+                "and no interface returns it to us afterwards."
             )
             raise ConfigurationError(msg)
         return self
