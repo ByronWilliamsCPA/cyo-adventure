@@ -19,6 +19,7 @@ from unittest import mock
 
 import pytest
 
+from cyo_adventure.core.config import Settings
 from scripts.compare_vendors import (
     BookRecord,
     Vendor,
@@ -27,9 +28,11 @@ from scripts.compare_vendors import (
     _load_vendors,  # pyright: ignore[reportPrivateUsage]
     _measure,  # pyright: ignore[reportPrivateUsage]
     _mirror_as_mock,  # pyright: ignore[reportPrivateUsage]
+    _report_preflight,  # pyright: ignore[reportPrivateUsage]
     _summarize,  # pyright: ignore[reportPrivateUsage]
     _verdict,  # pyright: ignore[reportPrivateUsage]
     analyze,
+    preflight,
     run_comparison,
 )
 
@@ -626,6 +629,100 @@ async def test_compare_vendors_stamps_each_book_with_its_lineage() -> None:
         ("a46", "anthropic"),
         ("solo", "solo"),
     }
+
+
+def _probe_provider(error: Exception | None) -> object:
+    """Build a stub provider whose ``complete`` succeeds or raises.
+
+    Args:
+        error: Raise this from ``complete``, or ``None`` to succeed.
+
+    Returns:
+        An object satisfying the one method pre-flight calls.
+    """
+
+    async def _complete(**_kwargs: object) -> str:
+        """Answer the pre-flight ping."""
+        if error is not None:
+            raise error
+        return "ok"
+
+    return mock.Mock(complete=_complete)
+
+
+@pytest.mark.asyncio
+async def test_preflight_passes_every_reachable_pin() -> None:
+    """A slate whose pins all answer reports no errors."""
+    vendors = [
+        Vendor(label="a", model="m1", provider_order=("p",)),
+        Vendor(label="b", model="m2", provider_order=("q",)),
+    ]
+
+    def _build(*_a: object, **_k: object) -> object:
+        """Build a provider that answers the ping."""
+        return _probe_provider(None)
+
+    with mock.patch("scripts.compare_vendors._build_provider", _build):
+        results = await preflight(vendors, Settings())
+
+    assert results == [("a", None), ("b", None)]
+
+
+@pytest.mark.asyncio
+async def test_preflight_reports_an_unreachable_pin_without_stopping() -> None:
+    """One blocked endpoint must not hide the state of the others.
+
+    A workspace data policy typically blocks several pins at once, so a
+    pre-flight that aborted on the first would need as many runs as there are
+    bad pins to converge on a working slate.
+    """
+    vendors = [
+        Vendor(label="blocked", model="m1", provider_order=("p",)),
+        Vendor(label="fine", model="m2", provider_order=("q",)),
+    ]
+    built: list[str] = []
+
+    def _build(vendor: Vendor, *_a: object, **_k: object) -> object:
+        """Fail the first leg only."""
+        built.append(vendor.label)
+        if vendor.label == "blocked":
+            return _probe_provider(RuntimeError("No endpoints found"))
+        return _probe_provider(None)
+
+    with mock.patch("scripts.compare_vendors._build_provider", _build):
+        results = await preflight(vendors, Settings())
+
+    assert built == ["blocked", "fine"]
+    assert results[0][1] is not None
+    assert "No endpoints found" in results[0][1]
+    assert results[1] == ("fine", None)
+
+
+@pytest.mark.asyncio
+async def test_preflight_catches_a_failure_in_provider_construction() -> None:
+    """A pin can be rejected before any request, and that is still unreachable."""
+    vendors = [Vendor(label="a", model="m", provider_order=("p",))]
+
+    def _build(*_a: object, **_k: object) -> object:
+        """Refuse to build."""
+        msg = "missing credential"
+        raise ValueError(msg)
+
+    with mock.patch("scripts.compare_vendors._build_provider", _build):
+        results = await preflight(vendors, Settings())
+
+    assert results[0][1] is not None
+    assert "missing credential" in results[0][1]
+
+
+def test_report_preflight_blocks_the_run_when_any_pin_failed() -> None:
+    """One unreachable pin is enough to stop a paid run before it starts."""
+    assert _report_preflight([("a", None), ("b", "boom")]) is False
+
+
+def test_report_preflight_allows_a_fully_reachable_slate() -> None:
+    """Every pin answering is the only condition that lets the run proceed."""
+    assert _report_preflight([("a", None), ("b", None)]) is True
 
 
 @pytest.mark.asyncio

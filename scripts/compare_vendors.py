@@ -129,6 +129,7 @@ __all__ = [
     "ComparisonReport",
     "Vendor",
     "analyze",
+    "preflight",
     "run_comparison",
 ]
 
@@ -1017,6 +1018,70 @@ def _mirror_as_mock(vendors: list[Vendor]) -> list[Vendor]:
     ]
 
 
+async def preflight(
+    vendors: Sequence[Vendor], settings: Settings
+) -> list[tuple[str, str | None]]:
+    """Send one tiny completion per leg to prove every pin is actually callable.
+
+    Listing a model's endpoints proves what the *model* offers, not what this
+    *account* may call: a workspace data policy can exclude a provider, and a
+    pin at an excluded endpoint with ``allow_fallbacks: false`` fails every
+    single book. Only a real completion down the same construction path
+    exercises the same permission check, so that is what this does. Three tokens
+    per leg is a rounding error against a run that generates whole books.
+
+    Args:
+        vendors: The slate about to be run.
+        settings: Settings supplying the credential and base url.
+
+    Returns:
+        One ``(label, error)`` pair per leg, in slate order, where ``error`` is
+        ``None`` for a reachable pin.
+    """
+    results: list[tuple[str, str | None]] = []
+    for vendor in vendors:
+        try:
+            provider = _build_provider(vendor, settings, mock=False)
+            _ = await provider.complete(
+                system="Reply with one word.", prompt="ping", max_tokens=3
+            )
+        except Exception as exc:
+            # Deliberately broad: the point is to report every way a pin can be
+            # unreachable (auth, policy, dead slug, transport) as one verdict
+            # rather than to handle any of them.
+            results.append((vendor.label, f"{type(exc).__name__}: {exc}"))
+        else:
+            results.append((vendor.label, None))
+    return results
+
+
+def _report_preflight(results: list[tuple[str, str | None]]) -> bool:
+    """Print the pre-flight verdict and say whether the run may proceed.
+
+    Args:
+        results: Output of :func:`preflight`.
+
+    Returns:
+        ``True`` when every pin answered.
+    """
+    width = max([len("leg"), *(len(label) for label, _ in results)])
+    print("Pre-flight: one 3-token completion per pin.", file=sys.stderr)
+    for label, error in results:
+        verdict = "reachable" if error is None else f"UNREACHABLE  {error[:150]}"
+        print(f"  {label:<{width}}  {verdict}", file=sys.stderr)
+    failed = [label for label, error in results if error is not None]
+    if failed:
+        print(
+            f"Error: {len(failed)} of {len(results)} pins are unreachable "
+            f"({', '.join(failed)}); nothing was generated. A 'No endpoints "
+            "found' message usually means the account's data policy excludes "
+            "that endpoint rather than that the slug is wrong; re-probe with "
+            "provider.only to see the real reason.",
+            file=sys.stderr,
+        )
+    return not failed
+
+
 def main(argv: list[str] | None = None) -> int:
     """CLI entry point.
 
@@ -1060,6 +1125,14 @@ def main(argv: list[str] | None = None) -> int:
         # gitignored dotenv so a local run picks the key up.
         _load_env_file(env_path)
         settings = Settings()
+        # #EDGE: external resources: a pin proven reachable here can still be
+        # withdrawn during the 40-to-80-minute run (a -preview slug retired, a
+        # data policy edited, a provider outage), so a green pre-flight bounds
+        # the loss to one book rather than guaranteeing the run.
+        # #VERIFY: run_comparison prints each book's error inline, so a mid-run
+        # withdrawal names itself at the book it first hits.
+        if not _report_preflight(asyncio.run(preflight(vendors, settings))):
+            return 1
 
     records = asyncio.run(
         run_comparison(

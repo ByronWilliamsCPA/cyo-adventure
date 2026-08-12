@@ -103,8 +103,8 @@ which is the exact unattributability the pin exists to prevent.
 Two traps follow, both of which cost a failed run to find:
 
 - **`GET /models/{id}/endpoints` lists endpoints the account cannot use.** Every slug resolving is no
-  evidence that any of them will answer. Reachability has to be probed with a real (three-token)
-  completion.
+  evidence that any of them will answer. Reachability has to be probed with a real completion,
+  which is what the pre-flight below does.
 - **`provider.order` reports the wrong reason.** A pin at a blocked endpoint with
   `allow_fallbacks: false` returns `404 No endpoints found for <model>`, which reads as a bad slug.
   The same request with `provider.only` returns the actual cause: `No endpoints available matching
@@ -114,9 +114,13 @@ Endpoint **tags** (`xai/zdr`, `moonshotai/mxfp4`, `amazon-bedrock/global`) are r
 fields, and are what the pins use: a tag fixes region, service tier, and quantization, where a
 provider name alone fixes none of the three.
 
-A `-preview` slug can be retired without notice, and Gemini is the one such slug here. Before
-spending anything, re-verify all six pins with a three-token completion each, not with the models
-endpoint.
+A `-preview` slug can be retired without notice, and Gemini is the one such slug here, so this has
+to be re-verified per run rather than trusted from the last one. Every live run therefore begins
+with a pre-flight: one three-token completion through each pin, all six attempted even after the
+first failure (a data policy usually blocks several at once, and converging one pin per run would
+take as many runs as there are bad pins). It prints a reachable/unreachable line per leg and exits
+non-zero before generating anything if any leg failed, so a mispinned slate costs one cent instead
+of a partial run. `--mock` skips it; there is nothing to reach.
 
 ## Running it
 
