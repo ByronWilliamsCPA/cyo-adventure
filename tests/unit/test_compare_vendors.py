@@ -23,6 +23,7 @@ from scripts.compare_vendors import (
     BookRecord,
     Vendor,
     _load_briefs,  # pyright: ignore[reportPrivateUsage]
+    _load_skeletons,  # pyright: ignore[reportPrivateUsage]
     _measure,  # pyright: ignore[reportPrivateUsage]
     _summarize,  # pyright: ignore[reportPrivateUsage]
     _verdict,  # pyright: ignore[reportPrivateUsage]
@@ -307,6 +308,99 @@ def test_load_briefs_accepts_two(tmp_path: Path) -> None:
     assert len(_load_briefs(path)) == 2
 
 
+def _write_skeletons(tmp_path: Path, *names: str) -> list[Path]:
+    """Write one minimal skeleton JSON per name and return the paths.
+
+    Args:
+        tmp_path: Directory to write into.
+        *names: Skeleton ids, one file each.
+
+    Returns:
+        The written paths, in argument order.
+    """
+    paths: list[Path] = []
+    for name in names:
+        path = tmp_path / f"{name}.json"
+        path.write_text(json.dumps({"id": name}), encoding="utf-8")
+        paths.append(path)
+    return paths
+
+
+def test_load_skeletons_pairs_one_per_brief(tmp_path: Path) -> None:
+    """A skeleton per brief loads index-aligned, which is the 3.3 condition."""
+    paths = _write_skeletons(tmp_path, "sk-a", "sk-b", "sk-c")
+
+    assert [s["id"] for s in _load_skeletons(paths, 3)] == ["sk-a", "sk-b", "sk-c"]
+
+
+def test_load_skeletons_broadcasts_a_lone_skeleton(tmp_path: Path) -> None:
+    """One skeleton is reused for every brief rather than rejected."""
+    loaded = _load_skeletons(_write_skeletons(tmp_path, "sk-a"), 3)
+
+    assert [s["id"] for s in loaded] == ["sk-a", "sk-a", "sk-a"]
+
+
+def test_load_skeletons_broadcast_copies_rather_than_aliases(tmp_path: Path) -> None:
+    """Broadcast entries are independent, so one fill cannot mutate another's input."""
+    loaded = _load_skeletons(_write_skeletons(tmp_path, "sk-a"), 2)
+    loaded[0]["id"] = "mutated"
+
+    assert loaded[1]["id"] == "sk-a"
+
+
+def test_load_skeletons_rejects_a_partial_count(tmp_path: Path) -> None:
+    """Two skeletons for three briefs is a silent mispairing, so it exits."""
+    paths = _write_skeletons(tmp_path, "sk-a", "sk-b")
+
+    with pytest.raises(SystemExit):
+        _load_skeletons(paths, 3)
+
+
+@pytest.mark.asyncio
+async def test_compare_vendors_pairs_skeleton_i_with_brief_i() -> None:
+    """Every vendor sees the same skeleton for a brief index, and only that one.
+
+    This is the whole basis of the vendor axis: if skeleton and brief drifted
+    out of step, a cross-vendor pair would differ in structure as well as
+    vendor and the comparison would measure nothing in particular.
+    """
+    seen: list[tuple[str, str]] = []
+
+    async def _stub(
+        skeleton: dict[str, object],
+        brief: dict[str, object],
+        _provider: object,
+        _pii: object,
+        **_kwargs: object,
+    ) -> object:
+        """Record the (skeleton, brief) pairing handed to each fill."""
+        seen.append((str(skeleton["id"]), str(brief["setting"])))
+        return mock.Mock(status="passed", attempts=0, storybook=_doc(_SHARED))
+
+    with mock.patch("scripts.compare_vendors.fill_skeleton", _stub):
+        await run_comparison(
+            [{"id": "sk-a"}, {"id": "sk-b"}],
+            [{"setting": "a"}, {"setting": "b"}],
+            [
+                Vendor(label="alpha", model="mock", provider_order=()),
+                Vendor(label="beta", model="mock", provider_order=()),
+            ],
+        )
+
+    assert seen == [("sk-a", "a"), ("sk-b", "b"), ("sk-a", "a"), ("sk-b", "b")]
+
+
+@pytest.mark.asyncio
+async def test_compare_vendors_rejects_mismatched_grid_lengths() -> None:
+    """A length mismatch is a programming error, not a survivable per-book fault."""
+    vendors = [Vendor(label="alpha", model="mock", provider_order=())]
+
+    with pytest.raises(ValueError, match="pair index-wise"):
+        await run_comparison(
+            [{"id": "sk-a"}], [{"setting": "a"}, {"setting": "b"}], vendors
+        )
+
+
 @pytest.mark.asyncio
 async def test_compare_vendors_uses_an_empty_pii_context() -> None:
     """No real child identity may reach a paid endpoint from this harness."""
@@ -325,7 +419,7 @@ async def test_compare_vendors_uses_an_empty_pii_context() -> None:
 
     with mock.patch("scripts.compare_vendors.fill_skeleton", _stub):
         await run_comparison(
-            {"id": "sk"},
+            [{"id": "sk-a"}, {"id": "sk-b"}],
             [{"setting": "a"}, {"setting": "b"}],
             [Vendor(label="alpha", model="mock", provider_order=())],
         )
@@ -344,7 +438,7 @@ async def test_compare_vendors_records_one_book_per_vendor_and_brief() -> None:
 
     with mock.patch("scripts.compare_vendors.fill_skeleton", _stub):
         records = await run_comparison(
-            {"id": "sk"},
+            [{"id": "sk-a"}, {"id": "sk-b"}],
             [{"setting": "a"}, {"setting": "b"}],
             [
                 Vendor(label="alpha", model="mock", provider_order=()),
@@ -375,7 +469,7 @@ async def test_compare_vendors_survives_one_failing_fill() -> None:
 
     with mock.patch("scripts.compare_vendors.fill_skeleton", _stub):
         records = await run_comparison(
-            {"id": "sk"},
+            [{"id": "sk-a"}, {"id": "sk-b"}],
             [{"setting": "a"}, {"setting": "b"}],
             [Vendor(label="alpha", model="mock", provider_order=())],
         )
@@ -389,7 +483,7 @@ async def test_compare_vendors_survives_one_failing_fill() -> None:
 async def test_compare_vendors_mock_run_makes_no_live_call() -> None:
     """The ``--mock`` path runs the real pipeline against the canned story."""
     records = await run_comparison(
-        {"id": "sk"},
+        [{"id": "sk-a"}, {"id": "sk-b"}],
         [{"setting": "a"}, {"setting": "b"}],
         [Vendor(label="mock-a", model="mock", provider_order=())],
         mock=True,

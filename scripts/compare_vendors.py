@@ -14,13 +14,19 @@ imply opposite diversification strategies:
 
 Neither number exists today. This harness produces both from one run.
 
-**Method.** Every vendor fills the SAME skeleton with the SAME set of theme
-briefs, one book per (vendor, brief). Holding structure constant is what
-isolates prose idiom as the variable, and it is also what keeps the numbers
-comparable to the existing 3.3 calibration, which was measured over sibling
-fills of one skeleton. Generating from concept briefs instead would let each
-book invent its own structure and confound the measurement, so this harness
-deliberately offers no brief-only mode.
+**Method.** Every vendor fills the SAME (skeleton, brief) grid, one book per
+cell, where skeleton *i* is paired with brief *i*. Structure is therefore held
+constant across the vendor axis, which is what isolates prose idiom as the
+variable, and varied across the brief axis, which is what makes the
+within-vendor cell reproduce the condition the 3.3 floor was measured under:
+"book pairs sharing nothing but the model and the age band". Pass one
+``--skeleton`` and it is reused for every brief; that still measures the vendor
+contrast correctly, but its within-vendor number is then a shared-structure
+figure and is not the 3.3 quantity, so the harness says so in its output.
+
+Generating from concept briefs instead would let each book invent its own
+structure and confound the vendor axis, so this harness offers no brief-only
+mode.
 
 **Reading the output.** Pairs are bucketed on two axes, not one::
 
@@ -53,15 +59,23 @@ fill that column in.
 Dry run (no network, proves the plumbing and the analysis path)::
 
     uv run python scripts/compare_vendors.py \\
-        --skeleton skeletons/<file>.json --briefs <briefs.json> --mock \\
+        --skeleton skeletons/<a>.json --skeleton skeletons/<b>.json \\
+        --briefs <briefs.json> --mock \\
         --out out/vendor-comparison/dry-run
 
 Live run (spends money; three vendors x N briefs paid fills)::
 
     uv run python scripts/compare_vendors.py \\
-        --skeleton skeletons/<file>.json --briefs <briefs.json> \\
+        --skeleton skeletons/8-11/<a>.json --skeleton skeletons/8-11/<b>.json \\
+        --skeleton skeletons/8-11/<c>.json --skeleton skeletons/8-11/<d>.json \\
+        --briefs docs/planning/vendor-comparison/briefs-8-11.json \\
         --vendors docs/planning/vendor-comparison/vendors.json \\
         --throttle 3 --out out/vendor-comparison/run-1
+
+``--skeleton`` is repeatable and pairs index-wise with ``--briefs``; pass either
+one skeleton or exactly as many as there are briefs. Every skeleton must belong
+to the same age band, since a cross-band pair would measure band difference
+rather than vendor difference.
 
 ``--vendors`` is a JSON array of ``{"label", "model", "provider_order"}``
 objects. ``OPENROUTER_API_KEY`` is read from the environment, sourced from the
@@ -294,6 +308,53 @@ def _load_briefs(path: Path) -> list[dict[str, object]]:
     return briefs
 
 
+def _load_skeletons(paths: Sequence[Path], brief_count: int) -> list[dict[str, object]]:
+    """Load one skeleton per brief, broadcasting a lone skeleton across all of them.
+
+    Pairing a distinct skeleton with each brief is what makes a within-vendor
+    pair share nothing but the model and the age band, which is the condition
+    the 3.3 idiom floor was measured under. A single skeleton is still accepted
+    because it is the cheaper setup and still measures the vendor contrast, but
+    the caller is told what the resulting number is not.
+
+    Args:
+        paths: One or ``brief_count`` skeleton JSON paths, in brief order.
+        brief_count: How many briefs the run will use.
+
+    Returns:
+        Exactly ``brief_count`` skeleton dicts, index-aligned with the briefs.
+
+    Raises:
+        SystemExit: If a file is not a JSON object, or the count is neither 1
+            nor ``brief_count``.
+    """
+    loaded: list[dict[str, object]] = []
+    for path in paths:
+        parsed = _load_json(path)
+        if not isinstance(parsed, dict):
+            print(f"Error: {path} must contain a JSON object.", file=sys.stderr)
+            sys.exit(1)
+        loaded.append(dict(parsed))  # pyright: ignore[reportUnknownArgumentType]
+
+    if len(loaded) == 1 and brief_count > 1:
+        print(
+            "Note: one skeleton for all briefs. Within-vendor pairs will share "
+            "structure, so that number is a shared-structure figure and is not "
+            "comparable to the 3.3 floor, which was measured on books sharing "
+            "nothing. Pass one --skeleton per brief for the comparable number.",
+            file=sys.stderr,
+        )
+        return [dict(loaded[0]) for _ in range(brief_count)]
+    if len(loaded) != brief_count:
+        print(
+            f"Error: got {len(loaded)} skeleton(s) for {brief_count} brief(s); "
+            "pass either one skeleton or exactly one per brief.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+    return loaded
+
+
 def _band(doc: dict[str, Any]) -> tuple[float, float] | None:
     """Return the declared reading-level target and tolerance, if any.
 
@@ -386,7 +447,7 @@ def _build_provider(
 
 
 async def run_comparison(
-    skeleton: dict[str, object],
+    skeletons: Sequence[dict[str, object]],
     briefs: Sequence[dict[str, object]],
     vendors: Sequence[Vendor],
     *,
@@ -394,11 +455,13 @@ async def run_comparison(
     throttle: float = 0.0,
     settings: Settings | None = None,
 ) -> list[BookRecord]:
-    """Fill the skeleton once per (vendor, brief) and measure every result.
+    """Fill the grid once per (vendor, brief) and measure every result.
 
     Args:
-        skeleton: The skeleton dict, FILL directives intact. The same object is
-            copied per fill so no run mutates another's input.
+        skeletons: One skeleton per brief, index-aligned, FILL directives
+            intact. Each is copied per fill so no run mutates another's input.
+            Every vendor sees the same skeleton for a given brief index, which
+            is what holds structure constant across the vendor axis.
         briefs: The theme briefs; every vendor sees all of them, in order.
         vendors: The vendor legs to compare.
         mock: When ``True`` every leg is the deterministic mock provider. The
@@ -409,7 +472,17 @@ async def run_comparison(
 
     Returns:
         One :class:`BookRecord` per (vendor, brief), vendor-major order.
+
+    Raises:
+        ValueError: If the skeleton and brief counts disagree, which would
+            silently pair the wrong structure with a premise.
     """
+    if len(skeletons) != len(briefs):
+        message = (
+            f"skeletons ({len(skeletons)}) and briefs ({len(briefs)}) must be "
+            "the same length; they pair index-wise"
+        )
+        raise ValueError(message)
     # #CRITICAL: security: this harness reaches a paid third-party endpoint and
     # must never carry real child identity into a prompt. The PII context is
     # empty by construction and the briefs are operator-authored fixtures, not
@@ -426,7 +499,7 @@ async def run_comparison(
             started = time.monotonic()
             try:
                 outcome = await fill_skeleton(
-                    dict(skeleton), dict(brief), provider, pii
+                    dict(skeletons[index]), dict(brief), provider, pii
                 )
             except Exception as exc:  # one book's failure must not void the batch
                 # A comparison over N vendors is expensive; losing every prior
@@ -609,11 +682,15 @@ def _pairs(summary: dict[str, float]) -> str:
     return f"{count} pair" if count == 1 else f"{count} pairs"
 
 
-def _print_report(report: ComparisonReport) -> None:
+def _print_report(report: ComparisonReport, *, structure_varies: bool = True) -> None:
     """Print the human-readable summary to stdout.
 
     Args:
         report: The analyzed comparison.
+        structure_varies: Whether each brief had its own skeleton. When it did
+            not, the within-vendor number is a shared-structure figure and the
+            printer says so, because 3.3 is the obvious thing a reader will
+            compare it against and that comparison would not be like for like.
     """
     print("=" * 72)
     print("Cross-vendor fill comparison")
@@ -628,6 +705,16 @@ def _print_report(report: ComparisonReport) -> None:
         )
     print()
     print("Shared four-grams per 1000 leaf words (different-brief pairs):")
+    if structure_varies:
+        print(
+            "  within-vendor pairs share nothing but the model and the band, "
+            "the condition the 3.3 floor was measured under."
+        )
+    else:
+        print(
+            "  one skeleton for every brief: within-vendor pairs share "
+            "structure, so these are NOT comparable to the 3.3 floor."
+        )
     for label, summary in report.within_vendor.items():
         print(
             f"  within {label:<14} mean {summary['mean_per_1000']:>6.2f}  "
@@ -739,7 +826,16 @@ def _parse_args(argv: list[str] | None) -> argparse.Namespace:
         )
     )
     parser.add_argument(
-        "--skeleton", required=True, type=Path, help="Skeleton JSON to fill."
+        "--skeleton",
+        required=True,
+        action="append",
+        type=Path,
+        dest="skeletons",
+        help=(
+            "Skeleton JSON to fill. Repeatable; pairs index-wise with --briefs. "
+            "Pass one per brief so within-vendor pairs share no structure, or a "
+            "single one to reuse it for every brief."
+        ),
     )
     parser.add_argument(
         "--briefs", required=True, type=Path, help="JSON array of theme briefs."
@@ -801,19 +897,18 @@ def main(argv: list[str] | None = None) -> int:
         never itself a failure exit.
     """
     args = _parse_args(argv)
-    skeleton_path: Path = Path(str(args.skeleton)).resolve()  # pyright: ignore[reportAny]
+    skeleton_paths: list[Path] = [
+        Path(str(p)).resolve()
+        for p in args.skeletons  # pyright: ignore[reportAny]
+    ]
     briefs_path: Path = Path(str(args.briefs)).resolve()  # pyright: ignore[reportAny]
     out_dir: Path = Path(str(args.out)).resolve()  # pyright: ignore[reportAny]
     env_path: Path = Path(str(args.env_file)).resolve()  # pyright: ignore[reportAny]
     throttle: float = float(args.throttle)  # pyright: ignore[reportAny]
     mock: bool = bool(args.mock)  # pyright: ignore[reportAny]
 
-    skeleton_raw = _load_json(skeleton_path)
-    if not isinstance(skeleton_raw, dict):
-        print(f"Error: {skeleton_path} must contain a JSON object.", file=sys.stderr)
-        return 1
-    skeleton: dict[str, object] = dict(skeleton_raw)  # pyright: ignore[reportUnknownArgumentType]
     briefs = _load_briefs(briefs_path)
+    skeletons = _load_skeletons(skeleton_paths, len(briefs))
 
     if mock:
         vendors = _mock_vendors()
@@ -830,7 +925,7 @@ def main(argv: list[str] | None = None) -> int:
 
     records = asyncio.run(
         run_comparison(
-            skeleton,
+            skeletons,
             briefs,
             vendors,
             mock=mock,
@@ -852,9 +947,15 @@ def main(argv: list[str] | None = None) -> int:
                 "measurement path runs; they say nothing about any vendor."
             ),
         )
-    _print_report(report)
+    distinct_skeletons = len({p.name for p in skeleton_paths})
+    _print_report(report, structure_varies=distinct_skeletons > 1)
     meta: dict[str, object] = {
-        "skeleton": skeleton_path.name,
+        "skeletons": [p.name for p in skeleton_paths],
+        # A within-vendor pair is only the 3.3 quantity ("sharing nothing but
+        # the model and the age band") when structure varies across briefs.
+        # Recording the flag beside the numbers keeps a later reader from
+        # comparing a shared-structure figure against that floor.
+        "structure_varies": distinct_skeletons > 1,
         "brief_count": len(briefs),
         "mock": mock,
         "vendors": [
