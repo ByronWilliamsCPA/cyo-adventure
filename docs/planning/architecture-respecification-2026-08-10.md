@@ -65,9 +65,12 @@ section 2 should be discarded rather than defended.
 
 ### 2.1 D-6 reported, and it corrects section 2 rather than confirming it
 
-D-6 has since run. Constraint B survives: holding graph, bindings, model and isolation constant and
-changing only whether two arms read one contract or two moves convergence from 2.9 to 17.2 shared
-four-grams per 1000, against a budget of 4.0. Sharing a plan does make books converge. (17.2 is the
+D-6 has since run. Constraint B survives: holding graph, bindings, model and isolation constant,
+moving two arms from separate contracts to one moves convergence from 2.9 to 17.2 shared
+four-grams per 1000, against a budget of 4.0. Sharing a plan does make books converge. It is
+sharing the plan *as a bundle* that does it: two separate contracts differ in premise and fact set
+as well as in being two documents, so this figure does not isolate the document-sharing channel
+(qualification added 2026-08-12; see the diversity test register under D-6's first falsifier). (17.2 is the
 figure re-derived from the artifacts on 2026-08-11; this document was written against the 16.9 first
 published, and the conclusion is unchanged either way.)
 
@@ -75,7 +78,7 @@ published, and the conclusion is unchanged either way.)
 section 2 put the leak in the wrong place.** Tracing shared grams to the contract field they draw
 on, `choice_semantics` accounts for well under half; the `premise` carries as much or more, and
 roughly a quarter of shared grams trace to no contract field at all and are same-model idiom
-(`AL-207`). Flattening the shared wording bought a 32 percent reduction and left the result at
+(`AL-207`). Flattening the shared wording bought a 31.4 percent reduction and left the result at
 roughly three times budget.
 
 Three corrections follow, and they should be read as amendments to the table in section 2 rather

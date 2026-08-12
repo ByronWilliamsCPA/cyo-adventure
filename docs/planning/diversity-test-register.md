@@ -225,11 +225,33 @@ no em-dash). Measured on **bodies only**, for a reason given below.
 > restatements marked inline.
 
 **The first falsifier did not fire, so `AL-208` is confirmed as a cause.** Holding the graph, the
-two bindings, the model and the isolation constant and changing only whether the arms read one
-contract or two moves convergence from 2.9 to 17.2, a factor of 5.9.
+two bindings, the model and the isolation constant, moving from two contracts to one moves
+convergence from 2.9 to 17.2, a factor of 5.9.
+
+**What this comparison can and cannot isolate** (added 2026-08-12, in review of PR #703, after an
+external reviewer pushed back on the "changing only" framing). Two facts about the design bound the
+claim:
+
+- The 2.9 is the **pilot's** rig, not a fourth arm of D-6. D-6 built three conditions and all three
+  share one contract (`build.py`: "One contract (`contract_v2`, 26 nodes), two bindings held
+  constant (`armC` and `armD`, the pilot's own)"). Graph and bindings genuinely carry over, so this
+  is not a free-floating cross-study comparison, but it is a comparison against a historical
+  baseline rather than against a control run alongside.
+- More importantly, **"shares a document" and "shares a premise" cannot be separated here**, and
+  not through any oversight: two *separate* contracts necessarily differ in everything a contract
+  carries, premise included. So the 5.9x is the effect of putting two books on one plan, which
+  bundles the shared document with the shared premise, the shared obligations and the shared
+  fact set. It is not an estimate of the document-sharing channel alone.
+
+Neither qualification touches the direction or the magnitude, and neither rescues the repairs:
+`verbatim`, `neutral` and `diverge` are three conditions *within* one shared contract, so the
+comparisons among them (17.2 against 11.8 and 13.6) are clean one-variable manipulations and are
+where the repair conclusions come from. Separating the document channel from the premise channel
+would need an arm giving two books the same premise on separately written contracts, which has not
+been run.
 
 **The second falsifier substantially fired, and this is the operative result.** The best repair
-lands at 11.8, a 32 percent reduction that is still roughly three times budget and four times the
+lands at 11.8, a 31.4 percent reduction that is still roughly three times budget and four times the
 pilot. **Neither tested repair unblocks D-2.** `neutral` and `diverge` are within noise of each
 other at n=1 per condition, and their ordering flips depending on whether labels are counted, so no
 claim is made about which is better; the claim is that neither is enough.

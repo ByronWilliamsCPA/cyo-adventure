@@ -1385,8 +1385,14 @@ a stated rule instead. The rule is what is on trial.
 | one contract, authors told to diverge from it | **13.6** | 3.4x |
 | **different** contracts, same graph, same bindings | **2.9** | passes |
 
-**16d is confirmed.** Changing only whether two arms read one contract or two, with graph, bindings,
-model and isolation all held constant, moves convergence by a factor of 5.9.
+**16d is confirmed.** Moving two arms from separate contracts to one, with graph, bindings, model
+and isolation all held constant, moves convergence by a factor of 5.9. The earlier wording here was
+"changing only whether two arms read one contract or two"; that overstated the isolation and is
+corrected. Two separate contracts differ in premise, obligations and fact set as well as in being
+two documents, so the 5.9x is the effect of sharing a plan as a bundle, not an estimate of the
+document-sharing channel on its own. The 2.9 row above is also the pilot's rig rather than a fourth
+D-6 arm, though graph and bindings do carry over. See `docs/planning/diversity-test-register.md`
+under the first falsifier for the full statement of what the comparison bounds.
 
 **And neither repair is enough.** The best lands at 11.8, a third off, still around three times
 budget. We report the two repairs as indistinguishable from each other: at one book pair per
@@ -1432,9 +1438,12 @@ that neither suffices, not that one beats the other.
 
 We checked the confound before believing any of this. Our pilot's shells shipped draft choice labels
 and our new books wrote every label from scratch, which is a second difference that could have
-carried the whole effect. It did not: **labels contribute zero shared four-grams in every condition,
-including the pilot.** The entire signal is in the bodies, which were written from scratch
-throughout, so the comparison is clean. We note without explaining it that this sits alongside 16d,
+carried the whole effect. It did not: **measured per label, labels contribute zero shared four-grams
+in every condition, including the pilot.** The per-label scope is the whole claim and is not a hedge:
+the joined label-inclusive metric does produce label-derived grams, seven in the flattened arm, but
+every one of them straddles a body/label boundary and so exists in neither the body nor the label
+(see the correction above). No gram is shared *within* a label anywhere in the corpus. The entire
+signal is in the bodies, which were written from scratch throughout, so the comparison is clean. We note without explaining it that this sits alongside 16d,
 where 41 to 51 of 131 choice menus were identical, which is not a contradiction once the two
 measures are distinguished as 16l does: menu identity is a two-word prefix match per position, and
 shared four-grams need four consecutive words; scale and how orthogonal the arms' house styles
