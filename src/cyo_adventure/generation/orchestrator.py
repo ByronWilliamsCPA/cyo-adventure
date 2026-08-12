@@ -36,6 +36,7 @@ from typing import TYPE_CHECKING, Literal, cast
 
 from cyo_adventure.generation.fidelity_gate import run_stage1_gate
 from cyo_adventure.generation.guarded import PiiGuardedProvider
+from cyo_adventure.generation.metered import ledger_of
 from cyo_adventure.generation.prompts import (
     build_bound_fill_prompt,
     build_fidelity_repair_prompt,
@@ -59,6 +60,7 @@ if TYPE_CHECKING:
     from cyo_adventure.generation.pii import PiiContext
     from cyo_adventure.generation.prompts import StagePrompt
     from cyo_adventure.generation.provider import GenerationProvider
+    from cyo_adventure.generation.usage import UsageLedger
     from cyo_adventure.validator.layer1 import Scale
 
 __all__ = [
@@ -168,6 +170,9 @@ class _Stage1Config:
             review-model default when ``review_stage1_model`` is unset (#134).
         settings: Application settings (review-backend selection).
         pii: PII context for the egress guard on the semantic-check prompt.
+        ledger: The run's usage ledger when the caller is metering, else
+            ``None``. Carried so the gate's own review call is billed to the
+            same job as the fill that provoked it.
     """
 
     original: dict[str, object]
@@ -175,6 +180,7 @@ class _Stage1Config:
     prep_model: str | None
     settings: Settings
     pii: PiiContext
+    ledger: UsageLedger | None = None
 
 
 @dataclass(slots=True)
@@ -336,11 +342,12 @@ async def _run_one_stage(
             from :class:`~cyo_adventure.generation.guarded.PiiGuardedProvider`
             before the inner provider is called).
     """
-    raw = await provider.complete(
+    completion = await provider.complete(
         system=stage_prompt.system,
         prompt=stage_prompt.user,
         max_tokens=max_tokens,
     )
+    raw = completion.text
 
     # Parse: treat any non-dict or non-JSON as a synthetic blocked gate.
     # #CRITICAL: data integrity: `raw` is untrusted model output, and a deeply
@@ -511,6 +518,7 @@ async def _next_repair_prompt(
         prep_model=ctx.stage1.prep_model,
         settings=ctx.stage1.settings,
         pii=ctx.stage1.pii,
+        ledger=ctx.stage1.ledger,
     )
     stage1_violations[:] = violations
     if not violations or attempts >= ctx.max_repairs:
@@ -856,6 +864,9 @@ async def fill_skeleton(
             prep_model=prep_model,
             settings=settings,
             pii=pii,
+            # Derived from the provider the caller handed us, so no call site
+            # has to learn about metering to be metered.
+            ledger=ledger_of(provider),
         )
         if settings is not None
         else None

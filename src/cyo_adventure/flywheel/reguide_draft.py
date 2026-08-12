@@ -638,7 +638,7 @@ async def draft_resolutions(  # noqa: PLR0913 -- one cohesive drafting orchestra
         completion = await provider.complete(
             system=system, prompt=user, max_tokens=_DRAFT_MAX_TOKENS
         )
-        drafted_text = completion.strip()
+        drafted_text = completion.text.strip()
         result = screen_draft(item, drafted_text, contract=contract, age_band=age_band)
         if not result.passed:
             continue

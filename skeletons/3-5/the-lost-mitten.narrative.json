@@ -47,9 +47,29 @@
       "sensory_trace",
       "testimony",
       "disturbance",
-      "container",
       "shared_effort",
-      "out_of_reach"
+      "out_of_reach",
+      "sound_cue",
+      "left_behind_piece",
+      "reflection",
+      "shadow_shape",
+      "counting_gap",
+      "lingering_warmth",
+      "texture_change",
+      "pointing_gesture",
+      "too_heavy",
+      "tucked_inside",
+      "stuck_fast",
+      "far_across",
+      "tool_use",
+      "ask_a_grown_up",
+      "take_turns",
+      "patient_waiting",
+      "pocket",
+      "basket",
+      "bag",
+      "hood",
+      "cupped_hands"
     ],
     "forbidden_device_kinds": [
       "deception",
@@ -63,23 +83,54 @@
       "clue_channels": {
         "count": 3,
         "unique_within_story": true,
-        "max_words": 10
+        "max_words": 10,
+        "kinds": [
+          "sensory_trace",
+          "testimony",
+          "disturbance",
+          "sound_cue",
+          "left_behind_piece",
+          "reflection",
+          "shadow_shape",
+          "counting_gap",
+          "lingering_warmth",
+          "texture_change",
+          "pointing_gesture"
+        ],
+        "note": "how the hero learns where the item went; each is a plain, concrete thing a three-year-old can see, hear, or touch. pointing_gesture is wordless and testimony is spoken, which is a real distinction for a pre-reader. shadow_shape stays playful, never looming"
       },
       "obstacle_kinds": {
         "count": 1,
         "kinds": [
-          "out_of_reach"
-        ]
+          "out_of_reach",
+          "too_heavy",
+          "tucked_inside",
+          "stuck_fast",
+          "far_across"
+        ],
+        "note": "what keeps the item from being picked straight up; a puzzle, never a hazard. Nothing here may put the hero at risk or require an adult to rescue them from danger"
       },
       "help_modes": {
         "count": 1,
         "kinds": [
-          "shared_effort"
-        ]
+          "shared_effort",
+          "tool_use",
+          "ask_a_grown_up",
+          "take_turns",
+          "patient_waiting"
+        ],
+        "note": "how the difficulty is answered; every mode is something the hero does with someone, never something done for them"
       },
       "containers": {
         "count": 1,
-        "note": "something the hero carries or wears home"
+        "note": "something the hero carries or wears home; must be present from early in the story, not produced at the end",
+        "kinds": [
+          "pocket",
+          "basket",
+          "bag",
+          "hood",
+          "cupped_hands"
+        ]
       }
     },
     "identity_roles": [
@@ -163,6 +214,7 @@
         "clue_channel": {
           "pick": 1,
           "from": "bible.device_vocabulary.clue_channels",
+          "category": "clue_channels",
           "unique_within_story": true,
           "assigned_at": "bind"
         }
@@ -205,6 +257,7 @@
         "clue_channel": {
           "pick": 1,
           "from": "bible.device_vocabulary.clue_channels",
+          "category": "clue_channels",
           "kind_must_be": "testimony",
           "unique_within_story": true,
           "assigned_at": "bind"
@@ -245,6 +298,7 @@
         "clue_channel": {
           "pick": 1,
           "from": "bible.device_vocabulary.clue_channels",
+          "category": "clue_channels",
           "unique_within_story": true,
           "assigned_at": "bind"
         }
@@ -316,6 +370,7 @@
         "obstacle": {
           "pick": 1,
           "from": "bible.device_vocabulary.obstacle_kinds",
+          "category": "obstacle_kinds",
           "assigned_at": "bind"
         }
       },
@@ -349,6 +404,7 @@
         "help_mode": {
           "pick": 1,
           "from": "bible.device_vocabulary.help_modes",
+          "category": "help_modes",
           "assigned_at": "bind"
         }
       },
@@ -382,6 +438,7 @@
         "container": {
           "pick": 1,
           "from": "bible.device_vocabulary.containers",
+          "category": "containers",
           "assigned_at": "bind",
           "note": "must be something the hero has carried or worn the whole story; plant it here naturally"
         }

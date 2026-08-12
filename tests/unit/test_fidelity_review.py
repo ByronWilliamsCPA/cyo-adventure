@@ -7,9 +7,19 @@ from typing import cast
 
 import pytest
 
+from cyo_adventure.generation.usage import Completion, TokenUsage
 from cyo_adventure.moderation.fidelity_review import run_semantic_fidelity_check
 
 pytestmark = pytest.mark.asyncio
+
+
+_REVIEW_USAGE = TokenUsage(
+    provider="scripted",
+    model="scripted",
+    input_tokens=None,
+    output_tokens=None,
+    duration_ms=0,
+)
 
 
 class _ScriptedReviewProvider:
@@ -19,20 +29,45 @@ class _ScriptedReviewProvider:
         self._response = response
         self.calls: list[tuple[str, str]] = []
 
-    async def complete(self, *, system: str, prompt: str, max_tokens: int) -> str:
+    async def complete(
+        self, *, system: str, prompt: str, max_tokens: int
+    ) -> Completion:
         """Record the call and return the scripted response."""
         _ = max_tokens
         self.calls.append((system, prompt))
-        return self._response
+        return Completion(text=self._response, usage=_REVIEW_USAGE)
 
 
-class _NonStringReviewProvider:
-    """A misbehaving double that violates the ``complete -> str`` contract."""
+class _NonCompletionReviewProvider:
+    """A misbehaving double that returns no Completion at all.
 
-    async def complete(self, *, system: str, prompt: str, max_tokens: int) -> str:
-        """Return a non-string, simulating a contract-violating provider."""
+    ReviewProvider is a structural protocol, so nothing stops an implementation
+    returning a bare string (the pre-instrumentation shape) or ``None``. That
+    is the likelier real-world violation than a malformed Completion, since it
+    is what every caller of the old contract returned.
+    """
+
+    async def complete(
+        self, *, system: str, prompt: str, max_tokens: int
+    ) -> Completion:
+        """Return a non-Completion, simulating a contract-violating provider."""
         _ = (system, prompt, max_tokens)
-        return cast("str", None)
+        return cast("Completion", None)
+
+
+class _NonStringTextReviewProvider:
+    """A double whose Completion carries a non-str ``text``.
+
+    Completion is a plain frozen dataclass with no runtime validation, so the
+    shape can be right while the payload is not.
+    """
+
+    async def complete(
+        self, *, system: str, prompt: str, max_tokens: int
+    ) -> Completion:
+        """Return a Completion whose text violates the declared ``str`` type."""
+        _ = (system, prompt, max_tokens)
+        return Completion(text=cast("str", None), usage=_REVIEW_USAGE)
 
 
 def _skeleton(body: str) -> dict[str, object]:
@@ -143,16 +178,25 @@ async def test_skips_node_with_valid_id_but_non_string_body() -> None:
     assert "n2" not in provider.calls[0][1]
 
 
-async def test_semantic_check_fails_open_on_non_string_response() -> None:
-    """A provider returning a non-str (contract violation) fails open, not crash.
+@pytest.mark.parametrize(
+    "provider",
+    [_NonCompletionReviewProvider(), _NonStringTextReviewProvider()],
+    ids=["not-a-completion", "completion-with-non-str-text"],
+)
+async def test_semantic_check_provider_contract_violation_fails_open(
+    provider: _NonCompletionReviewProvider | _NonStringTextReviewProvider,
+) -> None:
+    """A provider violating the contract fails open, at either boundary.
 
-    The isinstance guard before json.loads prevents a TypeError from a None (or
-    other non-str) response. This advisory-only check must treat a misbehaving
-    reviewer as "pass" (return None) rather than aborting the fill job.
+    Two guards run before json.loads: one that the return value is a
+    Completion, one that its text is a str. Both must hold, because binding the
+    result through ``object`` is the only thing keeping them live under a strict
+    type checker. This advisory-only check must treat a misbehaving reviewer as
+    "pass" (return None) rather than aborting the fill job with an
+    AttributeError or a TypeError.
     """
     original = _skeleton("<<FILL role=setup words=10 beats='a fox finds a lantern'>>")
     filled = _skeleton("A fox finds a lantern.")
-    provider = _NonStringReviewProvider()
 
     result = await run_semantic_fidelity_check(original, filled, provider)
 

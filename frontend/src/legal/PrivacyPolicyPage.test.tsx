@@ -142,7 +142,7 @@ describe('PrivacyPolicyPage', () => {
       //     evaluated when the sweep runs, not when the human decides, so a
       //     day-32 approval flips the storybook to published against a column
       //     that is already NULL. Without this clause the row implies the
-      //     decision retroactively rescues the output. UW-C226 tracks whether
+      //     decision retroactively rescues the output. UW-C227 tracks whether
       //     to close that window; until it is closed the page must say so.
       // See docs/compliance/data-retention-policy.md Section 4 and
       // tests/unit/test_report_retention.py's slow-review characterization test.

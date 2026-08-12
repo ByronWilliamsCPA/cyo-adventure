@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.78.0] - 2026-08-12
+
+### Features
+
+- Instrument generation cost and gate device-vocabulary feasibility
+  ([#701](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/701),
+  [`154d44f`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/154d44f59f369a13898ed287c76850a4892e4426))
+
+
 ## [0.77.1] - 2026-08-12
 
 ### Bug Fixes
@@ -3402,6 +3411,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.78.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.77.1...v0.78.0
 [0.77.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.77.0...v0.77.1
 [0.77.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.76.0...v0.77.0
 [0.76.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.75.0...v0.76.0

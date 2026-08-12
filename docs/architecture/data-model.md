@@ -358,6 +358,13 @@ erDiagram
         varchar(120) storybook_id "NULL; NOT a FK, see note below"
         int version "NULL"
         varchar(512) error "NULL"
+        int provider_call_count "NULL = not recorded; never 0 once recorded"
+        int provider_unknown_calls "NULL = not recorded; 0 = every call counted"
+        int input_tokens "NULL = not recorded; 0 = recorded, none consumed"
+        int output_tokens "NULL = not recorded; 0 = recorded, none consumed"
+        int provider_duration_ms "NULL = not recorded; 0 = sub-millisecond"
+        numeric(12,6) cost_usd "NULL = not recorded; lower bound unless cost_complete"
+        boolean cost_complete "NULL = not recorded; false = usage unknown, price missing, or capped"
         timestamptz created_at
         timestamptz updated_at
     }
@@ -990,6 +997,13 @@ jobs and cleared once the human-authored fill is imported.
 | storybook_id | VARCHAR(120) NULL | **Not a FK** (see note) |
 | version | INT NULL | Storybook version produced |
 | error | VARCHAR(512) NULL | Short error on failure |
+| provider_call_count | INT NULL | Provider calls this run made, across every stage and both models |
+| provider_unknown_calls | INT NULL | How many of those reported no usable token count |
+| input_tokens | INT NULL | Prompt tokens summed over the run's recorded calls |
+| output_tokens | INT NULL | Completion tokens, summed the same way |
+| provider_duration_ms | INT NULL | Milliseconds inside provider calls, not the job's total runtime |
+| cost_usd | NUMERIC(12,6) NULL | Summed per-call cost; a lower bound when `cost_complete` is false |
+| cost_complete | BOOLEAN NULL | False when any call went unpriced, went uncounted, or the total was capped to the column |
 | created_at | TIMESTAMPTZ | |
 | updated_at | TIMESTAMPTZ | `onupdate=func.now()` |
 
@@ -997,6 +1011,27 @@ jobs and cleared once the human-authored fill is imported.
 `storybook` row is created; a hard FK constraint would block inserting the failure
 record. The application layer verifies the storybook row exists independently when
 reading this field.
+
+The seven provider-accounting columns are typed rather than folded into `report`
+because `report` is purged (ADR-007) and cost history has to outlive prompt
+retention. On all seven, **NULL means "not recorded", never "zero"**: rows written
+before the accounting migration have none, and a run whose backend reported no
+usage is a third state again (`provider_call_count` set, `provider_unknown_calls`
+non-zero). A SUM across a mix of recorded and unrecorded jobs is therefore a lower
+bound, not a total, and is only defensible alongside `provider_unknown_calls` and
+`cost_complete`.
+
+A recorded zero is a real reading and must not be read as absence: `input_tokens = 0`
+means the run was counted and consumed none, and `provider_unknown_calls = 0` means
+every call reported usable counts. `provider_call_count` is the exception, since a
+recorded job made at least one call and so is never 0.
+
+`cost_complete` is false under three distinct conditions, and the column does not
+distinguish them: a model had no price entry, a call reported no usable token count,
+or the summed amount exceeded `NUMERIC(12, 6)` and was capped to `999999.999999`
+before it reached the driver (see `generation/cost.py::fit_cost_to_column`). All
+three mean the same thing to a reader, that `cost_usd` is a lower bound, which is
+why one flag carries all three.
 
 ### `moderation_threshold`
 

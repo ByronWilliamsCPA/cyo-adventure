@@ -118,9 +118,10 @@ async def attempt_repair(
         f"Revise this story to address these findings:\n{findings_text}\n\n"
         f"Story JSON:\n<untrusted_passage>\n{sanitized_blob}\n</untrusted_passage>"
     )
-    raw = await guarded.complete(
+    completion = await guarded.complete(
         system=_REPAIR_SYSTEM, prompt=prompt, max_tokens=max_tokens
     )
+    raw = completion.text
     try:
         parsed: object = cast("object", json.loads(raw))
     except json.JSONDecodeError:

@@ -1,0 +1,125 @@
+"""Run-level cost aggregation over a usage ledger.
+
+Sits between :mod:`cyo_adventure.generation.usage` (what the calls consumed)
+and :mod:`cyo_adventure.core.pricing` (what a token costs), and belongs to
+neither: ``usage`` stays free of money and ``core.pricing`` stays free of any
+import from ``generation``.
+
+Cost is summed **per call**, never over the run's token totals. One job routinely
+mixes models: the generation stages run on the configured generation model while
+the review stages run on the review model, and a fallback chain can move a
+single call to a different leg mid-run. Multiplying a run's summed tokens by any
+one price would therefore bill some calls at another model's rate, and the error
+grows with exactly the mixed-model runs the pipeline is built around.
+"""
+
+from __future__ import annotations
+
+from decimal import ROUND_HALF_UP, Decimal
+from typing import TYPE_CHECKING
+
+from cyo_adventure.core.pricing import CostEstimate, estimate_cost, price_for
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+
+    from cyo_adventure.generation.usage import TokenUsage
+
+__all__ = ["estimate_run_cost", "fit_cost_to_column"]
+
+# How many distinct shortfalls a run's `reason` names before it summarises. A
+# run makes tens of calls, and an unpriced model produces one identical reason
+# per call; the cap keeps the string readable without hiding that more exist.
+_MAX_REASONS = 4
+
+# The persisted column is NUMERIC(12, 6): 6 integer digits and 6 fractional.
+# Postgres treats the two halves of that declaration differently, and the
+# asymmetry is the whole reason `fit_cost_to_column` exists rather than a bare
+# assignment: excess SCALE is rounded to fit, but an out-of-range INTEGER part
+# raises `numeric field overflow`.
+# Source of truth: supabase/migrations/20260811160000_add_generation_job_
+# provider_accounting.sql. Widening the column means widening these two.
+_COST_SCALE = Decimal("0.000001")
+_MAX_COST_USD = Decimal("999999.999999")
+
+
+def estimate_run_cost(calls: Iterable[TokenUsage]) -> CostEstimate:
+    """Cost every recorded call at its own model's price and sum the results.
+
+    Args:
+        calls: The run's recorded calls, typically
+            :attr:`~cyo_adventure.generation.usage.UsageLedger.calls`.
+
+    Returns:
+        The summed cost, marked ``complete`` only when every call was fully
+        priced and fully counted. An incomplete result is a lower bound: the
+        halves it could not cost contribute nothing, and omitting a cost can
+        only push the total down.
+    """
+    # #CRITICAL: payment/financial: a single unpriced or uncounted call must
+    # make the WHOLE run incomplete. `complete` is ANDed across calls rather
+    # than reported per call and lost in the sum, because the persisted figure
+    # is one number and a reader cannot recover which calls it under-counted.
+    # #VERIFY: test_one_unpriced_call_makes_the_whole_run_incomplete.
+    total = Decimal(0)
+    complete = True
+    reasons: list[str] = []
+
+    for call in calls:
+        estimate = estimate_cost(
+            price_for(call.provider, call.model),
+            call.input_tokens,
+            call.output_tokens,
+        )
+        total += estimate.amount_usd
+        if not estimate.complete:
+            complete = False
+            detail = f"{call.provider}/{call.model}: {estimate.reason}"
+            if detail not in reasons:
+                reasons.append(detail)
+
+    if len(reasons) > _MAX_REASONS:
+        dropped = len(reasons) - _MAX_REASONS
+        reasons = [*reasons[:_MAX_REASONS], f"and {dropped} more"]
+
+    return CostEstimate(
+        amount_usd=total,
+        complete=complete,
+        reason="; ".join(reasons),
+    )
+
+
+def fit_cost_to_column(amount: Decimal) -> tuple[Decimal, bool]:
+    """Return ``amount`` in the exact shape the ``cost_usd`` column stores.
+
+    Args:
+        amount: A summed run cost, typically
+            :attr:`~cyo_adventure.core.pricing.CostEstimate.amount_usd`.
+
+    Returns:
+        The value to persist and whether it was capped. A capped amount is a
+        lower bound on the real spend, which is exactly what ``cost_complete``
+        already means, so the caller ANDs the flag rather than inventing a
+        second signal. Rounding to scale is NOT capping: it moves the figure
+        by under a millionth of a dollar and leaves completeness alone.
+    """
+    # #CRITICAL: payment/financial: an amount wider than the column must be
+    # capped HERE, in memory, and never handed to the driver. Postgres raises
+    # `numeric field overflow` at COMMIT rather than at assignment, and both
+    # writers of this column commit: the success path, and `_record_failure`
+    # in the interrupt guard. An uncapped overflow therefore double-faults,
+    # the second raise displacing the first, and the job is stranded in
+    # `queued`/`running` with no failure recorded at all: the precise outcome
+    # that guard exists to prevent.
+    # #VERIFY: tests/unit/test_cost.py::
+    # test_an_amount_past_the_column_maximum_is_capped_and_incomplete and
+    # test_rounding_to_scale_is_not_capping; end to end, tests/unit/
+    # test_worker.py::TestProviderAccounting::
+    # test_a_cost_past_the_column_maximum_is_capped_before_the_driver.
+    if amount > _MAX_COST_USD:
+        return _MAX_COST_USD, True
+    # Negative totals are unreachable: token counts are rejected below zero by
+    # `coerce_token_count` and every price is non-negative, so the sum cannot
+    # go below zero. Only the upper bound is guarded, so a negative would
+    # surface as an error rather than being quietly absorbed.
+    return amount.quantize(_COST_SCALE, rounding=ROUND_HALF_UP), False

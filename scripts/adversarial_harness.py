@@ -69,6 +69,7 @@ _REPO_ROOT = Path(__file__).resolve().parent.parent
 if TYPE_CHECKING:
     from collections.abc import Mapping, Sequence
 
+    from cyo_adventure.generation.usage import Completion
     from cyo_adventure.moderation.report import Finding
 
 __all__ = [
@@ -548,7 +549,9 @@ class _CountingProvider:
     inner: ReviewProvider
     calls: int = 0
 
-    async def complete(self, *, system: str, prompt: str, max_tokens: int) -> str:
+    async def complete(
+        self, *, system: str, prompt: str, max_tokens: int
+    ) -> Completion:
         """Delegate to the wrapped provider, incrementing ``calls`` first."""
         self.calls += 1
         return await self.inner.complete(

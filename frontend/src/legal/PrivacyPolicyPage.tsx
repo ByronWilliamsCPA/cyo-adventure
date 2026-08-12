@@ -88,7 +88,7 @@ import './legal.css'
  *     a REVIEWER is at status "passed" and is on the clock. An earlier draft of
  *     this row said "a run left waiting on a person has no timer on it at all",
  *     which conflated the two and read as a promise for the reviewer case. See
- *     UW-C226 and test_slow_review_report_is_purged_before_the_human_decides.
+ *     UW-C227 and test_slow_review_report_is_purged_before_the_human_decides.
  *
  * Relationship to the consent record: `auth/onboardingApi.ts` holds
  * CONSENT_POLICY_VERSION, the stamp stored on `User.consent_policy_version` so

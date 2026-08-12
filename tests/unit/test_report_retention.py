@@ -459,7 +459,7 @@ def test_slow_review_report_is_purged_before_the_human_decides() -> None:
     that is the fix landing, not a regression.** Delete this test, drop the
     #CRITICAL slow-review block on ``GenerationJob.report`` in db/models.py, and
     remove the corresponding caveat from data-retention-policy.md section 4,
-    privacy-model.md and ADR-007. Tracked as ``UW-C226``.
+    privacy-model.md and ADR-007. Tracked as ``UW-C227``.
 
     Raised by CodeRabbit on PR #703. The defect belongs to the 2026-08-10
     amendment, not to this PR's removal of the on-publish null; closing it means

@@ -24,6 +24,7 @@ one is calibrated for, so that "did this book pass" has a single answer.
 | `check_reading_level` | is the whole book too hard for its band | yes |
 | `check_label_template` | is the book identifiable from its labels alone | yes |
 | `check_promise_discharge` | does a choice promise what nothing delivers | yes |
+| `check_device_vocabulary` | can the contract's vocabulary support the series | yes |
 | `check_sibling_fills` | do sibling books converge on shared wording | yes, with 2+ books |
 | `check_device_collision` | do sibling books share their props | yes, with 2+ bindings |
 
@@ -85,7 +86,11 @@ def _run(script: str, *args: str) -> tuple[int, str]:
 
 
 def battery(
-    skeleton: str, contract: str, filled: list[str], bindings: list[str]
+    skeleton: str,
+    contract: str,
+    filled: list[str],
+    bindings: list[str],
+    series_books: int | None = None,
 ) -> list[Result]:
     """Run every guard over one or more sibling books.
 
@@ -94,10 +99,16 @@ def battery(
         contract: A narrative contract over it.
         filled: One or more finished storybooks.
         bindings: Zero or more device selections, one per book.
+        series_books: How many books the contract must ultimately support.
+            Defaults to the number given, which checks feasibility for these
+            books only. Pass the intended series length when validating part
+            of a series, or the vocabulary check passes on a subset while the
+            contract is already infeasible at a later book.
 
     Returns:
         Every guard's Result, per book and per sibling pair.
     """
+    series_books = series_books if series_books is not None else len(filled)
     out: list[Result] = []
     for book in filled:
         name = Path(book).stem
@@ -122,6 +133,30 @@ def battery(
     code, detail = _run("check_promise_discharge.py", skeleton, contract, "--check")
     out.append(
         Result("check_promise_discharge", "contract", code == 0, detail, gating=True)
+    )
+
+    # Also contract-scoped, and deliberately ordered after nothing: it is the
+    # UPSTREAM feasibility question. check_device_collision below asks whether
+    # these books collided; this asks whether the contract's vocabulary could
+    # have let them avoid it. A contract that runs out of kinds fails here on
+    # one JSON read, instead of downstream as a diversity failure that no
+    # amount of re-binding fixes (AL-195: a wasted rated round is the price).
+    # --check is what makes it gate, per the check_prose_craft note above.
+    code, detail = _run(
+        "check_device_vocabulary.py",
+        contract,
+        "--books",
+        str(series_books),
+        "--check",
+    )
+    out.append(
+        Result(
+            "check_device_vocabulary",
+            f"contract, {series_books} book(s)",
+            code == 0,
+            detail,
+            gating=True,
+        )
     )
 
     if len(filled) >= _PAIR:
@@ -174,10 +209,31 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("contract")
     parser.add_argument("filled", nargs="+")
     parser.add_argument("--binding", action="append", default=[], dest="bindings")
+    parser.add_argument(
+        "--series-books",
+        type=int,
+        default=None,
+        help=(
+            "how many books the contract must support (default: the number "
+            "of books given). Pass the intended series length when checking "
+            "a subset."
+        ),
+    )
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args(argv)
+    if args.series_books is not None and args.series_books < 1:
+        sys.stderr.write(
+            f"error: --series-books must be at least 1, got {args.series_books}\n"
+        )
+        return 2
 
-    results = battery(args.skeleton, args.contract, args.filled, args.bindings)
+    results = battery(
+        args.skeleton,
+        args.contract,
+        args.filled,
+        args.bindings,
+        args.series_books,
+    )
     width = max(len(r.guard) for r in results)
     for r in results:
         mark = "ok  " if r.ok else "FAIL"

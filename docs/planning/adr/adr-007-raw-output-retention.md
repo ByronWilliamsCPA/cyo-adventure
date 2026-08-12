@@ -61,7 +61,7 @@ Consequences, stated plainly because this widens retention:
   A job at status `passed` whose storybook is still `in_review` on day 31 is purged, and the
   approval on day 32 flips the storybook to `published` against a column that is already NULL.
   The calibration-corpus rationale below therefore holds only for reviews concluding inside 30
-  days of the job's last update. Tracked as `UW-C226` with
+  days of the job's last update. Tracked as `UW-C227` with
   `test_slow_review_report_is_purged_before_the_human_decides` pinning the current behaviour. Closing it means widening the predicate to every non-exempt status, which is a
   separate decision with its own deletion consequences and is tracked as a known gap in
   `docs/compliance/data-retention-policy.md` Section 4 rather than assumed here.

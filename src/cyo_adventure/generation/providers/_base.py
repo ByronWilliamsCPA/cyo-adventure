@@ -10,13 +10,17 @@ single-attempt HTTP logic.
 from __future__ import annotations
 
 import asyncio
+import time
 from typing import TYPE_CHECKING, Final, cast
 
 from cyo_adventure.core.exceptions import ProviderError
+from cyo_adventure.generation.usage import coerce_token_count
 from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
     from collections.abc import Awaitable, Callable
+
+    from cyo_adventure.generation.usage import Completion
 
 logger = get_logger(__name__)
 
@@ -98,20 +102,82 @@ def dig_content(payload: object) -> str | None:
     return content if isinstance(content, str) else None
 
 
+def dig_usage(payload: object) -> tuple[int | None, int | None]:
+    """Safely extract ``usage.prompt_tokens``/``usage.completion_tokens``.
+
+    Shared by every OpenAI-chat-completions-shaped adapter (OpenRouter, Modal),
+    which report usage in that block. Narrows the untrusted decoded JSON the
+    same defensive way :func:`dig_content` does, so a response that omits the
+    block, or carries a non-numeric count, yields ``None`` (not reported)
+    rather than ``0`` (free) or an exception.
+
+    Args:
+        payload: The decoded JSON response (untrusted shape).
+
+    Returns:
+        ``(input_tokens, output_tokens)``, each ``None`` when absent or
+        unusable.
+    """
+    # #CRITICAL: data-integrity: these counts feed a persisted spend figure,
+    # and every layer below is untrusted decoded JSON: the block can be
+    # absent, be a non-mapping, or carry a non-int count on an otherwise
+    # valid 200. Each narrowing step below must keep reporting None
+    # (unknown), never 0 (free), because a zero is indistinguishable from a
+    # genuinely free call once it reaches `cost_usd`. This is the same
+    # assumption `AnthropicProvider._usage_counts` carries; it lives here
+    # once because OpenRouter and Modal both route through this helper.
+    # #VERIFY: test_openrouter_missing_usage_block_reports_unknown,
+    # test_openrouter_malformed_usage_reports_unknown.
+    top = as_str_map(payload)
+    if top is None:
+        return (None, None)
+    usage = as_str_map(top.get("usage"))
+    if usage is None:
+        return (None, None)
+    return (
+        coerce_token_count(usage.get("prompt_tokens")),
+        coerce_token_count(usage.get("completion_tokens")),
+    )
+
+
+def elapsed_ms(start: float) -> int:
+    """Return whole milliseconds elapsed since a :func:`time.monotonic` reading.
+
+    Monotonic rather than wall-clock so a clock adjustment mid-call cannot
+    produce a negative or absurd duration.
+
+    Args:
+        start: The :func:`time.monotonic` value captured before the work.
+
+    Returns:
+        Elapsed milliseconds, rounded to the nearest integer and floored at
+        zero.
+    """
+    return max(0, round((time.monotonic() - start) * 1000))
+
+
 async def run_with_retries(
-    attempt: Callable[[], Awaitable[str]],
+    attempt: Callable[[], Awaitable[Completion]],
     *,
     provider: str,
     model: str,
     max_retries: int,
     backoff_base_seconds: float,
     sleep: Callable[[float], Awaitable[None]] = asyncio.sleep,
-) -> str:
+) -> Completion:
     """Drive ``attempt`` with transient-only exponential-backoff retries.
+
+    The returned :class:`~cyo_adventure.generation.usage.Completion` carries
+    the duration of the **successful** attempt only. Retried attempts are
+    excluded deliberately: a transient failure is typically a 429 or a
+    connection error, which is not billed, so folding its duration into the
+    usage record would inflate a figure meant to price the work that was
+    actually done. The retry itself is already visible in the
+    ``provider.transient_retry`` log line.
 
     Args:
         attempt: A zero-arg coroutine performing one HTTP attempt; returns the
-            completion text or raises :class:`ProviderError`.
+            completion and its usage, or raises :class:`ProviderError`.
         provider: Provider/leg name for logs and the exhaustion error.
         model: Model id for logs and the exhaustion error.
         max_retries: Number of attempts for transient failures.
@@ -121,7 +187,7 @@ async def run_with_retries(
         sleep: Injectable async sleep (defaults to :func:`asyncio.sleep`).
 
     Returns:
-        The completion text from the first successful attempt.
+        The completion from the first successful attempt.
 
     Raises:
         ProviderError: Immediately if an attempt raises a leg-fatal error; or

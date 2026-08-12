@@ -194,7 +194,7 @@ deletion routes on 2026-08-12 rather than inferred from the policy text:**
   rather than to the 2026-08-11 one, and closing it means either touching `updated_at` when a
   decision is recorded or dropping the status filter for storybooks still awaiting one; both
   change what is retained, so both are owner decisions. Raised in review of PR #703, tracked as
-  `UW-C226`, and pinned by `test_slow_review_report_is_purged_before_the_human_decides` so the
+  `UW-C227`, and pinned by `test_slow_review_report_is_purged_before_the_human_decides` so the
   window cannot be quietly assumed shut.
 
 - **Per-child erasure does not reach it.** Section 3 states this in full. `concept` carries

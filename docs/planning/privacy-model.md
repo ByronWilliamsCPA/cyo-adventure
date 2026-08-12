@@ -150,7 +150,7 @@ undecided one is short-lived. The detail is in the second bullet.
   storybook is still `in_review` on day 31 is purged, and a later approval cannot restore the
   column, so the pairing this exemption exists to enable only happens for reviews that
   conclude inside the 30 days. See `docs/compliance/data-retention-policy.md` Section 4 and
-  `UW-C226`.
+  `UW-C227`.
 
   ```python
   # #CRITICAL: data integrity: generation_job.report holds raw LLM output that may
