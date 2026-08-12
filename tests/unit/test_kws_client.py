@@ -342,13 +342,15 @@ class TestTokenHandling:
         """A brand new token rejected again is a real authorization failure.
 
         Retrying past this point would loop against a credential problem no
-        amount of waiting fixes.
+        amount of waiting fixes, which is why the error is the
+        operator-facing ConfigurationError and not the retryable
+        ExternalServiceError (see TestCredentialRejection).
         """
         recorder = _Recorder([401])
 
         client = _client(recorder)
 
-        with pytest.raises(ExternalServiceError):
+        with pytest.raises(ConfigurationError):
             await client.send_verification_email(_REQUEST, correlation=_CORRELATION)
 
         assert recorder.token_calls == 2
@@ -356,7 +358,7 @@ class TestTokenHandling:
     @pytest.mark.unit
     @pytest.mark.asyncio
     async def test_auth_failure_is_reported_not_swallowed(self) -> None:
-        """Bad client credentials surface as an upstream error."""
+        """Bad client credentials surface as an operator-fixable error."""
 
         def handle(request: httpx.Request) -> httpx.Response:
             del request
@@ -364,7 +366,7 @@ class TestTokenHandling:
 
         client = KwsClient(httpx.AsyncClient(transport=httpx.MockTransport(handle)))
 
-        with pytest.raises(ExternalServiceError):
+        with pytest.raises(ConfigurationError):
             await client.send_verification_email(_REQUEST, correlation=_CORRELATION)
 
     @pytest.mark.unit
@@ -598,6 +600,110 @@ class TestRefusalToRun:
             await client.send_verification_email(_REQUEST, correlation=_CORRELATION)
 
         assert recorder.requests == []
+
+
+@pytest.mark.usefixtures("_configured")
+class TestCredentialRejection:
+    """A rejected credential is the operator's problem, not the parent's.
+
+    UW-A55 gave ExternalServiceError its own 502 so a transient vendor
+    failure would stop reading as a permanent refusal. That leaves the mirror
+    defect live unless the credential case is split back out: a wrong client
+    id or API key would otherwise arrive as the same 502, and the page's
+    502 copy invites the retry that cannot possibly work. These tests pin the
+    split at both legs and in both directions.
+    """
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("status", [401, 403])
+    async def test_the_token_leg_rejecting_us_is_a_configuration_error(
+        self, status: int
+    ) -> None:
+        """A client-credentials grant carries no user input.
+
+        Nothing a guardian did can make the token endpoint answer 401 or 403,
+        so the only remaining explanation is our own client id, API key, or
+        grant, and no retry changes any of them.
+        """
+
+        def handle(request: httpx.Request) -> httpx.Response:
+            del request
+            return httpx.Response(status, json={})
+
+        client = KwsClient(httpx.AsyncClient(transport=httpx.MockTransport(handle)))
+
+        with pytest.raises(ConfigurationError):
+            await client.send_verification_email(_REQUEST, correlation=_CORRELATION)
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_a_send_leg_403_is_a_configuration_error(self) -> None:
+        """A 403 on the send leg is the "Request blocked" User-Agent answer.
+
+        Vendor constraint 1: a missing or empty User-Agent is a 403 that
+        reads like an authorization failure. Either reading is an operator
+        setting, never a transient outage.
+        """
+        recorder = _Recorder([403])
+
+        client = _client(recorder)
+
+        with pytest.raises(ConfigurationError):
+            await client.send_verification_email(_REQUEST, correlation=_CORRELATION)
+
+        # One attempt, not three: a blocked request is blocked on every retry
+        # and each one spends a slot from the address's hourly budget.
+        assert len(recorder.send_requests) == 1
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_a_credential_rejection_tells_the_client_nothing_about_the_vendor(
+        self,
+    ) -> None:
+        """The diagnostic goes to the log; the error body does not carry it.
+
+        The counterpart to app.py's `_SENSITIVE_DETAIL_KEYS`: that prunes the
+        vendor's identity and status out of a response body, and this keeps
+        them from being written into the message string, where no pruning
+        would reach them.
+        """
+        recorder = _Recorder([403])
+        client = _client(recorder)
+
+        with (
+            patch("cyo_adventure.consent.kws_client.logger") as mock_logger,
+            pytest.raises(ConfigurationError) as caught,
+        ):
+            await client.send_verification_email(_REQUEST, correlation=_CORRELATION)
+
+        rendered = json.dumps(caught.value.to_dict())
+        assert "KWS" not in rendered
+        assert "kws" not in rendered
+        assert "403" not in rendered
+        # The operator keeps both, on a distinctly-named event an alert can
+        # key on without parsing a generic failure line.
+        logged = _rendered(mock_logger)
+        assert "kws_credentials_rejected" in logged
+        assert "403" in logged
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_a_5xx_is_still_the_retryable_error(self) -> None:
+        """The split must not swallow the case UW-A55 was actually about.
+
+        Without this, narrowing 401/403 to ConfigurationError could be
+        satisfied by narrowing everything, which would put a genuine outage
+        back on the "contact support" copy it was moved off.
+        """
+        recorder = _Recorder([503])
+        client = _client(recorder)
+
+        with (
+            patch("cyo_adventure.consent.kws_client._BACKOFF_BASE_SECONDS", 0),
+            pytest.raises(ExternalServiceError),
+        ):
+            await client.send_verification_email(_REQUEST, correlation=_CORRELATION)
 
 
 @pytest.mark.usefixtures("_configured")

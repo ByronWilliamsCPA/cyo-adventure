@@ -12,8 +12,11 @@ Exception Hierarchy:
     ├── AuthorizationError (permission/access denied)
     ├── ExternalServiceError (third-party service failures)
     │   ├── APIError (external API errors)
-    │   └── DatabaseError (database operation errors)
+    │   ├── DatabaseError (database operation errors)
+    │   └── ProviderError (generation provider/LLM backend failures)
     └── BusinessLogicError (domain/business rule violations)
+        ├── StateTransitionError (illegal lifecycle transition)
+        └── RateLimitedError (a per-account quota is spent)
 
 Usage:
     from cyo_adventure.core.exceptions import (
@@ -304,6 +307,13 @@ class ExternalServiceError(ProjectBaseError):
 
     Base class for errors from external services (APIs, databases, etc.).
 
+    Mapped to HTTP 502 Bad Gateway (``app.py::_STATUS_BY_EXCEPTION``, UW-A55):
+    the failure is on the far side of a call this app made, so retrying may
+    succeed once the dependency recovers, unlike a 400/403/409 refusal this
+    app itself decided. A subclass with no entry of its own (``APIError``,
+    ``DatabaseError``, ``ProviderError``) inherits 502 through this row via
+    ``isinstance``, not through a separate row.
+
     Example:
         >>> raise ExternalServiceError(
         ...     "Payment gateway unavailable",
@@ -344,6 +354,10 @@ class APIError(ExternalServiceError):
     """External API errors.
 
     Raised when calls to external APIs fail.
+
+    Carries no ``_STATUS_BY_EXCEPTION`` row of its own; it is mapped to HTTP
+    502 by matching its parent's row (``ExternalServiceError``, above) via
+    ``isinstance``.
 
     Example:
         >>> raise APIError(

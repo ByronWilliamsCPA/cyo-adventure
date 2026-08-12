@@ -42,6 +42,7 @@ from cyo_adventure.core.config import settings
 from cyo_adventure.core.exceptions import (
     ConfigurationError,
     ExternalServiceError,
+    ProjectBaseError,
     ValidationError,
 )
 from cyo_adventure.utils.logging import get_logger
@@ -79,8 +80,26 @@ _BACKOFF_BASE_SECONDS: Final = 0.5
 _TOKEN_REFRESH_RATIO: Final = 0.9
 
 _HTTP_UNAUTHORIZED: Final = 401
+_HTTP_FORBIDDEN: Final = 403
 _HTTP_TOO_MANY_REQUESTS: Final = 429
 _HTTP_SERVER_ERROR: Final = 500
+
+# The statuses that mean "the operator has to fix something", not "the vendor
+# is having a bad minute". A 401 that survives one forced re-authentication is
+# a rejected client id or API key, or a grant this client has lost; a 403 is
+# either the same answer by another name or the "Request blocked" KWS returns
+# for a missing User-Agent (vendor constraint 1 in the module docstring). None
+# of them clears by waiting.
+_CREDENTIAL_REJECTION_STATUSES: Final = frozenset({_HTTP_UNAUTHORIZED, _HTTP_FORBIDDEN})
+
+# Deliberately says nothing about which vendor answered or how. The caller of
+# this module is a browser holding a guardian's session, and "an operator must
+# fix this" is the whole of what it can act on; the diagnostic goes to the log
+# line beside every raise instead.
+_MISCONFIGURED_MESSAGE: Final = (
+    "parent verification is misconfigured on this deployment; an operator must "
+    "correct it before a verification email can be sent"
+)
 
 # ISO 3166-1 alpha-2 ("US") or an ISO 3166-2 subdivision ("US-NY", "GB-ENG").
 # Shape only: this rejects obvious mistakes such as a full country name or a
@@ -249,6 +268,43 @@ def _is_retryable(status: int) -> bool:
     return status >= _HTTP_SERVER_ERROR
 
 
+def _credential_rejection(status: int, *, leg: str) -> ConfigurationError:
+    """Build the operator-facing error for a credential or config rejection.
+
+    #CRITICAL: external resources: a rejected credential must NOT leave this
+    module as the ``ExternalServiceError`` a timeout or a 5xx produces. Since
+    UW-A55 that class is HTTP 502, which
+    ``GuardianVerificationPage.tsx::messageForStartError`` renders as "this
+    may clear, try again"; a wrong client id or API key never clears on a
+    retry, so that advice would loop a parent against a condition only an
+    operator can fix, which is the exact failure UW-A55 set out to remove, one
+    status code further along. ``ConfigurationError`` puts it on the existing
+    400 path beside "KWS is not configured", where the copy already reads
+    "trying again will not help, so please contact support".
+    #VERIFY: tests/unit/test_kws_client.py::TestCredentialRejection.
+
+    #CRITICAL: security: the returned message names neither the vendor nor its
+    status. Both travel on the log line below instead, which is where an
+    operator reads them and a guardian's browser does not.
+    #VERIFY: tests/unit/test_kws_client.py::
+    test_a_credential_rejection_tells_the_client_nothing_about_the_vendor.
+
+    Args:
+        status: The rejecting HTTP status (401 or 403).
+        leg: Which call was rejected, ``"auth"`` or ``"send"``, for the log.
+
+    Returns:
+        ConfigurationError: The operator-fixable error to raise.
+    """
+    logger.error(
+        "kws_credentials_rejected",
+        status_code=status,
+        leg=leg,
+        kws_environment=settings.kws_environment,
+    )
+    return ConfigurationError(_MISCONFIGURED_MESSAGE)
+
+
 class KwsClient:
     """A client for the KWS Parent Verification Service send leg.
 
@@ -306,9 +362,14 @@ class KwsClient:
                 under, echoed back for callers that discarded their copy.
 
         Raises:
-            ConfigurationError: When the integration is unconfigured.
+            ConfigurationError: When the integration is unconfigured, or when
+                KWS rejects our credentials or blocks the request (401/403 on
+                either leg). Both are operator-fixable and reach the browser
+                as a 400 that says so, never as the retryable 502 below.
             ValidationError: When the request would be rejected by KWS.
-            ExternalServiceError: When KWS rejects or fails the call.
+            ExternalServiceError: When KWS fails the call for a reason that
+                may clear on its own (5xx, timeout, transport failure, the
+                per-address rate limit).
         """
         api_origin, credentials = _require_configured()
         _validate(request)
@@ -357,8 +418,10 @@ class KwsClient:
             credentials: The resolved auth credentials.
 
         Raises:
-            ExternalServiceError: On a non-2xx that is not worth retrying, or
-                once the retry budget is exhausted.
+            ConfigurationError: On a 401 that survived a forced re-auth, or a
+                403; both are operator-fixable rather than transient.
+            ExternalServiceError: On any other non-2xx that is not worth
+                retrying, or once the retry budget is exhausted.
         """
         if self._injected is not None:
             await self._attempt_loop(self._injected, url, body, credentials)
@@ -382,8 +445,10 @@ class KwsClient:
             credentials: The resolved auth credentials.
 
         Raises:
-            ExternalServiceError: On a terminal status, a transport failure
-                after the last attempt, or an exhausted retry budget.
+            ConfigurationError: On a 401 that survived the one forced re-auth,
+                or on a 403; see ``_credential_rejection``.
+            ExternalServiceError: On any other terminal status, a transport
+                failure after the last attempt, or an exhausted retry budget.
         """
         reauthenticated = False
         for attempt in range(1, _MAX_ATTEMPTS + 1):
@@ -425,18 +490,30 @@ class KwsClient:
                 raise self._terminal_error(response.status_code)
             await self._back_off(attempt, reason=str(response.status_code))
 
-    def _terminal_error(self, status: int) -> ExternalServiceError:
+    def _terminal_error(self, status: int) -> ProjectBaseError:
         """Build the error for a status we will not retry.
+
+        The return type is the shared base rather than
+        ``ExternalServiceError``, because the two terminal outcomes are not
+        the same kind of failure and must not carry the same HTTP status: a
+        401/403 is the operator's to fix (400 via ``ConfigurationError``) and
+        everything else here is the vendor's (502 via
+        ``ExternalServiceError``). Collapsing them was UW-A55's defect
+        re-created one status code along.
 
         Args:
             status: The HTTP status returned by KWS.
 
         Returns:
-            ExternalServiceError: Carrying the status, and a distinct
-                ``error_code`` for the rate limit so a caller can tell a
-                guardian "too many attempts for that address in the last hour"
-                instead of a generic upstream failure.
+            ProjectBaseError: ``ConfigurationError`` for a credential or
+                configuration rejection; otherwise ``ExternalServiceError``
+                carrying the status, with a distinct ``error_code`` for the
+                rate limit so a caller can tell a guardian "too many attempts
+                for that address in the last hour" instead of a generic
+                upstream failure.
         """
+        if status in _CREDENTIAL_REJECTION_STATUSES:
+            return _credential_rejection(status, leg="send")
         rate_limited = status == _HTTP_TOO_MANY_REQUESTS
         msg = (
             "KWS is rate limiting verification emails for this address"
@@ -506,7 +583,10 @@ class KwsClient:
             str: A bearer token.
 
         Raises:
-            ExternalServiceError: When authentication fails.
+            ConfigurationError: When the token endpoint rejects our client
+                credentials (401/403).
+            ExternalServiceError: When authentication fails for any other
+                reason.
         """
         cached = self._cached_token()
         if cached is not None:
@@ -532,8 +612,13 @@ class KwsClient:
             str: The new bearer token.
 
         Raises:
-            ExternalServiceError: On a non-2xx, a transport failure, or a body
-                without an ``access_token``.
+            ConfigurationError: When the token endpoint answers 401 or 403.
+                A client-credentials grant is machine-to-machine and carries
+                no user input, so a rejection here can only mean our own
+                client id, API key, or grant is wrong: an operator's problem,
+                and one no retry resolves.
+            ExternalServiceError: On any other non-2xx, a transport failure,
+                or a body without an ``access_token``.
         """
         try:
             response = await client.post(
@@ -555,7 +640,9 @@ class KwsClient:
 
         if not response.is_success:
             self._invalidate_token()
-            msg = "KWS rejected the client credentials"
+            if response.status_code in _CREDENTIAL_REJECTION_STATUSES:
+                raise _credential_rejection(response.status_code, leg="auth")
+            msg = "KWS authentication failed"
             raise ExternalServiceError(
                 msg, service_name=_SERVICE, status_code=response.status_code
             )

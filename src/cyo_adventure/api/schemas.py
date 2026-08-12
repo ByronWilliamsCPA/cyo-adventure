@@ -3300,6 +3300,7 @@ _ERROR_DESCRIPTIONS: dict[int, str] = {
     404: "The referenced resource does not exist.",
     409: "The action conflicts with the resource's current state.",
     429: "A per-account quota was exhausted; the action may succeed later.",
+    502: "An external service failed or timed out; the action may succeed later.",
 }
 
 

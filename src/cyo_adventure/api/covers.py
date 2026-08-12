@@ -96,7 +96,7 @@ async def _status_view(row: StorybookVersion) -> CoverStatusView:
 
 @router.post(
     "/storybooks/{storybook_id}/versions/{version}/cover",
-    responses=error_responses(400),
+    responses=error_responses(400, 502),
 )
 async def request_cover(
     storybook_id: str,
@@ -149,8 +149,12 @@ async def request_cover(
     # #CRITICAL: external resources: if the RQ broker is unreachable, enqueue
     # raises; roll the row off "generating" to "failed" (committed) before
     # surfacing the error so the console shows the retry affordance rather than
-    # a spinner that never resolves.
-    # #VERIFY: test_request_cover_enqueue_failure asserts cover_status=="failed".
+    # a spinner that never resolves. The response is 502 (app.py's
+    # ExternalServiceError row, UW-A55), so the console's retry affordance is
+    # honest: the broker being briefly unreachable is exactly the case where a
+    # retry may succeed.
+    # #VERIFY: test_request_cover_enqueue_failure_marks_failed asserts both
+    # cover_status=="failed" and the 502 status.
     try:
         enqueue_cover(storybook_id, version, settings, get_correlation_id())
     except Exception as exc:

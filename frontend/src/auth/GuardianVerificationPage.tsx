@@ -53,20 +53,14 @@ const TOO_MANY =
  * which of the five it was, because the distinctions are operator-facing and
  * the response body does not carry the rule code to the browser anyway.
  *
- * #ASSUME: external resources: 400 is NOT purely permanent. An
- * `ExternalServiceError` from a KWS outage is unlisted in app.py's status
- * table and so falls through to the same 400, and that one clears on its own;
- * since the backend now closes such an attempt out as `send_failed`, a retry
- * is even allowed immediately. This copy therefore tells a parent caught in a
- * vendor outage to contact support when waiting would have done. That is the
- * deliberate side to err on while the two cases are indistinguishable here:
- * the opposite default loops a parent forever against a condition only an
- * operator can clear, on the page gating a COPPA flow. Splitting them needs a
- * discriminator the response does not carry today, either a machine-readable
- * rule code in the body or a distinct upstream status.
- * #VERIFY: give `ExternalServiceError` its own status (502) in app.py's
- * `_STATUS_BY_EXCEPTION` and map it here to START_ERROR; that is a repo-wide
- * contract change, so it is tracked separately rather than done inline.
+ * UW-A55, resolved: 400 used to also cover a KWS outage or timeout
+ * (`ExternalServiceError` fell through app.py's status table to the same 400
+ * as these five permanent refusals), which made this exact copy wrong for a
+ * parent caught in a vendor outage rather than a real refusal. app.py's
+ * `_STATUS_BY_EXCEPTION` now gives `ExternalServiceError` its own 502, so 400
+ * here is purely the three permanent cases again, and a 502 is handled below:
+ * see messageForStartError's own note on how it reaches retry-appropriate
+ * copy without a dedicated branch.
  */
 const CANNOT_SEND =
   'We are not able to send a verification email for this account. Trying again will not help, so please contact support.'
@@ -282,13 +276,21 @@ export function GuardianVerificationPage() {
  *
  * Everything else falls through to classifyApiError, which is the right home
  * for genuinely transient faults; those are the only cases where retrying is
- * honest advice.
+ * honest advice. That includes 502 (UW-A55: a KWS outage or timeout,
+ * `ExternalServiceError` in app.py), which needs no dedicated branch here:
+ * classifyApiError already treats any status >= 500 as its `server` kind, and
+ * the `server` override below is START_ERROR, the same retry-appropriate copy
+ * a 500 gets. Deliberately not special-cased to keep this function's
+ * exceptions to the two shapes of permanent refusal above; adding a 502
+ * branch would invite a reader to assume it needs different wording, when the
+ * whole point is that it does not.
  *
  * #ASSUME: data-integrity: reads the status code off an axios-shaped error
  * without narrowing the type, because classifyApiError already owns the
  * type-safe fallback for everything else; this only diverts the codes it
  * recognises and hands the rest straight back.
- * #VERIFY: GuardianVerificationPage.test.tsx 400/403/409/429/500 message cases.
+ * #VERIFY: GuardianVerificationPage.test.tsx 400/403/409/429/500/502 message
+ * cases.
  */
 function messageForStartError(err: unknown): string {
   const status = (err as { response?: { status?: number } }).response?.status

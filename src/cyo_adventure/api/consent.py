@@ -99,7 +99,7 @@ router = APIRouter(
 @router.post(
     "/kws/start",
     status_code=202,
-    responses=error_responses(400, 403, 409, 429),
+    responses=error_responses(400, 403, 409, 429, 502),
 )
 async def start_kws_verification(
     body: KwsVerificationStartBody,
@@ -125,13 +125,21 @@ async def start_kws_verification(
         KwsVerificationStartView: The attempt id and when it was started.
 
     Raises:
-        ConfigurationError: If KWS is not configured on this tier (400).
+        ConfigurationError: If KWS is not configured on this tier, or if KWS
+            rejects our credentials or blocks the request (400). Both are the
+            operator's to fix, and the single status keeps the two
+            indistinguishable to the caller.
         BusinessLogicError: If the caller has no ``User`` row yet, or no email
             address to send to (400).
         AuthorizationError: If the caller is a child account, or the account
             is in a state that may not send (403).
         StateTransitionError: If an unresolved attempt is still recent (409).
         RateLimitedError: If the caller's hourly attempt cap is spent (429).
+        ExternalServiceError: If the outbound send fails in a way that may
+            clear on its own, a KWS 5xx, a timeout, or a dropped connection
+            (502). Unlike the refusals above, this one is worth retrying, and
+            the closed-out `send_failed` row lets an immediate retry through
+            (UW-A55).
     """
     # Checked before anything is written, so an unconfigured tier cannot leave
     # a `sent` row behind for an email that was never sendable. kws_client.py
