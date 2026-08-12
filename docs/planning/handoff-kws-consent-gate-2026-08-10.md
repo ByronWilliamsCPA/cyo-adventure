@@ -192,15 +192,34 @@ only settled by decision.**
 
 ### Blocks switching the flag on
 
-1. **O-125: no DPA with Epic.** Three parts, all open: execute the DPA; determine which Epic entity
-   receives the adult's email and under what transfer mechanism; ensure the pre-send disclosure exists
-   before the first real send. The check discloses a real adult's email to Epic at the *start* of the flow,
+1. **O-125: no DPA with Epic.** Three parts. Two are open: execute the DPA, and determine which Epic
+   entity receives the adult's email and under what transfer mechanism. The third, the pre-send
+   disclosure, was addressed 2026-08-12: `GuardianVerificationPage` now names what is sent (email
+   address, selected country, language, nothing child-derived) immediately above the button that
+   sends it. Note why the page had to carry it. KWS's own "Verify you're an adult" email says "CYO
+   Adventure will share your email address with KWS", which reads like the disclosure but cannot be
+   one: that email exists only because the address was already shared, so it is post-send by
+   construction. The check discloses a real adult's email to Epic at the *start* of the flow,
    so this is the gate in front of any production send, not paperwork trailing a live integration. The DPA
    checklist row says so in those words.
-2. **Gate 3: production is unwired.** The homelab-infra compose for this service contains **zero** `KWS_`
-   references. A production webhook round trip must be *verified*, not assumed, and the memory of how
-   staging behaved does not transfer: an edge rule once ate four webhook retries with zero origin POSTs,
-   which reads exactly like "the vendor never sent."
+2. **Gate 3: production is wired, but unexercised. Corrected 2026-08-12.** The homelab-infra compose for
+   this service carried **zero** `KWS_` references when this document was written; it now carries 13,
+   merged as `be193698` (homelab-infra #660). Nothing is switched on by that, and the service attests to
+   it directly: `GET /api/v1/health/ready` reports `kws_verification.state` as `"unconfigured"` on
+   production, because the four credentials are blank.
+
+   They were briefly set on 2026-08-12 **without** `KWS_ENABLED_METHODS`, which is a boot failure by
+   design (`_require_declared_kws_methods_when_configured`), and since `settings = Settings()` is
+   module-level, uvicorn never imported the app. Recovery was to blank the four credentials again. Two
+   things that cost time and are worth carrying forward: the credentials and the methods value must go
+   into a **single** Portainer save, and the outage presented as "the frontend won't start" because the
+   frontend's `depends_on: backend: condition: service_healthy` turned a backend config error into a
+   whole-origin Traefik 404. That coupling is removed by homelab-infra #661; until it deploys, the same
+   mistake still takes the reader offline rather than just the API.
+
+   What remains is unchanged in substance: a production webhook round trip must be *verified*, not
+   assumed, and the memory of how staging behaved does not transfer, since an edge rule once ate four
+   webhook retries with zero origin POSTs, which reads exactly like "the vendor never sent."
 3. **Closed 2026-08-11: PR #679 merged**, so the parent's return leg no longer 404s. Until it landed,
    the service worker answered *every* navigation on the origin, and `api/kws_redirect.py` renders
    server-side, so a parent who completed Epic's check landed on a 404. That never blocked the
