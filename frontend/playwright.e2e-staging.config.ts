@@ -16,22 +16,33 @@ import { requireStagingBaseUrl } from './e2e-staging/support/staging-env'
 export default defineConfig({
   testDir: './e2e-staging',
   // Left at 30s, unlike the prod tier's deliberately-sized 45s. The arithmetic
-  // is different, not overlooked: this tier has 21 timeout-bearing units (16
-  // tests plus 5 beforeAll sign-in hooks), so a fully-hung first pass costs
-  // 630s against the workflow's 1200s budget, with room for checkout, npm ci,
-  // and playwright install. The prod tier exceeded its (then-identical 900s)
-  // budget on the first pass, which is why only that one was resized. Adding
-  // a spec? Recount the units and redo this arithmetic plus the retry note
-  // below; the workflow budget was already raised once (15 -> 20 minutes)
-  // when moderation-qa-invisibility.spec.ts added 6 units.
+  // is different, not overlooked: this tier has 26 timeout-bearing units (20
+  // tests plus 6 beforeAll hooks, 5 of which sign in), so a fully-hung first
+  // pass costs 780s against the workflow's 1500s budget, with room for
+  // checkout, npm ci, playwright install, and the separate 60s device-grant
+  // sweep the same job runs afterwards. The prod tier exceeded its
+  // (then-identical 900s) budget on the first pass, which is why only that one
+  // was resized.
+  //
+  // Per spec, so the next recount starts from a diff rather than a re-read:
+  // guardian-admin-smoke 9 tests + 2 hooks, kid-library-smoke 3 + 1,
+  // moderation-qa-invisibility 4 + 2, kws-public-urls 4 + 1. `afterAll`
+  // teardown hooks are deliberately outside this model (there are 6 of them
+  // today); they are bounded cleanup that runs after the units they follow,
+  // and the headroom above absorbs them.
+  //
+  // Adding a spec? Recount the units and redo this arithmetic plus the retry
+  // note below; the workflow budget has now been raised twice, 15 -> 20
+  // minutes when moderation-qa-invisibility.spec.ts added 6 units, and
+  // 20 -> 25 when kws-public-urls.spec.ts added 5.
   timeout: 30_000,
   fullyParallel: false,
   // Kept at 1, where the prod tier deliberately uses 0. Both are correct now
   // that e2e-support/rate-limit.ts absorbs rate limits inside the helpers: a
   // 429 is retried in-test and never reaches Playwright, so this retry only
   // ever replays a genuine flake, not a limiter that a replay would feed.
-  // Worst case (every unit hanging on both attempts) is 1260s, which exceeds
-  // the 1200s job budget by one unit; such a run is already reporting failure
+  // Worst case (every unit hanging on both attempts) is 1560s, which exceeds
+  // the 1500s job budget by two units; such a run is already reporting failure
   // on every test, so the job timeout truncating its tail costs nothing, and
   // sizing the budget for that pathology would only delay the red signal.
   retries: process.env.CI ? 1 : 0,
