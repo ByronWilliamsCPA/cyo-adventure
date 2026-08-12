@@ -39,6 +39,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date
 from decimal import Decimal
+from types import MappingProxyType
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
 
 __all__ = [
     "PRICES",
@@ -95,7 +100,7 @@ class ModelPrice:
 # is the adapter's short name and the model is the id the call was issued
 # against, so an OpenRouter-routed Anthropic model keys off "openrouter" and
 # its slash-qualified id, not off "anthropic".
-PRICES: dict[tuple[str, str], ModelPrice] = {
+_PRICES: dict[tuple[str, str], ModelPrice] = {
     ("openrouter", "anthropic/claude-haiku-4.5"): ModelPrice(
         input_usd_per_mtok=None,
         output_usd_per_mtok=Decimal("5.00"),
@@ -134,6 +139,13 @@ PRICES: dict[tuple[str, str], ModelPrice] = {
         ),
     ),
 }
+
+# Exported read-only. Every entry is a dated, sourced fact that must stay
+# auditable against this file, so a runtime `PRICES[key] = ...` by any importer
+# would leave a live price with no trace in the source and no `as_of`/`source`
+# to check it against. The proxy makes the table changeable only by editing
+# the literal above.
+PRICES: Mapping[tuple[str, str], ModelPrice] = MappingProxyType(_PRICES)
 
 
 @dataclass(frozen=True, slots=True)

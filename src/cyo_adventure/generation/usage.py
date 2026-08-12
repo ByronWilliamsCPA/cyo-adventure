@@ -53,6 +53,17 @@ def coerce_token_count(value: object) -> int | None:
         The value as ``int`` when it is a non-negative, non-``bool`` integer,
         else ``None``.
     """
+    # #CRITICAL: data-integrity: this is the only boundary between a
+    # backend-controlled JSON value and a persisted dollar figure, and the
+    # None-versus-0 choice here is what makes the difference legible
+    # downstream. Coercing a malformed count to 0 would report the run as
+    # fully counted at a lower total, which reads as a cheap job rather than
+    # an uninstrumented one; returning None makes `cost_complete` false and
+    # says so. `bool` is rejected before the `int` check because it is an
+    # `int` subclass, so a `True` would otherwise be billed as one token.
+    # #VERIFY: tests/unit/test_usage.py::
+    # test_coerce_rejects_bool_despite_int_subclassing and
+    # ::test_coerce_rejects_non_integer_and_negative_values.
     if isinstance(value, bool) or not isinstance(value, int):
         return None
     return value if value >= 0 else None
@@ -205,6 +216,13 @@ class UsageLedger:
         Returns:
             The aggregate for every call recorded so far.
         """
+        # #CRITICAL: data-integrity: `or 0` here folds an unreported count to
+        # zero on purpose, and is safe ONLY because `unknown_calls` is summed
+        # alongside it. The token sums alone cannot distinguish a cheap run
+        # from an uninstrumented one; the pair can. Dropping or miscounting
+        # `unknown_calls` would leave a depressed total presenting as exact.
+        # #VERIFY: tests/unit/test_usage.py::
+        # test_unknown_call_depresses_totals_visibly_rather_than_silently.
         return UsageTotals(
             call_count=len(self.calls),
             unknown_calls=sum(1 for call in self.calls if not call.is_known),

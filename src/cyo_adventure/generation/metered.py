@@ -152,8 +152,17 @@ def ledger_of(provider: object) -> UsageLedger | None:
     silent under-counting is the failure this whole subsystem exists to make
     impossible.
 
+    Detection is OUTERMOST-ONLY: the meter is found only when ``provider`` is
+    itself a :class:`MeteredProvider`, never when one sits under another
+    wrapper. Today every caller passes the provider it was handed, so the
+    result is correct; a caller that wrapped it first (in its own
+    ``PiiGuardedProvider``, say) would get ``None``, make unmetered calls, and
+    raise no error. That is exactly the silent under-count named above, so the
+    constraint is stated here rather than left to be rediscovered.
+
     Args:
-        provider: Any provider, wrapped or not.
+        provider: A provider. Metering is detected only at the outermost
+            layer, so pass the provider before wrapping it, not after.
 
     Returns:
         The ledger when ``provider`` is a :class:`MeteredProvider`, else
