@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.77.1] - 2026-08-12
+
+### Bug Fixes
+
+- **api**: Give ExternalServiceError its own 502 (UW-A55)
+  ([#699](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/699),
+  [`14b2620`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/14b262057b82108408bcc609e3cd8862b358f01e))
+
+
 ## [0.77.0] - 2026-08-11
 
 ### Features
@@ -3393,6 +3402,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.77.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.77.0...v0.77.1
 [0.77.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.76.0...v0.77.0
 [0.76.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.75.0...v0.76.0
 [0.75.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.74.3...v0.75.0
