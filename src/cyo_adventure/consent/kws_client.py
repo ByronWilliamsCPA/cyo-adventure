@@ -131,10 +131,16 @@ class VerificationEmailRequest:
 
     Attributes:
         email: The parent or guardian's email address. Never logged.
-        location: The CHILD's location, not the parent's, as an ISO 3166-1
-            alpha-2 country code or an ISO 3166-2 subdivision code. It selects
-            which verification methods the parent is offered, so it is a
-            compliance input rather than a display preference.
+        location: The GUARDIAN's own location, not the child's, as an ISO
+            3166-1 alpha-2 country code or an ISO 3166-2 subdivision code. It
+            is the country the guardian selects on the verification screen,
+            passed through unchanged from ``KwsVerificationStartBody.location``.
+            It selects which verification methods the parent is offered, so it
+            is a compliance input rather than a display preference. This
+            docstring said "the CHILD's location" until 2026-08-12, which was
+            never what the code did and had propagated into the published
+            privacy policy's recipient table; the guardian is the only person
+            any screen asks, and no child-derived value reaches this field.
         language: The parent's language, used for KWS's emails and web screens.
     """
 
@@ -349,7 +355,7 @@ class KwsClient:
         16 CFR 312.5. The consent record remains ours.
 
         Args:
-            request: The parent's email, the child's location, the language.
+            request: The parent's email, the guardian's own location, the language.
             correlation: The attempt token to send as ``externalPayload``.
                 Required rather than minted here, because it is the primary key
                 of the ``kws_verification`` row and that row must be written

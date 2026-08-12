@@ -302,8 +302,9 @@ export function PrivacyPolicyPage() {
             <tr>
               <td>Epic Games (Kids Web Services)</td>
               <td>
-                A parent&apos;s email address, a country or region code for the child, and which
-                language to write in, when a verification is requested
+                A parent&apos;s email address, the country or region code that parent selected for
+                their own account, and which language to write in, when a verification is requested.
+                Nothing about the child
               </td>
               <td>
                 Confirming that a person giving permission is an adult. Epic also keeps what it
