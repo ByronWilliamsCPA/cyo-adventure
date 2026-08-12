@@ -143,7 +143,38 @@
    "letter_waiting",
    "tools_in_order",
    "season_preserved",
-   "provisions_laid"
+   "provisions_laid",
+   "shared_passage",
+   "seasonal_opening",
+   "lent_token",
+   "repair_scaffold",
+   "tuned_chimes",
+   "woven_pattern",
+   "stacked_weights",
+   "margin_notes",
+   "inlaid_floor",
+   "gear_tooth_counts",
+   "labelled_specimens",
+   "paint_layers",
+   "knotted_cord",
+   "dial_positions",
+   "ledger_columns",
+   "carved_tally_post",
+   "optical_curiosity",
+   "preserved_specimen",
+   "weather_instrument",
+   "map_or_chart",
+   "growing_thing",
+   "visitor_signatures",
+   "founding_charter",
+   "apprentice_record",
+   "seed_stock",
+   "master_pattern",
+   "reconciliation_token",
+   "shared_recipe",
+   "town_measure",
+   "memorial_list",
+   "instrument_prototype"
   ],
   "forbidden_device_kinds": [
    "weapon",
@@ -175,7 +206,11 @@
      "concealed_latch",
      "timed_opening",
      "service_route",
-     "mechanism_operated"
+     "mechanism_operated",
+     "shared_passage",
+     "seasonal_opening",
+     "lent_token",
+     "repair_scaffold"
     ],
     "note": "one concrete way in per approach branch: the note's decoded route and the building's own weak point draw freely; the keeper's branch stays person-mediated"
    },
@@ -189,12 +224,24 @@
      "calibration_scale",
      "sorted_collection",
      "wear_pattern",
-     "shadow_alignment"
+     "shadow_alignment",
+     "tuned_chimes",
+     "woven_pattern",
+     "stacked_weights",
+     "margin_notes",
+     "inlaid_floor",
+     "gear_tooth_counts",
+     "labelled_specimens",
+     "paint_layers",
+     "knotted_cord",
+     "dial_positions",
+     "ledger_columns",
+     "carved_tally_post"
     ],
     "note": "one per exploration room, drawn freely; unique_within_story gives each book four different carriers, and each carries enough cipher logic that any single room makes the clockface attemptable"
    },
    "room_curiosities": {
-    "count": 4,
+    "count": 3,
     "kinds": [
      "maker_relic",
      "working_mechanism",
@@ -204,9 +251,15 @@
      "scale_model",
      "light_play",
      "community_memory",
-     "resident_creature"
+     "resident_creature",
+     "optical_curiosity",
+     "preserved_specimen",
+     "weather_instrument",
+     "map_or_chart",
+     "growing_thing",
+     "visitor_signatures"
     ],
-    "note": "what makes each room distinct and worth the visit beyond its hint"
+    "note": "what makes each room distinct and worth the visit beyond its hint; three of the four exploration rooms carry one, since the pendulum room's draw is its crossing instead"
    },
    "vault_contents": {
     "count": 3,
@@ -216,7 +269,16 @@
      "community_memory",
      "written_record",
      "maker_relic",
-     "acoustic_wonder"
+     "acoustic_wonder",
+     "founding_charter",
+     "apprentice_record",
+     "seed_stock",
+     "master_pattern",
+     "reconciliation_token",
+     "shared_recipe",
+     "town_measure",
+     "memorial_list",
+     "instrument_prototype"
     ],
     "note": "the vault protects knowledge, heritage, and wonder; any treasure is modest and communal, never loot"
    },
