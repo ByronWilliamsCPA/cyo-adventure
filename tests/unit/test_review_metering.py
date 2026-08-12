@@ -7,7 +7,11 @@ default, and the resulting undercount is the dangerous kind: the persisted
 totals would still report themselves complete, and simply be too small.
 
 These tests pin that both paths reach the caller's ledger, and that the PII
-guard stays outermost so a prompt it rejects is billed to nobody.
+guard stays outermost so a prompt it rejects is billed to nobody. The
+``_build_guarded_review`` tests below call that function directly (not a
+hand-rebuilt copy of its composition), so a change to how it threads the
+ledger through the reviewer fails here instead of leaving this file green by
+construction.
 """
 
 from __future__ import annotations
@@ -83,27 +87,124 @@ def test_ledger_of_returns_none_for_an_unmetered_provider() -> None:
 
 @pytest.mark.unit
 @pytest.mark.asyncio
-async def test_review_calls_are_billed_to_the_generation_jobs_ledger() -> None:
-    """A review provider metered into the job ledger contributes to its totals.
+async def test_review_calls_are_billed_to_the_generation_jobs_ledger(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """`_build_guarded_review` bills the reviewer it builds to the job's ledger.
 
-    Exercises the composition
-    ``moderation/pipeline.py::_build_guarded_review`` builds: the review
-    provider wrapped in the job's meter, wrapped in turn by the PII guard.
+    Stubs ``build_review_provider`` (the seam the function calls internally)
+    with a provider whose usage is distinguishable from the generation side,
+    then drives a call through the provider ``_build_guarded_review`` returns
+    and checks the *caller's* ledger, the one attached to the
+    ``generation_provider`` argument, actually grew.
     """
+    from cyo_adventure.core.config import settings as config_settings
     from cyo_adventure.generation.guarded import PiiGuardedProvider
+    from cyo_adventure.moderation import pipeline as pipeline_mod
+    from cyo_adventure.moderation.pipeline import _build_guarded_review
 
     ledger = UsageLedger()
-    inner = _StubProvider()
-    guarded = PiiGuardedProvider(
-        MeteredProvider(inner, ledger=ledger),
-        forbidden=PiiContext(child_names=frozenset({_REAL_CHILD})),
+    review_stub = _StubProvider()
+    monkeypatch.setattr(
+        pipeline_mod, "build_review_provider", lambda *_a, **_kw: (review_stub, True)
     )
 
+    guarded, independent = _build_guarded_review(
+        config_settings,
+        generator_provider="anthropic",
+        generator_model="claude-opus",
+        pii=PiiContext(child_names=frozenset({_REAL_CHILD})),
+        generation_provider=MeteredProvider(_StubProvider(), ledger=ledger),
+    )
     await guarded.complete(system="review this", prompt="a gentle story", max_tokens=64)
 
-    assert inner.calls == 1
+    assert isinstance(guarded, PiiGuardedProvider)
+    assert independent is True
+    assert review_stub.calls == 1
     assert ledger.calls == [_REVIEW_USAGE]
     assert ledger.snapshot().output_tokens == 90
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_build_guarded_review_falls_back_to_unmetered_without_raising(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A plain (unmetered) generation provider must not stop review from working.
+
+    ``ledger_of`` returns ``None`` for a provider that carries no ledger;
+    ``_build_guarded_review`` must treat that as the documented silent
+    fallback, not raise, and still return a working, PII-guarded reviewer.
+    """
+    from cyo_adventure.core.config import settings as config_settings
+    from cyo_adventure.generation.guarded import PiiGuardedProvider
+    from cyo_adventure.moderation import pipeline as pipeline_mod
+    from cyo_adventure.moderation.pipeline import _build_guarded_review
+
+    review_stub = _StubProvider()
+    monkeypatch.setattr(
+        pipeline_mod, "build_review_provider", lambda *_a, **_kw: (review_stub, False)
+    )
+
+    guarded, independent = _build_guarded_review(
+        config_settings,
+        generator_provider="anthropic",
+        generator_model="claude-opus",
+        pii=PiiContext(child_names=frozenset({_REAL_CHILD})),
+        generation_provider=_StubProvider(),
+    )
+    result = await guarded.complete(
+        system="review this", prompt="a gentle story", max_tokens=64
+    )
+
+    assert isinstance(guarded, PiiGuardedProvider)
+    assert independent is False
+    assert review_stub.calls == 1
+    assert result.text == "{}"
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+@pytest.mark.parametrize("metered", [True, False], ids=["metered", "unmetered"])
+async def test_build_guarded_review_pii_guard_rejects_before_review_or_metering(
+    monkeypatch: pytest.MonkeyPatch, metered: bool
+) -> None:
+    """The PII guard stays outermost in both of `_build_guarded_review`'s branches.
+
+    A rejected review prompt must reach neither the reviewer nor the meter,
+    whether or not the run is metered, so a blocked call never inflates
+    either the vendor's call count or the job's ledger.
+    """
+    from cyo_adventure.core.config import settings as config_settings
+    from cyo_adventure.moderation import pipeline as pipeline_mod
+    from cyo_adventure.moderation.pipeline import _build_guarded_review
+
+    ledger = UsageLedger()
+    review_stub = _StubProvider()
+    monkeypatch.setattr(
+        pipeline_mod, "build_review_provider", lambda *_a, **_kw: (review_stub, True)
+    )
+    generation_provider = (
+        MeteredProvider(_StubProvider(), ledger=ledger) if metered else _StubProvider()
+    )
+
+    guarded, _independent = _build_guarded_review(
+        config_settings,
+        generator_provider="anthropic",
+        generator_model="claude-opus",
+        pii=PiiContext(child_names=frozenset({_REAL_CHILD})),
+        generation_provider=generation_provider,
+    )
+
+    with pytest.raises(ValidationError):
+        await guarded.complete(
+            system="review this",
+            prompt=f"a story about {_REAL_CHILD}",
+            max_tokens=64,
+        )
+
+    assert review_stub.calls == 0
+    assert ledger.calls == []
 
 
 @pytest.mark.unit
