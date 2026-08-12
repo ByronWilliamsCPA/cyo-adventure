@@ -82,12 +82,24 @@ describe('PrivacyPolicyPage', () => {
       expect(screen.getByText(/cannot catch every name a child might type/i)).toBeInTheDocument()
     })
 
-    it('discloses the child country code and language sent to Epic, not the email alone', () => {
-      // consent/kws_client.py sends {email, location, language, ...} and
-      // documents location as "The CHILD's location, not the parent's". An
-      // email-only row understates a child-linked transfer.
+    it('discloses the guardian country code and language sent to Epic, not the email alone', () => {
+      // consent/kws_client.py sends {email, location, language, ...}. An
+      // email-only row understates the transfer, so the row must name the
+      // country and the language too.
+      //
+      // The row said "for the child" until 2026-08-12, on the strength of a
+      // kws_client.py docstring that claimed the field carried the child's
+      // location. The code never did that: api/consent.py passes body.location
+      // straight through from the country the GUARDIAN picks on the
+      // verification screen, and no screen asks for a child's country at all.
+      // Asserting "for their own account" rather than "for the child" is what
+      // keeps a wrong docstring from re-entering the published policy, which is
+      // exactly the route it took the first time.
       renderPage()
-      expect(screen.getByText(/country or region code for the child/i)).toBeInTheDocument()
+      expect(
+        screen.getByText(/country or region code that parent selected for their own account/i)
+      ).toBeInTheDocument()
+      expect(screen.queryByText(/country or region code for the child/i)).not.toBeInTheDocument()
     })
 
     it('reconciles the never-collect list with that country code', () => {

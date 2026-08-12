@@ -257,3 +257,15 @@ path = [
 ]
 SPDX-License-Identifier = "CC0-1.0"
 SPDX-FileCopyrightText = "2025 Byron Williams"
+
+# Retained third-party vendor terms - NOT our work, NOT CC-BY-4.0.
+# This block must stay AFTER the `docs/**` block above: REUSE.toml resolves a
+# file against the LAST matching annotation, and `docs/**` would otherwise
+# assert Byron Williams' copyright over a vendor's contract document.
+# Convention and index: docs/compliance/vendor-terms/README.md
+[[annotations]]
+path = [
+    "docs/compliance/vendor-terms/epic-kws/**",
+]
+SPDX-License-Identifier = "LicenseRef-Vendor-Terms"
+SPDX-FileCopyrightText = "2025-2026 Kids Web Services Ltd"

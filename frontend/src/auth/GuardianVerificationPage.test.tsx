@@ -147,6 +147,41 @@ describe('GuardianVerificationPage start form', () => {
     expect(document.querySelector('input[type="email"]')).toBeNull()
   })
 
+  it('discloses the email handoff to KWS before the button that performs it', () => {
+    // #CRITICAL: security: assurance-register O-125 requires the guardian be
+    // told their email address is disclosed to Epic BEFORE they trigger the
+    // disclosure. KWS's own "Verify you're an adult" email carries similar
+    // wording, but that email only exists because the address was already
+    // shared, so this page is the only pre-send surface there is.
+    // Order is asserted, not just presence: the same sentence moved below the
+    // submit button would still satisfy a presence check while no longer being
+    // a pre-send disclosure at all.
+    //
+    // Completeness is asserted too, field by field. The disclosure has to name
+    // every part of the request body that varies per guardian (email, location,
+    // language, the per-attempt correlation token), and the guard that matters
+    // is against the copy silently NARROWING back to a shorter list, which a
+    // single substring check on the opening clause would not catch. The fixed
+    // `userContext` key is deliberately absent: it is the constant "parent" on
+    // every request and says nothing about the person reading the page.
+    // This cannot assert copy-equals-body, since the body is built server-side
+    // in consent/kws_client.py; that pairing is held by a comment on the copy.
+    renderWithRouter()
+
+    const disclosure = screen.getByText(/we send Kids Web Services your email address/i)
+    const submit = screen.getByRole('button', { name: 'Email me a verification link' })
+    expect(disclosure).toHaveTextContent('the country you chose above')
+    expect(disclosure).toHaveTextContent('your language')
+    expect(disclosure).toHaveTextContent('a reference number')
+    expect(disclosure).toHaveTextContent('We send them nothing about your child.')
+
+    const form = submit.closest('form')
+    expect(form).not.toBeNull()
+    const ordered = Array.from(form?.querySelectorAll('p, button') ?? [])
+    expect(ordered.indexOf(disclosure)).toBeGreaterThanOrEqual(0)
+    expect(ordered.indexOf(disclosure)).toBeLessThan(ordered.indexOf(submit))
+  })
+
   it('tells a parent an email is already on its way rather than that it failed', async () => {
     // The 409 case. Reporting the generic failure here is the specific harm
     // worth avoiding: it tells a parent to expect nothing, so they stop

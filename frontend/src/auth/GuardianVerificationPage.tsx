@@ -242,6 +242,34 @@ export function GuardianVerificationPage() {
           This decides which ways of verifying are available to you, so it needs to be where you
           actually live.
         </p>
+        {/*
+         * #CRITICAL: security: assurance-register O-125 requires the guardian be told that their
+         * email address is disclosed to Epic BEFORE they trigger the disclosure. Pressing the
+         * button below is the disclosure: POST /v1/consent/kws/start (api/consent.py) reaches
+         * consent/kws_client.py's send_verification_email, which posts the address to KWS.
+         * KWS's own "Verify you're an adult"
+         * email carries similar wording, but that email only exists because the address was
+         * already shared, so it is post-send by construction and cannot satisfy this. This
+         * paragraph is the pre-send surface, which is why it sits next to the trigger rather
+         * than in the intro above.
+         * The request body built in kws_client.py has five keys: email, location, language,
+         * externalPayload (an opaque per-attempt correlation token), and userContext. The
+         * sentence below names the first four. It does not name userContext because that key
+         * is the fixed string "parent" on every request, identical for every guardian, so it
+         * carries nothing about the person reading this; naming it would add noise, not
+         * disclosure. That is the only permitted omission, and it is permitted only while the
+         * value stays constant. Nothing child-derived is in the body.
+         * Keep the two in step: widening the body without widening this sentence turns a
+         * disclosure into a misstatement.
+         * #VERIFY: GuardianVerificationPage.test.tsx asserts this copy renders before submit
+         * and names every field that varies per guardian.
+         */}
+        <p className="cyo-text-muted">
+          When you continue, we send Kids Web Services your email address, the country you chose
+          above, your language, and a reference number that lets us match their answer to this
+          attempt. We send them nothing about your child. They tell us whether you verified; they
+          never tell us how.
+        </p>
         {error ? (
           <p role="alert" className="cyo-text-error">
             {error}
