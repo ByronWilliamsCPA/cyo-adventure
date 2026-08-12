@@ -43,10 +43,22 @@ only one topology that is worth seeing.
 ## Why these vendors
 
 `vendors.json` pins each slug to one backend. An OpenRouter slug is not a vendor: verified on
-2026-08-12 against `GET /api/v1/models/{id}/endpoints`, `anthropic/claude-sonnet-4.6` alone is
-served by four backends, so an unpinned run attributed to Anthropic can be answered by Bedrock at a
-different quantization. The adapter sends `allow_fallbacks: false` alongside the pin, so a
-substitution becomes a visible error rather than a silent one.
+2026-08-12 against `GET /api/v1/models/{id}/endpoints`, `anthropic/claude-sonnet-4.6` alone has
+seven endpoints across four provider names, so an unpinned run attributed to Anthropic can be
+answered by Bedrock. The adapter sends `allow_fallbacks: false` alongside the pin, so a
+substitution becomes a visible error rather than a silent one, and a pin that matches nothing fails
+on the first call rather than quietly routing elsewhere.
+
+Two details that the endpoint listing makes clear and the slug alone does not:
+
+- **Every backend serves the same dated snapshot** (`anthropic/claude-4.6-sonnet-20260217`,
+  `openai/gpt-5.4-20260305`, `google/gemini-3.1-pro-preview-20260219`). The pin therefore buys a
+  single serving stack and reproducibility, not a different model. Quantization is reported as
+  `unknown` on every endpoint, so it cannot be ruled out as a difference.
+- **A provider name covers several service tiers.** `openai` alone is standard, `openai/flex` and
+  `openai/priority` sit at half and double the price. The pins target standard tiers; flex would
+  roughly halve the bill but trades latency and capacity, which is not a good trade on a sub-$2
+  run.
 
 A `-preview` slug can be retired without notice. Re-verify the three slugs still resolve before
 spending anything.
