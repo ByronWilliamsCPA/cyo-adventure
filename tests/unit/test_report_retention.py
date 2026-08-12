@@ -540,10 +540,16 @@ def test_pipeline_event_index_is_rebuilt_concurrently() -> None:
     create_sql = _statements(create_path.read_text(encoding="utf-8"))[0].lower()
     assert drop_sql.startswith("drop index concurrently if exists")
     assert create_sql.startswith("create index concurrently")
-    # Same name and same column list as the index 20260810000000 created, so
-    # the rebuild changes how it is built and nothing about what it is.
-    for sql in (drop_sql, create_sql):
-        assert "ix_pipeline_event_entity_event_type" in sql
+    # Same name, same relation and same column list as the index 20260810000000
+    # created, so the rebuild changes how it is built and nothing about what it
+    # is. The relation is asserted separately from the index name because the
+    # two drift independently: a create that named the right index on the wrong
+    # table would satisfy a name-and-columns check while dropping the support
+    # the send-back probe needs. Schema-qualified on both sides for the same
+    # reason, since an unqualified name resolves against search_path.
+    assert '"public"."ix_pipeline_event_entity_event_type"' in drop_sql
+    assert '"ix_pipeline_event_entity_event_type"' in create_sql
+    assert 'on "public"."pipeline_event"' in create_sql
     assert '"entity_type", "entity_id", "event_type"' in create_sql
 
 
