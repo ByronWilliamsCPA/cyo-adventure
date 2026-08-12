@@ -61,7 +61,7 @@ from cyo_adventure.generation.binding import (
     render_bound_skeleton,
 )
 from cyo_adventure.generation.concept import ConceptBrief
-from cyo_adventure.generation.cost import estimate_run_cost
+from cyo_adventure.generation.cost import estimate_run_cost, fit_cost_to_column
 from cyo_adventure.generation.metered import MeteredProvider
 from cyo_adventure.generation.orchestrator import (
     GenerationOutcome,
@@ -229,6 +229,16 @@ def _stamp_provider_accounting(
     resolution itself failed) leaves every column untouched, which is the
     ``NULL`` = not recorded state the schema documents.
 
+    **This function must never raise.** One of its two callers is
+    :func:`_record_failure`, which is what the interrupt guard uses to record
+    that a job died; a raise here would replace the failure being recorded
+    with a new one and strand the row in ``queued``/``running``. Totality is
+    not merely asserted: the whole cost path (``usage``, ``cost``,
+    ``core.pricing``) contains no ``raise`` statement, the writes below are
+    plain attribute assignments, and the one value that could be rejected
+    downstream is bounded by :func:`fit_cost_to_column` before it is assigned.
+    Anything added here must preserve that property.
+
     Args:
         job: The job row to stamp. Mutated in place; the caller commits.
         provider: The provider the run used, metered or otherwise.
@@ -249,8 +259,9 @@ def _stamp_provider_accounting(
     job.output_tokens = totals.output_tokens
     job.provider_duration_ms = totals.duration_ms
     estimate = estimate_run_cost(provider.ledger.calls)
-    job.cost_usd = estimate.amount_usd
-    job.cost_complete = estimate.complete
+    amount, capped = fit_cost_to_column(estimate.amount_usd)
+    job.cost_usd = amount
+    job.cost_complete = estimate.complete and not capped
 
 
 async def _record_failure(

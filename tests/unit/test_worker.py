@@ -3423,6 +3423,51 @@ class TestProviderAccounting:
 
     @pytest.mark.unit
     @pytest.mark.asyncio
+    async def test_a_cost_past_the_column_maximum_is_capped_before_the_driver(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A run too expensive for NUMERIC(12,6) is capped, not left to raise.
+
+        Postgres raises ``numeric field overflow`` on an out-of-range integer
+        part, and it raises at COMMIT rather than at assignment. Both writers
+        of this column commit, so an uncapped amount would fault twice: once
+        on the success path, then again inside the ``_record_failure`` the
+        interrupt guard calls to record that very failure. The second raise
+        would displace the first and leave the row in ``queued``/``running``
+        with nothing recorded, defeating the guard entirely.
+
+        This harness has no Postgres, so the raise itself is not reproducible
+        here. What is pinned is the cap that makes it unreachable, at the
+        boundary where the value is written rather than where it is stored.
+        """
+        monkeypatch.setattr(worker_module, "run_moderation_pipeline", AsyncMock())
+
+        # $5.00/Mtok out, a million Mtok per call: far past six integer digits.
+        usage = TokenUsage(
+            provider="openrouter",
+            model="anthropic/claude-haiku-4.5",
+            input_tokens=1_000,
+            output_tokens=10**12,
+            duration_ms=250,
+        )
+        job, concept, provider = self._fresh_gen_job(usage)
+        session_ctx = _FreshGenSession(job, concept)
+
+        await worker_module.run_generation_job(
+            job.id, provider=provider, session_factory=self._factory(session_ctx)
+        )
+
+        assert job.cost_usd == Decimal("999999.999999")
+        # Capped means the figure is a lower bound, which is what this flag
+        # already means, so it must be False even though every call was priced.
+        assert job.cost_complete is False
+        # The tokens are NOT capped: only the derived money column is, so the
+        # measurement that would let a reader recompute the real cost survives.
+        assert job.output_tokens == 10**12 * len(provider.calls)
+        assert job.status not in ("queued", "running")
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
     async def test_an_uninstrumented_backend_is_counted_not_treated_as_free(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:

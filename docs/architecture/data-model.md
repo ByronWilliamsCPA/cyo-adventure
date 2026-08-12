@@ -997,6 +997,13 @@ jobs and cleared once the human-authored fill is imported.
 | storybook_id | VARCHAR(120) NULL | **Not a FK** (see note) |
 | version | INT NULL | Storybook version produced |
 | error | VARCHAR(512) NULL | Short error on failure |
+| provider_call_count | INT NULL | Provider calls this run made, across every stage and both models |
+| provider_unknown_calls | INT NULL | How many of those reported no usable token count |
+| input_tokens | INT NULL | Prompt tokens summed over the run's recorded calls |
+| output_tokens | INT NULL | Completion tokens, summed the same way |
+| provider_duration_ms | INT NULL | Milliseconds inside provider calls, not the job's total runtime |
+| cost_usd | NUMERIC(12,6) NULL | Summed per-call cost; a lower bound when `cost_complete` is false |
+| cost_complete | BOOLEAN NULL | Whether every call was both fully priced and fully counted |
 | created_at | TIMESTAMPTZ | |
 | updated_at | TIMESTAMPTZ | `onupdate=func.now()` |
 
@@ -1004,6 +1011,15 @@ jobs and cleared once the human-authored fill is imported.
 `storybook` row is created; a hard FK constraint would block inserting the failure
 record. The application layer verifies the storybook row exists independently when
 reading this field.
+
+The seven provider-accounting columns are typed rather than folded into `report`
+because `report` is purged (ADR-007) and cost history has to outlive prompt
+retention. On all seven, **NULL means "not recorded", never "zero"**: rows written
+before the accounting migration have none, and a run whose backend reported no
+usage is a third state again (`provider_call_count` set, `provider_unknown_calls`
+non-zero). A SUM across a mix of recorded and unrecorded jobs is therefore a lower
+bound, not a total, and is only defensible alongside `provider_unknown_calls` and
+`cost_complete`.
 
 ### `moderation_threshold`
 

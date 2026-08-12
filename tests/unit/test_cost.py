@@ -12,7 +12,7 @@ from decimal import Decimal
 
 import pytest
 
-from cyo_adventure.generation.cost import estimate_run_cost
+from cyo_adventure.generation.cost import estimate_run_cost, fit_cost_to_column
 from cyo_adventure.generation.usage import TokenUsage
 
 # Both are real entries in core/pricing.py: output-priced, input-unpriced.
@@ -132,3 +132,54 @@ def test_an_unreported_token_count_does_not_silently_contribute_zero() -> None:
 
     assert estimate.complete is False
     assert "output tokens not reported" in estimate.reason
+
+
+@pytest.mark.unit
+def test_an_amount_past_the_column_maximum_is_capped_and_incomplete() -> None:
+    """A cost too wide for the column is capped here, never at COMMIT.
+
+    Postgres raises ``numeric field overflow`` on an out-of-range integer
+    part, and raises it at commit rather than at assignment. Both writers of
+    ``cost_usd`` commit, including the one the interrupt guard uses to record
+    a failure, so an uncapped amount would displace the failure being
+    recorded and strand the job in ``queued``/``running``. Capping in memory
+    is what makes that sequence unreachable.
+
+    A capped figure is a lower bound on real spend, which is exactly what
+    ``cost_complete`` already means, so the flag carries it rather than a
+    second signal being invented.
+    """
+    amount, capped = fit_cost_to_column(Decimal(1_000_000))
+
+    assert capped is True
+    assert amount == Decimal("999999.999999")
+
+
+@pytest.mark.unit
+def test_rounding_to_scale_is_not_capping() -> None:
+    """Sub-millionth rounding moves the figure without making it a bound.
+
+    A 3-token call at $1.25/Mtok is $0.00000375: eight fractional digits,
+    stored in six. Rounding that away is immaterial and must not flip
+    ``cost_complete``, or nearly every real run would report itself
+    incomplete and the flag would stop meaning "the price table had a gap".
+    """
+    amount, capped = fit_cost_to_column(Decimal("0.00000375"))
+
+    assert capped is False
+    assert amount == Decimal("0.000004")
+
+
+@pytest.mark.unit
+def test_the_returned_amount_is_already_at_the_columns_scale() -> None:
+    """What is held in memory is what Postgres stores, digit for digit.
+
+    Rounding explicitly rather than letting the driver do it silently is what
+    lets a caller compare a stamped value against the estimate it came from
+    without an unexplained difference appearing at the sixth decimal.
+    """
+    amount, capped = fit_cost_to_column(Decimal("2.5"))
+
+    assert capped is False
+    assert amount == Decimal("2.5")
+    assert amount.as_tuple().exponent == -6

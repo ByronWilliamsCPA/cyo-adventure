@@ -2531,6 +2531,20 @@ class GenerationJob(UUIDPrimaryKeyMixin, CreatedAtMixin, UpdatedAtMixin, Base):
             class docstring.
         version: Storybook version number produced by this job.
         error: Short error message when status is ``failed``.
+        provider_call_count: Provider calls this run made, across every stage
+            and both models. NULL means not recorded, never zero.
+        provider_unknown_calls: How many of those calls reported no usable
+            token count. Non-zero makes the token and cost columns beside it
+            lower bounds rather than totals.
+        input_tokens: Prompt tokens summed over the run's recorded calls.
+        output_tokens: Completion tokens summed the same way.
+        provider_duration_ms: Wall-clock milliseconds spent inside provider
+            calls, which is not the job's total runtime.
+        cost_usd: Summed per-call cost as ``Decimal``, never float. A lower
+            bound whenever ``cost_complete`` is False.
+        cost_complete: Whether every call was both fully priced and fully
+            counted. Not derivable from the other columns; see the field
+            comment.
         created_at: Wall-clock insert time (UTC, TIMESTAMPTZ).
         updated_at: Updated on every status transition (UTC, TIMESTAMPTZ).
     """
@@ -2639,12 +2653,22 @@ class GenerationJob(UUIDPrimaryKeyMixin, CreatedAtMixin, UpdatedAtMixin, Base):
     # amounts run to millionths of a dollar (a 1000-token call at $5/Mtok is
     # $0.005) and these values are summed across thousands of jobs, which is
     # exactly the regime where binary floating point accumulates a drift no
-    # reader can attribute. Scale 6 holds a whole-token amount exactly at
-    # today's per-Mtok prices; precision 12 leaves 6 integer digits, so a
-    # single job would have to cost $999,999 to overflow.
+    # reader can attribute.
+    #
+    # Precision and scale fail in OPPOSITE ways, which is why the writer
+    # cannot simply assign. Scale 6 does NOT hold every amount exactly: a
+    # 3-token call at $1.25/Mtok is $0.00000375, eight fractional digits, and
+    # Postgres rounds the excess away SILENTLY. Precision 12 leaves 6 integer
+    # digits, and an amount past $999,999 is not rounded but RAISES `numeric
+    # field overflow` at COMMIT. ``generation.cost.fit_cost_to_column`` is
+    # what reconciles both before a value is ever assigned: it rounds to
+    # scale explicitly (so the in-memory value equals the stored one) and
+    # caps at the precision ceiling, marking a capped amount incomplete.
     # #VERIFY: test_cost_usd_round_trips_as_decimal pins that the value comes
     # back as Decimal rather than float, since the driver's type mapping is
-    # what makes the column choice effective.
+    # what makes the column choice effective. Widening this column means
+    # widening ``_MAX_COST_USD``/``_COST_SCALE`` in generation/cost.py in the
+    # same change.
     cost_usd: Mapped[Decimal | None] = mapped_column(Numeric(12, 6), default=None)
     # #ASSUME: payment/financial: ``cost_complete`` is NOT derivable from the
     # other columns. A run can report every token and still be un-costable
