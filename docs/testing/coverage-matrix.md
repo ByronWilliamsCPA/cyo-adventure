@@ -336,10 +336,44 @@ Supabase endpoints rather than `/api/v1`.
   `offers no way to name the recipient` and `sends no recipient of any kind`. The
   verification email goes to the account's own adult, and a recipient field would
   turn the flow into a way to send mail to an arbitrary address.
-- **Gap**: no E2E tier at all, mocked or real. The full round trip needs Epic's
-  hosted flow and a webhook, so nothing below `e2e-staging` can execute it, and the
-  staging tier does not cover it yet. What is proven here is the client's behavior
-  around the call, not that a verification ever completes.
+- E2E-staging: `frontend/e2e-staging/kws-public-urls.spec.ts` covers the redirect-return
+  leg only (`GET /api/v1/consent/kws/return`, `api/kws_redirect.py`), not the send: it
+  asserts the deployed origin, rather than the service worker, is what answers that path.
+  The claim is made directly, via Playwright's `Response.fromServiceWorker()`, not inferred
+  from a status code, so a future worker route that intercepted `/api/` and forwarded it to
+  the network (a byte-identical response) still fails the test. Its positive control is the
+  `/privacy` case in the same file, which asserts the worker DOES answer an ordinary SPA
+  route; without it, `fromServiceWorker() === false` would also be what a context with no
+  working worker reports. That is the regression guard for PR #679 (the SW's navigation
+  fallback was answering this exact path with the cached SPA shell). It sends no `signature`
+  query parameter, so a deterministic 400 refusal is what the test observes; nothing here
+  calls `POST /api/v1/consent/kws/start` or writes a `kws_verification` row.
+- The return leg is checked on two consecutive visits, and so are `/privacy` and `/support`.
+  This is **not** a before-and-after-service-worker-control comparison: the spec's first test
+  navigates to `/` and waits for the registration to report `active`, so every later
+  navigation in the file, both the "first" and the "second", is already controlled. The
+  second request buys determinism across two already-controlled requests, since Workbox
+  resolves navigations by first-match routing and one sample cannot separate "the denylist
+  holds" from "this request happened to miss the NavigationRoute".
+- Each 400 is asserted as a status/content-type/body triple, the rule
+  `frontend/e2e-prod/health-probe.spec.ts` documents, and accepts either of the origin's two
+  legitimate branches: `text/html` carrying the refusal page, or `application/json` carrying
+  a `ConfigurationError`. Which one arrives depends on whether `KWS_VERIFICATION_SECRET` is
+  set on the deployed tier. That is readable, just not from this repo's source tree:
+  `uv run python scripts/kws_probe_endpoints.py --origin <origin>` classifies exactly these
+  two cases against a live origin (`_classify_return`), and staging was probed serving the
+  refusal-page branch on 2026-08-11. It is left unpinned in the spec because it is deployed
+  state an operator can change without touching this repo, so pinning it would turn an
+  unrelated config change into a red run. Both branches still exclude the SPA shell and a
+  Cloudflare interstitial, which is what the assertion is for; the run annotates itself when
+  the unset branch is taken so that gap stays visible rather than reading as an unqualified
+  pass.
+- **Gap**: no E2E tier drives an actual completed verification. That still needs Epic's
+  hosted flow and a real webhook call and stays a manual check (see the KWS wire-protocol
+  memory and D1's staging note). What the new staging spec closes is narrower and different:
+  proof that the return leg itself is reachable and correctly rendered by the deployed
+  origin for a signed-out client, not that a verification can complete end to end. The
+  client's behavior around the `/start` call is still proven only at the component tier.
 
 ## Guardian: submit story request (intake)
 
@@ -455,7 +489,22 @@ pin both the load-bearing claims and the claims deliberately withheld.
 - Component: `frontend/src/legal/PrivacyPolicyPage.test.tsx` (renders with no auth provider mounted; pins the contact route against the shared constant, the never-collected-from-a-child list including location, the Epic recipient row naming both the parent email and the child's country, the hard-fail wording for the PII guard rather than a removal claim, and the four claims held back pending counsel or unfinished work: per-purpose GDPR legal basis, processor-only use, a named transfer mechanism, and re-consent on material change), `frontend/src/legal/SupportPage.test.tsx` (same signed-out render, contact route, and the FAQ entries that restate policy claims)
 - Config: `frontend/src/router.test.tsx` (structural assertions over the exported route config without rendering: both public paths resolve outside every gate, with a positive control on a known-gated guardian route so the public assertions cannot pass vacuously)
 - E2E-mocked: `frontend/e2e/visual.spec.ts` (the landing footer that links to both pages is inside the landing-page visual baseline)
-- **Gap**: no `e2e-real`, `e2e-staging`, or `e2e-prod` coverage, and no test asserts the pages resolve over HTTP for a signed-out client against a deployed environment. That is the assertion KWS actually depends on; the component tier proves the components need no session, not that the deployed URL answers.
+- E2E-staging: `frontend/e2e-staging/kws-public-urls.spec.ts` (both `/privacy` and `/support`
+  resolve with their real, distinctive content, a 200, and an HTML content-type for a
+  signed-out client against the real deployed staging origin. Each is checked on two
+  consecutive visits, both of them made after the service worker's registration already
+  reports `active`: the second is for determinism across two controlled requests, not a
+  before-and-after comparison, since no uncontrolled state survives the spec's opening
+  navigation. `/privacy` additionally asserts the worker DOES answer it, which is the
+  positive control that keeps the KWS-return page's `fromServiceWorker() === false` from
+  passing vacuously. Both also assert neither page redirects, closing the phishing-redirect
+  risk this section names. The same spec covers the KWS redirect-return page under the
+  ADR-018 D1 section above, since that page is server-rendered rather than a React route)
+- **Gap**: still no `e2e-real` or `e2e-prod` coverage. What remained open here, that no test
+  asserted the pages resolve over HTTP for a signed-out client against a deployed environment,
+  is now covered at `e2e-staging`; the component and config tiers above prove the components
+  need no session and the router leaves both paths ungated, neither of which is the same claim
+  as the deployed URL actually answering, which is what the new spec adds.
 
 ## Guardian: invite a co-parent (self-serve)
 
