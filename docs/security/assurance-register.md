@@ -2917,7 +2917,10 @@ posture at a trust boundary must be verified from outside that boundary.
 - **Verification target:** The executed Epic/KWS DPA and its named counterparty entity;
   `processor-dpa-checklist.md`'s row for that vendor; the guardian-facing copy on
   `GuardianVerificationPage` and the processor table in `privacy-notice.md`; and
-  `KWS_VERIFICATION_REQUIRED` on each deployed tier.
+  `KWS_VERIFICATION_REQUIRED` on each deployed tier. Since 2026-08-12 also the retained vendor
+  terms at `docs/compliance/vendor-terms/epic-kws/`, which are what the clause citations below are
+  checkable against; a claim about what Epic's terms say is verified against the retained bytes,
+  not against whatever the vendor is serving today.
 - **Failure oracle:** `KWS_VERIFICATION_REQUIRED` is true on a tier serving real families while
   any of the three preconditions is unmet. Equivalently: a `kws_verification` row exists for a
   real guardian and `processor-dpa-checklist.md` has no executed Epic entry.
@@ -2954,6 +2957,53 @@ posture at a trust boundary must be verified from outside that boundary.
   recording: a disclosure that arrives through the channel it is disclosing can never be prior to
   it. **The row stays open**, because its protected property is conjunctive and the DPA and the
   transfer mechanism are still absent; one of three parts closing does not move the gate.
+- **Counterparty entity RESOLVED 2026-08-12, and it is neither candidate this row considered.**
+  The vendor's own terms, now retained at `docs/compliance/vendor-terms/epic-kws/`, open by naming
+  the contracting party: "We are Kids Web Services Ltd, a private limited company incorporated in
+  England (Company Number 13351982) with our registered office at C/O Shepherd And Wedderburn LLP,
+  1-6 Lombard Street, London, England, EC3V 9AA, United Kingdom". Governing law is England and
+  Wales with exclusive jurisdiction in the courts of London (General Terms cl. 12.11). Every prior
+  record, this row included, hedged between "a US and an EU entity"; the answer is a **UK** entity,
+  so the hedge was not merely unresolved, it was framed over the wrong two options. The transfer to
+  price is therefore US-to-UK, which is the UK IDTA or the UK Addendum to the EU SCCs, not the DPF.
+  Note the interaction with **O-117**: this project keeps UK *users* out of scope by design, but
+  the processor performing its adult check is itself a UK company, and those are different facts.
+- **A DPA already binds us, incorporated by reference; it has never been retrieved.** General Terms
+  cl. 6 and PV Terms cl. 6 both read "DATA PRIVACY: The Data Processing Addendum located here
+  applies between you and us", the link resolving to `kidswebservices.com/data-processing-addendum`.
+  This converts the first limb from a negotiation into a retrieve-read-record task, which is a real
+  reduction in effort but **not a closure**: an incorporated document is as binding as the one
+  incorporating it, and we have accepted terms whose data-protection annex we have not read. Until
+  it is retrieved into `vendor-terms/` and its transfer mechanism recorded, this limb is open, and
+  it is now open in a worse way than before, because the gap is no longer "no contract exists" but
+  "a contract exists and we do not know what it says".
+- **[COUNSEL] The processor framing may be wrong for six of the eight activities in scope.**
+  PV Terms cl. 5 does not treat the flow as a single relationship. For activity 2.1 (our API call
+  transferring the parent's email) and 2.2 (KWS emailing that parent), it states we are the
+  controller and KWS the processor, Business and Service Provider under CCPA. For 2.3 through 2.8
+  (AgeGraph lookup, direct collection from the parent, the verification itself, hashing the email
+  into the AgeGraph, returning the result to us, notifying the parent) it states that "you and KWS
+  are each independent controllers". If that reading is right, three consequences follow and none
+  is cosmetic: a DPA is the wrong instrument for the majority of the processing, so executing it
+  cannot by itself satisfy this row's protected property as currently written; Art. 28 is not the
+  operative article for those activities; and `privacy-notice.md`'s blanket claim that every
+  processor "acts on our instructions only" is false as to this vendor. **Recorded as a finding,
+  not a conclusion.** The protected property above is deliberately left unamended pending counsel,
+  because rewriting a gate's definition on our own reading of a counterparty's terms is exactly the
+  move this register exists to prevent. Cited to the retained PV Terms so the reading is checkable.
+- **[COUNSEL] KWS retains the verification durably and reuses it across its other customers.**
+  "AgeGraph Data" is defined as the individual's "hashed email address, the method, status and the
+  timestamp of the first verification and the timestamp of subsequent verifications..., the country
+  in which their device is located, the Apps in connection with which the individual verifies their
+  age, a KWS generated transaction ID... and any transaction IDs provided to us by our verification
+  partners, such as Stripe". PV Terms cl. 5.1 states KWS owns that data and that it "is used to
+  provide KWS Services to you and our other customers." So an adult who verifies for this app is
+  durably recorded, keyed to a hash of their address, as having verified *for this app*, in a graph
+  Epic reuses commercially. Nothing guardian-facing says so: not the pre-send copy closed above,
+  not `privacy-notice.md`. This is what makes the independent-controller finding concrete rather
+  than formal, and it is the Art. 13(1)(e) limb of this row rather than the Art. 28 limb. It is
+  also the one part of the flow where "we send them nothing about your child" stays true while the
+  overall picture is still more than a guardian would infer.
 - **Phase home:** unassigned
 - **Owner:** core-maintainer
 - **Last verified:** not verified
@@ -3622,6 +3672,35 @@ posture at a trust boundary must be verified from outside that boundary.
     receives nothing. Test mode cannot produce the cardholder notification in any case, because
     Stripe test cards move no funds, which is the same reason the limb was accepted rather than
     observed.
+  - **The expiry condition has a named trigger and no detector, 2026-08-12.** The Expiry bullet
+    above says "reassess if Epic changes the method" without saying how that would ever come to our
+    attention. The retained PV Terms answer it, and the answer is unfavourable: cl. 4 reserves to
+    KWS the right, "upon reasonable notice (up to 14 days) at any time", to "use, test or introduce
+    different verification methods or remove old ones", and provides that "Your continued use of the
+    Parent Verification service after such notice constitutes your agreement". So the entire basis
+    of the acceptance above, a real charge with a multi-day refund lag, is a vendor setting that the
+    vendor may change unilaterally, on two weeks' notice, with our silence counting as assent. The
+    notice arrives at whatever address holds the KWS account, which is not a monitored channel and
+    is not wired to anything in this repository. **Nothing here would notice.** The same clause has a
+    second consequence, at **O-124**: that row already records that `KWS_ENABLED_METHODS` is asserted
+    by the operator and never reconciled against the Control Panel, so a vendor-side method change
+    would silently falsify the declaration too, and the two rows fail together from one cause.
+    Cheapest control, and the reason the terms are now retained rather than linked: re-fetch the PV
+    Terms at each gate, compare against the SHA-256 in
+    `docs/compliance/vendor-terms/README.md`, and treat any change as re-opening this row and
+    O-124 together. A hash comparison is not notice, but it converts a silent lapse into a
+    detectable one at a cadence we control.
+  - **The vendor disclaims the legality of the method, 2026-08-12.** PV Terms cl. 3 excludes KWS
+    liability for, among other things, whether "the method of verification (such as payment card or
+    government ID) is valid in, and/or complies with, the Applicable Laws of, the applicable
+    country". Epic sells a parent-verification service and contractually declines to warrant that
+    the verification it performs satisfies any particular law. This forecloses a line of argument
+    that would otherwise be tempting whenever this row is revisited, that the vendor's own
+    compliance posture can carry the reading: it cannot, because the vendor has said in the
+    contract that it does not. It also agrees with, rather than duplicating, the finding already on
+    file that Epic's own documentation declines to present the PV Service as a COPPA mechanism. The
+    determination is ours to make and ours to defend, which is what leaves this row's status at
+    *finding open* rather than *risk accepted* despite two owner rulings sitting inside it.
 - **Phase home:** unassigned
 - **Owner:** core-maintainer
 - **Last verified:** not verified. **Neither an accepted exception nor a decision to remediate is a
@@ -3756,6 +3835,20 @@ posture at a trust boundary must be verified from outside that boundary.
   on the inheritance branch it is a bound on a method that was never exercised. The declaration
   should be read as *what we permitted*, never as *what happened*, and any surface that renders it
   to a human must not imply otherwise.
+- **Refined 2026-08-12 from the retained vendor terms: the method is recorded, it is simply never
+  transmitted to us.** PV Terms cl. 5 defines "AgeGraph Data" to include "the **method**, status and
+  the timestamp of the first verification", and cl. 5.1 states KWS owns that data. So this row's
+  premise needs splitting into the part that holds and the part that does not. **Holds:** nothing
+  the vendor sends us carries a method, on either branch, so the operator's send-time declaration
+  remains the only bound we can hold, and every mechanism above is unchanged and still correct.
+  **Does not hold:** the claim that the method "cannot be reconstructed after the record is written",
+  which this row's rationale carried and which `core/config.py`'s boot-guard error message repeated
+  verbatim. It is reconstructible, by Epic, from data Epic holds. It is unavailable to *us*.
+  The error message was corrected the same day to "no interface returns it to us afterwards".
+  The distinction is not pedantry: a claim of impossibility tells the next reader there is nothing
+  to ask for, while a claim of unavailability tells them exactly what to ask the vendor for, which
+  is a hardening route this row had written off. Raise it alongside the DPA retrieval at O-125
+  rather than as separate work; both are questions for the same conversation with the same vendor.
 - **Available hardening, not yet taken:** the payload's `productId` is checkable, and
   `api/kws_webhook.py` already compares it against `settings.kws_product_id`. That comparison is
   vacuously true today because `KWS_PRODUCT_ID` is unset on staging, so a delivery naming any
