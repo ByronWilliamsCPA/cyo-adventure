@@ -1,12 +1,19 @@
 """The closed send-back reason vocabulary, owned by the domain.
 
 This module exists so the vocabulary has one home that both the API boundary
-and the publishing service can reach. It previously lived in
-``api/schemas.py``, which made it unreachable from ``publishing`` (the domain
-must not import from the API layer), so ``publishing/service.py::send_back``
-took an unvalidated ``str`` and documented the gap rather than closing it. The
-dependency now runs the way layering expects: ``api/schemas.py`` imports the
-vocabulary from here.
+and the publishing service can reach. It previously lived in ``api/schemas.py``,
+so ``publishing/service.py::send_back`` took an unvalidated ``str`` and
+documented the gap rather than closing it. Importing it back the other way was
+not an option: ``api/schemas.py`` is what the API boundary validates against and
+what the OpenAPI schema is generated from, so ``publishing`` importing from it
+while it imports the vocabulary would be a cycle. The dependency now runs one
+way: ``api/schemas.py`` imports the vocabulary from here.
+
+Note the narrower claim. This is not "the domain never imports from the API
+layer", which this package does not honour: ``catalog_publish.py`` imports
+``Principal`` and ``Role`` from ``api/deps.py`` at runtime, and ``service.py``
+imports ``Principal`` from the same module under ``TYPE_CHECKING``. The reason
+the vocabulary moved is the cycle above, not a rule with no exceptions.
 
 The vocabulary is the review-scorecard calibration corpus's structured label,
 persisted on the ``SENT_BACK`` pipeline event's payload. It is D3-compliant by

@@ -449,7 +449,9 @@ async def approve(
     # #CRITICAL: data-integrity: W0.4 -- stamp story_request.resulting_
     # storybook_id in the same flush as the status/approved_by/published_at
     # writes above, so a rollback of the publish also rolls back the stamp
-    # (both-or-neither, mirroring the report-nulling UPDATE just above).
+    # (both-or-neither). This used to read "mirroring the report-nulling UPDATE
+    # just above"; that UPDATE was removed by ADR-007's 2026-08-11 amendment, so
+    # the writes it mirrored are the three field assignments above instead.
     # #VERIFY: test_approve_stamps_resulting_storybook_id in
     # tests/unit/test_publishing_service_unit.py.
     await _stamp_resulting_storybook_id(session, storybook, version)
@@ -505,7 +507,11 @@ async def send_back(
 
     Raises:
         StateTransitionError: If the story is not in ``in_review``.
-        ValidationError: If ``reason_code`` is outside the closed vocabulary.
+        core.exceptions.ValidationError: If ``reason_code`` is outside the
+            closed vocabulary. Qualified deliberately: the only ``ValidationError``
+            name bound in this module is pydantic's, imported as
+            ``PydanticValidationError``, so a bare ``ValidationError`` here would
+            read as that one. ``validate_reason_code`` raises the project's.
     """
     # Validate before the state transition, so a bad code cannot leave the
     # storybook in needs_revision with no event written to explain it.

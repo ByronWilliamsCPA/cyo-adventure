@@ -186,6 +186,29 @@ PGSSLMODE=disable supabase db push --db-url "$DATABASE_URL"
 Migrations are forward-only: there are no downgrade scripts. Recovery from a bad migration is a
 corrective roll-forward migration, rehearsed on staging first (ADR-012, Consequences).
 
+**After any push that includes a `CREATE INDEX CONCURRENTLY`, check the index is valid.** This is
+the one migration outcome that reports success and silently delivers nothing. A concurrent build
+that fails partway leaves an `INVALID` index behind: Postgres will not use it for reads, but it is
+still maintained on every write, so the symptom is the index's benefit quietly absent rather than an
+error anyone sees. `pg_indexes` is no help, since it has no validity column and shows a full
+`indexdef` for a half-built index, and re-running the migration does not repair it because
+`if not exists` matches the invalid index by name and skips the rebuild.
+
+```bash
+psql "$DATABASE_URL" -c "
+  select i.relname as index_name, x.indisvalid, x.indisready
+  from pg_index x join pg_class i on i.oid = x.indexrelid
+  join pg_namespace n on n.oid = i.relnamespace
+  where n.nspname = 'public' and not x.indisvalid;"
+```
+
+An empty result is the pass. Any row returned is an invalid index: drop it concurrently and re-run
+the creating statement, and do not leave it in place.
+
+```bash
+psql "$DATABASE_URL" -c 'drop index concurrently if exists "public"."<index_name>";'
+```
+
 ## 3. Health checks
 
 `api/health.py` exposes three Kubernetes-style probes plus a load-balancer alias. The router is

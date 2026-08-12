@@ -21,6 +21,7 @@ Two purge paths are covered:
 
 from __future__ import annotations
 
+import ast
 import uuid
 from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock
@@ -143,16 +144,41 @@ async def test_approve_does_not_purge_generation_job_report() -> None:
 
     await service.approve(session, principal, story, 1)
 
+    # Deliberately NOT `isinstance(stmt, Update)` alone. That check only sees one
+    # of the three shapes a reintroduced purge can take: a Core `update()` or
+    # `table.update()` is an Update, but `text("UPDATE generation_job SET
+    # report = NULL ...")` is a TextClause and passes an isinstance filter
+    # untouched. Compare against the rendered SQL of every executed statement
+    # instead, so the assertion is about what reaches the database rather than
+    # about which constructor built it. (The third shape, ORM attribute
+    # assignment, emits no execute() call at all and is caught by
+    # test_approve_body_contains_no_report_mutation below.)
+    # Keyed on the statement's leading verb, not on the table name: approve()
+    # legitimately SELECTs generation_job.concept_id, so "mentions the table" is
+    # the wrong predicate and matching "update" anywhere would also catch a
+    # SELECT ... FOR UPDATE. What must not appear is a write.
+    executed_sql = [str(call.args[0]) for call in session.execute.await_args_list]
+    mutating = [
+        sql
+        for sql in executed_sql
+        if sql.strip().lower().startswith(("update", "delete", "insert"))
+    ]
+    assert mutating == [], (
+        "approve() must issue no write statement: retention for a reviewed job is "
+        "decided solely by the purge predicate in "
+        "20260810000000_exempt_reviewed_generation_job_report_from_purge.sql. "
+        f"Got {mutating}"
+    )
+    # Kept as a distinct, narrower assertion so a failure says which property
+    # broke: the loose string match above could in principle be satisfied by an
+    # unrelated statement mentioning the word, while this one is exact.
     update_calls = [
         call
         for call in session.execute.await_args_list
         if isinstance(call.args[0], Update)
     ]
     assert update_calls == [], (
-        "approve() must issue no UPDATE: retention for a reviewed job is decided "
-        "solely by the purge predicate in "
-        "20260810000000_exempt_reviewed_generation_job_report_from_purge.sql. "
-        f"Got {[str(c.args[0]) for c in update_calls]}"
+        f"approve() issued a Core UPDATE: {[str(c.args[0]) for c in update_calls]}"
     )
 
 
@@ -185,6 +211,68 @@ async def test_approve_issues_no_update_statements() -> None:
     assert not any(
         isinstance(call.args[0], Update) for call in session.execute.await_args_list
     ), "approve() must remain free of UPDATE statements at every version"
+
+
+def test_approve_body_contains_no_report_mutation() -> None:
+    """``approve`` must not null ``report`` by ORM attribute assignment either.
+
+    The two mock-based tests above watch ``session.execute``, which sees a Core
+    ``update()`` and a ``text()`` statement but is blind to the third shape:
+    ``job.report = None`` on a loaded ORM instance emits nothing at call time and
+    is flushed later by the caller's unit of work. Against an ``AsyncMock``
+    session it is invisible in every assertion, so it would reintroduce the purge
+    with the whole retention suite still green.
+
+    Implemented over the AST rather than the source text. A substring search for
+    ``report`` in ``service.py`` matches the RAD comment block that exists
+    precisely to explain why the purge is gone, so a text guard fails on the
+    documentation of its own subject; ``ast`` sees assignment targets and call
+    names, and never a comment or a docstring.
+    """
+    source = Path(service.__file__).read_text(encoding="utf-8")
+    tree = ast.parse(source)
+
+    approve_defs = [
+        node
+        for node in ast.walk(tree)
+        if isinstance(node, ast.AsyncFunctionDef) and node.name == "approve"
+    ]
+    assert len(approve_defs) == 1, (
+        f"expected exactly one async def approve in {service.__file__}, "
+        f"found {len(approve_defs)}"
+    )
+
+    offenders: list[str] = []
+    for node in ast.walk(approve_defs[0]):
+        # `something.report = ...` in any form, including AnnAssign and the
+        # augmented and walrus-free variants Assign covers.
+        targets: list[ast.expr] = []
+        if isinstance(node, ast.Assign):
+            targets = list(node.targets)
+        elif isinstance(node, ast.AnnAssign | ast.AugAssign):
+            targets = [node.target]
+        offenders.extend(
+            f"line {target.lineno}: assignment to .{target.attr}"
+            for target in targets
+            if isinstance(target, ast.Attribute) and target.attr == "report"
+        )
+        # `text(...)` anywhere on this path: the purge's other disguise, and
+        # nothing on the publish path has a legitimate need for raw SQL.
+        if (
+            isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id == "text"
+        ):
+            offenders.append(f"line {node.lineno}: text() call")
+
+    assert offenders == [], (
+        "approve() must not mutate GenerationJob.report or execute raw SQL. "
+        "ADR-007's 2026-08-11 amendment moved this decision into the purge "
+        "predicate in "
+        "20260810000000_exempt_reviewed_generation_job_report_from_purge.sql; "
+        "change that predicate instead of reintroducing a write here. "
+        f"Found: {offenders}"
+    )
 
 
 def test_migration_file_exists() -> None:
@@ -433,3 +521,57 @@ def test_pipeline_event_index_rebuild_has_no_em_dash() -> None:
     """House style (root CLAUDE.md): never use U+2014 in any project output."""
     for path in _INDEX_REBUILD_MIGRATIONS:
         assert "—" not in path.read_text(encoding="utf-8")
+
+
+def test_every_concurrent_migration_holds_one_statement() -> None:
+    """The single-statement rule applies to the whole directory, not two files.
+
+    ``test_pipeline_event_index_is_rebuilt_concurrently`` above names its two
+    files explicitly, which is right for asserting what those two do but wrong as
+    the only guard: the CLI constraint it encodes (Supabase CLI 2.109.1 runs a
+    multi-statement file as a pgx pipeline, where CONCURRENTLY fails with
+    SQLSTATE 25001 and aborts ``supabase db push``) applies to every migration
+    anyone adds later. A filename-pinned test cannot fail for a file that does not
+    exist yet, so the next author reaching for CONCURRENTLY gets no warning from
+    it. This one discovers its own inputs.
+
+    Scoped deliberately, and it refuses to guess rather than guessing:
+    ``_statements`` splits on semicolons, which is wrong inside a dollar-quoted
+    body (29 of the 62 migrations here use ``$$``/``$job$`` blocks that contain
+    semicolons). So a file that combines CONCURRENTLY with dollar-quoting fails
+    this test outright instead of being counted with a splitter that cannot read
+    it. That combination has no legitimate use today: CONCURRENTLY cannot run
+    inside a function or DO body at all, since those are implicitly
+    transactional.
+    """
+    offenders: list[str] = []
+    for path in sorted(_MIGRATIONS_DIR.glob("*.sql")):
+        sql = path.read_text(encoding="utf-8")
+        # Comment-only mentions do not execute, so they are not in scope. Two
+        # migrations discuss CONCURRENTLY in their headers to record that they
+        # deliberately do not use it.
+        executable = "\n".join(
+            line for line in sql.splitlines() if not line.lstrip().startswith("--")
+        )
+        if "concurrently" not in executable.lower():
+            continue
+        if "$$" in executable or "$job$" in executable:
+            offenders.append(
+                f"{path.name}: uses CONCURRENTLY inside a dollar-quoted body, "
+                "which cannot work (a DO block is transactional) and which this "
+                "test cannot statement-count reliably"
+            )
+            continue
+        statements = _statements(sql)
+        if len(statements) != 1:
+            offenders.append(
+                f"{path.name}: {len(statements)} statements; a file using "
+                "CONCURRENTLY must hold exactly one, or the whole push aborts "
+                "with SQLSTATE 25001"
+            )
+
+    assert offenders == [], (
+        "CONCURRENTLY migrations must each hold exactly one statement "
+        "(ADR-012, established by reproduction against CLI 2.109.1). "
+        f"Offenders: {offenders}"
+    )

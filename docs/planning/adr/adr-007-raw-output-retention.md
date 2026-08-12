@@ -42,10 +42,21 @@ Consequences, stated plainly because this widens retention:
   the life of the storybook, exactly as long as the send-back case already was. This is the
   behaviour the 2026-08-10 amendment argued for; it simply did not take effect on the approve
   path.
-- **Nothing is retained without a human decision attached.** The nightly sweep still nulls the
-  report of any job whose storybook never reached a human (a `draft` or `in_review` with no
-  send-back event, or a job whose `storybook_id` resolves to no row) after 30 days. The
+- **Nothing is retained by *this exemption* without a human decision attached.** The nightly sweep
+  still nulls the report of any job whose storybook never reached a human (a `draft` or `in_review`
+  with no send-back event, or a job whose `storybook_id` resolves to no row) after 30 days. The
   machine-rejected `auto_reject` path writes no `sent_back` event and so is still purged.
+
+  The claim is scoped to the exemption on purpose, because the unscoped version is false and was
+  stated that way in an earlier draft. The sweep's predicate is gated on
+  `status IN ('passed', 'needs_review', 'failed')`, and `generation_job.status` has six legal
+  values, so `queued`, `running` and `awaiting_manual_fill` are matched by no purge condition at
+  all and their `report` is never nulled on any timer, decision or no decision. `queued` and
+  `running` are transient and normally carry no report; `awaiting_manual_fill` is by definition a
+  run parked waiting on a person and can sit indefinitely. That gap predates both amendments and
+  neither closes it. Closing it means widening the predicate to every non-exempt status, which is a
+  separate decision with its own deletion consequences and is tracked as a known gap in
+  `docs/compliance/data-retention-policy.md` Section 4 rather than assumed here.
 - **The rollback coupling is gone, and is not needed.** The old purge lived in the publish
   transaction so a rolled-back publish also rolled back the purge. With no purge on that path,
   there is nothing to keep consistent; a rolled-back publish leaves a non-`published`
