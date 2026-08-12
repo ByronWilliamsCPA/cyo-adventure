@@ -4,10 +4,19 @@ Each function wraps a state-machine transition and mutates ORM rows, and the
 transaction is flushed before it returns: either directly via
 ``await session.flush()`` or indirectly through ``record_event``, which
 flushes as part of writing the pipeline event row. The request unit-of-work
-(api/deps.py) commits once at request end; these never commit. ``approve`` is
-the ONLY path that may set ``status="published"``, and it always stamps
-``approved_by`` in the same operation, which is the single-write-path leg of
-the no-unapproved-publish invariant.
+(api/deps.py) commits once at request end; these never commit. Within
+``src/`` ``approve`` is the only path that sets ``status="published"``:
+``publishing/catalog_publish.py`` promotes a catalog story by calling it
+rather than by writing the column, and it always stamps ``approved_by`` in
+the same operation, which is the single-write-path leg of the
+no-unapproved-publish invariant.
+
+The offline seed scripts are outside that guarantee. ``scripts/seed_staging.py``,
+``scripts/seed_dev_data.py`` (two sites), and ``scripts/seed_series_catalog.py``
+each construct a ``Storybook`` row with ``status="published"`` directly, and
+each stamps ``approved_by`` in the same constructor, so those uphold the
+invariant by convention rather than by routing through this module. A change
+to what ``approve`` guarantees has to be mirrored there by hand.
 """
 
 from __future__ import annotations
@@ -345,10 +354,15 @@ async def approve(
             fails for a series book (legacy pre-WS-G chains are grandfathered
             and skip this check).
     """
-    # #CRITICAL: security: this is the SOLE path that sets status="published",
-    # and it stamps approved_by in the same operation, so no story is published
-    # without a recorded approver (the slice-1 invariant).
-    # #VERIFY: test_no_publish_without_approver drives every endpoint path.
+    # #CRITICAL: security: within src/ this is the sole path that sets
+    # status="published" (catalog_publish.py calls it rather than writing the
+    # column), and it stamps approved_by in the same operation, so no story
+    # reaches a reader without a recorded approver (the slice-1 invariant).
+    # The four offline seed sites named in this module's docstring write the
+    # column directly and uphold the invariant only by convention.
+    # #VERIFY: test_no_publish_without_approver drives every endpoint path. No
+    # test covers the seed scripts' direct writes, so widening this invariant
+    # means auditing those four sites by hand.
     # #CRITICAL: security: approve() now has two privileged callers --
     # api/approval.py::approve_storybook (HTTP, gated by
     # ctx.principal.is_admin in _load_admin_story) and
