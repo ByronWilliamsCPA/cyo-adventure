@@ -539,12 +539,36 @@ def test_pipeline_event_index_is_rebuilt_concurrently() -> None:
     drop_sql = _statements(drop_path.read_text(encoding="utf-8"))[0].lower()
     create_sql = _statements(create_path.read_text(encoding="utf-8"))[0].lower()
     assert drop_sql.startswith("drop index concurrently if exists")
-    assert create_sql.startswith("create index concurrently if not exists")
+    assert create_sql.startswith("create index concurrently")
     # Same name and same column list as the index 20260810000000 created, so
     # the rebuild changes how it is built and nothing about what it is.
     for sql in (drop_sql, create_sql):
         assert "ix_pipeline_event_entity_event_type" in sql
     assert '"entity_type", "entity_id", "event_type"' in create_sql
+
+
+def test_pipeline_event_index_rebuild_fails_loudly_on_an_invalid_index() -> None:
+    """The concurrent build must not carry ``if not exists``.
+
+    A ``CREATE INDEX CONCURRENTLY`` that fails partway leaves the index in the
+    catalog with ``indisvalid = false``. The Supabase CLI does not record a
+    failed migration in ``schema_migrations``, so the next ``db push`` re-runs
+    this file. With ``if not exists`` that re-run matches the invalid index by
+    name, does nothing, and the migration is recorded as applied: an index the
+    planner ignores plus a green deploy, with nothing anywhere reporting it.
+    Without the clause the re-run fails on "relation already exists", which
+    blocks the deploy until a human drops the invalid index.
+
+    Adding the clause back is therefore not a robustness improvement even
+    though it reads like one, which is why this is pinned rather than left to
+    the comment above the statement.
+    """
+    _, create_path = _INDEX_REBUILD_MIGRATIONS
+    create_sql = _statements(create_path.read_text(encoding="utf-8"))[0].lower()
+    assert "if not exists" not in create_sql, (
+        "the concurrent index build must fail loudly on a pre-existing invalid "
+        "index; see this test's docstring before reinstating `if not exists`"
+    )
 
 
 def test_pipeline_event_index_rebuild_sorts_after_the_amendment() -> None:

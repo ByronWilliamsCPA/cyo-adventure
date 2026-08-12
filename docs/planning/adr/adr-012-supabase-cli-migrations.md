@@ -206,6 +206,17 @@ truth; Alembic is retired.**
   `20260811170000`/`20260811170100` do for `ix_pipeline_event_entity_event_type`. The two
   indexes named above are left as they are; they are already built, and rebuilding them
   would be churn.
+- **A `CREATE INDEX CONCURRENTLY` must not carry `if not exists`.** The clause reads as
+  defensive and is the opposite here. A concurrent build that fails partway leaves the index
+  with `indisvalid = false`, which Postgres will not read from but will still maintain on
+  write. The CLI does not record a failed migration in `schema_migrations`, so the next
+  `db push` re-runs the file; with `if not exists` that re-run matches the invalid index by
+  name, does nothing, and the migration is then recorded as applied. The end state is an
+  index the planner ignores plus a green deploy and no signal anywhere. Omitting the clause
+  makes the re-run fail on `relation ... already exists`, which blocks the deploy until
+  someone drops the invalid index and re-pushes. Prefer the blocked deploy. `DROP INDEX
+  CONCURRENTLY` is the reverse case: `if exists` there is correct, since a database that
+  never applied the creating migration must not fail on the drop.
 - **A prefix must be unclaimed across open pull requests, not just against `origin/main`.**
   The CLI keys `schema_migrations` on the 14-digit version prefix, not the filename, so two
   concurrent branches can each hold a distinct file at the same prefix, each pass CI alone,

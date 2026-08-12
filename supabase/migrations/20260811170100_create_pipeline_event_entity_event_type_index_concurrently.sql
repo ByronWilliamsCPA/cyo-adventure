@@ -10,20 +10,37 @@
 -- nightly sweep. Without support that is a sequential scan of an append-only log that
 -- only ever grows.
 --
--- #CRITICAL: external resources: a CONCURRENTLY build that fails partway leaves an
--- INVALID index behind. Postgres does not use an invalid index for reads, but it is still
--- maintained on write, so the failure mode is a silent loss of the index's benefit rather
--- than an error anyone sees. `if not exists` will then match that invalid index by name
--- and skip the rebuild, so a re-run does not repair it on its own.
--- #VERIFY: after deploying this pair, confirm
+-- #CRITICAL: external resources: this statement deliberately omits `if not exists`, and
+-- must keep omitting it. A CONCURRENTLY build that fails partway leaves an INVALID index
+-- behind. Postgres does not use an invalid index for reads but does maintain it on write,
+-- so on its own that failure costs the index's benefit without raising anything anyone
+-- sees. `if not exists` would turn that into a permanent silent state, because the CLI
+-- does not record a failed migration in "schema_migrations": the next `supabase db push`
+-- re-runs this file, `if not exists` matches the invalid index by name, does nothing, and
+-- the migration is then recorded as applied. The result is an index the planner ignores
+-- plus a green deploy. Without the clause the same re-run fails loudly with
+-- "relation ... already exists", which blocks the deploy until someone looks. A blocked
+-- deploy is the better failure here; recovery is two statements, each in its own file or
+-- session:
+--   drop index concurrently "public"."ix_pipeline_event_entity_event_type";
+-- then re-run this migration.
+-- #VERIFY: tests/unit/test_report_retention.py::
+-- test_pipeline_event_index_rebuild_fails_loudly_on_an_invalid_index asserts the clause
+-- stays absent. After deploying this pair, also confirm
 --   select indisvalid from pg_index x join pg_class i on i.oid = x.indexrelid
 --   where i.relname = 'ix_pipeline_event_entity_event_type';
--- returns true. If it returns false, drop the invalid index concurrently and re-run this
--- statement; do not leave it in place.
+-- returns true; if it returns false, recover as above rather than leaving it in place.
+--
+-- Not addressed here: the #684 review also asked for a build-then-drop-then-rename
+-- sequence, so that the index is never absent. That closes a different gap, the one-migration
+-- window part 1 opens, which part 1 measures as costing nothing at this table's size (61
+-- rows, one nightly reader). It would cost a third migration and an ALTER INDEX RENAME on
+-- the hot path, so it is declined on proportionality, not on correctness. Revisit if
+-- "pipeline_event" grows enough for the window to matter.
 --
 -- Forward-only migration per this project's Supabase CLI convention (ADR-012); no down
 -- script.
 
-create index concurrently if not exists "ix_pipeline_event_entity_event_type"
+create index concurrently "ix_pipeline_event_entity_event_type"
     on "public"."pipeline_event" using "btree"
     ("entity_type", "entity_id", "event_type");
