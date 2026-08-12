@@ -31,6 +31,7 @@ Rule source: ``docs/planning/validator-rules.md`` section RL-13.
 from __future__ import annotations
 
 import re
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from cyo_adventure.storybook.sentinels import strip_sentinels
@@ -41,7 +42,16 @@ from cyo_adventure.validator.report import (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
+
     from cyo_adventure.storybook.models import Storybook
+
+__all__ = [
+    "BookReadingLevel",
+    "check_reading_level",
+    "measure_book",
+    "score_body",
+]
 
 # FK scores on bodies shorter than this word count are statistically noisy.
 # The threshold matches the minimum recommended by most readability literature
@@ -126,6 +136,105 @@ def _flesch_kincaid_grade(text: str) -> float:
     )
 
 
+def score_body(body: str) -> float | None:
+    """Return a node body's Flesch-Kincaid grade, or ``None`` if unscorable.
+
+    This is the single definition of "scorable" in the codebase. A body is
+    unscorable when it still carries an unfilled ``<<FILL ...>>`` directive (it
+    is an authoring marker, not prose) or when it falls below
+    ``_MIN_WORDS_FOR_FK`` words after sentinel stripping (FK is statistically
+    noisy on short passages). Both :func:`check_reading_level` and
+    :func:`measure_book` route through here, so the per-node rule, the
+    whole-book aggregate, and the generation-time repair loop cannot disagree
+    about which nodes they are talking about.
+
+    Args:
+        body: The raw node body, sentinels and FILL directives intact.
+
+    Returns:
+        The Flesch-Kincaid grade, or ``None`` when the body cannot be scored.
+    """
+    if _FILL_MARKER in body:
+        return None
+    stripped = strip_sentinels(body)
+    if len(stripped.split()) < _MIN_WORDS_FOR_FK:
+        return None
+    return _flesch_kincaid_grade(stripped)
+
+
+@dataclass(frozen=True, slots=True)
+class BookReadingLevel:
+    """A whole-book reading level: the aggregate RL-13 cannot see.
+
+    RL-13 scores nodes one at a time and is advisory for a good reason: a
+    single short body scores noisily. The consequence is that nobody watches
+    the book. Three 101-node books measured at whole-book FK 8.14 to 8.41
+    against a 5.5 target while the gate returned not-blocked on all three
+    (``AL-209``). This type carries the measurement that finding needs.
+
+    Attributes:
+        grade: Flesch-Kincaid over every scorable body concatenated. This is
+            the headline number, and it is NOT the mean of the per-node
+            grades: a long node contributes proportionally more to it, which
+            is the correct weighting for "how hard is this book to read".
+        in_band: Share of *scored* nodes inside the target band. Unscorable
+            nodes are excluded from both numerator and denominator, so a book
+            with many short nodes reports a higher figure than a whole-book
+            reading suggests; compare ``scored_nodes`` against ``nodes`` to
+            see how much of the book this number actually covers.
+        nodes: Total node bodies considered.
+        scored_nodes: How many of them were long enough to score.
+        words: Total words across the scorable bodies.
+    """
+
+    grade: float
+    in_band: float
+    nodes: int
+    scored_nodes: int
+    words: int
+
+
+def measure_book(
+    bodies: Iterable[str],
+    *,
+    target: float,
+    tolerance: float,
+) -> BookReadingLevel | None:
+    """Measure a book's aggregate reading level from its node bodies.
+
+    Args:
+        bodies: Every node body in the book, sentinels and FILL directives
+            intact (this function strips them itself, exactly as
+            :func:`score_body` does).
+        target: The book's target Flesch-Kincaid grade.
+        tolerance: The half-width of the acceptable band around ``target``.
+
+    Returns:
+        The aggregate measurement, or ``None`` when the whole book holds too
+        little prose to score at all. ``None`` is a real finding rather than a
+        pass: in a filled storybook it means the fill is empty or truncated.
+    """
+    all_bodies = list(bodies)
+    scorable = [strip_sentinels(b) for b in all_bodies if _FILL_MARKER not in b]
+    joined = " ".join(scorable)
+    if len(joined.split()) < _MIN_WORDS_FOR_FK:
+        return None
+
+    per_node = [g for g in (score_body(b) for b in all_bodies) if g is not None]
+    in_band = (
+        sum(1 for g in per_node if abs(g - target) <= tolerance) / len(per_node)
+        if per_node
+        else 0.0
+    )
+    return BookReadingLevel(
+        grade=_flesch_kincaid_grade(joined),
+        in_band=in_band,
+        nodes=len(all_bodies),
+        scored_nodes=len(per_node),
+        words=len(joined.split()),
+    )
+
+
 def check_reading_level(story: Storybook) -> ValidationReport:
     """Run the RL-13 advisory reading-level check over all story nodes.
 
@@ -154,21 +263,18 @@ def check_reading_level(story: Storybook) -> ValidationReport:
     upper = target + tolerance
 
     for node in story.nodes:
-        body = node.body
-        # An unfilled `<<FILL ...>>` authoring marker means the node is not
-        # authored yet, so a reading-level grade over it is meaningless: skip.
-        if _FILL_MARKER in body:
+        # score_body applies both skips this rule needs, and is the same
+        # predicate measure_book and the generation-time repair loop use:
+        #   - an unfilled `<<FILL ...>>` marker means the node is not authored
+        #     yet, so a grade over it is meaningless;
+        #   - a raw `{~SLOTID:GenericWord~}` sentinel would otherwise tokenize
+        #     as two words (the slot id and the value), inflating word and
+        #     syllable counts, so it is stripped to its inner value before both
+        #     the word-count floor and the grade computation;
+        #   - FK is noisy below `_MIN_WORDS_FOR_FK` words.
+        fk_grade = score_body(node.body)
+        if fk_grade is None:
             continue
-        # A raw `{~SLOTID:GenericWord~}` sentinel would otherwise tokenize as
-        # two words (the slot id and the value), inflating word and syllable
-        # counts and skewing the FK grade. Stripping to the inner value
-        # before both the word-count floor and the grade computation scores
-        # a sentinel-bearing body identically to the same body with its
-        # sentinels already resolved.
-        body = strip_sentinels(body)
-        if len(body.split()) < _MIN_WORDS_FOR_FK:
-            continue
-        fk_grade = _flesch_kincaid_grade(body)
         if fk_grade < lower or fk_grade > upper:
             report.add(
                 ValidationFinding(

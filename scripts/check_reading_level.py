@@ -53,61 +53,35 @@ from typing import Any, NamedTuple, cast
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
-from cyo_adventure.validator.reading_level import (
-    _SENTENCE_RE,  # pyright: ignore[reportPrivateUsage]
-    _WORD_RE,  # pyright: ignore[reportPrivateUsage]
-    _count_syllables,  # pyright: ignore[reportPrivateUsage]
-)
+from cyo_adventure.validator.reading_level import BookReadingLevel, measure_book
 
 _MAX_GRADE = 7.0
 # Arbitrary, and advisory for that reason. Only _MAX_GRADE gates, and it is
 # derived from the product's own band rather than chosen here.
 _MIN_IN_BAND = 0.5
-_MIN_WORDS = 20
 _TARGET = 5.5
 _TOLERANCE = 1.5
 
 
 class Score(NamedTuple):
-    """One book's aggregate reading level."""
+    """One book's aggregate reading level, plus the book's name."""
 
     book: str
-    nodes: int
-    words: int
-    grade: float
-    in_band: float
-    """Share of *scored* nodes inside the band.
-
-    Nodes under the minimum word count are unscorable and are excluded from
-    both numerator and denominator, so this is not the share of all nodes. A
-    book with many short nodes will report a higher figure than a whole-book
-    reading would suggest; ``nodes`` and ``scored_nodes`` together show the gap.
-    """
-    scored_nodes: int
-
-
-def grade(text: str) -> float | None:
-    """Return the Flesch-Kincaid grade of a passage, or None if too short.
-
-    Uses the production validator's own tokenisation and syllable estimate so
-    this measure cannot drift away from the per-node rule it complements.
-
-    Args:
-        text: The passage to score.
-
-    Returns:
-        The grade, or None when the passage is too short to score stably.
-    """
-    words = cast("list[str]", _WORD_RE.findall(text))
-    if len(words) < _MIN_WORDS:
-        return None
-    sentences = max(len([s for s in _SENTENCE_RE.split(text) if s.strip()]), 1)
-    syllables = sum(_count_syllables(w) for w in words)
-    return 0.39 * (len(words) / sentences) + 11.8 * (syllables / len(words)) - 15.59
+    level: BookReadingLevel
 
 
 def score(path: Path) -> Score | None:
     """Score one filled storybook, or None when it has too little prose.
+
+    The measurement itself lives in ``validator.reading_level.measure_book``,
+    which is also what `RL-13` and the generation-time reading-level repair
+    loop use. This script previously reimplemented the Flesch-Kincaid formula
+    over three privately-imported symbols, and the reimplementation had drifted:
+    it counted sentences with ``_SENTENCE_RE.split`` where the validator uses
+    ``findall``, and applied a ``_WORD_RE``-based word floor where the validator
+    splits on whitespace. Both differences moved reported grades slightly, so
+    the docstring's claim that this measure "cannot drift from RL-13" was false
+    at the time it was written.
 
     Args:
         path: Path to a filled storybook JSON.
@@ -120,23 +94,8 @@ def score(path: Path) -> Score | None:
         str(n.get("body") or "")
         for n in cast("list[dict[str, Any]]", story.get("nodes") or [])
     ]
-    whole = grade(" ".join(bodies))
-    if whole is None:
-        return None
-    scored = [g for g in (grade(b) for b in bodies) if g is not None]
-    in_band = (
-        sum(1 for g in scored if abs(g - _TARGET) <= _TOLERANCE) / len(scored)
-        if scored
-        else 0.0
-    )
-    return Score(
-        path.stem,
-        len(bodies),
-        len(_WORD_RE.findall(" ".join(bodies))),
-        whole,
-        in_band,
-        len(scored),
-    )
+    level = measure_book(bodies, target=_TARGET, tolerance=_TOLERANCE)
+    return None if level is None else Score(path.stem, level)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -174,21 +133,22 @@ def main(argv: list[str] | None = None) -> int:
             unscorable.append(Path(raw).stem)
             sys.stdout.write(f"{Path(raw).stem:34s} too little prose to score\n")
             continue
-        over = scored.grade > args.max_grade
+        level = scored.level
+        over = level.grade > args.max_grade
         breached = breached or over
         sys.stdout.write(
-            f"{scored.book:34s} {scored.nodes:5d} {scored.words:6d} "
-            f"{scored.grade:9.2f} {scored.in_band:7.0%}"
+            f"{scored.book:34s} {level.nodes:5d} {level.words:6d} "
+            f"{level.grade:9.2f} {level.in_band:7.0%}"
             + (
-                f"  ({scored.nodes - scored.scored_nodes} node(s) too short to score)"
-                if scored.scored_nodes != scored.nodes
+                f"  ({level.nodes - level.scored_nodes} node(s) too short to score)"
+                if level.scored_nodes != level.nodes
                 else ""
             )
             + f"{'   OVER' if over else ''}\n"
         )
-        if scored.in_band < args.min_in_band:
+        if level.in_band < args.min_in_band:
             sys.stdout.write(
-                f"{'':34s} advisory: only {scored.in_band:.0%} of SCORED nodes sit inside "
+                f"{'':34s} advisory: only {level.in_band:.0%} of SCORED nodes sit inside "
                 f"the band, so the aggregate is carried by a minority\n"
             )
 

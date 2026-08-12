@@ -54,6 +54,7 @@ __all__ = [
     "build_fill_prompt",
     "build_interpret_bind_prompt",
     "build_prose_prompt",
+    "build_reading_level_repair_prompt",
     "build_repair_prompt",
     "build_structure_prompt",
 ]
@@ -77,6 +78,14 @@ _DRAFTING_GUIDE_PLACEHOLDER = "{drafting_guide}"
 # The theme-brief placeholder recurs across the fill, bind, interpret-and-bind,
 # and bound-fill templates; named once for the same reason as the two above.
 _THEME_BRIEF_PLACEHOLDER = "{theme_brief}"
+
+# Terminator of the ``<<<UNTRUSTED_USER_INPUT ... >>>END_UNTRUSTED_USER_INPUT``
+# fence, and the inert form substituted for it inside a payload. The defanged
+# form stays human-legible in a logged prompt (so a reviewer can see that an
+# escape was attempted) while no longer matching the terminator the model is
+# told to look for. See _neutralize_fence.
+_FENCE_TERMINATOR = ">>>END_UNTRUSTED_USER_INPUT"
+_FENCE_TERMINATOR_DEFANGED = ">>>END_UNTRUSTED_USER_INPUT_NEUTRALIZED"
 
 
 @dataclass(frozen=True, slots=True)
@@ -148,6 +157,37 @@ def _split_stage_prompt(text: str) -> StagePrompt:
         raise BusinessLogicError(msg, rule="stage_prompt_marker")
     system, user = parts
     return StagePrompt(system=system.strip(), user=user.strip())
+
+
+def _neutralize_fence(text: str) -> str:
+    """Defang the untrusted-input fence terminator inside a delimited payload.
+
+    Several templates wrap untrusted content between ``<<<UNTRUSTED_USER_INPUT``
+    and ``>>>END_UNTRUSTED_USER_INPUT``. A payload that itself contains the
+    literal terminator closes the fence early, and everything after it reads to
+    the model as trusted instruction: the classic delimiter-escape injection.
+
+    # #CRITICAL: security: the reading-level repair prompt carries model-written
+    # node prose, which descends from an untrusted guardian/child brief. A body
+    # holding the literal terminator would break out of the fence and steer the
+    # simplification model directly. ``moderation/stages.py`` already sanitizes
+    # for exactly this reason (``_sanitize_delimited``); the generation
+    # templates in this module do not, so the terminator is neutralized here at
+    # the one call site that feeds prose rather than a JSON brief.
+    # #VERIFY: test_reading_level_prompt_neutralizes_a_literal_fence_terminator.
+    # #EDGE: security: ``build_fill_prompt`` and ``build_bound_fill_prompt``
+    # interpolate ``{theme_brief}`` into the same fence without this treatment.
+    # The brief is JSON-serialised, which escapes quotes and newlines but NOT
+    # the terminator, so the hole is real though narrower (the attacker must
+    # get the string through screening intake first). Tracked as UW-C225.
+
+    Args:
+        text: The payload about to be placed inside an untrusted fence.
+
+    Returns:
+        The payload with any fence terminator rendered inert.
+    """
+    return text.replace(_FENCE_TERMINATOR, _FENCE_TERMINATOR_DEFANGED)
 
 
 def _drafting_guide() -> str:
@@ -793,6 +833,63 @@ def build_fidelity_repair_prompt(
         _load_template("fidelity_repair.md")
         .replace("{filled_story}", filled_json)
         .replace("{fidelity_violations}", violations_block)
+    )
+    return _split_stage_prompt(text)
+
+
+def build_reading_level_repair_prompt(
+    nodes: Sequence[tuple[str, str, float]],
+    *,
+    target: float,
+    tolerance: float,
+) -> StagePrompt:
+    """Build the node-scoped reading-level repair prompt.
+
+    Unlike every other repair builder in this module, this one does NOT send
+    the story. It sends a list of ``(node_id, body, current_grade)`` triples and
+    asks for a mapping of ``node_id`` to revised body. That asymmetry is the
+    point and it is a safety property rather than a token optimisation:
+
+    * The graph is not in the prompt, so the model cannot restructure it. A
+      structural change is not a thing the output channel is able to express.
+      ``repair.md`` and ``fidelity_repair.md`` both take back a whole Storybook
+      and therefore both have to *ask* the model not to disturb structure, and
+      then re-gate to find out whether it obeyed.
+    * A 101-node book with 85 out-of-band nodes costs 85 short bodies in and 85
+      short bodies out, batched, instead of the entire book re-emitted once per
+      attempt.
+
+    Loads ``reading_level_repair.md`` and substitutes its two volatile
+    placeholders, ``{reading_target}`` and ``{nodes_to_simplify}`` (both user).
+
+    Args:
+        nodes: The out-of-band nodes as ``(node_id, body, current_grade)``.
+            Bodies are passed with their ``{~SLOT:Word~}`` sentinels intact, so
+            the model can preserve them verbatim.
+        target: The story's target Flesch-Kincaid grade.
+        tolerance: Half-width of the acceptable band around ``target``.
+
+    Returns:
+        The reading-level repair :class:`StagePrompt` (no unfilled tokens).
+
+    Raises:
+        BusinessLogicError: If the template lacks its ``<!-- @user -->`` marker.
+    """
+    reading_target = (
+        f"Target Flesch-Kincaid grade: {target:.1f}. "
+        f"Acceptable band: {target - tolerance:.1f} to {target + tolerance:.1f}."
+    )
+    payload = json.dumps(
+        [
+            {"node_id": node_id, "current_grade": round(current, 1), "body": body}
+            for node_id, body, current in nodes
+        ],
+        indent=2,
+    )
+    text = (
+        _load_template("reading_level_repair.md")
+        .replace("{reading_target}", reading_target)
+        .replace("{nodes_to_simplify}", _neutralize_fence(payload))
     )
     return _split_stage_prompt(text)
 

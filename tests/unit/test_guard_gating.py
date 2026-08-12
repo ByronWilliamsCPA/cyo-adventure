@@ -30,6 +30,8 @@ from unittest.mock import patch
 
 import pytest
 
+from cyo_adventure.validator import reading_level
+
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 
 _READING_LEVEL_SPEC = importlib.util.spec_from_file_location(
@@ -76,10 +78,14 @@ def test_reading_level_unscorable_book_fails_check(tmp_path: Path) -> None:
     """A book whose total prose falls below the scoreable minimum must fail
     ``--check``, not exit 0 as though it had been cleared.
 
-    ``grade()`` returns None once the whole-book word count is below
-    ``_MIN_WORDS`` (20). Five words is comfortably under that floor.
+    ``measure_book()`` returns None once the whole-book word count is below the
+    validator's own scoreable floor (20). Five words is comfortably under it.
+
+    The floor is asserted against the validator constant rather than a script
+    local: the script no longer carries its own copy, which is the point of
+    routing both through ``validator.reading_level``.
     """
-    assert check_reading_level_script._MIN_WORDS == 20
+    assert reading_level._MIN_WORDS_FOR_FK == 20  # pyright: ignore[reportPrivateUsage]
     book = _write_story(tmp_path / "too_short.json", ["Once upon a time now."])
 
     result = check_reading_level_script.main([str(book), "--check"])
@@ -104,7 +110,7 @@ def test_reading_level_in_band_book_passes_check(tmp_path: Path) -> None:
 
     scored = check_reading_level_script.score(book)
     assert scored is not None
-    assert scored.grade <= check_reading_level_script._MAX_GRADE
+    assert scored.level.grade <= check_reading_level_script._MAX_GRADE
 
     result = check_reading_level_script.main([str(book), "--check"])
 
