@@ -8,14 +8,14 @@ from typing import Any
 
 import pytest
 
-from scripts.check_device_vocabulary import analyse, main
+from scripts.check_device_vocabulary import _DEFAULT_BOOKS, analyse, main
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 
-_SHIPPED_CONTRACTS = [
-    _REPO_ROOT / "skeletons/3-5/the-lost-mitten.narrative.json",
-    _REPO_ROOT / "skeletons/10-13/the-clocktower-cipher.narrative.json",
-]
+# Discovered, not listed. A hardcoded pair was 100% of the catalog by accident
+# of catalog size, so a third shipped contract could have landed with DV errors
+# and no test would have failed. `sorted` keeps the parametrised ids stable.
+_SHIPPED_CONTRACTS = sorted((_REPO_ROOT / "skeletons").glob("*/*.narrative.json"))
 
 
 def _contract(
@@ -405,10 +405,17 @@ def test_malformed_nodes_are_skipped_rather_than_raising() -> None:
 
 @pytest.mark.unit
 @pytest.mark.parametrize("path", _SHIPPED_CONTRACTS, ids=lambda p: p.parent.name)
-def test_shipped_contracts_clear_the_five_book_target(path: Path) -> None:
-    """Regression guard: the widening must not silently rot back."""
+def test_shipped_contracts_clear_the_shipped_book_target(path: Path) -> None:
+    """Regression guard: the widening must not silently rot back.
+
+    Billed against ``_DEFAULT_BOOKS`` rather than a literal 5. Every axis in
+    every shipped contract clears the current target with zero headroom to
+    spare, so raising the constant breaks them immediately; a hardcoded 5 here
+    would keep asserting the old bar and report contracts as clearing a target
+    they no longer meet.
+    """
     contract = json.loads(path.read_text(encoding="utf-8"))
-    findings, _ = analyse(contract, 5)
+    findings, _ = analyse(contract, _DEFAULT_BOOKS)
     errors = [f for f in findings if f.severity == "ERROR"]
     assert errors == [], [f"{f.code} [{f.axis}]: {f.message}" for f in errors]
 
@@ -458,3 +465,47 @@ def test_main_reports_a_usage_error_on_a_json_document_that_is_not_an_object(
     path = tmp_path / "list.narrative.json"
     path.write_text("[]", encoding="utf-8")
     assert main([str(path)]) == 2
+
+
+@pytest.mark.unit
+def test_main_exits_zero_under_check_when_only_warnings_are_found(
+    tmp_path: Path,
+) -> None:
+    """Warnings print but never fail, including under ``--check``.
+
+    The module docstring states this as the gate contract, and DV-9's severity
+    is asserted directly elsewhere, but nothing drove a warning-only contract
+    through ``main`` with the flag. That left the exit-code half of the
+    contract untested: a change that folded warnings into the failure total
+    would have turned an advisory into a blocker with CI still green.
+
+    The contract below is clean apart from a spec drawing from an axis the
+    recipe omits, which is exactly DV-9.
+    """
+    contract = _contract(
+        {"axis": {"count": 1, "kinds": list("abcde")}},
+        {
+            "n1": {
+                "invention": {
+                    "slot": {
+                        "pick": 1,
+                        "category": "axis",
+                        "from": "bible.device_vocabulary.axis",
+                    },
+                    "ghost": {
+                        "pick": 1,
+                        "category": "absent_axis",
+                        "from": "bible.device_vocabulary.absent_axis",
+                    },
+                }
+            }
+        },
+    )
+    path = tmp_path / "warn.narrative.json"
+    path.write_text(json.dumps(contract), encoding="utf-8")
+
+    findings, _ = analyse(contract, _DEFAULT_BOOKS)
+    assert [f.code for f in findings if f.severity == "ERROR"] == []
+    assert "DV-9" in [f.code for f in findings]
+
+    assert main([str(path), "--check"]) == 0

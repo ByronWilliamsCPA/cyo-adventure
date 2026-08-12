@@ -29,14 +29,20 @@ free kinds, which is 3 books of headroom rather than the 2 a naive
 ``floor(7 / 3)`` reports. Modelling this wrong understates real capacity and
 would drive pointless vocabulary authoring.
 
-**An axis may be frozen on purpose.** In the 3-5 band ``obstacle_kinds`` is
-``["out_of_reach"]`` and ``help_modes`` is ``["shared_effort"]``: those are
-the story engine, not a shortfall, and widening them would author a different
-book. Such an axis declares ``"premise_fixed": true`` with a ``note`` saying
-why, which exempts it from the headroom check (DV-6) and nothing else.
+**An axis may be frozen on purpose.** Some axes name the story engine rather
+than a vocabulary: a single-kind axis whose kind *is* the premise cannot be
+widened without authoring a different book. Such an axis declares
+``"premise_fixed": true`` with a ``note`` saying why, which exempts it from
+the headroom check (DV-6) and nothing else. No shipped contract is in that
+state today, so this text deliberately names no contract as its example: an
+earlier version cited the 3-5 band's ``obstacle_kinds`` and ``help_modes``,
+and went stale the moment those axes were widened in the same change that
+introduced this gate.
 
 Checks (all ERROR unless marked):
 
+- DV-0 uncheckable contract: no ``world_recipe.requires`` mapping, so no axis
+  can be analysed at all. Reported alone; no other check runs.
 - DV-1 unbindable axis: an axis declares ``count`` but enumerates no
   ``kinds``. The binder has nothing to draw from, and because every
   downstream device check keys on the kind, such an axis is invisible to all
@@ -345,6 +351,27 @@ def _envelope(contract: dict[str, Any]) -> tuple[set[str] | None, set[str]]:
     )
 
 
+def _declared_count(axis_config: dict[str, Any]) -> int:
+    """Return an axis's declared ``count``, or 0 when absent or not an integer.
+
+    DV-3 reads this on one path and DV-5/DV-6 on another. They were separate
+    copies of the same expression, so a change to either would have left the
+    checks disagreeing about picks per book while both still reported
+    confidently.
+
+    Args:
+        axis_config: One entry of ``world_recipe.requires``.
+
+    Returns:
+        The declared picks per book. A ``bool`` is rejected because it is an
+        ``int`` subclass and a ``true`` here is a typo, not a count of one.
+    """
+    declared = axis_config.get("count")
+    if isinstance(declared, bool) or not isinstance(declared, int):
+        return 0
+    return declared
+
+
 def _check_axis_kinds(
     axis: str, axis_config: dict[str, Any], kinds: list[str] | None
 ) -> list[Finding]:
@@ -360,9 +387,7 @@ def _check_axis_kinds(
         vocabulary too small to fill one book.
     """
     declared = axis_config.get("count")
-    count = (
-        declared if isinstance(declared, int) and not isinstance(declared, bool) else 0
-    )
+    count = _declared_count(axis_config)
     if kinds is None:
         return [
             Finding(
@@ -465,7 +490,13 @@ def _check_specs(contract: dict[str, Any], requires: dict[str, Any]) -> list[Fin
         if axis is None:
             continue
         where = f"{node_id}.{slot}"
-        if not isinstance(spec.get("category"), str):
+        # An empty string must fail here exactly as an absent key does.
+        # `_axis_of_spec` requires a NON-empty `category` and otherwise falls
+        # back to the `from` path tail, so a spec carrying `"category": ""`
+        # still resolves to an axis and would escape DV-8 on a bare
+        # `isinstance` test, which is the precise case DV-8 exists to catch.
+        category = spec.get("category")
+        if not isinstance(category, str) or not category:
             findings.append(
                 Finding(
                     "DV-8",
@@ -549,12 +580,7 @@ def analyse(
         findings.extend(_check_axis_kinds(axis, axis_config, kinds))
         findings.extend(_check_envelope(axis, kinds, permitted, forbidden))
 
-        declared = axis_config.get("count")
-        count = (
-            declared
-            if isinstance(declared, int) and not isinstance(declared, bool)
-            else 0
-        )
+        count = _declared_count(axis_config)
         consumed = picks.get(axis, 0)
         if count != consumed:
             findings.append(
@@ -645,7 +671,13 @@ def main(argv: list[str] | None = None) -> int:
         0 when clean or when ``--check`` was not passed, 1 when ``--check``
         found an error, 2 on a usage or load failure.
     """
-    parser = argparse.ArgumentParser(description=__doc__)
+    # The module docstring is a 70-line structured list of DV codes. The
+    # default formatter reflows it into one unreadable block, so --help would
+    # hide the very reference a caller opens it for.
+    parser = argparse.ArgumentParser(
+        description=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
     parser.add_argument(
         "contracts", nargs="+", help="One or more <slug>.narrative.json paths."
     )
@@ -658,7 +690,12 @@ def main(argv: list[str] | None = None) -> int:
             f"(default {_DEFAULT_BOOKS})."
         ),
     )
-    parser.add_argument("--check", action="store_true")
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="Exit 1 when any ERROR is found. Warnings never affect the "
+        "exit code. Without this flag the script only reports.",
+    )
     args = parser.parse_args(argv)
     if args.books < 1:
         sys.stderr.write(f"error: --books must be at least 1, got {args.books}\n")
