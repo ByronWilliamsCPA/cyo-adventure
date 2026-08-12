@@ -9,8 +9,22 @@ import pytest
 from cyo_adventure.core.config import Settings
 from cyo_adventure.generation.fidelity_gate import run_stage1_gate
 from cyo_adventure.generation.pii import PiiContext
+from cyo_adventure.generation.usage import Completion, TokenUsage
 
 pytestmark = pytest.mark.asyncio
+
+_REVIEW_USAGE = TokenUsage(
+    provider="stub",
+    model="stub",
+    input_tokens=None,
+    output_tokens=None,
+    duration_ms=0,
+)
+
+
+def _verdict(payload: dict[str, object]) -> Completion:
+    """Wrap a scripted reviewer verdict in the Completion the gate expects."""
+    return Completion(text=json.dumps(payload), usage=_REVIEW_USAGE)
 
 
 def _skeleton(body: str) -> dict[str, object]:
@@ -56,9 +70,11 @@ async def test_clean_pure_code_pass_runs_the_semantic_check(monkeypatch) -> None
     filled = _skeleton(" ".join(["word"] * 10))
 
     class _FlaggingProvider:
-        async def complete(self, *, system: str, prompt: str, max_tokens: int) -> str:
+        async def complete(
+            self, *, system: str, prompt: str, max_tokens: int
+        ) -> Completion:
             _ = (system, prompt, max_tokens)
-            return json.dumps({"verdict": "flag", "notes": "beat mismatch"})
+            return _verdict({"verdict": "flag", "notes": "beat mismatch"})
 
     monkeypatch.setattr(
         "cyo_adventure.generation.fidelity_gate.build_review_provider",
@@ -92,9 +108,11 @@ async def test_omitted_review_stage1_model_falls_back_to_prep_model(
         return settings
 
     class _PassingProvider:
-        async def complete(self, *, system: str, prompt: str, max_tokens: int) -> str:
+        async def complete(
+            self, *, system: str, prompt: str, max_tokens: int
+        ) -> Completion:
             _ = (system, prompt, max_tokens)
-            return json.dumps({"verdict": "pass"})
+            return _verdict({"verdict": "pass"})
 
     monkeypatch.setattr(
         "cyo_adventure.generation.fidelity_gate.resolve_review_settings",
@@ -132,9 +150,11 @@ async def test_explicit_review_stage1_model_takes_precedence_over_prep_model(
         return settings
 
     class _PassingProvider:
-        async def complete(self, *, system: str, prompt: str, max_tokens: int) -> str:
+        async def complete(
+            self, *, system: str, prompt: str, max_tokens: int
+        ) -> Completion:
             _ = (system, prompt, max_tokens)
-            return json.dumps({"verdict": "pass"})
+            return _verdict({"verdict": "pass"})
 
     monkeypatch.setattr(
         "cyo_adventure.generation.fidelity_gate.resolve_review_settings",

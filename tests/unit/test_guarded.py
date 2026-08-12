@@ -14,8 +14,17 @@ import pytest
 from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.generation.guarded import PiiGuardedProvider
 from cyo_adventure.generation.pii import PiiContext
+from cyo_adventure.generation.usage import Completion, TokenUsage
 
 _REAL_CHILD = "Wilhelmina Featherstone"
+
+_INNER_USAGE = TokenUsage(
+    provider="recording",
+    model="recording",
+    input_tokens=11,
+    output_tokens=7,
+    duration_ms=3,
+)
 
 
 class _RecordingProvider:
@@ -24,11 +33,13 @@ class _RecordingProvider:
     def __init__(self) -> None:
         self.calls: list[dict[str, object]] = []
 
-    async def complete(self, *, system: str, prompt: str, max_tokens: int) -> str:
+    async def complete(
+        self, *, system: str, prompt: str, max_tokens: int
+    ) -> Completion:
         self.calls.append(
             {"system": system, "prompt": prompt, "max_tokens": max_tokens}
         )
-        return "inner-response"
+        return Completion(text="inner-response", usage=_INNER_USAGE)
 
 
 def _guard() -> tuple[_RecordingProvider, PiiGuardedProvider]:
@@ -49,7 +60,11 @@ async def test_clean_call_delegates_to_inner() -> None:
         max_tokens=128,
     )
 
-    assert result == "inner-response"
+    assert result.text == "inner-response"
+    # The wrapper adds no call of its own, so the inner leg's usage must arrive
+    # unmodified: a guard that re-wrapped it would lose the leg attribution the
+    # cost aggregation bills against.
+    assert result.usage == _INNER_USAGE
     assert len(inner.calls) == 1
     assert inner.calls[0]["max_tokens"] == 128
 

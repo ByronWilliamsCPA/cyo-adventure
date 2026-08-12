@@ -16,7 +16,8 @@ double the backoff with different semantics.
 
 from __future__ import annotations
 
-from typing import Final, NoReturn
+import time
+from typing import Final, NoReturn, cast
 
 import anthropic
 
@@ -24,9 +25,11 @@ from cyo_adventure.core.exceptions import ProviderError
 from cyo_adventure.generation.providers._base import (
     DEFAULT_BACKOFF_BASE_SECONDS,
     DEFAULT_MAX_RETRIES,
+    elapsed_ms,
     run_with_retries,
     strip_code_fences,
 )
+from cyo_adventure.generation.usage import Completion, TokenUsage, coerce_token_count
 
 # Anthropic status codes worth retrying against the same model. Matches the
 # sibling OpenRouterProvider's transient set exactly (openrouter.py) and the
@@ -90,7 +93,9 @@ class AnthropicProvider:
         """Return the model id this leg targets."""
         return self._model
 
-    async def complete(self, *, system: str, prompt: str, max_tokens: int) -> str:
+    async def complete(
+        self, *, system: str, prompt: str, max_tokens: int
+    ) -> Completion:
         """Return the model completion for a system+user prompt pair.
 
         Args:
@@ -99,7 +104,8 @@ class AnthropicProvider:
             max_tokens: Upper bound on response length in tokens.
 
         Returns:
-            The completion text with any wrapping markdown code fence stripped.
+            The completion text with any wrapping markdown code fence stripped,
+            plus the token usage the API reported for the successful attempt.
 
         Raises:
             ProviderError: On a leg-fatal failure (mapped immediately) or after
@@ -120,7 +126,7 @@ class AnthropicProvider:
             backoff_base_seconds=self._backoff_base_seconds,
         )
 
-    async def _attempt(self, system: str, prompt: str, max_tokens: int) -> str:
+    async def _attempt(self, system: str, prompt: str, max_tokens: int) -> Completion:
         """Perform one Messages API call and map the outcome to text or ProviderError.
 
         Args:
@@ -129,13 +135,14 @@ class AnthropicProvider:
             max_tokens: Upper bound on response length in tokens.
 
         Returns:
-            The model completion text on success.
+            The model completion text and its reported token usage on success.
 
         Raises:
             ProviderError: Transient (``leg_fatal=False``) on connection
                 error/timeout/HTTP 408/409/425/429/529/5xx; leg-fatal
                 (``leg_fatal=True``) on any other 4xx.
         """
+        started = time.monotonic()
         try:
             message = await self._client.messages.create(
                 model=self._model,
@@ -166,7 +173,50 @@ class AnthropicProvider:
         except anthropic.APIStatusError as exc:
             self._raise_for_status(exc)
 
-        return self._extract_content(message)
+        # The content check runs first so a malformed 200 stays a retryable
+        # ProviderError; a discarded attempt records no usage, matching the
+        # "successful attempt only" contract in run_with_retries.
+        text = self._extract_content(message)
+        input_tokens, output_tokens = self._extract_usage(message)
+        return Completion(
+            text=text,
+            usage=TokenUsage(
+                provider="anthropic",
+                model=self._model,
+                input_tokens=input_tokens,
+                output_tokens=output_tokens,
+                duration_ms=elapsed_ms(started),
+            ),
+        )
+
+    def _extract_usage(
+        self, message: anthropic.types.Message
+    ) -> tuple[int | None, int | None]:
+        """Read the reported token counts off a successful Messages response.
+
+        Args:
+            message: The parsed ``Message`` response.
+
+        Returns:
+            ``(input_tokens, output_tokens)``, each ``None`` when the response
+            did not carry a usable count.
+        """
+        # #CRITICAL: data-integrity: these counts feed a spend figure, and the
+        # SDK builds Message by lenient construction rather than strict
+        # validation, so the declared non-optional Usage can be absent or hold
+        # a non-int on a malformed 200. The cast to `object` is what keeps the
+        # isinstance guard live: annotating the binding is not enough, because
+        # the type checker still narrows it from the assignment and then calls
+        # the guard unreachable. An unreadable usage block reports None
+        # (unknown), never 0 (free).
+        # #VERIFY: test_missing_usage_block_reports_unknown_tokens.
+        reported = cast("object", message.usage)
+        if not isinstance(reported, anthropic.types.Usage):
+            return (None, None)
+        return (
+            coerce_token_count(reported.input_tokens),
+            coerce_token_count(reported.output_tokens),
+        )
 
     def _raise_for_status(self, exc: anthropic.APIStatusError) -> NoReturn:
         """Map an Anthropic API status error to a ProviderError with the right fatality.

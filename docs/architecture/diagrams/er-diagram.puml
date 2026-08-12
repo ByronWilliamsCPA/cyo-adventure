@@ -509,6 +509,13 @@ entity "generation_job" as generation_job #FFEBEE {
   storybook_id : VARCHAR(120) NULL [NOT FK, see note]
   version : INT NULL
   error : VARCHAR(512) NULL
+  provider_call_count : INT NULL [NULL = not recorded; never 0 once recorded]
+  provider_unknown_calls : INT NULL [NULL = not recorded; 0 = every call counted]
+  input_tokens : INT NULL [NULL = not recorded; 0 = recorded, none consumed]
+  output_tokens : INT NULL [NULL = not recorded; 0 = recorded, none consumed]
+  provider_duration_ms : INT NULL [NULL = not recorded; 0 = sub-millisecond]
+  cost_usd : NUMERIC(12,6) NULL [NULL = not recorded; lower bound unless cost_complete]
+  cost_complete : BOOLEAN NULL [NULL = not recorded; false = usage unknown, price missing, or capped]
   created_at : TIMESTAMPTZ
   updated_at : TIMESTAMPTZ
 }

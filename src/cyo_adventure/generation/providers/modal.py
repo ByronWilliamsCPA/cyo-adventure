@@ -11,6 +11,7 @@ is an explicit, offline-only choice.
 
 from __future__ import annotations
 
+import time
 from typing import TYPE_CHECKING, Final
 
 import httpx
@@ -20,9 +21,12 @@ from cyo_adventure.generation.providers._base import (
     DEFAULT_BACKOFF_BASE_SECONDS,
     DEFAULT_MAX_RETRIES,
     dig_content,
+    dig_usage,
+    elapsed_ms,
     run_with_retries,
     strip_code_fences,
 )
+from cyo_adventure.generation.usage import Completion, TokenUsage
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
@@ -97,7 +101,9 @@ class ModalProvider:
         """Return the leg label used in logs and the worker provider record."""
         return f"modal:{self._model}"
 
-    async def complete(self, *, system: str, prompt: str, max_tokens: int) -> str:
+    async def complete(
+        self, *, system: str, prompt: str, max_tokens: int
+    ) -> Completion:
         """Return the model completion for a system+user prompt pair.
 
         Args:
@@ -106,7 +112,9 @@ class ModalProvider:
             max_tokens: Upper bound on response length in tokens.
 
         Returns:
-            The completion text with any wrapping markdown code fence removed.
+            The completion text with any wrapping markdown code fence removed,
+            plus the token usage the response reported for the successful
+            attempt.
 
         Raises:
             ProviderError: On a leg-fatal failure (mapped immediately) or after
@@ -146,7 +154,7 @@ class ModalProvider:
         url: str,
         body: Mapping[str, object],
         headers: Mapping[str, str],
-    ) -> str:
+    ) -> Completion:
         """Perform one HTTP attempt and map the outcome to text or ProviderError.
 
         Args:
@@ -155,13 +163,14 @@ class ModalProvider:
             headers: The request headers.
 
         Returns:
-            The model completion text on success.
+            The model completion text and its reported token usage on success.
 
         Raises:
             ProviderError: Transient (``leg_fatal=False``) on network/timeout/5xx
                 or rate limiting; leg-fatal (``leg_fatal=True``) on
                 invalid-model/auth failures.
         """
+        started = time.monotonic()
         try:
             if self._client is not None:
                 response = await self._client.post(url, json=body, headers=headers)
@@ -175,7 +184,7 @@ class ModalProvider:
             ) from exc
 
         self._raise_for_status(response)
-        return self._extract_content(response)
+        return self._extract_completion(response, started)
 
     def _raise_for_status(self, response: httpx.Response) -> None:
         """Map a non-2xx HTTP status to a ProviderError with the right fatality.
@@ -214,14 +223,17 @@ class ModalProvider:
             leg_fatal=True,
         )
 
-    def _extract_content(self, response: httpx.Response) -> str:
-        """Extract the completion text from a successful response.
+    def _extract_completion(
+        self, response: httpx.Response, started: float
+    ) -> Completion:
+        """Extract the completion text and token usage from a successful response.
 
         Args:
             response: A 2xx HTTP response.
+            started: The ``time.monotonic()`` reading taken before the request.
 
         Returns:
-            The first choice's message content.
+            The first choice's message content plus the reported token usage.
 
         Raises:
             ProviderError: Transient if the response shape is unexpected or the
@@ -241,4 +253,14 @@ class ModalProvider:
             raise ProviderError(
                 msg, provider="modal", model=self._model, leg_fatal=False
             )
-        return strip_code_fences(content)
+        input_tokens, output_tokens = dig_usage(payload)
+        return Completion(
+            text=strip_code_fences(content),
+            usage=TokenUsage(
+                provider="modal",
+                model=self._model,
+                input_tokens=input_tokens,
+                output_tokens=output_tokens,
+                duration_ms=elapsed_ms(started),
+            ),
+        )

@@ -17,6 +17,12 @@ Fix 2 (run_guard_battery.py): the per-book guard list invoked
 ``if args.check and breached: return 1`` then ``return 0``, so without the
 flag it can never fail, which put a structurally-passing guard into the
 gating denominator. It now passes ``--check``.
+
+Fix 3 (run_guard_battery.py): ``check_device_vocabulary.py`` was registered in
+no gate at all. It is the upstream feasibility check the sibling device guards
+assume but never verify, and nothing invoked it: not the battery, not a
+workflow, not a pre-commit hook. A guard nothing runs cannot fail, so these
+tests pin both its registration and the book count it is asked about.
 """
 
 from __future__ import annotations
@@ -153,3 +159,73 @@ def test_guard_battery_prose_craft_invoked_with_check_flag() -> None:
     story_gate_calls = [c for c in calls if c[0] == "run_story_gate.py"]
     assert story_gate_calls, "run_story_gate.py was not invoked"
     assert "--check" not in story_gate_calls[0][1]
+
+
+# --------------------------------------------------------------------------
+# Fix 3: check_device_vocabulary.py was registered in no gate at all
+# --------------------------------------------------------------------------
+
+
+def _battery_calls(
+    filled: list[str], **kwargs: object
+) -> tuple[list[tuple[str, tuple[str, ...]]], list[Any]]:
+    """Run ``battery()`` with ``_run`` intercepted, returning calls and results."""
+    calls: list[tuple[str, tuple[str, ...]]] = []
+
+    def _fake_run(script: str, *args: str) -> tuple[int, str]:
+        calls.append((script, args))
+        return 0, "ok"
+
+    with patch.object(run_guard_battery_script, "_run", _fake_run):
+        results = run_guard_battery_script.battery(
+            "skeleton.json", "contract.json", filled, [], **kwargs
+        )
+    return calls, results
+
+
+def _flag_value(args: tuple[str, ...], flag: str) -> str:
+    """Return the value following ``flag`` in a built argument tuple."""
+    return args[args.index(flag) + 1]
+
+
+def test_guard_battery_registers_the_device_vocabulary_gate() -> None:
+    """``check_device_vocabulary.py`` must actually be in the battery.
+
+    It was reachable only by hand and by one pytest test over a hardcoded
+    two-file list, which was 100% of the catalog by accident of catalog size
+    and would have gone silently incomplete the moment a third skeleton
+    landed. A feasibility gate nothing invokes cannot fail, so it was not a
+    gate. Asserting ``gating=True`` alongside ``--check`` matters because the
+    Result flag and the flag that makes the script able to fail are set
+    independently, which is precisely how check_prose_craft regressed above.
+    """
+    calls, results = _battery_calls(["a.json", "b.json"])
+
+    vocabulary_calls = [c for c in calls if c[0] == "check_device_vocabulary.py"]
+    assert vocabulary_calls, "check_device_vocabulary.py was not invoked"
+    assert "--check" in vocabulary_calls[0][1]
+
+    recorded = [r for r in results if r.guard == "check_device_vocabulary"]
+    assert len(recorded) == 1
+    assert recorded[0].gating is True
+
+
+def test_guard_battery_asks_for_feasibility_across_the_books_given() -> None:
+    """The default book count is the number of books actually passed."""
+    calls, _ = _battery_calls(["a.json", "b.json", "c.json"])
+
+    vocabulary_calls = [c for c in calls if c[0] == "check_device_vocabulary.py"]
+    assert _flag_value(vocabulary_calls[0][1], "--books") == "3"
+
+
+def test_guard_battery_series_books_overrides_the_default_count() -> None:
+    """A subset run can still ask the feasibility question for the whole series.
+
+    Without this, validating 2 books of an intended 6-book series would report
+    the contract feasible while it is already exhausted at book 3, recreating
+    the exact silently-incomplete shape this gate exists to catch.
+    """
+    calls, _ = _battery_calls(["a.json", "b.json"], series_books=6)
+
+    vocabulary_calls = [c for c in calls if c[0] == "check_device_vocabulary.py"]
+    assert _flag_value(vocabulary_calls[0][1], "--books") == "6"

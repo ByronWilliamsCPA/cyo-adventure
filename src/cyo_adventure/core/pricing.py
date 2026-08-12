@@ -1,0 +1,244 @@
+"""Dated per-(provider, model) token prices and the cost they imply.
+
+A cost figure that is quietly wrong is worse than no cost figure, so this
+module carries the same discipline
+:mod:`cyo_adventure.generation.usage` applies to token counts, one layer up:
+
+* A price is ``Decimal``, never ``float``. Money is never binary floating
+  point, and these values are summed across thousands of calls.
+* Each half of a price is ``Decimal | None`` independently. ``None`` means the
+  price is not known, and is never interchangeable with ``0``: an unpriced
+  model must not look free.
+* Every entry is **dated** and cites its ``source``. A price is a fact about a
+  vendor on a day, so a cost recomputed months later against a changed price
+  list is auditable rather than mysteriously different.
+* :class:`CostEstimate` reports ``complete``. When either half of the price or
+  either half of the token count is missing, the amount is a **lower bound**
+  and says so, rather than presenting a partial sum as a total.
+
+**Known gap.** The project's only recorded price source
+(``docs/planning/yield-results/phase-2b-2026-06-22-analysis.md``) records
+output prices and no input prices, so every seeded entry below has
+``input_usd_per_mtok=None``. For this workload that biases the estimate low
+but not wildly: that same analysis records generation as output-token-heavy.
+Every estimate against these entries reports ``complete=False``, so no caller
+can mistake the figure for a full cost.
+
+#CRITICAL: payment/financial: these prices are not read from a vendor API.
+They are transcribed from a dated project document, and a vendor price change
+makes every later estimate silently wrong in whichever direction the change
+went. Nothing here validates them against reality.
+#VERIFY: before any cost figure derived from this table is used for billing,
+budgeting, or a customer-visible number, re-check each entry against the
+vendor's live pricing page and update ``as_of``. Treat an entry older than one
+quarter as unverified. Fill the ``input_usd_per_mtok`` gaps at the same time.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from datetime import date
+from decimal import Decimal
+from types import MappingProxyType
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
+
+__all__ = [
+    "PRICES",
+    "CostEstimate",
+    "ModelPrice",
+    "estimate_cost",
+    "price_for",
+]
+
+_TOKENS_PER_MTOK = Decimal(1_000_000)
+
+# Where the seeded numbers come from. Named once so every entry cites the same
+# string and a future edit cannot leave half the table pointing at a stale doc.
+_PHASE_2B = "docs/planning/yield-results/phase-2b-2026-06-22-analysis.md"
+
+
+@dataclass(frozen=True, slots=True)
+class ModelPrice:
+    """What one vendor charged for one model, on one date.
+
+    Attributes:
+        input_usd_per_mtok: USD per million prompt tokens, or ``None`` when
+            the price is not known. Not interchangeable with ``Decimal(0)``,
+            which would assert the vendor charges nothing for input.
+        output_usd_per_mtok: USD per million completion tokens, or ``None``
+            when not known.
+        as_of: The date this price was recorded. A price is a fact about a
+            day, not a constant.
+        source: Where the number came from, so a wrong entry can be traced to
+            what it was read from rather than argued about.
+        note: Anything a reader needs in order not to misread the entry.
+    """
+
+    input_usd_per_mtok: Decimal | None
+    output_usd_per_mtok: Decimal | None
+    as_of: date
+    source: str
+    note: str = ""
+
+    @property
+    def fully_priced(self) -> bool:
+        """Whether both halves of this price are known.
+
+        Returns:
+            ``True`` only when neither half is ``None``. A half-known price
+            can still produce a lower bound, never a total.
+        """
+        return (
+            self.input_usd_per_mtok is not None and self.output_usd_per_mtok is not None
+        )
+
+
+# Keyed by (provider, model) exactly as TokenUsage reports them: the provider
+# is the adapter's short name and the model is the id the call was issued
+# against, so an OpenRouter-routed Anthropic model keys off "openrouter" and
+# its slash-qualified id, not off "anthropic".
+_PRICES: dict[tuple[str, str], ModelPrice] = {
+    ("openrouter", "anthropic/claude-haiku-4.5"): ModelPrice(
+        input_usd_per_mtok=None,
+        output_usd_per_mtok=Decimal("5.00"),
+        as_of=date(2026, 6, 22),
+        source=_PHASE_2B,
+        note="recorded as $5/Mtok out when chosen as the measurement primary",
+    ),
+    ("openrouter", "anthropic/claude-sonnet-4.6"): ModelPrice(
+        input_usd_per_mtok=None,
+        output_usd_per_mtok=Decimal("15.00"),
+        as_of=date(2026, 6, 22),
+        source=_PHASE_2B,
+        note=(
+            "derived, not transcribed: the source states Haiku 4.5 is '3x cheaper "
+            "than Sonnet' on output and gives Haiku as $5/Mtok out. Verify "
+            "directly before trusting it, since a rounded ratio in prose is "
+            "weaker evidence than a quoted price"
+        ),
+    ),
+    ("openrouter", "google/gemini-2.5-flash"): ModelPrice(
+        input_usd_per_mtok=None,
+        output_usd_per_mtok=Decimal("2.50"),
+        as_of=date(2026, 6, 22),
+        source=_PHASE_2B,
+        note="evaluated but not adopted; blocked on L1-7 for the test brief",
+    ),
+    ("ollama", "qwen2.5:14b"): ModelPrice(
+        input_usd_per_mtok=Decimal(0),
+        output_usd_per_mtok=Decimal(0),
+        as_of=date(2026, 8, 11),
+        source="self-hosted; no vendor bills these tokens",
+        note=(
+            "zero VENDOR cost, not zero cost. Hardware, power and the operator's "
+            "time are real and are not modelled here, so an all-Ollama run "
+            "reporting $0.00 means 'nothing was billed', not 'this was free'"
+        ),
+    ),
+}
+
+# Exported read-only. Every entry is a dated, sourced fact that must stay
+# auditable against this file, so a runtime `PRICES[key] = ...` by any importer
+# would leave a live price with no trace in the source and no `as_of`/`source`
+# to check it against. The proxy makes the table changeable only by editing
+# the literal above.
+PRICES: Mapping[tuple[str, str], ModelPrice] = MappingProxyType(_PRICES)
+
+
+@dataclass(frozen=True, slots=True)
+class CostEstimate:
+    """What a set of token counts cost, and how much of that is actually known.
+
+    Attributes:
+        amount_usd: The summed cost of every priced, counted half. When
+            ``complete`` is ``False`` this is a **lower bound**: it omits the
+            halves that had no price or no count, and omitting them can only
+            reduce the figure.
+        complete: ``True`` only when every half of both the price and the
+            token counts was known. ``False`` means the amount understates the
+            true cost by an unknown margin.
+        reason: Why the estimate is incomplete, for a log line or an operator
+            reading a dashboard. Empty when ``complete``.
+    """
+
+    amount_usd: Decimal
+    complete: bool
+    reason: str = ""
+
+
+def price_for(provider: str, model: str) -> ModelPrice | None:
+    """Look up the recorded price for one provider and model.
+
+    Args:
+        provider: The adapter's short name, as ``TokenUsage.provider`` reports
+            it (for a fallback chain, the leg that answered).
+        model: The model id the call was issued against.
+
+    Returns:
+        The recorded price, or ``None`` when this pair has no entry. ``None``
+        means unknown; callers must not substitute zero.
+    """
+    return PRICES.get((provider, model))
+
+
+def estimate_cost(
+    price: ModelPrice | None,
+    input_tokens: int | None,
+    output_tokens: int | None,
+) -> CostEstimate:
+    """Cost the given token counts against the given price.
+
+    Each half is costed independently, so a call with a known output price and
+    an unknown input price still contributes what is known rather than
+    contributing nothing. Every such shortfall is recorded in ``complete`` and
+    ``reason``, so the result can never be mistaken for a full cost.
+
+    Args:
+        price: The recorded price, or ``None`` when the model has no entry.
+        input_tokens: Prompt tokens, or ``None`` when the backend reported
+            none.
+        output_tokens: Completion tokens, or ``None`` when the backend
+            reported none.
+
+    Returns:
+        The cost of every priced and counted half, flagged complete only when
+        nothing was missing.
+    """
+    # #CRITICAL: payment/financial: an unknown price and an unknown token
+    # count must both reduce `complete`, never silently contribute zero to a
+    # sum that a reader would take as a total. The `missing` list is the
+    # mechanism: every skipped half appends to it, so `complete` is derived
+    # from what actually happened rather than asserted separately and left to
+    # drift from the arithmetic beside it.
+    # #VERIFY: test_unpriced_model_is_incomplete_and_not_free,
+    # test_half_priced_entry_yields_a_lower_bound.
+    if price is None:
+        return CostEstimate(
+            amount_usd=Decimal(0),
+            complete=False,
+            reason="no recorded price for this provider and model",
+        )
+
+    amount = Decimal(0)
+    missing: list[str] = []
+
+    for label, per_mtok, tokens in (
+        ("input", price.input_usd_per_mtok, input_tokens),
+        ("output", price.output_usd_per_mtok, output_tokens),
+    ):
+        if per_mtok is None:
+            missing.append(f"{label} price unknown")
+            continue
+        if tokens is None:
+            missing.append(f"{label} tokens not reported")
+            continue
+        amount += (Decimal(tokens) * per_mtok) / _TOKENS_PER_MTOK
+
+    return CostEstimate(
+        amount_usd=amount,
+        complete=not missing,
+        reason="; ".join(missing),
+    )
