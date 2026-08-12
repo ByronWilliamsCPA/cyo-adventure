@@ -242,6 +242,27 @@ export function GuardianVerificationPage() {
           This decides which ways of verifying are available to you, so it needs to be where you
           actually live.
         </p>
+        {/*
+         * #CRITICAL security: assurance-register O-125 requires the guardian be told that their
+         * email address is disclosed to Epic BEFORE they trigger the disclosure. Pressing the
+         * button below is the disclosure: POST /v1/consent/kws/start (api/consent.py) reaches
+         * consent/kws_client.py's send_verification_email, which posts the address to KWS.
+         * KWS's own "Verify you're an adult"
+         * email carries similar wording, but that email only exists because the address was
+         * already shared, so it is post-send by construction and cannot satisfy this. This
+         * paragraph is the pre-send surface, which is why it sits next to the trigger rather
+         * than in the intro above.
+         * The list is exhaustive against the request body built in kws_client.py: email,
+         * location, language, an opaque per-attempt correlation token, and a fixed
+         * userContext. Nothing child-derived is in it. Keep the two in step: widening the
+         * body without widening this sentence turns a disclosure into a misstatement.
+         * #VERIFY: GuardianVerificationPage.test.tsx asserts this copy renders before submit.
+         */}
+        <p className="cyo-text-muted">
+          When you continue, we send Kids Web Services your email address, the country you chose
+          above, and your language, so they can email you. We send them nothing about your child.
+          They tell us whether you verified; they never tell us how.
+        </p>
         {error ? (
           <p role="alert" className="cyo-text-error">
             {error}
