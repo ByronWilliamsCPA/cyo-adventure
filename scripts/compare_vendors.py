@@ -872,6 +872,8 @@ def _write_outputs(
         "within_vendor": report.within_vendor,
         "cross_vendor": report.cross_vendor,
         "same_brief_cross_vendor": report.same_brief_cross_vendor,
+        "same_family_cross_model": report.same_family_cross_model,
+        "same_family_same_brief": report.same_family_same_brief,
         "verdict": report.verdict,
     }
     (out_dir / "report.json").write_text(

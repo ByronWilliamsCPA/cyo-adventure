@@ -13,6 +13,7 @@ deterministic mock provider or a stubbed ``fill_skeleton``.
 
 from __future__ import annotations
 
+import dataclasses
 import json
 from typing import TYPE_CHECKING, Any
 from unittest import mock
@@ -22,6 +23,7 @@ import pytest
 from cyo_adventure.core.config import Settings
 from scripts.compare_vendors import (
     BookRecord,
+    ComparisonReport,
     Vendor,
     _load_briefs,  # pyright: ignore[reportPrivateUsage]
     _load_skeletons,  # pyright: ignore[reportPrivateUsage]
@@ -31,6 +33,7 @@ from scripts.compare_vendors import (
     _report_preflight,  # pyright: ignore[reportPrivateUsage]
     _summarize,  # pyright: ignore[reportPrivateUsage]
     _verdict,  # pyright: ignore[reportPrivateUsage]
+    _write_outputs,  # pyright: ignore[reportPrivateUsage]
     analyze,
     preflight,
     run_comparison,
@@ -762,3 +765,28 @@ async def test_compare_vendors_mock_run_makes_no_live_call() -> None:
 
     assert len(records) == 2
     assert all(r.doc is not None for r in records)
+
+
+def test_report_json_carries_every_bucket_the_report_computes(tmp_path: Path) -> None:
+    """Each analysed bucket must reach disk, not just the terminal.
+
+    ``report.json`` is what the run is read from days later; the printed table
+    scrolls away. When the family axis was added, both same-family buckets were
+    computed and printed but never serialized, so the version-bump control (the
+    entire reason a second checkpoint of one lab is on the slate) survived only
+    in scrollback. Driving this off ``dataclasses.fields`` rather than a literal
+    list means the next bucket added cannot be dropped the same way.
+    """
+    report = analyze(
+        [
+            _record("a46", 0, _SHARED, family="anthropic"),
+            _record("a5", 1, _SHARED, family="anthropic"),
+            _record("solo", 0, _DISTINCT),
+        ]
+    )
+
+    _write_outputs(tmp_path, report, {"run": "t"})
+    payload = json.loads((tmp_path / "report.json").read_text(encoding="utf-8"))
+
+    missing = {f.name for f in dataclasses.fields(ComparisonReport)} - set(payload)
+    assert not missing, f"buckets computed but never written: {sorted(missing)}"
