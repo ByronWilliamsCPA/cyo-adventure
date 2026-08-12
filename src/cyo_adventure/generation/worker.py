@@ -61,6 +61,8 @@ from cyo_adventure.generation.binding import (
     render_bound_skeleton,
 )
 from cyo_adventure.generation.concept import ConceptBrief
+from cyo_adventure.generation.cost import estimate_run_cost
+from cyo_adventure.generation.metered import MeteredProvider
 from cyo_adventure.generation.orchestrator import (
     GenerationOutcome,
     fill_skeleton,
@@ -76,6 +78,7 @@ from cyo_adventure.generation.series_link import (
 )
 from cyo_adventure.generation.skeleton import load_skeleton
 from cyo_adventure.generation.skeleton_match import resolve_skeleton_path
+from cyo_adventure.generation.usage import UsageLedger
 from cyo_adventure.generation.variation import axis_for_key
 from cyo_adventure.middleware.correlation import (
     generate_correlation_id,
@@ -210,6 +213,46 @@ def _provider_label(provider: GenerationProvider | None) -> str:
     return getattr(provider, "name", None) or _default_settings.generation_provider
 
 
+def _stamp_provider_accounting(
+    job: GenerationJob, provider: GenerationProvider | None
+) -> None:
+    """Write what this run consumed and what it cost onto the job row.
+
+    Reads the ledger off the provider itself rather than taking it as an
+    argument. Every path that persists a job outcome already threads the
+    resolved provider, including the interrupt guard in
+    :func:`run_generation_job`'s ``finally``, so sourcing the accounting from
+    there means a failed or interrupted job records its spend by the same
+    route a successful one does, with no call site left to forget.
+
+    A provider that is not metered (an injected test double, or ``None`` when
+    resolution itself failed) leaves every column untouched, which is the
+    ``NULL`` = not recorded state the schema documents.
+
+    Args:
+        job: The job row to stamp. Mutated in place; the caller commits.
+        provider: The provider the run used, metered or otherwise.
+    """
+    # #CRITICAL: payment/financial: `cost_complete` is written from the same
+    # estimate as `cost_usd` and must never be defaulted or inferred
+    # elsewhere. A False here means the amount is a lower bound, and it is the
+    # only surviving record that the price table could not cost part of this
+    # run; the token columns beside it look complete either way.
+    # #VERIFY: tests/unit/test_worker.py::TestProviderAccounting::
+    # test_an_unpriced_model_persists_an_incomplete_cost.
+    if not isinstance(provider, MeteredProvider):
+        return
+    totals = provider.ledger.snapshot()
+    job.provider_call_count = totals.call_count
+    job.provider_unknown_calls = totals.unknown_calls
+    job.input_tokens = totals.input_tokens
+    job.output_tokens = totals.output_tokens
+    job.provider_duration_ms = totals.duration_ms
+    estimate = estimate_run_cost(provider.ledger.calls)
+    job.cost_usd = estimate.amount_usd
+    job.cost_complete = estimate.complete
+
+
 async def _record_failure(
     session: AsyncSession,
     job: GenerationJob,
@@ -266,6 +309,9 @@ async def _record_failure(
     job.error = str(exc)[:512]
     job.provider = _provider_label(provider)
     job.prompt_version = _PROMPT_VERSION
+    # A failed run still spent money. Stamped before the commit below so the
+    # spend lands in the same transaction as the failure it belongs to.
+    _stamp_provider_accounting(job, provider)
     if report is not None:
         job.report = report
 
@@ -2283,6 +2329,24 @@ async def run_generation_job(
                     provider_override=_authoring_provider_override(authoring),
                     model_override=_authoring_model_override(authoring),
                 )
+            # #CRITICAL: concurrency: the ledger is created HERE, once per job,
+            # and never module-level. The RQ worker runs jobs concurrently, and
+            # a shared accumulator would bill one family's story to another
+            # job's row. Wrapping the resolved provider (rather than metering
+            # inside each adapter) is what makes this structural: from this
+            # line on, `effective_provider` is the only handle the pipeline
+            # has, so no stage can make a call that escapes the ledger.
+            # The PII guard ends up outside this wrapper (generate_story and
+            # fill_skeleton build their own guard around whatever provider they
+            # are handed), which is the ordering the accounting wants: a prompt
+            # the guard rejects never reaches the meter and correctly records
+            # no call.
+            # #VERIFY: tests/unit/test_worker.py::TestProviderAccounting::
+            # test_two_jobs_do_not_share_a_ledger and
+            # tests/unit/test_metered.py::test_two_wrappers_do_not_share_a_ledger.
+            effective_provider = MeteredProvider(
+                effective_provider, ledger=UsageLedger()
+            )
             concept_row, brief, pii = await _load_concept_and_pii(
                 session, job_row, effective_provider=effective_provider
             )
@@ -2361,6 +2425,10 @@ async def run_generation_job(
             # originating request row, in the worker's own transaction. A
             # no-request job (fresh generation, authored/catalog) no-ops.
             await _update_request_interpretation(session, job_row, outcome)
+
+            # Stamped last, so it counts every provider call this run made,
+            # including the moderation stages inside _persist_passed_outcome.
+            _stamp_provider_accounting(job_row, effective_provider)
 
             await session.commit()
             # #CRITICAL: concurrency: this is the ONLY place completed is set

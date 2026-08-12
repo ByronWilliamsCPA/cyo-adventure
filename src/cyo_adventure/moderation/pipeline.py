@@ -17,6 +17,7 @@ from cyo_adventure.core.exceptions import ResourceNotFoundError
 from cyo_adventure.db.models import Storybook, StorybookVersion
 from cyo_adventure.events import Actor, EventType, record_event
 from cyo_adventure.generation.guarded import PiiGuardedProvider
+from cyo_adventure.generation.metered import MeteredProvider, ledger_of
 from cyo_adventure.generation.pii import assert_prompt_pii_safe
 from cyo_adventure.moderation.classifiers import run_classifiers
 from cyo_adventure.moderation.leaf_diversity import run_leaf_diversity_check
@@ -72,6 +73,58 @@ _MAX_REPAIR_TOKENS = 32000
 # :mod:`cyo_adventure.moderation.personalizable_slots` so cross-package
 # consumers (``generation/import_story.py``, ``api/node_edit.py``) import a
 # public name from a dedicated module instead of this module's internals.
+
+
+def _build_guarded_review(
+    review_settings: Settings,
+    *,
+    generator_provider: str,
+    generator_model: str | None,
+    pii: PiiContext,
+    generation_provider: GenerationProvider,
+) -> tuple[PiiGuardedProvider, bool]:
+    """Build the review provider, guard it, and bill it to the job's ledger.
+
+    Args:
+        review_settings: Review-backend settings, already resolved.
+        generator_provider: The generator's backend name, for the independence
+            comparison.
+        generator_model: The model that wrote the version under review.
+        pii: PII context for the egress guard on every review prompt.
+        generation_provider: The generation provider the caller passed in.
+            Read only for the ledger it may carry.
+
+    Returns:
+        The guarded (and, when the run is metered, metered) review provider,
+        and whether the reviewer is independent of the generator.
+    """
+    review_provider, independent = build_review_provider(
+        review_settings,
+        generator_provider=generator_provider,
+        generator_model=generator_model,
+    )
+    # #CRITICAL: payment/financial: the review provider is built HERE rather
+    # than passed in, so its calls escape the job's ledger entirely unless they
+    # are metered on this path. Review is a large share of a job's calls
+    # (safety stages plus any repair), and the omission would not read as a
+    # gap: the persisted totals would look complete and simply be too small,
+    # which is the one failure this subsystem exists to prevent. The ledger
+    # comes from the generation provider the caller already passed, so review
+    # spend bills to the same job.
+    # #VERIFY: tests/unit/test_review_metering.py::
+    # test_review_calls_are_billed_to_the_generation_jobs_ledger.
+    job_ledger = ledger_of(generation_provider)
+    metered: GenerationProvider = (
+        review_provider
+        if job_ledger is None
+        else MeteredProvider(review_provider, ledger=job_ledger)
+    )
+    # #CRITICAL: security: every review prompt egresses story prose; the
+    # reviewer MUST be PII-guarded exactly like generation before any stage
+    # runs, and the guard stays OUTERMOST so a rejected prompt reaches neither
+    # the meter nor the backend.
+    # #VERIFY: stages receive the guarded provider, never the bare one.
+    return PiiGuardedProvider(metered, forbidden=pii), independent
 
 
 async def run_moderation_pipeline(
@@ -149,15 +202,13 @@ async def run_moderation_pipeline(
 
     report = ModerationReport()
     review_settings = resolve_review_settings(settings, review_model_override)
-    review_provider, independent = build_review_provider(
+    guarded_review, independent = _build_guarded_review(
         review_settings,
         generator_provider=settings.generation_provider,
         generator_model=version_row.model,
+        pii=pii,
+        generation_provider=generation_provider,
     )
-    # #CRITICAL: security: every review prompt egresses story prose; the reviewer
-    # MUST be PII-guarded exactly like generation before any stage runs.
-    # #VERIFY: stages receive guarded_review, never the bare provider.
-    guarded_review = PiiGuardedProvider(review_provider, forbidden=pii)
     report.reviewer_independent = independent
     if not independent:
         report.add(

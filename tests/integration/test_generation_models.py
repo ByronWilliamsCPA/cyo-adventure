@@ -13,6 +13,7 @@ via ``Base.metadata.create_all``; schema/migration parity itself is covered by
 
 from __future__ import annotations
 
+from decimal import Decimal
 from typing import TYPE_CHECKING
 
 import pytest
@@ -161,3 +162,107 @@ async def test_generation_job_status_update(
         assert job.storybook_id == "story-abc-123"
         assert job.version == 1
         assert job.report == {"gate": "pass", "score": 0.95}
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_cost_usd_round_trips_as_decimal(
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """A persisted cost comes back as an exact Decimal, not a float.
+
+    The NUMERIC(12,6) column choice only buys anything if the driver's type
+    mapping preserves it end to end. A float round-trip would not fail here in
+    any obvious way; it would return a value that compares unequal to the
+    Decimal that was written, and the drift it introduces only becomes visible
+    once thousands of these are summed, by which point no reader can attribute
+    it. So the assertion is on both the type and the exact value.
+
+    Args:
+        sessions: Async session factory bound to the test engine.
+    """
+    amount = Decimal("0.004237")
+
+    async with sessions() as session:
+        family = Family(name="Test Family for Cost Accounting")
+        session.add(family)
+        await session.flush()
+
+        concept = Concept(family_id=family.id, brief={"age_band": "6-9"})
+        session.add(concept)
+        await session.flush()
+
+        job = GenerationJob(
+            concept_id=concept.id,
+            status="passed",
+            provider_call_count=7,
+            provider_unknown_calls=0,
+            input_tokens=1234,
+            output_tokens=5678,
+            provider_duration_ms=9012,
+            cost_usd=amount,
+            cost_complete=False,
+        )
+        session.add(job)
+        await session.flush()
+        job_id = job.id
+        await session.commit()
+
+    async with sessions() as session:
+        retrieved = await session.get(GenerationJob, job_id)
+        assert retrieved is not None, "GenerationJob row not found after commit"
+        assert isinstance(retrieved.cost_usd, Decimal), (
+            "cost_usd came back as a non-Decimal; the NUMERIC column is not "
+            "being mapped as an exact type"
+        )
+        assert retrieved.cost_usd == amount
+        assert retrieved.provider_call_count == 7
+        assert retrieved.provider_unknown_calls == 0
+        assert retrieved.input_tokens == 1234
+        assert retrieved.output_tokens == 5678
+        assert retrieved.provider_duration_ms == 9012
+        # False is a recorded answer; it must survive as False, not as None.
+        assert retrieved.cost_complete is False
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_provider_accounting_defaults_to_null_not_zero(
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """A job with no accounting reads back NULL, keeping "unrecorded" reachable.
+
+    NULL and 0 mean different things in these columns: NULL is "nothing was
+    recorded" (a row predating the instrumentation, or a run whose provider was
+    never metered) and 0 is "measured, and it was zero". A column defaulting to
+    0 would erase that difference permanently and make every unrecorded job
+    look like a free one.
+
+    Args:
+        sessions: Async session factory bound to the test engine.
+    """
+    async with sessions() as session:
+        family = Family(name="Test Family for Unrecorded Accounting")
+        session.add(family)
+        await session.flush()
+
+        concept = Concept(family_id=family.id, brief={"age_band": "6-9"})
+        session.add(concept)
+        await session.flush()
+
+        job = GenerationJob(concept_id=concept.id, status="queued")
+        session.add(job)
+        await session.flush()
+        job_id = job.id
+        await session.commit()
+
+    async with sessions() as session:
+        retrieved = await session.get(GenerationJob, job_id)
+        assert retrieved is not None, "GenerationJob row not found after commit"
+        assert retrieved.provider_call_count is None
+        assert retrieved.provider_unknown_calls is None
+        assert retrieved.input_tokens is None
+        assert retrieved.output_tokens is None
+        assert retrieved.provider_duration_ms is None
+        assert retrieved.cost_usd is None
+        assert retrieved.cost_complete is None

@@ -10,6 +10,8 @@ from __future__ import annotations
 
 import hashlib
 import json
+from dataclasses import dataclass
+from decimal import Decimal
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any, cast
 from unittest.mock import AsyncMock
@@ -20,6 +22,7 @@ from sqlalchemy.exc import MultipleResultsFound
 from cyo_adventure.core.config import Settings
 from cyo_adventure.core.config import settings as config_settings
 from cyo_adventure.core.exceptions import (
+    BusinessLogicError,
     ConfigurationError,
     ResourceNotFoundError,
     ValidationError,
@@ -41,11 +44,13 @@ from cyo_adventure.generation.providers import (
     OllamaProvider,
     OpenRouterProvider,
 )
+from cyo_adventure.generation.usage import TokenUsage
 from cyo_adventure.generation.worker import (
     _review_stage2_override,
     _run_skeleton_fill,
     _should_persist_storybook,
     _SkeletonFillContext,
+    _stamp_provider_accounting,
 )
 from cyo_adventure.storybook.models import AgeBand, Storybook
 from cyo_adventure.storybook.reinsertion import verify_manifest
@@ -3250,3 +3255,330 @@ async def test_record_cannot_carry_noop_for_non_skeleton_or_other_field() -> Non
         )
         is None
     )
+
+
+@dataclass
+class _LabelledProvider(MockProvider):
+    """A MockProvider that declares a name and a model, as real adapters do.
+
+    MockProvider deliberately declares neither, so the worker's labels fall
+    back to the configured default for it. This double exists to tell the two
+    cases apart: a label that survives the metering wrapper, versus a default
+    that would look identical if the wrapper swallowed it.
+    """
+
+    name: str = "acme"
+    model: str = "acme-1"
+
+
+class TestProviderAccounting:
+    """The worker records what each job spent, on every terminal path.
+
+    These drive the real ``run_generation_job`` rather than the wrapper in
+    isolation (``tests/unit/test_metered.py`` covers that), because the claim
+    under test is a wiring claim: the ledger is created per job, the wrapper
+    goes around the resolved provider so no stage can escape it, and the
+    accounting reaches the row on both the success and the failure path.
+    """
+
+    @staticmethod
+    def _fresh_gen_job(
+        usage: TokenUsage, *, responses: int = 8
+    ) -> tuple[
+        Any,
+        Any,
+        Any,
+    ]:
+        """Build a queued fresh-generation job, its concept, and a provider."""
+        import uuid as uuid_mod
+
+        from cyo_adventure.db.models import Concept, GenerationJob
+
+        job_id = uuid_mod.uuid4()
+        concept_id = uuid_mod.uuid4()
+        job = GenerationJob(
+            id=job_id,
+            concept_id=concept_id,
+            status="queued",
+            authoring_metadata=None,
+        )
+        concept = Concept(
+            id=concept_id, family_id=uuid_mod.uuid4(), brief=_FRESHGEN_BRIEF
+        )
+        concept.created_by = uuid_mod.uuid4()
+        provider = MockProvider(
+            responses=[_CANNED_STORY_JSON] * responses, token_usage=usage
+        )
+        return job, concept, provider
+
+    @staticmethod
+    def _factory(session_ctx: object) -> Any:
+        """Wrap a session double in the sync-callable factory the worker wants."""
+
+        def factory() -> object:
+            class _Ctx:
+                async def __aenter__(self) -> object:
+                    return session_ctx
+
+                async def __aexit__(self, *exc: object) -> None:
+                    return None
+
+            return _Ctx()
+
+        return factory
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_a_successful_run_persists_what_it_consumed(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Tokens, call count and provider time land on the job row."""
+        monkeypatch.setattr(worker_module, "run_moderation_pipeline", AsyncMock())
+
+        usage = TokenUsage(
+            provider="openrouter",
+            model="anthropic/claude-haiku-4.5",
+            input_tokens=1_000,
+            output_tokens=2_000,
+            duration_ms=250,
+        )
+        job, concept, provider = self._fresh_gen_job(usage)
+        session_ctx = _FreshGenSession(job, concept)
+
+        await worker_module.run_generation_job(
+            job.id, provider=provider, session_factory=self._factory(session_ctx)
+        )
+
+        calls = len(provider.calls)
+        assert calls > 0, "the run must actually have called the provider"
+        assert job.provider_call_count == calls
+        assert job.provider_unknown_calls == 0
+        assert job.input_tokens == 1_000 * calls
+        assert job.output_tokens == 2_000 * calls
+        assert job.provider_duration_ms == 250 * calls
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_a_priced_model_persists_a_cost_flagged_as_a_lower_bound(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """The output half is billed; the missing input price is disclosed.
+
+        Every OpenRouter entry in the price table records an output price and
+        no input price today, so this is the shape production actually
+        persists: a real non-zero amount that must not be read as a total.
+        """
+        monkeypatch.setattr(worker_module, "run_moderation_pipeline", AsyncMock())
+
+        usage = TokenUsage(
+            provider="openrouter",
+            model="anthropic/claude-haiku-4.5",
+            input_tokens=1_000,
+            output_tokens=1_000_000,
+            duration_ms=250,
+        )
+        job, concept, provider = self._fresh_gen_job(usage)
+        session_ctx = _FreshGenSession(job, concept)
+
+        await worker_module.run_generation_job(
+            job.id, provider=provider, session_factory=self._factory(session_ctx)
+        )
+
+        # $5.00/Mtok out, one Mtok per call.
+        assert job.cost_usd == Decimal(5) * len(provider.calls)
+        assert job.cost_complete is False
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_an_unpriced_model_persists_an_incomplete_cost(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A model with no price entry records zero flagged incomplete, not free.
+
+        This is the default mock's own state, and it is the state any newly
+        adopted model starts in, so the honest reading of a zero here is
+        "un-costable", never "cost nothing".
+        """
+        monkeypatch.setattr(worker_module, "run_moderation_pipeline", AsyncMock())
+
+        usage = TokenUsage(
+            provider="acme",
+            model="acme-1",
+            input_tokens=10,
+            output_tokens=20,
+            duration_ms=5,
+        )
+        job, concept, provider = self._fresh_gen_job(usage)
+        session_ctx = _FreshGenSession(job, concept)
+
+        await worker_module.run_generation_job(
+            job.id, provider=provider, session_factory=self._factory(session_ctx)
+        )
+
+        assert job.cost_usd == Decimal(0)
+        assert job.cost_complete is False
+        # The tokens are still recorded: what is missing is the price, not the
+        # measurement, and a later price backfill can recost the row.
+        assert job.input_tokens == 10 * len(provider.calls)
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_an_uninstrumented_backend_is_counted_not_treated_as_free(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Calls reporting no usage raise unknown_calls rather than vanishing."""
+        monkeypatch.setattr(worker_module, "run_moderation_pipeline", AsyncMock())
+
+        usage = TokenUsage(
+            provider="mock",
+            model="mock",
+            input_tokens=None,
+            output_tokens=None,
+            duration_ms=7,
+        )
+        job, concept, provider = self._fresh_gen_job(usage)
+        session_ctx = _FreshGenSession(job, concept)
+
+        await worker_module.run_generation_job(
+            job.id, provider=provider, session_factory=self._factory(session_ctx)
+        )
+
+        calls = len(provider.calls)
+        assert job.provider_call_count == calls
+        assert job.provider_unknown_calls == calls
+        assert job.input_tokens == 0
+        assert job.cost_complete is False
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_a_failed_run_still_records_what_it_spent(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Money spent before the failure is recorded on the failed row.
+
+        A job that fails halfway has already paid for the calls it made. If
+        only successful jobs carried accounting, the cost of the failures, the
+        ones worth investigating, would be exactly the cost nobody could see.
+        """
+        monkeypatch.setattr(worker_module, "run_moderation_pipeline", AsyncMock())
+
+        usage = TokenUsage(
+            provider="openrouter",
+            model="anthropic/claude-haiku-4.5",
+            input_tokens=100,
+            output_tokens=200,
+            duration_ms=11,
+        )
+        # One queued response, then the mock raises on the next call, so the
+        # run fails with exactly one call already recorded.
+        job, concept, provider = self._fresh_gen_job(usage, responses=1)
+        session_ctx = _FreshGenSession(job, concept)
+        # Built outside the block so the raises assertion has exactly one
+        # invocation to attribute the failure to (S5778).
+        factory = self._factory(session_ctx)
+
+        with pytest.raises(BusinessLogicError):
+            await worker_module.run_generation_job(
+                job.id, provider=provider, session_factory=factory
+            )
+
+        assert job.status == "failed"
+        assert job.provider_call_count == 1
+        assert job.input_tokens == 100
+        assert job.output_tokens == 200
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_two_jobs_do_not_share_a_ledger(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Each job's row carries only its own spend.
+
+        The RQ worker runs jobs concurrently. A ledger held anywhere but per
+        run would cross-bill them, and the symptom would be a plausible
+        total on the wrong family's job, which no assertion downstream of the
+        sum could distinguish from a correct one.
+        """
+        monkeypatch.setattr(worker_module, "run_moderation_pipeline", AsyncMock())
+
+        def _usage(tokens: int) -> TokenUsage:
+            return TokenUsage(
+                provider="openrouter",
+                model="anthropic/claude-haiku-4.5",
+                input_tokens=tokens,
+                output_tokens=tokens,
+                duration_ms=1,
+            )
+
+        first_job, first_concept, first_provider = self._fresh_gen_job(_usage(10))
+        second_job, second_concept, second_provider = self._fresh_gen_job(_usage(400))
+
+        await worker_module.run_generation_job(
+            first_job.id,
+            provider=first_provider,
+            session_factory=self._factory(_FreshGenSession(first_job, first_concept)),
+        )
+        await worker_module.run_generation_job(
+            second_job.id,
+            provider=second_provider,
+            session_factory=self._factory(_FreshGenSession(second_job, second_concept)),
+        )
+
+        assert first_job.input_tokens == 10 * len(first_provider.calls)
+        assert second_job.input_tokens == 400 * len(second_provider.calls)
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_the_metering_wrapper_does_not_relabel_the_job(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """job.provider and job.model still name the provider that ran.
+
+        Both labels are read off the provider with ``getattr(..., None) or
+        <configured default>``, so a wrapper that failed to forward them would
+        not raise: it would quietly stamp every job with the configured
+        default, and an audit of which provider ran a job would be reading the
+        config file instead of the run.
+        """
+        monkeypatch.setattr(worker_module, "run_moderation_pipeline", AsyncMock())
+
+        usage = TokenUsage(
+            provider="acme",
+            model="acme-1",
+            input_tokens=1,
+            output_tokens=1,
+            duration_ms=1,
+        )
+        job, concept, inner = self._fresh_gen_job(usage)
+        labelled = _LabelledProvider(responses=inner.responses, token_usage=usage)
+        session_ctx = _FreshGenSession(job, concept)
+
+        await worker_module.run_generation_job(
+            job.id, provider=labelled, session_factory=self._factory(session_ctx)
+        )
+
+        assert job.provider == "acme"
+        assert job.model == "acme-1"
+
+    @pytest.mark.unit
+    def test_an_unmetered_provider_leaves_every_column_null(self) -> None:
+        """A provider the worker never wrapped records nothing, not zero.
+
+        NULL is the schema's "not recorded" state, and it has to stay
+        reachable: writing zeros here would make an unrecorded job
+        indistinguishable from a job that genuinely made no calls.
+        """
+        import uuid as uuid_mod
+
+        from cyo_adventure.db.models import GenerationJob
+
+        job = GenerationJob(
+            id=uuid_mod.uuid4(), concept_id=uuid_mod.uuid4(), status="queued"
+        )
+
+        _stamp_provider_accounting(job, MockProvider(responses=[]))
+        _stamp_provider_accounting(job, None)
+
+        assert job.provider_call_count is None
+        assert job.cost_usd is None
+        assert job.cost_complete is None

@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import date, datetime
+from decimal import Decimal
 
 from sqlalchemy import (
     CheckConstraint,
@@ -23,6 +24,7 @@ from sqlalchemy import (
     ForeignKey,
     ForeignKeyConstraint,
     Index,
+    Numeric,
     SmallInteger,
     String,
     Text,
@@ -2604,6 +2606,54 @@ class GenerationJob(UUIDPrimaryKeyMixin, CreatedAtMixin, UpdatedAtMixin, Base):
     storybook_id: Mapped[str | None] = mapped_column(String(120), default=None)
     version: Mapped[int | None] = mapped_column(default=None)
     error: Mapped[str | None] = mapped_column(String(512), default=None)
+    # ------------------------------------------------------------------
+    # Provider accounting (what this job consumed and what it cost).
+    # ------------------------------------------------------------------
+    # #CRITICAL: data integrity: these are typed columns rather than keys
+    # inside ``report`` BECAUSE ``report`` is purged (ADR-007, the Phase 5
+    # pg_cron job above). Cost history has to outlive prompt retention: the
+    # question "what has generation cost us" is asked months later, long after
+    # the raw output it is derived from is gone. A usage blob folded into
+    # ``report`` would be deleted by a retention rule aimed at something else
+    # entirely, and nothing would report the loss.
+    # #VERIFY: any future retention rule must leave these columns alone; the
+    # purge exemption test (tests/integration/test_generation_models.py) and
+    # the report-purge migration are the two places that would have to change.
+    #
+    # #ASSUME: data integrity: every column here is nullable and NULL means
+    # "not recorded", never "zero". Rows written before this migration have no
+    # accounting at all, and a job whose backend reported no usage is a
+    # different state again (``provider_call_count`` set,
+    # ``provider_unknown_calls`` non-zero). Collapsing either into 0 would make
+    # an un-instrumented run look free.
+    # #VERIFY: readers must treat NULL as unknown and must not SUM these
+    # columns across jobs without also checking ``provider_unknown_calls`` and
+    # ``cost_complete``; a SUM over a mix of recorded and unrecorded jobs is a
+    # lower bound, not a total.
+    provider_call_count: Mapped[int | None] = mapped_column(default=None)
+    provider_unknown_calls: Mapped[int | None] = mapped_column(default=None)
+    input_tokens: Mapped[int | None] = mapped_column(default=None)
+    output_tokens: Mapped[int | None] = mapped_column(default=None)
+    provider_duration_ms: Mapped[int | None] = mapped_column(default=None)
+    # #CRITICAL: payment/financial: NUMERIC, never a float column. Per-call
+    # amounts run to millionths of a dollar (a 1000-token call at $5/Mtok is
+    # $0.005) and these values are summed across thousands of jobs, which is
+    # exactly the regime where binary floating point accumulates a drift no
+    # reader can attribute. Scale 6 holds a whole-token amount exactly at
+    # today's per-Mtok prices; precision 12 leaves 6 integer digits, so a
+    # single job would have to cost $999,999 to overflow.
+    # #VERIFY: test_cost_usd_round_trips_as_decimal pins that the value comes
+    # back as Decimal rather than float, since the driver's type mapping is
+    # what makes the column choice effective.
+    cost_usd: Mapped[Decimal | None] = mapped_column(Numeric(12, 6), default=None)
+    # #ASSUME: payment/financial: ``cost_complete`` is NOT derivable from the
+    # other columns. A run can report every token and still be un-costable
+    # because a model has no entry in ``core/pricing.py``, so this records what
+    # the price table knew at the time the job ran, which a later reader cannot
+    # reconstruct from a price table that has since been filled in.
+    # #VERIFY: False means ``cost_usd`` is a LOWER BOUND; no caller may present
+    # it as a total or compare it against a budget without saying so.
+    cost_complete: Mapped[bool | None] = mapped_column(default=None)
 
 
 class DeviceGrant(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
