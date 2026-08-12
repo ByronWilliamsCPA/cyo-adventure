@@ -4107,10 +4107,44 @@ Supabase endpoints rather than <code>/api/v1</code>.</p>
   <code>offers no way to name the recipient</code> and <code>sends no recipient of any kind</code>. The
   verification email goes to the account's own adult, and a recipient field would
   turn the flow into a way to send mail to an arbitrary address.</li>
-<li><strong>Gap</strong>: no E2E tier at all, mocked or real. The full round trip needs Epic's
-  hosted flow and a webhook, so nothing below <code>e2e-staging</code> can execute it, and the
-  staging tier does not cover it yet. What is proven here is the client's behavior
-  around the call, not that a verification ever completes.</li>
+<li>E2E-staging: <code>frontend/e2e-staging/kws-public-urls.spec.ts</code> covers the redirect-return
+  leg only (<code>GET /api/v1/consent/kws/return</code>, <code>api/kws_redirect.py</code>), not the send: it
+  asserts the deployed origin, rather than the service worker, is what answers that path.
+  The claim is made directly, via Playwright's <code>Response.fromServiceWorker()</code>, not inferred
+  from a status code, so a future worker route that intercepted <code>/api/</code> and forwarded it to
+  the network (a byte-identical response) still fails the test. Its positive control is the
+  <code>/privacy</code> case in the same file, which asserts the worker DOES answer an ordinary SPA
+  route; without it, <code>fromServiceWorker() === false</code> would also be what a context with no
+  working worker reports. That is the regression guard for PR #679 (the SW's navigation
+  fallback was answering this exact path with the cached SPA shell). It sends no <code>signature</code>
+  query parameter, so a deterministic 400 refusal is what the test observes; nothing here
+  calls <code>POST /api/v1/consent/kws/start</code> or writes a <code>kws_verification</code> row.</li>
+<li>The return leg is checked on two consecutive visits, and so are <code>/privacy</code> and <code>/support</code>.
+  This is <strong>not</strong> a before-and-after-service-worker-control comparison: the spec's first test
+  navigates to <code>/</code> and waits for the registration to report <code>active</code>, so every later
+  navigation in the file, both the "first" and the "second", is already controlled. The
+  second request buys determinism across two already-controlled requests, since Workbox
+  resolves navigations by first-match routing and one sample cannot separate "the denylist
+  holds" from "this request happened to miss the NavigationRoute".</li>
+<li>Each 400 is asserted as a status/content-type/body triple, the rule
+  <code>frontend/e2e-prod/health-probe.spec.ts</code> documents, and accepts either of the origin's two
+  legitimate branches: <code>text/html</code> carrying the refusal page, or <code>application/json</code> carrying
+  a <code>ConfigurationError</code>. Which one arrives depends on whether <code>KWS_VERIFICATION_SECRET</code> is
+  set on the deployed tier. That is readable, just not from this repo's source tree:
+  <code>uv run python scripts/kws_probe_endpoints.py --origin &lt;origin&gt;</code> classifies exactly these
+  two cases against a live origin (<code>_classify_return</code>), and staging was probed serving the
+  refusal-page branch on 2026-08-11. It is left unpinned in the spec because it is deployed
+  state an operator can change without touching this repo, so pinning it would turn an
+  unrelated config change into a red run. Both branches still exclude the SPA shell and a
+  Cloudflare interstitial, which is what the assertion is for; the run annotates itself when
+  the unset branch is taken so that gap stays visible rather than reading as an unqualified
+  pass.</li>
+<li><strong>Gap</strong>: no E2E tier drives an actual completed verification. That still needs Epic's
+  hosted flow and a real webhook call and stays a manual check (see the KWS wire-protocol
+  memory and D1's staging note). What the new staging spec closes is narrower and different:
+  proof that the return leg itself is reachable and correctly rendered by the deployed
+  origin for a signed-out client, not that a verification can complete end to end. The
+  client's behavior around the <code>/start</code> call is still proven only at the component tier.</li>
 </ul>
 <h2 id="guardian-submit-story-request-intake">Guardian: submit story request (intake)<a class="headerlink" href="#guardian-submit-story-request-intake" title="Permanent link">&para;</a></h2>
 <ul>
@@ -4222,7 +4256,22 @@ pin both the load-bearing claims and the claims deliberately withheld.</p>
 <li>Component: <code>frontend/src/legal/PrivacyPolicyPage.test.tsx</code> (renders with no auth provider mounted; pins the contact route against the shared constant, the never-collected-from-a-child list including location, the Epic recipient row naming both the parent email and the child's country, the hard-fail wording for the PII guard rather than a removal claim, and the four claims held back pending counsel or unfinished work: per-purpose GDPR legal basis, processor-only use, a named transfer mechanism, and re-consent on material change), <code>frontend/src/legal/SupportPage.test.tsx</code> (same signed-out render, contact route, and the FAQ entries that restate policy claims)</li>
 <li>Config: <code>frontend/src/router.test.tsx</code> (structural assertions over the exported route config without rendering: both public paths resolve outside every gate, with a positive control on a known-gated guardian route so the public assertions cannot pass vacuously)</li>
 <li>E2E-mocked: <code>frontend/e2e/visual.spec.ts</code> (the landing footer that links to both pages is inside the landing-page visual baseline)</li>
-<li><strong>Gap</strong>: no <code>e2e-real</code>, <code>e2e-staging</code>, or <code>e2e-prod</code> coverage, and no test asserts the pages resolve over HTTP for a signed-out client against a deployed environment. That is the assertion KWS actually depends on; the component tier proves the components need no session, not that the deployed URL answers.</li>
+<li>E2E-staging: <code>frontend/e2e-staging/kws-public-urls.spec.ts</code> (both <code>/privacy</code> and <code>/support</code>
+  resolve with their real, distinctive content, a 200, and an HTML content-type for a
+  signed-out client against the real deployed staging origin. Each is checked on two
+  consecutive visits, both of them made after the service worker's registration already
+  reports <code>active</code>: the second is for determinism across two controlled requests, not a
+  before-and-after comparison, since no uncontrolled state survives the spec's opening
+  navigation. <code>/privacy</code> additionally asserts the worker DOES answer it, which is the
+  positive control that keeps the KWS-return page's <code>fromServiceWorker() === false</code> from
+  passing vacuously. Both also assert neither page redirects, closing the phishing-redirect
+  risk this section names. The same spec covers the KWS redirect-return page under the
+  ADR-018 D1 section above, since that page is server-rendered rather than a React route)</li>
+<li><strong>Gap</strong>: still no <code>e2e-real</code> or <code>e2e-prod</code> coverage. What remained open here, that no test
+  asserted the pages resolve over HTTP for a signed-out client against a deployed environment,
+  is now covered at <code>e2e-staging</code>; the component and config tiers above prove the components
+  need no session and the router leaves both paths ungated, neither of which is the same claim
+  as the deployed URL actually answering, which is what the new spec adds.</li>
 </ul>
 <h2 id="guardian-invite-a-co-parent-self-serve">Guardian: invite a co-parent (self-serve)<a class="headerlink" href="#guardian-invite-a-co-parent-self-serve" title="Permanent link">&para;</a></h2>
 <p>The guardian's own way to add a second adult to the family, from the guardian
@@ -4680,7 +4729,7 @@ closure. A companion action-level verdict for this audit lives at
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 11, 2026 16:36:17 UTC">August 11, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 12, 2026 11:18:32 UTC">August 12, 2026</span>
   </span>
 
     
