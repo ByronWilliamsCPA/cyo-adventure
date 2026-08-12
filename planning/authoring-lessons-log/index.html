@@ -6371,6 +6371,126 @@ plan somewhere. <code>applied</code> means the change is merged and the <code>Re
 <td>applied</td>
 <td>PR #690, which withdraws the 2.5 and carries the four-way re-derivation table (body-only and label-inclusive for both arms), restores the sixfold ratio at 5.8, and keeps the withdrawn block marked rather than deleted</td>
 </tr>
+<tr>
+<td>AL-296</td>
+<td>2026-08-11</td>
+<td>Device-vocabulary workstream, building <code>scripts/check_device_vocabulary.py</code></td>
+<td>validator</td>
+<td><strong>Every device check compared artifacts that already existed, so nothing asked whether the contract could supply the series at all.</strong> <code>check_bible_diversity.py</code> compares kind multisets between authored bibles and <code>check_device_collision.py</code> compares props between bound books; both answer "did these books collide?". Neither answers the question that decides whether they could have avoided it: an axis offering K distinct kinds and spending P free picks per book runs out after floor(K / P) books, and book floor(K / P) + 1 must repeat no matter how the binder is written. Measured against a five-book target, four of nine axes on the shipped 10-13 contract and every axis on the 3-5 contract were already infeasible. The failure mode this creates is worse than the repeat itself: the diversity gate fires downstream on a bound book, which reads as a binder defect, and the rebinding it invites cannot succeed because the vocabulary was never there.</td>
+<td>Check feasibility where it is decided, in the contract, before any book is bound. Generalised check: when a pipeline has a gate that compares N produced artifacts, ask what upstream declaration bounds how different those N can be, and gate that declaration too; a comparison gate with no feasibility gate behind it reports the symptom at the layer least able to fix it.</td>
+<td>applied</td>
+<td><code>scripts/check_device_vocabulary.py</code> (DV-1..DV-9), <code>tests/unit/test_check_device_vocabulary.py</code> (33 tests, including a regression guard asserting both shipped contracts clear the five-book target)</td>
+</tr>
+<tr>
+<td>AL-297</td>
+<td>2026-08-11</td>
+<td>Device-vocabulary workstream, building <code>scripts/check_device_vocabulary.py</code></td>
+<td>tooling</td>
+<td><strong>Headroom computed over totals understates capacity, and the error runs toward ordering vocabulary nobody needs.</strong> A node spec carrying <code>kind_must_be</code> spends that kind in every book, so it can never diverge; it must leave BOTH sides of the division, not just the numerator. <code>access_details</code> on the 10-13 contract has 7 kinds over 3 picks, which reads naively as floor(7 / 3) = 2 books. One pick is frozen to <code>trusted_escort</code>, leaving 6 free kinds over 2 free picks, which is 3. Had the naive figure driven the widening, the axis would have been credited one book less than it has and an author would have been asked for kinds the binder can never reach. The same arithmetic decides the degenerate case: an axis whose every pick is frozen has no forced-repeat book at all, because no vocabulary size changes an outcome that was never free.</td>
+<td>When a resource is partly reserved, subtract the reservation from both the supply and the demand before dividing, and treat a fully-reserved resource as unbounded rather than as zero. Generalised check: any capacity ratio over a pool with pinned members needs the pinned members removed from numerator and denominator; removing them from one side is a silent off-by-N that biases toward over-provisioning.</td>
+<td>applied</td>
+<td><code>AxisCapacity.free_picks</code> / <code>free_kinds</code> / <code>books_supported</code> in <code>scripts/check_device_vocabulary.py</code>; <code>tests/unit/test_check_device_vocabulary.py::test_frozen_picks_raise_the_headroom_rather_than_lowering_it</code> and <code>::test_a_fully_frozen_axis_reports_no_forced_repeat_book</code></td>
+</tr>
+<tr>
+<td>AL-298</td>
+<td>2026-08-11</td>
+<td>Device-vocabulary workstream, building <code>scripts/check_device_vocabulary.py</code></td>
+<td>tooling</td>
+<td><strong>A reporting tool keyed on an optional field reported the safest possible answer for every contract that omitted it.</strong> <code>check_bible_diversity.py --contract</code> builds its frozen-kind table from <code>spec.get("category")</code> and skips any spec where that key is absent. The shipped 3-5 contract carried the axis only as the tail of <code>from: bible.device_vocabulary.clue_channels</code>, so its hard <code>kind_must_be: testimony</code> freeze on <code>n_rabbit.clue_channel</code> was invisible: the tool printed <code>forced kinds none, free entries 6</code> for an axis with a frozen kind and 4 free entries. Reproduced directly against the pre-fix and post-fix contracts with a synthetic bible pair. Nothing failed, which is the point; the tool exists to tell an author where divergence is possible and it over-reported exactly that.</td>
+<td>Where a schema permits two encodings of the same fact, a consumer must read both or report the one it cannot read; contributing zero is the one option that cannot be distinguished from a clean result. The new checker resolves an axis from <code>category</code> OR the <code>from</code> path tail so its own arithmetic stays correct on a legacy contract, and reports the omission separately as DV-8 rather than silently absorbing it.</td>
+<td>applied</td>
+<td><code>_axis_of_spec</code> in <code>scripts/check_device_vocabulary.py</code> (dual resolution) plus the DV-8 finding; <code>category</code> added to all six device specs in <code>skeletons/3-5/the-lost-mitten.narrative.json</code>; <code>tests/unit/test_check_device_vocabulary.py::test_an_axis_is_resolved_from_the_path_tail_when_category_is_absent</code></td>
+</tr>
+<tr>
+<td>AL-299</td>
+<td>2026-08-11</td>
+<td>Device-vocabulary workstream, building <code>scripts/check_device_vocabulary.py</code></td>
+<td>validator</td>
+<td><strong>A declared pick count drifted above what the nodes actually consume, and the count is what sizes the author's work.</strong> <code>room_curiosities</code> on the 10-13 contract declares <code>count: 4</code>, but only <code>n_stairs</code>, <code>n_study</code> and <code>n_basement</code> take a curiosity; <code>n_pendulum</code> carries the room's obstacle instead and takes none. Nothing compared the two numbers, so the bible ask was one kind per book larger than the binder can place, and the series-headroom arithmetic was billed against a demand that does not exist. The drift is silent in both directions and the opposite sign is worse: a count BELOW real consumption runs the bible dry at bind time.</td>
+<td>Derive consumption from the node specs and compare it against the declared count. Generalised check: when one field declares a quantity that another part of the same document supplies, the two are a stated invariant and something must assert it; a count that no consumer cross-checks decays toward whatever it was when someone last edited a node.</td>
+<td>applied</td>
+<td>DV-5 in <code>scripts/check_device_vocabulary.py</code>; <code>room_curiosities.count</code> corrected 4 to 3 in <code>skeletons/10-13/the-clocktower-cipher.narrative.json</code> with its note amended to say why the pendulum room carries none; <code>tests/unit/test_check_device_vocabulary.py::test_dv5_flags_a_count_above_what_the_specs_consume</code></td>
+</tr>
+<tr>
+<td>AL-300</td>
+<td>2026-08-11</td>
+<td>Device-vocabulary workstream, building <code>scripts/check_device_vocabulary.py</code></td>
+<td>tooling</td>
+<td><strong>The two shipped narrative contracts are serialised at different indent widths, so any programmatic edit reformats one of them wholesale.</strong> <code>the-lost-mitten.narrative.json</code> round-trips at <code>indent=2</code> and <code>the-clocktower-cipher.narrative.json</code> at <code>indent=1</code>. A script written against either constant rewrites every line of the other, which buries a small semantic change in a whole-file diff and makes review of a safety-relevant contract change impractical. The <code>end-of-file-fixer</code> pre-commit hook fired on both files during this run, which means it had never run on either since they were added, and it normalised a second divergence (neither carried a trailing newline) while leaving the indent widths untouched. That is the shape of the trap: a formatting hook silently repairs the divergence it knows about and says nothing about the one it does not, so the surviving difference is precisely the one no gate will ever mention. It was caught here by round-tripping each file before editing it, but only because the check was run deliberately.</td>
+<td>Either normalise both contracts to one indent width and add a serialisation check to the authoring guard battery, or keep the per-file detect-and-preserve step as the documented way to edit them. Normalising is the cleaner end state but its diff must land on its own commit, never alongside a content change, for the same reason the drift matters.</td>
+<td>open</td>
+<td><code>skeletons/3-5/the-lost-mitten.narrative.json</code> (indent=2) versus <code>skeletons/10-13/the-clocktower-cipher.narrative.json</code> (indent=1); the reformat-on-write hazard is why every contract edit in this run was made in place rather than by <code>json.dump</code> round-trip</td>
+</tr>
+<tr>
+<td>AL-301</td>
+<td>2026-08-11</td>
+<td>Cost-instrumentation workstream, wrapping the generation providers in a usage meter</td>
+<td>tooling</td>
+<td><strong>Instrumenting the provider the worker holds covered every call site that receives a provider and none of the ones that build their own.</strong> The worker threads one provider through generation, so wrapping it there reads as total coverage. Two subsystems inside the same job construct providers for themselves instead: <code>moderation/pipeline.py</code> calls <code>build_review_provider</code> for the moderation reviewer, and <code>generation/fidelity_gate.py</code> does the same for the Stage 1 semantic check, which runs once per fill and again on every repair attempt. Both sets of calls were leaving the ledger entirely. The undercount is the dangerous kind, because the run still reports <code>cost_complete = true</code>: the number is simply too small, and it is smallest on exactly the jobs that cost the most, since a job that needed several repair rounds is the one running the uncounted gate the most times. Nothing would have surfaced it; the totals are internally consistent and there is no second source to reconcile them against.</td>
+<td>Enumerate the CONSTRUCTION sites of an instrumented resource, not the call sites of the instrumented handle, and grep for the factory rather than for the parameter. Generalised check: any accounting or auditing wrapper needs a search for every call of the thing it wraps around, because a subsystem that builds its own instance is invisible to a caller-side wrapper and produces a plausible number rather than an obvious gap.</td>
+<td>applied</td>
+<td><code>ledger_of</code> in <code>src/cyo_adventure/generation/metered.py</code>, <code>_build_guarded_review</code> in <code>src/cyo_adventure/moderation/pipeline.py</code>, the <code>ledger</code> kwarg on <code>run_stage1_gate</code> threaded from <code>_Stage1Config</code>, and <code>tests/unit/test_review_metering.py</code></td>
+</tr>
+<tr>
+<td>AL-302</td>
+<td>2026-08-11</td>
+<td>Cost-instrumentation workstream, satisfying BasedPyright strict on <code>generation/metered.py</code></td>
+<td>tooling</td>
+<td><strong>Strict type checking proved two defensive guards dead and asked for their deletion, and deleting them would have converted an unmetered call into a crash.</strong> The meter reads <code>response.usage</code> off whatever the inner provider returns. Both provider interfaces are structural Protocols, so a non-conforming implementation can return anything, and the moderation stages already depend on being handed exactly what the backend produced. Annotating the intermediate as <code>object</code> is not enough: pyright narrows a variable to the type of the expression assigned to it regardless of the declared annotation, so it proved <code>isinstance(returned, Completion)</code> always true and raised <code>reportUnnecessaryIsInstance</code> on both guards. An author who resolves that error the way the checker suggests removes the fail-safe, and the next degraded response raises on the accounting path rather than being forwarded. Only an explicit <code>cast("object", ...)</code> around the await keeps the guards live.</td>
+<td>Where a defensive check exists because the runtime type is weaker than the static one, launder the value through an explicit cast to <code>object</code> and say so in a comment; a bare annotation does not survive narrowing. Generalised check: <code>reportUnnecessaryIsInstance</code> on a value crossing a structural-Protocol boundary is a claim about the annotation, not about reality, and should be answered by widening the binding rather than by deleting the check.</td>
+<td>applied</td>
+<td>the <code>returned: object = cast("object", ...)</code> binding and its RAD block in <code>src/cyo_adventure/generation/metered.py</code>, covered by <code>tests/unit/test_metered.py::test_a_non_completion_response_is_forwarded_unmetered</code> and <code>::test_a_completion_with_a_non_usage_payload_is_forwarded_unmetered</code></td>
+</tr>
+<tr>
+<td>AL-303</td>
+<td>2026-08-11</td>
+<td>Cost-instrumentation workstream, choosing where per-job accounting is persisted</td>
+<td>process</td>
+<td><strong>The obvious home for the new accounting was a field that a retention job deletes.</strong> <code>generation_job.report</code> already holds a JSON blob of per-run detail, so adding token counts and cost to it needs no migration and no schema change. It is also the field the ADR-007 retention rule nulls on a Phase 5 pg_cron schedule to shed raw model output. Cost history has to outlive the prose it was derived from: "what has generation cost this quarter" is asked long after the raw output is gone. Accounting placed inside <code>report</code> would therefore be deleted by a rule aimed at something else, on a delay, with the row still present so nothing looks missing. The convenient choice fails months later and leaves no trace of why.</td>
+<td>Before adding a field to an existing JSON column, check what lifecycle rules already act on that column, and treat a retention or purge rule as a type constraint on what may live there. Generalised check: a column with a scheduled mutator is a different storage class from its neighbours regardless of what its type says, and the mismatch surfaces only after the schedule fires.</td>
+<td>applied</td>
+<td>the seven typed columns on <code>GenerationJob</code> in <code>src/cyo_adventure/db/models.py</code> and <code>supabase/migrations/20260811160000_add_generation_job_provider_accounting.sql</code>, whose header records the reasoning; parity proved by <code>tests/integration/test_schema_parity.py</code></td>
+</tr>
+<tr>
+<td>AL-304</td>
+<td>2026-08-11</td>
+<td>Cost-instrumentation workstream, building <code>generation/cost.py</code></td>
+<td>tooling</td>
+<td><strong>A cost derived from a job's token totals bills calls at prices they were never charged.</strong> One generation job routinely runs the drafting stages on one model and the review stages on another, and can fail over to a third mid-run, so the run's summed input and output tokens belong to no single price. Costing over totals requires picking one rate for all of them; the same 100k output tokens are worth 0.50 USD on Haiku and 1.50 USD on Sonnet, so the error is a factor of three in the direction of whichever model the code happened to name. The aggregate the schema stores is a single number, which also forces the completeness flag to be pessimistic for the whole run: a reader cannot recover per-call detail from one stored amount, so one un-costable call has to mark the entire figure a lower bound.</td>
+<td>Cost each call at its own model's price and aggregate afterwards, never the reverse, and carry a completeness flag alongside any summed money figure that can be partially derived. Generalised check: whenever a total is computed over a heterogeneous set, ask what per-item attribute the arithmetic silently assumes is uniform.</td>
+<td>applied</td>
+<td><code>estimate_run_cost</code> in <code>src/cyo_adventure/generation/cost.py</code> and <code>tests/unit/test_cost.py::test_each_call_is_costed_at_its_own_models_price</code>, <code>::test_one_unpriced_call_makes_the_whole_run_incomplete</code></td>
+</tr>
+<tr>
+<td>AL-305</td>
+<td>2026-08-12</td>
+<td>PR #701 review fixes, registering <code>scripts/check_device_vocabulary.py</code></td>
+<td>tooling</td>
+<td><strong>A checker that nothing invokes is not a gate, however complete it is.</strong> The device-vocabulary feasibility check shipped fully implemented, documented and unit-tested, and was reachable from no battery, no workflow, no pre-commit hook and no noxfile session. Its only standing enforcement was a pytest test iterating a hardcoded two-file list, which was 100% of the skeleton catalog by accident of catalog size and would have gone silently incomplete the moment a third skeleton landed, reporting green over an unchecked file. The failure is invisible to every ordinary signal: the script's own tests pass, coverage counts its lines as covered, and the guard battery prints a fully green summary that never mentions it. Same shape as AL-293/AL-294.</td>
+<td>Registering a checker in <code>run_guard_battery.py</code> is part of shipping it, not a follow-up, and the registration itself needs a test: assert the script is invoked, that it is invoked with the flag that makes it able to fail, and that its Result is recorded gating. Generalised check: for any new checker, name the thing that will run it in CI before writing its first assertion; if the answer is "a test over a hardcoded list", the list is the defect.</td>
+<td>applied</td>
+<td><code>scripts/run_guard_battery.py</code> and <code>tests/unit/test_guard_gating.py::test_guard_battery_registers_the_device_vocabulary_gate</code>, <code>::test_guard_battery_series_books_overrides_the_default_count</code></td>
+</tr>
+<tr>
+<td>AL-306</td>
+<td>2026-08-12</td>
+<td>PR #701 review fixes, DV-4 in <code>scripts/check_device_vocabulary.py</code></td>
+<td>validator</td>
+<td><strong>An absent key and an explicitly empty list are different declarations, and collapsing them inverted the author's meaning.</strong> <code>_envelope</code> returned an empty set both for a missing <code>permitted_device_kinds</code> and for an explicit <code>[]</code>, and DV-4's <code>elif permitted and ...</code> is falsy for both. An author who wrote <code>[]</code> (nothing is permitted) was therefore read as one who wrote nothing (everything is permitted): the exact inverse of the declaration, applied silently, with every kind passing the envelope check. The same file already drew the distinction correctly one function away, where <code>_kinds</code> documents why <code>"kinds": []</code> says something a missing key does not, so the codebase disagreed with itself in a single module.</td>
+<td>Read optional author-supplied lists as <code>set</code> or <code>None</code>, <code>None</code> for absent and a set for present, and branch on <code>is not None</code> rather than on truthiness. Generalised check: wherever a checker treats absence as "skip", grep the same file for an empty-collection literal reaching the same branch, and confirm the two are meant to be equivalent rather than assumed to be.</td>
+<td>applied</td>
+<td><code>_envelope</code> and <code>_check_envelope</code> in <code>scripts/check_device_vocabulary.py</code>, <code>tests/unit/test_check_device_vocabulary.py::test_dv4_enforces_an_explicitly_empty_permitted_list</code></td>
+</tr>
+<tr>
+<td>AL-307</td>
+<td>2026-08-12</td>
+<td>PR #701 review fixes, <code>generation_job.cost_usd</code></td>
+<td>tooling</td>
+<td><strong>Precision and scale fail in opposite ways in a NUMERIC column, and a value that overflows one of them can erase the failure record it was supposed to accompany.</strong> Excess SCALE is rounded away silently; an out-of-range INTEGER part raises <code>numeric field overflow</code>, and raises it at COMMIT rather than at assignment. Both writers of the accounting columns commit, and one of them is the <code>_record_failure</code> the worker's interrupt guard calls to record that a job died, so an uncapped amount faults twice: the second raise displaces the first and the row is left in <code>queued</code>/<code>running</code> with no failure recorded at all, defeating the guard precisely when it is needed. Reachable from a malformed provider response, since token counts are bounded below but not above.</td>
+<td>Bound a derived money value against its column in memory, before assignment, and reuse the existing completeness flag to mark the capped figure a lower bound rather than inventing a second signal. Generalised check: any function called on a failure-recording path must be total; verify it by reading for raises through its whole call tree, not by wrapping it in a handler, because the handler is what a linter will later ask you to justify.</td>
+<td>applied</td>
+<td><code>fit_cost_to_column</code> in <code>src/cyo_adventure/generation/cost.py</code>, <code>tests/unit/test_cost.py::test_an_amount_past_the_column_maximum_is_capped_and_incomplete</code> and <code>tests/unit/test_worker.py::TestProviderAccounting::test_a_cost_past_the_column_maximum_is_capped_before_the_driver</code></td>
+</tr>
 </tbody>
 </table>
 <hr />
@@ -6410,7 +6530,7 @@ plan somewhere. <code>applied</code> means the change is merged and the <code>Re
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 11, 2026 16:25:36 UTC">August 11, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 12, 2026 16:04:05 UTC">August 12, 2026</span>
   </span>
 
     
