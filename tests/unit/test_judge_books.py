@@ -42,7 +42,13 @@ _CRITERIA_NAMES = (
 
 
 def _verdict(
-    leg: str, judge: str, book: str, value: float, *, error: str | None = None
+    leg: str,
+    judge: str,
+    book: str,
+    value: float,
+    *,
+    error: str | None = None,
+    self_family: bool = False,
 ) -> Verdict:
     """Build a verdict scoring every criterion at one value.
 
@@ -52,6 +58,7 @@ def _verdict(
         book: The book identifier.
         value: The score to give every criterion.
         error: Failure text, or ``None`` for a successful scoring.
+        self_family: Whether the judge shares the leg's lab.
 
     Returns:
         The verdict.
@@ -61,7 +68,7 @@ def _verdict(
         leg=leg,
         family=leg,
         judge=judge,
-        self_family=False,
+        self_family=self_family,
         scores={} if error else dict.fromkeys(_CRITERIA_NAMES, value),
         notes={},
         error=error,
@@ -250,6 +257,47 @@ def test_normalisation_stops_a_lenient_judge_outvoting_a_strict_one() -> None:
     assert alpha == pytest.approx(-beta)
     assert pooled["alpha"]["raw_mean"] == pytest.approx(4.0)
     assert pooled["beta"]["raw_mean"] == pytest.approx(3.0)
+
+
+def test_peers_only_pooling_demotes_a_leg_its_own_lab_scored_generously() -> None:
+    """A leg graded by its own lab must be checkable against rival labs alone.
+
+    Two of this panel's three judges are the very models behind generating legs,
+    so the confound is not hypothetical: those legs are partly grading
+    themselves, and the leader of the pooled table is one of them. The peer
+    column is the control, and it has to actually move a leg that its own lab
+    favoured, or it is decoration.
+    """
+    verdicts = [
+        _verdict("own-lab-leg", "judge-own", "own#0", 5.0, self_family=True),
+        _verdict("rival-a", "judge-own", "a#0", 3.0),
+        _verdict("rival-b", "judge-own", "b#0", 3.0),
+        _verdict("own-lab-leg", "judge-rival", "own#0", 3.0),
+        _verdict("rival-a", "judge-rival", "a#0", 4.0),
+        _verdict("rival-b", "judge-rival", "b#0", 5.0),
+    ]
+
+    pooled = pool_scores(verdicts)
+    peers = pool_scores(verdicts, peers_only=True)
+
+    ranked = sorted(pooled, key=lambda leg: -float(pooled[leg]["normalised_mean"]))
+    peer_ranked = sorted(peers, key=lambda leg: -float(peers[leg]["normalised_mean"]))
+
+    assert ranked.index("own-lab-leg") == 1
+    assert peer_ranked.index("own-lab-leg") == 2, (
+        "dropping its own lab's generous scoring must cost the leg its place"
+    )
+    assert pooled["own-lab-leg"]["scorings"] == 2
+    assert peers["own-lab-leg"]["scorings"] == 1
+
+    # The legs nobody self-scored must not move at all. Their figures shift only
+    # if the z-baseline was re-estimated on the shrunken set, which would mean
+    # the control is also changing the judge's leniency correction rather than
+    # isolating the self-scoring.
+    for leg in ("rival-a", "rival-b"):
+        assert peers[leg]["normalised_mean"] == pytest.approx(
+            float(pooled[leg]["normalised_mean"])
+        )
 
 
 def test_participation_separates_a_dead_judge_from_scattered_flakiness() -> None:

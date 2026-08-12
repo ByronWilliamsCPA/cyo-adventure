@@ -379,18 +379,29 @@ def _z_scores(verdicts: Sequence[Verdict]) -> dict[tuple[str, str], float]:
     return out
 
 
-def pool_scores(verdicts: Sequence[Verdict]) -> dict[str, dict[str, float | int]]:
+def pool_scores(
+    verdicts: Sequence[Verdict], *, peers_only: bool = False
+) -> dict[str, dict[str, float | int]]:
     """Aggregate verdicts per generating leg.
 
     Args:
         verdicts: Every verdict, successful or not.
+        peers_only: Drop scorings where the judge shares the generating leg's
+            lab, so a leg's figure comes only from rival labs.
 
     Returns:
         Per-leg pooled figures: raw mean, judge-normalised mean, per-criterion
         means, and how many scorings succeeded.
     """
     good = [v for v in verdicts if v.scores and v.error is None]
+    # The z-scores stay estimated from EVERY book a judge graded even when the
+    # pool below drops some of them. A judge's leniency is a property of the
+    # judge, so shrinking the sample it is measured from would add noise to the
+    # correction while trying to remove bias from the average. Only the set of
+    # rows being averaged changes.
     z = _z_scores(good)
+    if peers_only:
+        good = [v for v in good if not v.self_family]
     by_leg: dict[str, list[Verdict]] = {}
     for v in good:
         by_leg.setdefault(v.leg, []).append(v)
@@ -545,11 +556,19 @@ def _print_participation(counts: dict[str, dict[str, int]]) -> None:
         )
 
 
-def _print_table(pooled: dict[str, dict[str, float | int]]) -> None:
+def _print_table(
+    pooled: dict[str, dict[str, float | int]],
+    peers: dict[str, dict[str, float | int]] | None = None,
+) -> None:
     """Print the pooled quality scorecard.
 
     Args:
         pooled: Output of :func:`pool_scores`.
+        peers: Output of :func:`pool_scores` with ``peers_only=True``, printed
+            as a second ranking column. A leg whose lab also sits on the panel
+            is partly grading itself, and two of this panel's judges are the
+            very models that generated legs, so the ordering is only safe to
+            quote where these two columns agree.
     """
     if not pooled:
         print("\nNo book was scored.")
@@ -557,8 +576,9 @@ def _print_table(pooled: dict[str, dict[str, float | int]]) -> None:
     rows = sorted(pooled.items(), key=lambda kv: -float(kv[1]["normalised_mean"]))
     width = max(len(leg) for leg in pooled)
     names = list(_CRITERIA)
-    header = f"  {'leg':<{width}}  {'norm':>6} {'raw':>5} {'n':>3}  " + " ".join(
-        f"{name[:6]:>6}" for name in names
+    header = (
+        f"  {'leg':<{width}}  {'norm':>6} {'peer':>6} {'raw':>5} {'n':>3}  "
+        + " ".join(f"{name[:6]:>6}" for name in names)
     )
     print("\nQUALITY  (blind cross-lab panel; normalised within judge)")
     print(header)
@@ -567,9 +587,47 @@ def _print_table(pooled: dict[str, dict[str, float | int]]) -> None:
             f"{float(entry[name]):>6.2f}" if name in entry else f"{'-':>6}"
             for name in names
         )
+        peer_entry = (peers or {}).get(leg)
+        peer_cell = (
+            f"{float(peer_entry['normalised_mean']):>+6.2f}"
+            if peer_entry
+            else f"{'-':>6}"
+        )
         print(
-            f"  {leg:<{width}}  {float(entry['normalised_mean']):>+6.2f} "
+            f"  {leg:<{width}}  {float(entry['normalised_mean']):>+6.2f} {peer_cell} "
             f"{float(entry['raw_mean']):>5.2f} {int(entry['scorings']):>3}  {cells}"
+        )
+    _print_self_family_note(pooled, peers or {})
+
+
+def _print_self_family_note(
+    pooled: dict[str, dict[str, float | int]],
+    peers: dict[str, dict[str, float | int]],
+) -> None:
+    """Name the legs whose own lab scored them, and by how much it helped.
+
+    Args:
+        pooled: Every scoring, including self-family ones.
+        peers: Rival-lab scorings only.
+    """
+    affected = [
+        (leg, int(entry["scorings"]) - int(peers.get(leg, {}).get("scorings", 0)))
+        for leg, entry in pooled.items()
+    ]
+    graded_by_own_lab = [(leg, n) for leg, n in affected if n > 0]
+    if not graded_by_own_lab:
+        return
+    print("\n  Self-family scorings (a leg's own lab grading it), dropped in 'peer':")
+    for leg, dropped in sorted(graded_by_own_lab, key=lambda kv: -kv[1]):
+        entry = pooled[leg]
+        peer_entry = peers.get(leg)
+        if peer_entry is None:
+            print(f"    {leg:<24} {dropped:>2} dropped  ->  no rival-lab scoring left")
+            continue
+        delta = float(entry["normalised_mean"]) - float(peer_entry["normalised_mean"])
+        print(
+            f"    {leg:<24} {dropped:>2} dropped  ->  own lab moved it "
+            f"{delta:+.2f} in 'norm'"
         )
 
 
@@ -608,6 +666,7 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     verdicts = asyncio.run(_run_panel(books, Settings()))
     pooled = pool_scores(verdicts)
+    peers = pool_scores(verdicts, peers_only=True)
     participation = panel_participation(verdicts)
 
     args.out.mkdir(parents=True, exist_ok=True)
@@ -619,6 +678,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 "criteria": _CRITERIA,
                 "verdicts": [dataclasses.asdict(v) for v in verdicts],
                 "pooled": pooled,
+                "pooled_peers_only": peers,
             },
             indent=2,
         )
@@ -626,7 +686,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         encoding="utf-8",
     )
     _print_participation(participation)
-    _print_table(pooled)
+    _print_table(pooled, peers)
     failed = sum(1 for v in verdicts if v.error is not None)
     if failed:
         print(f"\n{failed} of {len(verdicts)} scorings failed; see judgements.json")
