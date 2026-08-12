@@ -4,10 +4,19 @@ Each function wraps a state-machine transition and mutates ORM rows, and the
 transaction is flushed before it returns: either directly via
 ``await session.flush()`` or indirectly through ``record_event``, which
 flushes as part of writing the pipeline event row. The request unit-of-work
-(api/deps.py) commits once at request end; these never commit. ``approve`` is
-the ONLY path that may set ``status="published"``, and it always stamps
-``approved_by`` in the same operation, which is the single-write-path leg of
-the no-unapproved-publish invariant.
+(api/deps.py) commits once at request end; these never commit. Within
+``src/`` ``approve`` is the only path that sets ``status="published"``:
+``publishing/catalog_publish.py`` promotes a catalog story by calling it
+rather than by writing the column, and it always stamps ``approved_by`` in
+the same operation, which is the single-write-path leg of the
+no-unapproved-publish invariant.
+
+The offline seed scripts are outside that guarantee. ``scripts/seed_staging.py``,
+``scripts/seed_dev_data.py`` (two sites), and ``scripts/seed_series_catalog.py``
+each construct a ``Storybook`` row with ``status="published"`` directly, and
+each stamps ``approved_by`` in the same constructor, so those uphold the
+invariant by convention rather than by routing through this module. A change
+to what ``approve`` guarantees has to be mirrored there by hand.
 """
 
 from __future__ import annotations
@@ -16,7 +25,7 @@ from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
 from pydantic import ValidationError as PydanticValidationError
-from sqlalchemy import func, select, update
+from sqlalchemy import func, select
 
 from cyo_adventure.core.config import settings
 from cyo_adventure.core.exceptions import (
@@ -31,6 +40,7 @@ from cyo_adventure.db.models import (
     StoryRequest,
 )
 from cyo_adventure.events import Actor, EventType, record_event
+from cyo_adventure.publishing.reason_codes import validate_reason_code
 from cyo_adventure.publishing.state_machine import (
     Action,
     Status,
@@ -344,10 +354,15 @@ async def approve(
             fails for a series book (legacy pre-WS-G chains are grandfathered
             and skip this check).
     """
-    # #CRITICAL: security: this is the SOLE path that sets status="published",
-    # and it stamps approved_by in the same operation, so no story is published
-    # without a recorded approver (the slice-1 invariant).
-    # #VERIFY: test_no_publish_without_approver drives every endpoint path.
+    # #CRITICAL: security: within src/ this is the sole path that sets
+    # status="published" (catalog_publish.py calls it rather than writing the
+    # column), and it stamps approved_by in the same operation, so no story
+    # reaches a reader without a recorded approver (the slice-1 invariant).
+    # The four offline seed sites named in this module's docstring write the
+    # column directly and uphold the invariant only by convention.
+    # #VERIFY: test_no_publish_without_approver drives every endpoint path. No
+    # test covers the seed scripts' direct writes, so widening this invariant
+    # means auditing those four sites by hand.
     # #CRITICAL: security: approve() now has two privileged callers --
     # api/approval.py::approve_storybook (HTTP, gated by
     # ctx.principal.is_admin in _load_admin_story) and
@@ -427,33 +442,30 @@ async def approve(
     storybook.visibility = visibility.value
     version_row.approved_by = principal.user_id
     version_row.published_at = datetime.now(UTC)
-    # #CRITICAL: data integrity: ADR-007 requires GenerationJob.report (raw,
-    # multi-stage LLM output) to be nulled the instant the storybook version it
-    # produced reaches "published", not just after the 30-day sweep
-    # (20260718000000_add_report_retention_purge.sql). This UPDATE runs in the
-    # same flush as the status/approved_by/published_at writes above, so a
-    # rollback of the publish also rolls back the purge (both-or-neither).
-    # storybook_id is a plain string column, not a FK (see GenerationJob's
-    # class docstring: a job can fail before any storybook row exists), so this
-    # is a value match, not a joined delete; version narrows to the specific
-    # job(s) that produced *this* published version, not every job ever run
-    # for the storybook.
-    # #VERIFY: test_approve_nulls_generation_job_report in
-    # tests/unit/test_report_retention.py asserts the UPDATE targets
-    # (storybook_id, version) and only touches non-null report rows.
-    await session.execute(
-        update(GenerationJob)
-        .where(
-            GenerationJob.storybook_id == storybook.id,
-            GenerationJob.version == version,
-            GenerationJob.report.is_not(None),
-        )
-        .values(report=None)
-    )
+    # #CRITICAL: data integrity: approve() deliberately does NOT null
+    # GenerationJob.report. It used to, under ADR-007's original "immediately on
+    # publish" rule, and that UPDATE was removed by ADR-007's 2026-08-11
+    # amendment. Retention of a human-reviewed job's raw output is now decided in
+    # exactly one place, the purge predicate in
+    # 20260810000000_exempt_reviewed_generation_job_report_from_purge.sql, which
+    # exempts a job whose storybook reached "published"/"archived" or carries a
+    # sent_back pipeline_event. Nulling here defeated the approve half of that
+    # exemption completely: the sweep spares a published book's report and this
+    # UPDATE had already destroyed it, so the calibration corpus the exemption
+    # exists to build could never contain an approval. Do not reintroduce a purge
+    # on this path; change the migration's predicate instead, so retention stays
+    # readable from one predicate rather than from a predicate minus a side
+    # effect.
+    # #VERIFY: test_approve_does_not_purge_generation_job_report and
+    # test_approve_issues_no_update_statements in
+    # tests/unit/test_report_retention.py assert this path emits no UPDATE at
+    # all, which is the assertion that fails if the purge comes back.
     # #CRITICAL: data-integrity: W0.4 -- stamp story_request.resulting_
     # storybook_id in the same flush as the status/approved_by/published_at
     # writes above, so a rollback of the publish also rolls back the stamp
-    # (both-or-neither, mirroring the report-nulling UPDATE just above).
+    # (both-or-neither). This used to read "mirroring the report-nulling UPDATE
+    # just above"; that UPDATE was removed by ADR-007's 2026-08-11 amendment, so
+    # the writes it mirrored are the three field assignments above instead.
     # #VERIFY: test_approve_stamps_resulting_storybook_id in
     # tests/unit/test_publishing_service_unit.py.
     await _stamp_resulting_storybook_id(session, storybook, version)
@@ -502,16 +514,22 @@ async def send_back(
         storybook: The story being returned.
         reason: Why it was sent back (free text; logged, not persisted).
         reason_code: Calibration code for why it was sent back, persisted on
-            the SENT_BACK pipeline event so it is queryable later. Typed
-            ``str`` here on purpose: the closed vocabulary is
-            ``api.schemas.SendBackReasonCodeLiteral`` and is enforced at the
-            API boundary, because ``publishing`` must not import from ``api``.
-            **This function does not validate it**, so a non-API caller can
-            persist a code outside the vocabulary.
+            the SENT_BACK pipeline event so it is queryable later. Must be a
+            member of ``reason_codes.SEND_BACK_REASON_CODES``; this function
+            validates it, so the closed vocabulary holds for every caller and
+            not only for requests that arrive through the API boundary.
 
     Raises:
         StateTransitionError: If the story is not in ``in_review``.
+        core.exceptions.ValidationError: If ``reason_code`` is outside the
+            closed vocabulary. Qualified deliberately: the only ``ValidationError``
+            name bound in this module is pydantic's, imported as
+            ``PydanticValidationError``, so a bare ``ValidationError`` here would
+            read as that one. ``validate_reason_code`` raises the project's.
     """
+    # Validate before the state transition, so a bad code cannot leave the
+    # storybook in needs_revision with no event written to explain it.
+    checked_reason_code = validate_reason_code(reason_code)
     # #ASSUME: data integrity: the free-text reason is logged (not persisted)
     # as before; reason_code is the structured calibration signal, persisted
     # below on the event row.
@@ -523,7 +541,7 @@ async def send_back(
         "storybook_sent_back",
         storybook_id=storybook.id,
         reason=reason,
-        reason_code=reason_code,
+        reason_code=checked_reason_code,
         actor=str(principal.user_id),
     )
     # #CRITICAL: data-integrity: reason_code is the review-scorecard
@@ -549,7 +567,7 @@ async def send_back(
         event_type=EventType.SENT_BACK,
         from_state="in_review",
         to_state="needs_revision",
-        payload={"reason_code": reason_code},
+        payload={"reason_code": checked_reason_code},
     )
 
 

@@ -908,7 +908,9 @@ runs on Supabase-managed infrastructure instead of the homelab; see
       (documented in SECURITY.md Known Infrastructure Limitations).
 - [x] Operator runbook and a short authoring guide for non-technical use.
 - [x] ADR-007 retention purge: the pg_cron job nulling `generation_job.report` 30 days
-      post-completion or on publish (raw output currently persists indefinitely; S10).
+      post-completion (S10). The "or on publish" leg was withdrawn by ADR-007's 2026-08-11
+      amendment, and a human-decided job is exempt from the sweep entirely per the 2026-08-10
+      amendment; see `docs/compliance/data-retention-policy.md` Section 2 for the live rule.
 - [x] Offline-copy revocation: archived/pulled books are removed from device caches at
       next connection, completing the kill switch and the incident pull-everywhere path
       (G8, A5). Guardian notification on an incident archive shipped on unmerged branch

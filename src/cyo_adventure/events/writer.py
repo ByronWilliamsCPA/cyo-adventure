@@ -35,7 +35,9 @@ _PAYLOAD_ALLOWLIST: dict[EventType, frozenset[str]] = {
     EventType.REPAIR_APPLIED: frozenset({"stage"}),
     # Review-scorecard calibration (2026-08): the closed-vocabulary reason
     # code a reviewer selects alongside their free-text reason
-    # (api/schemas.py::SendBackReasonCodeLiteral). An enum value, never free
+    # (publishing/reason_codes.py::SendBackReasonCodeLiteral, validated by
+    # that module's validate_reason_code before it reaches this payload).
+    # An enum value, never free
     # text, so it fits the PII-free payload contract (D3) unchanged; the
     # free-text reason itself stays log-only, never persisted here.
     EventType.SENT_BACK: frozenset({"reason_code"}),

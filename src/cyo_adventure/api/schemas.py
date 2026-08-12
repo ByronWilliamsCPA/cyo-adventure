@@ -35,6 +35,7 @@ from cyo_adventure.db.models import (
 )
 from cyo_adventure.generation.concept import ConceptBrief
 from cyo_adventure.moderation.report import FindingSeverity, Source, Verdict
+from cyo_adventure.publishing.reason_codes import SendBackReasonCodeLiteral
 from cyo_adventure.storybook.character_vocabulary import ARCHETYPE_ROSTER
 from cyo_adventure.storybook.evaluator import VarState
 from cyo_adventure.storybook.models import (
@@ -1739,25 +1740,16 @@ class CharacterListView(BaseModel):
 # Approval schemas
 # ---------------------------------------------------------------------------
 
-# Closed-vocabulary calibration signal for a reviewer's send-back decision
-# (review-scorecard calibration corpus). Mirrors the KidFlagReasonLiteral
-# pattern above: named once, referenced from the request and response models
-# below so the wire contract and any future persistence stay in lockstep.
-# "other" is the deliberate escape hatch for a reason this list does not
-# anticipate; the free-text `reason` field on SendBackRequest still carries
-# the reviewer's prose for that case.
-SendBackReasonCodeLiteral = Literal[
-    "safety_concern",
-    "reading_level",
-    "coherence_error",
-    "continuity_error",
-    "weak_choices",
-    "repetitive",
-    "prose_quality",
-    "unsatisfying_ending",
-    "factual_error",
-    "other",
-]
+# The closed-vocabulary calibration signal for a reviewer's send-back decision
+# is defined in publishing/reason_codes.py and imported at the top of this
+# module. It used to be declared here, which left publishing/service.py::
+# send_back unable to validate against the very vocabulary this file owned,
+# because the domain cannot import from the API layer. Moving it reverses the
+# arrow: the boundary imports the domain's vocabulary.
+#
+# The wire contract is unchanged. A type alias is transparent to pydantic, so
+# the OpenAPI schema still carries the same inline string enum and the
+# generated frontend client does not move.
 
 
 class SendBackRequest(BaseModel):

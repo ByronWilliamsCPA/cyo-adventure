@@ -16,6 +16,69 @@ tags:
 > **Status**: Accepted (2026-07-16; see Amendment below)
 > **Date**: 2026-06-29
 
+## Amendment (2026-08-11): the on-publish purge is removed
+
+**This reverses a decision this ADR previously took deliberately, so read the reversal, not
+just the new state.** The 2026-08-10 amendment below explicitly left the on-publish purge in
+`publishing/service.py::approve` alone, describing it as "unchanged". That is no longer true:
+the purge is deleted, and the nightly `pg_cron` predicate is now the sole thing that decides
+this column's retention.
+
+The reason is that the two mechanisms contradicted each other. The 2026-08-10 exemption has an
+approve half: a `generation_job` whose storybook reaches `published` or `archived` is skipped
+by the sweep, so its raw output survives to serve the calibration corpus. But `approve()` is
+the *only* path that sets `storybook.status = "published"`, and in the same transaction it
+nulled that version's own `report`. The exemption therefore protected a column that was already
+NULL by the time it could ever apply. The approve half of the exemption preserved nothing for
+the version that was published; it reached only earlier sent-back versions on the same
+storybook, which the send-back half already covers. Whatever the on-publish purge was worth
+when the sweep was unqualified, once the exemption shipped the two encoded opposite intents
+about the same rows, and the one that ran first always won.
+
+Consequences, stated plainly because this widens retention:
+
+- **A reviewed book's raw LLM output now persists.** Before this change, a published version's
+  `report` was nulled within milliseconds of approval. After it, that report is retained for
+  the life of the storybook, exactly as long as the send-back case already was. This is the
+  behaviour the 2026-08-10 amendment argued for; it simply did not take effect on the approve
+  path.
+- **Nothing is retained by *this exemption* without a human decision attached.** The nightly sweep
+  still nulls the report of any job whose storybook never reached a human (a `draft` or `in_review`
+  with no send-back event, or a job whose `storybook_id` resolves to no row) after 30 days. The
+  machine-rejected `auto_reject` path writes no `sent_back` event and so is still purged.
+
+  The claim is scoped to the exemption on purpose, because the unscoped version is false and was
+  stated that way in an earlier draft. The sweep's predicate is gated on
+  `status IN ('passed', 'needs_review', 'failed')`, and `generation_job.status` has six legal
+  values, so `queued`, `running` and `awaiting_manual_fill` are matched by no purge condition at
+  all and their `report` is never nulled on any timer, decision or no decision. `queued` and
+  `running` are transient and normally carry no report; `awaiting_manual_fill` is by definition a
+  run parked waiting on a person and can sit indefinitely. That gap predates both amendments and
+  neither closes it.
+
+  A second, opposite gap belongs to the 2026-08-10 amendment itself: the exemption is evaluated
+  when the sweep runs, not when the decision is recorded, so it does not protect a slow review.
+  A job at status `passed` whose storybook is still `in_review` on day 31 is purged, and the
+  approval on day 32 flips the storybook to `published` against a column that is already NULL.
+  The calibration-corpus rationale below therefore holds only for reviews concluding inside 30
+  days of the job's last update. Tracked as `UW-C227` with
+  `test_slow_review_report_is_purged_before_the_human_decides` pinning the current behaviour. Closing it means widening the predicate to every non-exempt status, which is a
+  separate decision with its own deletion consequences and is tracked as a known gap in
+  `docs/compliance/data-retention-policy.md` Section 4 rather than assumed here.
+- **The rollback coupling is gone, and is not needed.** The old purge lived in the publish
+  transaction so a rolled-back publish also rolled back the purge. With no purge on that path,
+  there is nothing to keep consistent; a rolled-back publish leaves a non-`published`
+  storybook, which the nightly sweep then treats as undecided and purges on the normal 30-day
+  schedule.
+- **The compliance record is updated in the same change**, closing the documentation debt the
+  2026-08-10 amendment flagged: `docs/compliance/data-retention-policy.md`'s
+  `generation_job.report` row and its Section 4 list now describe the amended predicate and the
+  removal of the on-publish leg.
+
+`tests/unit/test_report_retention.py::test_approve_does_not_purge_generation_job_report` and
+`::test_approve_issues_no_update_statements` assert the absence, so a future change that
+reintroduces the purge fails rather than silently re-emptying the corpus.
+
 ## Amendment (2026-08-10): reviewed-storybook exemption for the 30-day sweep
 
 The review-scorecard calibration effort needs a corpus of human-reviewed books
@@ -55,6 +118,12 @@ exemption's practical effect is mostly for a storybook that was sent back
 (and any earlier job/version on the same storybook once any later job on it
 is decided) rather than for the version that ends up published.
 
+> **Superseded 2026-08-11**: the paragraph above is the reason the on-publish purge was
+> removed a day later. Leaving it in place meant the approve half of this exemption could
+> never preserve anything, since the only path that sets `published` nulled the report in the
+> same transaction. See the 2026-08-11 amendment at the top of this ADR. Everything else in
+> this amendment still holds.
+
 **What the retained label actually is.** The corpus this exemption preserves pairs raw output
 with an approve or a send-back, and that is a *decision*, not evidence that anyone read the
 book. Approval is a single state transition with no attestation, no per-passage
@@ -77,6 +146,9 @@ purge and marks it **Enforced**, citing only the original
 until it is updated the compliance record asserts an enforcement the schema no longer
 performs for human-decided jobs.
 
+> **Closed 2026-08-11**: both places named above now describe the amended predicate and the
+> removal of the on-publish leg.
+
 ## Amendment (2026-07-17): purge implemented (Phase 5, M5 register item S10)
 
 Both halves of the purge described in the TL;DR and Decision sections below are now
@@ -97,6 +169,8 @@ amendment flagged:
   `storybook.status = "published"`) nulls the matching `generation_job.report` (by
   `storybook_id` and `version`) in the same transaction as the publish write, so a
   rollback of the publish also rolls back the purge.
+  **Removed 2026-08-11**: this leg no longer exists; it defeated the approve half of the
+  2026-08-10 exemption. See the 2026-08-11 amendment at the top.
 
 ## Amendment (2026-07-16): access-control ruling and code reconciliation
 
@@ -121,14 +195,15 @@ admin review. Consequences:
 ## TL;DR
 
 Purge `GenerationJob.report` (raw staged LLM outputs) 30 days after job
-completion or when the produced storybook version reaches `published` status,
-whichever comes first, **except** for a job whose storybook reached a human
+completion, **except** for a job whose storybook reached a human
 review decision (approve or send-back), which the 2026-08-10 amendment above
-exempts from the 30-day leg. Access to `report` is restricted to admin/system
+exempts. Access to `report` is restricted to admin/system
 role only. Implementation shipped as a daily `pg_cron` job
 (`purge_generation_job_report`, migration `20260718000000_add_report_retention_purge.sql`),
 not as the Phase 5 RQ worker this ADR originally proposed; see the 2026-07-17
-amendment above.
+amendment above. The original policy also purged immediately on publish, whichever came
+first; the 2026-08-11 amendment removed that leg, because it fired before the approve
+exemption could ever apply.
 
 ## Context
 
@@ -162,7 +237,11 @@ timestamp of the final status transition), OR when the linked
 > **Amended 2026-08-10**: the 30-day leg no longer applies to a job whose
 > storybook reached a human review decision, in either direction. The
 > Amendment at the top of this ADR carries the exact predicate, what it
-> deliberately excludes, and why; the on-publish leg below is unchanged.
+> deliberately excludes, and why.
+>
+> **Amended 2026-08-11**: the `OR ... published` leg of the retention window above is
+> withdrawn. Publishing no longer purges anything; the 30-day sweep with its
+> human-decision exemption is the whole policy.
 
 **Mechanism**: A periodic RQ job (Phase 5) queries for jobs where:
 
@@ -174,7 +253,9 @@ AND report IS NOT NULL
 and sets `report = NULL` on matching rows. The job runs daily. It does not
 delete the `GenerationJob` row; only the `report` column is nulled. The
 predicate above is the original decision as taken; the shipped job additionally
-excludes human-decided storybooks per the 2026-08-10 amendment.
+excludes human-decided storybooks per the 2026-08-10 amendment, and its
+`linked_version.status = 'published'` disjunct is withdrawn per the 2026-08-11
+amendment (published is now an exemption from the purge, not a trigger for it).
 
 **Access control**: `report` must not be exposed via guardian or child API
 endpoints. Only internal admin/system paths (e.g. a future ops dashboard or
@@ -184,6 +265,7 @@ information only.
 
 **Audit log**: When a purge job nulls a `report`, it logs the job ID and
 purge reason (`expired` or `published`) at INFO level with a structured key.
+Only `expired` remains reachable after the 2026-08-11 amendment.
 
 ## Consequences
 
