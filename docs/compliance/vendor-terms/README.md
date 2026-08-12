@@ -76,13 +76,21 @@ work, not licensed to us for redistribution, and are annotated in `REUSE.toml` a
 | Epic Games (Kids Web Services) | Kids Web Services Ltd, a private limited company incorporated in England, Company Number 13351982, registered office C/O Shepherd And Wedderburn LLP, 1-6 Lombard Street, London EC3V 9AA, United Kingdom | [KWS General Terms](epic-kws/kws-general-terms-2026-05-13.pdf) (12pp) | 2026-05-13 | 2026-08-12, supplied by the account owner from the KWS Control Panel | `0786d6e425c765baa1320adfc1bc88177fcceb154fe10b4e706d209ddd221cdc` | `assurance-register.md` O-125; `processor-dpa-checklist.md` Epic row; `privacy-notice.md` transfers paragraph |
 | Epic Games (Kids Web Services) | as above | [KWS Service Specific Terms: Parent Verification](epic-kws/kws-parent-verification-service-terms-2025-08-28.pdf) (3pp) | 2025-08-28 | 2026-08-12, supplied by the account owner from the KWS Control Panel | `8194f057f5a306ed83c22cb271d4792ca5836431af3909712f1699abfd3e7270` | `assurance-register.md` O-122, O-124, O-125; `processor-dpa-checklist.md` Epic row; `privacy-notice.md` processor claim and transfers paragraph |
 
-Verify a retained document still matches its row:
+Verify every retained document still matches its row. Run from this directory; it reads the
+hash and the path out of the table above, so it needs no separate checksum file to drift from
+the index:
 
 ```bash
-sha256sum -c <<<"$(awk -F'|' '/^\| Epic/ {gsub(/[ `]/,"",$7); print $7"  docs/compliance/vendor-terms/epic-kws/"}' docs/compliance/vendor-terms/README.md)"
+awk -F'|' '/^\| Epic/ { p=$4; sub(/^[^(]*\(/, "", p); sub(/\).*$/, "", p);
+    gsub(/[ `]/, "", $7); print $7 "  " p }' README.md | sha256sum -c
 ```
 
-Or, more simply, `sha256sum docs/compliance/vendor-terms/epic-kws/*.pdf` and compare by eye.
+Expect one `: OK` per row and exit 0. A `FAILED` line means the bytes on disk are not the ones
+the citations elsewhere in the repo were written against, which is a finding, not a filing
+error: re-open every row named in that document's "Cited by" column.
+
+Uses only `sub()` rather than gawk's three-argument `match()`, so it behaves the same under
+mawk, which is the default `awk` on Debian and Ubuntu.
 
 ## What is not stored here
 
