@@ -116,6 +116,12 @@ if TYPE_CHECKING:
 
 _REPO_ROOT: Final[Path] = Path(__file__).resolve().parent.parent
 
+# Pre-flight completion budget. Sized to clear reasoning overhead, not to fit an
+# answer: a reasoning leg emits nothing until its hidden tokens are spent, so a
+# budget below that overhead returns empty content and is indistinguishable from
+# a dead pin. See preflight's docstring for the 2026-08-12 measurements.
+_PREFLIGHT_MAX_TOKENS: Final[int] = 512
+
 # Why per-book cost is absent rather than estimated. Carried into the report so
 # a reader of the JSON a year from now does not have to reconstruct it.
 _COST_UNAVAILABLE: Final[str] = (
@@ -1029,8 +1035,16 @@ async def preflight(
     *account* may call: a workspace data policy can exclude a provider, and a
     pin at an excluded endpoint with ``allow_fallbacks: false`` fails every
     single book. Only a real completion down the same construction path
-    exercises the same permission check, so that is what this does. Three tokens
-    per leg is a rounding error against a run that generates whole books.
+    exercises the same permission check, so that is what this does.
+
+    The budget must clear the leg's reasoning overhead, not just its answer. A
+    reasoning model spends hidden tokens before it emits any content, so a
+    budget sized for the answer alone returns ``finish_reason='length'`` with an
+    empty content string, which the provider reports as "no message content" and
+    which reads exactly like a dead pin. Measured overhead on 2026-08-12:
+    Gemini 3.1 Pro 183 tokens, Kimi K3 up to 197, GLM 5.2 98, against zero for
+    the Anthropic legs. ``_PREFLIGHT_MAX_TOKENS`` sits well above the worst of
+    those; it is still a rounding error against a run that generates whole books.
 
     Args:
         vendors: The slate about to be run.
@@ -1045,7 +1059,9 @@ async def preflight(
         try:
             provider = _build_provider(vendor, settings, mock=False)
             _ = await provider.complete(
-                system="Reply with one word.", prompt="ping", max_tokens=3
+                system="Reply with one word.",
+                prompt="ping",
+                max_tokens=_PREFLIGHT_MAX_TOKENS,
             )
         except Exception as exc:
             # Deliberately broad: the point is to report every way a pin can be
@@ -1067,7 +1083,10 @@ def _report_preflight(results: list[tuple[str, str | None]]) -> bool:
         ``True`` when every pin answered.
     """
     width = max([len("leg"), *(len(label) for label, _ in results)])
-    print("Pre-flight: one 3-token completion per pin.", file=sys.stderr)
+    print(
+        f"Pre-flight: one {_PREFLIGHT_MAX_TOKENS}-token completion per pin.",
+        file=sys.stderr,
+    )
     for label, error in results:
         verdict = "reachable" if error is None else f"UNREACHABLE  {error[:150]}"
         print(f"  {label:<{width}}  {verdict}", file=sys.stderr)
@@ -1078,7 +1097,11 @@ def _report_preflight(results: list[tuple[str, str | None]]) -> bool:
             f"({', '.join(failed)}); nothing was generated. A 'No endpoints "
             "found' message usually means the account's data policy excludes "
             "that endpoint rather than that the slug is wrong; re-probe with "
-            "provider.only to see the real reason.",
+            "provider.only to see the real reason. A 'no message content' "
+            "message means the opposite: the pin routed, and the leg spent the "
+            "whole budget on reasoning tokens before emitting anything, so "
+            f"raise _PREFLIGHT_MAX_TOKENS above {_PREFLIGHT_MAX_TOKENS} rather "
+            "than dropping the leg.",
             file=sys.stderr,
         )
     return not failed

@@ -22,6 +22,7 @@ import pytest
 
 from cyo_adventure.core.config import Settings
 from scripts.compare_vendors import (
+    _PREFLIGHT_MAX_TOKENS,  # pyright: ignore[reportPrivateUsage]
     BookRecord,
     ComparisonReport,
     Vendor,
@@ -790,3 +791,38 @@ def test_report_json_carries_every_bucket_the_report_computes(tmp_path: Path) ->
 
     missing = {f.name for f in dataclasses.fields(ComparisonReport)} - set(payload)
     assert not missing, f"buckets computed but never written: {sorted(missing)}"
+
+
+# Worst per-call reasoning overhead measured across the 2026-08-12 slate (Kimi
+# K3 at 197 tokens, Gemini 3.1 Pro at 183). A pre-flight budget at or below this
+# returns empty content on those legs, which the provider raises as "no message
+# content" and which the report then prints as UNREACHABLE. That is a false
+# negative that blocks a whole paid run on a pin that works.
+_MEASURED_REASONING_OVERHEAD = 197
+
+
+@pytest.mark.asyncio
+async def test_preflight_budget_clears_measured_reasoning_overhead() -> None:
+    """The ping must outlast a reasoning leg's hidden tokens, not just its answer."""
+    seen: list[object] = []
+
+    async def _complete(**kwargs: object) -> str:
+        """Record the budget the pre-flight asked for."""
+        seen.append(kwargs.get("max_tokens"))
+        return "ok"
+
+    def _build(*_a: object, **_k: object) -> object:
+        """Build a provider that records its call."""
+        return mock.Mock(complete=_complete)
+
+    with mock.patch("scripts.compare_vendors._build_provider", _build):
+        _ = await preflight(
+            [Vendor(label="a", model="m", provider_order=("p",))], Settings()
+        )
+
+    assert seen == [_PREFLIGHT_MAX_TOKENS]
+    assert _PREFLIGHT_MAX_TOKENS > _MEASURED_REASONING_OVERHEAD, (
+        f"a {_PREFLIGHT_MAX_TOKENS}-token ping cannot clear the "
+        f"{_MEASURED_REASONING_OVERHEAD}-token worst case; reasoning legs would "
+        "report UNREACHABLE while routing correctly"
+    )
