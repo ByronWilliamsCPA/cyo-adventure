@@ -49,12 +49,15 @@ does.
 
 | Leg | Model | Pinned backend | $/MTok in / out | 4-book cost |
 | --- | --- | --- | ---: | ---: |
-| `anthropic-sonnet-4.6` | `anthropic/claude-sonnet-4.6` | `anthropic` | 3 / 15 | $0.61 |
-| `anthropic-sonnet-5` | `anthropic/claude-sonnet-5` | `anthropic` | 2 / 10 | $0.41 |
-| `openai-gpt-5.6-sol` | `openai/gpt-5.6-sol` | `openai` | 5 / 30 | $1.19 |
+| `anthropic-sonnet-4.6` | `anthropic/claude-sonnet-4.6` | `amazon-bedrock/global` | 3 / 15 | $0.61 |
+| `anthropic-sonnet-5` | `anthropic/claude-sonnet-5` | `amazon-bedrock/global` | 2 / 10 | $0.41 |
+| `openai-gpt-5.6-sol` | `openai/gpt-5.6-sol` | `azure` | 5 / 30 | $1.19 |
 | `xai-grok-4.6` | `x-ai/grok-4.6` | `xai/zdr` | 2 / 6 | $0.28 |
 | `moonshot-kimi-k3` | `moonshotai/kimi-k3` | `moonshotai/mxfp4` | 3 / 15 | $0.61 |
-| `google-gemini-3.1-pro` | `google/gemini-3.1-pro-preview` | `google-ai-studio` | 2 / 12 | $0.47 |
+| `google-gemini-3.1-pro` | `google/gemini-3.1-pro-preview` | `google-vertex/global` | 2 / 12 | $0.47 |
+
+Both Anthropic legs share one backend deliberately, so the version-bump control differs by checkpoint
+and nothing else.
 
 The two Anthropic legs declare `"family": "anthropic"`. Everything else leaves `family` unset and
 falls back to its own label, so it is its own lineage.
@@ -74,7 +77,7 @@ call rather than quietly routing elsewhere.
 
 Three details the endpoint listing makes clear and the slug alone does not:
 
-- **A closed-weight model's backends all serve the same dated snapshot**
+- **A closed-weight model's backends all serve the same dated snapshot, at the same price**
   (`anthropic/claude-4.6-sonnet-20260217`, `anthropic/claude-sonnet-5-20260630`,
   `openai/gpt-5.6-sol-20260709`, `google/gemini-3.1-pro-preview-20260219`,
   `x-ai/grok-4.6-20260810`). For those the pin buys a single serving stack and reproducibility, not
@@ -89,8 +92,31 @@ Three details the endpoint listing makes clear and the slug alone does not:
   same. The pins target standard tiers, except xAI where `xai/zdr` (zero data retention) is offered
   at the *same* price as standard and is the better default for a children's product.
 
-A `-preview` slug can be retired without notice, and Gemini is the one such slug here. Re-verify all
-six slugs resolve before spending anything.
+### Resolving is not reaching
+
+Three of the six pins here are **not** the vendor's own endpoint, and that is not a preference. This
+account's OpenRouter data policy excludes the first-party endpoints of Anthropic, OpenAI, and Google
+AI Studio while permitting the same models served through Amazon Bedrock, Azure, and Google Vertex.
+An unpinned call to `anthropic/claude-sonnet-5` therefore succeeds and silently lands on Bedrock,
+which is the exact unattributability the pin exists to prevent.
+
+Two traps follow, both of which cost a failed run to find:
+
+- **`GET /models/{id}/endpoints` lists endpoints the account cannot use.** Every slug resolving is no
+  evidence that any of them will answer. Reachability has to be probed with a real (three-token)
+  completion.
+- **`provider.order` reports the wrong reason.** A pin at a blocked endpoint with
+  `allow_fallbacks: false` returns `404 No endpoints found for <model>`, which reads as a bad slug.
+  The same request with `provider.only` returns the actual cause: `No endpoints available matching
+  your guardrail restrictions and data policy`. Diagnose with `only`, then pin with `order`.
+
+Endpoint **tags** (`xai/zdr`, `moonshotai/mxfp4`, `amazon-bedrock/global`) are routable in both
+fields, and are what the pins use: a tag fixes region, service tier, and quantization, where a
+provider name alone fixes none of the three.
+
+A `-preview` slug can be retired without notice, and Gemini is the one such slug here. Before
+spending anything, re-verify all six pins with a three-token completion each, not with the models
+endpoint.
 
 ## Running it
 

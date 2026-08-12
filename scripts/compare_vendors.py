@@ -585,10 +585,16 @@ async def run_comparison(
                     )
                 )
             last = records[-1]
+            # Carry the failure text on the progress line, not only into the
+            # report. A misconfigured pin fails every book identically, and the
+            # operator needs to see why on book #0 rather than after paying for
+            # the other twenty-three (or, if the run is interrupted, never: the
+            # report is written at the end).
+            detail = "" if last.error is None else f" error={last.error[:160]}"
             print(
                 f"[{vendor.label} #{index}] status={last.status} "
                 f"fk={last.grade} in_band={last.in_band} "
-                f"latency={last.latency_s}s",
+                f"latency={last.latency_s}s{detail}",
                 file=sys.stderr,
                 flush=True,
             )
