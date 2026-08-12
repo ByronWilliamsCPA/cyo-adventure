@@ -243,7 +243,7 @@ export function GuardianVerificationPage() {
           actually live.
         </p>
         {/*
-         * #CRITICAL security: assurance-register O-125 requires the guardian be told that their
+         * #CRITICAL: security: assurance-register O-125 requires the guardian be told that their
          * email address is disclosed to Epic BEFORE they trigger the disclosure. Pressing the
          * button below is the disclosure: POST /v1/consent/kws/start (api/consent.py) reaches
          * consent/kws_client.py's send_verification_email, which posts the address to KWS.

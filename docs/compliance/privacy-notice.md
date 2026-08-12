@@ -121,9 +121,10 @@ Google Perspective specifically is covered by the Cloud DPA). Please confirm whe
 statement can stand as written, needs to be qualified per vendor, or should be held until the
 checklist closes before this notice is published. **Sharpened 2026-08-12**: for one vendor this is
 no longer an open question but a probable contradiction. Kids Web Services' Parent Verification
-terms (retained at `vendor-terms/epic-kws/`, cl. 5) make KWS our processor for only two of the
-eight activities they list, and state that for the other six "you and KWS are each independent
-controllers". Their cl. 5.1 then says the record they build is theirs and "is used to provide KWS
+terms (retained at `vendor-terms/epic-kws/`) list eight activities at cl. 2, and cl. 5 then makes
+KWS our processor for only two of them and states that for the other six "you and KWS are each
+independent
+controllers". The **General** Terms' cl. 5.1 then says the record they build is theirs and "is used to provide KWS
 Services to you and our other customers", which is the vendor using it for their own purposes.
 Read straight, that is the opposite of the sentence above. Please rule on whether the Kids Web
 Services row must be lifted out of this paragraph and described separately.]

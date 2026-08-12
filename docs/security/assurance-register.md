@@ -2999,18 +2999,31 @@ posture at a trust boundary must be verified from outside that boundary.
   because rewriting a gate's definition on our own reading of a counterparty's terms is exactly the
   move this register exists to prevent. Cited to the retained PV Terms so the reading is checkable.
 - **[COUNSEL] KWS retains the verification durably and reuses it across its other customers.**
-  "AgeGraph Data" is defined as the individual's "hashed email address, the method, status and the
+  "AgeGraph Data" is defined in the **General** Terms' Definitions section, not in the PV Terms,
+  as the individual's "hashed email address, the method, status and the
   timestamp of the first verification and the timestamp of subsequent verifications..., the country
   in which their device is located, the Apps in connection with which the individual verifies their
   age, a KWS generated transaction ID... and any transaction IDs provided to us by our verification
-  partners, such as Stripe". PV Terms cl. 5.1 states KWS owns that data and that it "is used to
-  provide KWS Services to you and our other customers." So an adult who verifies for this app is
+  partners, such as Stripe". **General** Terms cl. 5.1 states KWS owns that data and that it "is used to
+  provide KWS Services to you and our other customers." The PV Terms contain no clause 5.1 at all;
+  both citations belong to the General Terms, and a reader sent to the PV Terms will not find them.
+  So an adult who verifies for this app is
   durably recorded, keyed to a hash of their address, as having verified *for this app*, in a graph
   Epic reuses commercially. Nothing guardian-facing says so: not the pre-send copy closed above,
   not `privacy-notice.md`. This is what makes the independent-controller finding concrete rather
   than formal, and it is the Art. 13(1)(e) limb of this row rather than the Art. 28 limb. It is
   also the one part of the flow where "we send them nothing about your child" stays true while the
   overall picture is still more than a guardian would infer.
+- **[COUNSEL] The definition of "AgeGraph Data" can widen without notice, 2026-08-12.** The quote
+  above is elided at its end. The definition closes "and any other AgeGraph data as may be expressly
+  set out in the KWS Privacy Policy", so the set of fields Epic durably retains about a verifying
+  adult is not fixed by the contract at all: it is whatever a document Epic edits unilaterally says
+  it is. This is the same defect shape as the cl. 4 finding recorded under O-122 below, and it is
+  strictly worse. Clause 4 at least names a trigger (a notified method change) and a period (up to
+  14 days), which is what let that finding be written as "a named trigger and no detector". This
+  clause names no trigger, no notice period, and no assent mechanism, so there is nothing to detect
+  even in principle short of diffing Epic's Privacy Policy on a schedule. Recorded so the elision
+  in the quote above cannot be mistaken for a complete reading of the definition.
 - **Phase home:** unassigned
 - **Owner:** core-maintainer
 - **Last verified:** not verified
@@ -3683,8 +3696,12 @@ posture at a trust boundary must be verified from outside that boundary.
     above says "reassess if Epic changes the method" without saying how that would ever come to our
     attention. The retained PV Terms answer it, and the answer is unfavourable: cl. 4 reserves to
     KWS the right, "upon reasonable notice (up to 14 days) at any time", to "use, test or introduce
-    different verification methods or remove old ones", and provides that "Your continued use of the
-    Parent Verification service after such notice constitutes your agreement". So the entire basis
+    different verification methods or remove old ones", and provides that "Your continued use of or
+    access to Parent Verification after the advised implementation date of any notified different
+    verification method constitutes your agreement to the applicable verification method". Read the
+    trigger precisely: assent attaches at the *implementation date Epic advises*, not at the notice,
+    so the window to object is whatever Epic leaves between the two and is not necessarily the full
+    14 days. So the entire basis
     of the acceptance above, a real charge with a multi-day refund lag, is a vendor setting that the
     vendor may change unilaterally, on two weeks' notice, with our silence counting as assent. The
     notice arrives at whatever address holds the KWS account, which is not a monitored channel and
@@ -3843,8 +3860,10 @@ posture at a trust boundary must be verified from outside that boundary.
   should be read as *what we permitted*, never as *what happened*, and any surface that renders it
   to a human must not imply otherwise.
 - **Refined 2026-08-12 from the retained vendor terms: the method is recorded, it is simply never
-  transmitted to us.** PV Terms cl. 5 defines "AgeGraph Data" to include "the **method**, status and
-  the timestamp of the first verification", and cl. 5.1 states KWS owns that data. So this row's
+  transmitted to us.** The **General** Terms' Definitions section defines "AgeGraph Data" to include
+  "the **method**, status and
+  the timestamp of the first verification", and **General** Terms cl. 5.1 states KWS owns that data.
+  Both citations are to the General Terms, not the PV Terms, which have no clause 5.1. So this row's
   premise needs splitting into the part that holds and the part that does not. **Holds:** nothing
   the vendor sends us carries a method, on either branch, so the operator's send-time declaration
   remains the only bound we can hold, and every mechanism above is unchanged and still correct.
