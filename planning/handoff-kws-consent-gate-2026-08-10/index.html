@@ -3421,6 +3421,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="7. If you validate only one thing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#answered-2026-08-11-against-staging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Answered 2026-08-11, against staging
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -3445,9 +3462,19 @@
 
 <h1 id="handoff-the-kws-consent-gate-what-is-built-and-what-is-not">Handoff: the KWS consent gate, what is built and what is not<a class="headerlink" href="#handoff-the-kws-consent-gate-what-is-built-and-what-is-not" title="Permanent link">&para;</a></h1>
 <p>Written 2026-08-10, at the close of the session that built all four slices of the ADR-018 D1
-verification gate. Everything described here lives on <strong><code>feat/kws-consent-gate</code></strong>, pushed to origin at
-<code>bc6080b5</code>, seven commits ahead of <code>main</code>. <strong>No pull request has been opened.</strong> The feature flag is off
-in every environment, and production has never been wired at all.</p>
+verification gate. <strong>Merged to <code>main</code> on 2026-08-11 as PR #681</strong>; the branch it describes,
+<code>feat/kws-consent-gate</code>, no longer exists. The feature flag is off in every environment, and production
+has never been wired at all.</p>
+<blockquote>
+<p><strong>Status note, added 2026-08-11 on merge.</strong> The body below was written before the pull request was
+opened and describes the branch as it stood at <code>bc6080b5</code>, seven commits ahead of <code>main</code>. PR #681
+carried <strong>35 commits</strong> in the end, so <strong>27 landed after this document was written</strong>, among them
+<code>e8e59b81</code> (closing five CI gates, including the repo-root-relative links mkdocs resolves against the
+doc's own directory) and <code>683c338b</code>, which edited this file. The original text is corrected in place
+only where it would mislead a reader about what is true now; where it records <em>method</em> rather than
+state, notably section 6, it is left as written and marked. Section 7 was unanswered at merge and is
+answered at the end of this document.</p>
+</blockquote>
 <p>Read this document as three separate kinds of claim, because they need three different kinds of review:</p>
 <ol>
 <li><strong>Built and testable.</strong> Code on the branch, with named tests. Verify by reading and running.</li>
@@ -3458,7 +3485,7 @@ in every environment, and production has never been wired at all.</p>
 </ol>
 <h2 id="1-what-the-gate-does-in-one-paragraph">1. What the gate does, in one paragraph<a class="headerlink" href="#1-what-the-gate-does-in-one-paragraph" title="Permanent link">&para;</a></h2>
 <p>A guardian cannot create a child profile until an adult identity behind their account has been verified
-through Epic's Kids Web Services. <code>POST /v1/consent/kws/start</code> sends the verification, the parent completes
+through Epic's Kids Web Services. <code>POST /api/v1/consent/kws/start</code> sends the verification, the parent completes
 it in Epic's hosted flow, and a KWS webhook resolves the row. Three call sites read the gate
 (<code>src/cyo_adventure/api/profiles.py:346</code>,
 <code>src/cyo_adventure/api/admin_profiles.py:131</code>,
@@ -3486,7 +3513,7 @@ we have is one necessary component whose sufficiency is still the open question 
 </tr>
 <tr>
 <td><code>e4ce4d3a</code></td>
-<td>Slice 2: <code>POST /v1/consent/kws/start</code>, rate limits, open-attempt refusal, <code>/v1/me</code> state</td>
+<td>Slice 2: <code>POST /api/v1/consent/kws/start</code>, rate limits, open-attempt refusal, <code>/api/v1/me</code> state</td>
 </tr>
 <tr>
 <td><code>bd5c6c49</code></td>
@@ -3508,8 +3535,28 @@ we have is one necessary component whose sufficiency is still the open question 
 <td><code>bc6080b5</code></td>
 <td>Close Gate 1 questions Q2 and Q3</td>
 </tr>
+<tr>
+<td><code>2962b5fc</code></td>
+<td>This handoff document</td>
+</tr>
+<tr>
+<td><code>e8e59b81</code></td>
+<td>Close the five CI gates PR #681 failed (docs links, coverage matrix, authz matrix, ER diagram)</td>
+</tr>
+<tr>
+<td><code>313b58b3</code></td>
+<td>Re-render the ER diagram SVG</td>
+</tr>
 </tbody>
 </table>
+<p>The last three landed after the body below was written, which is why the line above says seven. The
+table is not the whole PR either: <strong>#681 merged 35 commits</strong>, of which <strong>27 landed after <code>2962b5fc</code></strong>,
+so the list above stops well short of the merged tip (<code>bd69e2c1</code> on the branch, squashed to <code>15a6d520</code>
+on <code>main</code>). One of those later commits, <code>683c338b</code>, edited this document.</p>
+<p>The two automated reviewers are not equally stale. <strong>Copilot reviewed <code>2962b5fc</code> and never re-reviewed</strong>,
+so its findings about the five gates <code>e8e59b81</code> closed are stale by construction. <strong>CodeRabbit
+re-reviewed at <code>313b58b3</code></strong>, which is after <code>e8e59b81</code>, so that exemption does not apply to it; its
+review is nonetheless 25 commits behind the merged tip.</p>
 <p>Totals: 57 files, roughly +5,160/-95. The code additions concentrate in
 <code>src/cyo_adventure/consent/service.py</code> (+370),
 <code>src/cyo_adventure/api/consent.py</code> (new, +224), and
@@ -3579,8 +3626,24 @@ only settled by decision.</strong></p>
   It was deliberately <strong>not</strong> sent to counsel. Do not upgrade it to a finding; do not restate it as fact.</li>
 <li><strong>312.5(b)(2) has no "sign and submit electronically" branch.</strong> Re-verified 2026-08-09 against the eCFR
   renderer API, because the HTML page is bot-blocked. Consent as we collect it today is a <strong>typed name
-  only</strong>. The enumerated-method question was withdrawn from counsel and accepted as a risk under O-122 with
-  expiry at R2. The DPIA residual risk for this stays <strong>High</strong>, and section 2.2 says so explicitly.</li>
+  only</strong>, and the DPIA residual risk for this stays <strong>High</strong>, as section 2.2 says explicitly.
+  <strong>Corrected 2026-08-11:</strong> the sentence that stood here said the enumerated-method question was
+  "accepted as a risk under O-122 with expiry at R2." That describes the acceptance recorded
+  <strong>2026-08-09</strong>, which O-122 <strong>superseded on 2026-08-10</strong>. The owner ruled that KWS card or debit
+  verification is the <strong>sole</strong> VPC method and that no parent is verified until it is active, which is
+  scheduled remediation rather than a carried exception; the row's status moved off <code>accepted exception</code>
+  and reads <strong><code>finding open</code></strong> today. The typed-name attestation is retained in a different role, as the
+  312.5(a)(1) and 312.4 record of what the parent agreed to, not as the method establishing that they
+  are a parent. Cite O-122 by date, not by row id alone: the row deliberately preserves superseded
+  records in place rather than editing them, so a row-id-only citation resolves to whichever entry the
+  reader reaches first.</li>
+<li><strong>Those first two bullets are load-bearing in series, not in parallel.</strong> Retiring typed-name-as-VPC
+  removed the fallback, and O-122 says so in terms: the retirement mechanism named on 2026-08-09 "is now
+  the only mechanism, so its unearned status is more consequential, not less," and Gate 1's Q2 is
+  promoted "from the highest-value experiment to the <strong>viability gate</strong>." The acceptance in the first
+  bullet then answered that viability gate by owner reading rather than by evidence. Read as a list,
+  the risk looks distributed across four cautions; read as a chain, the whole VPC posture rests on one
+  un-counselled reading of 312.5(b)(2)(ii)'s notification limb with nothing behind it.</li>
 <li><strong>"Received" is not "accepted."</strong> A webhook delivery was observed, and its <code>x-kws-signature</code> header
   carried Stripe-style <code>t=</code>/<code>v1=</code> components with <code>t=</code> in <strong>milliseconds</strong>. That capture predates PR #675,
   which taught the verifier to accept both units. On the code that was running at the time, that delivery
@@ -3601,13 +3664,14 @@ only settled by decision.</strong></p>
    references. A production webhook round trip must be <em>verified</em>, not assumed, and the memory of how
    staging behaved does not transfer: an edge rule once ate four webhook retries with zero origin POSTs,
    which reads exactly like "the vendor never sent."</li>
-<li><strong>PR #679 is unmerged, so the parent's return leg 404s in every browser.</strong> The service worker
-   answers <em>every</em> navigation on the origin, and <code>api/kws_redirect.py</code> renders server-side, so a
-   parent who completes Epic's check lands on a 404. This does not block the <em>mechanism</em>: only the
-   webhook resolves an attempt, and it resolves it regardless. It does block switching the flag on,
-   because the last thing a real parent sees at the end of a successful adult check would be a broken
-   page, with no signal that the check in fact worked. Note the failure is invisible to every tool we
-   would reach for: curl, Postman, and CI have no service worker and all see the page fine.</li>
+<li><strong>Closed 2026-08-11: PR #679 merged</strong>, so the parent's return leg no longer 404s. Until it landed,
+   the service worker answered <em>every</em> navigation on the origin, and <code>api/kws_redirect.py</code> renders
+   server-side, so a parent who completed Epic's check landed on a 404. That never blocked the
+   <em>mechanism</em>: only the webhook resolves an attempt, and it resolves it regardless. It did block
+   switching the flag on, because the last thing a real parent saw at the end of a successful adult
+   check would be a broken page, with no signal that the check in fact worked. The shape of the failure
+   is worth keeping even though the cause is fixed: it was invisible to every tool we would reach for,
+   since curl, Postman, and CI have no service worker and all saw the page fine.</li>
 <li><strong>The flag flip revokes existing accounts.</strong> Every guardian who consented under typed-name-only,
    including the owner's own account, loses child-profile creation until they re-verify. Staging bites
    first. This is the intended behavior per the standing decision that verification sits <em>before</em> admin
@@ -3621,18 +3685,51 @@ only settled by decision.</strong></p>
   "CYO Adventure"; the <code>US Only</code> Cloudflare rule also gates the redirect return URL, so a travelling or
   VPN-using parent hits a block mid-flow; the redirect leg still needs <code>KWS_VERIFICATION_SECRET</code> set and
   the return URL registered in the Control Panel.</li>
+<li><strong><code>KWS_PRODUCT_ID</code> is declared-but-blank in the tracked staging config, and this document should name
+  it.</strong> What was observed on 2026-08-11 is the <em>tracked file</em>
+  <code>homelab-infra/services/cyo-adventure-staging/stack.env</code> at <code>origin/main</code>, nothing more: seven KWS keys
+  are declared there with empty values (<code>KWS_ORGANIZATION_ID</code>, <code>KWS_API_ORIGIN</code>, <code>KWS_CLIENT_ID</code>,
+  <code>KWS_API_KEY</code>, <code>KWS_PRODUCT_ID</code>, <code>KWS_WEBHOOK_SECRET</code>, <code>KWS_VERIFICATION_SECRET</code>), the last of which is
+  the redirect-leg key named above. <strong>Deployed state was not observed, and the repo cannot observe it.</strong>
+  A blank in config-as-code is a placeholder for a value supplied elsewhere, not evidence that the
+  running process sees an empty value; the file's own comment says to "supply all four together in
+  Portainer, or none," and staging has produced <code>verified</code> rows, which the credential keys being unset at
+  runtime would have made impossible. So the tracked file establishes only that these keys are not set
+  <em>from this file</em>. O-124 records that the webhook's product comparison "is vacuously true today because
+  <code>KWS_PRODUCT_ID</code> is unset on staging, so a delivery naming any product passes"; whether that still
+  holds is a question for the running stack's environment, and answering it needs the deployed
+  environment read directly. <code>config.py::_empty_kws_override_means_unset</code> is what keeps an empty value
+  from crashing boot, which is also why an unset key degrades the control silently rather than
+  announcing itself.</li>
 <li><strong>Longer-standing</strong>: ADR-018 <strong>D4 is unsatisfied</strong> (<code>UW-N07</code>); <code>data-retention-policy.md</code> is still
-  <code>status: draft</code>; four stale <code>/v1/</code> paths remain in <code>dpia.md</code> and <code>coppa-gdpr-remediation-plan.md</code>; one
-  unpushed homelab-infra commit <code>074c568</code> sits on <code>docs/kws-staging-config-corrections</code>.</li>
+  <code>status: draft</code>; one unpushed homelab-infra commit <code>074c568</code> sits on
+  <code>docs/kws-staging-config-corrections</code>. <strong>Corrected 2026-08-11:</strong> the count of stale bare <code>/v1/</code> paths
+  is <strong>five, not four</strong>, and this document reproduced the same error itself in sections 1 and 2 (every
+  router carries <code>prefix="/api/v1"</code>). They are <code>dpia.md:216</code> (<code>GET /v1/me</code>) and
+  <code>coppa-gdpr-remediation-plan.md</code> lines 300 and 314 (<code>POST /v1/onboarding</code>) and 315 and 333
+  (<code>GET /v1/me</code>). Every <code>/api/v1/...</code> path in both files matches a real route and is not stale.</li>
 </ul>
 <h2 id="6-branch-disposition-and-the-trap-in-checking-it">6. Branch disposition, and the trap in checking it<a class="headerlink" href="#6-branch-disposition-and-the-trap-in-checking-it" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p><strong>Superseded as state, retained as method, 2026-08-11.</strong> Both branches named below have merged and no
+longer exist: <code>feat/kws-consent-gate</code> as PR #681 (squashed to <code>15a6d520</code>) and <code>feat/kws-return-landing</code>
+as PR #679, which merged <code>2026-08-11T05:25:24Z</code> and squashed to <strong><code>d8e8c2ce</code>, 8 files and +478/-7</strong>.
+The <code>591d10b8</code>, 5 files and +212/-7 recorded below were that branch's <em>second</em> commit and the state at
+the time of writing; five more commits landed on it before it merged. Do not mistake <code>ecc38dcf</code> for the
+merge commit either: it is the third of the branch's seven commits and touches only
+<code>docs/testing/coverage-matrix.md</code> (+11). The stale-branch table is therefore history. What survives is
+the two-dot versus three-dot reasoning at the end of this section, which is the reason the section
+exists, and the standing warning about <code>docs/kws-adr-and-diagrams</code> below, which applies for as long as
+that branch exists anywhere.</p>
+</blockquote>
 <p><strong>Only two KWS branches exist on origin</strong>: <code>feat/kws-consent-gate</code> (<code>bc6080b5</code>, the subject of this
 document) and <code>feat/kws-return-landing</code> (<code>591d10b8</code>). Everything else in the list below is local-only.</p>
-<p><code>feat/kws-return-landing</code> is the one genuinely additive branch not yet merged: 5 files, +212/-7, carrying
-the service-worker <code>navigateFallbackDenylist</code> plus the <code>kws_redirect.py</code> landing improvements. It already
-has its own PR, <strong>#679</strong>, open and green; it needs merging, not opening. The denylist matters beyond KWS:
-the service worker currently answers <em>every</em> navigation on the origin, so backend-rendered pages 404 in
-browsers while curl, Postman, and CI all see them fine. See blocker 3 in Section 5.</p>
+<p><code>feat/kws-return-landing</code> was the one genuinely additive branch not yet merged when this was written:
+5 files, +212/-7, carrying the service-worker <code>navigateFallbackDenylist</code> plus the <code>kws_redirect.py</code>
+landing improvements. It already had its own PR, <strong>#679</strong>, open and green; it needed merging, not
+opening, and <strong>it merged on 2026-08-11</strong> (see the note above for the merged figures). The denylist
+matters beyond KWS: the service worker answered <em>every</em> navigation on the origin, so backend-rendered
+pages 404ed in browsers while curl, Postman, and CI all saw them fine. See blocker 3 in Section 5.</p>
 <p>Every other local KWS branch is <strong>stale, and a PR from it would revert work already on main</strong>:</p>
 <table>
 <thead>
@@ -3673,8 +3770,21 @@ browsers while curl, Postman, and CI all see them fine. See blocker 3 in Section
 </tbody>
 </table>
 <p><code>docs/kws-adr-and-diagrams</code> is the dangerous one: <strong>a PR from it reverts main's millisecond handling from
-PR #675.</strong> Its 44 residual insertion lines span the runbook, <code>api/kws_webhook.py</code>, <code>consent/kws_signature.py</code>,
-and <code>tests/unit/test_kws_signature.py</code>, and should be cherry-picked if wanted, never merged wholesale.</p>
+PR #675.</strong> Confirmed 2026-08-11 by reading the diff: it deletes <code>_EPOCH_MILLIS_MIN</code>/<code>_EPOCH_MILLIS_MAX</code>,
+the <code>raw_timestamp</code> field, the <code>unit</code> discriminator, and the <code>timestamp // 1000</code> conversion, which is the
+whole of #675. Cherry-pick if wanted, never merge wholesale.</p>
+<p><strong>Corrected 2026-08-11: the residual insertions are 63 lines across 9 files, not 44 across 4.</strong> The
+four-file list that stood here (<code>docs/operations/kws-test-runbook.md</code>, <code>api/kws_webhook.py</code>,
+<code>consent/kws_signature.py</code>, <code>tests/unit/test_kws_signature.py</code>) omits <strong>five</strong> files. The load-bearing
+omission is <strong><code>src/cyo_adventure/core/config.py</code> (13 lines)</strong>, so anyone cherry-picking by that list drops
+the config changes silently; the other four are <code>tests/unit/test_kws_external_payload.py</code> (3),
+<code>docs/testing/coverage-matrix.md</code> (1), <code>pyproject.toml</code> (1), and <code>uv.lock</code> (1). The full set is
+<code>consent/kws_signature.py</code> (17), <code>tests/unit/test_kws_signature.py</code> (13), <code>core/config.py</code> (13),
+<code>docs/operations/kws-test-runbook.md</code> (9), <code>api/kws_webhook.py</code> (5),
+<code>tests/unit/test_kws_external_payload.py</code> (3), <code>docs/testing/coverage-matrix.md</code> (1), and one line each in
+<code>pyproject.toml</code> and <code>uv.lock</code>. These counts are no longer reproducible: as of 2026-08-11 no branch named
+<code>docs/kws-adr-and-diagrams</code> exists in this clone or on origin, so read them as a record of what was seen
+rather than as something a reader can re-derive.</p>
 <p><strong>The method matters more than the table.</strong> A three-dot diff (<code>origin/main...branch</code>) is structurally
 incapable of detecting squash-merged content: after a squash merge the squash commit is not an ancestor of
 the branch, so the full branch diff still appears. Three of the branches above were misread as "unmerged
@@ -3686,6 +3796,63 @@ deletions, which is why large negative numbers here mean "behind," not "removes.
 row that has left the <code>sent</code> state. Every other claim in this document is either readable in the diff or
 explicitly labelled above as a ruling. That one is the single load-bearing fact that nothing on this branch
 proves.</p>
+<p><strong>Unanswered at merge; answered later the same day against staging, recorded below.</strong> Four things
+sharpened the query, and are kept because they are what makes the answer readable rather than a bare
+row count:</p>
+<ul>
+<li><strong>Run it against the staging project, not production.</strong> Production has no <code>kws_verification</code> table and
+  is several migrations behind <code>main</code>, which is an independent confirmation of Gate 3 above and means a
+  query there returns "no such table" rather than an answer.</li>
+<li><strong>Establish that staging is running post-#675 code first.</strong> #675 merged <code>2026-08-10T20:12:58Z</code> and an
+  image built at <code>21:51Z</code>, but staging pins <code>VERSION=latest</code>, a mutable tag, so what is deployed depends
+  on when the stack was last restarted. Against a pre-#675 container the answer is knowably "no" and
+  proves nothing about the fix.</li>
+<li><strong>Distinguish four outcomes, not two, and do not reach for <code>status &lt;&gt; 'sent'</code>.</strong> That predicate was
+  correct against a three-value enum and stopped being correct when <code>20260810190000</code> added a fourth.
+  <code>send_failed</code> satisfies it while proving the opposite of what is being asked: per that migration,
+  "<code>send_failed</code> is our own outbound call giving up and says nothing whatever about the parent." The
+  same migration rules out the other shortcut, <code>resolved_at IS NOT NULL</code>, because the resolution-pairing
+  CHECK forces a <code>send_failed</code> row to carry a <code>resolved_at</code> too. So:</li>
+<li>a <code>verified</code> or <code>failed</code> row <strong>clears the fact</strong>; those statuses are only reachable over the webhook;</li>
+<li>only <code>send_failed</code> means the send never left, so the return path was never exercised and this says
+    nothing about #675; it points at the outbound call or the edge, not the webhook;</li>
+<li>only <code>sent</code> means sends left and nothing ever came back, the failure this check exists to detect;</li>
+<li><strong>zero rows</strong> is a fourth and different failure: the row is INSERTed and committed before the
+    outbound call precisely so this cannot be ambiguous, so an empty table means no send was ever
+    recorded rather than that none was accepted.</li>
+</ul>
+<p>Group by <code>status</code>. Do <strong>not</strong> reach for <code>transaction_id</code> as a discriminator among <code>sent</code> rows: it is
+  written only by the webhook (<code>api/kws_webhook.py:342</code>), so it is collinear with resolution by
+  construction and a <code>sent</code> row can never carry one. Nothing in this table separates a send that
+  reached KWS from one that never did. Expect <code>kws_environment = 'test'</code> on staging, which is correct
+  there and is deliberately not usable evidence.
+- <strong>Resolve the version threshold rather than reading <code>latest</code>.</strong> #675 merged as <code>1c5e26fe</code> and first
+  shipped in tag <code>v0.74.1</code>, so a <code>version</code> at or above <code>v0.74.1</code> establishes the deployed container
+  carries the fix. The endpoint is <code>GET /api/v1/health</code>, not <code>/health</code>: the bare path is served by the
+  SPA on the deployed hosts and answers <code>404</code> with <code>index.html</code>, which is the same anti-oracle the
+  production health-probe stub already presents.</p>
+<h3 id="answered-2026-08-11-against-staging">Answered 2026-08-11, against staging<a class="headerlink" href="#answered-2026-08-11-against-staging" title="Permanent link">&para;</a></h3>
+<p><strong>The fact is cleared.</strong> Staging (<code>lbhyjcykbamjtghcidgp</code>) holds seven rows, all <code>kws_environment = 'test'</code>:
+five <code>sent</code> and two <code>verified</code>. The decisive one was requested <code>2026-08-10 22:15:35Z</code> and resolved
+<code>2026-08-10 22:16:12Z</code>, a <strong>37-second</strong> webhook round trip. <code>GET /api/v1/health</code> reports <code>0.77.0</code>.</p>
+<p>The proof does not rest on that version reading, which only describes the container running now. It rests
+on what #675 fixed: before it, the verifier compared a millisecond <code>t=</code> against a seconds clock, so every
+genuine delivery measured roughly 56,000 years of skew and <strong>was rejected at the freshness gate before its
+HMAC was ever computed</strong>. A <code>verified</code> row is therefore only reachable by post-#675 code, and its existence
+is itself the deployment evidence. That is a stronger argument than any restart timeline, which staging's
+mutable <code>latest</code> tag cannot supply anyway.</p>
+<p>Two observations that follow from the same query, neither of which the section 7 question asked for:</p>
+<ul>
+<li><strong>The five <code>sent</code> rows are a live stuck-delivery alarm on a timer.</strong> The newest is <code>2026-08-10 20:54:48Z</code>
+  and <code>_KWS_STUCK_AFTER</code> is 24h, so the health check flips to degraded around <code>2026-08-11 20:54Z</code> unless
+  the rows are resolved. Section 3.2 anticipates exactly this and says to resolve the rows rather than
+  widen the rule. What to resolve them <em>to</em> is an owner call, not a mechanical one: <code>20260810190000</code>
+  explicitly refuses to stamp old <code>sent</code> rows as <code>send_failed</code>, on the grounds that whether those emails
+  went out is genuinely unknown and inventing the status would assert something never observed.</li>
+<li><strong><code>location</code> is NULL on all seven rows, and that is expected, not a defect.</strong> The column and its writer
+  arrived with #681 (merged 2026-08-11), and no attempt has been made since. It is worth re-checking on
+  the first post-#681 send, because a NULL there would be a real gap.</li>
+</ul>
 
 
 
@@ -3708,7 +3875,7 @@ proves.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 11, 2026 16:05:55 UTC">August 11, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 12, 2026 02:23:19 UTC">August 12, 2026</span>
   </span>
 
     
