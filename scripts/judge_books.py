@@ -147,8 +147,6 @@ _SYSTEM: Final[str] = (
     "the JSON object requested, with no commentary around it."
 )
 
-# Enough for seven scores plus one short justification each, with room for a
-# reasoning judge's hidden tokens on top.
 # Completion budget per scoring. Sized to clear reasoning overhead plus the
 # answer, not the answer alone: a reasoning judge spends hidden tokens before it
 # emits anything, and whatever is left has to carry seven criteria with their
@@ -161,7 +159,7 @@ _SYSTEM: Final[str] = (
 # what the model spends before it can answer, not by the answer.
 _JUDGE_MAX_TOKENS: Final[int] = 8000
 
-__all__ = ["Judge", "Verdict", "judge_book", "pool_scores"]
+__all__ = ["Judge", "Verdict", "judge_book", "panel_participation", "pool_scores"]
 
 
 @dataclass(frozen=True, slots=True)
@@ -502,6 +500,51 @@ async def _run_panel(
     return verdicts
 
 
+def panel_participation(verdicts: Sequence[Verdict]) -> dict[str, dict[str, int]]:
+    """Count each judge's attempted and successful scorings.
+
+    The panel's worth rests on being cross-lab and blind, so the failure that
+    matters is not how many scorings failed but whether they failed *together*.
+    Thirteen failures spread over three judges is flakiness; thirteen inside one
+    judge is a dead judge, and the cross-lab guarantee is gone while the pooled
+    table keeps its shape. An aggregate count cannot tell those apart, so report
+    the distribution instead.
+
+    Args:
+        verdicts: Every verdict, successful or not.
+
+    Returns:
+        Per judge, its ``attempted`` and ``scored`` counts.
+    """
+    counts: dict[str, dict[str, int]] = {}
+    for v in verdicts:
+        row = counts.setdefault(v.judge, {"attempted": 0, "scored": 0})
+        row["attempted"] += 1
+        if v.scores and v.error is None:
+            row["scored"] += 1
+    return counts
+
+
+def _print_participation(counts: dict[str, dict[str, int]]) -> None:
+    """Print per-judge participation and shout about any judge that contributed none.
+
+    Args:
+        counts: Output of :func:`panel_participation`.
+    """
+    print("\nPANEL PARTICIPATION")
+    for judge, row in sorted(counts.items()):
+        share = f"{row['scored']}/{row['attempted']}"
+        note = "  <-- CONTRIBUTED NOTHING" if row["scored"] == 0 else ""
+        print(f"  {judge:<20} {share:>8}{note}")
+    silent = [j for j, row in counts.items() if row["scored"] == 0]
+    if silent:
+        print(
+            f"\nWARNING: {len(silent)} of {len(counts)} judges scored no book "
+            f"({', '.join(sorted(silent))}). The pooled figures below are NOT a "
+            "cross-lab verdict; fix the judge and re-run before quoting them."
+        )
+
+
 def _print_table(pooled: dict[str, dict[str, float | int]]) -> None:
     """Print the pooled quality scorecard.
 
@@ -565,12 +608,14 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     verdicts = asyncio.run(_run_panel(books, Settings()))
     pooled = pool_scores(verdicts)
+    participation = panel_participation(verdicts)
 
     args.out.mkdir(parents=True, exist_ok=True)
     (args.out / "judgements.json").write_text(
         json.dumps(
             {
                 "panel": [dataclasses.asdict(j) for j in _PANEL],
+                "participation": participation,
                 "criteria": _CRITERIA,
                 "verdicts": [dataclasses.asdict(v) for v in verdicts],
                 "pooled": pooled,
@@ -580,6 +625,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         + "\n",
         encoding="utf-8",
     )
+    _print_participation(participation)
     _print_table(pooled)
     failed = sum(1 for v in verdicts if v.error is not None)
     if failed:

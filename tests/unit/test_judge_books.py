@@ -26,6 +26,7 @@ from scripts.judge_books import (
     _story_text,  # pyright: ignore[reportPrivateUsage]
     _z_scores,  # pyright: ignore[reportPrivateUsage]
     judge_book,
+    panel_participation,
     pool_scores,
 )
 
@@ -249,6 +250,40 @@ def test_normalisation_stops_a_lenient_judge_outvoting_a_strict_one() -> None:
     assert alpha == pytest.approx(-beta)
     assert pooled["alpha"]["raw_mean"] == pytest.approx(4.0)
     assert pooled["beta"]["raw_mean"] == pytest.approx(3.0)
+
+
+def test_participation_separates_a_dead_judge_from_scattered_flakiness() -> None:
+    """The same failure count must read differently depending on where it lands.
+
+    Four failures spread across three judges is flakiness and the panel is still
+    cross-lab. Four failures inside one judge means that lab contributed nothing
+    and the pooled figure is no longer a cross-lab verdict, even though the table
+    keeps its shape and the aggregate count is identical. This is what silently
+    reduced the 2026-08-12 panel from three judges to two.
+    """
+    scattered = [
+        _verdict("alpha", "j1", "alpha#0", 4.0),
+        _verdict("alpha", "j2", "alpha#0", 0.0, error="boom"),
+        _verdict("beta", "j1", "beta#0", 0.0, error="boom"),
+        _verdict("beta", "j2", "beta#0", 4.0),
+    ]
+    concentrated = [
+        _verdict("alpha", "j1", "alpha#0", 4.0),
+        _verdict("alpha", "j2", "alpha#0", 0.0, error="boom"),
+        _verdict("beta", "j1", "beta#0", 4.0),
+        _verdict("beta", "j2", "beta#0", 0.0, error="boom"),
+    ]
+
+    spread = panel_participation(scattered)
+    dead = panel_participation(concentrated)
+
+    total_failures_are_equal = sum(
+        r["attempted"] - r["scored"] for r in spread.values()
+    ) == sum(r["attempted"] - r["scored"] for r in dead.values())
+    assert total_failures_are_equal, "the two cases must be indistinguishable by count"
+    assert all(row["scored"] > 0 for row in spread.values())
+    assert dead["j2"]["scored"] == 0
+    assert dead["j1"]["scored"] == 2
 
 
 @pytest.mark.asyncio
