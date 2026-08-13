@@ -91,6 +91,16 @@ class TokenUsage:
         duration_ms: Wall-clock milliseconds for the call, measured around the
             adapter's network work. Always known, since it is measured here
             rather than reported by the backend.
+        reasoning_tokens: Hidden reasoning tokens the backend reported, a
+            subset of ``output_tokens`` rather than an addition to it, or
+            ``None`` when the backend reported none. Billed at the output rate
+            and producing no prose, which is why cost per delivered book spans
+            36x across legs asked for the identical book while the prose written
+            spans 1.36x (`AL-332`). Reported so reasoning share is observable in
+            production rather than reconstructed from a billing probe, and so a
+            leg can be selected on it. A provider that emits reasoning while
+            reporting zero has been observed, so a `0` here is the backend's
+            claim, not a measurement.
     """
 
     provider: str
@@ -98,6 +108,7 @@ class TokenUsage:
     input_tokens: int | None
     output_tokens: int | None
     duration_ms: int
+    reasoning_tokens: int | None = None
 
     @property
     def is_known(self) -> bool:
@@ -118,10 +129,19 @@ class Completion:
         text: The completion text, already stripped of code fences by the
             adapter. This is the value every pre-instrumentation caller used.
         usage: What the call consumed.
+        finish_reason: Why the backend stopped, verbatim as reported
+            (``"stop"``, ``"length"``, ``"error"``, ...), or ``None`` when it
+            reported none. The distinction that matters is ``"length"``: a
+            completion truncated at the cap and an endpoint that returned
+            nothing both arrive as empty content, they want opposite responses,
+            and without this field no retry policy could tell them apart. The
+            comparison harness retried a budget failure three times at roughly
+            eleven minutes and fifty cents an attempt (`AL-329`).
     """
 
     text: str
     usage: TokenUsage
+    finish_reason: str | None = None
 
 
 @dataclass(frozen=True, slots=True)

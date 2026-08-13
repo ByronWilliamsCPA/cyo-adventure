@@ -27,6 +27,8 @@ from cyo_adventure.generation.providers._base import (
     DEFAULT_BACKOFF_BASE_SECONDS,
     DEFAULT_MAX_RETRIES,
     dig_content,
+    dig_finish_reason,
+    dig_reasoning_tokens,
     dig_usage,
     elapsed_ms,
     run_with_retries,
@@ -287,6 +289,36 @@ class OpenRouterProvider:
             leg_fatal=True,
         )
 
+    @staticmethod
+    def _empty_content_message(
+        finish_reason: str | None, reasoning_tokens: int | None
+    ) -> str:
+        """Say why an empty completion was empty, so the log names the cause.
+
+        Args:
+            finish_reason: The reason the backend reported, or ``None``.
+            reasoning_tokens: Hidden reasoning tokens reported, or ``None``.
+
+        Returns:
+            The error text. Both figures are carried into it because
+            ``run_with_retries`` logs the exception string on every transient
+            retry, so this is what makes a budget failure legible in a run's
+            stderr rather than only in a later billing probe.
+        """
+        if finish_reason == "length":
+            spent = (
+                f", {reasoning_tokens} of them on reasoning" if reasoning_tokens else ""
+            )
+            return (
+                "openrouter completion hit the token budget and returned no "
+                f"usable content (finish_reason=length{spent}); retrying at the "
+                "same cap would buy the same wall, so this leg is not retried"
+            )
+        return (
+            "openrouter response had no message content "
+            f"(finish_reason={finish_reason!r}, reasoning_tokens={reasoning_tokens!r})"
+        )
+
     def _extract_completion(
         self, response: httpx.Response, started: float
     ) -> Completion:
@@ -311,11 +343,26 @@ class OpenRouterProvider:
                 msg, provider="openrouter", model=self._model, leg_fatal=False
             ) from exc
 
+        finish_reason = dig_finish_reason(payload)
+        reasoning_tokens = dig_reasoning_tokens(payload)
         content = dig_content(payload)
         if not content:
-            msg = "openrouter response had no message content"
+            # #CRITICAL: external-resources: an empty body from a truncated
+            # completion and an empty body from a dead endpoint are the same
+            # bytes and want opposite responses. Retrying a truncation re-buys
+            # the identical wall at the identical cap: the comparison harness
+            # spent three attempts at roughly eleven minutes and fifty cents
+            # each doing exactly that (AL-329), and one leg burned its entire
+            # 32,000-token budget on reasoning and returned 1,128 tokens of
+            # prose. `finish_reason` is the only thing that separates them, so
+            # a budget failure is leg-fatal here rather than transient.
+            # #VERIFY: test_openrouter_provider_pin.py drives both bodies and
+            # asserts leg_fatal True for length and False for everything else.
             raise ProviderError(
-                msg, provider="openrouter", model=self._model, leg_fatal=False
+                self._empty_content_message(finish_reason, reasoning_tokens),
+                provider="openrouter",
+                model=self._model,
+                leg_fatal=finish_reason == "length",
             )
         input_tokens, output_tokens = dig_usage(payload)
         # Normalize away any markdown code fence so the orchestrator's json.loads
@@ -328,5 +375,7 @@ class OpenRouterProvider:
                 input_tokens=input_tokens,
                 output_tokens=output_tokens,
                 duration_ms=elapsed_ms(started),
+                reasoning_tokens=reasoning_tokens,
             ),
+            finish_reason=finish_reason,
         )
