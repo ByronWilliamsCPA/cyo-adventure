@@ -173,7 +173,7 @@ async def test_import_rejects_a_story_whose_nodes_were_never_written(
 ) -> None:
     """A blob still carrying ``<<FILL`` directives is not a filled story.
 
-    AL-310: the deterministic gate abstains on directive bodies rather than
+    AL-325: the deterministic gate abstains on directive bodies rather than
     failing on them, so before PL-27 this import path accepted an unwritten
     book, persisted it, and handed it to moderation as a finished story.
     """

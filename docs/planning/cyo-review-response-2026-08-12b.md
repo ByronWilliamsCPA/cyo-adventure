@@ -100,7 +100,7 @@ carried by a syllable-counting formula. The right repair is to split the row: **
 rating, **age-appropriate** drops to low with an explicit note that only the quantitative dimension
 is instrumented.
 
-This is the same failure shape as AL-310, one lesson later and one layer up. There, four checkers
+This is the same failure shape as AL-325, one lesson later and one layer up. There, four checkers
 each correctly abstained on an unfilled body and the aggregate of four correct abstentions was a
 clean verdict on an unwritten book. Here, every instrument we run is silent on three of the four
 qualitative dimensions, and the aggregate silence reads as a verified property. **A gate assembled

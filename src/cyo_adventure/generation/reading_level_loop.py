@@ -442,12 +442,15 @@ async def _run_batch(
     prompt = build_reading_level_repair_prompt(
         batch, target=bounds.target, tolerance=bounds.tolerance
     )
-    raw = await provider.complete(
+    # Stage D needs no metering code of its own: the caller wraps the provider
+    # before handing it in, so these calls are recorded by the same
+    # MeteredProvider layer as Stage 1 and land in the run's usage ledger.
+    completion = await provider.complete(
         system=prompt.system,
         prompt=prompt.user,
         max_tokens=_MAX_TOKENS_BATCH,
     )
-    revisions = _parse_revisions(raw)
+    revisions = _parse_revisions(completion.text)
 
     sent = {node_id: body for node_id, body, _grade in batch}
     accepted: dict[str, str] = {}

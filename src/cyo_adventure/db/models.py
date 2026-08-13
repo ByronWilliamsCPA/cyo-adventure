@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import date, datetime
+from decimal import Decimal
 
 from sqlalchemy import (
     CheckConstraint,
@@ -23,6 +24,7 @@ from sqlalchemy import (
     ForeignKey,
     ForeignKeyConstraint,
     Index,
+    Numeric,
     SmallInteger,
     String,
     Text,
@@ -2529,6 +2531,20 @@ class GenerationJob(UUIDPrimaryKeyMixin, CreatedAtMixin, UpdatedAtMixin, Base):
             class docstring.
         version: Storybook version number produced by this job.
         error: Short error message when status is ``failed``.
+        provider_call_count: Provider calls this run made, across every stage
+            and both models. NULL means not recorded, never zero.
+        provider_unknown_calls: How many of those calls reported no usable
+            token count. Non-zero makes the token and cost columns beside it
+            lower bounds rather than totals.
+        input_tokens: Prompt tokens summed over the run's recorded calls.
+        output_tokens: Completion tokens summed the same way.
+        provider_duration_ms: Wall-clock milliseconds spent inside provider
+            calls, which is not the job's total runtime.
+        cost_usd: Summed per-call cost as ``Decimal``, never float. A lower
+            bound whenever ``cost_complete`` is False.
+        cost_complete: Whether every call was both fully priced and fully
+            counted. Not derivable from the other columns; see the field
+            comment.
         created_at: Wall-clock insert time (UTC, TIMESTAMPTZ).
         updated_at: Updated on every status transition (UTC, TIMESTAMPTZ).
     """
@@ -2563,7 +2579,28 @@ class GenerationJob(UUIDPrimaryKeyMixin, CreatedAtMixin, UpdatedAtMixin, Base):
     provider: Mapped[str | None] = mapped_column(String(120), default=None)
     prompt_version: Mapped[str | None] = mapped_column(String(120), default=None)
     # #CRITICAL: privacy: raw multi-stage LLM outputs; purge per ADR-007 after
-    # 30 days or when the linked storybook version reaches "published" status.
+    # 30 days, EXCEPT when a human reached a review decision about the storybook
+    # this job produced (published/archived, or a "sent_back" pipeline_event),
+    # which the 2026-08-10 amendment exempts so the raw output can be paired with
+    # the reviewer's decision in the review-scorecard calibration corpus.
+    # Publishing is now an exemption from the purge, not a trigger for it: the
+    # 2026-08-11 amendment removed publishing/service.py::approve's immediate
+    # on-publish null, which had defeated the approve half of that exemption
+    # (within src/, approve is the only path that sets "published", and it
+    # nulled the report in the same transaction). The nightly pg_cron sweep is
+    # now the only thing that nulls this column.
+    # #CRITICAL: data integrity: the exemption is evaluated when the SWEEP runs,
+    # not when the human decides, so it does not protect a slow review. A job at
+    # status "passed" whose storybook is still "in_review" on day 31 is purged;
+    # an approval on day 32 flips the storybook to "published" but cannot restore
+    # the column. The calibration-corpus purpose therefore holds only for reviews
+    # that conclude inside 30 days of the job's last update. This is a property of
+    # the 2026-08-10 predicate, not of the 2026-08-11 amendment, and closing it
+    # means changing the predicate (an updated_at touch on decision, or dropping
+    # the status filter for undecided storybooks), which is an owner decision.
+    # #VERIFY: test_slow_review_report_is_purged_before_the_human_decides in
+    # tests/unit/test_report_retention.py pins the current behaviour so this
+    # window cannot be believed away; tracked as UW-C227.
     # ADR-007 designates this column admin/system-only. Per the 2026-07-16
     # ruling, GET /generation-jobs/{id} (api/generation.py::get_generation_job)
     # returns it only when the caller holds the admin capability
@@ -2604,6 +2641,64 @@ class GenerationJob(UUIDPrimaryKeyMixin, CreatedAtMixin, UpdatedAtMixin, Base):
     storybook_id: Mapped[str | None] = mapped_column(String(120), default=None)
     version: Mapped[int | None] = mapped_column(default=None)
     error: Mapped[str | None] = mapped_column(String(512), default=None)
+    # ------------------------------------------------------------------
+    # Provider accounting (what this job consumed and what it cost).
+    # ------------------------------------------------------------------
+    # #CRITICAL: data integrity: these are typed columns rather than keys
+    # inside ``report`` BECAUSE ``report`` is purged (ADR-007, the Phase 5
+    # pg_cron job above). Cost history has to outlive prompt retention: the
+    # question "what has generation cost us" is asked months later, long after
+    # the raw output it is derived from is gone. A usage blob folded into
+    # ``report`` would be deleted by a retention rule aimed at something else
+    # entirely, and nothing would report the loss.
+    # #VERIFY: any future retention rule must leave these columns alone; the
+    # purge exemption test (tests/integration/test_generation_models.py) and
+    # the report-purge migration are the two places that would have to change.
+    #
+    # #ASSUME: data integrity: every column here is nullable and NULL means
+    # "not recorded", never "zero". Rows written before this migration have no
+    # accounting at all, and a job whose backend reported no usage is a
+    # different state again (``provider_call_count`` set,
+    # ``provider_unknown_calls`` non-zero). Collapsing either into 0 would make
+    # an un-instrumented run look free.
+    # #VERIFY: readers must treat NULL as unknown and must not SUM these
+    # columns across jobs without also checking ``provider_unknown_calls`` and
+    # ``cost_complete``; a SUM over a mix of recorded and unrecorded jobs is a
+    # lower bound, not a total.
+    provider_call_count: Mapped[int | None] = mapped_column(default=None)
+    provider_unknown_calls: Mapped[int | None] = mapped_column(default=None)
+    input_tokens: Mapped[int | None] = mapped_column(default=None)
+    output_tokens: Mapped[int | None] = mapped_column(default=None)
+    provider_duration_ms: Mapped[int | None] = mapped_column(default=None)
+    # #CRITICAL: payment/financial: NUMERIC, never a float column. Per-call
+    # amounts run to millionths of a dollar (a 1000-token call at $5/Mtok is
+    # $0.005) and these values are summed across thousands of jobs, which is
+    # exactly the regime where binary floating point accumulates a drift no
+    # reader can attribute.
+    #
+    # Precision and scale fail in OPPOSITE ways, which is why the writer
+    # cannot simply assign. Scale 6 does NOT hold every amount exactly: a
+    # 3-token call at $1.25/Mtok is $0.00000375, eight fractional digits, and
+    # Postgres rounds the excess away SILENTLY. Precision 12 leaves 6 integer
+    # digits, and an amount past $999,999 is not rounded but RAISES `numeric
+    # field overflow` at COMMIT. ``generation.cost.fit_cost_to_column`` is
+    # what reconciles both before a value is ever assigned: it rounds to
+    # scale explicitly (so the in-memory value equals the stored one) and
+    # caps at the precision ceiling, marking a capped amount incomplete.
+    # #VERIFY: test_cost_usd_round_trips_as_decimal pins that the value comes
+    # back as Decimal rather than float, since the driver's type mapping is
+    # what makes the column choice effective. Widening this column means
+    # widening ``_MAX_COST_USD``/``_COST_SCALE`` in generation/cost.py in the
+    # same change.
+    cost_usd: Mapped[Decimal | None] = mapped_column(Numeric(12, 6), default=None)
+    # #ASSUME: payment/financial: ``cost_complete`` is NOT derivable from the
+    # other columns. A run can report every token and still be un-costable
+    # because a model has no entry in ``core/pricing.py``, so this records what
+    # the price table knew at the time the job ran, which a later reader cannot
+    # reconstruct from a price table that has since been filled in.
+    # #VERIFY: False means ``cost_usd`` is a LOWER BOUND; no caller may present
+    # it as a total or compare it against a budget without saying so.
+    cost_complete: Mapped[bool | None] = mapped_column(default=None)
 
 
 class DeviceGrant(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):

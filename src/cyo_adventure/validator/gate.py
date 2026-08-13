@@ -14,7 +14,7 @@ Rule application order (per ``docs/planning/validator-rules.md``
    passes ``context="fill_result"``. Runs ahead of the rest of the policy
    layer so an unwritten book's first finding names that cause. Under the
    default ``"skeleton"`` posture it does not run at all, because a
-   catalog skeleton's bodies are directives by construction (AL-310).
+   catalog skeleton's bodies are directives by construction (AL-325).
 4. Policy (PL-15..PL-18): age-safety and shape invariants on the parsed
    model (forbidden ending kinds, content ceilings, floors, topology).
 5. Layer 2 (L2-9..L2-13): state-space walk, Tier-2 only (Tier-1 skips). L2-13
@@ -75,7 +75,7 @@ GateContext = Literal["skeleton", "fill_result"]
 construction and every checker's tolerance for them is correct. ``"fill_result"``
 is post-generation: a retained directive means the node was never written, and
 PL-27 fails on it. One distinction, no new checker, no regression to the
-catalog-time path (AL-310).
+catalog-time path (AL-325).
 """
 
 
@@ -94,7 +94,7 @@ class GateResult:
             computed honestly so Phase 3 does not require changes here.
         context: The posture this result was produced under. Recorded rather
             than inferred so a downstream reader can tell a ``blocked=False``
-            that cleared PL-27 from one that never ran it; AL-309's defect was
+            that cleared PL-27 from one that never ran it; AL-324's defect was
             an optional argument that changed which checks ran while leaving
             the verdict spelled identically.
     """

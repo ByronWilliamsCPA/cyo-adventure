@@ -119,23 +119,45 @@ counterparties for child-typed text as well as for generated prose.
 ## Raw LLM Outputs and Prompt Text
 
 Raw LLM outputs (the full text returned by the provider for each stage) and the prompt
-text sent to the provider are admin-only (ADR-007 as amended 2026-07-16) and short-lived:
+text sent to the provider are admin-only (ADR-007 as amended 2026-07-16). They are no longer
+uniformly short-lived: as of ADR-007's 2026-08-10 and 2026-08-11 amendments, a raw output that
+a human reached a decision about is retained for the life of the storybook, and only an
+undecided one is short-lived. The detail is in the second bullet.
 
 - **Prompt text**: store the prompt template version and a hash, not the full rendered
   prompt, where the rendered text could carry child-specific detail. The hash allows
   audit without persisting the content.
 - **Raw generation outputs**: stored in `generation_job.report`, a Postgres JSONB column
-  (not object storage; there is no `raw_output_ref` field), only as long as needed for
-  debugging and repair-pass analysis. The retention window is defined (ADR-007): purge 30
-  days after job completion or on publish, whichever comes first, via a `pg_cron` job
-  (ADR-009). The purge worker is a Phase 5 deliverable and is not yet built.
+  (not object storage; there is no `raw_output_ref` field). The purpose was originally
+  debugging and repair-pass analysis alone; ADR-007's 2026-08-10 amendment added a second,
+  broader one: calibrating the review scorecard against the decision a human actually made.
+  That is a purpose change as well as a window change, and it is what justifies the longer
+  retention below rather than the debugging need, which is satisfied inside 30 days.
+  The retention window is defined (ADR-007): purge 30
+  days after job completion, via a `pg_cron` job (ADR-009), **except** where a human
+  reached a review decision about the storybook the job produced, which ADR-007's
+  2026-08-10 amendment exempts so the raw output can be paired with the reviewer's
+  decision. ADR-007's 2026-08-11 amendment withdrew the original "or on publish, whichever
+  comes first" leg: publishing is now an exemption from the purge rather than a trigger for
+  it, because the immediate on-publish null in `publishing/service.py::approve` fired before
+  the approve half of the exemption could ever apply. The `pg_cron` job is built and
+  scheduled (`20260718000000_add_report_retention_purge.sql`, predicate amended by
+  `20260810000000_exempt_reviewed_generation_job_report_from_purge.sql`); it is no longer
+  the unbuilt Phase 5 deliverable this section once described.
+
+  The exemption has a boundary worth stating here rather than only in the retention policy:
+  it is evaluated when the nightly sweep runs, not when the human decides. A job whose
+  storybook is still `in_review` on day 31 is purged, and a later approval cannot restore the
+  column, so the pairing this exemption exists to enable only happens for reviews that
+  conclude inside the 30 days. See `docs/compliance/data-retention-policy.md` Section 4 and
+  `UW-C227`.
 
   ```python
   # #CRITICAL: data integrity: generation_job.report holds raw LLM output that may
   #            carry child-derived detail; it must be purged and never leaked.
-  # #VERIFY: the pg_cron purge job (30 days post-completion or on-publish, whichever
-  #          first) is implemented and scheduled before the public tier goes live;
-  #          confirm report stays off child-facing endpoints and the job-list endpoint.
+  # #VERIFY: the pg_cron purge job (30 days post-completion, minus the human-decided
+  #          exemption) is scheduled before the public tier goes live; confirm report
+  #          stays off child-facing endpoints and the job-list endpoint.
   ```
 
 - **Access control**: `generation_job.report` is returned by `GET /generation-jobs/{id}`

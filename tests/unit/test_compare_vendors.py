@@ -829,7 +829,7 @@ async def test_preflight_budget_clears_measured_reasoning_overhead() -> None:
     )
 
 
-# --- Incremental persistence (AL-311 / UW-C229) ---------------------------
+# --- Incremental persistence (AL-326 / UW-C232) ---------------------------
 #
 # The harness used to hold every generated book in memory until the last one
 # landed, so an interruption at any point lost everything already paid for.

@@ -185,7 +185,7 @@ second counter that would conflict with it.
 
 Measured 2026-08-12 by reissuing the fill call directly against OpenRouter at the same 32,000-token
 cap and reading the billed `usage.cost`, because the runs themselves recorded `cost: null` for every
-book (AL-314). **All eight comparison legs are measured across all four briefs**, 32 priced calls,
+book (AL-329). **All eight comparison legs are measured across all four briefs**, 32 priced calls,
 $5.86 total. A ninth candidate (`moonshotai/kimi-k3`) returned one priced call before its remaining
 three died at the transport layer, and is reported separately below as n=1.
 
@@ -235,7 +235,7 @@ books that landed, which widens the spread from 8.8x to **36x**:
 
 Note the fill rate comes from the runs, not from the billing probe, and the two disagree for
 `sonnet-5`: the probe saw 2 of 4 completions parse, the runs saw 1 of 4 books actually filled. **A
-completion that parses is not a book** (AL-312, AL-320).
+completion that parses is not a book** (AL-327, AL-335).
 
 **The limiting case.** `moonshotai/kimi-k3`, one call, n=1: billed **$0.5319** for 17,286 prompt
 tokens and the full 32,000 output tokens, of which **30,872 (96%) were reasoning and 1,128 were
@@ -248,7 +248,7 @@ static across books (the skeleton and brief are the only varying part), which is
 caching rewards, so any price model built from published rates without a cache-hit term will
 over-recover on the high-volume path.
 
-**Derived rates**, for seeding `core/pricing.py` (AL-318). Legs with no cache hits reproduce list
+**Derived rates**, for seeding `core/pricing.py` (AL-333). Legs with no cache hits reproduce list
 prices exactly, which is the check that the arithmetic is sound:
 
 | Model | Input $/MTok | Output $/MTok | Note |

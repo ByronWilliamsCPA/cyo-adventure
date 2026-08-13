@@ -326,7 +326,7 @@ async def _judge_pair(
         prompt=_judge_prompt(a_text, b_text, band),
         max_tokens=200,
     )
-    return _parse_judge_score(response)
+    return _parse_judge_score(response.text)
 
 
 async def _scored_pair(

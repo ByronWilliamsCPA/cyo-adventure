@@ -584,7 +584,7 @@ async def run_comparison(
         out_dir: When given, each book is written to ``out_dir/books/`` and
             journalled to ``out_dir/books.jsonl`` the moment it completes, so
             an interrupted run keeps everything it has already paid for
-            (AL-311). ``None`` keeps the records in memory only, which is what
+            (AL-326). ``None`` keeps the records in memory only, which is what
             the dry-run path and the unit tests want.
 
     Returns:
@@ -958,7 +958,7 @@ def persist_book(out_dir: Path, record: BookRecord) -> None:
     third party for. A multi-hour run that writes only at the end loses every
     book to any kill, which is not hypothetical: run-6 lost three completed
     books (1,869 seconds of billed provider time) to an environment restart on
-    2026-08-12 because the output directory did not yet exist (AL-311).
+    2026-08-12 because the output directory did not yet exist (AL-326).
     #VERIFY: test_an_interrupted_run_keeps_the_books_it_already_paid_for in
     tests/unit/test_compare_vendors.py kills a run mid-grid with a
     BaseException, which the per-book handler cannot absorb, and asserts the

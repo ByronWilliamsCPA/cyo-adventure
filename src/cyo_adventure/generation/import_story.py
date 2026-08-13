@@ -148,7 +148,7 @@ async def import_filled_story(
     # #CRITICAL: data-integrity: the gate result and the blob must agree on id;
     # if the blob's id is missing or wrong, the stored version row is unreachable.
     # #VERIFY: test_import_persists_a_valid_filled_story asserts story_id == blob["id"].
-    # AL-310: this endpoint imports a *filled* story, so a retained
+    # AL-325: this endpoint imports a *filled* story, so a retained
     # "<<FILL" directive means the blob was never written and PL-27 must
     # reject it. Every other checker abstains on a directive body rather
     # than failing, so without the posture an unwritten book imports clean.

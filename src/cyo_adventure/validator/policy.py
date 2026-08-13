@@ -89,12 +89,12 @@ def check_fill_residue(story: Storybook) -> ValidationReport:
     supposed to be directives) and wrong after a fill (a directive means the
     node was never written). Collectively those skips mean an unwritten book
     clears topology, safety, choice grammar and reading level without a single
-    finding: a gate assembled entirely from abstainers has no floor (AL-310).
+    finding: a gate assembled entirely from abstainers has no floor (AL-325).
 
     #CRITICAL: data integrity: this is the only deterministic check standing
-    between an unwritten book and a human reviewer. AL-312 showed the
+    between an unwritten book and a human reviewer. AL-327 showed the
     orchestrator returns the authoring skeleton as a passing book when a fill
-    produces no parseable document, and AL-309 showed Stage 1 fidelity review
+    produces no parseable document, and AL-324 showed Stage 1 fidelity review
     is off by default for every non-worker caller, so without PL-27 there is
     no automated floor at all on that path.
     #VERIFY: see test_gate.py, functions

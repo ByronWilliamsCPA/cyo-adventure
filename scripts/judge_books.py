@@ -155,7 +155,7 @@ _SYSTEM: Final[str] = (
 # (roughly 340 to 385 tokens), so the content is small and the overhead is what
 # the budget must absorb. At 2,000 this truncated every Gemini 3.1 Pro reply
 # mid-note, which surfaced as a JSONDecodeError and read as a malformed answer;
-# see _parse for why that misreads. This is AL-308 recurring: size a budget by
+# see _parse for why that misreads. This is AL-323 recurring: size a budget by
 # what the model spends before it can answer, not by the answer.
 _JUDGE_MAX_TOKENS: Final[int] = 8000
 

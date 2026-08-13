@@ -48,7 +48,7 @@ import './legal.css'
  * #VERIFY: PrivacyPolicyPage.test.tsx pins each of the four absences, so
  * re-adding one fails a test that names the reason rather than passing quietly.
  *
- * The same rule cuts the other way, and five statements here are PRESENT for a
+ * The same rule cuts the other way, and six statements here are PRESENT for a
  * reason rather than by default. Each one reads as an awkward hedge and is the
  * kind of sentence an editor tidies away, so each is pinned by a test too:
  *   - the PII check "stops the request rather than editing it".
@@ -71,6 +71,24 @@ import './legal.css'
  *     guardian/PrivacyPage.test.tsx pins "no button for this in the app yet"
  *     for family deletion; a public page promising the button would contradict
  *     a named regression test on the signed-in page.
+ *   - raw-output retention scoped to "after the generation run finishes" and to
+ *     an undecided story, plus "no timer on it at all" for a run that never
+ *     finished. The nightly purge predicate
+ *     (20260810000000_exempt_reviewed_generation_job_report_from_purge.sql) is
+ *     gated on status IN ('passed','needs_review','failed') and exempts a
+ *     human-decided storybook entirely, so an unqualified "30 days" and the old
+ *     "or as soon as the story is published" are both false: publishing is now
+ *     an exemption from deletion, not a trigger for it.
+ *   - "a later approval does not bring it back", and the "never finished" scope
+ *     on the no-timer clause. Both are forced by the same predicate: the
+ *     exemption is evaluated when the sweep runs, not when the human decides, so
+ *     a story still in review on day 31 is purged and the day-32 approval
+ *     recovers nothing. Only queued/running/awaiting_manual_fill sit outside the
+ *     status filter, and those are runs that have not finished; a run waiting on
+ *     a REVIEWER is at status "passed" and is on the clock. An earlier draft of
+ *     this row said "a run left waiting on a person has no timer on it at all",
+ *     which conflated the two and read as a promise for the reviewer case. See
+ *     UW-C227 and test_slow_review_report_is_purged_before_the_human_decides.
  *
  * Relationship to the consent record: `auth/onboardingApi.ts` holds
  * CONSENT_POLICY_VERSION, the stamp stored on `User.consent_policy_version` so
@@ -302,8 +320,9 @@ export function PrivacyPolicyPage() {
             <tr>
               <td>Epic Games (Kids Web Services)</td>
               <td>
-                A parent&apos;s email address, a country or region code for the child, and which
-                language to write in, when a verification is requested
+                A parent&apos;s email address, the country or region code that parent selected for
+                their own account, and which language to write in, when a verification is requested.
+                Nothing about the child
               </td>
               <td>
                 Confirming that a person giving permission is an adult. Epic also keeps what it
@@ -365,8 +384,20 @@ export function PrivacyPolicyPage() {
               </td>
             </tr>
             <tr>
-              <td>Raw story-generation output kept for troubleshooting</td>
-              <td>30 days, or as soon as the story is published, whichever comes first</td>
+              <td>
+                Raw story-generation output: the unedited text the AI produced, before our automated
+                checks ran and before an adult read it
+              </td>
+              <td>
+                Deleted 30 days after the generation run finishes, unless an adult reached a
+                decision about that story within those 30 days. Once an adult approves a story or
+                sends it back, we keep the raw output for as long as the story exists, so we can
+                check whether our safety checks got that story right and improve them. If nobody has
+                decided by day 30 we delete it anyway, and a later approval does not bring it back.
+                A run that never finished, because it is still generating or is waiting for a person
+                to fill something in, has no timer on it at all. All of it goes when you delete your
+                family account
+              </td>
             </tr>
             <tr>
               <td>Records of safety reviews</td>

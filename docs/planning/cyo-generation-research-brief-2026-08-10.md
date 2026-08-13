@@ -1414,24 +1414,70 @@ a stated rule instead. The rule is what is on trial.
 
 | Condition | Shared four-grams per 1000 | Against a budget of 4 |
 | --- | --- | --- |
-| one contract, wording as written | **16.9** | 4.2x |
-| one contract, wording flattened | **11.4** | 2.9x |
-| one contract, authors told to diverge from it | **12.9** | 3.2x |
+| one contract, wording as written | **17.2** | 4.3x |
+| one contract, wording flattened | **11.8** | 2.9x |
+| one contract, authors told to diverge from it | **13.6** | 3.4x |
 | **different** contracts, same graph, same bindings | **2.9** | passes |
 
-**16d is confirmed.** Changing only whether two arms read one contract or two, with graph, bindings,
-model and isolation all held constant, moves convergence by a factor of 5.8.
+**16d is confirmed.** Moving two arms from separate contracts to one, with graph, bindings, model
+and isolation all held constant, moves convergence by a factor of 5.9. The earlier wording here was
+"changing only whether two arms read one contract or two"; that overstated the isolation and is
+corrected. Two separate contracts differ in premise, obligations and fact set as well as in being
+two documents, so the 5.9x is the effect of sharing a plan as a bundle, not an estimate of the
+document-sharing channel on its own. The 2.9 row above is also the pilot's rig rather than a fourth
+D-6 arm, though graph and bindings do carry over. See `docs/planning/diversity-test-register.md`
+under the first falsifier for the full statement of what the comparison bounds.
 
-**And neither repair is enough.** The best lands at 11.4, a third off, still around three times
+**And neither repair is enough.** The best lands at 11.8, a third off, still around three times
 budget. We report the two repairs as indistinguishable from each other: at one book pair per
 condition their ordering flips depending on whether choice labels are counted, so the finding is
 that neither suffices, not that one beats the other.
 
+> [!WARNING]
+> **Correction, 2026-08-11: the three one-contract rows are re-derived from the artifacts. Published
+> 16.9, 11.4 and 12.9; measured 17.2, 11.8 and 13.6.**
+> Every figure in the table above is now taken directly from `docs/planning/evidence/d6-contract-sharing/`
+> and `docs/planning/evidence/obligation-variance/`, using the gram and tokenizer primitives in
+> `scripts/check_sibling_fills.py`, at the body-only scope 16l standardises on. The three originally
+> published one-contract values do not fall out of the frozen artifacts at either scope:
+>
+> | Condition | Files | Shared grams | Mean body words | Body-only | Label-inclusive | Published |
+> | --- | --- | --- | --- | --- | --- | --- |
+> | wording as written | `filled_verbatim_{C,D}` | 48 | 2,784.0 | **17.24** | 16.67 | 16.9 |
+> | wording flattened | `filled_neutral_{C,D}` | 34 | 2,894.0 | **11.75** | 13.43 | 11.4 |
+> | told to diverge | `filled_diverge_{C,D}` | 38 | 2,801.0 | **13.57** | 12.40 | 12.9 |
+> | different contracts | `obligation-variance/filled_{C,D}` | 9 | 3,073.0 | **2.93** | 2.74 | 2.9 |
+>
+> **The control row reproduces exactly and the three treatment rows do not.** That asymmetry inside one
+> table is what makes this a fact about the figures rather than about the harness, and the same harness
+> also reproduces all four cells of 16l's re-derivation block below (7 over 3,001.5, 10 over 3,134.0, 40
+> over 2,943.0, 40 over 3,110.0) to the gram and the tenth of a word. We have not established how the
+> three published values were produced and we are not going to guess: note only that all three sit
+> *below* their body-only re-derivation, so this is not the mixed-scope error 16l corrected, whose
+> signature was one figure moving in each direction. The artifacts are the authority and the table now
+> states what they contain.
+>
+> **Cite the body-only column, not the label-inclusive one.** The metric concatenates each node body
+> with the labels that follow it, which manufactures four-grams spanning the join that exist in neither
+> the body nor the label: seven of them in the flattened arm alone, including `drop down inside inside`,
+> which is a label's last three words meeting the next body's first. Measured per unit, labels share
+> **zero** four-grams in all three conditions and in the control, exactly as reported below. At body-only
+> scope the same contamination is one gram across all four pairs.
+>
+> **What does not change.** 16d is confirmed under either scope: the ratio is 5.9x body-only and 6.1x
+> label-inclusive, against the 5.8x first published. Neither repair suffices under either scope, at 2.9x
+> and 3.4x budget. And the two repairs stay indistinguishable for the reason already given, their
+> ordering flipping with scope: 11.8 below 13.6 body-only, 13.4 above 12.4 label-inclusive. The only
+> sentence that moves is "the best lands at 11.4", now 11.8.
+
 We checked the confound before believing any of this. Our pilot's shells shipped draft choice labels
 and our new books wrote every label from scratch, which is a second difference that could have
-carried the whole effect. It did not: **labels contribute zero shared four-grams in every condition,
-including the pilot.** The entire signal is in the bodies, which were written from scratch
-throughout, so the comparison is clean. We note without explaining it that this sits alongside 16d,
+carried the whole effect. It did not: **measured per label, labels contribute zero shared four-grams
+in every condition, including the pilot.** The per-label scope is the whole claim and is not a hedge:
+the joined label-inclusive metric does produce label-derived grams, seven in the flattened arm, but
+every one of them straddles a body/label boundary and so exists in neither the body nor the label
+(see the correction above). No gram is shared *within* a label anywhere in the corpus. The entire
+signal is in the bodies, which were written from scratch throughout, so the comparison is clean. We note without explaining it that this sits alongside 16d,
 where 41 to 51 of 131 choice menus were identical, which is not a contradiction once the two
 measures are distinguished as 16l does: menu identity is a two-word prefix match per position, and
 shared four-grams need four consecutive words; scale and how orthogonal the arms' house styles
@@ -1457,7 +1503,7 @@ would rather state than discover later:
    the guard is achievable. The more useful thing the floor establishes is that our pilot's
    one-contract-per-book design already scores 2.9, statistically indistinguishable from books
    sharing nothing at all. **Not converging is a solved problem.** The whole question is whether
-   reuse can be bought back without giving that up, and our repairs failed at 3.5 times the floor
+   reuse can be bought back without giving that up, and our repairs failed at 3.6 times the floor
    with a factor of three of headroom unclaimed.
 3. The third repair we named in 16d, generating the plan's decisional content per book, is still
    untested, and **we now predict it will also fall short on its own**, because the premise and the
@@ -1665,8 +1711,9 @@ hints, the bound devices) generated per book. The structural half looked safe to
 because of a weakness we had already documented: it provably does not determine what decision a fork
 asks, so sharing it cannot make the decisions repeat.
 
-**First run: it failed, at 13.6 per 1000**, close to where "tell the author to diverge from the
-shared plan" landed at 12.9. Generating the decisional half per book bought nothing measurable.
+**First run: it failed, at 13.6 per 1000**, indistinguishable from where "tell the author to diverge
+from the shared plan" landed, also 13.6 once that figure is re-derived at this scope (16g.1).
+Generating the decisional half per book bought nothing measurable.
 
 **Why, and it was our error rather than the idea's.** We traced every shared four-gram to the field
 it drew on. **62 percent came from the one prose our "wordless" structural half still carried: 32
@@ -1710,16 +1757,24 @@ different surfaces and both are reported because a reader meets both.
 **Correcting our own table.** Two rows below were previously quoted at the wrong scope, with labels
 included where every other row excluded them. Recomputed consistently, all rows are body-only:
 
+Three further rows moved on 2026-08-11, in a second pass that checked the claim rather than repeating
+it. The three D-6 rows carried their originally published values while this table asserted every row
+was body-only, and they were not: re-derived from the artifacts they are 11.8, 13.6 and 17.2, not
+11.4, 12.9 and 16.9. The re-derivation, the control that separates a wrong figure from a wrong
+harness, and what survives are all in the correction block under 16g.1. The two rows now reading 13.6
+are separate measurements that happen to coincide, 13.57 for the diverging repair and 13.59 for the
+glossed kernel, and no comparison should be drawn between them at this precision.
+
 | | shared four-grams per 1000, bodies only |
 | --- | --- |
 | **shared structure, bare identifiers** | **2.3** |
 | our pilot, wholly separate plans | 2.9 |
 | generator idiom floor, books sharing nothing at all | 3.3 |
 | **budget** | **4.0** |
-| shared plan, wording flattened | 11.4 |
-| shared plan, author told to diverge from it | 12.9 |
+| shared plan, wording flattened | 11.8 |
+| shared plan, author told to diverge from it | 13.6 |
 | shared structure **with** fact glosses | 13.6 |
-| shared plan as written | 16.9 |
+| shared plan as written | 17.2 |
 | one shared plan, 101 nodes | 50.1 |
 
 The two corrected figures are the stratified designs: with glosses 13.6 rather than the 12.9 we

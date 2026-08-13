@@ -1,0 +1,18 @@
+LicenseRef-Vendor-Terms
+
+This identifier covers third-party vendor contract documents retained in this
+repository under docs/compliance/vendor-terms/.
+
+These files are NOT part of this project's licensed work. They are documents
+published by a vendor and presented to this project as the terms governing a
+service it uses. They are retained, unmodified, as a record of what those terms
+said on a particular date, because this project's compliance records cite them
+by clause number and a clause number is meaningless without a fixed version.
+
+Rights in each document remain with its publisher, identified per-file by the
+SPDX-FileCopyrightText field in REUSE.toml. No license to redistribute, adapt,
+or sublicense them is claimed or granted here, and none of the licenses this
+project offers for its own material (MIT, CC-BY-4.0, CC0-1.0) extends to them.
+
+If you are the publisher of a document retained here and object to its
+retention, contact the address in SECURITY.md.

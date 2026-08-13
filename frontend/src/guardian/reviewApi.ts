@@ -107,7 +107,8 @@ export interface ApprovedResult {
 
 /**
  * Closed-vocabulary calibration code for a send-back decision, mirroring
- * SendBackReasonCodeLiteral in src/cyo_adventure/api/schemas.py. Kept in sync
+ * SendBackReasonCodeLiteral in src/cyo_adventure/publishing/reason_codes.py
+ * (re-exported through api/schemas.py, where it used to live). Kept in sync
  * by hand (this adapter is hand-typed, not generated; see the module
  * docstring above).
  */

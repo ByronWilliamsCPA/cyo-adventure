@@ -27,6 +27,7 @@ from typing import Any
 
 import pytest
 
+from cyo_adventure.generation.usage import Completion, TokenUsage
 from scripts.adversarial_harness import (
     CorpusReport,
     _observe_item,  # pyright: ignore[reportPrivateUsage]
@@ -67,11 +68,22 @@ class _RecordingMockProvider:
     def __init__(self) -> None:
         self.calls: list[tuple[str, str]] = []
 
-    async def complete(self, *, system: str, prompt: str, max_tokens: int) -> str:
+    async def complete(
+        self, *, system: str, prompt: str, max_tokens: int
+    ) -> Completion:
         """Record the call and return output no stage parser accepts."""
         _ = max_tokens
         self.calls.append((system, prompt))
-        return "{}"
+        return Completion(
+            text="{}",
+            usage=TokenUsage(
+                provider="recording-mock",
+                model="recording-mock",
+                input_tokens=None,
+                output_tokens=None,
+                duration_ms=0,
+            ),
+        )
 
 
 @pytest.mark.unit

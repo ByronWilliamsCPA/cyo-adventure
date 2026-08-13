@@ -81,7 +81,7 @@ class VerificationStartRequest:
         user_id: The guardian the attempt attributes to. Not the child.
         email: The parent or guardian's email address. Never persisted here
             and never logged; it goes to KWS and nowhere else.
-        location: The CHILD's location as an ISO 3166-1 alpha-2 country code
+        location: The GUARDIAN's own location as an ISO 3166-1 alpha-2 country code
             or an ISO 3166-2 subdivision code. It selects which verification
             methods the parent is offered, so it is a compliance input.
         language: The parent's language, for KWS's emails and web screens.
@@ -158,7 +158,7 @@ async def start_parent_verification(
     test_a_delivery_still_resolves_an_attempt_whose_send_failed.
 
     Args:
-        request: The guardian, the email, the child's location, the language.
+        request: The guardian, the email, the guardian's own location, the language.
         client: An optional long-lived ``KwsClient``. Omitted, a fresh one is
             built per call, which re-authenticates once per verification: fine
             at one verification per guardian, worth injecting a shared instance

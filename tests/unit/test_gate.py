@@ -651,7 +651,7 @@ def test_gate_blocks_on_unconfigured_band_profile(
 
 
 # ---------------------------------------------------------------------------
-# PL-27: fill-result residue (AL-310)
+# PL-27: fill-result residue (AL-325)
 # ---------------------------------------------------------------------------
 
 
@@ -660,8 +660,8 @@ def _unfilled_story() -> dict[str, object]:
 
     This is what a failed fill returns: the orchestrator seeds the repair loop
     with the authoring skeleton when a fill produces no parseable document
-    (AL-312), so a book that was never written is byte-identical to its
-    skeleton and clears every other checker by abstention (AL-310).
+    (AL-327), so a book that was never written is byte-identical to its
+    skeleton and clears every other checker by abstention (AL-325).
     """
     story = _load(_VALID / "01_hello_world.json")
     nodes = story["nodes"]
@@ -676,7 +676,7 @@ def _unfilled_story() -> dict[str, object]:
 def test_fill_result_context_blocks_on_retained_directive() -> None:
     """A document validated as a fill result fails on any retained ``<<FILL``.
 
-    AL-310: every checker that meets a directive skips it rather than failing,
+    AL-325: every checker that meets a directive skips it rather than failing,
     so a gate assembled entirely from abstainers has no floor and an unwritten
     book validates clean. PL-27 is that floor.
     """
@@ -692,7 +692,7 @@ def test_skeleton_context_tolerates_retained_directive() -> None:
 
     The 61-skeleton catalog, the mutation acceptance path and the promotion
     scripts all validate documents whose bodies are directives by construction.
-    PL-27 must not fire for them, or the fix for AL-310 would break the path it
+    PL-27 must not fire for them, or the fix for AL-325 would break the path it
     was required not to regress.
     """
     result = run_gate(_unfilled_story())
@@ -702,7 +702,7 @@ def test_skeleton_context_tolerates_retained_directive() -> None:
 
 @pytest.mark.unit
 def test_gate_result_records_the_context_it_ran_under() -> None:
-    """A verdict names the posture that produced it (AL-309).
+    """A verdict names the posture that produced it (AL-324).
 
     Without this, a ``blocked=False`` that cleared PL-27 is spelled identically
     to one that never ran it, which is exactly the defect that let three

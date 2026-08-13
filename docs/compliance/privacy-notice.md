@@ -119,7 +119,15 @@ vendors (OpenRouter's account-wide Zero Data Retention setting and whether it co
 downstream model provider it routes to; which Anthropic terms tier this account is on; whether
 Google Perspective specifically is covered by the Cloud DPA). Please confirm whether this
 statement can stand as written, needs to be qualified per vendor, or should be held until the
-checklist closes before this notice is published.]
+checklist closes before this notice is published. **Sharpened 2026-08-12**: for one vendor this is
+no longer an open question but a probable contradiction. Kids Web Services' Parent Verification
+terms (retained at `vendor-terms/epic-kws/`) list eight activities at cl. 2, and cl. 5 then makes
+KWS our processor for only two of them and states that for the other six "you and KWS are each
+independent
+controllers". The **General** Terms' cl. 5.1 then says the record they build is theirs and "is used to provide KWS
+Services to you and our other customers", which is the vendor using it for their own purposes.
+Read straight, that is the opposite of the sentence above. Please rule on whether the Kids Web
+Services row must be lifted out of this paragraph and described separately.]
 
 | Company | What they receive | Why |
 |---|---|---|
@@ -135,25 +143,45 @@ checklist closes before this notice is published.]
 Services when the check *starts*, not when it succeeds. If you abandon it, if it comes back
 refused, or if you never create an account at all after that point, your email address has
 still been sent to them and is subject to their handling of it, not ours. There is no version
-of this step that confirms an adult without disclosing the address first. [COUNSEL: (a) does
-this need to be surfaced *before* the guardian triggers the send rather than only in this
-notice; (b) Epic operates Kids Web Services from both US and EU entities and we have not
-established which one receives our traffic or under what transfer mechanism, so the "every
-company above is based in the United States" statement below does not currently cover this
-row; (c) `processor-dpa-checklist.md` carries an Epic entry, but it records no DPA requested
-and none reviewed, so the processor-only claim at the top of this section is asserted for this
-vendor without a DPA behind it.]
+of this step that confirms an adult without disclosing the address first.
+
+Kids Web Services also **keeps** a record of the check. Their terms describe it as a hashed
+version of your email address together with how and when you were verified, the country your
+device was in, and which apps you have verified for, held by them and reused across the other
+services they provide. We do not receive that record and cannot see it.
+
+[COUNSEL: three of the four asks previously here have moved.
+(a) **Answered 2026-08-12**: the disclosure is now made *before* the guardian triggers the send,
+in copy on the verification page itself, and its position ahead of the submit button is asserted
+by test rather than left to convention. This notice is no longer the only place it appears.
+(b) **Answered 2026-08-12, and neither prior guess was right**: the counterparty is Kids Web
+Services Ltd, a company incorporated in **England** (Company Number 13351982), governed by the
+laws of England and Wales. So this is a US-to-UK transfer, not US-to-US or US-to-EU, and the
+"every company above is based in the United States" statement below is wrong rather than merely
+uncovered. Please confirm the mechanism to name (UK IDTA, or the UK Addendum to the EU SCCs).
+(c) **Narrowed 2026-08-12**: a Data Processing Addendum does bind us, incorporated by reference
+at General Terms cl. 6, but it has not been retrieved or read, and per the note above a DPA
+would not reach the six activities their terms treat as independent-controller processing.
+(d) **New**: is the paragraph immediately above sufficient for what KWS retains and reuses, or
+does Art. 13(1)(e) require naming them as an independent controller for that part in the table
+itself? It is the one thing a guardian would not infer from "we send them your email address to
+check you are an adult".]
 
 We do not sell your or your child's information, and we do not use it for advertising — we
 have no advertising or marketing SDKs of any kind in the parts of the app your child uses.
 
-**International transfers**: every company above is based in the United States, with one
-exception we cannot yet state either way: Epic operates Kids Web Services from both a US and
-an EU entity, and we have not established which one receives our traffic. Until we have, treat
-the sentence before this one as covering every row except the Kids Web Services row. [COUNSEL:
-confirm the transfer mechanism (Standard Contractual Clauses or DPF self-certification) we
-should represent here is actually executed before publication — as of this draft, that
-paperwork (`coppa-gdpr-remediation-plan.md` Phase 5) has not yet been completed.]
+**International transfers**: every company above is based in the United States except Kids Web
+Services, which is a **United Kingdom** company: Kids Web Services Ltd, incorporated in England,
+with its registered office in London. Your email address goes to the UK when the adult check
+runs. [COUNSEL: this replaces a hedge, corrected 2026-08-12 from the vendor's own terms
+(`vendor-terms/epic-kws/`), which earlier drafts recorded as an unresolved choice between a US
+and an EU Epic entity. It was neither. Two asks follow: confirm the transfer mechanism to
+represent here for a US-to-UK transfer (the UK IDTA, or the UK Addendum to the EU SCCs; the
+Data Privacy Framework does not apply in this direction), and confirm it is actually executed
+before publication. As of this draft that paperwork (`coppa-gdpr-remediation-plan.md` Phase 5)
+has not been completed for any vendor. Note the interaction with the decision to keep UK users
+out of scope: that decision is about who uses the app, and does not follow through to a
+processor that is itself a UK company.]
 
 ### How long we keep information
 
@@ -162,7 +190,7 @@ paperwork (`coppa-gdpr-remediation-plan.md` Phase 5) has not yet been completed.
 | Your active account and your child's active profile | For as long as the account/profile is in use |
 | Reading progress, completions, ratings for a profile you've deactivated (not deleted) | Up to 90 days after deactivation, then deleted |
 | A story request we blocked or you declined | The decision and category are kept; the original typed text is replaced with a placeholder 30 days after the decision |
-| Raw story-generation output kept for troubleshooting | 30 days, or immediately once a story is published, whichever comes first |
+| Raw story-generation output (the unedited model output, before our automated checks and before an adult read it), kept for troubleshooting and to check our safety review against the decision an adult actually made | Deleted 30 days after the generation run finishes, unless an adult reached a decision about that story within those 30 days. Once an adult approves/archives a story or sends it back, the raw output is kept for as long as the story exists. If nobody has decided by day 30 it is deleted anyway and a later decision does not restore it, because the exemption is checked when the nightly deletion runs rather than when the adult decides. A run still awaiting a person (`awaiting_manual_fill`) is covered by no timer at all. All of it is deleted with the family account. [COUNSEL: this row changed on 2026-08-12 and the change widens a purpose, not just a window. The original 30-day-or-on-publish rule was troubleshooting-only; ADR-007's amendment additionally retains the output indefinitely, for reviewed stories, to calibrate our safety-review scorecard. Please rule on (a) the lawful basis for that second purpose, given the output is generated for an identified child profile, and (b) whether "for as long as the story exists" is an acceptable outer bound or needs a fixed ceiling.] |
 | Records of admin safety reviews | 1-2 years |
 | The adult-check record described above | Kept for as long as your account exists. [COUNSEL: this is a statement of current behaviour, not of a chosen policy: no deletion job covers this table, and `data-retention-policy.md` has no row for it. Please rule on a window, or confirm that keeping it alongside the consent record it supports is correct.] |
 | Our internal record of who did what (an accountability log; never contains your child's name or story text, only ids and categories) | Kept indefinitely, as a legal-compliance and dispute-resolution record; see our published Article 17(3) analysis for why this category is treated differently from the rest |

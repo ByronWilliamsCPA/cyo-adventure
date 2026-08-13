@@ -82,12 +82,24 @@ describe('PrivacyPolicyPage', () => {
       expect(screen.getByText(/cannot catch every name a child might type/i)).toBeInTheDocument()
     })
 
-    it('discloses the child country code and language sent to Epic, not the email alone', () => {
-      // consent/kws_client.py sends {email, location, language, ...} and
-      // documents location as "The CHILD's location, not the parent's". An
-      // email-only row understates a child-linked transfer.
+    it('discloses the guardian country code and language sent to Epic, not the email alone', () => {
+      // consent/kws_client.py sends {email, location, language, ...}. An
+      // email-only row understates the transfer, so the row must name the
+      // country and the language too.
+      //
+      // The row said "for the child" until 2026-08-12, on the strength of a
+      // kws_client.py docstring that claimed the field carried the child's
+      // location. The code never did that: api/consent.py passes body.location
+      // straight through from the country the GUARDIAN picks on the
+      // verification screen, and no screen asks for a child's country at all.
+      // Asserting "for their own account" rather than "for the child" is what
+      // keeps a wrong docstring from re-entering the published policy, which is
+      // exactly the route it took the first time.
       renderPage()
-      expect(screen.getByText(/country or region code for the child/i)).toBeInTheDocument()
+      expect(
+        screen.getByText(/country or region code that parent selected for their own account/i)
+      ).toBeInTheDocument()
+      expect(screen.queryByText(/country or region code for the child/i)).not.toBeInTheDocument()
     })
 
     it('reconciles the never-collect list with that country code', () => {
@@ -117,6 +129,46 @@ describe('PrivacyPolicyPage', () => {
       expect(screen.getAllByText(/not acting solely on our instructions/i).length).toBeGreaterThan(
         0
       )
+    })
+
+    it('scopes raw-output retention to a finished run and an undecided story', () => {
+      // Both halves of the previous wording ("30 days, or as soon as the story
+      // is published, whichever comes first") became false on 2026-08-11:
+      // publishing/service.py::approve no longer nulls the report, and ADR-007's
+      // 2026-08-10 amendment makes a human decision an EXEMPTION from the sweep,
+      // so publishing now preserves the raw output indefinitely instead of
+      // destroying it. Two hedges here are load-bearing and are exactly what an
+      // editor tidies away:
+      //   - "after the generation run finishes": the nightly predicate is gated
+      //     on status IN ('passed','needs_review','failed'), so a job parked in
+      //     awaiting_manual_fill is matched by no purge condition at all. An
+      //     unqualified "30 days" would be a promise no job enforces.
+      //   - "no timer on it at all", scoped to a run that NEVER FINISHED:
+      //     states that gap outright rather than leaving a parent to infer it.
+      //     The scope matters. An earlier draft said "a run left waiting on a
+      //     person", which reads as covering a story waiting on a reviewer, and
+      //     that case is the opposite: such a job is at status 'passed', is
+      //     inside the filter, and is purged on day 31 whether or not the review
+      //     ever concludes.
+      //   - "a later approval does not bring it back": the exemption is
+      //     evaluated when the sweep runs, not when the human decides, so a
+      //     day-32 approval flips the storybook to published against a column
+      //     that is already NULL. Without this clause the row implies the
+      //     decision retroactively rescues the output. UW-C227 tracks whether
+      //     to close that window; until it is closed the page must say so.
+      // See docs/compliance/data-retention-policy.md Section 4 and
+      // tests/unit/test_report_retention.py's slow-review characterization test.
+      renderPage()
+      expect(screen.getByText(/30 days after the generation run finishes/i)).toBeInTheDocument()
+      expect(screen.getByText(/no timer on it at all/i)).toBeInTheDocument()
+      expect(screen.getByText(/a later approval does not bring it back/i)).toBeInTheDocument()
+      expect(screen.getByText(/still generating or is waiting for a person/i)).toBeInTheDocument()
+      // The retracted claim must not come back: publishing is now the opposite
+      // of a deletion trigger.
+      expect(screen.queryByText(/as soon as the story is published/i)).not.toBeInTheDocument()
+      expect(screen.queryByText(/whichever comes first/i)).not.toBeInTheDocument()
+      // The conflated earlier draft must not come back either.
+      expect(screen.queryByText(/a run left waiting on a person/i)).not.toBeInTheDocument()
     })
 
     it.each([

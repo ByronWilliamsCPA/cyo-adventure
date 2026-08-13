@@ -889,11 +889,12 @@ async def bind_theme_to_contract(  # noqa: PLR0913
         stage_prompt = build_bind_prompt(
             request_contract, theme_brief, violations=violations or None
         )
-        raw = await guarded_provider.complete(
+        completion = await guarded_provider.complete(
             system=stage_prompt.system,
             prompt=stage_prompt.user,
             max_tokens=_MAX_TOKENS_BIND,
         )
+        raw = completion.text
 
         parsed = _parse_bind_response(raw)
         if parsed is None:
@@ -1114,11 +1115,12 @@ async def interpret_and_bind(  # noqa: PLR0913
         stage_prompt = build_interpret_bind_prompt(
             request_contract, theme_brief, violations=violations or None
         )
-        raw = await guarded_provider.complete(
+        completion = await guarded_provider.complete(
             system=stage_prompt.system,
             prompt=stage_prompt.user,
             max_tokens=_MAX_TOKENS_BIND,
         )
+        raw = completion.text
 
         parsed = _parse_interpret_bind_response(raw, request_contract)
         if parsed is None:

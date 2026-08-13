@@ -183,6 +183,23 @@ async def send_back_storybook(
     storybook_id: str, body: SendBackRequest, ctx: Context
 ) -> SentBackView:
     """Send an in-review story back for revision with a reason (admin only)."""
+    # #CRITICAL: security: authorization for this transition is _load_admin_story
+    # and nothing in this function body; it raises before the service call for a
+    # non-admin or a foreign-family story. Do not reorder the send_back call
+    # above it.
+    # #VERIFY: tests/integration/test_approval_api.py::test_child_cannot_send_back
+    # asserts 403 for a non-admin token on this exact route. There is no
+    # cross-family send-back test yet; _load_admin_story is shared with the
+    # approve path, which does have one.
+    # #ASSUME: data integrity: reason_code is validated twice, and deliberately.
+    # SendBackRequest types it as SendBackReasonCodeLiteral so pydantic rejects an
+    # unknown code at this boundary with a 422, which is why the declared
+    # responses list only 404 and 409; publishing/service.py::send_back validates
+    # it again because the API boundary is not its only caller (a script or worker
+    # reaching the service directly would otherwise write an out-of-vocabulary
+    # label onto an append-only pipeline_event that has no deletion path).
+    # #VERIFY: tests/unit/test_send_back_reason_codes.py::
+    # test_validate_reason_code_rejects_unknown_code covers the domain half.
     book = await _load_admin_story(ctx, storybook_id)
     await approval_service.send_back(
         ctx.session, ctx.principal, book, body.reason, reason_code=body.reason_code

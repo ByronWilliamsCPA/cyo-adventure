@@ -105,20 +105,34 @@ async def test_approve_stamps_resulting_storybook_id(
             concept_id=concept.id,
         )
         session.add(request)
-        session.add(
-            GenerationJob(
-                concept_id=concept.id,
-                storybook_id=book.id,
-                version=1,
-                status="passed",
-            )
+        # A non-empty report, so this test also witnesses the ADR-007 2026-08-11
+        # amendment positively. tests/unit/test_report_retention.py asserts the
+        # ABSENCE of an UPDATE against a mocked session, which cannot distinguish
+        # "the report survived" from "the report was never there"; this is the
+        # only place the raw output is written to a real database, flushed, and
+        # read back after a publish.
+        job = GenerationJob(
+            concept_id=concept.id,
+            storybook_id=book.id,
+            version=1,
+            status="passed",
+            report={"stages": ["draft"], "flags": []},
         )
+        session.add(job)
         await session.flush()
 
         principal = _principal(guardian_id, book.family_id)
         await approval_service.approve(session, principal, book, 1)
+        await session.flush()
+        await session.refresh(job)
 
         assert request.resulting_storybook_id == book.id
+        assert job.report == {"stages": ["draft"], "flags": []}, (
+            "publishing must leave GenerationJob.report intact: ADR-007's "
+            "2026-08-11 amendment makes a human decision an exemption from the "
+            "nightly purge, and an on-publish null would destroy the report "
+            "before that exemption could ever apply to it"
+        )
 
 
 async def test_approve_without_generation_job_leaves_resulting_storybook_id_none(

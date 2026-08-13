@@ -382,9 +382,11 @@ def _scalar_result(value: object) -> MagicMock:
 async def test_approve_stamps_resulting_storybook_id() -> None:
     """approve() links the originating request's resulting_storybook_id (W0.4).
 
-    session.execute is called three times by approve(): the report-nulling
-    UPDATE, then _stamp_resulting_storybook_id's two SELECTs (concept_id,
-    then the request row); side_effect supplies each in that order.
+    session.execute is called twice by approve(), both from
+    _stamp_resulting_storybook_id: the concept_id SELECT, then the request row
+    SELECT; side_effect supplies each in that order. There is no third call:
+    the report-nulling UPDATE that used to run first was removed by ADR-007's
+    2026-08-11 amendment (see tests/unit/test_report_retention.py).
     """
     story = _story("in_review")
     version_row = StorybookVersion(
@@ -404,7 +406,6 @@ async def test_approve_stamps_resulting_storybook_id() -> None:
     )
     session.execute = AsyncMock(
         side_effect=[
-            MagicMock(),  # report-nulling UPDATE result, unused
             _scalar_result(concept_id),
             _scalar_result(request_row),
         ]
@@ -435,7 +436,6 @@ async def test_approve_resulting_storybook_id_noop_without_generation_job() -> N
     session.get = AsyncMock(return_value=version_row)
     session.execute = AsyncMock(
         side_effect=[
-            MagicMock(),
             _scalar_result(None),  # no GenerationJob matches
         ]
     )
@@ -444,9 +444,10 @@ async def test_approve_resulting_storybook_id_noop_without_generation_job() -> N
 
     assert result is version_row
     assert story.status == "published"
-    # Only two execute() calls: the report-nulling UPDATE and the concept
-    # lookup; the request lookup is never reached with no concept_id.
-    assert session.execute.await_count == 2
+    # Exactly one execute() call, the concept lookup; the request lookup is
+    # never reached with no concept_id, and approve() issues no UPDATE of its
+    # own (ADR-007's 2026-08-11 amendment removed the report-nulling one).
+    assert session.execute.await_count == 1
 
 
 @pytest.mark.unit
@@ -468,7 +469,6 @@ async def test_approve_resulting_storybook_id_noop_without_request_row() -> None
     session.get = AsyncMock(return_value=version_row)
     session.execute = AsyncMock(
         side_effect=[
-            MagicMock(),
             _scalar_result(uuid.uuid4()),
             _scalar_result(None),  # no StoryRequest matches the concept_id
         ]

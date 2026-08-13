@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.78.2] - 2026-08-13
+
+### Bug Fixes
+
+- **consent**: Disclose the KWS email handoff before it happens, and retain the vendor terms
+  ([#704](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/704),
+  [`cf3a2d6`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/cf3a2d6a923f65a6a6127315e7a0a593eb150ea2))
+
+
+## [0.78.1] - 2026-08-12
+
+### Bug Fixes
+
+- **publishing**: Close the four open items from the research-round handoff
+  ([#703](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/703),
+  [`bf7cad1`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/bf7cad15b5d557de92d47966c469229020b64d76))
+
+
+## [0.78.0] - 2026-08-12
+
+### Features
+
+- Instrument generation cost and gate device-vocabulary feasibility
+  ([#701](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/701),
+  [`154d44f`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/154d44f59f369a13898ed287c76850a4892e4426))
+
+
 ## [0.77.1] - 2026-08-12
 
 ### Bug Fixes
@@ -3402,6 +3429,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.78.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.78.1...v0.78.2
+[0.78.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.78.0...v0.78.1
+[0.78.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.77.1...v0.78.0
 [0.77.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.77.0...v0.77.1
 [0.77.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.76.0...v0.77.0
 [0.76.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.75.0...v0.76.0

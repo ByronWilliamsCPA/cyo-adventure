@@ -179,7 +179,7 @@ def _neutralize_fence(text: str) -> str:
     # interpolate ``{theme_brief}`` into the same fence without this treatment.
     # The brief is JSON-serialised, which escapes quotes and newlines but NOT
     # the terminator, so the hole is real though narrower (the attacker must
-    # get the string through screening intake first). Tracked as UW-C225.
+    # get the string through screening intake first). Tracked as UW-C228.
 
     Args:
         text: The payload about to be placed inside an untrusted fence.

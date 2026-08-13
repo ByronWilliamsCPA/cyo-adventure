@@ -190,6 +190,43 @@ truth; Alembic is retired.**
 - **Trigger-only behavior**: see the `pipeline_event` bullet under Consequences; it is
   called out here again because it is the concrete reason the parity gate could not be
   the only test for this migration.
+- **`CONCURRENTLY` is usable, in a migration file holding exactly one statement**
+  (established 2026-08-11 by reproduction against CLI `2.109.1`, against a throwaway
+  database). The rule is not "the CLI wraps each migration in a transaction", which is
+  what `20260810180000_add_kws_verification_delivery_health_index.sql` and
+  `20260811150000_index_user_consent_verification_id.sql` both assert in their header
+  comments; read those two claims as superseded. What actually happens is that a
+  multi-statement file is executed as a `pgx` **pipeline**, and a `CONCURRENTLY`
+  statement inside a pipeline fails with `CREATE INDEX CONCURRENTLY cannot be executed
+  within a pipeline (SQLSTATE 25001)`, aborting the whole `db push` and blocking the
+  deploy. A file holding one statement runs it outside a pipeline and succeeds, leaving
+  the index `indisvalid = true`. Comments are not statements, so prose is free.
+  Consequence for authors: an index on a table large enough for the build lock to matter
+  should be added as its own single-statement migration, as
+  `20260811170000`/`20260811170100` do for `ix_pipeline_event_entity_event_type`. The two
+  indexes named above are left as they are; they are already built, and rebuilding them
+  would be churn.
+- **A `CREATE INDEX CONCURRENTLY` must not carry `if not exists`.** The clause reads as
+  defensive and is the opposite here. A concurrent build that fails partway leaves the index
+  with `indisvalid = false`, which Postgres will not read from but will still maintain on
+  write. The CLI does not record a failed migration in `schema_migrations`, so the next
+  `db push` re-runs the file; with `if not exists` that re-run matches the invalid index by
+  name, does nothing, and the migration is then recorded as applied. The end state is an
+  index the planner ignores plus a green deploy and no signal anywhere. Omitting the clause
+  makes the re-run fail on `relation ... already exists`, which blocks the deploy until
+  someone drops the invalid index and re-pushes. Prefer the blocked deploy. `DROP INDEX
+  CONCURRENTLY` is the reverse case: `if exists` there is correct, since a database that
+  never applied the creating migration must not fail on the drop.
+- **A prefix must be unclaimed across open pull requests, not just against `origin/main`.**
+  The CLI keys `schema_migrations` on the 14-digit version prefix, not the filename, so two
+  concurrent branches can each hold a distinct file at the same prefix, each pass CI alone,
+  and collide with a `schema_migrations_pkey` duplicate-key error on the first `db push`
+  after the second one merges. This has now happened twice: `AL-072` (PR #494 against
+  PR #507, at `20260730000000`) and again at `20260811160000`, which is why the pair named
+  above was renumbered to `1700xx`. Note that the guard `AL-072` proposed, comparing against
+  the newest prefix on `origin/main`, would not have caught either case: both colliding
+  prefixes were greater than main's newest. The check has to read the other open branches.
+  Tracked by `UW-C21`.
 
 ### Testing Strategy
 

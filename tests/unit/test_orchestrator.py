@@ -707,7 +707,7 @@ async def test_fill_skeleton_repair_exhaustion_is_needs_review_not_failed() -> N
 async def test_fill_skeleton_does_not_pass_a_book_it_never_wrote() -> None:
     """A provider that echoes the skeleton back must not yield status='passed'.
 
-    This is the run-1 defect reproduced (AL-309/AL-310): three Sonnet 5 books
+    This is the run-1 defect reproduced (AL-324/AL-325): three Sonnet 5 books
     came back with every node body still holding its ``<<FILL ...>>`` directive
     and were recorded ``status='passed'`` with ``error=None``, because a valid
     JSON echo of the input parses, and every deterministic checker skips a

@@ -36,7 +36,7 @@ Three constraints on how rules are written here:
    quality score is blocked on **W7**. Items whose rules need only a deterministic count are not,
    and that split is what makes most of this plan runnable now.
 3. **A metric is not promoted to a blocking gate on the strength of being computable.** That is the
-   mistake `AL-322` records. Deterministic measures enter as *reported statistics* first; promotion
+   mistake `AL-337` records. Deterministic measures enter as *reported statistics* first; promotion
    to a rule that blocks a book requires evidence that a reader is affected.
 
 ## 1. Sequencing
@@ -53,7 +53,7 @@ Track D (deterministic, runnable now, no judge, no human)
   W8 decoding/effort ablation (scored deterministically, so not blocked on W7)
   W9 cross-stage routing      (output is cost, which is a fact not a ranking)
   W10 MoPS premise pool       (scored against the 156.35 convergence figure)
-  W14 context composition     (blocked on UW-C236: input rates are all None today)
+  W14 context composition     (blocked on UW-C239: input rates are all None today)
 
 Track J (judged)
   W7 known-bad battery ──> every ranking-shaped claim, W11 pilot scoring, best-of-N
@@ -138,7 +138,7 @@ our corpus and we should say so rather than build on it.
 
 Corpus: 60 filled books (`out/*.filled.json`, the non-dry `out/vendor-comparison/run-*/books/`,
 and the two mutation pilot books). 53 measured; 4 skipped for retained `<<FILL` residue (the same
-four `AL-320` found) and 3 skipped because they fail `Storybook.model_validate` on
+four `AL-335` found) and 3 skipped because they fail `Storybook.model_validate` on
 `metadata.topology`, an older schema version. Paths are the W1 covering set, which is the right
 set for "is any reading bad".
 
@@ -201,7 +201,7 @@ book is measuring nothing, which is exactly how the dialogue criterion failed.
 
 Stage two, later: **promotion to a blocking validator rule requires W12.** `BandProfile` already has
 an unenforced `reconvergence_ceiling` field waiting for a number, and we will not invent that number
-from a measure no reader has been asked about. This staging is the direct application of `AL-322`.
+from a measure no reader has been asked about. This staging is the direct application of `AL-337`.
 
 *Cost.* Zero spend. Blocked by W1 for the path context; the fork walk itself is graph-local.
 
@@ -241,14 +241,14 @@ per cell that is the likely outcome, and agreeing to it in advance is the point 
 dimensions on which *every* constituent checker abstained, alongside its verdict.
 
 *Test, including the one that decides the design.* Assert it names the qualitative
-age-appropriateness dimensions as unobserved (the `AL-322` case) and, with PL-27 disabled, names
-filled-prose as unobserved (the `AL-310` case). Then the decisive test: **mutate a checker so it
+age-appropriateness dimensions as unobserved (the `AL-337` case) and, with PL-27 disabled, names
+filled-prose as unobserved (the `AL-325` case). Then the decisive test: **mutate a checker so it
 stops checking something, and require the manifest to notice.**
 
 *Decision rule.* **Keep iff the declaration cannot drift from behaviour.** If the manifest is a
 hand-maintained constant per checker that the mutation test cannot catch going stale, drop it: a
 manifest that lies is worse than no manifest, because it converts an unknown blind spot into a
-false assurance, which is the exact harm `AL-322` describes. If it cannot be made drift-proof, fall
+false assurance, which is the exact harm `AL-337` describes. If it cannot be made drift-proof, fall
 back to a documentation-only list with no machine-readable claim attached.
 
 *Cost.* Zero spend, one to two days.
@@ -296,7 +296,7 @@ item's slate shape rather than as a new item: highest reasoning for premise, cha
 whole-book review; middle reasoning for graph and scene plans; middle or fast for prose; a
 non-reasoning or local model for JSON normalisation. Model names are again deliberately not fixed
 here. The normalisation tier is the one rung with an independent justification already on file:
-`UW-C230` records a fill returning no parseable document seeding the repair loop with the unfilled
+`UW-C233` records a fill returning no parseable document seeding the repair loop with the unfilled
 skeleton, which is structurally valid by construction and therefore certified. **A deterministic
 parse-and-repair step is the cheaper answer to that defect than a local model**, and W9 should
 measure the deterministic option before spending a routing rung on it.
@@ -348,7 +348,7 @@ run that way, report it as a different experiment rather than as a fourth cell.
 
 *Blocked, and the blocker is ours.* Half of this item is a cost measurement over input tokens, and
 `core/pricing.py` sets `input_usd_per_mtok=None` on every cloud entry, so `estimate_cost` marks every
-row incomplete (`AL-318` / `UW-C236`). **Close UW-C236 before running W14** or the cost half is
+row incomplete (`AL-333` / `UW-C239`). **Close UW-C239 before running W14** or the cost half is
 unmeasurable and only the quality half survives.
 
 *Decision rule.* **Adopt a regime iff it moves a deterministic measure beyond that measure's noise
@@ -367,7 +367,7 @@ artifact, and in that form it is the architecture layer this plan already deferr
 having is the measurement half: a node that *declares* what it withholds can be checked for whether
 the prose leaks it.
 
-*Why this is not the deferred planner.* `AL-322` says the four qualitative age-appropriateness
+*Why this is not the deferred planner.* `AL-337` says the four qualitative age-appropriateness
 dimensions are observed by nothing in the pipeline, and section 5 of this plan rejects inventing
 deterministic proxies for them. This is not a proxy. It is a checker over an author-declared
 contract: the packet's `unknowns_to_preserve` states an intent, and leak detection tests compliance
@@ -386,7 +386,7 @@ language of an information-state check.**
 *Decision rule.* **Keep iff the paraphrase test passes and the false-positive rate on already-shipped
 catalogue nodes is zero.** If it only catches literal restatement, drop it and record that the
 information-state dimension stays uninstrumented, because a checker that catches only the naive case
-and reports clean otherwise is the `AL-322` harm rather than its fix. **Reported statistic first;
+and reports clean otherwise is the `AL-337` harm rather than its fix. **Reported statistic first;
 promotion to a blocking rule requires W12**, per admission rule 3.
 
 *Cost.* Zero spend. Blocked by W6, whose declaration mechanism this rides on.
@@ -428,7 +428,7 @@ than one:
 2. **familiarity and comfort with repetition**, which is the series-contract question the fifth
    review raised and which decides whether requirement 2's construct is monotone or inverted-U;
 3. whether choices felt consequential, which is what promotes or retires W3's gate;
-4. comprehension, which is the age-appropriateness question `AL-322` opened.
+4. comprehension, which is the age-appropriateness question `AL-337` opened.
 
 *Decision rule.* **This item is the referee, not a candidate.** It does not get a keep/drop rule; it
 issues them. Specifically it settles: whether `reconvergence_ceiling` gets a number, whether
@@ -441,7 +441,7 @@ before it is a money question, and it must be scoped against ADR-018 before anyt
 
 Rides with W12. A human-rater rubric over the qualitative dimensions, **not** a set of deterministic
 proxies. Section 3.2 of the review response gives the reasoning: writing four more formulas that
-proxy for dimensions no formula observes recreates `AL-322` rather than closing it.
+proxy for dimensions no formula observes recreates `AL-337` rather than closing it.
 
 *Decision rule.* **Build the rubric only if W12's comprehension results show band-appropriate books
 failing readers.** If comprehension tracks Flesch-Kincaid closely, the quantitative leg was
@@ -457,7 +457,7 @@ sufficient after all and the honest outcome is to say so and stop.
 | Character-causal planner, consistency checker | 4th | Architecture layer, which section 32.2 shows is the layer we already understand best |
 | Illustrated and read-aloud track | 4th | Product scope, not a research question |
 | Kappa > 0.80, Z > 1 deprecation | 5th | Rejected, not deferred. Our floor is cited and theirs is not |
-| Deterministic age-appropriateness proxies | inferred | Rejected, not deferred. Building them is the `AL-322` failure, not its fix |
+| Deterministic age-appropriateness proxies | inferred | Rejected, not deferred. Building them is the `AL-337` failure, not its fix |
 
 ## 6. What a "final version" decision looks like
 
