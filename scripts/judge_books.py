@@ -50,7 +50,7 @@ import statistics
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Any, Final, cast
 
 _REPO_ROOT: Final[Path] = Path(__file__).resolve().parent.parent
 if str(_REPO_ROOT) not in sys.path:
@@ -59,6 +59,11 @@ if str(_REPO_ROOT) not in sys.path:
 from cyo_adventure.core.config import Settings  # noqa: E402
 from cyo_adventure.generation.provider import build_openrouter_leg  # noqa: E402
 from scripts.evaluate_books import evaluate_book  # noqa: E402
+from scripts.instrument import (  # noqa: E402
+    Interval,
+    bootstrap_interval,
+    rank_separation,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -159,7 +164,30 @@ _SYSTEM: Final[str] = (
 # what the model spends before it can answer, not by the answer.
 _JUDGE_MAX_TOKENS: Final[int] = 8000
 
-__all__ = ["Judge", "Verdict", "judge_book", "panel_participation", "pool_scores"]
+# W4's saturation threshold, in raw scale points on the 1-to-5 scale, applied to
+# the spread of a criterion's cell means.
+#
+# This number is provisional and is deliberately not load-bearing. The one
+# calibration point we hold is the dialogue criterion at mean 3.04, sd 0.19
+# across twelve cells, while deterministic parsing found one leg at 100 percent
+# narration; a threshold has to sit above that. Nothing yet establishes where a
+# working criterion's spread starts, which is what replaying the real verdict
+# pool is for, so the report prints every criterion sorted flattest-first and
+# the flag is an annotation on a table the reader can overrule. Admission rule 3
+# of the workplan is the reason it stays that way: a measure does not become a
+# gate by being computable.
+_SATURATION_SD: Final[float] = 0.25
+
+__all__ = [
+    "CriterionSpread",
+    "Judge",
+    "Verdict",
+    "criterion_spread",
+    "judge_book",
+    "leg_intervals",
+    "panel_participation",
+    "pool_scores",
+]
 
 
 @dataclass(frozen=True, slots=True)
@@ -337,12 +365,19 @@ async def judge_book(
         error=None,
     )
     try:
-        raw = await provider.complete(
+        completion = await provider.complete(
             system=_SYSTEM,
             prompt=_prompt(_story_text(doc)),
             max_tokens=_JUDGE_MAX_TOKENS,
         )
-        scores, notes = _parse(raw)
+        # #CRITICAL: data integrity: `complete` returns a Completion, not a str,
+        # since #701 wrapped the provider result to capture token usage. Passing
+        # the wrapper to _parse raises inside the broad handler below, which
+        # records every scoring as a failed one; the panel then returns an empty
+        # scorecard that looks like an unlucky run rather than a wiring bug.
+        # #VERIFY: test_judge_books.py stubs the provider with a real Completion
+        # rather than a str, so the unwrap cannot be removed without a failure.
+        scores, notes = _parse(completion.text)
     except Exception as exc:
         # Deliberately broad: one judge failing on one book must not abandon the
         # other hundred-odd scorings. The failure is recorded per book, and
@@ -423,6 +458,204 @@ def pool_scores(
                 entry[name] = statistics.fmean(values)
         pooled[leg] = entry
     return pooled
+
+
+@dataclass(frozen=True, slots=True)
+class CriterionSpread:
+    """How much one criterion varied across the cells it was asked to separate.
+
+    Attributes:
+        criterion: The criterion's name.
+        cells: How many ``(leg, judge)`` cells contributed a mean.
+        mean: The mean of the cell means, on the raw 1-to-5 scale.
+        sd: Standard deviation of the cell means, or ``None`` when fewer than
+            two cells scored it and no spread exists to report.
+        saturated: Whether the spread sits below the stated threshold, which
+            makes the criterion a constant entering the composite mean and
+            diluting the criteria that do discriminate.
+    """
+
+    criterion: str
+    cells: int
+    mean: float
+    sd: float | None
+    saturated: bool
+
+
+def criterion_spread(
+    verdicts: Sequence[Verdict], *, threshold: float = _SATURATION_SD
+) -> list[CriterionSpread]:
+    """Report each criterion's spread across cells, flattest first (W4).
+
+    A criterion returning nearly the same score for every leg is measuring
+    nothing, and it does harm rather than merely wasting a column: the composite
+    mean averages it in, so a constant pulls every leg toward the same figure and
+    shrinks the differences the discriminating criteria found. The dialogue
+    criterion did exactly this, and it was caught by accident when deterministic
+    parsing showed one leg contained no dialogue at all while the criterion
+    scored it 3.00 like everything else.
+
+    The cell is ``(leg, judge)`` rather than the book. A judge's scoring of one
+    leg's four books is one opinion about that leg, and pooling books into the
+    cell first stops a leg with more books from widening the spread on volume.
+
+    Args:
+        verdicts: Every verdict, successful or not; failures are dropped.
+        threshold: Spread below which a criterion is flagged saturated.
+
+    Returns:
+        One entry per criterion that was scored at all, ascending by spread so
+        the flattest criterion is first whatever the threshold is set to.
+    """
+    good = [v for v in verdicts if v.scores and v.error is None]
+    cells: dict[str, dict[tuple[str, str], list[float]]] = {}
+    for v in good:
+        for name, score in v.scores.items():
+            cells.setdefault(name, {}).setdefault((v.leg, v.judge), []).append(score)
+
+    out: list[CriterionSpread] = []
+    for name, by_cell in cells.items():
+        values = [statistics.fmean(scores) for scores in by_cell.values()]
+        sd = statistics.stdev(values) if len(values) > 1 else None
+        out.append(
+            CriterionSpread(
+                criterion=name,
+                cells=len(values),
+                mean=statistics.fmean(values),
+                sd=sd,
+                # A criterion scored in a single cell has no spread to be below
+                # a threshold. Calling that saturated would flag thin data as a
+                # broken instrument, which is a different finding.
+                saturated=sd is not None and sd < threshold,
+            )
+        )
+    return sorted(out, key=lambda row: (row.sd is None, row.sd or 0.0, row.criterion))
+
+
+def leg_intervals(
+    verdicts: Sequence[Verdict],
+    *,
+    seed: int = 20260813,
+    resamples: int = 2000,
+) -> dict[str, Interval]:
+    """Bootstrap an interval around each leg's judge-normalised score (W5).
+
+    The unit resampled is the **book**, not the scoring. Three judges grading one
+    book are three opinions about one observation, and resampling scorings would
+    narrow every interval by roughly the panel size while adding no evidence.
+
+    Args:
+        verdicts: Every verdict, successful or not; failures are dropped.
+        seed: Seed for the resampling generator.
+        resamples: How many resamples to draw per leg.
+
+    Returns:
+        Leg label to its interval. A leg with one book yields an incomplete
+        interval rather than a zero-width one.
+    """
+    good = [v for v in verdicts if v.scores and v.error is None]
+    z = _z_scores(good)
+    per_book: dict[str, dict[str, list[float]]] = {}
+    for v in good:
+        if (v.judge, v.book) in z:
+            per_book.setdefault(v.leg, {}).setdefault(v.book, []).append(
+                z[v.judge, v.book]
+            )
+    return {
+        leg: bootstrap_interval(
+            [statistics.fmean(scores) for scores in books.values()],
+            seed=seed,
+            resamples=resamples,
+        )
+        for leg, books in per_book.items()
+    }
+
+
+def _print_criterion_spread(rows: Sequence[CriterionSpread]) -> None:
+    """Print the per-criterion spread table and name any saturated criterion.
+
+    Args:
+        rows: Output of :func:`criterion_spread`, flattest first.
+    """
+    if not rows:
+        print("\nNo criterion was scored, so no spread can be reported.")
+        return
+    print("\nCRITERION SPREAD  (W4; sd of cell means, flattest first)")
+    width = max(len(row.criterion) for row in rows)
+    print(f"  {'criterion':<{width}}  {'cells':>5} {'mean':>5} {'sd':>6}")
+    for row in rows:
+        sd = f"{row.sd:>6.2f}" if row.sd is not None else f"{'-':>6}"
+        flag = "  <-- SATURATED" if row.saturated else ""
+        print(f"  {row.criterion:<{width}}  {row.cells:>5} {row.mean:>5.2f} {sd}{flag}")
+    flagged = [row.criterion for row in rows if row.saturated]
+    if flagged:
+        print(
+            f"\n  {len(flagged)} criterion(s) below sd {_SATURATION_SD}: "
+            f"{', '.join(flagged)}. A criterion that does not vary across cells "
+            "carries no ordering information and dilutes the composite mean; "
+            "prefer a deterministic measure where one exists for the same "
+            "property, and retire the criterion otherwise."
+        )
+
+
+def _print_intervals(intervals: dict[str, Interval]) -> None:
+    """Print each leg's interval and say plainly whether the ranking stands.
+
+    Args:
+        intervals: Output of :func:`leg_intervals`.
+    """
+    if not intervals:
+        print("\nNo leg was scored, so no interval can be reported.")
+        return
+    ranking = rank_separation(intervals)
+    width = max(len(leg) for leg in intervals)
+    print("\nUNCERTAINTY  (W5; 95% bootstrap over books, on the normalised score)")
+    print(f"  {'leg':<{width}}  {'point':>6} {'95% interval':>18} {'books':>5}")
+    for leg in ranking.ordered:
+        row = intervals[leg]
+        bounds = (
+            f"[{row.lo:+.2f}, {row.hi:+.2f}]" if row.complete else "incomplete, n<2"
+        )
+        print(f"  {leg:<{width}}  {row.point:>+6.2f} {bounds:>18} {row.n:>5}")
+
+    if ranking.excluded:
+        print(
+            f"\n  Excluded from pair counting for having no usable interval: "
+            f"{', '.join(ranking.excluded)}."
+        )
+    print(
+        f"\n  {ranking.separated_pairs} of {ranking.total_pairs} pairs are "
+        f"separated; best and worst "
+        f"{'are' if ranking.extremes_separated else 'are NOT'} disjoint."
+    )
+    if not ranking.supported:
+        print(
+            "\n  RANKING NOT SUPPORTED. Every pair of intervals overlaps, so this "
+            "slate establishes no ordering. Per the workplan's pre-registered "
+            "rule (W5), the ranking is retracted rather than caveated."
+        )
+
+
+def _verdicts_from_payload(payload: dict[str, object]) -> list[Verdict]:
+    """Rebuild verdicts from a previously written ``judgements.json``.
+
+    Replaying a finished pool is what W4's decision rule asks for and is the
+    only way to run either instrument check without paying for the panel again.
+
+    Args:
+        payload: The parsed ``judgements.json``.
+
+    Returns:
+        Every verdict the file recorded.
+
+    Raises:
+        KeyError: If the file carries no ``verdicts`` array.
+    """
+    rows = payload["verdicts"]
+    if not isinstance(rows, list):
+        msg = "judgements.json 'verdicts' must be an array"
+        raise TypeError(msg)
+    return [Verdict(**cast("dict[str, Any]", row)) for row in rows]
 
 
 def _complete_books(
@@ -641,11 +874,35 @@ def main(argv: Sequence[str] | None = None) -> int:
         Process exit status.
     """
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--run", required=True, action="append", type=Path, dest="runs")
-    parser.add_argument("--skeletons", required=True, type=Path)
-    parser.add_argument("--out", required=True, type=Path)
+    parser.add_argument("--run", action="append", type=Path, dest="runs")
+    parser.add_argument("--skeletons", type=Path)
+    parser.add_argument("--out", type=Path)
     parser.add_argument("--env-file", type=Path, default=Path(".env"))
+    parser.add_argument(
+        "--judgements",
+        type=Path,
+        help=(
+            "Replay a previously written judgements.json instead of calling the "
+            "panel. Prints participation, the scorecard and both instrument "
+            "checks with no network call and no cost."
+        ),
+    )
     args = parser.parse_args(argv)
+
+    if args.judgements is not None:
+        payload = cast(
+            "dict[str, object]",
+            json.loads(args.judgements.read_text(encoding="utf-8")),
+        )
+        return _report(_verdicts_from_payload(payload), out=args.out)
+
+    if args.runs is None or args.skeletons is None or args.out is None:
+        print(
+            "Error: --run, --skeletons and --out are all required unless "
+            "--judgements is given.",
+            file=sys.stderr,
+        )
+        return 2
 
     if args.env_file.exists():
         for line in args.env_file.read_text(encoding="utf-8").splitlines():
@@ -665,32 +922,62 @@ def main(argv: Sequence[str] | None = None) -> int:
     )
 
     verdicts = asyncio.run(_run_panel(books, Settings()))
+    return _report(verdicts, out=args.out)
+
+
+def _report(verdicts: Sequence[Verdict], *, out: Path | None) -> int:
+    """Print every panel report and write the artifact when asked to.
+
+    Shared by the live path and the replay path so a replayed pool cannot
+    silently be analysed differently from the run that produced it.
+
+    Args:
+        verdicts: Every verdict, successful or not.
+        out: Directory to write ``judgements.json`` into, or ``None`` to print
+            only.
+
+    Returns:
+        Process exit status.
+    """
     pooled = pool_scores(verdicts)
     peers = pool_scores(verdicts, peers_only=True)
     participation = panel_participation(verdicts)
+    spread = criterion_spread(verdicts)
+    intervals = leg_intervals(verdicts)
 
-    args.out.mkdir(parents=True, exist_ok=True)
-    (args.out / "judgements.json").write_text(
-        json.dumps(
-            {
-                "panel": [dataclasses.asdict(j) for j in _PANEL],
-                "participation": participation,
-                "criteria": _CRITERIA,
-                "verdicts": [dataclasses.asdict(v) for v in verdicts],
-                "pooled": pooled,
-                "pooled_peers_only": peers,
-            },
-            indent=2,
+    if out is not None:
+        out.mkdir(parents=True, exist_ok=True)
+        (out / "judgements.json").write_text(
+            json.dumps(
+                {
+                    "panel": [dataclasses.asdict(j) for j in _PANEL],
+                    "participation": participation,
+                    "criteria": _CRITERIA,
+                    "verdicts": [dataclasses.asdict(v) for v in verdicts],
+                    "pooled": pooled,
+                    "pooled_peers_only": peers,
+                    "criterion_spread": [dataclasses.asdict(row) for row in spread],
+                    "intervals": {
+                        leg: dataclasses.asdict(row) for leg, row in intervals.items()
+                    },
+                    "ranking": dataclasses.asdict(rank_separation(intervals))
+                    if intervals
+                    else None,
+                },
+                indent=2,
+            )
+            + "\n",
+            encoding="utf-8",
         )
-        + "\n",
-        encoding="utf-8",
-    )
     _print_participation(participation)
     _print_table(pooled, peers)
+    _print_criterion_spread(spread)
+    _print_intervals(intervals)
     failed = sum(1 for v in verdicts if v.error is not None)
     if failed:
         print(f"\n{failed} of {len(verdicts)} scorings failed; see judgements.json")
-    print(f"Wrote {args.out / 'judgements.json'}")
+    if out is not None:
+        print(f"Wrote {out / 'judgements.json'}")
     return 0
 
 

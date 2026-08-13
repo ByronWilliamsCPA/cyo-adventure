@@ -470,3 +470,129 @@ deterministic work can settle.
 The outcome we should be least surprised by, and are pre-committing to accepting: **W2 returns
 "drop" and Part IV's supplier ranking is retracted by W5.** Both are live possibilities on the
 evidence we have, and a plan that cannot produce them is not a plan, it is a build order.
+
+---
+
+## 7. Status as of 2026-08-13, and the order the rest should run in
+
+> Written against `feat/reading-level-repair-loop` at `20dec2e5` (PR #708, open). Section 2's
+> per-item *Outcome* notes stay authoritative for W1 and W2; this section is the whole-plan view
+> and the running order, and it is meant to be edited in place as items close.
+
+### 7.1 Where the fifteen items stand
+
+| Item | Track | Built | Run | Blocker |
+| --- | --- | --- | --- | --- |
+| W1 path enumerator | D | yes, `validator/paths.py` | yes, 61/61 books at coverage 1.0 in 2.666 s | none, shipped |
+| W2 re-unit to path | D | measurement only, no committed script | yes | told-emotion needs `UW-C244` before its verdict stands |
+| W3 consequence distance | D | no | no | W1 (met) |
+| W4 criterion variance | J-adjacent | yes, `judge_books.criterion_spread` | no | needs the verdict pool, see 7.4 |
+| W5 bootstrap intervals | D | yes, `scripts/instrument.py` | no | needs the run artifacts, see 7.4 |
+| W6 blind-spot manifest | D | no | no | none |
+| W7 known-bad battery | J | no | no | none, and it blocks Track J entirely |
+| W8 decoding ablation | D | no | no | Tier 0 below |
+| W9 cross-stage routing | D | no | no | Tier 0 below |
+| W10 MoPS premise pool | D | no | no | Tier 0 below |
+| W11 prose-first pilot | deferred | no | no | W7 |
+| W12 child + expert read | H | no | no | ADR-018 consent scoping |
+| W13 age rubric | H | no | no | W12 |
+| W14 context composition | D | no | no | `UW-C239`, plus Tier 0 |
+| W15 declared information state | D | no | no | W6 |
+
+Two of fifteen are closed. `band_profile.py` still carries `reconvergence_ceiling` unenforced, and
+no `unknowns_to_preserve` field exists anywhere, so W3 and W15 are untouched rather than partial.
+
+W4 and W5 are built but not decided, and the distinction is the whole point of this plan: each now
+computes on demand, and neither has been pointed at the real pool, so neither has returned the
+evidence its rule asks for. Both are wired into `scripts/judge_books.py`, which grew a
+`--judgements` replay mode so a finished pool can be re-analysed with no network call and no cost.
+That mode is what W4's rule means by "replay the existing 84-verdict pool".
+
+### 7.1.1 A blocker found while wiring them, and fixed here
+
+The panel could not have scored a single book. `GenerationProvider.complete` returns a `Completion`
+rather than a `str` since #701, and `judge_books.judge_book` handed that object straight to a parser
+that runs a regex over it. The broad handler one line below turns the resulting `TypeError` into a
+per-book recorded failure, so the panel would emit an empty scorecard and report all three judges
+contributing nothing, which reads as an unlucky run against flaky endpoints. Every provider stub in
+the panel's tests returned a bare `str`, so the suite asserted against a contract that no longer
+existed, and no gate type-checks `scripts/`. This is the same defect PR #708 fixed at the
+reading-level loop's own call site, missed in the sibling script the same branch introduced.
+Recorded as `AL-351`, with the coverage gap that hid it as `AL-352` and `UW-C248`.
+
+Consequence for sequencing: **W7 and any judged work were blocked and nobody knew.** The fix is on
+this branch with a regression test that drives a real `Completion`.
+
+### 7.2 Tier 0: harness repairs that precede any further paid run
+
+This tier is not in section 2, because these are not candidate measures. They are the register rows
+this branch filed, and each one silently corrupts a deterministic measure that W8, W9, W10 and W14
+are scored on. Run-6 is the demonstration rather than the hypothesis: one book whose repair was
+discarded moved a leg mean 22 points and was written up as a quantisation effect.
+
+| Row | What it corrupts |
+| --- | --- |
+| `UW-C233` | an unparseable fill returns the skeleton and the gate certifies it `passed`, so gate pass rate counts total failures as successes |
+| `UW-C230` | `fill_skeleton(settings=...)` disarms the Stage 1 fidelity gate for the comparison harness, and nothing in the outcome records which gate ran |
+| `UW-C240` | the diversity verdict is gated on schema validity rather than content completeness |
+| `UW-C247` | `discarded_for_gate` reaches no caller and no artifact, so a silently degraded book is indistinguishable post hoc |
+| `UW-C246` | no drop-worst column, so one book can again become a property of the variable under test |
+| `UW-C245` | no pre-flight refusal when a field the run exists to populate is structurally unpopulable |
+| `UW-C234`, `UW-C235` | `max_tokens` is not reported as a measured condition and `finish_reason` is not surfaced, so a budget failure and an empty endpoint look alike |
+
+**Rule for this tier**: no item in Tier 3 is worth its spend until every row above is closed, because
+each of them can produce the effect the item is looking for.
+
+### 7.3 Running order
+
+1. **W4 and W5 first.** Both are now built, so what remains is one command each against a real
+   `judgements.json`:
+
+   ```bash
+   uv run python scripts/judge_books.py --judgements out/vendor-comparison/evaluation/judgements.json
+   ```
+
+   Zero spend, no network call. W4's rule is met if the run flags `dialogue` and leaves the
+   criteria we believe are working unflagged; W5's pre-registered consequence fires if the printed
+   pair count is zero, in which case the ranking is retracted rather than caveated. Running this
+   before more legs are bought decides whether that spend buys a finding or decoration.
+2. **Tier 0**, in the order above.
+3. **W3, W6, W15, and the W2 re-run** for told-emotion once its band is re-derived at path scale.
+4. **W7**, which unblocks every ranking-shaped claim. Note that the known-bad battery already on
+   file (brief section 20) validates the *diversity* metric, not the panel; W7 needs its own seeded
+   corpus. `scripts/check_annotator_agreement.py` and `scripts/blind_books.py` supply the agreement
+   and blinding legs.
+5. **W8, W9, W10, W14**, the paid ablations, W14 last because `UW-C239` gates its cost half.
+6. **W12 and W13.**
+
+### 7.4 Five gaps in the plan itself
+
+1. **Nothing measures the thing this branch built.** Stage D drives reading grade into band. Section
+   31 of the brief puts compliance against judged quality at rho +0.50, so in-band is related to good
+   and is not the same as it. No item asks whether the repair loop trades voice for compliance, and
+   that question only became load-bearing when Stage D started shipping. It wants a pre-registered
+   rule of its own before the loop's parameters are tuned on anything.
+2. **W1's output has no caller.** `covering_paths`, `reader_sample_paths` and `path_bodies` are
+   imported by nothing outside `validator/paths.py` and its tests. W2's measurement was run ad hoc
+   and no committed script reproduces it, so the W2 table cannot be regenerated and the five items
+   that depend on W1 will each rebuild the same plumbing.
+3. **The measurement artifacts are not in the repository.** `out/vendor-comparison/` is untracked and
+   is not in `.gitignore` either. The vendor-comparison README instructs anyone quoting the fp4 leg
+   to use 0.89 rather than 0.70, but `evaluation.json`, the file that correction was computed from,
+   exists only on the machine that ran it. W4's decision rule says to replay the existing 84-verdict
+   pool and W5 resamples books within each cell; **both are implemented and neither can be run by
+   anyone but the machine holding the artifacts.** Decide between committing the frozen artifacts
+   and accepting that both items are single-machine. This is the one blocker on section 7.3 step 1,
+   and it is a `git add` rather than a measurement.
+4. **The W5 pre-commitment interacts with sample size.** At four books per leg, overlapping intervals
+   across the slate are the likely outcome, and the plan pre-commits to retracting rather than
+   caveating. That is the right commitment and it should be made before more legs are bought.
+5. **The `AL-343` monotonicity precondition is documented, not enforced.** W3 and W6 are told to
+   inherit it. Nothing makes them.
+
+### 7.5 One note on PR #708 itself
+
+`CI (Python 3.14) / Unit Tests` is red on `20dec2e5`, taking `CI Gate` with it, and the workflow API
+surfaces only the security agent's post-steps rather than the pytest output. The full unit suite is
+green on that same commit locally: 7530 passed, 6 skipped, 3 xfailed in 9m27s, matching the PR
+description. A re-run is the cheap first move before anything is diagnosed.

@@ -18,6 +18,7 @@ from unittest import mock
 
 import pytest
 
+from cyo_adventure.generation.usage import Completion, TokenUsage
 from scripts.judge_books import (
     _JUDGE_MAX_TOKENS,  # pyright: ignore[reportPrivateUsage]
     Judge,
@@ -25,7 +26,9 @@ from scripts.judge_books import (
     _parse,  # pyright: ignore[reportPrivateUsage]
     _story_text,  # pyright: ignore[reportPrivateUsage]
     _z_scores,  # pyright: ignore[reportPrivateUsage]
+    criterion_spread,
     judge_book,
+    leg_intervals,
     panel_participation,
     pool_scores,
 )
@@ -39,6 +42,32 @@ _CRITERIA_NAMES = (
     "ending_quality",
     "engagement",
 )
+
+
+def _completion(text: str) -> Completion:
+    """Wrap judge text the way a real provider returns it.
+
+    Stubbing ``complete`` with a bare ``str`` is what let the missing ``.text``
+    unwrap survive: the panel would have failed every scoring in production
+    while the suite stayed green. Every provider stub in this file goes through
+    here so no test can accidentally re-establish the fiction.
+
+    Args:
+        text: The completion body.
+
+    Returns:
+        A completion carrying that body and an unknown-cost usage record.
+    """
+    return Completion(
+        text=text,
+        usage=TokenUsage(
+            provider="stub",
+            model="stub",
+            input_tokens=None,
+            output_tokens=None,
+            duration_ms=0,
+        ),
+    )
 
 
 def _verdict(
@@ -338,7 +367,7 @@ def test_participation_separates_a_dead_judge_from_scattered_flakiness() -> None
 async def test_judge_book_records_a_provider_failure_without_raising() -> None:
     """One failed scoring must not abandon the rest of the panel's work."""
 
-    async def _complete(**_kwargs: object) -> str:
+    async def _complete(**_kwargs: object) -> Completion:
         """Fail the way a dead endpoint does."""
         msg = "openrouter returned HTTP 502"
         raise RuntimeError(msg)
@@ -368,9 +397,9 @@ async def test_judge_book_marks_a_judge_scoring_its_own_family() -> None:
     row rather than to quietly pool it with the rest.
     """
 
-    async def _complete(**_kwargs: object) -> str:
+    async def _complete(**_kwargs: object) -> Completion:
         """Answer with a well-formed scoring."""
-        return json.dumps(dict.fromkeys(_CRITERIA_NAMES, 4))
+        return _completion(json.dumps(dict.fromkeys(_CRITERIA_NAMES, 4)))
 
     judge = Judge("judge-gpt", "m", ("p",), "openai")
 
@@ -385,3 +414,215 @@ async def test_judge_book_marks_a_judge_scoring_its_own_family() -> None:
 
     assert verdict.self_family is True
     assert verdict.error is None
+
+
+def _scored(leg: str, judge: str, book: str, scores: dict[str, float]) -> Verdict:
+    """Build a verdict with per-criterion scores set individually.
+
+    Args:
+        leg: The generating leg.
+        judge: The scoring judge.
+        book: The book identifier.
+        scores: Criterion name to score.
+
+    Returns:
+        The verdict.
+    """
+    return Verdict(
+        book=book,
+        leg=leg,
+        family=leg,
+        judge=judge,
+        self_family=False,
+        scores=dict(scores),
+        notes={},
+        error=None,
+    )
+
+
+def _saturated_pool() -> list[Verdict]:
+    """Build a pool reproducing the dialogue criterion's documented signature.
+
+    Twelve ``(leg, judge)`` cells, in which ``dialogue`` sits at a mean of about
+    3.04 with a spread of about 0.19 while ``imagery`` spreads across most of the
+    scale. This is the known answer: the check was written because we found the
+    real thing by accident, and it has to find the same shape on purpose.
+
+    Returns:
+        Every verdict in the pool.
+    """
+    # Twelve cell values whose mean is 3.0417 and whose sample sd is 0.1964,
+    # with ten cells at exactly 3.00, which is the shape the real pool had.
+    dialogue = [
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        2.85,
+        3.65,
+    ]
+    # The same twelve cells on a criterion that genuinely discriminates.
+    imagery = [
+        1.5,
+        2.0,
+        2.5,
+        3.0,
+        3.5,
+        4.0,
+        4.5,
+        5.0,
+        2.2,
+        3.8,
+        4.4,
+        1.9,
+    ]
+    verdicts: list[Verdict] = []
+    for index, (dial, imag) in enumerate(zip(dialogue, imagery, strict=True)):
+        leg = f"leg-{index // 3}"
+        judge = f"judge-{index % 3}"
+        verdicts.append(
+            _scored(leg, judge, f"{leg}#0", {"dialogue": dial, "imagery": imag})
+        )
+    return verdicts
+
+
+def test_criterion_spread_flags_the_dialogue_criterion_it_was_built_for() -> None:
+    """The known-answer test: the check must find the saturated criterion.
+
+    A check that cannot reproduce the one instrument failure we have already
+    confirmed is not evidence about the criteria we have not checked.
+    """
+    rows = criterion_spread(_saturated_pool())
+
+    by_name = {row.criterion: row for row in rows}
+    assert by_name["dialogue"].saturated is True
+    assert by_name["dialogue"].cells == 12
+    assert by_name["dialogue"].mean == pytest.approx(3.04, abs=0.01)
+    assert by_name["dialogue"].sd == pytest.approx(0.19, abs=0.01)
+
+
+def test_criterion_spread_does_not_flag_a_criterion_that_discriminates() -> None:
+    """The other half of the rule: a check that flags everything is useless."""
+    rows = criterion_spread(_saturated_pool())
+
+    by_name = {row.criterion: row for row in rows}
+    assert by_name["imagery"].saturated is False
+    assert by_name["imagery"].sd is not None
+    assert by_name["imagery"].sd > 0.25
+
+
+def test_criterion_spread_orders_the_flattest_criterion_first() -> None:
+    """The threshold is advisory, so the ordering has to carry the finding."""
+    rows = criterion_spread(_saturated_pool())
+
+    assert rows[0].criterion == "dialogue"
+
+
+def test_criterion_spread_pools_books_into_a_cell_before_measuring_spread() -> None:
+    """A leg with more books must not widen the spread on volume alone.
+
+    Two books scored 1 and 5 by one judge are one opinion about that leg, and
+    counting them as two cells would report a spread the panel never expressed.
+    """
+    verdicts = [
+        _scored("leg-a", "judge-0", "leg-a#0", {"voice": 1.0}),
+        _scored("leg-a", "judge-0", "leg-a#1", {"voice": 5.0}),
+        _scored("leg-b", "judge-0", "leg-b#0", {"voice": 3.0}),
+    ]
+
+    rows = criterion_spread(verdicts)
+
+    assert rows[0].cells == 2
+    # leg-a's cell mean is 3.0, identical to leg-b's, so the criterion separated
+    # nothing at all and must report a spread of zero.
+    assert rows[0].sd == pytest.approx(0.0)
+
+
+def test_criterion_spread_does_not_call_a_single_cell_saturated() -> None:
+    """One cell has no spread to be below a threshold; that is thin data."""
+    rows = criterion_spread([_scored("leg-a", "judge-0", "b", {"voice": 3.0})])
+
+    assert rows[0].sd is None
+    assert rows[0].saturated is False
+
+
+def test_criterion_spread_ignores_failed_scorings() -> None:
+    """A failed scoring is an absent opinion, not a score of zero."""
+    verdicts = [
+        *_saturated_pool(),
+        _verdict("leg-0", "judge-0", "leg-0#9", 0.0, error="boom"),
+    ]
+
+    rows = criterion_spread(verdicts)
+
+    by_name = {row.criterion: row for row in rows}
+    assert by_name["dialogue"].cells == 12
+
+
+def test_leg_intervals_resample_books_rather_than_scorings() -> None:
+    """Three judges on one book is one observation, not three.
+
+    Resampling scorings would divide every interval's width by roughly the panel
+    size while adding no evidence, which is the most flattering possible bug for
+    a ranking to have.
+    """
+    verdicts = [
+        _verdict("leg-a", f"judge-{j}", f"leg-a#{b}", 3.0 + b)
+        for b in range(4)
+        for j in range(3)
+    ]
+
+    intervals = leg_intervals(verdicts, resamples=200)
+
+    assert intervals["leg-a"].n == 4
+
+
+def test_leg_intervals_report_a_one_book_leg_as_incomplete() -> None:
+    """A leg with one book must not be handed a zero-width interval."""
+    verdicts = [
+        _verdict("leg-thin", "judge-0", "leg-thin#0", 4.0),
+        _verdict("leg-wide", "judge-0", "leg-wide#0", 1.0),
+        _verdict("leg-wide", "judge-0", "leg-wide#1", 5.0),
+    ]
+
+    intervals = leg_intervals(verdicts, resamples=200)
+
+    assert intervals["leg-thin"].complete is False
+    assert intervals["leg-thin"].n == 1
+
+
+@pytest.mark.asyncio
+async def test_judge_book_unwraps_the_completion_the_provider_actually_returns() -> (
+    None
+):
+    """The panel must score a real ``Completion``, not only a bare string.
+
+    ``GenerationProvider.complete`` returns a ``Completion`` since token-usage
+    capture landed. Handing that object straight to the parser raises inside
+    ``judge_book``'s broad handler, so every scoring is recorded as a failure and
+    the panel emits an empty scorecard: a wiring bug wearing the costume of an
+    unlucky run. This is the same defect the reading-level loop hit at its own
+    call site, in the sibling script, and no CI job type-checks ``scripts/``.
+    """
+
+    async def _complete(**_kwargs: object) -> Completion:
+        """Answer as the real adapter does, with a wrapped completion."""
+        return _completion(json.dumps(dict.fromkeys(_CRITERIA_NAMES, 4)))
+
+    verdict = await judge_book(
+        mock.Mock(complete=_complete),
+        Judge("j", "m", ("p",), "lab"),
+        {"title": "T", "nodes": []},
+        leg="alpha",
+        family="other",
+        brief_index=0,
+    )
+
+    assert verdict.error is None
+    assert verdict.scores == dict.fromkeys(_CRITERIA_NAMES, 4.0)

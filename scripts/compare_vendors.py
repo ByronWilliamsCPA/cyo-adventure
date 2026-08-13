@@ -113,6 +113,7 @@ if TYPE_CHECKING:
     from collections.abc import Sequence
 
     from cyo_adventure.generation.provider import GenerationProvider
+    from cyo_adventure.generation.usage import Completion
 
 _REPO_ROOT: Final[Path] = Path(__file__).resolve().parent.parent
 
@@ -497,7 +498,9 @@ class _CapOverrideProvider:
     inner: GenerationProvider
     max_tokens: int
 
-    async def complete(self, *, system: str, prompt: str, max_tokens: int) -> str:
+    async def complete(
+        self, *, system: str, prompt: str, max_tokens: int
+    ) -> Completion:
         """Delegate with the configured cap in place of the requested one.
 
         Args:
@@ -507,7 +510,11 @@ class _CapOverrideProvider:
                 override exists precisely to replace it.
 
         Returns:
-            The inner provider's completion.
+            The inner provider's completion, forwarded unchanged. The
+            annotation matters more than it looks: declared as ``str`` this
+            wrapper stopped satisfying :class:`GenerationProvider` structurally
+            and invited the next caller to treat a ``Completion`` as text, which
+            is the defect the judge panel was carrying in the sibling script.
         """
         del max_tokens
         return await self.inner.complete(
