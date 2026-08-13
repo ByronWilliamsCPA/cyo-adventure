@@ -398,14 +398,58 @@ class TestNormalizeLegacyMetadata:
         assert "topology" not in meta
 
 
+def _to_legacy_shape(blob: dict[str, object]) -> dict[str, object]:
+    """Return ``blob`` rewritten back into the retired pre-v2 shape.
+
+    The 3 catalog entries below were migrated to schema v2 on disk, so they no longer
+    exercise the normalizer as committed. Rather than delete that coverage (the
+    normalizer is live code, reachable by any future manifest entry authored against
+    the old shape) or freeze a copy of the old files as fixtures (which would drift
+    from the real documents), this reverses the three normalizations against the real
+    file and lets the test assert the round trip.
+
+    The synthesized ``ending.type`` value is deliberately the v2 ``kind``: the reverse
+    map is lossy, and its value is immaterial because
+    :func:`_normalize_legacy_endings` keys only on ``"kind" not in ending` and then
+    replaces the ending wholesale from the skeleton.
+
+    Args:
+        blob: A current-schema fill, mutated in place.
+
+    Returns:
+        The same dict, now carrying ``schema_version`` 1.0, no ``metadata.topology``
+        or ``metadata.production_eligible``, and ``{id, type, title}`` endings.
+    """
+    blob["schema_version"] = "1.0"
+    meta = blob["metadata"]
+    assert isinstance(meta, dict)
+    meta.pop("topology", None)
+    meta.pop("production_eligible", None)
+    nodes = blob["nodes"]
+    assert isinstance(nodes, list)
+    for node in nodes:
+        assert isinstance(node, dict)
+        ending = node.get("ending")
+        if not isinstance(ending, dict):
+            continue
+        node["ending"] = {
+            "id": ending["id"],
+            "type": ending["kind"],
+            "title": ending["title"],
+        }
+    return blob
+
+
 @pytest.mark.unit
 class TestRealLegacyFilesNormalizeCleanly:
-    """Regression: the 3 documented legacy files pass run_gate once normalized.
+    """Regression: a legacy-shaped version of each documented file clears run_gate.
 
-    Empirically verifies the normalization recipe against the actual repo
-    files rather than a synthetic stand-in, matching how these 3 files were
-    originally investigated. Files are small (11-32 nodes), so running the
-    real validator gate here stays fast.
+    Empirically verifies the normalization recipe against the actual repo files rather
+    than a synthetic stand-in, matching how these 3 files were originally investigated.
+    Since those files are now committed at schema v2, each is rewritten back to the
+    retired shape by :func:`_to_legacy_shape` first, so this asserts the full round
+    trip and stays true whatever the files' committed schema version becomes. Files
+    are small (11-32 nodes), so running the real validator gate here stays fast.
     """
 
     @pytest.mark.parametrize("title", _LEGACY_TITLES)
@@ -414,7 +458,7 @@ class TestRealLegacyFilesNormalizeCleanly:
     ) -> None:
         monkeypatch.chdir(_REPO_ROOT)
         entry = _entry(title)
-        blob = _load_blob(_REPO_ROOT, entry.path)
+        blob = _to_legacy_shape(_load_blob(_REPO_ROOT, entry.path))
         assert _needs_legacy_normalization(blob) is True
 
         skeleton = _load_reference_skeleton(entry.skeleton_band, entry.skeleton_slug)
@@ -422,6 +466,21 @@ class TestRealLegacyFilesNormalizeCleanly:
 
         result = run_gate(normalized)
         assert result.blocked is False, [f.message for f in result.report.errors]
+
+    @pytest.mark.parametrize("title", _LEGACY_TITLES)
+    def test_committed_file_needs_no_normalization(
+        self, title: str, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """The committed files are v2, so the import path must leave them alone.
+
+        The other half of the migration: if a file regressed to the legacy shape, or a
+        new legacy fill were committed under one of these entries, this fails.
+        """
+        monkeypatch.chdir(_REPO_ROOT)
+        entry = _entry(title)
+        blob = _load_blob(_REPO_ROOT, entry.path)
+        assert _needs_legacy_normalization(blob) is False
+        assert run_gate(blob).blocked is False
 
 
 @pytest.mark.unit
