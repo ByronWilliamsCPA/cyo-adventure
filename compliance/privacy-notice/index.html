@@ -3568,7 +3568,15 @@ vendors (OpenRouter's account-wide Zero Data Retention setting and whether it co
 downstream model provider it routes to; which Anthropic terms tier this account is on; whether
 Google Perspective specifically is covered by the Cloud DPA). Please confirm whether this
 statement can stand as written, needs to be qualified per vendor, or should be held until the
-checklist closes before this notice is published.]</p>
+checklist closes before this notice is published. <strong>Sharpened 2026-08-12</strong>: for one vendor this is
+no longer an open question but a probable contradiction. Kids Web Services' Parent Verification
+terms (retained at <code>vendor-terms/epic-kws/</code>) list eight activities at cl. 2, and cl. 5 then makes
+KWS our processor for only two of them and states that for the other six "you and KWS are each
+independent
+controllers". The <strong>General</strong> Terms' cl. 5.1 then says the record they build is theirs and "is used to provide KWS
+Services to you and our other customers", which is the vendor using it for their own purposes.
+Read straight, that is the opposite of the sentence above. Please rule on whether the Kids Web
+Services row must be lifted out of this paragraph and described separately.]</p>
 <table>
 <thead>
 <tr>
@@ -3619,23 +3627,41 @@ checklist closes before this notice is published.]</p>
 Services when the check <em>starts</em>, not when it succeeds. If you abandon it, if it comes back
 refused, or if you never create an account at all after that point, your email address has
 still been sent to them and is subject to their handling of it, not ours. There is no version
-of this step that confirms an adult without disclosing the address first. [COUNSEL: (a) does
-this need to be surfaced <em>before</em> the guardian triggers the send rather than only in this
-notice; (b) Epic operates Kids Web Services from both US and EU entities and we have not
-established which one receives our traffic or under what transfer mechanism, so the "every
-company above is based in the United States" statement below does not currently cover this
-row; &copy; <code>processor-dpa-checklist.md</code> carries an Epic entry, but it records no DPA requested
-and none reviewed, so the processor-only claim at the top of this section is asserted for this
-vendor without a DPA behind it.]</p>
+of this step that confirms an adult without disclosing the address first.</p>
+<p>Kids Web Services also <strong>keeps</strong> a record of the check. Their terms describe it as a hashed
+version of your email address together with how and when you were verified, the country your
+device was in, and which apps you have verified for, held by them and reused across the other
+services they provide. We do not receive that record and cannot see it.</p>
+<p>[COUNSEL: three of the four asks previously here have moved.
+(a) <strong>Answered 2026-08-12</strong>: the disclosure is now made <em>before</em> the guardian triggers the send,
+in copy on the verification page itself, and its position ahead of the submit button is asserted
+by test rather than left to convention. This notice is no longer the only place it appears.
+(b) <strong>Answered 2026-08-12, and neither prior guess was right</strong>: the counterparty is Kids Web
+Services Ltd, a company incorporated in <strong>England</strong> (Company Number 13351982), governed by the
+laws of England and Wales. So this is a US-to-UK transfer, not US-to-US or US-to-EU, and the
+"every company above is based in the United States" statement below is wrong rather than merely
+uncovered. Please confirm the mechanism to name (UK IDTA, or the UK Addendum to the EU SCCs).
+&copy; <strong>Narrowed 2026-08-12</strong>: a Data Processing Addendum does bind us, incorporated by reference
+at General Terms cl. 6, but it has not been retrieved or read, and per the note above a DPA
+would not reach the six activities their terms treat as independent-controller processing.
+(d) <strong>New</strong>: is the paragraph immediately above sufficient for what KWS retains and reuses, or
+does Art. 13(1)(e) require naming them as an independent controller for that part in the table
+itself? It is the one thing a guardian would not infer from "we send them your email address to
+check you are an adult".]</p>
 <p>We do not sell your or your child's information, and we do not use it for advertising — we
 have no advertising or marketing SDKs of any kind in the parts of the app your child uses.</p>
-<p><strong>International transfers</strong>: every company above is based in the United States, with one
-exception we cannot yet state either way: Epic operates Kids Web Services from both a US and
-an EU entity, and we have not established which one receives our traffic. Until we have, treat
-the sentence before this one as covering every row except the Kids Web Services row. [COUNSEL:
-confirm the transfer mechanism (Standard Contractual Clauses or DPF self-certification) we
-should represent here is actually executed before publication — as of this draft, that
-paperwork (<code>coppa-gdpr-remediation-plan.md</code> Phase 5) has not yet been completed.]</p>
+<p><strong>International transfers</strong>: every company above is based in the United States except Kids Web
+Services, which is a <strong>United Kingdom</strong> company: Kids Web Services Ltd, incorporated in England,
+with its registered office in London. Your email address goes to the UK when the adult check
+runs. [COUNSEL: this replaces a hedge, corrected 2026-08-12 from the vendor's own terms
+(<code>vendor-terms/epic-kws/</code>), which earlier drafts recorded as an unresolved choice between a US
+and an EU Epic entity. It was neither. Two asks follow: confirm the transfer mechanism to
+represent here for a US-to-UK transfer (the UK IDTA, or the UK Addendum to the EU SCCs; the
+Data Privacy Framework does not apply in this direction), and confirm it is actually executed
+before publication. As of this draft that paperwork (<code>coppa-gdpr-remediation-plan.md</code> Phase 5)
+has not been completed for any vendor. Note the interaction with the decision to keep UK users
+out of scope: that decision is about who uses the app, and does not follow through to a
+processor that is itself a UK company.]</p>
 <h3 id="how-long-we-keep-information">How long we keep information<a class="headerlink" href="#how-long-we-keep-information" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -3743,7 +3769,7 @@ interim manual process.]</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 12, 2026 20:28:02 UTC">August 12, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 12, 2026 23:53:38 UTC">August 12, 2026</span>
   </span>
 
     

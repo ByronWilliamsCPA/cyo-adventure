@@ -3655,29 +3655,46 @@ only settled by decision.</strong></p>
 <h2 id="5-what-remains">5. What remains<a class="headerlink" href="#5-what-remains" title="Permanent link">&para;</a></h2>
 <h3 id="blocks-switching-the-flag-on">Blocks switching the flag on<a class="headerlink" href="#blocks-switching-the-flag-on" title="Permanent link">&para;</a></h3>
 <ol>
-<li><strong>O-125: no DPA with Epic.</strong> Three parts, all open: execute the DPA; determine which Epic entity
-   receives the adult's email and under what transfer mechanism; ensure the pre-send disclosure exists
-   before the first real send. The check discloses a real adult's email to Epic at the <em>start</em> of the flow,
+<li><strong>O-125: no DPA with Epic.</strong> Three parts. Two are open: execute the DPA, and determine which Epic
+   entity receives the adult's email and under what transfer mechanism. The third, the pre-send
+   disclosure, was addressed 2026-08-12: <code>GuardianVerificationPage</code> now names what is sent (email
+   address, selected country, language, nothing child-derived) immediately above the button that
+   sends it. Note why the page had to carry it. KWS's own "Verify you're an adult" email says "CYO
+   Adventure will share your email address with KWS", which reads like the disclosure but cannot be
+   one: that email exists only because the address was already shared, so it is post-send by
+   construction. The check discloses a real adult's email to Epic at the <em>start</em> of the flow,
    so this is the gate in front of any production send, not paperwork trailing a live integration. The DPA
    checklist row says so in those words.</li>
-<li><strong>Gate 3: production is unwired.</strong> The homelab-infra compose for this service contains <strong>zero</strong> <code>KWS_</code>
-   references. A production webhook round trip must be <em>verified</em>, not assumed, and the memory of how
-   staging behaved does not transfer: an edge rule once ate four webhook retries with zero origin POSTs,
-   which reads exactly like "the vendor never sent."</li>
-<li><strong>Closed 2026-08-11: PR #679 merged</strong>, so the parent's return leg no longer 404s. Until it landed,
+<li><strong>Gate 3: production is wired, but unexercised. Corrected 2026-08-12.</strong> The homelab-infra compose for
+   this service carried <strong>zero</strong> <code>KWS_</code> references when this document was written; it now carries 13,
+   merged as <code>be193698</code> (homelab-infra #660). Nothing is switched on by that, and the service attests to
+   it directly: <code>GET /api/v1/health/ready</code> reports <code>kws_verification.state</code> as <code>"unconfigured"</code> on
+   production, because the four credentials are blank.</li>
+</ol>
+<p>They were briefly set on 2026-08-12 <strong>without</strong> <code>KWS_ENABLED_METHODS</code>, which is a boot failure by
+   design (<code>_require_declared_kws_methods_when_configured</code>), and since <code>settings = Settings()</code> is
+   module-level, uvicorn never imported the app. Recovery was to blank the four credentials again. Two
+   things that cost time and are worth carrying forward: the credentials and the methods value must go
+   into a <strong>single</strong> Portainer save, and the outage presented as "the frontend won't start" because the
+   frontend's <code>depends_on: backend: condition: service_healthy</code> turned a backend config error into a
+   whole-origin Traefik 404. That coupling is removed by homelab-infra #661; until it deploys, the same
+   mistake still takes the reader offline rather than just the API.</p>
+<p>What remains is unchanged in substance: a production webhook round trip must be <em>verified</em>, not
+   assumed, and the memory of how staging behaved does not transfer, since an edge rule once ate four
+   webhook retries with zero origin POSTs, which reads exactly like "the vendor never sent."
+3. <strong>Closed 2026-08-11: PR #679 merged</strong>, so the parent's return leg no longer 404s. Until it landed,
    the service worker answered <em>every</em> navigation on the origin, and <code>api/kws_redirect.py</code> renders
    server-side, so a parent who completed Epic's check landed on a 404. That never blocked the
    <em>mechanism</em>: only the webhook resolves an attempt, and it resolves it regardless. It did block
    switching the flag on, because the last thing a real parent saw at the end of a successful adult
    check would be a broken page, with no signal that the check in fact worked. The shape of the failure
    is worth keeping even though the cause is fixed: it was invisible to every tool we would reach for,
-   since curl, Postman, and CI have no service worker and all saw the page fine.</li>
-<li><strong>The flag flip revokes existing accounts.</strong> Every guardian who consented under typed-name-only,
+   since curl, Postman, and CI have no service worker and all saw the page fine.
+4. <strong>The flag flip revokes existing accounts.</strong> Every guardian who consented under typed-name-only,
    including the owner's own account, loses child-profile creation until they re-verify. Staging bites
    first. This is the intended behavior per the standing decision that verification sits <em>before</em> admin
    approval and that prior consenters must re-verify, but it should be a deliberate act with a
-   communication attached, not a surprise.</li>
-</ol>
+   communication attached, not a surprise.</p>
 <h3 id="does-not-block-but-is-owed">Does not block, but is owed<a class="headerlink" href="#does-not-block-but-is-owed" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>Q1 needs run 2</strong>: the <code>+verified</code> alias, with an observation window of at least two hours.</li>
@@ -3875,7 +3892,7 @@ mutable <code>latest</code> tag cannot supply anyway.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 12, 2026 02:23:19 UTC">August 12, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 12, 2026 23:53:38 UTC">August 12, 2026</span>
   </span>
 
     

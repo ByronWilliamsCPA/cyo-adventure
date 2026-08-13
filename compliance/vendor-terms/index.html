@@ -12,7 +12,7 @@
         <meta name="author" content="Byron Williams">
       
       
-        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/compliance/processor-dpa-checklist/">
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/compliance/vendor-terms/">
       
       
       
@@ -25,7 +25,7 @@
     
     
       
-        <title>Phase 5 Processor DPA Checklist - CYO Adventure</title>
+        <title>Retained Vendor Terms - CYO Adventure</title>
       
     
     
@@ -88,7 +88,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#how-to-work-this-checklist" class="md-skip">
+        <a href="#why-this-exists" class="md-skip">
           Skip to content
         </a>
       
@@ -122,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Phase 5 Processor DPA Checklist
+              Retained Vendor Terms
             
           </span>
         </div>
@@ -3267,10 +3267,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#how-to-work-this-checklist" class="md-nav__link">
+  <a href="#why-this-exists" class="md-nav__link">
     <span class="md-ellipsis">
       
-        How to work this checklist
+        Why this exists
       
     </span>
   </a>
@@ -3278,10 +3278,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#checklist" class="md-nav__link">
+  <a href="#layout" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Checklist
+        Layout
       
     </span>
   </a>
@@ -3289,10 +3289,43 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#notes" class="md-nav__link">
+  <a href="#adding-a-document" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Notes
+        Adding a document
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#licensing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Licensing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Index
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-not-stored-here" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is not stored here
       
     </span>
   </a>
@@ -3330,136 +3363,112 @@
   
 
 
-  <h1>Phase 5 Processor DPA Checklist</h1>
+  <h1>Retained Vendor Terms</h1>
 
-<p>Status: working checklist, not a compliance record. Owner: Byron Williams (execution decided
-2026-07-20: the account owner works through this directly, per
-<code>coppa-gdpr-remediation-plan.md</code> Section 6). Once a row is executed, record the outcome in
-<code>docs/planning/privacy-model.md</code>'s processor list (Phase 5c) and
-<code>records-of-processing-activities.md</code> Section &#8536;, not just here — this file is the to-do
-list, not the durable record.</p>
-<p>Every processor below is US-hosted (<code>gdpr-compliance-review.md</code>'s "all current users are US"
-finding), so a DPA alone is not the full transfer-mechanism story if any EEA/UK user is ever
-in scope (currently: none, per the 2026-07-20 decision recorded in the remediation plan) —
-each row also needs Standard Contractual Clauses or Data Privacy Framework self-certification
-confirmed before that changes, not necessarily before this checklist is worked through.</p>
-<h2 id="how-to-work-this-checklist">How to work this checklist<a class="headerlink" href="#how-to-work-this-checklist" title="Permanent link">&para;</a></h2>
-<p>For each row: open the DPA link, confirm the current version, execute it (most of these are
-self-serve click-through or dashboard-signed, not something requiring a sales call), and note
-the execution date and any deviation from the standard terms. OpenRouter is the one row that
-needs an actual conversation, not just a click-through (see its row).</p>
-<h2 id="checklist">Checklist<a class="headerlink" href="#checklist" title="Permanent link">&para;</a></h2>
+<p>Created 2026-08-12, when the Kids Web Services terms became the first vendor documents cited by
+clause number in <code>docs/security/assurance-register.md</code> and <code>processor-dpa-checklist.md</code>.</p>
+<h2 id="why-this-exists">Why this exists<a class="headerlink" href="#why-this-exists" title="Permanent link">&para;</a></h2>
+<p>Compliance records here cite vendor terms by clause number: "PV Terms clause 5", "General Terms
+clause 6". A clause number is only meaningful against a specific version of a specific document,
+and vendor terms change under you. Kids Web Services' Parent Verification terms reserve the right
+to change verification methods "upon reasonable notice (up to 14 days)", with continued use
+counting as agreement (clause 4). An acceptance recorded against methods that no longer exist is
+worse than no record, because it reads as current.</p>
+<p>So the rule is: <strong>if a compliance record cites a vendor document by clause, the bytes of that
+document live here.</strong> A link to the vendor's live page is not a substitute. The live page is
+whatever the vendor is serving today; the citation was written against what they served on a
+particular day, and only one of those two is a fact about our decision.</p>
+<h2 id="layout">Layout<a class="headerlink" href="#layout" title="Permanent link">&para;</a></h2>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>docs/compliance/vendor-terms/
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>├── README.md                        &lt;- this file: the convention plus the index
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>└── &lt;vendor-slug&gt;/
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    └── &lt;document-slug&gt;-&lt;version-date&gt;.pdf
+</span></code></pre></div>
+<p><code>&lt;version-date&gt;</code> is <strong>the vendor's own "Last updated" date</strong>, ISO-formatted, not the date we
+downloaded it. Two consequences, both deliberate:</p>
+<ul>
+<li>A clause citation elsewhere in the repo can name the exact file, and the filename alone says
+  which version it is.</li>
+<li>Supersession is visible from <code>ls</code>. Two files with the same document slug and different dates
+  means the terms changed, and the older one is what some earlier decision was made against.</li>
+</ul>
+<p><strong>Never overwrite or delete a superseded document.</strong> When a vendor issues a new version, add it
+alongside. The question a superseded file answers, "what did we actually agree to when we made
+that call", has no other source once the file is gone.</p>
+<h2 id="adding-a-document">Adding a document<a class="headerlink" href="#adding-a-document" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Save the PDF as the vendor serves it. Do not re-print, re-export, or flatten it: the retained
+   artifact should hash to the same bytes the vendor published, or the hash below proves nothing
+   about the vendor's document.</li>
+<li>Name it <code>&lt;document-slug&gt;-&lt;version-date&gt;.pdf</code> using the vendor's own "Last updated" date.</li>
+<li><code>sha256sum</code> it and add a row to the index below.</li>
+<li>Add or extend the <code>REUSE.toml</code> annotation (see "Licensing" below). The blanket <code>docs/**</code> rule
+   marks everything CC-BY-4.0 and copyright Byron Williams, which for a vendor's contract would be
+   an affirmatively false ownership claim. Every file in this directory needs its own annotation
+   naming the actual rights holder.</li>
+<li>Record which compliance rows cite it, in the index's last column. That column is what makes a
+   terms change actionable: when a new version arrives, it names the rows to re-check.</li>
+</ol>
+<h2 id="licensing">Licensing<a class="headerlink" href="#licensing" title="Permanent link">&para;</a></h2>
+<p>These are third-party documents, retained as a record of terms presented to us. They are not our
+work, not licensed to us for redistribution, and are annotated in <code>REUSE.toml</code> as
+<code>LicenseRef-Vendor-Terms</code> with the vendor as copyright holder. See
+<code>LICENSES/LicenseRef-Vendor-Terms.txt</code>.</p>
+<h2 id="index">Index<a class="headerlink" href="#index" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
-<th>Processor</th>
-<th>What they receive</th>
-<th>DPA / terms link</th>
-<th>Standard mechanism</th>
-<th>Status</th>
+<th>Vendor</th>
+<th>Contracting entity</th>
+<th>Document</th>
+<th>Vendor version date</th>
+<th>Retrieved</th>
+<th>SHA-256</th>
+<th>Cited by</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Supabase</td>
-<td>Full application database (Postgres, auth)</td>
-<td><a href="https://supabase.com/legal/dpa">supabase.com/legal/dpa</a> (request the signable PandaDoc version from the dashboard's legal-documents page; <a href="https://trust.supabase.io/documents">trust.supabase.io/documents</a> has supporting trust-center material)</td>
-<td>DPA incorporates SCCs + the UK ICO addendum</td>
-<td>Not yet executed</td>
-</tr>
-<tr>
-<td>OpenRouter (+ downstream model providers it routes to)</td>
-<td>Story-generation prompts (PII-guarded)</td>
-<td><a href="https://openrouter.ai/docs/guides/features/zdr">openrouter.ai/docs/guides/features/zdr</a> for the Zero Data Retention feature itself; DPA/enterprise terms via <a href="https://openrouter.ai/enterprise">openrouter.ai/enterprise</a></td>
-<td>ZDR is enforced by a guardrail on a dedicated, key-scoped workspace (see Status). Since 2026-07-28 this backs ADR-003's production-routing control rather than a dispatch blocker, which makes keeping it verified more important, not less: it is now the control, not a second layer under a vendor rule</td>
-<td><strong>Routing controls CONFIGURED 2026-07-28; DPA still NOT EXECUTED.</strong> A dedicated OpenRouter workspace was created for this project with its own API key, and a guardrail set to require ZDR endpoints across non-frontier, Anthropic, OpenAI, Google, and xAI routing, plus all three data-training paths disabled (paid-trains, free-trains, free-publishes-prompts). No individual provider or model is blocked: eligibility is by data policy, by design. The plugins/tools carve-out is closed for this app and verified in code, not assumed: the generation request body has no <code>plugins</code> or <code>tools</code> key (<code>generation/providers/openrouter.py:154-164</code>). <strong>Still open</strong>: (a) execute the DPA / enterprise terms, which a routing guardrail does not substitute for; (b) re-confirm guardrail state at P7-08 and on any credential rotation, since console settings are mutable.</td>
-</tr>
-<tr>
-<td>AWS Bedrock (OpenRouter sub-processor)</td>
-<td>Story-generation prompts (PII-guarded), for Anthropic-family traffic OpenRouter routes here since the 2026-07-28 ZDR toggles disabled first-party Anthropic endpoints</td>
-<td>No direct link: coverage would flow through OpenRouter's own sub-processor terms, not a DPA CYO Adventure signs</td>
-<td><strong>Sub-processor, not a direct counterparty.</strong> There is no contractual relationship to execute here; the mechanism is whatever OpenRouter's DPA/enterprise terms commit for its sub-processors, which is part of what the OpenRouter row above has to establish</td>
-<td>Not applicable as a direct DPA. <strong>Open</strong>: confirm, as part of the OpenRouter conversation, that its terms name and bind its sub-processors, and that ZDR routing actually holds at this endpoint</td>
-</tr>
-<tr>
-<td>Microsoft Azure (OpenRouter sub-processor)</td>
-<td>Story-generation prompts (PII-guarded), for OpenAI-family traffic OpenRouter routes here since the 2026-07-28 ZDR toggles disabled first-party OpenAI endpoints</td>
-<td>As above: via OpenRouter's sub-processor terms</td>
-<td><strong>Sub-processor, not a direct counterparty</strong>; same mechanism as the Bedrock row</td>
-<td>Not applicable as a direct DPA; same open item as the Bedrock row</td>
-</tr>
-<tr>
-<td>Google Vertex (OpenRouter sub-processor)</td>
-<td>Story-generation prompts (PII-guarded), for Google-family traffic OpenRouter routes here since the 2026-07-28 ZDR toggle disabled AI Studio endpoints</td>
-<td>As above: via OpenRouter's sub-processor terms</td>
-<td><strong>Sub-processor, not a direct counterparty</strong>; same mechanism as the Bedrock row. Distinct from the Google Perspective / Gemini row below, which is a direct integration</td>
-<td>Not applicable as a direct DPA; same open item as the Bedrock row</td>
-</tr>
-<tr>
-<td>Anthropic (direct)</td>
-<td>Story-generation prompts (PII-guarded), same guard as above</td>
-<td><a href="https://privacy.claude.com/en/articles/7996862-how-do-i-view-and-sign-your-data-processing-addendum-dpa">privacy.claude.com/en/articles/7996862</a></td>
-<td>DPA is incorporated into Anthropic's <strong>Commercial</strong> Terms of Service automatically once accepted; confirm this account is actually on commercial terms, not the free/consumer terms, since the DPA does not apply to <code>claude.ai</code> free accounts</td>
-<td>Not yet confirmed which terms tier this account is under; execute after confirming. <strong>Row stays as of 2026-07-28, and is not superseded by the OpenRouter ZDR toggles.</strong> Those toggles remove first-party Anthropic endpoints from the <em>OpenRouter</em> route only. The direct leg is a separate, built path: <code>AnthropicProvider</code> (<code>generation/providers/anthropic.py</code>) is dispatched whenever <code>generation_provider="anthropic"</code> (<code>generation/provider.py:659-660</code>), the admin allowlist seeds two direct-Anthropic models (<code>generation/allowlist.py</code>), and <code>records-of-processing-activities.md</code> lists "Anthropic (direct)" as a live recipient of request text. That leg inherits none of the OpenRouter guardrail, so this row is more load-bearing than before, not less</td>
-</tr>
-<tr>
-<td>OpenAI Moderation</td>
-<td>Generated story prose, child-typed request text (Stage-0 classifier)</td>
-<td><a href="https://openai.com/policies/data-processing-addendum/">openai.com/policies/data-processing-addendum</a></td>
-<td>30-day API data retention by default, per OpenAI's own DPA terms; supports GDPR/CCPA</td>
-<td>Not yet executed</td>
-</tr>
-<tr>
-<td>Google Perspective / Google Gemini (cover art)</td>
-<td>Generated prose + child-typed text (Perspective); cover-art prompts (Gemini)</td>
-<td><a href="https://cloud.google.com/terms/data-processing-addendum">cloud.google.com/terms/data-processing-addendum</a> (the Cloud DPA); confirm Perspective API specifically is in scope of this DPA or needs its own terms acceptance — the search that produced this checklist could not confirm Perspective's coverage directly, flagged below</td>
-<td><strong>Verify Perspective API is actually covered</strong> by the Cloud DPA (not confirmed by this checklist's research; may need a direct check of the Perspective API terms of service) before treating this row as closed by the Cloud DPA alone</td>
-<td>Not yet executed; Perspective coverage unconfirmed</td>
-</tr>
-<tr>
-<td>Cloudflare (R2)</td>
-<td>Cover images (private bucket, presigned-URL access only)</td>
-<td><a href="https://www.cloudflare.com/cloudflare-customer-dpa/">cloudflare.com/cloudflare-customer-dpa</a>; SCCs at <a href="https://www.cloudflare.com/cloudflare-customer-scc/">cloudflare.com/cloudflare-customer-scc</a></td>
-<td>DPA forms part of the main agreement on acceptance; also DPF-certified per Cloudflare's own trust-hub material</td>
-<td>Not yet executed</td>
+<td>Epic Games (Kids Web Services)</td>
+<td>Kids Web Services Ltd, a private limited company incorporated in England, Company Number 13351982, registered office C/O Shepherd And Wedderburn LLP, 1-6 Lombard Street, London EC3V 9AA, United Kingdom</td>
+<td><a href="epic-kws/kws-general-terms-2026-05-13.pdf">KWS General Terms</a> (12pp)</td>
+<td>2026-05-13</td>
+<td>2026-08-12, supplied by the account owner from the KWS Control Panel</td>
+<td><code>0786d6e425c765baa1320adfc1bc88177fcceb154fe10b4e706d209ddd221cdc</code></td>
+<td><code>assurance-register.md</code> O-125; <code>processor-dpa-checklist.md</code> Epic row; <code>privacy-notice.md</code> transfers paragraph</td>
 </tr>
 <tr>
 <td>Epic Games (Kids Web Services)</td>
-<td><strong>A guardian's email address</strong>, the country they selected, a language tag, and an opaque reference number. No child data of any kind</td>
-<td>Terms retained under the <a href="../vendor-terms/">vendor-terms convention</a>: <a href="../vendor-terms/epic-kws/kws-general-terms-2026-05-13.pdf">General Terms</a> (v. 2026-05-13) and <a href="../vendor-terms/epic-kws/kws-parent-verification-service-terms-2025-08-28.pdf">Parent Verification Service Terms</a> (v. 2025-08-28). <strong>A DPA already binds us</strong>: General Terms cl. 6 and PV Terms cl. 6 both incorporate by reference the addendum at <a href="https://www.kidswebservices.com/data-processing-addendum">kidswebservices.com/data-processing-addendum</a>. It has not been retrieved or read</td>
-<td><strong>UK, not US or EU.</strong> Resolved 2026-08-12 from the retained terms: the counterparty is <strong>Kids Web Services Ltd</strong>, incorporated in England (Company Number 13351982), governed by the laws of England and Wales with exclusive jurisdiction in London (General Terms cl. 12.11). The transfer to price is therefore US-to-UK, so the mechanism is the UK IDTA or the UK Addendum to the EU SCCs, not the DPF. <strong>A DPA will not cover most of it</strong>: PV Terms cl. 5 makes us controller and KWS processor for only two of the eight listed activities (our API transfer of the email, and their email to the parent); for the other six, including the verification itself and the AgeGraph write, it states "you and KWS are each independent controllers", which no DPA governs</td>
-<td><strong>Terms retrieved and read 2026-08-12; nothing executed, and this row is still the only one where that blocks a switch-on rather than trailing a live integration.</strong> The gap changed shape rather than closing: it is no longer "no contract exists" but "a contract exists, its data-protection annex is incorporated by reference, and we have not read it". Added 2026-08-10 when the KWS adult-check gate was built (staging only, against the vendor's Test environment; production flag off). Three properties make it unlike every other row: the address is sent when the check <em>starts</em>, so refused and abandoned applicants are disclosed too; it is therefore the only processor here that receives data about people who never become users; and unlike the rows above, nothing is live in production yet, so the gap is closable before any real family's data moves rather than after. Tracked at assurance-register row <strong>O-125</strong> and DPIA section 2.8</td>
-</tr>
-<tr>
-<td>Sentry</td>
-<td>Error telemetry; hardcoded to exclude child-linked PII by design</td>
-<td><a href="https://sentry.io/legal/dpa/">sentry.io/legal/dpa</a> (current version 5.1.0, 2024-05-29 — confirm no newer version before signing)</td>
-<td>Signable via DocuSign from the Legal &amp; Compliance section of the Sentry org dashboard (Owner/Billing role required)</td>
-<td>Close to a formality given the no-PII-by-design finding (<code>gdpr-compliance-review.md</code>), but "compliant from the start" means closing it rather than assuming it's unnecessary; not yet executed</td>
+<td>as above</td>
+<td><a href="epic-kws/kws-parent-verification-service-terms-2025-08-28.pdf">KWS Service Specific Terms: Parent Verification</a> (3pp)</td>
+<td>2025-08-28</td>
+<td>2026-08-12, supplied by the account owner from the KWS Control Panel</td>
+<td><code>8194f057f5a306ed83c22cb271d4792ca5836431af3909712f1699abfd3e7270</code></td>
+<td><code>assurance-register.md</code> O-122, O-124, O-125; <code>processor-dpa-checklist.md</code> Epic row; <code>privacy-notice.md</code> processor claim and transfers paragraph</td>
 </tr>
 </tbody>
 </table>
-<h2 id="notes">Notes<a class="headerlink" href="#notes" title="Permanent link">&para;</a></h2>
+<p>Verify every retained document still matches its row. Run from this directory; it reads the
+hash and the path out of the table above, so it needs no separate checksum file to drift from
+the index:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>awk<span class="w"> </span>-F<span class="s1">&#39;|&#39;</span><span class="w"> </span><span class="s1">&#39;/^\| Epic/ { p=$4; sub(/^[^(]*\(/, &quot;&quot;, p); sub(/\).*$/, &quot;&quot;, p);</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="s1">    gsub(/[ `]/, &quot;&quot;, $7); print $7 &quot;  &quot; p }&#39;</span><span class="w"> </span>README.md<span class="w"> </span><span class="p">|</span><span class="w"> </span>sha256sum<span class="w"> </span>-c
+</span></code></pre></div>
+<p>Expect one <code>: OK</code> per row and exit 0. A <code>FAILED</code> line means the bytes on disk are not the ones
+the citations elsewhere in the repo were written against, which is a finding, not a filing
+error: re-open every row named in that document's "Cited by" column.</p>
+<p>Uses only <code>sub()</code> rather than gawk's three-argument <code>match()</code>, so it behaves the same under
+mawk, which is the default <code>awk</code> on Debian and Ubuntu.</p>
+<h2 id="what-is-not-stored-here">What is not stored here<a class="headerlink" href="#what-is-not-stored-here" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Every link above was verified live (web search, 2026-07-20) rather than reused from
-  training-data memory or guessed, since a stale/wrong legal-document link in a compliance
-  record is worse than no link. Re-verify before relying on this checklist if it is used long
-  after this date — legal-document URLs and version numbers do change.</li>
-<li>None of these require a paid enterprise tier to access a DPA, based on this checklist's
-  research, except possibly Anthropic (flagged above) — confirm account tier before assuming a
-  self-serve DPA is available if a vendor's page suggests otherwise.</li>
-<li>This checklist does not cover SCC/DPF execution specifically (only DPA execution); revisit
-  that separately if/when the UK/EEA-user status decision (<code>coppa-gdpr-remediation-plan.md</code>
-  Section 2) changes from "none."</li>
-<li><strong>Added 2026-07-28</strong>: the AWS Bedrock, Microsoft Azure, and Google Vertex rows are
-  sub-processor entries, present so the record follows the routing change ADR-003's 2026-07-28
-  amendment describes. They are not rows to execute; they are rows the OpenRouter conversation
-  has to cover.</li>
-<li><strong>Known gap, 2026-07-28</strong>: <strong>Modal</strong> is absent from this checklist despite being a hosted
-  third-party platform (ADR-010: "Modal is a second serverless vendor") with a built generation
-  adapter and configured endpoint settings (<code>core/config.py:529-554</code>). It is also absent from
-  ADR-018 item 6 and <code>docs/planning/privacy-model.md</code>. Add a row before the Modal leg is enabled
-  on any deployed tier; the omission is not an exemption.</li>
+<li><strong>Vendor pages that are not contract documents</strong> (pricing, status, marketing). Link to those.</li>
+<li><strong>Documents incorporated by reference that we have not retrieved.</strong> The KWS General Terms
+  incorporate a Data Processing Addendum by reference at clause 6; that DPA is not in this
+  directory because it has not been retrieved yet. That absence is itself tracked, at
+  <code>assurance-register.md</code> O-125. An incorporated document is as binding as the one that
+  incorporates it, so a gap here is a gap in the record, not a filing detail.</li>
+<li><strong>Anything containing credentials.</strong> Vendor terms are public documents. Order forms, invoices,
+  and Control Panel exports may not be; do not add them without checking.</li>
 </ul>
 <h2 id="relationship-to-other-compliance-documents">Relationship to other compliance documents<a class="headerlink" href="#relationship-to-other-compliance-documents" title="Permanent link">&para;</a></h2>
 <table>
@@ -3471,20 +3480,20 @@ needs an actual conversation, not just a click-through (see its row).</p>
 </thead>
 <tbody>
 <tr>
-<td><code>coppa-gdpr-remediation-plan.md</code></td>
-<td>Phase 5, whose execution-tracking checklist this document is.</td>
+<td><code>processor-dpa-checklist.md</code></td>
+<td>The to-do list of DPAs to execute. Rows there cite documents here.</td>
 </tr>
 <tr>
-<td><code>docs/planning/privacy-model.md</code></td>
-<td>The durable processor-list record Phase 5c asks outcomes to be recorded in, once each row above is executed.</td>
+<td><code>docs/security/assurance-register.md</code></td>
+<td>Where an accepted risk records what it relies on. When a retained document changes, the "Cited by" column names the rows to re-open.</td>
+</tr>
+<tr>
+<td><code>privacy-notice.md</code></td>
+<td>The guardian-facing statement. Its processor and transfer claims must be true against the documents here, not against what we assume a vendor's posture to be.</td>
 </tr>
 <tr>
 <td><code>records-of-processing-activities.md</code></td>
-<td>Section &#8536;'s recipient and transfer-mechanism tables, which should be updated to reflect "executed" status once this checklist closes each row.</td>
-</tr>
-<tr>
-<td><code>information-security-program.md</code></td>
-<td>Section 4's vendor-oversight table and process, which this checklist is the first pass at executing.</td>
+<td>Article 30 record; its recipient and transfer-mechanism entries are downstream of what these documents actually say.</td>
 </tr>
 </tbody>
 </table>
@@ -3520,7 +3529,7 @@ needs an actual conversation, not just a click-through (see its row).</p>
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 20, 2026 15:27:41 UTC">July 20, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 12, 2026 23:53:38 UTC">August 12, 2026</span>
   </span>
 
     
