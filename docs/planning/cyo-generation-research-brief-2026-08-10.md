@@ -116,8 +116,14 @@ design: the effect is **stronger for children than adults**, and the optimum is 
 **two to four successive choices** rather than more. Self-determination theory [42] supplies
 the mechanism, with autonomy as one of three basic psychological needs.
 
-Our per-band rules cap options per choice at two to four. That was arrived at
-independently and turns out to match the meta-analytic optimum.
+Our per-band rules cap options per choice at two to four. That was arrived at independently,
+and it is **not** the same quantity the meta-analysis measured: [41]'s two-to-four moderator
+concerns the number of *successive* choices a participant is given, not the number of options
+presented at any one of them. The two numbers coinciding is a coincidence. **Our branching
+rules are a house convention with no meta-analytic backing**, and the right number of options
+per fork is an open question that has to be settled in a reading context, against option
+complexity and whether a child can anticipate what an option leads to. See the correction in
+section 17.
 
 Survey evidence points the same way. Scholastic's *Kids & Family Reading Report* [52] reports
 **93% of children agree that "my favorite books are the ones I have picked out myself"**
@@ -1994,6 +2000,17 @@ choice, and it cost us a round.
 
 ## 17. Corrections to Part I
 
+- **1.2 misread its own citation, corrected 2026-08-12.** The section stated [41]'s moderator
+  correctly as "two to four **successive** choices", then claimed in the next sentence that our
+  cap of two to four **options per choice** "turns out to match the meta-analytic optimum". Those
+  are different quantities and the match was a coincidence, so the sentence asserted support the
+  meta-analysis does not give. Found by the fourth external review; confirmed by reading our own
+  two adjacent sentences, with no external check needed. The branching rules are unchanged and
+  now stand explicitly as a house convention. The same review reports two further problems with
+  how [41] is usually read, that the three-to-five-options result was not robust under
+  random-effects analysis and that the child-versus-adult moderator was model-dependent. Both
+  are claims about the paper's internals that we have not yet verified against it, so 1.2's
+  "stronger for children than adults" is flagged pending that check rather than changed.
 - **Three edits were made to Part I's own text on 2026-08-11**, and they are the only ones. The
   provenance banner was added at the head of the document; section 7's methods bullet now reads
   "separate *model-evaluator* instances" and "inter-model agreement" where it read "separate *rater*
