@@ -10,19 +10,24 @@ Rule application order (per ``docs/planning/validator-rules.md``
 1. Layer 1 (L1-1..L1-8): graph structure, schema conformance, logic.
 2. **Early return on any L1 ERROR**: the graph must be sound before a
    state-space walk is meaningful, and the document may not even parse.
-3. Policy (PL-15..PL-18): age-safety and shape invariants on the parsed
+3. PL-27: retained ``<<FILL`` directive check, but only when the caller
+   passes ``context="fill_result"``. Runs ahead of the rest of the policy
+   layer so an unwritten book's first finding names that cause. Under the
+   default ``"skeleton"`` posture it does not run at all, because a
+   catalog skeleton's bodies are directives by construction (AL-310).
+4. Policy (PL-15..PL-18): age-safety and shape invariants on the parsed
    model (forbidden ending kinds, content ceilings, floors, topology).
-4. Layer 2 (L2-9..L2-13): state-space walk, Tier-2 only (Tier-1 skips). L2-13
+5. Layer 2 (L2-9..L2-13): state-space walk, Tier-2 only (Tier-1 skips). L2-13
    is a WARNING-only scale advisory and never sets ``blocked``.
-5. CH-*: character envelope rules (ADR-028), participating books only (a
+6. CH-*: character envelope rules (ADR-028), participating books only (a
    book that neither declares ``accepts_character`` nor uses a reserved
    canonical name gets an empty report from this step). Not every CH-* id
    has landed yet; see ``validator/character.py``.
-6. RL-13: advisory reading-level check (WARNING, never blocks).
-7. CG-1..CG-4: advisory choice-grammar checks (WARNING, never blocks),
+7. RL-13: advisory reading-level check (WARNING, never blocks).
+8. CG-1..CG-4: advisory choice-grammar checks (WARNING, never blocks),
    gated behind ``enforce_grammar`` (default False; D3/D11 grandfathering,
    see ``validator/choice_grammar.py``).
-8. SAFE-14: safety content check (Phase-2 stub, always empty).
+9. SAFE-14: safety content check (Phase-2 stub, always empty).
 
 Blocking semantics
 ------------------
@@ -41,7 +46,7 @@ without changing this function.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 from pydantic import ValidationError as PydanticValidationError
 
@@ -50,7 +55,7 @@ from cyo_adventure.validator.character import validate_character
 from cyo_adventure.validator.choice_grammar import check_choice_grammar
 from cyo_adventure.validator.layer1 import Scale, validate_layer1
 from cyo_adventure.validator.layer2 import validate_layer2
-from cyo_adventure.validator.policy import validate_policy
+from cyo_adventure.validator.policy import check_fill_residue, validate_policy
 from cyo_adventure.validator.reading_level import check_reading_level
 from cyo_adventure.validator.report import (
     Severity,
@@ -61,6 +66,17 @@ from cyo_adventure.validator.safety import check_safety
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
+
+
+GateContext = Literal["skeleton", "fill_result"]
+"""What the caller is validating, which decides whether PL-27 runs.
+
+``"skeleton"`` is catalog time: node bodies are ``<<FILL ...>>`` directives by
+construction and every checker's tolerance for them is correct. ``"fill_result"``
+is post-generation: a retained directive means the node was never written, and
+PL-27 fails on it. One distinction, no new checker, no regression to the
+catalog-time path (AL-310).
+"""
 
 
 @dataclass(frozen=True, slots=True)
@@ -76,11 +92,17 @@ class GateResult:
         safety_flagged: ``True`` when any finding with rule_id ``"SAFE-14"``
             is present. Always ``False`` in Phase 2 (stub is empty), but
             computed honestly so Phase 3 does not require changes here.
+        context: The posture this result was produced under. Recorded rather
+            than inferred so a downstream reader can tell a ``blocked=False``
+            that cleared PL-27 from one that never ran it; AL-309's defect was
+            an optional argument that changed which checks ran while leaving
+            the verdict spelled identically.
     """
 
     report: ValidationReport
     blocked: bool
     safety_flagged: bool
+    context: GateContext = "skeleton"
 
 
 def run_gate(
@@ -88,6 +110,7 @@ def run_gate(
     scale: Scale = "standard",
     *,
     enforce_grammar: bool = False,
+    context: GateContext = "skeleton",
 ) -> GateResult:
     """Run all validation layers and return a combined gate result.
 
@@ -105,16 +128,20 @@ def run_gate(
             unaffected; a future skeleton-promotion path opts in explicitly
             (D3/D11). CG-* findings are WARNING-only and never set
             ``blocked`` regardless of this flag.
+        context: Whether ``data`` is a catalog-time ``"skeleton"`` (the
+            default, where ``<<FILL ...>>`` directives are expected) or a
+            ``"fill_result"`` (where a retained directive is a blocking PL-27
+            failure). Recorded on the result either way.
 
     Returns:
-        GateResult: The merged report, block status, and safety flag.
+        GateResult: The merged report, block status, safety flag, and the
+        context the run was made under.
     """
     merged = ValidationReport()
 
     # --- Layer 1: graph structure, schema, logic ---
     l1_report = validate_layer1(data, scale)
-    for finding in l1_report.findings:
-        merged.add(finding)
+    merged.extend(l1_report)
 
     if not l1_report.ok:
         # The graph is structurally unsound; the document may not even parse.
@@ -123,6 +150,7 @@ def run_gate(
             report=merged,
             blocked=True,
             safety_flagged=False,
+            context=context,
         )
 
     # --- Parse: Layer 1 includes L1-1 schema conformance, so model_validate
@@ -135,40 +163,36 @@ def run_gate(
             report=merged,
             blocked=True,
             safety_flagged=False,
+            context=context,
         )
 
+    # --- PL-27: a fill result may not retain a <<FILL directive. Runs before
+    # the rest of the policy layer so the first finding a reader sees on an
+    # unwritten book names the actual cause, rather than whatever downstream
+    # rule happens to trip over a directive-shaped body first. ---
+    if context == "fill_result":
+        merged.extend(check_fill_residue(story))
+
     # --- Policy layer: age-safety and shape invariants (PL-15..PL-18) ---
-    policy_report = validate_policy(story)
-    for finding in policy_report.findings:
-        merged.add(finding)
+    merged.extend(validate_policy(story))
 
     # --- Layer 2: state-space walk (Tier-2 only; Tier-1 short-circuits) ---
-    l2_report = validate_layer2(story)
-    for finding in l2_report.findings:
-        merged.add(finding)
+    merged.extend(validate_layer2(story))
 
     # --- CH-*: character envelope rules (ADR-028), participating books only;
     # validate_character returns an empty report for a book that neither opts
     # in nor uses a reserved name. ---
-    ch_report = validate_character(story)
-    for finding in ch_report.findings:
-        merged.add(finding)
+    merged.extend(validate_character(story))
 
     # --- RL-13: advisory reading-level check (WARNING, never blocks) ---
-    rl_report = check_reading_level(story)
-    for finding in rl_report.findings:
-        merged.add(finding)
+    merged.extend(check_reading_level(story))
 
     # --- CG-1..CG-4: advisory choice-grammar checks (WARNING, never blocks,
     # gated behind enforce_grammar per D3/D11 grandfathering) ---
-    cg_report = check_choice_grammar(story, enforce_grammar=enforce_grammar)
-    for finding in cg_report.findings:
-        merged.add(finding)
+    merged.extend(check_choice_grammar(story, enforce_grammar=enforce_grammar))
 
     # --- SAFE-14: safety check (Phase-2 stub, always empty) ---
-    safe_report = check_safety(story)
-    for finding in safe_report.findings:
-        merged.add(finding)
+    merged.extend(check_safety(story))
 
     # --- Compute blocked and safety_flagged from the merged report ---
     blocked = any(
@@ -181,6 +205,7 @@ def run_gate(
         report=merged,
         blocked=blocked,
         safety_flagged=safety_flagged,
+        context=context,
     )
 
 

@@ -49,7 +49,7 @@ from cyo_adventure.generation.reading_level_loop import (
     ReadingLevelResult,
     run_reading_level_loop,
 )
-from cyo_adventure.validator.gate import GateResult, run_gate
+from cyo_adventure.validator.gate import GateContext, GateResult, run_gate
 from cyo_adventure.validator.report import (
     Severity,
     ValidationFinding,
@@ -210,6 +210,10 @@ class _RepairContext:
         max_repairs: Maximum number of repair attempts.
         stage_log: Accumulated log list; entries are appended in place.
         scale: Story-size profile forwarded to each repair stage's gate.
+        context: Gate posture forwarded to each repair stage. A repair of a
+            fill result is still a fill result, so PL-27 must keep applying
+            across the loop; otherwise a repair attempt would launder an
+            unwritten book past the floor that caught it (AL-310).
         stage1: The Stage 1 fidelity-gate config for the authoring skeleton-fill
             path, or ``None`` (the default) for callers that do no Stage 1 and
             must retain the pre-fold structural-only loop behavior.
@@ -219,6 +223,7 @@ class _RepairContext:
     max_repairs: int
     stage_log: list[str]
     scale: Scale = "standard"
+    context: GateContext = "skeleton"
     stage1: _Stage1Config | None = None
 
 
@@ -301,8 +306,14 @@ def _gate_signature(
     return findings_tuple, _doc_hash(doc)
 
 
-def _empty_blocked_gate() -> GateResult:
+def _empty_blocked_gate(context: GateContext = "skeleton") -> GateResult:
     """Synthesise a minimal blocked gate result for parse-error cases.
+
+    Args:
+        context: The posture the caller was validating under, recorded on
+            the synthetic result so a parse failure is not reported as a
+            skeleton-posture verdict when the caller asked for a stricter
+            one.
 
     Returns:
         A :class:`~cyo_adventure.validator.gate.GateResult` with one
@@ -317,7 +328,9 @@ def _empty_blocked_gate() -> GateResult:
             message="L1-1 schema: provider output was not valid JSON or not a dict",
         )
     )
-    return GateResult(report=report, blocked=True, safety_flagged=False)
+    return GateResult(
+        report=report, blocked=True, safety_flagged=False, context=context
+    )
 
 
 async def _run_one_stage(
@@ -326,6 +339,7 @@ async def _run_one_stage(
     provider: PiiGuardedProvider,
     max_tokens: int,
     scale: Scale = "standard",
+    context: GateContext = "skeleton",
 ) -> tuple[dict[str, object] | None, GateResult]:
     """Run a single generation stage: call provider, parse JSON, run gate.
 
@@ -342,6 +356,12 @@ async def _run_one_stage(
         max_tokens: Maximum tokens for the provider completion.
         scale: Story-size profile forwarded to ``run_gate`` so L1-7 is enforced
             against the same budget the prompt promised.
+        context: Gate posture forwarded to ``run_gate``. Stages that produce
+            prose (Stage B, the skeleton fill, and any repair of either) pass
+            ``"fill_result"`` so PL-27 rejects a node whose body is still a
+            ``<<FILL ...>>`` directive. Stage A keeps the ``"skeleton"``
+            default because its bodies are one-line beat descriptions by
+            design, not prose (see ``prompts/structure.md``).
 
     Returns:
         A tuple of ``(doc_or_none, gate_result)``. ``doc_or_none`` is the
@@ -380,13 +400,13 @@ async def _run_one_stage(
     try:
         parsed: object = json.loads(raw)  # pyright: ignore[reportAny]
     except (json.JSONDecodeError, RecursionError):
-        return None, _empty_blocked_gate()
+        return None, _empty_blocked_gate(context)
 
     if not isinstance(parsed, dict):
-        return None, _empty_blocked_gate()
+        return None, _empty_blocked_gate(context)
 
     doc = cast("dict[str, object]", parsed)
-    return doc, run_gate(doc, scale)
+    return doc, run_gate(doc, scale, context=context)
 
 
 def _get_failing_findings(gate_result: GateResult) -> list[dict[str, object]]:
@@ -667,6 +687,7 @@ async def _run_repair_loop(
             provider=ctx.provider,
             max_tokens=_MAX_TOKENS_REPAIR,
             scale=ctx.scale,
+            context=ctx.context,
         )
         attempts += 1
         ctx.stage_log.append(f"repair:{attempts}")
@@ -813,6 +834,7 @@ async def generate_story(
             provider=guarded_provider,
             max_tokens=_MAX_TOKENS_PROSE,
             scale=scale,
+            context="fill_result",
         )
         _append_stage_log(stage_log, "stage_b", current_doc, gate_result)
         # Prefer Stage B's fuller document, but keep Stage A's skeleton if
@@ -830,6 +852,7 @@ async def generate_story(
             max_repairs=max_repairs,
             stage_log=stage_log,
             scale=scale,
+            context="fill_result",
         )
         # Seed the loop with the last valid document so a Stage B parse failure
         # repairs from Stage A's skeleton rather than an empty object, and the
@@ -994,7 +1017,10 @@ async def fill_skeleton(
         )
     )
     current_doc, gate_result = await _run_one_stage(
-        fill_prompt, provider=guarded_provider, max_tokens=_MAX_TOKENS_PROSE
+        fill_prompt,
+        provider=guarded_provider,
+        max_tokens=_MAX_TOKENS_PROSE,
+        context="fill_result",
     )
     _append_stage_log(stage_log, "stage_fill", current_doc, gate_result)
     last_valid_doc = current_doc if current_doc is not None else skeleton
@@ -1009,6 +1035,7 @@ async def fill_skeleton(
             max_repairs=max_repairs,
             stage_log=stage_log,
             stage1=stage1_config,
+            context="fill_result",
         )
         repair_seed = current_doc if current_doc is not None else last_valid_doc
         current_doc, gate_result, attempts, stage1_violations = await _run_repair_loop(

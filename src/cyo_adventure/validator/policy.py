@@ -79,6 +79,57 @@ _FILL_WORDS_RE = re.compile(r"\bwords=(\d+)")
 _SATISFYING_KINDS = frozenset({EndingKind.SUCCESS, EndingKind.COMPLETION})
 
 
+def check_fill_residue(story: Storybook) -> ValidationReport:
+    """Run PL-27: no node body of a *fill result* may still be a directive.
+
+    Deliberately not part of :func:`validate_policy`, because it is the one
+    policy rule whose correctness depends on what the caller is validating.
+    Every other checker in the gate treats a ``<<FILL ...>>`` body as input it
+    cannot judge and skips it, which is right at catalog time (a skeleton is
+    supposed to be directives) and wrong after a fill (a directive means the
+    node was never written). Collectively those skips mean an unwritten book
+    clears topology, safety, choice grammar and reading level without a single
+    finding: a gate assembled entirely from abstainers has no floor (AL-310).
+
+    #CRITICAL: data integrity: this is the only deterministic check standing
+    between an unwritten book and a human reviewer. AL-312 showed the
+    orchestrator returns the authoring skeleton as a passing book when a fill
+    produces no parseable document, and AL-309 showed Stage 1 fidelity review
+    is off by default for every non-worker caller, so without PL-27 there is
+    no automated floor at all on that path.
+    #VERIFY: see test_gate.py, functions
+    test_fill_result_context_blocks_on_retained_directive and
+    test_skeleton_context_tolerates_retained_directive, which prove the rule
+    blocks under the fill-result posture and stays silent under the skeleton
+    posture.
+
+    Args:
+        story: The validated Storybook (Layer 1 has already passed).
+
+    Returns:
+        ValidationReport: One ERROR finding per node whose body retains a
+        directive; empty when every body holds prose.
+    """
+    report = ValidationReport()
+    for node in story.nodes:
+        if _FILL_MARKER not in node.body:
+            continue
+        report.add(
+            ValidationFinding(
+                rule_id="PL-27",
+                severity=Severity.ERROR,
+                story_id=story.id,
+                node_id=node.id,
+                message=(
+                    f"PL-27 policy: node '{node.id}' of story '{story.id}' was "
+                    f"validated as a fill result but its body still holds a "
+                    f"'{_FILL_MARKER}' directive, so the node was never written"
+                ),
+            )
+        )
+    return report
+
+
 def validate_policy(story: Storybook) -> ValidationReport:
     """Run PL-15..PL-18 over a parsed story.
 

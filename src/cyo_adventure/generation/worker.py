@@ -1296,7 +1296,9 @@ def _regate_after_transform(
     # Scale is always "standard" on this path: fill_skeleton documents that
     # skeleton library files use genre-faithful authored node counts (ADR-011)
     # rather than the "compact" live-model budget.
-    regated = run_gate(final_storybook, "standard")
+    # AL-310: the reinserted book is a fill result and this is the last
+    # deterministic gate before a human reviewer sees it, so PL-27 applies.
+    regated = run_gate(final_storybook, "standard", context="fill_result")
     if not regated.blocked:
         post_status: Literal["passed", "needs_review", "failed"] = (
             "needs_review" if regated.safety_flagged else "passed"

@@ -168,6 +168,35 @@ def _filled_story() -> dict[str, object]:
 
 @pytest.mark.unit
 @pytest.mark.asyncio
+async def test_import_rejects_a_story_whose_nodes_were_never_written(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A blob still carrying ``<<FILL`` directives is not a filled story.
+
+    AL-310: the deterministic gate abstains on directive bodies rather than
+    failing on them, so before PL-27 this import path accepted an unwritten
+    book, persisted it, and handed it to moderation as a finished story.
+    """
+    moderation = AsyncMock()
+    monkeypatch.setattr(
+        "cyo_adventure.generation.import_story.run_moderation_pipeline", moderation
+    )
+    blob = _filled_story()
+    nodes = blob["nodes"]
+    assert isinstance(nodes, list)
+    nodes[0]["body"] = "<<FILL role=setup words=40 beats='the door opens'>>"
+    session = _FakeSession()
+    request = ImportRequest(blob=blob, family_id=uuid.uuid4(), model="opus-4.8")
+
+    with pytest.raises(ValidationError, match="PL-27"):
+        await import_filled_story(session, request)
+
+    assert not [r for r in session.added if isinstance(r, StorybookVersion)]
+    moderation.assert_not_awaited()
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
 async def test_import_persists_a_valid_filled_story(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

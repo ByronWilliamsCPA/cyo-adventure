@@ -506,7 +506,7 @@ async def run_reading_level_loop(
     # graph and can only return body strings), so a block means an assumption
     # broke and the safe move is to keep the document that already passed.
     # #VERIFY: test_reading_level_gate_regression_discards_the_whole_pass.
-    revised_gate = run_gate(revised_doc, ctx.scale)
+    revised_gate = run_gate(revised_doc, ctx.scale, context="fill_result")
     if revised_gate.blocked and not gate_result.blocked:
         _logger.warning(
             "reading_level_repair_discarded",
