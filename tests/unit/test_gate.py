@@ -514,7 +514,14 @@ def test_defensive_parse_failure_sets_blocked() -> None:
     except PydanticValidationError as exc:
         fake_exc = exc
     else:
-        pytest.skip("Could not construct a PydanticValidationError for the mock")
+        # NOT a skip. `{"id": 123}` is structurally invalid for Storybook, so
+        # model_validate accepting it means the model stopped rejecting garbage,
+        # which is a regression this test should report rather than step around.
+        # A skip here would have made that regression indistinguishable from a pass.
+        pytest.fail(
+            "Storybook.model_validate accepted {'id': 123}; the model no longer "
+            "rejects a structurally invalid document, so this test's premise is broken"
+        )
 
     with patch.object(Storybook, "model_validate", side_effect=fake_exc):
         result = run_gate(data)
@@ -541,7 +548,14 @@ def test_defensive_parse_failure_no_l2_findings() -> None:
     except PydanticValidationError as exc:
         fake_exc = exc
     else:
-        pytest.skip("Could not construct a PydanticValidationError for the mock")
+        # NOT a skip. `{"id": 123}` is structurally invalid for Storybook, so
+        # model_validate accepting it means the model stopped rejecting garbage,
+        # which is a regression this test should report rather than step around.
+        # A skip here would have made that regression indistinguishable from a pass.
+        pytest.fail(
+            "Storybook.model_validate accepted {'id': 123}; the model no longer "
+            "rejects a structurally invalid document, so this test's premise is broken"
+        )
 
     with patch.object(Storybook, "model_validate", side_effect=fake_exc):
         result = run_gate(data)

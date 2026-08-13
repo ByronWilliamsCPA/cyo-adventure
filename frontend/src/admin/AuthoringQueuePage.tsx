@@ -73,7 +73,7 @@ export function AuthoringQueuePage() {
   const planningRequest = requests.find((r) => r.id === planningId) ?? null
 
   return (
-    <main>
+    <div>
       <h1>Authoring queue</h1>
       <p>
         Approved requests waiting for an authoring plan (method, mechanism, and, for an automated
@@ -122,6 +122,6 @@ export function AuthoringQueuePage() {
           }}
         />
       ) : null}
-    </main>
+    </div>
   )
 }

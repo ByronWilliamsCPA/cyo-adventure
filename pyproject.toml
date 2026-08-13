@@ -854,7 +854,7 @@ color = true
 [tool.pydoclint]
 style = "google"
 exclude = '\.git|tests/|scripts/|benchmarks/|tools/|noxfile\.py|\.claude/'
-arg-type-hints-in-docstring = true
+arg-type-hints-in-docstring = false
 arg-type-hints-in-signature = true
 skip-checking-raises = false
 require-return-section-when-returning-nothing = false

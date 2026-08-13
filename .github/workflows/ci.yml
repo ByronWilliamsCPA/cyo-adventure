@@ -687,6 +687,53 @@ jobs:
   # bypassed it completely. This job closes that: it is the only place a RAD
   # #VERIFY citation is checked on every push and pull request regardless of
   # local hook state.
+  # interrogate ran ONLY in .pre-commit-config.yaml, so CI never enforced docstring
+  # coverage (UW-F09): a contributor without hooks installed, or any path that
+  # bypasses them, could merge undocumented code. The backend quality job is a
+  # reusable workflow in ByronWilliamsCPA/.github, which this repo cannot edit, so
+  # the check gets its own job here and is wired into ci-gate below.
+  #
+  # Invoked THROUGH pre-commit rather than as a bare `uv run interrogate`, which
+  # matters twice over. It pins the same hook revision and the same per-scope
+  # thresholds the developer runs locally (scripts/ at 85%, src/ at 80%), so CI and
+  # pre-commit cannot drift into disagreeing about what passes; and it runs the tool
+  # in pre-commit's isolated environment rather than this project's venv. The second
+  # point is not theoretical: `uv run pydoclint` currently dies with an ImportError
+  # (`DocstringYields` from docstring_parser) because the resolved venv pins a
+  # docstring_parser this pydoclint cannot use, while the hook's own pinned env is
+  # fine.
+  #
+  # pydoclint is deliberately NOT run here despite its hook comment claiming CI
+  # covers it. It reports 703 findings across src/ as of 2026-08-13, so gating on it
+  # would block every PR. See the UW-F09 register row for the backlog.
+  docstrings:
+    name: Docstring coverage (interrogate)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Harden the runner
+        # deferral: 2026-09-18
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6.0.1
+        with:
+          python-version: "3.14"
+
+      - name: Install pre-commit
+        run: uv tool install pre-commit
+
+      # Both interrogate hooks (src/ 80%, scripts/ 85%) in one invocation.
+      - name: Docstring coverage
+        run: uv tool run pre-commit run interrogate --all-files --show-diff-on-failure
+
   rad-citations:
     name: RAD Citation Gate
     runs-on: ubuntu-latest
@@ -1104,6 +1151,7 @@ jobs:
         schema-docs,
         format-tree,
         rad-citations,
+        docstrings,
       ]
     if: always()
     permissions:
@@ -1141,6 +1189,7 @@ jobs:
           SCHEMA_DOCS_RESULT: ${{ needs.schema-docs.result }}
           FORMAT_TREE_RESULT: ${{ needs.format-tree.result }}
           RAD_CITATIONS_RESULT: ${{ needs.rad-citations.result }}
+          DOCSTRINGS_RESULT: ${{ needs.docstrings.result }}
         run: |
           set -euo pipefail
 
@@ -1281,6 +1330,7 @@ jobs:
           check_job "Format (tree-wide)" "$FORMAT_TREE_RESULT" false
           # Also no job-level `if:`, for the same reason as Format (tree-wide).
           check_job "RAD Citation Gate" "$RAD_CITATIONS_RESULT" false
+          check_job "Docstring coverage (interrogate)" "$DOCSTRINGS_RESULT" false
           check_job "Frontend (Node 22)" "$FRONTEND_RESULT" "$merge_queue_skip_ok"
           check_job "Frontend E2E (Playwright, mocked tier)" "$FRONTEND_E2E_RESULT" "$merge_queue_skip_ok"
           check_job "Design System (Node 22)" "$DESIGN_SYSTEM_RESULT" "$merge_queue_skip_ok"
