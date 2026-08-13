@@ -27,7 +27,7 @@ or internal detection.
 
 GDPR Article 4(12)'s definition governs: "a breach of security leading to the accidental or
 unlawful destruction, loss, alteration, unauthorised disclosure of, or access to, personal data
-transmitted, stored or otherwise processed." That is broader than "an attacker got in" — it
+transmitted, stored or otherwise processed." That is broader than "an attacker got in"; it
 covers confidentiality breaches (unauthorized access/disclosure), integrity breaches (unauthorized
 alteration), and availability breaches (loss of access, including a ransomware event or an
 accidental deletion with no backup), and it covers accidental causes (a misconfigured access
@@ -88,7 +88,7 @@ place to extend once the team grows.
 2. **Triage (target: within 4 hours of detection during business hours, within 24 hours
    otherwise).** The security coordinator (`information-security-program.md` Section 2)
    classifies per Section 2 above, and starts a written incident record (see Section 6) with a
-   timestamp for "discovery" — this timestamp is what starts the Article 33 clock in Section 4,
+   timestamp for "discovery"; this timestamp is what starts the Article 33 clock in Section 4,
    not the time classification finishes.
 3. **Containment.** Stop ongoing exposure first: revoke a compromised credential, roll back a
    bad deploy, take a misconfigured bucket private, disable an affected endpoint. For a compromised
@@ -120,9 +120,9 @@ Two distinct GDPR duties, tracked separately because meeting one does not satisf
 ### Article 33: notifying the supervisory authority (72-hour clock)
 
 - **Trigger:** the breach is "likely to result in a risk to the rights and freedoms of natural
-  persons" — for a children's app, assume this threshold is met by default for any Critical or
+  persons"; for a children's app, assume this threshold is met by default for any Critical or
   High severity incident (Section 2) rather than arguing the exception case under time pressure.
-- **Clock starts:** at "awareness" (Article 33(1)) — this runbook treats that as the discovery
+- **Clock starts:** at "awareness" (Article 33(1)); this runbook treats that as the discovery
   timestamp from Section 3 step 2, not the time investigation completes or classification is
   finalized. A partial, evolving notification within 72 hours is the GDPR-compliant move; waiting
   for complete facts and missing the window is not (Article 33(4) explicitly allows phased
@@ -138,14 +138,14 @@ Two distinct GDPR duties, tracked separately because meeting one does not satisf
 
 ### Article 34: notifying affected individuals ("high risk" threshold, no fixed clock but "without undue delay")
 
-- **Trigger:** a higher bar than Article 33 — "likely to result in a *high* risk" to the
+- **Trigger:** a higher bar than Article 33: "likely to result in a *high* risk" to the
   individual. For this app, treat any Critical-severity incident (child-linked data exposed
   across families, or write access compromised) as presumptively meeting this bar; High-severity
   single-family incidents are assessed case by case against Article 34(3)'s exceptions
   (encryption/unintelligibility of the exposed data, subsequent measures ensuring the high risk
-  is no longer likely to materialize, or disproportionate effort — the last of which, if relied
+  is no longer likely to materialize, or disproportionate effort; the last of which, if relied
   on, requires a public communication instead per Article 34(3)(c), not silence).
-- **Recipient:** the guardian of an affected child profile is the notified party — this app has
+- **Recipient:** the guardian of an affected child profile is the notified party; this app has
   no direct channel to a child data subject, consistent with every other guardian-mediated
   interaction in the product (ADR-018's already-decided consent framing).
 - **Content:** in clear and plain language, the nature of the breach and, at minimum, the same
@@ -168,7 +168,7 @@ Whichever clock applies, a notification (to an authority, per Article 33(3), or 
 per Article 34) should answer, in plain language for the guardian-facing version:
 
 - What happened, and when it was discovered (not necessarily when it started).
-- What data was involved — named categories, not "some data" (e.g. "child display name and
+- What data was involved: named categories, not "some data" (e.g. "child display name and
   reading history," not "personal information").
 - How many data subjects/records are affected, even as an initial estimate.
 - What we have already done to contain it.

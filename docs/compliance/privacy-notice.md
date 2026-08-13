@@ -35,7 +35,7 @@ text a guardian agreed to.
 
 CYO Adventure ("we," "us") operates a choose-your-own-adventure reading app for kids. The
 person responsible for your and your child's information (the "controller," in EU/UK privacy
-terms) is [CONTROLLER LEGAL NAME/ENTITY — currently Byron Williams; confirm whether a formal
+terms) is [CONTROLLER LEGAL NAME/ENTITY: currently Byron Williams; confirm whether a formal
 business entity should be named here before publication]. Contact: byronawilliams@gmail.com.
 
 ### Who this notice covers
@@ -70,7 +70,7 @@ a way that has been reviewed by counsel; the table states our best current under
 
 **What we deliberately do not collect from a child**: your child's real name, birthdate,
 exact age, photo, email address, phone number, or location. Your child never has their own
-email/phone/OAuth identity — every login path (a picker PIN, a guardian-authorized device, or
+email/phone/OAuth identity; every login path (a picker PIN, a guardian-authorized device, or
 a guardian-minted session) resolves back to your account.
 
 ### How we get your permission (verifiable parental consent)
@@ -167,7 +167,7 @@ does Art. 13(1)(e) require naming them as an independent controller for that par
 itself? It is the one thing a guardian would not infer from "we send them your email address to
 check you are an adult".]
 
-We do not sell your or your child's information, and we do not use it for advertising — we
+We do not sell your or your child's information, and we do not use it for advertising; we
 have no advertising or marketing SDKs of any kind in the parts of the app your child uses.
 
 **International transfers**: every company above is based in the United States except Kids Web
@@ -225,7 +225,7 @@ follow a documented internal breach-response process.
 
 If we make a material change to this notice, we will ask you to review and re-confirm your
 consent the next time you sign in. [Note: the re-consent-on-change flow itself is not yet
-built — `coppa-gdpr-remediation-plan.md` Phase 2b — so this sentence describes intended, not
+built (`coppa-gdpr-remediation-plan.md` Phase 2b), so this sentence describes intended, not
 current, behavior. Do not publish this sentence until 2b ships, or adjust it to describe the
 interim manual process.]
 
@@ -248,4 +248,4 @@ Questions about this notice or your family's information: byronawilliams@gmail.c
 3. Once approved, publish this as an actual guardian-facing route (not just this markdown
    file) and link it from: the landing page, the guardian console, and
    `GuardianConsentPage.tsx`'s consent-capture screen (currently that screen references "our
-   Privacy Notice" with no link — add one once this exists as a real page).
+   Privacy Notice" with no link; add one once this exists as a real page).

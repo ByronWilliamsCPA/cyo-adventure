@@ -78,7 +78,7 @@ python3 - <<'EOF'
 import os, sys
 WD = os.environ["WD"]
 raw = open(f"{WD}/filled_V5c.json", encoding="utf-8").read()
-n = raw.count("—")
+n = raw.count("—")  # em-dash-ok: counts the character
 print(f"V5c: {n} em-dashes")
 sys.exit(1 if n else 0)
 EOF
