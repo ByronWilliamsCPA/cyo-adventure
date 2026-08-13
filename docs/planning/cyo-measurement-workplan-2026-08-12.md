@@ -75,10 +75,13 @@ cheap experiments behind one expensive one.
 *Build.* `validator/paths.py`, over `WalkResult.edges` from `walk_configurations`. Two outputs, kept
 separate and never pooled:
 
-- a **covering set**: the smallest set of root-to-ending paths that traverses every edge at least
-  once, so no fork escapes measurement;
-- a **uniform sample** of n paths under a fixed seed, which estimates the distribution an actual
-  reader draws from.
+- a **covering set**: a set of root-to-ending paths that traverses every reachable edge at least
+  once, so no fork escapes measurement. Greedy, not minimal: a path is kept whenever it covers
+  something new, and no attempt is made to find the fewest such paths. `edge_coverage` is the
+  result; `len(paths)` is incidental;
+- a **reader sample** of n paths under a fixed seed, drawn uniformly over the *choices* visible at
+  each fork rather than uniformly over paths, because the former is the distribution an actual
+  reader draws from and the latter is not.
 
 They answer different questions. Covering answers "is any path bad"; sampling answers "is a typical
 path bad". Reporting one as the other is the failure mode to guard against.
@@ -86,6 +89,13 @@ path bad". Reporting one as the other is the failure mode to guard against.
 *The real difficulty.* Root-to-ending path count is exponential in fork count even when
 `walk_configurations` caps *configurations*. `WalkResult.capped` must propagate into every derived
 statistic, and a capped walk must make the derived metric report "incomplete", not a number.
+
+The corollary, learned by shipping the wrong thing first: **enumerate-and-filter cannot build a
+covering set.** Depth-first enumeration under a path budget spends the whole budget inside whichever
+subtree it entered first, then reports an honest and useless coverage number (30 percent on a real
+catalogue title, with every unit test green). The covering set must be *constructed* per target,
+shortest-route-in plus the choice plus shortest-route-out over the configuration graph, which makes
+coverage independent of search order and of how many readings the book admits.
 
 *Test.* Hand-built fixtures: a linear book (one path), a diamond (two), a reconverging spine with a
 carried flag (state-dependent path count). Assert the covering set touches every edge; assert the
@@ -95,6 +105,13 @@ rather than shrinking it. Mutation check: delete the `capped` propagation and a 
 *Decision rule.* Feasibility only. **Ship if the covering set computes in under 2 seconds for a
 101-node ceiling-scale book.** If it does not, ship sampling alone and record that per-fork coverage
 is not guaranteed, because a silently partial covering set is worse than an admitted sample.
+
+*Outcome (2026-08-12): shipped with both modes.* Measured over all 61 skeleton-catalogue books:
+61/61 at `edge_coverage == 1.0`, 61/61 `complete`, 2.666 s for the whole catalogue. The 101-node
+ceiling-scale book in the decision rule takes 0.001 s; the largest book in the catalogue (677 nodes)
+takes 0.917 s. The rule is met with about three orders of magnitude of headroom, which is a property
+of the redesign rather than of tuning: cost now scales with the configuration graph, not with the
+reading count.
 
 *Cost.* Zero spend, roughly a day.
 
