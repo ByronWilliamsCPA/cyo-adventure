@@ -305,3 +305,58 @@ much cheaper rotation to operate.
 Sample size caveat inherited from the calibration itself: 3.3 came from 3 pairs with a range of 1.9
 to 5.0. This run's 36 and 168 pairs are far better, but the 12-pair version-bump cell is closer to
 the calibration's own thinness, and a difference smaller than that spread is not a finding.
+
+## Run-6 (2026-08-12): the DeepSeek quantisation matrix, and why its headline does not stand
+
+Five legs, four briefs, twenty books, all twenty `status=passed`. The diversity verdict was
+`vendor-driven: within-vendor 1.26 exceeds cross-vendor 1.01 per 1000 (ratio 1.25)`.
+
+Read the compliance table in `out/vendor-comparison/evaluation/evaluation.json` before that verdict,
+because two things about this run are load-bearing and neither is visible in `report.json`.
+
+### The fp4 penalty is one book, not a quantisation effect
+
+The compliance table reads `deepseek-v4-pro-fp4` at 0.70 in-band against `deepseek-v4-pro-fp8` at
+0.92 and unquantised `deepseek-v4-pro` at 0.85. Taken at face value that is a 22-point band
+penalty for fp4 and the obvious headline of the run. It is a single book.
+
+Brief 1 of the fp4-pro leg is the book whose reading-level repair was discarded wholesale by the
+defect recorded in `AL-345`: it shipped at grade 5.61 with 12 percent of nodes in band, against
+siblings of 0.92, 0.86 and 0.89. Recomputing every leg with its worst book dropped:
+
+| leg | all 4 books | worst dropped | worst book |
+| --- | --- | --- | --- |
+| `deepseek-v4-pro` | 0.85 | 0.88 | 0.76 |
+| `deepseek-v4-pro-fp4` | **0.70** | **0.89** | **0.12** |
+| `deepseek-v4-pro-fp8` | 0.92 | 0.94 | 0.86 |
+
+fp4 is indistinguishable from no quantisation at all. With four books per leg, one silently
+degraded book moves a leg mean by roughly twenty points, which is larger than any effect this
+design can resolve, so the drop-worst column is the one to read. `AL-349` and `UW-C246` carry the
+generalised rule and the proposed harness change.
+
+**The affected book was deliberately not regenerated.** Re-running it would have produced a fresh
+draw from the same leg rather than the same draw repaired, and the arithmetic above already
+isolates the artefact without spending anything. The published `run-6` artifacts are therefore left
+exactly as they were generated, defect included, and this section is the correction. Anyone
+quoting the fp4-pro leg must quote 0.89, not 0.70, and must say which they used.
+
+### Three further limits on this run
+
+- **The cross-vendor figure rests on one lab pair.** Four of the five legs are DeepSeek, so all 48
+  cross-vendor pairs are DeepSeek against Qwen. The 1.25 ratio is real for that pair and is not
+  evidence about vendor rotation in general.
+- **The fp4 arms carry a provider confound, stated up front in `vendors-run-6.json`.** No provider
+  serves both checkpoints at fp4 on this account, so any fp4-versus-fp8 gap is quantisation and
+  provider together. The fp8 pair holds provider constant; the fp4 pair cannot.
+- **Cost is absent.** All twenty books carry `cost: null`, because per-call token usage was
+  discarded on the branch the run executed from (`AL-348`, `UW-C245`). That instrumentation is now
+  merged in, so the next run reports cost; run-6 never can.
+
+### What the run did establish
+
+`qwen-3.8-2.4t` returned the cleanest compliance of any leg measured so far: 1.00 in band, 1.00
+on-budget, 0.90 beat recall, at the lowest grade spread (0.70) of the thirteen legs. That result
+does not depend on the discarded book and does not share the fp4 legs' provider confound, though
+it is a single non-DeepSeek fp4 leg, so a deficit there could not have been cleanly attributed
+either way.
