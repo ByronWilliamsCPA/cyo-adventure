@@ -490,13 +490,13 @@ evidence we have, and a plan that cannot produce them is not a plan, it is a bui
 | W5 bootstrap intervals | D | yes, `scripts/instrument.py` | no | needs the run artifacts, see 7.4 |
 | W6 blind-spot manifest | D | no | no | none |
 | W7 known-bad battery | J | no | no | none, and it blocks Track J entirely |
-| W8 decoding ablation | D | no | no | Tier 0 below |
-| W9 cross-stage routing | D | no | no | Tier 0 below |
-| W10 MoPS premise pool | D | no | no | Tier 0 below |
+| W8 decoding ablation | D | no | no | `UW-C239` (pricing) |
+| W9 cross-stage routing | D | no | no | `UW-C239` (pricing) |
+| W10 MoPS premise pool | D | no | no | `UW-C239` (pricing) |
 | W11 prose-first pilot | deferred | no | no | W7 |
 | W12 child + expert read | H | no | no | ADR-018 consent scoping |
 | W13 age rubric | H | no | no | W12 |
-| W14 context composition | D | no | no | `UW-C239`, plus Tier 0 |
+| W14 context composition | D | no | no | `UW-C239` |
 | W15 declared information state | D | no | no | W6 |
 
 Two of fifteen are closed. `band_profile.py` still carries `reconvergence_ceiling` unenforced, and
@@ -530,18 +530,31 @@ this branch filed, and each one silently corrupts a deterministic measure that W
 are scored on. Run-6 is the demonstration rather than the hypothesis: one book whose repair was
 discarded moved a leg mean 22 points and was written up as a quantisation effect.
 
-| Row | What it corrupts |
-| --- | --- |
-| `UW-C233` | an unparseable fill returns the skeleton and the gate certifies it `passed`, so gate pass rate counts total failures as successes |
-| `UW-C230` | `fill_skeleton(settings=...)` disarms the Stage 1 fidelity gate for the comparison harness, and nothing in the outcome records which gate ran |
-| `UW-C240` | the diversity verdict is gated on schema validity rather than content completeness |
-| `UW-C247` | `discarded_for_gate` reaches no caller and no artifact, so a silently degraded book is indistinguishable post hoc |
-| `UW-C246` | no drop-worst column, so one book can again become a property of the variable under test |
-| `UW-C245` | no pre-flight refusal when a field the run exists to populate is structurally unpopulable |
-| `UW-C234`, `UW-C235` | `max_tokens` is not reported as a measured condition and `finish_reason` is not surfaced, so a budget failure and an empty endpoint look alike |
+**Closed 2026-08-13.** All eight rows are `done`; the table below is kept as the record of what
+each one corrupted, since the next paid run's results have to be read against it.
+
+| Row | What it corrupted | How it closed |
+| --- | --- | --- |
+| `UW-C233` | an unparseable fill returned the skeleton, so a total failure counted as a delivered book | `fill_skeleton` never returns its own input; verdict taken regardless of the gate |
+| `UW-C230` | `settings` alone armed the Stage 1 gate, so three harness scripts ran ungated against the same `status` field | explicit `stage1_gate` posture, stamped on every outcome report |
+| `UW-C240` | the diversity verdict participated any book that parsed | participation is content completeness; exclusions named; median beside every mean, and a verdict the two disagree on is refused |
+| `UW-C247` | Stage D's discard and partial salvage reached no artifact | `nodes_dropped` and `degraded` on the result and in `books.jsonl` |
+| `UW-C246` | no drop-worst column, so one book could be a property of the variable | drop-worst column plus a one-sd mover flag |
+| `UW-C245` | no refusal when a column the run exists to populate cannot be | `unpopulable_fields` refuses; per-book metering now populates cost |
+| `UW-C234` | the cap was not reported as a condition | cap on every row, mixed-cap warning, fill rate suppressed with no headroom |
+| `UW-C235` | a budget failure and a dead endpoint looked alike | `finish_reason` and `reasoning_tokens` surfaced; a truncation is no longer retried |
 
 **Rule for this tier**: no item in Tier 3 is worth its spend until every row above is closed, because
-each of them can produce the effect the item is looking for.
+each of them can produce the effect the item is looking for. That condition is now met.
+
+**One thing this surfaced, and it is a real blocker rather than a side effect.** `UW-C245`'s refusal
+fires on every live slate today, because no cloud entry in `core/pricing.py` is fully priced: every
+one sets `input_usd_per_mtok=None` (`AL-333` / `UW-C239`). That is the correct reading rather than an
+accident, and `--allow-unpriced` is the deliberate override, but it means **`UW-C239` is now on the
+critical path for every paid item, not just W14.** Prices were deliberately not invented here; the
+vendor-comparison README carries measured per-MTok rates from the 2026-08-12 billing probe, and
+seeding the table from them is a decision for the owner because the cached legs' figures are
+effective rather than list rates.
 
 ### 7.3 Running order
 
@@ -556,7 +569,8 @@ each of them can produce the effect the item is looking for.
    criteria we believe are working unflagged; W5's pre-registered consequence fires if the printed
    pair count is zero, in which case the ranking is retracted rather than caveated. Running this
    before more legs are bought decides whether that spend buys a finding or decoration.
-2. **Tier 0**, in the order above.
+2. ~~**Tier 0**, in the order above.~~ **Done 2026-08-13**, except that it promoted `UW-C239`
+   (populate `core/pricing.py`'s input rates) into a blocker for every paid item.
 3. **W3, W6, W15, and the W2 re-run** for told-emotion once its band is re-derived at path scale.
 4. **W7**, which unblocks every ranking-shaped claim. Note that the known-bad battery already on
    file (brief section 20) validates the *diversity* metric, not the panel; W7 needs its own seeded
