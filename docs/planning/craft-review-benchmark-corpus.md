@@ -69,16 +69,23 @@ itself); the only correction needed here is to make explicit that this rules out
 automated corpus-assembly tool from the start, not just from the production architecture. A
 human has to read each review and fill in the schema below.
 
-**Assumption (data integrity), tagged per this repo's RAD standard:** the specific titles, review
-claims, and quoted findings in this doc's candidate list (Kirkus's stated criticisms of *The
-Citadel of Whispers*, Common Sense Media's framing of *Violet and the Mystery Next Door*,
-Goodreads rating counts for *The Cave of Time*, etc.) were recalled from the proposing model's
-training data in the original session, not independently verified against a live source in this
-session (no `WebFetch`/`WebSearch` was run against any of these review pages). Treat every
-specific claim below as plausible, not confirmed, matching the existing hedge in
-`cyoa-book-benchmark-comparison.md`'s own book-mechanic citations. **Verification required:**
-before any title enters the actual corpus, re-read its source review live and correct or drop the
-claim if it does not hold up.
+**Assumption (data integrity), tagged per this repo's RAD standard, updated 2026-08-13 after a
+first sourcing pass:** the original draft of this doc flagged every specific claim as recalled
+from a proposing model's training data, unverified against a live source. That first pass is now
+done for 10 of the proposal's named titles (see the next section); every claim in the corpus data
+file below is backed by a real `WebSearch` result rather than recollection. One title from the
+original proposal, *Violet and the Mystery Next Door* (cited only for its Common Sense Media
+framing, not put through this session's research batch), remains unverified in the sense the
+original draft described; drop or verify it before citing it anywhere. **Methodology caveat that
+held across all 10 research runs:** `WebFetch` was blocked by this session's network egress
+policy for every review-site domain attempted (kirkusreviews.com, goodreads.com,
+commonsensemedia.org, slj.com, thestorygraph.com, amazon.com, and others), with no exceptions
+across ten independent agent runs. Every finding below is therefore reconstructed from
+`WebSearch`'s snippet-level synthesis of those pages, not a first-hand page read; confidence is
+capped accordingly in the data file. This is real signal (multiple independent runs converged on
+the same specific claims for the same book), not equivalent to opening the page directly, and it
+is worth stating plainly here since a future curation session on different infrastructure should
+expect to try a direct fetch before assuming it will fail the same way.
 
 ## Craft-dimension taxonomy, mapped onto what this project already has
 
@@ -103,20 +110,54 @@ integration) leaves six that are genuinely unmeasured today: choice meaningfulne
 depth/change, ending payoff, replayability, dialogue/prose craft, and validating the reading-level
 proxy against reviewer judgment.
 
-## Candidate corpus (unverified, per the data-integrity assumption above)
+## First sourced batch: 10 of ~30 titles (2026-08-13)
 
-Kept in the same four age-band groups the proposal used, trimmed to the titles most relevant to
-this project's own bands (5-7, 8-10/8-11, 11-12/11-13):
+The full sourced entries, each with real citations, paraphrased evidence, and per-source
+confidence, live in
+[`data/craft-benchmark-corpus.yaml`](./data/craft-benchmark-corpus.yaml). This section summarizes
+what that batch actually found; treat the YAML file as authoritative on any conflict with the
+summary below.
 
-| Band | Candidate titles | Note |
-|---|---|---|
-| 5-7 | *Endlessly Ever After*, *Jungle Adventure* | Picture-book-style branching; closest match to this project's 3-5/5-7 bands |
-| 8-10 | *The Cave of Time*, *Meanwhile*, *Traitors in Space*, *Search for a Giant Squid* | Closest comparison set to the 8-11 core band |
-| 11-12 | *Samurai vs. Ninja*, *Leviathan* | Closest to the 11-13 band |
-| Negative-example reference | *The Citadel of Whispers*, *Eighth Grade Witch* | Kept separately: the proposal's strongest point is that a well-written negative professional review is more actionable than dozens of five-star ratings, since it names a specific failure mode rather than "my child loved it" |
+| Band | Title | What held up vs. the original proposal | Craft-label headline |
+|---|---|---|---|
+| 5-7 | *Endlessly Ever After* | Confirmed real (Snyder/Santat, Chronicle, 2022); age-fit conflicts across sources (SLJ: PreS-Gr3; Horn Book/parents: one-on-one only, dark endings) | Strong choices/replayability; character depth not addressed by any source found |
+| 5-7 | *Jungle Adventure* | High title-collision risk resolved to a specific book (Murray/Kimpimäki, words & pictures); "personalized" claim was a partial fit, not a real-child-name product | Mixed choice meaningfulness; strong replayability |
+| 8-10 | *The Cave of Time* | Confirmed; found the most quantified craft data point in the whole batch (a historian's count: 39 choice points, 40 endings, 18 good/16 bad/6 ambiguous) | Weak character depth/dialogue; strong replayability; choices sometimes read as arbitrary |
+| 8-10 | *Meanwhile* | Confirmed; Kirkus explicitly names shallow/circular branch plots alongside praising the construction | Strong choice consequence, weak character depth: an explicit, named trade-off |
+| 8-10 | *Traitors in Space* | Held up almost exactly against Kirkus's actual starred review (replayability praised, character development explicitly secondary) | Strong replayability; weak character depth |
+| 8-10 | *Search for a Giant Squid* | Real book, but not the guessed series (Chronicle's "Science Explorers," not Capstone's "You Choose") | Strong educational integration and replayability; thinnest failure-mode signal of the batch |
+| 11-12 | *Samurai vs. Ninja* | Confirmed (Shiga, Abrams Fanfare); positive-example framing holds at the professional tier, more mixed at the reader tier (series fatigue) | Strong choice consequence and ending payoff; character depth never addressed |
+| 11-12 | *Leviathan* | Required active disambiguation from Westerfeld's unrelated non-interactive novel of the same title | Readers directly disagree on replayability (two endings vs. none); navigation called both a strength and a weakness |
+| Negative-example reference | *The Citadel of Whispers* | Confirmed word-for-word in substance: Kirkus names six distinct failure modes in one review (limited character growth, haphazard paths, under-contextualized decisions, abrupt endings, stilted dialogue, anachronistic diction, clunky exposition) | The single richest negative-craft source in the batch |
+| Negative-example reference | *Eighth Grade Witch* | Confirmed, but the claimed defects split across two distinct editions (2012 prose original vs. 2021 graphic-novel adaptation) rather than one review set | Weak choice meaningfulness and ending payoff |
 
-This is a candidate list to re-verify and expand to roughly 30 titles during the actual curation
-pass, not a finished corpus.
+**Cross-cutting findings worth acting on, not just filing:**
+
+- **Character depth is the format's default weak point, not this project's weak point alone.**
+  6 of 10 titles score `weak` or `not_reported` on character depth/change; none score `strong`.
+  That's independent, external corroboration of
+  [design-review-kid-appeal-2026-08-01.md](./design-review-kid-appeal-2026-08-01.md) section 2.4's
+  finding from the opposite direction: a craft rubric built from this corpus should calibrate
+  "weak-to-absent character arc" as typical for the format, not as a uniquely damning finding
+  against generated stories, while still treating a genuinely `strong` result as the differentiator
+  worth chasing.
+- **Replayability is a weak differentiator by itself.** 7 of 10 titles score `strong`; it is
+  close to a format universal, not a craft signal. The two titles where reviewers actively
+  *disagree* with each other on replayability (*Leviathan*) are more informative than the seven
+  where everyone agrees it's good.
+- **One well-sourced negative professional review outperforms a pile of five-star ratings**, as
+  the original proposal claimed. *The Citadel of Whispers*'s single Kirkus review produced more
+  distinct, actionable failure modes than the other nine titles' reader-review aggregates
+  combined.
+- **Title-collision risk is real, not hypothetical.** 2 of 10 titles required active
+  disambiguation to avoid citing the wrong book entirely (*Leviathan* vs. Westerfeld's novel;
+  *Search for a Giant Squid* vs. a guessed-wrong series). Any future curation pass needs the same
+  "confirm the specific ISBN/edition before trusting a title match" discipline this batch used.
+
+Twenty titles remain to reach the ~30-title target; the next batch should skew toward filling the
+still-empty 3-5 band (this batch has none) and toward titles that, like *The Citadel of Whispers*,
+have a substantive professional review rather than reader-aggregate-only coverage, since that is
+where the actionable failure-mode signal actually came from.
 
 ## Failure-mode-to-check mapping (proposed, not built)
 
@@ -148,11 +189,21 @@ of them are ready to build directly from this doc.
 
 ## Recommendation
 
-This is a scoping document, not committed work. If commissioned, the actual deliverable is a
-person (not an unsupervised agent) reading roughly 30 reviews and filling in the label schema from
-the original proposal, re-verifying every specific claim per the verification-required note above
-before it enters the corpus. No schema, validator, or generation change is proposed here; the earliest
-concrete use is feeding `drafting_guide.md`'s positive-craft section and, if that proves useful,
-a new advisory-only reviewer module. See `UW-N11` in
-[unscheduled-work-register.md](./unscheduled-work-register.md) for the phase-linkage entry this
-doc's own conventions require.
+This started as a scoping document; as of 2026-08-13 it also has real, sourced data behind it, not
+just a plan. 10 of a roughly 30-title target are sourced in
+[`data/craft-benchmark-corpus.yaml`](./data/craft-benchmark-corpus.yaml), each citation backed by
+an actual `WebSearch` result rather than recollection. What remains genuinely unscheduled work,
+still awaiting the owner decision `UW-N11` names, is:
+
+1. **Scaling to ~30 titles**, prioritizing the 3-5 band (currently empty) and
+   professional-review-backed titles over reader-aggregate-only ones, per the cross-cutting
+   findings above.
+2. **Deciding where the corpus feeds in**: `drafting_guide.md`'s positive-craft section (already
+   recommended by `design-review-kid-appeal-2026-08-01.md` section 2.4) is the lowest-risk
+   consumer and needs no owner sign-off beyond normal doc editing; a new advisory-only reviewer
+   module alongside `moderation/fidelity_review.py` is the higher-cost option and does need one,
+   since it is a new LLM-judge call in the generation path.
+3. **No schema, validator, or generation change is proposed here regardless of that decision.**
+
+See `UW-N11` in [unscheduled-work-register.md](./unscheduled-work-register.md) for the
+phase-linkage entry this doc's own conventions require, updated with this batch's completion.
