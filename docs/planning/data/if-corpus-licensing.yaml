@@ -1,0 +1,152 @@
+# Legally-tiered interactive-fiction corpus: licensing register.
+#
+# Companion data file to docs/planning/if-corpus-license-tiers.md. Tracks the fields a commercial
+# project needs before treating any third-party work as reusable, per that doc's "Legal handling
+# recommendations" section: author, title, source/download URL, exact license text found,
+# verification method, date accessed, jurisdiction, what the license covers (text/code/art), and
+# whether commercial use and derivatives are permitted.
+#
+# status values (closed set, matches the doc's color labels):
+#   green            - public domain in the intended jurisdiction, source and rights documented
+#   green_attribution - CC0/CC-BY or similar, commercial derivatives permitted with attribution
+#   yellow           - CC BY-SA or similar; derivative/model-use implications need case-by-case review
+#   red              - CC BY-NC / CC BY-ND / CC BY-NC-ND / freeware / unclear license
+#   reference_only   - copyrighted; may be studied by a human and labeled, never copied into any
+#                       corpus, prompt, or generation input
+#
+# verification_method values: primary_source_fetch (WebFetch/browser read the actual license page),
+# websearch_snippet (reconstructed from search results, not a direct page read), unverified
+# (claim relayed from an external source, not checked this session).
+#
+# IMPORTANT: every entry below was checked 2026-08-13 in a session where WebFetch was blocked by
+# network egress policy for every relevant domain (wikisource.org, ifdb.org, grunk.org,
+# wikidata.org, archive.org, and others). No entry here has verification_method:
+# primary_source_fetch as a result; every one is websearch_snippet or unverified. Re-verify with
+# direct browser/page access before storing any work's actual text in this repository, and before
+# treating a "green" status here as legal sign-off rather than a strong lead.
+
+schema_version: 1
+checked_date: "2026-08-13"
+checked_method_caveat: "WebFetch egress-blocked for every candidate domain this session; all entries are websearch_snippet or unverified, none are primary_source_fetch"
+
+works:
+  - id: consider-the-consequences
+    title: "Consider the Consequences!"
+    author: "Doris Webster and Mary Alden Hopkins"
+    publication_year: 1930
+    source_url: "https://en.wikisource.org/wiki/Consider_the_Consequences!"
+    download_url: null
+    jurisdiction: "United States"
+    license_claimed: "Public domain (US), on a non-renewal basis for a 1930 work, not a life+70 basis"
+    covers: [text]
+    commercial_use_permitted: true
+    derivatives_permitted: true
+    status: green
+    verification_method: websearch_snippet
+    verification_confidence: medium
+    verification_notes: >
+      Wikidata reportedly cites "copyright not renewed" as the PD determination method, consistent
+      with Wikisource's standard pre-1964 US PD template practice. No renewal record was found or
+      contradicted. Could not directly fetch Wikisource, Wikidata, or a Copyright Office renewal
+      database this session; re-verify with direct access before treating as final. Real modern
+      discussion confirmed (Library of Congress "Bibliomania" blog, MetaFilter, intfiction.org, a
+      2024/25 commercial reprint); the "historical press coverage" claim has one unverified lead
+      (a 1930 Tampa Times mention) rather than a confirmed body of contemporary coverage.
+
+  - id: the-interlopers-adaptation
+    title: "The Interlopers (interactive adaptation)"
+    author: "Adaptation author not identified in any source found; original short story by Saki (H.H. Munro, d. 1916, published posthumously 1919)"
+    publication_year: 2014
+    source_url: "https://ifdb.org/viewgame?id=rg42893ymbsay0kk"
+    download_url: "https://textadventures.co.uk/games/view/V1XJ83r5LkSmN9IIXWB7yA/the-interlopers"
+    jurisdiction: "United States (original story, pre-1929 95-year rule) and life+70 jurisdictions (UK/EU, PD since 1987)"
+    license_claimed: "Original story public domain (high confidence); adaptation's own IFDB license field says Public Domain, sourced from Feedbooks' public-domain text"
+    covers: [text, code]
+    commercial_use_permitted: true
+    derivatives_permitted: true
+    status: green
+    verification_method: websearch_snippet
+    verification_confidence: medium
+    verification_notes: >
+      Saki's original story is solidly public domain, cross-corroborated across multiple
+      independent sources (high confidence). The adaptation (Quest 5, IFDB TUID
+      rg42893ymbsay0kk, IFID A8EFEB24-DB5E-4E4A-88D8-94C509416429, first published 2014-11-17,
+      v1.0) is described on IFDB as containing "the complete Feedbooks public-domain text," with
+      both a playable version and full source files offered for download (.quest story file, or
+      all source code with brief documentation). No independent author-signed PD dedication (e.g.
+      a CC0 statement in the adaptation author's own words) was found, and the adaptation's own
+      creator name could not be determined from any source. Kept at green given the story text
+      itself is the object of interest and is solidly PD either way; confirm the adaptation code's
+      own status separately if the Quest implementation (not just the text) is what gets reused.
+
+  - id: the-tailgator
+    title: "The Tailgator"
+    author: null
+    publication_year: null
+    source_url: null
+    download_url: null
+    jurisdiction: null
+    license_claimed: "Public domain (per the external proposal); NOT CONFIRMED"
+    covers: []
+    commercial_use_permitted: null
+    derivatives_permitted: null
+    status: reference_only
+    verification_method: websearch_snippet
+    verification_confidence: unable_to_verify
+    verification_notes: >
+      Could not locate any IFDB listing under this title after extensive search (exact title,
+      title + ifdb.org, title + author/rating/license terms, spelling variants). Every result was
+      an unrelated product (monster truck, taillight brand, generator, golf game, tailgating
+      brand/event) or a different IF title. This title may be misremembered, misattributed to
+      IFDB, or too obscure to surface in search. Do not add to any corpus, structural or
+      reference, until it can actually be located and its real IFDB entry confirmed.
+
+  - id: cavern-of-the-morlocks
+    title: "The Cavern of the Morlocks"
+    author: "François Coulon"
+    publication_year: 1985
+    source_url: "https://ifdb.org/viewgame?id=yern8xmey2e5dcwj"
+    download_url: "listed as downloadable on IFDB per search results; not independently confirmed by direct fetch"
+    jurisdiction: "France (original 1985 magazine type-in, L'Ordinateur Individuel issue 77); English TRS-80 MC-10 port also listed"
+    license_claimed: "Public domain, per IFDB's community-entered license field only"
+    covers: [text, code]
+    commercial_use_permitted: null
+    derivatives_permitted: null
+    status: yellow
+    verification_method: websearch_snippet
+    verification_confidence: medium
+    verification_notes: >
+      IFDB lists "Public Domain" but this is community metadata, not a sourced legal statement
+      from the author; 1980s French magazine type-in programs were typically printed for readers
+      to freely copy, which is consistent with but not proof of an actual PD dedication. Real
+      rating/review count is 2 ratings, 1 review (the external proposal's "3 ratings and 1
+      detailed review" does not match; corrected here), by IFDB member jgerrie, discussing its
+      multiple-ending design and single-keypress navigation on 8-bit Alice/MC-10 hardware. Kept at
+      yellow, not green, until an author-sourced PD statement is found.
+
+  - id: lost-pig
+    title: "Lost Pig"
+    author: "Admiral Jota (real identity not publicly disclosed in sources found)"
+    publication_year: 2007
+    source_url: "https://grunk.org/lostpig/index.html"
+    download_url: "https://ifdb.org/viewgame?id=mohwfk47yjzii14w"
+    jurisdiction: "Unconfirmed; author's site is the license source"
+    license_claimed: "CC BY-NC-ND 3.0 Unported"
+    covers: [text]
+    commercial_use_permitted: false
+    derivatives_permitted: false
+    status: red
+    verification_method: websearch_snippet
+    verification_confidence: medium
+    verification_notes: >
+      The external proposal's claimed license is confirmed, not an overstatement: CC
+      BY-NC-ND 3.0 Unported, consistent across multiple independent searches pointing at
+      grunk.org/lostpig. NonCommercial and NoDerivs both block this project's use outright without
+      the rights holder's explicit written permission (a model-training or corpus-inclusion use
+      would likely be characterized as reproduction and/or adaptation under this license).
+      Award/review evidence also checks out: ~523-526 IFDB ratings, 4 XYZZY Award wins (Best Game,
+      Best Writing, Best Individual NPC, Best Individual PC) plus 4 more finalist nods in 2007,
+      and 1st place at IFComp 2007 (avg. score 8.27 of 27 entries). This is the strongest
+      permission-request candidate of anything checked this session, precisely because the review
+      evidence is this solid and the blocker is a single missing permission, not an absence of
+      quality signal.
