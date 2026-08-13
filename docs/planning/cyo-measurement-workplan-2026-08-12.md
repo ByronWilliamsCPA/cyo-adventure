@@ -133,6 +133,53 @@ This rule can genuinely return "drop", and it is the reason to run W2 before W3 
 measurement turns out to be redundant, two of the three reviews' central recommendation is wrong on
 our corpus and we should say so rather than build on it.
 
+*Outcome (2026-08-12): mixed, and the rule needed a directional refinement to be usable.*
+
+Corpus: 60 filled books (`out/*.filled.json`, the non-dry `out/vendor-comparison/run-*/books/`,
+and the two mutation pilot books). 53 measured; 4 skipped for retained `<<FILL` residue (the same
+four `AL-320` found) and 3 skipped because they fail `Storybook.model_validate` on
+`metadata.topology`, an older schema version. Paths are the W1 covering set, which is the right
+set for "is any reading bad".
+
+| measure | book in, path out | book out, path in | either | share | median within-book path spread |
+| --- | --- | --- | --- | --- | --- |
+| reading level (FK grade vs `target ± tolerance`) | 7 | 3 | 10 | **18.9%** | 0.878 grades |
+| told-emotion (per 1000 narration words, band 0.5) | 6 | 1 | 7 | **13.2%** | 0.000 |
+| tense instability (unstable nodes, band 0) | 0 | 2 | 2 | 3.8% | 0.000 |
+| moral tags (count over endings, band 0) | 0 | 9 | 9 | 17.0% | 0.000 |
+
+**Reading level: keep.** Clears the bar bidirectionally, and the disagreement is not
+small-denominator noise: the disagreeing paths run 364 to 969 words over 5 to 12 nodes. The
+mechanism is sound. The book aggregate is length-weighted over every node, so it systematically
+understates the hardest single reading; `sk_night_market` measures 3.50 whole-book inside a 1.0-4.0
+band while one covering path measures 4.03, and `sk_school_garden_mystery` 4.07 against a path at
+5.09. This is the concentration effect the reviews predicted, and it is the one place we have
+evidence for it.
+
+**Told-emotion: keep the unit, re-derive the threshold before using it.** The 13.2% is real
+disagreement but it is evidence about the threshold rather than about per-path sensitivity. All six
+book-passes-path-fails cases are exactly `k x 1000 / path_words`, the smallest nonzero rate each
+path length admits (1075 words to 0.930, 570 to 1.754, 1856 to 0.539, 643 to 1.555, 536 to 1.866,
+and 1187 to 2.527 at k=3). The 0.5 band was calibrated on books of 2,344 to 24,601 words; on a
+600-word path a single hit already scores 1.67, so the band never binds and the measure degenerates
+from a rate into "does this path contain a told-emotion phrase at all". Either re-derive the band at
+path scale or express the path-scope version as a count with a path-appropriate allowance.
+
+**Tense instability: drop.** 3.8%, below the bar, and both disagreements point the weaker way.
+
+**Moral tags: drop, despite a literal 17%.** Every one of the nine disagreements is
+book-fails-path-passes, and that is structural rather than incidental: a path's ending set is a
+subset of the book's, so a path's moral-tag count can never exceed the book's. A per-path check here
+can only ever pass books the book-level check fails, which is a laxer gate, not a more sensitive
+one.
+
+*Rule refinement, applied above and carried forward to W3 and W6.* The rule as written counts
+either direction of disagreement as evidence. For any measure that is monotone under path-subsetting
+(a count over a subset of nodes or endings), the book-fails-path-passes direction is dilution, not
+sensitivity, and must not count toward the 10 percent. Before applying the rule to a new measure,
+ask whether the path-scope value can exceed the book-scope value at all; if it cannot, the per-path
+version is weaker by construction and the rule should not be run.
+
 *Cost.* Zero spend. Blocked by W1.
 
 ### W3. Consequence distance per fork
