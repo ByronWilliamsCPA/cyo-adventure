@@ -54,13 +54,21 @@ attributable to a vendor. Each vendor entry therefore carries a
 ``provider_order``; the adapter sends ``allow_fallbacks: false`` alongside it,
 turning a silent substitution into a visible error.
 
-**Cost is not reported.** Per-book token cost requires the provider-usage
-capture on the unmerged ``feat/generation-cost-instrumentation`` branch (#701),
-which changes ``GenerationProvider.complete``'s return type repo-wide. This
-harness deliberately does not reimplement a second, conflicting counter: it
-records ``"cost": null`` with a reason string, and wall-clock latency as the
-only run-cost proxy available today. Re-run this harness after #701 lands to
-fill that column in.
+**Cost is measured, per book, across every call that book consumed.** Each book
+gets its own :class:`~cyo_adventure.generation.usage.UsageLedger` wrapped around
+its provider, so fill and repair calls are both billed to the book that caused
+them; a leg needing three repairs to deliver is more expensive than one landing
+first time, and that is exactly the difference this comparison exists to find.
+A run refuses to start when a leg has no complete price, because a comparison
+that exists to price vendors and cannot price them has already failed: run-6
+spent twenty generations and recorded ``cost: null`` twenty times (AL-348).
+Pass ``--allow-unpriced`` to accept the gap deliberately.
+
+**The completion cap is a condition, not a setting.** At 32,000 one leg spends
+6,054 completion tokens on a book and another spends all 32,000, 28,247 of them
+on hidden reasoning. A leg with no headroom was measured against the wall rather
+than against itself, so its fill rate is suppressed rather than printed, and the
+cap is stamped on every book row (AL-328).
 
 Dry run (no network, proves the plumbing and the analysis path)::
 
@@ -101,12 +109,15 @@ import time
 from dataclasses import dataclass, replace
 from itertools import combinations
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Final
+from typing import TYPE_CHECKING, Any, Final, cast
 
 from cyo_adventure.core.config import Settings
-from cyo_adventure.generation.orchestrator import fill_skeleton
+from cyo_adventure.core.pricing import estimate_cost, price_for
+from cyo_adventure.generation.metered import MeteredProvider
+from cyo_adventure.generation.orchestrator import _MAX_TOKENS_PROSE, fill_skeleton
 from cyo_adventure.generation.pii import PiiContext
 from cyo_adventure.generation.provider import build_openrouter_leg, build_provider
+from cyo_adventure.generation.usage import UsageLedger
 from cyo_adventure.validator.reading_level import measure_book
 
 if TYPE_CHECKING:
@@ -123,13 +134,18 @@ _REPO_ROOT: Final[Path] = Path(__file__).resolve().parent.parent
 # a dead pin. See preflight's docstring for the 2026-08-12 measurements.
 _PREFLIGHT_MAX_TOKENS: Final[int] = 512
 
-# Why per-book cost is absent rather than estimated. Carried into the report so
-# a reader of the JSON a year from now does not have to reconstruct it.
-_COST_UNAVAILABLE: Final[str] = (
-    "per-call token usage is discarded by GenerationProvider.complete on this "
-    "branch; capture lands with #701 (feat/generation-cost-instrumentation). "
-    "Re-run after that merges to populate cost."
-)
+# The orchestrator's own prose cap, mirrored so a run that does not override it
+# still records the cap it ran under. Imported rather than restated: a local copy
+# would drift and the recorded condition would then be fiction.
+_PROSE_CAP: Final[int] = _MAX_TOKENS_PROSE
+
+# Share of the completion budget above which a leg is treated as having had no
+# headroom. At the production cap of 32,000, one leg spent 6,054 tokens on a book
+# and another spent all 32,000 (AL-328); the legs scored unreliable were exactly
+# the two without headroom, so their fill rate measured the cap rather than the
+# model. 0.95 rather than 1.0 because a model that stops just short of the wall
+# was still shaped by it.
+_NEAR_CAP_SHARE: Final[float] = 0.95
 
 __all__ = [
     "BookRecord",
@@ -200,6 +216,24 @@ class BookRecord:
         leaf_words: Total scorable leaf words.
         doc: The filled Storybook dict, or ``None`` on a total failure.
         error: Truncated exception text when ``status == "error"``.
+        fill_completeness: Fraction of node bodies that are prose rather than a
+            retained ``<<FILL ...>>`` directive. ``1.0`` is a written book.
+        output_tokens: Completion tokens the leg spent on this book, summed
+            across fill and repair calls, or ``None`` when unmetered.
+        reasoning_tokens: Hidden reasoning tokens inside ``output_tokens``, or
+            ``None`` when the backend reported none.
+        cost_usd: Measured spend for this book, or ``None`` when unpriced.
+        cost_complete: Whether every half of the price and the counts was known.
+            A ``False`` here makes ``cost_usd`` a lower bound.
+        cost_unavailable_reason: Why cost is absent or partial. Empty when
+            complete.
+        max_tokens: The completion cap this book was written under. Recorded
+            because it is a condition of the measurement, not a setting: results
+            at different caps are not poolable (`AL-328`).
+        reading_level_degraded: Whether Stage D did less than it was asked to,
+            by discarding a pass or dropping nodes from one.
+        reading_level_nodes_dropped: How many accepted revisions Stage D threw
+            away. Non-zero on a book that otherwise reads as fully repaired.
     """
 
     vendor: str
@@ -213,6 +247,49 @@ class BookRecord:
     leaf_words: int
     doc: dict[str, Any] | None
     error: str | None
+    fill_completeness: float = 0.0
+    output_tokens: int | None = None
+    reasoning_tokens: int | None = None
+    cost_usd: float | None = None
+    cost_complete: bool = False
+    cost_unavailable_reason: str = ""
+    max_tokens: int | None = None
+    reading_level_degraded: bool = False
+    reading_level_nodes_dropped: int = 0
+
+    @property
+    def complete(self) -> bool:
+        """Whether this book is finished prose rather than a schema-valid shell.
+
+        Returns:
+            ``True`` only when a document was produced and no node body still
+            holds a ``<<FILL ...>>`` directive. Four unfilled books out of
+            thirty-two inverted a published diversity verdict (`AL-335`), so
+            this is the participation test for every pair bucket rather than
+            ``doc is not None``.
+        """
+        return self.doc is not None and self.fill_completeness >= 1.0
+
+    @property
+    def near_cap(self) -> bool:
+        """Whether this book was written with no meaningful budget headroom.
+
+        A fixed ``max_tokens`` is not a neutral condition across vendors: at the
+        production cap of 32,000 one leg spends 6,054 completion tokens on a
+        book and another spends all 32,000, 28,247 of them on hidden reasoning
+        (`AL-328`). The legs scored unreliable were exactly the two without
+        headroom, so a fill rate for those measures the cap rather than the
+        model.
+
+        Returns:
+            ``True`` when the call spent at least ``_NEAR_CAP_SHARE`` of its
+            budget. ``False`` when either figure is unknown, since an unmeasured
+            call is not evidence of headroom either way; ``output_tokens`` being
+            ``None`` is visible separately in the row.
+        """
+        if self.output_tokens is None or self.max_tokens is None:
+            return False
+        return self.output_tokens >= self.max_tokens * _NEAR_CAP_SHARE
 
 
 @dataclass(frozen=True, slots=True)
@@ -238,6 +315,9 @@ class ComparisonReport:
             shared lineage, so it is recorded rather than dropped and is never
             part of any headline.
         verdict: A one-line reading of within versus cross.
+        excluded_incomplete: Books that produced a document but were not fully
+            written, named rather than silently dropped so a reader can see how
+            much of a paid run did not reach the analysis.
     """
 
     books: list[BookRecord]
@@ -247,6 +327,7 @@ class ComparisonReport:
     same_family_cross_model: dict[str, float]
     same_family_same_brief: dict[str, float]
     verdict: str
+    excluded_incomplete: tuple[str, ...] = ()
 
 
 def _load_json(path: Path) -> object:
@@ -619,9 +700,15 @@ async def run_comparison(
 
     for vendor in vendors:
         for index, brief in enumerate(briefs):
-            provider = _build_provider(
-                vendor, resolved, mock=mock, max_tokens=max_tokens
+            # One ledger per book, never one per run: the comparison's whole
+            # point is per-leg economics, and a shared accumulator would report
+            # the slate's total against whichever book happened to be last.
+            ledger = UsageLedger()
+            provider = MeteredProvider(
+                _build_provider(vendor, resolved, mock=mock, max_tokens=max_tokens),
+                ledger=ledger,
             )
+            effective_cap = max_tokens if max_tokens is not None else _PROSE_CAP
             started = time.monotonic()
             try:
                 outcome = await fill_skeleton(
@@ -647,6 +734,8 @@ async def run_comparison(
                         leaf_words=0,
                         doc=None,
                         error=str(exc)[:512],
+                        max_tokens=effective_cap,
+                        **_metered_fields(ledger, vendor),
                     )
                 )
             else:
@@ -667,6 +756,10 @@ async def run_comparison(
                         leaf_words=words,
                         doc=doc,
                         error=None,
+                        fill_completeness=_fill_completeness(doc),
+                        max_tokens=effective_cap,
+                        **_reading_level_fields(outcome.report),
+                        **_metered_fields(ledger, vendor),
                     )
                 )
             last = records[-1]
@@ -693,6 +786,106 @@ async def run_comparison(
     return records
 
 
+def _fill_completeness(doc: dict[str, Any] | None) -> float:
+    """Return the fraction of node bodies that are prose rather than a directive.
+
+    Args:
+        doc: The filled Storybook dict, or ``None``.
+
+    Returns:
+        ``0.0`` when no document was produced or it carries no nodes, otherwise
+        the share of bodies with no retained ``<<FILL`` marker. Schema validity
+        is not the same question: a skeleton echoed back is schema-clean and
+        entirely unwritten, and four such books out of thirty-two inverted a
+        published diversity verdict (`AL-335`).
+    """
+    if doc is None:
+        return 0.0
+    nodes = doc.get("nodes")
+    if not isinstance(nodes, list) or not nodes:
+        return 0.0
+    bodies = [
+        node.get("body")
+        for node in cast("list[dict[str, Any]]", nodes)
+        if isinstance(node, dict)
+    ]
+    if not bodies:
+        return 0.0
+    written = sum(
+        1 for body in bodies if isinstance(body, str) and "<<FILL" not in body
+    )
+    return written / len(bodies)
+
+
+def _reading_level_fields(report: dict[str, object]) -> dict[str, Any]:
+    """Lift Stage D's self-reported degradation out of the gate report.
+
+    A book whose reading-level repair was discarded, or partly dropped, is
+    indistinguishable from a fully repaired one everywhere else in the artifact:
+    ``status`` reads ``passed`` either way. Carrying the two fields into the
+    per-book row is what lets a leg comparison exclude or flag affected books
+    without regenerating anything (`AL-350`).
+
+    Args:
+        report: The generation outcome's report mapping.
+
+    Returns:
+        The ``reading_level_*`` keyword arguments for :class:`BookRecord`.
+    """
+    level = report.get("reading_level")
+    if not isinstance(level, dict):
+        return {}
+    entry = cast("dict[str, object]", level)
+    dropped = entry.get("nodes_dropped")
+    return {
+        "reading_level_degraded": bool(entry.get("degraded", False)),
+        "reading_level_nodes_dropped": dropped if isinstance(dropped, int) else 0,
+    }
+
+
+def _metered_fields(ledger: UsageLedger, vendor: Vendor) -> dict[str, Any]:
+    """Price one book from the calls it actually made.
+
+    Args:
+        ledger: This book's ledger, holding one entry per provider call.
+        vendor: The leg, whose slug is the price-table key.
+
+    Returns:
+        The token and cost keyword arguments for :class:`BookRecord`.
+
+    Note:
+        Costed across every call the book consumed, fill plus repairs, rather
+        than the fill alone. A leg that needs three repairs to deliver is more
+        expensive than one that lands first time, and charging only the first
+        call would hide exactly the difference this comparison exists to find.
+    """
+    if not ledger.calls:
+        return {"cost_unavailable_reason": "no provider call was metered for this book"}
+    totals = ledger.snapshot()
+    price = price_for("openrouter", vendor.model)
+    estimate = estimate_cost(price, totals.input_tokens, totals.output_tokens)
+    reasoning = [
+        call.reasoning_tokens
+        for call in ledger.calls
+        if call.reasoning_tokens is not None
+    ]
+    return {
+        "output_tokens": totals.output_tokens if totals.unknown_calls == 0 else None,
+        "reasoning_tokens": sum(reasoning) if reasoning else None,
+        "cost_usd": float(estimate.amount_usd),
+        "cost_complete": estimate.complete and totals.unknown_calls == 0,
+        "cost_unavailable_reason": (
+            estimate.reason
+            if not estimate.complete
+            else (
+                f"{totals.unknown_calls} of {totals.call_count} calls reported no usage"
+                if totals.unknown_calls
+                else ""
+            )
+        ),
+    }
+
+
 def _summarize(rates: list[float]) -> dict[str, float]:
     """Reduce a list of per-pair rates to the figures the report quotes.
 
@@ -700,15 +893,27 @@ def _summarize(rates: list[float]) -> dict[str, float]:
         rates: Shared four-grams per 1000 leaf words, one entry per pair.
 
     Returns:
-        ``{"pairs", "mean_per_1000", "max_per_1000"}``. An empty input yields
-        zeros with ``pairs == 0``, which reads as "not measured" rather than
-        as a clean result.
+        ``{"pairs", "mean_per_1000", "median_per_1000", "max_per_1000"}``. An
+        empty input yields zeros with ``pairs == 0``, which reads as "not
+        measured" rather than as a clean result.
+
+        The median is reported beside the mean as a contamination detector. A
+        handful of near-identical pairs drags a mean and barely moves a median,
+        so a large gap between the two says the bucket is being decided by a few
+        outliers rather than by its population; four unfilled books out of
+        thirty-two did exactly that and inverted a published verdict (`AL-335`).
     """
     if not rates:
-        return {"pairs": 0.0, "mean_per_1000": 0.0, "max_per_1000": 0.0}
+        return {
+            "pairs": 0.0,
+            "mean_per_1000": 0.0,
+            "median_per_1000": 0.0,
+            "max_per_1000": 0.0,
+        }
     return {
         "pairs": float(len(rates)),
         "mean_per_1000": round(statistics.fmean(rates), 2),
+        "median_per_1000": round(statistics.median(rates), 2),
         "max_per_1000": round(max(rates), 2),
     }
 
@@ -716,7 +921,14 @@ def _summarize(rates: list[float]) -> dict[str, float]:
 def analyze(records: Sequence[BookRecord]) -> ComparisonReport:
     """Bucket every book pair by vendor axis and brief axis, then compare.
 
-    Only books that produced a document participate. Pairs are computed with
+    Only books that were **fully written** participate. Schema validity is the
+    wrong test: a skeleton echoed back parses, and an unfilled book inflates
+    within-vendor similarity (near-identical directives) while deflating
+    cross-vendor similarity (directives share nothing with prose) at the same
+    time, moving the headline ratio in both directions at once. Four such books
+    out of thirty-two inverted the published verdict (`AL-335`), so the
+    participation test is ``BookRecord.complete`` and the excluded books are
+    named in the report rather than dropped quietly. Pairs are computed with
     ``scripts/check_sibling_fills.pairwise_shared_grams``, so the rates use the
     same four-gram definition, stopword handling, and per-1000 normalization as
     the calibrated 3.3 sibling-fill floor and are directly comparable to it.
@@ -731,7 +943,12 @@ def analyze(records: Sequence[BookRecord]) -> ComparisonReport:
     _ensure_repo_on_path()
     from scripts.check_sibling_fills import pairwise_shared_grams  # noqa: PLC0415
 
-    usable = [r for r in records if r.doc is not None]
+    usable = [r for r in records if r.complete]
+    excluded = tuple(
+        f"{r.vendor}#{r.brief_index} ({r.fill_completeness:.0%} filled)"
+        for r in records
+        if r.doc is not None and not r.complete
+    )
     if len(usable) < 2:
         return ComparisonReport(
             books=list(records),
@@ -740,7 +957,8 @@ def analyze(records: Sequence[BookRecord]) -> ComparisonReport:
             same_brief_cross_vendor=_summarize([]),
             same_family_cross_model=_summarize([]),
             same_family_same_brief=_summarize([]),
-            verdict="not measured: fewer than two books produced a document",
+            excluded_incomplete=excluded,
+            verdict="not measured: fewer than two books were fully written",
         )
 
     docs = [r.doc for r in usable if r.doc is not None]
@@ -780,6 +998,7 @@ def analyze(records: Sequence[BookRecord]) -> ComparisonReport:
         same_brief_cross_vendor=_summarize(same_brief_cross),
         same_family_cross_model=_summarize(family_cross),
         same_family_same_brief=_summarize(family_same_brief),
+        excluded_incomplete=excluded,
         verdict=_verdict(within_summary, cross_summary),
     )
 
@@ -803,6 +1022,12 @@ def _verdict(within: dict[str, dict[str, float]], cross: dict[str, float]) -> st
     if cross_mean <= 0:
         return "cross-vendor pairs share no four-grams at all; check the inputs"
     ratio = within_mean / cross_mean
+    medians = [s["median_per_1000"] for s in within.values() if s["pairs"] > 0]
+    contamination = _contamination_note(
+        ratio, statistics.fmean(medians), cross["median_per_1000"]
+    )
+    if contamination:
+        return contamination
     if ratio >= 1.15:
         return (
             f"vendor-driven: within-vendor {within_mean:.2f} exceeds cross-vendor "
@@ -819,6 +1044,48 @@ def _verdict(within: dict[str, dict[str, float]], cross: dict[str, float]) -> st
         f"task-driven: within-vendor {within_mean:.2f} and cross-vendor "
         f"{cross_mean:.2f} per 1000 are comparable (ratio {ratio:.2f}); the floor "
         "follows the skeleton and prompt, so vendor rotation buys little"
+    )
+
+
+def _contamination_note(
+    mean_ratio: float, within_median: float, cross_median: float
+) -> str:
+    """Refuse a verdict the mean and the median do not agree on.
+
+    The mean-versus-median gap is the contamination detector `AL-335` asked for.
+    Both statistics answer the same question over the same pairs, so a
+    disagreement large enough to cross the reporting thresholds means a few
+    outlier pairs are deciding the headline. Reporting the mean alone would
+    publish their verdict as the population's.
+
+    Args:
+        mean_ratio: Within-over-cross computed from the bucket means.
+        within_median: Mean of the per-vendor within-vendor medians.
+        cross_median: The cross-vendor median.
+
+    Returns:
+        A one-line refusal when the two ratios straddle a threshold, else the
+        empty string.
+    """
+    if cross_median <= 0:
+        return ""
+    median_ratio = within_median / cross_median
+
+    def _band(ratio: float) -> str:
+        if ratio >= 1.15:
+            return "vendor-driven"
+        if ratio <= 0.87:
+            return "inverted"
+        return "task-driven"
+
+    if _band(mean_ratio) == _band(median_ratio):
+        return ""
+    return (
+        f"contaminated: the mean ratio ({mean_ratio:.2f}) and the median ratio "
+        f"({median_ratio:.2f}) fall in different bands "
+        f"({_band(mean_ratio)} vs {_band(median_ratio)}), so a few outlier pairs "
+        "are deciding this verdict rather than the population. Inspect the pair "
+        "distribution before quoting either figure"
     )
 
 
@@ -912,10 +1179,67 @@ def _print_report(report: ComparisonReport, *, structure_varies: bool = True) ->
             f"  {'same brief, same lab':<{name_width}} mean {fsb['mean_per_1000']:>6.2f}  "
             f"max {fsb['max_per_1000']:>6.2f}  ({_pairs(fsb)})  both confounds"
         )
+    if report.excluded_incomplete:
+        print()
+        print(
+            f"  EXCLUDED from every bucket, not fully written: "
+            f"{', '.join(report.excluded_incomplete)}"
+        )
+    _print_conditions(report.books)
     print()
     print(f"Verdict: {report.verdict}")
-    print(f"Cost:    not reported. {_COST_UNAVAILABLE}")
     print("=" * 72)
+
+
+def _print_conditions(books: Sequence[BookRecord]) -> None:
+    """Print the conditions the measurement ran under, and any cost it recorded.
+
+    The completion cap belongs here rather than in a config file nobody reads
+    back: it is a variable of the experiment, not a setting. A leg that spent its
+    whole budget was measured against the wall rather than against its own
+    limits, so its fill rate is suppressed rather than printed (`AL-328`).
+
+    Args:
+        books: Every book record from the run.
+    """
+    caps = sorted({b.max_tokens for b in books if b.max_tokens is not None})
+    if not caps:
+        return
+    print()
+    cap_text = ", ".join(str(c) for c in caps)
+    print(f"  Completion cap (a measured condition, not a setting): {cap_text}")
+    if len(caps) > 1:
+        print(
+            "  WARNING: books in this report were written at DIFFERENT caps and "
+            "are not poolable."
+        )
+
+    near = sorted({b.vendor for b in books if b.near_cap})
+    if near:
+        print(
+            f"  No budget headroom, fill rate NOT reported for: {', '.join(near)}. "
+            "These legs were measured against the cap rather than against "
+            "themselves."
+        )
+
+    priced = [b for b in books if b.cost_usd is not None and b.cost_complete]
+    if priced:
+        total = sum(b.cost_usd or 0.0 for b in priced)
+        print(f"  Cost: ${total:.4f} over {len(priced)} priced books.")
+    unpriced = [b for b in books if not b.cost_complete]
+    if unpriced:
+        reasons = sorted(
+            {b.cost_unavailable_reason for b in unpriced if b.cost_unavailable_reason}
+        )
+        detail = f" ({reasons[0]})" if reasons else ""
+        print(f"  Cost incomplete for {len(unpriced)} of {len(books)} books{detail}.")
+
+    degraded = sorted({b.vendor for b in books if b.reading_level_degraded})
+    if degraded:
+        print(
+            f"  Stage D did less than it was asked to on: {', '.join(degraded)}. "
+            "Those books read as repaired everywhere else; exclude or flag them."
+        )
 
 
 def _book_row(record: BookRecord) -> dict[str, object]:
@@ -942,8 +1266,17 @@ def _book_row(record: BookRecord) -> dict[str, object]:
         "grade": record.grade,
         "in_band": record.in_band,
         "leaf_words": record.leaf_words,
-        "cost": None,
-        "cost_unavailable_reason": _COST_UNAVAILABLE,
+        "fill_completeness": round(record.fill_completeness, 3),
+        "complete": record.complete,
+        "max_tokens": record.max_tokens,
+        "output_tokens": record.output_tokens,
+        "reasoning_tokens": record.reasoning_tokens,
+        "near_cap": record.near_cap,
+        "reading_level_degraded": record.reading_level_degraded,
+        "reading_level_nodes_dropped": record.reading_level_nodes_dropped,
+        "cost": record.cost_usd,
+        "cost_complete": record.cost_complete,
+        "cost_unavailable_reason": record.cost_unavailable_reason,
         "file": f"books/{_book_filename(record)}" if record.doc is not None else None,
         "error": record.error,
     }
@@ -1025,6 +1358,7 @@ def _write_outputs(
         "same_brief_cross_vendor": report.same_brief_cross_vendor,
         "same_family_cross_model": report.same_family_cross_model,
         "same_family_same_brief": report.same_family_same_brief,
+        "excluded_incomplete": list(report.excluded_incomplete),
         "verdict": report.verdict,
     }
     (out_dir / "report.json").write_text(
@@ -1106,6 +1440,16 @@ def _parse_args(argv: list[str] | None) -> argparse.Namespace:
         type=float,
         default=0.0,
         help="Seconds to sleep between fills (per-minute rate limits).",
+    )
+    parser.add_argument(
+        "--allow-unpriced",
+        action="store_true",
+        help=(
+            "Run even when a leg has no complete price, accepting that its "
+            "books will record an incomplete cost. Without this the run refuses "
+            "to start, because a comparison that exists to price vendors and "
+            "cannot price them has already failed (AL-348)."
+        ),
     )
     parser.add_argument(
         "--max-tokens",
@@ -1229,6 +1573,43 @@ async def preflight(
     return results
 
 
+def unpopulable_fields(vendors: Sequence[Vendor]) -> list[str]:
+    """Name the report fields this run could not fill in, before it spends money.
+
+    Run-6 spent twenty book generations across five legs to compare quality
+    **and cost**, and every one of the twenty carries ``cost: null``: the branch
+    it executed from discarded per-call usage, so the field the run existed to
+    populate was unpopulable before the first call was made (`AL-348`). Nothing
+    checked, because nothing was looking.
+
+    A missing price is the remaining way to reach that state now that metering
+    is wired in, so that is what this checks.
+
+    Args:
+        vendors: The slate about to run.
+
+    Returns:
+        One line per structurally unpopulable field, empty when the run can
+        fill in everything it reports.
+    """
+    unpriced = [
+        v.label
+        for v in vendors
+        if (price := price_for("openrouter", v.model)) is None or not price.fully_priced
+    ]
+    if not unpriced:
+        return []
+    return [
+        (
+            f"cost: no complete price for {', '.join(unpriced)}. Every book "
+            "from these legs would record an incomplete cost, which is the "
+            "state run-6 shipped in (AL-348/UW-C245). Add them to "
+            "core/pricing.py, or pass --allow-unpriced to run anyway and "
+            "accept the gap."
+        )
+    ]
+
+
 def _report_preflight(results: list[tuple[str, str | None]]) -> bool:
     """Print the pre-flight verdict and say whether the run may proceed.
 
@@ -1317,6 +1698,19 @@ def main(argv: list[str] | None = None) -> int:
         # the loss to one book rather than guaranteeing the run.
         # #VERIFY: run_comparison prints each book's error inline, so a mid-run
         # withdrawal names itself at the book it first hits.
+        # #CRITICAL: data integrity: a paid run must not start when a column it
+        # exists to populate cannot be populated. Run-6 spent twenty
+        # generations to compare cost and recorded `cost: null` twenty times
+        # (AL-348), and nothing objected because nothing was asked to.
+        # #VERIFY: test_compare_vendors.py drives an unpriced slate and asserts
+        # both the refusal and the --allow-unpriced override.
+        gaps = unpopulable_fields(vendors)
+        if gaps and not args.allow_unpriced:  # pyright: ignore[reportAny]
+            for line in gaps:
+                print(f"Error: {line}", file=sys.stderr)
+            return 1
+        for line in gaps:
+            print(f"WARNING: {line}", file=sys.stderr)
         if not _report_preflight(asyncio.run(preflight(vendors, settings))):
             return 1
 

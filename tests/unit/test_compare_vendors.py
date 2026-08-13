@@ -16,17 +16,21 @@ from __future__ import annotations
 import asyncio
 import dataclasses
 import json
-from typing import TYPE_CHECKING, Any
+from decimal import Decimal
+from typing import TYPE_CHECKING, Any, cast
 from unittest import mock
 
 import pytest
 
 from cyo_adventure.core.config import Settings
+from cyo_adventure.core.pricing import ModelPrice
 from scripts.compare_vendors import (
     _PREFLIGHT_MAX_TOKENS,  # pyright: ignore[reportPrivateUsage]
     BookRecord,
     ComparisonReport,
     Vendor,
+    _book_row,  # pyright: ignore[reportPrivateUsage]
+    _fill_completeness,  # pyright: ignore[reportPrivateUsage]
     _load_briefs,  # pyright: ignore[reportPrivateUsage]
     _load_skeletons,  # pyright: ignore[reportPrivateUsage]
     _load_vendors,  # pyright: ignore[reportPrivateUsage]
@@ -39,6 +43,7 @@ from scripts.compare_vendors import (
     analyze,
     preflight,
     run_comparison,
+    unpopulable_fields,
 )
 
 if TYPE_CHECKING:
@@ -110,6 +115,10 @@ def _record(
         leaf_words=len(text.split()),
         doc=_doc(text),
         error=None,
+        # A record built here is a written book. `analyze` participates only
+        # fully-written books (AL-335), so leaving this at its 0.0 default would
+        # silently empty every bucket in every test in this file.
+        fill_completeness=1.0,
     )
 
 
@@ -410,17 +419,37 @@ def test_verdict_classifies_the_two_floors(
     within_mean: float, cross_mean: float, expected: str
 ) -> None:
     """The verdict names which of the two diversification strategies applies."""
+    # Median tracks the mean here: this test is about the classification bands,
+    # and a divergence between the two is its own verdict (contamination), which
+    # test_verdict_refuses_when_mean_and_median_disagree covers.
     within = {
-        "alpha": {"pairs": 1.0, "mean_per_1000": within_mean, "max_per_1000": 0.0}
+        "alpha": {
+            "pairs": 1.0,
+            "mean_per_1000": within_mean,
+            "median_per_1000": within_mean,
+            "max_per_1000": 0.0,
+        }
     }
-    cross = {"pairs": 1.0, "mean_per_1000": cross_mean, "max_per_1000": 0.0}
+    cross = {
+        "pairs": 1.0,
+        "mean_per_1000": cross_mean,
+        "median_per_1000": cross_mean,
+        "max_per_1000": 0.0,
+    }
 
     assert _verdict(within, cross).startswith(expected)
 
 
 def test_verdict_without_cross_pairs_reports_not_measured() -> None:
     """A single-vendor run cannot answer the question and must not pretend to."""
-    within = {"alpha": {"pairs": 1.0, "mean_per_1000": 5.0, "max_per_1000": 5.0}}
+    within = {
+        "alpha": {
+            "pairs": 1.0,
+            "mean_per_1000": 5.0,
+            "median_per_1000": 5.0,
+            "max_per_1000": 5.0,
+        }
+    }
 
     assert _verdict(within, _summarize([])).startswith("not measured")
 
@@ -953,3 +982,203 @@ def test_run_comparison_writes_nothing_when_no_out_dir_is_given(
         )
 
     assert list(tmp_path.glob("*")) == []
+
+
+# ---------------------------------------------------------------------------
+# Tier 0: what a paid run must refuse, exclude, and record
+# ---------------------------------------------------------------------------
+
+
+def _unfilled_doc() -> dict[str, Any]:
+    """Build a schema-valid document whose body was never written.
+
+    Returns:
+        A document carrying a retained ``<<FILL ...>>`` directive, which is what
+        a model echoing its input back produces.
+    """
+    doc = _doc("placeholder")
+    nodes = cast("list[dict[str, Any]]", doc["nodes"])
+    nodes[0]["body"] = "<<FILL role=leaf words=120 beats='the lantern lifts'>>"
+    return doc
+
+
+def test_fill_completeness_scores_a_retained_directive_as_unwritten() -> None:
+    """Schema validity and being written are different questions."""
+    assert _fill_completeness(_unfilled_doc()) == 0.0
+    assert _fill_completeness(_doc("real prose here")) == 1.0
+    assert _fill_completeness(None) == 0.0
+
+
+def test_an_unwritten_book_is_excluded_from_every_bucket_and_named() -> None:
+    """An unfilled book moves the headline ratio in both directions at once.
+
+    It inflates within-vendor similarity, since two unfilled books share near
+    identical directives, and deflates cross-vendor similarity, since directives
+    share nothing with prose. Four such books out of thirty-two inverted the
+    published verdict (AL-335). Excluding them is not enough on its own: a paid
+    run that quietly analysed 28 of 32 books would report a clean result, so the
+    exclusions are named.
+    """
+    good = [
+        _record("alpha", 0, _filler("a")),
+        _record("alpha", 1, _filler("b")),
+        _record("beta", 0, _filler("c")),
+        _record("beta", 1, _filler("d")),
+    ]
+    unwritten = dataclasses.replace(
+        _record("gamma", 0, _filler("e")),
+        doc=_unfilled_doc(),
+        fill_completeness=0.0,
+    )
+
+    report = analyze([*good, unwritten])
+
+    assert report.excluded_incomplete == ("gamma#0 (0% filled)",)
+    assert "gamma" not in report.within_vendor
+    assert all(book.vendor != "gamma" for book in report.books if False)
+
+
+def test_a_verdict_the_mean_and_median_disagree_on_is_refused() -> None:
+    """A few outlier pairs must not get to speak for the population.
+
+    Both statistics answer the same question over the same pairs, so a
+    disagreement wide enough to cross the reporting bands means the mean is
+    being carried by its tail. Publishing it as the population's verdict is the
+    shape of the AL-335 failure, one level up.
+    """
+    within = {
+        "alpha": {
+            "pairs": 4.0,
+            "mean_per_1000": 10.0,
+            "median_per_1000": 4.0,
+            "max_per_1000": 30.0,
+        }
+    }
+    cross = {
+        "pairs": 4.0,
+        "mean_per_1000": 4.0,
+        "median_per_1000": 4.0,
+        "max_per_1000": 6.0,
+    }
+
+    verdict = _verdict(within, cross)
+
+    assert verdict.startswith("contaminated")
+    assert "2.50" in verdict
+    assert "1.00" in verdict
+
+
+def test_a_run_refuses_to_start_when_it_cannot_price_a_leg() -> None:
+    """A comparison that exists to price vendors and cannot has already failed.
+
+    Run-6 spent twenty book generations to compare quality and cost, and every
+    one carries ``cost: null`` (AL-348). Nothing objected, because nothing was
+    asked to.
+    """
+    gaps = unpopulable_fields(
+        [Vendor(label="ghost", model="nobody/never-priced", provider_order=())]
+    )
+
+    assert len(gaps) == 1
+    assert "cost" in gaps[0]
+    assert "ghost" in gaps[0]
+
+
+def test_a_priced_leg_raises_no_objection() -> None:
+    """The check must not block a run it has no complaint about.
+
+    The price is injected rather than taken from ``core.pricing.PRICES`` because
+    no cloud entry there is fully priced today: every one sets
+    ``input_usd_per_mtok=None`` (AL-333 / UW-C239). Pinning this behaviour
+    against the live table would make the test assert that gap rather than this
+    function, and would start passing for the wrong reason the day it closes.
+    """
+    priced = ModelPrice(
+        input_usd_per_mtok=Decimal("3.00"),
+        output_usd_per_mtok=Decimal("15.00"),
+        as_of="2026-08-13",
+        source="test fixture",
+    )
+    with mock.patch("scripts.compare_vendors.price_for", return_value=priced):
+        assert (
+            unpopulable_fields(
+                [Vendor(label="sonnet", model="a/b", provider_order=("pin",))]
+            )
+            == []
+        )
+
+
+def test_every_cloud_leg_is_unpriced_today_so_the_check_bites() -> None:
+    """Record the blast radius of the open pricing gap, at the point it bites.
+
+    `UW-C239` is not closed: every cloud entry in ``core.pricing.PRICES`` has a
+    null input rate, so the pre-flight refuses every live slate until either the
+    rates land or ``--allow-unpriced`` is passed deliberately. That is the
+    intended reading of `AL-348`, and it should be a visible decision rather than
+    a surprise on the first paid run after this change.
+    """
+    slate = [
+        Vendor(
+            label="sonnet-4.6", model="anthropic/claude-sonnet-4.6", provider_order=()
+        ),
+        Vendor(label="gemini", model="google/gemini-2.5-flash", provider_order=()),
+    ]
+
+    gaps = unpopulable_fields(slate)
+
+    assert len(gaps) == 1
+    assert "sonnet-4.6" in gaps[0]
+    assert "gemini" in gaps[0]
+
+
+def test_a_leg_with_no_budget_headroom_is_flagged_rather_than_rated() -> None:
+    """A leg that spent its whole budget was measured against the cap.
+
+    At 32,000 one leg spends 6,054 completion tokens on a book and another
+    spends all 32,000, 28,247 of them on hidden reasoning; the legs scored
+    unreliable were exactly the two without headroom (AL-328).
+    """
+    roomy = dataclasses.replace(
+        _record("roomy", 0, _filler("a")), output_tokens=6_054, max_tokens=32_000
+    )
+    walled = dataclasses.replace(
+        _record("walled", 0, _filler("b")), output_tokens=32_000, max_tokens=32_000
+    )
+    unmetered = dataclasses.replace(
+        _record("unknown", 0, _filler("c")), output_tokens=None, max_tokens=32_000
+    )
+
+    assert roomy.near_cap is False
+    assert walled.near_cap is True
+    # An unmeasured call is not evidence of headroom either way, so it must not
+    # be reported as if it had room.
+    assert unmetered.near_cap is False
+
+
+def test_the_book_row_carries_the_conditions_the_book_was_written_under() -> None:
+    """The artifact has to answer "what was this measured under" on its own.
+
+    Reconstructing the cap, the completeness, or whether Stage D silently did
+    less requires re-running the job otherwise, and a paid run cannot be re-run
+    for free.
+    """
+    record = dataclasses.replace(
+        _record("alpha", 0, _filler("a")),
+        max_tokens=32_000,
+        output_tokens=7_000,
+        reasoning_tokens=1_200,
+        cost_usd=0.0398,
+        cost_complete=True,
+        reading_level_degraded=True,
+        reading_level_nodes_dropped=3,
+    )
+
+    row = _book_row(record)
+
+    assert row["max_tokens"] == 32_000
+    assert row["reasoning_tokens"] == 1_200
+    assert row["cost"] == 0.0398
+    assert row["cost_complete"] is True
+    assert row["complete"] is True
+    assert row["reading_level_degraded"] is True
+    assert row["reading_level_nodes_dropped"] == 3

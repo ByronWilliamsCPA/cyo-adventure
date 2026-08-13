@@ -102,6 +102,27 @@ __all__ = [
 ]
 
 
+# Fields where a LARGE value is the bad one, so the drop-worst comparison has to
+# remove the top of the distribution rather than the bottom. Everything else in
+# BookScore is oriented lower-is-worse (a compliance share, a recall, a grade
+# sitting in band). Getting this backwards would turn a robustness check into a
+# flattering one, which is the failure mode drop-worst exists to catch.
+_LOWER_IS_BETTER: Final[frozenset[str]] = frozenset(
+    {
+        "grade_spread",
+        "sentence_spread",
+        "placeholder_leaks",
+        "l1_errors",
+        "l1_warnings",
+    }
+)
+
+# Below this, removing a book leaves too little to average. Dropping one of two
+# leaves a single observation, which is not a robustness check but a different
+# and weaker claim wearing its name.
+_MIN_BOOKS_FOR_DROP_WORST: Final[int] = 3
+
+
 @dataclass(frozen=True, slots=True)
 class BookScore:
     """Every deterministic measurement for one filled book.
@@ -175,6 +196,14 @@ class LegSummary:
             Books that produced no prose are excluded from prose means but
             still counted in ``books``, so a leg cannot raise its average by
             failing.
+        drop_worst: The same means recomputed with each field's single worst
+            book removed. At four books per leg one silently degraded book moves
+            a leg mean by roughly twenty points, which is larger than any effect
+            this design can resolve; run-6's apparent 22-point band-compliance
+            penalty for fp4 quantisation was one such book, and dropping each
+            leg's worst put fp4 at 0.89 against unquantised 0.88 (`AL-349`).
+            Empty when a leg has fewer than three books, since dropping one of
+            two leaves a single observation rather than a robustness check.
     """
 
     leg: str
@@ -182,6 +211,7 @@ class LegSummary:
     books: int
     complete_books: int
     means: dict[str, float | None]
+    drop_worst: dict[str, float | None] = dataclasses.field(default_factory=dict)
 
 
 def _words(text: str) -> list[str]:
@@ -491,7 +521,50 @@ def summarize_leg(scores: Sequence[BookScore]) -> LegSummary:
         books=len(scores),
         complete_books=sum(1 for s in scores if s.fill_completeness >= 1.0),
         means=means,
+        drop_worst=_drop_worst_means(scores, numeric),
     )
+
+
+def _drop_worst_means(
+    scores: Sequence[BookScore], numeric: Sequence[str]
+) -> dict[str, float | None]:
+    """Recompute each mean with that field's single worst book removed.
+
+    "Worst" is per field, not per book: a leg's weakest book on reading level is
+    not necessarily its weakest on beat recall, and picking one book to drop
+    across all fields would be a different, less informative statistic.
+
+    Args:
+        scores: Every book from one leg.
+        numeric: The field names to recompute.
+
+    Returns:
+        The robust means, or an empty mapping when the leg has too few books for
+        the comparison to mean anything.
+
+    Note:
+        Every field here is oriented so that lower is worse, except the two
+        spreads in :data:`_LOWER_IS_BETTER`, where a large value is the bad one.
+        Dropping the wrong tail would turn a robustness check into a flattering
+        one, so the orientation is stated rather than assumed.
+    """
+    if len(scores) < _MIN_BOOKS_FOR_DROP_WORST:
+        return {}
+    robust: dict[str, float | None] = {}
+    for name in numeric:
+        values = [
+            v
+            for s in scores
+            if isinstance(v := getattr(s, name), (int, float)) and v is not None
+        ]
+        if len(values) < _MIN_BOOKS_FOR_DROP_WORST:
+            robust[name] = None
+            continue
+        worst = max(values) if name in _LOWER_IS_BETTER else min(values)
+        remaining = list(values)
+        remaining.remove(worst)
+        robust[name] = statistics.fmean(remaining)
+    return robust
 
 
 def _load_run(run_dir: Path, skeleton_dir: Path) -> list[BookScore]:
@@ -566,6 +639,7 @@ def _print_table(summaries: Iterable[LegSummary]) -> None:
             f"{_fmt(m['word_ratio_median']):>10} {_fmt(m['word_on_budget']):>9} "
             f"{_fmt(m['beat_recall']):>6}"
         )
+    _print_drop_worst(rows, width)
     print("\nPROSE CHARACTER  (descriptive; how the leg writes, not how well)")
     print(
         f"  {'leg':<{width}}  {'MATTR':>6} {'sent len':>9} {'sent sd':>8} "
@@ -578,6 +652,59 @@ def _print_table(summaries: Iterable[LegSummary]) -> None:
             f"{_fmt(m['mean_sentence_words'], 1):>9} "
             f"{_fmt(m['sentence_spread'], 1):>8} "
             f"{_fmt(m['dialogue_share'], 3):>9} {_fmt(m['total_words'], 0):>7}"
+        )
+
+
+def _print_drop_worst(rows: Sequence[LegSummary], width: int) -> None:
+    """Print in-band compliance with each leg's worst book removed, and flag movers.
+
+    At four books per leg, one silently degraded book moves a leg mean by
+    roughly twenty points, which is larger than any effect this design can
+    resolve. Run-6's headline was exactly that: `deepseek-v4-pro-fp4` read 0.70
+    in band against fp8's 0.92 and was written up as a 22-point quantisation
+    penalty, when dropping each leg's worst book put fp4 at 0.89 against
+    unquantised 0.88 and the effect vanished (`AL-349`).
+
+    A leg whose mean moves more than one between-leg standard deviation when its
+    worst book is removed is flagged, because at that size the single book is
+    outweighing the variable under test.
+
+    Args:
+        rows: The leg summaries, already sorted.
+        width: Column width for the leg label.
+    """
+    movable = [s for s in rows if s.drop_worst.get("in_band") is not None]
+    if not movable:
+        return
+    full = [s.means["in_band"] for s in movable if s.means["in_band"] is not None]
+    between_leg_sd = statistics.stdev(full) if len(full) > 1 else 0.0
+
+    print("\nDROP-WORST  (in band, each leg's weakest book removed)")
+    print(
+        f"  {'leg':<{width}}  {'all':>6} {'drop1':>6} {'delta':>7}  "
+        f"(between-leg sd {between_leg_sd:.3f})"
+    )
+    flagged: list[str] = []
+    for s in movable:
+        base = s.means["in_band"]
+        robust = s.drop_worst["in_band"]
+        if base is None or robust is None:
+            continue
+        delta = robust - base
+        mover = between_leg_sd > 0 and abs(delta) > between_leg_sd
+        if mover:
+            flagged.append(s.leg)
+        print(
+            f"  {s.leg:<{width}}  {base:>6.2f} {robust:>6.2f} {delta:>+7.2f}"
+            f"{'  <-- ONE BOOK IS CARRYING THIS LEG' if mover else ''}"
+        )
+    if flagged:
+        print(
+            f"\n  {len(flagged)} leg(s) move more than one between-leg sd on a "
+            f"single book: {', '.join(flagged)}. Quote the drop-worst column for "
+            "these, and say which you used. A difference this design cannot "
+            "resolve must not be reported as a property of the variable under "
+            "test."
         )
 
 
