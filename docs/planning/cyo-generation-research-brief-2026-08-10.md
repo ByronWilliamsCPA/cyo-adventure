@@ -13,6 +13,14 @@
 > stop at section 26; a reader being asked to choose an architecture should not, because
 > section 27 retires one of the options and section 31 prices the rest.
 >
+> **Remit, widened again 2026-08-13.** Everything before section 32 asks a narrow question and
+> asks it in one vocabulary: architecture and metrics. That vocabulary produced real results
+> and also bounded what we could see, and the last two rounds of work found the most consequential
+> problems outside it, in supplier behaviour, quantization, serving infrastructure and evaluation
+> validity rather than in any architecture. **Section 32 replaces section 0's instruction with a
+> wider one and is the operative statement of what we want.** Read it first if you are reviewing
+> this document, then use Parts I to IV as evidence rather than as a specification of the task.
+>
 > **Citations.** Every reference in section 10 was verified against a primary source
 > (publisher page, ACL Anthology, or proceedings entry). Six entries in an earlier draft were
 > wrong and are corrected here; two claims that could not be verified were removed rather
@@ -45,6 +53,18 @@
 ---
 
 ## 0. What we are asking you to do
+
+> **Superseded 2026-08-13 by section 32.** This section states the task as it was first posed and
+> is kept because Parts I to III were written to answer it and read oddly without it. It is no
+> longer the instruction. Section 32 is, and it is deliberately much wider. If the two conflict,
+> follow 32.
+
+**The actual objective, stated plainly:** a growing catalogue of choose-your-own-adventure books
+for children that are **good**, that are **genuinely different from one another**, produced at a
+**cost that works at catalogue scale**, without weakening the safety, reading-level and review
+standards a children's product has to meet. Every question in this document is instrumental to
+that. Where a section treats one of those four as the whole problem, the section is narrower than
+the goal, not the other way round.
 
 Read sections 1 through 7, then produce what section 8 asks for: **two to four concrete
 architectures we could build and test.** Section 8.1 gives the specification each proposal
@@ -2701,3 +2721,130 @@ which is what sections 25 and 26 said had to happen before the architecture comp
 be run.
 
 The comparison this unblocks is still not run. What has changed is that it can be.
+
+---
+
+### 32. What we are asking you now, and the latitude you have
+
+> Added 2026-08-13. **This section supersedes section 0 and section 18 as the statement of the
+> task.** Those asked for architectures, in a document that spends 2,700 lines establishing that
+> architecture is the layer we understand best. This one asks for something else.
+
+#### 32.1 The objective, and the only four things that are actually required
+
+A growing catalogue of choose-your-own-adventure books for children that is:
+
+| | Requirement | How we currently judge it | Confidence |
+| --- | --- | --- | --- |
+| 1 | **Good**: a child wants to read it, and finish it | LLM judge panel, three labs, blind, z-normalised (29) | **low**: no human or child has read any book |
+| 2 | **Varied**: books differ from one another in ways a reader notices | four-gram convergence plus a decision-repetition construct we know is wrong (1.4, 14) | **low on construct, high on arithmetic** |
+| 3 | **Affordable** at catalogue scale | measured $/delivered book, fill stage only (30) | **medium**: real, but partial (32.4) |
+| 4 | **Safe and age-appropriate**, verifiably | deterministic validator, moderation gate, mandatory human approval | **highest evidence we hold** |
+
+Requirement 4 is not negotiable and no proposal may trade against it. The other three are all
+open to reformulation, including the claim that requirement 2 matters as much as this document
+assumes.
+
+#### 32.2 Why we are widening the remit rather than asking for more architectures
+
+Two rounds of review produced architecture proposals and we learned from them. But when we
+tabulate where the **consequential** findings actually came from, almost none came from the
+architecture layer:
+
+| Finding | Layer it lives in | What it cost us to not know |
+| --- | --- | --- |
+| Our headline diversity verdict was inverted by 4 unfilled books out of 32 (28) | measurement hygiene | a published conclusion, backwards |
+| One instrument item never varied across twelve cells; the item carrying every result saturated (16m) | instrument design | a round of experiments |
+| Cost tracks reasoning tokens, not output length, and varies 36x per delivered book (30) | supplier economics | the entire pricing question |
+| A pinned endpoint returned `finish_reason=error` on every call while the same model unpinned worked (2026-08-12) | serving infrastructure | a run, and nearly a wrong verdict about a model |
+| One provider reported `reasoning_tokens=0` while emitting 5,339 characters of reasoning (2026-08-12) | supplier telemetry honesty | trust in our own cost discriminator |
+| Two fp4 endpoints are unreachable on our account by data policy, not by price or capability | procurement and compliance | the cleanest arm of a 2x2 |
+| No human or child has read a single generated book | evaluation validity | unknown, and that is the point |
+
+Every row above was discovered by accident, while checking something else. That is the pattern
+we most want attacked: **we keep finding that the binding constraint was not where we were
+looking.** Section 18 said the most transferable rule we adopted was terminating a contaminated
+round rather than caveating it. The corollary we are acting on now is that our choice of
+vocabulary is itself a contaminant.
+
+#### 32.3 What we want from you
+
+**Attack the approach from angles this document does not contain.** Concretely, we would rather
+receive one well-argued attack on a premise than four more architectures. You are explicitly
+invited to tell us that a question we have spent months on does not matter.
+
+Nothing below is a menu to work through. It is a demonstration that the space is wider than
+Parts I to III, and the angle we most need is probably one we failed to list:
+
+1. **The product premise.** Is decision diversity what makes these books good for a child, or is
+   it an engineer's proxy? Children re-read. Series work partly *because* they repeat. We have
+   assumed sameness is the defect (1.3) on an owner judgment, never tested against a reader.
+   If the real driver is character attachment, pacing, illustration, or agency-in-the-moment
+   rather than variety-across-books, most of this document optimises the wrong thing.
+2. **Whether to generate at all.** We generate because we can. A catalogue could be licensed,
+   commissioned from human authors, or built as a hybrid where the expensive human step is
+   placed somewhere other than where we placed it. We currently spend human effort on *approval*
+   of machine output. Spending it on *premises* and letting the machine do prose is a different
+   product with different economics, and we have never priced it.
+3. **The catalogue-versus-per-child framing.** We assume we need N mutually distinct books. A
+   child reads a handful. Distinctness may be a property better delivered by assignment,
+   recommendation and personalisation than by generation, in which case the diversity floor in
+   section 27 stops being a blocker at all.
+4. **The supply chain as a first-class design surface.** Recent work says "which model" is
+   underspecified: the same checkpoint at a different quantization, on a different provider, at
+   a different token cap, is a different product with different failure modes, different
+   latency and different honesty about its own telemetry. Should we pin, self-host, run a
+   quorum, or treat suppliers as interchangeable and defend with validation? What breaks when a
+   provider silently changes a quant?
+5. **Evaluation validity, which may be the highest-value unspent dollar here.** Every quality
+   and reader claim in this document is model-based (see the provenance banner). Twenty real
+   children reading twelve books might invalidate more of this brief than another six months of
+   architecture. What is the cheapest study design that would actually move our beliefs, and
+   what should we stop measuring until it exists?
+6. **The real unit economics.** Section 30 prices the fill call. It does not price repair,
+   moderation, cover art, storage, retries against flaky endpoints, or the human review minute,
+   and human review may dominate everything else. What does a book cost *fully loaded*, and
+   which term should we be attacking?
+7. **The standards themselves.** In-band reading level is a compliance target we chose. It is
+   also a constraint on voice, and section 31 shows compliance and judged quality are related
+   but not interchangeable (rho +0.50). Are we enforcing the right standard, at the right
+   strictness, at the right stage?
+8. **Operating model and durability.** This is built and maintained by one person. A proposal
+   that is correct and unmaintainable is wrong here. So is one that assumes a supplier, a price,
+   or a data policy stays put; we have now been bitten by all three.
+
+#### 32.4 What makes a response useful to us
+
+We are not looking for consensus and we are not looking for polish. A response is useful if it:
+
+- **Names the layer it is attacking** and says what it thinks the binding constraint is.
+- **States what would falsify it.** Everything in this document that survived did so by being
+  checked; everything that failed, failed a check we nearly did not run.
+- **Declares its evidence class** using the table in the provenance banner. A claim resting on
+  LLM-evaluator judgment is still welcome, but it must not be dressed as deterministic.
+- **Says what it costs and what it breaks.** Including human time, including requirement 4.
+- **Is willing to recommend we stop something.** Retiring a line of work is a valid deliverable.
+
+Two specific invitations, because they are the questions we are least equipped to ask ourselves:
+
+- **Tell us what we should have measured and did not.** Every row in 32.2 was found by accident.
+  We would like the next one found on purpose, preferably by someone who does not share our
+  assumptions.
+- **Tell us where this document is arguing with itself.** It has been written across four rounds
+  and several reversals. We have corrected the contradictions we found (17, 28). We do not
+  believe we found them all.
+
+#### 32.5 What is still true and load-bearing
+
+So the widening is not read as an invitation to discard the evidence, these hold and a proposal
+should be consistent with them:
+
+- **The premise floor is real and is not a supplier artifact.** Eight models from six labs
+  converge on the same premises (27). No vendor sells a way out (31, rho -0.11).
+- **Deterministic validation is the strongest evidence class we have**, and it is what makes
+  requirement 4 credible. Proposals that rely on a model's judgment for a safety property are
+  weaker than they look.
+- **Sharing structure without sharing prose reaches the generator's floor** (16l), which is the
+  one architectural result we would defend.
+- **Our reader instrument measures the wrong construct** (1.4, 14, 16m). Any proposal that
+  depends on our existing diversity score inherits that defect.
