@@ -47,12 +47,13 @@ Three tracks. Only one of them is blocked on anything.
 Track D (deterministic, runnable now, no judge, no human)
   W1 path enumerator ──┬── W2 per-path re-unit
                        ├── W3 consequence distance
-                       └── W6 blind-spot manifest
+                       └── W6 blind-spot manifest ── W15 declared information state
   W4 instrument variance      (independent)
   W5 bootstrap intervals      (independent)
   W8 decoding/effort ablation (scored deterministically, so not blocked on W7)
   W9 cross-stage routing      (output is cost, which is a fact not a ranking)
   W10 MoPS premise pool       (scored against the 156.35 convergence figure)
+  W14 context composition     (blocked on UW-C236: input rates are all None today)
 
 Track J (judged)
   W7 known-bad battery ──> every ranking-shaped claim, W11 pilot scoring, best-of-N
@@ -257,6 +258,16 @@ back to a documentation-only list with no machine-readable claim attached.
 *Build.* Vary temperature, top-p and reasoning effort across a small grid on one fixed brief and
 skeleton set. Never done once in the whole programme.
 
+The sixth review supplies the grid this item previously left unspecified, and it is adopted as the
+starting point: prose at (0.7, 0.9), (0.9, 0.95), (1.0, 1.0) and (1.1, 1.0); planning at 0.3 to 0.7;
+premise generation at 0.8 to 1.0. One correction to it. The same review reports the vendor model
+card recommending temperature 1.0 with top_p 1.0 for maximum reasoning, which its own planning rows
+at 0.3 to 0.7 sit well below. **Carry the vendor-recommended point as an explicit baseline cell at
+every stage**, so a low-temperature planning result is measured against the card rather than
+quietly replacing it. The card reading is confirmed: the DeepSeek-V4-Pro and V4-Flash model cards
+both recommend temperature 1.0 with top_p 1.0 (verified 2026-08-12), so the baseline cell is a real
+vendor position rather than a paraphrase.
+
 *Test.* Score **only on deterministic measures**: shared four-gram convergence, leaf diversity, gate
 pass rate, cost per delivered book. This is what lets it run before W7.
 
@@ -280,6 +291,16 @@ pass rate or deterministic craft measures.** Cost is a fact rather than a rankin
 blocked on W7. Note the fifth review's recommended model names are stale; the tiering transfers and
 its instantiation does not, so the slate is chosen from current models at run time.
 
+The sixth review's staged allocation is the same tiering at finer grain and is adopted as this
+item's slate shape rather than as a new item: highest reasoning for premise, character and
+whole-book review; middle reasoning for graph and scene plans; middle or fast for prose; a
+non-reasoning or local model for JSON normalisation. Model names are again deliberately not fixed
+here. The normalisation tier is the one rung with an independent justification already on file:
+`UW-C230` records a fill returning no parseable document seeding the repair loop with the unfilled
+skeleton, which is structurally valid by construction and therefore certified. **A deterministic
+parse-and-repair step is the cheaper answer to that defect than a local model**, and W9 should
+measure the deterministic option before spending a routing rung on it.
+
 *Cost.* One matched run, comparable to a vendor-comparison leg.
 
 ### W10. MoPS premise pool
@@ -297,6 +318,78 @@ Drop if it stays in the tens per 1000**, because a curated space that still conv
 the problem it was chosen for. This is deterministic, pre-registered, and unambiguous.
 
 *Cost.* Generation for n books, plus curation time for the module dictionary.
+
+### W14. Context composition
+
+*Source.* Sixth review, experiment C, which flags its own central claim as expert judgment rather
+than measurement: that a compact state ledger plus the relevant path beats passing the whole graph.
+That is the correct reason to test it and the wrong reason to adopt it.
+
+*Why it is here at all.* W8 varies decoding, W9 varies which model, W10 varies the premise. Nothing
+in this plan varies **what each stage is given**, and on a 1M-context model that is a first-order
+lever on both quality and cost. It is the one axis the programme has never moved.
+
+*Build.* Three context regimes for the prose stage on a fixed brief and skeleton set: the whole
+graph as passed today; the current node plus its ancestors on the path being written; and a compact
+state ledger (accumulated flags, characters introduced, facts established) plus that path. Vary
+nothing else.
+
+*Test.* Deterministic only, so it runs before W7: gate pass rate, shared four-gram convergence
+against the 3.3 idiom floor, leaf diversity, and cost per delivered book split into input and output.
+
+*A confound this item must hold fixed, found while verifying the review's figures.* The DeepSeek-V4
+model card states a **384K minimum context window for its Think Max reasoning mode** (verified
+2026-08-12 on the V4-Pro card). Context composition and reasoning effort are therefore not
+independent variables on this model: an ablation that shrinks the configured window along with the
+prompt would silently drop out of Think Max, and the result would read as "less context, worse
+book" when the actual cause is "less reasoning". **Hold the configured context window fixed at or
+above 384K across all three regimes and vary only what the prompt contains.** If a regime cannot be
+run that way, report it as a different experiment rather than as a fourth cell.
+
+*Blocked, and the blocker is ours.* Half of this item is a cost measurement over input tokens, and
+`core/pricing.py` sets `input_usd_per_mtok=None` on every cloud entry, so `estimate_cost` marks every
+row incomplete (`AL-318` / `UW-C236`). **Close UW-C236 before running W14** or the cost half is
+unmeasurable and only the quality half survives.
+
+*Decision rule.* **Adopt a regime iff it moves a deterministic measure beyond that measure's noise
+floor, or holds every deterministic measure flat while reducing measured input cost.** The second
+clause is the point: a context regime that changes nothing about the book and costs less is a win on
+cost alone, which is a fact rather than a ranking. **Drop the whole item if all three regimes sit
+inside the noise floor on every measure**, which would say context composition is not a lever here
+and would retire the review's expert-judgment claim on our corpus.
+
+*Cost.* One matched run per regime, comparable to a vendor-comparison leg.
+
+### W15. Declared information state as a deterministic instrument
+
+*Source.* Sixth review's scene state packet, inverted. The review proposes it as a generation
+artifact, and in that form it is the architecture layer this plan already deferred. The half worth
+having is the measurement half: a node that *declares* what it withholds can be checked for whether
+the prose leaks it.
+
+*Why this is not the deferred planner.* `AL-322` says the four qualitative age-appropriateness
+dimensions are observed by nothing in the pipeline, and section 5 of this plan rejects inventing
+deterministic proxies for them. This is not a proxy. It is a checker over an author-declared
+contract: the packet's `unknowns_to_preserve` states an intent, and leak detection tests compliance
+with that stated intent rather than guessing at an unstated construct.
+
+*Build.* Extend the skeleton node schema with an optional `unknowns_to_preserve` list (entities,
+facts or relationships the node must not reveal). Add a checker that fails a filled node whose prose
+names any of them. Author the field on a small set of catalogue nodes rather than the whole tree.
+
+*Test.* A node declaring a withheld fact whose fill states it plainly must fail; the same node whose
+fill withholds it must pass; a node declaring nothing must be unaffected, so the field's absence is
+never a finding. Then the decisive one, mirroring W6: **a fill that reveals the fact through an
+obvious synonym or paraphrase must also fail, or the checker is a substring match wearing the
+language of an information-state check.**
+
+*Decision rule.* **Keep iff the paraphrase test passes and the false-positive rate on already-shipped
+catalogue nodes is zero.** If it only catches literal restatement, drop it and record that the
+information-state dimension stays uninstrumented, because a checker that catches only the naive case
+and reports clean otherwise is the `AL-322` harm rather than its fix. **Reported statistic first;
+promotion to a blocking rule requires W12**, per admission rule 3.
+
+*Cost.* Zero spend. Blocked by W6, whose declaration mechanism this rides on.
 
 ## 3. Track J: the blocking item
 
@@ -359,7 +452,8 @@ sufficient after all and the honest outcome is to say so and stop.
 | Item | Source | Why deferred |
 | --- | --- | --- |
 | W11 prose-first (DSR) pilot | 5th review | Real, but its scoring needs W7. Design note held: the pilot must measure what happens when the slicer *cannot* find cut points respecting reconvergence and conditions, since the proposal assumes that away |
-| Best-of-N at pivotal forks | 3rd, 4th | Selects on the instrument by construction. Strictly after W7 |
+| Best-of-N at pivotal forks | 3rd, 4th, 6th | Selects on the instrument by construction. Strictly after W7. The sixth review re-proposes it three times under new names (candidate generation at high-leverage nodes, a local story-quality selector, a Tinker preference model); all three select or train on a quality score and all three are the same deferral. Training is the worse form: `W4` exists because the dialogue criterion returned 3.04 at SD 0.19 while deterministic parsing found one leg at 100 percent narration, and a preference model fitted to that pool launders a saturated instrument into weights, where it is far harder to detect than in a score column |
+| Fine-tuning anything on the Thinking Machines credit | 6th | **Premise verified 2026-08-12** against `https://tinker-docs.thinkingmachines.ai/tinker/models/`: the catalogue lists DeepSeek-V3.1 at $3.718/MTok and Qwen3-8B at $0.44/MTok, and contains **no DeepSeek-V4 variant of any kind**, Pro or Flash. The credit therefore cannot produce a V4 adapter, so every Tinker item is really "train a different, smaller companion model", a different proposition with a different value case and one nothing in this plan currently needs. Independently, most Tinker uses proposed are the selector deferral above |
 | Character-causal planner, consistency checker | 4th | Architecture layer, which section 32.2 shows is the layer we already understand best |
 | Illustrated and read-aloud track | 4th | Product scope, not a research question |
 | Kappa > 0.80, Z > 1 deprecation | 5th | Rejected, not deferred. Our floor is cited and theirs is not |
@@ -367,9 +461,9 @@ sufficient after all and the honest outcome is to say so and stop.
 
 ## 6. What a "final version" decision looks like
 
-At the end of Track D we expect to be able to say, for each of W2, W3, W4, W6, W8, W9 and W10,
-either "included, and here is the measurement that kept it" or "dropped, and here is the measurement
-that removed it". W1 and W5 ship as infrastructure. W7 changes what the judge panel contains rather
+At the end of Track D we expect to be able to say, for each of W2, W3, W4, W6, W8, W9, W10, W14 and
+W15, either "included, and here is the measurement that kept it" or "dropped, and here is the
+measurement that removed it". W1 and W5 ship as infrastructure. W7 changes what the judge panel contains rather
 than being kept or dropped itself. W12 and W13 decide the two construct questions that no amount of
 deterministic work can settle.
 
