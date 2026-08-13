@@ -1,0 +1,314 @@
+---
+title: "Measurement workplan: what to build, how to test it, and what would make us drop it"
+schema_type: planning
+status: draft
+owner: core-maintainer
+purpose: "Turn the third, fourth and fifth external reviews into thirteen work items, each carrying a pre-registered decision rule that says what evidence would keep it and what would drop it."
+tags:
+  - planning
+  - research
+  - measurement
+component: Research
+source: "synthesis of docs/planning/cyo-review-response-2026-08-12.md and cyo-review-response-2026-08-12b.md"
+---
+
+# Measurement workplan
+
+> **Date**: 2026-08-12
+> **Derived from**: [third review response](./cyo-review-response-2026-08-12.md),
+> [fourth and fifth review response](./cyo-review-response-2026-08-12b.md)
+> **Status**: draft, pending owner sign-off. Register rows are added on sign-off, not before.
+
+## 0. How an item earns its place
+
+Every item below carries a **decision rule written before the work runs**. This is not ceremony. Six
+of the thirteen items are cheap enough that they will get built regardless, and an item that is
+already built is included by default unless something can say no to it. The rule is the thing that
+can say no.
+
+Three constraints on how rules are written here:
+
+1. **A rule must be able to return "drop".** If no plausible measurement outcome would remove the
+   item, it is not a candidate and should be marked infrastructure instead. Three items below are
+   marked that way honestly rather than dressed up as candidates.
+2. **A rule may not appeal to the judge panel until the judge panel is validated.** Section 32 of
+   the brief and all three reviews agree the instrument is unvalidated. Any item whose rule needs a
+   quality score is blocked on **W7**. Items whose rules need only a deterministic count are not,
+   and that split is what makes most of this plan runnable now.
+3. **A metric is not promoted to a blocking gate on the strength of being computable.** That is the
+   mistake `AL-322` records. Deterministic measures enter as *reported statistics* first; promotion
+   to a rule that blocks a book requires evidence that a reader is affected.
+
+## 1. Sequencing
+
+Three tracks. Only one of them is blocked on anything.
+
+```text
+Track D (deterministic, runnable now, no judge, no human)
+  W1 path enumerator ──┬── W2 per-path re-unit
+                       ├── W3 consequence distance
+                       └── W6 blind-spot manifest
+  W4 instrument variance      (independent)
+  W5 bootstrap intervals      (independent)
+  W8 decoding/effort ablation (scored deterministically, so not blocked on W7)
+  W9 cross-stage routing      (output is cost, which is a fact not a ranking)
+  W10 MoPS premise pool       (scored against the 156.35 convergence figure)
+
+Track J (judged)
+  W7 known-bad battery ──> every ranking-shaped claim, W11 pilot scoring, best-of-N
+
+Track H (human, ~$300, settles constructs nothing else can)
+  W12 child + adult read ──> promotes or retires W3's gate, settles requirement 2's construct
+  W13 age-appropriateness rubric (rides with W12)
+```
+
+The load-bearing observation: **W8, W9 and W10 all have deterministic decision rules, so none of
+them waits for the instrument.** Previous plans assumed the opposite and would have idled three
+cheap experiments behind one expensive one.
+
+## 2. Track D: deterministic work
+
+### W1. Path enumerator and its sampling rule
+
+**Infrastructure, not a candidate.** Five items depend on it.
+
+*Build.* `validator/paths.py`, over `WalkResult.edges` from `walk_configurations`. Two outputs, kept
+separate and never pooled:
+
+- a **covering set**: the smallest set of root-to-ending paths that traverses every edge at least
+  once, so no fork escapes measurement;
+- a **uniform sample** of n paths under a fixed seed, which estimates the distribution an actual
+  reader draws from.
+
+They answer different questions. Covering answers "is any path bad"; sampling answers "is a typical
+path bad". Reporting one as the other is the failure mode to guard against.
+
+*The real difficulty.* Root-to-ending path count is exponential in fork count even when
+`walk_configurations` caps *configurations*. `WalkResult.capped` must propagate into every derived
+statistic, and a capped walk must make the derived metric report "incomplete", not a number.
+
+*Test.* Hand-built fixtures: a linear book (one path), a diamond (two), a reconverging spine with a
+carried flag (state-dependent path count). Assert the covering set touches every edge; assert the
+sample is byte-identical under a fixed seed; assert `capped` propagates and suppresses the number
+rather than shrinking it. Mutation check: delete the `capped` propagation and a test must fail.
+
+*Decision rule.* Feasibility only. **Ship if the covering set computes in under 2 seconds for a
+101-node ceiling-scale book.** If it does not, ship sampling alone and record that per-fork coverage
+is not guaranteed, because a silently partial covering set is worse than an admitted sample.
+
+*Cost.* Zero spend, roughly a day.
+
+### W2. Re-unit existing metrics from book to path
+
+*Build.* No new metrics. Call `reading_level.measure_book` and the `check_prose_craft` functions
+(dialogue share, tense breach rate, told-emotion rate, moral tags) with a path's bodies instead of a
+book's. `measure_book` already takes `Iterable[str]`, so this is a caller change.
+
+*Test, and it is the decision.* Run over the existing book corpus, which is already paid for. For
+each measure compute the within-book spread across paths.
+
+*Decision rule.* **Keep a per-path measure iff it disagrees with its book-level parent often enough
+to change a verdict: for at least 10 percent of books, one path falls outside the acceptable band
+while the book aggregate falls inside, or the reverse. Otherwise the book aggregate is a sufficient
+statistic and the per-path version is complexity bought for nothing, and it is dropped.**
+
+This rule can genuinely return "drop", and it is the reason to run W2 before W3 and W6: if per-path
+measurement turns out to be redundant, two of the three reviews' central recommendation is wrong on
+our corpus and we should say so rather than build on it.
+
+*Cost.* Zero spend. Blocked by W1.
+
+### W3. Consequence distance per fork
+
+*Build.* For each decision node, walk both branches to their reconvergence point. Record distance in
+nodes and the set of state flags that differ on arrival. A fork reconverging in one node with an
+identical state is a false choice.
+
+*Test.* Fixtures for each shape: false choice (distance 1, empty state delta), real choice
+(distance 8, two flags differ), never-reconverging fork, and a fork whose branches reconverge only
+under one condition. Then run over the shipped catalogue.
+
+*Decision rule, in two stages.* Stage one, now: **report it as a statistic, and keep it iff it
+discriminates on our own catalogue.** If nearly every fork in every shipped book is a false choice,
+that is a finding worth acting on immediately. If nearly none is, the measure has no discriminating
+power here and parks until the corpus changes. A measure that returns the same verdict for every
+book is measuring nothing, which is exactly how the dialogue criterion failed.
+
+Stage two, later: **promotion to a blocking validator rule requires W12.** `BandProfile` already has
+an unenforced `reconvergence_ceiling` field waiting for a number, and we will not invent that number
+from a measure no reader has been asked about. This staging is the direct application of `AL-322`.
+
+*Cost.* Zero spend. Blocked by W1 for the path context; the fork walk itself is graph-local.
+
+### W4. Per-criterion instrument variance
+
+*Build.* For every judge run, compute each criterion's standard deviation across cells and flag any
+criterion whose spread is below a threshold as saturated.
+
+*Test, and it is a known-answer test.* Replay the existing 84-verdict pool. **The check must flag the
+dialogue criterion**, whose mean was 3.04 at SD 0.19 across twelve cells while deterministic parsing
+found one leg at 100 percent narration. We found that by accident; the check must find it on purpose.
+
+*Decision rule.* **Keep iff it flags the dialogue criterion and does not flag criteria we have
+independent reason to believe are working.** A check that flags everything is as useless as one that
+flags nothing, so both failure directions are tested.
+
+*Cost.* Zero spend, half a day. Independent of everything.
+
+### W5. Bootstrap intervals on ranked quantities
+
+*Build.* Resample books within each cell; report an interval alongside every mean currently
+presented as a rank.
+
+*Test.* Assert interval width shrinks as n grows; assert a synthetically separated pair reports
+non-overlapping intervals; assert a synthetically identical pair overlaps.
+
+*Decision rule.* **Infrastructure, not a candidate: reporting uncertainty is a correction, not a
+feature.** But the consequence is a decision we pre-commit to now: **if the intervals overlap across
+the whole supplier slate, Part IV's ranking is retracted rather than caveated.** At single-digit n
+per cell that is the likely outcome, and agreeing to it in advance is the point of writing it here.
+
+*Cost.* Zero spend, half a day.
+
+### W6. Gate blind-spot manifest
+
+*Build.* Each checker declares the dimensions it observes. The gate emits the complement: the set of
+dimensions on which *every* constituent checker abstained, alongside its verdict.
+
+*Test, including the one that decides the design.* Assert it names the qualitative
+age-appropriateness dimensions as unobserved (the `AL-322` case) and, with PL-27 disabled, names
+filled-prose as unobserved (the `AL-310` case). Then the decisive test: **mutate a checker so it
+stops checking something, and require the manifest to notice.**
+
+*Decision rule.* **Keep iff the declaration cannot drift from behaviour.** If the manifest is a
+hand-maintained constant per checker that the mutation test cannot catch going stale, drop it: a
+manifest that lies is worse than no manifest, because it converts an unknown blind spot into a
+false assurance, which is the exact harm `AL-322` describes. If it cannot be made drift-proof, fall
+back to a documentation-only list with no machine-readable claim attached.
+
+*Cost.* Zero spend, one to two days.
+
+### W8. Decoding and reasoning-effort ablation
+
+*Build.* Vary temperature, top-p and reasoning effort across a small grid on one fixed brief and
+skeleton set. Never done once in the whole programme.
+
+*Test.* Score **only on deterministic measures**: shared four-gram convergence, leaf diversity, gate
+pass rate, cost per delivered book. This is what lets it run before W7.
+
+*Decision rule.* **Adopt a parameter change into the production config iff it moves a deterministic
+measure beyond that measure's own noise floor**, where the noise floor is the generator's measured
+idiom floor of 3.3 per 1000 for convergence and a re-run spread for the others. **Explicitly do not
+adopt on a judge score**, whatever the judge says, until W7 clears.
+
+*Cost.* $10 to $20.
+
+### W9. Cross-stage model routing
+
+*Build.* Route the structure stage to a reasoner and the prose stage to a cheap fast model. The
+repair tier already exists as `generation/reading_level_loop.py`.
+
+*Test.* Cost per delivered book and gate pass rate, against the current single-model configuration
+on matched briefs.
+
+*Decision rule.* **Adopt iff cost per delivered book falls materially with no regression in gate
+pass rate or deterministic craft measures.** Cost is a fact rather than a ranking, so this is not
+blocked on W7. Note the fifth review's recommended model names are stale; the tiering transfers and
+its instantiation does not, so the slate is chosen from current models at run time.
+
+*Cost.* One matched run, comparable to a vendor-comparison leg.
+
+### W10. MoPS premise pool
+
+*Build.* Verify the citation first (section 5.3 of the fourth/fifth review response). Then enumerate
+orthogonal premise modules, sample algorithmically, and generate.
+
+*Test, and it is the cleanest in this plan, because the comparator already exists.* Same-brief
+cross-lab premise convergence currently measures **156.35 shared four-grams per 1000**, against a
+generator idiom floor of **3.3**. Generate n books from MoPS-sampled premises and measure the same
+quantity the same way.
+
+*Decision rule.* **Adopt iff convergence drops to within a small multiple of the 3.3 idiom floor.
+Drop if it stays in the tens per 1000**, because a curated space that still converges is not solving
+the problem it was chosen for. This is deterministic, pre-registered, and unambiguous.
+
+*Cost.* Generation for n books, plus curation time for the module dictionary.
+
+## 3. Track J: the blocking item
+
+### W7. Known-bad battery for the quality panel
+
+**This is the blocking item and it should start first among the judged work.**
+
+*Build.* Take real books that currently pass and seed one known defect each: flatten dialogue to
+zero, break narrative tense in a third of nodes, replace a real fork with a false choice, raise
+reading level by three grades, duplicate a sibling book's premise. Keep an unmodified control arm.
+
+*Test.* Run the existing panel blind over seeded and control books. Per criterion, compute detection
+rate on its own defect and false-positive rate on the control.
+
+*Decision rule, per criterion rather than per panel.* **Retire any criterion that fails to detect
+its own seeded defect, or that fires on the clean control.** Agreement is scored against our existing
+floor of **kappa 0.60**, cited to Landis and Koch (1977), and explicitly **not** the fifth review's
+proposed 0.80, which sits in the "almost perfect" band that human raters routinely miss (see the
+review response, section 5.4).
+
+We already know one criterion this will retire: the dialogue criterion scored 3.04 at SD 0.19 while
+one leg contained no dialogue at all. If the battery does not retire it, the battery is broken.
+
+*What it unblocks.* Every ranking-shaped claim, W11's scoring, and best-of-N.
+
+*Cost.* Judge calls over roughly 20 to 30 books. Modest.
+
+## 4. Track H: the referee
+
+### W12. Child and adult-expert read
+
+*Build.* A read protocol over a small matched set, with a questionnaire covering four things rather
+than one:
+
+1. enjoyment and completion;
+2. **familiarity and comfort with repetition**, which is the series-contract question the fifth
+   review raised and which decides whether requirement 2's construct is monotone or inverted-U;
+3. whether choices felt consequential, which is what promotes or retires W3's gate;
+4. comprehension, which is the age-appropriateness question `AL-322` opened.
+
+*Decision rule.* **This item is the referee, not a candidate.** It does not get a keep/drop rule; it
+issues them. Specifically it settles: whether `reconvergence_ceiling` gets a number, whether
+requirement 2 is reformulated, and whether the qualitative age dimensions need instrumenting at all.
+
+*Cost.* Roughly $300 for the adult-expert half. The child half is a protocol and consent question
+before it is a money question, and it must be scoped against ADR-018 before anything is scheduled.
+
+### W13. Age-appropriateness rubric
+
+Rides with W12. A human-rater rubric over the qualitative dimensions, **not** a set of deterministic
+proxies. Section 3.2 of the review response gives the reasoning: writing four more formulas that
+proxy for dimensions no formula observes recreates `AL-322` rather than closing it.
+
+*Decision rule.* **Build the rubric only if W12's comprehension results show band-appropriate books
+failing readers.** If comprehension tracks Flesch-Kincaid closely, the quantitative leg was
+sufficient after all and the honest outcome is to say so and stop.
+
+## 5. Deferred, with the reason
+
+| Item | Source | Why deferred |
+| --- | --- | --- |
+| W11 prose-first (DSR) pilot | 5th review | Real, but its scoring needs W7. Design note held: the pilot must measure what happens when the slicer *cannot* find cut points respecting reconvergence and conditions, since the proposal assumes that away |
+| Best-of-N at pivotal forks | 3rd, 4th | Selects on the instrument by construction. Strictly after W7 |
+| Character-causal planner, consistency checker | 4th | Architecture layer, which section 32.2 shows is the layer we already understand best |
+| Illustrated and read-aloud track | 4th | Product scope, not a research question |
+| Kappa > 0.80, Z > 1 deprecation | 5th | Rejected, not deferred. Our floor is cited and theirs is not |
+| Deterministic age-appropriateness proxies | inferred | Rejected, not deferred. Building them is the `AL-322` failure, not its fix |
+
+## 6. What a "final version" decision looks like
+
+At the end of Track D we expect to be able to say, for each of W2, W3, W4, W6, W8, W9 and W10,
+either "included, and here is the measurement that kept it" or "dropped, and here is the measurement
+that removed it". W1 and W5 ship as infrastructure. W7 changes what the judge panel contains rather
+than being kept or dropped itself. W12 and W13 decide the two construct questions that no amount of
+deterministic work can settle.
+
+The outcome we should be least surprised by, and are pre-committing to accepting: **W2 returns
+"drop" and Part IV's supplier ranking is retracted by W5.** Both are live possibilities on the
+evidence we have, and a plan that cannot produce them is not a plan, it is a build order.
