@@ -79,6 +79,21 @@ EASY_BODY = (
 
 _TARGET_NODE = "n_open"
 
+# The fixture is band 8-11 prose, whose PL-19 per-node wall is 220 words. These
+# two bodies sit either side of it while staying inside every other acceptance
+# condition, which is what makes them a counter-example rather than a fluke:
+#   NEAR_CAP_HARD  209 words, grade 30.73, under the 220 wall
+#   OVER_CAP_EASY  225 words, grade  3.45, over it
+# The move is +7.7 percent, inside the 10 percent drift `_preserves_contract`
+# allows, and it improves the grade, so both of the loop's own acceptance tests
+# say yes. Only PL-19's absolute wall says no, and the loop cannot see it.
+_HARD_TAIL = (
+    "Investigators subsequently documented numerous additional unexplained "
+    "mechanical irregularities throughout."
+)
+NEAR_CAP_HARD = " ".join([HARD_BODY] * 8 + [_HARD_TAIL])
+OVER_CAP_EASY = " ".join([EASY_BODY] * 9)
+
 
 def _doc(**bodies: str) -> dict[str, object]:
     """Return the valid fixture with the named nodes' bodies replaced.
@@ -409,13 +424,19 @@ async def test_reading_level_unknown_node_id_is_ignored() -> None:
 
 @pytest.mark.asyncio
 async def test_reading_level_gate_regression_discards_the_whole_pass() -> None:
-    """If the spliced document fails the gate, the pre-repair one is kept.
+    """If no part of the spliced pass can be salvaged, the pre-repair doc wins.
 
-    The model is never shown the graph and can only return body strings, so
-    this should be unfalsifiable; a block means an assumption broke, and the
-    safe move is to keep the document that already passed. ``run_gate`` is
-    patched because the real gate cannot be made to fail on a body swap, which
-    is precisely the point.
+    ``run_gate`` is patched here to produce a block that names no node, which
+    is the one shape :func:`_drop_offenders` cannot salvage: with nothing
+    identified to drop, there is no smaller pass to try, so the whole thing is
+    rolled back.
+
+    This docstring used to claim the branch was unfalsifiable, on the reasoning
+    that the model never sees the graph and can only return body strings, and
+    that the real gate therefore could not be made to fail on a body swap. That
+    was wrong, and the mock is what kept it from being noticed: PL-19's word
+    wall is computed from body text, and run-6 tripped it for real. The sibling
+    test below reaches this code through the real gate.
     """
     doc = _doc(n_open=HARD_BODY)
     clean = _clean_gate(doc)
@@ -433,6 +454,70 @@ async def test_reading_level_gate_regression_discards_the_whole_pass() -> None:
     assert result.gate is clean
     assert _body_of(result.doc, _TARGET_NODE) == HARD_BODY
     assert "reading_level:gate_regression_discard" in ctx.stage_log
+
+
+@pytest.mark.asyncio
+async def test_reading_level_rejects_a_revision_that_would_breach_the_word_cap() -> (
+    None
+):
+    """A revision may not cross PL-19's absolute per-node wall.
+
+    The regression this pins is a real one, found on the run-6 vendor
+    comparison: ``deepseek-v4-pro-fp4`` brief 1 had 50 nodes revised and the
+    whole pass discarded, shipping at grade 5.61 with 12 percent of nodes in
+    band. Node ``f_steps`` sat at 147 words against a 155-word wall, and it was
+    the only node in all 845 corpus nodes whose permitted drift could cross a
+    wall.
+
+    The cause is a units mismatch in the acceptance rule.
+    ``_preserves_contract`` bounds drift *relatively* (10 percent of the
+    original), while PL-19 is an *absolute* ceiling. A relative guard cannot
+    enforce an absolute bound, so a node already near the wall can be pushed
+    over it by a revision that every acceptance test approves. Reading-level
+    repair makes this the common direction rather than a rare one: simplifying
+    prose splits long sentences, which adds words.
+
+    The real gate runs here deliberately. The sibling test above patches
+    ``run_gate`` on the belief that a body swap cannot fail it, and that belief
+    is what this test refutes.
+    """
+    doc = _doc(n_open=NEAR_CAP_HARD)
+    clean = _clean_gate(doc)
+    provider = MockProvider(responses=[json.dumps({_TARGET_NODE: OVER_CAP_EASY})])
+    ctx = _ctx(provider)
+
+    result = await run_reading_level_loop(doc, clean, ctx)
+
+    # The revision is refused at acceptance, so the pass never reaches the
+    # gate: no discard, and the original body survives intact.
+    assert result.discarded_for_gate is False
+    assert result.nodes_revised == 0
+    assert _body_of(result.doc, _TARGET_NODE) == NEAR_CAP_HARD
+
+
+@pytest.mark.asyncio
+async def test_reading_level_one_capped_node_does_not_discard_the_others() -> None:
+    """One unusable revision costs its own node, not the whole pass.
+
+    On run-6 a single node crossing the wall discarded 49 other accepted
+    revisions, because the splice is adopted or rejected as one unit. The
+    blast radius of one bad node must be that node.
+    """
+    doc = _doc(n_open=NEAR_CAP_HARD, n_start=HARD_BODY)
+    clean = _clean_gate(doc)
+    provider = MockProvider(
+        responses=[
+            json.dumps({_TARGET_NODE: OVER_CAP_EASY, "n_start": EASY_BODY}),
+        ]
+    )
+    ctx = _ctx(provider)
+
+    result = await run_reading_level_loop(doc, clean, ctx)
+
+    assert result.discarded_for_gate is False
+    assert result.nodes_revised == 1
+    assert _body_of(result.doc, "n_start") == EASY_BODY
+    assert _body_of(result.doc, _TARGET_NODE) == NEAR_CAP_HARD
 
 
 # ---------------------------------------------------------------------------

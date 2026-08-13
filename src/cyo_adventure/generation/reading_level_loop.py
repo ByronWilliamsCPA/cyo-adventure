@@ -46,14 +46,17 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, cast
 
 from cyo_adventure.generation.prompts import build_reading_level_repair_prompt
+from cyo_adventure.storybook.models import NarrativeStyle
 from cyo_adventure.storybook.sentinels import find_sentinels
 from cyo_adventure.utils.logging import get_logger
 from cyo_adventure.validator.gate import run_gate
+from cyo_adventure.validator.policy import node_word_count, words_per_node_profile
 from cyo_adventure.validator.reading_level import (
     BookReadingLevel,
     measure_book,
     score_body,
 )
+from cyo_adventure.validator.report import Severity
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -98,13 +101,13 @@ class ReadingLevelContext:
     for the same reason, to keep the entry point under the argument-count limit.
 
     Attributes:
-        provider: The PII-guarded generation provider. The type is not a
+        provider (PiiGuardedProvider): The PII-guarded generation provider. The type is not a
             convenience: requiring the guarded wrapper here is what makes PII
             enforcement structural rather than a rule someone has to remember.
-        max_passes: Maximum repair passes. Each pass is one round of batched
+        max_passes (int): Maximum repair passes. Each pass is one round of batched
             calls over whatever is still out of band. ``0`` disables the stage.
-        stage_log: The orchestrator's stage log; entries are appended in place.
-        scale: Story-size profile forwarded to the post-splice gate re-run, so
+        stage_log (list[str]): The orchestrator's stage log; entries are appended in place.
+        scale (Scale): Story-size profile forwarded to the post-splice gate re-run, so
             L1-7 is re-checked against the same budget as before.
     """
 
@@ -115,26 +118,48 @@ class ReadingLevelContext:
 
 
 @dataclass(frozen=True, slots=True)
+class _Bounds:
+    """The three limits a revision is accepted against.
+
+    Grouped into one value object because they always travel together and
+    because passing them individually pushed :func:`_run_batch` over the
+    argument-count limit.
+
+    Attributes:
+        target (float): Target Flesch-Kincaid grade.
+        tolerance (float): Half-width of the acceptable band.
+        per_node_max (int | None): PL-19's absolute words-per-node wall, or
+            ``None`` when the band declares no profile.
+    """
+
+    target: float
+    tolerance: float
+    per_node_max: int | None
+
+
+@dataclass(frozen=True, slots=True)
 class ReadingLevelResult:
     """The outcome of the reading-level repair stage.
 
     Attributes:
-        doc: The document after repair. Identical to the input document when
+        doc (dict[str, object]): The document after repair. Identical to the input document when
             nothing was accepted, or when the spliced result failed the gate
             and the whole pass was discarded.
-        gate: The gate result for ``doc``. Re-run only when a revision was
+        gate (GateResult): The gate result for ``doc``. Re-run only when a revision was
             accepted; otherwise the caller's original result, unchanged.
-        before: The whole-book measurement before repair, or ``None`` when the
+        before (BookReadingLevel | None): The whole-book measurement before repair, or ``None`` when the
             book held too little prose to score.
-        after: The whole-book measurement after repair. Equal to ``before``
+        after (BookReadingLevel | None): The whole-book measurement after repair. Equal to ``before``
             when nothing was accepted.
-        nodes_revised: How many node bodies were replaced.
-        passes: How many repair passes ran (0 when everything was already in
+        nodes_revised (int): How many node bodies were replaced.
+        passes (int): How many repair passes ran (0 when everything was already in
             band, so no provider call was made).
-        discarded_for_gate: ``True`` when revisions were accepted per-node but
-            the spliced document then failed the structural gate, so the entire
-            pass was rolled back. Should be vanishingly rare (the model is never
-            shown the graph) and is worth an alert if it is not.
+        discarded_for_gate (bool): ``True`` when revisions were accepted per-node, the
+            spliced document then failed the gate, and no subset of the pass
+            could be salvaged, so everything was rolled back. Rare, but not the
+            impossibility this once claimed: the gate reads node bodies as well
+            as the graph (PL-19's word wall among them), so a body-only edit can
+            block it. Run-6 hit exactly that. Worth an alert.
     """
 
     doc: dict[str, object]
@@ -149,9 +174,10 @@ class ReadingLevelResult:
         """Render the measurement for the generation outcome's report dict.
 
         Returns:
-            A JSON-serialisable summary. ``None`` measurements render as
-            ``None`` rather than being omitted, so a book that could not be
-            scored is visibly unscored rather than silently absent.
+            dict[str, object]: A JSON-serialisable summary. ``None``
+                measurements render as ``None`` rather than being omitted, so a
+                book that could not be scored is visibly unscored rather than
+                silently absent.
         """
 
         def _level(level: BookReadingLevel | None) -> dict[str, object] | None:
@@ -177,11 +203,12 @@ def _band(doc: dict[str, object]) -> tuple[float, float] | None:
     """Read the target grade and tolerance out of a story document.
 
     Args:
-        doc: The raw story JSON.
+        doc (dict[str, object]): The raw story JSON.
 
     Returns:
-        A ``(target, tolerance)`` pair, or ``None`` when the document declares
-        no reading level (in which case there is no band to repair toward).
+        tuple[float, float] | None: A ``(target, tolerance)`` pair, or ``None``
+            when the document declares no reading level (in which case there is
+            no band to repair toward).
     """
     metadata = doc.get("metadata")
     if not isinstance(metadata, dict):
@@ -200,16 +227,54 @@ def _band(doc: dict[str, object]) -> tuple[float, float] | None:
     return float(target), float(tolerance)
 
 
+def _per_node_cap(doc: dict[str, object]) -> int | None:
+    """Read PL-19's absolute words-per-node wall for this story's band.
+
+    The loop's own acceptance rule bounds word drift *relatively* (10 percent
+    of the original body), but PL-19 is an *absolute* ceiling. A relative guard
+    cannot enforce an absolute bound, so a node already sitting near the wall
+    can be pushed over it by a revision that every other acceptance test
+    approves, and the whole spliced pass is then rejected by the gate. Reading
+    a simplification pass makes this the likely direction rather than a remote
+    one: shortening sentences to lower a grade adds words.
+
+    Args:
+        doc (dict[str, object]): The raw story JSON.
+
+    Returns:
+        int | None: The per-node maximum word count, or ``None`` when the
+            document declares no band and style pair the profile table knows.
+    """
+    metadata = doc.get("metadata")
+    if not isinstance(metadata, dict):
+        return None
+    meta = cast("dict[str, object]", metadata)
+    band = meta.get("age_band")
+    if not isinstance(band, str):
+        return None
+    # `narrative_style` is optional in the schema and most documents omit it, so
+    # mirroring Storybook's own default is what makes the wall apply to the
+    # ordinary book rather than only to the rare one that spells the field out.
+    style = meta.get("narrative_style")
+    if not isinstance(style, str):
+        style = NarrativeStyle.PROSE.value
+    profile = words_per_node_profile(band, style)
+    if profile is None:
+        return None
+    return profile[3]
+
+
 def _bodies(doc: dict[str, object]) -> list[tuple[str, str]]:
     """Extract ``(node_id, body)`` pairs from a story document.
 
     Args:
-        doc: The raw story JSON.
+        doc (dict[str, object]): The raw story JSON.
 
     Returns:
-        Every node carrying a string id and a string body, in document order.
-        Malformed entries are skipped rather than raising: this stage is
-        advisory and must never be the thing that fails a generation.
+        list[tuple[str, str]]: Every node carrying a string id and a string
+            body, in document order. Malformed entries are skipped rather than
+            raising: this stage is advisory and must never be the thing that
+            fails a generation.
     """
     raw_nodes = doc.get("nodes")
     if not isinstance(raw_nodes, list):
@@ -240,11 +305,11 @@ def _preserves_contract(original: str, revised: str) -> bool:
       directive) that still applies.
 
     Args:
-        original: The current node body.
-        revised: The proposed replacement.
+        original (str): The current node body.
+        revised (str): The proposed replacement.
 
     Returns:
-        ``True`` when the revision may be considered on its merits.
+        bool: ``True`` when the revision may be considered on its merits.
     """
     if _FILL_MARKER in revised:
         return False
@@ -258,13 +323,20 @@ def _preserves_contract(original: str, revised: str) -> bool:
     return True
 
 
-def _accept(original: str, revised: object, *, target: float) -> str | None:
+def _accept(
+    original: str,
+    revised: object,
+    *,
+    target: float,
+    per_node_max: int | None = None,
+) -> str | None:
     """Decide whether one revised body may replace its original.
 
     This is the loop's safety boundary and its convergence rule at once: a
     revision must be well-formed, must preserve what the original promised
-    (:func:`_preserves_contract`), must be scorable, and must land strictly
-    closer to ``target`` than what it replaces.
+    (:func:`_preserves_contract`), must stay inside PL-19's absolute word wall,
+    must be scorable, and must land strictly closer to ``target`` than what it
+    replaces.
 
     That last condition is what makes the loop terminate. Because acceptance is
     strictly monotone in ``|grade - target|``, repeated passes cannot oscillate
@@ -273,16 +345,29 @@ def _accept(original: str, revised: object, *, target: float) -> str | None:
     is byte-identical AND carries identical findings.
 
     Args:
-        original: The current node body.
-        revised: The model's proposed replacement, untrusted and untyped.
-        target: The story's target Flesch-Kincaid grade.
+        original (str): The current node body.
+        revised (object): The model's proposed replacement, untrusted and
+            untyped.
+        target (float): The story's target Flesch-Kincaid grade.
+        per_node_max (int | None): PL-19's absolute words-per-node wall for
+            this story's band, or ``None`` when the band declares no profile.
 
     Returns:
-        The revised body when it is a strict improvement, else ``None``.
+        str | None: The revised body when it is a strict improvement, else
+            ``None``.
     """
     if not isinstance(revised, str) or not revised.strip():
         return None
     if not _preserves_contract(original, revised):
+        return None
+    # #CRITICAL: data-integrity: PL-19 is an absolute ceiling and
+    # _preserves_contract's drift bound is relative, so the drift check alone
+    # cannot keep a near-wall node under the wall. Accepting a revision the
+    # gate will reject costs the whole pass, not just this node. Measured on
+    # run-6: one node at 147 words against a 155-word wall discarded 50 revised
+    # nodes and shipped the book at grade 5.61 with 12 percent of nodes in band.
+    # #VERIFY: test_reading_level_rejects_a_revision_that_would_breach_the_word_cap.
+    if per_node_max is not None and node_word_count(revised) > per_node_max:
         return None
     before = score_body(original)
     after = score_body(revised)
@@ -299,10 +384,11 @@ def _parse_revisions(raw: str | None) -> dict[str, object]:
     """Parse the model's ``{node_id: body}`` reply, or return an empty mapping.
 
     Args:
-        raw: The provider's completion text.
+        raw (str | None): The provider's completion text.
 
     Returns:
-        The decoded mapping, or ``{}`` for any reply that is not a JSON object.
+        dict[str, object]: The decoded mapping, or ``{}`` for any reply that is
+            not a JSON object.
         An unparseable reply costs this batch and nothing else: the caller
         keeps every original body and the run continues.
     """
@@ -326,24 +412,20 @@ async def _run_batch(
     batch: Sequence[tuple[str, str, float]],
     *,
     provider: PiiGuardedProvider,
-    target: float,
-    tolerance: float,
+    bounds: _Bounds,
 ) -> dict[str, str]:
     """Simplify one batch of nodes and return only the accepted revisions.
 
     Args:
-        batch: ``(node_id, body, current_grade)`` for the nodes in this batch.
-        provider: The PII-guarded generation provider.
-        target: Target Flesch-Kincaid grade.
-        tolerance: Half-width of the acceptable band.
+        batch (Sequence[tuple[str, str, float]]): ``(node_id, body,
+            current_grade)`` for the nodes in this batch.
+        provider (PiiGuardedProvider): The PII-guarded generation provider.
+        bounds (_Bounds): The band and the PL-19 wall this pass accepts against.
 
     Returns:
-        A mapping of node id to accepted revised body. Ids the model invented,
-        and revisions that failed :func:`_accept`, are absent.
-
-    Raises:
-        ValidationError: If the assembled prompt contains forbidden PII
-            (propagated from the guard before any egress).
+        dict[str, str]: A mapping of node id to accepted revised body. Ids the
+            model invented, and revisions that failed :func:`_accept`, are
+            absent.
     """
     # #CRITICAL: security: the prompt carries node prose descended from an
     # untrusted brief, so it MUST go through the PII guard exactly like every
@@ -358,7 +440,7 @@ async def _run_batch(
     # #VERIFY: only json.JSONDecodeError/RecursionError are caught, in
     # _parse_revisions; provider errors are not caught here.
     prompt = build_reading_level_repair_prompt(
-        batch, target=target, tolerance=tolerance
+        batch, target=bounds.target, tolerance=bounds.tolerance
     )
     raw = await provider.complete(
         system=prompt.system,
@@ -377,26 +459,59 @@ async def _run_batch(
             # into an unrelated node, or create one.
             # #VERIFY: test_reading_level_unknown_node_id_is_ignored.
             continue
-        good = _accept(original, proposed, target=target)
+        good = _accept(
+            original,
+            proposed,
+            target=bounds.target,
+            per_node_max=bounds.per_node_max,
+        )
         if good is not None:
             accepted[node_id] = good
     return accepted
+
+
+def _drop_offenders(
+    accepted: dict[str, str], gate: GateResult
+) -> dict[str, str] | None:
+    """Return ``accepted`` without the nodes the blocked gate named.
+
+    Args:
+        accepted (dict[str, str]): The revisions the per-node rule took this
+            pass.
+        gate (GateResult): The blocked gate result for the spliced document.
+
+    Returns:
+        dict[str, str] | None: The surviving revisions, or ``None`` when the
+            gate named no node in ``accepted`` (a story-level finding, so there
+            is nothing to drop) or named all of them (nothing would survive).
+    """
+    offenders = {
+        finding.node_id
+        for finding in gate.report.findings
+        if finding.severity is Severity.ERROR and finding.node_id in accepted
+    }
+    if not offenders or len(offenders) == len(accepted):
+        return None
+    return {
+        node_id: body for node_id, body in accepted.items() if node_id not in offenders
+    }
 
 
 def _splice(doc: dict[str, object], revisions: dict[str, str]) -> dict[str, object]:
     """Return a copy of ``doc`` with the given node bodies replaced.
 
     Only the ``nodes`` list and the revised node dicts are rebuilt; every other
-    part of the document is carried over by reference. Nothing outside a node
-    ``body`` can change, which is what makes the post-splice gate re-run a
-    formality rather than a hope.
+    part of the document is carried over by reference, so the graph cannot
+    change. That is not the same as the gate re-run being a formality: several
+    blocking rules are computed *from* body text, so a body-only splice can
+    still fail it. The re-run is load-bearing.
 
     Args:
-        doc: The story document.
-        revisions: Mapping of node id to its new body.
+        doc (dict[str, object]): The story document.
+        revisions (dict[str, str]): Mapping of node id to its new body.
 
     Returns:
-        A new document dict with the revisions applied.
+        dict[str, object]: A new document dict with the revisions applied.
     """
     raw_nodes = doc.get("nodes")
     if not isinstance(raw_nodes, list):
@@ -427,18 +542,16 @@ async def run_reading_level_loop(
     stage is cheap to leave enabled.
 
     Args:
-        doc: The story document to repair, after the structural and Stage 1
-            loops have converged.
-        gate_result: That document's current gate result.
-        ctx: Grouped provider, budget, scale, and stage log.
+        doc (dict[str, object]): The story document to repair, after the
+            structural and Stage 1 loops have converged.
+        gate_result (GateResult): That document's current gate result.
+        ctx (ReadingLevelContext): Grouped provider, budget, scale, and stage
+            log.
 
     Returns:
-        A :class:`ReadingLevelResult`. On every failure path it carries the
-        untouched input document and the caller's original gate result, because
-        an advisory stage must never be able to worsen a generation.
-
-    Raises:
-        ValidationError: If an assembled prompt contains forbidden PII.
+        ReadingLevelResult: On every failure path it carries the untouched
+            input document and the caller's original gate result, because an
+            advisory stage must never be able to worsen a generation.
     """
     band = _band(doc)
     pairs = _bodies(doc)
@@ -453,6 +566,9 @@ async def run_reading_level_loop(
             discarded_for_gate=False,
         )
     target, tolerance = band
+    bounds = _Bounds(
+        target=target, tolerance=tolerance, per_node_max=_per_node_cap(doc)
+    )
     before = measure_book(
         (body for _id, body in pairs), target=target, tolerance=tolerance
     )
@@ -474,9 +590,7 @@ async def run_reading_level_loop(
         for start in range(0, len(out_of_band), _BATCH_SIZE):
             batch = out_of_band[start : start + _BATCH_SIZE]
             pass_accepted.update(
-                await _run_batch(
-                    batch, provider=ctx.provider, target=target, tolerance=tolerance
-                )
+                await _run_batch(batch, provider=ctx.provider, bounds=bounds)
             )
         ctx.stage_log.append(f"reading_level:{passes}:{len(pass_accepted)}")
         if not pass_accepted:
@@ -502,12 +616,46 @@ async def run_reading_level_loop(
     # #CRITICAL: data-integrity: a repaired document's structure is re-proven,
     # never merely trusted, before it replaces the pre-repair one. This mirrors
     # moderation/pipeline.py, which re-runs run_gate on an adopted repair for
-    # the same reason. Here it should be unfalsifiable (the model never saw the
-    # graph and can only return body strings), so a block means an assumption
-    # broke and the safe move is to keep the document that already passed.
-    # #VERIFY: test_reading_level_gate_regression_discards_the_whole_pass.
+    # the same reason. This branch was once annotated as unfalsifiable, on the
+    # reasoning that the model never sees the graph and can only return body
+    # strings. That reasoning was wrong and run-6 falsified it: blocking rules
+    # including PL-19's word wall are computed FROM body text, so "cannot change
+    # the graph" does not imply "cannot fail the gate".
+    # #VERIFY: the salvage path is driven through the REAL gate, with no
+    # patching, by the one-capped-node test; the unsalvageable path is covered
+    # by the whole-pass discard test. Both live in test_reading_level_loop.py.
     revised_gate = run_gate(revised_doc, ctx.scale, context="fill_result")
     if revised_gate.blocked and not gate_result.blocked:
+        # The gate names the nodes it objected to, so a single unusable
+        # revision need not cost the rest of the pass. Drop the named nodes,
+        # re-splice, and let the gate rule on the remainder; the re-run is the
+        # authority on whether the salvage worked, so nothing here has to
+        # reimplement which rules block.
+        salvaged = _drop_offenders(accepted, revised_gate)
+        if salvaged:
+            salvaged_doc = _splice(doc, salvaged)
+            salvaged_gate = run_gate(salvaged_doc, ctx.scale, context="fill_result")
+            if not salvaged_gate.blocked:
+                _logger.warning(
+                    "reading_level_repair_partially_discarded",
+                    nodes_revised=len(salvaged),
+                    nodes_dropped=len(accepted) - len(salvaged),
+                    reason="some revisions failed the structural gate",
+                )
+                ctx.stage_log.append("reading_level:gate_regression_partial")
+                return ReadingLevelResult(
+                    doc=salvaged_doc,
+                    gate=salvaged_gate,
+                    before=before,
+                    after=measure_book(
+                        (body for _id, body in _bodies(salvaged_doc)),
+                        target=target,
+                        tolerance=tolerance,
+                    ),
+                    nodes_revised=len(salvaged),
+                    passes=passes,
+                    discarded_for_gate=False,
+                )
         _logger.warning(
             "reading_level_repair_discarded",
             nodes_revised=len(accepted),
