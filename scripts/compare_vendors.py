@@ -473,8 +473,54 @@ def _measure(doc: dict[str, Any]) -> tuple[float | None, float | None, int]:
     return measured.grade, measured.in_band, measured.words
 
 
+@dataclass(frozen=True)
+class _CapOverrideProvider:
+    """Substitute the completion cap the orchestrator asks for.
+
+    ``orchestrator._MAX_TOKENS_PROSE`` is a module constant, so a comparison run
+    cannot vary the budget without editing production defaults. Reasoning models
+    make that budget a live experimental variable rather than a formality: a leg
+    that spends 19,500 tokens thinking before writing a word needs headroom a
+    non-reasoning leg never touches, and a cap set below that overhead returns
+    empty content that looks exactly like a dead endpoint (measured on DeepSeek
+    V4 Flash, 2026-08-12).
+
+    Wrapping the provider keeps the override at the harness boundary, where it
+    is visible in the report, instead of mutating a shared constant that every
+    other caller reads. Satisfies :class:`GenerationProvider` structurally.
+
+    Attributes:
+        inner: The real provider that performs the call.
+        max_tokens: The cap to send, replacing whatever the caller passed.
+    """
+
+    inner: GenerationProvider
+    max_tokens: int
+
+    async def complete(self, *, system: str, prompt: str, max_tokens: int) -> str:
+        """Delegate with the configured cap in place of the requested one.
+
+        Args:
+            system: System-role instructions, passed through unchanged.
+            prompt: User-role prompt, passed through unchanged.
+            max_tokens: The orchestrator's cap. Deliberately ignored; the
+                override exists precisely to replace it.
+
+        Returns:
+            The inner provider's completion.
+        """
+        del max_tokens
+        return await self.inner.complete(
+            system=system, prompt=prompt, max_tokens=self.max_tokens
+        )
+
+
 def _build_provider(
-    vendor: Vendor, settings: Settings, *, mock: bool
+    vendor: Vendor,
+    settings: Settings,
+    *,
+    mock: bool,
+    max_tokens: int | None = None,
 ) -> GenerationProvider:
     """Build a fresh single-leg provider for one vendor.
 
@@ -487,15 +533,23 @@ def _build_provider(
         settings: Settings supplying the credential, base url, and timeout.
         mock: When ``True`` return the deterministic mock provider instead, so a
             dry run exercises the whole path without spending anything.
+        max_tokens: Completion cap to force for every call on this leg. ``None``
+            leaves the orchestrator's own budget in place. A run that sets this
+            is NOT comparable to one that does not: the budget bounds how much a
+            leg can deliver, so it is part of the measurement, not a knob.
 
     Returns:
         A provider ready for one book.
     """
     if mock:
-        return build_provider(Settings())
-    return build_openrouter_leg(
-        settings, vendor.model, provider_order=vendor.provider_order
-    )
+        base = build_provider(Settings())
+    else:
+        base = build_openrouter_leg(
+            settings, vendor.model, provider_order=vendor.provider_order
+        )
+    if max_tokens is None:
+        return base
+    return _CapOverrideProvider(inner=base, max_tokens=max_tokens)
 
 
 async def run_comparison(
@@ -506,6 +560,8 @@ async def run_comparison(
     mock: bool = True,
     throttle: float = 0.0,
     settings: Settings | None = None,
+    max_tokens: int | None = None,
+    out_dir: Path | None = None,
 ) -> list[BookRecord]:
     """Fill the grid once per (vendor, brief) and measure every result.
 
@@ -521,6 +577,15 @@ async def run_comparison(
             because the mock echoes one canned story for every call.
         throttle: Seconds to sleep after each fill, for per-minute rate limits.
         settings: Settings for the live legs. Defaults to a fresh ``Settings()``.
+        max_tokens: Completion cap forced on every leg, or ``None`` to use the
+            orchestrator's default. Applied uniformly so the legs stay
+            comparable to each other, but a run at one cap cannot be pooled with
+            a run at another.
+        out_dir: When given, each book is written to ``out_dir/books/`` and
+            journalled to ``out_dir/books.jsonl`` the moment it completes, so
+            an interrupted run keeps everything it has already paid for
+            (AL-311). ``None`` keeps the records in memory only, which is what
+            the dry-run path and the unit tests want.
 
     Returns:
         One :class:`BookRecord` per (vendor, brief), vendor-major order.
@@ -547,7 +612,9 @@ async def run_comparison(
 
     for vendor in vendors:
         for index, brief in enumerate(briefs):
-            provider = _build_provider(vendor, resolved, mock=mock)
+            provider = _build_provider(
+                vendor, resolved, mock=mock, max_tokens=max_tokens
+            )
             started = time.monotonic()
             try:
                 outcome = await fill_skeleton(
@@ -592,11 +659,15 @@ async def run_comparison(
                     )
                 )
             last = records[-1]
+            # Persist before printing: the progress line is a convenience, the
+            # book is the thing that was paid for.
+            if out_dir is not None:
+                persist_book(out_dir, last)
             # Carry the failure text on the progress line, not only into the
             # report. A misconfigured pin fails every book identically, and the
             # operator needs to see why on book #0 rather than after paying for
-            # the other twenty-three (or, if the run is interrupted, never: the
-            # report is written at the end).
+            # the other twenty-three. The journal now carries the same detail
+            # durably, so this line is the live signal rather than the only one.
             detail = "" if last.error is None else f" error={last.error[:160]}"
             print(
                 f"[{vendor.label} #{index}] status={last.status} "
@@ -836,10 +907,90 @@ def _print_report(report: ComparisonReport, *, structure_varies: bool = True) ->
     print("=" * 72)
 
 
+def _book_row(record: BookRecord) -> dict[str, object]:
+    """Render one book's metadata row, shared by the journal and the report.
+
+    Both writers must describe a book identically, or reconstructing a killed
+    run from its journal would produce a report subtly unlike the one the run
+    would have written itself.
+
+    Args:
+        record: The book to describe.
+
+    Returns:
+        The row, whose ``file`` is the report-relative path to the book JSON,
+        or ``None`` when the leg produced no document.
+    """
+    return {
+        "vendor": record.vendor,
+        "family": record.family,
+        "brief_index": record.brief_index,
+        "status": record.status,
+        "attempts": record.attempts,
+        "latency_s": record.latency_s,
+        "grade": record.grade,
+        "in_band": record.in_band,
+        "leaf_words": record.leaf_words,
+        "cost": None,
+        "cost_unavailable_reason": _COST_UNAVAILABLE,
+        "file": f"books/{_book_filename(record)}" if record.doc is not None else None,
+        "error": record.error,
+    }
+
+
+def _book_filename(record: BookRecord) -> str:
+    """Name a book file from its grid position.
+
+    Args:
+        record: The book to name.
+
+    Returns:
+        A ``{vendor}__{index:02d}.json`` filename, unique per grid cell.
+    """
+    return f"{record.vendor}__{record.brief_index:02d}.json"
+
+
+def persist_book(out_dir: Path, record: BookRecord) -> None:
+    """Write one completed book and journal its row, as soon as it is bought.
+
+    #CRITICAL: data integrity: this is the only thing standing between an
+    interrupted run and the total loss of everything it has already paid a
+    third party for. A multi-hour run that writes only at the end loses every
+    book to any kill, which is not hypothetical: run-6 lost three completed
+    books (1,869 seconds of billed provider time) to an environment restart on
+    2026-08-12 because the output directory did not yet exist (AL-311).
+    #VERIFY: test_an_interrupted_run_keeps_the_books_it_already_paid_for in
+    tests/unit/test_compare_vendors.py kills a run mid-grid with a
+    BaseException, which the per-book handler cannot absorb, and asserts the
+    earlier books survive on disk.
+
+    The journal is appended rather than rewritten so a book already flushed can
+    never be lost by a later failure, and an errored leg still leaves a row
+    even though it has no document to write.
+
+    Args:
+        out_dir: The run's output directory, created if absent.
+        record: The book that just completed, successfully or not.
+    """
+    books_dir = out_dir / "books"
+    books_dir.mkdir(parents=True, exist_ok=True)
+    if record.doc is not None:
+        (books_dir / _book_filename(record)).write_text(
+            json.dumps(record.doc, indent=2) + "\n", encoding="utf-8"
+        )
+    with (out_dir / "books.jsonl").open("a", encoding="utf-8") as journal:
+        journal.write(json.dumps(_book_row(record)) + "\n")
+
+
 def _write_outputs(
     out_dir: Path, report: ComparisonReport, meta: dict[str, object]
 ) -> None:
     """Write the report JSON and every filled book to ``out_dir``.
+
+    Books are normally already on disk, written by :func:`persist_book` as each
+    completed. Rewriting them here is deliberate and idempotent: it keeps this
+    function correct for a caller that analyzed records it did not persist
+    incrementally, and the content is identical either way.
 
     Args:
         out_dir: Destination directory, created if absent.
@@ -850,28 +1001,11 @@ def _write_outputs(
     books_dir.mkdir(parents=True, exist_ok=True)
     rows: list[dict[str, object]] = []
     for record in report.books:
-        filename = f"{record.vendor}__{record.brief_index:02d}.json"
         if record.doc is not None:
-            (books_dir / filename).write_text(
+            (books_dir / _book_filename(record)).write_text(
                 json.dumps(record.doc, indent=2) + "\n", encoding="utf-8"
             )
-        rows.append(
-            {
-                "vendor": record.vendor,
-                "family": record.family,
-                "brief_index": record.brief_index,
-                "status": record.status,
-                "attempts": record.attempts,
-                "latency_s": record.latency_s,
-                "grade": record.grade,
-                "in_band": record.in_band,
-                "leaf_words": record.leaf_words,
-                "cost": None,
-                "cost_unavailable_reason": _COST_UNAVAILABLE,
-                "file": f"books/{filename}" if record.doc is not None else None,
-                "error": record.error,
-            }
-        )
+        rows.append(_book_row(record))
     payload: dict[str, object] = {
         **meta,
         "books": rows,
@@ -961,6 +1095,17 @@ def _parse_args(argv: list[str] | None) -> argparse.Namespace:
         type=float,
         default=0.0,
         help="Seconds to sleep between fills (per-minute rate limits).",
+    )
+    parser.add_argument(
+        "--max-tokens",
+        type=int,
+        default=None,
+        help=(
+            "Force this completion cap on every leg, overriding the "
+            "orchestrator's default. Reasoning legs spend most of a budget "
+            "before writing anything, so a cap sized for prose alone returns "
+            "empty content. Results at different caps are not comparable."
+        ),
     )
     parser.add_argument(
         "--out", required=True, type=Path, help="Directory for report.json and books/."
@@ -1128,6 +1273,11 @@ def main(argv: list[str] | None = None) -> int:
     env_path: Path = Path(str(args.env_file)).resolve()  # pyright: ignore[reportAny]
     throttle: float = float(args.throttle)  # pyright: ignore[reportAny]
     mock: bool = bool(args.mock)  # pyright: ignore[reportAny]
+    max_tokens: int | None = (
+        None
+        if args.max_tokens is None  # pyright: ignore[reportAny]
+        else int(args.max_tokens)  # pyright: ignore[reportAny]
+    )
 
     briefs = _load_briefs(briefs_path)
     skeletons = _load_skeletons(skeleton_paths, len(briefs))
@@ -1167,6 +1317,8 @@ def main(argv: list[str] | None = None) -> int:
             mock=mock,
             throttle=throttle,
             settings=settings,
+            max_tokens=max_tokens,
+            out_dir=out_dir,
         )
     )
     report = analyze(records)

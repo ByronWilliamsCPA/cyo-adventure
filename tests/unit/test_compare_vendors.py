@@ -13,6 +13,7 @@ deterministic mock provider or a stubbed ``fill_skeleton``.
 
 from __future__ import annotations
 
+import asyncio
 import dataclasses
 import json
 from typing import TYPE_CHECKING, Any
@@ -826,3 +827,129 @@ async def test_preflight_budget_clears_measured_reasoning_overhead() -> None:
         f"{_MEASURED_REASONING_OVERHEAD}-token worst case; reasoning legs would "
         "report UNREACHABLE while routing correctly"
     )
+
+
+# --- Incremental persistence (AL-311 / UW-C229) ---------------------------
+#
+# The harness used to hold every generated book in memory until the last one
+# landed, so an interruption at any point lost everything already paid for.
+# Run-6 proved it on 2026-08-12: an environment restart destroyed three
+# completed books because the output directory was never created. These tests
+# pin the durability property, which is the one property the old design's
+# tests never exercised.
+
+
+async def _passing_stub(*_args: object, **_kwargs: object) -> object:
+    """Return a passing outcome carrying a real document."""
+    return mock.Mock(status="passed", attempts=0, storybook=_doc(_SHARED))
+
+
+@pytest.mark.asyncio
+async def test_run_comparison_writes_each_book_as_it_completes(
+    tmp_path: Path,
+) -> None:
+    """A completed book is on disk before the run ends, not after."""
+    with mock.patch("scripts.compare_vendors.fill_skeleton", _passing_stub):
+        await run_comparison(
+            [{"id": "sk-a"}, {"id": "sk-b"}],
+            [{"setting": "a"}, {"setting": "b"}],
+            [Vendor(label="alpha", model="mock", provider_order=())],
+            out_dir=tmp_path,
+        )
+
+    written = sorted(p.name for p in (tmp_path / "books").glob("*.json"))
+    assert written == ["alpha__00.json", "alpha__01.json"]
+
+
+@pytest.mark.asyncio
+async def test_an_interrupted_run_keeps_the_books_it_already_paid_for(
+    tmp_path: Path,
+) -> None:
+    """The defect this change exists to fix, reproduced as a test.
+
+    ``KeyboardInterrupt`` is a ``BaseException``, so the per-book ``except
+    Exception`` guard does not absorb it: it propagates exactly the way an
+    environment restart or an operator abort does, killing the run before it
+    can reach the end-of-run write.
+    """
+    calls = {"n": 0}
+
+    async def _die_on_the_third(*_args: object, **_kwargs: object) -> object:
+        """Pass twice, then kill the process the way a restart would."""
+        calls["n"] += 1
+        if calls["n"] == 3:
+            raise KeyboardInterrupt
+        return mock.Mock(status="passed", attempts=0, storybook=_doc(_SHARED))
+
+    vendors = [
+        Vendor(label="alpha", model="mock", provider_order=()),
+        Vendor(label="beta", model="mock", provider_order=()),
+    ]
+    skeletons = [{"id": "sk-a"}, {"id": "sk-b"}]
+    briefs = [{"setting": "a"}, {"setting": "b"}]
+
+    with (
+        mock.patch("scripts.compare_vendors.fill_skeleton", _die_on_the_third),
+        pytest.raises(KeyboardInterrupt),
+    ):
+        await run_comparison(skeletons, briefs, vendors, out_dir=tmp_path)
+
+    survived = sorted(p.name for p in (tmp_path / "books").glob("*.json"))
+    assert survived == ["alpha__00.json", "alpha__01.json"]
+
+
+@pytest.mark.asyncio
+async def test_the_journal_records_a_row_for_a_book_that_produced_no_document(
+    tmp_path: Path,
+) -> None:
+    """An errored leg leaves a durable trace even though it has no book file.
+
+    Without this the only record of a failed leg is a progress line on stderr,
+    which is exactly what run-6 was reduced to.
+    """
+
+    async def _always_fails(*_args: object, **_kwargs: object) -> object:
+        """Fail every book with a recoverable per-book error."""
+        message = "endpoint refused"
+        raise RuntimeError(message)
+
+    with mock.patch("scripts.compare_vendors.fill_skeleton", _always_fails):
+        await run_comparison(
+            [{"id": "sk-a"}],
+            [{"setting": "a"}],
+            [Vendor(label="alpha", model="mock", provider_order=())],
+            out_dir=tmp_path,
+        )
+
+    rows = [
+        json.loads(line)
+        for line in (tmp_path / "books.jsonl").read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+    assert [r["status"] for r in rows] == ["error"]
+    assert rows[0]["file"] is None
+    assert "endpoint refused" in str(rows[0]["error"])
+
+
+def test_run_comparison_writes_nothing_when_no_out_dir_is_given(
+    tmp_path: Path,
+) -> None:
+    """The default stays non-persisting, so callers that only want the records
+    (the dry-run path and every other test here) are unaffected.
+
+    Driven with ``asyncio.run`` from a sync test rather than the usual
+    ``@pytest.mark.asyncio``, so the filesystem assertion does not sit inside
+    an async frame (ASYNC240). The sibling tests above escape that rule only
+    because ruff cannot infer the type of a ``tmp_path / "books"`` expression,
+    which is a gap in the check rather than a difference in the code.
+    """
+    with mock.patch("scripts.compare_vendors.fill_skeleton", _passing_stub):
+        asyncio.run(
+            run_comparison(
+                [{"id": "sk-a"}],
+                [{"setting": "a"}],
+                [Vendor(label="alpha", model="mock", provider_order=())],
+            )
+        )
+
+    assert list(tmp_path.glob("*")) == []
