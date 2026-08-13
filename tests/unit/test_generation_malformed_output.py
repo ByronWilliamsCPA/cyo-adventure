@@ -500,7 +500,7 @@ async def test_generate_story_injection_in_blocked_story_stays_data_in_repair() 
 
 
 # ---------------------------------------------------------------------------
-# Class 7: fill_skeleton fill-output parsing (same boundary, skeleton fallback)
+# Class 7: fill_skeleton fill-output parsing (same boundary, no skeleton fallback)
 # ---------------------------------------------------------------------------
 
 
@@ -514,10 +514,22 @@ async def test_generate_story_injection_in_blocked_story_stays_data_in_repair() 
         pytest.param('"a bare JSON string, not a document"', id="json-string"),
     ],
 )
-async def test_fill_skeleton_malformed_fill_returns_needs_review_with_skeleton(
+async def test_fill_skeleton_malformed_fill_fails_rather_than_returning_the_skeleton(
     raw_output: str,
 ) -> None:
-    """A malformed fill surfaces the unfilled skeleton as needs_review, not failed."""
+    """A malformed fill with no repair budget is a failure, carrying no document.
+
+    This test asserted the opposite until `AL-327`: that the caller-supplied
+    skeleton was "the surfaced fallback document, with its FILL directive intact
+    (nothing fabricated, nothing silently dropped)". Nothing was fabricated,
+    which is what made it convincing. The problem is what a caller does with the
+    result: four books across two labs went to a review queue as stories when no
+    prose had been written at all, and `compare_vendors` counted them as
+    delivered.
+
+    Returning nothing is the honest answer. A caller that wants the skeleton
+    back already has it; it passed it in.
+    """
     skeleton = _skeleton_with_fill_placeholder()
     provider = MockProvider(responses=[raw_output])
 
@@ -525,14 +537,9 @@ async def test_fill_skeleton_malformed_fill_returns_needs_review_with_skeleton(
         skeleton, {"premise": "a fox"}, provider, _empty_pii(), max_repairs=0
     )
 
-    assert outcome.status == "needs_review"
+    assert outcome.status == "failed"
+    assert outcome.storybook is None
+    assert outcome.report["unfilled_skeleton_returned"] is True
     assert outcome.attempts == 0
     assert outcome.stage_log[0] == "stage_fill:parse_error"
-    # The caller-supplied skeleton is the surfaced fallback document, with its
-    # FILL directive intact (nothing fabricated, nothing silently dropped).
-    assert outcome.storybook is not None
-    assert outcome.storybook == skeleton
-    nodes = cast("list[dict[str, object]]", outcome.storybook["nodes"])
-    body = nodes[0]["body"]
-    assert isinstance(body, str)
-    assert body.startswith("<<FILL ")
+    assert outcome.stage_log[-1] == "stage_fill:unfilled_skeleton_returned"

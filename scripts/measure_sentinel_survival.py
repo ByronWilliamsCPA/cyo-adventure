@@ -271,6 +271,7 @@ async def _run_trial(
         provider,
         pii,
         max_repairs=max_repairs,
+        stage1_gate="skipped",
         slot_bindings=specimen.slot_bindings,
     )
     # #EDGE: external-resources: a provider that never produces a parseable

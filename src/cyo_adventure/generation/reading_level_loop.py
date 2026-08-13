@@ -160,6 +160,13 @@ class ReadingLevelResult:
             impossibility this once claimed: the gate reads node bodies as well
             as the graph (PL-19's word wall among them), so a body-only edit can
             block it. Run-6 hit exactly that. Worth an alert.
+        nodes_dropped (int): How many accepted revisions the salvage path threw
+            away to get the rest past the gate. Non-zero means the book shipped
+            with the repair only partly applied, which reads identically to a
+            fully repaired book everywhere else in the artifact. Distinct from
+            ``discarded_for_gate``, which is the all-or-nothing case; a book can
+            be partly degraded without being discarded, and `AL-350` is what it
+            costs when neither number leaves this dataclass.
     """
 
     doc: dict[str, object]
@@ -169,6 +176,7 @@ class ReadingLevelResult:
     nodes_revised: int
     passes: int
     discarded_for_gate: bool
+    nodes_dropped: int = 0
 
     def to_report(self) -> dict[str, object]:
         """Render the measurement for the generation outcome's report dict.
@@ -196,7 +204,23 @@ class ReadingLevelResult:
             "nodes_revised": self.nodes_revised,
             "passes": self.passes,
             "discarded_for_gate": self.discarded_for_gate,
+            "nodes_dropped": self.nodes_dropped,
+            "degraded": self.degraded,
         }
+
+    @property
+    def degraded(self) -> bool:
+        """Whether this stage did less than it was asked to.
+
+        One flag for the two ways Stage D can under-deliver, so a consumer that
+        wants to exclude or flag affected books has a single field to read
+        rather than a rule to reimplement.
+
+        Returns:
+            bool: ``True`` when the pass was discarded outright or any accepted
+                revision was dropped to get the rest past the gate.
+        """
+        return self.discarded_for_gate or self.nodes_dropped > 0
 
 
 def _band(doc: dict[str, object]) -> tuple[float, float] | None:
@@ -658,6 +682,7 @@ async def run_reading_level_loop(
                     nodes_revised=len(salvaged),
                     passes=passes,
                     discarded_for_gate=False,
+                    nodes_dropped=len(accepted) - len(salvaged),
                 )
         _logger.warning(
             "reading_level_repair_discarded",
@@ -673,6 +698,7 @@ async def run_reading_level_loop(
             nodes_revised=0,
             passes=passes,
             discarded_for_gate=True,
+            nodes_dropped=len(accepted),
         )
 
     after = measure_book(

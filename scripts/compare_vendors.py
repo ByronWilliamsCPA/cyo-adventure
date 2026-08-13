@@ -625,7 +625,11 @@ async def run_comparison(
             started = time.monotonic()
             try:
                 outcome = await fill_skeleton(
-                    dict(skeletons[index]), dict(brief), provider, pii
+                    dict(skeletons[index]),
+                    dict(brief),
+                    provider,
+                    pii,
+                    stage1_gate="skipped",
                 )
             except Exception as exc:  # one book's failure must not void the batch
                 # A comparison over N vendors is expensive; losing every prior
