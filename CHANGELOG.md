@@ -3398,7 +3398,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   from test code, comments, and script documentation; add `.gitguardian.yml` with
   an allowlist for remaining known-benign test patterns.
 
-## [0.1.0] - TBD
+## [0.1.0] - 2026-07-07
 
 ### Added
 - Initial project structure with Poetry package management

@@ -120,7 +120,7 @@ FastAPI backend (Python 3.14)
 
 ## Architecture Decision Records
 
-The table below lists all 28 ADRs in `docs/planning/adr/`; see that directory for the
+The table below lists all 29 ADRs in `docs/planning/adr/`; see that directory for the
 full decision records.
 
 | ADR | Title | Status |
@@ -153,3 +153,4 @@ full decision records.
 | [ADR-026](../planning/adr/adr-026-rendered-stop-flow.md) | Rendered-stop flow of linear passages | Accepted |
 | [ADR-027](../planning/adr/adr-027-in-story-illustration.md) | In-story illustration (3-5 pilot) | Accepted |
 | [ADR-028](../planning/adr/adr-028-persistent-reader-characters.md) | Persistent reader characters | Accepted |
+| [ADR-029](../planning/adr/adr-029-web-accessibility-conformance.md) | Web accessibility conformance target and testing strategy | Accepted |

@@ -102,8 +102,16 @@ Two implications:
    projects' transitive trees.
 2. `osv-scanner.toml` currently reports three **unused** ignores
    (`CVE-2022-42969`, `PYSEC-2022-42969`, `GHSA-w596-4wvx-j9j6`, all the disputed
-   `py`/`interrogate` ReDoS). The transitive dependency that triggered them is gone,
-   so these exceptions are now dead policy and should be removed.
+   `py`/`interrogate` ReDoS).
+
+   > **Corrected 2026-08-13 (`UW-K08`).** This originally read "the transitive dependency
+   > that triggered them is gone, so these exceptions are now dead policy and should be
+   > removed". That is false and was acted on: `uv.lock` still carries `py` 1.11.0, pulled
+   > in by `interrogate` 1.7.0, which is declared in `[project.optional-dependencies]`.
+   > The ignores were removed from `osv-scanner.toml` on this false premise. Whether they
+   > need restoring depends on whether `osv-scanner --recursive ./` reports a dev-only
+   > transitive from `uv.lock`, which is a live scan, so it is deliberately not guessed at
+   > here; see the `UW-K08` register row.
 
 ## Finding 3: Code (SAST) findings are real files but partly false positives
 

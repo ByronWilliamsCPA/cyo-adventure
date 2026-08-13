@@ -49,8 +49,19 @@
 # Add your project's vulnerability exceptions below this line
 
 # No project-specific exceptions currently active.
-# CVE-2022-42969, PYSEC-2022-42969, and GHSA-w596-4wvx-j9j6 were removed
-# because the interrogate/py transitive dependency that triggered them is
-# no longer present in the dependency tree. Dead policy entries would
-# cause "unused ignore" warnings in future osv-scanner runs.
-# See: docs/snyk-implementation-findings.md (Finding 2)
+# CVE-2022-42969, PYSEC-2022-42969, and GHSA-w596-4wvx-j9j6 were removed on the
+# stated grounds that "the interrogate/py transitive dependency that triggered
+# them is no longer present in the dependency tree".
+#
+# #CRITICAL: security: that premise is FALSE, verified 2026-08-13 (UW-K08).
+# `uv.lock` still carries `py` 1.11.0, required by `interrogate` 1.7.0, which is
+# declared in [project.optional-dependencies]. The ignores were therefore removed
+# for a reason that does not hold, and this file no longer suppresses three
+# advisories whose subject is still in the resolved tree.
+# #VERIFY: the next security-analysis.yml run settles it, because
+# `osv-scanner --recursive ./` reads uv.lock. If it reports these three, restore
+# the ignores with the real justification (disputed ReDoS in a dev-only, non-
+# runtime transitive) rather than a claim of absence. If it does not report them,
+# record WHY (dev-group exclusion or severity threshold) here, so the next reader
+# does not have to rediscover it. Deliberately not pre-emptively re-added: that
+# would be guessing at a scanner's scope instead of observing it.
