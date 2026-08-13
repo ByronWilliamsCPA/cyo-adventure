@@ -185,43 +185,82 @@ second counter that would conflict with it.
 
 Measured 2026-08-12 by reissuing the fill call directly against OpenRouter at the same 32,000-token
 cap and reading the billed `usage.cost`, because the runs themselves recorded `cost: null` for every
-book (AL-314). Four legs are measured; the rest are unmeasured for the reason in the last paragraph
-of this section.
+book (AL-314). **All eight comparison legs are measured across all four briefs**, 32 priced calls,
+$5.86 total. A ninth candidate (`moonshotai/kimi-k3`) returned one priced call before its remaining
+three died at the transport layer, and is reported separately below as n=1.
 
-**The projection above is right for some legs and 3.3x low for others, and the discriminator is
-reasoning.** It budgeted 8,256 output tokens per book, derived from book length. That holds only
-where the model writes the book and little else:
+**The deliverable is nearly constant; the bill is not.** Prose actually written spans 6,094 to 8,300
+tokens across the seven delivering legs, a factor of 1.36. Cost spans a factor of 8.8. What you pay
+for is reasoning, billed at the output rate and invisible in the finished book:
 
-| Leg | Output tokens/book | Reasoning share | vs projected | $/call | Projected 4-book | Measured 4-book |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| `google-gemini-3-flash` | 6,506 | 0% | 0.8x | $0.0286 | n/a | n/a |
-| `openai-gpt-5.6-sol` | 6,054 | 10% | 0.7x | $0.2859 | $1.19 | $1.14 |
-| `anthropic-sonnet-4.6` | not captured | not captured | n/a | $0.1595 | $0.61 | $0.64 |
-| `anthropic-sonnet-5` | 28,209 | 18% | 3.4x | $0.3364 | $0.41 | **$1.35** |
-| `moonshot-kimi-k3` | 32,000 | 88% | 3.9x | $0.5027 | $0.61 | **$2.01** |
+| Leg | $/call | Prompt tok | Cached | Output tok | Reasoning | Share | **Prose tok** |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `google-gemini-3-flash` | $0.0314 | 19,752 | 0% | 7,174 | 0 | 0% | 7,174 |
+| `deepseek-v4-pro` | $0.0398 | 18,826 | 0% | 7,122 | 0 | 0% | 7,122 |
+| `z-ai-glm-5.2` | $0.1123 | 18,314 | 30% | 21,107 | 13,822 | 65% | 7,284 |
+| `anthropic-sonnet-4.6` | $0.1860 | 20,833 | 0% | 8,232 | 0 | 0% | 8,232 |
+| `xai-grok-4.6` | $0.1963 | 19,103 | 1% | 26,387 | 19,486 | **74%** | 6,901 |
+| `openai-gpt-5.6-sol` | $0.2688 | 18,362 | 44% | 6,696 | 602 | 9% | 6,094 |
+| `google-gemini-3.1-pro` | $0.2767 | 19,752 | 0% | 19,770 | 11,470 | 58% | 8,300 |
+| `anthropic-sonnet-5` | $0.3549 | 27,180 | 0% | 30,050 | 5,179 | 17% | (2 of 4 truncated) |
 
-Reasoning tokens are billed at the output rate and produce no prose, so they are pure overhead on a
-structured-JSON task. Kimi spent 28,247 of 32,000 completion tokens thinking and returned a
-truncated book: 88% of that call's bill bought nothing, and the remaining 12% did not finish. Two
-consequences for anyone pricing this work:
+**The projection above fails, and the discriminator is reasoning share, cleanly.** It budgeted 8,256
+output tokens per book from book length. Every leg under 10% reasoning lands within 15%; every leg
+above it is underestimated about twofold, with no overlap between the groups:
 
-- **Book length does not predict cost.** All five legs were asked for the same book. The spread in
-  what they charged to produce it is 17x, and it tracks reasoning share, not output quality.
-- **A cost model built from `$/MTok x book words` will under-recover on exactly the legs that need
-  the most retries**, because a starved reasoning model burns the full cap and delivers nothing.
+| Leg | Reasoning share | Projected | Measured | Error |
+| --- | ---: | ---: | ---: | ---: |
+| `anthropic-sonnet-4.6` | 0% | $0.1863 | $0.1860 | 1.00x |
+| `deepseek-v4-pro` | 0% | $0.0427 | $0.0398 | 0.93x |
+| `google-gemini-3-flash` | 0% | $0.0346 | $0.0314 | 0.91x |
+| `openai-gpt-5.6-sol` | 9% | $0.3156 | $0.2688 | 0.85x |
+| `google-gemini-3.1-pro` | 58% | $0.1386 | $0.2767 | **2.00x** |
+| `z-ai-glm-5.2` | 65% | $0.0557 | $0.1123 | **2.01x** |
+| `xai-grok-4.6` | 74% | $0.0876 | $0.1963 | **2.24x** |
 
-Input is cheaper than list price, in the one direction that helps. Kimi's 16,795 prompt tokens
-billed at $1.35/MTok against a $3.00 list rate, because 10,240 of them were cache hits. The fill
-prompt is large and almost entirely static across books (the skeleton and brief are the only
-varying part), which is the shape prompt caching rewards.
+**Price the delivered book, not the call.** A billed call that returns nothing must still be paid
+for and retried. Dividing measured spend by the fill rate the runs observed charges failures to the
+books that landed, which widens the spread from 8.8x to **36x**:
 
-Five legs are unmeasured (`deepseek-v4-pro`, `z-ai-glm-5.2`, `xai-grok-4.6`,
-`google-gemini-3.1-pro`, and briefs 1 to 3 of the three legs measured on brief 0 only). The account's
-OpenRouter key hit its monthly limit partway through the sweep, and completing it costs roughly $8.
-Until then, treat the table as four measured points and a demonstrated mechanism, not a full slate.
-`xai-grok-4.6` is the notable gap: at 616 seconds mean latency it is the slowest leg on the slate,
-which is the signature of heavy reasoning, so its list-price projection of $0.28 is the one most
-likely to be understated.
+| Leg | Fill rate | $/call | **$/book delivered** | $/1000 books |
+| --- | ---: | ---: | ---: | ---: |
+| `deepseek-v4-pro` | 1.00 | $0.0398 | **$0.0398** | $40 |
+| `google-gemini-3-flash` | 0.75 | $0.0314 | **$0.0419** | $42 |
+| `z-ai-glm-5.2` | 1.00 | $0.1123 | **$0.1123** | $112 |
+| `anthropic-sonnet-4.6` | 1.00 | $0.1860 | **$0.1860** | $186 |
+| `xai-grok-4.6` | 1.00 | $0.1963 | **$0.1963** | $196 |
+| `openai-gpt-5.6-sol` | 1.00 | $0.2688 | **$0.2688** | $269 |
+| `google-gemini-3.1-pro` | 1.00 | $0.2767 | **$0.2767** | $277 |
+| `anthropic-sonnet-5` | 0.25 | $0.3549 | **$1.4194** | $1,419 |
+
+Note the fill rate comes from the runs, not from the billing probe, and the two disagree for
+`sonnet-5`: the probe saw 2 of 4 completions parse, the runs saw 1 of 4 books actually filled. **A
+completion that parses is not a book** (AL-312, AL-320).
+
+**The limiting case.** `moonshotai/kimi-k3`, one call, n=1: billed **$0.5319** for 17,286 prompt
+tokens and the full 32,000 output tokens, of which **30,872 (96%) were reasoning and 1,128 were
+prose**. It finished on `length` and returned nothing usable. The most expensive call in the sweep
+delivered no book.
+
+**Input is cheaper than list price**, in the one direction that helps: 44% of `gpt-5.6-sol`'s prompt
+tokens and 30% of `glm-5.2`'s were served from cache. The fill prompt is large and almost entirely
+static across books (the skeleton and brief are the only varying part), which is the shape prompt
+caching rewards, so any price model built from published rates without a cache-hit term will
+over-recover on the high-volume path.
+
+**Derived rates**, for seeding `core/pricing.py` (AL-318). Legs with no cache hits reproduce list
+prices exactly, which is the check that the arithmetic is sound:
+
+| Model | Input $/MTok | Output $/MTok | Note |
+| --- | ---: | ---: | --- |
+| `anthropic/claude-sonnet-4.6` | 3.00 | 15.00 | |
+| `anthropic/claude-sonnet-5` | 2.00 | 10.00 | |
+| `deepseek/deepseek-v4-pro` | 1.15 | 2.55 | |
+| `google/gemini-3-flash-preview` | 0.50 | 3.00 | |
+| `google/gemini-3.1-pro-preview` | 2.00 | 12.00 | |
+| `openai/gpt-5.6-sol` | 3.70 | 30.00 | effective, 44% of prompt cached |
+| `x-ai/grok-4.6` | 1.99 | 6.00 | effective, 1% cached |
+| `z-ai/glm-5.2` | 1.06 | 4.40 | effective, 30% cached |
 
 ## What the pair counts will be
 
