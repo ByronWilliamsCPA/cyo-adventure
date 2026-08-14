@@ -353,3 +353,12 @@ docs/template_feedback.md
 # state keyed by URL, restored in CI from the actions/cache entry rather than
 # from git.
 .lycheecache
+
+# W7 known-bad battery arms (scripts/seed_defects.py --out out/w7/arms). The
+# mechanical arms are regenerated for free from out/w7/corpus/, so committing
+# them would just duplicate the corpus. The reading_level_up arms are the
+# exception and are kept: they are paid generation (w7_battery.py --prepare),
+# and without them the run's age_fit verdict is not reproducible without
+# spending again.
+out/w7/arms/*
+!out/w7/arms/*__reading_level_up.json
