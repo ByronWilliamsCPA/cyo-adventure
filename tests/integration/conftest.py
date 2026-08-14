@@ -13,7 +13,6 @@ from __future__ import annotations
 
 import json
 import os
-import re
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -127,9 +126,6 @@ def _seed_catalog_family_stmt() -> Insert:
     )
 
 
-_SAFE_DB_SUFFIX_RE = re.compile(r"\A[A-Za-z0-9_]{1,32}\Z")
-
-
 def _prepare_external_database(external_url: str) -> str:
     """Build this worker's own database on an already-running Postgres server.
 
@@ -159,9 +155,12 @@ def _prepare_external_database(external_url: str) -> str:
     server instead, two workers promoting the same migrated role overwrite each
     other's password and both hold a DSN that no longer authenticates. Measured:
     1026 errors at ``-n=auto`` against 0 at ``-n0``.
-    #VERIFY: run the integration suite with ``-n0`` whenever CYO_TEST_PG_URL is
-    set. Per-worker DATABASES (below) are necessary but not sufficient, because
-    the collision is on roles, which no database boundary isolates.
+    #VERIFY: enforced below rather than documented. ``pyproject.toml``'s
+    ``addopts`` carries ``-n=auto``, so the DEFAULT invocation violates this
+    constraint and a reader who never reaches this docstring gets the 1026-error
+    run; the guard turns that into one legible failure at setup. Per-worker
+    DATABASES (below) are necessary but not sufficient, because the collision is
+    on roles, which no database boundary isolates.
 
     Args:
         external_url: Admin ``postgresql+asyncpg://`` URL for a running server,
@@ -172,15 +171,26 @@ def _prepare_external_database(external_url: str) -> str:
         ORM schema built and the catalog family seeded.
 
     Raises:
-        ValueError: If ``PYTEST_XDIST_WORKER`` is not a safe identifier, since it
-            is interpolated into ``CREATE DATABASE`` DDL, which takes no bind
-            parameters.
+        RuntimeError: If pytest-xdist is active, since cluster-global role
+            collisions make this path unsafe under any worker count above one.
     """
-    worker = os.environ.get("PYTEST_XDIST_WORKER", "gw0")
-    if not _SAFE_DB_SUFFIX_RE.match(worker):
-        msg = f"PYTEST_XDIST_WORKER {worker!r} is not a safe Postgres identifier"
-        raise ValueError(msg)
-    db_name = f"cyo_test_{worker}"
+    worker = os.environ.get("PYTEST_XDIST_WORKER", "")
+    if worker:
+        msg = (
+            "CYO_TEST_PG_URL is set and pytest-xdist is active "
+            f"(PYTEST_XDIST_WORKER={worker!r}). This path points every worker at "
+            "ONE Postgres server, and roles are cluster-global, so concurrent "
+            "ALTER ROLE ... LOGIN PASSWORD calls overwrite each other and leave "
+            "workers holding DSNs that no longer authenticate (measured: 1026 "
+            "errors at -n=auto, 0 at -n0). Re-run with -n0; pyproject.toml's "
+            "addopts sets -n=auto, so -n0 must be passed explicitly."
+        )
+        raise RuntimeError(msg)
+    # Serial-only by the guard above, so there is exactly one database and the
+    # name is a fixed literal rather than an interpolated worker id. That is
+    # also what makes the CREATE DATABASE below safe: DDL takes no bind
+    # parameters, and there is no longer any environment-derived text in it.
+    db_name = "cyo_test_gw0"
 
     def _sync(url: URL) -> str:
         return url.set(drivername="postgresql+psycopg").render_as_string(
