@@ -30,6 +30,7 @@ import argparse
 import json
 import os
 import sys
+import urllib.error
 import urllib.request
 from datetime import UTC, datetime
 from decimal import Decimal
@@ -95,6 +96,43 @@ def fetch(api_key: str) -> dict[str, dict[str, Any]]:
     return {str(row["id"]): row for row in rows if isinstance(row, dict)}
 
 
+def endpoint_count(api_key: str, model: str) -> int | None:
+    """Return how many providers currently serve *model*.
+
+    The distinction this exists for cost a wrong answer on 2026-08-14. The
+    ``/models`` list returns only models with at least one live endpoint, so a
+    real model nobody is serving is absent from it, and reporting that absence
+    as "NOT LISTED" reads as "does not exist". OpenRouter itself distinguishes
+    the two clearly and we were not listening: a completion against an unknown
+    slug returns ``400 not a valid model ID``, while a real model with no
+    endpoints returns ``404 No endpoints found``. ``qwen/qwen3.8-27b`` is the
+    second case, a catalogue entry named "Qwen: Qwen3.8 27B" with zero
+    endpoints, and it was written off as nonexistent.
+
+    Args:
+        api_key: An OpenRouter credential.
+        model: The model slug.
+
+    Returns:
+        The endpoint count, or ``None`` when the slug is unknown to OpenRouter,
+        which is the genuinely-does-not-exist case.
+    """
+    url = f"https://openrouter.ai/api/v1/models/{model}/endpoints"
+    request = urllib.request.Request(
+        url, headers={"Authorization": f"Bearer {api_key}"}
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS) as response:  # noqa: S310
+            payload = json.load(response)
+    except urllib.error.HTTPError:
+        return None
+    data = payload.get("data")
+    if not isinstance(data, dict):
+        return None
+    endpoints = data.get("endpoints")
+    return len(endpoints) if isinstance(endpoints, list) else 0
+
+
 def _rate(pricing: dict[str, Any], key: str) -> Decimal | None:
     """Return a per-million-token rate, or ``None`` when the vendor omits it.
 
@@ -117,7 +155,9 @@ def _rate(pricing: dict[str, Any], key: str) -> Decimal | None:
         return None
 
 
-def render(models: dict[str, dict[str, Any]], wanted: Sequence[str]) -> str:
+def render(
+    models: dict[str, dict[str, Any]], wanted: Sequence[str], api_key: str = ""
+) -> str:
     """Render paste-ready ``_PRICES`` entries for *wanted*.
 
     Args:
@@ -133,7 +173,25 @@ def render(models: dict[str, dict[str, Any]], wanted: Sequence[str]) -> str:
     for model in wanted:
         row = models.get(model)
         if row is None:
-            lines.append(f"    # NOT LISTED by OpenRouter on {today}: {model!r}")
+            # Absent from the list is two different facts and they need
+            # different answers, so ask which one this is rather than guessing.
+            count = endpoint_count(api_key, model) if api_key else None
+            if count == 0:
+                lines.append(
+                    f"    # NO ENDPOINTS on {today}: {model!r} is a real "
+                    "OpenRouter model that no provider is currently serving. "
+                    "Re-check later; it is not unavailable permanently."
+                )
+            elif count is None:
+                lines.append(
+                    f"    # UNKNOWN SLUG on {today}: {model!r} is not a model "
+                    "id OpenRouter recognises."
+                )
+            else:
+                lines.append(
+                    f"    # UNPRICED on {today}: {model!r} has {count} "
+                    "endpoint(s) but no entry in the model list."
+                )
             continue
         pricing = row.get("pricing")
         if not isinstance(pricing, dict):
@@ -207,7 +265,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 2
 
     models = fetch(api_key)
-    print(render(models, args.models or _WANTED))
+    print(render(models, args.models or _WANTED, api_key))
     return 0
 
 

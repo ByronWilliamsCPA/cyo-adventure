@@ -18,14 +18,14 @@
     "model": "qwen/qwen3.6-27b",
     "provider_order": [],
     "family": "qwen",
-    "_note": "Nearest available to the requested qwen/qwen3.8-27b, which OpenRouter does not list: the 3.8 line ships only as 2.4t-a95b and max, both far larger, and 27b exists at 3.5 and 3.6. $0.60/$3.60."
+    "_note": "Stand-in for qwen/qwen3.8-27b, which is a REAL OpenRouter model (catalogue name 'Qwen: Qwen3.8 27B') currently served by zero providers. It returns 404 'No endpoints found', not 400 'not a valid model ID', and the /models list omits zero-endpoint models, which is why a first pass wrongly called it nonexistent. Re-check and slate it the moment an endpoint appears. $0.60/$3.60."
   },
   {
     "label": "qwen3.5-27b",
     "model": "qwen/qwen3.5-27b",
     "provider_order": [],
     "family": "qwen",
-    "_note": "The other 27b qwen, at $0.195/$1.56. Included because the requested model does not exist and guessing which generation was meant is worse than testing both when a battery costs cents."
+    "_note": "The other 27b qwen, at $0.195/$1.56. Both generations are slated because the requested 3.8-27b cannot be called today and guessing which of 3.5 or 3.6 stands closest to it is worse than running both when a battery costs cents."
   },
   {
     "label": "llama-3.3-70b",
