@@ -233,7 +233,7 @@
     },
     {
       "id": "pf_breeze",
-      "body": "They stood very still, with their palms up, and waited.\n\nThe breeze thought about it for a while. Then it tipped the gold square off the awning. Down it came in lazy zigzags, right into Pip's open paws.\n\n\"Oh!\" said Pip, and squeaked.\n\nIt was the first happy sound Milo had heard her make all evening.",
+      "body": "So they waited for the breeze.\n\nThey stood very still, with their palms up. The breeze thought about it for a while. Then it tipped the gold square off the awning. Down it came in lazy zigzags, right into Pip's open paws.\n\n\"Oh!\" said Pip, and squeaked.\n\nIt was the first happy sound Milo had heard her make all evening.",
       "is_ending": false,
       "choices": [
         {
@@ -245,7 +245,7 @@
     },
     {
       "id": "pf_sort",
-      "body": "Milo sorted the squares into their trays. Reds with reds, golds with golds, blues with blues. The paper folder smoothed each one flat under his thumb.\n\nWhile they worked, he picked up a scrap and folded it. Corner to corner. Corner to corner. And then a crane sat in his palm and flapped its wings.\n\nPip watched so closely her nose almost touched it.",
+      "body": "Milo sorted the paper into its colour trays. Reds with reds, golds with golds, blues with blues. The paper folder smoothed each one flat under his thumb.\n\nWhile they worked, he picked up a scrap and folded it. Corner to corner. Corner to corner. And then a crane sat in his palm and flapped its wings.\n\nPip watched so closely her nose almost touched it.",
       "is_ending": false,
       "choices": [
         {
@@ -349,7 +349,7 @@
     },
     {
       "id": "tm_entry",
-      "body": "Mr. Fez's table was a tiny hospital for toys. Wind-up beetles lay on their backs. A one-eared rabbit waited its turn. A drum wore a brand new skin.\n\nMr. Fez squinted through a lens the size of a teacup, hunting for a runaway brass gear. By his elbow, a tin of tiny screws sat in a hopeless jumble.\n\nMilo could sort the screws. Or he could hunt the gear.",
+      "body": "The toy mender's table was a tiny hospital for toys. Wind-up beetles lay on their backs. A one-eared rabbit waited its turn. A drum wore a brand new skin.\n\nMr. Fez squinted through a lens the size of a teacup, hunting for a runaway brass gear. By his elbow, a tin of tiny screws sat in a hopeless jumble.\n\nMilo could sort the screws. Or he could hunt the gear.",
       "is_ending": false,
       "choices": [
         {
@@ -395,7 +395,7 @@
     },
     {
       "id": "tm_gear",
-      "body": "Under the table was a shadow-land of table legs and wood shavings. Milo held a lantern low. Pip squeezed into the narrow places, where no hand could go.\n\nThere it was. The brass gear, winking in a crack between two floorboards. Pip hooked it out with one careful claw.\n\nMr. Fez cheered so loudly that the one-eared rabbit fell over.",
+      "body": "Under the stall was a shadow-land of table legs and wood shavings. Milo held a lantern low. Pip squeezed into the narrow places, where no hand could go.\n\nThere it was. The brass gear, winking in a crack between two floorboards. Pip hooked it out with one careful claw.\n\nMr. Fez cheered so loudly that the one-eared rabbit fell over.",
       "is_ending": false,
       "choices": [
         {
@@ -441,7 +441,7 @@
     },
     {
       "id": "fs_stack",
-      "body": "They herded the runaway oranges home. Pip rolled them in with her nose, like a small striped bulldozer.\n\nThen came the good part. Building it back up.\n\nMilo could do it the classic way. Biggest oranges on the bottom, in one good solid square.\n\nOr he could try something fancy. Stripes of green star fruit, running up through the orange.",
+      "body": "You cannot build a pyramid out of oranges that still roll. So first they herded the runaways home. Pip rolled them in with her nose. She was like a small striped bulldozer.\n\nThen came the good part.\n\nMilo could do it the classic way. Biggest oranges on the bottom, in one good solid square.\n\nOr he could try something fancy. Stripes of green star fruit, running up through the orange.",
       "is_ending": false,
       "choices": [
         {
@@ -470,7 +470,7 @@
     },
     {
       "id": "fs_pattern",
-      "body": "Orange, green, orange, green. The stripes climbed the pyramid. Up and up, like the paint on a lighthouse.\n\nPeople stopped just to look at it. One man took a picture with a very long camera. Even Pip stepped back to have a look.\n\n\"The prettiest pyramid this market has ever grown,\" said Auntie Plum. Then she waved them over, with a twinkle in her eye.",
+      "body": "The fancy pattern went like this. Orange, green, orange, green. The stripes climbed the pyramid. Up and up, like the paint on a lighthouse.\n\nPeople stopped just to look at it. One man took a picture with a very long camera. Even Pip stepped back to have a look.\n\n\"The prettiest pyramid this market has ever grown,\" said Auntie Plum. Then she waved them over, with a twinkle in her eye.",
       "is_ending": false,
       "choices": [
         {
@@ -482,7 +482,7 @@
     },
     {
       "id": "fs_bundle",
-      "body": "Auntie Plum taught him the bundle knot. Loop, loop, pull. Soon the plums and the star fruit sat in tidy bundles, each one tied with golden string.\n\nPip held the spool and let it spin. \"Loop, loop, pull,\" she whispered along, learning it too.\n\nThe spool glinted in the lantern light as Auntie Plum reached for her scissors.",
+      "body": "Auntie Plum taught him how to tie the bundle knot. Loop, loop, pull. Soon the plums and the star fruit sat in tidy bundles, each one tied with golden string.\n\nPip held the spool and let it spin. \"Loop, loop, pull,\" she whispered along, learning it too.\n\nThe spool glinted in the lantern light as Auntie Plum reached for her scissors.",
       "is_ending": false,
       "choices": [
         {
@@ -545,7 +545,7 @@
     },
     {
       "id": "mc_time",
-      "body": "Shake, shake, right on the beat. The bells stitched a silver edge onto the drum song. The fiddler grinned around his bow. The flute swooped happily up and down.\n\nPip tapped her tail on the cobbles, in perfect time. She looked very surprised at herself.\n\nWhen the song landed, the whole corner clapped. Milo bowed. Pip hid behind his knee, but only a little.",
+      "body": "Softly, softly, right on the beat. The bells stitched a silver edge onto the drum song. The fiddler grinned around his bow. The flute swooped happily up and down.\n\nPip tapped her tail on the cobbles, in perfect time. She looked very surprised at herself.\n\nWhen the song landed, the whole corner clapped. Milo bowed. Pip hid behind his knee, but only a little.",
       "is_ending": false,
       "choices": [
         {
@@ -557,7 +557,7 @@
     },
     {
       "id": "mc_pages",
-      "body": "Milo stood like a music stand with very good manners. He held the pages flat. The breeze tried every trick it knew, and it did not win once.\n\nHe learned to turn the page exactly on the fiddler's nod. The songs poured out smooth and steady, with no flapping at all.\n\nBetween two of them, the fiddler bent down. He asked Pip something, kindly and quietly.",
+      "body": "Milo held the songbook pages flat and stood like a music stand with very good manners. The breeze tried every trick it knew. It did not win once.\n\nHe learned to turn the page exactly on the fiddler's nod. The songs poured out smooth and steady, with no flapping at all.\n\nBetween two of them, the fiddler bent down. He asked Pip something, kindly and quietly.",
       "is_ending": false,
       "choices": [
         {
@@ -700,7 +700,7 @@
     },
     {
       "id": "f_friends",
-      "body": "Milo went round the square to fetch company. The night market answered the way it always does.\n\nEvery keeper who had waved at them came. So did folk who simply love a ceremony. They came wiping their hands on aprons. They came with cups. They came dragging stools.\n\nBy the time Milo got back, a warm crowd stood on the steps. All of it for one small pangolin.",
+      "body": "Milo went round the square to gather Pip's friends. The night market answered the way it always does.\n\nEvery keeper who had waved at them came. So did folk who simply love a ceremony. They came wiping their hands on aprons. They came with cups. They came dragging stools.\n\nBy the time Milo got back, a warm crowd stood on the steps. All of it for one small pangolin.",
       "is_ending": false,
       "choices": [
         {
@@ -779,7 +779,7 @@
     },
     {
       "id": "e_mc_gong",
-      "body": "BWOOOONNNG.\n\nPigeons burst off every rooftop in the square. The band stopped dead in the middle of a note.\n\nEveryone laughed, even the fiddler. But ears were ringing. The band called a long tea break. Ada decided that was the evening's big finish.\n\n\"The gong gets you exactly once,\" the drummer girl told Milo. \"Everyone. Just once.\"\n\nThen she made Pip promise to come and hum with the band next market night.",
+      "body": "Milo gave the gong one mighty whack.\n\nBWOOOONNNG.\n\nPigeons burst off every rooftop in the square. The band stopped dead in the middle of a note.\n\nEveryone laughed, even the fiddler. But ears were ringing. The band called a long tea break. Ada decided that was the evening's big finish.\n\n\"The gong gets you exactly once,\" the drummer girl told Milo. \"Everyone. Just once.\"\n\nThen she made Pip promise to come and hum with the band next market night.",
       "is_ending": true,
       "ending": {
         "id": "end_mc_gong",
@@ -834,7 +834,7 @@
     },
     {
       "id": "e_light_together",
-      "body": "\"One. Two. Three.\"\n\nThey touched the flame to the wick at exactly the same moment. Now the lantern belonged to both of them forever.\n\nUp it went, trailing golden string, over the steam and the music and the criss-crossing lights. The whole night market seemed to glow one shade brighter as it passed.\n\n\"Best market night ever,\" said Pip. Out loud. In a voice that did not whisper at all.\n\nTwo friends. One light. One enormous sky.",
+      "body": "They would light it together, on a count of three.\n\n\"One. Two. Three.\"\n\nThey touched the flame to the wick at exactly the same moment. Now the lantern belonged to both of them forever.\n\nUp it went, trailing golden string, over the steam and the music and the criss-crossing lights. The whole night market seemed to glow one shade brighter as it passed.\n\n\"Best market night ever,\" said Pip. Out loud. In a voice that did not whisper at all.\n\nTwo friends. One light. One enormous sky.",
       "is_ending": true,
       "ending": {
         "id": "end_light_together",
@@ -878,7 +878,7 @@
     },
     {
       "id": "e_up_song",
-      "body": "Nobody counted at all.\n\nInstead the band began the ceremony song. The whole circle hummed the low warm part underneath it.\n\nThen the lantern simply rose on the swell of the music. It was as if the song itself were lifting it. Up it drifted, through the humming and the steam and the little lights, glowing gold.\n\nPip hummed until it was only a spark among the stars. The music carried her wish the whole way up.",
+      "body": "They would hum the song instead of counting. Nobody would count at all.\n\nThe band began the ceremony tune, and the whole circle came in underneath it, low and warm.\n\nThen the lantern simply rose on the swell of the music. It was as if the song itself were lifting it. Up it drifted, through the humming and the steam and the little lights, glowing gold.\n\nPip hummed until it was only a spark among the stars. The music carried her wish the whole way up.",
       "is_ending": true,
       "ending": {
         "id": "end_up_song",
