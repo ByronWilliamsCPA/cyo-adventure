@@ -135,10 +135,12 @@ def _prepare_external_database(external_url: str) -> str:
 
     The ``CYO_TEST_PG_URL`` escape hatch exists for environments where the Docker
     daemon runs but registry image pulls are blocked (Claude Code on the web is
-    the motivating case: ``docker pull postgres:16-alpine`` 403s at the layer
+    the motivating case: ``docker pull postgres:17-alpine`` 403s at the layer
     fetch, so ``start_or_probe_error`` cannot help). The full
-    ``supabase/migrations`` chain applies cleanly to a vanilla Postgres 16
-    cluster, so a locally-started server is a faithful substitute.
+    ``supabase/migrations`` chain applies cleanly to a vanilla Postgres
+    cluster, so a locally-started server is a faithful substitute. Verified on
+    16 (the only major installable in that environment); the container path
+    below is what exercises 17.
 
     Two constraints on the server this points at, both load-bearing:
 
@@ -209,7 +211,12 @@ def _prepare_external_database(external_url: str) -> str:
 
 @pytest.fixture(scope="session")
 def _pg_url() -> Iterator[str]:
-    """Start a Postgres 16 container and create its schema once per session.
+    """Start a Postgres 17 container and create its schema once per session.
+
+    The major tracks production, which runs Postgres 17.6 (Supabase, read
+    2026-08-13). It was ``postgres:16-alpine``, one major behind, so every
+    schema-parity and RLS test in this suite was asserting against a different
+    engine than the one the assertions are about.
 
     Skips the integration suite when no Docker daemon is reachable so a developer
     without Docker is not blocked; CI runners provide Docker for testcontainers.
@@ -229,7 +236,7 @@ def _pg_url() -> Iterator[str]:
         yield _prepare_external_database(external_url)
         return
     container, probe_error = start_or_probe_error(
-        lambda: PostgresContainer("postgres:16-alpine", driver="asyncpg")
+        lambda: PostgresContainer("postgres:17-alpine", driver="asyncpg")
     )
     if container is None:
         if os.environ.get("CI", "").strip().lower() in {"1", "true", "yes", "on"}:

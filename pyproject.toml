@@ -747,7 +747,8 @@ addopts = [
     # scope="session", which xdist gives one independent instance of per
     # worker process, not one shared instance) -- so there is no cross-worker
     # database collision to guard against. Verified locally (real Docker,
-    # postgres:16-alpine): 139 integration tests, 104.33s serial vs 42.18s at
+    # postgres:16-alpine, before the 17 bump): 139 integration tests, 104.33s
+    # serial vs 42.18s at
     # -n 4, all passing, coverage combining correctly across workers.
     # mutmut (nox -s mutate) is unaffected: [tool.mutmut] already resets
     # addopts to empty (`-o addopts=`) before building its own pytest args.
