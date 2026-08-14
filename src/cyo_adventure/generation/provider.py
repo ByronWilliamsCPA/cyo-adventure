@@ -394,12 +394,21 @@ class MockProvider:
         return Completion(text=text, usage=self.token_usage)
 
 
-def build_openrouter_leg(settings: Settings, model: str) -> GenerationProvider:
+def build_openrouter_leg(
+    settings: Settings, model: str, *, provider_order: tuple[str, ...] = ()
+) -> GenerationProvider:
     """Construct a single OpenRouter leg for ``model`` from settings.
 
     Args:
         settings: The application settings instance.
         model: The OpenRouter model id this leg targets.
+        provider_order: Optional backend pin, most preferred first. Empty (the
+            default, and what every production caller passes) leaves
+            OpenRouter's routing untouched. Offline measurement harnesses such
+            as ``scripts/compare_vendors.py`` set it so a run is attributable to
+            one backend; ``build_provider`` deliberately exposes no way to set
+            it, because a per-job pin has no production caller and would only
+            widen the settings surface.
 
     Returns:
         An OpenRouter ``GenerationProvider`` adapter.
@@ -425,6 +434,7 @@ def build_openrouter_leg(settings: Settings, model: str) -> GenerationProvider:
         base_url=settings.openrouter_base_url,
         timeout_seconds=settings.llm_timeout_seconds,
         effort=settings.llm_effort,
+        provider_order=provider_order,
     )
 
 

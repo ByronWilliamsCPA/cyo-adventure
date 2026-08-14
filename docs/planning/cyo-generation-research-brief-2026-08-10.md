@@ -1,18 +1,38 @@
-# Generating choose-your-own-adventure books with LLMs: problem statement, capability analysis, and an open puzzle
+# Generating choose-your-own-adventure books with LLMs: decision diversity, story quality, and cost
 
 > **Status: research brief prepared for external analysis.** Written to be handed to readers
 > with no access to the system it describes, so it is self-contained: every term is defined
 > in section 9 and no claim depends on inspecting our code. Its purpose is to get independent
 > theorizing on a problem we have attacked from ten directions without solving.
 >
+> **Scope, widened 2026-08-12.** Parts I to III report one axis, **decision diversity**: the
+> open puzzle this brief was originally written to pose. Part IV adds the two axes needed to
+> make the question decidable, **story quality** (29) and **cost** (30), and reports the
+> cross-vendor replication that Parts II and III said had to run before any diversity figure
+> here could be quoted as general (27). A reader interested only in the original puzzle can
+> stop at section 26; a reader being asked to choose an architecture should not, because
+> section 27 retires one of the options and section 31 prices the rest.
+>
+> **Remit, widened again 2026-08-13.** Everything before section 32 asks a narrow question and
+> asks it in one vocabulary: architecture and metrics. That vocabulary produced real results
+> and also bounded what we could see, and the last two rounds of work found the most consequential
+> problems outside it, in supplier behaviour, quantization, serving infrastructure and evaluation
+> validity rather than in any architecture. **Section 32 replaces section 0's instruction with a
+> wider one and is the operative statement of what we want.** Read it first if you are reviewing
+> this document, then use Parts I to IV as evidence rather than as a specification of the task.
+>
 > **Citations.** Every reference in section 10 was verified against a primary source
 > (publisher page, ACL Anthology, or proceedings entry). Six entries in an earlier draft were
 > wrong and are corrected here; two claims that could not be verified were removed rather
 > than softened. Where a finding is ours rather than published, it is marked as such.
 
+<!-- Two distinct blockquotes below: a plain blank line here would trip MD028's ambiguity
+     check, and prefixing it with ">" would merge this into one blockquote with the
+     [!IMPORTANT] callout that follows, breaking that callout's GitHub rendering. -->
+
 > [!IMPORTANT]
 > **Provenance of every rating in this document.** All ratings, annotations and "reader"
-> judgments reported here, in both parts, were produced by **LLM agent instances**. **No human
+> judgments reported here, in all four parts, were produced by **LLM agent instances**. **No human
 > and no child has read or rated any generated book.** These results are model-based
 > hypotheses about reader response, not reader evidence. The reported Fleiss kappas are
 > **inter-model agreement**: they measure consistency among those instances and establish
@@ -38,10 +58,23 @@
 
 ## 0. What we are asking you to do
 
-Read sections 1 through 7, then produce what section 8 asks for: **two to four concrete
-architectures we could build and test.** Section 8.1 gives the specification each proposal
-should meet, 8.2 the hard constraints, 8.3 the design questions we expect a good proposal to
-take a position on, and 8.4 some undeveloped families you are free to extend or dismiss.
+> **Superseded 2026-08-13 by section 32.** This section states the task as it was first posed and
+> is kept because Parts I to III were written to answer it and read oddly without it. It is no
+> longer the instruction. Section 32 is, and it is deliberately much wider. If the two conflict,
+> follow 32.
+
+**The actual objective, stated plainly:** a growing catalogue of choose-your-own-adventure books
+for children that are **good**, that are **genuinely different from one another**, produced at a
+**cost that works at catalogue scale**, without weakening the safety, reading-level and review
+standards a children's product has to meet. Every question in this document is instrumental to
+that. Where a section treats one of those four as the whole problem, the section is narrower than
+the goal, not the other way round.
+
+*(Historical framing, not a live instruction: this section originally continued "read sections 1
+through 7, then produce what section 8 asks for: two to four concrete architectures we could
+build and test," which is the request section 32 has superseded. It is kept below, unexecuted,
+because sections 8.1 through 8.4 and Parts I to III were written against it and read oddly without
+the context. Do not act on it; act on section 32.)*
 
 We are not asking whether LLMs can write stories. They can. We are asking something
 narrower: **what architecture lets one reusable story graph produce many books in which the
@@ -88,8 +121,14 @@ design: the effect is **stronger for children than adults**, and the optimum is 
 **two to four successive choices** rather than more. Self-determination theory [42] supplies
 the mechanism, with autonomy as one of three basic psychological needs.
 
-Our per-band rules cap options per choice at two to four. That was arrived at
-independently and turns out to match the meta-analytic optimum.
+Our per-band rules cap options per choice at two to four. That was arrived at independently,
+and it is **not** the same quantity the meta-analysis measured: [41]'s two-to-four moderator
+concerns the number of *successive* choices a participant is given, not the number of options
+presented at any one of them. The two numbers coinciding is a coincidence. **Our branching
+rules are a house convention with no meta-analytic backing**, and the right number of options
+per fork is an open question that has to be settled in a reading context, against option
+complexity and whether a child can anticipate what an option leads to. See the correction in
+section 17.
 
 Survey evidence points the same way. Scholastic's *Kids & Family Reading Report* [52] reports
 **93% of children agree that "my favorite books are the ones I have picked out myself"**
@@ -2021,6 +2060,17 @@ choice, and it cost us a round.
 
 ## 17. Corrections to Part I
 
+- **1.2 misread its own citation, corrected 2026-08-12.** The section stated [41]'s moderator
+  correctly as "two to four **successive** choices", then claimed in the next sentence that our
+  cap of two to four **options per choice** "turns out to match the meta-analytic optimum". Those
+  are different quantities and the match was a coincidence, so the sentence asserted support the
+  meta-analysis does not give. Found by the fourth external review; confirmed by reading our own
+  two adjacent sentences, with no external check needed. The branching rules are unchanged and
+  now stand explicitly as a house convention. The same review reports two further problems with
+  how [41] is usually read, that the three-to-five-options result was not robust under
+  random-effects analysis and that the child-versus-adult moderator was model-dependent. Both
+  are claims about the paper's internals that we have not yet verified against it, so 1.2's
+  "stronger for children than adults" is flagged pending that check rather than changed.
 - **Three edits were made to Part I's own text on 2026-08-11**, and they are the only ones. The
   provenance banner was added at the head of the document; section 7's methods bullet now reads
   "separate *model-evaluator* instances" and "inter-model agreement" where it read "separate *rater*
@@ -2329,6 +2379,15 @@ is training-distribution-level across vendors. That replication is the open vers
 question, and until it runs, no idiom floor or diversity margin in this document should be
 quoted as general.
 
+> **Resolved 2026-08-12 by section 27.** The replication ran across eight models from six
+> independent labs. Premise convergence reproduces and is large: same brief, different lab,
+> **156.35 shared four-grams per 1000, about 120 times the cross-vendor floor**. The claim
+> above is therefore distribution-level, not family-level, and premise allocation is a
+> precondition for every candidate architecture. The idiom floor result went the *other* way
+> from what this section's framing implied: it is task-driven, not vendor-driven, so the
+> caveat above is discharged for the floor and still stands for every single-family figure
+> elsewhere in Parts II and III.
+
 ### 25. Where this leaves the architecture question
 
 Three things are now properties every candidate must supply, rather than advantages any one
@@ -2345,6 +2404,14 @@ What genuinely separates the candidates has narrowed to review economics and cos
 neither is measurable today, because generation cost is not recorded anywhere in our system.
 The comparison should not be run until it is.
 
+> **Half-resolved 2026-08-12 by section 30.** Cost is now measured, at the fill stage, per
+> book delivered: **$0.040 to $1.419**, a 36x spread. The blocker on the architecture
+> comparison is lifted for cost and remains for review economics. Section 27 also converts
+> item 1 above from "a property every candidate must supply" into a cross-vendor result, and
+> retires a fourth candidate advantage that was still open: **rotating vendors to buy lexical
+> variety is close to a null intervention** (ratio 1.28, and cost buys diversity at rho
+> -0.11).
+
 One reuse-based design cleared its own cheapest kill test: the pilot contract decomposes
 into fork-to-join segments whose entry knowledge is entailed on every incoming path, with
 zero type errors across twenty-five nodes carrying declared entry states. We report it as
@@ -2355,8 +2422,530 @@ joins, so the property was barely exercised.
 
 - **Whether any of this tracks a reader.** Unchanged and unchangeable here. Every rating in
   this document is a model's.
-- **Whether the premise mode is a family artifact or a distribution artifact** (24).
-- **What any of it costs.** No token, cost or duration figure is recorded by our pipeline,
-  so every economic claim in Part III is an observation about two runs rather than a price.
+- ~~**Whether the premise mode is a family artifact or a distribution artifact** (24).~~
+  **Answered in 27**: distribution artifact, replicated across six independent labs.
+- ~~**What any of it costs.** No token, cost or duration figure is recorded by our pipeline,
+  so every economic claim in Part III is an observation about two runs rather than a price.~~
+  **Answered in 30**, for the fill stage: $0.040 to $1.419 per delivered book. Repair-stage
+  cost is still unmeasured, and our pipeline still does not record cost at run time, so this
+  is a bought measurement rather than instrumentation.
 - **Whether structural success at one hundred nodes reaches one hundred and fifty**, which
   is the catalog median. We tested the scale that was in dispute, not the scale we ship.
+
+Added by Part IV:
+
+- **Whether the judge panel can score dialogue at all.** Dialogue is the floor for every
+  vendor at 3.04 with sd 0.19 (29), which is equally consistent with uniformly weak dialogue
+  and with judges unable to discriminate it. A human read of ten books would separate these
+  two, and nothing else we can run will.
+- **What review costs**, the remaining half of 25. Generation is now priced; the human and
+  automated review that every book must pass is not.
+- **Whether any of the quality ordering survives a human reader.** The provenance banner has
+  always said this; the addition of a quality axis in 29 makes it the load-bearing gap rather
+  than a caveat, because the quality column is now being used to rank suppliers.
+
+---
+
+## Part IV. Three axes: diversity, story quality, and cost
+
+> Added 2026-08-12. This part widens the brief. Parts I to III asked one question, whether
+> the reader is asked to decide different things, and reported one axis. That framing was
+> too narrow to support the decision it was feeding: a book that varies its decisions and
+> reads badly is not a product, and neither is one we cannot afford to generate. This part
+> adds the two axes that were missing, **story quality** and **cost**, and reports the
+> cross-vendor replication that section 24 said had to run before any diversity figure in
+> this document could be quoted as general.
+>
+> It also corrects the strongest claim of the previous round. Our own harness recorded a
+> verdict of *vendor-driven* convergence, and that verdict was an artifact of a measurement
+> defect, not a property of the models. Section 28 gives the mechanism, because the defect
+> generalises to anyone running this kind of comparison.
+>
+> **Everything in the provenance banner at the head of this document applies here without
+> exception**, and applies with particular force to section 29, which is entirely
+> LLM-evaluator judgment. No human and no child has read any of these books either.
+
+### 27. The cross-vendor replication section 24 asked for
+
+Section 24 established that premise convergence was not one model's mode, then limited the
+claim in the strongest terms available: all three tiers tested belonged to **one model
+family**, so nothing followed about whether the mode was training-distribution-level. That
+replication has now run.
+
+**Design.** Eight models from **six independent labs** (Anthropic, DeepSeek, Google, OpenAI,
+xAI, Z-AI), four briefs each, the same four skeletons, the same fill prompt, the same
+32,000-token cap. Thirty-two books. No leg appears in more than one run, and every pair
+below is computed with the project's own four-gram metric, unchanged.
+
+Three quantities matter, and the comparison between them is the whole result:
+
+| measure | what it asks | pairs | shared four-grams per 1000 |
+| --- | --- | ---: | ---: |
+| **within-vendor** | same model, different brief | 39 | **1.66** |
+| **cross-vendor** | different lab, different brief | 243 | **1.30** |
+| ratio | does rotating the vendor buy variety? | | **1.28** |
+| **same-brief, cross-lab** | different lab, *same* brief | 80 | **156.35** |
+
+Per leg, within-vendor:
+
+| leg | pairs | mean | max |
+| --- | ---: | ---: | ---: |
+| xai-grok-4.6 | 6 | 0.81 | 1.72 |
+| z-ai-glm-5.2 | 6 | 1.31 | 2.51 |
+| openai-gpt-5.6-sol | 6 | 1.43 | 2.64 |
+| deepseek-v4-pro | 6 | 1.74 | 4.01 |
+| google-gemini-3-flash | 3 | 1.96 | 2.56 |
+| anthropic-sonnet-4.6 | 6 | 1.99 | 3.23 |
+| google-gemini-3.1-pro | 6 | 2.50 | 5.42 |
+
+**The idiom floor is task-driven, not vendor-driven.** A model repeats itself across briefs
+at 1.66 per 1000; two different labs writing different briefs land at 1.30. The gap is 28
+percent, and the spread *within* the per-leg column (0.81 to 2.50, a factor of three) is
+larger than the gap between the within and cross conditions. Rotating vendors to buy
+lexical variety is close to a null intervention. This is a negative result for one of the
+architectural options Part III was still holding open.
+
+**Premise convergence, however, replicates across the training distribution and is enormous.**
+Hold the brief fixed and vary the lab, and shared four-grams jump to **156.35 per 1000,
+roughly 120 times the cross-vendor floor**. Six labs that share no weights, no training run
+and no context converge on the same story when handed the same brief, at a rate two orders
+of magnitude above the level at which they converge on anything else.
+
+So section 24's limiting caveat is discharged, and its conclusion survives contact with five
+more vendors:
+
+> **Premise allocation from a curated enumerated space is a precondition for every candidate
+> architecture, not a feature of any one of them.** It is not a per-model artifact and not a
+> per-family artifact. Independent generation buys wording independence and nothing above it,
+> whoever trained the model.
+
+The corresponding sentence in section 24, that no idiom floor or diversity margin in this
+document should be quoted as general until this ran, no longer applies to the floor. It
+still applies to everything derived from a single family elsewhere in Parts II and III.
+
+### 28. The measurement defect that inverted our own headline
+
+The first run of this comparison recorded, in its own report file, the opposite verdict:
+
+> `vendor-driven: within-vendor 2.54 exceeds cross-vendor 0.79 per 1000 (ratio 3.22);`
+> `rotating vendors removes idiom that rotating briefs does not`
+
+That is wrong, and it was nearly propagated into this document. The mechanism is worth
+stating in full because it is not specific to our harness.
+
+**Four of the thirty-two books were never filled.** The generator returned a structurally
+valid document whose node bodies still held the skeleton's `<<FILL ...>>` directives. Our
+pipeline reported those books as passing, because every deterministic checker abstains on a
+body it cannot parse as prose and an abstention aggregates as clean. Three of the four
+belonged to one leg.
+
+An unfilled book corrupts a similarity metric **in both directions at once**:
+
+- **Against each other**, unfilled books are near-identical, because they are largely the
+  same skeleton directives. Measured: 10.1, 12.1 and 13.0 shared four-grams per 1000, against
+  a maximum of 5.42 anywhere in the clean pool. This inflates *within-vendor*.
+- **Against filled books**, they share almost nothing, because directive text is not prose.
+  Measured against one peer leg's four books: 0.00, 70.44, 0.25, 0.00. This deflates
+  *cross-vendor*.
+
+The ratio is a quotient of the two, so a single bad leg moves the numerator up and the
+denominator down simultaneously. Three books out of thirty-two produced a 2.5x error in the
+headline and flipped its direction.
+
+**The cheap detector we now use.** On the clean pool, the ratio computed from means and the
+ratio computed from medians agree exactly: **1.28 and 1.28**. On the contaminated pool they
+diverge sharply: **1.77 against 1.22**. Convergence of the two statistics is evidence the
+distribution has no pathological outlier driving the result; divergence is a signal to go
+looking for one before publishing. This costs one extra line of arithmetic and would have
+caught the defect at the moment it was introduced.
+
+The generalisation, for anyone building a comparison of this shape:
+
+> A pipeline stage that can return a syntactically valid but semantically empty artifact will
+> corrupt every downstream aggregate, and will do so *silently*, because validity checks pass
+> and content checks abstain. Gate the aggregate on content completeness, not on schema
+> validity, and never emit a verdict from a pool you have not first proven is filled.
+
+### 29. Story quality, the axis this brief was missing
+
+Diversity is necessary and nowhere near sufficient. A generator that produces maximally
+different books nobody wants to read has solved the stated problem and none of the real one.
+This programme measures quality two ways, and they do not agree with each other, which is
+the interesting part.
+
+**Deterministic compliance** is the strong evidence class. Two figures per leg: the mean
+Flesch-Kincaid grade of the book, and the **in-band rate**, the fraction of nodes falling
+inside the target reading band for the age group. These are computed, not judged.
+
+**The judge panel** is the weak evidence class, and the provenance banner governs it
+completely. Three judges drawn from **three different labs** scored every book on seven
+criteria (age fit, choice quality, dialogue, ending quality, engagement, imagery, voice),
+producing 84 verdicts. Two controls:
+
+- **Self-family scorings are dropped from the reported figure.** A judge's ratings of books
+  written by its own model family are excluded from the pooled mean, which is what the
+  `peers_only` column below reports. This does not eliminate the self-preference effect
+  identified in 3.8 and [37]; it removes only its most direct expression.
+- **Baselines are estimated from every book a judge graded**, including the dropped
+  self-family ones, so a judge that is uniformly harsh is not mistaken for one that dislikes
+  a particular vendor.
+
+| leg | FK grade | in-band | quality (peers only) | raw mean | n |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| anthropic-sonnet-5 | 3.04 | 0.89 | **+0.69** | 4.10 | 3 |
+| xai-grok-4.6 | 2.89 | **0.99** | +0.61 | 4.04 | 12 |
+| openai-gpt-5.6-sol | 2.96 | 0.93 | +0.38 | 4.04 | 12 |
+| anthropic-sonnet-4.6 | **3.90** | **0.54** | +0.14 | 3.90 | 12 |
+| deepseek-v4-pro | 2.68 | 0.85 | -0.13 | 3.85 | 12 |
+| z-ai-glm-5.2 | 2.99 | 0.86 | -0.41 | 3.70 | 12 |
+| google-gemini-3.1-pro | 3.15 | 0.91 | -0.43 | 3.68 | 12 |
+| google-gemini-3-flash | 3.31 | 0.61 | -0.85 | 3.63 | 9 |
+
+**Compliance and quality dissociate.** The clearest case is `anthropic-sonnet-4.6`, which
+posts the **best mean reading grade in the table and the worst in-band rate**: 3.90 and 0.54.
+A good average over a distribution half of which is out of band is not a good book for a
+seven-year-old, and an average is exactly what a per-book aggregate hides. Rank correlation
+between judged quality and in-band rate is +0.50: related, far from the same thing. This is
+the same lesson section 23 reached from the repair-loop side, arriving from the measurement
+side.
+
+**The models fail at the same thing.** Across all 84 verdicts, the per-criterion spread is
+narrow and the ordering is stable:
+
+| criterion | mean | sd |
+| --- | ---: | ---: |
+| imagery | 4.46 | 0.54 |
+| age fit | 4.15 | 0.59 |
+| engagement | 4.14 | 0.58 |
+| ending quality | 3.92 | 0.71 |
+| choice quality | 3.75 | 0.77 |
+| voice | 3.49 | 0.81 |
+| **dialogue** | **3.04** | **0.19** |
+
+Dialogue is the floor everywhere, and it has by far the tightest spread in the table: sd
+0.19, less than a third of any other criterion, with judges using only the range 3 to 4
+across every book from every lab. **No vendor is better at dialogue than any other**, and
+the panel cannot separate them. Read alongside section 27, this is the same shape of result
+on a different axis: the binding constraints are properties of the task and the prompt, not
+of the supplier. Choice quality, the criterion closest to the defect this whole programme
+exists to attack, sits second from the bottom at 3.75.
+
+**On dialogue specifically, the deterministic measure settles what the panel cannot, and the
+answer is that both readings are true.** We also compute `dialogue_share`, the fraction of
+text inside quotation marks, which is arithmetic rather than judgment:
+
+| leg | dialogue share |
+| --- | ---: |
+| xai-grok-4.6 | 0.000 |
+| anthropic-sonnet-5 | 0.000 |
+| google-gemini-3.1-pro | 0.002 |
+| deepseek-v4-pro | 0.007 |
+| anthropic-sonnet-4.6 | 0.012 |
+| google-gemini-3-flash | 0.014 |
+| z-ai-glm-5.2 | 0.023 |
+| openai-gpt-5.6-sol | 0.049 |
+
+Two conclusions follow, and they are independent:
+
+1. **The books really are near-dialogue-free**, whatever model writes them. The most
+   conversational book in the entire comparison is **95 percent narration**, and two legs
+   write no dialogue at all. For a book aimed at a seven-year-old this is a product defect,
+   and it is a property of our skeletons and fill prompt rather than of any supplier, which
+   makes it the same shape of finding as 27 and the dialogue row above.
+2. **The panel's dialogue criterion is measuring nothing.** It returned 3.00 for seven of the
+   eight legs while the deterministic measure of the same property spread **twenty-five-fold**
+   across those legs, and it scored the leg that writes literally zero dialogue the same as
+   the leg that writes the most. A criterion that returns a constant across subjects is
+   evidence about the rubric, not about the subjects.
+
+The general lesson we take from the pair, and the reason this section reports two evidence
+classes side by side rather than one: **where a deterministic measure of a property exists,
+prefer it, and reserve the panel for what only a reader can judge.** The evidence-class
+caveat is not a formality here; on this criterion the weak class was not merely weaker than
+the strong one, it was actively misleading, and only having both revealed it.
+
+### 30. What a book costs
+
+Sections 25 and 26 both stopped at the same wall: *"generation cost is not recorded anywhere
+in our system"*, so *"every economic claim in Part III is an observation about two runs
+rather than a price"*. We bought the number.
+
+**Method.** Every fill call was re-issued through a billing-transparent gateway that reports
+the actually-charged amount and splits it into prompt and completion components, at the same
+32,000-token cap and with the same prompt as the runs. Nine models, four briefs each. Total
+measurement spend, $5.86.
+
+> **#ASSUME: payment/financial.** Every dollar figure below is what the gateway billed for
+> this one re-issue, not a guaranteed production price: model pricing can change between this
+> measurement and any later run, and a re-issued call is not contractually the same call the
+> original comparison paid for, only a same-prompt, same-cap proxy for it.
+> **#VERIFY:** treat this table as a point-in-time measurement to re-run before quoting a
+> production cost estimate, not as a standing price list.
+
+> **#ASSUME: external-resources.** The per-call figures depend on the gateway's own billing
+> report being accurate and on the routed backend for each model being the one actually billed
+> (a fallback or region reroute mid-call would attribute cost to the wrong leg).
+> **#VERIFY:** the `provider_order` backend pin on each vendor entry (`docs/planning/vendor-comparison/vendors.json`)
+> is what makes a leg's spend attributable to one serving stack; a slate that omits the pin
+> loses that guarantee.
+
+| leg | $/call | prompt tok | cached | output tok | reasoning | reasoning share | **prose tok** |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| google-gemini-3-flash | 0.0314 | 19,752 | 0% | 7,174 | 0 | 0% | 7,174 |
+| deepseek-v4-pro | 0.0398 | 18,826 | 0% | 7,122 | 0 | 0% | 7,122 |
+| z-ai-glm-5.2 | 0.1123 | 18,314 | 30% | 21,107 | 13,822 | 65% | 7,284 |
+| anthropic-sonnet-4.6 | 0.1860 | 20,833 | 0% | 8,232 | 0 | 0% | 8,232 |
+| xai-grok-4.6 | 0.1963 | 19,103 | 1% | 26,387 | 19,486 | **74%** | 6,901 |
+| openai-gpt-5.6-sol | 0.2688 | 18,362 | 44% | 6,696 | 602 | 9% | 6,094 |
+| google-gemini-3.1-pro | 0.2767 | 19,752 | 0% | 19,770 | 11,470 | 58% | 8,300 |
+| anthropic-sonnet-5 | 0.3549 | 27,180 | 0% | 30,050 | 5,179 | 17% | (truncated) |
+
+**The deliverable is nearly constant; the bill is not.** Across the seven legs that delivered,
+the prose actually written spans **6,094 to 8,300 tokens, a factor of 1.36**. Cost spans
+**a factor of 8.8**. The variable you are paying for is reasoning, which is billed at the
+output rate, is invisible in the finished book, and ranges from zero to 19,486 tokens. Grok
+4.6 spends **74 percent of its billed output on thinking the reader never sees**.
+
+Two consequences that were not obvious to us before measuring:
+
+1. **Cost per book cannot be projected from book length.** We tried, using list rates and a
+   measured 8,256 output tokens per book, and the error sorts perfectly by reasoning share:
+
+   | leg | reasoning share | projected | measured | error |
+   | --- | ---: | ---: | ---: | ---: |
+   | anthropic-sonnet-4.6 | 0% | 0.1863 | 0.1860 | 1.00x |
+   | deepseek-v4-pro | 0% | 0.0427 | 0.0398 | 0.93x |
+   | google-gemini-3-flash | 0% | 0.0346 | 0.0314 | 0.91x |
+   | openai-gpt-5.6-sol | 9% | 0.3156 | 0.2688 | 0.85x |
+   | google-gemini-3.1-pro | 58% | 0.1386 | 0.2767 | **2.00x** |
+   | z-ai-glm-5.2 | 65% | 0.0557 | 0.1123 | **2.01x** |
+   | xai-grok-4.6 | 74% | 0.0876 | 0.1963 | **2.24x** |
+
+   Every leg below 10 percent reasoning lands within 15 percent, and every leg above it is
+   **underestimated by roughly half**. There is no overlap between the two groups. Length is a
+   property of the product; the bill is a property of the process.
+2. **List input prices overstate the real input cost**, because prompt caching is doing
+   substantial work: 44 percent of `gpt-5.6-sol`'s prompt tokens and 30 percent of
+   `glm-5.2`'s were served from cache. Any price model built from published rates without a
+   cache-hit term will over-recover on exactly the high-volume path where caching pays.
+
+**Failure is billed in full, so price the delivered book, not the call.** `anthropic-sonnet-5`
+hit the token cap on two of four calls and returned unterminated JSON, charged at $0.3695 and
+$0.3857 for nothing usable. Dividing measured spend by the **fill rate observed in the runs**
+charges those failures to the books that landed, which is what a price actually has to cover:
+
+| leg | fill rate | $/call | **$/book delivered** | $ per 1000 books |
+| --- | ---: | ---: | ---: | ---: |
+| deepseek-v4-pro | 1.00 | 0.0398 | **0.0398** | 40 |
+| google-gemini-3-flash | 0.75 | 0.0314 | **0.0419** | 42 |
+| z-ai-glm-5.2 | 1.00 | 0.1123 | **0.1123** | 112 |
+| anthropic-sonnet-4.6 | 1.00 | 0.1860 | **0.1860** | 186 |
+| xai-grok-4.6 | 1.00 | 0.1963 | **0.1963** | 196 |
+| openai-gpt-5.6-sol | 1.00 | 0.2688 | **0.2688** | 269 |
+| google-gemini-3.1-pro | 1.00 | 0.2767 | **0.2767** | 277 |
+| anthropic-sonnet-5 | 0.25 | 0.3549 | **1.4194** | 1,419 |
+
+The spread across the whole table is **36x per delivered book**, against 8.8x per call. Note
+also that the fill rate here comes from the runs rather than from the billing probe, and the
+two disagree for `sonnet-5`: the probe saw 2 of 4 completions parse, the runs saw 1 of 4
+books actually filled. That gap is section 28's defect measured directly. **A completion that
+parses is not a book.**
+
+**The limiting case, from a ninth model we could not fully measure.** `moonshotai/kimi-k3`
+returned exactly one priced call before its remaining three died at the transport layer, so
+this is n=1 and we report it as an illustration rather than a figure. That single call:
+
+| | |
+| --- | ---: |
+| billed | **$0.5319** |
+| prompt tokens | 17,286 |
+| output tokens | 32,000 (hit the cap) |
+| of which reasoning | **30,872 (96%)** |
+| of which prose | **1,128** |
+| finish reason | `length` |
+| usable book | **no** |
+
+It is the most expensive call in the sweep and it delivered nothing. Ninety-six percent of
+the bill bought reasoning, the remaining four percent bought a fragment, and the cap arrived
+before the book did. Every claim in this section is visible in one row: the bill tracks the
+process, the product is what is left over, and a token budget set from expected book length
+will be consumed by thinking before the story starts.
+
+**Scope.** These are fill-stage figures. Only 5 of the 40 books in the comparison required
+any repair attempt, so fill dominates the bill, but a production path that runs the section 23
+repair loop will cost more than this table on the books that need it.
+
+> **Denominator flagged, not resolved.** Section 27 defines this comparison's cohort as eight
+> models times four briefs, thirty-two books; this section's own Method paragraph above re-issued
+> the cost measurement over nine models times four briefs, thirty-six calls. Neither is forty, and
+> nothing else in this document defines a forty-book cohort (the only other "forty" in this
+> document, in section 12, counts shared four-grams in an unrelated diversity experiment and is not
+> a book count). Whoever holds the underlying run data should confirm which denominator this "5"
+> was actually counted against (32, 36, or a genuinely distinct cohort this brief never states) and
+> correct the rate here; recomputing without that data would replace one unverified number with
+> another.
+
+### 31. Where the three axes leave the decision
+
+| leg | diversity (within-vendor, lower is better) | in-band | quality | $/book |
+| --- | ---: | ---: | ---: | ---: |
+| xai-grok-4.6 | **0.81** | **0.99** | +0.61 | 0.1963 |
+| z-ai-glm-5.2 | 1.31 | 0.86 | -0.41 | 0.1123 |
+| openai-gpt-5.6-sol | 1.43 | 0.93 | +0.38 | 0.2688 |
+| deepseek-v4-pro | 1.74 | 0.85 | -0.13 | **0.0398** |
+| google-gemini-3-flash | 1.96 | 0.61 | -0.85 | 0.0419 |
+| anthropic-sonnet-4.6 | 1.99 | 0.54 | +0.14 | 0.1860 |
+| google-gemini-3.1-pro | 2.50 | 0.91 | -0.43 | 0.2767 |
+| anthropic-sonnet-5 | n/a | 0.89 | +0.69 | 1.4194 |
+
+Rank correlations across the seven delivering legs, which is a small enough sample that these
+are indications rather than estimates:
+
+| relationship | Spearman rho | reading |
+| --- | ---: | --- |
+| cost vs in-band compliance | **+0.64** | the strongest thing money buys |
+| quality vs in-band compliance | +0.50 | related, not interchangeable (29) |
+| quality vs diversity | +0.57 | the more varied legs also read better |
+| cost vs quality | +0.39 | weak |
+| **cost vs diversity** | **-0.11** | **nothing. money does not buy variety** |
+
+**Spending more does not buy a more varied book.** That correlation is -0.11, which at n=7 is
+indistinguishable from zero, and it is consistent with section 27's finding from the other
+direction: the floor belongs to the task, so no supplier sells a way out of it.
+
+One leg is close to dominant on the axes we can measure. `xai-grok-4.6` holds the best
+within-vendor diversity (0.81), the best in-band compliance (0.99) and the second-best judged
+quality (+0.61), at mid-table cost, though 74 percent of what it bills is reasoning overhead.
+`deepseek-v4-pro` is **4.9x cheaper** and gives up 0.14 of in-band rate and 0.74 of judged
+quality to get there. That is the actual trade, and it is now a trade rather than a guess,
+which is what sections 25 and 26 said had to happen before the architecture comparison could
+be run.
+
+The comparison this unblocks is still not run. What has changed is that it can be.
+
+---
+
+### 32. What we are asking you now, and the latitude you have
+
+> Added 2026-08-13. **This section supersedes section 0 and section 18 as the statement of the
+> task.** Those asked for architectures, in a document that spends 2,700 lines establishing that
+> architecture is the layer we understand best. This one asks for something else.
+
+#### 32.1 The objective, and the only four things that are actually required
+
+A growing catalogue of choose-your-own-adventure books for children that is:
+
+| | Requirement | How we currently judge it | Confidence |
+| --- | --- | --- | --- |
+| 1 | **Good**: a child wants to read it, and finish it | LLM judge panel, three labs, blind, z-normalised (29) | **low**: no human or child has read any book |
+| 2 | **Varied**: books differ from one another in ways a reader notices | four-gram convergence plus a decision-repetition construct we know is wrong (1.4, 14) | **low on construct, high on arithmetic** |
+| 3 | **Affordable** at catalogue scale | measured $/delivered book, fill stage only (30) | **medium**: real, but partial (32.4) |
+| 4 | **Safe and age-appropriate**, verifiably | deterministic validator, moderation gate, mandatory human approval | **highest evidence we hold** |
+
+Requirement 4 is not negotiable and no proposal may trade against it. The other three are all
+open to reformulation, including the claim that requirement 2 matters as much as this document
+assumes.
+
+#### 32.2 Why we are widening the remit rather than asking for more architectures
+
+Two rounds of review produced architecture proposals and we learned from them. But when we
+tabulate where the **consequential** findings actually came from, almost none came from the
+architecture layer:
+
+| Finding | Layer it lives in | What it cost us to not know |
+| --- | --- | --- |
+| Our headline diversity verdict was inverted by 4 unfilled books out of 32 (28) | measurement hygiene | a published conclusion, backwards |
+| One instrument item never varied across twelve cells; the item carrying every result saturated (16m) | instrument design | a round of experiments |
+| Cost tracks reasoning tokens, not output length, and varies 36x per delivered book (30) | supplier economics | the entire pricing question |
+| A pinned endpoint returned `finish_reason=error` on every call while the same model unpinned worked (2026-08-12) | serving infrastructure | a run, and nearly a wrong verdict about a model |
+| One provider reported `reasoning_tokens=0` while emitting 5,339 characters of reasoning (2026-08-12) | supplier telemetry honesty | trust in our own cost discriminator |
+| Two fp4 endpoints are unreachable on our account by data policy, not by price or capability | procurement and compliance | the cleanest arm of a 2x2 |
+| No human or child has read a single generated book | evaluation validity | unknown, and that is the point |
+
+Every row above was discovered by accident, while checking something else. That is the pattern
+we most want attacked: **we keep finding that the binding constraint was not where we were
+looking.** Section 18 said the most transferable rule we adopted was terminating a contaminated
+round rather than caveating it. The corollary we are acting on now is that our choice of
+vocabulary is itself a contaminant.
+
+#### 32.3 What we want from you
+
+**Attack the approach from angles this document does not contain.** Concretely, we would rather
+receive one well-argued attack on a premise than four more architectures. You are explicitly
+invited to tell us that a question we have spent months on does not matter.
+
+Nothing below is a menu to work through. It is a demonstration that the space is wider than
+Parts I to III, and the angle we most need is probably one we failed to list:
+
+1. **The product premise.** Is decision diversity what makes these books good for a child, or is
+   it an engineer's proxy? Children re-read. Series work partly *because* they repeat. We have
+   assumed sameness is the defect (1.3) on an owner judgment, never tested against a reader.
+   If the real driver is character attachment, pacing, illustration, or agency-in-the-moment
+   rather than variety-across-books, most of this document optimises the wrong thing.
+2. **Whether to generate at all.** We generate because we can. A catalogue could be licensed,
+   commissioned from human authors, or built as a hybrid where the expensive human step is
+   placed somewhere other than where we placed it. We currently spend human effort on *approval*
+   of machine output. Spending it on *premises* and letting the machine do prose is a different
+   product with different economics, and we have never priced it.
+3. **The catalogue-versus-per-child framing.** We assume we need N mutually distinct books. A
+   child reads a handful. Distinctness may be a property better delivered by assignment,
+   recommendation and personalisation than by generation, in which case the diversity floor in
+   section 27 stops being a blocker at all.
+4. **The supply chain as a first-class design surface.** Recent work says "which model" is
+   underspecified: the same checkpoint at a different quantization, on a different provider, at
+   a different token cap, is a different product with different failure modes, different
+   latency and different honesty about its own telemetry. Should we pin, self-host, run a
+   quorum, or treat suppliers as interchangeable and defend with validation? What breaks when a
+   provider silently changes a quant?
+5. **Evaluation validity, which may be the highest-value unspent dollar here.** Every quality
+   and reader claim in this document is model-based (see the provenance banner). Twenty real
+   children reading twelve books might invalidate more of this brief than another six months of
+   architecture. What is the cheapest study design that would actually move our beliefs, and
+   what should we stop measuring until it exists?
+6. **The real unit economics.** Section 30 prices the fill call. It does not price repair,
+   moderation, cover art, storage, retries against flaky endpoints, or the human review minute,
+   and human review may dominate everything else. What does a book cost *fully loaded*, and
+   which term should we be attacking?
+7. **The standards themselves.** In-band reading level is a compliance target we chose. It is
+   also a constraint on voice, and section 31 shows compliance and judged quality are related
+   but not interchangeable (rho +0.50). Are we enforcing the right standard, at the right
+   strictness, at the right stage?
+8. **Operating model and durability.** This is built and maintained by one person. A proposal
+   that is correct and unmaintainable is wrong here. So is one that assumes a supplier, a price,
+   or a data policy stays put; we have now been bitten by all three.
+
+#### 32.4 What makes a response useful to us
+
+We are not looking for consensus and we are not looking for polish. A response is useful if it:
+
+- **Names the layer it is attacking** and says what it thinks the binding constraint is.
+- **States what would falsify it.** Everything in this document that survived did so by being
+  checked; everything that failed, failed a check we nearly did not run.
+- **Declares its evidence class** using the table in the provenance banner. A claim resting on
+  LLM-evaluator judgment is still welcome, but it must not be dressed as deterministic.
+- **Says what it costs and what it breaks.** Including human time, including requirement 4.
+- **Is willing to recommend we stop something.** Retiring a line of work is a valid deliverable.
+
+Two specific invitations, because they are the questions we are least equipped to ask ourselves:
+
+- **Tell us what we should have measured and did not.** Every row in 32.2 was found by accident.
+  We would like the next one found on purpose, preferably by someone who does not share our
+  assumptions.
+- **Tell us where this document is arguing with itself.** It has been written across four rounds
+  and several reversals. We have corrected the contradictions we found (17, 28). We do not
+  believe we found them all.
+
+#### 32.5 What is still true and load-bearing
+
+So the widening is not read as an invitation to discard the evidence, these hold and a proposal
+should be consistent with them:
+
+- **The premise floor is real and is not a supplier artifact.** Eight models from six labs
+  converge on the same premises (27). No vendor sells a way out (31, rho -0.11).
+- **Deterministic validation is the strongest evidence class we have**, and it is what makes
+  requirement 4 credible. Proposals that rely on a model's judgment for a safety property are
+  weaker than they look.
+- **Sharing structure without sharing prose reaches the generator's floor** (16l), which is the
+  one architectural result we would defend.
+- **Our reader instrument measures the wrong construct** (1.4, 14, 16m). Any proposal that
+  depends on our existing diversity score inherits that defect.

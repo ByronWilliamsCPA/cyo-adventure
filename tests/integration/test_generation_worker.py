@@ -579,28 +579,37 @@ async def test_worker_runs_fill_skeleton_for_authoring_metadata_jobs(
 ) -> None:
     """A queued job carrying authoring_metadata runs fill_skeleton, not generate_story.
 
-    Exactly two scripted responses are queued: one for the fill call itself
-    (fill_skeleton makes a single provider call for a clean fill; no Stage A,
-    unlike generate_story which always makes at least two: Stage A then Stage
-    B), plus one for the moderation pipeline's guaranteed bounded auto-repair
+    The provider budget is: one call for the fill itself (fill_skeleton makes
+    a single provider call for a clean fill; no Stage A, unlike generate_story
+    which always makes at least two: Stage A then Stage B), then Stage D
+    (reading-level repair, wired into fill_skeleton unconditionally) measures
+    every node and, because this fixture's placeholder bodies are
+    ``"word word word ..."`` with no sentence punctuation, every node scores
+    far outside the skeleton's declared band (a Flesch-Kincaid grade driven up
+    by the words-per-sentence term when a whole body is one "sentence"). That
+    puts every node in Stage D's first repair pass, costing one additional
+    provider call per batch of ``_BATCH_SIZE`` (12) out-of-band nodes -- six
+    batches for this 65-node skeleton -- before Stage D gives up (none of the
+    reused fill-shaped replies parse as a ``{node_id: body}`` revision map, so
+    the pass accepts nothing and Stage D does not spend a second pass). One
+    more call covers the moderation pipeline's guaranteed bounded auto-repair
     (the default "mock" review backend always returns an unparseable "{}"
     verdict, which soft-flags Stage 1 safety and triggers exactly one
     attempt_repair call against this same provider -- see
     test_passing_run_creates_storybook_version, which budgets for the same
-    thing with headroom to spare).
-
-    If the worker still routes through generate_story, Stage A and Stage B
-    alone consume both queued responses, leaving none for the guaranteed
-    repair call; MockProvider raises on that third call, so the job ends up
-    "failed" instead of "passed"/"needs_review". This is what makes the
-    assertion below a real signal of which pipeline ran, not just "did the
-    run not crash".
+    thing with headroom to spare). The response list below is sized with
+    headroom above that 8-call floor (1 fill + 6 Stage D batches + 1
+    moderation repair) rather than pinned to it exactly, so a small future
+    change to this skeleton's node count does not reopen this test.
     """
     job_id: uuid.UUID = gen_seed_authoring["job_id"]  # type: ignore[assignment]
 
     # A valid filled-skeleton JSON string (not a generate_story Stage-A/B
-    # output), reused for both the fill call and the moderation repair call.
-    provider = MockProvider(responses=[_filled_skeleton_json()] * 2)
+    # output), reused for the fill call, every Stage D repair batch, and the
+    # moderation repair call. None of its top-level keys ("title", "nodes",
+    # "metadata") match a real node id, so Stage D accepts nothing from it;
+    # see the docstring above for why 12 (not 2) responses are queued.
+    provider = MockProvider(responses=[_filled_skeleton_json()] * 12)
 
     await run_generation_job(
         job_id,
@@ -639,6 +648,18 @@ async def test_worker_cross_band_override_loads_stored_band(
     ``load_skeleton`` raises ``FileNotFoundError``, and the job ends up
     "failed" instead of "passed"/"needs_review" -- both assertions below
     would fail on a revert.
+
+    The provider budget: one call for the fill, then Stage D (unconditional
+    in fill_skeleton) measures every node against this skeleton's declared
+    13-16 band and finds every one of its 253 nodes out of band, for the same
+    reason documented on
+    ``test_worker_runs_fill_skeleton_for_authoring_metadata_jobs`` (the
+    placeholder "word word word ..." body has no sentence punctuation, so its
+    Flesch-Kincaid grade is driven far past any real band). That costs 22
+    batch calls (253 nodes / ``_BATCH_SIZE`` 12) in Stage D's first pass
+    before it gives up, plus one more for the moderation pipeline's
+    guaranteed bounded auto-repair. The response list below is sized with
+    headroom above that 24-call floor.
     """
     job_id: uuid.UUID = gen_seed_cross_band_authoring["job_id"]  # type: ignore[assignment]
 
@@ -652,7 +673,7 @@ async def test_worker_cross_band_override_loads_stored_band(
     monkeypatch.setattr(worker_module, "load_skeleton", _recording_load_skeleton)
 
     provider = MockProvider(
-        responses=[_filled_skeleton_json_for(_CROSS_BAND_SKELETON_PATH)] * 2
+        responses=[_filled_skeleton_json_for(_CROSS_BAND_SKELETON_PATH)] * 30
     )
 
     await run_generation_job(

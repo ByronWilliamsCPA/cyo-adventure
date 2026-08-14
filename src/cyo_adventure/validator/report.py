@@ -78,6 +78,21 @@ class ValidationReport:
         """
         self.findings.append(finding)
 
+    def extend(self, other: ValidationReport) -> None:
+        """Append every finding from another report, preserving its order.
+
+        Each validator layer returns its own report and the gate composes them
+        into one. Doing that with a loop per layer made ``run_gate`` accumulate
+        a branch for every layer added, which is a complexity cost paid for an
+        operation that belongs to the collection rather than to its caller.
+
+        Args:
+            other: The report whose findings are appended. Left unmodified,
+                and its backing list is copied rather than adopted, so a later
+                ``add`` on either report cannot mutate the other.
+        """
+        self.findings.extend(other.findings)
+
     @property
     def errors(self) -> list[ValidationFinding]:
         """Return only the error-severity findings.

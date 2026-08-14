@@ -703,6 +703,32 @@ async def test_fill_skeleton_repair_exhaustion_is_needs_review_not_failed() -> N
     assert outcome.storybook["id"] == VALID_STORY["id"]
 
 
+@pytest.mark.asyncio
+async def test_fill_skeleton_does_not_pass_a_book_it_never_wrote() -> None:
+    """A provider that echoes the skeleton back must not yield status='passed'.
+
+    This is the run-1 defect reproduced (AL-324/AL-325): three Sonnet 5 books
+    came back with every node body still holding its ``<<FILL ...>>`` directive
+    and were recorded ``status='passed'`` with ``error=None``, because a valid
+    JSON echo of the input parses, and every deterministic checker skips a
+    directive rather than failing on it. The gate must have a floor here even
+    though the document is schema-clean and topologically sound.
+    """
+    skeleton = _skeleton_with_fill_placeholder()
+    echo = json.dumps(skeleton)
+    provider = MockProvider(responses=[echo, echo, echo])
+    pii = PiiContext(child_names=frozenset())
+
+    outcome = await fill_skeleton(
+        skeleton, {"premise": "a fox"}, provider, pii, max_repairs=1
+    )
+
+    assert outcome.status != "passed"
+    findings = outcome.report["findings"]
+    assert isinstance(findings, list)
+    assert any(f["rule_id"] == "PL-27" for f in findings)
+
+
 # ---------------------------------------------------------------------------
 # Test: fill_skeleton Stage 1 fidelity fold (#133)
 # ---------------------------------------------------------------------------

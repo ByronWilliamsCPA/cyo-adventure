@@ -27,6 +27,7 @@ differs every call and is never cached.
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass
 from importlib.resources import files
 from typing import TYPE_CHECKING
@@ -54,6 +55,7 @@ __all__ = [
     "build_fill_prompt",
     "build_interpret_bind_prompt",
     "build_prose_prompt",
+    "build_reading_level_repair_prompt",
     "build_repair_prompt",
     "build_structure_prompt",
 ]
@@ -77,6 +79,17 @@ _DRAFTING_GUIDE_PLACEHOLDER = "{drafting_guide}"
 # The theme-brief placeholder recurs across the fill, bind, interpret-and-bind,
 # and bound-fill templates; named once for the same reason as the two above.
 _THEME_BRIEF_PLACEHOLDER = "{theme_brief}"
+
+# Both delimiters of the ``<<<UNTRUSTED_USER_INPUT ... >>>END_UNTRUSTED_USER_INPUT``
+# fence. Matched case-insensitively (mirrors moderation/stages.py's
+# _sanitize_delimited, the same defense against the same delimiter-escape class):
+# a payload holding a differently-cased literal ("uNtRuStEd_user_input") would
+# otherwise slip past a case-sensitive match. See _neutralize_fence.
+_FENCE_OPEN = "<<<UNTRUSTED_USER_INPUT"
+_FENCE_TERMINATOR = ">>>END_UNTRUSTED_USER_INPUT"
+_FENCE_RE = re.compile(
+    f"({re.escape(_FENCE_OPEN)}|{re.escape(_FENCE_TERMINATOR)})", re.IGNORECASE
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -121,12 +134,55 @@ def _load_template(name: str) -> str:
     return _TEMPLATES.joinpath(name).read_text(encoding="utf-8")
 
 
+def _split_template_halves(text: str) -> tuple[str, str]:
+    """Split raw template text on the ``<!-- @user -->`` marker.
+
+    This is the one place the marker split happens, and it must run on text
+    that has NOT yet had any placeholder substituted into it. A builder that
+    substitutes untrusted content (a node body, a brief) before splitting
+    would let that content's own literal ``<!-- @user -->`` string count as
+    the marker, corrupting the split or (with more than one marker now
+    present) raising on a legitimate document that merely happens to contain
+    the substring. Splitting the pristine template first and substituting
+    into the resulting halves afterward makes the split immune to whatever
+    the untrusted content contains.
+
+    Args:
+        text: The raw template text, before any placeholder substitution.
+
+    Returns:
+        ``(system_half, user_half)``, unstripped.
+
+    Raises:
+        BusinessLogicError: If the template does not contain exactly one
+            ``<!-- @user -->`` marker. This is a template-authoring error, not
+            a runtime input error, so failing loudly is correct.
+    """
+    parts = text.split(_USER_MARKER)
+    if len(parts) != 2:
+        msg = (
+            f"template must contain exactly one '{_USER_MARKER}' marker; "
+            f"found {len(parts) - 1}"
+        )
+        raise BusinessLogicError(msg, rule="stage_prompt_marker")
+    return parts[0], parts[1]
+
+
 def _split_stage_prompt(text: str) -> StagePrompt:
     """Split fully-substituted template text into a :class:`StagePrompt`.
 
     Splits on the single ``<!-- @user -->`` marker line: text before the marker
     becomes the system block, text after becomes the user block. Both parts are
     stripped of surrounding whitespace.
+
+    Every builder except :func:`build_reading_level_repair_prompt` substitutes
+    its placeholders into the template text before calling this, which is safe
+    only because none of those placeholders' values can plausibly contain the
+    literal marker string unescaped in a way that survives their own framing
+    (JSON-encoded briefs, schema text). ``build_reading_level_repair_prompt``
+    substitutes raw untrusted node prose and therefore cannot use this
+    function; it calls :func:`_split_template_halves` before substitution
+    instead. See that function's docstring for why the order matters.
 
     Args:
         text: The template text after all placeholder substitution.
@@ -139,15 +195,47 @@ def _split_stage_prompt(text: str) -> StagePrompt:
             ``<!-- @user -->`` marker. This is a template-authoring error, not a
             runtime input error, so failing loudly is correct.
     """
-    parts = text.split(_USER_MARKER)
-    if len(parts) != 2:
-        msg = (
-            f"template must contain exactly one '{_USER_MARKER}' marker; "
-            f"found {len(parts) - 1}"
-        )
-        raise BusinessLogicError(msg, rule="stage_prompt_marker")
-    system, user = parts
+    system, user = _split_template_halves(text)
     return StagePrompt(system=system.strip(), user=user.strip())
+
+
+def _neutralize_fence(text: str) -> str:
+    """Defang untrusted-input fence delimiters inside a delimited payload.
+
+    Several templates wrap untrusted content between ``<<<UNTRUSTED_USER_INPUT``
+    and ``>>>END_UNTRUSTED_USER_INPUT``. A payload that itself contains either
+    literal delimiter closes the fence early (or opens a spurious one), and
+    everything after it reads to the model as trusted instruction: the classic
+    delimiter-escape injection.
+
+    # #CRITICAL: security: the reading-level repair prompt carries model-written
+    # node prose, which descends from an untrusted guardian/child brief. A body
+    # holding a literal delimiter would break out of the fence and steer the
+    # simplification model directly. ``moderation/stages.py`` already sanitizes
+    # for exactly this reason (``_sanitize_delimited``); the generation
+    # templates in this module do not, so both delimiters are neutralized here,
+    # case-insensitively, at the one call site that feeds prose rather than a
+    # JSON brief.
+    # #VERIFY: test_reading_level_prompt_neutralizes_a_literal_fence_terminator,
+    # test_reading_level_prompt_neutralizes_a_literal_fence_opener,
+    # test_reading_level_prompt_neutralizes_a_case_varied_fence_delimiter.
+    # #EDGE: security: this is a known-literal substitution, not a structural
+    # boundary (a nonce-per-request delimiter or a structured, non-string-
+    # concatenated input channel would close the gap fully rather than just
+    # this known form). Tracked as UW-C228 alongside the sibling gap below.
+    # #EDGE: security: ``build_fill_prompt`` and ``build_bound_fill_prompt``
+    # interpolate ``{theme_brief}`` into the same fence without this treatment.
+    # The brief is JSON-serialised, which escapes quotes and newlines but NOT
+    # the delimiters, so the hole is real though narrower (the attacker must
+    # get the string through screening intake first). Tracked as UW-C228.
+
+    Args:
+        text: The payload about to be placed inside an untrusted fence.
+
+    Returns:
+        The payload with any fence delimiter rendered inert.
+    """
+    return _FENCE_RE.sub(lambda m: m.group(0) + "_NEUTRALIZED", text)
 
 
 def _drafting_guide() -> str:
@@ -795,6 +883,70 @@ def build_fidelity_repair_prompt(
         .replace("{fidelity_violations}", violations_block)
     )
     return _split_stage_prompt(text)
+
+
+def build_reading_level_repair_prompt(
+    nodes: Sequence[tuple[str, str, float]],
+    *,
+    target: float,
+    tolerance: float,
+) -> StagePrompt:
+    """Build the node-scoped reading-level repair prompt.
+
+    Unlike every other repair builder in this module, this one does NOT send
+    the story. It sends a list of ``(node_id, body, current_grade)`` triples and
+    asks for a mapping of ``node_id`` to revised body. That asymmetry is the
+    point and it is a safety property rather than a token optimisation:
+
+    * The graph is not in the prompt, so the model cannot restructure it. A
+      structural change is not a thing the output channel is able to express.
+      ``repair.md`` and ``fidelity_repair.md`` both take back a whole Storybook
+      and therefore both have to *ask* the model not to disturb structure, and
+      then re-gate to find out whether it obeyed.
+    * A 101-node book with 85 out-of-band nodes costs 85 short bodies in and 85
+      short bodies out, batched, instead of the entire book re-emitted once per
+      attempt.
+
+    Loads ``reading_level_repair.md`` and substitutes its two volatile
+    placeholders, ``{reading_target}`` and ``{nodes_to_simplify}`` (both user).
+
+    Args:
+        nodes: The out-of-band nodes as ``(node_id, body, current_grade)``.
+            Bodies are passed with their ``{~SLOT:Word~}`` sentinels intact, so
+            the model can preserve them verbatim.
+        target: The story's target Flesch-Kincaid grade.
+        tolerance: Half-width of the acceptable band around ``target``.
+
+    Returns:
+        The reading-level repair :class:`StagePrompt` (no unfilled tokens).
+
+    Raises:
+        BusinessLogicError: If the template lacks its ``<!-- @user -->`` marker.
+    """
+    reading_target = (
+        f"Target Flesch-Kincaid grade: {target:.1f}. "
+        f"Acceptable band: {target - tolerance:.1f} to {target + tolerance:.1f}."
+    )
+    payload = json.dumps(
+        [
+            {"node_id": node_id, "current_grade": round(current, 1), "body": body}
+            for node_id, body, current in nodes
+        ],
+        indent=2,
+    )
+    # #CRITICAL: security: split on the marker BEFORE substituting the payload,
+    # not after. `payload` carries untrusted node prose (descended from a
+    # guardian/child brief), and JSON-encoding does not escape the literal
+    # `<!-- @user -->` string. Substituting first would let a body containing
+    # that string add a second marker occurrence, which _split_stage_prompt
+    # raises on; splitting the pristine template first makes the split immune
+    # to whatever the payload contains. See _split_template_halves.
+    # #VERIFY: test_reading_level_prompt_body_containing_user_marker_does_not_raise.
+    system, user = _split_template_halves(_load_template("reading_level_repair.md"))
+    user = user.replace("{reading_target}", reading_target).replace(
+        "{nodes_to_simplify}", _neutralize_fence(payload)
+    )
+    return StagePrompt(system=system.strip(), user=user.strip())
 
 
 def build_repair_prompt(

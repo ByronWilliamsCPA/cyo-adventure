@@ -796,7 +796,9 @@ def _repair_is_adoptable(
         ::test_repair_forged_sentinel_is_discarded_and_routes_to_human_review
         assert all four branches.
     """
-    gate_result = run_gate(revised)
+    # AL-325: a repair that returns a "<<FILL" directive has un-authored the
+    # node it was asked to fix, which PL-27 catches only under this posture.
+    gate_result = run_gate(revised, context="fill_result")
     if gate_result.blocked:
         _logger.warning(
             "moderation.repair_failed_gate",

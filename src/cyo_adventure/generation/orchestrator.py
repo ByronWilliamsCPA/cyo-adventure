@@ -45,7 +45,12 @@ from cyo_adventure.generation.prompts import (
     build_repair_prompt,
     build_structure_prompt,
 )
-from cyo_adventure.validator.gate import GateResult, run_gate
+from cyo_adventure.generation.reading_level_loop import (
+    ReadingLevelContext,
+    ReadingLevelResult,
+    run_reading_level_loop,
+)
+from cyo_adventure.validator.gate import GateContext, GateResult, run_gate
 from cyo_adventure.validator.report import (
     Severity,
     ValidationFinding,
@@ -96,6 +101,20 @@ __all__ = [
 _MAX_TOKENS_STRUCTURE = 16384
 _MAX_TOKENS_PROSE = 32000
 _MAX_TOKENS_REPAIR = 32000
+
+# Reading-level repair passes (Stage D). On by default rather than opt-in, which
+# is the whole content of AL-292's proposed change: "put the reading-level repair
+# loop in the harness, not the prompt, and make it non-optional". A prompt cannot
+# reach this target because the model cannot count syllables (AL-288), so an
+# instrumented loop is not an enhancement over the prompt, it is the only thing
+# that works.
+#
+# Two passes rather than one because the first pass is where a body moves
+# furthest and the second catches nodes that improved but not enough; and rather
+# than three because acceptance is strictly monotone, so later passes hit
+# diminishing returns against real per-batch spend. Costs zero provider calls
+# when everything already sits in band.
+_DEFAULT_READING_LEVEL_PASSES = 2
 
 # Type alias: (sorted_findings_tuple, doc_sha256_hex)
 _Signature = tuple[tuple[tuple[str, str | None, str | None, str], ...], str]
@@ -197,6 +216,10 @@ class _RepairContext:
         max_repairs: Maximum number of repair attempts.
         stage_log: Accumulated log list; entries are appended in place.
         scale: Story-size profile forwarded to each repair stage's gate.
+        context: Gate posture forwarded to each repair stage. A repair of a
+            fill result is still a fill result, so PL-27 must keep applying
+            across the loop; otherwise a repair attempt would launder an
+            unwritten book past the floor that caught it (AL-325).
         stage1: The Stage 1 fidelity-gate config for the authoring skeleton-fill
             path, or ``None`` (the default) for callers that do no Stage 1 and
             must retain the pre-fold structural-only loop behavior.
@@ -206,6 +229,7 @@ class _RepairContext:
     max_repairs: int
     stage_log: list[str]
     scale: Scale = "standard"
+    context: GateContext = "skeleton"
     stage1: _Stage1Config | None = None
 
 
@@ -288,8 +312,14 @@ def _gate_signature(
     return findings_tuple, _doc_hash(doc)
 
 
-def _empty_blocked_gate() -> GateResult:
+def _empty_blocked_gate(context: GateContext = "skeleton") -> GateResult:
     """Synthesise a minimal blocked gate result for parse-error cases.
+
+    Args:
+        context: The posture the caller was validating under, recorded on
+            the synthetic result so a parse failure is not reported as a
+            skeleton-posture verdict when the caller asked for a stricter
+            one.
 
     Returns:
         A :class:`~cyo_adventure.validator.gate.GateResult` with one
@@ -304,7 +334,9 @@ def _empty_blocked_gate() -> GateResult:
             message="L1-1 schema: provider output was not valid JSON or not a dict",
         )
     )
-    return GateResult(report=report, blocked=True, safety_flagged=False)
+    return GateResult(
+        report=report, blocked=True, safety_flagged=False, context=context
+    )
 
 
 async def _run_one_stage(
@@ -313,6 +345,7 @@ async def _run_one_stage(
     provider: PiiGuardedProvider,
     max_tokens: int,
     scale: Scale = "standard",
+    context: GateContext = "skeleton",
 ) -> tuple[dict[str, object] | None, GateResult]:
     """Run a single generation stage: call provider, parse JSON, run gate.
 
@@ -329,6 +362,12 @@ async def _run_one_stage(
         max_tokens: Maximum tokens for the provider completion.
         scale: Story-size profile forwarded to ``run_gate`` so L1-7 is enforced
             against the same budget the prompt promised.
+        context: Gate posture forwarded to ``run_gate``. Stages that produce
+            prose (Stage B, the skeleton fill, and any repair of either) pass
+            ``"fill_result"`` so PL-27 rejects a node whose body is still a
+            ``<<FILL ...>>`` directive. Stage A keeps the ``"skeleton"``
+            default because its bodies are one-line beat descriptions by
+            design, not prose (see ``prompts/structure.md``).
 
     Returns:
         A tuple of ``(doc_or_none, gate_result)``. ``doc_or_none`` is the
@@ -368,13 +407,13 @@ async def _run_one_stage(
     try:
         parsed: object = json.loads(raw)  # pyright: ignore[reportAny]
     except (json.JSONDecodeError, RecursionError):
-        return None, _empty_blocked_gate()
+        return None, _empty_blocked_gate(context)
 
     if not isinstance(parsed, dict):
-        return None, _empty_blocked_gate()
+        return None, _empty_blocked_gate(context)
 
     doc = cast("dict[str, object]", parsed)
-    return doc, run_gate(doc, scale)
+    return doc, run_gate(doc, scale, context=context)
 
 
 def _get_failing_findings(gate_result: GateResult) -> list[dict[str, object]]:
@@ -420,6 +459,7 @@ def _build_outcome(
         The appropriate :class:`GenerationOutcome`.
     """
     final_report = gate_result.report.to_dict()
+    final_report["gate_context"] = gate_result.context
 
     if not gate_result.blocked:
         status: Literal["passed", "needs_review", "failed"] = (
@@ -443,6 +483,82 @@ def _build_outcome(
         report=final_report,
         attempts=attempts,
         stage_log=stage_log,
+    )
+
+
+async def _repair_reading_level(
+    current_doc: dict[str, object] | None,
+    gate_result: GateResult,
+    ctx: ReadingLevelContext,
+) -> tuple[dict[str, object] | None, GateResult, ReadingLevelResult | None]:
+    """Run Stage D (reading level) when there is a clean document to run it on.
+
+    Skipped on a blocked or absent document. A document that never cleared the
+    structural gate is already bound for human review, so spending provider
+    calls to make its prose easier to read would be paying to polish something
+    nobody will publish in this state.
+
+    Args:
+        current_doc: The document after the structural/Stage 1 loop, or ``None``.
+        gate_result: That document's gate result.
+        ctx: The reading-level stage context (provider, budget, log, scale).
+
+    Returns:
+        A ``(doc, gate_result, result)`` tuple. ``result`` is ``None`` when the
+        stage did not run, in which case the first two elements are the inputs
+        unchanged.
+
+    Raises:
+        ValidationError: If an assembled prompt contains forbidden PII.
+    """
+    # #CRITICAL: external-resources: this call reaches a real LLM provider
+    # (billed, network-dependent) whenever a document is present, clean, and
+    # the budget is positive; a blocked or absent document, or a zero budget,
+    # must skip it rather than spend a call polishing something bound for
+    # human review or explicitly disabled.
+    # #CRITICAL: security: current_doc's prose descends from an untrusted
+    # guardian/child brief; run_reading_level_loop requires a PII-guarded
+    # provider (ctx.provider) for exactly this reason.
+    # #VERIFY: test_generate_story_skips_stage_d_on_a_blocked_document asserts
+    # the skip; test_reading_level_pii_guard_aborts_before_any_egress asserts
+    # the guard.
+    if current_doc is None or gate_result.blocked or ctx.max_passes <= 0:
+        return current_doc, gate_result, None
+    result = await run_reading_level_loop(current_doc, gate_result, ctx)
+    return result.doc, result.gate, result
+
+
+def _with_reading_level(
+    outcome: GenerationOutcome, result: ReadingLevelResult | None
+) -> GenerationOutcome:
+    """Attach the reading-level measurement to an outcome's report.
+
+    The measurement is recorded even when nothing was revised, because "this
+    book was measured and was already in band" and "nobody looked" are
+    different facts and the report should not conflate them. ``AL-209`` is what
+    happens when it does: three books shipped at whole-book FK 8.14 to 8.41
+    with a not-blocked verdict and no number anywhere to contradict it.
+
+    Args:
+        outcome: The outcome built from the final gate result.
+        result: The Stage D result, or ``None`` when the stage did not run.
+
+    Returns:
+        The outcome, with a ``"reading_level"`` report key when Stage D ran.
+    """
+    if result is None:
+        return outcome
+    # Constructed directly rather than via dataclasses.replace, for the same
+    # reason fill_skeleton's Stage 1 downgrade does (S5886: replace()'s TypeVar
+    # return can resolve to DataclassInstance rather than GenerationOutcome).
+    return GenerationOutcome(
+        status=outcome.status,
+        storybook=outcome.storybook,
+        report={**outcome.report, "reading_level": result.to_report()},
+        attempts=outcome.attempts,
+        stage_log=outcome.stage_log,
+        sentinel_manifest=outcome.sentinel_manifest,
+        personalization_eligible=outcome.personalization_eligible,
     )
 
 
@@ -593,6 +709,7 @@ async def _run_repair_loop(
             provider=ctx.provider,
             max_tokens=_MAX_TOKENS_REPAIR,
             scale=ctx.scale,
+            context=ctx.context,
         )
         attempts += 1
         ctx.stage_log.append(f"repair:{attempts}")
@@ -647,6 +764,7 @@ async def generate_story(
     *,
     max_repairs: int = 3,
     scale: Scale = "standard",
+    reading_level_passes: int = _DEFAULT_READING_LEVEL_PASSES,
 ) -> GenerationOutcome:
     """Run the staged generation pipeline and return a validated outcome.
 
@@ -660,6 +778,14 @@ async def generate_story(
     3. **Stage C (Repair)**: while the gate is blocked and ``attempts <
        max_repairs``, build a repair prompt for the failing findings,
        PII-guard, call provider, parse JSON, run gate, check no-progress.
+    4. **Stage D (Reading level)**: on an unblocked document, measure every
+       node's Flesch-Kincaid grade and re-prompt the out-of-band ones toward
+       the band. Never blocks: a revision is taken only when it strictly
+       improves. If splicing every accepted revision back in regresses the
+       gate, the gate's own findings name the offending nodes; those are
+       dropped and the remainder re-spliced and kept if that salvage clears
+       the gate. The whole pass is discarded only when the block is
+       unsalvageable (the salvaged splice still fails).
 
     PII enforcement: ``provider`` is wrapped in a
     :class:`~cyo_adventure.generation.guarded.PiiGuardedProvider` at entry.
@@ -684,6 +810,10 @@ async def generate_story(
         scale: Story-size profile (``"standard"`` or ``"compact"``) applied to
             both the Stage A prompt budget and the L1-7 gate, so they stay in
             sync. Defaults to ``"standard"``.
+        reading_level_passes: Maximum Stage D passes. ``0`` disables the stage
+            entirely. Defaults to two (see ``_DEFAULT_READING_LEVEL_PASSES``);
+            the stage costs no provider calls when every node is already in
+            band, or when the book declares no reading-level target.
 
     Returns:
         A :class:`GenerationOutcome` describing the final status, the last
@@ -730,6 +860,7 @@ async def generate_story(
             provider=guarded_provider,
             max_tokens=_MAX_TOKENS_PROSE,
             scale=scale,
+            context="fill_result",
         )
         _append_stage_log(stage_log, "stage_b", current_doc, gate_result)
         # Prefer Stage B's fuller document, but keep Stage A's skeleton if
@@ -747,6 +878,7 @@ async def generate_story(
             max_repairs=max_repairs,
             stage_log=stage_log,
             scale=scale,
+            context="fill_result",
         )
         # Seed the loop with the last valid document so a Stage B parse failure
         # repairs from Stage A's skeleton rather than an empty object, and the
@@ -761,7 +893,24 @@ async def generate_story(
             repair_ctx,
         )
 
-    return _build_outcome(gate_result, current_doc, attempts, stage_log)
+    # ------------------------------------------------------------------
+    # Stage D: Reading-level repair (runs only when NOT blocked)
+    # ------------------------------------------------------------------
+    current_doc, gate_result, reading_level = await _repair_reading_level(
+        current_doc,
+        gate_result,
+        ReadingLevelContext(
+            provider=guarded_provider,
+            max_passes=reading_level_passes,
+            stage_log=stage_log,
+            scale=scale,
+        ),
+    )
+
+    return _with_reading_level(
+        _build_outcome(gate_result, current_doc, attempts, stage_log),
+        reading_level,
+    )
 
 
 async def fill_skeleton(
@@ -776,8 +925,9 @@ async def fill_skeleton(
     prep_model: str | None = None,
     slot_bindings: Mapping[str, str] | None = None,
     differentiation_directive: str = "",
+    reading_level_passes: int = _DEFAULT_READING_LEVEL_PASSES,
 ) -> GenerationOutcome:
-    """Run the automated skeleton-fill pipeline (Stage B': Fill -> Repair).
+    """Run the automated skeleton-fill pipeline (Fill -> Repair -> Reading level).
 
     A matched skeleton library file already has hand-authored, gate-validated
     structure; every node needing prose carries a
@@ -840,6 +990,9 @@ async def fill_skeleton(
             never left as an unfilled template token. Threaded into both the
             free-text and the bound-fill prompt variants, so contract-bound
             skeletons receive the same A6/A7 anti-repetition steering.
+        reading_level_passes: Maximum Stage D (reading-level) passes over the
+            filled book once it is structurally clean. ``0`` disables the
+            stage. Defaults to two; see ``_DEFAULT_READING_LEVEL_PASSES``.
 
     Returns:
         A :class:`GenerationOutcome` describing the final status, the last
@@ -893,7 +1046,10 @@ async def fill_skeleton(
         )
     )
     current_doc, gate_result = await _run_one_stage(
-        fill_prompt, provider=guarded_provider, max_tokens=_MAX_TOKENS_PROSE
+        fill_prompt,
+        provider=guarded_provider,
+        max_tokens=_MAX_TOKENS_PROSE,
+        context="fill_result",
     )
     _append_stage_log(stage_log, "stage_fill", current_doc, gate_result)
     last_valid_doc = current_doc if current_doc is not None else skeleton
@@ -908,11 +1064,26 @@ async def fill_skeleton(
             max_repairs=max_repairs,
             stage_log=stage_log,
             stage1=stage1_config,
+            context="fill_result",
         )
         repair_seed = current_doc if current_doc is not None else last_valid_doc
         current_doc, gate_result, attempts, stage1_violations = await _run_repair_loop(
             gate_result, repair_seed, repair_ctx
         )
+
+    # Stage D: reading-level repair on a structurally-clean fill. Runs before
+    # the Stage 1 downgrade below rather than after, because the downgrade only
+    # changes a status, and a book bound for admin review still benefits from
+    # prose a child can read. Skipped outright when the gate is blocked.
+    current_doc, gate_result, reading_level = await _repair_reading_level(
+        current_doc,
+        gate_result,
+        ReadingLevelContext(
+            provider=guarded_provider,
+            max_passes=reading_level_passes,
+            stage_log=stage_log,
+        ),
+    )
 
     outcome = _build_outcome(gate_result, current_doc, attempts, stage_log)
 
@@ -927,7 +1098,7 @@ async def fill_skeleton(
         # resolves to the DataclassInstance protocol under some type-checker
         # inference, not the concrete GenerationOutcome (S5886); constructing
         # the instance directly keeps the return type unambiguous everywhere.
-        return GenerationOutcome(
+        outcome = GenerationOutcome(
             status="needs_review",
             storybook=outcome.storybook,
             report={
@@ -936,5 +1107,7 @@ async def fill_skeleton(
             },
             attempts=outcome.attempts,
             stage_log=outcome.stage_log,
+            sentinel_manifest=outcome.sentinel_manifest,
+            personalization_eligible=outcome.personalization_eligible,
         )
-    return outcome
+    return _with_reading_level(outcome, reading_level)

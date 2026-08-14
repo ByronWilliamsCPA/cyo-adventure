@@ -445,7 +445,20 @@ async def test_generate_story_prompt_injection_body_treated_as_data() -> None:
     story_json = json.dumps(_story_with_body(VALID_STORY, INJECTION_TEXT))
     provider = MockProvider(responses=[story_json, story_json])
 
-    outcome = await generate_story(_make_brief(), provider, _empty_pii(), max_repairs=0)
+    # Stage D (reading level) is switched off here so the stage sequence below
+    # stays the oracle this test is about. It is not incidental: the injection
+    # body is 26 words at Flesch-Kincaid 8.2 against this fixture's 4.5 target,
+    # so with the default two passes Stage D would legitimately fire and add a
+    # third provider call. That path has its own coverage in
+    # test_reading_level_loop.py, including the fence-terminator neutralization
+    # that keeps injection-shaped prose data inside the repair prompt.
+    outcome = await generate_story(
+        _make_brief(),
+        provider,
+        _empty_pii(),
+        max_repairs=0,
+        reading_level_passes=0,
+    )
 
     # Control flow identical to any clean story: Stage A + Stage B, no repairs.
     assert outcome.stage_log == ["stage_a:gate_ok", "stage_b:gate_ok"]

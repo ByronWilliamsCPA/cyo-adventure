@@ -148,7 +148,13 @@ async def import_filled_story(
     # #CRITICAL: data-integrity: the gate result and the blob must agree on id;
     # if the blob's id is missing or wrong, the stored version row is unreachable.
     # #VERIFY: test_import_persists_a_valid_filled_story asserts story_id == blob["id"].
-    result = run_gate(request.blob)
+    # #CRITICAL: data-integrity: AL-325: this endpoint imports a *filled* story,
+    # so a retained "<<FILL" directive means the blob was never written and
+    # PL-27 must reject it. Every other checker abstains on a directive body
+    # rather than failing, so without the "fill_result" posture an unwritten
+    # book imports clean.
+    # #VERIFY: test_import_story_with_unwritten_nodes_raises_validation_error.
+    result = run_gate(request.blob, context="fill_result")
     if result.blocked:
         messages = (
             "; ".join(f.message for f in result.report.errors)
