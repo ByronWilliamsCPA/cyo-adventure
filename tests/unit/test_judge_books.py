@@ -441,53 +441,34 @@ def _scored(leg: str, judge: str, book: str, scores: dict[str, float]) -> Verdic
 
 
 def _saturated_pool() -> list[Verdict]:
-    """Build a pool reproducing the dialogue criterion's documented signature.
+    """Build a pool reproducing the dialogue criterion's ACTUAL recorded shape.
 
-    Twelve ``(leg, judge)`` cells, in which ``dialogue`` sits at a mean of about
-    3.04 with a spread of about 0.19 while ``imagery`` spreads across most of the
-    scale. This is the known answer: the check was written because we found the
-    real thing by accident, and it has to find the same shape on purpose.
+    The figures come from `AL-330`, which is the only place the real per-leg
+    numbers are written down: the criterion "returned exactly 3.00 for seven of
+    eight legs", the eighth being 3.25. Their spread is 0.088.
+
+    An earlier version of this fixture used "mean 3.04, sd 0.19 across twelve
+    cells", copied from the measurement workplan. That phrase is a bad splice and
+    the number is not reproducible by `criterion_spread`: the 0.19 is section
+    29's spread across all 84 individual verdicts, and "twelve cells" comes from
+    section 16m, which is a different instrument (a six-question diversity
+    rubric over 3 rounds x 4 cells). `criterion_spread` averages books into
+    ``(leg, judge)`` cells before taking a spread, so on the real pool it returns
+    0.088. Pinning the test to 0.19 would have sent whoever replays the pool
+    hunting a bug in a function that was working.
 
     Returns:
         Every verdict in the pool.
     """
-    # Twelve cell values whose mean is 3.0417 and whose sample sd is 0.1964,
-    # with ten cells at exactly 3.00, which is the shape the real pool had.
-    dialogue = [
-        3.0,
-        3.0,
-        3.0,
-        3.0,
-        3.0,
-        3.0,
-        3.0,
-        3.0,
-        3.0,
-        3.0,
-        2.85,
-        3.65,
-    ]
-    # The same twelve cells on a criterion that genuinely discriminates.
-    imagery = [
-        1.5,
-        2.0,
-        2.5,
-        3.0,
-        3.5,
-        4.0,
-        4.5,
-        5.0,
-        2.2,
-        3.8,
-        4.4,
-        1.9,
-    ]
+    # Seven legs at exactly 3.00 and one at 3.25, per AL-330.
+    dialogue = [3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.25]
+    # The same eight legs on a criterion that genuinely discriminates.
+    imagery = [1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0]
     verdicts: list[Verdict] = []
     for index, (dial, imag) in enumerate(zip(dialogue, imagery, strict=True)):
-        leg = f"leg-{index // 3}"
-        judge = f"judge-{index % 3}"
+        leg = f"leg-{index}"
         verdicts.append(
-            _scored(leg, judge, f"{leg}#0", {"dialogue": dial, "imagery": imag})
+            _scored(leg, "judge-0", f"{leg}#0", {"dialogue": dial, "imagery": imag})
         )
     return verdicts
 
@@ -502,9 +483,9 @@ def test_criterion_spread_flags_the_dialogue_criterion_it_was_built_for() -> Non
 
     by_name = {row.criterion: row for row in rows}
     assert by_name["dialogue"].saturated is True
-    assert by_name["dialogue"].cells == 12
-    assert by_name["dialogue"].mean == pytest.approx(3.04, abs=0.01)
-    assert by_name["dialogue"].sd == pytest.approx(0.19, abs=0.01)
+    assert by_name["dialogue"].cells == 8
+    assert by_name["dialogue"].mean == pytest.approx(3.03, abs=0.01)
+    assert by_name["dialogue"].sd == pytest.approx(0.088, abs=0.005)
 
 
 def test_criterion_spread_does_not_flag_a_criterion_that_discriminates() -> None:
@@ -562,7 +543,7 @@ def test_criterion_spread_ignores_failed_scorings() -> None:
     rows = criterion_spread(verdicts)
 
     by_name = {row.criterion: row for row in rows}
-    assert by_name["dialogue"].cells == 12
+    assert by_name["dialogue"].cells == 8
 
 
 def test_leg_intervals_resample_books_rather_than_scorings() -> None:
