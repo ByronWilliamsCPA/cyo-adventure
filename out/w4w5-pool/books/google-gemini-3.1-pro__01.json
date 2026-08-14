@@ -1,0 +1,891 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_night_market",
+  "version": 1,
+  "title": "The Night Market",
+  "metadata": {
+    "age_band": "5-8",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 2.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "kindness",
+      "friendship",
+      "community",
+      "courage"
+    ],
+    "estimated_minutes": 7,
+    "ending_count": 13,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "open_map",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "You and your dad step through the big iron gates of the Night Market. Long strings of yellow bulbs blink on up high. Warm steam rises from the food carts. You hear crinkling paper at the craft tables. A happy fiddle tunes up. Tonight ends with the Star-Rise Ceremony. This is the part you love best. Suddenly, you hear a tiny sniffle. Something small hides behind a wooden barrel near the gates. The market is warm and twinkly. It is never spooky.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_peek",
+          "label": "Peek behind the wooden barrel.",
+          "target": "n_meet"
+        }
+      ]
+    },
+    {
+      "id": "n_meet",
+      "body": "Behind the barrel is a little lost puppy. She is a talking terrier pup curled in a tight, fuzzy ball. \"My name is Pip,\" she whispers. She is new to the Night Market and very shy. Between sniffles, Pip explains that she lost her basket. It held the three things she needs for the Star-Rise Ceremony: wishing paper, strong kite string, and a spark-candle. You kneel down slowly and pet her soft ears.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_meet_promise",
+          "label": "Promise to help Pip before the ceremony.",
+          "target": "n_promise"
+        }
+      ]
+    },
+    {
+      "id": "n_promise",
+      "body": "You promise Pip that you will sort this out together. Your dad nods. He tells you the stall keepers here are the kindest people anywhere. Helping hands are always welcome at the Night Market, and a small kindness is worth more than gold coins. Pip uncurls her fuzzy body. She reaches up and gently takes your hand in her paw. Together, you all walk into the Great Circle.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_promise_hub",
+          "label": "Step into the busy Great Circle.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "n_hub",
+      "body": "The Great Circle is the round heart of the Night Market. Strings of bright bulbs cross the sky. Paths lead off to a skewer cart wrapped in delicious smoke. You see an origami stall covered in spinning paper. You see a cider stand puffing sweet steam. A tinker's wagon is full of clockwork toys. A fruit stand is stacked with bright melons. A lively fiddle plays in the corner. The grand stone steps glow nearby. Pip stays close by your side while you choose where to go.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hub_dumpling",
+          "label": "Follow the delicious smoke to the skewer cart.",
+          "target": "ds_entry"
+        },
+        {
+          "id": "c_hub_paper",
+          "label": "Visit the origami stall and its paper spinners.",
+          "target": "pf_entry"
+        },
+        {
+          "id": "c_hub_tea",
+          "label": "Stop by the cider stand with sweet steam.",
+          "target": "tc_entry"
+        },
+        {
+          "id": "c_hub_toys",
+          "label": "Look in at the busy tinker's wagon.",
+          "target": "tm_entry"
+        },
+        {
+          "id": "c_hub_fruit",
+          "label": "Wander over to the bright fruit stand.",
+          "target": "fs_entry"
+        },
+        {
+          "id": "c_hub_music",
+          "label": "Drift toward the fiddle player's corner.",
+          "target": "mc_entry"
+        },
+        {
+          "id": "c_hub_steps",
+          "label": "Head to the grand steps with Pip.",
+          "target": "f_steps"
+        }
+      ]
+    },
+    {
+      "id": "ds_entry",
+      "body": "At the skewer cart, Chef Sal is a one-man whirlwind. Smoke puffs up around him as he calls out orders. A tall, wobbling tower of trays waits to go out to the tables. He spots you and Pip through the smoke. Chef Sal laughs and says he could use four extra hands tonight! You can decide to carry the warm trays to the tables, or you can join his helper and fold the doughy meat wraps.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_carry",
+          "label": "Carry the warm trays out to the tables.",
+          "target": "ds_carry"
+        },
+        {
+          "id": "c_ds_fold",
+          "label": "Join the helper to fold the meat wraps.",
+          "target": "ds_fold"
+        }
+      ]
+    },
+    {
+      "id": "ds_carry",
+      "body": "The trays are as warm as sunbaked stones. They smell amazing, full of savory spices. Hungry customers sit at lantern-lit tables and wave to you from every side. Pip trots right beside you, holding a stack of napkins in her mouth. You must decide how to serve the food. You can take one tray at a time, slow and steady like a real waiter. Or, you can stack three trays high for one big trip.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_carry_steady",
+          "label": "Take one tray at a time, slow and steady.",
+          "target": "ds_happy"
+        },
+        {
+          "id": "c_ds_carry_stack",
+          "label": "Stack three trays high for one big trip.",
+          "target": "e_ds_spill"
+        }
+      ]
+    },
+    {
+      "id": "ds_happy",
+      "body": "You carry the trays with care. Every single table gets its meat wraps hot and perfect. The happy customers cheer for the small waiter and the clever puppy helper. Chef Sal watches through the smoke. He smiles at you with a huge grin. You set down the very last tray. He waves you and Pip back to the cart. He wants to give you a big thank-you.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_happy_gift",
+          "label": "Go collect Chef Sal's big thank-you.",
+          "target": "ds_gift"
+        }
+      ]
+    },
+    {
+      "id": "ds_fold",
+      "body": "At the folding table, Chef Sal shows you how to pleat the dough. You pinch and fold, pinch and fold, just like tucking a tiny blanket. Your first wrap is a bit wonky. Your second is even wonkier! But your tenth wrap stands up proud. Pip pats the dough flat with her careful paws. Chef Sal steams the whole wobbly batch anyway and calls them his special night treats.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_fold_gift",
+          "label": "See what Chef Sal says to you next.",
+          "target": "ds_gift"
+        }
+      ]
+    },
+    {
+      "id": "ds_gift",
+      "body": "Chef Sal tucks two warm wraps into a paper bag. He gently presses it into Pip's paws. He tells her that shy tummies are much braver when they are warm. He promises to close his cart early tonight. This way, he can cheer super loud for Pip's lantern at the Star-Rise Ceremony. Pip hugs the warm bag tightly. Now you can head back to the Great Circle. Or, you can take Pip toward the grand steps.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_gift_hub",
+          "label": "Walk back to the Great Circle.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_ds_gift_steps",
+          "label": "Head for the grand steps with Pip.",
+          "target": "f_steps"
+        }
+      ]
+    },
+    {
+      "id": "pf_entry",
+      "body": "The origami stall is hung with bright paper spinners. They turn slowly in the warm air. Mr. Finn the maker looks sad. His big basket of colored paper tipped over! Squares of red, gold, and blue blow across the busy path. They look like slow butterflies. You must decide how to help. You can chase and catch the flying paper squares. Or, you can help sort the rest of the papers back into the right color trays.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pf_chase",
+          "label": "Chase the drifting paper squares.",
+          "target": "pf_scraps"
+        },
+        {
+          "id": "c_pf_sort",
+          "label": "Sort the leftover papers by their color.",
+          "target": "pf_sort"
+        }
+      ]
+    },
+    {
+      "id": "pf_scraps",
+      "body": "You and Pip tiptoe after the paper squares. You catch them gently so they do not crumple. You grab one off a wooden bench, one off a lantern pole, and one out of a sleepy dog's fur. Soon, only one runaway square is left. It is a gold one, resting high up on the noodle cart's striped awning. You can ask the tall noodle cook for a boost, or wait for the breeze to blow it down.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pf_scraps_boost",
+          "label": "Ask the tall noodle cook for a boost.",
+          "target": "pf_last"
+        },
+        {
+          "id": "c_pf_scraps_breeze",
+          "label": "Wait for the evening breeze to blow it down.",
+          "target": "pf_breeze"
+        }
+      ]
+    },
+    {
+      "id": "pf_last",
+      "body": "The tall noodle cook laughs happily. He lifts you onto his shoulders like a soft sack of flour. You easily pluck the gold square safe and smooth. From way up high, the whole Night Market glitters with lights! Back on the ground, Pip carries the rescued gold square back to Mr. Finn like a tiny, proud flag.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pf_last_gift",
+          "label": "Bring the rescued papers back to Mr. Finn.",
+          "target": "pf_gift"
+        }
+      ]
+    },
+    {
+      "id": "pf_breeze",
+      "body": "You and Pip stand very still. You hold your palms facing up and wait. The evening breeze thinks about it for a moment. Then, it tips the gold square right off the awning! The paper floats down in lazy zigzags and lands right into Pip's open paws. Pip squeaks with pure delight. It is her first happy squeak of the night.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pf_breeze_gift",
+          "label": "Carry the gold square back to Mr. Finn.",
+          "target": "pf_gift"
+        }
+      ]
+    },
+    {
+      "id": "pf_sort",
+      "body": "You neatly sort the squares into their trays. You put the reds with reds, golds with golds, and blues with blues. Mr. Finn smooths each one flat with his thumb. As you both work, he takes a scrap and folds it into a little paper crane right before your eyes. He folds corner to corner until its wings flap! Pip watches so closely her wet nose nearly touches the paper.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pf_sort_gift",
+          "label": "Hand Mr. Finn the last tidy tray.",
+          "target": "pf_gift"
+        }
+      ]
+    },
+    {
+      "id": "pf_gift",
+      "body": "Mr. Finn thanks you both. Then, he cuts a fresh square of beautiful, moon-white paper. He creases it once into the special wish fold. He gives it to Pip. It is wishing paper, just like the one she lost! He promises to sit near the very front at the Star-Rise Ceremony to watch it fly. Pip holds the paper flat like a real treasure. Now, you can head back to the Great Circle, or toward the grand steps.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pf_gift_hub",
+          "label": "Walk back to the Great Circle.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_pf_gift_steps",
+          "label": "Head for the grand steps with Pip.",
+          "target": "f_steps"
+        }
+      ]
+    },
+    {
+      "id": "tc_entry",
+      "body": "The cider stand glows with a tiny iron stove. Auntie Lin pours hot apple cider in long, amber ribbons. The cider steams in the night air. A line of thirsty stall keepers has formed. Her big kettle is running low all at once. She winks at you and Pip right over her round glasses. You can decide to help her pass out the little clay cups to the line. Or, you can help refill the big kettle from the wooden water barrel.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tc_cups",
+          "label": "Pass out the little clay cups.",
+          "target": "tc_cups"
+        },
+        {
+          "id": "c_tc_kettle",
+          "label": "Refill the big kettle from the water barrel.",
+          "target": "tc_kettle"
+        }
+      ]
+    },
+    {
+      "id": "tc_cups",
+      "body": "The little clay cups are as warm as held hands. They are full right to their happy brims. The waiting stall keepers chat and stretch their tired arms. Pip walks beside you. She announces each cup of cider in her small voice, which gets a tiny bit louder every single time. You must decide how to serve them. You can carry two cups at a time, nice and level. Or, load up the whole tray in one go.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tc_cups_level",
+          "label": "Carry two cups at a time, nice and level.",
+          "target": "tc_warm"
+        },
+        {
+          "id": "c_tc_cups_tray",
+          "label": "Load up the whole tray in one go.",
+          "target": "e_tc_slosh"
+        }
+      ]
+    },
+    {
+      "id": "tc_warm",
+      "body": "Carrying two cups at a time, you are as steady as a stone bridge. You deliver the hot cider all down the line. Keepers warm their hands on the clay and sigh happy sighs. Tinker Tom toasts you with his cup, and the fiddle player hums a cheerful thank-you note. Auntie Lin calls you back to her cart with a big, brewing smile.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tc_warm_gift",
+          "label": "Head back to Auntie Lin's cart.",
+          "target": "tc_gift"
+        }
+      ]
+    },
+    {
+      "id": "tc_kettle",
+      "body": "You ladle clear water from the barrel into the big kettle. You pour one careful scoop after another, while Pip counts the scoops out loud. Auntie Lin sets the heavy kettle on the tiny stove. She shows you how to bank the glowing coals so the fire stays cozy but calm all night. The kettle begins its low, happy singing. Auntie Lin looks like she has a bright idea!",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tc_kettle_gift",
+          "label": "See what Auntie Lin has in mind.",
+          "target": "tc_gift"
+        }
+      ]
+    },
+    {
+      "id": "tc_gift",
+      "body": "Auntie Lin lights a stubby little candle from her stove. She sets it inside a little tin with a hinged lid. It is a spark-candle, just like the one Pip lost! She tucks it into Pip's paws and promises to bring her sweet cider to the grand steps after the lanterns fly. The tin is as warm as a purring kitten. From here, you can head back to the Great Circle, or move on toward the grand steps.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tc_gift_hub",
+          "label": "Walk back to the Great Circle.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_tc_gift_steps",
+          "label": "Head for the grand steps with Pip.",
+          "target": "f_steps"
+        }
+      ]
+    },
+    {
+      "id": "tm_entry",
+      "body": "The tinker's wagon is a tiny hospital for clockwork toys. You see wind-up beetles and one-eared rabbits. You see a drum with a new skin. Tinker Tom looks through a huge glass lens. It is the size of a teacup. He is hunting for a runaway brass gear! Also, his shiny tin of tiny screws is a messy jumble. You can decide to sort the tin of tiny screws by size. Or, you can hunt for the runaway gear under the stall.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tm_screws",
+          "label": "Sort the tin of tiny screws by size.",
+          "target": "tm_screws"
+        },
+        {
+          "id": "c_tm_gear",
+          "label": "Hunt for the runaway gear under the stall.",
+          "target": "tm_gear"
+        }
+      ]
+    },
+    {
+      "id": "tm_screws",
+      "body": "The screws are as small as sesame seeds, and every size is totally different. You spread them out on the green felt table. Pip helps sort them with the tips of her claws, which turn out to be perfect little tweezers! Nearby, a shiny wind-up beetle sits waiting. Its silver key is just begging for a turn. You can keep lining the screws up in neat rows, or wind the beetle's key as far as it can go.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tm_screws_rows",
+          "label": "Keep lining the screws up in neat rows.",
+          "target": "tm_neat"
+        },
+        {
+          "id": "c_tm_screws_wind",
+          "label": "Wind the beetle's key as far as it can go.",
+          "target": "e_tm_spring"
+        }
+      ]
+    },
+    {
+      "id": "tm_neat",
+      "body": "Row by row, the screws line up from big to small. They look like a tiny, shiny parade. Tinker Tom looks up from his glass lens. He blinks at the tidy felt table as if helpful elves had visited! Now he can fix three clockwork toys in the time one used to take. He waves you and Pip closer. Then he reaches for something on his high shelf.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tm_neat_gift",
+          "label": "Come see what Tinker Tom is reaching for.",
+          "target": "tm_gift"
+        }
+      ]
+    },
+    {
+      "id": "tm_gear",
+      "body": "Under the stall is a dusty land of table legs and wood shavings. You borrow a lantern. Pip squeezes into the narrow places. There is the shiny brass gear! It winks in a floorboard crack. Pip hooks it out with one careful claw. Tinker Tom cheers so loudly the one-eared rabbit falls right over! He waves you close. He reaches for a little box on his shelf.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tm_gear_gift",
+          "label": "Come see what Tinker Tom is reaching for.",
+          "target": "tm_gift"
+        }
+      ]
+    },
+    {
+      "id": "tm_gift",
+      "body": "Tinker Tom notices a little dent in Pip's lantern frame. He taps it round again with three soft taps, then oils the tiny door until it swings like new. Last of all, he clips a tiny brass bell to the handle. He calls it a jingling friend for a shy walker. He promises to watch the Star-Rise Ceremony from his stool. Now, you can head back to the Great Circle, or go on toward the grand steps.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tm_gift_hub",
+          "label": "Walk back to the Great Circle.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_tm_gift_steps",
+          "label": "Head for the grand steps with Pip.",
+          "target": "f_steps"
+        }
+      ]
+    },
+    {
+      "id": "fs_entry",
+      "body": "The bright fruit stand is a city of colorful pyramids! There are piles of oranges and pointy star fruit. There are plums with dusty purple cheeks. A passing cart has just bumped the corner. Mrs. Plum's grandest orange pyramid has tumbled down! It is now a rolling puddle of fruit. She is laughing about it, but her hands are full weighing plums. You can choose to help rebuild the orange pyramid. Or, you can help tie the fruit baskets with strong kite string.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fs_stack",
+          "label": "Rebuild the tumbled orange pyramid.",
+          "target": "fs_stack"
+        },
+        {
+          "id": "c_fs_bundle",
+          "label": "Tie fruit baskets with the kite string.",
+          "target": "fs_bundle"
+        }
+      ]
+    },
+    {
+      "id": "fs_stack",
+      "body": "You and Pip herd the runaway oranges back home. Pip rolls them in gently with her wet nose. Now comes the really fun building part! You have to put them back together. You can decide to build it the classic way. This puts the biggest oranges on the bottom in a solid square. Or, you can try a fancy pattern. This uses neat stripes of orange and green star fruit.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fs_stack_classic",
+          "label": "Build it the classic way, big ones on the bottom.",
+          "target": "fs_tower"
+        },
+        {
+          "id": "c_fs_stack_fancy",
+          "label": "Try a fancy striped fruit pattern.",
+          "target": "fs_pattern"
+        }
+      ]
+    },
+    {
+      "id": "fs_tower",
+      "body": "You put the big oranges on the bottom. You put the smaller ones on top. The pyramid rises as steady as a sweet-smelling castle. You place the very last orange on top like a little crown. The whole stand seems to stand up straighter. Mrs. Plum whistles. She is very impressed! She dusts off her hands to find you a special thank-you.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fs_tower_gift",
+          "label": "Go get Mrs. Plum's special thank-you.",
+          "target": "fs_gift"
+        }
+      ]
+    },
+    {
+      "id": "fs_pattern",
+      "body": "Orange, green, orange, green! The bright stripes go up the fruit pyramid. It looks like a tall, sweet lighthouse. A few Night Market shoppers stop just to look at it. One even takes a picture with a very long camera! Mrs. Plum says it is the prettiest pyramid the market has ever made. She waves you and Pip over. She has a happy twinkle in her eye.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fs_pattern_gift",
+          "label": "Go see what Mrs. Plum is twinkling about.",
+          "target": "fs_gift"
+        }
+      ]
+    },
+    {
+      "id": "fs_bundle",
+      "body": "Mrs. Plum teaches you the special bundle knot. It goes: loop, loop, pull! Soon, plums and star fruit sit in tidy baskets tied with golden string, ready for shoppers. Pip holds the string spool in her paws and lets it spin. \"Loop, loop, pull,\" Pip whispers along, learning the trick too. The spool of strong kite string glints in the lantern light as Mrs. Plum reaches for her scissors.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fs_bundle_gift",
+          "label": "Watch what Mrs. Plum snips off the spool.",
+          "target": "fs_gift"
+        }
+      ]
+    },
+    {
+      "id": "fs_gift",
+      "body": "Mrs. Plum measures out a long piece of kite string from her spool. It is just like the string Pip lost! She coils it into Pip's paws, along with one perfect star fruit for good luck. She promises to bring a tray of sweet fruit baskets to the grand steps for after the lanterns fly. Pip practices the neat knot in the air: loop, loop, pull! You can head back to the Great Circle or go toward the grand steps.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fs_gift_hub",
+          "label": "Walk back to the Great Circle.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_fs_gift_steps",
+          "label": "Head for the grand steps with Pip.",
+          "target": "f_steps"
+        }
+      ]
+    },
+    {
+      "id": "mc_entry",
+      "body": "In the music corner, a fiddle player and a drummer girl warm up. They play the evening songs. Their fun tunes spread like warm honey over the whole square. The evening breeze keeps flipping the thick songbook pages! At the same time, the little brass bells sit and wait for extra hands. You must choose what to do. You can hold the songbook pages open against the breeze. Or, you can try shaking the little brass bells with the drummer girl.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mc_pages",
+          "label": "Hold the songbook pages open against the breeze.",
+          "target": "mc_pages"
+        },
+        {
+          "id": "c_mc_bells",
+          "label": "Try the little brass bells with the drummer.",
+          "target": "mc_bells"
+        }
+      ]
+    },
+    {
+      "id": "mc_bells",
+      "body": "The drummer girl hands you the strap of little brass bells. She shows you the easy trick. You shake them softly on the drum beat. It sounds like rain falling with thunder. A big, shiny metal gong hangs beside the big drum. Its thick, soft mallet looks very tempting! You can choose to ring the bells softly with the drum. Or, you can pick up the mallet and give the big gong one hard whack.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mc_bells_time",
+          "label": "Ring the bells softly in time.",
+          "target": "mc_time"
+        },
+        {
+          "id": "c_mc_bells_gong",
+          "label": "Give the big gong one mighty whack.",
+          "target": "e_mc_gong"
+        }
+      ]
+    },
+    {
+      "id": "mc_time",
+      "body": "Shake, shake! Right on the beat, the bells add a silver edge to the deep drum song. The fiddle player smiles around his bow. His music swoops happily. Pip taps her fuzzy tail on the cobblestones in perfect time. She surprises even herself! The fast song lands on its last note. Then, the whole corner claps for its two newest music makers.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mc_time_gift",
+          "label": "Take a happy bow with the band.",
+          "target": "mc_gift"
+        }
+      ]
+    },
+    {
+      "id": "mc_pages",
+      "body": "You stand like a strong wooden music stand. You hold the pages flat. The tricky breeze tries to blow them away. Soon, you learn to turn the page just when the fiddle player nods. The fun songs pour out smoothly. There is no flapping paper at all! Between two fast songs, the fiddle player leans down. He asks Pip a question in a kind, quiet voice.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mc_pages_gift",
+          "label": "Listen to what the fiddle player asks Pip.",
+          "target": "mc_gift"
+        }
+      ]
+    },
+    {
+      "id": "mc_gift",
+      "body": "The band promises Pip they will play the special Star-Rise song the exact moment her lantern rises into the sky. Right there, they teach you and Pip the humming part. It is low and warm, like a resting kettle. Pip hums it once, a tiny, brave sound. Then she hums it again, a little stronger! The drummer girl declares Pip an official member of the band. You can head back to the Great Circle, or on toward the grand steps.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mc_gift_hub",
+          "label": "Walk back to the Great Circle.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_mc_gift_steps",
+          "label": "Head for the grand steps with Pip.",
+          "target": "f_steps"
+        }
+      ]
+    },
+    {
+      "id": "f_steps",
+      "body": "The big stone steps glow under thick strings of lights. The keepers are putting out the Star-Rise rack. They lay out extra wishing paper on a long tray. They add kite string and little spark-tins. No shy latecomer is left out here! Between Pip's items and the tray, her lantern has what it needs. Steam drifts up the steps. Paper crinkles, and fiddle music floats over. Keepers begin to gather. Pip takes a deep breath and looks at you. You can fold and write the wish. You can get the paper star-lantern ready to fly. Or, you can gather your new stall friends around Pip first.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fsteps_paper",
+          "label": "Help Pip fold and write her wish.",
+          "target": "f_paper"
+        },
+        {
+          "id": "c_fsteps_lantern",
+          "label": "Help Pip get the star-lantern ready to fly.",
+          "target": "f_lantern"
+        },
+        {
+          "id": "c_fsteps_friends",
+          "label": "Gather the stall friends around Pip first.",
+          "target": "f_friends"
+        }
+      ]
+    },
+    {
+      "id": "f_paper",
+      "body": "You and Pip smooth the wishing paper flat on the cool stone step. A smiling keeper gives you a thin brush and a tiny pot of night-blue ink. Other families around you are busy folding their own paper wishes. Pip stares at her empty paper. She wants her wish to be exactly right. Her floppy ears droop down. She moves a little closer to your side.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fpaper_whisper",
+          "label": "Lean in so Pip can whisper her wish.",
+          "target": "f_whisper"
+        }
+      ]
+    },
+    {
+      "id": "f_whisper",
+      "body": "Pip cups her soft paws around your ear. She whispers her big wish. It is so quiet, it feels almost like warm air. It is a very good wish. It is simple and kind, the sort of wish that makes you smile with your whole entire face. You nod solemnly, becoming the proud keeper of the secret. Now, there is just the writing to decide.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fwhisper_write",
+          "label": "Pick up the ink brush together.",
+          "target": "f_write"
+        }
+      ]
+    },
+    {
+      "id": "f_write",
+      "body": "The brush waits over the wishing paper. The wet night-blue ink shines. You and Pip must decide how to write the wish. You can write Pip's wish just how she whispered it to you. Or, you can add a second line. This line can wish something warm and happy for the whole Night Market. Or, you can hand Pip the brush. Then she can write it in her own wobbly puppy letters. Each way feels perfectly right in its own way.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fwrite_pip",
+          "label": "Write Pip's wish just as she whispered it.",
+          "target": "e_wish_pip"
+        },
+        {
+          "id": "c_fwrite_market",
+          "label": "Add a second wish for the whole Night Market.",
+          "target": "e_wish_market"
+        },
+        {
+          "id": "c_fwrite_brave",
+          "label": "Hand Pip the brush to write it herself.",
+          "target": "e_wish_brave"
+        }
+      ]
+    },
+    {
+      "id": "f_lantern",
+      "body": "You gently rest the paper star-lantern on your knees. Its folded paper walls glow a little. It looks like a small moon waiting to happen. Pip sits right beside you, nose to nose with it. A keeper kneels down to check the frame. She smiles and calls it a perfectly fine flyer! You only have to tie the string and light a flame. Then it can fly up into the sky.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_flantern_string",
+          "label": "Tie on the kite string first.",
+          "target": "f_string"
+        }
+      ]
+    },
+    {
+      "id": "f_string",
+      "body": "The kite string goes on with a simple loop, loop, pull knot. It is easy enough for small puppy paws to do. Now the folded wish can hang beneath the star-lantern like the clapper of a tiny bell. Pip pulls the last loop snug herself and checks it twice. The lantern is totally dressed and ready! Now only the flame is left, the biggest moment of all.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fstring_flame",
+          "label": "Get ready to light the paper star-lantern.",
+          "target": "f_flame"
+        }
+      ]
+    },
+    {
+      "id": "f_flame",
+      "body": "A small flame waits inside its tin, steady and warm. The lantern's wick stands ready. The keepers say the special lighting can be done any way the wisher likes best. Pip can touch the flame to the wick first, all by herself. Or, you and Pip can light it together on a quick count of three. Or, you can ask the oldest keeper to light it the old way with his long brass taper. Pip looks at each choice in turn.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fflame_pip",
+          "label": "Let Pip light the wick all by herself.",
+          "target": "e_light_pip"
+        },
+        {
+          "id": "c_fflame_together",
+          "label": "Light it together on a count of three.",
+          "target": "e_light_together"
+        },
+        {
+          "id": "c_fflame_keeper",
+          "label": "Ask the oldest keeper to light it the old way.",
+          "target": "e_light_keeper"
+        }
+      ]
+    },
+    {
+      "id": "f_friends",
+      "body": "You trot around the Great Circle to get friends for Pip. The Night Market answers the way it always does! Every stall keeper who waved to you tonight comes right over. Many kind neighbors who love a ceremony come too. They wipe their hands on aprons. They carry warm cups and stools. Soon, a happy crowd gathers at the grand steps. They stand around one small talking puppy.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ffriends_circle",
+          "label": "Bring everyone into a circle around Pip.",
+          "target": "f_circle"
+        }
+      ]
+    },
+    {
+      "id": "f_circle",
+      "body": "The big circle of lantern-lit faces sits on the stone steps. You see floury aprons, round glasses, and one big drum. Everyone smiles down at Pip. Pip started the night hiding behind a barrel. Now, she stands in the very middle. She holds her star-lantern and does not hide at all! She shines just like a little lantern herself. The launch is only moments away.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fcircle_countdown",
+          "label": "Get ready to send the star-lantern up.",
+          "target": "f_countdown"
+        }
+      ]
+    },
+    {
+      "id": "f_countdown",
+      "body": "The star-lantern glows in Pip's paws. It tugs gently upward toward the sky, just like a puppy pulling on a string. The whole circle leans in close. All that is left is choosing how to send it off. Pip can lead the count of three in her new brave voice. Or, the whole circle can count together like one big, warm voice. Or, instead of counting, everyone can hum the Star-Rise song and let the magic music lift it. You squeeze Pip's soft paw.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fcount_pip",
+          "label": "Let Pip lead the count of three.",
+          "target": "e_up_pip"
+        },
+        {
+          "id": "c_fcount_chorus",
+          "label": "Count down all together with the crowd.",
+          "target": "e_up_chorus"
+        },
+        {
+          "id": "c_fcount_song",
+          "label": "Hum the Star-Rise song and let it lift.",
+          "target": "e_up_song"
+        }
+      ]
+    },
+    {
+      "id": "e_ds_spill",
+      "body": "Three heavy trays are two trays too many! The giant tower falls over. The meat skewers bounce and roll like ping-pong balls! Nobody gets hurt. Chef Sal laughs the loudest of all. But the big cleanup takes up the rest of the night. Dad says it is time to go home. The keepers promise to save Pip a star-lantern for the next market night. Pip walks home safely between you and Dad. She is already planning her next fun trip.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ds_spill",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Runaway Meat Skewers"
+      }
+    },
+    {
+      "id": "e_tc_slosh",
+      "body": "Carrying the whole tray is a wobbly idea. The cups slide. The warm cider spills on your shoes! Half the cups need washing before anyone else can drink. No one is hurt. Auntie Lin just chuckles. When the washing is done, Dad says it is time to go home. Auntie Lin sends you off with honey tea. She promises to teach you how to hold a tray next market night. Pip waves happily to the Great Circle as you go. She is not sad at all.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_tc_slosh",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Apple Cider Spill"
+      }
+    },
+    {
+      "id": "e_tm_spring",
+      "body": "You wind the beetle's silver key one turn too far. SPROING! The tiny spring pops out. The beetle does one heroic backflip and lies totally still. Tinker Tom is not cross at all. Springs pop every single week! But the toy beetle needs a whole evening of careful surgery, and his table becomes a busy operating room. Dad says that is your cue to head home. Tinker Tom promises the beetle will be marching by next market night, and saves Pip a front-row stool.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_tm_spring",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Broken Clockwork"
+      }
+    },
+    {
+      "id": "e_mc_gong",
+      "body": "The big metal gong says BWOOONNNG. It is so loud that sleepy pigeons fly off every roof! The whole band stops playing right away. Everyone laughs, even the fiddle player. But all your ears are ringing. The band takes a long tea break to rest. Dad decides that is the big finish for the night. The drummer girl says the gong tricks everyone once. She makes Pip promise to come hum with the band next market night.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_mc_gong",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Giant Gong"
+      }
+    },
+    {
+      "id": "e_wish_pip",
+      "body": "You write Pip's wish in neat dark blue letters. You write just what she whispered. You do not change a single word. Pip watches every stroke of the brush. The folded wish is tied under the star lantern. The flame is lit. Up it sails over the Night Market! It flies with many others, but yours is easy to spot. It holds a secret only two friends know. The stall keepers cheer from the steps. Pip leans on your arm to watch her wish join the stars.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_wish_pip",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Pip's Own Wish"
+      }
+    },
+    {
+      "id": "e_wish_market",
+      "body": "Right under Pip's wish, you add one more line. It is a warm wish for the whole Night Market. You wish for its sweet steam, folk songs, and kind hands. Pip nods hard at every word. The star lantern rises. The stall keepers on the steps cheer loudly. It is like they can feel the extra wish riding along! The lantern climbs until it is a tiny gold dot in the stars. It carries kindness up for everyone who traded kindness tonight.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_wish_market",
+        "valence": "positive",
+        "kind": "success",
+        "title": "A Wish for the Market"
+      }
+    },
+    {
+      "id": "e_wish_brave",
+      "body": "You hand Pip the wet brush. The little pup whispered all night. Now she writes her own wish in wobbly, proud letters. The keepers try not to peek! The oldest keeper whispers a secret. He says the wobbliest letters always fly best. The star lantern lifts off with Pip's wish swinging under it. She finds out her voice works out loud, too! She cheers as her special wish climbs the dark sky. The shy puppy from behind the barrel is gone for good.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_wish_brave",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Wobbliest Letters"
+      }
+    },
+    {
+      "id": "e_light_pip",
+      "body": "Pip touches the flame to the wick all by herself. Her paws do not shake at all! The star lantern wakes up. It glows like a small moon. The crowd on the steps gets quiet. Then they cheer loudly as the lantern rises from her paws. Pip stands tall. She watches her bright light climb over the market roofs. You think she does not look like a shy puppy anymore. She looks just like a brave lighthouse keeper.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_light_pip",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Pip Lights the Way"
+      }
+    },
+    {
+      "id": "e_light_together",
+      "body": "One, two, three! You and Pip touch the flame to the wick at the exact same moment. Now, the star-lantern belongs to both of you forever. It rises up, trailing its kite string over the steam, the fiddle music, and the blinking bulbs. The whole Night Market seems to glow a shade brighter as it goes. \"Best market night ever,\" Pip says out loud, in a brave voice that does not whisper at all. Two good friends, one bright light, and one huge sky.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_light_together",
+        "valence": "positive",
+        "kind": "success",
+        "title": "One Sky Together"
+      }
+    },
+    {
+      "id": "e_light_keeper",
+      "body": "The oldest keeper lights the wick with his long brass stick. This is how things were done when the Night Market was new. He tells you the stick has lit a thousand first wishes. \"A thousand and one now,\" Pip says bravely. The old keeper laughs. He sounds like dry autumn leaves. The star lantern rises up slow and grand. The Great Circle watches the newest wish go up the oldest way. You and Pip stand right at the heart of it all.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_light_keeper",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Oldest Tradition"
+      }
+    },
+    {
+      "id": "e_up_pip",
+      "body": "Pip lifts her fuzzy chin and counts. \"One, two, THREE!\" she yells in a clear voice. It surprises even the sleeping pigeons. The star lantern leaps for the dark sky. It is like the lantern was waiting for her voice! The big circle of stall keepers shouts with joy. The band plays a fast tune. You cheer the loudest. Her voice began hiding behind a barrel tonight. Now look at her! She is leading the whole Great Circle.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_up_pip",
+        "valence": "positive",
+        "kind": "success",
+        "title": "A Brave New Voice"
+      }
+    },
+    {
+      "id": "e_up_chorus",
+      "body": "The whole circle counts together. \"One, two, three!\" Floury aprons, round glasses, the big drum, and you all shout at once. It is one big warm voice under the lights. Pip's star lantern sails up on the great sound. It climbs safely past the market roofs. The paper wish swings below. The happy crowd keeps cheering for a long time! Pip spins slowly. She looks at every smiling face that counted for her. It is the best crowd a small pup ever had.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_up_chorus",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Great Market Chorus"
+      }
+    },
+    {
+      "id": "e_up_song",
+      "body": "Nobody counts out loud at all. The band starts to play the Star-Rise song. The whole circle hums the low, warm part together. Pip's star lantern rises on the soft music. It looks like the beautiful song is lifting it! The lantern drifts up through the sweet steam and the strings of yellow lights. It glows pure gold. Pip hums until her lantern is a tiny spark in the stars. The music sends the wish the whole way up.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_up_song",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Lifted by a Song"
+      }
+    }
+  ]
+}

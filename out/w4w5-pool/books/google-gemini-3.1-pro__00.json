@@ -1,0 +1,575 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_lantern_festival",
+  "version": 1,
+  "title": "The Lantern Festival",
+  "metadata": {
+    "age_band": "5-8",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 2.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "friendship",
+      "community",
+      "celebration",
+      "perseverance"
+    ],
+    "estimated_minutes": 6,
+    "ending_count": 10,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "none",
+      "peril": "none"
+    },
+    "topology": "loop_and_grow",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_open",
+  "nodes": [
+    {
+      "id": "n_open",
+      "body": "You stand in your cozy cottage by the river. Tonight is the Great River Festival! You must find many things. Soon everyone will walk paper lanterns down to the water. Your heart does a happy flip. You feel warm and glad. You are not worried at all.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Count what you still need to get.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_start",
+      "body": "You hold up your hands. You count on your fingers all the special things you still need for your paper boat lantern. The list is long, but you are ready. Where will you set out to go first?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_berries",
+          "label": "Go gather river-candles on the rocky shore.",
+          "target": "n_berry1"
+        },
+        {
+          "id": "c_start_willow",
+          "label": "Go invite your friends at the boathouse.",
+          "target": "n_willow1"
+        },
+        {
+          "id": "c_start_reeds",
+          "label": "Go cut tall reeds for paper boat frames.",
+          "target": "n_reed1"
+        },
+        {
+          "id": "c_start_honey",
+          "label": "Go ask the baker for sweet moon-cakes.",
+          "target": "n_honey1"
+        },
+        {
+          "id": "c_start_shed",
+          "label": "Go fetch the colorful sails from the attic.",
+          "target": "n_shed1"
+        },
+        {
+          "id": "c_start_crickets",
+          "label": "Go ask the friendly river-frogs to sing.",
+          "target": "n_cricket1"
+        }
+      ]
+    },
+    {
+      "id": "n_berry1",
+      "body": "Down by the rocks, the glow-berry bushes shine. The low berries are ripe. They glow with a soft, warm light. But you spot the biggest, brightest berry of all! It hangs way up high on a shaky branch. Do you want to fill your basket with the easy berries down low? Or will you stretch up on your toes for that one bright berry?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_berry_low",
+          "label": "Pick the ripe low glow-berries.",
+          "target": "n_berry2"
+        },
+        {
+          "id": "c_berry_high",
+          "label": "Climb up for the high berry.",
+          "target": "e_berry_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_berry2",
+      "body": "You pick the low glow-berries and drop them into your basket. They shine so brightly that they light up your chin with a warm yellow glow! You smile. Your collection for the festival is already growing. You have a choice to make. You can carry your glowing berries right down to the main riverbank. Or, you can trot back to your cottage to grab the next thing on your list.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_berry_meadow",
+          "label": "Carry the glow-berries to the riverbank.",
+          "target": "n_meadow"
+        },
+        {
+          "id": "c_berry_back",
+          "label": "Go back to your cottage for more.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_willow1",
+      "body": "You walk down to the old wooden boathouse. Inside, your friends sleep in the warm sun. You want to ask them to the Great River Festival! You stand at the door. You think about how to wake them. You could knock nicely on the door to wake them up softly. Or, you could reach up and ring the shiny brass bell to hurry things along!",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_willow_knock",
+          "label": "Knock gently on the boathouse door.",
+          "target": "n_willow2"
+        },
+        {
+          "id": "c_willow_bell",
+          "label": "Clang the shiny brass bell.",
+          "target": "e_willow_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_willow2",
+      "body": "You knock gently on the door. Your friends stretch and yawn. When you tell them about the festival, they smile and say yes at once! They jump up and grab their folded paper boats. Your little group is growing fast. Now, you can lead your happy, chattering friends straight down to the riverbank. Or, you can swing back by your cottage first to grab the very next thing on your list.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_willow_meadow",
+          "label": "Lead your friends to the riverbank.",
+          "target": "n_meadow"
+        },
+        {
+          "id": "c_willow_back",
+          "label": "Pop back to your cottage first.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_reed1",
+      "body": "You squish your way into the muddy marsh. You need good stalks to bend into frames for your boat lanterns. The tall, dry river-reeds rustle loudly on the bank. But there are also fresh, bendy green reeds. They lean far out over the splashing water. You look back and forth at them. Which kind of river-reeds will you cut down for your lantern today?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_reed_dry",
+          "label": "Cut the tall, dry river-reeds.",
+          "target": "n_reed2"
+        },
+        {
+          "id": "c_reed_wet",
+          "label": "Cut the fresh, green river-reeds.",
+          "target": "e_reed_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_reed2",
+      "body": "You cut the tall, dry reeds. They snap free and make a neat, golden bundle in your arms. They will be absolutely perfect for bending into boat shapes! You have a choice. You can sit down in the grass and start weaving the lantern frames right here by the marsh. Or, you can lug the whole heavy bundle back to your cottage to work on your favorite porch step.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_reed_weave",
+          "label": "Weave the frames right here by the marsh.",
+          "target": "n_reed3"
+        },
+        {
+          "id": "c_reed_back",
+          "label": "Carry the bundle back to your cottage.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_reed3",
+      "body": "You sit in the soft grass. You carefully bend the dry reeds. You shape them into strong little boat frames. You hum a happy tune as you work. Soon, a tall stack of frames rests in your arms. You did a great job! There is only one thing left to do now. You must carry all your boat frames down to the wide riverbank.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_reed_meadow",
+          "label": "Carry the boat frames to the riverbank.",
+          "target": "n_meadow"
+        }
+      ]
+    },
+    {
+      "id": "n_honey1",
+      "body": "You skip down the lane to the village bakery. You ask the happy baker for moon-cakes for the festival feast. The baker hums a kind song and turns to the ovens. The cakes are not quite ready yet. Do you want to stand by the counter and wait for him to pack a basket? Or will you run back to your cottage and get the moon-cakes later?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_honey_wait",
+          "label": "Wait politely for the moon-cakes.",
+          "target": "n_honey2"
+        },
+        {
+          "id": "c_honey_back",
+          "label": "Head back to your cottage for now.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_honey2",
+      "body": "You decide to wait by the warm ovens. Soon, the baker fills a basket with warm, gold moon-cakes. They smell like baked sugar and sweet cinnamon. The big feast is really coming together now! You smile big and thank the glad baker for his hard work. You grab the handle. You carry the sweet basket down the path to the wide riverbank.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_honey_meadow",
+          "label": "Carry the moon-cakes to the riverbank.",
+          "target": "n_meadow"
+        }
+      ]
+    },
+    {
+      "id": "n_shed1",
+      "body": "You push open the creaky door to the old garden shed. Inside, the bright paper sails from last year sit on a dusty shelf. They are covered in cobwebs! You wonder what to do next. You can take out a rag and dust each paper sail off right now. Or, you can scoot back to your cottage and get them on your next trip.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_shed_dust",
+          "label": "Dust off the colorful paper sails.",
+          "target": "n_shed2"
+        },
+        {
+          "id": "c_shed_back",
+          "label": "Go back to the cottage for now.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_shed2",
+      "body": "You rub the paper with a soft cloth. The bright sails look so pretty! Their painted swirls look just as good as new. Your big pile of special festival treasures keeps growing and growing. You hold the clean paper sails tight against your chest. This way, the wind will not blow them away. Now you are ready to carry them all to the busy riverbank.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_shed_meadow",
+          "label": "Carry the paper sails to the riverbank.",
+          "target": "n_meadow"
+        }
+      ]
+    },
+    {
+      "id": "n_cricket1",
+      "body": "You wander down by the green lily pads. The friendly river-frogs are tuning their tiny banjos! You ask them if they will please play their music at the festival tonight. They croak eagerly and hop up and down in the mud. You have a choice. You can lead the musical frogs along to the festival right away. Or, you can pop back to your cottage to gather one more thing first.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cricket_lead",
+          "label": "Ask the river-frogs to follow you now.",
+          "target": "n_cricket2"
+        },
+        {
+          "id": "c_cricket_back",
+          "label": "Go back to your cottage first.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_cricket2",
+      "body": "You wave your hand and say, follow me! The river frogs walk in a happy line right behind you. They hold round banjos under their wet green arms. Their fun music will make the party night perfect! You march ahead with pride and tap your feet. You lead the frog band down the long dirt path to the river.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cricket_meadow",
+          "label": "Lead the river-frogs to the riverbank.",
+          "target": "n_meadow"
+        }
+      ]
+    },
+    {
+      "id": "n_meadow",
+      "body": "The wide sandy riverbank opens up before you. The sun is going down! The grand willow tree and the rushing river ring the space. Everything you gathered all day is piled up in the grass. More and more friends arrive to help. You look around at the busy scene. You must decide. Will you start setting the festival up right now? Or will you make one last trip to your cottage to check for things you forgot?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_meadow_setup",
+          "label": "Start setting up the river festival.",
+          "target": "n_setup"
+        },
+        {
+          "id": "c_meadow_back",
+          "label": "Make one last trip to your cottage.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_setup",
+      "body": "You decide to stay and help set up. Everyone works together on the busy riverbank. The reed boat frames get wrapped in bright paper sails. You tuck the glow-berries inside the boats. Now they shimmer and shine in the fading light. Friends hurry everywhere in the grass! You look at the great scene. Do you want to hang the paper boats in the branches of the grand willow tree? Or would you rather spread out the picnic feast first?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_setup_hang",
+          "label": "Hang the paper boats in the grand willow tree.",
+          "target": "n_hang"
+        },
+        {
+          "id": "c_setup_picnic",
+          "label": "Spread out the big picnic feast.",
+          "target": "n_picnic"
+        }
+      ]
+    },
+    {
+      "id": "n_hang",
+      "body": "You and your friends gently lift the finished paper boats into the sweeping branches of the grand willow tree. They sway in the breeze like sleepy fireflies. The huge sky above you is slowly turning a deep, twilight purple. The night is almost here! You look at the boats swinging in the cool air. Will you light up all the beautiful boats right this very moment? Or will you wait quietly until the very first star appears in the sky?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hang_light",
+          "label": "Light the paper boats right now.",
+          "target": "n_light"
+        },
+        {
+          "id": "c_hang_star",
+          "label": "Wait for the first star.",
+          "target": "n_star"
+        }
+      ]
+    },
+    {
+      "id": "n_light",
+      "body": "You choose to light them now. One by one, the hanging paper boats wake up with a warm glow! Soon, the whole river side glows a rich gold. Everyone smiles big at the pretty sight. You stare at the shining tree branches. Now comes the biggest choice of the night. Will you set some of your paper boats out to float on the rushing river? Or will you keep them all safely glowing high up in the big willow tree?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_light_pond",
+          "label": "Float the lanterns on the rushing river.",
+          "target": "e_finale_pond"
+        },
+        {
+          "id": "c_light_oak",
+          "label": "Keep the lanterns in the grand willow tree.",
+          "target": "e_finale_oak"
+        }
+      ]
+    },
+    {
+      "id": "n_star",
+      "body": "You tell everyone to wait. The busy river bank grows very quiet. You all watch the dark purple sky together. Then, the very first tiny star blinks awake over the water! A happy, loud cheer goes up from the crowd. That tiny star is the magic sign. You reach up with care. You light the very first paper boat lantern in the willow tree. The pretty party glow has now begun!",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_star_glow",
+          "label": "Light the lanterns and begin.",
+          "target": "n_glow"
+        }
+      ]
+    },
+    {
+      "id": "n_glow",
+      "body": "Paper boat after paper boat turns on! Soon, the wide river bank is a huge sea of soft, gold light. The dark, rushing river below shows back every pretty glow. Near the shore, the nice river frogs lift their tiny wood banjos. They are ready to play. The night is perfect. Do you want to start singing the River Boat Song for everyone to hear? Or would you rather pull all your close friends near to make a special wish together?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_glow_song",
+          "label": "Start singing the River Boat Song.",
+          "target": "n_song"
+        },
+        {
+          "id": "c_glow_wish",
+          "label": "Gather your friends to make a wish.",
+          "target": "n_wish"
+        }
+      ]
+    },
+    {
+      "id": "n_song",
+      "body": "You choose the music! The friendly river-frogs strike up a bouncy, cheerful tune on their banjos. You step forward and bravely sing the first verse of the River Boat Song. Your friends join in, line by line, adding their voices. Soon, the entire riverbank rings brightly with happy song! The grand willow tree glows warmly overhead, keeping time with the bouncy beat of the amazing music.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_song_end",
+          "label": "Sing the festival into the night.",
+          "target": "e_finale_song"
+        }
+      ]
+    },
+    {
+      "id": "n_wish",
+      "body": "You call your friends close. You all gather in a tight ring around the brightest glowing paper boat. You close your eyes and hold hands tightly. The night is so quiet and magical. You count softly, one, two, three. At exactly the same time, everyone makes the very same warm wish for your peaceful riverside village. The shared magic fills the cool air all around you.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wish_end",
+          "label": "Make the wish all together.",
+          "target": "e_finale_wish"
+        }
+      ]
+    },
+    {
+      "id": "n_picnic",
+      "body": "You decide to eat first! You spread a huge red cloth right on the soft river grass. You lay out the sweet moon cakes and juicy berry treats with care. The paper boats glow softly in the tree branches up above. Your hungry friends sit down all around the large picnic blanket. Will you start sharing the yummy cakes right now? Or will you wait for Old Fisherman Finn to get here and bless the grand feast?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_picnic_feast",
+          "label": "Start sharing the sweet moon-cakes.",
+          "target": "n_feast"
+        },
+        {
+          "id": "c_picnic_bless",
+          "label": "Wait for Old Fisherman Finn.",
+          "target": "n_bless"
+        }
+      ]
+    },
+    {
+      "id": "n_feast",
+      "body": "You pass the woven basket. The sweet moon cakes go round the glowing circle of friends. Everyone eats happily under the softly swaying paper boats. The big picnic feast is a happy, yummy success! You wipe sugar crumbs from your chin. Now you have to choose. You can let this happy feast slowly roll on deep into the quiet night. Or, you can start a round of silly river riddles between your bites of cake!",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_feast_end",
+          "label": "Let the happy feast roll on.",
+          "target": "e_finale_feast"
+        },
+        {
+          "id": "c_feast_riddle",
+          "label": "Start a round of river-riddles.",
+          "target": "n_riddle"
+        }
+      ]
+    },
+    {
+      "id": "n_riddle",
+      "body": "You shout out a riddle! Between big bites of moon-cakes, you and your friends trade silly river-riddles. Each riddle is even sillier than the last one! Soon, everyone is laughing so hard that the warm paper boat light shining down seems to giggle and shake, too. You grin a huge, sticky smile. You are saving the very best riddle of all for the very end of the night.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_riddle_end",
+          "label": "Tell the very best river-riddle.",
+          "target": "e_finale_riddle"
+        }
+      ]
+    },
+    {
+      "id": "n_bless",
+      "body": "You decide to wait. Soon, Old Fisherman Finn slowly gets to the picnic blanket. He leans heavily on his nice wooden walking stick. Your friends quickly make room for him and grow very quiet. Finn sits down on the blanket with a warm smile. Then, he clears his throat. He begins to tell the great tale of the very first paper lantern. He tells this same story every single year.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bless_end",
+          "label": "Listen to Finn's paper boat story.",
+          "target": "e_finale_story"
+        }
+      ]
+    },
+    {
+      "id": "e_berry_oops",
+      "body": "You stretch as high as you can for the bright berry. Snap! The wobbly branch springs back. Your whole basket of glow-berries bounces away into the squishy river mud with a loud, comic boing! Splat! You sigh, but nobody is hurt. You cannot help but laugh at the silly mess. You simply dust off your muddy knees, trot all the way back to your cottage, and happily start your gathering all over again.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_berry_oops",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Muddy Berry Bounce"
+      }
+    },
+    {
+      "id": "e_willow_oops",
+      "body": "You pull the rope, and the shiny brass bell rings loudly! Ding-dong! Every sleepy friend falls right out of the boathouse at the very same time. They land on the dock in a giggly, grumpy pile. They have thick blankets fully over their heads! It takes a very long time to sort out the big mess of arms and legs. You decide to start over and invite them the gentle way next time!",
+      "is_ending": true,
+      "ending": {
+        "id": "end_willow_oops",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Boathouse Tumble"
+      }
+    },
+    {
+      "id": "e_reed_oops",
+      "body": "You slice the fresh green reeds. But they are far too soft and wet to hold a good boat shape! Every time you try to bend a frame, it just flops right over like wet, cooked noodles. Green water drips all over your messy hands. You laugh out loud at the soggy, silly mess you made. You head right back to your cottage to begin again, this time with the right reeds.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_reed_oops",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Noodle Boats"
+      }
+    },
+    {
+      "id": "e_finale_pond",
+      "body": "You bring your lanterns to the water. Your friends set their glowing paper boats adrift on the rushing river, floating like little golden moons. But when you set yours down, it tips over! Splash! You fix the wet paper and try again. It tips a second time! You do not give up. You balance it carefully, and finally, it floats perfectly away! Everyone on the riverbank ohhs and cheers for you. The festival is beautiful, and you glow as bright as your floating lantern.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_pond",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Brave Floating Lantern"
+      }
+    },
+    {
+      "id": "e_finale_oak",
+      "body": "The big willow tree shines brightly with many hanging paper boats! It looks just like a huge magic tree filled with warm, glowing stars. The music plays. Everyone joins hands to dance slowly under the golden branches. You tilt your head back and look up. You see all the pretty things you and your happy friends made together tonight. Your proud heart feels just as full and bright as the happy party glow shining all around you.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_oak",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Tree of Stars"
+      }
+    },
+    {
+      "id": "e_finale_song",
+      "body": "The whole sandy river bank rings loudly with the cheerful River Boat Song! The big willow tree glows brightly above you. The nice river frogs pluck their banjos very loudly. The notes sail right over every single voice. The pretty music rolls out over the wide, rushing river. It fades away into the starry night. You stand up tall and sing the loudest of all. You are so very proud of the great party your group has made.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_song",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The River Chorus"
+      }
+    },
+    {
+      "id": "e_finale_wish",
+      "body": "You stand still in the bright ring of paper boat light. You and your friends make one very warm wish together. You wish for a happy and calm year in the village. At last, you open your eyes. You see the wide river bank glowing all around you in the dark. You smile big and squeeze your friends' hands as tight as you can. You are sure this is the very best lantern festival there ever was.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_wish",
+        "valence": "positive",
+        "kind": "success",
+        "title": "A Glowing Wish"
+      }
+    },
+    {
+      "id": "e_finale_feast",
+      "body": "The sweet moon-cakes and berry treats go round and round the blanket. Soft paper boats sway in the air above. Everyone laughs and tells jokes. They eat the yummy food late into the night. The feast you gathered has brought the village together! You sit on the warm river bank. You chew a bite of sweet cake. You feel so happy and warm. You are surrounded by the best friends in the world.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_feast",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Merry Moon-Cake Feast"
+      }
+    },
+    {
+      "id": "e_finale_riddle",
+      "body": "You stand up and tell the best river riddle! It is very silly. Your glowing circle of friends roars with loud laughs. The sweet moon-cakes are almost forgotten in all the fun! The bright paper boats hang in the breeze. They seem to twinkle with the happy giggles below. You wipe a tear of joy from your eye. It is the best river festival night the village friends can ever recall.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_riddle",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Riddling River"
+      }
+    },
+    {
+      "id": "e_finale_story",
+      "body": "Old Fisherman Finn tells a grand tale. He finishes the story of the first paper lantern. He speaks the last word. Suddenly, the paper boats glow! They shine bright on the river bank. Your friends clap softly in the quiet night air. You sigh and lean on Finn's warm, patchy coat. You close your eyes. You are so glad you gathered things today. Your hard work has kept the river festival alive for one more great year.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_story",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Fisherman's Tale"
+      }
+    }
+  ]
+}

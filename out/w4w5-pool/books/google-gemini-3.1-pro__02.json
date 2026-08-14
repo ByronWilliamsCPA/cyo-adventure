@@ -1,0 +1,823 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_backyard_treasure_map",
+  "version": 1,
+  "title": "The Mystery of the Bean Eater",
+  "metadata": {
+    "age_band": "5-8",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 2.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "friendship",
+      "adventure",
+      "curiosity",
+      "discovery"
+    ],
+    "estimated_minutes": 7,
+    "ending_count": 12,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "time_cave",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_open",
+  "nodes": [
+    {
+      "id": "n_open",
+      "body": "You and Leo find a muddy map under the leaky watering can. It rests right at the edge of the raised vegetable beds. Something ate the bean shoots last night! The hand-drawn map shows a trail of footprints and a big green 'X' at the end. The late spring sun shines down. You feel safe and excited to solve this mystery.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Spread out the muddy map.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_start",
+      "body": "You and Leo spread the muddy map flat on the grass between you. You look closely at the drawn paths. You must decide which garden landmark to check first to find the hungry bean eater.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_oak",
+          "label": "Follow the map to the compost bin.",
+          "target": "o_intro"
+        },
+        {
+          "id": "c_start_shed",
+          "label": "Follow the map to the tool shed.",
+          "target": "r_intro"
+        },
+        {
+          "id": "c_start_stream",
+          "label": "Follow the map down to the muddy puddle.",
+          "target": "s_intro"
+        }
+      ]
+    },
+    {
+      "id": "o_intro",
+      "body": "The footprint trail points first to the giant compost bin. It sits at the top of the raised vegetable beds. You hold the map carefully while Leo counts your paces. The wooden compost bin is huge. Three kids could hide behind it! The trail on the paper seems to split right near the bin's wooden base.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_go",
+          "label": "Search around the compost bin's base.",
+          "target": "o_fork"
+        }
+      ]
+    },
+    {
+      "id": "o_fork",
+      "body": "At the foot of the bin, the footprint trail splits into two faint lines. One wiggly line goes toward a large terracotta pot. A soft scratching sound calls out from it. The other line loops toward a hanging bird feeder. You and Leo look at the muddy map. You must decide which way the mapmaker meant for you to go.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_hollow",
+          "label": "Take the path to the terracotta pot.",
+          "target": "o_hollow_1"
+        },
+        {
+          "id": "c_o_swing",
+          "label": "Take the path to the bird feeder.",
+          "target": "o_swing_1"
+        }
+      ]
+    },
+    {
+      "id": "o_hollow_1",
+      "body": "You follow the footprint trail to the big terracotta pot lying on its side in the long grass. It is bigger than a bucket. One end is very dark and cool inside. That soft scratching sound comes from somewhere deep in the shadows. You wonder if the bean eater is in there.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_hollow_1",
+          "label": "Peek inside the big terracotta pot.",
+          "target": "o_hollow_2"
+        }
+      ]
+    },
+    {
+      "id": "o_hollow_2",
+      "body": "You peek in the dark pot with your flashlight. Leo checks the map again. The muddy print line goes right through the pot. It comes out the broken back side. The scratch sound grows louder. It sounds like a happy, tiny crowd. They are chewing on green leaves.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_hollow_2",
+          "label": "Follow the map through the terracotta pot.",
+          "target": "o_hollow_app"
+        }
+      ]
+    },
+    {
+      "id": "o_hollow_app",
+      "body": "Past the broken pot, the map is smudged by an old raindrop. Two little dirt paths lead away from the clay pieces. One path is a dry dirt track that looks very dusty. The other is a damp mossy path that smells like wet earth. You and Leo must guess which path the mapmaker meant for you to take.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hollow_dry",
+          "label": "Try the dry dirt track.",
+          "target": "e_set_hollow"
+        },
+        {
+          "id": "c_hollow_moss",
+          "label": "Try the damp mossy path.",
+          "target": "o_hollow_3"
+        }
+      ]
+    },
+    {
+      "id": "e_set_hollow",
+      "body": "The dry dirt track just curves back to the garden fence. It stops at a pile of empty seed packets. There is no green 'X' and no bean eater in sight. You and Leo laugh. You roll up the map. You skip back to the school for a juice box. You are happy to try again tomorrow!",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_hollow",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Back to the Seed Packets"
+      }
+    },
+    {
+      "id": "o_hollow_3",
+      "body": "The wet moss path is soft and cool under your shoes. Green ferns brush soft on your knees. The strange scratch sound grows loud and glad. Leo whispers. He says it sounds like many tiny mouths. They are all chewing on leaves at once.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_hollow_3",
+          "label": "Follow the damp mossy path deeper.",
+          "target": "o_hollow_4"
+        }
+      ]
+    },
+    {
+      "id": "o_hollow_4",
+      "body": "The path dips into a dark spot under the cucumber leaves. The dirt here is very soft. Each small round stone looks a bit like a tiny green door. You and Leo step with care. You follow the muddy prints deep into the cool shade.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_hollow_4",
+          "label": "Step under the cucumber leaves.",
+          "target": "o_hollow_5"
+        }
+      ]
+    },
+    {
+      "id": "o_hollow_5",
+      "body": "In the shadowy corner, you find a circle of chewed bean shoots. They are set out like a tiny green wall. Behind the wall, fat green caterpillars sit on dirt-clod thrones. They rest on little lily-pad chairs. Not one of them wriggles or hops away from you.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_hollow_5",
+          "label": "Tiptoe up to the chewed circle.",
+          "target": "o_hollow_6"
+        }
+      ]
+    },
+    {
+      "id": "o_hollow_6",
+      "body": "The big caterpillar wears a fuzzy yellow stripe like a crown. He blinks his many eyes slow at you both. You and Leo kneel down soft so you do not scare anyone. The big green 'X' is drawn right here! It is in the loose dirt corner.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_hollow_6",
+          "label": "Kneel down by the biggest caterpillar.",
+          "target": "e_toad_king"
+        }
+      ]
+    },
+    {
+      "id": "e_toad_king",
+      "body": "You and Leo have found the Caterpillar King! He is hidden safely in the shadowy corner, wearing his fuzzy yellow crown on his dirt throne. He is the one eating the tasty bean shoots! You promise to keep his home a secret. You leave a soft green weed leaf as a gift for him. All the way back to class, you can hardly stop grinning.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_toad_king",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Caterpillar King"
+      }
+    },
+    {
+      "id": "o_swing_1",
+      "body": "You follow the loop of the trail to the hanging bird feeder. It hangs from a low branch of the oak tree near the compost bin. The wooden feeder turns slowly in the warm spring breeze. Someone has tied shiny foil strips to the rope. They flutter and shine brightly in the sun.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_swing_1",
+          "label": "Look at the foil strips on the feeder.",
+          "target": "o_swing_2"
+        }
+      ]
+    },
+    {
+      "id": "o_swing_2",
+      "body": "Leo gives the feeder a soft push. He hears a tiny jingle sound from high up in the oak tree. You look close at the muddy map. The print line climbs right up the trunk. It goes to the green leaves. The jingle sounds like tiny silver bells ringing.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_swing_2",
+          "label": "Listen for the jingling sound.",
+          "target": "o_swing_app"
+        }
+      ]
+    },
+    {
+      "id": "o_swing_app",
+      "body": "The map line splits at a large knot in the rough wood. One line goes to a twisted tomato vine. It looks very tricky. The other goes next to a thick sunflower stalk. It is flat and easy to walk by. You and Leo pick a way to follow the pretty sound.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_swing_left",
+          "label": "Climb toward the twisted tomato vine.",
+          "target": "e_set_swing"
+        },
+        {
+          "id": "c_swing_right",
+          "label": "Walk along the thick sunflower stalk.",
+          "target": "o_swing_3"
+        }
+      ]
+    },
+    {
+      "id": "e_set_swing",
+      "body": "The twisted tomato vine is a messy tangle of green stems. It leads nowhere but to a perfectly empty snail shell. You and Leo give up on that route with a happy giggle. You hop off the raised bed. You head back to the school for a juice box and a rest. You are sure the green 'X' is hiding somewhere else!",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_swing",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Just an Empty Snail Shell"
+      }
+    },
+    {
+      "id": "o_swing_3",
+      "body": "The thick sunflower stalk is easy to walk by. The pretty jingle sound gets more clear with each step. You keep one hand on the green stem. Leo takes care to watch the muddy map. The path goes up to a bright roof of huge yellow petals.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_swing_3",
+          "label": "Balance along toward the jingling sound.",
+          "target": "o_swing_4"
+        }
+      ]
+    },
+    {
+      "id": "o_swing_4",
+      "body": "You reach the bright sunflower canopy. Hundreds of little things dangle from the green leaves on tiny bits of string. The hanging things all knock together in the warm spring wind. The whole giant flower seems to be singing softly to you and Leo.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_swing_4",
+          "label": "Look at the dangling silver things.",
+          "target": "o_swing_5"
+        }
+      ]
+    },
+    {
+      "id": "o_swing_5",
+      "body": "Someone long ago hung silver spoons on this big hidden sunflower! The sun hits the bright metal pieces. It throws tiny rainbows down on the chewed bean leaves. You and Leo stand very still in the garden. You just listen to the sweet music.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_swing_5",
+          "label": "Stand still and listen to the spoons.",
+          "target": "o_swing_6"
+        }
+      ]
+    },
+    {
+      "id": "o_swing_6",
+      "body": "In the middle of the singing leaves hangs a shiny soup spoon. A small paper with a green 'X' floats right beside it in the breeze. You reach your hand out. You give the big spoon the gentlest touch, and it rings with a beautiful clear note.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_swing_6",
+          "label": "Touch the shiny soup spoon gently.",
+          "target": "e_chime"
+        }
+      ]
+    },
+    {
+      "id": "e_chime",
+      "body": "You and Leo found the Music Sunflower! It sings all by itself when the wind blows on the dirt beds. You add one small rock of your own to the strings. Now it will sing a bit louder. You walk back to class and hum its happy tune. You are glad the beans have a guard!",
+      "is_ending": true,
+      "ending": {
+        "id": "end_chime",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Musical Sunflower"
+      }
+    },
+    {
+      "id": "r_intro",
+      "body": "The muddy map points next across the grass. It points to the rusty tool shed near the garden fence. Leo hops over a row of green carrots while you read the map. The shed door hangs open just a crack. Something inside gives a soft, mysterious creak.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_go",
+          "label": "Sneak up to the rusty tool shed.",
+          "target": "r_fork"
+        }
+      ]
+    },
+    {
+      "id": "r_fork",
+      "body": "The map trail splits in two behind the rusty tool shed. One print line slips inside the shed door and into the dark shade. The other print line runs to a low rock wall by the back fence. You and Leo pick a path to check out.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_shed",
+          "label": "Slip inside the tool shed's door.",
+          "target": "r_shed_1"
+        },
+        {
+          "id": "c_r_rock",
+          "label": "Head to the low rock wall.",
+          "target": "r_rock_1"
+        }
+      ]
+    },
+    {
+      "id": "r_shed_1",
+      "body": "You push the shed door open wider. Dusty golden light spills across old flowerpots and coiled garden hoses. The room smells like damp potting soil and dry wood. The map line leads straight to a large stack of wooden crates.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_shed_1",
+          "label": "Follow the light to the wooden crates.",
+          "target": "r_shed_2"
+        }
+      ]
+    },
+    {
+      "id": "r_shed_2",
+      "body": "You tiptoe past rusty rakes and big watering cans. Leo holds the map still. The wood apple crates are piled up like a set of stairs. A high shelf glows with warm sunlight. Something up there looks very cozy.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_shed_2",
+          "label": "Look closely at the apple crates.",
+          "target": "r_shed_app"
+        }
+      ]
+    },
+    {
+      "id": "r_shed_app",
+      "body": "The paper map is torn right at this spot. Two ways go on from here. A dark gap behind the giant soil bags leads into the shadows. The apple crates climb up toward the glowing high shelf. You and Leo decide which way the green 'X' wants you to go.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_shed_back",
+          "label": "Crawl into the dark gap.",
+          "target": "e_set_shed"
+        },
+        {
+          "id": "c_shed_in",
+          "label": "Climb the crates up to the shelf.",
+          "target": "r_shed_3"
+        }
+      ]
+    },
+    {
+      "id": "e_set_shed",
+      "body": "The dark gap behind the heavy soil bags is just a cobwebby dead end! It is filled with old plastic plant pots and a forgotten garden gnome. You back out sneezing and laughing. You dust the muddy map off. Then you trot back to the school for a cold juice box before trying another trail.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_shed",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "A Cobwebby Dead End"
+      }
+    },
+    {
+      "id": "r_shed_3",
+      "body": "The apple crates wobble just a little bit but hold firm. You and your friend climb toward the glowing high shelf. Leo goes first. He gasps softly at what he sees at the top. You quickly scramble up the crates right behind him.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_shed_3",
+          "label": "Climb toward the glowing high shelf.",
+          "target": "r_shed_4"
+        }
+      ]
+    },
+    {
+      "id": "r_shed_4",
+      "body": "Someone built a tiny cozy space up past the shelf edge! It is made from old garden sacks and a green battery lamp. A small wood sign hangs past the cloth door. It feels very warm and secret inside.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_shed_4",
+          "label": "Peek into the cozy space.",
+          "target": "r_shed_5"
+        }
+      ]
+    },
+    {
+      "id": "r_shed_5",
+      "body": "Inside the cozy space are two soft floor cushions. There is a small shelf of garden books and a jar of shiny seeds. A blanket is folded neatly in the corner. It looks like it is waiting for special visitors. The green 'X' is drawn right here on the floor!",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_shed_5",
+          "label": "Step inside the cozy space.",
+          "target": "r_shed_6"
+        }
+      ]
+    },
+    {
+      "id": "r_shed_6",
+      "body": "The wooden sign over the doorway reads 'Garden Watchers' in bright friendly letters. You and Leo realize this must be a secret fort! Kids built it long ago to watch over the bean shoots. It was left ready for whoever found the map next. You step inside like honored guests.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_shed_6",
+          "label": "Read the Garden Watchers sign.",
+          "target": "e_fort"
+        }
+      ]
+    },
+    {
+      "id": "e_fort",
+      "body": "You and Leo have found the Secret Garden Fort! It is snug and hidden in the top of the rusty tool shed, all ready for new explorers. You write your own names in the little logbook on the shelf. You promise to come back and take good care of it. This will be your garden headquarters from now on!",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fort",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Secret Garden Fort"
+      }
+    },
+    {
+      "id": "r_rock_1",
+      "body": "The other footprint line leads to the low rock wall. The stones are warm from the bright afternoon sun. A few orange marigolds grow in the small cracks. The map line points right to a flat slate rock near the bottom of the wall.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_rock_1",
+          "label": "Look at the flat slate rock.",
+          "target": "r_rock_2"
+        }
+      ]
+    },
+    {
+      "id": "r_rock_2",
+      "body": "Leo taps the flat slate rock. It sounds very hollow, like there is a hidden space underneath. You check the muddy map. The green 'X' sits just below the rocks! A patch of loose potting soil seems to mark the very spot you need to dig.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_rock_2",
+          "label": "Tap on the flat slate rock.",
+          "target": "r_rock_app"
+        }
+      ]
+    },
+    {
+      "id": "r_rock_app",
+      "body": "Two small arrows are scratched faintly on the flat rock. One arrow points toward a narrow crack between the red bricks. The other arrow points down at the soft soil right beneath the slate stone. You and Leo must choose where to look for the bean eater.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rock_left",
+          "label": "Check the crack between the bricks.",
+          "target": "e_set_rock"
+        },
+        {
+          "id": "c_rock_dig",
+          "label": "Dig into the soft soil.",
+          "target": "r_rock_3"
+        }
+      ]
+    },
+    {
+      "id": "e_set_rock",
+      "body": "The crack between the bricks is just a snug home for a long line of busy marching ants. They hurry to and fro. There is no treasure or bean eater to be seen. You and Leo say a polite hello to the ants. You roll up the map and wander back to the school for a juice box.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_rock",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Only a Line of Ants"
+      }
+    },
+    {
+      "id": "r_rock_3",
+      "body": "You gently lift the flat slate rock aside. Underneath, the brown soil is soft and easy to brush away. Leo digs with a small garden trowel while you cup your hands to scoop the dirt. Something smooth and round soon appears in the earth.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_rock_3",
+          "label": "Brush away the soft cool soil.",
+          "target": "r_rock_4"
+        }
+      ]
+    },
+    {
+      "id": "r_rock_4",
+      "body": "A rusty tin box with a stiff latch sits nestled in the dirt. It is exactly where the green 'X' promised! It is just the right size for two hands to lift. You and Leo carefully wiggle it free from the ground and blow the dry soil off the lid.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_rock_4",
+          "label": "Wiggle the rusty box free.",
+          "target": "r_rock_5"
+        }
+      ]
+    },
+    {
+      "id": "r_rock_5",
+      "body": "The stiff latch pops open with a happy click! Inside is a folded paper. It wraps a stash of pretty glass marbles. They catch the warm sun in swirls of blue, green, and gold. You gasp with joy at the sparkling colors.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_rock_5",
+          "label": "Open the stiff latch.",
+          "target": "r_rock_6"
+        }
+      ]
+    },
+    {
+      "id": "r_rock_6",
+      "body": "There are cat's-eyes and swirlies. One big marble is as clear as a fresh raindrop. Some other kid saved these marbles years and years ago! The folded paper inside just says, 'share and enjoy'. You and Leo read the happy message twice.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_rock_6",
+          "label": "Look closely at the shiny marbles.",
+          "target": "e_marbles"
+        }
+      ]
+    },
+    {
+      "id": "e_marbles",
+      "body": "You and Leo have dug up the Marble Stash! It was left as a treasure by a kid from long ago. You choose two favorite marbles to keep. You leave the rest tucked back in the soil with a tiny note of your own for the next lucky finder. You walk back to class clinking a marble in each pocket.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_marbles",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Marble Stash"
+      }
+    },
+    {
+      "id": "s_intro",
+      "body": "The last part of the footprint line runs down the grassy slope. It points to the muddy puddle by the raised plant beds. Water from a leaky hose splashes over the smooth stones. Leo holds the muddy map high. He does not want it to get wet in the water.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_go",
+          "label": "Head down to the muddy puddle.",
+          "target": "s_fork"
+        }
+      ]
+    },
+    {
+      "id": "s_fork",
+      "body": "Down by the water, the footprint line splits one last time. One branch curves right into a tangled berry bush on the muddy bank. The other hops across the stepping stones. It goes to the far side of the puddle. You and Leo decide which way the green 'X' lies.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bramble",
+          "label": "Follow the line into the blackberry bush.",
+          "target": "s_bramble_1"
+        },
+        {
+          "id": "c_s_bank",
+          "label": "Cross the stepping stones.",
+          "target": "s_bank_1"
+        }
+      ]
+    },
+    {
+      "id": "s_bramble_1",
+      "body": "You follow the line into the dark shade of the berry bush. It is full of ripe, juicy purple berries. The sharp leaves make a cool green tunnel over your heads. A soft, happy rustling purr comes from deep inside the bush.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bramble_1",
+          "label": "Follow the purr into the bushes.",
+          "target": "s_bramble_2"
+        }
+      ]
+    },
+    {
+      "id": "s_bramble_2",
+      "body": "You hold a branch aside so no sharp thorns catch your sleeves. The rustling purr comes again, and it sounds closer this time! Leo checks the map. The dirty footprint line winds right into the middle of the thorny bramble patch. You step in very gently.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bramble_2",
+          "label": "Hold the thorns aside and go in.",
+          "target": "s_bramble_app"
+        }
+      ]
+    },
+    {
+      "id": "s_bramble_app",
+      "body": "Inside the bushes, the trail on the map is very faded. Two little dirt tunnels lead on through the leaves. One tunnel goes low toward a muddy dead end path. The other goes toward a dry nest of straw where the purr sounds the happiest. You pick a way to go.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bramble_back",
+          "label": "Take the muddy low tunnel.",
+          "target": "e_set_bramble"
+        },
+        {
+          "id": "c_bramble_push",
+          "label": "Take the dry straw nest tunnel.",
+          "target": "s_bramble_3"
+        }
+      ]
+    },
+    {
+      "id": "e_set_bramble",
+      "body": "The muddy dead end just stops in a thick tangle of thorns. It is much too prickly to pass! There is only a lost gardening glove caught on a branch. You carefully back out without getting a single scratch. You laugh at the silly lost glove and head back up to the school for a cold juice box.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_bramble",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Lost Gardening Glove"
+      }
+    },
+    {
+      "id": "s_bramble_3",
+      "body": "The second tunnel opens into a dry nest of straw. It sits right in the heart of the bushes! It is floored with very soft, dry leaves. The rustling turns into a loud, rumbly purr. Suddenly, two bright green eyes blink at you. They peek from inside the warm grass nest.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bramble_3",
+          "label": "Step into the dry straw nest.",
+          "target": "s_bramble_4"
+        }
+      ]
+    },
+    {
+      "id": "s_bramble_4",
+      "body": "A fluffy black cat with white paws is curled up in the straw nest! It does not run away at all. Instead, it stretches, yawns a big pink yawn, and pads right over to say hello to you. It wears a bright green collar around its neck.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bramble_4",
+          "label": "Say hello to the black cat.",
+          "target": "s_bramble_5"
+        }
+      ]
+    },
+    {
+      "id": "s_bramble_5",
+      "body": "The cat winds around your ankles. It purrs just like a tiny engine and flops over for a good belly rub. You and Leo laugh and stroke its very soft fur. The big green 'X' is drawn right where the friendly cat has made its cozy hideaway!",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bramble_5",
+          "label": "Give the cat a gentle belly rub.",
+          "target": "s_bramble_6"
+        }
+      ]
+    },
+    {
+      "id": "s_bramble_6",
+      "body": "The green collar has a shiny silver tag. It reads the cat's name and 'please be my friend', but there is no address at all! The cat clearly knows this nest very well and treats you like old pals. You and Leo wonder if it nibbled the bean shoots just to get your attention!",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bramble_6",
+          "label": "Read the silver tag.",
+          "target": "e_cat"
+        }
+      ]
+    },
+    {
+      "id": "e_cat",
+      "body": "You and Leo have found the Garden Cat! He is living happily in the straw nest. You share your afternoon snack with your new pal. You promise to visit every single day and feed him so he does not eat the bean shoots! He walks you halfway back to class with his black tail held high.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_cat",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Garden Cat"
+      }
+    },
+    {
+      "id": "s_bank_1",
+      "body": "The stepping stones cross the muddy puddle in a neat flat row. They are dry on top and easy to hop. You cross one careful stone at a time. Soon you get to the mossy far bank. The muddy map line points right to the roots of a big willow tree.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bank_1",
+          "label": "Hop across to the mossy far bank.",
+          "target": "s_bank_2"
+        }
+      ]
+    },
+    {
+      "id": "s_bank_2",
+      "body": "On the far bank, the weeping willow tree trails its long green leaves in the muddy water. The ground beneath its roots is very soft and cool. Leo studies the map. The green 'X' sits tucked right among the tangled tree roots! A patch of loose soil shows in the deep shade.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bank_2",
+          "label": "Look among the roots of the willow.",
+          "target": "s_bank_app"
+        }
+      ]
+    },
+    {
+      "id": "s_bank_app",
+      "body": "Two little hollows show among the tree roots. One is the puddle edge right near the water. The other is a gap between the roots a little higher up. The patch of loose soil comes from that higher gap. You and Leo choose where the green 'X' is pointing.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bank_back",
+          "label": "Search the puddle edge.",
+          "target": "e_set_bank"
+        },
+        {
+          "id": "c_bank_cross",
+          "label": "Search the gap between the roots.",
+          "target": "s_bank_3"
+        }
+      ]
+    },
+    {
+      "id": "e_set_bank",
+      "body": "The puddle edge holds nothing but a shiny wet pebble. But there is one very surprised green frog sitting right on it! You grin at your muddy sneakers. You wave hello to the frog. Then you hop back across the stepping stones to get a juice box at the school.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_bank",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "A Surprised Green Frog"
+      }
+    },
+    {
+      "id": "s_bank_3",
+      "body": "The gap between the roots is just the right size to kneel in. The loose soil covers something hidden in the cool dirt! You brush the earth away very gently. Leo holds the willow branches back for you. Suddenly, a small corner of metal pops out.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bank_3",
+          "label": "Brush away the cool dirt.",
+          "target": "s_bank_4"
+        }
+      ]
+    },
+    {
+      "id": "s_bank_4",
+      "body": "It is a metal seed tin! It is green at the edges but still shut very tight. It rests exactly where the green 'X' promised. You and Leo work the stiff lid with your careful fingers. At last, the tin opens with a soft puff of old air.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bank_4",
+          "label": "Open the metal seed tin.",
+          "target": "s_bank_5"
+        }
+      ]
+    },
+    {
+      "id": "s_bank_5",
+      "body": "Inside the tin is a heap of beautiful shiny buttons! They rest on a bed of faded soft cloth. There are brass buttons and glass buttons. Some pearly ones are shaped just like little flowers. They sparkle like real jewels in the sunlight shining through the leaves.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bank_5",
+          "label": "Look at the shiny buttons.",
+          "target": "s_bank_6"
+        }
+      ]
+    },
+    {
+      "id": "s_bank_6",
+      "body": "Someone has kept these bright buttons safe here for years! Each one is different and pretty. It is a true backyard treasure. A faded label inside reads, 'for the finder, with love'. You and Leo feel like you just opened a chest of secret pirate gold.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bank_6",
+          "label": "Read the faded label.",
+          "target": "e_buttons"
+        }
+      ]
+    },
+    {
+      "id": "e_buttons",
+      "body": "You and Leo have found the Button Box! It is the real treasure at the end of the muddy map. You pick one shiny button each to keep as a fun memory. You bury the tin again with a new note for the next garden explorer. You cross the stepping stones back home. You feel as rich as kings!",
+      "is_ending": true,
+      "ending": {
+        "id": "end_buttons",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Button Box"
+      }
+    }
+  ]
+}
