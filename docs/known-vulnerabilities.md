@@ -846,27 +846,17 @@ evidence.
 
 ## CVE-2026-64283 and 8 further kernel-header CVEs | linux-libc-dev | High
 
-> **DRAFT, NOT YET ACCEPTED. Do not read `Blocking Release` below as a ruling.**
-> Prepared from the PR #709 Trivy run by a cloud session that could not reach
-> `security-tracker.debian.org` or `avd.aquasec.com` (both return proxy 403), so the
-> Debian-tracker corroboration every prior entry in this file performed is
-> **outstanding**. No `.trivyignore` entries were added, because this file's own
-> precedent is explicit that acceptance is "verified on the Debian tracker ... rather
-> than inferred from scan absence, which suppression would have masked". Complete the
-> tracker check, then either accept (add the suppression block and flip this
-> admonition) or reject.
-
 | Field | Value |
 |-------|-------|
 | **CVE ID** | CVE-2026-64283, CVE-2026-68159, CVE-2026-68166, CVE-2026-68198, CVE-2026-68264, CVE-2026-68291, CVE-2026-68337, CVE-2026-68409, CVE-2026-68426 (High, 9 CVEs, none reporting a fix) |
 | **Package** | linux-libc-dev (Debian binary package from the `linux` kernel source package) |
 | **Affected Version** | 6.12.101-1+dhi0 (Debian 13 "trixie" 13.6, DHI mirror build), at base digest `sha256:5bbd41aef3ca86147ef389f3f0d944aa89bbae0d6c3ee31417e7bed15342aadf` |
-| **Fixed Version** | Empty for all nine in the Trivy report, status `affected`. **Not yet corroborated on the Debian tracker**; prior entries in this class resolved to a sid-only fix, but that must be confirmed rather than assumed |
+| **Fixed Version** | None on the trixie track. Empty for all nine in the Trivy report, status `affected`; corroborated on the Debian tracker 2026-08-14, which records source package `linux` vulnerable in both `trixie` (6.12.94-1) and `trixie-security` (6.12.101-1) for all nine, fixed only in `sid` (7.1.8-1), which this base image does not track |
 | **Severity** | High (all 9, per the Trivy/Aqua feed; the report summary shows 9 vulnerabilities for target `cyo_adventure:scan (debian 13.6)`) |
-| **CVSS Score** | Not catalogued here; pending the tracker check |
+| **CVSS Score** | Not catalogued, consistent with every prior `linux-libc-dev` entry in this file: the applicability question is answered by reachability (kernel UAPI headers, no running kernel code), not by score |
 | **Discovered** | 2026-08-14 |
-| **Reassessment Due** | Pending acceptance. If accepted, align to 2026-09-30 with CVE-2026-63879, CVE-2026-64561 and CVE-2026-68480 |
-| **Blocking Release** | Undetermined pending the tracker check |
+| **Reassessment Due** | 2026-09-30 (aligned with CVE-2026-63879, CVE-2026-64561 and CVE-2026-68480) |
+| **Blocking Release** | No |
 
 ### Description
 
@@ -908,47 +898,58 @@ records. That entry pins digest `sha256:f4a77e21...` with `linux-libc-dev`
 
 ### Impact on This Project
 
-Pending the tracker check, the expected rationale is identical to every
-`linux-libc-dev` entry above: the package ships kernel UAPI headers used at compile
-time, contains no kernel binary, and executes no kernel code at runtime. The container
-serves a FastAPI web application under whatever kernel the Docker host provides, not
-the kernel version recorded in this package's metadata. On that reading exposure
-through the application surface is negligible, and the listed subsystems (Wi-Fi
-drivers, DRM, KVM, network offload) are not reachable from this workload at all.
+The rationale is identical to every `linux-libc-dev` entry above, and is now the
+finding rather than the expectation: the package ships kernel UAPI headers used at
+compile time, contains no kernel binary, and executes no kernel code at runtime. The
+container serves a FastAPI web application under whatever kernel the Docker host
+provides, not the kernel version recorded in this package's metadata. Exposure through
+the application surface is negligible, and the listed subsystems (Wi-Fi drivers, DRM,
+KVM, network offload) are not reachable from this workload at all.
 
-That is stated as the expectation, not as the finding. It is precisely what the tracker
-check exists to confirm rather than assume.
+What the tracker check changed is the remedy, not the impact. Because all nine are
+vulnerable in `trixie-security` and fixed only in `sid`, a base-image digest refresh on
+the trixie track would ship the same nine, so suppression is the only available action
+rather than the convenient one.
 
 ### Remediation Plan
 
-- [ ] **Corroborate all nine on the Debian security tracker** (`trixie`,
-      `trixie-security`, `sid`) from an environment that can reach it. This is the
-      blocking step; nothing below should happen first. Tracked as issue [#711](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/711),
-      item 1.
-- [ ] **Confirm the pinned GHCR digest is still the live one**, so a base-image re-pin
-      is genuinely not an available remedy, as the 2026-08-08 entry verified for its
-      own CVE.
-- [ ] **If confirmed unfixed:** add a suppression block to `.trivyignore` in the format
-      of the CVE-2026-68480 block, flip this entry out of draft, set the reassessment
-      date, and add a Review History row.
-- [ ] **If a fix exists on the trixie track:** do not suppress. Request a base-image
-      digest refresh from the `ByronWilliamsCPA/container-images` mirror pipeline, as
-      `bb89468` did for CVE-2026-64564.
+- [x] **Corroborated all nine on the Debian security tracker** on 2026-08-14, each CVE
+      fetched individually. All nine record source package `linux` as vulnerable in
+      `trixie` (6.12.94-1) and `trixie-security` (6.12.101-1), and fixed only in `sid`
+      (7.1.8-1). Closes item 1 of issue [#711](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/711).
+- [x] **Confirmed the pinned GHCR digest is still live** on 2026-08-14: the manifest for
+      `sha256:5bbd41ae...` resolves (HTTP 200). The `3.14-debian13` tag itself did not
+      resolve from that session, so whether a newer digest exists is unconfirmed; it does
+      not change the outcome, because the tracker rules out any trixie-track digest
+      carrying a fix.
+- [x] **Confirmed unfixed, so suppressed:** the nine were added to `.trivyignore` in the
+      format of the CVE-2026-68480 block, this entry left draft, the reassessment date
+      set, and a Review History row added.
+- [x] **No fix exists on the trixie track**, so the base-image digest refresh branch does
+      not apply. A refresh from the `ByronWilliamsCPA/container-images` mirror pipeline
+      (as `bb89468` did for CVE-2026-64564) would ship the same nine.
 
 ### Why Not Fixed Yet
 
-Undetermined, pending the tracker check. If it follows the established pattern, Debian
-will not have released a patched `linux-libc-dev` for the DHI mirror snapshot, with any
-fix landing only in `sid`, which this base image does not track; and because the DHI
-runtime image ships no shell or package manager, the fix can only arrive through a
-base-image digest refresh from a mirror pipeline this project consumes rather than
-controls.
+It follows the established pattern exactly. Debian has not released a patched
+`linux-libc-dev` on the trixie track: `trixie-security` still ships 6.12.101-1 and
+records all nine as vulnerable, with the fix landing only in `sid` (7.1.8-1), which this
+base image does not track. Because the DHI runtime image ships no shell or package
+manager, a fix could only arrive through a base-image digest refresh from a mirror
+pipeline this project consumes rather than controls, and no such refresh can help while
+the trixie track itself carries the defects.
 
 ### References
 
-- Aqua AVD and Debian tracker links follow the established
-  `avd.aquasec.com/nvd/<cve-id>` and `security-tracker.debian.org/tracker/<CVE-ID>`
-  patterns for all nine. Both hosts were unreachable from the drafting session.
+- [CVE-2026-64283](https://security-tracker.debian.org/tracker/CVE-2026-64283) ([Aqua AVD](https://avd.aquasec.com/nvd/cve-2026-64283))
+- [CVE-2026-68159](https://security-tracker.debian.org/tracker/CVE-2026-68159) ([Aqua AVD](https://avd.aquasec.com/nvd/cve-2026-68159))
+- [CVE-2026-68166](https://security-tracker.debian.org/tracker/CVE-2026-68166) ([Aqua AVD](https://avd.aquasec.com/nvd/cve-2026-68166))
+- [CVE-2026-68198](https://security-tracker.debian.org/tracker/CVE-2026-68198) ([Aqua AVD](https://avd.aquasec.com/nvd/cve-2026-68198))
+- [CVE-2026-68264](https://security-tracker.debian.org/tracker/CVE-2026-68264) ([Aqua AVD](https://avd.aquasec.com/nvd/cve-2026-68264))
+- [CVE-2026-68291](https://security-tracker.debian.org/tracker/CVE-2026-68291) ([Aqua AVD](https://avd.aquasec.com/nvd/cve-2026-68291))
+- [CVE-2026-68337](https://security-tracker.debian.org/tracker/CVE-2026-68337) ([Aqua AVD](https://avd.aquasec.com/nvd/cve-2026-68337))
+- [CVE-2026-68409](https://security-tracker.debian.org/tracker/CVE-2026-68409) ([Aqua AVD](https://avd.aquasec.com/nvd/cve-2026-68409))
+- [CVE-2026-68426](https://security-tracker.debian.org/tracker/CVE-2026-68426) ([Aqua AVD](https://avd.aquasec.com/nvd/cve-2026-68426))
 - [Debian security tracker: linux](https://security-tracker.debian.org/tracker/source-package/linux)
 - Discovered by the Container Security workflow (Trivy v0.70.0) on
   [PR #709](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/709),
@@ -1079,4 +1080,4 @@ re-verified rather than carried forward:
 | 2026-07-30  | Byron Williams | Suppressed the 7 new CVEs in .trivyignore per that file's stated scope (base-image OS-package CVEs with no upstream fix, each paired with an entry here). Resolved CVE-2026-53399/64600: removed their .trivyignore block, whose own removal condition (base ships 6.12.96-1) is met; verified fixed in trixie-security 6.12.96-1 on the Debian tracker rather than inferred from scan absence, which suppression would have masked. |
 | 2026-08-04  | Byron Williams | Added linux-libc-dev CVE-2026-64561 (KVM x86 MMU) from the PR #597 Trivy run; High, empty Fixed Version, base version unchanged at 6.12.100-1+dhi0, so a feed refresh rather than an image change (main's run 3.5h earlier was clean). Verified on the Debian tracker before accepting into .trivyignore: trixie and trixie-security both vulnerable at 6.12.100-1, fix is sid-only (7.1.6-1). Reassessment aligned to 2026-09-30 with CVE-2026-63879. |
 | 2026-08-08  | Byron Williams | Added linux-libc-dev CVE-2026-68480 (x86 SRSO Safe-RET) from the PR #644 Trivy run (run 31262431949); High, empty Fixed Version, and the run's only finding. Established it as a feed refresh rather than a PR regression by pinned-digest identity across main and head plus the last executing run (30973596262, 2026-08-05) being clean, since main's own tip shows the job `skipped` and proves nothing either way. Verified on the Debian tracker before accepting into .trivyignore: trixie (6.12.94-1) and trixie-security (6.12.101-1) both vulnerable, fix is sid-only (7.1.7-1). Confirmed the pinned GHCR digest is still the live one, so a base-image re-pin was not an available remedy. Reassessment aligned to 2026-09-30 with CVE-2026-63879 and CVE-2026-64561. |
-| 2026-08-14  | Claude (draft)  | **DRAFT, unaccepted.** Recorded linux-libc-dev CVE-2026-64283/68159/68166/68198/68264/68291/68337/68409/68426 from the PR #709 Container Security run (run 31760080363); High, empty Fixed Version, status `affected`, base advanced to 6.12.101-1+dhi0 at digest `sha256:5bbd41ae...`. Established as a feed refresh rather than a PR regression: no container file in the diff, Dockerfile untouched since `bb89468`, base commit `20e26221` green 2026-08-13T00:05, and 0 findings across every Python package. **No `.trivyignore` entries added**: the drafting session could not reach security-tracker.debian.org or avd.aquasec.com (proxy 403), and this file's precedent requires tracker corroboration rather than inference from scan absence. Owner must complete the tracker check, then accept or reject. |
+| 2026-08-14  | Byron Williams | Added linux-libc-dev CVE-2026-64283/68159/68166/68198/68264/68291/68337/68409/68426 from the PR #709 Container Security run (run 31760080363); all High, empty Fixed Version, status `affected`, base advanced to 6.12.101-1+dhi0 at digest `sha256:5bbd41ae...`. Established as a feed refresh rather than a PR regression: no container file in the diff, Dockerfile untouched since `bb89468`, base commit `20e26221` green 2026-08-13T00:05, the scheduled 2026-08-12 run already red on main, and 0 findings across every Python package. Verified on the Debian tracker before accepting into `.trivyignore`, each CVE fetched individually: all nine vulnerable in trixie (6.12.94-1) and trixie-security (6.12.101-1), fix is sid-only (7.1.8-1), which rules out a base-image re-pin as an alternative remedy. Confirmed the pinned GHCR digest still resolves (HTTP 200); the `3.14-debian13` tag did not resolve from that session, noted as unconfirmed rather than assumed. Reassessment aligned to 2026-09-30 with CVE-2026-63879, CVE-2026-64561 and CVE-2026-68480. Closes item 1 of issue #711. |

@@ -51,17 +51,27 @@
 # No project-specific exceptions currently active.
 # CVE-2022-42969, PYSEC-2022-42969, and GHSA-w596-4wvx-j9j6 were removed on the
 # stated grounds that "the interrogate/py transitive dependency that triggered
-# them is no longer present in the dependency tree".
+# them is no longer present in the dependency tree". That premise is FALSE, and
+# the correct reason to leave them out is a different one (UW-K08).
 #
-# #CRITICAL: security: that premise is FALSE, verified 2026-08-13 (UW-K08).
-# `uv.lock` still carries `py` 1.11.0, required by `interrogate` 1.7.0, which is
-# declared in [project.optional-dependencies]. The ignores were therefore removed
-# for a reason that does not hold, and this file no longer suppresses three
-# advisories whose subject is still in the resolved tree.
-# #VERIFY: the next security-analysis.yml run settles it, because
-# `osv-scanner --recursive ./` reads uv.lock. If it reports these three, restore
-# the ignores with the real justification (disputed ReDoS in a dev-only, non-
-# runtime transitive) rather than a claim of absence. If it does not report them,
-# record WHY (dev-group exclusion or severity threshold) here, so the next reader
-# does not have to rediscover it. Deliberately not pre-emptively re-added: that
-# would be guessing at a scanner's scope instead of observing it.
+# The subject IS still here: `uv.lock` carries `py` 1.11.0, required by
+# `interrogate` 1.7.0, declared in [project.optional-dependencies]. What changed
+# is the advisories, not the tree. All three IDs are ALIASES of one another and
+# all three are WITHDRAWN upstream: GHSA-w596-4wvx-j9j6 on 2025-08-01 and
+# PYSEC-2022-42969 on 2026-06-09 (CVE-2022-42969 is an alias of both). Queried
+# against api.osv.dev on 2026-08-14, the exact database osv-scanner reads:
+# `py` 1.11.0 returns zero vulnerabilities.
+#
+# So the ignores are correctly absent, and re-adding them would create the
+# "unused ignore" warnings the original removal was trying to avoid, just with a
+# true justification instead of a false one. This is recorded rather than left
+# implicit because the next reader will otherwise re-derive it from the same
+# false premise: the right question was never "is the transitive gone" (it is
+# not) but "is the advisory still live" (it is not).
+#
+# #ASSUME: security: a withdrawn advisory stays withdrawn. If OSV ever
+# un-withdraws one, osv-scanner starts reporting it and this file needs a real
+# suppression block with the disputed-ReDoS-in-a-dev-only-transitive rationale.
+# #VERIFY: the security-analysis.yml `osv-scanner` job is the standing check;
+# it passed on PR #709 with these three absent, which is the observation this
+# comment previously asked a future run to make.

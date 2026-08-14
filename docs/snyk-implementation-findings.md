@@ -104,14 +104,21 @@ Two implications:
    (`CVE-2022-42969`, `PYSEC-2022-42969`, `GHSA-w596-4wvx-j9j6`, all the disputed
    `py`/`interrogate` ReDoS).
 
-   > **Corrected 2026-08-13 (`UW-K08`).** This originally read "the transitive dependency
-   > that triggered them is gone, so these exceptions are now dead policy and should be
-   > removed". That is false and was acted on: `uv.lock` still carries `py` 1.11.0, pulled
-   > in by `interrogate` 1.7.0, which is declared in `[project.optional-dependencies]`.
-   > The ignores were removed from `osv-scanner.toml` on this false premise. Whether they
-   > need restoring depends on whether `osv-scanner --recursive ./` reports a dev-only
-   > transitive from `uv.lock`, which is a live scan, so it is deliberately not guessed at
-   > here; see the `UW-K08` register row.
+   > **Corrected 2026-08-13, resolved 2026-08-14 (`UW-K08`).** This originally read "the
+   > transitive dependency that triggered them is gone, so these exceptions are now dead
+   > policy and should be removed". That is false and was acted on: `uv.lock` still
+   > carries `py` 1.11.0, pulled in by `interrogate` 1.7.0, declared in
+   > `[project.optional-dependencies]`. The ignores were removed from `osv-scanner.toml`
+   > on that false premise.
+   >
+   > The removal was nonetheless correct, for a different reason. All three IDs are
+   > aliases of one another and all three are **withdrawn upstream**:
+   > `GHSA-w596-4wvx-j9j6` on 2025-08-01 and `PYSEC-2022-42969` on 2026-06-09. Queried
+   > against `api.osv.dev` on 2026-08-14, the database `osv-scanner` reads, `py` 1.11.0
+   > returns zero vulnerabilities, and the PR #709 `osv-scanner` job passed with the
+   > ignores absent. Restoring them would produce the "unused ignore" warnings the
+   > original removal was avoiding. The right question was never "is the transitive
+   > gone" but "is the advisory still live"; `osv-scanner.toml` now records that.
 
 ## Finding 3: Code (SAST) findings are real files but partly false positives
 
