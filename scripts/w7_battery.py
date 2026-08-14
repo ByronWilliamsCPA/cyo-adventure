@@ -169,6 +169,22 @@ def load_panel(path: Path | None) -> tuple[Judge, ...]:
     if not isinstance(rows, list) or not rows:
         msg = f"{path} must hold a non-empty JSON array of judge objects"
         raise ValueError(msg)
+
+    # A row marked `pending` is a slot held open for a model we intend to test
+    # and currently cannot, usually because nothing is serving it. Keeping it in
+    # the slate rather than in a comment is the point: the gap stays visible
+    # where the panel is defined, and picking it up later is removing a flag
+    # rather than remembering a conversation.
+    pending = [str(r["label"]) for r in rows if r.get("pending")]
+    if pending:
+        print(
+            f"  Slots held open, not judged: {', '.join(pending)}.",
+            file=sys.stderr,
+        )
+    active = [r for r in rows if not r.get("pending")]
+    if not active:
+        msg = f"{path} holds no judge that is not pending"
+        raise ValueError(msg)
     return tuple(
         Judge(
             label=str(row["label"]),
@@ -176,7 +192,7 @@ def load_panel(path: Path | None) -> tuple[Judge, ...]:
             provider_order=tuple(row.get("provider_order") or ()),
             family=str(row.get("family", "unknown")),
         )
-        for row in rows
+        for row in active
     )
 
 

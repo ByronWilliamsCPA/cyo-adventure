@@ -1,0 +1,919 @@
+{
+  "panel": [
+    {
+      "label": "judge-gpt-5.6",
+      "model": "openai/gpt-5.6-sol",
+      "provider_order": [
+        "azure"
+      ],
+      "family": "openai"
+    },
+    {
+      "label": "judge-gemini-3.1",
+      "model": "google/gemini-3.1-pro-preview",
+      "provider_order": [
+        "google-vertex/global"
+      ],
+      "family": "google"
+    },
+    {
+      "label": "judge-grok-4.6",
+      "model": "x-ai/grok-4.6",
+      "provider_order": [
+        "xai/zdr"
+      ],
+      "family": "xai"
+    }
+  ],
+  "participation": {
+    "judge-gpt-5.6": {
+      "attempted": 9,
+      "scored": 9
+    },
+    "judge-gemini-3.1": {
+      "attempted": 9,
+      "scored": 9
+    },
+    "judge-grok-4.6": {
+      "attempted": 9,
+      "scored": 9
+    }
+  },
+  "criteria": {
+    "age_fit": "Suitability for a 5-to-8-year-old reading alone. 1 = vocabulary or sentence structure a 7-year-old would stall on, or themes too adult. 5 = consistently readable at that age with no talking down.",
+    "imagery": "Concreteness of sensory detail. 1 = abstract or generic description that could belong to any story. 5 = specific, physical detail a child can picture.",
+    "voice": "Distinctness and consistency of the main character. 1 = interchangeable narrator with no personality. 5 = a character who reacts in a recognisable, consistent way throughout.",
+    "dialogue": "Naturalness of spoken lines. 1 = stilted, expository, or absent where it is clearly needed. 5 = lines that sound like people talking. Score 3 if the story is legitimately narration-led with little dialogue.",
+    "choice_quality": "Whether the branch points feel like real decisions. 1 = options that are cosmetic restatements of each other. 5 = options that promise genuinely different experiences and deliver on that promise.",
+    "ending_quality": "Satisfaction of the endings reached. 1 = abrupt stops or flat morals. 5 = endings that resolve what the story set up and feel earned.",
+    "engagement": "Whether a child would want to read on. 1 = a chore. 5 = genuinely compelling."
+  },
+  "verdicts": [
+    {
+      "book": "xai-grok-4.6#0",
+      "leg": "xai-grok-4.6",
+      "family": "xai",
+      "judge": "judge-gpt-5.6",
+      "self_family": false,
+      "scores": {
+        "age_fit": 4.0,
+        "imagery": 5.0,
+        "voice": 4.0,
+        "dialogue": 3.0,
+        "choice_quality": 3.0,
+        "ending_quality": 4.0,
+        "engagement": 4.0
+      },
+      "notes": {
+        "age_fit": "Short sentences, playful comparisons, and clear actions suit young readers, though phrases such as \u201clists to port\u201d and \u201cmotes\u201d may require help.",
+        "imagery": "Details such as candleberries \u201cwarm as coins,\u201d cane dust gilding whiskers, and cool sand between toes create a vivid physical world.",
+        "voice": "The eager, good-humored hero consistently giggles at mishaps, cares for friends, and patiently tends the stubbornly leaning lantern.",
+        "dialogue": "The narration-led format works, but spoken interaction is sparse beyond brief lines such as the friends saying \u201cYes\u201d and the bees humming that warm cakes take a minute.",
+        "choice_quality": "The festival branches lead to distinct songs, wishes, feasts, and stories, but many earlier choices are obvious correct-answer tests or simply return to the boathouse.",
+        "ending_quality": "The major endings satisfyingly resolve the recurring tipping-lantern thread, although the three mishap endings mainly instruct the reader to begin again.",
+        "engagement": "The accumulating festival preparations, comic mishaps, and inviting decisions provide steady momentum toward the glowing celebration."
+      },
+      "error": null
+    },
+    {
+      "book": "xai-grok-4.6#1",
+      "leg": "xai-grok-4.6",
+      "family": "xai",
+      "judge": "judge-gpt-5.6",
+      "self_family": false,
+      "scores": {
+        "age_fit": 4.0,
+        "imagery": 5.0,
+        "voice": 2.0,
+        "dialogue": 3.0,
+        "choice_quality": 4.0,
+        "ending_quality": 4.0,
+        "engagement": 4.0
+      },
+      "notes": {
+        "age_fit": "Short sentences and playful repetition support young readers, though words such as \u201cdismay,\u201d \u201cstately,\u201d and \u201cbrass taper\u201d may slow some independent readers.",
+        "imagery": "Details such as sugar-sticky cobbles, ginger steam, dusty purple plums, and bulbs humming \u201clike friendly bees\u201d make the market vividly physical.",
+        "voice": "Mallow develops recognisably from sniffles and whispers to cheering, but the second-person child remains mostly a neutral helper whose personality changes with each choice.",
+        "dialogue": "The story is legitimately narration-led, and brief lines such as \u201cA thousand and one now\u201d sound natural, but most speech is paraphrased rather than directly voiced.",
+        "choice_quality": "The six distinct market stalls and final options offer varied activities, though many smaller choices converge on the same gift and every reckless option predictably ends the night.",
+        "ending_quality": "The Wish-Rise endings satisfyingly complete Mallow\u2019s journey from hiding behind a barrel to speaking aloud, while the spill and mishap endings halt the evening somewhat conveniently.",
+        "engagement": "The lost lantern supplies a clear goal, and enticing moments such as chasing gold paper, repairing clockwork toys, and launching a glowing lantern encourage continued reading."
+      },
+      "error": null
+    },
+    {
+      "book": "xai-grok-4.6#2",
+      "leg": "xai-grok-4.6",
+      "family": "xai",
+      "judge": "judge-gpt-5.6",
+      "self_family": false,
+      "scores": {
+        "age_fit": 4.0,
+        "imagery": 5.0,
+        "voice": 2.0,
+        "dialogue": 3.0,
+        "choice_quality": 3.0,
+        "ending_quality": 3.0,
+        "engagement": 4.0
+      },
+      "notes": {
+        "age_fit": "Short, direct sentences suit young independent readers, though words such as \u201crafters,\u201d \u201cflagstone,\u201d \u201cthicket,\u201d and \u201cdappled\u201d may slow some children.",
+        "imagery": "Details such as warm pollen \u201clike gold flour,\u201d berries tapping shoulders, and marbles swirling blue, green, and gold create vivid physical scenes.",
+        "voice": "The unnamed second-person hero is consistently curious and gentle but has few individual traits beyond following the map with Pip.",
+        "dialogue": "The narration-led approach works, but spoken interaction is sparse beyond lines such as Pip whispering, \u201cSomething lives in there.\u201d",
+        "choice_quality": "The sunflower, shed, and ditch routes deliver distinct discoveries, but later choices often clearly pair an inviting path with an obvious dead end such as the \u201cbrighter happier tunnel\u201d versus the \u201clow thorny tunnel.\u201d",
+        "ending_quality": "Discoveries such as the Toad Night Watch and secret fort receive warm resolutions, but many endings repeat a quick retreat to lemonade and most do not solve the promised bean-eater mystery.",
+        "engagement": "The crayon map, hidden routes, animal encounters, and buried tins provide steady discovery, although the repeated sequence of fork, wrong turn, and treasure can become predictable."
+      },
+      "error": null
+    },
+    {
+      "book": "xai-grok-4.6#3",
+      "leg": "xai-grok-4.6",
+      "family": "xai",
+      "judge": "judge-gpt-5.6",
+      "self_family": false,
+      "scores": {
+        "age_fit": 4.0,
+        "imagery": 5.0,
+        "voice": 4.0,
+        "dialogue": 3.0,
+        "choice_quality": 4.0,
+        "ending_quality": 4.0,
+        "engagement": 4.0
+      },
+      "notes": {
+        "age_fit": "Short sentences and playful comparisons such as \u201cquicker than a sneeze\u201d suit young readers, though words like \u201cexpedition,\u201d \u201cperched,\u201d and \u201cbrimming\u201d may challenge some independent readers.",
+        "imagery": "Details such as wet boots squelching, pea-vines ticking in the breeze, and a marble winking \u201clike a tiny frozen moon\u201d make the garden vividly physical.",
+        "voice": "The explorer consistently names places such as Drip Lane and Brick Ridge, salutes \u201cexplorer-style,\u201d and responds to mishaps with cheerful curiosity.",
+        "dialogue": "Most speech is reported rather than directly voiced, as in Nell explaining that \u201ctangles hate hurrying,\u201d so the narration carries more personality than the conversations.",
+        "choice_quality": "Choosing among four distinct creatures leads to different rescue problems, although each plan scene has one clearly gentle solution and two consequence-free failures that simply loop back.",
+        "ending_quality": "The celebratory endings provide concrete closure through songs, races, treasures, or picnics, though \u201cthree rescues by you\u201d in the Nim ending may not match the reader\u2019s actual route.",
+        "engagement": "The varied creatures, comic splashes, and recurring approach of the Melt encourage continued exploration, despite the repeated plan-failure-tip structure reducing suspense."
+      },
+      "error": null
+    },
+    {
+      "book": "anthropic-sonnet-5#0",
+      "leg": "anthropic-sonnet-5",
+      "family": "anthropic",
+      "judge": "judge-gpt-5.6",
+      "self_family": false,
+      "scores": {
+        "age_fit": 4.0,
+        "imagery": 4.0,
+        "voice": 3.0,
+        "dialogue": 3.0,
+        "choice_quality": 3.0,
+        "ending_quality": 4.0,
+        "engagement": 4.0
+      },
+      "notes": {
+        "age_fit": "Short sentences and repeated action words support independent reading, though terms such as \u201cshallows,\u201d \u201cfreckled,\u201d and \u201criver-flower strings\u201d may slow younger readers.",
+        "imagery": "Details such as moonberries glowing warmly on Pip\u2019s chin, sticky paws, and lanterns floating like little gold moons create a clear sensory setting.",
+        "voice": "Pip is consistently cheerful, calm, and hardworking, but her frequent humming and laughing do not develop into a particularly distinctive personality.",
+        "dialogue": "The narration-led format works, but spoken interaction is limited mostly to brief lines such as \u201cOf course we\u2019ll come!\u201d and the crowd\u2019s \u201cohhh.\u201d",
+        "choice_quality": "The festival choices lead to meaningfully different songs, wishes, feasts, and stories, but many earlier options are obvious correct-or-mistake tests or simply loop back to Driftwood Hollow.",
+        "ending_quality": "The main endings pay off the gathered lanterns, food, music, and friends with warm communal celebrations, although the three mistake endings function mainly as resets.",
+        "engagement": "The six opening destinations, playful mishaps such as the slingshot branch, and varied festival finales provide steady reasons for a child to continue and reread."
+      },
+      "error": null
+    },
+    {
+      "book": "google-gemini-3.1-pro#0",
+      "leg": "google-gemini-3.1-pro",
+      "family": "google",
+      "judge": "judge-gpt-5.6",
+      "self_family": false,
+      "scores": {
+        "age_fit": 4.0,
+        "imagery": 4.0,
+        "voice": 2.0,
+        "dialogue": 3.0,
+        "choice_quality": 2.0,
+        "ending_quality": 3.0,
+        "engagement": 3.0
+      },
+      "notes": {
+        "age_fit": "Short sentences and familiar actions suit independent readers, though phrases such as \u201cthe rushing river ring the space\u201d and \u201cbless the grand feast\u201d may cause confusion.",
+        "imagery": "Details such as yellow glow lighting the character\u2019s chin, reeds flopping like cooked noodles, and cinnamon-scented moon-cakes create a vivid physical setting.",
+        "voice": "The main character repeatedly feels \u201chappy,\u201d \u201cglad,\u201d or \u201cproud,\u201d but shows few distinctive traits beyond cheerful persistence.",
+        "dialogue": "The narration-led format works without much speech, but moments such as inviting the friends and frogs are summarized rather than brought alive through spoken lines.",
+        "choice_quality": "Although the setup choices offer different locations and the festival choices lead to different activities, many options simply return to the cottage or test an obvious correct answer such as dry reeds versus wet reeds.",
+        "ending_quality": "The main finales resolve the festival with concrete celebrations such as floating lanterns, singing, and feasting, but the three \u201coops\u201d endings merely send the reader back to start.",
+        "engagement": "Glowing berries, banjo-playing frogs, and multiple festival finales provide playful appeal, but repeated gathering loops and uniformly cheerful narration reduce suspense."
+      },
+      "error": null
+    },
+    {
+      "book": "google-gemini-3.1-pro#1",
+      "leg": "google-gemini-3.1-pro",
+      "family": "google",
+      "judge": "judge-gpt-5.6",
+      "self_family": false,
+      "scores": {
+        "age_fit": 4.0,
+        "imagery": 4.0,
+        "voice": 3.0,
+        "dialogue": 3.0,
+        "choice_quality": 3.0,
+        "ending_quality": 4.0,
+        "engagement": 4.0
+      },
+      "notes": {
+        "age_fit": "Short sentences and repeated phrases support young readers, though words such as \u201corigami,\u201d \u201csavory,\u201d \u201csolemnly,\u201d and \u201cceremony\u201d may slow some independent readers.",
+        "imagery": "Details such as warm steam, blinking yellow bulbs, plums with \u201cdusty purple cheeks,\u201d and screws like sesame seeds make the market easy to picture.",
+        "voice": "Pip\u2019s movement from tiny whispers to a brave voice is consistent, but the second-person child mainly helps and chooses without showing a distinctive personality.",
+        "dialogue": "Lines such as \u201cBest market night ever\u201d sound natural, but much of what characters say is summarized indirectly rather than presented as conversation.",
+        "choice_quality": "The market stalls and ceremony routes offer varied activities, but many choices quickly converge on the same gift node while reckless options predictably end the night early.",
+        "ending_quality": "The ceremony endings satisfyingly complete Pip\u2019s shy-to-brave arc, although spill, spring, and gong endings use the repetitive device of Dad abruptly deciding it is time to leave.",
+        "engagement": "The bustling hub, useful tasks, playful mishaps, and promise of launching Pip\u2019s lantern provide strong reasons to keep exploring."
+      },
+      "error": null
+    },
+    {
+      "book": "google-gemini-3.1-pro#2",
+      "leg": "google-gemini-3.1-pro",
+      "family": "google",
+      "judge": "judge-gpt-5.6",
+      "self_family": false,
+      "scores": {
+        "age_fit": 3.0,
+        "imagery": 4.0,
+        "voice": 2.0,
+        "dialogue": 3.0,
+        "choice_quality": 3.0,
+        "ending_quality": 2.0,
+        "engagement": 3.0
+      },
+      "notes": {
+        "age_fit": "Mostly short sentences suit young readers, but words such as \u201cterracotta,\u201d \u201ccanopy,\u201d \u201cbramble,\u201d and \u201cslate\u201d may stall some children reading alone.",
+        "imagery": "Details such as dusty golden light, wet moss under shoes, silver spoons in the wind, and marbles swirling blue, green, and gold create vivid garden scenes.",
+        "voice": "The second-person hero is consistently curious and gentle, but reactions such as laughing, gasping, and feeling excited do not establish a distinctive personality.",
+        "dialogue": "The narration-led format works without much speech, though moments such as meeting the cat or Caterpillar King would benefit from actual conversation rather than reported thoughts.",
+        "choice_quality": "The compost bin, tool shed, and puddle routes deliver different discoveries, but later choices often signal the correct option by contrasting a \u201cdead end\u201d or \u201ctricky\u201d path with an inviting one.",
+        "ending_quality": "The Caterpillar King ending answers who ate the beans, but endings such as the Music Sunflower, Marble Stash, and Button Box leave the central bean-eater mystery unresolved.",
+        "engagement": "The muddy map, green X marks, hidden fort, friendly cat, and buried treasures invite exploration, though the repeated route structure and juice-box dead ends become predictable."
+      },
+      "error": null
+    },
+    {
+      "book": "google-gemini-3.1-pro#3",
+      "leg": "google-gemini-3.1-pro",
+      "family": "google",
+      "judge": "judge-gpt-5.6",
+      "self_family": false,
+      "scores": {
+        "age_fit": 4.0,
+        "imagery": 4.0,
+        "voice": 3.0,
+        "dialogue": 3.0,
+        "choice_quality": 3.0,
+        "ending_quality": 3.0,
+        "engagement": 4.0
+      },
+      "notes": {
+        "age_fit": "Short sentences and playful comparisons such as \u201cquicker than a sneeze\u201d suit young independent readers, though words like \u201cUncharted,\u201d \u201cthermos,\u201d and \u201ccardinal\u201d may slow some children.",
+        "imagery": "Details such as Zorp\u2019s arms hanging \u201clike sad celery,\u201d fairy-light wires like \u201cicy noodles,\u201d and cocoa with marshmallows make the garden easy to picture.",
+        "voice": "The child consistently acts as a cheerful, persistent polar explorer, but the second-person hero has few individual traits beyond bravery and giggling at mistakes.",
+        "dialogue": "Leo\u2019s spoken tips are warm and clear, but lines such as \u201cTangles hate hurrying\u201d mainly deliver the correct solution rather than develop a natural conversation.",
+        "choice_quality": "Choosing which toy to rescue first creates genuinely different scenes, but each rescue repeats the same obvious wrong-choice loops before one clearly sensible solution.",
+        "ending_quality": "Most endings provide safety, celebration, and a warm moment with Leo, though some let the Great Flurry finish rescues too easily and weaken the child\u2019s achievement.",
+        "engagement": "The approaching Great Flurry, four distinctive stranded toys, comic mishaps, and many celebratory endings provide strong momentum despite the repeated rescue structure."
+      },
+      "error": null
+    },
+    {
+      "book": "xai-grok-4.6#0",
+      "leg": "xai-grok-4.6",
+      "family": "xai",
+      "judge": "judge-gemini-3.1",
+      "self_family": false,
+      "scores": {
+        "age_fit": 4.0,
+        "imagery": 5.0,
+        "voice": 5.0,
+        "dialogue": 3.0,
+        "choice_quality": 4.0,
+        "ending_quality": 5.0,
+        "engagement": 5.0
+      },
+      "notes": {
+        "age_fit": "While the cozy tone is perfect, an early independent reader might stall on advanced or nautical vocabulary like \"lists to port\" and \"sunny motes.\"",
+        "imagery": "The text is packed with exquisite, physical details a child can easily picture, such as bats that \"scribble the air\" and canes that \"smell like sun and old rope.\"",
+        "voice": "The eager protagonist possesses a wonderfully consistent, gentle enthusiasm, established immediately when their \"paws tingle with happy hurry\" over their stubborn lantern.",
+        "dialogue": "The story is legitimately narration-led with very little dialogue, earning a standard score, though the brief spoken moments like the dock bees humming \"Warm ones take a minute\" are completely natural.",
+        "choice_quality": "While early choices lead to simple restart endings like the wobbly branch springing back, later decisions provide genuinely different narrative paths such as sharing clover cakes or listening to Grandmother Heron.",
+        "ending_quality": "The successful endings feel immensely satisfying because they all creatively resolve the running motif of the protagonist's lantern, whether it finally \"sits true\" on the river or remains crooked.",
+        "engagement": "The comforting atmosphere and the steady, satisfying progression of gathering items like clover cakes and painted poles make this an exceptionally compelling world a child would want to read over and over."
+      },
+      "error": null
+    },
+    {
+      "book": "xai-grok-4.6#1",
+      "leg": "xai-grok-4.6",
+      "family": "xai",
+      "judge": "judge-gemini-3.1",
+      "self_family": false,
+      "scores": {
+        "age_fit": 4.0,
+        "imagery": 5.0,
+        "voice": 3.0,
+        "dialogue": 3.0,
+        "choice_quality": 3.0,
+        "ending_quality": 3.0,
+        "engagement": 4.0
+      },
+      "notes": {
+        "age_fit": "The short, rhythmic sentences are highly readable for early independent readers, though a seven-year-old might momentarily stall on vocabulary like 'spectacles' or 'stately.'",
+        "imagery": "The text is packed with delightful, physical sensory details a child can easily picture, such as cobbles that are 'sticky with sugar' and tiny screws 'small as sesame seeds.'",
+        "voice": "Because the story relies on a second-person 'you' avatar holding Grandad Moss's hand, the main character acts as a consistently kind but ultimately interchangeable vessel for the reader rather than a distinct personality.",
+        "dialogue": "The story is legitimately narration-led and effectively relies on charming reported speech, such as when Mallow 'explains in a tiny voice' between sniffles, rather than direct quotes.",
+        "choice_quality": "Many options are merely cosmetic flavor preferences that funnel directly into the exact same reward, such as choosing to build Miss Zest's orange pyramid either the 'classic way' or with 'fancy stripes.'",
+        "ending_quality": "While the successful wish-lantern endings wonderfully resolve Mallow's arc of gaining confidence, the failure endings abruptly abort the story over trivial mistakes like winding Mr. Tock's beetle one turn too far.",
+        "engagement": "The exceptionally cozy, magical atmosphere of the String-Light Market and the clear, empathetic goal of helping a shy puppy replace her lost wish items create a highly compelling reading experience."
+      },
+      "error": null
+    },
+    {
+      "book": "xai-grok-4.6#2",
+      "leg": "xai-grok-4.6",
+      "family": "xai",
+      "judge": "judge-gemini-3.1",
+      "self_family": false,
+      "scores": {
+        "age_fit": 4.0,
+        "imagery": 5.0,
+        "voice": 2.0,
+        "dialogue": 3.0,
+        "choice_quality": 4.0,
+        "ending_quality": 4.0,
+        "engagement": 4.0
+      },
+      "notes": {
+        "age_fit": "The short, declarative sentences like \"Pip taps three spots with a grubby finger\" are perfectly paced for a young reader to tackle independently without stalling.",
+        "imagery": "The text is packed with vivid, sensory details a child can easily picture, such as smelling \"like dry hay and crayon wax\" or pollen that \"dusts your wrists like gold flour.\"",
+        "voice": "Because the story relies on a blank-slate second-person perspective, the narrator lacks distinct character traits beyond generic reactions like feeling \"your pulse hops like a cricket.\"",
+        "dialogue": "The narrative is legitimately exposition-led and atmospheric, featuring only a single natural spoken line when Pip whispers, \"Something lives in there.\"",
+        "choice_quality": "The major decisions present genuinely different physical paths and experiences, such as choosing to explore the dark of a \"hollow clay pipe\" versus a \"hanging tire planter.\"",
+        "ending_quality": "While the Toad Night Watch ending brilliantly resolves the initial mystery of the nibbled bean leaves, other otherwise-charming endings like finding the button tin drop the setup entirely.",
+        "engagement": "The continuous promise of uncovering tangible, cozy garden secrets, such as a hidden loft built from milk crates, makes the exploration genuinely compelling to continue."
+      },
+      "error": null
+    },
+    {
+      "book": "xai-grok-4.6#3",
+      "leg": "xai-grok-4.6",
+      "family": "xai",
+      "judge": "judge-gemini-3.1",
+      "self_family": false,
+      "scores": {
+        "age_fit": 4.0,
+        "imagery": 5.0,
+        "voice": 4.0,
+        "dialogue": 3.0,
+        "choice_quality": 4.0,
+        "ending_quality": 5.0,
+        "engagement": 5.0
+      },
+      "notes": {
+        "age_fit": "While a very early independent reader might stall on multi-syllable words like \"expedition\" or \"meltwater,\" the short, rhythmic sentences keep the text highly accessible for most seven-year-olds.",
+        "imagery": "The text is packed with fantastic, child-friendly tactile details, such as frozen netting feeling \"shiny and slippery as wet noodles\" and wet toes that \"squelch inside your socks.\"",
+        "voice": "The second-person protagonist maintains a distinctly gentle, earnest \"explorer\" persona throughout, demonstrated by consistent actions like saluting to garden rules and shaking off wet hair \"like a puppy.\"",
+        "dialogue": "Following the rubric for a legitimately narration-led story that relies almost entirely on indirect reported speech\u2014such as when the newt \"says his name is Skip\"\u2014this earns a standard three.",
+        "choice_quality": "The puzzle-solving choices promise and deliver genuinely different physical actions, such as deciding whether to catch a newt with bare hands or dig a little river for him, which lead to uniquely entertaining mini-failures.",
+        "ending_quality": "The multiple cozy conclusions fully resolve the tension of the encroaching water and reward the reader with sweet, specific moments, such as Luma doing a \"slow grand cartwheel under the water to say thank you.\"",
+        "engagement": "The gentle ticking-clock stakes of the approaching Melt combined with the whimsical appeal of rescuing an \"acorn-cap walker\" make the adventure genuinely compelling to keep reading."
+      },
+      "error": null
+    },
+    {
+      "book": "anthropic-sonnet-5#0",
+      "leg": "anthropic-sonnet-5",
+      "family": "anthropic",
+      "judge": "judge-gemini-3.1",
+      "self_family": false,
+      "scores": {
+        "age_fit": 5.0,
+        "imagery": 4.0,
+        "voice": 3.0,
+        "dialogue": 3.0,
+        "choice_quality": 2.0,
+        "ending_quality": 3.0,
+        "engagement": 3.0
+      },
+      "notes": {
+        "age_fit": "Short, decodable sentences like \"The river below mirrors every glow\" make the text perfectly suited for independent early readers without feeling condescending.",
+        "imagery": "Concrete sensory descriptions like honeycakes that \"smell like clover and sunshine\" or soft reeds that flop \"like a cooked noodle\" provide excellent physical details a child can easily picture.",
+        "voice": "Pip is consistently cheerful throughout, but her personality rarely stretches beyond being a generic happy woodland creature who simply \"laughs and sets it up again.\"",
+        "dialogue": "As a legitimately narration-led story, the dialogue is intentionally sparse, relying on a single, serviceable spoken line where friends chirp, \"Of course we'll come!\"",
+        "choice_quality": "The early branching structure relies on repetitive hub-and-spoke fetch quests rather than true narrative forks, frequently asking the reader if they want to advance or \"Go back to Driftwood Hollow for more.\"",
+        "ending_quality": "While the successful festival conclusions provide cozy, earned resolutions, the mistake pathways like the bouncing basket in the moonberry brambles act as abrupt fail-states rather than full endings.",
+        "engagement": "The low-stakes woodland setting is undeniably sweet, but looping through the repetitive gathering tasks before the festival actually begins might feel like a chore for some readers."
+      },
+      "error": null
+    },
+    {
+      "book": "google-gemini-3.1-pro#0",
+      "leg": "google-gemini-3.1-pro",
+      "family": "google",
+      "judge": "judge-gemini-3.1",
+      "self_family": true,
+      "scores": {
+        "age_fit": 3.0,
+        "imagery": 4.0,
+        "voice": 2.0,
+        "dialogue": 3.0,
+        "choice_quality": 2.0,
+        "ending_quality": 2.0,
+        "engagement": 2.0
+      },
+      "notes": {
+        "age_fit": "The heavy reliance on short, simple sentences like \"You cut the tall, dry reeds\" makes the text highly accessible for a five-year-old but lacks the structural variety an eight-year-old needs to stay engaged.",
+        "imagery": "The description of the harvested glow-berries shining so brightly that they \"light up your chin with a warm yellow glow\" gives children a highly specific, magical visual to picture.",
+        "voice": "The second-person protagonist is a blank, interchangeable avatar whose heart does a \"happy flip\" but who lacks any distinct personality traits or unique perspective beyond general cheerfulness.",
+        "dialogue": "The story is legitimately narration-led with almost no spoken lines, summarizing interactions like asking the baker for moon-cakes rather than relying on direct quotes.",
+        "choice_quality": "Many early choices are false decisions where picking the wrong option, such as stretching for the high berry, simply triggers an abrupt failure and tells the reader to start over.",
+        "ending_quality": "While the successful finale scenes are pleasant, the failure states are abrupt halts that simply instruct the reader to \"dust off your muddy knees\" and start again rather than offering a satisfying narrative resolution.",
+        "engagement": "The repetitive hub-and-spoke structure of constantly having to return to the cottage to pick the next item makes the reading experience feel more like a tedious checklist than an unfolding adventure."
+      },
+      "error": null
+    },
+    {
+      "book": "google-gemini-3.1-pro#1",
+      "leg": "google-gemini-3.1-pro",
+      "family": "google",
+      "judge": "judge-gemini-3.1",
+      "self_family": true,
+      "scores": {
+        "age_fit": 5.0,
+        "imagery": 5.0,
+        "voice": 3.0,
+        "dialogue": 3.0,
+        "choice_quality": 3.0,
+        "ending_quality": 4.0,
+        "engagement": 5.0
+      },
+      "notes": {
+        "age_fit": "The short, rhythmic sentences and accessible vocabulary like 'wobbly' and 'sniffle' perfectly match the reading level of early independent readers without feeling condescending.",
+        "imagery": "Descriptions of pouring hot apple cider in 'long, amber ribbons' and plums with 'dusty purple cheeks' provide wonderfully specific, tactile images.",
+        "voice": "While the second-person narrator is an interchangeable helper, Pip has a distinct and consistent arc from hiding behind a barrel to bravely shouting her 'One, two, THREE!' countdown.",
+        "dialogue": "The story earns a standard score here because it is legitimately narration-led with minimal direct dialogue, though Pip's few spoken lines like her whispered 'Loop, loop, pull' fit her personality.",
+        "choice_quality": "While the Great Circle provides genuinely distinct areas to explore, choices within the stalls\u2014such as carrying trays versus folding dough\u2014collapse immediately back into the same outcome.",
+        "ending_quality": "The successful Star-Rise endings beautifully resolve Pip's character arc, but the abrupt failure endings where Dad says it is time to go home before the ceremony feel unrewarding.",
+        "engagement": "The cozy, magical setting of the Night Market and the clear quest to gather missing items for the Star-Rise Ceremony make this highly compelling for a young reader."
+      },
+      "error": null
+    },
+    {
+      "book": "google-gemini-3.1-pro#2",
+      "leg": "google-gemini-3.1-pro",
+      "family": "google",
+      "judge": "judge-gemini-3.1",
+      "self_family": true,
+      "scores": {
+        "age_fit": 5.0,
+        "imagery": 4.0,
+        "voice": 2.0,
+        "dialogue": 3.0,
+        "choice_quality": 4.0,
+        "ending_quality": 2.0,
+        "engagement": 4.0
+      },
+      "notes": {
+        "age_fit": "The short, subject-verb-object sentences like \"You follow the footprint trail to the big terracotta pot lying on its side in the long grass\" are perfectly leveled for an early independent reader.",
+        "imagery": "Specific sensory details like \"fat green caterpillars sit on dirt-clod thrones\" and a \"rustling purr\" provide concrete images children can easily visualize.",
+        "voice": "The second-person narrator and the companion Leo act merely as interchangeable vehicles for moving through the garden, lacking distinct personalities or unique reactions to the discoveries.",
+        "dialogue": "The story is legitimately narration-led with virtually no dialogue, relying instead on indirect speech like \"He says it sounds like many tiny mouths\" to convey information.",
+        "choice_quality": "The major branching forks offer genuinely different choices, such as deciding whether to \"Follow the map to the compost bin\" or the tool shed, leading to distinctly different environments and outcomes.",
+        "ending_quality": "While the endings are pleasantly cozy, most of them\u2014like digging up the \"Marble Stash\" or finding the \"Button Box\"\u2014completely fail to resolve the story's core mystery of what ate the bean shoots.",
+        "engagement": "The warm treasure-hunt atmosphere and the variety of hidden backyard secrets, such as discovering the \"Music Sunflower,\" make this a compelling read that encourages exploring every branch."
+      },
+      "error": null
+    },
+    {
+      "book": "google-gemini-3.1-pro#3",
+      "leg": "google-gemini-3.1-pro",
+      "family": "google",
+      "judge": "judge-gemini-3.1",
+      "self_family": true,
+      "scores": {
+        "age_fit": 5.0,
+        "imagery": 5.0,
+        "voice": 5.0,
+        "dialogue": 3.0,
+        "choice_quality": 5.0,
+        "ending_quality": 5.0,
+        "engagement": 5.0
+      },
+      "notes": {
+        "age_fit": "The sentences are short and active, using accessible vocabulary like 'slush puddle' and 'snow-cave' that a 7-year-old can easily read independently.",
+        "imagery": "The text uses wonderfully concrete comparisons, such as describing Zorp's five green arms hanging down 'like sad celery' and the fairy light wire feeling 'like icy noodles.'",
+        "voice": "The second-person protagonist maintains a consistent, enthusiastic explorer persona throughout, reacting to failed rescue attempts by giggling and shaking off snow 'like a wet puppy' rather than getting frustrated.",
+        "dialogue": "The story is legitimately narration-led with the toys communicating via squeaks or clacks, leaving only a few gentle, spoken hints from Leo like 'Tangles hate hurrying.'",
+        "choice_quality": "The branch points offer genuinely distinct approaches to each puzzle, where choosing to use your mittens versus a shovel results in uniquely funny, harmless failures like a tiny wave of icy water splashing onto your nose.",
+        "ending_quality": "The varied endings neatly and satisfyingly resolve the afternoon's mission, whether by actively celebrating with a winter song on the porch or letting the falling snow gently carry Shelly the turtle home.",
+        "engagement": "The blend of a cozy winter atmosphere and the low-stakes, humorous outcomes of the failed attempts\u2014like playing tug-of-war with a marshmallow spoon\u2014makes the story genuinely compelling to explore."
+      },
+      "error": null
+    },
+    {
+      "book": "xai-grok-4.6#0",
+      "leg": "xai-grok-4.6",
+      "family": "xai",
+      "judge": "judge-grok-4.6",
+      "self_family": true,
+      "scores": {
+        "age_fit": 4.0,
+        "imagery": 5.0,
+        "voice": 4.0,
+        "dialogue": 3.0,
+        "choice_quality": 4.0,
+        "ending_quality": 4.0,
+        "engagement": 4.0
+      },
+      "notes": {
+        "age_fit": "Short sentences and concrete actions suit a solo 5-to-8 reader, though a few phrases such as \u201clists to port\u201d and \u201csunny motes\u201d could stall a younger child.",
+        "imagery": "Sensory lines like candleberries \u201cwarm as coins\u201d lighting the chin, minnows that \u201cstitch the shallows,\u201d and bats that \u201cscribble the air\u201d give a child something physical to see and feel.",
+        "voice": "The pawed narrator stays recognisably eager and giggle-prone, righting the same stubborn leaning lantern from the boathouse bench through every gathering stop.",
+        "dialogue": "The story is legitimately narration-led, with only brief spoken bits such as the bees\u2019 \u201cWarm ones take a minute\u201d and the school-lantern riddle.",
+        "choice_quality": "Branch points such as low berries versus the high cluster, or floating lanterns versus keeping them in the willow, promise and deliver different scenes rather than restating one another.",
+        "ending_quality": "The festival finales earn the gathered feast and lights, though nearly every good ending resolves the same way when the tipping lantern finally sits true.",
+        "engagement": "The ticking list of candleberries, friends, canes, cakes, poles, and frogs, plus the comic oops paths, give a child a clear reason to keep turning pages and replay."
+      },
+      "error": null
+    },
+    {
+      "book": "xai-grok-4.6#1",
+      "leg": "xai-grok-4.6",
+      "family": "xai",
+      "judge": "judge-grok-4.6",
+      "self_family": true,
+      "scores": {
+        "age_fit": 4.0,
+        "imagery": 4.0,
+        "voice": 3.0,
+        "dialogue": 3.0,
+        "choice_quality": 4.0,
+        "ending_quality": 4.0,
+        "engagement": 4.0
+      },
+      "notes": {
+        "age_fit": "Short, concrete sentences and a gentle helping-a-puppy plot sit well in the 5-to-8 range, though a few words such as taper, solemnly, and stately may stall a younger independent reader.",
+        "imagery": "Sensory specifics recur throughout, from yellow bulbs that buzz in wiggly lines and trays as warm as sun-baked stones to a drop of broth ticking on a rim and juice sparkling on the boards like little suns.",
+        "voice": "The second-person child stays a consistently gentle helper who kneels and keeps a very gentle voice, but most personality belongs to Mallow\u2019s sniffles, sneezes, and growing bravery rather than a distinctive narrator.",
+        "dialogue": "The story is legitimately narration-led, with speech mostly reported (Miss Kettle on shy tummies, Mallow\u2019s \u2018Best market night ever\u2019) rather than lines that sound like people talking.",
+        "choice_quality": "Risky options such as stacking three trays or whacking the gong deliver genuinely different missed-Wish-Rise nights, even though many stall pairs (fold vs carry, classic vs striped pyramid) reconverge on the same gift.",
+        "ending_quality": "Success endings pay off the lost basket and the shy-puppy arc (Mallow writing wobbly letters, lighting the wick herself, counting in a clear little voice), and the spill/slosh/spring/gong endings are kind, earned, and still resolve the night.",
+        "engagement": "A night market, a loaf-sized puppy behind a pickle barrel, and a Wish-Rise to prepare give a child clear reasons to keep visiting stalls and to replay after a gong or a spilled tray."
+      },
+      "error": null
+    },
+    {
+      "book": "xai-grok-4.6#2",
+      "leg": "xai-grok-4.6",
+      "family": "xai",
+      "judge": "judge-grok-4.6",
+      "self_family": true,
+      "scores": {
+        "age_fit": 4.0,
+        "imagery": 4.0,
+        "voice": 3.0,
+        "dialogue": 3.0,
+        "choice_quality": 4.0,
+        "ending_quality": 3.0,
+        "engagement": 4.0
+      },
+      "notes": {
+        "age_fit": "Short garden sentences stay readable for a 7-year-old, though words like rafters, flagstone, and dappled may stall a younger independent reader.",
+        "imagery": "Physical specifics such as pollen like gold flour, berries tapping shoulders, and an ant with a crumb as big as its head are easy to picture, even if the leaky-can drip is overused.",
+        "voice": "You stay gently careful and grinning from the jam jar to every ending, but that kindness never becomes a personality as distinct as Pip's pinwheels and gasps.",
+        "dialogue": "The story is legitimately narration-led, with almost no speech beyond Pip whispering that something lives in the clay pipe.",
+        "choice_quality": "Sunflower, shed, and ditch, then later forks like the crate stairs versus the crawlspace, lead to different finds, though every dead end collapses into the same lemonade send-off.",
+        "ending_quality": "The crowned toads actually explain the nibbled beans, but the fort, marbles, chimes, and buttons are pleasant treasures that leave the midnight-eater mystery unsolved.",
+        "engagement": "A crayon map, a secret loft, glass marbles, and a purring cat named Moth would pull a child through the branches despite the repetitive follow-the-line rhythm."
+      },
+      "error": null
+    },
+    {
+      "book": "xai-grok-4.6#3",
+      "leg": "xai-grok-4.6",
+      "family": "xai",
+      "judge": "judge-grok-4.6",
+      "self_family": true,
+      "scores": {
+        "age_fit": 4.0,
+        "imagery": 4.0,
+        "voice": 4.0,
+        "dialogue": 3.0,
+        "choice_quality": 4.0,
+        "ending_quality": 4.0,
+        "engagement": 4.0
+      },
+      "notes": {
+        "age_fit": "Short, concrete lines such as \u201cYou promise with a salute, explorer-style\u201d stay readable alone, though words like expedition and trembling may still snag a younger independent reader.",
+        "imagery": "Physical bits such as the jam crumb on the picnic spoon, a soggy fringe dripping on a scarf, and water whooshing over boots give a child clear pictures, even when sparkly Melt language starts to repeat.",
+        "voice": "The second-person child consistently names each crossing\u2014Sleeping Bear, Drip Lane, Brick Ridge\u2014and grins through soggy flops, a recognisable explorer tic rather than a blank \u201cyou.\u201d",
+        "dialogue": "Spoken bits such as Skip wanting \u201ca bigger pool please\u201d and Nim\u2019s muffled \u201cNo rolling today, thank you\u201d are clear but uniformly chipper, and much talk is summarized instead of heard.",
+        "choice_quality": "Picking which friend to reach first, then choosing among tossing water, the tin scoop, or wet-hand sliding, leads to distinct slapstick fails or a real rescue rather than restated options.",
+        "ending_quality": "Closings such as the Melt lifting Nim \u201clike a leaf on a stream\u201d or the milk-bottle marble thank-you finish the stuck-friends setup, even if several celebration endings sit in the same sweet register.",
+        "engagement": "Comic mishaps like Skip splashing up a nose and the chance to loop back from n_meet for another calling voice would make a child want one more pass."
+      },
+      "error": null
+    },
+    {
+      "book": "anthropic-sonnet-5#0",
+      "leg": "anthropic-sonnet-5",
+      "family": "anthropic",
+      "judge": "judge-grok-4.6",
+      "self_family": false,
+      "scores": {
+        "age_fit": 4.0,
+        "imagery": 4.0,
+        "voice": 3.0,
+        "dialogue": 3.0,
+        "choice_quality": 3.0,
+        "ending_quality": 3.0,
+        "engagement": 4.0
+      },
+      "notes": {
+        "age_fit": "Short sentences and a gentle gathering-for-the-festival plot stay readable, though phrases like \u201cslow amber river\u201d and \u201csea of soft golden light\u201d sit at the top of the range.",
+        "imagery": "A child can picture berries warm on Pip\u2019s chin, reeds that flop like a cooked noodle, and Old Moss\u2019s lily-pad-freckled shell, even when some stops stay more list-like.",
+        "voice": "Pip is consistently cheerful and laugh-it-off\u2014she laughs after the slingshot branch and the soggy reeds\u2014but that sunny helper tone is her only real trait.",
+        "dialogue": "The story is legitimately narration-led, with almost no speech beyond the friends\u2019 single chirped line \u201cOf course we\u2019ll come!\u201d",
+        "choice_quality": "The six gathering stops and later forks like hang-lanterns versus picnic matter, but many options only loop back to Driftwood Hollow or dump into short retry oopses.",
+        "ending_quality": "The festival finales (floating gold moons, the Lantern Boat Song, Old Moss\u2019s tale) resolve the night, yet they blur together, and the three oops pages just send Pip back to start.",
+        "engagement": "Collecting moonberries, cricket fiddlers, and lanterns for River Lantern Night gives a clear, cozy reason for a child to keep choosing."
+      },
+      "error": null
+    },
+    {
+      "book": "google-gemini-3.1-pro#0",
+      "leg": "google-gemini-3.1-pro",
+      "family": "google",
+      "judge": "judge-grok-4.6",
+      "self_family": false,
+      "scores": {
+        "age_fit": 4.0,
+        "imagery": 3.0,
+        "voice": 2.0,
+        "dialogue": 3.0,
+        "choice_quality": 3.0,
+        "ending_quality": 3.0,
+        "engagement": 3.0
+      },
+      "notes": {
+        "age_fit": "Short sentences and words like glow-berries and moon-cakes are easy for a solo 5-to-8 reader, though lines such as \"You are not worried at all\" talk down a little.",
+        "imagery": "A few physical flashes land (berries lighting the chin yellow, reeds flopping like cooked noodles, cinnamon moon-cakes), but much of the riverbank is generic pretty/warm/happy description.",
+        "voice": "The second-person hero only smiles, feels proud, and is \"not worried at all,\" with no distinct habit or reaction that changes from cottage to willow to picnic.",
+        "dialogue": "The story is narration-led, and the rare spoken bits (\"follow me!\") never let us hear the River Boat Song, the riddles, or Finn's lantern tale.",
+        "choice_quality": "Hang-versus-picnic and float-versus-tree do open different scenes, but many early options are just \"go back to your cottage\" loops or oops-restarts like the brass bell.",
+        "ending_quality": "The comic fail endings only send you home to start over, and the success endings all close on the same \"best festival ever\" warmth except the twice-tipping lantern.",
+        "engagement": "Collecting parts and the splat/boing mishaps could keep a child turning pages once, but the cottage hub and identical cheer make the branches feel like a chore on a second pass."
+      },
+      "error": null
+    },
+    {
+      "book": "google-gemini-3.1-pro#1",
+      "leg": "google-gemini-3.1-pro",
+      "family": "google",
+      "judge": "judge-grok-4.6",
+      "self_family": false,
+      "scores": {
+        "age_fit": 4.0,
+        "imagery": 4.0,
+        "voice": 2.0,
+        "dialogue": 3.0,
+        "choice_quality": 4.0,
+        "ending_quality": 4.0,
+        "engagement": 4.0
+      },
+      "notes": {
+        "age_fit": "Short, concrete sentences suit a child reading alone, though words like \u201csolemnly,\u201d \u201cpleat,\u201d and \u201ctaper\u201d may slow a younger 5-year-old.",
+        "imagery": "Physical details such as cider poured \u201cin long, amber ribbons\u201d and paper plucked \u201cout of a sleepy dog\u2019s fur\u201d are easy to picture, even if many similes reuse the \u201cas warm as\u201d pattern.",
+        "voice": "The second-person \u201cyou\u201d stays a generic kind helper who kneels and pets Pip\u2019s ears; Pip has more personality than the protagonist.",
+        "dialogue": "The story is legitimately narration-led, and the few spoken lines\u2014Pip\u2019s \u201cMy name is Pip\u201d and \u201cBest market night ever\u201d\u2014sound natural enough.",
+        "choice_quality": "The Great Circle stalls, the careful-versus-risky jobs, and the three ceremony paths (wish, lantern, friends) deliver different scenes, though stall routes often reconverge on the same gift-and-return beat.",
+        "ending_quality": "The wish, lighting, and launch endings earn Pip\u2019s lantern flight and new bravery, while the four mishaps all cut to Dad saying it is time to go home.",
+        "engagement": "A lost talking puppy, food carts, clockwork toys, and the Star-Rise Ceremony give a child clear reasons to keep choosing another path."
+      },
+      "error": null
+    },
+    {
+      "book": "google-gemini-3.1-pro#2",
+      "leg": "google-gemini-3.1-pro",
+      "family": "google",
+      "judge": "judge-grok-4.6",
+      "self_family": false,
+      "scores": {
+        "age_fit": 4.0,
+        "imagery": 4.0,
+        "voice": 2.0,
+        "dialogue": 3.0,
+        "choice_quality": 4.0,
+        "ending_quality": 3.0,
+        "engagement": 4.0
+      },
+      "notes": {
+        "age_fit": "Short, concrete sentences stay readable for a 7-year-old, though words like terracotta, canopy, and honored guests may stall a younger independent reader.",
+        "imagery": "Specific sensations such as ferns brushing knees, dirt-clod thrones, and silver spoons throwing tiny rainbows give a child clear pictures to hold.",
+        "voice": "The second-person you stays a generic polite explorer from the opening safe-and-excited line through every gentle kneel and leftover gift, with no sharper personal quirk.",
+        "dialogue": "The story is legitimately narration-led; Leo\u2019s remark that it sounds like many tiny mouths is reported speech, not a spoken exchange.",
+        "choice_quality": "Compost bin, tool shed, and puddle open genuinely different scenes and six distinct finds, though every miss-path collapses into the same juice-box send-off.",
+        "ending_quality": "The Caterpillar King and Garden Cat close the bean-eater mystery, but the marble stash and button box never explain the missing shoots, and the six miss endings all stop at a juice box.",
+        "engagement": "A muddy map with a green X and last night\u2019s missing bean shoots give a child a clear reason to try another path after each ending."
+      },
+      "error": null
+    },
+    {
+      "book": "google-gemini-3.1-pro#3",
+      "leg": "google-gemini-3.1-pro",
+      "family": "google",
+      "judge": "judge-grok-4.6",
+      "self_family": false,
+      "scores": {
+        "age_fit": 4.0,
+        "imagery": 4.0,
+        "voice": 3.0,
+        "dialogue": 3.0,
+        "choice_quality": 4.0,
+        "ending_quality": 4.0,
+        "engagement": 4.0
+      },
+      "notes": {
+        "age_fit": "Short lines and concrete words like hot cocoa and red snow shovel are easy for a 5-to-8-year-old, though labels such as Uncharted Lawn and Base Camp Porch add a little pretend-jargon.",
+        "imagery": "Physical comparisons such as Zorp's arms hanging like sad celery, wire slippery like icy noodles, and a puddle no bigger than a dinner plate give a child something definite to picture.",
+        "voice": "The second-person explorer stays cheerfully unflappable\u2014saluting, shaking a snowy hat like a wet puppy, wiggling frosty toes\u2014but remains more a helpful role than a distinct person.",
+        "dialogue": "The story is legitimately narration-led; Leo's few tips, such as Space aliens like a smooth landing and Tangles hate hurrying, are playful but slightly writerly.",
+        "choice_quality": "Choosing which toy to save and whether to use mittens, the shovel, or a slide leads to different scenes, even though each puzzle repeats the same two-fail-one-win pattern.",
+        "ending_quality": "Closings such as the Flurry building Shelly a ramp or the cocoa toast resolve the stranded-toys setup without a lecture, though many endings rest on the same everyone-is-home beat.",
+        "engagement": "Comic flops, four different toy crises, and the approaching Great Flurry give a child clear reasons to keep following branches."
+      },
+      "error": null
+    }
+  ],
+  "pooled": {
+    "xai-grok-4.6": {
+      "scorings": 12,
+      "raw_mean": 3.8452380952380953,
+      "normalised_mean": 0.5719186403520471,
+      "age_fit": 4.0,
+      "imagery": 4.75,
+      "voice": 3.3333333333333335,
+      "dialogue": 3.0,
+      "choice_quality": 3.75,
+      "ending_quality": 3.9166666666666665,
+      "engagement": 4.166666666666667
+    },
+    "anthropic-sonnet-5": {
+      "scorings": 3,
+      "raw_mean": 3.4285714285714284,
+      "normalised_mean": -0.3604396145924284,
+      "age_fit": 4.333333333333333,
+      "imagery": 4.0,
+      "voice": 3.0,
+      "dialogue": 3.0,
+      "choice_quality": 2.6666666666666665,
+      "ending_quality": 3.3333333333333335,
+      "engagement": 3.6666666666666665
+    },
+    "google-gemini-3.1-pro": {
+      "scorings": 12,
+      "raw_mean": 3.4404761904761902,
+      "normalised_mean": -0.481808736703939,
+      "age_fit": 4.083333333333333,
+      "imagery": 4.083333333333333,
+      "voice": 2.5833333333333335,
+      "dialogue": 3.0,
+      "choice_quality": 3.3333333333333335,
+      "ending_quality": 3.25,
+      "engagement": 3.75
+    }
+  },
+  "pooled_peers_only": {
+    "xai-grok-4.6": {
+      "scorings": 8,
+      "raw_mean": 3.875,
+      "normalised_mean": 0.5153800703085757,
+      "age_fit": 4.0,
+      "imagery": 5.0,
+      "voice": 3.25,
+      "dialogue": 3.0,
+      "choice_quality": 3.625,
+      "ending_quality": 4.0,
+      "engagement": 4.25
+    },
+    "anthropic-sonnet-5": {
+      "scorings": 3,
+      "raw_mean": 3.4285714285714284,
+      "normalised_mean": -0.3604396145924284,
+      "age_fit": 4.333333333333333,
+      "imagery": 4.0,
+      "voice": 3.0,
+      "dialogue": 3.0,
+      "choice_quality": 2.6666666666666665,
+      "ending_quality": 3.3333333333333335,
+      "engagement": 3.6666666666666665
+    },
+    "google-gemini-3.1-pro": {
+      "scorings": 8,
+      "raw_mean": 3.3214285714285716,
+      "normalised_mean": -0.6474392119798748,
+      "age_fit": 3.875,
+      "imagery": 3.875,
+      "voice": 2.375,
+      "dialogue": 3.0,
+      "choice_quality": 3.25,
+      "ending_quality": 3.25,
+      "engagement": 3.625
+    }
+  },
+  "criterion_spread": [
+    {
+      "criterion": "dialogue",
+      "cells": 9,
+      "mean": 3.0,
+      "sd": 0.0,
+      "saturated": true
+    },
+    {
+      "criterion": "age_fit",
+      "cells": 9,
+      "mean": 4.138888888888889,
+      "sd": 0.377307714089059,
+      "saturated": false
+    },
+    {
+      "criterion": "voice",
+      "cells": 9,
+      "mean": 2.9722222222222223,
+      "sd": 0.4039733214513608,
+      "saturated": false
+    },
+    {
+      "criterion": "engagement",
+      "cells": 9,
+      "mean": 3.861111111111111,
+      "sd": 0.4166666666666667,
+      "saturated": false
+    },
+    {
+      "criterion": "imagery",
+      "cells": 9,
+      "mean": 4.277777777777778,
+      "sd": 0.4583333333333333,
+      "saturated": false
+    },
+    {
+      "criterion": "ending_quality",
+      "cells": 9,
+      "mean": 3.5,
+      "sd": 0.46770717334674267,
+      "saturated": false
+    },
+    {
+      "criterion": "choice_quality",
+      "cells": 9,
+      "mean": 3.25,
+      "sd": 0.625,
+      "saturated": false
+    }
+  ],
+  "intervals": {
+    "xai-grok-4.6": {
+      "point": 0.5719186403520471,
+      "lo": 0.06681620974808891,
+      "hi": 1.0770210709560053,
+      "n": 4,
+      "complete": true
+    },
+    "anthropic-sonnet-5": {
+      "point": -0.3604396145924284,
+      "lo": -0.3604396145924284,
+      "hi": -0.3604396145924284,
+      "n": 1,
+      "complete": false
+    },
+    "google-gemini-3.1-pro": {
+      "point": -0.48180873670393887,
+      "lo": -1.3277299299544807,
+      "hi": 0.46353165508095884,
+      "n": 4,
+      "complete": true
+    }
+  },
+  "ranking": {
+    "ordered": [
+      "xai-grok-4.6",
+      "anthropic-sonnet-5",
+      "google-gemini-3.1-pro"
+    ],
+    "separated_pairs": 0,
+    "total_pairs": 1,
+    "excluded": [
+      "anthropic-sonnet-5"
+    ],
+    "supported": false,
+    "extremes_separated": false
+  }
+}

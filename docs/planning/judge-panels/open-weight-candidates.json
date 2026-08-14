@@ -14,6 +14,14 @@
     "_note": "The dated checkpoint the floating alias serves today, at $0.14/$0.28. Same weights by name, different price and different route, so a score difference between this and the alias is evidence about routing rather than about the model."
   },
   {
+    "label": "qwen3.8-27b",
+    "model": "qwen/qwen3.8-27b",
+    "provider_order": [],
+    "family": "qwen",
+    "pending": true,
+    "_note": "Slot held open deliberately. This is a real OpenRouter model ('Qwen: Qwen3.8 27B') with zero endpoints as of 2026-08-14, so it returns 404 'No endpoints found' rather than 400 'not a valid model ID'. Nothing to change and nothing to decide: when a provider serves it, `probe_callable` returns ok, this row's `pending` flag comes off, and it joins the battery against the same arms as everyone else. Kept here rather than in a comment so the gap is visible in the slate itself and cannot be forgotten."
+  },
+  {
     "label": "qwen3.6-27b",
     "model": "qwen/qwen3.6-27b",
     "provider_order": [],

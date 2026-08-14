@@ -11,6 +11,7 @@ does not own.
 from __future__ import annotations
 
 import itertools
+import json
 import os
 from typing import TYPE_CHECKING
 
@@ -24,6 +25,7 @@ from scripts.w7_battery import (
     DEFECT_CRITERION,
     blend_to_grade,
     cohens_kappa,
+    load_panel,
     score_battery,
     single_run,
     weighted_kappa,
@@ -463,3 +465,51 @@ def test_a_corrupted_lock_file_reads_as_dead(tmp_path: Path) -> None:
         pass
 
     assert not (tmp_path / ".run.lock").exists()
+
+
+# --------------------------------------------------------------------------
+# Panel loading
+# --------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+def test_a_pending_judge_is_held_out_of_the_panel(tmp_path: Path) -> None:
+    """A slot held open must not be silently judged, nor silently forgotten.
+
+    `qwen/qwen3.8-27b` is a real model with zero endpoints, so it cannot be
+    called today but is worth testing the moment one appears. Keeping the row
+    in the slate with a flag makes the gap visible where the panel is defined;
+    dropping it would lose it, and loading it would fail the run.
+    """
+    panel = tmp_path / "panel.json"
+    panel.write_text(
+        json.dumps(
+            [
+                {"label": "live", "model": "vendor/live", "family": "v"},
+                {
+                    "label": "held",
+                    "model": "vendor/unserved",
+                    "family": "v",
+                    "pending": True,
+                },
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    loaded = load_panel(panel)
+
+    assert [j.label for j in loaded] == ["live"]
+
+
+@pytest.mark.unit
+def test_a_panel_of_nothing_but_pending_rows_is_an_error(tmp_path: Path) -> None:
+    """Silently judging with zero judges would report every criterion untested."""
+    panel = tmp_path / "panel.json"
+    panel.write_text(
+        json.dumps([{"label": "held", "model": "m", "family": "v", "pending": True}]),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="no judge that is not pending"):
+        load_panel(panel)
