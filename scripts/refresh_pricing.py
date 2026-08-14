@@ -133,6 +133,66 @@ def endpoint_count(api_key: str, model: str) -> int | None:
     return len(endpoints) if isinstance(endpoints, list) else 0
 
 
+def probe_callable(api_key: str, model: str) -> str:
+    """Return whether *model* can actually be called by THIS account.
+
+    The authoritative availability test, because the cheaper checks each miss a
+    real case. ``GET /models`` omits models with no endpoints. The endpoints
+    route counts endpoints that exist globally, not endpoints this account may
+    route to. On 2026-08-14 the whole ``qwen/qwen3.7`` line (flash, plus, max)
+    listed fine, had endpoints, and refused every call with "No endpoints
+    available matching your guardrail restrictions and data policy": this
+    account's policy excludes their serving stacks, which is a correct setting
+    for a children's product and still leaves the model uncallable.
+
+    Four outcomes, each needing a different response, which is why they are
+    reported separately rather than collapsed into "unavailable":
+
+    * ``ok``: callable now.
+    * ``data-policy``: real, served, blocked by our own routing policy. Change
+      the policy or pick another model; waiting will not help.
+    * ``no-endpoints``: real, nobody serving it. Waiting may help.
+    * ``unknown-slug``: not a model id OpenRouter recognises.
+
+    Args:
+        api_key: An OpenRouter credential.
+        model: The model slug.
+
+    Returns:
+        One of the four states above.
+    """
+    body = json.dumps(
+        {
+            "model": model,
+            "max_tokens": 8,
+            "messages": [{"role": "user", "content": "say ok"}],
+        }
+    ).encode()
+    request = urllib.request.Request(
+        "https://openrouter.ai/api/v1/chat/completions",
+        data=body,
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        },
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS):  # noqa: S310
+            return "ok"
+    except urllib.error.HTTPError as exc:
+        try:
+            message = json.loads(exc.read())["error"]["message"]
+        except (ValueError, KeyError):
+            return f"http-{exc.code}"
+    if "data policy" in message or "guardrail" in message:
+        return "data-policy"
+    if "No endpoints" in message:
+        return "no-endpoints"
+    if "not a valid model" in message:
+        return "unknown-slug"
+    return "other"
+
+
 def _rate(pricing: dict[str, Any], key: str) -> Decimal | None:
     """Return a per-million-token rate, or ``None`` when the vendor omits it.
 

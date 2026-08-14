@@ -25,7 +25,7 @@
     "model": "qwen/qwen3.5-27b",
     "provider_order": [],
     "family": "qwen",
-    "_note": "The other 27b qwen, at $0.195/$1.56. Both generations are slated because the requested 3.8-27b cannot be called today and guessing which of 3.5 or 3.6 stands closest to it is worse than running both when a battery costs cents."
+    "_note": "Stands in for the requested qwen 3.7, which is unreachable from this account at EVERY tier: flash, plus and max all return 404 'No endpoints available matching your guardrail restrictions and data policy'. That is our own policy excluding their serving stacks, which is the right setting for a children's product and still leaves the models uncallable, so waiting will not help. There is no 27b in the 3.7 line either way. $0.195/$1.56, served by SiliconFlow."
   },
   {
     "label": "llama-3.3-70b",
