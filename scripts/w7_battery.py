@@ -76,9 +76,10 @@ DEFECT_CRITERION: Final[dict[str, str]] = {
 # criteria for being calibrated rather than for being blind.
 _DETECTION_MARGIN: Final[float] = 0.5
 
-# The control must not move by more than this, or the criterion is firing on a
-# book with nothing wrong with it.
-_FALSE_POSITIVE_MARGIN: Final[float] = _DETECTION_MARGIN
+# How far a criterion must move on an arm it does not own before that movement
+# is worth recording. Recorded only: see `CriterionVerdict.cross_arm_moves` for
+# why this cannot be read as a false-positive rate.
+_CROSS_ARM_MARGIN: Final[float] = _DETECTION_MARGIN
 
 _KAPPA_FLOOR: Final[float] = 0.60
 
@@ -117,8 +118,20 @@ class CriterionVerdict:
         detections: Books where the criterion dropped by the margin on its own
             defect arm, against that same book's control.
         opportunities: Books where it could have.
-        false_positives: Control books where some OTHER book's defect moved this
-            criterion, which is the "fires on the clean control" half of the rule.
+        cross_arm_moves: Arms carrying a defect some OTHER criterion owns on
+            which this criterion still moved by more than the margin. Named for
+            what it counts rather than "false positives", which is what it was
+            called and is not what it measures: no arm in this fixture carries a
+            single isolated defect, so `reading_level_up` really does change
+            voice and `premise_duplicate` really does change engagement. A high
+            count here is mostly a criterion correctly noticing collateral
+            change, and it decides nothing.
+        control_noise: Pooled between-judge standard deviation on the control
+            arms for this criterion. This is the honest version of the "fires on
+            a clean book" test: with no repeat scorings there is no way to ask
+            one judge the same question twice, but the panel's disagreement
+            about an undefected book is the floor any detection has to clear to
+            be more than scoring noise.
         deltas: Per-book movement on the defect arm, for the record.
         verdict: RETIRE, KEEP, or UNTESTED, with the reason.
     """
@@ -127,7 +140,8 @@ class CriterionVerdict:
     defect: str
     detections: int
     opportunities: int
-    false_positives: int
+    cross_arm_moves: int
+    control_noise: float | None
     deltas: list[float]
     verdict: str
 
@@ -192,6 +206,52 @@ def _mean_by_criterion(verdicts: Sequence[Verdict], book: str) -> dict[str, floa
     return out
 
 
+def _control_noise(
+    verdicts: Sequence[Verdict], arms: Sequence[tuple[str, str]], criterion: str
+) -> float | None:
+    """Return the panel's disagreement about undefected books, for one criterion.
+
+    W7's rule has a second half: a criterion must not fire on a clean control.
+    As written it was implemented by looking at *other* criteria's defect arms,
+    which does not test that, because no arm in this fixture carries a single
+    isolated defect. `reading_level_up` rewrites a third of the prose, so voice
+    and imagery genuinely change; a criterion noticing that is working, not
+    misfiring, and the old count charged it as an error.
+
+    What the data can actually support is a noise floor. There are no repeat
+    scorings, so a judge cannot be asked the same question twice, but three
+    judges scoring the same undefected book give a direct read on how much this
+    criterion moves when nothing has moved. A detection smaller than that floor
+    is not distinguishable from scoring noise, whatever its sign.
+
+    Args:
+        verdicts: Every verdict from the run.
+        arms: ``(book_stem, defect)`` pairs describing what each book is.
+        criterion: The criterion being scored.
+
+    Returns:
+        The pooled between-judge standard deviation over control arms, or
+        ``None`` when fewer than two controls carry two or more judge scores.
+    """
+    spreads: list[float] = []
+    for stem, arm in arms:
+        if arm != "control":
+            continue
+        scores = [
+            v.scores[criterion]
+            for v in verdicts
+            if _book_key(v.book) == f"{stem}__control"
+            and v.scores
+            and v.error is None
+            and criterion in v.scores
+        ]
+        if len(scores) >= 2:
+            spreads.append(statistics.stdev(scores))
+    if len(spreads) < 2:
+        return None
+    return statistics.fmean(spreads)
+
+
 def score_battery(
     verdicts: Sequence[Verdict], arms: Sequence[tuple[str, str]]
 ) -> list[CriterionVerdict]:
@@ -217,7 +277,8 @@ def score_battery(
         deltas: list[float] = []
         detections = 0
         opportunities = 0
-        false_positives = 0
+        cross_arm_moves = 0
+        control_noise = _control_noise(verdicts, arms, criterion)
 
         for book, (stem, arm) in by_book.items():
             control = controls.get(stem)
@@ -234,11 +295,12 @@ def score_battery(
                 # the criterion that observes it.
                 if delta <= -_DETECTION_MARGIN:
                     detections += 1
-            elif arm not in {"control", defect} and abs(delta) > _FALSE_POSITIVE_MARGIN:
-                # This book carries a defect some OTHER criterion owns, so this
-                # criterion moving is the instrument responding to something it
-                # does not claim to measure.
-                false_positives += 1
+            elif arm not in {"control", defect} and abs(delta) > _CROSS_ARM_MARGIN:
+                # This arm carries a defect some other criterion owns. That is
+                # NOT evidence against this criterion: the arms are not
+                # single-defect documents, so the movement is usually real.
+                # Counted for the record, used for nothing.
+                cross_arm_moves += 1
 
         out.append(
             CriterionVerdict(
@@ -246,24 +308,41 @@ def score_battery(
                 defect=defect,
                 detections=detections,
                 opportunities=opportunities,
-                false_positives=false_positives,
+                cross_arm_moves=cross_arm_moves,
+                control_noise=control_noise,
                 deltas=deltas,
-                verdict=_verdict_for(criterion, defect, detections, opportunities),
+                verdict=_verdict_for(
+                    criterion, defect, detections, opportunities, deltas, control_noise
+                ),
             )
         )
     return out
 
 
 def _verdict_for(
-    criterion: str, defect: str, detections: int, opportunities: int
+    criterion: str,
+    defect: str,
+    detections: int,
+    opportunities: int,
+    deltas: Sequence[float],
+    control_noise: float | None,
 ) -> str:
     """State the rule's conclusion for one criterion.
+
+    Two gates, in order. The detection rate is the original rule. The noise
+    floor is the honest replacement for the "fires on the clean control" half:
+    a criterion whose median movement on its own defect does not exceed the
+    panel's disagreement about an *undefected* book has not demonstrated it can
+    tell the two apart, however often it happened to cross the margin.
 
     Args:
         criterion: The criterion's name.
         defect: The defect targeting it, or empty.
         detections: How many times it noticed.
         opportunities: How many times it could have.
+        deltas: Per-book movement on the defect arm.
+        control_noise: Between-judge spread on the control arms, or ``None``
+            when too few controls carry two or more judge scores.
 
     Returns:
         The verdict line.
@@ -280,9 +359,22 @@ def _verdict_for(
             f"{opportunities} books. A criterion that misses the defect it "
             "exists to catch cannot support a ranking"
         )
+
+    median = abs(statistics.median(deltas)) if deltas else 0.0
+    if control_noise is not None and median <= control_noise:
+        return (
+            f"INCONCLUSIVE: detected its own seeded {defect} on {detections} of "
+            f"{opportunities} books, but its median movement ({median:.2f}) does "
+            f"not exceed the panel's disagreement about an undefected book "
+            f"({control_noise:.2f}). The detections are not separable from "
+            "scoring noise"
+        )
+    noise = (
+        "" if control_noise is None else f", against a {control_noise:.2f} noise floor"
+    )
     return (
         f"KEEP: detected its own seeded {defect} on {detections} of "
-        f"{opportunities} books"
+        f"{opportunities} books{noise}"
     )
 
 
@@ -318,6 +410,78 @@ def cohens_kappa(a: Sequence[float], b: Sequence[float]) -> float | None:
     if expected >= 1.0:
         return None
     return (observed - expected) / (1 - expected)
+
+
+def weighted_kappa(a: Sequence[float], b: Sequence[float]) -> float | None:
+    """Return quadratic-weighted kappa between two judges on one criterion.
+
+    Replaces the unweighted :func:`cohens_kappa` for reporting, and the reason
+    is that the unweighted form gave W7's first run an uninterpretable answer.
+    It was fed each judge's *mean across all seven criteria*, rounded to an
+    integer. After rounding, `judge-gpt-5.6` occupied two categories with 24 of
+    31 books in one and `judge-grok-4.6` three with 23 of 31 in one: the
+    skewed-marginals regime where kappa collapses despite high raw agreement.
+    The reported figures matched that exactly, +0.58 between the two similarly
+    skewed judges and about +0.15 for both pairings with the judge whose scale
+    is spread wider. Those numbers measure scale spread, not agreement.
+
+    Two changes. Quadratic weighting, because a 1-to-5 rubric is ordinal and
+    scoring 3 against 4 is not the same failure as scoring 3 against 1; the
+    unweighted form counts both as simple disagreement. And the caller passes
+    one criterion's raw scores rather than a rounded average, because the
+    criterion is W7's unit and averaging seven of them discards exactly the
+    structure the run exists to examine.
+
+    Args:
+        a: One judge's scores on one criterion, one entry per arm.
+        b: The other judge's scores over the same arms, in the same order.
+
+    Returns:
+        Kappa, or ``None`` when the pair is too small, or when neither judge
+        varied at all and the statistic is undefined rather than zero.
+    """
+    if len(a) != len(b) or len(a) < 2:
+        return None
+    left = [round(x) for x in a]
+    right = [round(x) for x in b]
+    labels = sorted(set(left) | set(right))
+    if len(labels) < 2:
+        return None
+
+    span = (len(labels) - 1) ** 2
+
+    def weight(x: int, y: int) -> float:
+        return 1.0 - ((labels.index(x) - labels.index(y)) ** 2) / span
+
+    n = len(left)
+    observed = sum(weight(x, y) for x, y in zip(left, right, strict=True)) / n
+    expected = sum(
+        (left.count(x) / n) * (right.count(y) / n) * weight(x, y)
+        for x in labels
+        for y in labels
+    )
+    if expected >= 1.0:
+        return None
+    return (observed - expected) / (1 - expected)
+
+
+def _marginals(scores: Sequence[float]) -> str:
+    """Summarise one judge's use of the scale, for printing beside a kappa.
+
+    A kappa that collapses from skewed marginals is indistinguishable from one
+    that collapses from real disagreement unless the marginals are shown. This
+    is what makes that visible rather than something a reader has to suspect.
+
+    Args:
+        scores: One judge's scores on one criterion.
+
+    Returns:
+        A compact category count, e.g. ``"{2:7, 3:24}"``.
+    """
+    counts: dict[int, int] = {}
+    for value in scores:
+        counts[round(value)] = counts.get(round(value), 0) + 1
+    return "{" + ", ".join(f"{k}:{v}" for k, v in sorted(counts.items())) + "}"
 
 
 _HARDEN_SYSTEM: Final[str] = (
@@ -662,36 +826,60 @@ def _print_report(
     print("\nW7 KNOWN-BAD BATTERY  (per criterion; within-book against control)")
     width = max(len(r.criterion) for r in results)
     print(
-        f"  {'criterion':<{width}}  {'defect':<18} {'detect':>7} {'FP':>4} "
-        f"{'median delta':>13}"
+        f"  {'criterion':<{width}}  {'defect':<18} {'detect':>7} {'x-arm':>6} "
+        f"{'noise':>6} {'median delta':>13}"
     )
     for row in results:
         rate = f"{row.detections}/{row.opportunities}" if row.opportunities else "-"
         delta = f"{statistics.median(row.deltas):+.2f}" if row.deltas else "-"
+        noise = "-" if row.control_noise is None else f"{row.control_noise:.2f}"
         print(
             f"  {row.criterion:<{width}}  {row.defect or '-':<18} {rate:>7} "
-            f"{row.false_positives:>4} {delta:>13}"
+            f"{row.cross_arm_moves:>6} {noise:>6} {delta:>13}"
         )
+    print(
+        "\n  x-arm counts movement on arms this criterion does not own. The arms "
+        "are not\n  single-defect documents, so most of it is real collateral "
+        "change; it decides nothing."
+    )
     print("\n  Verdicts:")
     for row in results:
         print(f"    {row.criterion}: {row.verdict}")
 
-    print(f"\n  Agreement floor: kappa {_KAPPA_FLOOR} (Landis and Koch 1977).")
+    print(
+        f"\n  Agreement, per criterion, quadratic-weighted kappa against a "
+        f"{_KAPPA_FLOOR} floor (Landis and Koch 1977)."
+    )
     books = sorted({v.book for v in verdicts})
-    for i, left in enumerate(_PANEL):
-        for right in _PANEL[i + 1 :]:
-            pairs = [
-                (
-                    _one(verdicts, left.label, b),
-                    _one(verdicts, right.label, b),
+    for criterion in _CRITERIA:
+        print(f"\n    {criterion}")
+        for i, left in enumerate(_PANEL):
+            for right in _PANEL[i + 1 :]:
+                pairs = [
+                    (
+                        _score(verdicts, left.label, b, criterion),
+                        _score(verdicts, right.label, b, criterion),
+                    )
+                    for b in books
+                ]
+                usable = [(x, y) for x, y in pairs if x is not None and y is not None]
+                xs = [x for x, _ in usable]
+                ys = [y for _, y in usable]
+                kappa = weighted_kappa(xs, ys)
+                text = "undefined" if kappa is None else f"{kappa:+.2f}"
+                flag = (
+                    ""
+                    if kappa is None or kappa >= _KAPPA_FLOOR
+                    else "  <-- below floor"
                 )
-                for b in books
-            ]
-            usable = [(x, y) for x, y in pairs if x is not None and y is not None]
-            kappa = cohens_kappa([x for x, _ in usable], [y for _, y in usable])
-            text = "undefined" if kappa is None else f"{kappa:+.2f}"
-            flag = "" if kappa is None or kappa >= _KAPPA_FLOOR else "  <-- below floor"
-            print(f"    {left.label} vs {right.label}: {text} (n={len(usable)}){flag}")
+                print(
+                    f"      {left.label} vs {right.label}: {text} "
+                    f"(n={len(usable)}){flag}"
+                )
+                # Marginals beside the figure, because a kappa depressed by
+                # skew reads identically to one depressed by disagreement.
+                print(f"        {left.label} {_marginals(xs)}")
+                print(f"        {right.label} {_marginals(ys)}")
 
     # Zero here means the judge models carry no rate in `core/pricing.py`
     # (UW-C239), not that the panel was free. The harden step printed "$0.0000"
@@ -705,6 +893,27 @@ def _print_report(
             "\n  Measured spend: UNPRICED. The judge models have no rate in "
             "core/pricing.py (UW-C239); read the provider balance instead."
         )
+
+
+def _score(
+    verdicts: Sequence[Verdict], judge: str, book: str, criterion: str
+) -> float | None:
+    """Return one judge's score for one book on one criterion.
+
+    Args:
+        verdicts: Every verdict.
+        judge: The judge label.
+        book: The book identifier, as recorded on the verdict.
+        criterion: The criterion name.
+
+    Returns:
+        The score, or ``None`` when that judge did not score that book, or
+        scored it without that criterion.
+    """
+    for v in verdicts:
+        if v.judge == judge and v.book == book and v.scores and v.error is None:
+            return v.scores.get(criterion)
+    return None
 
 
 def _one(verdicts: Sequence[Verdict], judge: str, book: str) -> float | None:

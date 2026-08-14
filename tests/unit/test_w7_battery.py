@@ -20,6 +20,7 @@ from scripts.w7_battery import (
     blend_to_grade,
     cohens_kappa,
     score_battery,
+    weighted_kappa,
 )
 
 _CRITERIA_NAMES = (
@@ -102,12 +103,15 @@ def test_a_criterion_blind_to_its_own_defect_is_retired() -> None:
     assert by_name["dialogue"].opportunities == len(_BOOKS)
 
 
-def test_a_criterion_firing_on_a_defect_it_does_not_own_is_counted() -> None:
-    """The second half of the rule: reacting to everything is not discrimination.
+def test_movement_on_an_arm_a_criterion_does_not_own_is_recorded_not_charged() -> None:
+    """Renamed from a false-positive count, because that is not what it measures.
 
-    A criterion that drops on every seeded book, including the ones carrying a
-    defect some other criterion owns, is responding to "this book was touched"
-    rather than to the property it claims to measure.
+    The old rule read any movement on another criterion's defect arm as the
+    criterion misfiring. That holds only if each arm carries one isolated
+    defect, and none do: `reading_level_up` rewrites a third of the prose, so
+    voice and imagery genuinely change, and the count charged them for noticing.
+    It is still worth recording, so the count survives under an honest name and
+    decides nothing.
     """
 
     def indiscriminate(arm: str, _criterion: str) -> float:
@@ -116,10 +120,11 @@ def test_a_criterion_firing_on_a_defect_it_does_not_own_is_counted() -> None:
     results = score_battery(*_pool(indiscriminate))
 
     by_name = {r.criterion: r for r in results}
-    # It "detects" its own defect, but it also moved on every other arm.
     assert by_name["dialogue"].detections == len(_BOOKS)
-    assert by_name["dialogue"].false_positives > 0
-    assert by_name["imagery"].false_positives > 0
+    assert by_name["dialogue"].cross_arm_moves > 0
+    assert by_name["imagery"].cross_arm_moves > 0
+    # And it does not turn a detection into a retirement.
+    assert by_name["dialogue"].verdict.startswith(("KEEP", "INCONCLUSIVE"))
 
 
 def test_a_criterion_no_defect_targets_is_reported_untested() -> None:
@@ -298,3 +303,95 @@ def test_arms_join_verdicts_whose_book_id_carries_a_brief_suffix() -> None:
     voice = next(r for r in score_battery(verdicts, arms) if r.criterion == "voice")
     assert voice.opportunities == 1, "the suffixed identifier did not join"
     assert voice.detections == 1
+
+
+# --------------------------------------------------------------------------
+# The noise floor and the agreement statistic
+# --------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+def test_a_detection_inside_the_panels_own_noise_is_inconclusive() -> None:
+    """Crossing the margin is not the same as being distinguishable from noise.
+
+    The replacement for the old "fires on the clean control" test. With no
+    repeat scorings a judge cannot be asked twice, but three judges scoring the
+    same undefected book measure directly how much a criterion moves when
+    nothing moved. A detection smaller than that is not evidence.
+    """
+    arms = [("bookA", "control"), ("bookA", "dialogue_flat")]
+    verdicts: list[Verdict] = []
+    # Judges disagree wildly about the clean control, and the "detection" is
+    # a bare 0.6, inside that disagreement.
+    for judge, control in zip(_JUDGES, (5.0, 3.0, 1.0), strict=True):
+        for arm, value in (("control", control), ("dialogue_flat", control - 0.6)):
+            verdicts.append(
+                Verdict(
+                    book=f"bookA__{arm}#0",
+                    leg=f"bookA__{arm}",
+                    family="f",
+                    judge=judge,
+                    self_family=False,
+                    scores=dict.fromkeys(_CRITERIA_NAMES, value),
+                    notes={},
+                    error=None,
+                )
+            )
+
+    # One control book alone cannot establish a floor; add a second.
+    for judge, control in zip(_JUDGES, (5.0, 3.0, 1.0), strict=True):
+        verdicts.append(
+            Verdict(
+                book="bookB__control#0",
+                leg="bookB__control",
+                family="f",
+                judge=judge,
+                self_family=False,
+                scores=dict.fromkeys(_CRITERIA_NAMES, control),
+                notes={},
+                error=None,
+            )
+        )
+    arms.append(("bookB", "control"))
+
+    dialogue = next(
+        r for r in score_battery(verdicts, arms) if r.criterion == "dialogue"
+    )
+    assert dialogue.detections == 1, "the margin was crossed"
+    assert dialogue.control_noise is not None
+    assert dialogue.verdict.startswith("INCONCLUSIVE"), dialogue.verdict
+
+
+@pytest.mark.unit
+def test_weighted_kappa_separates_near_misses_from_far_ones() -> None:
+    """A 1-to-5 rubric is ordinal; 3-against-4 is not 3-against-1.
+
+    The unweighted form counts both as plain disagreement, which is part of why
+    W7's first agreement figure was uninterpretable. Quadratic weighting is what
+    makes a near miss cost less than an opposite call.
+    """
+    truth = [1.0, 2.0, 3.0, 4.0, 5.0]
+    near = [2.0, 3.0, 4.0, 5.0, 4.0]
+    far = [5.0, 4.0, 3.0, 2.0, 1.0]
+
+    near_k = weighted_kappa(truth, near)
+    far_k = weighted_kappa(truth, far)
+    assert near_k is not None
+    assert far_k is not None
+    assert near_k > far_k
+
+    # The unweighted form ranks these backwards. Neither sequence matches
+    # `truth` exactly even once, so its observed-agreement term is 0 for both,
+    # and all that separates them is how their marginals fall: the off-by-one
+    # judge scores -0.25 and the judge who reverses the scale scores 0.00.
+    near_unweighted = cohens_kappa(truth, near)
+    far_unweighted = cohens_kappa(truth, far)
+    assert near_unweighted is not None
+    assert far_unweighted is not None
+    assert near_unweighted < far_unweighted
+
+
+@pytest.mark.unit
+def test_weighted_kappa_is_undefined_not_zero_when_a_judge_never_varies() -> None:
+    """Reporting 0.0 would read as total disagreement between judges who agreed."""
+    assert weighted_kappa([3.0, 3.0, 3.0], [3.0, 3.0, 3.0]) is None
