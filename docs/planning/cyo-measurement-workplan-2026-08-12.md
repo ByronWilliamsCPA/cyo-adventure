@@ -1070,3 +1070,75 @@ The practical reading, and the one Part IV should carry:
 A W7 verdict from one run is therefore provisional near the margin. Any future battery should
 score each arm more than once and report the spread, which is a cost decision (129 scorings
 cost about $2.60) rather than a design problem.
+
+### 7.7.6 Three corrections to 7.7.5, and a much better instrument (2026-08-14)
+
+Asked whether the two retired criteria failed because an LLM cannot judge them or because
+the judges were badly chosen, and the answer is neither. Three separate causes, all found by
+breaking the panel mean back out per judge, which 7.7.5 did not do.
+
+**`voice` was never tested. The mapping was wrong.** Its rubric reads "Distinctness and
+consistency of the *main character*. 1 = interchangeable narrator with no personality." The
+defect mapped to it, `tense_break`, switches the *narrator's tense*. Those are different
+properties, and a judge assessing whether the protagonist is a distinct person is right not
+to move when the narrator's grammar wobbles. Per judge, on the six `tense_break` arms:
+
+| Judge | Deltas on the six arms |
+| --- | --- |
+| `judge-gpt-5.6` | 0.00 on all six |
+| `judge-grok-4.6` | 0.00 on five, -1.00 on one |
+| `judge-gemini-3.1` | -2.00, -1.00, 0.00, +1.00, +1.00, +1.00 |
+
+Two judges held flat throughout; only the noisiest moved, and it moved both ways. The
+RETIRE verdict is withdrawn and `voice` is now UNTESTED. `tense_break` is removed from
+`DEFECT_CRITERION` rather than remapped, because no criterion in the panel covers narrative
+tense stability, and none needs to: `check_prose_craft.py` measures it deterministically and
+is the better instrument for it.
+
+**`dialogue`'s miss is a rubric anchor, not blindness.** All three judges detected the seed
+on `the-backyard-treasure-map` (-2.00, -2.00, -1.00: unanimous and strong). All three
+returned exactly 0.00 on `the-lost-mitten`, and the rubric says why in its own last sentence:
+"Score 3 if the story is legitimately narration-led with little dialogue." A 760-word
+3-to-5-band book with its dialogue flattened *is* narration-led, so the rubric instructs the
+score that makes the delta zero. The criterion cannot distinguish "legitimately narration-led"
+from "had its dialogue removed", which is a real limitation of the rubric rather than of the
+judge, and the 1-of-2 rate rests on one confounded book. The claim in 7.7.4 that the criterion
+"really is insensitive" is withdrawn.
+
+**One judge supplies most of the panel's noise.** Same control books, same criteria, run 1
+against run 2:
+
+| Judge | Mean shift | Max shift |
+| --- | --- | --- |
+| `judge-gemini-3.1` | **0.64** | **2.00** |
+| `judge-gpt-5.6` | 0.14 | 1.00 |
+| `judge-grok-4.6` | 0.14 | 1.00 |
+
+Its mean drift on unchanged text exceeds the 0.5 detection margin by itself. 7.7.5 reported
+run-to-run instability as a property of the panel; it is substantially the property of one
+member, contaminating the mean the battery scores against.
+
+#### The same 129 scorings, re-scored with that judge dropped
+
+| Criterion | Three judges | Two judges | Noise floor |
+| --- | --- | --- | --- |
+| `imagery` | KEEP 6/6 | KEEP 6/6 | 0.29 to **0.24** |
+| `age_fit` | KEEP 6/6 | KEEP 6/6 | 0.53 to **0.35** |
+| `ending_quality` | KEEP 6/6 | KEEP 6/6 | 0.67 to **0.12** |
+| `choice_quality` | KEEP 4/5 | **KEEP 5/5** | 0.74 to **0.24** |
+| `engagement` | INCONCLUSIVE | **KEEP 4/6** | 0.77 to **0.12** |
+| `dialogue` | RETIRE 1/2 | RETIRE 1/2 | 0.29 to **0.00** |
+| `voice` | RETIRE 1/6 | **UNTESTED** | corrected mapping |
+
+Every noise floor falls, by between 2x and 6x. `choice_quality` recovers its sixth book and
+`engagement` clears its floor by four times over. The third judge was not adding a
+perspective; it was adding variance to a mean, and the battery scored the sum.
+
+**Five criteria now support a ranking** (`imagery`, `age_fit`, `ending_quality`,
+`choice_quality`, `engagement`), one is untested (`voice`) and one is under-powered on a
+confounded n=2 (`dialogue`). That is a materially different instrument from the one 7.7.5
+described, and the difference cost nothing: same verdicts, re-scored.
+
+The general form, worth keeping: **a panel mean hides a bad member, and averaging is what
+hides it.** Any panel should report per-member stability on unchanged inputs before its mean
+is trusted, and membership should be a decision the evidence supports rather than a default.

@@ -52,7 +52,13 @@ from cyo_adventure.generation.metered import MeteredProvider  # noqa: E402
 from cyo_adventure.generation.provider import build_openrouter_leg  # noqa: E402
 from cyo_adventure.generation.usage import UsageLedger  # noqa: E402
 from cyo_adventure.validator.reading_level import measure_book  # noqa: E402
-from scripts.judge_books import _CRITERIA, _PANEL, Verdict, judge_book  # noqa: E402
+from scripts.judge_books import (  # noqa: E402
+    _CRITERIA,
+    _PANEL,
+    Judge,
+    Verdict,
+    judge_book,
+)
 from scripts.seed_defects import (  # noqa: E402
     _sensory_density,  # pyright: ignore[reportPrivateUsage]
     verify,
@@ -69,11 +75,27 @@ DEFECT_CRITERION: Final[dict[str, str]] = {
     "imagery_flat": "imagery",
     "dialogue_flat": "dialogue",
     "dialogue_added": "dialogue",
-    "tense_break": "voice",
     "false_choice": "choice_quality",
     "reading_level_up": "age_fit",
     "premise_duplicate": "engagement",
 }
+
+# `tense_break` is deliberately absent, and its absence is the correction of a
+# wrong hypothesis rather than an omission. It was mapped to `voice`, which
+# retired that criterion at 1 of 6 on 2026-08-14. The two are different
+# properties: `voice` asks "Distinctness and consistency of the main character.
+# 1 = interchangeable narrator with no personality", and the seed switches the
+# NARRATOR'S TENSE. A judge assessing whether the protagonist is a distinct
+# person should not move when the narrator's grammar wobbles, and two of the
+# three judges did exactly that, holding at 0.00 across all six books; only the
+# noisiest judge moved, and it moved in both directions. The mapping asserted a
+# hypothesis the rubric does not support, so the arm tested nothing and `voice`
+# is UNTESTED rather than retired.
+#
+# No criterion in the panel covers narrative tense stability. That is fine and
+# deliberate: `check_prose_craft.py` measures it deterministically, which is
+# the better instrument for it.
+_UNMAPPED_DEFECTS: Final[frozenset[str]] = frozenset({"tense_break"})
 
 # A criterion must move at least this far, on the 1-to-5 scale, against its own
 # book's control before the movement counts as detection. Set below one scale
@@ -117,7 +139,45 @@ _HARDEN_MODEL: Final[str] = "anthropic/claude-sonnet-5"
 # eyesight, not its sensitivity.
 _IMAGERY_KEEP: Final[float] = 0.4
 
-__all__ = ["CriterionVerdict", "score_battery"]
+__all__ = ["CriterionVerdict", "load_panel", "score_battery"]
+
+
+def load_panel(path: Path | None) -> tuple[Judge, ...]:
+    """Return the judge panel, from *path* or the built-in frontier default.
+
+    The panel is a parameter rather than a constant because W7 has two jobs
+    now. It validates the criteria against a fixed panel, and it validates a
+    *panel* against criteria already known to work, which is what picking a
+    distillation parent requires: run an open-weight candidate over the same
+    43 arms and compare its per-criterion detection to the frontier panel's.
+
+    Args:
+        path: JSON array of ``{label, model, provider_order, family}`` objects,
+            or ``None`` for the built-in panel.
+
+    Returns:
+        The panel.
+
+    Raises:
+        ValueError: If the file is not a non-empty array of objects. A panel
+            that silently falls back to the default would attribute an
+            open-weight run's numbers to the frontier judges.
+    """
+    if path is None:
+        return _PANEL
+    rows = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(rows, list) or not rows:
+        msg = f"{path} must hold a non-empty JSON array of judge objects"
+        raise ValueError(msg)
+    return tuple(
+        Judge(
+            label=str(row["label"]),
+            model=str(row["model"]),
+            provider_order=tuple(row.get("provider_order") or ()),
+            family=str(row.get("family", "unknown")),
+        )
+        for row in rows
+    )
 
 
 @dataclass(frozen=True, slots=True)
@@ -971,7 +1031,9 @@ async def prepare_arms(
 
 
 async def run_panel(
-    books: Sequence[tuple[str, dict[str, Any]]], settings: Settings
+    books: Sequence[tuple[str, dict[str, Any]]],
+    settings: Settings,
+    panel: Sequence[Judge] = _PANEL,
 ) -> tuple[list[Verdict], float]:
     """Score every book with every judge, blind, and meter the spend.
 
@@ -990,7 +1052,7 @@ async def run_panel(
     """
     verdicts: list[Verdict] = []
     ledger = UsageLedger()
-    for judge in _PANEL:
+    for judge in panel:
         provider = MeteredProvider(
             build_openrouter_leg(
                 settings, model=judge.model, provider_order=judge.provider_order
@@ -1069,14 +1131,17 @@ def _print_report(
         f"{_KAPPA_FLOOR} floor (Landis and Koch 1977)."
     )
     books = sorted({v.book for v in verdicts})
+    # Judges are read off the verdicts rather than the module constant, so a
+    # replay of an open-weight run reports the judges that produced it.
+    labels = sorted({v.judge for v in verdicts})
     for criterion in _CRITERIA:
         print(f"\n    {criterion}")
-        for i, left in enumerate(_PANEL):
-            for right in _PANEL[i + 1 :]:
+        for i, left in enumerate(labels):
+            for right in labels[i + 1 :]:
                 pairs = [
                     (
-                        _score(verdicts, left.label, b, criterion),
-                        _score(verdicts, right.label, b, criterion),
+                        _score(verdicts, left, b, criterion),
+                        _score(verdicts, right, b, criterion),
                     )
                     for b in books
                 ]
@@ -1090,14 +1155,11 @@ def _print_report(
                     if kappa is None or kappa >= _KAPPA_FLOOR
                     else "  <-- below floor"
                 )
-                print(
-                    f"      {left.label} vs {right.label}: {text} "
-                    f"(n={len(usable)}){flag}"
-                )
+                print(f"      {left} vs {right}: {text} (n={len(usable)}){flag}")
                 # Marginals beside the figure, because a kappa depressed by
                 # skew reads identically to one depressed by disagreement.
-                print(f"        {left.label} {_marginals(xs)}")
-                print(f"        {right.label} {_marginals(ys)}")
+                print(f"        {left} {_marginals(xs)}")
+                print(f"        {right} {_marginals(ys)}")
 
     # Zero here means the judge models carry no rate in `core/pricing.py`
     # (UW-C239), not that the panel was free. The harden step printed "$0.0000"
@@ -1149,6 +1211,26 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--env-file", type=Path, default=Path(".env"))
     parser.add_argument("--replay", type=Path)
     parser.add_argument(
+        "--panel",
+        type=Path,
+        help=(
+            "JSON array of judge objects to use instead of the frontier panel. "
+            "This is how an open-weight candidate is evaluated as a "
+            "distillation parent: same arms, same rubric, different judges."
+        ),
+    )
+    parser.add_argument(
+        "--exclude-judge",
+        action="append",
+        default=[],
+        metavar="LABEL",
+        help=(
+            "Drop this judge before scoring. Repeatable. For asking which "
+            "verdicts survive without a judge whose own run-to-run drift "
+            "exceeds the detection margin."
+        ),
+    )
+    parser.add_argument(
         "--harden-dir",
         type=Path,
         default=Path("out/w7/harden"),
@@ -1183,6 +1265,15 @@ def main(argv: Sequence[str] | None = None) -> int:
         payload = json.loads(args.replay.read_text(encoding="utf-8"))
         verdicts = [Verdict(**row) for row in payload["verdicts"]]
         arms = [tuple(pair) for pair in payload["arms"]]
+        if args.exclude_judge:
+            before = len({v.judge for v in verdicts})
+            verdicts = [v for v in verdicts if v.judge not in set(args.exclude_judge)]
+            after = len({v.judge for v in verdicts})
+            print(
+                f"Excluded {', '.join(args.exclude_judge)}: "
+                f"{before} judges -> {after}.",
+                file=sys.stderr,
+            )
         _print_report(
             score_battery(verdicts, arms),  # pyright: ignore[reportArgumentType]
             verdicts,
@@ -1232,14 +1323,16 @@ def main(argv: Sequence[str] | None = None) -> int:
     files = sorted(args.arms.glob("*.json"))
     books = [(p.stem, json.loads(p.read_text(encoding="utf-8"))) for p in files]
     arms = [tuple(p.stem.rsplit("__", 1)) for p in files]
+    panel = load_panel(args.panel)
     print(
-        f"Judging {len(books)} books with {len(_PANEL)} judges "
-        f"({len(books) * len(_PANEL)} scorings).",
+        f"Judging {len(books)} books with {len(panel)} judges "
+        f"({len(books) * len(panel)} scorings): "
+        f"{', '.join(j.label for j in panel)}.",
         file=sys.stderr,
     )
 
     with single_run(args.out):
-        verdicts, spend = asyncio.run(run_panel(books, Settings()))
+        verdicts, spend = asyncio.run(run_panel(books, Settings(), panel))
     results = score_battery(verdicts, arms)  # pyright: ignore[reportArgumentType]
 
     args.out.mkdir(parents=True, exist_ok=True)
