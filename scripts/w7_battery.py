@@ -23,6 +23,8 @@ being ordinarily noisy.
 
 Usage::
 
+    uv run python scripts/seed_defects.py <books> --out out/w7/arms
+    uv run python scripts/w7_battery.py --arms out/w7/arms --prepare <books>
     uv run python scripts/w7_battery.py --arms out/w7/arms --out out/w7 --env-file .env
     uv run python scripts/w7_battery.py --replay out/w7/verdicts.json
 """
@@ -49,6 +51,7 @@ from cyo_adventure.generation.metered import MeteredProvider  # noqa: E402
 from cyo_adventure.generation.provider import build_openrouter_leg  # noqa: E402
 from cyo_adventure.generation.usage import UsageLedger  # noqa: E402
 from scripts.judge_books import _CRITERIA, _PANEL, Verdict, judge_book  # noqa: E402
+from scripts.seed_defects import verify  # noqa: E402
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -77,6 +80,27 @@ _DETECTION_MARGIN: Final[float] = 0.5
 _FALSE_POSITIVE_MARGIN: Final[float] = _DETECTION_MARGIN
 
 _KAPPA_FLOOR: Final[float] = 0.60
+
+# How many US reading grades the `reading_level_up` seed aims to add. Three is
+# roughly a band's width in this catalogue, so the result is a book that is
+# genuinely wrong for its declared band rather than one that merely reads a
+# little older.
+_HARDEN_GRADES: Final[float] = 3.0
+
+# Nodes shorter than this are left alone: rewriting a ten-word body is a
+# replacement, not a reworking, and the seed would then be measuring
+# substitution rather than difficulty.
+_MIN_HARDENABLE_WORDS: Final[int] = 15
+
+_HARDEN_CONCURRENCY: Final[int] = 6
+
+# The model that writes the harder prose. Sonnet 5 rather than the cheaper
+# default: this seed has to produce a book that is genuinely too old for its
+# band while still reading like a book, and a weak rewrite yields an arm that
+# fails to land, which costs an opportunity rather than saving money. It is a
+# fixture model and has nothing to do with which model the pipeline generates
+# with.
+_HARDEN_MODEL: Final[str] = "anthropic/claude-sonnet-5"
 
 __all__ = ["CriterionVerdict", "score_battery"]
 
@@ -304,28 +328,86 @@ async def harden_book(
     nodes = out.get("nodes")
     if not isinstance(nodes, list):
         return out
-    for node in nodes:
+
+    # Bounded concurrency rather than a sequential loop. A six-book corpus is
+    # 213 hardenable nodes and one call each; serialised at a few seconds per
+    # call that is most of an hour of wall clock, which is long enough that an
+    # operator starts wondering whether to kill it. The bound is low because the
+    # cap is the provider's rate limit, not ours.
+    semaphore = asyncio.Semaphore(_HARDEN_CONCURRENCY)
+
+    async def rewrite(node: dict[str, Any]) -> None:
         body = str(node.get("body", ""))
-        if len(body.split()) < 15:
+        if len(body.split()) < _MIN_HARDENABLE_WORDS:
             # Too short to harden meaningfully, and a rewrite would be a
             # replacement rather than a reworking.
-            continue
-        try:
-            completion = await provider.complete(  # pyright: ignore[reportAttributeAccessIssue]
-                system=_HARDEN_SYSTEM,
-                prompt=(
-                    f"Rewrite this passage about {grades:.0f} US reading grades "
-                    f"harder, preserving every event exactly:\n\n{body}"
-                ),
-                max_tokens=1500,
-            )
-        except Exception as exc:  # one node failing must not void the book
-            print(f"    harden failed on {node.get('id')}: {exc}", file=sys.stderr)
-            continue
+            return
+        async with semaphore:
+            try:
+                completion = await provider.complete(  # pyright: ignore[reportAttributeAccessIssue]
+                    system=_HARDEN_SYSTEM,
+                    prompt=(
+                        f"Rewrite this passage about {grades:.0f} US reading "
+                        f"grades harder, preserving every event exactly:"
+                        f"\n\n{body}"
+                    ),
+                    max_tokens=1500,
+                )
+            except Exception as exc:  # one node failing must not void the book
+                print(f"    harden failed on {node.get('id')}: {exc}", file=sys.stderr)
+                return
         text = completion.text.strip()
         if text:
             node["body"] = text
+
+    await asyncio.gather(*(rewrite(node) for node in nodes if isinstance(node, dict)))
     return out
+
+
+async def prepare_arms(
+    corpus: Sequence[Path], arms_dir: Path, settings: Settings
+) -> tuple[int, float]:
+    """Write each book's control and its generation-seeded reading-level arm.
+
+    The other arms are mechanical and `seed_defects.py` writes them, control
+    included; the control is rewritten here only so this step is usable on its
+    own. The reading-level arm is here because it needs a provider, and because
+    it was otherwise absent: `harden_book` existed with no caller at all, so a
+    run would have scored `age_fit` with no arm to score it on and reported the
+    criterion untested without saying why.
+
+    Args:
+        corpus: The passing books to build arms from.
+        arms_dir: Directory the mechanical seeds were written to.
+        settings: Settings supplying the credential.
+
+    Returns:
+        The number of arms written and the dollars spent hardening.
+    """
+    ledger = UsageLedger()
+    provider = MeteredProvider(
+        build_openrouter_leg(settings, _HARDEN_MODEL), ledger=ledger
+    )
+    written = 0
+    for path in corpus:
+        doc = json.loads(path.read_text(encoding="utf-8"))
+        stem = path.stem.replace(".filled", "")
+
+        (arms_dir / f"{stem}__control.json").write_text(
+            json.dumps(doc, indent=2) + "\n", encoding="utf-8"
+        )
+        written += 1
+
+        hardened = await harden_book(doc, provider, grades=_HARDEN_GRADES)
+        result = verify("reading_level_up", doc, hardened)
+        mark = "ok  " if result.landed else "MISS"
+        print(f"  {mark} {stem}__reading_level_up  {result.evidence}", file=sys.stderr)
+        (arms_dir / f"{stem}__reading_level_up.json").write_text(
+            json.dumps(hardened, indent=2) + "\n", encoding="utf-8"
+        )
+        written += 1
+
+    return written, _spend(ledger)
 
 
 async def run_panel(
@@ -467,6 +549,18 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--out", type=Path)
     parser.add_argument("--env-file", type=Path, default=Path(".env"))
     parser.add_argument("--replay", type=Path)
+    parser.add_argument(
+        "--prepare",
+        nargs="+",
+        type=Path,
+        metavar="BOOK",
+        help=(
+            "Write each book's control and its generation-seeded "
+            "reading_level_up arm into --arms, then exit without judging. "
+            "Separate from the run so the paid harden is not repeated when a "
+            "judging pass is retried."
+        ),
+    )
     args = parser.parse_args(argv)
 
     if args.replay is not None:
@@ -480,16 +574,25 @@ def main(argv: Sequence[str] | None = None) -> int:
         )
         return 0
 
-    if args.arms is None or args.out is None:
-        print("Error: --arms and --out are required without --replay.", file=sys.stderr)
-        return 2
-
     if args.env_file.exists():
         for line in args.env_file.read_text(encoding="utf-8").splitlines():
             if line.startswith("OPENROUTER_API_KEY="):
                 os.environ["OPENROUTER_API_KEY"] = (
                     line.split("=", 1)[1].strip().strip("'\"")
                 )
+
+    if args.prepare is not None:
+        if args.arms is None:
+            print("Error: --prepare needs --arms.", file=sys.stderr)
+            return 2
+        args.arms.mkdir(parents=True, exist_ok=True)
+        written, spent = asyncio.run(prepare_arms(args.prepare, args.arms, Settings()))
+        print(f"\n{written} arm(s) written; ${spent:.4f} spent hardening.")
+        return 0
+
+    if args.arms is None or args.out is None:
+        print("Error: --arms and --out are required without --replay.", file=sys.stderr)
+        return 2
 
     files = sorted(args.arms.glob("*.json"))
     books = [(p.stem, json.loads(p.read_text(encoding="utf-8"))) for p in files]

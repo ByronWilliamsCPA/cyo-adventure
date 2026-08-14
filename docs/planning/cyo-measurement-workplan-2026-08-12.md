@@ -820,3 +820,68 @@ the battery is broken".
 **Item 5**: `judge_books.py` derives the band phrase from the book's own declared band and falls
 back to the historical "5 to 8" wording when a book declares none, so the existing 84 verdicts
 remain reproducible while a book declaring 10-13 is no longer judged against a 5-to-8 rubric.
+
+### 7.7.2 W7's corpus, and three harness defects found building it (2026-08-14)
+
+The corpus was rebuilt rather than reused, because the fixed detector changed which books
+can carry the `dialogue_flat` arm and because pricing the previously-planned corpus made it
+unaffordable.
+
+**Why not the corpus in the "Not doing" note above.** That note ruled the swap out on the
+grounds that `the-clocktower-cipher` and `the-lost-mitten` fail `Storybook.model_validate`
+as pre-schema-v2 documents. Correct as far as it went, and it stopped one step early: the
+three failures (`schema_version` "1.0", absent `metadata.topology`, `ending.type` where v2
+wants `kind` and `valence`) are all mechanically derivable. `scripts/normalize_pre_v2.py`
+derives the topology from `validator.topology.admissible_topologies`, the classifier the
+gate itself uses for PL-18, and maps the five `type` values the corpus uses onto
+`(kind, valence)` from a fixed exhaustive table that raises on anything unlisted. It writes
+copies and never touches the tracked fixtures.
+
+That produced a finding worth keeping: the xfail reason on all three legacy books reads
+"migrate to v2 then drop from `_LEGACY_PRE_V2`", and after migration only `the-lost-mitten`
+passes the gate. `the-clocktower-cipher` and `the-sunken-signal` are blocked by L1-7 on
+branch depth (9 against a limit of 8, and 13 against 12), which is a content property, not a
+schema gap. The xfail reason is therefore accurate for one of the three books and misleading
+for the other two.
+
+**The corpus.** Six books, every one gate-passing under `fill_result` context, chosen
+smallest-first for cost with the two dialogue-carrying books included deliberately:
+
+| Book | Nodes | Words | Dialogue share |
+| --- | --- | --- | --- |
+| `the-lost-mitten` (normalised) | 11 | 760 | 0.818 |
+| `the-clover-and-the-butterfly` | 20 | 663 | 0.000 |
+| `the-teddy-bears-picnic` | 29 | 1,172 | 0.000 |
+| `the-lantern-festival` | 37 | 1,948 | 0.000 |
+| `the-backyard-treasure-map` | 62 | 4,052 | 0.258 |
+| `the-cave-of-echoes` | 65 | 4,906 | 0.000 |
+
+Stated limits. These are the small end of a catalogue running to 551 nodes, which the
+per-criterion rule tolerates (the question is the judge's sensitivity to a seeded defect, and
+a shorter book gives the defect less room to be noticed, so the bias runs conservative) but
+which a later reader should not mistake for a representative sample. The bands span 3-5 to
+10-13, which item 5's per-book band phrasing now handles.
+
+**Three harness defects, all found before spending:**
+
+1. **`harden_book` had no caller.** The function that seeds `reading_level_up` was defined
+   and never invoked from `main`, so a run would have judged five arms, found no
+   `reading_level_up` arm, and reported `age_fit` UNTESTED without saying why. Now behind
+   `--prepare`, deliberately a separate invocation so a retried judging pass does not repeat
+   the paid rewrite.
+2. **The seeder wrote arms that did not land.** `seed_defects.py` reported MISS and wrote the
+   file anyway. A non-landing seed yields an arm byte-identical to its control, the battery
+   counts it as an opportunity, the delta is zero, and the pre-registered reading of a zero
+   detection rate is "retire the criterion". That is precisely the error item 4 deleted from
+   section 3, sitting in the harness rather than in the prose. Non-landing arms are now
+   withheld and named, so the affected criterion runs at reduced n instead of being handed a
+   manufactured failure. Five arms were withheld on this corpus: `dialogue_flat` on the four
+   books with no dialogue, and `false_choice` on `the-lost-mitten`, whose forks are already
+   false (4 of 4).
+3. **`harden_book` was sequential.** 224 rewrite calls at one at a time is most of an hour of
+   wall clock. Bounded to 6 concurrent.
+
+**Arm counts going into the run**: 6 controls, 6 `tense_break`, 5 `false_choice`,
+6 `premise_duplicate`, 2 `dialogue_flat`, 6 `reading_level_up`. The `dialogue` criterion gets
+2 opportunities, both with strong seeds (0.818 and 0.258 to 0.000), against the 1 dead
+opportunity the previously-planned corpus offered.

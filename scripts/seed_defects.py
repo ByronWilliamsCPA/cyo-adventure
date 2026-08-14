@@ -430,8 +430,13 @@ def main(argv: Sequence[str] | None = None) -> int:
         argv: Argument vector, or ``None`` for ``sys.argv``.
 
     Returns:
-        ``0`` when every seed landed, ``1`` otherwise: a battery built on a seed
-        that did not land would measure the fixture rather than the panel.
+        Always ``0``. A seed that does not land is an ordinary outcome, not an
+        error: `dialogue_flat` cannot land on a book with no dialogue and
+        `false_choice` cannot land on one whose forks are already false. What
+        would make a battery measure the fixture rather than the panel is
+        *scoring* such an arm, and the fix for that is to withhold the file,
+        which this does, rather than to fail the whole seeding run and take the
+        arms that did land down with it.
     """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("books", nargs="+", type=Path)
@@ -440,7 +445,7 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     docs = [json.loads(p.read_text(encoding="utf-8")) for p in args.books]
     args.out.mkdir(parents=True, exist_ok=True)
-    failures = 0
+    missed: list[str] = []
     for index, (path, doc) in enumerate(zip(args.books, docs, strict=True)):
         sibling = docs[(index + 1) % len(docs)]
         for defect in DEFECTS:
@@ -448,15 +453,32 @@ def main(argv: Sequence[str] | None = None) -> int:
                 continue
             result = verify(defect, doc, seed(defect, doc, sibling=sibling))
             stem = f"{path.stem.replace('.filled', '')}__{defect}.json"
-            (args.out / stem).write_text(
-                json.dumps(result.doc, indent=2) + "\n", encoding="utf-8"
-            )
-            mark = "ok  " if result.landed else "MISS"
+            if result.landed or defect == "control":
+                (args.out / stem).write_text(
+                    json.dumps(result.doc, indent=2) + "\n", encoding="utf-8"
+                )
+            else:
+                # A seed that did not land yields an arm byte-identical to its
+                # control. Writing it would give the battery an "opportunity" the
+                # criterion cannot possibly take, and the pre-registered reading
+                # of a zero detection rate is "retire the criterion". The arm is
+                # therefore withheld rather than scored, which lowers that
+                # criterion's n instead of manufacturing a failure for it. This
+                # is the harness half of the correction that deleted section 3's
+                # pre-committed verdict from the workplan.
+                (args.out / stem).unlink(missing_ok=True)
+                missed.append(f"{stem}: {result.evidence}")
+            mark = "ok  " if result.landed else "SKIP"
             print(f"  {mark} {stem:<52} {result.evidence}")
-            failures += 0 if result.landed else 1
-    if failures:
-        print(f"\n{failures} seed(s) did not land. Fix the fixture before judging.")
-    return 1 if failures else 0
+    if missed:
+        print(
+            f"\n{len(missed)} arm(s) withheld because the seed did not land. "
+            "The books they would have covered are not counted as opportunities; "
+            "the affected criteria run at reduced n:"
+        )
+        for line in missed:
+            print(f"  - {line}")
+    return 0
 
 
 if __name__ == "__main__":
