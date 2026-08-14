@@ -286,10 +286,23 @@ repair tier already exists as `generation/reading_level_loop.py`.
 *Test.* Cost per delivered book and gate pass rate, against the current single-model configuration
 on matched briefs.
 
-*Decision rule.* **Adopt iff cost per delivered book falls materially with no regression in gate
-pass rate or deterministic craft measures.** Cost is a fact rather than a ranking, so this is not
-blocked on W7. Note the fifth review's recommended model names are stale; the tiering transfers and
-its instantiation does not, so the slate is chosen from current models at run time.
+*Decision rule.* **Adopt iff cost per delivered book falls by at least 20 percent against the
+current single-model baseline, with no regression in gate pass rate or deterministic craft
+measures.** Pre-registered at 20 percent rather than left as "materially" because per-leg $/book
+already spans roughly $0.04 to $1.42 in the section 30/31 cost table (35x), so a routing-driven
+saving has to clear a real threshold to be distinguishable from ordinary vendor-to-vendor spread,
+not just be directionally lower. Cost is a fact rather than a ranking, so this is not blocked on
+W7. Note the fifth review's recommended model names are stale; the tiering transfers and its
+instantiation does not, so the slate is chosen from current models at run time.
+
+> **#ASSUME: external-resources.** The routing slate is chosen from whichever models are current
+> at run time (deliberately not pinned to the fifth/sixth review's stale names), so this decision
+> rule assumes the pricing and reasoning-overhead profile a chosen model exhibits at test time is
+> stable enough that the same slate, re-run later, would clear the same 20 percent bar. A
+> mid-project price change or model deprecation on the routed backend would need a re-test, not a
+> re-derivation of the threshold.
+> **#VERIFY:** re-run the cost/gate-pass-rate test in this section's *Test* line before relying on
+> an adoption decision more than a pricing cycle old.
 
 The sixth review's staged allocation is the same tiering at finer grain and is adopted as this
 item's slate shape rather than as a new item: highest reasoning for premise, character and
@@ -313,9 +326,11 @@ cross-lab premise convergence currently measures **156.35 shared four-grams per 
 generator idiom floor of **3.3**. Generate n books from MoPS-sampled premises and measure the same
 quantity the same way.
 
-*Decision rule.* **Adopt iff convergence drops to within a small multiple of the 3.3 idiom floor.
-Drop if it stays in the tens per 1000**, because a curated space that still converges is not solving
-the problem it was chosen for. This is deterministic, pre-registered, and unambiguous.
+*Decision rule.* **Adopt iff convergence drops below 3x the 3.3 idiom floor (under 10 shared
+four-grams per 1000). Drop if it stays at 10 or above (the "tens per 1000" range this plan's own
+comparator has repeatedly measured for a non-curated premise space)**, because a curated space
+that still converges is not solving the problem it was chosen for. This is deterministic,
+pre-registered, and unambiguous.
 
 *Cost.* Generation for n books, plus curation time for the module dictionary.
 
@@ -345,6 +360,20 @@ prompt would silently drop out of Think Max, and the result would read as "less 
 book" when the actual cause is "less reasoning". **Hold the configured context window fixed at or
 above 384K across all three regimes and vary only what the prompt contains.** If a regime cannot be
 run that way, report it as a different experiment rather than as a fourth cell.
+
+> **#ASSUME: external-resources.** This confound-avoidance rule rests on the DeepSeek-V4 model
+> card's stated 384K Think Max floor holding at run time; a vendor can revise a model card's
+> documented minimum (or retire Think Max) between this plan being written and W14 actually
+> running. The three-regime design silently reacquires the confound this paragraph exists to
+> avoid if that floor moves and nobody re-checks it.
+> **#ASSUME: payment/financial.** Holding the context window at or above 384K on every regime,
+> including the two narrower ones (current-node-plus-ancestors, the compact ledger), means paying
+> for a context floor those regimes do not otherwise need, which raises W14's cost above what a
+> naive reading of "compact context should be cheap" would predict; the *Test* line's cost
+> measurement must be read with that floor in mind, not as evidence the compact regime is
+> expensive on its own terms.
+> **#VERIFY:** re-check the current DeepSeek-V4 model card's Think Max minimum immediately before
+> running W14, not from this document's 2026-08-12 citation.
 
 *Blocked, and the blocker is ours.* Half of this item is a cost measurement over input tokens, and
 `core/pricing.py` sets `input_usd_per_mtok=None` on every cloud entry, so `estimate_cost` marks every
@@ -446,6 +475,15 @@ proxy for dimensions no formula observes recreates `AL-337` rather than closing 
 *Decision rule.* **Build the rubric only if W12's comprehension results show band-appropriate books
 failing readers.** If comprehension tracks Flesch-Kincaid closely, the quantitative leg was
 sufficient after all and the honest outcome is to say so and stop.
+
+> **Numeric threshold not pre-registered here.** "Tracks closely" needs a stated correlation
+> coefficient (or agreement statistic) and a minimum sample size before W12 runs, the same way
+> W9's cost bar and W10's convergence bar are pre-registered above. This plan does not have a
+> comprehension-versus-Flesch-Kincaid baseline to derive one from (unlike W9's cost spread or
+> W10's four-gram floor), so picking a number here would be invented, not derived. Whoever runs
+> W12 should set it (a candidate starting point: Pearson r >= 0.7 with n >= 20 books, but this is
+> a suggestion for the owner to confirm or replace, not a pre-registered value) before results are
+> in hand, so the "sufficient after all" call is not made post hoc.
 
 ## 5. Deferred, with the reason
 

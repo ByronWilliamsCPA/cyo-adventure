@@ -35,6 +35,13 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from cyo_adventure.storybook.sentinels import strip_sentinels
+
+# A skeleton body is a ``<<FILL role=... words=N ...>>`` directive, not prose: it
+# is a single run-on clause and therefore always scores outside any band, so
+# scoring it emits one meaningless warning per node (746 for a ceiling-scale
+# book) and trains reviewers to ignore RL-13 entirely. PL-19 (policy.py) already
+# special-cases the same marker; this mirrors it, from the same shared constant.
+from cyo_adventure.validator.policy import FILL_MARKER
 from cyo_adventure.validator.report import (
     Severity,
     ValidationFinding,
@@ -57,13 +64,6 @@ __all__ = [
 # The threshold matches the minimum recommended by most readability literature
 # for Flesch-Kincaid stability (roughly one paragraph of prose).
 _MIN_WORDS_FOR_FK: int = 20
-
-# A skeleton body is a ``<<FILL role=... words=N ...>>`` directive, not prose: it
-# is a single run-on clause and therefore always scores outside any band, so
-# scoring it emits one meaningless warning per node (746 for a ceiling-scale
-# book) and trains reviewers to ignore RL-13 entirely. PL-19 already special-
-# cases the same marker; this mirrors it.
-_FILL_MARKER = "<<FILL"
 
 # A "word" is a run of letters (optionally with internal apostrophes/hyphens).
 # Numbers and standalone punctuation are not counted as words.
@@ -157,7 +157,7 @@ def score_body(body: str) -> float | None:
     Returns:
         The Flesch-Kincaid grade, or ``None`` when the body cannot be scored.
     """
-    if _FILL_MARKER in body:
+    if FILL_MARKER in body:
         return None
     stripped = strip_sentinels(body)
     if len(stripped.split()) < _MIN_WORDS_FOR_FK:
@@ -234,7 +234,7 @@ def measure_book(
     # deliberately wider than score_body's per-node floor. See
     # BookReadingLevel.grade/words for why the whole-book aggregate keeps
     # bodies scored_nodes/in_band would exclude as individually too short.
-    authored_bodies = [strip_sentinels(b) for b in all_bodies if _FILL_MARKER not in b]
+    authored_bodies = [strip_sentinels(b) for b in all_bodies if FILL_MARKER not in b]
     joined = " ".join(authored_bodies)
     if len(joined.split()) < _MIN_WORDS_FOR_FK:
         return None

@@ -22,11 +22,13 @@ from unittest import mock
 import pytest
 
 from cyo_adventure.core.config import Settings
+from cyo_adventure.generation.usage import Completion, TokenUsage
 from scripts.compare_vendors import (
     _PREFLIGHT_MAX_TOKENS,  # pyright: ignore[reportPrivateUsage]
     BookRecord,
     ComparisonReport,
     Vendor,
+    _CapOverrideProvider,  # pyright: ignore[reportPrivateUsage]
     _load_briefs,  # pyright: ignore[reportPrivateUsage]
     _load_skeletons,  # pyright: ignore[reportPrivateUsage]
     _load_vendors,  # pyright: ignore[reportPrivateUsage]
@@ -953,3 +955,40 @@ def test_run_comparison_writes_nothing_when_no_out_dir_is_given(
         )
 
     assert list(tmp_path.glob("*")) == []
+
+
+# --- _CapOverrideProvider ---------------------------------------------------
+
+
+def test_cap_override_provider_replaces_the_callers_max_tokens() -> None:
+    """The wrapper's configured cap replaces whatever the caller passed.
+
+    The override exists precisely to substitute a comparison-run-specific
+    budget for orchestrator._MAX_TOKENS_PROSE; if the caller's value leaked
+    through instead, a reasoning leg under-budgeted by that module constant
+    would still truncate under the harness's own override.
+    """
+    seen: dict[str, object] = {}
+
+    async def _complete(*, system: str, prompt: str, max_tokens: int) -> Completion:
+        seen["max_tokens"] = max_tokens
+        return Completion(
+            text="unchanged",
+            usage=TokenUsage(
+                provider="mock",
+                model="m",
+                input_tokens=10,
+                output_tokens=5,
+                duration_ms=1,
+            ),
+        )
+
+    inner = mock.Mock(complete=_complete)
+    provider = _CapOverrideProvider(inner=inner, max_tokens=64_000)
+
+    result = asyncio.run(provider.complete(system="s", prompt="p", max_tokens=128))
+
+    assert seen["max_tokens"] == 64_000
+    assert result.text == "unchanged"
+    assert result.usage.input_tokens == 10
+    assert result.usage.output_tokens == 5

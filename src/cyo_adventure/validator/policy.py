@@ -67,10 +67,12 @@ from cyo_adventure.validator.topology import admissible_topologies
 # A skeleton node body is a ``<<FILL role=... words=N ...>>`` directive carrying
 # the author's declared word target; a filled node body is prose. The
 # words-per-node check reads the declared target for skeletons and the actual
-# word count for prose, so it applies pre-fill and post-fill. This regex is a
-# local copy (not imported from generation.diagram) to keep the validator from
-# depending on the generation layer.
-_FILL_MARKER = "<<FILL"
+# word count for prose, so it applies pre-fill and post-fill. Public (not
+# imported from generation.diagram, which keeps the validator from depending
+# on the generation layer) so generation/ and scripts/ callers that need the
+# same literal (reading_level_loop.py, evaluate_books.py) import it from here
+# rather than each redeclaring it.
+FILL_MARKER = "<<FILL"
 _FILL_WORDS_RE = re.compile(r"\bwords=(\d+)")
 
 # Endings that count as a *satisfying* completion for the PL-20 arc floor. A
@@ -112,7 +114,7 @@ def check_fill_residue(story: Storybook) -> ValidationReport:
     """
     report = ValidationReport()
     for node in story.nodes:
-        if _FILL_MARKER not in node.body:
+        if FILL_MARKER not in node.body:
             continue
         report.add(
             ValidationFinding(
@@ -123,7 +125,7 @@ def check_fill_residue(story: Storybook) -> ValidationReport:
                 message=(
                     f"PL-27 policy: node '{node.id}' of story '{story.id}' was "
                     f"validated as a fill result but its body still holds a "
-                    f"'{_FILL_MARKER}' directive, so the node was never written"
+                    f"'{FILL_MARKER}' directive, so the node was never written"
                 ),
             )
         )
@@ -353,7 +355,7 @@ def node_word_count(body: str) -> int:
     Returns:
         The word count used by the PL-19 words-per-node check.
     """
-    if _FILL_MARKER in body:
+    if FILL_MARKER in body:
         match = _FILL_WORDS_RE.search(body)
         return int(match.group(1)) if match is not None else 0
     return len(body.split())

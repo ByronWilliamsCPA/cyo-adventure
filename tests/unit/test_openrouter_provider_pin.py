@@ -113,6 +113,11 @@ def _leg_kwargs(model: str, **extra: object) -> dict[str, Any]:
     instead tests exactly what the factory is responsible for: threading the pin
     through unchanged.
 
+    Uses ``create_autospec(OpenRouterProvider, spec_set=True)`` rather than a
+    permissive ``**kwargs`` stub, so a removed or renamed constructor keyword
+    fails this call with a real ``TypeError`` instead of being silently
+    swallowed and recorded as if it were still accepted.
+
     Args:
         model: The model slug to build a leg for.
         **extra: Extra keyword arguments forwarded to the factory.
@@ -120,19 +125,12 @@ def _leg_kwargs(model: str, **extra: object) -> dict[str, Any]:
     Returns:
         The keyword arguments the factory passed to ``OpenRouterProvider``.
     """
-    recorded: dict[str, Any] = {}
-
-    def _record(**kwargs: object) -> object:
-        """Stand in for the adapter constructor and record its kwargs."""
-        recorded.update(kwargs)
-        return object()
-
+    autospec = mock.create_autospec(OpenRouterProvider, spec_set=True)
     settings = Settings(openrouter_api_key="test-key")
-    with mock.patch(
-        "cyo_adventure.generation.provider.OpenRouterProvider", side_effect=_record
-    ):
+    with mock.patch("cyo_adventure.generation.provider.OpenRouterProvider", autospec):
         build_openrouter_leg(settings, model, **extra)  # pyright: ignore[reportArgumentType]
-    return recorded
+    assert autospec.call_args is not None
+    return dict(autospec.call_args.kwargs)
 
 
 def test_build_openrouter_leg_defaults_to_no_pin() -> None:

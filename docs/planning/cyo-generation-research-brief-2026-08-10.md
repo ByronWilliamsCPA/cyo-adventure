@@ -26,6 +26,10 @@
 > wrong and are corrected here; two claims that could not be verified were removed rather
 > than softened. Where a finding is ours rather than published, it is marked as such.
 
+<!-- Two distinct blockquotes below: a plain blank line here would trip MD028's ambiguity
+     check, and prefixing it with ">" would merge this into one blockquote with the
+     [!IMPORTANT] callout that follows, breaking that callout's GitHub rendering. -->
+
 > [!IMPORTANT]
 > **Provenance of every rating in this document.** All ratings, annotations and "reader"
 > judgments reported here, in all four parts, were produced by **LLM agent instances**. **No human
@@ -2671,6 +2675,20 @@ the actually-charged amount and splits it into prompt and completion components,
 32,000-token cap and with the same prompt as the runs. Nine models, four briefs each. Total
 measurement spend, $5.86.
 
+> **#ASSUME: payment/financial.** Every dollar figure below is what the gateway billed for
+> this one re-issue, not a guaranteed production price: model pricing can change between this
+> measurement and any later run, and a re-issued call is not contractually the same call the
+> original comparison paid for, only a same-prompt, same-cap proxy for it.
+> **#VERIFY:** treat this table as a point-in-time measurement to re-run before quoting a
+> production cost estimate, not as a standing price list.
+
+> **#ASSUME: external-resources.** The per-call figures depend on the gateway's own billing
+> report being accurate and on the routed backend for each model being the one actually billed
+> (a fallback or region reroute mid-call would attribute cost to the wrong leg).
+> **#VERIFY:** the `provider_order` backend pin on each vendor entry (`docs/planning/vendor-comparison/vendors.json`)
+> is what makes a leg's spend attributable to one serving stack; a slate that omits the pin
+> loses that guarantee.
+
 | leg | $/call | prompt tok | cached | output tok | reasoning | reasoning share | **prose tok** |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | google-gemini-3-flash | 0.0314 | 19,752 | 0% | 7,174 | 0 | 0% | 7,174 |
@@ -2756,6 +2774,16 @@ will be consumed by thinking before the story starts.
 **Scope.** These are fill-stage figures. Only 5 of the 40 books in the comparison required
 any repair attempt, so fill dominates the bill, but a production path that runs the section 23
 repair loop will cost more than this table on the books that need it.
+
+> **Denominator flagged, not resolved.** Section 27 defines this comparison's cohort as eight
+> models times four briefs, thirty-two books; this section's own Method paragraph above re-issued
+> the cost measurement over nine models times four briefs, thirty-six calls. Neither is forty, and
+> nothing else in this document defines a forty-book cohort (the only other "forty" in this
+> document, in section 12, counts shared four-grams in an unrelated diversity experiment and is not
+> a book count). Whoever holds the underlying run data should confirm which denominator this "5"
+> was actually counted against (32, 36, or a genuinely distinct cohort this brief never states) and
+> correct the rate here; recomputing without that data would replace one unverified number with
+> another.
 
 ### 31. Where the three axes leave the decision
 

@@ -229,6 +229,22 @@ frontier tier), so the tiering idea transfers and its instantiation does not. An
 advice, static content first and dynamic content last, is sound and orthogonal; it should be checked
 against what our prompt templates already do rather than adopted blind.
 
+> **#ASSUME: external-resources.** "Adopted blind" is the failure mode this caution names, and it
+> is a real risk here specifically: `generation/prompts.py`'s templates already split into a
+> static system block and a volatile user block on a `<!-- @user -->` marker, precisely so an
+> adapter can cache the system prefix. Assuming this advice is still needed without checking that
+> split first could duplicate work already done, or worse, reorder a template in a way that
+> breaks the existing marker-based split.
+> **#VERIFY:** confirm against `generation/prompts.py`'s current system/user split (see its module
+> docstring) before treating prompt-caching as unaddressed.
+> **#ASSUME: payment/financial.** The routing item above assumes a 36x per-book cost spread
+> (tracking reasoning tokens) is the same spread a routed slate would still see when the models
+> chosen at run time differ from those measured in section 30; pricing and reasoning-token
+> behavior are properties of specific models, not a stable multiplier across arbitrary
+> replacements.
+> **#VERIFY:** re-measure the cost spread on whichever models the routing slate actually names at
+> test time, per W9's pre-registered 20 percent decision rule (`cyo-measurement-workplan-2026-08-12.md`).
+
 ### 4.4 Prose-first generation is a real alternative ordering with a named risk
 
 The Dual-Stage Refinement proposal inverts our order: draft unconstrained prose first, then slice it
@@ -390,6 +406,21 @@ returned `finish_reason=error` on every call while the same model unpinned worke
 reported `reasoning_tokens=0` while emitting 5,339 characters of reasoning. None of those is
 downstream of the quality instrument, none would have been found by building the instrument first,
 and every one of them was found by running a sweep.
+
+> **#ASSUME: external-resources.** Both findings above are properties of a specific provider's
+> serving stack observed on a specific day, not guaranteed-stable facts: a pinned endpoint that
+> works today can regress to `finish_reason=error` again after a vendor-side change, and a
+> provider that misreports `reasoning_tokens=0` may fix or worsen that reporting without notice.
+> Any downstream decision (routing, cost accounting) that treats these as settled facts rather
+> than point-in-time observations inherits the same staleness risk `UW-C235` already tracks for
+> `finish_reason`/`reasoning_tokens` surfacing.
+> **#VERIFY:** re-probe the specific pinned endpoint before relying on its reachability in a
+> paid run; `scripts/compare_vendors.py`'s reachability pre-flight is the existing mechanism for
+> this, not a one-time finding recorded here.
+> **#EDGE: data-integrity.** The quantization claim this section relies on ("quantization
+> degrades lexical diversity") is being tested on our own task specifically because the fifth
+> review's own evidence for it (a forum post about multilingual mathematics) does not transfer;
+> treat the in-flight run's result, not the forum post, as the evidence once it completes.
 
 The fifth review sharpens this rather than contradicting it. It asserts as established that
 quantization degrades lexical diversity and that procurement should mandate precision floors, and it

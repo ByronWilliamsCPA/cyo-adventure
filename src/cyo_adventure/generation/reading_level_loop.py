@@ -50,7 +50,11 @@ from cyo_adventure.storybook.models import NarrativeStyle
 from cyo_adventure.storybook.sentinels import find_sentinels
 from cyo_adventure.utils.logging import get_logger
 from cyo_adventure.validator.gate import run_gate
-from cyo_adventure.validator.policy import node_word_count, words_per_node_profile
+from cyo_adventure.validator.policy import (
+    FILL_MARKER,
+    node_word_count,
+    words_per_node_profile,
+)
 from cyo_adventure.validator.reading_level import (
     BookReadingLevel,
     measure_book,
@@ -87,9 +91,6 @@ _MAX_TOKENS_BATCH = 8192
 # model rewrote rather than simplified, and the original body was written to a
 # word-count target (PL-19 / the FILL directive) that still applies.
 _WORD_DRIFT_TOLERANCE = 0.10
-
-# An unfilled authoring directive must never come back from a simplification.
-_FILL_MARKER = "<<FILL"
 
 
 @dataclass(slots=True)
@@ -312,7 +313,7 @@ def _preserves_contract(original: str, revised: str) -> bool:
     Returns:
         bool: ``True`` when the revision may be considered on its merits.
     """
-    if _FILL_MARKER in revised:
+    if FILL_MARKER in revised:
         return False
     if find_sentinels(revised) != find_sentinels(original):
         return False

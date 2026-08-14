@@ -50,6 +50,7 @@ if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
 from cyo_adventure.validator.layer1 import validate_layer1  # noqa: E402
+from cyo_adventure.validator.policy import FILL_MARKER  # noqa: E402
 from cyo_adventure.validator.reading_level import (  # noqa: E402
     measure_book,
     score_body,
@@ -64,7 +65,6 @@ if TYPE_CHECKING:
 _FILL_RE: Final[re.Pattern[str]] = re.compile(
     r"<<FILL\s+role=(?P<role>\w+)\s+words=(?P<words>\d+)\s+beats='(?P<beats>[^']*)'",
 )
-_FILL_MARKER: Final[str] = "<<FILL"
 
 # Binding slots the generator is supposed to replace. Any survivor in a filled
 # book is a hard compliance failure: the child would read a literal {HERO}.
@@ -381,7 +381,7 @@ def _fidelity(
     recalls: list[float] = []
     for node_id, body in bodies:
         request = directives.get(node_id)
-        if request is None or _FILL_MARKER in body:
+        if request is None or FILL_MARKER in body:
             continue
         requested, terms = request
         tokens = _words(body)
@@ -421,7 +421,7 @@ def evaluate_book(
         Every deterministic measurement for the book.
     """
     bodies = _bodies(doc)
-    filled = [(nid, b) for nid, b in bodies if _FILL_MARKER not in b]
+    filled = [(nid, b) for nid, b in bodies if FILL_MARKER not in b]
     prose = " ".join(b for _, b in filled)
     tokens = _words(prose)
 

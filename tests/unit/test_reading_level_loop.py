@@ -18,6 +18,7 @@ import json
 import re
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, cast
+from unittest import mock
 
 import pytest
 
@@ -39,7 +40,7 @@ from cyo_adventure.generation.reading_level_loop import (
 )
 from cyo_adventure.storybook.models import AgeBand
 from cyo_adventure.validator.gate import GateResult, run_gate
-from cyo_adventure.validator.report import ValidationReport
+from cyo_adventure.validator.report import Severity, ValidationFinding, ValidationReport
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
@@ -506,11 +507,16 @@ async def test_reading_level_rejects_a_revision_that_would_breach_the_word_cap()
 
 @pytest.mark.asyncio
 async def test_reading_level_one_capped_node_does_not_discard_the_others() -> None:
-    """One unusable revision costs its own node, not the whole pass.
+    """A revision that breaches the absolute word wall costs only its own node.
 
     On run-6 a single node crossing the wall discarded 49 other accepted
-    revisions, because the splice is adopted or rejected as one unit. The
-    blast radius of one bad node must be that node.
+    revisions downstream, in the post-splice gate-regression salvage this
+    module also has (see the sibling test below, which exercises that path
+    directly). This test covers the EARLIER safety net: ``_accept()`` checks
+    PL-19's absolute per-node wall itself (``node_word_count(revised) >
+    per_node_max``) before a revision is ever spliced in, so ``n_open``'s
+    over-cap revision here never reaches the splice/gate step at all; only
+    ``n_start``'s revision is accepted and spliced.
     """
     doc = _doc(n_open=NEAR_CAP_HARD, n_start=HARD_BODY)
     clean = _clean_gate(doc)
@@ -527,6 +533,72 @@ async def test_reading_level_one_capped_node_does_not_discard_the_others() -> No
     assert result.nodes_revised == 1
     assert _body_of(result.doc, "n_start") == EASY_BODY
     assert _body_of(result.doc, _TARGET_NODE) == NEAR_CAP_HARD
+    # Confirms the over-cap revision never reached the splice/gate step: no
+    # gate-regression log entry of either shape is present, because _accept()
+    # rejected it before there was anything to splice or gate.
+    assert "reading_level:gate_regression_partial" not in ctx.stage_log
+    assert "reading_level:gate_regression_discard" not in ctx.stage_log
+
+
+@pytest.mark.asyncio
+async def test_reading_level_gate_regression_partial_salvage_drops_only_the_named_node() -> (
+    None
+):
+    """The post-splice gate-regression salvage drops only the node it names.
+
+    Distinct from the test above: this exercises ``_drop_offenders`` and the
+    salvage re-splice/re-gate in ``run_reading_level_loop`` itself, for a case
+    ``_accept()``'s own checks do not intercept (both revisions individually
+    pass: under the word wall, contract-preserving, and closer to target).
+    ``run_gate`` is patched with two results in sequence, the same pattern
+    ``test_reading_level_gate_regression_discards_the_whole_pass`` already
+    uses for its sibling case: the first call (the full two-node splice)
+    returns blocked with an ERROR finding naming exactly ``n_open``, and the
+    second call (the salvaged one-node splice, with ``n_open`` dropped)
+    returns clean. This is a controlled ``GateResult`` rather than a rule the
+    real validator was driven to reject on this input, but it is the real
+    ``_drop_offenders`` node-matching logic under a realistic
+    ``ValidationReport``/``ValidationFinding`` shape, not a stand-in for it.
+    """
+    doc = _doc(n_open=HARD_BODY, n_start=MID_BODY)
+    clean = _clean_gate(doc)
+    provider = MockProvider(
+        responses=[json.dumps({_TARGET_NODE: EASY_BODY, "n_start": EASY_BODY})]
+    )
+    ctx = _ctx(provider)
+
+    blocked_naming_n_open = GateResult(
+        report=ValidationReport(
+            findings=[
+                ValidationFinding(
+                    rule_id="PL-19",
+                    severity=Severity.ERROR,
+                    story_id=cast("str", doc["id"]),
+                    message="PL-19 words: node 'n_open' over the wall",
+                    node_id=_TARGET_NODE,
+                )
+            ]
+        ),
+        blocked=True,
+        safety_flagged=False,
+    )
+    salvaged_clean = GateResult(
+        report=ValidationReport(), blocked=False, safety_flagged=False
+    )
+
+    with pytest.MonkeyPatch.context() as patch:
+        patch.setattr(
+            reading_level_loop,
+            "run_gate",
+            mock.Mock(side_effect=[blocked_naming_n_open, salvaged_clean]),
+        )
+        result = await run_reading_level_loop(doc, clean, ctx)
+
+    assert result.discarded_for_gate is False
+    assert result.nodes_revised == 1
+    assert _body_of(result.doc, "n_start") == EASY_BODY
+    assert _body_of(result.doc, _TARGET_NODE) == HARD_BODY
+    assert "reading_level:gate_regression_partial" in ctx.stage_log
 
 
 # ---------------------------------------------------------------------------

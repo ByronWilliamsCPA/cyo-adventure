@@ -109,6 +109,16 @@ one model, and the review is correct that we conflated them. The reasoning-effor
 (3b) is the most valuable of the three, because it decides the real price of our
 near-dominant supplier and costs under $10 by our own probe economics.
 
+> **#ASSUME: payment/financial.** "Under $10" extrapolates from the per-call pricing measured
+> for other probes on this supplier's model, not from a priced dry run of the reasoning-effort
+> ablation itself. A reasoning-effort setting change can move the reasoning-token share
+> materially (section 30 of the research brief measures reasoning shares from 0 percent to 96
+> percent of a bill across otherwise-comparable calls on other models), so the actual spend is
+> not guaranteed to land under this figure.
+> **#VERIFY:** run the pre-flight/dry-run pattern `scripts/compare_vendors.py` already uses
+> before committing the ablation's full paid run, and treat "$10" as a planning estimate rather
+> than a cap enforced anywhere in code.
+
 ## 3. Where the review needs a qualification
 
 ### 3.1 Instrumenting the approval step yields a single-rater column, not human ground truth
