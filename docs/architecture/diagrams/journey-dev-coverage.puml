@@ -30,10 +30,25 @@
 '   frontend/e2e-prod/ and frontend/e2e-staging/ (deployed-env smoke, own configs)
 '   frontend/src/**/*.test.ts(x)  (Vitest component + unit)
 '
-' Coverage classification last verified: 2026-08-04 (re-audited the eleven
-' specs added 2026-07-23 to 2026-07-27 against this backbone; see per-node
-' notes and the legend's "Not yet recolored" entry for what changed and what
-' did not).
+'   Inventoried 2026-08-14, NOT yet mapped to backbone nodes (10 specs the
+'   lists above had never picked up):
+'     admin-audit, admin-review-cover, guardian-devices,
+'     guardian-notifications, guardian-preview-as-child, guardian-privacy,
+'     guardian-reading, kid-read-aloud, reader-flag, reader-go-back
+'   Most of these exercise guardian- and admin-console pages that this
+'   child-initiated backbone does not contain, so they would not recolour a
+'   node even once mapped; the reader three reinforce a node already green.
+'   That is a name-level read, NOT a per-node audit, which is why they are
+'   listed separately rather than merged into the verified sets above.
+'
+' Coverage classification last verified: 2026-08-04 for the node COLOURS
+' (re-audited the eleven specs added 2026-07-23 to 2026-07-27 against this
+' backbone; see per-node notes and the legend's "Not yet recolored" entry for
+' what changed and what did not). The spec INVENTORY above was refreshed
+' 2026-08-14 against the 45 files then in frontend/e2e/, which is how the ten
+' unmapped specs surfaced. Treat the colours as a 2026-08-04 snapshot: this
+' diagram bakes a claim into a committed artifact, so a stale green reads as
+' reassurance rather than as an omission.
 ' ============================================================
 
 title Developer View: Journey x Test Coverage\n(green = e2e, amber = unit-only [e2e backlog], red = none, grey = backend/pytest)
@@ -104,7 +119,7 @@ note right: GREEN  •  e2e: guardian-review.spec (approve, incl. guardian-403 f
 note right: GREEN  •  e2e: assignments.spec (sibling add)\n+ keyboard-nav.spec (Assign-children dialog focus trap)\nunit: AssignChildrenDialog.test, assignApi.test
 |Child|
 #F6E1B0:Avatar shows "new story ready!";
-note right: AMBER  •  unit: ProfilePickerPage.test\npill state not asserted in e2e
+note right: AMBER  •  unit: ProfilePickerPage.test\nNo FUNCTIONAL e2e assertion on the pill's state. It is no longer\nunseen by e2e, though: visual.spec.ts routes /v1/profiles/story-status\nwith an ON fixture, so the "new story!" pill is pinned in the kid\nvisual baselines. That catches it disappearing, not it being wrong,\nso the node stays amber. Before that fixture the endpoint was UNROUTED\nand failed closed, and the pill was absent from every baseline: the\nsurface least covered was the one the visual suite could least see
 
 #BFE3C6:Open Library (hero + shelf);
 note right: GREEN  •  e2e: library.spec (hero+shelf, tap->reader, empty, mobile)\n+ responsive.spec / cross-device.spec (no horizontal overflow,\nincl. single-book shelf, at desktop/tablet/mobile widths and\nreal device projects)\n+ mobile-viewport.spec "kid library (/library/:profileId)" block\n(no overflow; the weekly-ring/badge-case nav cluster)\nunit: LibraryPage.test, pickHero.test
@@ -116,8 +131,8 @@ if (Online?) then (yes)
 else (offline)
   #BFE3C6:Read from cache, queue progress;
   note right: GREEN  •  e2e: reader.spec (plays to ending, network disabled)\nunit: offline/db.test, offline/sync.test
-  #BFE3C6:Reconnect + reconcile a clash;
-  note right: GREEN  •  e2e: reader-conflict.spec (both reconciliation paths)\nunit: reader/dialogs.test, offline/sync.test
+  #BFE3C6:Reconnect; a clash resolves itself;
+  note right: GREEN  •  e2e: reader-conflict.spec (both paths; asserts a\nconflict-dialog count of ZERO, since newest-write-wins is silent)\nunit: ReaderPage.test (live-save 409 adopted silently),\nReaderRoute.test (replay 409 discarded silently), offline/sync.test\nNOT reader/dialogs.test: that file only exercises DownloadNeeded,\nthe iOS post-eviction state, and never touched conflict
 endif
 #BFE3C6:Reach an ending;
 note right: GREEN  •  reader.spec asserts the ending screen
