@@ -66,10 +66,11 @@ standards a children's product has to meet. Every question in this document is i
 that. Where a section treats one of those four as the whole problem, the section is narrower than
 the goal, not the other way round.
 
-Read sections 1 through 7, then produce what section 8 asks for: **two to four concrete
-architectures we could build and test.** Section 8.1 gives the specification each proposal
-should meet, 8.2 the hard constraints, 8.3 the design questions we expect a good proposal to
-take a position on, and 8.4 some undeveloped families you are free to extend or dismiss.
+*(Historical framing, not a live instruction: this section originally continued "read sections 1
+through 7, then produce what section 8 asks for: two to four concrete architectures we could
+build and test," which is the request section 32 has superseded. It is kept below, unexecuted,
+because sections 8.1 through 8.4 and Parts I to III were written against it and read oddly without
+the context. Do not act on it; act on section 32.)*
 
 We are not asking whether LLMs can write stories. They can. We are asking something
 narrower: **what architecture lets one reusable story graph produce many books in which the

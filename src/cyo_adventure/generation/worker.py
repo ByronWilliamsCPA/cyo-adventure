@@ -1385,6 +1385,7 @@ def _regate_after_transform(
     # needs_review job needs to be able to tell which of the two gate runs
     # produced the downgrade.
     report: dict[str, object] = dict(regated.report.to_dict())
+    report["gate_context"] = regated.context
     report["pre_reinsertion_gate"] = {
         "status": outcome.status,
         "report": outcome.report,

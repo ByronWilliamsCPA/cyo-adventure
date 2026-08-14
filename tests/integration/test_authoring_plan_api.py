@@ -555,12 +555,16 @@ async def test_cross_band_override_producer_binds_consumer_fill(
     # #ASSUME: external-resources: the injected MockProvider keeps the worker
     # hermetic (no network); the per-job provider="anthropic" override is
     # intentionally bypassed exactly as in
-    # test_skeleton_fill_automated_provider_runs_end_to_end. Two responses:
-    # one for the single fill call, one for the moderation pipeline's bounded
-    # auto-repair (see test_generation_worker.py's fixture docstrings).
+    # test_skeleton_fill_automated_provider_runs_end_to_end. The budget is one
+    # call for the fill, 22 Stage D repair-batch calls (this 253-node
+    # skeleton's placeholder bodies all score outside its declared band, for
+    # the reason documented on
+    # test_generation_worker.py::test_worker_cross_band_override_loads_stored_band),
+    # and one more for the moderation pipeline's bounded auto-repair; queued
+    # with headroom above that 24-call floor.
     # #VERIFY: recorded_paths asserts the resolved band-scoped path below.
     provider = MockProvider(
-        responses=[_filled_skeleton_json_for(_CROSS_BAND_SKELETON_PATH)] * 2
+        responses=[_filled_skeleton_json_for(_CROSS_BAND_SKELETON_PATH)] * 30
     )
     await run_generation_job(
         uuid.UUID(job_id),

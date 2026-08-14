@@ -261,7 +261,8 @@ def _per_node_cap(doc: dict[str, object]) -> int | None:
     profile = words_per_node_profile(band, style)
     if profile is None:
         return None
-    return profile[3]
+    _mean, _advisory_lo, _advisory_hi, per_node_max = profile
+    return per_node_max
 
 
 def _bodies(doc: dict[str, object]) -> list[tuple[str, str]]:
@@ -627,7 +628,7 @@ async def run_reading_level_loop(
     # #VERIFY: the salvage path is driven through the REAL gate, with no
     # patching, by the one-capped-node test; the unsalvageable path is covered
     # by the whole-pass discard test. Both live in test_reading_level_loop.py.
-    revised_gate = run_gate(revised_doc, ctx.scale, context="fill_result")
+    revised_gate = run_gate(revised_doc, ctx.scale, context=gate_result.context)
     if revised_gate.blocked and not gate_result.blocked:
         # The gate names the nodes it objected to, so a single unusable
         # revision need not cost the rest of the pass. Drop the named nodes,
@@ -637,7 +638,9 @@ async def run_reading_level_loop(
         salvaged = _drop_offenders(accepted, revised_gate)
         if salvaged:
             salvaged_doc = _splice(doc, salvaged)
-            salvaged_gate = run_gate(salvaged_doc, ctx.scale, context="fill_result")
+            salvaged_gate = run_gate(
+                salvaged_doc, ctx.scale, context=gate_result.context
+            )
             if not salvaged_gate.blocked:
                 _logger.warning(
                     "reading_level_repair_partially_discarded",

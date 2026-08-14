@@ -139,14 +139,17 @@ def _flesch_kincaid_grade(text: str) -> float:
 def score_body(body: str) -> float | None:
     """Return a node body's Flesch-Kincaid grade, or ``None`` if unscorable.
 
-    This is the single definition of "scorable" in the codebase. A body is
-    unscorable when it still carries an unfilled ``<<FILL ...>>`` directive (it
-    is an authoring marker, not prose) or when it falls below
+    This is the single definition of "individually scorable" in the codebase.
+    A body is unscorable when it still carries an unfilled ``<<FILL ...>>``
+    directive (it is an authoring marker, not prose) or when it falls below
     ``_MIN_WORDS_FOR_FK`` words after sentinel stripping (FK is statistically
-    noisy on short passages). Both :func:`check_reading_level` and
-    :func:`measure_book` route through here, so the per-node rule, the
-    whole-book aggregate, and the generation-time repair loop cannot disagree
-    about which nodes they are talking about.
+    noisy on short passages). :func:`check_reading_level`, the per-node half
+    of :func:`measure_book` (``scored_nodes``/``in_band``), and the
+    generation-time repair loop all route through here, so those three agree
+    on which nodes they grade individually. ``measure_book``'s whole-book
+    ``grade``/``words`` are a separate aggregate over a broader set (every
+    authored, non-``<<FILL`` body, short ones included); see
+    :class:`BookReadingLevel` for why that set is intentionally wider.
 
     Args:
         body: The raw node body, sentinels and FILL directives intact.
@@ -173,18 +176,30 @@ class BookReadingLevel:
     (``AL-209``). This type carries the measurement that finding needs.
 
     Attributes:
-        grade: Flesch-Kincaid over every scorable body concatenated. This is
-            the headline number, and it is NOT the mean of the per-node
-            grades: a long node contributes proportionally more to it, which
-            is the correct weighting for "how hard is this book to read".
-        in_band: Share of *scored* nodes inside the target band. Unscorable
-            nodes are excluded from both numerator and denominator, so a book
-            with many short nodes reports a higher figure than a whole-book
+        grade: Flesch-Kincaid over every authored (non-``<<FILL``) body
+            concatenated. This is the headline number, and it is NOT the mean
+            of the per-node grades: a long node contributes proportionally
+            more to it, which is the correct weighting for "how hard is this
+            book to read". Unlike ``scored_nodes``/``in_band``, this
+            concatenation deliberately keeps bodies shorter than
+            ``_MIN_WORDS_FOR_FK``: a short body is too noisy to grade on its
+            own, but its words still belong in the whole-book text, and the
+            concatenation is long regardless of any one body's length.
+        in_band: Share of *scored* nodes inside the target band. A node
+            counts as scored only when :func:`score_body` returns a grade for
+            it (excludes unfilled and sub-floor bodies), and unscored nodes
+            are excluded from both numerator and denominator, so a book with
+            many short nodes reports a higher figure than a whole-book
             reading suggests; compare ``scored_nodes`` against ``nodes`` to
             see how much of the book this number actually covers.
         nodes: Total node bodies considered.
-        scored_nodes: How many of them were long enough to score.
-        words: Total words across the scorable bodies.
+        scored_nodes: How many of them were long enough to score individually
+            (the same ``_MIN_WORDS_FOR_FK`` floor :func:`score_body` applies).
+            This is a narrower set than what ``grade``/``words`` cover; see
+            those attributes.
+        words: Total words across every authored (non-``<<FILL``) body, the
+            same set ``grade`` is computed over, not just the ``scored_nodes``
+            subset.
     """
 
     grade: float
@@ -215,8 +230,12 @@ def measure_book(
         pass: in a filled storybook it means the fill is empty or truncated.
     """
     all_bodies = list(bodies)
-    scorable = [strip_sentinels(b) for b in all_bodies if _FILL_MARKER not in b]
-    joined = " ".join(scorable)
+    # Every authored (non-FILL) body, short ones included: this is
+    # deliberately wider than score_body's per-node floor. See
+    # BookReadingLevel.grade/words for why the whole-book aggregate keeps
+    # bodies scored_nodes/in_band would exclude as individually too short.
+    authored_bodies = [strip_sentinels(b) for b in all_bodies if _FILL_MARKER not in b]
+    joined = " ".join(authored_bodies)
     if len(joined.split()) < _MIN_WORDS_FOR_FK:
         return None
 

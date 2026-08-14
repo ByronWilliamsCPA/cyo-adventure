@@ -58,7 +58,7 @@ if str(_REPO_ROOT) not in sys.path:
 
 from cyo_adventure.core.config import Settings  # noqa: E402
 from cyo_adventure.generation.provider import build_openrouter_leg  # noqa: E402
-from scripts.evaluate_books import evaluate_book  # noqa: E402
+from scripts.evaluate_books import _skeleton_for, evaluate_book  # noqa: E402
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -157,6 +157,11 @@ _SYSTEM: Final[str] = (
 # mid-note, which surfaced as a JSONDecodeError and read as a malformed answer;
 # see _parse for why that misreads. This is AL-323 recurring: size a budget by
 # what the model spends before it can answer, not by the answer.
+# #ASSUME: external-resources: a reasoning model's hidden-token spend before
+# its first content token stays within this margin as models change; if a
+# future judge model spends more, its replies truncate mid-note the same way
+# Gemini 3.1 Pro's did at 2,000.
+# #VERIFY: test_judge_budget_exceeds_the_measured_answer_by_a_reasoning_margin.
 _JUDGE_MAX_TOKENS: Final[int] = 8000
 
 __all__ = ["Judge", "Verdict", "judge_book", "panel_participation", "pool_scores"]
@@ -167,7 +172,10 @@ class Verdict:
     """One judge's scoring of one book.
 
     Attributes:
-        book: Identifier of the book scored, ``"<leg>#<brief>"``.
+        book: Identifier of the book scored, ``"<run>:<leg>#<brief>"``. The run
+            label disambiguates the same leg/brief-index pair scored across
+            two different ``--run`` directories, which would otherwise
+            collide onto the same book identifier.
         leg: The generating leg's label.
         family: The generating leg's lineage.
         judge: The scoring judge's label.
@@ -291,16 +299,36 @@ def _parse(raw: str) -> tuple[dict[str, float], dict[str, str]]:
     notes: dict[str, str] = {}
     for name in _CRITERIA:
         entry = payload.get(name)
-        if isinstance(entry, dict) and isinstance(entry.get("score"), (int, float)):
-            scores[name] = float(entry["score"])
-            notes[name] = str(entry.get("note", ""))
-        elif isinstance(entry, (int, float)):
-            scores[name] = float(entry)
-            notes[name] = ""
+        candidate = entry.get("score") if isinstance(entry, dict) else entry
+        score = _valid_rubric_score(candidate)
+        if score is None:
+            continue
+        scores[name] = score
+        notes[name] = str(entry.get("note", "")) if isinstance(entry, dict) else ""
     if not scores:
         msg = f"reply carried no recognised criterion: {raw[:120]!r}"
         raise ValueError(msg)
     return scores, notes
+
+
+def _valid_rubric_score(candidate: object) -> float | None:
+    """Narrow a judge-reported score to a valid 1-to-5 rubric value.
+
+    Args:
+        candidate: The raw ``score`` value from the judge's reply (untrusted
+            shape).
+
+    Returns:
+        The score as ``float`` when it is a non-bool ``int``/``float`` inside
+        the inclusive 1-to-5 rubric, else ``None``.
+    """
+    # bool is an int subclass; a JSON `true`/`false` here is a malformed
+    # reply, not a score of 1/0, and must not silently become one.
+    if isinstance(candidate, bool) or not isinstance(candidate, (int, float)):
+        return None
+    if not 1 <= candidate <= 5:
+        return None
+    return float(candidate)
 
 
 async def judge_book(
@@ -308,6 +336,7 @@ async def judge_book(
     judge: Judge,
     doc: dict[str, object],
     *,
+    run: str,
     leg: str,
     family: str,
     brief_index: int,
@@ -318,6 +347,9 @@ async def judge_book(
         provider: The judge's provider leg.
         judge: The judge being asked.
         doc: The filled story document.
+        run: The ``--run`` directory's name the book was collected from, so
+            the same leg/brief-index pair from two different runs does not
+            collide onto one book identifier.
         leg: The generating leg's label.
         family: The generating leg's lineage.
         brief_index: Which brief the book was written from.
@@ -325,7 +357,7 @@ async def judge_book(
     Returns:
         The verdict, carrying ``error`` when scoring failed.
     """
-    book = f"{leg}#{brief_index}"
+    book = f"{run}:{leg}#{brief_index}"
     blank = Verdict(
         book=book,
         leg=leg,
@@ -337,12 +369,12 @@ async def judge_book(
         error=None,
     )
     try:
-        raw = await provider.complete(
+        completion = await provider.complete(
             system=_SYSTEM,
             prompt=_prompt(_story_text(doc)),
             max_tokens=_JUDGE_MAX_TOKENS,
         )
-        scores, notes = _parse(raw)
+        scores, notes = _parse(completion.text)
     except Exception as exc:
         # Deliberately broad: one judge failing on one book must not abandon the
         # other hundred-odd scorings. The failure is recorded per book, and
@@ -451,7 +483,7 @@ def _complete_books(
             index = int(row["brief_index"])
             score = evaluate_book(
                 doc,
-                skeletons[index if len(skeletons) > 1 else 0],
+                _skeleton_for(skeletons, index, run_dir=run_dir),
                 leg=row["vendor"],
                 family=row["family"],
                 brief_index=index,
@@ -466,6 +498,10 @@ def _complete_books(
             out.append(
                 {
                     "doc": doc,
+                    # run_dir.name, not the full path: kept short and stable
+                    # for the book identifier below, and distinct --run
+                    # directories are exactly what this field disambiguates.
+                    "run": run_dir.name,
                     "leg": row["vendor"],
                     "family": row["family"],
                     "brief_index": index,
@@ -496,6 +532,7 @@ async def _run_panel(
                 provider,
                 judge,
                 entry["doc"],  # pyright: ignore[reportArgumentType]
+                run=str(entry["run"]),
                 leg=str(entry["leg"]),
                 family=str(entry["family"]),
                 brief_index=int(entry["brief_index"]),  # pyright: ignore[reportArgumentType]
@@ -691,6 +728,13 @@ def main(argv: Sequence[str] | None = None) -> int:
     if failed:
         print(f"\n{failed} of {len(verdicts)} scorings failed; see judgements.json")
     print(f"Wrote {args.out / 'judgements.json'}")
+    if not pooled:
+        # No leg received a single usable verdict: the panel judged nothing,
+        # not "judged everything as mediocre". A caller scripting this (the
+        # comparison harness, CI) must be able to tell that apart from a
+        # normal run, so this is not a 0 like every other empty-but-fine exit.
+        print("\nNo judge contributed a usable verdict; treating this as a failed run.")
+        return 1
     return 0
 
 

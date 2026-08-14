@@ -113,6 +113,7 @@ if TYPE_CHECKING:
     from collections.abc import Sequence
 
     from cyo_adventure.generation.provider import GenerationProvider
+    from cyo_adventure.generation.usage import Completion
 
 _REPO_ROOT: Final[Path] = Path(__file__).resolve().parent.parent
 
@@ -124,10 +125,15 @@ _PREFLIGHT_MAX_TOKENS: Final[int] = 512
 
 # Why per-book cost is absent rather than estimated. Carried into the report so
 # a reader of the JSON a year from now does not have to reconstruct it.
+# #701 (feat/generation-cost-instrumentation) has merged: GenerationProvider.
+# complete() now returns a Completion carrying per-call TokenUsage. The gap is
+# local to this script, which does not yet read that usage or thread it into
+# BookRecord/_book_row; cost is not "coming later", it is unwired here now.
+# Tracked as UW-C245.
 _COST_UNAVAILABLE: Final[str] = (
-    "per-call token usage is discarded by GenerationProvider.complete on this "
-    "branch; capture lands with #701 (feat/generation-cost-instrumentation). "
-    "Re-run after that merges to populate cost."
+    "this harness does not yet read GenerationProvider.complete's per-call "
+    "TokenUsage or thread it into BookRecord (UW-C245); the underlying "
+    "instrumentation (#701) is already merged."
 )
 
 __all__ = [
@@ -497,7 +503,9 @@ class _CapOverrideProvider:
     inner: GenerationProvider
     max_tokens: int
 
-    async def complete(self, *, system: str, prompt: str, max_tokens: int) -> str:
+    async def complete(
+        self, *, system: str, prompt: str, max_tokens: int
+    ) -> Completion:
         """Delegate with the configured cap in place of the requested one.
 
         Args:
@@ -507,7 +515,7 @@ class _CapOverrideProvider:
                 override exists precisely to replace it.
 
         Returns:
-            The inner provider's completion.
+            The inner provider's completion text and token usage.
         """
         del max_tokens
         return await self.inner.complete(
@@ -1305,7 +1313,8 @@ def main(argv: list[str] | None = None) -> int:
         # data policy edited, a provider outage), so a green pre-flight bounds
         # the loss to one book rather than guaranteeing the run.
         # #VERIFY: run_comparison prints each book's error inline, so a mid-run
-        # withdrawal names itself at the book it first hits.
+        # withdrawal names itself at the book it first hits; covered by
+        # test_compare_vendors_survives_one_failing_fill.
         if not _report_preflight(asyncio.run(preflight(vendors, settings))):
             return 1
 

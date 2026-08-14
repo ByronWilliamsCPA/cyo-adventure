@@ -354,6 +354,11 @@ def _band(doc: dict[str, object]) -> tuple[float, float] | None:
         return None
     target = level.get("target")  # pyright: ignore[reportUnknownMemberType]
     tolerance = level.get("tolerance")  # pyright: ignore[reportUnknownMemberType]
+    # bool is an int subclass; a JSON `true`/`false` here is malformed
+    # metadata, not a target/tolerance of 1.0, so it must not silently
+    # become one (mirrors reading_level_loop.py's _band guard).
+    if isinstance(target, bool) or isinstance(tolerance, bool):
+        return None
     if not isinstance(target, (int, float)) or not isinstance(tolerance, (int, float)):
         return None
     return float(target), float(tolerance)
@@ -494,6 +499,42 @@ def summarize_leg(scores: Sequence[BookScore]) -> LegSummary:
     )
 
 
+def _skeleton_for(
+    skeletons: Sequence[dict[str, object]], index: int, *, run_dir: Path
+) -> dict[str, object]:
+    """Select the skeleton a book's ``brief_index`` maps to.
+
+    A run's report declares either one shared skeleton (every book in the run
+    was filled from the same structure) or one skeleton per brief. Sharing
+    collapses every index to the single skeleton; otherwise the index selects
+    directly.
+
+    Args:
+        skeletons: The run's loaded skeleton documents, in report order.
+        index: The book's ``brief_index``.
+        run_dir: The run directory, folded into the error message so an
+            out-of-range index names which run and row produced it.
+
+    Returns:
+        The skeleton document this book was filled from.
+
+    Raises:
+        ValueError: If ``index`` is out of range for a per-brief run (more
+            than one skeleton declared) and there is no shared skeleton to
+            fall back to. A bare ``IndexError`` here would name neither the
+            run nor the offending index.
+    """
+    if len(skeletons) == 1:
+        return skeletons[0]
+    if not 0 <= index < len(skeletons):
+        msg = (
+            f"{run_dir}: brief_index {index} has no matching skeleton "
+            f"({len(skeletons)} declared in report.json)"
+        )
+        raise ValueError(msg)
+    return skeletons[index]
+
+
 def _load_run(run_dir: Path, skeleton_dir: Path) -> list[BookScore]:
     """Score every book in one run directory.
 
@@ -503,6 +544,11 @@ def _load_run(run_dir: Path, skeleton_dir: Path) -> list[BookScore]:
 
     Returns:
         One score per book that has a document on disk.
+
+    Raises:
+        ValueError: If a book's ``brief_index`` does not match any skeleton
+            the run declared (see :func:`_skeleton_for`); a malformed
+            ``report.json`` produces this rather than a bare ``IndexError``.
     """
     payload = json.loads((run_dir / "report.json").read_text(encoding="utf-8"))
     skeleton_names: list[str] = list(payload["skeletons"])
@@ -519,7 +565,7 @@ def _load_run(run_dir: Path, skeleton_dir: Path) -> list[BookScore]:
         scores.append(
             evaluate_book(
                 doc,
-                skeletons[index if len(skeletons) > 1 else 0],
+                _skeleton_for(skeletons, index, run_dir=run_dir),
                 leg=row["vendor"],
                 family=row["family"],
                 brief_index=index,

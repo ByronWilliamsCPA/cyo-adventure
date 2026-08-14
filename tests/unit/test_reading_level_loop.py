@@ -99,15 +99,24 @@ def _doc(**bodies: str) -> dict[str, object]:
     """Return the valid fixture with the named nodes' bodies replaced.
 
     Args:
-        **bodies: Node id to replacement body. Ids absent from the fixture are
-            ignored, so a typo shows up as a test that proves nothing rather
-            than one that errors; the assertions below all name real ids.
+        **bodies: Node id to replacement body.
 
     Returns:
         A fresh, mutable copy of the story document.
+
+    Raises:
+        ValueError: If any keyword names a node id absent from the fixture. A
+            typo'd id would otherwise be silently ignored, leaving a test that
+            proves nothing rather than one that errors.
     """
     doc = cast("dict[str, Any]", json.loads(_FIXTURE.read_text(encoding="utf-8")))
-    for node in cast("list[dict[str, Any]]", doc["nodes"]):
+    nodes = cast("list[dict[str, Any]]", doc["nodes"])
+    fixture_ids = {cast("str", node["id"]) for node in nodes}
+    unknown = set(bodies) - fixture_ids
+    if unknown:
+        msg = f"_doc() got unknown node id(s) {sorted(unknown)}; not in the fixture"
+        raise ValueError(msg)
+    for node in nodes:
         replacement = bodies.get(cast("str", node["id"]))
         if replacement is not None:
             node["body"] = replacement

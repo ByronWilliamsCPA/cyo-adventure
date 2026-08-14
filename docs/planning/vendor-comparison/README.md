@@ -59,8 +59,13 @@ does.
 Both Anthropic legs share one backend deliberately, so the version-bump control differs by checkpoint
 and nothing else.
 
-The two Anthropic legs declare `"family": "anthropic"`. Everything else leaves `family` unset and
-falls back to its own label, so it is its own lineage.
+The two Anthropic legs declare `"family": "anthropic"` so their pair reads as the version-bump
+control rather than a cross-vendor pair. The other four single-checkpoint lab legs (OpenAI, xAI,
+Moonshot, Google) each also declare their own family (`"openai"`, `"xai"`, `"moonshot"`,
+`"google"`), one lineage apiece, which is the same outcome an unset `family` would fall back to
+(its own label); declaring it explicitly documents the lineage rather than leaving it implicit. A
+vendor slate that adds a second checkpoint from one of those labs would leave `family` unset only
+if it wants that pair to also read as a version-bump control.
 
 Matching is on **tier, not price**. OpenAI's flagship costs 2.5x Anthropic's, and the cheaper
 `gpt-5.6-terra` and `-luna` exist; a surprising result from a mid-tier model could not be told apart
@@ -176,10 +181,11 @@ A structural repair on a third of the books puts it near $4.76; two repairs on e
 would be a bad day, caps it near $10.71. Wall clock is dominated by 24 sequential long completions
 plus the throttle, so budget roughly 40 to 80 minutes.
 
-Per-book token cost is not reported by the harness. `GenerationProvider.complete` discards usage on
-this branch; capture lands with #701 (`feat/generation-cost-instrumentation`), which changes that
-return type across 52 files. Re-run after it merges to populate the column rather than building a
-second counter that would conflict with it.
+Per-book token cost is not reported by the harness. `#701` (`feat/generation-cost-instrumentation`)
+has merged: `GenerationProvider.complete` now returns a `Completion` carrying per-call `TokenUsage`.
+The gap is local to this harness, which does not yet read that usage or thread it into `BookRecord`
+(`UW-C245`); a future run populates the column once that wiring lands, rather than this doc building
+a second counter that would conflict with it.
 
 ### What it actually cost
 

@@ -18,6 +18,7 @@ from unittest import mock
 
 import pytest
 
+from cyo_adventure.generation.usage import Completion, TokenUsage
 from scripts.judge_books import (
     _JUDGE_MAX_TOKENS,  # pyright: ignore[reportPrivateUsage]
     Judge,
@@ -28,6 +29,10 @@ from scripts.judge_books import (
     judge_book,
     panel_participation,
     pool_scores,
+)
+
+_NO_USAGE = TokenUsage(
+    provider="mock", model="m", input_tokens=None, output_tokens=None, duration_ms=0
 )
 
 _CRITERIA_NAMES = (
@@ -97,6 +102,37 @@ def test_parse_accepts_a_bare_number_per_criterion() -> None:
     scores, _ = _parse(raw)
 
     assert scores["imagery"] == 3.0
+
+
+def test_parse_drops_a_score_outside_the_one_to_five_rubric() -> None:
+    """A score outside [1, 5] is a malformed reply, not a real rating.
+
+    A judge that returns 0, a negative number, or 100 (a common failure mode
+    when a model confuses this rubric with a 1-to-100 scale) must not have
+    that value silently averaged into the pool: it would skew the mean far
+    more than a dropped criterion would.
+    """
+    body = {**dict.fromkeys(_CRITERIA_NAMES, 3), "imagery": 0, "voice": 100}
+
+    scores, _ = _parse(json.dumps(body))
+
+    assert "imagery" not in scores
+    assert "voice" not in scores
+    assert scores["age_fit"] == 3.0
+
+
+def test_parse_drops_a_boolean_score() -> None:
+    """A JSON ``true``/``false`` score must not be silently read as 1/0.
+
+    ``bool`` is an ``int`` subclass, so an unguarded numeric check accepts it;
+    a malformed reply must not become a real (out-of-rubric, at that) score.
+    """
+    body = {**dict.fromkeys(_CRITERIA_NAMES, 3), "engagement": True}
+
+    scores, _ = _parse(json.dumps(body))
+
+    assert "engagement" not in scores
+    assert scores["age_fit"] == 3.0
 
 
 def test_parse_finds_the_object_inside_surrounding_prose() -> None:
@@ -338,7 +374,7 @@ def test_participation_separates_a_dead_judge_from_scattered_flakiness() -> None
 async def test_judge_book_records_a_provider_failure_without_raising() -> None:
     """One failed scoring must not abandon the rest of the panel's work."""
 
-    async def _complete(**_kwargs: object) -> str:
+    async def _complete(**_kwargs: object) -> Completion:
         """Fail the way a dead endpoint does."""
         msg = "openrouter returned HTTP 502"
         raise RuntimeError(msg)
@@ -349,6 +385,7 @@ async def test_judge_book_records_a_provider_failure_without_raising() -> None:
         mock.Mock(complete=_complete),
         judge,
         {"title": "T", "nodes": []},
+        run="run-1",
         leg="alpha",
         family="xai",
         brief_index=0,
@@ -368,9 +405,11 @@ async def test_judge_book_marks_a_judge_scoring_its_own_family() -> None:
     row rather than to quietly pool it with the rest.
     """
 
-    async def _complete(**_kwargs: object) -> str:
+    async def _complete(**_kwargs: object) -> Completion:
         """Answer with a well-formed scoring."""
-        return json.dumps(dict.fromkeys(_CRITERIA_NAMES, 4))
+        return Completion(
+            text=json.dumps(dict.fromkeys(_CRITERIA_NAMES, 4)), usage=_NO_USAGE
+        )
 
     judge = Judge("judge-gpt", "m", ("p",), "openai")
 
@@ -378,6 +417,7 @@ async def test_judge_book_marks_a_judge_scoring_its_own_family() -> None:
         mock.Mock(complete=_complete),
         judge,
         {"title": "T", "nodes": []},
+        run="run-1",
         leg="openai-gpt-5.6-sol",
         family="openai",
         brief_index=0,
@@ -385,3 +425,45 @@ async def test_judge_book_marks_a_judge_scoring_its_own_family() -> None:
 
     assert verdict.self_family is True
     assert verdict.error is None
+
+
+@pytest.mark.asyncio
+async def test_judge_book_identifier_disambiguates_the_run_directory() -> None:
+    """The same leg/brief-index pair from two ``--run`` dirs must not collide.
+
+    Comparing two independently-scored runs (e.g. a re-run after a prompt
+    change) requires each run's books to stay distinct in the pooled output;
+    without the run label, ``run-1``'s and ``run-2``'s ``leg#brief`` would
+    overwrite each other under the same book identifier.
+    """
+
+    async def _complete(**_kwargs: object) -> Completion:
+        return Completion(
+            text=json.dumps(dict.fromkeys(_CRITERIA_NAMES, 3)), usage=_NO_USAGE
+        )
+
+    judge = Judge("j", "m", ("p",), "openai")
+    doc = {"title": "T", "nodes": []}
+
+    first = await judge_book(
+        mock.Mock(complete=_complete),
+        judge,
+        doc,
+        run="run-1",
+        leg="alpha",
+        family="openai",
+        brief_index=0,
+    )
+    second = await judge_book(
+        mock.Mock(complete=_complete),
+        judge,
+        doc,
+        run="run-2",
+        leg="alpha",
+        family="openai",
+        brief_index=0,
+    )
+
+    assert first.book != second.book
+    assert first.book == "run-1:alpha#0"
+    assert second.book == "run-2:alpha#0"

@@ -459,6 +459,7 @@ def _build_outcome(
         The appropriate :class:`GenerationOutcome`.
     """
     final_report = gate_result.report.to_dict()
+    final_report["gate_context"] = gate_result.context
 
     if not gate_result.blocked:
         status: Literal["passed", "needs_review", "failed"] = (
@@ -510,6 +511,17 @@ async def _repair_reading_level(
     Raises:
         ValidationError: If an assembled prompt contains forbidden PII.
     """
+    # #CRITICAL: external-resources: this call reaches a real LLM provider
+    # (billed, network-dependent) whenever a document is present, clean, and
+    # the budget is positive; a blocked or absent document, or a zero budget,
+    # must skip it rather than spend a call polishing something bound for
+    # human review or explicitly disabled.
+    # #CRITICAL: security: current_doc's prose descends from an untrusted
+    # guardian/child brief; run_reading_level_loop requires a PII-guarded
+    # provider (ctx.provider) for exactly this reason.
+    # #VERIFY: test_generate_story_skips_stage_d_on_a_blocked_document asserts
+    # the skip; test_reading_level_pii_guard_aborts_before_any_egress asserts
+    # the guard.
     if current_doc is None or gate_result.blocked or ctx.max_passes <= 0:
         return current_doc, gate_result, None
     result = await run_reading_level_loop(current_doc, gate_result, ctx)
@@ -545,6 +557,8 @@ def _with_reading_level(
         report={**outcome.report, "reading_level": result.to_report()},
         attempts=outcome.attempts,
         stage_log=outcome.stage_log,
+        sentinel_manifest=outcome.sentinel_manifest,
+        personalization_eligible=outcome.personalization_eligible,
     )
 
 
@@ -767,7 +781,11 @@ async def generate_story(
     4. **Stage D (Reading level)**: on an unblocked document, measure every
        node's Flesch-Kincaid grade and re-prompt the out-of-band ones toward
        the band. Never blocks: a revision is taken only when it strictly
-       improves, and the whole pass is discarded if it regresses the gate.
+       improves. If splicing every accepted revision back in regresses the
+       gate, the gate's own findings name the offending nodes; those are
+       dropped and the remainder re-spliced and kept if that salvage clears
+       the gate. The whole pass is discarded only when the block is
+       unsalvageable (the salvaged splice still fails).
 
     PII enforcement: ``provider`` is wrapped in a
     :class:`~cyo_adventure.generation.guarded.PiiGuardedProvider` at entry.
@@ -1089,5 +1107,7 @@ async def fill_skeleton(
             },
             attempts=outcome.attempts,
             stage_log=outcome.stage_log,
+            sentinel_manifest=outcome.sentinel_manifest,
+            personalization_eligible=outcome.personalization_eligible,
         )
     return _with_reading_level(outcome, reading_level)
