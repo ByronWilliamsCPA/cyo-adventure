@@ -3918,8 +3918,8 @@ plan somewhere. <code>applied</code> means the change is merged and the <code>Re
 <td>tooling</td>
 <td>The new filled-story suite immediately found three committed fills (<code>the-lost-mitten</code>, <code>the-sunken-signal</code>, <code>the-clocktower-cipher</code>) that cannot pass the gate at all: they carry the retired <code>ending.type</code> field instead of <code>ending.kind</code> plus <code>ending.valence</code>, and omit the now-required <code>metadata.topology</code>. Pre-existing legacy artifacts, invisible because nothing tested <code>out/</code>.</td>
 <td>Quarantined under <strong>strict</strong> xfail so migrating one makes its test XPASS and forces the list to be pruned, which stops the quarantine becoming a dumping ground. Migrate all three to schema v2 and delete <code>_LEGACY_PRE_V2</code>.</td>
-<td>open</td>
-<td><code>tests/unit/test_filled_story_corpus.py</code></td>
+<td>applied</td>
+<td>Migrated 2026-08-13 on branch <code>claude/pr-review-708-o1u2rr</code> by running the production normalizer <code>generation/import_catalog._normalize_legacy_fill</code> over each file on disk and committing the result, so the mapping came from each fill's own source skeleton rather than being invented: <code>the-lost-mitten</code> (loop_and_grow), <code>the-clocktower-cipher</code> and <code>the-sunken-signal</code> (branch_and_bottleneck), all stamped <code>schema_version</code> 2.0 with <code>production_eligible</code> preserved as false. <code>_LEGACY_PRE_V2</code> and <code>_gate_params()</code> are deleted from <code>tests/unit/test_filled_story_corpus.py</code>, which now parametrizes every fill unconditionally: 47 pass, 0 xfail. <code>TestRealLegacyFilesNormalizeCleanly</code> was pinned to the on-disk legacy shape and would have lost its subject, so it now downgrades each real file in memory via <code>_to_legacy_shape</code> and asserts the round trip, plus a new <code>test_committed_file_needs_no_normalization</code> guarding against regression to the old shape.</td>
 </tr>
 <tr>
 <td>AL-051</td>
@@ -6921,6 +6921,26 @@ plan somewhere. <code>applied</code> means the change is merged and the <code>Re
 <td>open</td>
 <td>Verified 2026-08-13: <code>books.jsonl</code> keys are <code>attempts, brief_index, cost, cost_unavailable_reason, error, family, file, grade, in_band, latency_s, leaf_words, status, vendor</code>; the affected <code>deepseek-v4-pro-fp4</code> book 1 row reads <code>status='passed'</code>. Scheduled as <code>UW-C247</code></td>
 </tr>
+<tr>
+<td>AL-351</td>
+<td>2026-08-14</td>
+<td>Reviewing an external agent's PR #708 findings against <code>scripts/compare_vendors.py</code></td>
+<td>tooling</td>
+<td><strong>A vendor label doubled as the only artifact-identity component, so a duplicate label in <code>vendors.json</code> would silently overwrite an already-paid-for book with another vendor's.</strong> <code>_book_filename</code> names each output <code>{vendor}__{brief_index:02d}.json</code>; <code>_load_vendors</code> validated <code>label</code> and <code>model</code> as strings but never checked uniqueness across entries. A slate with two vendors sharing a label, a copy-paste typo in the spec file being the likeliest cause, would not error at load time. Both legs would run, and the second leg's <code>persist_book</code> call would overwrite the first leg's file for every shared <code>brief_index</code>, leaving <code>books.jsonl</code> the only record that two different legs ever existed.</td>
+<td>Reject a duplicate label at <code>_load_vendors</code> load time, before any provider call is billed, rather than discovering the collision from a missing book after the run. Generalised check: whenever a field doubles as both a display label and a storage-identity key, validate its uniqueness at the point it is first accepted, not at the point it is used to name a file.</td>
+<td>applied</td>
+<td><code>scripts/compare_vendors.py::_load_vendors</code> (duplicate-label rejection); <code>tests/unit/test_compare_vendors.py::test_load_vendors_rejects_a_duplicate_label</code></td>
+</tr>
+<tr>
+<td>AL-352</td>
+<td>2026-08-14</td>
+<td>Reviewing an external agent's PR #708 findings against <code>src/cyo_adventure/validator/paths.py</code></td>
+<td>tooling</td>
+<td><strong>The AL-338 covering-set rebuild fixed budget-dependent coverage but left one shape uncovered: a book whose start node is itself an ending has no choice edges, so the edge-covering loop never runs and the covering set came back empty.</strong> <code>covering_paths</code> builds <code>reachable</code> from <code>graph.by_edge</code>, populated only for non-ending configurations; for a one-node book the initial configuration is itself an ending, <code>by_edge</code> is empty, and the function returned <code>paths=[]</code> while reporting <code>edge_coverage=1.0</code> (vacuously true over zero choices). That reads as "fully covered", not "recorded nothing", and the asymmetry with <code>reader_sample_paths</code> is what made it easy to miss: that function's per-draw loop checks <code>is_ending</code> before it ever needs an edge, so it already emitted the trivial one-node reading <code>draw.count</code> times.</td>
+<td>Cover the zero-edge case explicitly: when the initial configuration is itself an ending, seed the covering set with that one-node reading before the edge loop runs. Generalised check: when a covering-set construction is keyed off "things that need coverage", audit what happens when there are zero of them but the underlying object still exists and still needs exactly one reading recorded.</td>
+<td>applied</td>
+<td><code>src/cyo_adventure/validator/paths.py::covering_paths</code>; <code>tests/unit/test_paths.py::test_covering_paths_keeps_the_zero_edge_reading_when_the_start_node_is_an_ending</code></td>
+</tr>
 </tbody>
 </table>
 <hr />
@@ -6960,7 +6980,7 @@ plan somewhere. <code>applied</code> means the change is merged and the <code>Re
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 14, 2026 17:31:04 UTC">August 14, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 14, 2026 19:09:38 UTC">August 14, 2026</span>
   </span>
 
     

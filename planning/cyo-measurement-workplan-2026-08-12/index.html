@@ -3804,9 +3804,15 @@ at run time (deliberately not pinned to the fifth/sixth review's stale names), s
 rule assumes the pricing and reasoning-overhead profile a chosen model exhibits at test time is
 stable enough that the same slate, re-run later, would clear the same 20 percent bar. A
 mid-project price change or model deprecation on the routed backend would need a re-test, not a
-re-derivation of the threshold.
-<strong>#VERIFY:</strong> re-run the cost/gate-pass-rate test in this section's <em>Test</em> line before relying on
-an adoption decision more than a pricing cycle old.</p>
+re-derivation of the threshold. "Chosen at run time" means chosen once, at the start of a given
+W9 run, then frozen for that run: every book in one measurement is priced and gated against the
+same slate, never a slate that drifts mid-run. Each run's results record the exact model IDs and
+endpoint/version pins the slate resolved to, not just "current at the time", so a later reader can
+tell whether a stored adoption decision still describes today's routing or was measured against
+models or pricing that have since moved.
+<strong>#VERIFY:</strong> re-run the cost/gate-pass-rate test in this section's <em>Test</em> line whenever the slate,
+its endpoint pins, or its pricing changes from what a stored run recorded, not on a fixed
+calendar cadence; the recorded model IDs and pins are what make that comparison checkable.</p>
 </blockquote>
 <p>The sixth review's staged allocation is the same tiering at finer grain and is adopted as this
 item's slate shape rather than as a new item: highest reasoning for premise, character and
@@ -3825,10 +3831,12 @@ orthogonal premise modules, sample algorithmically, and generate.</p>
 cross-lab premise convergence currently measures <strong>156.35 shared four-grams per 1000</strong>, against a
 generator idiom floor of <strong>3.3</strong>. Generate n books from MoPS-sampled premises and measure the same
 quantity the same way.</p>
-<p><em>Decision rule.</em> <strong>Adopt iff convergence drops below 3x the 3.3 idiom floor (under 10 shared
-four-grams per 1000). Drop if it stays at 10 or above (the "tens per 1000" range this plan's own
+<p><em>Decision rule.</em> <strong>Adopt iff convergence drops below 9.9 shared four-grams per 1000, exactly 3x the
+3.3 idiom floor. Drop if it stays at 9.9 or above (the "tens per 1000" range this plan's own
 comparator has repeatedly measured for a non-curated premise space)</strong>, because a curated space
-that still converges is not solving the problem it was chosen for. This is deterministic,
+that still converges is not solving the problem it was chosen for. One threshold, not two: an
+earlier draft paired "3x the idiom floor" (9.9) with "under 10" as if they were the same number,
+which left a measured value between 9.9 and 10 with no single classification. This is deterministic,
 pre-registered, and unambiguous.</p>
 <p><em>Cost.</em> Generation for n books, plus curation time for the module dictionary.</p>
 <h3 id="w14-context-composition">W14. Context composition<a class="headerlink" href="#w14-context-composition" title="Permanent link">&para;</a></h3>
@@ -4030,7 +4038,7 @@ evidence we have, and a plan that cannot produce them is not a plan, it is a bui
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 14, 2026 17:31:04 UTC">August 14, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 14, 2026 19:09:38 UTC">August 14, 2026</span>
   </span>
 
     

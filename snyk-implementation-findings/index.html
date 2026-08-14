@@ -3586,9 +3586,24 @@ vendored dependencies as if they were ours. This is the source of the 192.</p>
    projects' transitive trees.</li>
 <li><code>osv-scanner.toml</code> currently reports three <strong>unused</strong> ignores
    (<code>CVE-2022-42969</code>, <code>PYSEC-2022-42969</code>, <code>GHSA-w596-4wvx-j9j6</code>, all the disputed
-   <code>py</code>/<code>interrogate</code> ReDoS). The transitive dependency that triggered them is gone,
-   so these exceptions are now dead policy and should be removed.</li>
+   <code>py</code>/<code>interrogate</code> ReDoS).</li>
 </ol>
+<blockquote>
+<p><strong>Corrected 2026-08-13, resolved 2026-08-14 (<code>UW-K08</code>).</strong> This originally read "the
+transitive dependency that triggered them is gone, so these exceptions are now dead
+policy and should be removed". That is false and was acted on: <code>uv.lock</code> still
+carries <code>py</code> 1.11.0, pulled in by <code>interrogate</code> 1.7.0, declared in
+<code>[project.optional-dependencies]</code>. The ignores were removed from <code>osv-scanner.toml</code>
+on that false premise.</p>
+<p>The removal was nonetheless correct, for a different reason. All three IDs are
+aliases of one another and all three are <strong>withdrawn upstream</strong>:
+<code>GHSA-w596-4wvx-j9j6</code> on 2025-08-01 and <code>PYSEC-2022-42969</code> on 2026-06-09. Queried
+against <code>api.osv.dev</code> on 2026-08-14, the database <code>osv-scanner</code> reads, <code>py</code> 1.11.0
+returns zero vulnerabilities, and the PR #709 <code>osv-scanner</code> job passed with the
+ignores absent. Restoring them would produce the "unused ignore" warnings the
+original removal was avoiding. The right question was never "is the transitive
+gone" but "is the advisory still live"; <code>osv-scanner.toml</code> now records that.</p>
+</blockquote>
 <h2 id="finding-3-code-sast-findings-are-real-files-but-partly-false-positives">Finding 3: Code (SAST) findings are real files but partly false positives<a class="headerlink" href="#finding-3-code-sast-findings-are-real-files-but-partly-false-positives" title="Permanent link">&para;</a></h2>
 <p>These map to genuine project source. Triage:</p>
 <table>
@@ -3756,7 +3771,7 @@ high false-positive volume out of the box).</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 31, 2026 21:33:03 UTC">July 31, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 14, 2026 19:09:18 UTC">August 14, 2026</span>
   </span>
 
     

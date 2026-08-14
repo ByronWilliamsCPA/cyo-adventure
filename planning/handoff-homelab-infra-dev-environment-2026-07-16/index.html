@@ -3431,11 +3431,11 @@ asking to change that.</p>
 <p>The frontend needs these at <strong>build</strong> time (Vite bakes them in, they
 cannot be injected at runtime):</p>
 <ul>
-<li><code>VITE_SUPABASE_URL</code> and <code>VITE_SUPABASE_ANON_KEY</code> — pointed at the
+<li><code>VITE_SUPABASE_URL</code> and <code>VITE_SUPABASE_ANON_KEY</code>: pointed at the
   <strong>staging</strong> Supabase Cloud project, not a new one. See "Why dev shares
   staging's backend" below; there is no dev-specific Supabase project to
   point at.</li>
-<li><code>VITE_API_URL</code> — however your deployment resolves the backend API for
+<li><code>VITE_API_URL</code>: however your deployment resolves the backend API for
   this environment (likely relative <code>/api</code> through the same nginx proxy
   pattern the production image uses; see <code>frontend/nginx.conf</code> and
   <code>frontend/Dockerfile</code> in this repo for the existing proxy_pass
@@ -3512,17 +3512,17 @@ same requirements, minus the "decoupled cadence" ask).</p>
 </ol>
 <h2 id="reference-material-in-this-repo">Reference material in this repo<a class="headerlink" href="#reference-material-in-this-repo" title="Permanent link">&para;</a></h2>
 <ul>
-<li><code>docs/testing/README.md</code> — the full environment/tier model this handoff
+<li><code>docs/testing/README.md</code>: the full environment/tier model this handoff
   extends.</li>
-<li><code>docs/testing/coverage-matrix.md</code> — what's tested where, useful context
+<li><code>docs/testing/coverage-matrix.md</code>: what's tested where, useful context
   for why we're asking for this.</li>
-<li><code>docs/guides/supabase-environments.md</code> — the Supabase-side topology and
+<li><code>docs/guides/supabase-environments.md</code>: the Supabase-side topology and
   the free-plan project-count constraint.</li>
-<li><code>.github/workflows/trigger-image-build.yml</code> — the existing dispatch
+<li><code>.github/workflows/trigger-image-build.yml</code>: the existing dispatch
   mechanism into homelab-infra.</li>
-<li><code>.github/workflows/e2e-staging.yml</code> — the workflow waiting on the
+<li><code>.github/workflows/e2e-staging.yml</code>: the workflow waiting on the
   secrets above.</li>
-<li><code>frontend/Dockerfile</code>, <code>frontend/nginx.conf</code>, <code>docker-compose.prod.yml</code> —
+<li><code>frontend/Dockerfile</code>, <code>frontend/nginx.conf</code>, <code>docker-compose.prod.yml</code>:
   the existing production container/proxy shape to mirror for <code>dev</code>.</li>
 </ul>
 <p><code>#ASSUME: external-resources: this handoff assumes homelab-infra's
@@ -3554,7 +3554,7 @@ addition.</code></p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 17, 2026 13:03:57 UTC">July 17, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 14, 2026 19:09:18 UTC">August 14, 2026</span>
   </span>
 
     

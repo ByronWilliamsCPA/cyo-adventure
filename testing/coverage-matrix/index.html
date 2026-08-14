@@ -3802,7 +3802,7 @@ relate to the Supabase project constraints.</p>
 </ul>
 <h2 id="cross-cutting-checks-not-tied-to-one-journey">Cross-cutting checks (not tied to one journey)<a class="headerlink" href="#cross-cutting-checks-not-tied-to-one-journey" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>Accessibility</strong>: <code>frontend/e2e/a11y.spec.ts</code> — axe-core, scoped to WCAG
+<li><strong>Accessibility</strong>: <code>frontend/e2e/a11y.spec.ts</code>, axe-core, scoped to WCAG
   2.1 A/AA, across every top-level page (landing, kid picker, kid library
   populated/empty, reader, guardian login/console/intake/requests/
   books/profiles, admin console/requests/moderation-thresholds/
@@ -3844,7 +3844,7 @@ relate to the Supabase project constraints.</p>
   gap (11 routes scanned at neither tier, including two this same pass
   edited for accessibility) is tracked as <code>UW-F29</code>.</li>
 <li><strong>Keyboard operability of dialogs (2026-07-27)</strong>:
-  <code>frontend/e2e/keyboard-nav.spec.ts</code> — the focus behavior axe cannot see,
+  <code>frontend/e2e/keyboard-nav.spec.ts</code>: the focus behavior axe cannot see,
   asserted against the real built app. Three representative <code>cyo-dialog</code> modals
   (the admin review Approve dialog, the guardian Profile form dialog, and the
   guardian Assign-children dialog) must each satisfy the same contract: opening
@@ -3860,7 +3860,7 @@ relate to the Supabase project constraints.</p>
   user clicked into the field. Remaining gap: the three dialogs above stand in
   for the shared component, so a dialog that hand-rolls its own focus handling
   instead of using <code>cyo-dialog</code> would not be caught here.</li>
-<li><strong>Visual regression</strong>: <code>frontend/e2e/visual.spec.ts</code> — screenshot
+<li><strong>Visual regression</strong>: <code>frontend/e2e/visual.spec.ts</code>, screenshot
   baselines for every top-level page and every modal/dialog surface:
   landing, kid picker, reader (+ conflict dialog), library, guardian
   console/intake/requests/books (+ assign dialog)/profiles (+ profile-form
@@ -3869,7 +3869,7 @@ relate to the Supabase project constraints.</p>
   accessibility above: one state per surface, not every variant.</li>
 <li><strong>Cross-device/cross-browser responsiveness (2026-07-24)</strong>:
   <code>frontend/e2e/responsive.spec.ts</code> and <code>frontend/e2e/cross-device.spec.ts</code>
-  (shared checks factored into <code>frontend/e2e/support/responsiveChecks.ts</code>) —
+  (shared checks factored into <code>frontend/e2e/support/responsiveChecks.ts</code>):
   structural (not pixel-diff) checks across landing, kid picker, library,
   reader, guardian console, admin console, and the admin user-management
   table: zero page-level horizontal overflow, plus a regression guard that a
@@ -3879,7 +3879,7 @@ relate to the Supabase project constraints.</p>
   same checks once per real device/browser project (<code>cross-device-mobile</code>:
   Pixel 7, <code>cross-device-tablet</code>: iPad (gen 7)/webkit, <code>cross-browser-
   mobile-safari</code>: iPhone 14/webkit, <code>cross-browser-firefox</code>: Desktop
-  Firefox — <code>npm run test:e2e:cross-device</code>, wired into its own
+  Firefox: <code>npm run test:e2e:cross-device</code>, wired into its own
   <code>cross-device-e2e.yml</code> workflow rather than <code>ci.yml</code>'s <code>frontend</code> job:
   <code>playwright install --with-deps firefox webkit</code> apt-installs a much larger
   dependency set than chromium alone, which pushed <code>frontend</code>'s 15-minute
@@ -3961,7 +3961,7 @@ relate to the Supabase project constraints.</p>
   once its per-PR flakiness rate is known. The same spec also runs under
   <code>real-backend</code> in the nightly (one spec, two projects).</li>
 <li><strong>Mobile-web tap targets (Task A7, mobile-safari)</strong>:
-  <code>frontend/e2e/admin-touch-targets.spec.ts</code> — asserts every action button in
+  <code>frontend/e2e/admin-touch-targets.spec.ts</code>: asserts every action button in
   the six admin CRUD surfaces migrated to the <code>@ds</code> <code>Button</code> (FamiliesTab,
   KidsTab, ConnectionsTab, UsersTab, ProviderAllowlistPage, AuditPage) plus the
   two moderation pages' trigger/submit buttons clears the 44x44 minimum (WCAG
@@ -3970,7 +3970,7 @@ relate to the Supabase project constraints.</p>
   height-only until 2026-07-27, when the width assertion was added alongside the
   kid sweep below; WCAG 2.5.5 is both axes.</li>
 <li><strong>Kid reader tap targets (2026-07-27, both axes)</strong>:
-  <code>frontend/e2e/kid-touch-targets.spec.ts</code> — the same 44x44 WCAG 2.5.5 floor for
+  <code>frontend/e2e/kid-touch-targets.spec.ts</code>: the same 44x44 WCAG 2.5.5 floor for
   the surface the app's primary users actually touch: every visible choice
   button the reader renders (<code>.reader-choices button:visible</code>) is measured on
   both axes at a 390x844 phone viewport, with a count assertion so a selector or
@@ -3978,7 +3978,7 @@ relate to the Supabase project constraints.</p>
   admin-scoped, which left the kid reader's choice buttons, the highest-traffic
   control in the product, with no tap-target guard at all until this landed.</li>
 <li><strong>Mobile-web narrow-width overflow sweep (Task A12, mobile-safari)</strong>:
-  <code>frontend/e2e/mobile-viewport.spec.ts</code> — runs under the <code>mobile-safari</code>
+  <code>frontend/e2e/mobile-viewport.spec.ts</code>: runs under the <code>mobile-safari</code>
   project (<code>npm run test:e2e:mobile</code>); asserts zero horizontal overflow at real
   phone widths across landing, kid picker/library, and guardian surfaces. Guards
   fluid-layout overflow only; Playwright device profiles do not emulate
@@ -4540,11 +4540,11 @@ passes; entries are kept (marked Closed) rather than deleted so the audit
 trail of what was fixed and when is preserved, per the policy at the bottom
 of this file.</p>
 <ol>
-<li><strong>Screening/anchoring</strong> — Closed. <code>StoryRequestQueue.test.tsx</code> now gives
+<li><strong>Screening/anchoring</strong>: Closed. <code>StoryRequestQueue.test.tsx</code> now gives
    the shared anchored-request component its own dedicated unit coverage
    (see the journey section above); there was never a separate frontend
    screening/anchoring module to test, that logic lives server-side.</li>
-<li><strong>Moderation dashboard/thresholds</strong> — Closed for the mocked tier
+<li><strong>Moderation dashboard/thresholds</strong>: Closed for the mocked tier
    (<code>frontend/e2e/moderation.spec.ts</code>, adding/removing a threshold
    override, saving the noise floor, applying a dashboard suggestion,
    verified against a real browser) and for the real-backend tier
@@ -4552,14 +4552,14 @@ of this file.</p>
    the live API, verified twice for idempotency). See that journey's
    section above for the one path still not covered: a real suggestion
    actually appearing, which needs a bigger seed-data addition.</li>
-<li><strong>Provider allowlist management</strong> — Closed. Built <code>ProviderAllowlistPage.tsx</code>
+<li><strong>Provider allowlist management</strong>: Closed. Built <code>ProviderAllowlistPage.tsx</code>
    (general CRUD settings page) plus, since the real user need turned out to
    span two related gaps, the previously-nonexistent <code>AuthoringQueuePage.tsx</code>/
    <code>AuthoringPlanDialog.tsx</code> (the actual per-story model picker that reads
    from this allowlist). See the two journey sections above for full detail,
    including a real bug (a confusing 422 for the skill mechanism) caught only
    by the real-backend E2E spec and fixed before shipping.</li>
-<li><strong>Ratings</strong> — Closed for the real-backend tier.
+<li><strong>Ratings</strong>: Closed for the real-backend tier.
    <code>frontend/e2e-real/ratings-real.spec.ts</code> now confirms a tapped rating
    survives a reload against the real backend. Still no <code>e2e-staging</code> or
    <code>e2e-prod</code> coverage; low priority.</li>
@@ -4571,7 +4571,7 @@ of this file.</p>
    no <code>dev</code>-tier environment (see <code>docs/testing/README.md</code>); that requires a
    frontend deploy pipeline this repo does not own. Not addressed in this
    pass.</li>
-<li><strong>Offline sync/conflict resolution</strong> — Closed for the real-backend tier.
+<li><strong>Offline sync/conflict resolution</strong>: Closed for the real-backend tier.
    <code>frontend/e2e-real/offline-conflict-real.spec.ts</code> races two genuine
    <code>BrowserContext</code>s ("device A" and "device B") against a real backend on
    "The Clockwork Garden": device A opens first and creates the real
@@ -4729,7 +4729,7 @@ closure. A companion action-level verdict for this audit lives at
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 12, 2026 11:18:32 UTC">August 12, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 14, 2026 19:09:18 UTC">August 14, 2026</span>
   </span>
 
     
