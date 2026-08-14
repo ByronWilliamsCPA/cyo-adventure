@@ -1005,3 +1005,68 @@ support a ranking, two do not, two were never exercised. The agreement half is u
 what ran was the wrong calculation. Any Part IV claim resting on the panel may use `age_fit`,
 `choice_quality` and (with the caveat above) `engagement`; it may not use `voice` or
 `dialogue`, and it may not yet cite inter-judge agreement at all.
+
+### 7.7.5 W7 complete: all seven criteria, and the panel's own noise (2026-08-14)
+
+Second run, 43 arms, 3 judges, 129 scorings, all successful. Every criterion now has a
+verdict, including the two the first run could not test.
+
+| Criterion | Defect | Detected | Median delta | Noise floor | Verdict |
+| --- | --- | --- | --- | --- | --- |
+| `imagery` | `imagery_flat` | 6/6 | -2.00 | 0.29 | **KEEP** |
+| `age_fit` | `reading_level_up` | 6/6 | -1.67 | 0.53 | **KEEP** |
+| `ending_quality` | `ending_truncated` | 6/6 | -1.33 | 0.67 | **KEEP** |
+| `choice_quality` | `false_choice` | 4/5 | -1.00 | 0.74 | **KEEP**, marginal |
+| `engagement` | `premise_duplicate` | 4/6 | -0.67 | 0.77 | **INCONCLUSIVE** |
+| `voice` | `tense_break` | 1/6 | +0.00 | 0.62 | **RETIRE** |
+| `dialogue` | `dialogue_flat` | 1/2 | -0.83 | 0.29 | **RETIRE** |
+
+The two new arms produced the two cleanest results in the battery. `imagery` is the
+strongest criterion the panel has: a -2.00 median against a 0.29 noise floor, and the only
+criterion clearing the 0.60 agreement floor on all three judge pairs (+0.70, +0.82, +0.81).
+`ending_quality` detects 6 of 6. Neither had been tested at all before this run, and the
+first run's report called both UNTESTED without being able to say whether they worked.
+
+#### The finding that matters most: the panel is not stable between runs
+
+The same three judges scored the same six control books twice, hours apart, with no change
+to the documents or the prompt:
+
+| Criterion | Run 1 mean | Run 2 mean | Shift | Largest per-book shift |
+| --- | --- | --- | --- | --- |
+| `age_fit` | 3.22 | 3.00 | -0.22 | 0.67 |
+| `imagery` | 3.67 | 3.50 | -0.17 | 0.33 |
+| `voice` | 2.44 | 2.22 | -0.22 | 0.67 |
+| `dialogue` | 2.94 | 2.83 | -0.11 | 0.67 |
+| `choice_quality` | 2.94 | 2.83 | -0.11 | 1.00 |
+| `ending_quality` | 2.78 | 2.61 | -0.17 | 0.67 |
+| `engagement` | 3.11 | 2.94 | -0.17 | 0.67 |
+
+**A book that did not change moved by up to a full scale point.** The detection margin is
+0.5. That is an independent estimate of the same quantity the control-noise floor measures
+from between-judge spread, and the two agree in size (0.29 to 0.77 between judges, 0.33 to
+1.00 between runs), which is the strongest evidence available that the floor is measuring
+something real rather than an artefact of how it is computed.
+
+Within-run pairing protects the deltas from the run-level drift, since each arm is scored
+against a control from its own run. What it cannot remove is the per-book residual, and that
+residual is the size of the effect for the weaker criteria. Three verdicts moved between the
+two runs on that basis alone: `engagement` KEEP to INCONCLUSIVE, `choice_quality` 5/5 to 4/5,
+`voice` 2/6 to 1/6.
+
+The practical reading, and the one Part IV should carry:
+
+- **`imagery`, `age_fit` and `ending_quality` are usable.** Their effects are two to seven
+  times their noise floors and they survived a change of run.
+- **`choice_quality` is usable with care.** A -1.00 effect against a 0.74 floor clears, but a
+  control book moved 1.00 between runs on this very criterion, so a single-run
+  `choice_quality` difference near one point is not evidence.
+- **`engagement` is not usable as scored.** Its detections are real but smaller than the
+  instrument's own noise. It needs either a stronger seed or repeat scorings.
+- **`voice` and `dialogue` stay retired**, and both runs agree.
+- **No criterion clears the 0.60 agreement floor on all three pairs except `imagery`.** The
+  panel supports within-book delta comparisons, not absolute scoring.
+
+A W7 verdict from one run is therefore provisional near the margin. Any future battery should
+score each arm more than once and report the spread, which is a cost decision (129 scorings
+cost about $2.60) rather than a design problem.
