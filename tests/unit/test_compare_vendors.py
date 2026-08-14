@@ -1108,27 +1108,36 @@ def test_a_priced_leg_raises_no_objection() -> None:
         )
 
 
-def test_every_cloud_leg_is_unpriced_today_so_the_check_bites() -> None:
-    """Record the blast radius of the open pricing gap, at the point it bites.
+def test_a_priced_slate_starts_and_an_unpriced_leg_still_stops_it() -> None:
+    """Inverted on 2026-08-14, when `UW-C239` closed.
 
-    `UW-C239` is not closed: every cloud entry in ``core.pricing.PRICES`` has a
-    null input rate, so the pre-flight refuses every live slate until either the
-    rates land or ``--allow-unpriced`` is passed deliberately. That is the
-    intended reading of `AL-348`, and it should be a visible decision rather than
-    a surprise on the first paid run after this change.
+    This test used to record the blast radius of the open pricing gap: every
+    cloud entry had a null input rate, so the pre-flight refused every live
+    slate and a real run needed ``--allow-unpriced``. Both halves of every
+    OpenRouter entry are now read live from the vendor, so a slate of
+    table-priced legs starts on its own, which is what let the W4/W5 pool run.
+
+    The refusal itself is the part worth keeping, and it is asserted below
+    against a model absent from the table. That is how the gap reopens: a model
+    promoted out of a comparison and added to the allowlist but not to
+    `scripts/refresh_pricing.py`. `AL-348`'s reading is unchanged, that a
+    comparison existing to price vendors must not start unable to price them.
     """
-    slate = [
+    priced = [
         Vendor(
             label="sonnet-4.6", model="anthropic/claude-sonnet-4.6", provider_order=()
         ),
         Vendor(label="gemini", model="google/gemini-2.5-flash", provider_order=()),
     ]
 
-    gaps = unpopulable_fields(slate)
+    assert unpopulable_fields(priced) == []
+
+    unknown = [*priced, Vendor(label="acme", model="acme/acme-1", provider_order=())]
+    gaps = unpopulable_fields(unknown)
 
     assert len(gaps) == 1
-    assert "sonnet-4.6" in gaps[0]
-    assert "gemini" in gaps[0]
+    assert "acme" in gaps[0]
+    assert "sonnet-4.6" not in gaps[0]
 
 
 def test_a_leg_with_no_budget_headroom_is_flagged_rather_than_rated() -> None:
