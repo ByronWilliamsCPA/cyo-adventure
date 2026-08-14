@@ -1,0 +1,575 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_lantern_festival",
+  "version": 1,
+  "title": "The Lantern Festival",
+  "metadata": {
+    "age_band": "5-8",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 2.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "friendship",
+      "community",
+      "celebration",
+      "perseverance"
+    ],
+    "estimated_minutes": 6,
+    "ending_count": 10,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "none",
+      "peril": "none"
+    },
+    "topology": "loop_and_grow",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_open",
+  "nodes": [
+    {
+      "id": "n_open",
+      "body": "You stand in the cool shade of the boathouse under the pier. Water slaps the posts. Tonight is the River Lantern Walk. Everyone will carry paper lanterns down to the sandbar. Your lantern already leans on the bench. You grin. There is still so much to gather, and your paws tingle with happy hurry.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Count what the lantern walk still needs.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_start",
+      "body": "You count on your paws what the walk still needs. Candleberries. Friends. River canes for frames. Clover cakes. Painted poles. And music too. Your lantern tips on the bench. You set it upright and pick a first stop.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_berries",
+          "label": "Pick candleberries by the lock hedge.",
+          "target": "n_berry1"
+        },
+        {
+          "id": "c_start_willow",
+          "label": "Invite your friends in the hammock loft.",
+          "target": "n_willow1"
+        },
+        {
+          "id": "c_start_reeds",
+          "label": "Cut river canes for lantern frames.",
+          "target": "n_reed1"
+        },
+        {
+          "id": "c_start_honey",
+          "label": "Ask the dock bees for clover cakes.",
+          "target": "n_honey1"
+        },
+        {
+          "id": "c_start_shed",
+          "label": "Fetch last year's painted poles.",
+          "target": "n_shed1"
+        },
+        {
+          "id": "c_start_crickets",
+          "label": "Ask the peeper frogs to play.",
+          "target": "n_cricket1"
+        }
+      ]
+    },
+    {
+      "id": "n_berry1",
+      "body": "The lock hedge smells warm and sweet in the late sun. Low candleberries hang like tiny lamps, ripe and glowing. They would fill your basket with no fuss. Far above, a fat cluster shines on a wobbly branch. That cluster would make your tipping lantern blaze. You bounce on your toes. The branch creaks a warning. Easy low fruit, or the high prize? Your empty lantern lists against your hip, as if it wants to help you choose.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_berry_low",
+          "label": "Pick the ripe low candleberries.",
+          "target": "n_berry2"
+        },
+        {
+          "id": "c_berry_high",
+          "label": "Climb for the high cluster.",
+          "target": "e_berry_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_berry2",
+      "body": "You fill your basket with the low candleberries. They are warm as coins and light your chin from below. Your whiskers glow gold. Juice dots your paws. The gathering has begun to grow. You tuck two berries into your leaning lantern, and for a second it sits almost straight. Then it tips again. You giggle. You can carry this light to the sandbar landing now, or trot back to the boathouse for the next thing on your list.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_berry_meadow",
+          "label": "Carry the candleberries to the sandbar.",
+          "target": "n_meadow"
+        },
+        {
+          "id": "c_berry_back",
+          "label": "Go back to the boathouse for more.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_willow1",
+      "body": "The hammock loft over the ferry slip is dim and warm. Your friends doze in swaying nets, hats over their eyes. You want every one of them on the River Lantern Walk. A ship's bell hangs by the door, fat and tempting. You could knock gently and wake them soft as tide. Or you could clang that bell and hurry the afternoon along. Someone snores like a little foghorn. Your lantern leans against the doorframe, waiting.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_willow_knock",
+          "label": "Knock gently on the loft door.",
+          "target": "n_willow2"
+        },
+        {
+          "id": "c_willow_bell",
+          "label": "Clang the ferry ship's bell.",
+          "target": "e_willow_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_willow2",
+      "body": "You knock as soft as rain. Friends yawn and smile from their nets. Blankets slither to the floor. \"Yes,\" they say at once, and grab their little paper lanterns. One lantern is already folding the wrong way, just like yours. You both laugh and fold it back. The group is growing. You can lead this happy troop straight to the sandbar landing, or swing by the boathouse to grab the next thing on your list.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_willow_meadow",
+          "label": "Lead your friends to the sandbar.",
+          "target": "n_meadow"
+        },
+        {
+          "id": "c_willow_back",
+          "label": "Pop back to the boathouse first.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_reed1",
+      "body": "At the cane bank, river canes clack in the breeze. You need stalks to bend into paper-lantern frames. The tall dry canes rustle on the bank, pale as old gold. Fresh green ones lean far out over the water, shiny and cool. Your own frame already lists to port. The right canes might fix that. You wade one step into the silt. You test a dry one. It snaps clean. The green ones bow and drip. Which will you cut?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_reed_dry",
+          "label": "Cut the tall dry river canes.",
+          "target": "n_reed2"
+        },
+        {
+          "id": "c_reed_wet",
+          "label": "Cut the fresh green river canes.",
+          "target": "e_reed_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_reed2",
+      "body": "The dry canes snap free in a neat golden bundle. They smell like sun and old rope. Perfect for bending. You try one hoop around your tipping lantern, and the frame sits a little truer. Dragonflies zip over the gold. You can weave the lantern frames right here by the cane bank, with the river talking at your toes. Or you can lug the whole bundle back to the boathouse and work by your stump.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_reed_weave",
+          "label": "Weave the frames here by the cane bank.",
+          "target": "n_reed3"
+        },
+        {
+          "id": "c_reed_back",
+          "label": "Carry the bundle back to the boathouse.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_reed3",
+      "body": "You hum a walking tune and bend the canes into round little lantern frames. Each hoop clicks into itself. Cane dust golds your whiskers. A stack of them balances in your arms, light as bubbles. Your own lantern gets a fresh hoop last. It still leans, but less. The river claps the bank. There is only one thing to do now. Carry the finished frames to the sandbar landing, where the evening walk will begin.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_reed_meadow",
+          "label": "Carry the lantern frames to the sandbar.",
+          "target": "n_meadow"
+        }
+      ]
+    },
+    {
+      "id": "n_honey1",
+      "body": "On the flower barge, dock bees comb clover from tin pails. You ask for a few clover cakes for the festival feast. They buzz kindly, wings like tiny fans. Pollen dusts your nose. \"Warm ones take a minute,\" they hum. A kettle sings. You could wait politely while they pack a basket. Or you could dash back to the boathouse and come by for the cakes later. Your lantern tips toward the honey smell, greedy as you.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_honey_wait",
+          "label": "Wait politely for the clover cakes.",
+          "target": "n_honey2"
+        },
+        {
+          "id": "c_honey_back",
+          "label": "Head back to the boathouse for now.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_honey2",
+      "body": "The dock bees load a basket with warm golden clover cakes. They smell of clover and river wind. Steam kisses your nose. The feast is coming together. You thank them with a deep little bow. They wave sticky feet. Wax gleams on the basket rim. One cake you save to weight the bottom of your tipping lantern. It still lists, but it smells wonderful. You carry the sweet basket straight to the sandbar landing.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_honey_meadow",
+          "label": "Carry the clover cakes to the sandbar.",
+          "target": "n_meadow"
+        }
+      ]
+    },
+    {
+      "id": "n_shed1",
+      "body": "In the festival locker under the pier, last year's painted poles sit dusty on a shelf. Cobwebs hang like old fishing line. Dragonflies and fish swirl on each one. The air smells of paint and river mud. You sneeze. You could dust each pole carefully now, until the colors wake. Or you could scoot back to the boathouse and fetch them on the next trip. Your lantern bumps a pole and nearly tips it. You catch both just in time.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_shed_dust",
+          "label": "Dust off the painted poles.",
+          "target": "n_shed2"
+        },
+        {
+          "id": "c_shed_back",
+          "label": "Go back to the boathouse for now.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_shed2",
+      "body": "You rub each pole with your little cloth. Dust flies up in sunny motes. Colors come up like sunrise. The painted fish leap again, bright and pretty, good as new. You stack the poles in the crook of your arm. Your armful of festival treasures keeps growing. You lash your tipping lantern to the tallest pole so it cannot fall. Then you carry the whole bright bundle off toward the sandbar landing.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_shed_meadow",
+          "label": "Carry the painted poles to the sandbar.",
+          "target": "n_meadow"
+        }
+      ]
+    },
+    {
+      "id": "n_cricket1",
+      "body": "By the lily-pad bandstand, the peeper frogs tune their tiny fiddles. Strings plink like rain on a tin roof. A bow gets stuck in duckweed. You ask if they will play at the River Lantern Walk. They chirp eagerly, throats puffing gold. One frog wears a captain's hat. You could lead them along right away, a walking band. Or you could pop back to the boathouse to gather one more thing first. Your lantern tips in time to their practice notes.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cricket_lead",
+          "label": "Ask the peeper frogs to follow you now.",
+          "target": "n_cricket2"
+        },
+        {
+          "id": "c_cricket_back",
+          "label": "Go back to the boathouse first.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_cricket2",
+      "body": "The peeper frogs form a cheerful little parade behind you, fiddles under their arms. Pads bob like drums. Someone starts a walking chirp. Someone else answers. Music will make the night complete. Evening cools your ears. Your lantern sways on its pole like a shy dancer, still leaning, still trying. You lead the chirping players all the way to the sandbar landing, past boats that tap their hulls in time.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cricket_meadow",
+          "label": "Lead the peeper frogs to the sandbar.",
+          "target": "n_meadow"
+        }
+      ]
+    },
+    {
+      "id": "n_meadow",
+      "body": "You step onto the sand with your latest prize. The sandbar landing opens wide at dusk. The old willow rings one side. The river rings the other, brown-gold and slow. Minnows stitch the shallows. Sand cools between your toes. Everything you have gathered is piling up in happy heaps. Friends arrive with their own paper lanterns. Yours still lists, stubborn as a tired duck. You could start setting the festival up now, while the light is kind. Or you could make one last trip back to the boathouse for anything forgotten.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_meadow_setup",
+          "label": "Start setting up the festival.",
+          "target": "n_setup"
+        },
+        {
+          "id": "c_meadow_back",
+          "label": "Make one last trip to the boathouse.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_setup",
+      "body": "On the sandbar, friends wrap the cane frames in bright paper. Paper rustles like dry rain. You tuck candleberries inside until each lantern shimmers. Yours still leans, so you add one more berry on the low side. It almost sits true. A moth inspects your work. Friends bustle everywhere, tying knots with their teeth. Glue smells sharp and sweet. You could hang the paper lanterns up in the old willow now. Or you could spread out the picnic feast first, before anyone gets too hungry.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_setup_hang",
+          "label": "Hang the paper lanterns in the old willow.",
+          "target": "n_hang"
+        },
+        {
+          "id": "c_setup_picnic",
+          "label": "Spread out the picnic feast.",
+          "target": "n_picnic"
+        }
+      ]
+    },
+    {
+      "id": "n_hang",
+      "body": "Friends lift the finished paper lanterns into the branches of the old willow. They sway like sleepy fireflies over the river. The willow smells green and damp. The sky turns purple, then deeper purple. Bats scribble the air. Your lantern hangs a little crooked, of course. You give the string a tiny tug. It spins, then leans again. A hush starts. You could light them right this moment, while paws are ready. Or you could wait for the very first star to appear.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hang_light",
+          "label": "Light the paper lanterns right now.",
+          "target": "n_light"
+        },
+        {
+          "id": "c_hang_star",
+          "label": "Wait for the first star.",
+          "target": "n_star"
+        }
+      ]
+    },
+    {
+      "id": "n_light",
+      "body": "One by one the paper lanterns wake up with warm candleberry light. The sandbar landing glows all gold. Faces turn honey-colored. All gasp with joy. Owls call once. Your crooked lantern flares last. For one beat it stands as straight as a mast. Then it tips, happy as ever. The river copies every lamp. You could set some lanterns floating out across the river now. A walking of lights on water. Or you could keep them all glowing high in the old willow.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_light_pond",
+          "label": "Float paper lanterns on the river.",
+          "target": "e_finale_pond"
+        },
+        {
+          "id": "c_light_oak",
+          "label": "Keep the lanterns in the old willow.",
+          "target": "e_finale_oak"
+        }
+      ]
+    },
+    {
+      "id": "n_star",
+      "body": "Everyone grows hushed. The river holds its breath. Faces tip up. Frogs hush too. You all watch the darkening sky until the first tiny star blinks awake over the sandbar landing. A happy cheer goes up, splashy and loud. That is the signal. One willow leaf falls. You light the very first paper lantern to begin the festival glow. It is yours, of course. It leans. You steady it with both paws until the flame sits true, then let go.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_star_glow",
+          "label": "Light the first lantern and begin.",
+          "target": "n_glow"
+        }
+      ]
+    },
+    {
+      "id": "n_glow",
+      "body": "Lantern after lantern flickers on until the sandbar landing is a sea of soft golden light. The river mirrors it all, two festivals stacked. Friends squeeze closer. Night wind smells of wet stone. The peeper frogs lift their fiddles. Bows hover. Someone whispers the first note. Your lantern still lists a little, but its twin in the water sits perfectly straight. You could start 'Walk Them Down, Paper Moons' for everyone now. Or you could gather your friends to make a wish together.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_glow_song",
+          "label": "Start singing Walk Them Down, Paper Moons.",
+          "target": "n_song"
+        },
+        {
+          "id": "c_glow_wish",
+          "label": "Make a warm wish together.",
+          "target": "n_wish"
+        }
+      ]
+    },
+    {
+      "id": "n_song",
+      "body": "The peeper frogs strike up a bouncy tune. Fiddles skip like stones. You lead the first verse of 'Walk Them Down, Paper Moons.' Your voice wobbles, then steadies, just like your lantern. Friends join line by line. Paws stamp the wet sand. The sandbar landing rings with song. The old willow glows overhead, a tree full of walking moons. Even the river seems to hum the chorus back. You grin so wide your whiskers ache.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_song_end",
+          "label": "Sing the festival into the night.",
+          "target": "e_finale_song"
+        }
+      ]
+    },
+    {
+      "id": "n_wish",
+      "body": "The friends gather in a ring around the brightest paper lantern. It happens to be yours, leaning like a shy bow. Everyone closes their eyes and holds paws. Candleberry light paints your lids. Sand is cool. Fur is warm. A fish jumps. You count softly to three so everyone can make the same warm wish for the riverbank at once. You wish your lantern will float true. You know the others wish it too.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wish_end",
+          "label": "Make the wish all together.",
+          "target": "e_finale_wish"
+        }
+      ]
+    },
+    {
+      "id": "n_picnic",
+      "body": "You spread a checked cloth on the cool sand. You lay out clover cakes and berry treats. The cloth smells of soap and river. Paper lanterns glow softly high up. Yours is with them. It keeps tipping toward the cakes as if it is hungry too. Friends sit around, licking jam from their paws. Ants form a polite line. Night cools the jam. You could start sharing the clover cakes now, warm and ready. Or you could wait for old Grandmother Heron to come and bless the feast.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_picnic_feast",
+          "label": "Start sharing the clover cakes.",
+          "target": "n_feast"
+        },
+        {
+          "id": "c_picnic_bless",
+          "label": "Wait for old Grandmother Heron.",
+          "target": "n_bless"
+        }
+      ]
+    },
+    {
+      "id": "n_feast",
+      "body": "Clover cakes go round the glowing circle. A cake is shaped like a little boat. Everyone munches happily under the swaying paper lanterns. Jam dots whiskers. Someone hiccups honey. Your lantern dips toward your plate, then rights itself, as if it is learning. The feast is a merry success. Warm crumbs fall. The river licks the cloth's edge. You could let the happy feast roll on into the night. Or you could start a round of giggly float-riddles between bites.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_feast_end",
+          "label": "Let the happy feast roll on.",
+          "target": "e_finale_feast"
+        },
+        {
+          "id": "c_feast_riddle",
+          "label": "Start a round of float-riddles.",
+          "target": "n_riddle"
+        }
+      ]
+    },
+    {
+      "id": "n_riddle",
+      "body": "Between bites of clover cake, the friends trade silly float-riddles. Each one is sillier than the last. Why did the lantern go to school? To get a little brighter! Someone snorts crumbs. Paws slap the cloth. Everyone laughs so hard the lantern light seems to giggle too. Your own lantern shakes on its pole, laughing in its leaning way. You wipe your eyes. You save the very best riddle for the end, tucked behind your teeth.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_riddle_end",
+          "label": "Tell the very best float-riddle.",
+          "target": "e_finale_riddle"
+        }
+      ]
+    },
+    {
+      "id": "n_bless",
+      "body": "Grandmother Heron arrives. Her long beak is tucked in a silk scarf, and an unlit lantern swings from her wing. Night folds around her like a cloak. The friends make room and grow quiet. Sand whispers under her wide feet. She smiles and begins the tale of the first lantern that tipped and tipped until the river held it, just as she does every year. Her voice is slow as tide. You hug your own leaning lantern and listen.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bless_end",
+          "label": "Listen to Grandmother Heron's lantern story.",
+          "target": "e_finale_story"
+        }
+      ]
+    },
+    {
+      "id": "e_berry_oops",
+      "body": "You stretch for the fat high cluster. The wobbly branch springs back. Boing! Your whole basket of candleberries bounces away into the duckweed ditch. Berries bob like tiny escaped moons. A frog applauds. Your lantern tips into the weeds too. Nobody is hurt. You sit in the mud and laugh until your sides squeak. Then you dust off your paws, right your empty lantern, and trot back to the boathouse to start your gathering again.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_berry_oops",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "{A_MISHAP_TITLE}"
+      }
+    },
+    {
+      "id": "e_willow_oops",
+      "body": "The ship's bell clangs. Every sleepy friend tumbles out of the hammock loft at once in a giggly, grumbly heap, blankets over their heads. Lanterns roll. Someone is wearing a pillow as a hat. A hammock keeps swinging, empty. It takes ages to sort out the muddle. You decide to start over and invite them the gentle way next time. You pick up your own lantern, which has tipped, of course, and tiptoe away.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_willow_oops",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "{B_MISHAP_TITLE}"
+      }
+    },
+    {
+      "id": "e_reed_oops",
+      "body": "The fresh green river canes are far too soft and wet to hold a shape. Every frame you bend just flops over like cooked noodles and drips on your paws. Silt squishes between your toes. Your lantern wears a wet hoop like a droopy hat. You laugh at the soggy mess. You shake your whiskers. Then you head back to the boathouse to begin again with the right dry canes, and a drier pair of paws.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_reed_oops",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "{C_MISHAP_TITLE}"
+      }
+    },
+    {
+      "id": "e_finale_pond",
+      "body": "You and your friends set glowing paper lanterns adrift on the river. They float like little golden moons, doubled in the water. You kneel in the shallows and give yours one last careful push. It tips. It tips again. Then the current takes it, and it sits true at last, a small brave moon among the rest. Night holds still to watch. Everyone on the sandbar ohhs together. The festival is beautiful and complete, and you glow as bright as your lanterns.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_pond",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "{FINALE_POND_TITLE}"
+      }
+    },
+    {
+      "id": "e_finale_oak",
+      "body": "The old willow blazes with hanging paper lanterns like a tree full of warm stars. Leaves tick like clocks. Everyone dances slowly beneath its golden branches. Paws shuffle in cool sand. You look up at all you and your friends have made together. Your own lantern still hangs a little crooked, and you love it that way. Then a breeze rights it, just once, as if the willow is proud. Someone takes your paw. Your heart is as full and bright as the festival glow.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_oak",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{FINALE_OAK_TITLE}"
+      }
+    },
+    {
+      "id": "e_finale_song",
+      "body": "The sandbar landing rings with 'Walk Them Down, Paper Moons.' The old willow glows above. Peeper-frog fiddles sail over every voice. Boats join from the dark. The music rolls out over the river and into the night. You sing loudest of all, proud of the festival your gathering has grown into. Your throat tastes like honey. Stars lean in to listen. On the last note, your leaning lantern steadies, as if it wanted to sing too, and for once it does not tip.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_song",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "{FINALE_SONG_TITLE}"
+      }
+    },
+    {
+      "id": "e_finale_wish",
+      "body": "In the ring of lantern light the friends make one warm wish together for a happy river year. Then you open your eyes to the sandbar landing glowing all around you. Night smells like cake and wet leaves. You squeeze your friends' paws. Nobody lets go yet. Your lantern, still in the middle, has stopped tipping. It floats in a shallow dish of river, sitting true at last. You are sure that this is the best festival there ever was. A star winks back.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_wish",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{FINALE_WISH_TITLE}"
+      }
+    },
+    {
+      "id": "e_finale_feast",
+      "body": "Clover cakes and berry treats go round and round beneath the swaying paper lanterns. Jam moons mark every plate. Everyone laughs and nibbles late into the glowing night. Owls only watch. You lick honey from one paw. The feast you gathered piece by piece has brought the whole riverbank together, warm and merry. Your lantern sits by the cloth, and every time it starts to tip, a friend rights it. At last it stays, full of crumbs and light. The river keeps time.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_feast",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{FINALE_FEAST_TITLE}"
+      }
+    },
+    {
+      "id": "e_finale_riddle",
+      "body": "You tell the very best float-riddle of all. What did the river say to the lantern that would not sit? I will hold you. Keep trying. The whole glowing circle roars with laughter, clover cakes nearly forgotten. Someone falls backward, still laughing. The paper lanterns seem to twinkle along with the giggling. Yours gives a last little tip, then floats upright in a puddle, as if it finally got the joke. It is the merriest festival night the river friends can remember. You bow.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_riddle",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{FINALE_RIDDLE_TITLE}"
+      }
+    },
+    {
+      "id": "e_finale_story",
+      "body": "Grandmother Heron finishes the tale of the first lantern that tipped until the river held it, just as every paper lantern on the sandbar glows its brightest. The friends clap softly. A kind hush holds. You lean against her silk-scarfed side, happy that your gathering has kept the gentle festival alive one more year. Her wing is warm. She lights your lantern last. It tips. She waits. You wait. Night listens with both banks. Then it floats in her water-bowl, true at last.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_story",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "{FINALE_STORY_TITLE}"
+      }
+    }
+  ]
+}
