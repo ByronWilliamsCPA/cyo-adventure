@@ -117,7 +117,7 @@ export function UserManagementPage() {
   const { data } = state
 
   return (
-    <main>
+    <div>
       <h1>User management</h1>
       <nav aria-label="User management sections">
         {TABS.map((key) => (
@@ -158,6 +158,6 @@ export function UserManagementPage() {
           onChanged={refreshAll}
         />
       ) : null}
-    </main>
+    </div>
   )
 }

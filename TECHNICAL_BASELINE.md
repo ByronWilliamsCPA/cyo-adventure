@@ -33,18 +33,27 @@ Container images are pinned by tag; `latest` is never used in production.
 | structlog | 26.1.0 | Structured logging |
 | rich | 15.0.0 | Console logging (dev) |
 
-### Planned additions (pin at add time, per phase)
+### Formerly planned additions (all resolved; kept as a decision record)
 
-These are committed by the plan but not yet added; pin the resolved version when
-`uv add` runs in the phase that needs it.
+This table was a live backlog of packages "committed by the plan but not yet added".
+Every row is now resolved, so it is retained as a record rather than as work. Do not
+read it as outstanding.
 
-| Package | Phase | Role | Decision reference |
-|---------|-------|------|--------------------|
-| networkx | 1 | Graph reachability, cycle, termination (Layer-1 validator) | tech-spec |
-| textstat | 2 | Flesch-Kincaid grade (advisory reading-level rule) | tech-spec RL-13 |
-| rq | 2 | Background generation queue (chosen over Celery for simplicity at this scale) | ADR-004, confirmed |
-| anthropic | 2 | Claude provider behind the `GenerationProvider` interface | ADR-003 |
-| hypothesis | 1 | Property-based totality tests for the condition evaluator | tech-spec testing |
+| Package | Phase | Role | Outcome |
+|---------|-------|------|---------|
+| networkx | 1 | Graph reachability, cycle, termination (Layer-1 validator) | ✅ Added |
+| rq | 2 | Background generation queue (chosen over Celery for simplicity at this scale) | ✅ Added |
+| anthropic | 2 | Claude provider behind the `GenerationProvider` interface | ✅ Added |
+| hypothesis | 1 | Property-based totality tests for the condition evaluator | ✅ Added |
+| textstat | 2 | Flesch-Kincaid grade (advisory reading-level rule) | ❌ Declined, superseded |
+
+`textstat` was never added and should not be: `validator/reading_level.py` computes the
+Flesch-Kincaid grade with a small dependency-free implementation
+(`_flesch_kincaid_grade`) instead. Its docstring records the reasoning: the formula needs
+only word, sentence, and syllable counts, so vendoring it avoids pulling a heavy NLP
+dependency tree and its transitive CVE surface into the runtime for a check that is
+advisory and never blocks, and it keeps the scores deterministic and version-stable
+rather than dependent on a library version.
 
 **Condition evaluator**: in-house, no third-party logic library (ADR-006). This is
 confirmed; the only state logic in the content path is the whitelisted evaluator

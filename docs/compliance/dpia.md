@@ -19,7 +19,7 @@ Phase 2's consent-capture design was finalized and built (per Pressure Point P-2
 `gdpr-compliance-review.md`: a DPIA should inform the consent-mechanism design, and since the
 mechanism is now built, this DPIA assesses the real, shipped design rather than a proposal).
 Article 35(3)(b) does not clearly mandate a DPIA here (no confirmed "large scale" systematic
-monitoring at current scale — see `information-security-program.md`'s scale note), but the
+monitoring at current scale, see `information-security-program.md`'s scale note), but the
 data category (children's information) and the novel-method question flagged in ADR-018 D1
 both weigh toward doing one anyway, consistent with this project's "compliant from the start"
 posture.
@@ -176,7 +176,7 @@ without a proper legal basis or adequate consent.
 (`FamilyConnection.consented_by_viewer_user_id`/`_at` and `consented_by_sharer_user_id`/`_at`,
 paired and DB-enforced), surfaced through a real guardian-facing UI
 (`ConnectionsPage.tsx`). Nothing crosses until both sides click "Allow." This was previously
-misdocumented as unbuilt (`gdpr-compliance-review.md` G-10, corrected 2026-07-20) — it is, in
+misdocumented as unbuilt (`gdpr-compliance-review.md` G-10, corrected 2026-07-20); it is, in
 fact, one of the stronger controls in the system.
 
 **Residual risk**: Low. The default state is opt-in (no data flows on connection creation

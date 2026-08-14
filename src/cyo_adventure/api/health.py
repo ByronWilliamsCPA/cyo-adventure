@@ -661,54 +661,6 @@ async def check_kws_verification() -> ReadinessCheck:
         )
 
 
-async def check_external_service() -> ReadinessCheck:  # NOSONAR
-    """Check external API/service connectivity.
-
-    #ASSUME: external resources: kept ``async``, and awaits nothing yet, on
-    purpose (Sonar S7503): this is a placeholder sibling of check_database /
-    check_cache / check_generation_queue, all real ``async def check_x() ->
-    ReadinessCheck`` callables awaited uniformly by readiness(). Enabling the
-    commented-out httpx call below only requires uncommenting code, not
-    touching this signature or any caller/test; dropping ``async`` now would
-    require re-adding it later and would break the existing
-    ``await check_external_service()`` call sites in tests/unit/test_health.py.
-
-    Returns:
-        ReadinessCheck: external service status.
-    """
-    start = time.time()
-    try:
-        # Example external service check
-        # import httpx
-        # async with httpx.AsyncClient() as client:
-        #     response = await client.get("https://api.example.com/health", timeout=2.0)
-        #     response.raise_for_status()
-
-        # #ASSUME: external resources: this placeholder returns status=True without
-        # calling the external service. Enabling it in readiness() before the real
-        # request is implemented reports a false-healthy dependency.
-        # #VERIFY: implement the httpx call above before uncommenting the external
-        # service check in readiness().
-        # Placeholder - replace with actual external service check
-        latency_ms = (time.time() - start) * 1000
-        return ReadinessCheck(
-            name="external_api",
-            status=True,
-            latency_ms=round(latency_ms, 2),
-        )
-    except Exception as exc:
-        # #EDGE: data-integrity: parens required, not redundant (Sonar
-        # S1110 false positive); see check_database's identical comment.
-        latency_ms = (time.time() - start) * 1000  # NOSONAR
-        logger.warning(_CHECK_FAILED_LOG, check="external_api", error=str(exc))
-        return ReadinessCheck(
-            name="external_api",
-            status=False,
-            latency_ms=round(latency_ms, 2),
-            error=_CHECK_FAILED_MESSAGE,
-        )
-
-
 @router.get(
     "/ready",
     responses={
@@ -731,8 +683,8 @@ async def readiness() -> ReadinessStatus:
       check_generation_queue's docstring, ADR-021 Phase 1).
     - KWS parent-verification delivery health (reported, does not gate
       readiness; see check_kws_verification's docstring, ADR-018 D1).
-    - External service health: not wired in (check_external_service exists
-      but is unused; see api/health.py module history / docs/operations/runbook.md).
+    - External service health: intentionally absent; see the comment in the
+      body for why there is no generic external check.
 
     #ASSUME: external resources: cache (Redis) is deliberately excluded from
     the gate below. The app fails open without Redis: RateLimitMiddleware
@@ -788,13 +740,19 @@ async def readiness() -> ReadinessStatus:
     checks["generation_queue"] = await check_generation_queue()
     checks["kws_verification"] = await check_kws_verification()
 
-    # check_external_service remains unwired here: LLM/story-generation
-    # providers are optional and provider-specific (generation_provider is
-    # "mock" by default; live legs are validated lazily at call time in
-    # build_provider, not at startup or health-check time), so there is no
-    # single external dependency to ping generically. Uncomment once a
-    # specific, always-critical external dependency needs readiness coverage:
-    # checks["external_api"] = await check_external_service()
+    # There is deliberately NO generic external-service check here, and no
+    # placeholder waiting to be uncommented. LLM/story-generation providers are
+    # optional and provider-specific (generation_provider is "mock" by default;
+    # live legs are validated lazily at call time in build_provider, not at
+    # startup or health-check time), so there is no single external dependency
+    # to ping generically. A `check_external_service` placeholder used to sit
+    # below returning status=True unconditionally, with only a comment standing
+    # between it and a false-healthy readiness signal; it was template
+    # scaffolding, never wired, whitelisted in vulture, and was removed rather
+    # than left as a footgun (UW-J17). A real external dependency should get its
+    # own named check modelled on check_cache or check_generation_queue, which
+    # actually contact their dependency, and be added to
+    # _CRITICAL_READINESS_CHECKS only if its absence should stop traffic.
 
     # Determine overall status: only checks named in
     # _CRITICAL_READINESS_CHECKS can flip readiness to unavailable.

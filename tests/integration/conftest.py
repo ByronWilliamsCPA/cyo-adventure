@@ -22,7 +22,7 @@ import pytest
 import pytest_asyncio
 from fastapi import Request
 from httpx import ASGITransport, AsyncClient
-from sqlalchemy import create_engine, insert, text
+from sqlalchemy import create_engine, insert, make_url, text
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.pool import NullPool
 from testcontainers.community.postgres import PostgresContainer
@@ -52,6 +52,7 @@ if TYPE_CHECKING:
     import uuid
     from collections.abc import AsyncIterator, Iterator
 
+    from sqlalchemy.engine import URL
     from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
     from sqlalchemy.sql.dml import Insert
 
@@ -125,12 +126,112 @@ def _seed_catalog_family_stmt() -> Insert:
     )
 
 
+def _prepare_external_database(external_url: str) -> str:
+    """Build this worker's own database on an already-running Postgres server.
+
+    The ``CYO_TEST_PG_URL`` escape hatch exists for environments where the Docker
+    daemon runs but registry image pulls are blocked (Claude Code on the web is
+    the motivating case: ``docker pull postgres:17-alpine`` 403s at the layer
+    fetch, so ``start_or_probe_error`` cannot help). The full
+    ``supabase/migrations`` chain applies cleanly to a vanilla Postgres
+    cluster, so a locally-started server is a faithful substitute. Verified on
+    16 (the only major installable in that environment); the container path
+    below is what exercises 17.
+
+    Two constraints on the server this points at, both load-bearing:
+
+    * Its bootstrap superuser must NOT be named ``postgres``. The baseline dump
+      creates ``postgres`` as an ordinary table-owning role, and
+      ``test_worker_role_posture.py`` asserts that role is clean on the
+      ``rolbypassrls``/``rolsuper`` path and dirty only on the ownership path.
+      A cluster initialised with ``-U postgres`` makes that role the superuser
+      and inverts the finding ADR-021 exists to measure. Use ``-U test``, which
+      is what ``PostgresContainer`` does.
+    * The suite must run serially (``-n0``). See the #CRITICAL note below.
+
+    #CRITICAL: concurrency: Postgres roles are CLUSTER-global, but every xdist
+    worker gets its own testcontainers *server*, so ``migrate_and_connect_as``
+    can ``ALTER ROLE <role> LOGIN PASSWORD`` freely. Pointed at one shared
+    server instead, two workers promoting the same migrated role overwrite each
+    other's password and both hold a DSN that no longer authenticates. Measured:
+    1026 errors at ``-n=auto`` against 0 at ``-n0``.
+    #VERIFY: enforced below rather than documented. ``pyproject.toml``'s
+    ``addopts`` carries ``-n=auto``, so the DEFAULT invocation violates this
+    constraint and a reader who never reaches this docstring gets the 1026-error
+    run; the guard turns that into one legible failure at setup. Per-worker
+    DATABASES (below) are necessary but not sufficient, because the collision is
+    on roles, which no database boundary isolates.
+
+    Args:
+        external_url: Admin ``postgresql+asyncpg://`` URL for a running server,
+            taken verbatim from ``CYO_TEST_PG_URL``.
+
+    Returns:
+        str: An asyncpg URL for this worker's freshly created database, with the
+        ORM schema built and the catalog family seeded.
+
+    Raises:
+        RuntimeError: If pytest-xdist is active, since cluster-global role
+            collisions make this path unsafe under any worker count above one.
+    """
+    worker = os.environ.get("PYTEST_XDIST_WORKER", "")
+    if worker:
+        msg = (
+            "CYO_TEST_PG_URL is set and pytest-xdist is active "
+            f"(PYTEST_XDIST_WORKER={worker!r}). This path points every worker at "
+            "ONE Postgres server, and roles are cluster-global, so concurrent "
+            "ALTER ROLE ... LOGIN PASSWORD calls overwrite each other and leave "
+            "workers holding DSNs that no longer authenticate (measured: 1026 "
+            "errors at -n=auto, 0 at -n0). Re-run with -n0; pyproject.toml's "
+            "addopts sets -n=auto, so -n0 must be passed explicitly."
+        )
+        raise RuntimeError(msg)
+    # Serial-only by the guard above, so there is exactly one database and the
+    # name is a fixed literal rather than an interpolated worker id. That is
+    # also what makes the CREATE DATABASE below safe: DDL takes no bind
+    # parameters, and there is no longer any environment-derived text in it.
+    db_name = "cyo_test_gw0"
+
+    def _sync(url: URL) -> str:
+        return url.set(drivername="postgresql+psycopg").render_as_string(
+            hide_password=False
+        )
+
+    admin_url = make_url(external_url)
+    admin = create_engine(_sync(admin_url), isolation_level="AUTOCOMMIT")
+    try:
+        with admin.connect() as conn:
+            conn.execute(text(f'DROP DATABASE IF EXISTS "{db_name}"'))
+            conn.execute(text(f'CREATE DATABASE "{db_name}"'))
+    finally:
+        admin.dispose()
+
+    worker_url = admin_url.set(database=db_name)
+    # A fresh database needs no drop_all; create_all alone mirrors what the
+    # container branch below leaves behind.
+    sync_engine = create_engine(_sync(worker_url))
+    try:
+        Base.metadata.create_all(sync_engine)
+        with sync_engine.begin() as conn:
+            conn.execute(_seed_catalog_family_stmt())
+    finally:
+        sync_engine.dispose()
+    return worker_url.render_as_string(hide_password=False)
+
+
 @pytest.fixture(scope="session")
 def _pg_url() -> Iterator[str]:
-    """Start a Postgres 16 container and create its schema once per session.
+    """Start a Postgres 17 container and create its schema once per session.
+
+    The major tracks production, which runs Postgres 17.6 (Supabase, read
+    2026-08-13). It was ``postgres:16-alpine``, one major behind, so every
+    schema-parity and RLS test in this suite was asserting against a different
+    engine than the one the assertions are about.
 
     Skips the integration suite when no Docker daemon is reachable so a developer
     without Docker is not blocked; CI runners provide Docker for testcontainers.
+    Set ``CYO_TEST_PG_URL`` to run against an already-started server instead; see
+    ``_prepare_external_database`` for the two constraints that path carries.
 
     # #CRITICAL: external-resources: a CI runner that silently skips the whole
     # integration suite (rather than failing) would let a real Docker/testcontainers
@@ -140,8 +241,12 @@ def _pg_url() -> Iterator[str]:
     # skipping. Match on truthy tokens rather than mere presence so an explicit
     # ``CI=false`` from a local shell keeps the developer-friendly skip.
     """
+    external_url = os.environ.get("CYO_TEST_PG_URL", "").strip()
+    if external_url:
+        yield _prepare_external_database(external_url)
+        return
     container, probe_error = start_or_probe_error(
-        lambda: PostgresContainer("postgres:16-alpine", driver="asyncpg")
+        lambda: PostgresContainer("postgres:17-alpine", driver="asyncpg")
     )
     if container is None:
         if os.environ.get("CI", "").strip().lower() in {"1", "true", "yes", "on"}:

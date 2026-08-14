@@ -75,7 +75,7 @@ WD = os.environ["WD"]
 bad = 0
 for x in ("C", "D"):
     raw = open(f"{WD}/filled_{x}.json", encoding="utf-8").read()
-    n = raw.count("—")
+    n = raw.count("—")  # em-dash-ok: counts the character
     print(f"{x}: {n} em-dashes")
     bad += n
 sys.exit(1 if bad else 0)

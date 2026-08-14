@@ -493,7 +493,7 @@ for current status and review the relevant planning documents and
 - [project-vision.md](docs/planning/project-vision.md) - Problem, solution, scope, success metrics (codename "Ariadne")
 - [tech-spec.md](docs/planning/tech-spec.md) - Architecture, data model, APIs, security
 - [roadmap.md](docs/planning/roadmap.md) - Phased implementation plan and current status
-- [adr/](docs/planning/adr/) - 18 architecture decision records (story format, client PWA,
+- [adr/](docs/planning/adr/) - 29 architecture decision records (story format, client PWA,
   frontier LLM generation, homelab-first deployment, mandatory human approval, in-house
   condition evaluator, raw-output retention, public App Store launch, Supabase platform,
   Modal review + gated generation, story-scale framework, Supabase CLI migrations,
@@ -798,7 +798,7 @@ frontend/                    # React 19 + Vite + TS app (own package.json)
     └── hooks/                  # useApi, useOnlineStatus, useReplayOnReconnect, ...
 
 docs/
-├── planning/                # Vision, tech-spec, roadmap, 11 ADRs, workstream docs
+├── planning/                # Vision, tech-spec, roadmap, 29 ADRs, workstream docs
 └── architecture/            # System overview, data model, deployment, generation
                               # pipeline, story skeletons, user journeys, diagrams
 ```

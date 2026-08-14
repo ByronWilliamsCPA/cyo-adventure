@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "2.0",
   "id": "sk_clocktower_cipher",
   "version": 1,
   "title": "The Clocktower Cipher",
@@ -23,7 +23,9 @@
       "violence": "none",
       "scariness": "mild",
       "peril": "mild"
-    }
+    },
+    "topology": "branch_and_bottleneck",
+    "production_eligible": false
   },
   "variables": [],
   "start_node": "n_open",
@@ -335,8 +337,9 @@
       "is_ending": true,
       "ending": {
         "id": "e_library",
-        "type": "neutral",
-        "title": "Lost in the Logbooks"
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "{END_LIBRARY_TITLE}"
       }
     },
     {
@@ -345,7 +348,8 @@
       "is_ending": true,
       "ending": {
         "id": "e_giveup",
-        "type": "failure",
+        "valence": "negative",
+        "kind": "setback",
         "title": "Too Risky"
       }
     },
@@ -355,7 +359,8 @@
       "is_ending": true,
       "ending": {
         "id": "e_timeout",
-        "type": "failure",
+        "valence": "negative",
+        "kind": "setback",
         "title": "Out of Time"
       }
     },
@@ -365,7 +370,8 @@
       "is_ending": true,
       "ending": {
         "id": "e_stuck",
-        "type": "failure",
+        "valence": "negative",
+        "kind": "setback",
         "title": "Locked Out for the Night"
       }
     },
@@ -375,8 +381,9 @@
       "is_ending": true,
       "ending": {
         "id": "e_secret",
-        "type": "good",
-        "title": "The Hidden Workshop"
+        "valence": "positive",
+        "kind": "success",
+        "title": "{END_SECRET_TITLE}"
       }
     },
     {
@@ -385,8 +392,9 @@
       "is_ending": true,
       "ending": {
         "id": "e_hero",
-        "type": "completion",
-        "title": "The Cipher Revealed"
+        "valence": "positive",
+        "kind": "completion",
+        "title": "{END_HERO_TITLE}"
       }
     },
     {
@@ -395,7 +403,8 @@
       "is_ending": true,
       "ending": {
         "id": "e_keepsake",
-        "type": "good",
+        "valence": "positive",
+        "kind": "success",
         "title": "A Secret Kept"
       }
     },
@@ -405,7 +414,8 @@
       "is_ending": true,
       "ending": {
         "id": "e_caught",
-        "type": "failure",
+        "valence": "negative",
+        "kind": "setback",
         "title": "Caught Red-Handed"
       }
     }

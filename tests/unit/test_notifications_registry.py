@@ -314,8 +314,13 @@ class TestKidFlaggedTolerance:
         # picked it up; this pins that the registration actually happened,
         # not just that it didn't crash.
         kid_flagged = getattr(EventType, "KID_FLAGGED", None)
-        if kid_flagged is None:
-            pytest.skip("EventType.KID_FLAGGED not present in this checkout")
+        # NOT a skip: the K15 workstream landed EventType.KID_FLAGGED, so absence
+        # means it was removed and the tolerant getattr lookup in the registry is
+        # now silently registering nothing. A skip would report that as a pass.
+        assert kid_flagged is not None, (
+            "EventType.KID_FLAGGED is gone; registry's tolerant getattr lookup would "
+            "silently register no composer for kid flags"
+        )
         assert kid_flagged in registry._COMPOSERS
         assert kid_flagged.value in registry.relevant_event_type_values()
 

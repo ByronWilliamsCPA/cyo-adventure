@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "2.0",
   "id": "sk_sunken_signal",
   "version": 1,
   "title": "The Sunken Signal",
@@ -23,7 +23,9 @@
       "violence": "mild",
       "scariness": "moderate",
       "peril": "moderate"
-    }
+    },
+    "topology": "branch_and_bottleneck",
+    "production_eligible": false
   },
   "variables": [
     {
@@ -610,7 +612,8 @@
       "is_ending": true,
       "ending": {
         "id": "e_success",
-        "type": "completion",
+        "valence": "positive",
+        "kind": "completion",
         "title": "Signal Recovered"
       }
     },
@@ -620,7 +623,8 @@
       "is_ending": true,
       "ending": {
         "id": "e_survived",
-        "type": "failure",
+        "valence": "negative",
+        "kind": "setback",
         "title": "Empty-Handed"
       }
     },
@@ -630,7 +634,8 @@
       "is_ending": true,
       "ending": {
         "id": "e_retreat",
-        "type": "failure",
+        "valence": "negative",
+        "kind": "setback",
         "title": "Aborted Dive"
       }
     },
@@ -640,7 +645,8 @@
       "is_ending": true,
       "ending": {
         "id": "e_rescue",
-        "type": "failure",
+        "valence": "negative",
+        "kind": "setback",
         "title": "Pulled From the Brink"
       }
     },
@@ -650,7 +656,8 @@
       "is_ending": true,
       "ending": {
         "id": "e_drown",
-        "type": "death",
+        "valence": "negative",
+        "kind": "death",
         "title": "The Dark Below"
       }
     },
@@ -660,7 +667,8 @@
       "is_ending": true,
       "ending": {
         "id": "e_sink",
-        "type": "death",
+        "valence": "negative",
+        "kind": "death",
         "title": "Letting Go"
       }
     },
@@ -670,7 +678,8 @@
       "is_ending": true,
       "ending": {
         "id": "e_lab_flood",
-        "type": "death",
+        "valence": "negative",
+        "kind": "death",
         "title": "Bulkhead Breach"
       }
     },
@@ -680,7 +689,8 @@
       "is_ending": true,
       "ending": {
         "id": "e_specimen",
-        "type": "neutral",
+        "valence": "neutral",
+        "kind": "discovery",
         "title": "The Documentarian"
       }
     },
@@ -690,7 +700,8 @@
       "is_ending": true,
       "ending": {
         "id": "e_crew_trap",
-        "type": "failure",
+        "valence": "negative",
+        "kind": "setback",
         "title": "Sealed In"
       }
     },
@@ -700,7 +711,8 @@
       "is_ending": true,
       "ending": {
         "id": "e_junction",
-        "type": "failure",
+        "valence": "negative",
+        "kind": "setback",
         "title": "Lost Nerve"
       }
     },
@@ -710,7 +722,8 @@
       "is_ending": true,
       "ending": {
         "id": "e_vent_stuck",
-        "type": "death",
+        "valence": "negative",
+        "kind": "death",
         "title": "Wedged"
       }
     },
@@ -720,7 +733,8 @@
       "is_ending": true,
       "ending": {
         "id": "e_meltdown",
-        "type": "death",
+        "valence": "negative",
+        "kind": "death",
         "title": "Critical"
       }
     },
@@ -730,7 +744,8 @@
       "is_ending": true,
       "ending": {
         "id": "e_data",
-        "type": "death",
+        "valence": "negative",
+        "kind": "death",
         "title": "One Thing Too Many"
       }
     },
@@ -740,7 +755,8 @@
       "is_ending": true,
       "ending": {
         "id": "e_listen",
-        "type": "death",
+        "valence": "negative",
+        "kind": "death",
         "title": "Lost in the Signal"
       }
     }

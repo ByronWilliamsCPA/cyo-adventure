@@ -659,19 +659,29 @@ _WYRMREACH = (
 
 
 def _load_wyrmreach() -> list[Storybook]:
-    """Return the three real filled books, skipping if the corpus is absent."""
+    """Return the three wyrmreach books, skipping if the corpus is absent.
+
+    None of the three is currently committed, so every test using this helper skips
+    and has never executed. They are kept because they run unchanged once the corpus
+    lands. Deliberately a skip rather than a CI failure: the artifacts are absent on
+    every checkout including CI, so failing would break the suite instead of revealing
+    anything. Tracked by UW-F19 (weak-skip audit) and UW-F20 (corpus coverage).
+    """
     books: list[Storybook] = []
     for name in _WYRMREACH:
         path = _REPO_ROOT / "out" / name
         if not path.is_file():
-            pytest.skip(f"{name} not present")
+            pytest.skip(f"out/{name} is not committed; tracked by UW-F19 and UW-F20")
         books.append(Storybook.model_validate(json.loads(path.read_text())))
     return books
 
 
 @pytest.mark.unit
 def test_real_three_book_chain_validates() -> None:
-    """The committed wyrmreach trilogy passes every SR rule."""
+    """The wyrmreach trilogy passes every SR rule, once it is committed.
+
+    Skips today: the corpus is not in the tree. See _load_wyrmreach.
+    """
     report = validate_series(_load_wyrmreach())
     assert report.ok, [f.message for f in report.findings]
 

@@ -162,7 +162,7 @@ export function AuditPage() {
   const canGoNext = state.kind === 'ready' && state.data.has_more && !refreshing
 
   return (
-    <main>
+    <div>
       <h1>Audit log</h1>
       <p className="console__muted cyo-text-muted">
         Every recorded action on child-linked data: who did it, what changed, and when. Newest
@@ -308,6 +308,6 @@ export function AuditPage() {
           </p>
         </>
       ) : null}
-    </main>
+    </div>
   )
 }

@@ -258,8 +258,12 @@ is serving and the backend is unreachable behind it.
 Redis (the rate limiter falls back to an in-memory counter on any Redis error), so a `200` can
 still be paired with `checks.cache.status: false` when Redis is down; watch that field, or the
 queue-depth and worker-log checks in Section 5.1, rather than relying on the top-level status
-alone. `check_external_service()` remains an unwired placeholder: LLM/story-generation providers
-are optional and provider-specific, so there is no single external dependency to ping generically.
+alone. There is deliberately no generic external-service check: LLM/story-generation providers
+are optional and provider-specific, so there is no single external dependency to ping
+generically. A `check_external_service()` placeholder that always returned `status=True`
+was removed on 2026-08-13 (`UW-J17`) rather than left one uncommented line away from a
+false-healthy readiness signal; a real external dependency should get its own named check
+modelled on `check_cache()`.
 
 **`check_generation_queue()` (ADR-021 Phase 1)** is wired into `/api/v1/health/ready` as
 `checks.generation_queue` and is the worker-down/worker-failing alarm: a stopped or crash-looping

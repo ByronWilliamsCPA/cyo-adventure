@@ -14,16 +14,16 @@ A choose-your-own-adventure reading app for kids
 ## Quick Start
 
 ```bash
-# Install the package
-pip install cyo-adventure
-
-# Or install with development dependencies
+# Clone and install (this is a deployed application, not a published package)
+git clone https://github.com/ByronWilliamsCPA/cyo-adventure.git
+cd cyo-adventure
 uv sync --all-extras
+uv run pre-commit install
 ```
 
 ## Features
 
-- Modern Python 3.12+ support
+- Python 3.11+ (3.14 is the primary runtime target)
 - Type-safe with BasedPyright strict mode
 - Comprehensive test coverage
 - Structured logging with structlog

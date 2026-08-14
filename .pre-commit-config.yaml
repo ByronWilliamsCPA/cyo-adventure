@@ -463,11 +463,18 @@ repos:
   # Pre-scan confirmed no existing em-dashes in the repository
   - repo: local
     hooks:
+      # The previous form of this hook (`bash -c 'git grep --cached -nP "\xe2\x80\x94"'`)
+      # could not fire where it mattered: `git grep -P` resolves `\xNN` against the
+      # locale, and under `C.UTF-8` (the only UTF-8 locale in this project's containers)
+      # PCRE reads `\xe2` as codepoint U+00E2 rather than a raw byte, so it matched zero
+      # of the 62 occurrences then in the tree. It also scanned the whole index, so one
+      # legacy violation would have failed every later commit. See the script's docstring.
       - id: no-em-dash
         name: No em-dash character check
-        entry: bash -c 'if git grep --cached -nP "\xe2\x80\x94" -- .; then echo "em-dash (U+2014) found in staged files above; replace with comma, semicolon, or colon"; exit 1; fi'
+        entry: python scripts/check_no_em_dash.py
         language: system
-        pass_filenames: false
+        types: [text]
+        exclude: ^out/
         stages: [pre-commit]
 
 # Exclude patterns

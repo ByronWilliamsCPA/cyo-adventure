@@ -30,7 +30,15 @@ def test_headroom_reports_proximity_to_every_budget_edge(
         / "the-ninth-hand.json"
     )
     if not path.is_file():
-        pytest.skip("the-ninth-hand skeleton not present")
+        # Tracked skip (UW-F19): skeletons/16+/the-ninth-hand.json has never been
+        # committed, so this test has never executed. It is kept rather than deleted
+        # because it runs unchanged the moment that skeleton lands. Deliberately a skip
+        # and not a CI failure: the artifact is absent on every checkout including CI,
+        # so failing would break the suite rather than reveal anything.
+        pytest.skip(
+            "skeletons/16+/the-ninth-hand.json is not committed; tracked by "
+            "UW-F19 (weak-skip audit) and UW-F20 (corpus coverage)"
+        )
     assert check_skeleton.main([str(path), "--headroom"]) == 0
     out = capsys.readouterr().out
     for expected in (
@@ -56,7 +64,15 @@ def test_headroom_is_opt_in(capsys: pytest.CaptureFixture[str]) -> None:
         / "the-ninth-hand.json"
     )
     if not path.is_file():
-        pytest.skip("the-ninth-hand skeleton not present")
+        # Tracked skip (UW-F19): skeletons/16+/the-ninth-hand.json has never been
+        # committed, so this test has never executed. It is kept rather than deleted
+        # because it runs unchanged the moment that skeleton lands. Deliberately a skip
+        # and not a CI failure: the artifact is absent on every checkout including CI,
+        # so failing would break the suite rather than reveal anything.
+        pytest.skip(
+            "skeletons/16+/the-ninth-hand.json is not committed; tracked by "
+            "UW-F19 (weak-skip audit) and UW-F20 (corpus coverage)"
+        )
     assert check_skeleton.main([str(path)]) == 0
     assert "headroom" not in capsys.readouterr().out
 
