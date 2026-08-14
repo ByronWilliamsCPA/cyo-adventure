@@ -499,10 +499,10 @@ evidence we have, and a plan that cannot produce them is not a plan, it is a bui
 | W1 path enumerator | D | yes, `validator/paths.py` | yes, 61/61 books at coverage 1.0 in 2.666 s | none, shipped |
 | W2 re-unit to path | D | yes, `scripts/measure_per_path.py` | yes, twice | **closed**: told-emotion band is inert at path scale |
 | W3 consequence distance | D | yes, `validator/consequence.py` | yes, 61-book catalogue | **KEEP as a reported statistic** |
-| W4 criterion variance | J-adjacent | yes, `judge_books.criterion_spread` | no | needs the verdict pool, see 7.4 |
-| W5 bootstrap intervals | D | yes, `scripts/instrument.py` | no | needs the run artifacts, see 7.4 |
+| W4 criterion variance | J-adjacent | yes, `judge_books.criterion_spread` | yes, 2026-08-14 | **KEEP**: flags `dialogue` at 0.00, flags no working criterion |
+| W5 bootstrap intervals | D | yes, `scripts/instrument.py` | yes, 2026-08-14 | **infrastructure**; ranking retracted per its pre-committed rule |
 | W6 blind-spot manifest | D | yes, `validator/blind_spots.py` | yes | **KEEP**: declarations are drift-proof by witness |
-| W7 known-bad battery | J | no | no | none, and it blocks Track J entirely |
+| W7 known-bad battery | J | yes | yes, twice | 5 KEEP, 1 UNTESTED, 1 under-powered; see 7.7.4 to 7.7.6 |
 | W8 decoding ablation | D | no | no | `UW-C239` (pricing) |
 | W9 cross-stage routing | D | no | no | `UW-C239` (pricing) |
 | W10 MoPS premise pool | D | no | no | `UW-C239` (pricing) |
@@ -1142,3 +1142,66 @@ described, and the difference cost nothing: same verdicts, re-scored.
 The general form, worth keeping: **a panel mean hides a bad member, and averaging is what
 hides it.** Any panel should report per-member stability on unchanged inputs before its mean
 is trusted, and membership should be a decision the evidence supports rather than a default.
+
+### 7.8 W4 and W5 close (2026-08-14)
+
+Both were built weeks ago and neither had ever been pointed at a pool with several books per
+leg, which is what they need to form cells and intervals. `out/vendor-comparison/` held such a
+pool and is gone (`UW-C252`), so one was regenerated: 3 legs by 4 briefs, of which 9 books
+survived (`anthropic-sonnet-5` lost three to the reasoning-budget cap, `AL-328` again).
+
+**Stated substitution.** W4's rule says "replay the existing 84-verdict pool". That pool no
+longer exists on any checkout, so the known-answer test ran on a 27-verdict replacement. The
+substantive requirement is unchanged and arguably better evidenced, since the result
+reproduces on an independent pool.
+
+#### W4, per-criterion instrument variance: KEEP
+
+| Criterion | Cells | Mean | SD |
+| --- | --- | --- | --- |
+| `dialogue` | 9 | 3.00 | **0.00 SATURATED** |
+| `age_fit` | 9 | 4.14 | 0.38 |
+| `voice` | 9 | 2.97 | 0.40 |
+| `engagement` | 9 | 3.86 | 0.42 |
+| `imagery` | 9 | 4.28 | 0.46 |
+| `ending_quality` | 9 | 3.50 | 0.47 |
+| `choice_quality` | 9 | 3.25 | 0.62 |
+
+The rule is "keep iff it flags the dialogue criterion and does not flag criteria we have
+independent reason to believe are working", and both directions pass. It flags `dialogue`, at
+a spread of exactly 0.00 here against the 0.088 recorded on the lost pool. It flags nothing
+else, and the six it leaves alone include all five W7 keeps.
+
+That agreement is the part worth keeping. W4 and W7 are independent instruments run on
+different corpora by different methods, one measuring spread across vendor legs and the other
+measuring response to a seeded defect, and they single out the same criterion. `dialogue`'s
+weakness is now attested twice.
+
+#### W5, bootstrap intervals: infrastructure, and its pre-committed consequence fires
+
+| Leg | Point | 95% interval | Books |
+| --- | --- | --- | --- |
+| `xai-grok-4.6` | +0.57 | [+0.07, +1.08] | 4 |
+| `google-gemini-3.1-pro` | -0.48 | [-1.33, +0.46] | 4 |
+| `anthropic-sonnet-5` | -0.36 | incomplete, n<2 | 1 |
+
+Zero of one comparable pair separated. Per the rule pre-committed in W5, **Part IV's ranking
+is retracted rather than caveated.** That was written down in advance precisely because
+single-digit n per cell made this the likely outcome, and honouring it now is the whole point
+of having written it.
+
+The instrument itself works: it produced intervals, refused a ranking the data does not
+support, and excluded the leg it could not bootstrap rather than quietly bootstrapping n=1.
+
+**The limitation, stated plainly.** One comparable pair is the thinnest test that exists.
+`anthropic-sonnet-5` was excluded for having a single usable book, so "every pair overlaps"
+is a claim about one pair. The retraction still stands, because the rule was pre-registered
+and the point of pre-registration is that a thin result does not become a reason to
+renegotiate. But a future slate should carry enough legs that the ranking claim is tested
+rather than merely unsupported.
+
+#### Where the fifteen now stand
+
+Closed or decided: W1, W2, W3, W4, W5, W6, W7, W15. Blocked on ADR-018 consent scoping: W12,
+W13. Unblocked by `UW-C239` and not yet started: W8, W9, W10, W14. Deferred pending a whole
+instrument: W11.
