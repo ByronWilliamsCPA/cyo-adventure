@@ -47,7 +47,7 @@
     },
     {
       "id": "n_door",
-      "body": "Milo pulled on his red boots. He pushed his arms into the yellow raincoat. Zip! Grandma opened the front door. The world was drippy and shiny. It smelled like wet leaves. The sidewalk sparkled, as if it had waited just for Milo.",
+      "body": "Milo pulled on his red boots. He put on his yellow coat. Zip! Grandma opened the front door. The world was wet and shiny. It smelled like wet leaves. The sidewalk shone. It had waited all day, just for Milo.",
       "is_ending": false,
       "choices": [
         {
@@ -71,7 +71,7 @@
     },
     {
       "id": "n_corner",
-      "body": "At the corner the walk went two ways. One way was the tree lane. The trees dripped, and small puddles dotted the path like polka dots. The other way was the hill, where rain water raced down the curb and chattered. \"You pick,\" said Grandma.",
+      "body": "At the corner the walk went two ways. One way was the tree lane. The trees dripped there. Small puddles dotted the path like polka dots. The other way was the hill. Rain water raced down the curb. It chattered and splashed. \"You pick,\" said Grandma.",
       "is_ending": false,
       "choices": [
         {
@@ -129,7 +129,7 @@
     },
     {
       "id": "n_worm_end",
-      "body": "The worm slid into the dirt and gave one happy wiggle. Home at last. Grandma gave Milo a high five. Her wet glove went squelch. They splashed all the way home for warm cocoa, and at dinner Milo told everyone about the little worm.",
+      "body": "The worm slid into the dirt. It gave one happy wiggle. Home at last! Grandma gave Milo a high five. Her wet glove went squelch. They splashed all the way home for warm cocoa. At dinner, Milo told everyone about the worm.",
       "is_ending": true,
       "ending": {
         "id": "e_worm_home",
@@ -140,7 +140,7 @@
     },
     {
       "id": "n_mirror",
-      "body": "The puddle was the biggest one Milo had ever seen. It held a whole upside-down sky. Milo saw clouds in it. He saw two smiling faces too, his and Grandma's. He backed up three big steps and bent his knees.",
+      "body": "This puddle was the biggest one Milo had ever seen. It held a whole upside-down sky. Milo saw clouds in it. He saw two faces too. They were his and Grandma's. He backed up three big steps. He bent his knees.",
       "is_ending": false,
       "choices": [
         {
@@ -164,7 +164,7 @@
     },
     {
       "id": "n_splash_end",
-      "body": "SPLASH! Silver drops flew up like fireworks. They pattered down on two hoods. The puddle wobbled into rings, giggling all the way to the edge. Milo was soaked. Grandma was soaked. Nobody minded one bit. That was the biggest splash of the whole day.",
+      "body": "SPLASH! Silver drops flew up like a firework. They came down on two hoods, pat, pat, pat. The puddle shook into rings. Milo was wet. Grandma was wet. No one minded one bit. That was the best splash of the whole day.",
       "is_ending": true,
       "ending": {
         "id": "e_biggest_splash",
@@ -175,7 +175,7 @@
     },
     {
       "id": "n_hill",
-      "body": "Rain water hurried along the curb. It burbled and rushed downhill like a tiny river. A leaf sailed by like a little boat. It spun once and zoomed away. Far down the hill, the clouds opened, and one warm sunbeam poked through.",
+      "body": "Rain water ran along the curb. It rushed downhill like a small river. A leaf sailed by. It was a little boat! It spun once and zoomed away. Far down the hill, the clouds opened. A warm sunbeam poked through.",
       "is_ending": false,
       "choices": [
         {
@@ -187,7 +187,7 @@
     },
     {
       "id": "n_stream_fork",
-      "body": "Milo trotted beside the chattering stream. Grandma picked up a wide brown leaf. \"Here is a boat,\" she said. Down below, the sunbeam grew brighter and warmer. Milo could race the leaf boat down the stream. Or he could follow the sun down the hill.",
+      "body": "Milo trotted beside the stream. It chattered all the way. Grandma picked up a wide brown leaf. \"Here is a boat,\" she said. Down below, the sunbeam grew warm and bright. Milo could race the boat down the stream. Or he could walk down to the sun.",
       "is_ending": false,
       "choices": [
         {
@@ -216,7 +216,7 @@
     },
     {
       "id": "n_race_finish",
-      "body": "Near the bottom of the hill, the water swirled toward the drain grate. That was the finish line. The leaf boat wobbled. It tipped. Then it popped up straight and shot ahead. Milo reached out his hand.",
+      "body": "Near the bottom of the hill, the water swirled. It ran to the drain grate. That was the finish line! The leaf boat wobbled. It tipped. Then it popped up straight. It shot ahead. Milo reached out his hand.",
       "is_ending": false,
       "choices": [
         {
@@ -228,7 +228,7 @@
     },
     {
       "id": "n_race_end",
-      "body": "Got it! Milo scooped up the leaf boat right at the finish line. It was drippy. He was proud. \"Hooray!\" cheered Grandma. Milo tucked the winning leaf into his pocket like a shiny medal. Then they stomped and splashed all the way home to tell everyone.",
+      "body": "Got it! Milo scooped up the leaf boat at the finish line. It was wet. He was proud. \"Hooray!\" cheered Grandma. Milo put the leaf in his pocket. It was his medal now. Then they stomped and splashed all the way home to tell the news.",
       "is_ending": true,
       "ending": {
         "id": "e_leaf_boat",
@@ -239,7 +239,7 @@
     },
     {
       "id": "n_downhill",
-      "body": "They followed the sunbeam down the hill. The drizzle turned to sprinkles. Then it stopped. Milo held out his hand and felt no rain at all. Every puddle turned gold, like little mirrors full of treasure. The whole street sparkled.",
+      "body": "They followed the sun down the hill. The rain went soft. Then it stopped. Milo held out his hand. He felt no rain at all. Every puddle turned gold. They looked like little mirrors full of treasure. The whole street shone.",
       "is_ending": false,
       "choices": [
         {
@@ -251,7 +251,7 @@
     },
     {
       "id": "n_sky",
-      "body": "At the bottom of the hill, Grandma stopped. She pointed up over the rooftops. \"Milo,\" she said softly. \"Look.\" Milo held her hand tight. He tipped his head way back and looked up, up, up.",
+      "body": "At the foot of the hill, Grandma stopped. She pointed up over the roofs. \"Milo,\" she said. \"Look.\" He held her hand tight. He tipped his head way back. He looked up, up, up.",
       "is_ending": false,
       "choices": [
         {
@@ -263,7 +263,7 @@
     },
     {
       "id": "n_rainbow_end",
-      "body": "A rainbow! It arched all the way over the town. Its stripes glowed in the clean blue sky. \"Red,\" said Milo. \"Orange. Yellow. Green. Blue. Purple.\" They named every color. Then they walked home right under it, the best surprise of Puddle Jumping Day.",
+      "body": "A rainbow! It arched over the whole town. Its stripes glowed in the clean blue sky. \"Red,\" said Milo. \"Orange. Yellow. Green. Blue. Purple.\" They named them all. Then they walked home right under it. What a fine surprise on Puddle Jumping Day!",
       "is_ending": true,
       "ending": {
         "id": "e_rainbow",
