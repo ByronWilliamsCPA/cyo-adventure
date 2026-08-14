@@ -25,7 +25,7 @@
     
     
       
-        <title>Generating choose-your-own-adventure books with LLMs: problem statement, capability analysis, and an open puzzle - CYO Adventure</title>
+        <title>Generating choose-your-own-adventure books with LLMs: decision diversity, story quality, and cost - CYO Adventure</title>
       
     
     
@@ -88,7 +88,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#generating-choose-your-own-adventure-books-with-llms-problem-statement-capability-analysis-and-an-open-puzzle" class="md-skip">
+        <a href="#generating-choose-your-own-adventure-books-with-llms-decision-diversity-story-quality-and-cost" class="md-skip">
           Skip to content
         </a>
       
@@ -122,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Generating choose-your-own-adventure books with LLMs: problem statement, capability analysis, and an open puzzle
+              Generating choose-your-own-adventure books with LLMs: decision diversity, story quality, and cost
             
           </span>
         </div>
@@ -4252,6 +4252,89 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#part-iv-three-axes-diversity-story-quality-and-cost" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part IV. Three axes: diversity, story quality, and cost
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part IV. Three axes: diversity, story quality, and cost">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#27-the-cross-vendor-replication-section-24-asked-for" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        27. The cross-vendor replication section 24 asked for
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#28-the-measurement-defect-that-inverted-our-own-headline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        28. The measurement defect that inverted our own headline
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#29-story-quality-the-axis-this-brief-was-missing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        29. Story quality, the axis this brief was missing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#30-what-a-book-costs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        30. What a book costs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#31-where-the-three-axes-leave-the-decision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        31. Where the three axes leave the decision
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-what-we-are-asking-you-now-and-the-latitude-you-have" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        32. What we are asking you now, and the latitude you have
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -4272,19 +4355,39 @@
   
 
 
-<h1 id="generating-choose-your-own-adventure-books-with-llms-problem-statement-capability-analysis-and-an-open-puzzle">Generating choose-your-own-adventure books with LLMs: problem statement, capability analysis, and an open puzzle<a class="headerlink" href="#generating-choose-your-own-adventure-books-with-llms-problem-statement-capability-analysis-and-an-open-puzzle" title="Permanent link">&para;</a></h1>
+<h1 id="generating-choose-your-own-adventure-books-with-llms-decision-diversity-story-quality-and-cost">Generating choose-your-own-adventure books with LLMs: decision diversity, story quality, and cost<a class="headerlink" href="#generating-choose-your-own-adventure-books-with-llms-decision-diversity-story-quality-and-cost" title="Permanent link">&para;</a></h1>
 <blockquote>
 <p><strong>Status: research brief prepared for external analysis.</strong> Written to be handed to readers
 with no access to the system it describes, so it is self-contained: every term is defined
 in section 9 and no claim depends on inspecting our code. Its purpose is to get independent
 theorizing on a problem we have attacked from ten directions without solving.</p>
+<p><strong>Scope, widened 2026-08-12.</strong> Parts I to III report one axis, <strong>decision diversity</strong>: the
+open puzzle this brief was originally written to pose. Part IV adds the two axes needed to
+make the question decidable, <strong>story quality</strong> (29) and <strong>cost</strong> (30), and reports the
+cross-vendor replication that Parts II and III said had to run before any diversity figure
+here could be quoted as general (27). A reader interested only in the original puzzle can
+stop at section 26; a reader being asked to choose an architecture should not, because
+section 27 retires one of the options and section 31 prices the rest.</p>
+<p><strong>Remit, widened again 2026-08-13.</strong> Everything before section 32 asks a narrow question and
+asks it in one vocabulary: architecture and metrics. That vocabulary produced real results
+and also bounded what we could see, and the last two rounds of work found the most consequential
+problems outside it, in supplier behaviour, quantization, serving infrastructure and evaluation
+validity rather than in any architecture. <strong>Section 32 replaces section 0's instruction with a
+wider one and is the operative statement of what we want.</strong> Read it first if you are reviewing
+this document, then use Parts I to IV as evidence rather than as a specification of the task.</p>
 <p><strong>Citations.</strong> Every reference in section 10 was verified against a primary source
 (publisher page, ACL Anthology, or proceedings entry). Six entries in an earlier draft were
 wrong and are corrected here; two claims that could not be verified were removed rather
 than softened. Where a finding is ours rather than published, it is marked as such.</p>
+</blockquote>
+<!-- Two distinct blockquotes below: a plain blank line here would trip MD028's ambiguity
+     check, and prefixing it with ">" would merge this into one blockquote with the
+     [!IMPORTANT] callout that follows, breaking that callout's GitHub rendering. -->
+
+<blockquote>
 <p>[!IMPORTANT]
 <strong>Provenance of every rating in this document.</strong> All ratings, annotations and "reader"
-judgments reported here, in both parts, were produced by <strong>LLM agent instances</strong>. <strong>No human
+judgments reported here, in all four parts, were produced by <strong>LLM agent instances</strong>. <strong>No human
 and no child has read or rated any generated book.</strong> These results are model-based
 hypotheses about reader response, not reader evidence. The reported Fleiss kappas are
 <strong>inter-model agreement</strong>: they measure consistency among those instances and establish
@@ -4326,10 +4429,23 @@ there. Reader-facing optimization in this programme remains provisional.</p>
 </blockquote>
 <hr />
 <h2 id="0-what-we-are-asking-you-to-do">0. What we are asking you to do<a class="headerlink" href="#0-what-we-are-asking-you-to-do" title="Permanent link">&para;</a></h2>
-<p>Read sections 1 through 7, then produce what section 8 asks for: <strong>two to four concrete
-architectures we could build and test.</strong> Section 8.1 gives the specification each proposal
-should meet, 8.2 the hard constraints, 8.3 the design questions we expect a good proposal to
-take a position on, and 8.4 some undeveloped families you are free to extend or dismiss.</p>
+<blockquote>
+<p><strong>Superseded 2026-08-13 by section 32.</strong> This section states the task as it was first posed and
+is kept because Parts I to III were written to answer it and read oddly without it. It is no
+longer the instruction. Section 32 is, and it is deliberately much wider. If the two conflict,
+follow 32.</p>
+</blockquote>
+<p><strong>The actual objective, stated plainly:</strong> a growing catalogue of choose-your-own-adventure books
+for children that are <strong>good</strong>, that are <strong>genuinely different from one another</strong>, produced at a
+<strong>cost that works at catalogue scale</strong>, without weakening the safety, reading-level and review
+standards a children's product has to meet. Every question in this document is instrumental to
+that. Where a section treats one of those four as the whole problem, the section is narrower than
+the goal, not the other way round.</p>
+<p><em>(Historical framing, not a live instruction: this section originally continued "read sections 1
+through 7, then produce what section 8 asks for: two to four concrete architectures we could
+build and test," which is the request section 32 has superseded. It is kept below, unexecuted,
+because sections 8.1 through 8.4 and Parts I to III were written against it and read oddly without
+the context. Do not act on it; act on section 32.)</em></p>
 <p>We are not asking whether LLMs can write stories. They can. We are asking something
 narrower: <strong>what architecture lets one reusable story graph produce many books in which the
 reader is asked to decide genuinely different things?</strong></p>
@@ -4365,8 +4481,14 @@ motivation, effort, task performance, and perceived competence. Two moderators m
 design: the effect is <strong>stronger for children than adults</strong>, and the optimum is around
 <strong>two to four successive choices</strong> rather than more. Self-determination theory [42] supplies
 the mechanism, with autonomy as one of three basic psychological needs.</p>
-<p>Our per-band rules cap options per choice at two to four. That was arrived at
-independently and turns out to match the meta-analytic optimum.</p>
+<p>Our per-band rules cap options per choice at two to four. That was arrived at independently,
+and it is <strong>not</strong> the same quantity the meta-analysis measured: [41]'s two-to-four moderator
+concerns the number of <em>successive</em> choices a participant is given, not the number of options
+presented at any one of them. The two numbers coinciding is a coincidence. <strong>Our branching
+rules are a house convention with no meta-analytic backing</strong>, and the right number of options
+per fork is an open question that has to be settled in a reading context, against option
+complexity and whether a child can anticipate what an option leads to. See the correction in
+section 17.</p>
 <p>Survey evidence points the same way. Scholastic's <em>Kids &amp; Family Reading Report</em> [52] reports
 <strong>93% of children agree that "my favorite books are the ones I have picked out myself"</strong>
 (8<sup>th</sup> edition, 2024; the comparable 5<sup>th</sup>-edition figure was 91%).</p>
@@ -6853,6 +6975,17 @@ thrown away the better experiment. The criterion was arbitrary, we had not writt
 choice, and it cost us a round.</p>
 <h2 id="17-corrections-to-part-i">17. Corrections to Part I<a class="headerlink" href="#17-corrections-to-part-i" title="Permanent link">&para;</a></h2>
 <ul>
+<li><strong>1.2 misread its own citation, corrected 2026-08-12.</strong> The section stated [41]'s moderator
+  correctly as "two to four <strong>successive</strong> choices", then claimed in the next sentence that our
+  cap of two to four <strong>options per choice</strong> "turns out to match the meta-analytic optimum". Those
+  are different quantities and the match was a coincidence, so the sentence asserted support the
+  meta-analysis does not give. Found by the fourth external review; confirmed by reading our own
+  two adjacent sentences, with no external check needed. The branching rules are unchanged and
+  now stand explicitly as a house convention. The same review reports two further problems with
+  how [41] is usually read, that the three-to-five-options result was not robust under
+  random-effects analysis and that the child-versus-adult moderator was model-dependent. Both
+  are claims about the paper's internals that we have not yet verified against it, so 1.2's
+  "stronger for children than adults" is flagged pending that check rather than changed.</li>
 <li><strong>Three edits were made to Part I's own text on 2026-08-11</strong>, and they are the only ones. The
   provenance banner was added at the head of the document; section 7's methods bullet now reads
   "separate <em>model-evaluator</em> instances" and "inter-model agreement" where it read "separate <em>rater</em>
@@ -7218,6 +7351,16 @@ this establishes that the mode is not a per-model artifact and says nothing abou
 is training-distribution-level across vendors. That replication is the open version of the
 question, and until it runs, no idiom floor or diversity margin in this document should be
 quoted as general.</p>
+<blockquote>
+<p><strong>Resolved 2026-08-12 by section 27.</strong> The replication ran across eight models from six
+independent labs. Premise convergence reproduces and is large: same brief, different lab,
+<strong>156.35 shared four-grams per 1000, about 120 times the cross-vendor floor</strong>. The claim
+above is therefore distribution-level, not family-level, and premise allocation is a
+precondition for every candidate architecture. The idiom floor result went the <em>other</em> way
+from what this section's framing implied: it is task-driven, not vendor-driven, so the
+caveat above is discharged for the floor and still stands for every single-family figure
+elsewhere in Parts II and III.</p>
+</blockquote>
 <h3 id="25-where-this-leaves-the-architecture-question">25. Where this leaves the architecture question<a class="headerlink" href="#25-where-this-leaves-the-architecture-question" title="Permanent link">&para;</a></h3>
 <p>Three things are now properties every candidate must supply, rather than advantages any one
 of them has:</p>
@@ -7232,6 +7375,15 @@ of them has:</p>
 <p>What genuinely separates the candidates has narrowed to review economics and cost, and
 neither is measurable today, because generation cost is not recorded anywhere in our system.
 The comparison should not be run until it is.</p>
+<blockquote>
+<p><strong>Half-resolved 2026-08-12 by section 30.</strong> Cost is now measured, at the fill stage, per
+book delivered: <strong>$0.040 to $1.419</strong>, a 36x spread. The blocker on the architecture
+comparison is lifted for cost and remains for review economics. Section 27 also converts
+item 1 above from "a property every candidate must supply" into a cross-vendor result, and
+retires a fourth candidate advantage that was still open: <strong>rotating vendors to buy lexical
+variety is close to a null intervention</strong> (ratio 1.28, and cost buys diversity at rho
+-0.11).</p>
+</blockquote>
 <p>One reuse-based design cleared its own cheapest kill test: the pilot contract decomposes
 into fork-to-join segments whose entry knowledge is entailed on every incoming path, with
 zero type errors across twenty-five nodes carrying declared entry states. We report it as
@@ -7241,11 +7393,1065 @@ joins, so the property was barely exercised.</p>
 <ul>
 <li><strong>Whether any of this tracks a reader.</strong> Unchanged and unchangeable here. Every rating in
   this document is a model's.</li>
-<li><strong>Whether the premise mode is a family artifact or a distribution artifact</strong> (24).</li>
-<li><strong>What any of it costs.</strong> No token, cost or duration figure is recorded by our pipeline,
-  so every economic claim in Part III is an observation about two runs rather than a price.</li>
+<li><del><strong>Whether the premise mode is a family artifact or a distribution artifact</strong> (24).</del>
+  <strong>Answered in 27</strong>: distribution artifact, replicated across six independent labs.</li>
+<li><del><strong>What any of it costs.</strong> No token, cost or duration figure is recorded by our pipeline,
+  so every economic claim in Part III is an observation about two runs rather than a price.</del>
+  <strong>Answered in 30</strong>, for the fill stage: $0.040 to $1.419 per delivered book. Repair-stage
+  cost is still unmeasured, and our pipeline still does not record cost at run time, so this
+  is a bought measurement rather than instrumentation.</li>
 <li><strong>Whether structural success at one hundred nodes reaches one hundred and fifty</strong>, which
   is the catalog median. We tested the scale that was in dispute, not the scale we ship.</li>
+</ul>
+<p>Added by Part IV:</p>
+<ul>
+<li><strong>Whether the judge panel can score dialogue at all.</strong> Dialogue is the floor for every
+  vendor at 3.04 with sd 0.19 (29), which is equally consistent with uniformly weak dialogue
+  and with judges unable to discriminate it. A human read of ten books would separate these
+  two, and nothing else we can run will.</li>
+<li><strong>What review costs</strong>, the remaining half of 25. Generation is now priced; the human and
+  automated review that every book must pass is not.</li>
+<li><strong>Whether any of the quality ordering survives a human reader.</strong> The provenance banner has
+  always said this; the addition of a quality axis in 29 makes it the load-bearing gap rather
+  than a caveat, because the quality column is now being used to rank suppliers.</li>
+</ul>
+<hr />
+<h2 id="part-iv-three-axes-diversity-story-quality-and-cost">Part IV. Three axes: diversity, story quality, and cost<a class="headerlink" href="#part-iv-three-axes-diversity-story-quality-and-cost" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p>Added 2026-08-12. This part widens the brief. Parts I to III asked one question, whether
+the reader is asked to decide different things, and reported one axis. That framing was
+too narrow to support the decision it was feeding: a book that varies its decisions and
+reads badly is not a product, and neither is one we cannot afford to generate. This part
+adds the two axes that were missing, <strong>story quality</strong> and <strong>cost</strong>, and reports the
+cross-vendor replication that section 24 said had to run before any diversity figure in
+this document could be quoted as general.</p>
+<p>It also corrects the strongest claim of the previous round. Our own harness recorded a
+verdict of <em>vendor-driven</em> convergence, and that verdict was an artifact of a measurement
+defect, not a property of the models. Section 28 gives the mechanism, because the defect
+generalises to anyone running this kind of comparison.</p>
+<p><strong>Everything in the provenance banner at the head of this document applies here without
+exception</strong>, and applies with particular force to section 29, which is entirely
+LLM-evaluator judgment. No human and no child has read any of these books either.</p>
+</blockquote>
+<h3 id="27-the-cross-vendor-replication-section-24-asked-for">27. The cross-vendor replication section 24 asked for<a class="headerlink" href="#27-the-cross-vendor-replication-section-24-asked-for" title="Permanent link">&para;</a></h3>
+<p>Section 24 established that premise convergence was not one model's mode, then limited the
+claim in the strongest terms available: all three tiers tested belonged to <strong>one model
+family</strong>, so nothing followed about whether the mode was training-distribution-level. That
+replication has now run.</p>
+<p><strong>Design.</strong> Eight models from <strong>six independent labs</strong> (Anthropic, DeepSeek, Google, OpenAI,
+xAI, Z-AI), four briefs each, the same four skeletons, the same fill prompt, the same
+32,000-token cap. Thirty-two books. No leg appears in more than one run, and every pair
+below is computed with the project's own four-gram metric, unchanged.</p>
+<p>Three quantities matter, and the comparison between them is the whole result:</p>
+<table>
+<thead>
+<tr>
+<th>measure</th>
+<th>what it asks</th>
+<th style="text-align: right;">pairs</th>
+<th style="text-align: right;">shared four-grams per 1000</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>within-vendor</strong></td>
+<td>same model, different brief</td>
+<td style="text-align: right;">39</td>
+<td style="text-align: right;"><strong>1.66</strong></td>
+</tr>
+<tr>
+<td><strong>cross-vendor</strong></td>
+<td>different lab, different brief</td>
+<td style="text-align: right;">243</td>
+<td style="text-align: right;"><strong>1.30</strong></td>
+</tr>
+<tr>
+<td>ratio</td>
+<td>does rotating the vendor buy variety?</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"><strong>1.28</strong></td>
+</tr>
+<tr>
+<td><strong>same-brief, cross-lab</strong></td>
+<td>different lab, <em>same</em> brief</td>
+<td style="text-align: right;">80</td>
+<td style="text-align: right;"><strong>156.35</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Per leg, within-vendor:</p>
+<table>
+<thead>
+<tr>
+<th>leg</th>
+<th style="text-align: right;">pairs</th>
+<th style="text-align: right;">mean</th>
+<th style="text-align: right;">max</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>xai-grok-4.6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">0.81</td>
+<td style="text-align: right;">1.72</td>
+</tr>
+<tr>
+<td>z-ai-glm-5.2</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">1.31</td>
+<td style="text-align: right;">2.51</td>
+</tr>
+<tr>
+<td>openai-gpt-5.6-sol</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">1.43</td>
+<td style="text-align: right;">2.64</td>
+</tr>
+<tr>
+<td>deepseek-v4-pro</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">1.74</td>
+<td style="text-align: right;">4.01</td>
+</tr>
+<tr>
+<td>google-gemini-3-flash</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1.96</td>
+<td style="text-align: right;">2.56</td>
+</tr>
+<tr>
+<td>anthropic-sonnet-4.6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">1.99</td>
+<td style="text-align: right;">3.23</td>
+</tr>
+<tr>
+<td>google-gemini-3.1-pro</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">2.50</td>
+<td style="text-align: right;">5.42</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The idiom floor is task-driven, not vendor-driven.</strong> A model repeats itself across briefs
+at 1.66 per 1000; two different labs writing different briefs land at 1.30. The gap is 28
+percent, and the spread <em>within</em> the per-leg column (0.81 to 2.50, a factor of three) is
+larger than the gap between the within and cross conditions. Rotating vendors to buy
+lexical variety is close to a null intervention. This is a negative result for one of the
+architectural options Part III was still holding open.</p>
+<p><strong>Premise convergence, however, replicates across the training distribution and is enormous.</strong>
+Hold the brief fixed and vary the lab, and shared four-grams jump to <strong>156.35 per 1000,
+roughly 120 times the cross-vendor floor</strong>. Six labs that share no weights, no training run
+and no context converge on the same story when handed the same brief, at a rate two orders
+of magnitude above the level at which they converge on anything else.</p>
+<p>So section 24's limiting caveat is discharged, and its conclusion survives contact with five
+more vendors:</p>
+<blockquote>
+<p><strong>Premise allocation from a curated enumerated space is a precondition for every candidate
+architecture, not a feature of any one of them.</strong> It is not a per-model artifact and not a
+per-family artifact. Independent generation buys wording independence and nothing above it,
+whoever trained the model.</p>
+</blockquote>
+<p>The corresponding sentence in section 24, that no idiom floor or diversity margin in this
+document should be quoted as general until this ran, no longer applies to the floor. It
+still applies to everything derived from a single family elsewhere in Parts II and III.</p>
+<h3 id="28-the-measurement-defect-that-inverted-our-own-headline">28. The measurement defect that inverted our own headline<a class="headerlink" href="#28-the-measurement-defect-that-inverted-our-own-headline" title="Permanent link">&para;</a></h3>
+<p>The first run of this comparison recorded, in its own report file, the opposite verdict:</p>
+<blockquote>
+<p><code>vendor-driven: within-vendor 2.54 exceeds cross-vendor 0.79 per 1000 (ratio 3.22);</code>
+<code>rotating vendors removes idiom that rotating briefs does not</code></p>
+</blockquote>
+<p>That is wrong, and it was nearly propagated into this document. The mechanism is worth
+stating in full because it is not specific to our harness.</p>
+<p><strong>Four of the thirty-two books were never filled.</strong> The generator returned a structurally
+valid document whose node bodies still held the skeleton's <code>&lt;&lt;FILL ...&gt;&gt;</code> directives. Our
+pipeline reported those books as passing, because every deterministic checker abstains on a
+body it cannot parse as prose and an abstention aggregates as clean. Three of the four
+belonged to one leg.</p>
+<p>An unfilled book corrupts a similarity metric <strong>in both directions at once</strong>:</p>
+<ul>
+<li><strong>Against each other</strong>, unfilled books are near-identical, because they are largely the
+  same skeleton directives. Measured: 10.1, 12.1 and 13.0 shared four-grams per 1000, against
+  a maximum of 5.42 anywhere in the clean pool. This inflates <em>within-vendor</em>.</li>
+<li><strong>Against filled books</strong>, they share almost nothing, because directive text is not prose.
+  Measured against one peer leg's four books: 0.00, 70.44, 0.25, 0.00. This deflates
+  <em>cross-vendor</em>.</li>
+</ul>
+<p>The ratio is a quotient of the two, so a single bad leg moves the numerator up and the
+denominator down simultaneously. Three books out of thirty-two produced a 2.5x error in the
+headline and flipped its direction.</p>
+<p><strong>The cheap detector we now use.</strong> On the clean pool, the ratio computed from means and the
+ratio computed from medians agree exactly: <strong>1.28 and 1.28</strong>. On the contaminated pool they
+diverge sharply: <strong>1.77 against 1.22</strong>. Convergence of the two statistics is evidence the
+distribution has no pathological outlier driving the result; divergence is a signal to go
+looking for one before publishing. This costs one extra line of arithmetic and would have
+caught the defect at the moment it was introduced.</p>
+<p>The generalisation, for anyone building a comparison of this shape:</p>
+<blockquote>
+<p>A pipeline stage that can return a syntactically valid but semantically empty artifact will
+corrupt every downstream aggregate, and will do so <em>silently</em>, because validity checks pass
+and content checks abstain. Gate the aggregate on content completeness, not on schema
+validity, and never emit a verdict from a pool you have not first proven is filled.</p>
+</blockquote>
+<h3 id="29-story-quality-the-axis-this-brief-was-missing">29. Story quality, the axis this brief was missing<a class="headerlink" href="#29-story-quality-the-axis-this-brief-was-missing" title="Permanent link">&para;</a></h3>
+<p>Diversity is necessary and nowhere near sufficient. A generator that produces maximally
+different books nobody wants to read has solved the stated problem and none of the real one.
+This programme measures quality two ways, and they do not agree with each other, which is
+the interesting part.</p>
+<p><strong>Deterministic compliance</strong> is the strong evidence class. Two figures per leg: the mean
+Flesch-Kincaid grade of the book, and the <strong>in-band rate</strong>, the fraction of nodes falling
+inside the target reading band for the age group. These are computed, not judged.</p>
+<p><strong>The judge panel</strong> is the weak evidence class, and the provenance banner governs it
+completely. Three judges drawn from <strong>three different labs</strong> scored every book on seven
+criteria (age fit, choice quality, dialogue, ending quality, engagement, imagery, voice),
+producing 84 verdicts. Two controls:</p>
+<ul>
+<li><strong>Self-family scorings are dropped from the reported figure.</strong> A judge's ratings of books
+  written by its own model family are excluded from the pooled mean, which is what the
+  <code>peers_only</code> column below reports. This does not eliminate the self-preference effect
+  identified in 3.8 and [37]; it removes only its most direct expression.</li>
+<li><strong>Baselines are estimated from every book a judge graded</strong>, including the dropped
+  self-family ones, so a judge that is uniformly harsh is not mistaken for one that dislikes
+  a particular vendor.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>leg</th>
+<th style="text-align: right;">FK grade</th>
+<th style="text-align: right;">in-band</th>
+<th style="text-align: right;">quality (peers only)</th>
+<th style="text-align: right;">raw mean</th>
+<th style="text-align: right;">n</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>anthropic-sonnet-5</td>
+<td style="text-align: right;">3.04</td>
+<td style="text-align: right;">0.89</td>
+<td style="text-align: right;"><strong>+0.69</strong></td>
+<td style="text-align: right;">4.10</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr>
+<td>xai-grok-4.6</td>
+<td style="text-align: right;">2.89</td>
+<td style="text-align: right;"><strong>0.99</strong></td>
+<td style="text-align: right;">+0.61</td>
+<td style="text-align: right;">4.04</td>
+<td style="text-align: right;">12</td>
+</tr>
+<tr>
+<td>openai-gpt-5.6-sol</td>
+<td style="text-align: right;">2.96</td>
+<td style="text-align: right;">0.93</td>
+<td style="text-align: right;">+0.38</td>
+<td style="text-align: right;">4.04</td>
+<td style="text-align: right;">12</td>
+</tr>
+<tr>
+<td>anthropic-sonnet-4.6</td>
+<td style="text-align: right;"><strong>3.90</strong></td>
+<td style="text-align: right;"><strong>0.54</strong></td>
+<td style="text-align: right;">+0.14</td>
+<td style="text-align: right;">3.90</td>
+<td style="text-align: right;">12</td>
+</tr>
+<tr>
+<td>deepseek-v4-pro</td>
+<td style="text-align: right;">2.68</td>
+<td style="text-align: right;">0.85</td>
+<td style="text-align: right;">-0.13</td>
+<td style="text-align: right;">3.85</td>
+<td style="text-align: right;">12</td>
+</tr>
+<tr>
+<td>z-ai-glm-5.2</td>
+<td style="text-align: right;">2.99</td>
+<td style="text-align: right;">0.86</td>
+<td style="text-align: right;">-0.41</td>
+<td style="text-align: right;">3.70</td>
+<td style="text-align: right;">12</td>
+</tr>
+<tr>
+<td>google-gemini-3.1-pro</td>
+<td style="text-align: right;">3.15</td>
+<td style="text-align: right;">0.91</td>
+<td style="text-align: right;">-0.43</td>
+<td style="text-align: right;">3.68</td>
+<td style="text-align: right;">12</td>
+</tr>
+<tr>
+<td>google-gemini-3-flash</td>
+<td style="text-align: right;">3.31</td>
+<td style="text-align: right;">0.61</td>
+<td style="text-align: right;">-0.85</td>
+<td style="text-align: right;">3.63</td>
+<td style="text-align: right;">9</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Compliance and quality dissociate.</strong> The clearest case is <code>anthropic-sonnet-4.6</code>, which
+posts the <strong>best mean reading grade in the table and the worst in-band rate</strong>: 3.90 and 0.54.
+A good average over a distribution half of which is out of band is not a good book for a
+seven-year-old, and an average is exactly what a per-book aggregate hides. Rank correlation
+between judged quality and in-band rate is +0.50: related, far from the same thing. This is
+the same lesson section 23 reached from the repair-loop side, arriving from the measurement
+side.</p>
+<p><strong>The models fail at the same thing.</strong> Across all 84 verdicts, the per-criterion spread is
+narrow and the ordering is stable:</p>
+<table>
+<thead>
+<tr>
+<th>criterion</th>
+<th style="text-align: right;">mean</th>
+<th style="text-align: right;">sd</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>imagery</td>
+<td style="text-align: right;">4.46</td>
+<td style="text-align: right;">0.54</td>
+</tr>
+<tr>
+<td>age fit</td>
+<td style="text-align: right;">4.15</td>
+<td style="text-align: right;">0.59</td>
+</tr>
+<tr>
+<td>engagement</td>
+<td style="text-align: right;">4.14</td>
+<td style="text-align: right;">0.58</td>
+</tr>
+<tr>
+<td>ending quality</td>
+<td style="text-align: right;">3.92</td>
+<td style="text-align: right;">0.71</td>
+</tr>
+<tr>
+<td>choice quality</td>
+<td style="text-align: right;">3.75</td>
+<td style="text-align: right;">0.77</td>
+</tr>
+<tr>
+<td>voice</td>
+<td style="text-align: right;">3.49</td>
+<td style="text-align: right;">0.81</td>
+</tr>
+<tr>
+<td><strong>dialogue</strong></td>
+<td style="text-align: right;"><strong>3.04</strong></td>
+<td style="text-align: right;"><strong>0.19</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Dialogue is the floor everywhere, and it has by far the tightest spread in the table: sd
+0.19, less than a third of any other criterion, with judges using only the range 3 to 4
+across every book from every lab. <strong>No vendor is better at dialogue than any other</strong>, and
+the panel cannot separate them. Read alongside section 27, this is the same shape of result
+on a different axis: the binding constraints are properties of the task and the prompt, not
+of the supplier. Choice quality, the criterion closest to the defect this whole programme
+exists to attack, sits second from the bottom at 3.75.</p>
+<p><strong>On dialogue specifically, the deterministic measure settles what the panel cannot, and the
+answer is that both readings are true.</strong> We also compute <code>dialogue_share</code>, the fraction of
+text inside quotation marks, which is arithmetic rather than judgment:</p>
+<table>
+<thead>
+<tr>
+<th>leg</th>
+<th style="text-align: right;">dialogue share</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>xai-grok-4.6</td>
+<td style="text-align: right;">0.000</td>
+</tr>
+<tr>
+<td>anthropic-sonnet-5</td>
+<td style="text-align: right;">0.000</td>
+</tr>
+<tr>
+<td>google-gemini-3.1-pro</td>
+<td style="text-align: right;">0.002</td>
+</tr>
+<tr>
+<td>deepseek-v4-pro</td>
+<td style="text-align: right;">0.007</td>
+</tr>
+<tr>
+<td>anthropic-sonnet-4.6</td>
+<td style="text-align: right;">0.012</td>
+</tr>
+<tr>
+<td>google-gemini-3-flash</td>
+<td style="text-align: right;">0.014</td>
+</tr>
+<tr>
+<td>z-ai-glm-5.2</td>
+<td style="text-align: right;">0.023</td>
+</tr>
+<tr>
+<td>openai-gpt-5.6-sol</td>
+<td style="text-align: right;">0.049</td>
+</tr>
+</tbody>
+</table>
+<p>Two conclusions follow, and they are independent:</p>
+<ol>
+<li><strong>The books really are near-dialogue-free</strong>, whatever model writes them. The most
+   conversational book in the entire comparison is <strong>95 percent narration</strong>, and two legs
+   write no dialogue at all. For a book aimed at a seven-year-old this is a product defect,
+   and it is a property of our skeletons and fill prompt rather than of any supplier, which
+   makes it the same shape of finding as 27 and the dialogue row above.</li>
+<li><strong>The panel's dialogue criterion is measuring nothing.</strong> It returned 3.00 for seven of the
+   eight legs while the deterministic measure of the same property spread <strong>twenty-five-fold</strong>
+   across those legs, and it scored the leg that writes literally zero dialogue the same as
+   the leg that writes the most. A criterion that returns a constant across subjects is
+   evidence about the rubric, not about the subjects.</li>
+</ol>
+<p>The general lesson we take from the pair, and the reason this section reports two evidence
+classes side by side rather than one: <strong>where a deterministic measure of a property exists,
+prefer it, and reserve the panel for what only a reader can judge.</strong> The evidence-class
+caveat is not a formality here; on this criterion the weak class was not merely weaker than
+the strong one, it was actively misleading, and only having both revealed it.</p>
+<h3 id="30-what-a-book-costs">30. What a book costs<a class="headerlink" href="#30-what-a-book-costs" title="Permanent link">&para;</a></h3>
+<p>Sections 25 and 26 both stopped at the same wall: <em>"generation cost is not recorded anywhere
+in our system"</em>, so <em>"every economic claim in Part III is an observation about two runs
+rather than a price"</em>. We bought the number.</p>
+<p><strong>Method.</strong> Every fill call was re-issued through a billing-transparent gateway that reports
+the actually-charged amount and splits it into prompt and completion components, at the same
+32,000-token cap and with the same prompt as the runs. Nine models, four briefs each. Total
+measurement spend, $5.86.</p>
+<blockquote>
+<p><strong>#ASSUME: payment/financial.</strong> Every dollar figure below is what the gateway billed for
+this one re-issue, not a guaranteed production price: model pricing can change between this
+measurement and any later run, and a re-issued call is not contractually the same call the
+original comparison paid for, only a same-prompt, same-cap proxy for it.
+<strong>#VERIFY:</strong> treat this table as a point-in-time measurement to re-run before quoting a
+production cost estimate, not as a standing price list.</p>
+<p><strong>#ASSUME: external-resources.</strong> The per-call figures depend on the gateway's own billing
+report being accurate and on the routed backend for each model being the one actually billed
+(a fallback or region reroute mid-call would attribute cost to the wrong leg).
+<strong>#VERIFY:</strong> the <code>provider_order</code> backend pin on each vendor entry (<code>docs/planning/vendor-comparison/vendors.json</code>)
+is what makes a leg's spend attributable to one serving stack; a slate that omits the pin
+loses that guarantee.</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>leg</th>
+<th style="text-align: right;">$/call</th>
+<th style="text-align: right;">prompt tok</th>
+<th style="text-align: right;">cached</th>
+<th style="text-align: right;">output tok</th>
+<th style="text-align: right;">reasoning</th>
+<th style="text-align: right;">reasoning share</th>
+<th style="text-align: right;"><strong>prose tok</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>google-gemini-3-flash</td>
+<td style="text-align: right;">0.0314</td>
+<td style="text-align: right;">19,752</td>
+<td style="text-align: right;">0%</td>
+<td style="text-align: right;">7,174</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0%</td>
+<td style="text-align: right;">7,174</td>
+</tr>
+<tr>
+<td>deepseek-v4-pro</td>
+<td style="text-align: right;">0.0398</td>
+<td style="text-align: right;">18,826</td>
+<td style="text-align: right;">0%</td>
+<td style="text-align: right;">7,122</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0%</td>
+<td style="text-align: right;">7,122</td>
+</tr>
+<tr>
+<td>z-ai-glm-5.2</td>
+<td style="text-align: right;">0.1123</td>
+<td style="text-align: right;">18,314</td>
+<td style="text-align: right;">30%</td>
+<td style="text-align: right;">21,107</td>
+<td style="text-align: right;">13,822</td>
+<td style="text-align: right;">65%</td>
+<td style="text-align: right;">7,284</td>
+</tr>
+<tr>
+<td>anthropic-sonnet-4.6</td>
+<td style="text-align: right;">0.1860</td>
+<td style="text-align: right;">20,833</td>
+<td style="text-align: right;">0%</td>
+<td style="text-align: right;">8,232</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0%</td>
+<td style="text-align: right;">8,232</td>
+</tr>
+<tr>
+<td>xai-grok-4.6</td>
+<td style="text-align: right;">0.1963</td>
+<td style="text-align: right;">19,103</td>
+<td style="text-align: right;">1%</td>
+<td style="text-align: right;">26,387</td>
+<td style="text-align: right;">19,486</td>
+<td style="text-align: right;"><strong>74%</strong></td>
+<td style="text-align: right;">6,901</td>
+</tr>
+<tr>
+<td>openai-gpt-5.6-sol</td>
+<td style="text-align: right;">0.2688</td>
+<td style="text-align: right;">18,362</td>
+<td style="text-align: right;">44%</td>
+<td style="text-align: right;">6,696</td>
+<td style="text-align: right;">602</td>
+<td style="text-align: right;">9%</td>
+<td style="text-align: right;">6,094</td>
+</tr>
+<tr>
+<td>google-gemini-3.1-pro</td>
+<td style="text-align: right;">0.2767</td>
+<td style="text-align: right;">19,752</td>
+<td style="text-align: right;">0%</td>
+<td style="text-align: right;">19,770</td>
+<td style="text-align: right;">11,470</td>
+<td style="text-align: right;">58%</td>
+<td style="text-align: right;">8,300</td>
+</tr>
+<tr>
+<td>anthropic-sonnet-5</td>
+<td style="text-align: right;">0.3549</td>
+<td style="text-align: right;">27,180</td>
+<td style="text-align: right;">0%</td>
+<td style="text-align: right;">30,050</td>
+<td style="text-align: right;">5,179</td>
+<td style="text-align: right;">17%</td>
+<td style="text-align: right;">(truncated)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The deliverable is nearly constant; the bill is not.</strong> Across the seven legs that delivered,
+the prose actually written spans <strong>6,094 to 8,300 tokens, a factor of 1.36</strong>. Cost spans
+<strong>a factor of 8.8</strong>. The variable you are paying for is reasoning, which is billed at the
+output rate, is invisible in the finished book, and ranges from zero to 19,486 tokens. Grok
+4.6 spends <strong>74 percent of its billed output on thinking the reader never sees</strong>.</p>
+<p>Two consequences that were not obvious to us before measuring:</p>
+<ol>
+<li><strong>Cost per book cannot be projected from book length.</strong> We tried, using list rates and a
+   measured 8,256 output tokens per book, and the error sorts perfectly by reasoning share:</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>leg</th>
+<th style="text-align: right;">reasoning share</th>
+<th style="text-align: right;">projected</th>
+<th style="text-align: right;">measured</th>
+<th style="text-align: right;">error</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>anthropic-sonnet-4.6</td>
+<td style="text-align: right;">0%</td>
+<td style="text-align: right;">0.1863</td>
+<td style="text-align: right;">0.1860</td>
+<td style="text-align: right;">1.00x</td>
+</tr>
+<tr>
+<td>deepseek-v4-pro</td>
+<td style="text-align: right;">0%</td>
+<td style="text-align: right;">0.0427</td>
+<td style="text-align: right;">0.0398</td>
+<td style="text-align: right;">0.93x</td>
+</tr>
+<tr>
+<td>google-gemini-3-flash</td>
+<td style="text-align: right;">0%</td>
+<td style="text-align: right;">0.0346</td>
+<td style="text-align: right;">0.0314</td>
+<td style="text-align: right;">0.91x</td>
+</tr>
+<tr>
+<td>openai-gpt-5.6-sol</td>
+<td style="text-align: right;">9%</td>
+<td style="text-align: right;">0.3156</td>
+<td style="text-align: right;">0.2688</td>
+<td style="text-align: right;">0.85x</td>
+</tr>
+<tr>
+<td>google-gemini-3.1-pro</td>
+<td style="text-align: right;">58%</td>
+<td style="text-align: right;">0.1386</td>
+<td style="text-align: right;">0.2767</td>
+<td style="text-align: right;"><strong>2.00x</strong></td>
+</tr>
+<tr>
+<td>z-ai-glm-5.2</td>
+<td style="text-align: right;">65%</td>
+<td style="text-align: right;">0.0557</td>
+<td style="text-align: right;">0.1123</td>
+<td style="text-align: right;"><strong>2.01x</strong></td>
+</tr>
+<tr>
+<td>xai-grok-4.6</td>
+<td style="text-align: right;">74%</td>
+<td style="text-align: right;">0.0876</td>
+<td style="text-align: right;">0.1963</td>
+<td style="text-align: right;"><strong>2.24x</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Every leg below 10 percent reasoning lands within 15 percent, and every leg above it is
+   <strong>underestimated by roughly half</strong>. There is no overlap between the two groups. Length is a
+   property of the product; the bill is a property of the process.
+2. <strong>List input prices overstate the real input cost</strong>, because prompt caching is doing
+   substantial work: 44 percent of <code>gpt-5.6-sol</code>'s prompt tokens and 30 percent of
+   <code>glm-5.2</code>'s were served from cache. Any price model built from published rates without a
+   cache-hit term will over-recover on exactly the high-volume path where caching pays.</p>
+<p><strong>Failure is billed in full, so price the delivered book, not the call.</strong> <code>anthropic-sonnet-5</code>
+hit the token cap on two of four calls and returned unterminated JSON, charged at $0.3695 and
+$0.3857 for nothing usable. Dividing measured spend by the <strong>fill rate observed in the runs</strong>
+charges those failures to the books that landed, which is what a price actually has to cover:</p>
+<table>
+<thead>
+<tr>
+<th>leg</th>
+<th style="text-align: right;">fill rate</th>
+<th style="text-align: right;">$/call</th>
+<th style="text-align: right;"><strong>$/book delivered</strong></th>
+<th style="text-align: right;">$ per 1000 books</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>deepseek-v4-pro</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">0.0398</td>
+<td style="text-align: right;"><strong>0.0398</strong></td>
+<td style="text-align: right;">40</td>
+</tr>
+<tr>
+<td>google-gemini-3-flash</td>
+<td style="text-align: right;">0.75</td>
+<td style="text-align: right;">0.0314</td>
+<td style="text-align: right;"><strong>0.0419</strong></td>
+<td style="text-align: right;">42</td>
+</tr>
+<tr>
+<td>z-ai-glm-5.2</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">0.1123</td>
+<td style="text-align: right;"><strong>0.1123</strong></td>
+<td style="text-align: right;">112</td>
+</tr>
+<tr>
+<td>anthropic-sonnet-4.6</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">0.1860</td>
+<td style="text-align: right;"><strong>0.1860</strong></td>
+<td style="text-align: right;">186</td>
+</tr>
+<tr>
+<td>xai-grok-4.6</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">0.1963</td>
+<td style="text-align: right;"><strong>0.1963</strong></td>
+<td style="text-align: right;">196</td>
+</tr>
+<tr>
+<td>openai-gpt-5.6-sol</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">0.2688</td>
+<td style="text-align: right;"><strong>0.2688</strong></td>
+<td style="text-align: right;">269</td>
+</tr>
+<tr>
+<td>google-gemini-3.1-pro</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">0.2767</td>
+<td style="text-align: right;"><strong>0.2767</strong></td>
+<td style="text-align: right;">277</td>
+</tr>
+<tr>
+<td>anthropic-sonnet-5</td>
+<td style="text-align: right;">0.25</td>
+<td style="text-align: right;">0.3549</td>
+<td style="text-align: right;"><strong>1.4194</strong></td>
+<td style="text-align: right;">1,419</td>
+</tr>
+</tbody>
+</table>
+<p>The spread across the whole table is <strong>36x per delivered book</strong>, against 8.8x per call. Note
+also that the fill rate here comes from the runs rather than from the billing probe, and the
+two disagree for <code>sonnet-5</code>: the probe saw 2 of 4 completions parse, the runs saw 1 of 4
+books actually filled. That gap is section 28's defect measured directly. <strong>A completion that
+parses is not a book.</strong></p>
+<p><strong>The limiting case, from a ninth model we could not fully measure.</strong> <code>moonshotai/kimi-k3</code>
+returned exactly one priced call before its remaining three died at the transport layer, so
+this is n=1 and we report it as an illustration rather than a figure. That single call:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align: right;"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>billed</td>
+<td style="text-align: right;"><strong>$0.5319</strong></td>
+</tr>
+<tr>
+<td>prompt tokens</td>
+<td style="text-align: right;">17,286</td>
+</tr>
+<tr>
+<td>output tokens</td>
+<td style="text-align: right;">32,000 (hit the cap)</td>
+</tr>
+<tr>
+<td>of which reasoning</td>
+<td style="text-align: right;"><strong>30,872 (96%)</strong></td>
+</tr>
+<tr>
+<td>of which prose</td>
+<td style="text-align: right;"><strong>1,128</strong></td>
+</tr>
+<tr>
+<td>finish reason</td>
+<td style="text-align: right;"><code>length</code></td>
+</tr>
+<tr>
+<td>usable book</td>
+<td style="text-align: right;"><strong>no</strong></td>
+</tr>
+</tbody>
+</table>
+<p>It is the most expensive call in the sweep and it delivered nothing. Ninety-six percent of
+the bill bought reasoning, the remaining four percent bought a fragment, and the cap arrived
+before the book did. Every claim in this section is visible in one row: the bill tracks the
+process, the product is what is left over, and a token budget set from expected book length
+will be consumed by thinking before the story starts.</p>
+<p><strong>Scope.</strong> These are fill-stage figures. Only 5 of the 40 books in the comparison required
+any repair attempt, so fill dominates the bill, but a production path that runs the section 23
+repair loop will cost more than this table on the books that need it.</p>
+<blockquote>
+<p><strong>Denominator flagged, not resolved.</strong> Section 27 defines this comparison's cohort as eight
+models times four briefs, thirty-two books; this section's own Method paragraph above re-issued
+the cost measurement over nine models times four briefs, thirty-six calls. Neither is forty, and
+nothing else in this document defines a forty-book cohort (the only other "forty" in this
+document, in section 12, counts shared four-grams in an unrelated diversity experiment and is not
+a book count). Whoever holds the underlying run data should confirm which denominator this "5"
+was actually counted against (32, 36, or a genuinely distinct cohort this brief never states) and
+correct the rate here; recomputing without that data would replace one unverified number with
+another.</p>
+</blockquote>
+<h3 id="31-where-the-three-axes-leave-the-decision">31. Where the three axes leave the decision<a class="headerlink" href="#31-where-the-three-axes-leave-the-decision" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>leg</th>
+<th style="text-align: right;">diversity (within-vendor, lower is better)</th>
+<th style="text-align: right;">in-band</th>
+<th style="text-align: right;">quality</th>
+<th style="text-align: right;">$/book</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>xai-grok-4.6</td>
+<td style="text-align: right;"><strong>0.81</strong></td>
+<td style="text-align: right;"><strong>0.99</strong></td>
+<td style="text-align: right;">+0.61</td>
+<td style="text-align: right;">0.1963</td>
+</tr>
+<tr>
+<td>z-ai-glm-5.2</td>
+<td style="text-align: right;">1.31</td>
+<td style="text-align: right;">0.86</td>
+<td style="text-align: right;">-0.41</td>
+<td style="text-align: right;">0.1123</td>
+</tr>
+<tr>
+<td>openai-gpt-5.6-sol</td>
+<td style="text-align: right;">1.43</td>
+<td style="text-align: right;">0.93</td>
+<td style="text-align: right;">+0.38</td>
+<td style="text-align: right;">0.2688</td>
+</tr>
+<tr>
+<td>deepseek-v4-pro</td>
+<td style="text-align: right;">1.74</td>
+<td style="text-align: right;">0.85</td>
+<td style="text-align: right;">-0.13</td>
+<td style="text-align: right;"><strong>0.0398</strong></td>
+</tr>
+<tr>
+<td>google-gemini-3-flash</td>
+<td style="text-align: right;">1.96</td>
+<td style="text-align: right;">0.61</td>
+<td style="text-align: right;">-0.85</td>
+<td style="text-align: right;">0.0419</td>
+</tr>
+<tr>
+<td>anthropic-sonnet-4.6</td>
+<td style="text-align: right;">1.99</td>
+<td style="text-align: right;">0.54</td>
+<td style="text-align: right;">+0.14</td>
+<td style="text-align: right;">0.1860</td>
+</tr>
+<tr>
+<td>google-gemini-3.1-pro</td>
+<td style="text-align: right;">2.50</td>
+<td style="text-align: right;">0.91</td>
+<td style="text-align: right;">-0.43</td>
+<td style="text-align: right;">0.2767</td>
+</tr>
+<tr>
+<td>anthropic-sonnet-5</td>
+<td style="text-align: right;">n/a</td>
+<td style="text-align: right;">0.89</td>
+<td style="text-align: right;">+0.69</td>
+<td style="text-align: right;">1.4194</td>
+</tr>
+</tbody>
+</table>
+<p>Rank correlations across the seven delivering legs, which is a small enough sample that these
+are indications rather than estimates:</p>
+<table>
+<thead>
+<tr>
+<th>relationship</th>
+<th style="text-align: right;">Spearman rho</th>
+<th>reading</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cost vs in-band compliance</td>
+<td style="text-align: right;"><strong>+0.64</strong></td>
+<td>the strongest thing money buys</td>
+</tr>
+<tr>
+<td>quality vs in-band compliance</td>
+<td style="text-align: right;">+0.50</td>
+<td>related, not interchangeable (29)</td>
+</tr>
+<tr>
+<td>quality vs diversity</td>
+<td style="text-align: right;">+0.57</td>
+<td>the more varied legs also read better</td>
+</tr>
+<tr>
+<td>cost vs quality</td>
+<td style="text-align: right;">+0.39</td>
+<td>weak</td>
+</tr>
+<tr>
+<td><strong>cost vs diversity</strong></td>
+<td style="text-align: right;"><strong>-0.11</strong></td>
+<td><strong>nothing. money does not buy variety</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Spending more does not buy a more varied book.</strong> That correlation is -0.11, which at n=7 is
+indistinguishable from zero, and it is consistent with section 27's finding from the other
+direction: the floor belongs to the task, so no supplier sells a way out of it.</p>
+<p>One leg is close to dominant on the axes we can measure. <code>xai-grok-4.6</code> holds the best
+within-vendor diversity (0.81), the best in-band compliance (0.99) and the second-best judged
+quality (+0.61), at mid-table cost, though 74 percent of what it bills is reasoning overhead.
+<code>deepseek-v4-pro</code> is <strong>4.9x cheaper</strong> and gives up 0.14 of in-band rate and 0.74 of judged
+quality to get there. That is the actual trade, and it is now a trade rather than a guess,
+which is what sections 25 and 26 said had to happen before the architecture comparison could
+be run.</p>
+<p>The comparison this unblocks is still not run. What has changed is that it can be.</p>
+<hr />
+<h3 id="32-what-we-are-asking-you-now-and-the-latitude-you-have">32. What we are asking you now, and the latitude you have<a class="headerlink" href="#32-what-we-are-asking-you-now-and-the-latitude-you-have" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p>Added 2026-08-13. <strong>This section supersedes section 0 and section 18 as the statement of the
+task.</strong> Those asked for architectures, in a document that spends 2,700 lines establishing that
+architecture is the layer we understand best. This one asks for something else.</p>
+</blockquote>
+<h4 id="321-the-objective-and-the-only-four-things-that-are-actually-required">32.1 The objective, and the only four things that are actually required<a class="headerlink" href="#321-the-objective-and-the-only-four-things-that-are-actually-required" title="Permanent link">&para;</a></h4>
+<p>A growing catalogue of choose-your-own-adventure books for children that is:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Requirement</th>
+<th>How we currently judge it</th>
+<th>Confidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>Good</strong>: a child wants to read it, and finish it</td>
+<td>LLM judge panel, three labs, blind, z-normalised (29)</td>
+<td><strong>low</strong>: no human or child has read any book</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Varied</strong>: books differ from one another in ways a reader notices</td>
+<td>four-gram convergence plus a decision-repetition construct we know is wrong (1.4, 14)</td>
+<td><strong>low on construct, high on arithmetic</strong></td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Affordable</strong> at catalogue scale</td>
+<td>measured $/delivered book, fill stage only (30)</td>
+<td><strong>medium</strong>: real, but partial (32.4)</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Safe and age-appropriate</strong>, verifiably</td>
+<td>deterministic validator, moderation gate, mandatory human approval</td>
+<td><strong>highest evidence we hold</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Requirement 4 is not negotiable and no proposal may trade against it. The other three are all
+open to reformulation, including the claim that requirement 2 matters as much as this document
+assumes.</p>
+<h4 id="322-why-we-are-widening-the-remit-rather-than-asking-for-more-architectures">32.2 Why we are widening the remit rather than asking for more architectures<a class="headerlink" href="#322-why-we-are-widening-the-remit-rather-than-asking-for-more-architectures" title="Permanent link">&para;</a></h4>
+<p>Two rounds of review produced architecture proposals and we learned from them. But when we
+tabulate where the <strong>consequential</strong> findings actually came from, almost none came from the
+architecture layer:</p>
+<table>
+<thead>
+<tr>
+<th>Finding</th>
+<th>Layer it lives in</th>
+<th>What it cost us to not know</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Our headline diversity verdict was inverted by 4 unfilled books out of 32 (28)</td>
+<td>measurement hygiene</td>
+<td>a published conclusion, backwards</td>
+</tr>
+<tr>
+<td>One instrument item never varied across twelve cells; the item carrying every result saturated (16m)</td>
+<td>instrument design</td>
+<td>a round of experiments</td>
+</tr>
+<tr>
+<td>Cost tracks reasoning tokens, not output length, and varies 36x per delivered book (30)</td>
+<td>supplier economics</td>
+<td>the entire pricing question</td>
+</tr>
+<tr>
+<td>A pinned endpoint returned <code>finish_reason=error</code> on every call while the same model unpinned worked (2026-08-12)</td>
+<td>serving infrastructure</td>
+<td>a run, and nearly a wrong verdict about a model</td>
+</tr>
+<tr>
+<td>One provider reported <code>reasoning_tokens=0</code> while emitting 5,339 characters of reasoning (2026-08-12)</td>
+<td>supplier telemetry honesty</td>
+<td>trust in our own cost discriminator</td>
+</tr>
+<tr>
+<td>Two fp4 endpoints are unreachable on our account by data policy, not by price or capability</td>
+<td>procurement and compliance</td>
+<td>the cleanest arm of a 2x2</td>
+</tr>
+<tr>
+<td>No human or child has read a single generated book</td>
+<td>evaluation validity</td>
+<td>unknown, and that is the point</td>
+</tr>
+</tbody>
+</table>
+<p>Every row above was discovered by accident, while checking something else. That is the pattern
+we most want attacked: <strong>we keep finding that the binding constraint was not where we were
+looking.</strong> Section 18 said the most transferable rule we adopted was terminating a contaminated
+round rather than caveating it. The corollary we are acting on now is that our choice of
+vocabulary is itself a contaminant.</p>
+<h4 id="323-what-we-want-from-you">32.3 What we want from you<a class="headerlink" href="#323-what-we-want-from-you" title="Permanent link">&para;</a></h4>
+<p><strong>Attack the approach from angles this document does not contain.</strong> Concretely, we would rather
+receive one well-argued attack on a premise than four more architectures. You are explicitly
+invited to tell us that a question we have spent months on does not matter.</p>
+<p>Nothing below is a menu to work through. It is a demonstration that the space is wider than
+Parts I to III, and the angle we most need is probably one we failed to list:</p>
+<ol>
+<li><strong>The product premise.</strong> Is decision diversity what makes these books good for a child, or is
+   it an engineer's proxy? Children re-read. Series work partly <em>because</em> they repeat. We have
+   assumed sameness is the defect (1.3) on an owner judgment, never tested against a reader.
+   If the real driver is character attachment, pacing, illustration, or agency-in-the-moment
+   rather than variety-across-books, most of this document optimises the wrong thing.</li>
+<li><strong>Whether to generate at all.</strong> We generate because we can. A catalogue could be licensed,
+   commissioned from human authors, or built as a hybrid where the expensive human step is
+   placed somewhere other than where we placed it. We currently spend human effort on <em>approval</em>
+   of machine output. Spending it on <em>premises</em> and letting the machine do prose is a different
+   product with different economics, and we have never priced it.</li>
+<li><strong>The catalogue-versus-per-child framing.</strong> We assume we need N mutually distinct books. A
+   child reads a handful. Distinctness may be a property better delivered by assignment,
+   recommendation and personalisation than by generation, in which case the diversity floor in
+   section 27 stops being a blocker at all.</li>
+<li><strong>The supply chain as a first-class design surface.</strong> Recent work says "which model" is
+   underspecified: the same checkpoint at a different quantization, on a different provider, at
+   a different token cap, is a different product with different failure modes, different
+   latency and different honesty about its own telemetry. Should we pin, self-host, run a
+   quorum, or treat suppliers as interchangeable and defend with validation? What breaks when a
+   provider silently changes a quant?</li>
+<li><strong>Evaluation validity, which may be the highest-value unspent dollar here.</strong> Every quality
+   and reader claim in this document is model-based (see the provenance banner). Twenty real
+   children reading twelve books might invalidate more of this brief than another six months of
+   architecture. What is the cheapest study design that would actually move our beliefs, and
+   what should we stop measuring until it exists?</li>
+<li><strong>The real unit economics.</strong> Section 30 prices the fill call. It does not price repair,
+   moderation, cover art, storage, retries against flaky endpoints, or the human review minute,
+   and human review may dominate everything else. What does a book cost <em>fully loaded</em>, and
+   which term should we be attacking?</li>
+<li><strong>The standards themselves.</strong> In-band reading level is a compliance target we chose. It is
+   also a constraint on voice, and section 31 shows compliance and judged quality are related
+   but not interchangeable (rho +0.50). Are we enforcing the right standard, at the right
+   strictness, at the right stage?</li>
+<li><strong>Operating model and durability.</strong> This is built and maintained by one person. A proposal
+   that is correct and unmaintainable is wrong here. So is one that assumes a supplier, a price,
+   or a data policy stays put; we have now been bitten by all three.</li>
+</ol>
+<h4 id="324-what-makes-a-response-useful-to-us">32.4 What makes a response useful to us<a class="headerlink" href="#324-what-makes-a-response-useful-to-us" title="Permanent link">&para;</a></h4>
+<p>We are not looking for consensus and we are not looking for polish. A response is useful if it:</p>
+<ul>
+<li><strong>Names the layer it is attacking</strong> and says what it thinks the binding constraint is.</li>
+<li><strong>States what would falsify it.</strong> Everything in this document that survived did so by being
+  checked; everything that failed, failed a check we nearly did not run.</li>
+<li><strong>Declares its evidence class</strong> using the table in the provenance banner. A claim resting on
+  LLM-evaluator judgment is still welcome, but it must not be dressed as deterministic.</li>
+<li><strong>Says what it costs and what it breaks.</strong> Including human time, including requirement 4.</li>
+<li><strong>Is willing to recommend we stop something.</strong> Retiring a line of work is a valid deliverable.</li>
+</ul>
+<p>Two specific invitations, because they are the questions we are least equipped to ask ourselves:</p>
+<ul>
+<li><strong>Tell us what we should have measured and did not.</strong> Every row in 32.2 was found by accident.
+  We would like the next one found on purpose, preferably by someone who does not share our
+  assumptions.</li>
+<li><strong>Tell us where this document is arguing with itself.</strong> It has been written across four rounds
+  and several reversals. We have corrected the contradictions we found (17, 28). We do not
+  believe we found them all.</li>
+</ul>
+<h4 id="325-what-is-still-true-and-load-bearing">32.5 What is still true and load-bearing<a class="headerlink" href="#325-what-is-still-true-and-load-bearing" title="Permanent link">&para;</a></h4>
+<p>So the widening is not read as an invitation to discard the evidence, these hold and a proposal
+should be consistent with them:</p>
+<ul>
+<li><strong>The premise floor is real and is not a supplier artifact.</strong> Eight models from six labs
+  converge on the same premises (27). No vendor sells a way out (31, rho -0.11).</li>
+<li><strong>Deterministic validation is the strongest evidence class we have</strong>, and it is what makes
+  requirement 4 credible. Proposals that rely on a model's judgment for a safety property are
+  weaker than they look.</li>
+<li><strong>Sharing structure without sharing prose reaches the generator's floor</strong> (16l), which is the
+  one architectural result we would defend.</li>
+<li><strong>Our reader instrument measures the wrong construct</strong> (1.4, 14, 16m). Any proposal that
+  depends on our existing diversity score inherits that defect.</li>
 </ul>
 
 
@@ -7269,7 +8475,7 @@ joins, so the property was barely exercised.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 12, 2026 20:28:02 UTC">August 12, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 14, 2026 17:31:04 UTC">August 14, 2026</span>
   </span>
 
     
