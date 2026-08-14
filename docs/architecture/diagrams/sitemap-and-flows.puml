@@ -33,8 +33,21 @@
 '   frontend/src/auth/GuardianAwaitingApprovalPage.tsx (/guardian/awaiting-approval,
 '                                            WS-J self-signup approval interstitial)
 '   frontend/src/auth/GuardianConsentPage.tsx (/guardian/consent, ADR-018 D1 VPC)
+'   frontend/src/auth/GuardianVerificationPage.tsx (/guardian/verify, ADR-018 D1
+'                                            KWS parent verification; the FIRST
+'                                            of the interstitials ProtectedRoute
+'                                            checks)
+'   frontend/src/legal/PrivacyPolicyPage.tsx, SupportPage.tsx (/privacy, /support:
+'                                            public and ungated by construction,
+'                                            registered with KWS)
+'   frontend/src/router.test.tsx            (asserts no gate sits between the
+'                                            route-tree root and /privacy or
+'                                            /support)
 '   frontend/src/routes.ts                  (GUARDIAN_AWAITING_APPROVAL_PATH,
-'                                            GUARDIAN_CONSENT_PATH)
+'                                            GUARDIAN_CONSENT_PATH,
+'                                            GUARDIAN_VERIFICATION_PATH,
+'                                            GUARDIAN_UNAVAILABLE_PATH,
+'                                            PRIVACY_PATH, SUPPORT_PATH)
 '   frontend/src/kid/ProfilePickerPage.tsx, library/LibraryPage.tsx,
 '     reader/ReaderRoute.tsx
 '   frontend/src/guardian/ConsolePage.tsx, IntakePage.tsx, RequestsPage.tsx,
@@ -64,9 +77,39 @@ skinparam component {
 package "Landing / Device Boundary\n(chunk-neutral, no KidShell, no Supabase)" #FFF3E0 {
   component "LandingPage\n/\nTwo doors: Kids + Grown-ups.\nKids door target depends on\nhasValidDeviceGrant()" as landing #FFE0B2
   component "LoginPage\n/guardian/login\n[?intent=authorize-device]\nSupabase sign-in; mints a\ndevice grant when the intent\nis present" as login #FFE0B2
+  component "GuardianVerificationPage\n/guardian/verify\nADR-018 D1: start, then wait out,\nEpic KWS parent verification.\nFIRST of the three interstitials" as verification_page #FFE0B2
   component "GuardianAwaitingApprovalPage\n/guardian/awaiting-approval\nSelf-signed-up guardian,\nnot yet admin-approved (WS-J)" as awaiting_approval #FFE0B2
   component "GuardianConsentPage\n/guardian/consent\nADR-018 D1 VPC: typed legal\nname + checkbox attestation" as consent_page #FFE0B2
+  component "GuardianUnavailablePage\n/guardian/unavailable\nAuthStatus 'backend-unreachable'\n(#452): Supabase session is fine,\nour own API is not. Retry here\nrather than bounce to login" as unavailable_page #FFE0B2
 }
+
+package "Public / Ungated\n(NO gate between the route tree root and these two)" #FFFDE7 {
+  component "PrivacyPolicyPage\n/privacy\nfrontend/src/legal/" as public_privacy #FFF9C4
+  component "SupportPage\n/support\nfrontend/src/legal/" as public_support #FFF9C4
+}
+
+note bottom of public_support
+  #CRITICAL security: these two MUST stay
+  outside every auth gate. Both are registered
+  with Epic's Kids Web Services (ADR-018 D1) as
+  our Privacy Policy and Support URLs, and a
+  parent follows them mid-verification with no
+  account and no session. Nesting either under
+  ProtectedRoute would send that parent to a
+  login page from a third-party consent flow,
+  which reads as a phishing redirect.
+
+  Do NOT confuse /privacy with the Adult Zone's
+  /guardian/privacy: different page, and that
+  one stays gated on purpose.
+
+  Enforced by router.test.tsx, which walks the
+  exported route config and asserts the chain of
+  components between the tree root and each of
+  these two paths contains no gate, with a
+  positive control so the assertion cannot pass
+  by failing to see gates at all.
+end note
 
 package "Kid Zone\nDeviceAuthorizedRoute: local device-grant check" #E0F7FA {
   component "ProfilePickerPage\n/kids\nPick a profile + PIN\n(mints a child session via\nthe device grant)" as picker #B2EBF2
@@ -145,9 +188,31 @@ landing -[#a8660a,dashed]-> login : "**no valid grant**\n(Kids door) OR\nGrown-u
 login -[#a8660a,dashed]-> picker : "authorize-device intent:\nmint grant, then redirect\nto /kids"
 login -[#a8660a,dashed]-> console : "normal redirect:\nguardian-only or dual-role"
 login -[#a8660a,dashed]-> admin_console : "normal redirect:\nadmin-only"
+login -[#a8660a,dashed]-> verification_page : "ProtectedRoute redirect:\nAuthStatus 'needs-verification'\n(checked FIRST, before approval)"
 login -[#a8660a,dashed]-> awaiting_approval : "ProtectedRoute redirect:\nAuthStatus 'awaiting-approval'\n(real session, not yet approved)"
 login -[#a8660a,dashed]-> consent_page : "ProtectedRoute redirect:\nAuthStatus 'needs-consent'\n(approved, VPC not yet recorded)"
+login -[#a8660a,dashed]-> unavailable_page : "ProtectedRoute redirect:\nAuthStatus 'backend-unreachable'"
 consent_page -[#a8660a,dashed]-> console : "recordConsent() succeeds\n-> AuthStatus 'signed-in'"
+
+note bottom of verification_page
+  ProtectedRoute checks the four statuses in
+  this order: needs-verification, then
+  awaiting-approval, then needs-consent, then
+  backend-unreachable. Verification coming
+  first is the ratified order and not the
+  obvious one: proving an adult is an adult is
+  cheap and entirely self-service, while admin
+  approval is a human judgement that should not
+  be spent on an account that may never prove
+  adulthood.
+
+  The consequence runs through the feature.
+  This guardian's User.status is still
+  'awaiting_approval', so
+  api/deps.py::require_principal refuses them,
+  so neither this page nor the endpoint behind
+  it may depend on GET /v1/me.
+end note
 picker -[#a8660a,dashed]-> login : "**AdultGate step-up**\ncrossing UP from kid mode\n(password re-entry if not warm)"
 
 note bottom of landing
