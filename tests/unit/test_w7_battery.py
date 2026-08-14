@@ -39,7 +39,16 @@ _CRITERIA_NAMES = (
     "engagement",
 )
 _BOOKS = ("bookA", "bookB", "bookC")
-_DEFECTS = ("dialogue_flat", "tense_break", "false_choice", "reading_level_up")
+# Every entry must be a defect DEFECT_CRITERION actually maps to. `tense_break`
+# used to sit here and was removed with its mapping on 2026-08-14: it switches
+# the narrator's tense, while the `voice` rubric it was mapped to asks about the
+# main character's distinctness, so the arm tested nothing (AL-371).
+_DEFECTS = (
+    "dialogue_flat",
+    "ending_truncated",
+    "false_choice",
+    "reading_level_up",
+)
 _JUDGES = ("judge-a", "judge-b", "judge-c")
 
 
@@ -86,7 +95,7 @@ def test_a_criterion_that_detects_its_own_defect_is_kept() -> None:
     by_name = {r.criterion: r for r in results}
     assert by_name["dialogue"].verdict.startswith("KEEP")
     assert by_name["dialogue"].detection_rate == 1.0
-    assert by_name["voice"].detections == len(_BOOKS)
+    assert by_name["ending_quality"].detections == len(_BOOKS)
 
 
 def test_a_criterion_blind_to_its_own_defect_is_retired() -> None:
@@ -290,7 +299,7 @@ def test_arms_join_verdicts_whose_book_id_carries_a_brief_suffix() -> None:
     verdicts. The tell was that the failure was total: a battery merely short of
     data reports some numbers.
     """
-    arms = [("bookA", "control"), ("bookA", "tense_break")]
+    arms = [("bookA", "control"), ("bookA", "ending_truncated")]
     verdicts = [
         Verdict(
             book=f"bookA__{arm}#0",
@@ -299,16 +308,18 @@ def test_arms_join_verdicts_whose_book_id_carries_a_brief_suffix() -> None:
             judge="judge-a",
             self_family=False,
             scores=dict.fromkeys(_CRITERIA_NAMES, 4.0)
-            | ({"voice": 1.0} if arm == "tense_break" else {}),
+            | ({"ending_quality": 1.0} if arm == "ending_truncated" else {}),
             notes={},
             error=None,
         )
         for _, arm in arms
     ]
 
-    voice = next(r for r in score_battery(verdicts, arms) if r.criterion == "voice")
-    assert voice.opportunities == 1, "the suffixed identifier did not join"
-    assert voice.detections == 1
+    scored = next(
+        r for r in score_battery(verdicts, arms) if r.criterion == "ending_quality"
+    )
+    assert scored.opportunities == 1, "the suffixed identifier did not join"
+    assert scored.detections == 1
 
 
 # --------------------------------------------------------------------------
