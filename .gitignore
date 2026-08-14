@@ -354,6 +354,12 @@ docs/template_feedback.md
 # from git.
 .lycheecache
 
+# A paid harness writes its pid here while it runs (w7_battery.py::single_run),
+# so a second instance refuses to start against the same output directory. It is
+# live process state, never a result, and a committed one would name a pid that
+# does not exist on the next machine.
+**/.run.lock
+
 # W7 known-bad battery arms. Every one of them is regenerated for free from
 # out/w7/corpus/ plus out/w7/harden/: the mechanical arms by seed_defects.py,
 # and the reading_level_up arm by `w7_battery.py --reblend`, which composes it
