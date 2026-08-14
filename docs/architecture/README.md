@@ -61,7 +61,7 @@ PWA (React 19, TypeScript)
   |  REST /api/v1 + Bearer token (OIDC via Supabase Auth)
   v
 FastAPI backend (Python 3.14)
-  - api/: 36 routers -- health, library, reading, reading_history, reading_time,
+  - api/: 37 routers -- health, library, reading, reading_history, reading_time,
                  progress, generation, profiles, personalization, characters,
                  families, ratings, assignments, approval (global admin),
                  node_edit, covers, moderation_thresholds, moderation_dashboard,
@@ -70,14 +70,19 @@ FastAPI backend (Python 3.14)
                  offline_downloads, onboarding, flags, notifications,
                  admin_users, admin_profiles, family_connections,
                  recommendations (#270 M4b-d + #277),
-                 kws_webhook + kws_redirect (ADR-018 D1)
+                 consent + kws_webhook + kws_redirect (ADR-018 D1)
+                 (37 distinct routers, 38 include_router() calls: health
+                 mounts twice. api/*.py holds 44 files; six define no router)
   - api/deps.py: Principal (role/family/profile) auth seam; Role.DEVICE
                  routing branch for the device grant (ADR-014)
   - storybook/: Pydantic models, condition DSL, evaluator
   - player/: StoryEngine (Runtime Semantics v1, pure)
-  - validator/: gate (L1+L2+RL+SAFE), walk, report
-  - generation/: orchestrator (Stage A->B->C fresh_generation, or
-                 skeleton_fill via fill_skeleton), prompts, PII guard
+  - validator/: gate (L1+PL+L2+CH+RL+CG+SAFE), walk, report
+                 (CH = character.py, ADR-028, and it BLOCKS: run_gate()'s
+                 blocked prefix set is CH/L1/L2/PL)
+  - generation/: orchestrator (Stage A->B->C->D fresh_generation, or
+                 skeleton_fill via fill_skeleton; Stage D is the
+                 reading_level_loop and runs on BOTH), prompts, PII guard
                  (guarded.PiiGuardedProvider wrapper), skeleton
                  catalog + cell-aware matching (WS-C PR2), series
                  continuation chaining (WS-G),

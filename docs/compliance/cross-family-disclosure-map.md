@@ -188,7 +188,18 @@ are ordered among themselves by sensitivity of the field set rather than by rout
 
 **Sections 3.11 to 3.18** were derived differently, and the difference is the point. v1.2 re-walked
 the crossings from the authorization capability instead: `is_admin` appears 124 times across 29 of
-the 36 routers, and nine of those are bypasses that skip an ownership or family check. Eight of the
+the 36 routers, and nine of those are bypasses that skip an ownership or family check.
+
+> **Inventory note, 2026-08-14.** The denominator has since moved: the app wires **37** distinct
+> routers, not 36. `api/consent.py` (ADR-018 D1, the browser-facing KWS verification start) landed
+> after this walk. The finding above is left exactly as derived rather than renumbered, because
+> re-spelling a denominator would imply the new router was walked when it was not. It does not need
+> to be for the conclusion to hold: `consent.py` contains **zero** `is_admin` references, so it is
+> neither one of the 29 nor one of the nine bypasses. Re-verified 2026-08-14 that
+> `grep -c is_admin src/cyo_adventure/api/*.py` still totals 124 matching lines across 29 files, so
+> the numerator and the reference count are both unchanged. Note that those 29 files include
+> `deps.py`, `review_surface.py`, and `schemas.py`, which define no router: "29 of the 36 routers"
+> is 29 *files under `api/`*, three of which are support modules. Eight of the
 resulting surfaces appear in no `/admin/` route name at all. They are ordinary endpoints, several of
 which a guardian's own app calls in normal use, that widen for an admin caller in one inline
 condition. That is why the first pass missed them, and why Section 5's negative claims were wrong
@@ -638,7 +649,9 @@ construct that does the scoping, because a negative claim is only as good as its
 > enumerated crossings by reading route names, and `is_admin` is an orthogonal boolean rather than a
 > role, so a route reads as family-scoped and still admits a global operator through one inline
 > condition. Deriving the list from the authorization capability instead surfaced 124 `is_admin`
-> references across 29 of the 36 routers, of which nine are ownership-check bypasses. **A negative
+> references across 29 of the 36 routers (denominator as at v1.2; it is 37 today, see the inventory
+> note in Section 3's preamble, and the added router carries no `is_admin` so this holds), of which
+> nine are ownership-check bypasses. **A negative
 > claim about authorization has to be derived from the authorization, not from the route name.**
 > That is also why the rows below now cite a construct each rather than sharing one summary line.
 
