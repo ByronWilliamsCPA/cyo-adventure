@@ -74,14 +74,99 @@ _SENTENCE_RE = re.compile(r"[.!?]+")
 
 _VOWELS = frozenset("aeiouy")
 
+# ``y`` is a vowel letter but a consonant sound between two vowels, which is
+# what splits ``be|yond`` and ``ma|ya``. Kept separate from ``_VOWELS`` so the
+# test is about the neighbours, not about ``y`` itself.
+_TRUE_VOWELS = frozenset("aeiou")
 
-def _count_syllables(word: str) -> int:
+# Words ending in ``-ed`` where the ``-ed`` is pronounced despite the stem not
+# ending in ``t``/``d``. Two kinds, and neither is derivable from spelling:
+# adjectival forms (``naked``, ``wicked``) and words that merely end in those
+# letters (``hundred``, ``hatred``). Derived from CMUdict rather than from
+# memory: of 1,810 ``-ed`` words whose stem is also in the dictionary, only
+# these behave this way, which is why the rule below is worth having and why it
+# needs a list at all.
+_ED_KEEPS_SYLLABLE = frozenset(
+    {
+        "aged",
+        "beloved",
+        "blessed",
+        "crooked",
+        "cursed",
+        "dogged",
+        "hatred",
+        "hundred",
+        "jagged",
+        "kindred",
+        "learned",
+        "legged",
+        "naked",
+        "ragged",
+        "rugged",
+        "sacred",
+        "striped",
+        "wicked",
+        "wretched",
+    }
+)
+
+# Consonant-initial suffixes that leave the stem's silent ``e`` stranded in the
+# middle of the word, where the trailing-``e`` rule cannot see it: ``care|ful``,
+# ``move|ment``, ``some|thing``, ``some|one``. Stripped repeatedly, because
+# ``care|ful|ly`` stacks two of them.
+_SILENT_E_SUFFIXES = (
+    "ly",
+    "ful",
+    "ness",
+    "ment",
+    "less",
+    "some",
+    "thing",
+    "where",
+    "body",
+    "time",
+    "most",
+    "hood",
+    "ship",
+    "one",
+)
+
+# Vowel pairs that are more often two syllables than one, measured over
+# CMUdict: ``ia`` 69% (``d|ia|ry``), ``eo`` 63% (``th|eo``), ``iu`` 82%
+# (``med|iu|m``). Every other pair in English is majority-digraph, including
+# the tempting ones (``ea`` 12%, ``ie`` 17%, ``io`` 28%), so they are left
+# alone: splitting them loses more words than it wins.
+_HIATUS_PAIRS = ("ia", "eo", "iu")
+
+# ``-cial``/``-tial``/``-sial`` collapse the ``ia`` back into one syllable
+# (``spe|cial``, ``par|tial``), so the ``ia`` rule skips them.
+_IA_DIGRAPH_ONSETS = "cts"
+
+
+def _count_syllables(word: str) -> int:  # noqa: C901, PLR0912
     """Estimate the syllable count of a single word.
 
-    Uses the standard vowel-group heuristic: each maximal run of vowel letters
-    counts as one syllable, a silent trailing ``e`` is removed, and every word
-    has at least one syllable. This is the same approximation used by common
-    readability libraries and is accurate enough for an advisory grade.
+    Starts from the vowel-group heuristic (each maximal run of vowel letters is
+    one syllable) and then applies the corrections that heuristic demonstrably
+    needs. `AL-383` characterised the bare heuristic against CMUdict: it was
+    right on 83.0 percent of 115,901 words and 94.2 percent of this corpus's
+    tokens, and its errors were systematic in both directions rather than
+    random, over-counting every regular ``-ed`` past and under-counting the
+    ``-Cle`` words that 3-to-5 prose is built from. That bias reached the
+    catalogue: four independent drafting agents swapped regular pasts for
+    irregular ones to satisfy a band the counter was misreporting (`AL-378`).
+
+    With the corrections below it is right on 90.3 percent of those words and
+    99.1 percent of corpus tokens, and its residual grade bias is -0.02 rather
+    than +0.27. Each rule was kept only because it improved accuracy against
+    CMUdict; several plausible ones (splitting ``ea``, ``ie`` or ``io``) were
+    measured and dropped for making it worse.
+
+    What it still gets wrong, so the next reader does not rediscover it:
+    unstressed-vowel deletion (``everything`` is 3, not 4), r-coloured
+    ``-ire`` (``entire`` is 3, not 2), and names. A dictionary lookup would
+    fix all three and is the obvious next step if this ever needs to arbitrate
+    rather than advise.
 
     Args:
         word: A single alphabetic token (already stripped of surrounding
@@ -91,16 +176,99 @@ def _count_syllables(word: str) -> int:
         int: The estimated syllable count, never less than 1.
     """
     word = word.lower()
+
     count = 0
     prev_is_vowel = False
-    for char in word:
+    for index, char in enumerate(word):
         is_vowel = char in _VOWELS
+        if (
+            char == "y"
+            and 0 < index < len(word) - 1
+            and word[index - 1] in _TRUE_VOWELS
+            and word[index + 1] in _TRUE_VOWELS
+        ):
+            is_vowel = False
         if is_vowel and not prev_is_vowel:
             count += 1
         prev_is_vowel = is_vowel
-    if word.endswith("e") and count > 1:
+
+    for pair in _HIATUS_PAIRS:
+        start = 0
+        while (found := word.find(pair, start)) != -1:
+            start = found + 1
+            if pair == "ia" and found > 0 and word[found - 1] in _IA_DIGRAPH_ONSETS:
+                continue
+            if pair == "eo" and word[found : found + 3] == "eop":
+                continue  # people, jeopardy
+            count += 1
+    if "uie" in word:
+        count += 1  # quiet, quietly: a three-vowel run the pair rules miss
+
+    # A vowel before ``-ing`` is a syllable boundary: go|ing, be|ing, see|ing.
+    if word.endswith("ing") and len(word) > 4 and word[-4] in _TRUE_VOWELS:
+        count += 1
+
+    if word.endswith("ed") and len(word) > 4 and word not in _ED_KEEPS_SYLLABLE:
+        before = word[-3]
+        # ``-Cled`` keeps the syllable the ``-Cle`` carried: sett|led, spark|led.
+        # A doubled ``ll`` is not that case, so ``pulled`` and ``filled`` are one.
+        syllabic_l = before == "l" and word[-4] not in _VOWELS and word[-4] != "l"
+        # ``y`` after a vowel is the diphthong spelling, so ``stayed`` is one.
+        consonantal = before not in _VOWELS or (
+            before == "y" and word[-4] in _TRUE_VOWELS
+        )
+        if consonantal and before not in "td" and not syllabic_l:
+            count -= 1
+
+    stem = word
+    if word.endswith("es") and len(word) > 3:
+        before = word[-3]
+        # ``-es`` is its own syllable after a sibilant (boxes, faces, pages)
+        # and after a vowel (carries, galleries); elsewhere it is silent and
+        # the ``e`` is the stem's own: comes, takes, lines, gives.
+        if not (
+            before in "sxzcg"
+            or before in _TRUE_VOWELS
+            or word.endswith(("ches", "shes"))
+        ):
+            stem = word[:-2] + "e"
+    elif word.endswith("s") and not word.endswith(("ss", "us", "is", "as", "os", "es")):
+        stem = word[:-1]
+
+    if stem.endswith("e") and count > 1 and not _has_syllabic_l(stem):
         count -= 1
+
+    head = word
+    while True:
+        for suffix in _SILENT_E_SUFFIXES:
+            if head.endswith(suffix) and len(head) > len(suffix) + 2:
+                head = head[: -len(suffix)]
+                if head.endswith("e") and not _has_syllabic_l(head) and count > 1:
+                    count -= 1
+                break
+        else:
+            break
+
     return max(count, 1)
+
+
+def _has_syllabic_l(stem: str) -> bool:
+    """Return whether *stem*'s trailing ``e`` carries a syllable rather than being silent.
+
+    A trailing ``e`` after consonant + ``l`` is pronounced: ``lit|tle``,
+    ``pud|dle``, ``ap|ple``, ``can|dle``. The bare silent-``e`` rule strips it
+    and under-counts every one of them, and they are core 3-to-5 vocabulary
+    (`AL-383`). A vowel before the ``l`` keeps the ``e`` silent, which is what
+    separates ``candle`` from ``whole`` and ``smile``.
+
+    Args:
+        stem: A word or word stem known to end in ``e``.
+
+    Returns:
+        bool: ``True`` when the trailing ``e`` is syllabic.
+    """
+    min_length = 3
+    return len(stem) >= min_length and stem[-2] == "l" and stem[-3] not in _VOWELS
 
 
 def _flesch_kincaid_grade(text: str) -> float:

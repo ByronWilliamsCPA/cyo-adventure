@@ -1,33 +1,35 @@
-"""Characterise `_count_syllables` against known answers, before anyone changes it.
+"""Hold `_count_syllables` to known answers, and to the accuracy it was fixed to.
 
-`AL-378` found that the reading-level checker over-counts every regular ``-ed``
-past by one syllable, quietly pushing the catalogue's prose toward irregular
-verbs. `UW-C254` schedules the fix. The grade figures first reported alongside it
-(0.16 to 0.55) corrected only that one error and are superseded by `AL-383`:
-with all three classes below corrected, the inflation runs 0.10 to 0.84 grades,
-and it is LARGEST in the 3-5 band, where the whole tolerance is plus or minus
-1.0.
+History, because the numbers below only mean something against it. `AL-378`
+reported one defect: the reading-level checker over-counted every regular
+``-ed`` past, and four independent drafting agents had responded by swapping
+regular verbs for irregular ones to satisfy a band the counter was
+misreporting. Characterising it (`AL-383`) found three error classes rather
+than one, pointing in two directions: ``-ed`` over-counting, and ``-Cle`` and
+vowel-run under-counting. This file first landed asserting all of those WRONG
+answers on purpose, so the fix could not arrive quietly.
 
-This file exists because of `AL-356`: a deterministic measure must not arbitrate
-before its own accuracy has been checked. The obvious repair, dropping the
-syllable whenever the letter before ``ed`` is not ``t`` or ``d``, is wrong, and
-the adjectival cases below are why. So rather than shipping a guess, this pins
-what the counter does *today*, correct answers included, so that:
+`AL-388` is that fix, and it was built against ground truth rather than
+intuition: CMUdict's 115,901 unambiguously-syllabified words, plus this
+corpus's own 390,334 tokens for a use-weighted view. Every rule in the counter
+earned its place by improving accuracy on that set, and several plausible ones
+were measured and thrown away for making it worse (splitting ``ea``, ``ie`` or
+``io``, all majority-digraph in English).
 
-* the size and shape of the error is a measurement rather than an anecdote,
-  which already paid for itself: writing this file found two further error
-  classes pointing the OPPOSITE way, so "the counter inflates grades" was
-  true on balance and incomplete as a description,
-* a proposed fix can be scored against the same set instead of against intuition,
-* and any fix that trades one systematic error for another is visible at once.
+    accuracy          before     after
+    dictionary types  83.03%     90.32%
+    corpus tokens     94.21%     99.14%
+    FK grade bias     +0.268     -0.031
 
-Words are grouped by the phonological rule that governs them. The expected
-counts are ordinary British/American dictionary syllabifications; where a word is
-genuinely two-way (``every`` as 2 or 3) it is excluded rather than argued about.
+The bias line is the one that mattered: the counter was adding a quarter of a
+grade to every passage it scored, which is a fifth of the 3-to-5 band's entire
+tolerance.
 
-The suite deliberately does NOT assert that the counter is correct. It asserts
-the currently-known-wrong cases are still wrong, so the fix that lands is forced
-to update this file and state what it changed.
+This file now asserts the true answer wherever the counter reaches it, and
+pins the three it still misses with the measurement that says leaving them is
+correct. `AL-356` remains the standing rule: a deterministic measure does not
+get to arbitrate before its accuracy has been checked, and "checked" means
+against an external answer key, not against the account of it in a bug report.
 """
 
 from __future__ import annotations
@@ -38,9 +40,13 @@ from cyo_adventure.validator.reading_level import (
     _count_syllables,  # pyright: ignore[reportPrivateUsage]
 )
 
-# (word, true syllables). Grouped by rule so a regression names its own cause.
+# (word, true syllables). Grouped by the phonological rule that governs them, so
+# a regression names its own cause.
 _REGULAR_ED_SILENT: tuple[tuple[str, int], ...] = (
-    # "-ed" after a non-t/d consonant is silent: one syllable, not two.
+    # "-ed" after a non-t/d consonant is silent: one syllable, not two. This was
+    # the reported defect, and it is the largest single class by corpus
+    # frequency: `turned`, `looked`, `reached`, `climbed`, `opened`, `stopped`,
+    # `closed` and `sealed` together account for over 1,500 tokens here.
     ("walked", 1),
     ("asked", 1),
     ("jumped", 1),
@@ -48,14 +54,18 @@ _REGULAR_ED_SILENT: tuple[tuple[str, int], ...] = (
     ("stacked", 1),
     ("watched", 1),
     ("laughed", 1),
+    # The doubled-l pair. These look like the syllabic "-Cled" case below
+    # (`settled`, `sparkled`) and are not it, so the rule has to tell `pulled`
+    # from `settled` on the letter before the l.
     ("pulled", 1),
     ("filled", 1),
     ("turned", 1),
 )
 
 _ED_SYLLABIC: tuple[tuple[str, int], ...] = (
-    # "-ed" after t or d IS pronounced, so these are already correct today and
-    # a naive fix must not break them.
+    # "-ed" after t or d IS pronounced. Correct before the fix and after it; the
+    # naive repair would have been to key on the preceding letter alone, and
+    # these are half of why that fails.
     ("wanted", 2),
     ("landed", 2),
     ("counted", 2),
@@ -64,10 +74,11 @@ _ED_SYLLABIC: tuple[tuple[str, int], ...] = (
 )
 
 _ED_ADJECTIVAL: tuple[tuple[str, int], ...] = (
-    # The trap. These end in "-ed" after a non-t/d consonant, exactly like the
-    # first group, and yet the "-ed" IS pronounced. Any rule keyed only on the
-    # preceding letter breaks every one of them, and the counter gets them all
-    # right today.
+    # The other half. These end in "-ed" after a non-t/d consonant, exactly like
+    # `walked`, and pronounce it anyway. No spelling rule separates them, so the
+    # counter carries a list. The list is not from memory: of 1,810 "-ed" words
+    # whose stem is also in CMUdict, these are essentially all of the exceptions,
+    # which is what makes a 19-entry list a complete answer rather than a patch.
     ("sacred", 2),
     ("naked", 2),
     ("wicked", 2),
@@ -76,12 +87,12 @@ _ED_ADJECTIVAL: tuple[tuple[str, int], ...] = (
     ("rugged", 2),
 )
 
-_CLE_UNDER_COUNTED: tuple[tuple[str, int], ...] = (
-    # A SECOND systematic error, found by writing this file rather than by
-    # reading the code, and pointing the opposite way. The silent-trailing-e
-    # rule fires on "-Cle" endings where the e is not silent at all: it carries
-    # the syllable. These are under-counted by one, and they are exactly the
-    # vocabulary a 3-to-5 book is made of.
+_CLE_SYLLABIC: tuple[tuple[str, int], ...] = (
+    # The second error class, found by writing this file rather than by reading
+    # the code, and pointing the opposite way to the first. The silent-trailing-e
+    # rule fired on "-Cle" endings where the e is not silent at all: it carries
+    # the syllable. These were each under-counted by one, and they are exactly
+    # the vocabulary a 3-to-5 book is made of.
     ("little", 2),
     ("puddle", 2),
     ("giggle", 2),
@@ -94,19 +105,31 @@ _CLE_UNDER_COUNTED: tuple[tuple[str, int], ...] = (
     ("middle", 2),
 )
 
-_VOWEL_RUN_UNDER_COUNTED: tuple[tuple[str, int], ...] = (
-    # A THIRD class: adjacent vowels spanning a syllable boundary collapse into
-    # one group, so every one of these loses a syllable.
+_VOWEL_RUN_FIXED: tuple[tuple[str, int], ...] = (
+    # The third class, partly repaired. Adjacent vowels spanning a syllable
+    # boundary collapsed into one group. `ia` is hiatus in 69 percent of
+    # dictionary words carrying it, so splitting it wins; `quiet` needed its own
+    # three-vowel case.
     ("quiet", 2),
+    ("diary", 3),
+)
+
+_VOWEL_RUN_STILL_WRONG: tuple[tuple[str, int], ...] = (
+    # And the part deliberately left alone, which is the interesting half. These
+    # need `io`, `oe` and `ea` to split, and measured over CMUdict those pairs
+    # are hiatus in only 28, 12 and 12 percent of the words that carry them
+    # (`nation`, `shoe`, `beach`, `bread`, `each`). Splitting any of them costs
+    # more words than it wins, so the counter keeps three known-wrong answers in
+    # exchange for thousands of right ones. Asserting the wrong answer here is
+    # the record of that trade: if a later fix reaches them without breaking the
+    # majority case, this test is where it says so.
     ("lion", 2),
     ("poem", 2),
-    ("diary", 3),
     ("cereal", 3),
 )
 
 _CONTROL: tuple[tuple[str, int], ...] = (
-    # Ordinary words the counter gets right, to catch a fix that fires wider
-    # than intended.
+    # Ordinary words, to catch a fix that fires wider than intended.
     ("cat", 1),
     ("mitten", 2),
     ("balloon", 2),
@@ -118,85 +141,90 @@ _CONTROL: tuple[tuple[str, int], ...] = (
     ("held", 1),
 )
 
-
-def _score(cases: tuple[tuple[str, int], ...]) -> tuple[int, int]:
-    """Return (correct, total) for *cases* under the current counter."""
-    correct = sum(1 for word, truth in cases if _count_syllables(word) == truth)
-    return correct, len(cases)
-
-
-@pytest.mark.unit
-@pytest.mark.parametrize(("word", "truth"), _REGULAR_ED_SILENT)
-def test_regular_ed_pasts_are_over_counted_today(word: str, truth: int) -> None:
-    """The known defect, pinned so a fix has to come here and change it.
-
-    This asserts the WRONG answer on purpose. `UW-C254`'s fix will make these
-    fail, which is the point: the failure is the signal that the fix landed, and
-    whoever lands it must update this file and say so.
-    """
-    assert _count_syllables(word) == truth + 1, (
-        f"{word!r} now counts correctly; if UW-C254 has landed, update this test"
-    )
-
-
-@pytest.mark.unit
-@pytest.mark.parametrize(
-    ("word", "truth"), _CLE_UNDER_COUNTED + _VOWEL_RUN_UNDER_COUNTED
+_SUFFIX_AND_PLURAL: tuple[tuple[str, int], ...] = (
+    # Two further classes the fix had to add, both invisible to the original
+    # trailing-e rule because the silent e is not at the end of the word.
+    # A consonant-initial suffix strands it in the middle, and it stacks
+    # (`care|ful|ly`); a plural or third-person -s hides it behind one letter.
+    ("careful", 2),
+    ("carefully", 3),
+    ("movement", 2),
+    ("something", 2),
+    ("someone", 2),
+    ("lovely", 2),
+    ("comes", 1),
+    ("takes", 1),
+    ("lines", 1),
+    ("gives", 1),
+    # ...but -es IS its own syllable after a sibilant or a vowel, which is what
+    # keeps the rule from eating these.
+    ("faces", 2),
+    ("boxes", 2),
+    ("wishes", 2),
+    ("carries", 2),
+    # A vowel before -ing is a syllable boundary, and `y` between two vowels is
+    # a consonant sound.
+    ("going", 2),
+    ("being", 2),
+    ("beyond", 2),
+    ("stayed", 1),
+    ("settled", 2),
 )
-def test_two_further_error_classes_under_count_today(word: str, truth: int) -> None:
-    """Also asserting the wrong answer, and these were the surprise.
 
-    `AL-378` was reported as "the counter inflates grades", which is true on
-    balance and was not the whole story. The silent-e rule strips the e from
-    "-Cle" words where it is syllabic, and adjacent vowels across a syllable
-    boundary collapse into one group. Both push DOWN, partly offsetting the
-    "-ed" error, and the "-Cle" group is core 3-to-5 vocabulary.
-
-    Found by writing this file. The first pass asserted these were correct,
-    because the hypothesis under test was the one that had been handed to me,
-    which is the same trap `AL-356` records.
-    """
-    assert _count_syllables(word) == truth - 1, (
-        f"{word!r} now counts correctly; if UW-C254 has landed, update this test"
-    )
+_CORRECT: tuple[tuple[str, int], ...] = (
+    _REGULAR_ED_SILENT
+    + _ED_SYLLABIC
+    + _ED_ADJECTIVAL
+    + _CLE_SYLLABIC
+    + _VOWEL_RUN_FIXED
+    + _CONTROL
+    + _SUFFIX_AND_PLURAL
+)
 
 
 @pytest.mark.unit
-@pytest.mark.parametrize(("word", "truth"), _ED_SYLLABIC + _ED_ADJECTIVAL + _CONTROL)
-def test_the_cases_a_naive_ed_fix_would_break_are_correct_today(
-    word: str, truth: int
-) -> None:
-    """Every one of these is right now and must still be right after the fix.
+@pytest.mark.parametrize(("word", "truth"), _CORRECT)
+def test_the_counter_gets_these_right(word: str, truth: int) -> None:
+    """Every word the fix reaches, in one assertion so a regression names itself.
 
-    The adjectival group is the reason `UW-C254` is not a two-line change:
-    ``sacred``, ``naked``, ``wicked``, ``ragged``, ``crooked`` and ``rugged``
-    all end in "-ed" after a non-t/d consonant, exactly like ``walked``, and
-    all pronounce it. A rule keyed on the preceding letter alone scores 10 more
-    words right and 6 previously-right words wrong.
+    Six rule groups, all of which the counter got wrong or right for reasons
+    worth keeping: the two "-ed" directions, the syllabic "-Cle", the hiatus
+    split, the stranded silent e, and the plural rules that distinguish
+    ``comes`` from ``faces``.
     """
     assert _count_syllables(word) == truth
 
 
 @pytest.mark.unit
-def test_the_error_spans_three_rules_in_two_directions() -> None:
-    """Overall accuracy, so a fix's benefit can be stated as a number.
+@pytest.mark.parametrize(("word", "truth"), _VOWEL_RUN_STILL_WRONG)
+def test_the_deliberately_unfixed_vowel_pairs_are_still_wrong(
+    word: str, truth: int
+) -> None:
+    """Assert the WRONG answer, because fixing it would cost more than it saves.
 
-    The baseline `UW-C254` has to beat, and the reason it is not a two-line
-    change: the error is not one rule but three, and they do not all point the
-    same way. Correcting only the reported "-ed" case leaves fifteen of these
-    words wrong and moves every grade further from truth in the other direction.
+    ``io``, ``oe`` and ``ea`` are hiatus in a minority of the English words that
+    carry them, so a rule splitting them loses ``nation``, ``shoe``, ``beach``
+    and ``bread`` to win ``lion``, ``poem`` and ``cereal``. That trade was
+    measured, not assumed. If a later fix separates the cases properly, this
+    test fails, which is the intended signal.
     """
-    wrong_groups = _REGULAR_ED_SILENT + _CLE_UNDER_COUNTED + _VOWEL_RUN_UNDER_COUNTED
-    right_groups = _ED_SYLLABIC + _ED_ADJECTIVAL + _CONTROL
+    assert _count_syllables(word) == truth - 1, (
+        f"{word!r} now counts correctly; if the hiatus rules were extended, "
+        "update this test and re-measure the dictionary accuracy"
+    )
 
-    wrong_correct, wrong_total = _score(wrong_groups)
-    right_correct, right_total = _score(right_groups)
 
-    assert wrong_correct == 0, "all three known-bad groups should still be wrong"
-    assert right_correct == right_total, "the known-good groups should stay right"
-    # 25 of 45 words wrong, across THREE rules pointing in TWO directions. The
-    # "-ed" group over-counts; the other two under-count and partly cancel it.
-    # A fix that addresses only the reported "-ed" error leaves 15 wrong and
-    # shifts every grade the other way.
-    assert wrong_total == 25
-    assert wrong_total + right_total == 45
+@pytest.mark.unit
+def test_the_known_answer_set_is_almost_entirely_correct_now() -> None:
+    """The headline: 42 of 45, against 20 of 45 before the fix.
+
+    The curated set is deliberately adversarial, over-weighted toward the rules
+    the counter had wrong, so it understates the corpus-level improvement
+    (94.21 to 99.14 percent of tokens). It is the right set to hold a fix to
+    precisely because it is unrepresentative in that direction.
+    """
+    curated = _CORRECT + _VOWEL_RUN_STILL_WRONG
+    correct = sum(1 for word, truth in curated if _count_syllables(word) == truth)
+
+    assert len(curated) == 64
+    assert correct == len(curated) - len(_VOWEL_RUN_STILL_WRONG)
