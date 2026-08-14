@@ -1,0 +1,589 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_school_garden_mystery",
+  "version": 1,
+  "title": "The School Garden Mystery",
+  "metadata": {
+    "age_band": "5-8",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 2.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "curiosity",
+      "kindness",
+      "nature",
+      "problem-solving"
+    ],
+    "estimated_minutes": 5,
+    "ending_count": 7,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "open_map",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "On Monday morning, the sun shone bright on the school garden. The class walked in behind Ms. Flores. She lifted the white row cover and gasped. \"Oh my!\" she said. \"Look at our lettuce!\" Every leaf in the lettuce beds had tiny half-moon bites. Who would nibble the lettuce? Priya felt a happy fizz in her tummy. She kept a detective notebook in her pocket, just in case a mystery ever came along. She raised her hand high. \"I will take the case!\" she said. Her friends cheered.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_look",
+          "label": "Take a closer look at the nibbled lettuce.",
+          "target": "n_clue"
+        }
+      ]
+    },
+    {
+      "id": "n_clue",
+      "body": "Priya knelt by the lettuce beds. She studied the bites the way a real detective would. Slowly. Closely. Each nibble was small and neat, like a bite out of a tiny cookie. Nothing was torn. Nothing was stomped. \"So our visitor is little,\" she whispered, \"and gentle, too.\" She pulled out her detective notebook and wrote: Clue one. Tiny teeth. Then she stood up and brushed off her knees. Every garden path began at the round path circle. That was the place to start.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_clue_hub",
+          "label": "Start at the round path circle where all the paths meet.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "n_hub",
+      "body": "Priya stood on the round path circle by the garden gate. Paths spread out all around her, like the spokes of a bike wheel. One path led to the lettuce beds. One led to the compost corner. One went to the tool shed. One ran down the sunflower row. One curved along the pond edge. And way at the back of the garden, the willow corner waited, quiet and green. Priya flipped through her notebook and tapped her pencil on her chin. \"Where should a detective look next?\" she said.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hub_lettuce",
+          "label": "Search the lettuce beds for footprints.",
+          "target": "lb_prints"
+        },
+        {
+          "id": "c_hub_compost",
+          "label": "Poke around the compost corner.",
+          "target": "cc_tunnel"
+        },
+        {
+          "id": "c_hub_shed",
+          "label": "Check inside the tool shed.",
+          "target": "ts_shed"
+        },
+        {
+          "id": "c_hub_sunflower",
+          "label": "Walk down the sunflower row.",
+          "target": "sf_row"
+        },
+        {
+          "id": "c_hub_pond",
+          "label": "Look for clues along the pond edge.",
+          "target": "pe_pond"
+        },
+        {
+          "id": "c_hub_willow",
+          "label": "Head for the willow corner at the back.",
+          "target": "wc_approach"
+        }
+      ]
+    },
+    {
+      "id": "lb_prints",
+      "body": "The soil between the lettuce rows was soft and dark. Perfect for footprints! Priya bent down low, and there they were: tiny footprints pressed into the dirt. The front paws were little and round. The back feet were long, and they landed side by side in hoppy pairs. \"A hopping visitor,\" Priya whispered. She gripped her pencil. Should she sketch the footprints in her notebook, nice and slow? Or should she crawl along and follow them right away?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lb_sketch",
+          "label": "Sketch the footprints in her detective notebook.",
+          "target": "lb_sketch"
+        },
+        {
+          "id": "c_lb_follow",
+          "label": "Follow the footprints right away.",
+          "target": "lb_follow"
+        }
+      ]
+    },
+    {
+      "id": "lb_sketch",
+      "body": "Priya sketched the footprints slowly and neatly. She drew the round front paws. She drew the long back feet. When she finished, the answer looked clearer than ever. Big back feet mean a hopper! And the trail of prints pointed straight toward the willow corner at the back of the garden. Priya smiled at her tidy sketch. She could go check another corner first, or she could follow the prints right now.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lb_sketch_hub",
+          "label": "Go back to the round path circle.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_lb_sketch_willow",
+          "label": "Follow the prints toward the willow corner.",
+          "target": "wc_approach"
+        }
+      ]
+    },
+    {
+      "id": "lb_follow",
+      "body": "Priya scooted along on her hands and knees, fast as a beetle. Oops! Her boot smudged one footprint. Then another. \"Slow down, detective,\" she told herself. She took a big breath and moved gently, like she was sneaking past a sleeping cat. The trail still showed the way. The prints hopped off toward the willow corner. Priya wrote a note in her notebook: Move slowly. Good detectives take their time.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lb_follow_hub",
+          "label": "Head back to the round path circle.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_lb_follow_willow",
+          "label": "Trail the prints toward the willow corner.",
+          "target": "wc_approach"
+        }
+      ]
+    },
+    {
+      "id": "cc_tunnel",
+      "body": "The compost corner smelled warm and earthy, like rain on dirt. Priya peeked behind the big bins. There she found a surprise: a fresh little tunnel, dug right under the garden fence! The hole was round and smooth, just the size of a loaf of bread. \"Somebody made a secret door,\" Priya said. What should a detective do first? She could lie down and peek inside the tunnel. She could check where it came out past the fence. Or she could dig through the compost for buried clues.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cc_peek",
+          "label": "Lie down and peek into a fresh little tunnel.",
+          "target": "cc_peek"
+        },
+        {
+          "id": "c_cc_fence",
+          "label": "Check where a fresh little tunnel comes out past the fence.",
+          "target": "cc_fence"
+        },
+        {
+          "id": "c_cc_dig",
+          "label": "Dig through the compost corner for buried clues.",
+          "target": "e_set_compost"
+        }
+      ]
+    },
+    {
+      "id": "cc_peek",
+      "body": "Priya lay down on her tummy and peeked into the tunnel. Inside, it was tidy and round, like a slide made of dirt. Then she saw it: a wisp of gray fluff, caught on a root! A brand new clue. She wrote it in her notebook right away. The tunnel aimed toward the willow corner, too. Priya's heart went hop, just like the footprints.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cc_peek_hub",
+          "label": "Return to the round path circle.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_cc_peek_willow",
+          "label": "Head toward the willow corner.",
+          "target": "wc_approach"
+        }
+      ]
+    },
+    {
+      "id": "cc_fence",
+      "body": "Priya ran around to the far side of the fence. There it was! The tunnel popped out under a patch of dandelions. She looked at the stems. Each one was nibbled. Each one had the same tiny half-moon bites. \"Our visitor loves greens,\" Priya said. She wrote it down fast. The nibbled trail led away through the grass. It went toward the willow corner. This trail was easy to follow now.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cc_fence_hub",
+          "label": "Go back to the round path circle.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_cc_fence_willow",
+          "label": "Follow the nibbled trail to the willow corner.",
+          "target": "wc_approach"
+        }
+      ]
+    },
+    {
+      "id": "ts_shed",
+      "body": "The tool shed door was open, just a crack. Priya slipped inside. Dust floated in the sunny light. She saw flowerpots. She saw watering cans. Then she saw something strange. A battered blue lunchbox sat on the shelf! Lunchboxes do not live in sheds. Beside it lay a bag of seeds, tipped on its side. \"Very odd,\" Priya whispered. She tapped her pencil. Should she open the lunchbox, slow and careful? Or should she look around the shed for more signs first?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ts_open",
+          "label": "Open a battered blue lunchbox carefully.",
+          "target": "ts_open"
+        },
+        {
+          "id": "c_ts_look",
+          "label": "Look around the tool shed for more signs.",
+          "target": "ts_look"
+        }
+      ]
+    },
+    {
+      "id": "ts_open",
+      "body": "Priya opened the lunchbox slowly, like a treasure chest. Inside were crisp lettuce leaves, packed as neat as a tiny picnic. And there on the lid was a name tag. It said: MARCO. Priya blinked. Marco was in her class! So a classmate had been sneaking lettuce snacks into the garden. But why? And who were the snacks for? She could go ask Marco right now, or she could carry this clue back to the path circle.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ts_open_marco",
+          "label": "Go ask Marco about a battered blue lunchbox.",
+          "target": "ts_marco"
+        },
+        {
+          "id": "c_ts_open_hub",
+          "label": "Take the clue back to the round path circle.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "ts_look",
+      "body": "Priya looked behind the watering cans. Aha! A trail of shredded green scraps led from the lunchbox, across the dusty floor, all the way to a small gap under the shed wall. Priya followed the crumbs with her eyes, one by one. The gap faced the willow corner at the back of the garden. \"Every clue points the same way,\" she said, and she wrote that down.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ts_look_hub",
+          "label": "Head back to the round path circle.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_ts_look_willow",
+          "label": "Follow the crumb trail toward the willow corner.",
+          "target": "wc_approach"
+        }
+      ]
+    },
+    {
+      "id": "ts_marco",
+      "body": "Priya found Marco watering the beans. \"Marco,\" she said, \"I found your lunchbox in the shed.\" Marco turned pink as a radish. Then the secret spilled out. \"Last week I saw something small and fluffy near the willow corner,\" he said. \"I left lettuce so it would not go hungry.\" He was being kind, not naughty. \"Go look!\" Marco said, pointing. \"I have to finish my watering job.\"",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ts_marco_hub",
+          "label": "Go back to the round path circle.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_ts_marco_willow",
+          "label": "Head for the willow corner.",
+          "target": "wc_approach"
+        }
+      ]
+    },
+    {
+      "id": "sf_row",
+      "body": "The sunflower row towered over Priya like a green hallway. The flowers wore big sunny hats. But look! Some of the low leaves had the same tiny half-moon bites. Priya ducked under the stems. The mulch was pressed down into a narrow secret path, only knee high. A path for somebody small! She could crawl along the secret path herself. Or she could climb the garden bench and look over the whole row from above.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sf_crawl",
+          "label": "Crawl along a narrow secret path under the stems.",
+          "target": "sf_crawl"
+        },
+        {
+          "id": "c_sf_bench",
+          "label": "Climb the bench to look over the sunflower row.",
+          "target": "sf_bench"
+        }
+      ]
+    },
+    {
+      "id": "sf_crawl",
+      "body": "Priya got down and crawled along the secret path. Leaves brushed her hair. It was like a tunnel made of green. Halfway through, she found a cozy flattened rest spot with a wisp of gray fluff right in the middle. \"A rest stop,\" she whispered. \"Like a tiny travelers inn!\" The little path kept going, straight toward the willow corner. Her visitor had a favorite road.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sf_crawl_hub",
+          "label": "Back out to the round path circle.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_sf_crawl_willow",
+          "label": "Keep following the path to the willow corner.",
+          "target": "wc_approach"
+        }
+      ]
+    },
+    {
+      "id": "sf_bench",
+      "body": "Priya climbed up on the garden bench. She stood up tall. From up here, the whole garden looked like a map! She could see faint little trails in the mulch. They wound between the beds. Every one bent toward the willow corner. They looked like arrows drawn in the dirt. Priya opened her notebook. She wrote: Every trail points one way. Her pencil wiggled, she was so excited.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sf_bench_hub",
+          "label": "Hop down and go to the round path circle.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_sf_bench_willow",
+          "label": "Head straight for the willow corner.",
+          "target": "wc_approach"
+        }
+      ]
+    },
+    {
+      "id": "pe_pond",
+      "body": "The pond edge was soft and muddy, perfect for prints. And there they were! Tiny hoppy footprints, marching right up to the waterline. \"Our visitor stopped here for a drink,\" said Priya. Just then a frog went PLOP into the water. Priya jumped. Then she laughed. \"You scared me, frog!\" Now, where next? She could follow the prints along the mud. She could check the rustling reeds. Or she could lean way out over the water for a closer look.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_mud",
+          "label": "Follow the little prints along the mud.",
+          "target": "pe_mud"
+        },
+        {
+          "id": "c_pe_reeds",
+          "label": "Check the rustling reeds.",
+          "target": "pe_reeds"
+        },
+        {
+          "id": "c_pe_lean",
+          "label": "Lean way out over the water for a closer look.",
+          "target": "e_set_splash"
+        }
+      ]
+    },
+    {
+      "id": "pe_mud",
+      "body": "The cool mud kept every footprint crisp and clear, like stamps on a letter. Priya read the story they told. First, a nibbled patch of clover. Then a drink at the pond. Then hop, hop, hop, away toward the willow corner! \"Mud is a detective's best friend,\" Priya said. She drew a tiny arrow in her notebook, pointing the way.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_mud_hub",
+          "label": "Return to the round path circle.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_pe_mud_willow",
+          "label": "Follow the hops toward the willow corner.",
+          "target": "wc_approach"
+        }
+      ]
+    },
+    {
+      "id": "pe_reeds",
+      "body": "The reeds rustled. Swish, swish. Priya crept close and peeked between the stems. It was only a sleepy toad, dozing under a leaf! \"False alarm,\" she giggled. But wait. From down low she could see something new: tiny hoppy footprints leaving the mud and heading toward the willow corner. \"Thanks for the help, toad,\" Priya whispered. \"Sleep well.\" The toad blinked one droopy eye.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_reeds_hub",
+          "label": "Go back to the round path circle.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_pe_reeds_willow",
+          "label": "Follow the prints to the willow corner.",
+          "target": "wc_approach"
+        }
+      ]
+    },
+    {
+      "id": "wc_approach",
+      "body": "The willow corner was a hushed, leafy nook behind the bean teepee. Even the breeze whispered here. Priya stopped and looked around. Under the willow roots sat a low round burrow. A wisp of gray fluff hung on a twig. Tiny hoppy footprints dotted the dust right at her feet. Every clue lined up in this one quiet spot. Priya's heart thumped. She could tiptoe close and wait like a statue. She could sit in the clover and hold out a lettuce leaf. Or she could dash over for a quick peek.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wc_wait",
+          "label": "Tiptoe close and wait as still as a statue.",
+          "target": "wc_wait"
+        },
+        {
+          "id": "c_wc_offer",
+          "label": "Sit in the clover and hold out a lettuce leaf.",
+          "target": "wc_offer"
+        },
+        {
+          "id": "c_wc_dash",
+          "label": "Dash over for a quick peek.",
+          "target": "e_set_dash"
+        }
+      ]
+    },
+    {
+      "id": "wc_wait",
+      "body": "Priya tiptoed behind the bean teepee. Then she waited, still as a garden statue. She counted her own quiet breaths. One. Two. Three. The garden seemed to hold its breath, too. After a long hush, a twitchy, whiskery nose poked out of the burrow. Then two soft ears. Then careful round eyes. Something small hopped one brave hop into the light. Priya did not move one bit.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wc_wait_watch",
+          "label": "Keep watching quietly.",
+          "target": "wc_watch"
+        }
+      ]
+    },
+    {
+      "id": "wc_offer",
+      "body": "Priya sat down in the soft clover. She held out a green lettuce leaf, low and still, the way you offer a snack to somebody shy. She did not say a word. The leaf trembled a tiny bit in the breeze. Sniff, sniff. A whiskery nose peeked from the doorway of the burrow. Then a small, fluffy visitor hopped one brave hop toward her. Priya stayed as still as morning.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wc_offer_watch",
+          "label": "Stay very still and watch.",
+          "target": "wc_watch"
+        }
+      ]
+    },
+    {
+      "id": "wc_watch",
+      "body": "Out came a mother rabbit, soft and gray. And tumbling after her came two round baby bunnies! They bounced into the clover and began to nibble. Priya opened her notebook without making a sound. Tiny hoppy footprints? Check. A low round burrow? Check. Gray fluff? Check. Tiny half-moon bites? Check! Every single clue fit. The lettuce mystery had a soft, whiskery answer.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wc_watch_reveal",
+          "label": "Put all the clues together.",
+          "target": "wc_reveal"
+        }
+      ]
+    },
+    {
+      "id": "wc_reveal",
+      "body": "Mystery solved! The lettuce visitors were a hungry rabbit family. They lived right under the willow. A mother rabbit and two baby bunnies, all with wiggly noses. Nobody was in trouble. The rabbits were not naughty. They were only hungry. Priya hugged her notebook. Now came the best part: picking a kind ending. She could plant a patch of greens just for the rabbits. She could plan a low fence with a gate, so everyone could share. Or she could run and tell Ms. Flores and the class the news.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wcr_patch",
+          "label": "Plant a patch just for the rabbits.",
+          "target": "r_patch"
+        },
+        {
+          "id": "c_wcr_fence",
+          "label": "Plan a low fence with a gate around the lettuce.",
+          "target": "r_fence"
+        },
+        {
+          "id": "c_wcr_tell",
+          "label": "Go tell Ms. Flores and the class.",
+          "target": "r_tell"
+        }
+      ]
+    },
+    {
+      "id": "r_patch",
+      "body": "The class loved Priya's plan. Everyone helped plant a rabbit patch by the willow corner. They planted rows of clover. They planted crunchy greens. It was all just for the rabbit family. Her friends dug the holes. Priya patted down the soil. Then she painted a little wooden sign with green letters. Soon the patch was ready for its very first furry customers. \"Dinner is served,\" Priya said.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_patch_end",
+          "label": "Open the rabbit buffet.",
+          "target": "e_patch"
+        }
+      ]
+    },
+    {
+      "id": "r_fence",
+      "body": "Ms. Flores helped the class build a knee-high fence around the lettuce beds, with a small gate for gardeners. Tap, tap, tap went the little hammers. The willow corner stayed wild and cozy, just for the rabbit family. Priya tapped the very last post into place. Now the garden felt fair for everyone. People veggies here. Rabbit snacks there. \"Well done, detective,\" said Ms. Flores.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_fence_end",
+          "label": "Finish the little fence together.",
+          "target": "e_fence"
+        }
+      ]
+    },
+    {
+      "id": "r_tell",
+      "body": "Priya opened her notebook on the helper table. The class gathered close. Priya walked them through the case, clue by clue. Tiny half-moon bites. Tiny hoppy footprints. A wisp of gray fluff. And a low round burrow under the willow! \"Rabbits!\" the class gasped. \"A whole rabbit family!\" Then everyone lined up at the gate, ready to tiptoe out and meet the garden's smallest visitors.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_tell_show",
+          "label": "Lead everyone to the willow corner on tiptoe.",
+          "target": "r_show"
+        }
+      ]
+    },
+    {
+      "id": "r_show",
+      "body": "The class peeked around the bean teepee in a quiet, wiggly line. There they were! The mother rabbit and her two round baby bunnies, nibbling clover in the sun. Happy whispers flew up and down the line. \"So fluffy!\" \"Look at their ears!\" Ms. Flores put a finger to her lips and smiled. Now the class had to decide together how to share the garden. They could hang a friendly rabbit crossing sign. Or they could make rabbit watching an official class job.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_show_share",
+          "label": "Hang a friendly rabbit crossing sign.",
+          "target": "e_share"
+        },
+        {
+          "id": "c_r_show_watch",
+          "label": "Make rabbit watching a class job.",
+          "target": "e_watch"
+        }
+      ]
+    },
+    {
+      "id": "e_set_compost",
+      "body": "Priya dug and sifted through the compost. She found wiggly worms. She found a giggle when one tickled her thumb. But she did not find one single clue. Just then the tidy-up bell rang. Searching time was over for today. Priya dusted off her hands and smiled anyway. In her notebook she wrote: Tomorrow, follow the little tunnel. A good detective always knows what to try next.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_compost",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Wiggly Worm Detour"
+      }
+    },
+    {
+      "id": "e_set_splash",
+      "body": "Priya leaned out over the water. Then she leaned one lean too far. SQUELCH! Her boot slipped into the muddy pond edge with a splash. Priya was perfectly fine, just soggy up to one ankle. But squishy socks meant a trip inside to change. \"The mystery can wait until tomorrow,\" she said with a grin, squelching up the path. Behind her, the frog seemed to wave goodbye.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_splash",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "One Squishy Boot"
+      }
+    },
+    {
+      "id": "e_set_dash",
+      "body": "Priya dashed toward the burrow for a quick peek. THUMP! A big back foot drummed the ground. A flash of white tail zipped underground, faster than a blink. Then the willow corner went very still. \"Sorry,\" Priya whispered to the quiet leaves. In her notebook she wrote: Move slowly next time. Tomorrow she would come back on tiptoe. Detectives always get a second try.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_dash",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "A Flash of White Tail"
+      }
+    },
+    {
+      "id": "e_patch",
+      "body": "The rabbit patch worked like a charm. The rabbit family nibbled clover on their own side of the garden. The class lettuce grew back big and crunchy. Every morning, the class ran out to check the patch. And every morning, there were happy new footprints in the dirt! Priya opened her notebook one last time. She wrote the best words a detective can write: Case closed. Solved with kindness.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_patch",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Bunny Buffet"
+      }
+    },
+    {
+      "id": "e_fence",
+      "body": "The little fence worked just right. It kept the lettuce safe. It did not scare anyone away. The rabbit family stayed snug in the wild willow corner. At harvest time, the class shared a crisp leaf or two over the gate anyway. That is what garden friends do. Priya clipped her notebook shut with a happy snap. Case closed. Garden shared. Everybody fed.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fence",
+        "valence": "positive",
+        "kind": "success",
+        "title": "A Fence with a Gate"
+      }
+    },
+    {
+      "id": "e_share",
+      "body": "The rabbit crossing sign went up by the willow corner. Soon the whole school learned to walk softly past it. The garden was famous now! It had the smallest, fluffiest neighbors in town. Visitors tiptoed in just to peek at the bunnies. Priya wrote her name in the corner of the sign. Under it she wrote: Junior Garden Detective. The mother rabbit watched from the clover. Her calm round eyes seemed to say, well done.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_share",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Shared Garden"
+      }
+    },
+    {
+      "id": "e_watch",
+      "body": "Rabbit watching became a real class job. It came with a clipboard and everything! Everyone got a turn counting rabbits at quiet time. One, two, three hops! All spring long, the baby bunnies grew bigger and bolder. Priya turned to a brand new page in her notebook. At the top she wrote: More garden mysteries, please. The best detective work ends kindly. And this was only the start.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_watch",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Rabbit Watchers on Duty"
+      }
+    }
+  ]
+}
