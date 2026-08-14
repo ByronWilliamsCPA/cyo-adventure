@@ -1245,26 +1245,31 @@ jobs:
             exit 1
           fi
 
-          # #CRITICAL: data-integrity: THREE jobs in this gate carry no
+          # #CRITICAL: data-integrity: FOUR jobs in this gate carry no
           # job-level `if:` and no `needs:` (schema-docs, format-tree,
-          # rad-citations), so unlike the rest of the suite they really run
-          # on a release-automation commit. Every one of their results must
-          # be evaluated BEFORE the release-skip branch below returns 0, or a
-          # genuine failure is discarded and reported as an intentional skip.
+          # rad-citations, docstrings), so unlike the rest of the suite they
+          # really run on a release-automation commit. Every one of their
+          # results must be evaluated BEFORE the release-skip branch below
+          # returns 0, or a genuine failure is discarded and reported as an
+          # intentional skip.
           # This is written as a list rather than as one hand-copied `if:`
           # per job precisely so the next unconditional job added to the gate
           # joins it by name instead of silently inheriting the hole:
           # format-tree sat in this branch's blind spot for exactly that
-          # reason before rad-citations became the second member.
-          # #VERIFY: test_ci_gate_contract.py asserts a release commit with
-          # each of these results set to failure fails the gate, and asserts
-          # each of these jobs still has no job-level `if:` and no `needs:`
-          # so this branch stays necessary.
+          # reason before rad-citations became the second member, and
+          # docstrings repeated the mistake as the fourth.
+          # #VERIFY: test_ci_gate_contract.py::TestGateDecisions asserts a
+          # release commit with each of these results set to failure fails the
+          # gate, and TestEveryUnconditionalJobIsReleaseChecked derives the set
+          # of no-`if:`/no-`needs:` jobs from the workflow and asserts this loop
+          # names every one of them, so a fifth such job cannot inherit the hole
+          # by omission.
           if [ "$RELEASE_PR" = "true" ]; then
             for entry in \
               "ER Diagram Drift:$SCHEMA_DOCS_RESULT" \
               "Format (tree-wide):$FORMAT_TREE_RESULT" \
-              "RAD Citation Gate:$RAD_CITATIONS_RESULT"; do
+              "RAD Citation Gate:$RAD_CITATIONS_RESULT" \
+              "Docstring coverage (interrogate):$DOCSTRINGS_RESULT"; do
               unconditional_label="${entry%%:*}"
               unconditional_result="${entry#*:}"
               if [ "$unconditional_result" != "success" ]; then
@@ -1291,8 +1296,9 @@ jobs:
               echo "## CI Gate passed WITHOUT running the suite"
               echo ""
               echo "Release-automation commit: every quality job except \`ER Diagram Drift\`,"
-              echo "\`Format (tree-wide)\` and \`RAD Citation Gate\` was intentionally skipped."
-              echo "Those three carry no job-level condition, so they really ran and really"
+              echo "\`Format (tree-wide)\`, \`RAD Citation Gate\` and \`Docstring coverage (interrogate)\`"
+              echo "was intentionally skipped."
+              echo "Those four carry no job-level condition, so they really ran and really"
               echo "passed. Beyond them this commit carries **no verification from this workflow**."
               echo "The tested content is the feature PR that produced it."
               echo ""
