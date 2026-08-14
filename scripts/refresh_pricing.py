@@ -56,6 +56,13 @@ _WANTED: Final[tuple[str, ...]] = (
     "google/gemini-3.1-pro-preview",
     "openai/gpt-5.6-sol",
     "x-ai/grok-4.6",
+    # Open-weight judge candidates evaluated as distillation parents against
+    # W7's arms. Priced here for the same reason as every other entry: an
+    # unpriced model reports its runs as costing nothing.
+    "deepseek/deepseek-v4-flash",
+    "qwen/qwen3-32b",
+    "meta-llama/llama-3.3-70b-instruct",
+    "z-ai/glm-5",
 )
 
 

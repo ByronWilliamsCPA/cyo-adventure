@@ -1,0 +1,30 @@
+[
+  {
+    "label": "deepseek-v4-flash",
+    "model": "deepseek/deepseek-v4-flash",
+    "provider_order": [],
+    "family": "deepseek",
+    "_note": "The distillation candidate under test. $0.14/$0.28 per Mtok against $9/$48 for the whole frontier panel, so a 43-arm battery costs about two cents per judge. Open weights, so it can be fine-tuned and quantised and then frozen, which is what a measuring instrument wants."
+  },
+  {
+    "label": "qwen3-32b",
+    "model": "qwen/qwen3-32b",
+    "provider_order": [],
+    "family": "qwen",
+    "_note": "Nearest open-weight peer by price ($0.08/$0.28) and a different lineage, so agreement between it and deepseek is evidence about the task rather than about one training corpus."
+  },
+  {
+    "label": "llama-3.3-70b",
+    "model": "meta-llama/llama-3.3-70b-instruct",
+    "provider_order": [],
+    "family": "meta",
+    "_note": "Larger dense open-weight model at $0.10/$0.32. Included to separate 'this criterion needs a bigger model' from 'this criterion needs a better-suited one'."
+  },
+  {
+    "label": "glm-5",
+    "model": "z-ai/glm-5",
+    "provider_order": [],
+    "family": "zai",
+    "_note": "Strongest open-weight tier in this slate at $0.95/$2.55, and the ceiling check: if a criterion fails here too, the failure is not about model size within the open-weight family."
+  }
+]
