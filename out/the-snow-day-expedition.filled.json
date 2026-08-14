@@ -46,7 +46,7 @@
     },
     {
       "id": "n_gear",
-      "body": "In the mudroom the explorers suited up. Puffy coats became parkas. Nadia pulled on her red mittens. They were rated for the coldest cold. Theo's boots squeaked on the tile.\n\nThe sled was the supply carrier. They packed it with care. A dented silver pot of cocoa. The flat metal shovel. The notebook with the pencil on a string. A bag of small orange carrots.\n\nMom ran mission control. It looked just like the kitchen. She zipped Theo's coat up to his chin.\n\n\"Map it well,\" she said.",
+      "body": "In the mudroom the explorers suited up. Puffy coats became parkas. Nadia pulled on her red mittens, rated for the coldest cold. Theo's boots squeaked on the tile.\n\nThe sled was the supply carrier. They packed it with care. A dented silver pot of cocoa. The flat metal shovel. The notebook with the pencil on a string. A bag of small orange carrots.\n\nMom ran mission control, which looked just like the kitchen. She zipped Theo's coat to his chin.\n\n\"Map it well,\" she said.",
       "is_ending": false,
       "choices": [
         {
@@ -58,7 +58,7 @@
     },
     {
       "id": "n_basecamp",
-      "body": "Outpost One was the top step of the back porch. The wood was cold under their boots. From up there the whole White Wild spread out below them.\n\nOn one side, a snowbank loomed by the driveway. With her eyes half shut, Nadia saw a mountain. Below it ran a line of small paw prints. They dotted along the grey fence boards.\n\nOn the other side lay the Powder Plains. That snow was deep and smooth. It was perfect for packing. The birdbath iceberg poked up out of it like a lonely marker. Its icy top shone like glass.\n\n\"Which way?\" said Theo.",
+      "body": "Outpost One was the top step of the back porch. The wood was cold under their boots. From up there the whole White Wild spread out below.\n\nOn one side, a snowbank loomed by the driveway. With her eyes half shut, Nadia saw a mountain. Below it ran a line of small paw prints, dotted along the grey fence boards.\n\nOn the other side lay the Powder Plains. That snow was deep and smooth, perfect for packing. The birdbath iceberg poked up out of it like a lonely marker. Its icy top shone like glass.\n\n\"Which way?\" said Theo.",
       "is_ending": false,
       "choices": [
         {
@@ -75,7 +75,7 @@
     },
     {
       "id": "n_east",
-      "body": "The trek east was squeaky boot work. The powder came up over their knees. Squeak, squeak, said the cold snow.\n\nMount Shovelheap rose up ahead. Up close it was only a snowbank. With eyes half shut it was a true peak. It had icy cliffs and a hard white crust.\n\nRight across the trail ran the paw prints. Small. Round. Heading for the fence.\n\nTheo gasped. \"A creature came through here.\"\n\nTwo trips called at once. The explorers could pick only one.",
+      "body": "The trek east was squeaky boot work. The powder came up over their knees. Squeak, squeak, said the cold snow.\n\nMount Shovelheap rose up ahead. Up close it was only a snowbank. With eyes half shut it was a true peak. It had icy cliffs and a hard white crust.\n\nRight across the trail ran the paw prints, small and round, heading straight for the fence.\n\nTheo gasped. \"A creature came through here.\"\n\nTwo adventures called at once, and the explorers could pick only one.",
       "is_ending": false,
       "choices": [
         {
@@ -410,7 +410,7 @@
     },
     {
       "id": "p_2",
-      "body": "Up close, the ice held each penguin tight by the feet. It was shiny and stubborn. Nadia tapped it with one knuckle. It went tock, like glass.\n\n\"Two plans,\" she said. \"We tap and wiggle them loose, bit by bit. A mitten thump and the ice scraper. Slow, but steady.\"\n\n\"Or?\" said Theo.\n\n\"Or we pour warm cocoa on the ice. That melts them out fast. But the cocoa is our only fuel.\"",
+      "body": "Up close, the ice held each penguin tight by the feet. It was shiny and stubborn. Nadia tapped it with one knuckle. It went tock, like glass.\n\n\"Two plans,\" she said. \"We can tap and wiggle them loose bit by bit, with a mitten thump and the ice scraper. Slow, but steady.\"\n\n\"Or?\" said Theo.\n\n\"Or we pour warm cocoa over the ice and melt them out fast. But the cocoa is our only fuel.\"",
       "is_ending": false,
       "choices": [
         {
@@ -450,7 +450,7 @@
     },
     {
       "id": "p_3",
-      "body": "Tap. Tap. Tap. A little crack ran out around each penguin's feet. Theo held his breath beside the sled.\n\nOne popped free into Nadia's red mitten. Then two. Then all three. Their feet were still cold and wet with ice chips.\n\nThe team wrapped them up in Nadia's spare scarf. It was the soft striped one. They rode snug as tiny rescued explorers.",
+      "body": "Tap. Tap. Tap. A little crack ran out around each penguin's feet, and Theo held his breath beside the sled.\n\nOne popped free into Nadia's red mitten. Then two, then all three. Their feet were still cold and wet with ice chips.\n\nThe team wrapped them up in Nadia's spare scarf, the soft striped one. They rode snug as tiny rescued explorers.",
       "is_ending": false,
       "choices": [
         {
