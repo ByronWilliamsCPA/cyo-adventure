@@ -69,6 +69,18 @@ if TYPE_CHECKING:
 _GRADE_TARGET: Final[float] = 3.0
 _GRADE_MIN_RISE: Final[float] = 1.5
 
+# The `imagery_flat` seed must strip at least this share of the book's
+# concrete-sensory vocabulary to count as landed. Deliberately a ratio rather
+# than an absolute: the corpus spans 0.8 to 4.5 declared reading grades and the
+# younger books are far more concrete to begin with.
+_IMAGERY_MIN_DROP: Final[float] = 0.7
+
+# Seeds that need a generation call and therefore cannot be produced here.
+# `w7_battery.py --prepare` owns them, because it owns the provider.
+_GENERATION_SEEDS: Final[frozenset[str]] = frozenset(
+    {"reading_level_up", "imagery_flat"}
+)
+
 # Share of nodes the tense seed switches. A third is the workplan's figure: enough
 # that a reader would notice, not so much that the book reads as present-tense
 # throughout and the defect becomes a style rather than a break.
@@ -312,6 +324,35 @@ def verify(defect: str, before: dict[str, Any], after: dict[str, Any]) -> SeedRe
     Returns:
         The result, carrying the measurement either way.
     """
+    if defect == "ending_truncated":
+
+        def ending_words(doc: dict[str, Any]) -> int:
+            return sum(
+                len(str(n.get("body", "")).split())
+                for n in _bodies(doc)
+                if n.get("is_ending") or n.get("ending")
+            )
+
+        was, now = ending_words(before), ending_words(after)
+        return SeedResult(
+            defect,
+            after,
+            landed=now < was,
+            evidence=f"ending words {was}->{now}",
+        )
+    if defect == "imagery_flat":
+        was_d, now_d = _sensory_density(before), _sensory_density(after)
+        return SeedResult(
+            defect,
+            after,
+            landed=now_d < was_d * _IMAGERY_MIN_DROP,
+            evidence=(
+                f"sensory density {was_d:.1f}->{now_d:.1f} per 1000 words "
+                f"({(now_d / was_d - 1) * 100:+.0f}%)"
+                if was_d
+                else "no sensory words to lose"
+            ),
+        )
     if defect == "dialogue_flat":
         was, now = _dialogue_share(before), _dialogue_share(after)
         return SeedResult(
@@ -384,7 +425,78 @@ DEFECTS: Final[tuple[str, ...]] = (
     "false_choice",
     "reading_level_up",
     "premise_duplicate",
+    "ending_truncated",
+    "imagery_flat",
 )
+
+
+# Words a child can see, hear, touch or smell. A crude proxy for the `imagery`
+# criterion's own anchor ("specific, physical detail a child can picture"),
+# curated in the same style as this repository's other deterministic pattern
+# sets, and honest about being a proxy: it is used only to verify that the
+# `imagery_flat` seed landed and to size it, never to score a book. A rewrite
+# that strips concrete detail lowers this; a rewrite that merely paraphrases
+# does not.
+_SENSORY: Final[frozenset[str]] = frozenset(
+    """
+    red orange yellow green blue purple pink brown black white grey gray gold
+    silver bright dark pale shiny dull glowing striped spotted
+    cold hot warm cool icy freezing burning damp wet dry sticky slippery rough
+    smooth soft hard sharp blunt fuzzy prickly heavy light
+    loud quiet silent squeak squeaked creak creaked crunch crunched rustle
+    rustled clatter clattered thud thump hiss buzz hum whistle bang crack snap
+    splash drip patter roar rumble
+    smell smelled smoky sweet sour bitter salty musty fresh
+    mud muddy dust dusty sand sandy stone rock wood metal glass rope cloth
+    leather paper feather fur moss grass leaf leaves branch twig bark
+    """.split()
+)
+
+
+def _sensory_density(doc: dict[str, Any]) -> float:
+    """Return recognised concrete-sensory words per 1000 words of prose.
+
+    Args:
+        doc: The story document.
+
+    Returns:
+        The density, ``0.0`` for a book with no prose.
+    """
+    words = [
+        w.lower()
+        for node in _bodies(doc)
+        for w in re.findall(r"[A-Za-z']+", str(node.get("body", "")))
+    ]
+    if not words:
+        return 0.0
+    return sum(1 for w in words if w in _SENSORY) / len(words) * 1000.0
+
+
+def seed_ending_truncated(doc: dict[str, Any]) -> dict[str, Any]:
+    """Cut every ending down to its first sentence.
+
+    Targets the `ending_quality` rubric's own first anchor, "abrupt stops".
+    Deterministic and reversible in principle: the events the ending opens with
+    survive, the resolution does not, which is exactly the defect a reader
+    complains about. Chosen over appending a stated moral, the rubric's other
+    anchor, because a moral has to be written and would put an author's voice
+    into a fixture.
+
+    Args:
+        doc: The passing book.
+
+    Returns:
+        The seeded copy.
+    """
+    out = copy.deepcopy(doc)
+    for node in _bodies(out):
+        if not node.get("is_ending") and not node.get("ending"):
+            continue
+        body = str(node.get("body", "")).strip()
+        sentences = [m.group(0).strip() for m in re.finditer(r"[^.!?]+[.!?]*", body)]
+        if len(sentences) > 1:
+            node["body"] = sentences[0]
+    return out
 
 
 def seed(
@@ -408,6 +520,8 @@ def seed(
     """
     if defect == "control":
         return copy.deepcopy(doc)
+    if defect == "ending_truncated":
+        return seed_ending_truncated(doc)
     if defect == "dialogue_flat":
         return seed_dialogue_flat(doc)
     if defect == "tense_break":
@@ -449,7 +563,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     for index, (path, doc) in enumerate(zip(args.books, docs, strict=True)):
         sibling = docs[(index + 1) % len(docs)]
         for defect in DEFECTS:
-            if defect == "reading_level_up":
+            if defect in _GENERATION_SEEDS:
+                # Needs a provider; `w7_battery.py --prepare` owns those.
                 continue
             result = verify(defect, doc, seed(defect, doc, sibling=sibling))
             stem = f"{path.stem.replace('.filled', '')}__{defect}.json"

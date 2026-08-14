@@ -1,0 +1,299 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_clover_butterfly",
+  "version": 1,
+  "title": "Clover and the Butterfly",
+  "metadata": {
+    "age_band": "3-5",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 1.0,
+      "tolerance": 1.0
+    },
+    "tier": 1,
+    "themes": [
+      "nature",
+      "curiosity",
+      "friendship",
+      "gentleness"
+    ],
+    "estimated_minutes": 3,
+    "ending_count": 7,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "time_cave",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "Clover is a small animal. She sat in an outdoor area during a certain time of day. Something flew past! It went by some plants. It went by some water. It went to an area of vegetation. Clover noticed it. She wanted to go after it! Which way should she go?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_daisies",
+          "label": "Follow it to the daisy patch.",
+          "target": "n_daisies"
+        },
+        {
+          "id": "c_pond",
+          "label": "Follow it to the little pond.",
+          "target": "n_pond"
+        },
+        {
+          "id": "c_grass",
+          "label": "Follow it to the tall grass.",
+          "target": "n_grass"
+        }
+      ]
+    },
+    {
+      "id": "n_daisies",
+      "body": "The insect moved over some flowers. It went to more flowers. Another insect was there! It made a sound. It went from flower to flower. Then the first insect went away. It went to an object holding water. What did Clover do?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_watch_bee",
+          "label": "Stop and watch the bumblebee.",
+          "target": "n_bee_end"
+        },
+        {
+          "id": "c_to_birdbath",
+          "label": "Keep following the butterfly.",
+          "target": "n_birdbath"
+        }
+      ]
+    },
+    {
+      "id": "n_bee_end",
+      "body": "Clover stayed. She watched the creature. There was a sound, again and again. The creature went on each plant. It was fun to watch. Then Clover looked up. The other creature was gone. But Clover was happy. She went back home.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_bee_setback",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Busy Bumblebee"
+      }
+    },
+    {
+      "id": "n_birdbath",
+      "body": "A small bird was at a location. The bird was in a certain condition. It made a disturbance. The butterfly was at a nearby spot. Then it left. It went to a food item. Clover went after it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_to_strawberries",
+          "label": "Follow the butterfly to the strawberries.",
+          "target": "n_strawberries"
+        }
+      ]
+    },
+    {
+      "id": "n_strawberries",
+      "body": "Small fruit sat under some plant growth. They tasted good. The insect went over them. Then it went to a new spot. It went to a patch of plant growth. A character came near.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_to_meadow",
+          "label": "Tiptoe after the butterfly.",
+          "target": "n_meadow"
+        }
+      ]
+    },
+    {
+      "id": "n_meadow",
+      "body": "The butterfly went very slow. It went right to Clover's nose! It stopped there. Clover could see it! A small arrangement of objects was close by. Clover sat still. She did not move.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hold_still",
+          "label": "Hold still and wait.",
+          "target": "n_nose_end"
+        },
+        {
+          "id": "c_flower_ring",
+          "label": "Peek at the little flower ring.",
+          "target": "n_crown_end"
+        }
+      ]
+    },
+    {
+      "id": "n_nose_end",
+      "body": "The insect landed on Clover's nose! It moved. It moved. Clover reacted with amusement! Ha! She stayed still. She felt very happy. A very good day!",
+      "is_ending": true,
+      "ending": {
+        "id": "e_nose",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "On Clover\u2019s Nose"
+      }
+    },
+    {
+      "id": "n_crown_end",
+      "body": "Clover found a small ring of plants. It was like a special item! It fit her head. The insect went around it once, in a mild way. Clover put on the item. She felt a strong positive feeling!",
+      "is_ending": true,
+      "ending": {
+        "id": "e_crown",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Daisy Crown"
+      }
+    },
+    {
+      "id": "n_pond",
+      "body": "There was a pond. An animal was on a plant. It had a certain feature. Another creature moved across the water. It went to some plants. What did Clover do?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_play_frog",
+          "label": "Play peekaboo with the frog.",
+          "target": "n_frog_end"
+        },
+        {
+          "id": "c_to_reeds",
+          "label": "Follow the butterfly to the reeds.",
+          "target": "n_reeds"
+        }
+      ]
+    },
+    {
+      "id": "n_frog_end",
+      "body": "Clover and the frog played. They played a game! Then another! Then another! The frog moved one way. Clover moved another way. They had fun. But the other creature went away. Clover went home. She was tired. She was happy too.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_frog_setback",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Peekaboo Frog"
+      }
+    },
+    {
+      "id": "n_reeds",
+      "body": "The butterfly went through the plants. The plants made a noise. Another creature went by! Fast! It was like a machine! The butterfly went on. There was an object nearby.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_to_hedgehog",
+          "label": "Follow past the mossy log.",
+          "target": "n_hedgehog"
+        }
+      ]
+    },
+    {
+      "id": "n_hedgehog",
+      "body": "Under the object was a small shape. It was a hedgehog! It was asleep. Clover went very quiet. She did not wake it up. She went on after the butterfly. It was pleasant there.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_to_friend",
+          "label": "Tiptoe into the shady corner.",
+          "target": "n_friend"
+        }
+      ]
+    },
+    {
+      "id": "n_friend",
+      "body": "A small animal was in a shaded area. Its name was Pip. Pip was eating some food. There was a sound as it ate. The other creature was positioned on an object nearby. Pip saw Clover. Pip said hello.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_share_berries",
+          "label": "Share the sweet berries with Pip.",
+          "target": "n_share_end"
+        }
+      ]
+    },
+    {
+      "id": "n_share_end",
+      "body": "Clover and Pip found some food items. They ate them together. There was a sound. The butterfly stayed and watched. Two new friends. Their paws were not clean. A pleasant time outside. The best time ever!",
+      "is_ending": true,
+      "ending": {
+        "id": "e_share",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Berries to Share"
+      }
+    },
+    {
+      "id": "n_grass",
+      "body": "The area around her was full of plants. The insect moved about. Like an object in the air! The plants were pleasant to touch. Clover could move quickly. Or she could move slowly and without noise. What did she do?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dash",
+          "label": "Dash after it fast!",
+          "target": "n_lost_end"
+        },
+        {
+          "id": "c_tiptoe",
+          "label": "Tiptoe slow and quiet.",
+          "target": "n_sunflower"
+        }
+      ]
+    },
+    {
+      "id": "n_lost_end",
+      "body": "Clover moved very quickly! There was a repeated sound as she went. The butterfly went up high. Up over a barrier! Clover could not go there. So she went back home. She was happy and tired.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_lost_setback",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Too Fast!"
+      }
+    },
+    {
+      "id": "n_sunflower",
+      "body": "The plants were all around. They moved in the wind. The butterfly went through them. It went to a gate. The gate was made of a material. Clover went after it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_to_gate",
+          "label": "Follow toward the garden gate.",
+          "target": "n_gate"
+        }
+      ]
+    },
+    {
+      "id": "n_gate",
+      "body": "The butterfly went through the gate. Clover went through too! There were things there. Some were one kind. Some were another kind. So many! So nice!",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_to_arch",
+          "label": "Follow into the flower corner.",
+          "target": "n_arch"
+        }
+      ]
+    },
+    {
+      "id": "n_arch",
+      "body": "The area was over them. It had pleasant things on it. The butterfly went through it. Around and around. Then it sat still. It waited for Clover!",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sit_arch",
+          "label": "Sit quietly beneath the arch.",
+          "target": "n_perch_end"
+        }
+      ]
+    },
+    {
+      "id": "n_perch_end",
+      "body": "Clover sat in a certain spot. The small creature was near her. It seemed pleasant, like a small addition. They stayed there for a while. Conditions were agreeable. It was a good experience. They felt happy. It was a very good day.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_perch",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Under the Flower Arch"
+      }
+    }
+  ]
+}

@@ -33,6 +33,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import contextlib
 import copy
 import json
 import os
@@ -52,15 +53,20 @@ from cyo_adventure.generation.provider import build_openrouter_leg  # noqa: E402
 from cyo_adventure.generation.usage import UsageLedger  # noqa: E402
 from cyo_adventure.validator.reading_level import measure_book  # noqa: E402
 from scripts.judge_books import _CRITERIA, _PANEL, Verdict, judge_book  # noqa: E402
-from scripts.seed_defects import verify  # noqa: E402
+from scripts.seed_defects import (  # noqa: E402
+    _sensory_density,  # pyright: ignore[reportPrivateUsage]
+    verify,
+)
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    from collections.abc import Generator, Sequence
 
 # Which criterion each seeded defect is supposed to be detected by. This mapping
 # IS the hypothesis under test: a criterion that does not move on its own defect
 # has failed its half of the rule, whatever it does elsewhere.
 DEFECT_CRITERION: Final[dict[str, str]] = {
+    "ending_truncated": "ending_quality",
+    "imagery_flat": "imagery",
     "dialogue_flat": "dialogue",
     "dialogue_added": "dialogue",
     "tense_break": "voice",
@@ -103,6 +109,13 @@ _HARDEN_CONCURRENCY: Final[int] = 6
 # fixture model and has nothing to do with which model the pipeline generates
 # with.
 _HARDEN_MODEL: Final[str] = "anthropic/claude-sonnet-5"
+
+# Share of a book's concrete-sensory vocabulary the `imagery_flat` arm keeps.
+# Chosen so the arm is a book that has lost most of its detail rather than one
+# rewritten into pure abstraction, for the same reason `_HARDEN_GRADES` is 3
+# rather than 10: a defect three times its stated size measures the panel's
+# eyesight, not its sensitivity.
+_IMAGERY_KEEP: Final[float] = 0.4
 
 __all__ = ["CriterionVerdict", "score_battery"]
 
@@ -155,6 +168,72 @@ class CriterionVerdict:
         if not self.opportunities:
             return None
         return self.detections / self.opportunities
+
+
+@contextlib.contextmanager
+def single_run(out_dir: Path) -> Generator[None]:
+    """Refuse to start when another instance is already writing to *out_dir*.
+
+    W7's judging pass was once relaunched on the evidence of a missing log file
+    while the original process was still running. Two panels went through 93
+    scorings each against the same arms: $4.94 where one run was about $2. The
+    artefact would not have shown it, because both write `verdicts.json` at the
+    end and the survivor's file is indistinguishable from a clean single run.
+
+    Absence of output is the expected state for most of a paid run's life, so it
+    can never be the signal to retry. This makes that structural rather than a
+    thing an operator has to remember.
+
+    Args:
+        out_dir: The run's output directory.
+
+    Yields:
+        Nothing; the lock is held for the block.
+
+    Raises:
+        RuntimeError: If a live process already holds the lock. The message
+            carries the other pid so an operator can check it rather than guess.
+    """
+    out_dir.mkdir(parents=True, exist_ok=True)
+    lock = out_dir / ".run.lock"
+    if lock.exists():
+        holder = lock.read_text(encoding="utf-8").strip()
+        if _alive(holder):
+            msg = (
+                f"another run (pid {holder}) is already writing to {out_dir}. "
+                "A paid run produces no output until it finishes, so a quiet log "
+                "is not a dead process; check that pid before starting another."
+            )
+            raise RuntimeError(msg)
+        print(
+            f"  clearing a stale lock from pid {holder}, which is gone.",
+            file=sys.stderr,
+        )
+    lock.write_text(str(os.getpid()), encoding="utf-8")
+    try:
+        yield
+    finally:
+        lock.unlink(missing_ok=True)
+
+
+def _alive(pid: str) -> bool:
+    """Return whether *pid* names a live process.
+
+    Args:
+        pid: A process id as written into the lock file.
+
+    Returns:
+        ``True`` when the process exists. A malformed lock file reads as dead,
+        so a corrupted lock cannot wedge the harness permanently.
+    """
+    try:
+        os.kill(int(pid), 0)
+    except (ValueError, ProcessLookupError):
+        return False
+    except PermissionError:
+        # It exists and belongs to someone else, which still counts as live.
+        return True
+    return True
 
 
 def _book_key(book: str) -> str:
@@ -484,6 +563,17 @@ def _marginals(scores: Sequence[float]) -> str:
     return "{" + ", ".join(f"{k}:{v}" for k, v in sorted(counts.items())) + "}"
 
 
+_FLATTEN_SYSTEM: Final[str] = (
+    "You rewrite children's story prose to be LESS vivid, on purpose, for a "
+    "measurement fixture. Keep every event, character, name and plot beat exactly "
+    "as they are, and keep the length about the same. Remove concrete sensory "
+    "detail: replace specific colours, textures, sounds, smells and named physical "
+    "objects with generic, abstract wording ('a bright red mitten' becomes 'the "
+    "item', 'the floorboard creaked' becomes 'there was a noise'). Do not add or "
+    "remove events. Return only the rewritten prose for the passage given, with no "
+    "commentary."
+)
+
 _HARDEN_SYSTEM: Final[str] = (
     "You rewrite children's story prose to be HARDER to read, on purpose, for a "
     "measurement fixture. Keep every event, character, name and plot beat exactly "
@@ -527,27 +617,94 @@ async def harden_book(
     # call that is most of an hour of wall clock, which is long enough that an
     # operator starts wondering whether to kill it. The bound is low because the
     # cap is the provider's rate limit, not ours.
+    return await _rewrite_nodes(
+        out,
+        provider,
+        system=_HARDEN_SYSTEM,
+        instruction=(
+            f"Rewrite this passage about {grades:.0f} US reading grades harder, "
+            "preserving every event exactly:"
+        ),
+        label="harden",
+    )
+
+
+async def flatten_book(doc: dict[str, Any], provider: object) -> dict[str, Any]:
+    """Rewrite a book's prose to strip concrete sensory detail, via generation.
+
+    Seeds `imagery_flat`, the arm the `imagery` criterion had none of. Like the
+    reading-level seed this cannot be faked by a formula: removing specific
+    colours, textures and sounds while keeping the events and the length is a
+    rewrite, and a lexical substitution would leave prose no reader would accept
+    as a book. Also like it, the raw rewrite overshoots, so `prepare_arms`
+    blends it back to a stated magnitude rather than shipping it whole.
+
+    Args:
+        doc: The passing book.
+        provider: A ``GenerationProvider``; each eligible node costs one call.
+
+    Returns:
+        A copy with the prose flattened. A node whose rewrite fails keeps its
+        original text, so a partial failure weakens the seed rather than
+        corrupting the book, and `verify` reports what actually landed.
+    """
+    return await _rewrite_nodes(
+        copy.deepcopy(doc),
+        provider,
+        system=_FLATTEN_SYSTEM,
+        instruction=(
+            "Rewrite this passage with the concrete sensory detail removed, "
+            "preserving every event and roughly the length:"
+        ),
+        label="flatten",
+    )
+
+
+async def _rewrite_nodes(
+    out: dict[str, Any],
+    provider: object,
+    *,
+    system: str,
+    instruction: str,
+    label: str,
+) -> dict[str, Any]:
+    """Rewrite every eligible node body of *out* in place, concurrently.
+
+    Args:
+        out: The document to rewrite, already a copy.
+        provider: A ``GenerationProvider``.
+        system: The system prompt describing the rewrite.
+        instruction: The per-node instruction, prepended to the body.
+        label: Name used in the failure message.
+
+    Returns:
+        *out*, rewritten.
+    """
+    nodes = out.get("nodes")
+    if not isinstance(nodes, list):
+        return out
+
+    # Bounded concurrency rather than a sequential loop. A six-book corpus is
+    # 224 eligible nodes and one call each; serialised at a few seconds per call
+    # that is most of an hour of wall clock. The bound is low because the cap is
+    # the provider's rate limit, not ours.
     semaphore = asyncio.Semaphore(_HARDEN_CONCURRENCY)
 
     async def rewrite(node: dict[str, Any]) -> None:
         body = str(node.get("body", ""))
         if len(body.split()) < _MIN_HARDENABLE_WORDS:
-            # Too short to harden meaningfully, and a rewrite would be a
+            # Too short to rework meaningfully; a rewrite would be a
             # replacement rather than a reworking.
             return
         async with semaphore:
             try:
                 completion = await provider.complete(  # pyright: ignore[reportAttributeAccessIssue]
-                    system=_HARDEN_SYSTEM,
-                    prompt=(
-                        f"Rewrite this passage about {grades:.0f} US reading "
-                        f"grades harder, preserving every event exactly:"
-                        f"\n\n{body}"
-                    ),
+                    system=system,
+                    prompt=f"{instruction}\n\n{body}",
                     max_tokens=1500,
                 )
             except Exception as exc:  # one node failing must not void the book
-                print(f"    harden failed on {node.get('id')}: {exc}", file=sys.stderr)
+                print(f"    {label} failed on {node.get('id')}: {exc}", file=sys.stderr)
                 return
         text = completion.text.strip()
         if text:
@@ -671,6 +828,57 @@ def blend_to_grade(
     )
 
 
+def blend_to_density(
+    original: dict[str, Any], flattened: dict[str, Any], *, keep: float
+) -> tuple[dict[str, Any], str]:
+    """Compose an `imagery_flat` arm that keeps a stated share of its detail.
+
+    Same reasoning as `blend_to_grade`, and the same reason: a rewrite asked to
+    remove sensory detail removes as much as it feels like, and an arm that
+    strips a book to abstraction is a trivially detectable defect that also
+    moves voice and engagement. Blending stops at a measured target.
+
+    Args:
+        original: The passing book.
+        flattened: The same book with every eligible body rewritten flat.
+        keep: Target share of the original's sensory density to retain.
+
+    Returns:
+        The blended arm, and a one-line note of what was achieved.
+    """
+    base = _sensory_density(original)
+    if not base:
+        return copy.deepcopy(flattened), "no sensory words to lose; full rewrite used"
+
+    out = copy.deepcopy(original)
+    out_nodes = out.get("nodes")
+    flat_nodes = flattened.get("nodes")
+    if not isinstance(out_nodes, list) or not isinstance(flat_nodes, list):
+        return out, "no nodes to blend"
+
+    swappable = [
+        i
+        for i, (a, b) in enumerate(zip(out_nodes, flat_nodes, strict=False))
+        if isinstance(a, dict)
+        and isinstance(b, dict)
+        and a.get("body") != b.get("body")
+    ]
+    swapped = 0
+    for index in _spread_order(len(swappable)):
+        node_index = swappable[index]
+        out_nodes[node_index]["body"] = flat_nodes[node_index]["body"]
+        swapped += 1
+        if _sensory_density(out) <= base * keep:
+            break
+
+    achieved = _sensory_density(out)
+    return out, (
+        f"{swapped} of {len(swappable)} rewritable nodes swapped, "
+        f"sensory density {base:.1f} -> {achieved:.1f} per 1000 words "
+        f"({achieved / base:.0%} retained against a {keep:.0%} target)"
+    )
+
+
 async def prepare_arms(
     corpus: Sequence[Path],
     arms_dir: Path,
@@ -719,35 +927,45 @@ async def prepare_arms(
         )
         written += 1
 
-        rewrite_path = harden_dir / f"{stem}.json"
-        if provider is not None:
-            hardened = await harden_book(doc, provider, grades=_HARDEN_GRADES)
-            rewrite_path.write_text(
-                json.dumps(hardened, indent=2) + "\n", encoding="utf-8"
-            )
-        elif rewrite_path.exists():
-            hardened = json.loads(rewrite_path.read_text(encoding="utf-8"))
-        else:
-            print(f"  SKIP {stem}: no rewrite at {rewrite_path}", file=sys.stderr)
-            continue
+        for defect, rewrite, blend in (
+            (
+                "reading_level_up",
+                lambda d, p: harden_book(d, p, grades=_HARDEN_GRADES),
+                lambda o, r: blend_to_grade(o, r, grades=_HARDEN_GRADES),
+            ),
+            (
+                "imagery_flat",
+                flatten_book,
+                lambda o, r: blend_to_density(o, r, keep=_IMAGERY_KEEP),
+            ),
+        ):
+            rewrite_path = harden_dir / f"{stem}__{defect}.json"
+            if provider is not None:
+                rewritten = await rewrite(doc, provider)
+                rewrite_path.write_text(
+                    json.dumps(rewritten, indent=2) + "\n", encoding="utf-8"
+                )
+            elif rewrite_path.exists():
+                rewritten = json.loads(rewrite_path.read_text(encoding="utf-8"))
+            else:
+                print(f"  SKIP {stem}__{defect}: no rewrite on disk", file=sys.stderr)
+                continue
 
-        arm, note = blend_to_grade(doc, hardened, grades=_HARDEN_GRADES)
-        result = verify("reading_level_up", doc, arm)
-        if not result.landed:
+            arm, note = blend(doc, rewritten)
+            result = verify(defect, doc, arm)
+            target = arms_dir / f"{stem}__{defect}.json"
+            if not result.landed:
+                print(
+                    f"  SKIP {stem}__{defect}  {result.evidence}; {note}",
+                    file=sys.stderr,
+                )
+                target.unlink(missing_ok=True)
+                continue
             print(
-                f"  SKIP {stem}__reading_level_up  {result.evidence}; {note}",
-                file=sys.stderr,
+                f"  ok   {stem}__{defect}  {result.evidence}; {note}", file=sys.stderr
             )
-            (arms_dir / f"{stem}__reading_level_up.json").unlink(missing_ok=True)
-            continue
-        print(
-            f"  ok   {stem}__reading_level_up  {result.evidence}; {note}",
-            file=sys.stderr,
-        )
-        (arms_dir / f"{stem}__reading_level_up.json").write_text(
-            json.dumps(arm, indent=2) + "\n", encoding="utf-8"
-        )
-        written += 1
+            target.write_text(json.dumps(arm, indent=2) + "\n", encoding="utf-8")
+            written += 1
 
     return written, (_spend(ledger) if provider is not None else None)
 
@@ -916,23 +1134,6 @@ def _score(
     return None
 
 
-def _one(verdicts: Sequence[Verdict], judge: str, book: str) -> float | None:
-    """Return one judge's overall score for one book.
-
-    Args:
-        verdicts: Every verdict.
-        judge: The judge label.
-        book: The book identifier.
-
-    Returns:
-        The mean across criteria, or ``None`` when that scoring failed.
-    """
-    for v in verdicts:
-        if v.judge == judge and v.book == book and v.scores and v.error is None:
-            return statistics.fmean(v.scores.values())
-    return None
-
-
 def main(argv: Sequence[str] | None = None) -> int:
     """Run or replay the battery.
 
@@ -1002,14 +1203,15 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 2
         args.arms.mkdir(parents=True, exist_ok=True)
         args.harden_dir.mkdir(parents=True, exist_ok=True)
-        written, spent = asyncio.run(
-            prepare_arms(
-                args.prepare,
-                args.arms,
-                args.harden_dir,
-                None if args.reblend else Settings(),
+        with single_run(args.harden_dir):
+            written, spent = asyncio.run(
+                prepare_arms(
+                    args.prepare,
+                    args.arms,
+                    args.harden_dir,
+                    None if args.reblend else Settings(),
+                )
             )
-        )
         # Never print "$0.0000" for an unpriced run. `core/pricing.py` leaves
         # input rates unset for every cloud model (UW-C239), so a zero here
         # means the call was not priced, not that it was free, and printing it
@@ -1036,7 +1238,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         file=sys.stderr,
     )
 
-    verdicts, spend = asyncio.run(run_panel(books, Settings()))
+    with single_run(args.out):
+        verdicts, spend = asyncio.run(run_panel(books, Settings()))
     results = score_battery(verdicts, arms)  # pyright: ignore[reportArgumentType]
 
     args.out.mkdir(parents=True, exist_ok=True)

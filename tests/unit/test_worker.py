@@ -3359,14 +3359,20 @@ class TestProviderAccounting:
 
     @pytest.mark.unit
     @pytest.mark.asyncio
-    async def test_a_priced_model_persists_a_cost_flagged_as_a_lower_bound(
+    async def test_a_fully_priced_model_persists_a_complete_cost(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        """The output half is billed; the missing input price is disclosed.
+        """Both halves are billed and the figure is flagged complete.
 
-        Every OpenRouter entry in the price table records an output price and
-        no input price today, so this is the shape production actually
-        persists: a real non-zero amount that must not be read as a total.
+        Named and asserted the opposite until 2026-08-14. Every OpenRouter
+        entry then recorded an output price and no input price, so the shape
+        production persisted was a real non-zero amount that had to be read as
+        a lower bound, and `cost_complete` was false on every row: the
+        accounting migration's own advice to filter on that column selected
+        nothing. `UW-C239` closed by reading both halves live from the vendor,
+        so a job on a table-priced model now persists a figure a reader can
+        use. `test_an_unpriced_model_persists_an_incomplete_cost` below still
+        covers the model-absent-from-the-table case, which is how this reopens.
         """
         monkeypatch.setattr(worker_module, "run_moderation_pipeline", AsyncMock())
 
@@ -3384,9 +3390,9 @@ class TestProviderAccounting:
             job.id, provider=provider, session_factory=self._factory(session_ctx)
         )
 
-        # $5.00/Mtok out, one Mtok per call.
-        assert job.cost_usd == Decimal(5) * len(provider.calls)
-        assert job.cost_complete is False
+        # $1/Mtok in on 1k tokens plus $5/Mtok out on one Mtok, per call.
+        assert job.cost_usd == Decimal("5.001") * len(provider.calls)
+        assert job.cost_complete is True
 
     @pytest.mark.unit
     @pytest.mark.asyncio

@@ -1,0 +1,875 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_cave_of_echoes",
+  "version": 1,
+  "title": "The Cave of Echoes",
+  "metadata": {
+    "age_band": "8-11",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 4.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "exploration",
+      "courage",
+      "wonder",
+      "nature"
+    ],
+    "estimated_minutes": 8,
+    "ending_count": 16,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "moderate"
+    },
+    "topology": "time_cave",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_open",
+  "nodes": [
+    {
+      "id": "n_open",
+      "body": "Maya scrambles beneath the lighthouse's craggy stones, Biscuit trailing faithfully at her heels, precisely as the tide commences its gradual withdrawal from the sea caves. Her aunt, the custodian of the lighthouse, understands that the two of them are venturing through the cove only until the tide reverses its course. Three shadowy apertures await within the cliff face, each one exhaling a current of cool air. Every opening produces its own distinctive resonance: the leftmost hums with a warm, sustained undertone, while the one to the right emits a slow, rhythmic dripping. Directly ahead, something within the darkness seems almost to murmur.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Listen for which one carries.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_start",
+      "body": "Biscuit's tail beats a rhythmic tattoo against the sand as Maya scrutinizes the telltale line of moisture marking the rocks behind her, evidence of the tide's previous reach. Roughly an hour remains, she calculates, before the ocean returns to reclaim its territory, sealing every cave mouth into impenetrable darkness. She activates her torch and, among the competing sounds that beckon her, selects the one that summons her most insistently.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_left",
+          "label": "Follow the humming echo to the left.",
+          "target": "la_tunnel"
+        },
+        {
+          "id": "c_right",
+          "label": "Follow the dripping echo to the right.",
+          "target": "ra_drip"
+        },
+        {
+          "id": "c_down",
+          "label": "Follow the whispering echo straight down.",
+          "target": "da_dark"
+        }
+      ]
+    },
+    {
+      "id": "la_tunnel",
+      "body": "The left passage constricts with unsettling swiftness, contorting itself into a low, cramped tunnel that resonates with a single sustained hum, as though the stone itself were holding one unbroken note. Biscuit's ears prick upward in alert anticipation, and he advances ahead of her, his nose diligently working the air for clues. The rock walls press inward from both sides, their surface cool and damp beneath the exploratory pressure of Maya's hand. Farther ahead, beyond a bend in the passage, a faint luminescence glimmers, while a barely perceptible rustling drifts backward toward them, evoking the sound of wind whispering through delicate paper. Maya lowers herself into a crouch and edges forward with cautious deliberation, driven by an urgent curiosity to discover what awaits beyond the bend.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_fork",
+          "label": "Press on toward the glow.",
+          "target": "la_fork"
+        }
+      ]
+    },
+    {
+      "id": "la_fork",
+      "body": "Precisely at the point where the murmuring tunnel diverges into a bifurcated passage, Maya halts abruptly, sweeping her torch's beam in alternating directions to survey both possibilities. Along one wall, minuscule flecks glimmer faintly, catching her light in a manner reminiscent of distant stars scattered across a darkened sky. Along the alternate route, the ambient hum intensifies with an unmistakable warmth, resembling something akin to a voice murmuring in close proximity. Biscuit, meanwhile, investigates first one passage and then the other, his nose working diligently, yet he remains utterly incapable of reaching a determination. Maya recognizes that she must render her decision without further delay, lest the relentlessly advancing tide usurp her agency and dictate the outcome in her stead.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_glitter",
+          "label": "Go toward the glittering wall.",
+          "target": "la_glitter"
+        },
+        {
+          "id": "c_hum",
+          "label": "Go toward the warm murmur.",
+          "target": "la_hum"
+        }
+      ]
+    },
+    {
+      "id": "la_glitter",
+      "body": "Maya pivots toward the glimmering expanse of wall, and it does not disappoint her expectations. Minuscule fragments of quartz are embedded within the stone's surface, capturing the illumination of her torch and casting it back in diminutive, scattered sparks. As she proceeds alongside the rock, she trails her fingertips along its frigid, unyielding surface. Farther ahead, the floor descends in a gradual incline, arcing toward a slender fissure that interrupts the stone. A current of chilled air escapes with a soft exhalation from within that fissure, and Biscuit, ever eager, investigates it first, his tail oscillating with rapid enthusiasm as he beckons her to descend the slope in pursuit.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_slope",
+          "label": "Follow the sloping floor down.",
+          "target": "la_glitter2"
+        }
+      ]
+    },
+    {
+      "id": "la_glitter2",
+      "body": "The inclined passage gives way, unexpectedly, to a modest, circular chamber, hushed and motionless, as though the very air itself were holding its breath. On the far side of this enclosed space, a fissure splitting the wall emanates a gentle, azure luminescence, resembling, in its ethereal quality, moonlight somehow captured and imprisoned within the stone. The atmosphere carries a scent of dampness and purity, while, from some indeterminate proximity, water descends in a languid, rhythmic cadence. Biscuit advances directly toward the radiance, his tail lowered yet betraying an evident curiosity that propels him forward. Maya proceeds closely behind him, the beam of her torch rendered insignificant, utterly consumed by that peculiar cerulean glimmer.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_crack",
+          "label": "Approach the glowing crack.",
+          "target": "la_grotto_app"
+        }
+      ]
+    },
+    {
+      "id": "la_grotto_app",
+      "body": "The fissure is exceedingly narrow, permitting Maya to insinuate herself through it only by angling her body sideways with considerable effort. Yet frigid water has begun accumulating in an ever-widening pool around the circumference of her boots, seeping insidiously from some unseen source deep within the rock's ancient recesses. Biscuit emits a soft, plaintive whine, evidently torn between the alluring glow beckoning from ahead and the numbing chill now lapping at his paws. Maya presses her palm against the frigid, unyielding stone, acutely aware that a decision must be reached with utmost urgency: should she force herself through the constricted passage before the rising water renders it impassable, or ought she retreat while the route behind her remains, for the moment, unflooded?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_squeeze",
+          "label": "Squeeze through the glowing crack.",
+          "target": "la_squeeze"
+        },
+        {
+          "id": "c_retreat",
+          "label": "Turn back before the water rises.",
+          "target": "la_retreat_pool"
+        }
+      ]
+    },
+    {
+      "id": "la_retreat_pool",
+      "body": "Maya resolves that the luminous fissure in the rock can await further investigation, gathers Biscuit into her arms, and wades back through the encroaching shallows along the path by which they had originally entered. With every stride, the frigid water climbs incrementally higher about her ankles, an unrelenting reminder of the tide's advance. By the time the cave's entrance finally comes into view, the sea has already advanced halfway up the surrounding rocks, and the daylight beyond blazes with a brilliance that feels almost like a welcome. They stumble out into the sunlight, soaked and streaked with mud, and Maya erupts into laughter, overcome with relief. Turning to glance once more at the shadowed opening behind her, she makes a solemn promise to Biscuit that they will return the moment the tide recedes again.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_left_pool",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Back to the Mouth"
+      }
+    },
+    {
+      "id": "la_squeeze",
+      "body": "Maya angles her body sideways, easing herself through the chill fissure with deliberate care, the beam of her torch projecting ever forward into the gloom. The stone's surface grazes both shoulders simultaneously before releasing its grip in a single decisive instant. She emerges abruptly into an expanse of open air. Biscuit forces himself through the narrow passage immediately behind her, executing a vigorous shake that scatters droplets of water across the surrounding floor. Ahead, the azure luminescence intensifies with startling rapidity, suffusing an expansive, glimmering chamber that lies immediately beyond the following step.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_room",
+          "label": "Step into the shimmering room.",
+          "target": "la_grotto"
+        }
+      ]
+    },
+    {
+      "id": "la_grotto",
+      "body": "The luminous chamber presents itself as a crystalline grotto, its walls embedded with radiant blue formations that suffuse the entire cavity with an illumination reminiscent of an aquatic sky. Maya rotates in a gradual, deliberate circle, her mouth agape with astonishment. A single crystal, dislodged from its neighbors, rests precisely at the height of her gaze, oscillating with a subtle, almost imperceptible motion within its stony recess. Farther within the grotto's depths, a curved archway emits a faint, resonant hum, as though intimating the existence of further marvels concealed beyond it. Biscuit investigates the loosened crystal with his nose before redirecting his attention toward the archway.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_take",
+          "label": "Gently take the loose crystal.",
+          "target": "la_crystal_take"
+        },
+        {
+          "id": "c_deeper",
+          "label": "Follow the humming archway deeper.",
+          "target": "la_crystal_deeper"
+        }
+      ]
+    },
+    {
+      "id": "la_crystal_take",
+      "body": "Maya extends her arm upward and carefully dislodges the crystal from its loosened setting, whereupon it descends into the waiting cup of her palm, cool and weighted, radiating a faint bluish luminescence of its own accord. The modest crystal's glow illuminates a subterranean passage that Maya had failed to notice previously, one that curves backward along the very route by which she had originally arrived, leading toward the ancient lighthouse staircase. Biscuit, brimming with eagerness, scampers into the radiant glow, his tail oscillating with rapid enthusiasm, evidently prepared to trail the light homeward.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_up",
+          "label": "Follow the crystal's light back up.",
+          "target": "la_crystal_out"
+        }
+      ]
+    },
+    {
+      "id": "la_crystal_out",
+      "body": "The luminous crystal illuminates every stage of the ascent, guiding her along a constricted stone stairway that culminates in a diminutive wooden door, concealed behind the aged lighthouse. Maya thrusts it ajar and emerges into the cool evening atmosphere, where amber light disperses expansively across the surface of the sea. Cradled within her hands, still emitting a faint luminescence against her palm, rests an authentic crystal born of the caverns. Biscuit presses insistently against her leg, his tail oscillating with fervent enthusiasm. Maya can scarcely contain her anticipation to reveal, to those awaiting her at home, what the subterranean depths had bestowed upon her this evening.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_crystal",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Glowing Crystal"
+      }
+    },
+    {
+      "id": "la_crystal_deeper",
+      "body": "Maya proceeds along the resonant archway, advancing ever deeper into the recesses of the grotto. With every successive step, the sound intensifies, acquiring a richness that gradually swells into something resembling a chord. The luminous crystals that had accompanied her begin to thin, diminishing in number, and in their place emerge smooth, ribbed walls that curve overhead in a manner reminiscent of the interior of some enormous shell. The stone itself appears deliberately shaped, as though constructed with the express purpose of conducting and amplifying sound. Biscuit's ears twitch reflexively at every reverberating echo as the two of them press onward together, undeterred, into the depths.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_chord",
+          "label": "Follow the chord toward the sound.",
+          "target": "la_song_app"
+        }
+      ]
+    },
+    {
+      "id": "la_song_app",
+      "body": "Before her, the corrugated walls unfurl into a cavernous, circular chamber whose dimensions defy immediate comprehension. It is an expanse of shadow and profound stillness, where the smallest disturbance refuses to go unnoticed. Every drip, every tentative footfall, reverberates outward, multiplying until the accumulated echoes coalesce into something resembling an eerie symphony. Biscuit emits a low, questioning whimper, and the chamber returns it twofold, then threefold, as though some unseen congregation were offering its own answer. Maya hesitates at the threshold, her pulse quickening beneath her ribs. Raising her torch to illuminate what lies beyond, she summons her resolve and steps forward into the unknown.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_sing",
+          "label": "Step into the ringing chamber.",
+          "target": "la_song"
+        }
+      ]
+    },
+    {
+      "id": "la_song",
+      "body": "Maya advances to the epicenter of the circular chamber and releases a solitary note, tentative and hushed in its initial emergence. The entirety of the chamber reciprocates the sound, returning it to her in layered, shimmering reverberations, a resonance far more sumptuous than any single voice could independently produce. Biscuit remains utterly motionless beside her, ears erect and attentive, as the sound expands and envelops them, settling around their forms with the enveloping gentleness of warm water. Maya has discovered the chamber possessing this peculiar acoustic property\u2014a secret she presumes was known exclusively to the elderly lighthouse keeper before her. She ascends from the chamber, murmuring that identical note beneath her breath, sustaining the hum throughout her entire journey homeward.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_song",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Chamber That Sings"
+      }
+    },
+    {
+      "id": "la_hum",
+      "body": "Maya trails the murmuring warmth through a smoothly curving passage, Biscuit advancing before her with steps of unwavering, assured deliberation. The sound, she comes to understand by degrees, is no wind at all, but rather some resonant vibration\u2014low, sustained, and uniform, reminiscent of a bell tolled in the depths far beneath her. The passage bends and descends beneath the soles of her boots, the resonance sharpening in clarity with every downward stride she takes. Maya maintains contact with the smooth stone wall, one palm pressed against its surface, and continues onward, drawn by the sound toward whatever source might be generating it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_ring",
+          "label": "Follow the ringing downward.",
+          "target": "la_hum2"
+        }
+      ]
+    },
+    {
+      "id": "la_hum2",
+      "body": "The passage inclines with an abrupt severity beneath Maya's boots, ascending at a gradient that demands her careful attention. The ringing, once erratic, now stabilizes into a slow, resonant chime, its cadence deepening with each repetition. This sound appears to originate directly beneath the ground upon which she stands, emanating from some unseen source below. A pale, diffuse light seeps upward from a subterranean chamber, casting faint illumination against the surrounding darkness. Within that glow, something metallic flickers with an intermittent, elusive brightness. Biscuit, meanwhile, peers cautiously over the edge of the descending slope, his tail rigid with an alert, unmistakable curiosity. Maya lowers herself into a crouch at the precipice of the drop, her posture tense with anticipation. She angles the beam of her torch downward, straining to discern the source of the chiming that persists, mysterious and unseen, in the darkness below.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_chime",
+          "label": "Climb down toward the chiming light.",
+          "target": "la_bell_app"
+        }
+      ]
+    },
+    {
+      "id": "la_bell_app",
+      "body": "An antiquated rope ladder dangles into the subterranean chamber beneath, having been abandoned there by some unknown predecessor long ago. Maya yanks it experimentally, and it proves resilient, oscillating only a fraction. Yet the internal tide-clock lodged within her consciousness cautions that the interval remaining is meager, and she yearns for an unsaturated passage back to the entrance. Biscuit emits a tremulous whimper at the ladder's precipice, harboring evident uncertainty about the venture. Maya must resolve this instant: descend toward the resonant, chiming glow below, or retreat upward while safety remains still attainable.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bell",
+          "label": "Climb down the old rope ladder.",
+          "target": "la_bell"
+        },
+        {
+          "id": "c_humback",
+          "label": "Scramble back up to be safe.",
+          "target": "la_hum_back"
+        }
+      ]
+    },
+    {
+      "id": "la_hum_back",
+      "body": "Maya surveys the precariously swaying rope ladder with a wary, calculating eye. She resolves, with quiet deliberation, that the chime can await a more auspicious and less perilous occasion. Gently, she summons Biscuit back from the precipice's edge, her voice soft but insistent. Together, the two of them ascend through the rounded passageway, journeying steadily toward the promise of daylight above. They emerge at the cave's mouth, salt-dampened and somewhat breathless from the exertion, yet entirely unharmed and safe. The sea has only just commenced its gentle lapping against the entrance stones, a subtle herald of the tide's slow return. Maya casts one final glance backward into the enveloping darkness behind her. Already, her thoughts are turning toward the next expedition she intends to undertake.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_left_hum",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Another Low Tide"
+      }
+    },
+    {
+      "id": "la_bell",
+      "body": "Throughout its entire descent, the rope ladder maintains an unwavering, dependable sturdiness. Upon reaching the cavern's floor, Maya discovers an immense, antiquated ship's bell, suspended beneath a naturally formed stone archway and discolored to a verdant hue by the passage of countless years. Deliberate droplets, descending from the ceiling above, collide intermittently with its rim, coaxing forth a series of gentle, resonant chimes that echo, again and again, throughout the patient, unyielding darkness. Biscuit, meanwhile, investigates the bell's elongated shadow with an inquisitive nose, his tail swaying with evident enthusiasm. Maya, momentarily transfixed by astonishment, gazes upward at the looming fixture before advancing nearer in order to examine it with proper attentiveness.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_bell2",
+          "label": "Walk up to the great bell.",
+          "target": "la_bell2"
+        }
+      ]
+    },
+    {
+      "id": "la_bell2",
+      "body": "Embedded profoundly within the bell's verdant, weathered rim, cast letters proclaim the identity of a vessel that vanished into oblivion a full century prior. Maya traces the inscription with deliberate, unhurried movements of a single finger, an involuntary catch interrupting the rhythm of her breathing. Concealed behind the bell, upon a parched outcropping, rests a corroded lantern alongside a coiled length of sturdy rope, artifacts abandoned there in some distant era and subsequently consigned to obscurity. Biscuit investigates the ledge with palpable, genuine curiosity. Maya inclines herself closer, intent upon deciphering the inscription with precision and discovering whatever additional secrets might lie concealed behind the ancient bell.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_bell3",
+          "label": "Read the name and look behind the bell.",
+          "target": "la_bell3"
+        }
+      ]
+    },
+    {
+      "id": "la_bell3",
+      "body": "Maya transcribes the vessel's name into her notebook with meticulous care, bearing down firmly so that the inscription remains unmistakably legible. Within the corroded lantern, a remnant of ancient candle persists still. The coiled length of rope appears sufficiently robust to assist their ascent back to the surface. Biscuit nudges the rope with an air of expectation, his tail oscillating eagerly. Maya gathers both objects into her embrace. She envisions the climb that awaits them, then pivots toward the passage that will usher them homeward once more.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_bell4",
+          "label": "Take the lantern and rope and head out.",
+          "target": "la_bell4"
+        }
+      ]
+    },
+    {
+      "id": "la_bell4",
+      "body": "The ship's designation now resides securely within her notebook, and the aged lantern has been kindled to hold the darkness at bay. Maya and Biscuit ascend the sound length of rope back toward the daylight above, hand over hand in steady succession. They emerge from the cave's mouth at precisely the moment the evening's golden light makes contact with the water's surface. Maya can already envision the entire town congregating in eager anticipation, every resident hungry for an account of the vanished ship that continues, with unwavering fidelity, to sound its bell somewhere beneath the sea near her home.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_bell",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Bell of the Lost Ship"
+      }
+    },
+    {
+      "id": "ra_drip",
+      "body": "Maya veers rightward into the moisture-laden corridor, her torch's beam illuminating walls slicked black with dampness. They shimmer with the luster of burnished stone. A slender rivulet of water traces a path along the floor, drawing her onward into the deepening obscurity ahead. The atmosphere in this passage grows noticeably more frigid than in the previous tunnels, carrying upon it the faint suggestion of salt and ancient brine. Biscuit, investigating the trickling water with his nose, sets off after it with unrestrained enthusiasm. Maya, in turn, follows the meager stream, permitting it to guide her further into the cavern's depths.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_fork",
+          "label": "Follow the trickle deeper.",
+          "target": "ra_fork"
+        }
+      ]
+    },
+    {
+      "id": "ra_fork",
+      "body": "At the point where the thread of water abruptly forks, Maya finds herself confronted by a decision. Along one channel, the auditory murmur of the water gradually intensifies into a slow, cavernous lapping, a sound suggestive of something vast and motionless lying just beyond perception. Along the other, an acrid, briny odor emanates from a low, constricted side-passage, its saline strangeness insinuating itself unfamiliarly into her nostrils. Biscuit raises his nose toward the source of the smell, then redirects his attention toward the lapping sound, seemingly incapable of settling on a preference. Maya deliberates between the two routes, her torch's beam sweeping with unhurried uncertainty from one to the other.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lake",
+          "label": "Head toward the lapping water.",
+          "target": "ra_lake_way"
+        },
+        {
+          "id": "c_pool",
+          "label": "Follow the briny smell.",
+          "target": "ra_pool_way"
+        }
+      ]
+    },
+    {
+      "id": "ra_lake_way",
+      "body": "Maya trails the diminutive, lapping murmur, which intensifies incrementally with every subsequent stride she takes. Beneath her boots, the composition of the passage floor undergoes a subtle transformation. Smooth, moisture-slicked pebbles emit faint clicking sounds as she proceeds. Above her, the ceiling recedes into an impenetrable darkness, ascending beyond the reach of her torch's feeble illumination. The surrounding space abruptly assumes a scale far grander than it had previously possessed. Beside her, Biscuit's claws produce their own clicking percussion against the pebbled surface. Maya advances with deliberate caution, testing the stability of each smooth stone beneath her feet before committing her weight to it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_pebbles",
+          "label": "Cross the wet pebbles.",
+          "target": "ra_lake2"
+        }
+      ]
+    },
+    {
+      "id": "ra_lake2",
+      "body": "The pebbles yield to a broad, level shelf of stone. Beyond it extends an expanse of black, motionless water, which vanishes entirely from view into the enveloping darkness. The intermittent lapping sound, it transpires, originates from nothing more than Biscuit's paw, as he cautiously investigates the frigid margin of the water. Diminutive ripples radiate outward in silence. Maya lowers herself beside him, crouching. The beam of her torch glides futilely across the flat, obsidian surface. She rises once more and surveys the rocky shelf's length, contemplating the uncertain distance it might traverse.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_shelf",
+          "label": "Edge along the rocky shelf.",
+          "target": "ra_lake_app"
+        }
+      ]
+    },
+    {
+      "id": "ra_lake_app",
+      "body": "Ahead of her, the rocky ledge constricts into a narrower passage, becoming treacherously slick and coated with a persistent, clinging vegetation of green weed. Beneath this precarious shelf, the immense subterranean lake waits in patient stillness, its waters dark and utterly silent. Maya cautiously tests the slippery stone with one foot, first grasping a protruding knob of rock to verify its stability before committing her full weight to its uncertain surface. Despite this precaution, the rock continues to shift slightly beneath the sole of her boot. Biscuit, wary of the treacherous footing, hesitates and remains behind. The moment has arrived for Maya to make her decision. She might proceed with deliberate caution, descending toward the lake's pale, distant shore while maintaining a low posture and relying on both hands for stability, or she might instead retreat from the perilous, slick ledge before anyone plunges into that frigid, black water below.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_descend",
+          "label": "Climb down to the lake shore.",
+          "target": "ra_descend"
+        },
+        {
+          "id": "c_lakeback",
+          "label": "Back off the slippery shelf.",
+          "target": "ra_lake_back"
+        }
+      ]
+    },
+    {
+      "id": "ra_lake_back",
+      "body": "The algae-slicked rock face feels altogether too treacherous to warrant confidence. Maya coaxes Biscuit backward along the constricted ledge, advancing one deliberate, cautious step at a time, until unyielding stone once again lies safely beneath both their feet. They retrace the moisture-laden passage in its entirety, proceeding all the way back to the cave's entrance, arriving thoroughly damp and mud-spattered, yet entirely unharmed. Maya casts one final glance toward the shadowed opening behind her, resolving to abandon the black lake's mysteries to more intrepid boots on some future occasion.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_lake",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Weed-Slick Shelf"
+      }
+    },
+    {
+      "id": "ra_descend",
+      "body": "Maya negotiates her descent along the rocky escarpment with deliberate caution, remaining low to the ground and ensuring that three points of contact with the stone are maintained at every moment. She arrives eventually at a shoreline composed of pale, weather-smoothed gravel, situated alongside the vast and motionless lake. The water lies in glassy, frigid stillness, extending outward into an obscuring darkness. Some elongated, shadowed form rests partially emerged from the water upon the nearby gravel, its silhouette rendered peculiar and indistinct by the faint, flickering torchlight. Biscuit trots ahead toward it first, his tail lowered in an attitude of tentative curiosity. Maya proceeds along the shoreline in his wake, intent upon discovering what has been deposited there.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_shore",
+          "label": "Walk along the gravel shore.",
+          "target": "ra_lakeshore"
+        }
+      ]
+    },
+    {
+      "id": "ra_lakeshore",
+      "body": "The obscure silhouette reveals itself, upon closer inspection, to be an antiquated wooden rowboat\u2014its hull fractured in several places, yet remarkably intact and structurally sound nonetheless. Maya trails her fingers contemplatively along the weather-worn timber, harboring a quiet astonishment that the vessel has managed to endure so persistently within this subterranean environment. Farther along the pebbled shoreline, the shallow water emits a faint, luminous glow, as though illuminated from some hidden source beneath its surface. Biscuit, having briefly investigated the boat with his nose, subsequently abandons it in favor of trotting toward the mysteriously radiant shallows. Maya, confronted with this dual enigma, finds herself compelled to determine which puzzling discovery merits her attention first.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_boat",
+          "label": "Examine the old rowboat.",
+          "target": "ra_boat"
+        },
+        {
+          "id": "c_wade",
+          "label": "Wade into the glowing shallows.",
+          "target": "ra_wade"
+        }
+      ]
+    },
+    {
+      "id": "ra_boat",
+      "body": "Maya lowers herself beside the aging rowboat, its oars still secured within, patient and undisturbed, awaiting purpose. She empties a small accumulation of rainwater from its hull, and the modest vessel settles thereafter, drifting with quiet stability upon the motionless, obsidian surface of the water. Biscuit clambers aboard first, his claws scraping insistently against the wooden bench, his tail thrashing with unrestrained enthusiasm. The small craft sways with a mild, rhythmic motion, evidently prepared to bear them both across the expansive, glasslike stillness of the lake.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_row",
+          "label": "Climb in and push off.",
+          "target": "ra_row"
+        }
+      ]
+    },
+    {
+      "id": "ra_row",
+      "body": "Maya propels the small craft with unwavering persistence across the hushed expanse of the lake, its surface undisturbed and impenetrably still. Biscuit, meanwhile, maintains a posture of evident self-satisfaction at the vessel's forward point. Her oars, again and again, descend noiselessly into the frigid, ink-dark water, each stroke indistinguishable from the last. Before them, a projecting ledge of stone, luminous with some inner glimmer, ascends abruptly from the depths. Within it, a chimney formed by nature itself admits a solitary, coin-sized disc of daylight, filtering downward from an unseen height far above. They ascend from the vessel onto the rock's surface and continue upward through the narrow passage until they emerge into a landscape of yielding dune grass beneath an unobstructed sky. Maya's expression broadens into an unrestrained grin, for she harbors an unshakable conviction that she and her companion are the first living beings in a generation's span to have traversed this concealed and secluded lake.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_rowboat",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Across the Hidden Lake"
+      }
+    },
+    {
+      "id": "ra_wade",
+      "body": "Maya advances tentatively into the luminescent shallows, where the water shimmers and pulses with an ethereal, undulating radiance encircling her boots. Innumerable diminutive, pallid shells blanket the sandy substrate beneath the surface, emitting a faint luminosity whenever disturbed by the motion of her feet. Biscuit plunges enthusiastically into the water alongside her, generating concentric ripples of gentle illumination that propagate outward across the surface. In the distance ahead, the phosphorescent glow appears to beckon toward a low, brilliantly lit aperture embedded within the cavern wall. Maya continues her wading passage forward, guided by the luminous trail of shells stretching before her.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_islet",
+          "label": "Follow the glowing shells.",
+          "target": "ra_islet"
+        }
+      ]
+    },
+    {
+      "id": "ra_islet",
+      "body": "The luminescent shells guide Maya and Biscuit forward with an almost deliberate persistence, drawing them ever onward. Eventually, they arrive at a diminutive islet composed of bleached, powdery sand. A narrow aperture in the rock above permits a slender column of daylight to descend upon it, illuminating the small expanse with an almost ceremonial precision. Encircling this modest island is a ring of luminous water, resembling a secluded, clandestine pool, its surface shimmering faintly amid the cave's subdued half-light. Kneeling upon the sand, Maya carefully gathers a quantity of the pallid shells into a small jar, intending to transport them homeward as mementos of the discovery. Afterward, she makes her way back through the shallow water, wading steadily toward the promise of daylight beyond. Before departing, she solemnly vows\u2014both to Biscuit and to herself\u2014that this radiant, hidden place shall remain an inviolable secret, guarded from all others.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_islet",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Glowing Islet"
+      }
+    },
+    {
+      "id": "ra_pool_way",
+      "body": "Maya folds herself into a low crouch, compelled to trail the brine-scented side-passage that branches unexpectedly from the main channel. The confined space presses close around her, saturated with the pungent odor of salt and decaying seaweed, an atmosphere thick enough to taste. She lowers her head beneath ledges of stone from which moisture perpetually drips, navigating with deliberate caution. Her torch, held aloft, scrapes with a grating persistence against the low ceiling of rock that looms just above her. Biscuit, by contrast, advances ahead of her with effortless ease, his diminutive frame permitting him to trot briskly through passages where Maya is forced to crawl on hands and knees. In the distance, a lighter illumination begins to glow faintly, filtering through a narrow aperture in the rock. Maya presses onward, following Biscuit toward that distant glow, her elbows and knees suffering the abrasive friction of the cold, unyielding stone beneath her.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_crouch",
+          "label": "Crouch through toward the pale light.",
+          "target": "ra_pool2"
+        }
+      ]
+    },
+    {
+      "id": "ra_pool2",
+      "body": "The confined passageway gradually widens, permitting Maya to resume something approaching an upright posture. Tendrils of green vegetation dangle from the diminutive ceiling above, brushing with unexpected delicacy against her shoulders as she proceeds beneath their trailing fronds. A shallow rivulet of translucent seawater traverses the length of the floor, trickling with persistent momentum toward a rounded chamber situated somewhere ahead in the gloom. Biscuit, exhibiting evident enthusiasm, splashes energetically through the meandering channel. Maya, propelled by curiosity regarding its ultimate destination, follows the clear and frigid current as it continues onward.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_channel",
+          "label": "Follow the clear channel.",
+          "target": "ra_pool_app"
+        }
+      ]
+    },
+    {
+      "id": "ra_pool_app",
+      "body": "The unobstructed channel guides Maya toward a suspended curtain of trailing weed, beyond which a luminous, watery radiance shimmers with a gentle persistence. Behind her, however, the passage has already commenced its inexorable submersion beneath the advancing tide, water surging with startling swiftness about her ankles. Biscuit emits an anxious whimper, his gaze oscillating between the weed-curtain ahead and the encroaching water at their backs. Maya finds herself allotted only the briefest interval in which to render her decision: ought she to force her way through the curtain of weed immediately, or should she instead retreat with all possible haste before the entire channel becomes irrevocably sealed by the flood?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_enter",
+          "label": "Push through the weed curtain.",
+          "target": "ra_pool_enter"
+        },
+        {
+          "id": "c_poolback",
+          "label": "Hurry back before the channel fills.",
+          "target": "ra_pool_back"
+        }
+      ]
+    },
+    {
+      "id": "ra_pool_back",
+      "body": "Maya refuses to gamble on the ascending channel, its waters visibly encroaching with each passing moment. She snatches Biscuit into her arms and retraces their previous route with urgent haste. She wades forcefully through water that surges ever higher with every successive step she takes. The pair emerge explosively at the cave's entrance in the very instant the sea rushes in behind them, sealing off the passage they have just abandoned. Drenched to the knees and with hearts pounding violently within their chests, they find themselves nonetheless entirely unharmed. Maya steadies her breathing beneath the warmth of the afternoon sun. Already, her thoughts are turning toward another attempt when the tide next recedes to its lowest point.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_pool",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Beat the Tide Back"
+      }
+    },
+    {
+      "id": "ra_pool_enter",
+      "body": "Maya presses onward, forcing her way with deliberate purpose through the dense curtain of suspended weed that obstructs her path. Beyond this barrier, the chamber unfurls into an unexpectedly luminous, secreted tide-pool, concealed from any casual observer. The water possesses such extraordinary clarity that it seems almost indistinguishable from air itself, an near-invisible medium suspended within the rock. Gentle sunlight, filtering down from some unseen aperture high above, casts a diffuse glow across the scene. Anemones cling tenaciously to the periphery of the rocky basin, their forms affixed to the stone as though grown from it. Diminutive fish dart erratically through the shallow water, their scales flashing with a brilliant, silvery luminescence as they move. Biscuit, meanwhile, gazes downward at the pool's surface, his tail swaying in a slow, contemplative rhythm. Maya, drawn irresistibly toward this miniature and seemingly flawless world, lowers herself to kneel precisely at the water's edge.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_kneel",
+          "label": "Kneel by the clear tide-pool.",
+          "target": "ra_pool_chamber"
+        }
+      ]
+    },
+    {
+      "id": "ra_pool_chamber",
+      "body": "Within the rocky basin's confines, the tide-pool contained an entire diminutive universe unto itself. In one recess, an uncommon cushion starfish emanated a profound, luminous orange hue\u2014a spectacle unlike any Maya had previously encountered. Upon the opposite periphery, minuscule crustacean impressions meandered toward a more shadowed, unfathomable hollow secreted within the stone. Biscuit, his tail lowered in evident curiosity, extended his snout toward these markings with palpable interest. Maya found herself confronted with a decision of consequence: whether to examine the radiant starfish at close proximity, or to pursue the tracks into the obscurer waters that lay beyond.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_star",
+          "label": "Look closely at the orange starfish.",
+          "target": "ra_starfish"
+        },
+        {
+          "id": "c_deep",
+          "label": "Follow the crab-track to the dark basin.",
+          "target": "ra_pool_deep"
+        }
+      ]
+    },
+    {
+      "id": "ra_starfish",
+      "body": "Maya inclines herself toward the cushion starfish, scrutinizing it with heightened attention. The creature exceeds the dimensions of her own hand, possessing the deep, burnished orange of a sunset in its final descent. Withdrawing her notebook with deliberate care, she renders its likeness meticulously, capturing every ridge and curve upon the page while permitting the starfish to remain, undisturbed, precisely where it clings to the rock's surface. Biscuit, positioned beside her, observes with unwavering patience, his tail motionless. Maya subsequently captures a photograph of the entire luminescent pool in its totality. Thereafter, she closes her notebook with gentle deliberation and withdraws, retracing the path by which she had originally arrived.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_sketch",
+          "label": "Finish the sketch and slip out.",
+          "target": "ra_starfish2"
+        }
+      ]
+    },
+    {
+      "id": "ra_starfish2",
+      "body": "Maya extricates herself with deliberate caution from the tide-pool chamber, retreating backward so as not to disturb the delicate ecosystem she has just observed. Her notebook, that repository of newly acquired knowledge, remains securely nestled beneath her arm, its pages now populated with meticulous illustrations depicting the exceedingly rare orange starfish she has been so fortunate to encounter. She is acutely aware that the rockpool club awaiting her return will greet her account with considerable skepticism, harboring doubts that will persist unabated until the tangible evidence of her sketch materializes before their very eyes. Biscuit, meanwhile, trots alongside her with unmistakable pride, tail elevated in a display of triumphant satisfaction. Together, the pair ascend toward the beckoning daylight above, each wearing an expression of quiet, understated jubilation at the modest yet significant discovery they have shared.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_starfish",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Rare Starfish"
+      }
+    },
+    {
+      "id": "ra_pool_deep",
+      "body": "Maya pursues the diminutive crustacean's tracks toward a more shadowed basin, where the water assumes a deep, murky viridescence that obscures its depths. Something smooth and pale emits a faint gleam from the very bottom, half-submerged beneath soft sediment, capturing the last attenuated rays of light filtering from above. Biscuit peers over the edge, emitting a soft whine that betrays genuine curiosity. Maya rolls up her sleeve methodically. She leans down close to the water's surface, extending her arm with deliberate care into the green basin to ascertain what lies concealed within.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_reach",
+          "label": "Reach into the green basin.",
+          "target": "ra_pool_deep2"
+        }
+      ]
+    },
+    {
+      "id": "ra_pool_deep2",
+      "body": "With a delicate, almost reverent motion, Maya's fingers curl around an object of remarkable smoothness, and she withdraws from the pool a shell of near-perfect spiral symmetry, its dimensions spanning the width of her two cupped hands, its interior lined with a pearlescent sheen that glows in a soft, luminous pink. It is, without exaggeration, the most extraordinary object she has ever encountered in the whole of her existence. Biscuit, seized by an evident and irrepressible pride, barks exuberantly while circling her legs in a display of unrestrained excitement. Maya emerges from the tide-pool's shadowed recesses and ascends into the brilliance of the open daylight, bearing the shell aloft as one might carry a hard-won trophy.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_shell",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Great Spiral Shell"
+      }
+    },
+    {
+      "id": "da_dark",
+      "body": "Maya proceeds unhesitatingly into the most impenetrable of the three passageways, descending with deliberate resolve. Biscuit remains fastened tightly against her leg, unwilling to relinquish even the slightest distance. The murmuring echo that had seemed so ominous reveals itself, upon closer scrutiny, to be nothing more than a mere current of air\u2014an unremarkable draft that sighs monotonously across the frigid stone, repeating its low, patient exhalation without cessation. Maya maintains one palm pressed flat against the wall's surface as she navigates the descent, using it as both guide and reassurance. Her torch's beam remains modest and unwavering, a small circle of illumination struggling against the dense, expectant darkness that presses in from every direction. Biscuit continues clinging fast to her side, ears flattened in apprehension, as the two of them advance downward together with cautious, measured steps.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_fork",
+          "label": "Feel along the wall downward.",
+          "target": "da_fork"
+        }
+      ]
+    },
+    {
+      "id": "da_fork",
+      "body": "The obscure passage bifurcates ahead, presenting a choice that demands consideration. Maya halts, straining to discern meaning from the surrounding silence with deliberate attentiveness. From one branch emanates a papery squeaking accompanied by frantic fluttering, diminutive yet unmistakably industrious in character. From the opposing direction issues the deliberate, protracted creak of aged timber, resonant with age. A subtle glimmer of oxidized iron reflects momentarily against the beam of her torchlight, catching her notice. Biscuit's ears rotate instinctively toward the source of the squeaking, betraying an uncertainty as to which direction merits pursuit. Maya finds herself compelled to determine which auditory signal should guide their venture further into the enveloping darkness: the erratic fluttering, or the unhurried, persistent creaking.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bat",
+          "label": "Go toward the squeaking and flutter.",
+          "target": "da_bat_way"
+        },
+        {
+          "id": "c_cache",
+          "label": "Go toward the creaking wood.",
+          "target": "da_cache_way"
+        }
+      ]
+    },
+    {
+      "id": "da_bat_way",
+      "body": "Maya proceeds cautiously toward the source of the squeaking, an insistent noise that intensifies in both frequency and volume with each deliberate step she undertakes. Above her, the ceiling ascends to an improbable height. The beam of her torch illuminates hundreds of diminutive, folded silhouettes suspended within the enveloping darkness. They tremble faintly, undisturbed in their slumber. Biscuit presses himself firmly against her leg, evidently apprehensive of these peculiar, restless shapes hovering above. Maya advances with measured caution, her torch angled downward, mindful not to disturb whatever creatures have taken up residence overhead.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_creep",
+          "label": "Creep on under the hanging shapes.",
+          "target": "da_bat2"
+        }
+      ]
+    },
+    {
+      "id": "da_bat2",
+      "body": "The diminutive silhouettes reveal themselves, upon closer inspection, to be bats\u2014hundreds of them, congregated together within a vast, cavernous chamber whose ceiling arches high overhead. They tremble almost imperceptibly, ensconced in the depths of slumber. The atmosphere pervading this subterranean space is warm, saturated with a rich, earthen fragrance unlike anything Maya has encountered elsewhere throughout her subterranean wanderings. High above, embedded within the vaulted ceiling, a faint, circular luminescence of grey light filters through a narrow fissure. Biscuit remains low to the ground and silent at Maya's side, while she fixes her gaze upon that distant, pallid glow, contemplating whether it might constitute a passage leading, at last, to the world beyond.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_grey",
+          "label": "Move quietly toward the grey light.",
+          "target": "da_bat_app"
+        }
+      ]
+    },
+    {
+      "id": "da_bat_app",
+      "body": "The pallid illumination filtering downward originates from a slender aperture piercing the cavern's ceiling, a potential passage leading upward and beyond the subterranean darkness. Yet gaining access to it necessitates traversing the ground directly beneath the dormant colony of bats\u2014perilously near enough that the entire assembly might be roused from its slumber. These remain untamed creatures of the wild, and Maya understands, without question, that physical contact is strictly forbidden. Her only viable option is to advance with deliberate slowness and utmost quiet, maintaining a cautious distance throughout. Biscuit remains crouched in stillness, awaiting the signal that will dictate his next movement. The decision now rests upon Maya alone: whether to proceed with measured, careful steps beneath the roosting multitude, or to retreat in silence, permitting the bats to continue their undisturbed repose.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_batenter",
+          "label": "Tiptoe across under the bats.",
+          "target": "da_bat_enter"
+        },
+        {
+          "id": "c_batback",
+          "label": "Back away and leave the bats be.",
+          "target": "da_bat_back"
+        }
+      ]
+    },
+    {
+      "id": "da_bat_back",
+      "body": "Maya, unwilling to hazard rousing the entirety of the slumbering colony that evening, resolved instead toward a more prudent course. She and Biscuit withdrew by degrees, each footfall deliberate and hushed, retracing their trajectory through the shadowed corridor that led toward the distant, luminous aperture marking the cave's egress. Upon emerging into the sunlight, they found themselves powdered with dust and suffused with wonder, yet entirely unharmed. Behind them, the multitudinous bats persisted in their repose, undisturbed and tranquil within the enveloping darkness. Maya derived a quiet satisfaction from the knowledge that she had exercised such compassionate restraint. She found herself speculating upon the spectacle that must attend the colony's collective awakening, when the entire multitude would stream forth into the nocturnal sky in pursuit of sustenance. She resolved, with this curiosity unresolved, to seek an explanation from the lighthouse ranger upon the following day.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_bat",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Let the Bats Sleep"
+      }
+    },
+    {
+      "id": "da_bat_enter",
+      "body": "Maya and Biscuit traverse the chamber floor with soft, deliberate footfalls, advancing at a slow and hushed pace so as to grant the wild roost every measure of space it might require. Not a single bat stirs above them. Beneath the shaft of grey light, a jumbled accumulation of fallen rock assembles itself into an irregular staircase, ascending steadily toward the distant circle of daylight far overhead. Biscuit noses eagerly at the loose stones, his tail wagging with unrestrained enthusiasm. Maya steadies herself against the rock and commences the arduous task of picking her way up the rocky steps toward the light above.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_stair",
+          "label": "Start up the fallen-rock stair.",
+          "target": "da_roost"
+        }
+      ]
+    },
+    {
+      "id": "da_roost",
+      "body": "The rock stairway ascends at a formidable incline, yet the stones remain steadfast beneath the deliberate, careful placement of Maya's feet. Partway through her ascent, she discerns something incised deeply into the surface of the wall\u2014an antiquated, carved arrow accompanied by a set of weathered, barely legible initials. Evidently, someone had scaled this identical chimney long before her arrival, leaving behind tangible evidence embedded within the stone itself. Biscuit lingers patiently a step above, his tail swaying in a steady, rhythmic motion. Maya traces the ancient inscription once with her finger before continuing her climb, pressing onward past it toward the light above.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_climb",
+          "label": "Climb on past the old carving.",
+          "target": "da_roost2"
+        }
+      ]
+    },
+    {
+      "id": "da_roost2",
+      "body": "The rocky stairway gradually constricts into a moss-laden funnel, its surfaces perpetually damp and verdant. A current of cool air descends through the passage, bearing with it the pleasant fragrance of grass and unobstructed terrain. Maya elevates Biscuit ahead of herself first, propelling him gently through the narrowing aperture. Subsequently, she hoists herself upward through the final few moss-covered metres, her fingers locating purchase within the soft, saturated stone. Above her, the verdant light intensifies with each successive pull upward.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_push",
+          "label": "Push up through the mossy funnel.",
+          "target": "da_skylight"
+        }
+      ]
+    },
+    {
+      "id": "da_skylight",
+      "body": "Maya emerges cautiously through a concealed aperture in the meadow atop the cliff, situated far above the lighthouse below. The abrupt brilliance of the sun causes her to blink repeatedly, her eyes struggling to adjust. Beside her, Biscuit shakes the dampness from his coat amid the tall grass, his tail wagging with unmistakable relief. Maya pivots to survey the diminutive, obscured entrance behind her, already envisioning the astonishment such a discovery will provoke at the museum. What she has uncovered constitutes an entirely undocumented passage into the caverns below\u2014one that harbors, moreover, an entire colony of bats whose existence beneath the meadow had remained, until this very moment, utterly unknown to anyone.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_bats",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Skylight in the Meadow"
+      }
+    },
+    {
+      "id": "da_cache_way",
+      "body": "The creaking of the timber intensifies as Maya proceeds ever further into the dark passage, her progress unhurried but deliberate. Illuminated by the wavering beam of her torch, the fractured remnants of barrel staves reveal themselves, strewn haphazardly across the uneven floor. Farther along, a door of weathered grey planks, tilted precariously, appears wedged into the mouth of a side-cave. Its corroded nails bleed long, rust-colored streaks that trail downward across the aged and splintering wood. Biscuit, overtaken by curiosity, sniffs cautiously at the tilted door, his tail lowered in an attitude of wary suspicion. Maya draws nearer, her gaze fixed upon the ancient door, contemplating with quiet unease what might once have been concealed within.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_door",
+          "label": "Approach the leaning plank door.",
+          "target": "da_cache2"
+        }
+      ]
+    },
+    {
+      "id": "da_cache2",
+      "body": "Maya presses against the antiquated door, and it swings ajar with a prolonged, weary groan, as though reluctant to relinquish its secrets. Beyond it lies a desiccated cavity, meticulously walled off by human hands in some distant, unremembered era. Its purpose as a concealed repository was unmistakable. Amid the flickering, unsteady torchlight, Maya can barely discern the silhouettes of crates, stacked haphazardly and crowded together within the shadowed recesses. Biscuit, propelled by eager curiosity, noses forward into the cavity without hesitation. Maya leans through the doorway, straining to obtain a more thorough examination of whatever lies concealed within.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_peer",
+          "label": "Peer into the walled-off hollow.",
+          "target": "da_cache_app"
+        }
+      ]
+    },
+    {
+      "id": "da_cache_app",
+      "body": "It is a superannuated smuggler's cache, consigned to oblivion within this hollow for a full century. Crates repose in silent formation, huddled together in the pervasive gloom. Yet beyond these confines, the tide is undergoing its inexorable reversal, and the chamber's floor already gleams with the surreptitious advance of encroaching water. Biscuit paces restlessly at the threshold, discomposed by the moisture seeping beneath his paws. Maya finds herself compelled toward an immediate decision. Ought she venture inward for one hasty inspection of the antiquated crates, or should she abandon them to their fate and outpace the ascending tide toward the sanctuary of daylight?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cacheenter",
+          "label": "Step in for a quick look.",
+          "target": "da_cache_enter"
+        },
+        {
+          "id": "c_cacheback",
+          "label": "Leave the cache and beat the tide.",
+          "target": "da_cache_back"
+        }
+      ]
+    },
+    {
+      "id": "da_cache_back",
+      "body": "In the end, it is the sodden, treacherous floor that renders the decision for her, leaving no alternative to consider. Maya inscribes the precise location upon her map with meticulous care. She hastens outward, Biscuit trotting ahead of the steadily encroaching tide, urging her onward. They arrive at the cave's mouth in a state of breathlessness, caked in mud, yet unharmed. The water begins lapping insistently at the entrance mere moments after they have cleared it. Maya carefully refolds her map and tucks it away. Already, her thoughts have turned toward a future return, when drier conditions might permit her to retrieve the old, forgotten cache.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_cache",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Mark It on the Map"
+      }
+    },
+    {
+      "id": "da_cache_enter",
+      "body": "Within the hollow's shadowed recesses, the piled crates lie thickly shrouded in accumulated dust, their timbers so thoroughly compromised by decay that most crumble into brittle splinters at the merest contact from Maya's fingertips. Two smaller containers, however, occupy a separate position upon a desiccated stone ledge, distinguished from their disintegrating counterparts. Though the lids have grown rigid and unyielding with the passage of years, they remain wholly intact, unmarred by the deterioration afflicting the others. Biscuit investigates the containers with fervent curiosity, his tail oscillating in rapid, eager motion. Maya lowers herself beside the ledge, consumed by speculation regarding whatever contents might have lain in undisturbed silence within these vessels throughout the intervening years.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_boxes",
+          "label": "Open the two dry boxes.",
+          "target": "da_cache_room"
+        }
+      ]
+    },
+    {
+      "id": "da_cache_room",
+      "body": "Maya works the lid of the first crate loose, prying it open with effort. Within its confines rests a compass of tarnished brass, its surface encrusted with a patina of verdigris. The second container proves considerably more burdensome. As she shifts its weight experimentally, it produces a rattling cacophony, as though it harbors an entire handful of loose coins jostling within. Behind her, water advances with steady, encroaching persistence across the floor. She recognizes, with unwelcome certainty, that she possesses the capacity to extract only a single crate before the rising tide overtakes her. Biscuit observes in silence, awaiting the verdict she must render, while Maya deliberates, weighing the diminutive compass against the ponderous, clattering crate.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_compass",
+          "label": "Take the old brass compass.",
+          "target": "da_compass"
+        },
+        {
+          "id": "c_coins",
+          "label": "Take the heavy rattling box.",
+          "target": "da_coins"
+        }
+      ]
+    },
+    {
+      "id": "da_compass",
+      "body": "Maya scrapes the verdant residue from the compass with a sweep of her sleeve, and, remarkably, the needle continues its faithful oscillation, directing her toward the most expedient route back to the cave's entrance. Biscuit advances confidently, apparently possessing an innate certainty regarding the correct path, while Maya trails behind, her movements guided by the needle's insistent orientation through the shadowed corridor. Her pace quickens considerably now, propelled by the awareness that the rising tide pursues them with unrelenting proximity.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_out",
+          "label": "Follow the compass out.",
+          "target": "da_compass2"
+        }
+      ]
+    },
+    {
+      "id": "da_compass2",
+      "body": "The century-old compass, unerring in its guidance, conducts Maya and Biscuit directly toward the cave's yawning entrance, delivering them to safety in the precise instant the encroaching tide comes surging back in behind them. Maya, breathless and grinning with unconcealed triumph, steps at last onto the dry, welcoming sand. Clutched tightly within her hand rests an authentic smuggler's compass, its venerable needle still capable, after all the intervening years, of locating true north with unwavering fidelity. Already she comprehends, with a certainty that requires no confirmation, that the entire town will clamor to hear this extraordinary tale\u2014the one concerning the compass she unearthed in the deep, shadowed recesses beneath the ancient, weathered lighthouse.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_compass",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Smuggler's Compass"
+      }
+    },
+    {
+      "id": "da_coins",
+      "body": "The weighty container proves, upon inspection, to be laden entirely with coins darkened by age and neglect. Faces of unfamiliar visage are impressed, faintly, upon the tarnished silver surfaces. Maya cannot pause now to enumerate them, not while frigid water is already advancing steadily across the floor of the hidden chamber. Yet she calculates that she can manage the entire container, provided she moves without hesitation. Biscuit paces anxiously near the threshold, betraying an unmistakable agitation. Maya hoists the cumbersome box against her chest and proceeds toward the passage without delay, advancing as swiftly as the burden will permit.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_carry",
+          "label": "Carry the box out quickly.",
+          "target": "da_coins2"
+        }
+      ]
+    },
+    {
+      "id": "da_coins2",
+      "body": "Maya hauls the ponderous crate upward toward the daylight, narrowly outpacing the encroaching tide as it swells behind her. Her arms throb with exhaustion, and her breath emerges in ragged, labored gasps, testament to the strain of her exertions. Biscuit erupts alongside her into the warm, welcoming sunlight, his tail thrashing with unrestrained relief. Maya deposits the crate upon the dry sand and allows an expansive grin to spread across her face. Already, her imagination conjures the museum meticulously polishing every coin, printing her name upon a modest placard: the girl who discovered the smugglers' concealed fortune.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_coins",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Smuggler's Coins"
+      }
+    }
+  ]
+}

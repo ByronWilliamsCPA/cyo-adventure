@@ -16,13 +16,24 @@ module carries the same discipline
   either half of the token count is missing, the amount is a **lower bound**
   and says so, rather than presenting a partial sum as a total.
 
-**Known gap.** The project's only recorded price source
-(``docs/planning/yield-results/phase-2b-2026-06-22-analysis.md``) records
-output prices and no input prices, so every seeded entry below has
-``input_usd_per_mtok=None``. For this workload that biases the estimate low
-but not wildly: that same analysis records generation as output-token-heavy.
-Every estimate against these entries reports ``complete=False``, so no caller
-can mistake the figure for a full cost.
+**The input-price gap is closed (2026-08-14, `UW-C239`).** Every OpenRouter
+entry below now carries both halves, read live from the vendor's model list by
+``scripts/refresh_pricing.py`` and stamped with the date it was read. Before
+that, the only recorded source (the phase-2b analysis) noted output prices and
+no input prices, so every cloud entry had ``input_usd_per_mtok=None``, every
+estimate reported ``complete=False``, and the per-job accounting merged with
+#701 wrote ``cost_complete = false`` on every row, which made the migration's
+own advice to filter on that column select nothing. Two measurement runs on
+2026-08-14 printed ``$0.0000`` for work that cost $0.85 and $6.29 against the
+provider's balance.
+
+Refreshing is now a command rather than an act of archaeology::
+
+    uv run python scripts/refresh_pricing.py
+
+A model promoted out of a vendor comparison must be added to that script's
+list at the same time it is added to the allowlist. Otherwise its calls price
+as unknown and every job that touches it reports incomplete again.
 
 #CRITICAL: payment/financial: these prices are not read from a vendor API.
 They are transcribed from a dated project document, and a vendor price change
@@ -58,6 +69,7 @@ _TOKENS_PER_MTOK = Decimal(1_000_000)
 # Where the seeded numbers come from. Named once so every entry cites the same
 # string and a future edit cannot leave half the table pointing at a stale doc.
 _PHASE_2B = "docs/planning/yield-results/phase-2b-2026-06-22-analysis.md"
+_OPENROUTER_API = "https://openrouter.ai/api/v1/models (scripts/refresh_pricing.py)"
 
 
 @dataclass(frozen=True, slots=True)
@@ -102,30 +114,60 @@ class ModelPrice:
 # its slash-qualified id, not off "anthropic".
 _PRICES: dict[tuple[str, str], ModelPrice] = {
     ("openrouter", "anthropic/claude-haiku-4.5"): ModelPrice(
-        input_usd_per_mtok=None,
-        output_usd_per_mtok=Decimal("5.00"),
-        as_of=date(2026, 6, 22),
-        source=_PHASE_2B,
-        note="recorded as $5/Mtok out when chosen as the measurement primary",
+        input_usd_per_mtok=Decimal(1),
+        output_usd_per_mtok=Decimal(5),
+        as_of=date(2026, 8, 14),
+        source=_OPENROUTER_API,
+        note="read live from https://openrouter.ai/api/v1/models",
     ),
     ("openrouter", "anthropic/claude-sonnet-4.6"): ModelPrice(
-        input_usd_per_mtok=None,
-        output_usd_per_mtok=Decimal("15.00"),
-        as_of=date(2026, 6, 22),
-        source=_PHASE_2B,
-        note=(
-            "derived, not transcribed: the source states Haiku 4.5 is '3x cheaper "
-            "than Sonnet' on output and gives Haiku as $5/Mtok out. Verify "
-            "directly before trusting it, since a rounded ratio in prose is "
-            "weaker evidence than a quoted price"
-        ),
+        input_usd_per_mtok=Decimal(3),
+        output_usd_per_mtok=Decimal(15),
+        as_of=date(2026, 8, 14),
+        source=_OPENROUTER_API,
+        note="read live from https://openrouter.ai/api/v1/models",
+    ),
+    ("openrouter", "anthropic/claude-sonnet-5"): ModelPrice(
+        input_usd_per_mtok=Decimal(2),
+        output_usd_per_mtok=Decimal(10),
+        as_of=date(2026, 8, 14),
+        source=_OPENROUTER_API,
+        note="read live from https://openrouter.ai/api/v1/models",
     ),
     ("openrouter", "google/gemini-2.5-flash"): ModelPrice(
-        input_usd_per_mtok=None,
-        output_usd_per_mtok=Decimal("2.50"),
-        as_of=date(2026, 6, 22),
-        source=_PHASE_2B,
-        note="evaluated but not adopted; blocked on L1-7 for the test brief",
+        input_usd_per_mtok=Decimal("0.3"),
+        output_usd_per_mtok=Decimal("2.5"),
+        as_of=date(2026, 8, 14),
+        source=_OPENROUTER_API,
+        note="read live from https://openrouter.ai/api/v1/models",
+    ),
+    ("openrouter", "google/gemini-3-flash-preview"): ModelPrice(
+        input_usd_per_mtok=Decimal("0.5"),
+        output_usd_per_mtok=Decimal(3),
+        as_of=date(2026, 8, 14),
+        source=_OPENROUTER_API,
+        note="read live from https://openrouter.ai/api/v1/models",
+    ),
+    ("openrouter", "google/gemini-3.1-pro-preview"): ModelPrice(
+        input_usd_per_mtok=Decimal(2),
+        output_usd_per_mtok=Decimal(12),
+        as_of=date(2026, 8, 14),
+        source=_OPENROUTER_API,
+        note="read live from https://openrouter.ai/api/v1/models",
+    ),
+    ("openrouter", "openai/gpt-5.6-sol"): ModelPrice(
+        input_usd_per_mtok=Decimal(5),
+        output_usd_per_mtok=Decimal(30),
+        as_of=date(2026, 8, 14),
+        source=_OPENROUTER_API,
+        note="read live from https://openrouter.ai/api/v1/models",
+    ),
+    ("openrouter", "x-ai/grok-4.6"): ModelPrice(
+        input_usd_per_mtok=Decimal(2),
+        output_usd_per_mtok=Decimal(6),
+        as_of=date(2026, 8, 14),
+        source=_OPENROUTER_API,
+        note="read live from https://openrouter.ai/api/v1/models",
     ),
     ("ollama", "qwen2.5:14b"): ModelPrice(
         input_usd_per_mtok=Decimal(0),

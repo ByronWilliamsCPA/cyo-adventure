@@ -1,0 +1,575 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_lantern_festival",
+  "version": 1,
+  "title": "The Lantern Festival",
+  "metadata": {
+    "age_band": "5-8",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 2.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "friendship",
+      "community",
+      "celebration",
+      "perseverance"
+    ],
+    "estimated_minutes": 6,
+    "ending_count": 10,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "none",
+      "peril": "none"
+    },
+    "topology": "loop_and_grow",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_open",
+  "nodes": [
+    {
+      "id": "n_open",
+      "body": "Tansy is a juvenile hedgehog, her still-tender spines exhibiting a soft brown hue, and she resides within a snug, hollowed-out stump that serves as her dwelling. On this particular evening, the eagerly anticipated Lantern Festival, an event of considerable significance, is finally set to commence.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Count what is still needed.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_start",
+      "body": "Tansy positions herself within her customary clearing, methodically enumerating her obligations upon her own paws, as though the very act of tallying might impose order upon an otherwise unwieldy multitude of preparations. Glowberries, she reasons, must be procured to furnish illumination. Reeds, likewise, are required for the construction of frames. Beyond these material necessities, she recognizes an obligation to seek out her companions and extend to each of them a proper invitation. Honey cakes, too, must be secured to grace the forthcoming feast, while the antiquated paper lanterns\u2014long relegated to the shed\u2014demand retrieval and restoration to purpose. Nor can she neglect the cricket ensemble, whose musical accompaniment she deems indispensable to the occasion. Within her breast, an unmistakable warmth kindles itself, mingled with an anticipation she can scarcely contain. What course of action, she wonders, ought she now pursue?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_berries",
+          "label": "Go pick glowberries by the bramble patch.",
+          "target": "n_berry1"
+        },
+        {
+          "id": "c_start_willow",
+          "label": "Go invite your friends at the willow.",
+          "target": "n_willow1"
+        },
+        {
+          "id": "c_start_reeds",
+          "label": "Go cut reeds for lantern frames.",
+          "target": "n_reed1"
+        },
+        {
+          "id": "c_start_honey",
+          "label": "Go ask the bees for honey cakes.",
+          "target": "n_honey1"
+        },
+        {
+          "id": "c_start_shed",
+          "label": "Go fetch the old paper lanterns.",
+          "target": "n_shed1"
+        },
+        {
+          "id": "c_start_crickets",
+          "label": "Go ask the cricket band to play.",
+          "target": "n_cricket1"
+        }
+      ]
+    },
+    {
+      "id": "n_berry1",
+      "body": "At the bramble thicket, a cluster of low-hanging berries glimmers with a subdued luster, their ripeness rendering them effortlessly attainable. Plump and perfectly rounded, they present themselves without complication. Yet higher up, suspended upon a branch, resides an even more abundant cluster\u2014berries that gleam with a brilliance far surpassing that of their lower counterparts. Tansy contemplates the easily accessible berries below, her gaze then drifting upward toward those radiant, elevated ones. These higher berries, however, prove considerably more challenging to obtain. Compelled to select only one option, she finds herself confronted with an inevitable decision. Which will she choose?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_berry_low",
+          "label": "Pick the ripe low glowberries.",
+          "target": "n_berry2"
+        },
+        {
+          "id": "c_berry_high",
+          "label": "Climb for the high cluster.",
+          "target": "e_berry_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_berry2",
+      "body": "Tansy loads her basket to overflowing with the luminous berries, their warm radiance casting an amber glow beneath her chin as she surveys the fruits of her diligent labor with evident satisfaction. The festival preparations, meanwhile, are gathering momentum, each contribution steadily coalescing into a unified whole. She might transport this harvest directly to the meadow, or alternatively, retrace her steps to the clearing in pursuit of an additional yield. Which course of action seems most fitting to her?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_berry_meadow",
+          "label": "Carry the glowberries to the meadow.",
+          "target": "n_meadow"
+        },
+        {
+          "id": "c_berry_back",
+          "label": "Go back to the clearing for more.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_willow1",
+      "body": "Beneath the venerable, aged willow, her companions lie in gentle, huddled clusters, their forms arranged in soft disarray. The sun's warmth suffuses them pleasantly as they slumber. Tansy is eager to extend an invitation to the grand festival occurring that very evening. She might tap gently upon the willow's door, a gesture that would rouse them gradually and without disturbance. Alternatively, she could sound the boisterous dinner bell, whose clamor would jolt them into wakefulness with startling immediacy. Which course of action ought she to choose?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_willow_knock",
+          "label": "Knock gently on the willow door.",
+          "target": "n_willow2"
+        },
+        {
+          "id": "c_willow_bell",
+          "label": "Clang the loud dinner bell.",
+          "target": "e_willow_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_willow2",
+      "body": "Her companions, stirred from their languor, emit prolonged yawns and elongate their limbs in unison before uttering their assent in a single, simultaneous breath. Without hesitation, they spring upward, seizing their diminutive lanterns with eager haste. The assembly steadily swells in number, and a pervasive sense of contentment settles upon the collective as they revel together. Tansy perceives the exuberance suffusing the atmosphere around her while their laughter resonates. She now possesses the capacity to guide them toward the distant meadow. Alternatively, she might retrace her steps to her familiar clearing. Which of these paths, she wonders, would prove most gratifying to her spirit?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_willow_meadow",
+          "label": "Lead your friends to the meadow.",
+          "target": "n_meadow"
+        },
+        {
+          "id": "c_willow_back",
+          "label": "Pop back to the clearing first.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_reed1",
+      "body": "Beside the reed-choked pond, Tansy occupies herself with the search for suitable stalks, for these are required in the construction of lantern frames. Along the bank stand tall, desiccated reeds, rustling and swaying with each passing gust of the breeze, while fresher stalks\u2014verdant and supple\u2014incline themselves outward over the water's surface, beneath which lies a stretch of cool, unruffled stillness. The question of which variety of reed might prove most serviceable for her frames occupies her thoughts considerably, and it is with great deliberation that Tansy weighs the matter.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_reed_dry",
+          "label": "Cut the tall dry reeds.",
+          "target": "n_reed2"
+        },
+        {
+          "id": "c_reed_wet",
+          "label": "Cut the fresh green reeds.",
+          "target": "e_reed_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_reed2",
+      "body": "The desiccated reeds detach with a crisp uniformity, gathering themselves into an orderly, compact bundle. Golden and sturdy, they possess exactly the pliability required for bending without fracture. They yield with remarkable precision beneath the modest pressure of her diminutive paws. Their qualities render them ideally suited for constructing ornamental frames of considerable charm. She might undertake the weaving immediately, right there at the pond's edge, or she might instead transport the bundle homeward for later use. Which course of action ought she to choose?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_reed_weave",
+          "label": "Weave the frames here by the pond.",
+          "target": "n_reed3"
+        },
+        {
+          "id": "c_reed_back",
+          "label": "Carry the bundle back to the clearing.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_reed3",
+      "body": "Tansy carefully manipulates the pliant reeds, coaxing them into circular little frameworks with practiced dexterity. As she labors, she hums a cheerful melody beneath her breath, her paws moving with swift and unerring precision. Before long, she has accumulated a considerable stack of frames, which she balances with care against her arms. A profound sense of pride swells within her at the sight of her accomplished work. Now, with purposeful steps, she transports her creations toward the meadow.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_reed_meadow",
+          "label": "Carry the lantern frames to the meadow.",
+          "target": "n_meadow"
+        }
+      ]
+    },
+    {
+      "id": "n_honey1",
+      "body": "At the circular hive, Tansy makes a request for honey cakes, articulating her desire with careful politeness. The bees, responding with evident benevolence, emit a gentle buzzing and incline their heads in agreement, their willingness to assist her plainly apparent. Tansy now faces a decision: she may remain patiently while they assemble a basket, or alternatively, she may withdraw temporarily and return at a subsequent moment. Which of these two courses of action ought she to choose at this very instant?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_honey_wait",
+          "label": "Wait politely for the honey cakes.",
+          "target": "n_honey2"
+        },
+        {
+          "id": "c_honey_back",
+          "label": "Head back to the clearing for now.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_honey2",
+      "body": "The bees, industrious as ever, assemble within a basket an abundance of honey cakes still warm from baking, their fragrance redolent of sweet clover and sun-drenched afternoons. This aroma summons a broad smile across Tansy's face, and, in gratitude, she offers the bees a courteous bow. In response, they buzz melodiously and wave their farewells. Bearing the weighty basket with care, Tansy makes her way toward the meadow.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_honey_meadow",
+          "label": "Carry the honey cakes to the meadow.",
+          "target": "n_meadow"
+        }
+      ]
+    },
+    {
+      "id": "n_shed1",
+      "body": "In the modest garden shed reside the elderly lanterns from the previous year's festival, remnants of celebrations long concluded. They repose, dust-laden, upon an elevated shelf, silently awaiting the attention they require. The paintwork adorning each one, however, remains remarkably vibrant despite the passage of time. Tansy possesses the option of dusting each lantern immediately, employing a soft cloth for the task. Alternatively, she might postpone the endeavor, choosing instead to retrieve them at some subsequent moment. Which course of action, she wonders, corresponds most naturally to her inclination?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_shed_dust",
+          "label": "Dust off the old paper lanterns.",
+          "target": "n_shed2"
+        },
+        {
+          "id": "c_shed_back",
+          "label": "Go back to the clearing for now.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_shed2",
+      "body": "Tansy attends to the paper lanterns with meticulous care, whisking away the accumulated dust that had dulled their surfaces. The painted moons and leaves, once obscured, now shine with renewed brilliance. Gold and red and blue hues reemerge vividly, restored to a condition indistinguishable from newness. She regards her handiwork with considerable satisfaction. The bundle of belongings cradled in her arms continues to swell in size. She transports the lanterns onward, toward the meadow.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_shed_meadow",
+          "label": "Carry the paper lanterns to the meadow.",
+          "target": "n_meadow"
+        }
+      ]
+    },
+    {
+      "id": "n_cricket1",
+      "body": "Beside the towering blades of grass, the ensemble of crickets lingers in anticipation, their diminutive fiddles cradled beneath their slender forelimbs, poised for instruction. Tansy inquires, with a note of curiosity, whether they intend to perform at the forthcoming festival. In response, the crickets emit a chorus of enthusiastic chirping, their heads bobbing in unmistakable affirmation, for they possess an unwavering conviction that their forthcoming melodies shall render the evening nothing short of flawless. A dilemma now presents itself to her: ought she to escort them onward without delay, or would it be more prudent to retrace her steps beforehand?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cricket_lead",
+          "label": "Ask the crickets to follow you now.",
+          "target": "n_cricket2"
+        },
+        {
+          "id": "c_cricket_back",
+          "label": "Go back to the clearing first.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_cricket2",
+      "body": "The cricket ensemble proceeds in formation directly behind Tansy, each member clutching a diminutive fiddle with unwavering firmness. Music, they believe, shall render the evening utterly complete. Tansy guides the chirruping assembly forward, and as they progress, they hop and leap in rhythmic accompaniment, giving voice to jubilant melodies. In this manner, they march the entire distance to the meadow.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cricket_meadow",
+          "label": "Lead the cricket band to the meadow.",
+          "target": "n_meadow"
+        }
+      ]
+    },
+    {
+      "id": "n_meadow",
+      "body": "As twilight descends upon the meadow, it unfurls in an expansive tapestry of color, the heavens above transmuting into hues of violet and rose as the sun makes its gradual descent below the horizon. The venerable oak, ancient and imposing, presides over the scene with unwavering solidity, while the motionless pond faithfully reflects the vibrant spectacle above with remarkable fidelity. Meanwhile, Tansy's accumulated belongings continue to multiply, their heap steadily expanding in both size and quantity, even as her companions persist in emerging from among the trees in a steady procession. Each arrival greets her with a beaming countenance, offering assistance in the continued collection of her possessions. Confronted with this circumstance, Tansy finds herself deliberating: ought she to commence preparations immediately, or would it prove more prudent to undertake yet another expedition beforehand?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_meadow_setup",
+          "label": "Start setting up the festival.",
+          "target": "n_setup"
+        },
+        {
+          "id": "c_meadow_back",
+          "label": "Make one last trip to the clearing.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_setup",
+      "body": "In the wide meadow, the assembled reed frameworks were being methodically swathed, layer upon layer, in vividly colored paper that concealed their skeletal forms entirely. Clusters of glowberries were tucked carefully within, poised to emit their soft, shimmering luminescence once darkness fell. All around, companions bustled with unrelenting industry, their diligent paws darting here and there in a flurry of coordinated effort. Gradually, the lanterns began to assume their intended shape. Yet a question lingered, unresolved: ought she suspend them from the sprawling boughs of the oak, or instead turn her attention toward arranging the picnic?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_setup_hang",
+          "label": "Hang the lanterns in the great oak.",
+          "target": "n_hang"
+        },
+        {
+          "id": "c_setup_picnic",
+          "label": "Spread out the picnic feast.",
+          "target": "n_picnic"
+        }
+      ]
+    },
+    {
+      "id": "n_hang",
+      "body": "With deliberate care, the friends hoist the lanterns into the outstretched branches of the oak. They sway gently, resembling fireflies caught in the evening breeze. The lanterns hang there, poised and expectant, awaiting the moment they shall illuminate the surroundings. Above them, the sky transforms from purple into deepening darkness. Before long, night will descend upon the meadow, and the full constellation of stars will emerge into view. Ought Tansy to light them now, or should she instead await the appearance of the very first star?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hang_light",
+          "label": "Light the lanterns right now.",
+          "target": "n_light"
+        },
+        {
+          "id": "c_hang_star",
+          "label": "Wait for the first star.",
+          "target": "n_star"
+        }
+      ]
+    },
+    {
+      "id": "n_light",
+      "body": "One by one, the lanterns kindle themselves into luminous being, as though summoned by some unseen decree. First a solitary glow, then a pair, then a trio, and thereafter an ever-multiplying constellation of flickering light. The meadow is transfigured, suffused entirely in a golden, tender radiance that seems to emanate from the very air itself. The illumination possesses a gentle, exquisite quality, one that captivates the eye with its softness. Every creature present exhales in astonished delight, overcome by a shared sense of marvel. Paws come together in spontaneous applause, and smiles spread unbidden across every face. The glow itself seems to coax these wide, irrepressible grins into being. Ought Tansy to release a few lanterns to drift upon the pond's placid surface? Or would it be preferable to leave them suspended aloft, nestled among the branches of the towering oak?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_light_pond",
+          "label": "Float lanterns on the pond.",
+          "target": "e_finale_pond"
+        },
+        {
+          "id": "c_light_oak",
+          "label": "Keep the lanterns in the oak.",
+          "target": "e_finale_oak"
+        }
+      ]
+    },
+    {
+      "id": "n_star",
+      "body": "As if by some unspoken accord, everyone lapses into a hushed stillness, their attention fixed upon the darkening firmament above. The clouds dissipate gradually overhead, dissolving into nothingness, while the sky undergoes its slow metamorphosis from a somber purple into an impenetrable black. Then, with quiet suddenness, the first minuscule star flickers into existence, awakening as though from a long slumber, casting its luminous glow across the expanse of the meadow below. A jubilant cheer erupts spontaneously from the gathered assembly. Companions embrace one another, their laughter mingling in shared delight. This, at last, is the long-awaited signal. Tansy, with reverent ceremony, ignites the very first lantern.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_star_glow",
+          "label": "Light the first lantern and begin.",
+          "target": "n_glow"
+        }
+      ]
+    },
+    {
+      "id": "n_glow",
+      "body": "Lantern by lantern, each successive flame kindles into being, until the meadow is transformed into an undulating sea of gold. Every lantern radiates a warmth that seems almost tangible in its brightness. Below, the pond serves as an obedient mirror, faithfully reflecting each individual light, and in doing so, it multiplies every hue into a doubled spectacle of color. The crickets, as if summoned by some unspoken cue, raise their fiddles aloft in unified anticipation. With practiced synchrony, they commence their performance, bowing their instruments in graceful arcs. The resulting music drifts outward, delicate and unhurried. Ought Tansy to lend her voice to a song? Or would it be preferable to summon her companions together in pursuit of a wish?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_glow_song",
+          "label": "Start a lantern song.",
+          "target": "n_song"
+        },
+        {
+          "id": "c_glow_wish",
+          "label": "Make a wish together.",
+          "target": "n_wish"
+        }
+      ]
+    },
+    {
+      "id": "n_song",
+      "body": "The crickets, with an almost gleeful exuberance, perform a buoyant and irrepressibly cheerful melody, one that bounces and hops and courses through the air with unrestrained vitality. Tansy, assuming the role of leader, initiates the venerable lantern song, and her companions, one by one, add their voices to the growing chorus, joining in line by line until every contribution has merged into a single harmonious current. Their voices intertwine and swell together, rising in unison, until the entirety of the meadow resounds with the words being sung. The resulting music possesses a beauty and loveliness so profound that it lingers, enchantingly, upon the air.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_song_end",
+          "label": "Sing the festival into the night.",
+          "target": "e_finale_song"
+        }
+      ]
+    },
+    {
+      "id": "n_wish",
+      "body": "Beneath the lantern's radiant glow, the assembled friends convene in a circle, arranging themselves around the most luminous vessel among them. With paws clasped firmly together in solidarity, they permit their eyelids to drift gently shut. Tansy, with deliberate patience, counts aloud to the number three. In that suspended moment, every creature present formulates a single, heartfelt wish\u2014one intended not merely for themselves, but for the collective welfare of the entire woodland realm.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wish_end",
+          "label": "Make the wish all together.",
+          "target": "e_finale_wish"
+        }
+      ]
+    },
+    {
+      "id": "n_picnic",
+      "body": "Tansy carefully arranges a cloth upon the grass, a fabric adorned in red with a scattering of white dots across its surface. Upon this makeshift table rest honey cakes and confections of berry, offerings whose fragrance drifts pleasantly through the surrounding air. Overhead, lanterns emit a soft and gentle luminescence, casting their warmth downward upon the gathering. Her companions arrange themselves in a circle, settling into place as they wait, exchanging smiles amongst one another in quiet anticipation. Tansy hesitates, uncertain: ought she commence the distribution of treats immediately, or would it be more prudent to await Granny Hedgehog's arrival?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_picnic_feast",
+          "label": "Start sharing the honey cakes.",
+          "target": "n_feast"
+        },
+        {
+          "id": "c_picnic_bless",
+          "label": "Wait for Granny Hedgehog.",
+          "target": "n_bless"
+        }
+      ]
+    },
+    {
+      "id": "n_feast",
+      "body": "Here is a rewritten version of the passage, elevated in complexity while preserving every event precisely:\n\nThe honey cakes circulate methodically among the assembled gathering, passed from hand to hand around the circle's perimeter. Each participant savors the confections with unhurried contentment, munching slowly in a state of evident happiness. The treats possess an exceptional sweetness, their flavor proving thoroughly satisfying to all who partake. Companions exchange laughter and beaming expressions, united in shared merriment. The entire feast radiates conviviality and abundance, a celebration marked by fullness and delight. This entire scene unfolds beneath lanterns that sway gently overhead, their motion casting flickering illumination upon the festivities below. She found herself confronted with a decision: should she permit the pleasant proceedings to continue undisturbed in their natural course? Or might she instead introduce some whimsical riddles, thereby altering the trajectory of the evening's entertainment?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_feast_end",
+          "label": "Let the happy feast roll on.",
+          "target": "e_finale_feast"
+        },
+        {
+          "id": "c_feast_riddle",
+          "label": "Start a round of riddles.",
+          "target": "n_riddle"
+        }
+      ]
+    },
+    {
+      "id": "n_riddle",
+      "body": "Companions exchange increasingly absurd riddles, their laughter escalating with each successive attempt, for every riddle proves more preposterous than the one preceding it. What manner of thing takes flight, they wonder aloud, despite possessing no wings whatsoever? A confection of honey cake renders these riddles all the more delectable, and the assembled group dissolves into uncontrollable, collective merriment. Even the lanterns, it seems, participate in this shared amusement, flickering as though convulsed with laughter themselves. Tansy, however, withholds her most superior riddle, reserving it deliberately until the very conclusion.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_riddle_end",
+          "label": "Tell the very best riddle.",
+          "target": "e_finale_riddle"
+        }
+      ]
+    },
+    {
+      "id": "n_bless",
+      "body": "Granny Hedgehog arrives, leaning upon her cane, her steps deliberate and unhurried, each footfall placed with the measured confidence that only advanced age can bestow. Her spines gleam with a silvery luster beneath the ambient light, sparkling and shimmering as though illuminated from within. The assembled friends fall into a hushed, motionless silence, awaiting her presence. She regards them with a broad, benevolent smile before lowering herself into her seat, releasing a weary sigh as she settles. Then, as is her custom every single year without exception, she recounts the venerable legend concerning the very first lantern ever to exist.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bless_end",
+          "label": "Listen to Granny's lantern story.",
+          "target": "e_finale_story"
+        }
+      ]
+    },
+    {
+      "id": "e_berry_oops",
+      "body": "Tansy stretches toward the elevated berries clustered upon the precariously unsteady branch, unaware of the consequence her reaching will provoke. Without warning, the branch recoils with startling velocity and considerable force, propelling her basket into a sudden, arcing ascent through the air. It descends, ultimately, into the cushioned embrace of the ferns sprawled beneath. Boing, boing, boing\u2014it proceeds, emitting peculiar, comical noises with each successive bounce. Remarkably, she emerges entirely unscathed, sustaining no injury whatsoever. Amused rather than distressed, she erupts into laughter at the absurdity of the spectacle. Meanwhile, the scattered berries tumble haphazardly among the fronds, settling wherever gravity dictates. Brushing herself off with practiced nonchalance, she turns and makes her way homeward, already resolving, undeterred, to attempt the endeavor once more.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_berry_oops",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Oops, Bouncing Berries"
+      }
+    },
+    {
+      "id": "e_willow_oops",
+      "body": "The dinner bell erupts with a startling clamor, its resonance reverberating throughout the entirety of the tree. Instantaneously, all her companions tumble forth in unison, collapsing into a chaotic, mirthful heap upon one another. Blankets scatter chaotically in every conceivable direction. A chorus of giggling intermingled with grumbling ensues among the group. Considerable time elapses before order can be restored and everyone properly disentangled. Ultimately, the entire assembly dissolves into raucous laughter. Tansy joins wholeheartedly in their amusement. She resolves that, henceforth, she will knock with considerably greater gentleness.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_willow_oops",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Oops, Too Loud a Bell"
+      }
+    },
+    {
+      "id": "e_reed_oops",
+      "body": "Tansy discovers that the newly sprouted, verdant reeds possess insufficient rigidity to serve her purpose, saturated as they are by the waters lying beneath them. Each framework she attempts to fashion collapses immediately, drooping with the limp helplessness of an overcooked noodle. Moisture cascades unceremoniously across her paws, drenching them thoroughly. Rather than succumbing to frustration, she finds herself amused by the ridiculous, waterlogged disaster before her\u2014the spectacle strikes her as genuinely comical. Retracing her steps, she makes her way back toward her clearing, resolved to commence her labor once more from the very beginning.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_reed_oops",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Oops, Soggy Reeds"
+      }
+    },
+    {
+      "id": "e_finale_pond",
+      "body": "Tansy and her companions arranged lanterns delicately upon the surface of the pond, whose waters lay motionless and undisturbed beneath them. The lanterns drifted with a gentle buoyancy, resembling diminutive golden moons suspended above the darkened depths. The pond, functioning as an impeccable mirror, faithfully reproduced every flickering illumination. The radiance descended and ascended in perfect reciprocity, doubling itself through reflection. Throughout the meadow, spectators emitted a unified murmur of astonishment. They erupted into applause and jubilant cheering, their delight unmistakable. The festival, resplendent in its beauty, concluded with quiet satisfaction. Tansy herself radiated with a luminosity that rivaled the very lanterns she had helped to set adrift.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_pond",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Lanterns on the Water"
+      }
+    },
+    {
+      "id": "e_finale_oak",
+      "body": "Beneath the sprawling canopy of the ancient oak, an abundance of lanterns blazed with radiant intensity, suspended in such profusion that the tree itself seemed transformed into a celestial constellation of warmth. The illumination cast about them was gentle and suffused with a golden luminescence, enveloping the entire scene in its glow. All present moved languidly in dance beneath the overarching boughs, revolving and pirouetting in unhurried circles. Tansy tilted her gaze upward, contemplating the spectacle they had collectively brought into being. Within her breast, an overwhelming sense of fullness and luminous joy took hold, and she found herself suffused with an inexpressible contentment.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_oak",
+        "valence": "positive",
+        "kind": "success",
+        "title": "A Tree Full of Stars"
+      }
+    },
+    {
+      "id": "e_finale_song",
+      "body": "The entire meadow resonates with the timeworn melody, voices intertwining and ascending in unison as though bound by some invisible thread. The crickets' fiddles produce notes both piercing and impeccably true, their harmonies unfurling across the pond's glassy surface before drifting, unhurried, into the vast expanse of the night sky. Amid this chorus, Tansy's voice emerges as the most exuberant of all, her volume unmatched, for she harbors a profound sense of pride in the festivities unfolding around her.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_song",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Lantern Song"
+      }
+    },
+    {
+      "id": "e_finale_wish",
+      "body": "Their friends' eyelids part slowly, revealing the luminous glow suffusing everything before them. The entire meadow radiates a brilliant shimmer in every direction. Together, in perfect unison, they formulated a single heartfelt wish\u2014a fervent hope for a joyous and prosperous year to unfold ahead of them. Tansy clasps each of their paws tightly, one after another, in a gesture of affection. Across her face spreads an enormous, unrestrained smile. Never before has any festival brought such immeasurable joy as this one.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_wish",
+        "valence": "positive",
+        "kind": "success",
+        "title": "One Warm Wish"
+      }
+    },
+    {
+      "id": "e_finale_feast",
+      "body": "The confections of honey and their accompanying sweetmeats circulate ceaselessly among the assembled company, each participant partaking with unrestrained delight, nibbling and masticating in a state of collective jubilation. Laughter erupts from mouths still brimming with festive fare, a chorus of merriment shared amongst friends. The banquet persists deep into the nocturnal hours, unhurried and indulgent. Overhead, the gently oscillating lanterns cast their glow downward upon the gathering. The entirety of the woodland community has convened in this singular moment of togetherness\u2014suffused with warmth, contentment, and the satisfaction of having feasted well.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_feast",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Glowing Feast"
+      }
+    },
+    {
+      "id": "e_finale_riddle",
+      "body": "Tansy delivers the most masterful riddle of the entire gathering, one so cleverly constructed that the whole assembled circle erupts into uproarious laughter. Several of her companions, overcome by mirth, inadvertently expel crumbs in every direction. The lanterns appear to shimmer and pulse in sympathetic celebration. The sound of giggling reverberates outward across the expanse of the meadow. It is, without question, the most jubilant and festive night the woodland has ever known.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_riddle",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Best Riddle of All"
+      }
+    },
+    {
+      "id": "e_finale_story",
+      "body": "Granny arrives, at long last, at the conclusion of the venerable tale. In that very instant, every lantern blazes with its most luminous intensity. The assembled friends applaud gently, their gestures unhurried and deliberate. Tansy inclines herself against Granny, seeking the closeness of her presence. Granny's arm encircles her with a firm, protective embrace. Through her efforts, the gathering has succeeded in preserving the festival's vitality for yet another season. Thus, one additional year of illumination gleams forth.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_story",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Granny's Lantern Story"
+      }
+    }
+  ]
+}

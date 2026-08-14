@@ -11,8 +11,13 @@ does not own.
 from __future__ import annotations
 
 import itertools
+import os
+from typing import TYPE_CHECKING
 
 import pytest
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 from scripts.judge_books import Verdict
 from scripts.w7_battery import (
@@ -20,6 +25,7 @@ from scripts.w7_battery import (
     blend_to_grade,
     cohens_kappa,
     score_battery,
+    single_run,
     weighted_kappa,
 )
 
@@ -395,3 +401,54 @@ def test_weighted_kappa_separates_near_misses_from_far_ones() -> None:
 def test_weighted_kappa_is_undefined_not_zero_when_a_judge_never_varies() -> None:
     """Reporting 0.0 would read as total disagreement between judges who agreed."""
     assert weighted_kappa([3.0, 3.0, 3.0], [3.0, 3.0, 3.0]) is None
+
+
+# --------------------------------------------------------------------------
+# The concurrent-run lock
+# --------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+def test_a_second_run_against_the_same_output_directory_is_refused(
+    tmp_path: Path,
+) -> None:
+    """A paid run is silent for most of its life, so silence must not invite a retry.
+
+    W7's judging pass was relaunched on the evidence of a missing log while the
+    original was still running: two panels, 93 scorings each, $4.94 against
+    about $2. Both would have written `verdicts.json`, so the artefact could
+    not have shown it.
+    """
+    (tmp_path / ".run.lock").write_text(str(os.getpid()), encoding="utf-8")
+
+    with pytest.raises(RuntimeError, match="already writing"), single_run(tmp_path):
+        pass  # pragma: no cover - the raise is the assertion
+
+
+@pytest.mark.unit
+def test_a_lock_left_by_a_dead_process_does_not_wedge_the_harness(
+    tmp_path: Path,
+) -> None:
+    """A killed run must not require manual cleanup before the next one.
+
+    The lock is a guard against a *live* duplicate, not a mutex that outlives
+    its holder; treating a stale file as authoritative would turn one crash
+    into a permanently blocked harness.
+    """
+    (tmp_path / ".run.lock").write_text("999999", encoding="utf-8")
+
+    with single_run(tmp_path):
+        assert (tmp_path / ".run.lock").read_text(encoding="utf-8") == str(os.getpid())
+
+    assert not (tmp_path / ".run.lock").exists(), "the lock outlived its run"
+
+
+@pytest.mark.unit
+def test_a_corrupted_lock_file_reads_as_dead(tmp_path: Path) -> None:
+    """Otherwise a truncated write during a crash blocks every later run."""
+    (tmp_path / ".run.lock").write_text("not-a-pid", encoding="utf-8")
+
+    with single_run(tmp_path):
+        pass
+
+    assert not (tmp_path / ".run.lock").exists()

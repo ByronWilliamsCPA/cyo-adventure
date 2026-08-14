@@ -1,0 +1,201 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_lost_mitten",
+  "version": 1,
+  "title": "The Lost Mitten",
+  "metadata": {
+    "age_band": "3-5",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 1.0,
+      "tolerance": 1.0
+    },
+    "tier": 1,
+    "themes": [
+      "friendship",
+      "winter",
+      "problem-solving"
+    ],
+    "estimated_minutes": 5,
+    "ending_count": 3,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "none",
+      "peril": "none"
+    },
+    "topology": "loop_and_grow"
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "Pip, the diminutive fox, occupied himself amid the snow, ascending the hill with vigor and descending it with equal enthusiasm. Pip possessed a pair of crimson mittens, garments notable for their warmth and softness. Yet, unexpectedly, a disturbance arose: one mitten had vanished entirely! Pip regarded a single unclothed paw, which had become uncomfortably, persistently frigid. \"Oh no,\" exclaimed Pip, \"wherever could my crimson mitten have gone?\" Pip resolved to locate the missing garment. The snow lay thick and pale across the landscape, presenting several possibilities for investigation. Pip might scrutinize the area surrounding the towering pine tree. Alternatively, Pip could consult Hoppy, the rabbit, regarding the mitten's whereabouts. A third option existed as well: Pip could examine the impressions left by the sled's passage. Which of these locations ought Pip to investigate initially?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pine",
+          "label": "Look under the big pine tree.",
+          "target": "n_pine"
+        },
+        {
+          "id": "c_rabbit",
+          "label": "Ask Hoppy the rabbit.",
+          "target": "n_rabbit"
+        },
+        {
+          "id": "c_sled",
+          "label": "Check the sledding track.",
+          "target": "n_sled"
+        }
+      ]
+    },
+    {
+      "id": "n_pine",
+      "body": "Pip dashed toward the towering pine, its branches burdened with accumulated snow. Pip surveyed the ground below with careful attention, then tilted his gaze toward the heights above. The red mitten was nowhere to be discovered in either direction. But wait\u2014observe! A sequence of diminutive paw prints traversed the snowy expanse. They descended, gradually and persistently, continuing downward until they reached the distant creek. \"A clue!\" Pip exclaimed, overcome with a surge of delight. Perhaps the elusive mitten lay somewhere along that very path. Yet the hill remained temptingly warm and conveniently close. Ought Pip to pursue the mysterious tracks all the way to the creek? Or should he instead retreat to the familiar, snow-covered hill?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pine_creek",
+          "label": "Follow the footprints to the creek.",
+          "target": "n_creek"
+        },
+        {
+          "id": "c_pine_back",
+          "label": "Go back to the snowy hill.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_rabbit",
+      "body": "Pip proceeded, with a series of energetic bounds, toward Hoppy the rabbit, whose ears were notably large and remarkably soft in appearance. \"Greetings, Hoppy,\" Pip inquired earnestly, \"have you, by any chance, observed the whereabouts of my crimson mitten?\" Hoppy responded by shaking her head in a gesture of negation. \"No, Pip. I have not encountered it. However, I happened to overhear the birds earlier this day. They had congregated near the creek, engaging in persistent, animated chirping. It appeared that they had caught sight of something distinctly red in color!\" \"I am most grateful to you, Hoppy!\" exclaimed Pip. The creek, fortunately, was not situated at any considerable distance. Yet it remained entirely possible that the mitten had, in fact, remained upon the hill the entire time. Ought Pip, therefore, to venture down toward the creek in pursuit of the lost item? Or would it be wiser to resume the search upon the hill once more?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rabbit_creek",
+          "label": "Hop down to the creek.",
+          "target": "n_creek"
+        },
+        {
+          "id": "c_rabbit_back",
+          "label": "Look again on the hill.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_sled",
+      "body": "Pip proceeded toward the sled track, where the snow lay unusually smooth and swift beneath the pale afternoon light. Pip surveyed the surrounding area with meticulous attention, yet no crimson mitten presented itself to view. Then, quite unexpectedly, Pip's gaze fell upon a diminutive twig, upon which rested a single scarlet thread\u2014delicate and fuzzy in texture. \"This unmistakably belongs to my mitten!\" Pip exclaimed. The crimson filament indicated a particular direction, pointing distinctly downward toward the creek. Pip might choose to pursue this fragile clue, or alternatively, might attempt once more to ascend the hill. What course of action should Pip undertake?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sled_creek",
+          "label": "Follow the red thread to the creek.",
+          "target": "n_creek"
+        },
+        {
+          "id": "c_sled_back",
+          "label": "Try the hill one more time.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_creek",
+      "body": "Pip arrived at the edge of the creek, where the water lay cold and motionless beneath a wintry hush. Pausing, Pip surveyed the surroundings with careful attention. Something crimson lay conspicuously embedded in the snow! Overhead, unseen birds produced a persistent chirping, their calls drifting downward through the chilled air. In the distance, the unmistakable aroma of warm cocoa wafted from home, tantalizing and sweet. So many possibilities presented themselves. Pip might retrieve the mysterious red object nestled in the snow. Pip might instead gaze upward, searching for the source of the birdsong. Or Pip might abandon both pursuits and return home to savor the cocoa. Which of these tempting options should Pip choose?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_creek_red",
+          "label": "Reach for the red thing in the snow.",
+          "target": "n_found"
+        },
+        {
+          "id": "c_creek_birds",
+          "label": "Look up at the chirping birds.",
+          "target": "n_birds"
+        },
+        {
+          "id": "c_creek_home",
+          "label": "Follow the smell of cocoa home.",
+          "target": "n_cocoa"
+        }
+      ]
+    },
+    {
+      "id": "n_birds",
+      "body": "Pip gazed upward toward the birds, which trilled melodiously and beat their wings against the crisp air. It was then that Pip noticed something remarkable. The crimson mitten had become entangled upon a low-hanging branch, suspended maddeningly beyond immediate grasp. Pip leapt upward with determined energy, extending to full height in a valiant attempt. So near, yet frustratingly insufficient! Perhaps Pip possessed the capability to retrieve it unassisted. Alternatively, perhaps Pip's companions might offer their assistance in this small predicament. Ought Pip to attempt dislodging the mitten independently, or should Pip instead summon friends to lend their aid?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_birds_lift",
+          "label": "Gently lift the mitten down.",
+          "target": "n_found"
+        },
+        {
+          "id": "c_birds_help",
+          "label": "Call your friends to help.",
+          "target": "n_help"
+        }
+      ]
+    },
+    {
+      "id": "n_help",
+      "body": "Pip cried out in a voice thick with urgency, \"Friends! I am in need of assistance!\" Without hesitation, Hoppy came bounding forward with remarkable haste, while the squirrels, too, came dashing over, every one of them possessed by an eager desire to render Pip aid. \"Let us form ourselves into a chain!\" Hoppy proposed, and so, without delay, they organized themselves accordingly. Pip grasped hold of Hoppy, who in turn clasped a squirrel firmly, and together they swayed unsteadily, their bodies wobbling precariously even as laughter bubbled up between them. Higher and higher, inch by inch, they extended themselves in unified effort, until at last the branch loomed within reach. The moment had finally arrived to retrieve the red mitten!",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_help_together",
+          "label": "Reach the mitten together.",
+          "target": "n_together"
+        }
+      ]
+    },
+    {
+      "id": "n_cocoa",
+      "body": "Pip pursued the aroma of cocoa homeward, discovering that Mama Fox was already stationed at the doorway, awaiting arrival. \"Come in, Pip! It is warm in here,\" she announced. Pip settled beside the fire, and the sensation proved immensely gratifying. Pip proceeded to remove one snow-laden boot, and subsequently extracted the other. Plop! An object of crimson hue tumbled forth onto the floor. \"What is that?\" inquired Pip, bending downward to investigate the mysterious item more closely.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cocoa_surprise",
+          "label": "See what fell out of the boot.",
+          "target": "n_surprise"
+        }
+      ]
+    },
+    {
+      "id": "n_found",
+      "body": "Pip lowered a paw and retrieved the object with careful deliberation. It was, unmistakably, the red mitten! A faint dusting of snow clung to its surface, yet it remained, remarkably, soft and imbued with warmth. Pip slid it onto the waiting paw. At last, both paws were restored to a state of cozy comfort! \"I have discovered you!\" Pip exclaimed, with unmistakable delight. Pip wiggled all ten toasty toes in succession. Pip brought both warmed paws together in a triumphant clap. The snow glittered beneath the brilliance of the sun. It was, without question, an exceptionally fine day. The end.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_found",
+        "title": "The Red Mitten",
+        "kind": "completion",
+        "valence": "positive"
+      }
+    },
+    {
+      "id": "n_together",
+      "body": "Working in unison, the assembled companions cooperated to bring the crimson mitten down from its lofty perch. \"Hooray!\" they exclaimed jubilantly. Without hesitation, Pip donned it immediately, and thus both paws were rendered comfortably warm at last. \"Thank you, my companions,\" Pip declared. \"You are truly without equal.\" Together they embraced amid the soft, blanketing snow. Genuine friends, after all, assist one another in times of need. And genuine friends, moreover, engage in play together. Accordingly, this is precisely what they did, for the entirety of that afternoon. The end.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_together",
+        "title": "Found Together",
+        "kind": "completion",
+        "valence": "positive"
+      }
+    },
+    {
+      "id": "n_surprise",
+      "body": "It was, in fact, the elusive red mitten, which had been secreted inside Pip's boot the entire duration of the search. \"It was accompanying me the whole time, without my knowledge!\" Pip exclaimed, erupting into laughter. Mama Fox, too, dissolved into giggles at the revelation. Pip proceeded to slip the cozy mitten onto his paw. Afterward, Pip savored a mug of sweet, steaming cocoa. What an extraordinarily amusing day this had turned out to be. Pip was warmed thoroughly. Pip was satisfied completely. And Pip, above all, was overcome with happiness. The end.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_surprise",
+        "title": "A Cozy Surprise",
+        "kind": "success",
+        "valence": "positive"
+      }
+    }
+  ]
+}
