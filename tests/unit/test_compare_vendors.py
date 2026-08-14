@@ -321,6 +321,26 @@ def test_load_vendors_rejects_a_non_string_family(tmp_path: Path) -> None:
         _load_vendors(path)
 
 
+def test_load_vendors_rejects_a_duplicate_label(tmp_path: Path) -> None:
+    """Two vendors sharing a label would overwrite each other's paid books.
+
+    `_book_filename` names each output file `{vendor}__{brief_index:02d}.json`,
+    using the label as its only identity component. A duplicate label is
+    therefore not a cosmetic mistake; it is silent data loss on a run that
+    already paid a provider for the book it just overwrote.
+    """
+    path = _write_vendors(
+        tmp_path,
+        [
+            {"label": "dup", "model": "m1", "provider_order": ["p"]},
+            {"label": "dup", "model": "m2", "provider_order": ["p"]},
+        ],
+    )
+
+    with pytest.raises(SystemExit):
+        _load_vendors(path)
+
+
 def test_mirror_as_mock_preserves_the_family_layout() -> None:
     """A dry run must rehearse the real grid, families included.
 
