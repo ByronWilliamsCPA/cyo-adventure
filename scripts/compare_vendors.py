@@ -288,13 +288,15 @@ def _load_vendors(path: Path) -> list[Vendor]:
         The parsed vendors, in file order.
 
     Raises:
-        SystemExit: If the file is not an array of well-formed vendor objects.
+        SystemExit: If the file is not an array of well-formed vendor objects,
+            or if two vendors share a label.
     """
     parsed = _load_json(path)
     if not isinstance(parsed, list):
         print(f"Error: {path} must contain a JSON array.", file=sys.stderr)
         sys.exit(1)
     vendors: list[Vendor] = []
+    seen_labels: set[str] = set()
     for i, raw in enumerate(parsed):  # pyright: ignore[reportUnknownVariableType]
         entry: object = raw  # pyright: ignore[reportUnknownVariableType]
         if not isinstance(entry, dict):
@@ -306,6 +308,20 @@ def _load_vendors(path: Path) -> list[Vendor]:
         if not isinstance(label, str) or not isinstance(model, str):
             print(f"Error: vendor #{i} needs string label and model.", file=sys.stderr)
             sys.exit(1)
+        # #CRITICAL: data integrity: _book_filename() names each book's output
+        # file `{vendor}__{brief_index:02d}.json`, using the label as the sole
+        # identity component. Two vendors sharing a label would silently
+        # overwrite each other's paid artifacts, book for book, as the run
+        # persists them (persist_book writes as it goes, per its own critical
+        # data-integrity note on why that matters). Rejecting the duplicate
+        # at load time is the only point cheap enough to catch it before any
+        # provider call is billed.
+        # #VERIFY: test_load_vendors_rejects_a_duplicate_label in
+        # tests/unit/test_compare_vendors.py.
+        if label in seen_labels:
+            print(f"Error: vendor #{i} reuses label '{label}'.", file=sys.stderr)
+            sys.exit(1)
+        seen_labels.add(label)
         if not isinstance(order_raw, list):
             print(f"Error: vendor #{i} provider_order must be a list.", file=sys.stderr)
             sys.exit(1)

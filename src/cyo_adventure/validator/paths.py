@@ -439,6 +439,18 @@ def covering_paths(
     covered: set[_ChoiceEdge] = set()
     truncated = False
 
+    if graph.initial in graph.endings:
+        # #EDGE: data-integrity: a story whose start node is itself a valid
+        # ending has no choice edges, so the edge-covering loop below never
+        # runs and would otherwise leave `kept` empty. That reads as "zero
+        # readings, fully covered" (`edge_coverage` is 1.0 vacuously, since
+        # `reachable` is empty), silently dropping the one reading the book
+        # actually has. reader_sample_paths does not share this gap: each
+        # draw checks `is_ending` before ever consulting `reachable`, so it
+        # naturally records the zero-edge reading `draw.count` times.
+        # #VERIFY: test_covering_paths_keeps_the_zero_edge_reading_when_the_start_node_is_an_ending.
+        kept.append([graph.initial[0]])
+
     for edge in sorted(reachable):
         if edge in covered:
             continue

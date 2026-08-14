@@ -300,9 +300,15 @@ instantiation does not, so the slate is chosen from current models at run time.
 > rule assumes the pricing and reasoning-overhead profile a chosen model exhibits at test time is
 > stable enough that the same slate, re-run later, would clear the same 20 percent bar. A
 > mid-project price change or model deprecation on the routed backend would need a re-test, not a
-> re-derivation of the threshold.
-> **#VERIFY:** re-run the cost/gate-pass-rate test in this section's *Test* line before relying on
-> an adoption decision more than a pricing cycle old.
+> re-derivation of the threshold. "Chosen at run time" means chosen once, at the start of a given
+> W9 run, then frozen for that run: every book in one measurement is priced and gated against the
+> same slate, never a slate that drifts mid-run. Each run's results record the exact model IDs and
+> endpoint/version pins the slate resolved to, not just "current at the time", so a later reader can
+> tell whether a stored adoption decision still describes today's routing or was measured against
+> models or pricing that have since moved.
+> **#VERIFY:** re-run the cost/gate-pass-rate test in this section's *Test* line whenever the slate,
+> its endpoint pins, or its pricing changes from what a stored run recorded, not on a fixed
+> calendar cadence; the recorded model IDs and pins are what make that comparison checkable.
 
 The sixth review's staged allocation is the same tiering at finer grain and is adopted as this
 item's slate shape rather than as a new item: highest reasoning for premise, character and
@@ -326,10 +332,12 @@ cross-lab premise convergence currently measures **156.35 shared four-grams per 
 generator idiom floor of **3.3**. Generate n books from MoPS-sampled premises and measure the same
 quantity the same way.
 
-*Decision rule.* **Adopt iff convergence drops below 3x the 3.3 idiom floor (under 10 shared
-four-grams per 1000). Drop if it stays at 10 or above (the "tens per 1000" range this plan's own
+*Decision rule.* **Adopt iff convergence drops below 9.9 shared four-grams per 1000, exactly 3x the
+3.3 idiom floor. Drop if it stays at 9.9 or above (the "tens per 1000" range this plan's own
 comparator has repeatedly measured for a non-curated premise space)**, because a curated space
-that still converges is not solving the problem it was chosen for. This is deterministic,
+that still converges is not solving the problem it was chosen for. One threshold, not two: an
+earlier draft paired "3x the idiom floor" (9.9) with "under 10" as if they were the same number,
+which left a measured value between 9.9 and 10 with no single classification. This is deterministic,
 pre-registered, and unambiguous.
 
 *Cost.* Generation for n books, plus curation time for the module dictionary.

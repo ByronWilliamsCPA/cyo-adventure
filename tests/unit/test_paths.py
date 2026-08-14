@@ -106,6 +106,11 @@ def _linear_story() -> Storybook:
     )
 
 
+def _single_ending_story() -> Storybook:
+    """start is itself an ending: the shortest possible book, one reading."""
+    return _story(nodes=[_ending("start", "The whole book.", "e1")], start="start")
+
+
 def _diamond_story() -> Storybook:
     """start forks to left/right, both reconverging on one ending."""
     return _story(
@@ -292,6 +297,25 @@ def test_a_linear_story_has_exactly_one_path() -> None:
 
     assert result.complete
     assert result.paths == [["start", "middle", "end"]]
+    assert result.edge_coverage == 1.0
+
+
+def test_covering_paths_keeps_the_zero_edge_reading_when_the_start_node_is_an_ending() -> (
+    None
+):
+    """A start node that is itself an ending has no choice edges, but one reading.
+
+    The edge-covering loop has nothing to iterate when the graph has no
+    edges, which used to leave the covering set empty for the shortest
+    possible book while ``edge_coverage`` reported ``1.0`` (vacuously true
+    over zero choices). ``reader_sample_paths`` never had this gap, since its
+    per-draw loop checks ``is_ending`` before it ever needs an edge; the
+    covering set must not silently drop the one reading a one-node book has.
+    """
+    result = covering_paths(_single_ending_story())
+
+    assert result.paths == [["start"]]
+    assert result.reachable_choices == 0
     assert result.edge_coverage == 1.0
 
 
