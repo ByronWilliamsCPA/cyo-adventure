@@ -71,7 +71,7 @@
     },
     {
       "id": "n_fork",
-      "body": "At the fork, the balloon hung in the air. It looked like it was choosing too. Down on the left, the path went to the shiny duck pond. Up on the right, it climbed grassy kite hill. The wind tugged the balloon up, high and far.",
+      "body": "At the fork, the big red balloon hung in the air. It looked like it was choosing too. Down on the left, the path went to the shiny duck pond. Up on the right, it climbed grassy kite hill. The wind tugged the balloon up, high and far.",
       "is_ending": false,
       "choices": [
         {
@@ -158,7 +158,7 @@
     },
     {
       "id": "n_stick",
-      "body": "Grandpa held Lila steady. She stretched the stick up high. It nudged the string loop. Slowly, it slid down the twig. It came close to her hand.",
+      "body": "Grandpa held Lila steady. She stretched the smooth stick up high. It nudged the string loop. Slowly, it slid down the twig. It came close to her hand.",
       "is_ending": false,
       "choices": [
         {
@@ -181,7 +181,7 @@
     },
     {
       "id": "n_breeze",
-      "body": "Lila and Grandpa sat still on the stone. They watched and waited. The wind puffed once, twice. The string slipped free of the twig. But the balloon did not come down. It floated out over the calm middle of the pond.",
+      "body": "Lila and Grandpa sat still on the smooth stone. They watched and waited. The wind puffed once, twice. The string slipped free of the twig. But the balloon did not come down. It floated out over the calm middle of the pond.",
       "is_ending": false,
       "choices": [
         {
@@ -193,7 +193,7 @@
     },
     {
       "id": "n_drift",
-      "body": "The balloon drifted down. It landed softly on the water. It was calm and glassy. The balloon looked round and red, like a little boat. One by one, ducks paddled over. They circled it slowly. It was like a brand new friend.",
+      "body": "The big red balloon drifted down. It landed softly on the water. It was calm and glassy. It looked round and red, like a little boat. One by one, ducks paddled over. They circled it slowly. It was like a brand new friend.",
       "is_ending": false,
       "choices": [
         {
@@ -205,7 +205,7 @@
     },
     {
       "id": "n_parade_end",
-      "body": "The ducks swam in a circle. They quacked a happy song. A little duck bobbed near, like a small guard. Lila giggled. She waved from the stones. Her balloon led the parade now. What a happy trade.",
+      "body": "The ducks swam in a circle. Their feathers were soft and white. They quacked a happy song. A little duck bobbed near, like a small guard. Lila giggled. She waved from the bank. Her balloon led the parade now. What a happy trade.",
       "is_ending": true,
       "ending": {
         "id": "e_duck_parade",
@@ -287,7 +287,7 @@
     },
     {
       "id": "n_hillside",
-      "body": "The balloon dipped low toward the cart. Then it bobbed up toward the kids at the top. It could not make up its mind. Grandpa squeezed Lila's hand. \"You pick where we try to catch it,\" he said.",
+      "body": "The big red balloon dipped low toward the cart. Then it bobbed up toward the bright kites at the top. It could not make up its mind. Grandpa squeezed Lila's hand. \"You pick where we try to catch it,\" he said.",
       "is_ending": false,
       "choices": [
         {
@@ -316,7 +316,7 @@
     },
     {
       "id": "n_umbrella",
-      "body": "The string was wound around the pole. It was way up high, too high for Lila. The ice cream man was tall. He kept a small step stool by the cart. \"Ask him, or climb the stool?\" said Grandpa.",
+      "body": "The string was wound around the pole, up where the striped umbrella spread wide. It was too high for Lila. The ice cream man was tall. He kept a small stool by the cart. \"Ask him, or climb the stool?\" said Grandpa.",
       "is_ending": false,
       "choices": [
         {
@@ -333,7 +333,7 @@
     },
     {
       "id": "n_reachup",
-      "body": "The ice cream man wiped his hands. He stood up on his toes. He unwound the string, loop by loop. He caught the balloon before it could float away. Then he bowed, like a fancy waiter.",
+      "body": "The ice cream man wiped his sticky hands. He stood up on his toes. He unwound the string, loop by loop. He caught the balloon before it could float away. Then he bowed, like a fancy waiter.",
       "is_ending": false,
       "choices": [
         {
@@ -356,7 +356,7 @@
     },
     {
       "id": "n_stool",
-      "body": "Lila climbed on the wooden stool. Grandpa held her steady. She stretched up high on her toes. Her hand reached for the string. Almost, almost, so close. Just a little more to go.",
+      "body": "Lila climbed on the smooth stool. Grandpa held her steady. She stretched up high on her toes. Her hand reached for the string. Almost, almost, so close. Just a little more to go.",
       "is_ending": false,
       "choices": [
         {
@@ -368,7 +368,7 @@
     },
     {
       "id": "n_gust",
-      "body": "Just then, wind swept by. It swept over the hill. The string spun off the pole. It hopped past her fingers. The balloon sailed up and away. It grew smaller and smaller.",
+      "body": "Just then, wind swept by. It swept over the hill. The string spun off the pole. It hopped past her fingers. The big red balloon sailed up and away. It grew smaller and smaller.",
       "is_ending": false,
       "choices": [
         {
@@ -391,7 +391,7 @@
     },
     {
       "id": "n_top",
-      "body": "At the top of the hill, the balloon rose up. It rose among the kites. It bobbed like a kite with no tail. A kid named Jo grinned. \"My kite can help,\" she said.",
+      "body": "At the top of the hill, the big red balloon rose up. It rose among the bright kites. It bobbed like a kite with no tail. A kid named Jo grinned. \"My kite can help,\" she said.",
       "is_ending": false,
       "choices": [
         {

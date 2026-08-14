@@ -58,7 +58,7 @@
     },
     {
       "id": "n_basecamp",
-      "body": "Outpost One was the top step of the back porch. The wood was cold under their boots. From up there the whole White Wild spread out below.\n\nOn one side, a snowbank loomed by the driveway. With her eyes half shut, Nadia saw a mountain. Below it ran a line of small paw prints, dotted along the grey fence boards.\n\nOn the other side lay the Powder Plains. That snow was deep and smooth, perfect for packing. The birdbath iceberg poked up out of it like a lonely marker. Its icy top shone like glass.\n\n\"Which way?\" said Theo.",
+      "body": "Outpost One was the top step of the back porch. The wood was cold under their boots. From up there the whole White Wild spread out below.\n\nOn one side, a snowbank loomed by the driveway. With her eyes half shut, Nadia saw a mountain. Below it ran a line of small paw prints, dotted along the gray fence boards.\n\nOn the other side lay the Powder Plains. That snow was deep and smooth, perfect for packing. The birdbath iceberg poked up out of it like a lonely marker. Its icy top shone like glass.\n\n\"Which way?\" said Theo.",
       "is_ending": false,
       "choices": [
         {
@@ -173,7 +173,7 @@
     },
     {
       "id": "m_4",
-      "body": "The summit! From the top the explorers could see the whole White Wild at once. The grey fence line. The Powder Plains. The birdbath iceberg. Even their own boot trail, winding back to Outpost One.\n\nNadia held up the broom handle. Her red mitten was tied to the end of it. It was ready to fly.\n\nTheo looked the other way, down the far slope. The wind had packed it smooth and hard. Good sled ground.",
+      "body": "The summit! From the top the explorers could see the whole White Wild at once. The gray fence line. The Powder Plains. The birdbath iceberg. Even their own boot trail, winding back to Outpost One.\n\nNadia held up the broom handle. Her red mitten was tied to the end of it. It was ready to fly.\n\nTheo looked the other way, down the far slope. The wind had packed it smooth and hard. Good sled ground.",
       "is_ending": false,
       "choices": [
         {
@@ -248,7 +248,7 @@
     },
     {
       "id": "t_2",
-      "body": "The trail ran straight to the old holly bush in the corner. Then it dived underneath, into the shadows. Dark green leaves hung low over the snow. They were stiff and prickly.\n\nThe trackers huddled up to plan. Behind them the shed stood grey and quiet.\n\n\"Two ways,\" said Nadia. \"We can wriggle through the low tunnel under the bush, where the prints go. Or we can run around behind the shed. Then we cut the creature off on the far side.\"",
+      "body": "The trail ran straight to the old holly bush in the corner. Then it dived underneath, into the shadows. Dark green leaves hung low over the snow. They were stiff and prickly.\n\nThe trackers huddled up to plan. Behind them the shed stood gray and quiet.\n\n\"Two ways,\" said Nadia. \"We can wriggle through the low tunnel under the bush, where the prints go. Or we can run around behind the shed. Then we cut the creature off on the far side.\"",
       "is_ending": false,
       "choices": [
         {
@@ -277,7 +277,7 @@
     },
     {
       "id": "e_t_cat",
-      "body": "Curled in a snug gap between the logs was Biscuit, the neighbor's fluffy gray cat. She blinked slow, warm blinks at her visitors.\n\nThe explorers knew a rare animal in a secret den when they saw one. They crouched down like wildlife scientists. Theo whispered the field notes. Nadia wrote them in the notebook. One snow leopard. Soft grey fur. Sleeping.\n\n\"Your den is safe with us,\" Nadia said.\n\nBiscuit purred. They could feel the hum of it through the wood.",
+      "body": "Curled in a snug gap between the logs was Biscuit, the neighbor's fluffy gray cat. She blinked slow, warm blinks at her visitors.\n\nThe explorers knew a rare animal in a secret den when they saw one. They crouched down like wildlife scientists. Theo whispered the field notes. Nadia wrote them in the notebook. One snow leopard. Soft gray fur. Sleeping.\n\n\"Your den is safe with us,\" Nadia said.\n\nBiscuit purred. They could feel the hum of it through the wood.",
       "is_ending": true,
       "ending": {
         "id": "end_t_cat",
@@ -300,7 +300,7 @@
     },
     {
       "id": "e_t_rabbits",
-      "body": "A plump brown rabbit hopped halfway out of the gap. Behind her, two round kits peeked over her back. They had soft grey ears. A whole secret team, living under the shed step.\n\nThe explorers set one orange carrot down in the snow. They put it a polite way off. Then they backed away, slow and quiet.\n\nThe rabbit came out and took it.\n\nNadia marked the hidden base on the map with a big star.",
+      "body": "A plump brown rabbit hopped halfway out of the gap. Behind her, two round kits peeked over her back. They had soft gray ears. A whole secret team, living under the shed step.\n\nThe explorers set one orange carrot down in the snow. They put it a polite way off. Then they backed away, slow and quiet.\n\nThe rabbit came out and took it.\n\nNadia marked the hidden base on the map with a big star.",
       "is_ending": true,
       "ending": {
         "id": "end_t_rabbits",
@@ -398,7 +398,7 @@
     },
     {
       "id": "p_1",
-      "body": "The birdbath iceberg rose out of the drifts, alone and shiny. On top, frozen fast in the ice, stood the three toy penguins. Upright. Brave. Just where Theo had left them before the big freeze.\n\nTheir black backs were dusted with white. One had frost on its beak.\n\n\"Rescue mission is open,\" Nadia said.\n\nThe sled became the rescue van. The team crunched closer to study the hard grey ice.",
+      "body": "The birdbath iceberg rose out of the drifts, alone and shiny. On top, frozen fast in the ice, stood the three toy penguins. Upright. Brave. Just where Theo had left them before the big freeze.\n\nTheir black backs were dusted with white. One had frost on its beak.\n\n\"Rescue mission is open,\" Nadia said.\n\nThe sled became the rescue van. The team crunched closer to study the hard gray ice.",
       "is_ending": false,
       "choices": [
         {
@@ -514,7 +514,7 @@
     },
     {
       "id": "e_p_parade",
-      "body": "The parade rounded the whole White Wild. Past Mount Shovelheap. Along the grey fence line. Home again to Outpost One.\n\nThe explorers cheered for their heroes. They cheered loud enough for every snowdrift to hear. Their black wings shone in the low gold sun.\n\nMom waved from the window like a whole crowd at once.\n\nThe penguins rode home tall and proud. It was the greatest rescue parade the White Wild had ever seen.",
+      "body": "The parade rounded the whole White Wild. Past Mount Shovelheap. Along the gray fence line. Home again to Outpost One.\n\nThe explorers cheered for their heroes. They cheered loud enough for every snowdrift to hear. Their black wings shone in the low gold sun.\n\nMom waved from the window like a whole crowd at once.\n\nThe penguins rode home tall and proud. It was the greatest rescue parade the White Wild had ever seen.",
       "is_ending": true,
       "ending": {
         "id": "end_p_parade",
