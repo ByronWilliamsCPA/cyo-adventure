@@ -23,9 +23,14 @@ measured rather than reasoned about:
 #CRITICAL: data-integrity: this script is the ONLY enforcement of the no-em-dash
 directive. A silent pass is indistinguishable from a clean tree, which is how 62
 occurrences accumulated across 18 files while the hook reported success on every commit.
-#VERIFY: tests/unit/test_check_no_em_dash.py asserts a violation is detected and that the
-exit code is non-zero, so a regression that stops matching fails the suite rather than
-passing quietly.
+#VERIFY: ``tests/unit/test_check_no_em_dash.py::TestMain::test_violation_exits_non_zero``
+asserts a file containing the character exits 1, and
+``TestScanText::test_em_dash_is_reported_with_position`` asserts the match itself, so a
+regression that stops matching fails the suite rather than passing quietly.
+``TestRepositoryIsClean::test_tracked_authored_files_have_no_em_dashes`` is the standing
+tree-wide guard, and it matters more than it looks: this hook runs at ``stages:
+[pre-commit]`` only and no CI job invokes pre-commit for it, so that test is the only
+enforcement CI has.
 
 Legitimate uses exist: code that counts or asserts the absence of the character needs the
 character itself. Mark those lines with ``em-dash-ok`` plus a reason, mirroring this
@@ -123,11 +128,17 @@ def scan_text(path: Path, text: str) -> list[Violation]:
 
 
 def scan_path(path: Path) -> list[Violation]:
-    """Scan one file, skipping anything that is not decodable UTF-8 text.
+    """Scan one file, skipping only what genuinely cannot hold a UTF-8 em-dash.
 
-    A file pre-commit classifies as text can still fail to decode (a stray latin-1 byte,
-    a UTF-16 export). Such a file cannot carry a UTF-8 em-dash, so skipping it is
-    correct rather than lenient.
+    Two skips are deliberate. A file pre-commit classifies as text can still fail to
+    decode (a stray latin-1 byte, a UTF-16 export), and such a file cannot carry a UTF-8
+    em-dash; and a path can vanish between staging and this run.
+
+    Every other read failure propagates. Catching bare ``OSError`` here also swallowed
+    ``PermissionError`` and ``IsADirectoryError``, which made the hook report success on
+    a staged file it never actually inspected. For a check whose whole failure mode is
+    "a silent pass is indistinguishable from a clean tree" (see the module docstring),
+    an uninspected file must be an error, not a pass.
 
     Args:
         path: File to read.
@@ -135,10 +146,15 @@ def scan_path(path: Path) -> list[Violation]:
     Returns:
         list[Violation]: Violations found, or an empty list when the file is missing or
         not UTF-8 decodable.
+
+    Raises:
+        OSError: If the file exists but cannot be read (permissions, a directory, an
+            I/O error), since a file this script could not inspect must not be reported
+            as clean.
     """
     try:
         text = path.read_text(encoding="utf-8")
-    except (OSError, UnicodeDecodeError):
+    except (FileNotFoundError, UnicodeDecodeError):
         return []
     return scan_text(path, text)
 

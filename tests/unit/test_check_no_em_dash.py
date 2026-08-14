@@ -9,6 +9,7 @@ passed against the broken hook too.
 from __future__ import annotations
 
 import importlib.util
+import subprocess
 import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -123,6 +124,21 @@ class TestMain:
         """A path that vanished between staging and running is not a violation."""
         assert checker.main([str(tmp_path / "gone.md")]) == 0
 
+    def test_an_unreadable_path_is_not_reported_as_clean(
+        self, checker: ModuleType, tmp_path: Path
+    ) -> None:
+        """A file the script could not inspect must fail loudly, not pass silently.
+
+        ``scan_path`` used to catch bare ``OSError``, so a staged file it could not
+        read (permissions, a directory) returned no violations and the hook exited 0.
+        For a check whose only failure mode is a silent pass, "not inspected" and
+        "clean" must not produce the same result. A directory is the portable way to
+        provoke a non-FileNotFoundError ``OSError``; a chmod-based test is a no-op when
+        the suite runs as root, which it does in this project's containers.
+        """
+        with pytest.raises(OSError):  # noqa: PT011  # IsADirectoryError on Linux
+            checker.scan_path(tmp_path)
+
 
 class TestRepositoryIsClean:
     """The regression guard: the tree this hook governs must stay clean."""
@@ -130,23 +146,37 @@ class TestRepositoryIsClean:
     def test_tracked_authored_files_have_no_em_dashes(
         self, checker: ModuleType
     ) -> None:
-        """Every authored file the hook covers is free of em-dashes.
+        """Every file the hook governs is free of em-dashes.
 
-        Scoped to the trees the pre-commit hook covers, so it mirrors the hook rather
-        than asserting something the hook would not have caught. Generated pipeline
-        artifacts under ``out/`` are excluded in both places.
+        Enumerated with ``git ls-files`` and filtered only by the hook's own
+        ``exclude: ^out/``, so the guard's scope IS the hook's scope. It previously
+        walked five directories and six suffixes, which left the hook's real coverage
+        (repo-root files such as ``CLAUDE.md``, ``.github/**``, all of ``frontend/``,
+        and every ``.yml``) unguarded; the hook would have caught a violation there on
+        commit, but nothing would have caught one already in the tree.
+
+        This is the only enforcement CI has. The hook itself is ``stages:
+        [pre-commit]`` and no workflow runs pre-commit for it, so a contributor
+        without hooks installed is caught here or not at all.
         """
         repo_root = Path(__file__).resolve().parents[2]
+        tracked = subprocess.run(  # fixed argv, no shell, no user input
+            ["git", "-C", str(repo_root), "ls-files", "-z"],  # noqa: S607
+            capture_output=True,
+            check=True,
+            text=True,
+        ).stdout
+        paths = [p for p in tracked.split("\0") if p and not p.startswith("out/")]
+        assert paths, "git ls-files returned nothing; this guard would be vacuous"
+
         violations: list[object] = []
-        for relative in ("docs", "src", "tests", "scripts", "supabase"):
-            root = repo_root / relative
-            if not root.is_dir():
+        for relative in paths:
+            path = repo_root / relative
+            # A tracked path can be absent from the worktree (a submodule gitlink) or
+            # unreadable; neither is an em-dash violation, and scan_path now raises on
+            # the unreadable case, so both are filtered here rather than swallowed.
+            if not path.is_file():
                 continue
-            for path in root.rglob("*"):
-                if not path.is_file() or "__pycache__" in path.parts:
-                    continue
-                if path.suffix not in {".md", ".py", ".sh", ".sql", ".toml", ".yaml"}:
-                    continue
-                violations.extend(checker.scan_path(path))
+            violations.extend(checker.scan_path(path))
         rendered = "\n".join(v.render() for v in violations)  # type: ignore[attr-defined]
         assert not violations, f"em-dashes found in authored files:\n{rendered}"
