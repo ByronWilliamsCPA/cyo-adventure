@@ -931,3 +931,77 @@ That is `UW-C239` arriving where it does damage: `core/pricing.py` leaves input 
 for every cloud model, so an unpriced run and a free one print identically. The harness now
 prints "spend unpriced" and names the row, because a dollar figure in a measurement record is
 read as measured.
+
+### 7.7.4 W7 result: three criteria kept, two retired, and half the instrument still unvalidated (2026-08-14)
+
+Ran on the six-book corpus, 31 arms, 3 judges, 93 scorings, all successful (no errors, no
+empty score sets). Total spend measured against the provider's balance: **$6.29**, of which
+$0.85 was the harden and about $2.5 was a duplicate concurrent panel run (`AL-364`).
+
+**The run first reported seven UNTESTED verdicts over 93 good scorings**, which was a join
+defect rather than a result: `judge_book` labels each verdict `f"{leg}#{brief_index}"`, right
+for the vendor comparison it was written for, and the battery joined on the bare stem. The
+tell was that the failure was total; a battery merely short of data reports some numbers. The
+fix was free, and the numbers below come from replaying the same verdicts.
+
+#### Detection, per criterion
+
+| Criterion | Defect | Detected | Median delta | Verdict |
+| --- | --- | --- | --- | --- |
+| `age_fit` | `reading_level_up` | 6/6 | -2.00 | **KEEP** |
+| `choice_quality` | `false_choice` | 5/5 | -1.33 | **KEEP** |
+| `engagement` | `premise_duplicate` | 4/6 | -0.67 | **KEEP** |
+| `voice` | `tense_break` | 2/6 | -0.17 | **RETIRE** |
+| `dialogue` | `dialogue_flat` | 1/2 | -0.83 | **RETIRE** |
+| `imagery` | none | - | - | UNTESTED |
+| `ending_quality` | none | - | - | UNTESTED |
+
+`age_fit` and `choice_quality` are unambiguous: every book, every time, with deltas from
+-0.67 to -2.33 against a 0.5 margin. Note that `age_fit` cleared it on the *blended* seed, at
++3 grades rather than the +9.6 the raw rewrite would have given it, so this is a pass at a
+realistic defect size rather than a demonstration that the panel can read.
+
+`voice` fails outright. Its six deltas are -0.33, 0.00, 0.00, -0.67, +0.33, -0.67: noise
+around zero, including a book where the criterion moved *up* after the tense was broken.
+
+`engagement` is a marginal keep and should be read as one. Its four detections are -0.67,
+-0.67, -0.67 and -1.00, so three of the four sit one third of a point past the margin, and
+the two misses are -0.33 and 0.00. The verdict is what the pre-registered rule says; the
+effect size is small enough that a slightly different margin would flip it.
+
+`dialogue` retires on n=2, which is thin, but the *shape* is worse than the count suggests.
+The book it missed is `the-lost-mitten`, whose 0.818 dialogue share is the highest in the
+catalogue: every spoken line in the book was converted to narration and the criterion scored
+it 2.67 before and 2.67 after. The arm where detection should have been easiest is the one it
+failed. Set against `AL-330`, this is the answer that section could not previously give: the
+`dialogue` criterion really is insensitive, and the earlier evidence for that claim was
+simply the wrong evidence.
+
+#### Two parts of the battery's own rule that do not hold up
+
+**The false-positive column measures something other than false positives.** The rule counts
+any non-target arm moving a criterion by more than 0.5. But `reading_level_up` rewrites a
+third of the prose, so `voice` and `imagery` genuinely change; `premise_duplicate` replaces
+the opening node, so `engagement` genuinely changes. Every one of the 4-to-10 "false
+positives" per criterion is of that kind. The column charges a criterion for correctly
+noticing a real change. It drives no verdict here (the KEEP/RETIRE strings cite detection
+only) and no conclusion above rests on it, but it must not be read as evidence against any
+criterion, and the rule needs restating before it is.
+
+**The agreement figure is not interpretable as computed.** All three pairs came in below the
+0.60 floor (+0.16, +0.58, +0.14), and that number should not be quoted. `cohens_kappa` is a
+categorical statistic and it is being fed the *mean across all seven criteria*, rounded to an
+integer. After rounding, `judge-gpt-5.6` uses two categories with 24 of 31 books in one, and
+`judge-grok-4.6` uses three with 23 of 31 in one. That is the classic skewed-marginals regime
+where kappa collapses despite high raw agreement, and it explains the pattern exactly: the
+two judges with similarly skewed marginals score +0.58, while both pairings with
+`judge-gemini-3.1` (four categories, sd 0.79 against 0.31) fall to about +0.15. Rounding a
+seven-criterion mean also discards the per-criterion structure that W7 exists to examine.
+Agreement has to be computed per criterion, and with a statistic suited to ordinal data, before
+this half of the instrument says anything.
+
+**Where that leaves W7.** The detection half is done and gives a usable answer: three criteria
+support a ranking, two do not, two were never exercised. The agreement half is unrun, because
+what ran was the wrong calculation. Any Part IV claim resting on the panel may use `age_fit`,
+`choice_quality` and (with the caveat above) `engagement`; it may not use `voice` or
+`dialogue`, and it may not yet cite inter-judge agreement at all.

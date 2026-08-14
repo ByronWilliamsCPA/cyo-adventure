@@ -259,3 +259,42 @@ def test_a_book_with_no_declared_reading_level_falls_back_to_the_full_rewrite() 
     arm, note = blend_to_grade(original, hardened, grades=3.0)
     assert arm["nodes"][0]["body"] == _HARD  # pyright: ignore[reportIndexIssue, reportGeneralTypeIssues]
     assert "unmeasurable" in note
+
+
+# --------------------------------------------------------------------------
+# The identifier join
+# --------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+def test_arms_join_verdicts_whose_book_id_carries_a_brief_suffix() -> None:
+    """`judge_book` labels every verdict "{leg}#{brief_index}"; the battery must join anyway.
+
+    That convention is right for the vendor comparison it was written for, where
+    one leg writes one book per brief. This battery passes an arm's file stem as
+    the leg and has no briefs, so every verdict came back as
+    `the-lost-mitten__control#0` while the battery looked up
+    `the-lost-mitten__control`. Nothing matched, every criterion saw zero
+    opportunities, and a run of 93 clean scorings printed seven UNTESTED
+    verdicts. The tell was that the failure was total: a battery merely short of
+    data reports some numbers.
+    """
+    arms = [("bookA", "control"), ("bookA", "tense_break")]
+    verdicts = [
+        Verdict(
+            book=f"bookA__{arm}#0",
+            leg=f"bookA__{arm}",
+            family="f",
+            judge="judge-a",
+            self_family=False,
+            scores=dict.fromkeys(_CRITERIA_NAMES, 4.0)
+            | ({"voice": 1.0} if arm == "tense_break" else {}),
+            notes={},
+            error=None,
+        )
+        for _, arm in arms
+    ]
+
+    voice = next(r for r in score_battery(verdicts, arms) if r.criterion == "voice")
+    assert voice.opportunities == 1, "the suffixed identifier did not join"
+    assert voice.detections == 1

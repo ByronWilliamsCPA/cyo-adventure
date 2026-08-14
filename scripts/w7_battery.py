@@ -143,19 +143,47 @@ class CriterionVerdict:
         return self.detections / self.opportunities
 
 
+def _book_key(book: str) -> str:
+    """Return an arm identifier with `judge_book`'s brief suffix removed.
+
+    `judge_book` labels every verdict ``f"{leg}#{brief_index}"``, which is the
+    right identity for the vendor comparison it was written for: there, one leg
+    writes one book per brief and the index separates them. This battery passes
+    the arm's file stem as the leg and has no briefs, so every verdict comes
+    back as ``the-lost-mitten__control#0`` while the battery joins on
+    ``the-lost-mitten__control``.
+
+    Nothing matched, so every arm was invisible, every criterion reported zero
+    opportunities, and the run printed seven UNTESTED verdicts over 93 perfectly
+    good scorings. The failure was total rather than partial, which is the tell:
+    a battery that is merely short of data reports some numbers.
+
+    Args:
+        book: A verdict's book identifier.
+
+    Returns:
+        The identifier up to the first ``#``.
+    """
+    return book.split("#", 1)[0]
+
+
 def _mean_by_criterion(verdicts: Sequence[Verdict], book: str) -> dict[str, float]:
     """Average each criterion's score across the panel for one book.
 
     Args:
         verdicts: Every verdict.
-        book: The book identifier.
+        book: The book identifier, without a brief suffix.
 
     Returns:
         Criterion name to its panel-mean score. Missing criteria are absent
         rather than zero: a judge that failed to score one is not a judge that
         scored it badly.
     """
-    rows = [v for v in verdicts if v.book == book and v.scores and v.error is None]
+    rows = [
+        v
+        for v in verdicts
+        if _book_key(v.book) == book and v.scores and v.error is None
+    ]
     out: dict[str, float] = {}
     for name in _CRITERIA:
         values = [v.scores[name] for v in rows if name in v.scores]
@@ -665,7 +693,18 @@ def _print_report(
             flag = "" if kappa is None or kappa >= _KAPPA_FLOOR else "  <-- below floor"
             print(f"    {left.label} vs {right.label}: {text} (n={len(usable)}){flag}")
 
-    print(f"\n  Measured spend: ${spend:.4f}")
+    # Zero here means the judge models carry no rate in `core/pricing.py`
+    # (UW-C239), not that the panel was free. The harden step printed "$0.0000"
+    # for 224 calls that cost $0.85 against the provider's own balance, so a
+    # dollar figure from this ledger is not evidence of anything until that row
+    # is closed.
+    if spend:
+        print(f"\n  Measured spend: ${spend:.4f}")
+    else:
+        print(
+            "\n  Measured spend: UNPRICED. The judge models have no rate in "
+            "core/pricing.py (UW-C239); read the provider balance instead."
+        )
 
 
 def _one(verdicts: Sequence[Verdict], judge: str, book: str) -> float | None:
