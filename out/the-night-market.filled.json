@@ -1,0 +1,891 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_night_market",
+  "version": 1,
+  "title": "The Night Market",
+  "metadata": {
+    "age_band": "5-8",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 2.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "kindness",
+      "friendship",
+      "community",
+      "courage"
+    ],
+    "estimated_minutes": 7,
+    "ending_count": 13,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "open_map",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "The gate of the night market swung open, and all at once the lantern strings blinked on overhead. Warm steam rolled out of the food stalls. Paper crinkled at the craft tables. Somewhere a fiddle went twang, twang, tuning up.\n\n\"Best night of the year,\" said Milo's cousin Ada.\n\nMilo nodded hard. And the best part came last, when everybody let their wish lanterns go.\n\nThen he heard something small underneath it all. A wet little sniffle.\n\nIt was coming from behind a barrel by the gate.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_peek",
+          "label": "Peek behind the barrel.",
+          "target": "n_meet"
+        }
+      ]
+    },
+    {
+      "id": "n_meet",
+      "body": "Behind the barrel was a pangolin.\n\nShe was curled up tight, like a pinecone with eyes. Milo knelt down slowly, the way you kneel for a nervous cat.\n\n\"Hello,\" he said. \"I'm Milo.\"\n\n\"Pip,\" she whispered. Her voice was so small he had to lean in. \"I'm new here. I had a basket. My wish paper was in it, and my golden string, and my candle. Everything I need for the ceremony.\"\n\nShe sniffled. \"Now I can't find it anywhere.\"",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_meet_promise",
+          "label": "Promise to help Pip before the wish-lantern ceremony.",
+          "target": "n_promise"
+        }
+      ]
+    },
+    {
+      "id": "n_promise",
+      "body": "\"Then we'll sort it out,\" said Milo. \"Together.\"\n\nAda nodded. \"The keepers here are the kindest people anywhere. At the night market, a bit of help is worth more than a pocket of coins.\" She smiled down at Pip. \"Go on. Ask them.\"\n\nPip uncurled, just a little. Then she reached up and took Milo's hand in one warm paw.\n\nThe three of them walked into the lantern square.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_promise_hub",
+          "label": "Step into the lantern square.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "n_hub",
+      "body": "The lantern square was the round heart of the night market. Paper lanterns criss-crossed above it like a warm ceiling.\n\nSix lanes led away from it. One breathed ginger steam from Auntie Mo's dumpling stall. One had paper cranes turning above it. One glowed where Granny Osha poured her tea. One clinked and whirred at Mr. Fez's toy table. One was stacked with bright fruit. One hummed with music.\n\nAt the top of the square, the ceremony steps waited.\n\nPip stayed close to Milo's leg. \"Where now?\" she whispered.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hub_dumpling",
+          "label": "Follow ginger steam to the dumpling stall.",
+          "target": "ds_entry"
+        },
+        {
+          "id": "c_hub_paper",
+          "label": "Visit the paper folder's stall and his paper cranes.",
+          "target": "pf_entry"
+        },
+        {
+          "id": "c_hub_tea",
+          "label": "Stop by the tea cart with a tiny glowing stove.",
+          "target": "tc_entry"
+        },
+        {
+          "id": "c_hub_toys",
+          "label": "Look in at the toy mender's table.",
+          "target": "tm_entry"
+        },
+        {
+          "id": "c_hub_fruit",
+          "label": "Wander over to the fruit stand.",
+          "target": "fs_entry"
+        },
+        {
+          "id": "c_hub_music",
+          "label": "Drift toward the musicians' corner.",
+          "target": "mc_entry"
+        },
+        {
+          "id": "c_hub_steps",
+          "label": "Head to the ceremony steps with Pip.",
+          "target": "f_steps"
+        }
+      ]
+    },
+    {
+      "id": "ds_entry",
+      "body": "Auntie Mo's dumpling stall was all steam and shouting. Bamboo steamers puffed in towers. A wobbly stack of trays waited to go out to the little tables.\n\n\"Four more hands!\" Auntie Mo called through the steam. \"That's all I need tonight. Four more hands!\"\n\nMilo looked at the waiting trays. Then he looked at the folding table, where circles of dough lay in neat white rows.\n\nHe could carry. Or he could fold.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_carry",
+          "label": "Carry the warm trays to the tables.",
+          "target": "ds_carry"
+        },
+        {
+          "id": "c_ds_fold",
+          "label": "Join the folding table and pleat dumplings.",
+          "target": "ds_fold"
+        }
+      ]
+    },
+    {
+      "id": "ds_carry",
+      "body": "The first tray was warm as a sunbaked stone. It smelled of ginger and pepper. Hungry people waved from every lantern-lit table. Pip trotted beside him with the napkins, holding them like something precious.\n\nThere were a lot of tables.\n\nMilo could go slow and steady. One tray at a time, like a proper waiter.\n\nOr he could stack three trays up his arm. One heroic trip, all done at once.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_carry_steady",
+          "label": "Take one tray at a time, slow and steady.",
+          "target": "ds_happy"
+        },
+        {
+          "id": "c_ds_carry_stack",
+          "label": "Stack three trays high for one big trip.",
+          "target": "e_ds_spill"
+        }
+      ]
+    },
+    {
+      "id": "ds_happy",
+      "body": "One careful tray at a time, Milo went. Every table got its dumplings hot. Nobody had to wait long at all.\n\nA man in a striped cap cheered for the small waiter and his pangolin napkin helper. Pip's ears went pink.\n\nWhen the last tray landed, Auntie Mo beamed at them through the steam. She waved them both back to her stall.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_happy_gift",
+          "label": "Go collect Auntie Mo's thank-you.",
+          "target": "ds_gift"
+        }
+      ]
+    },
+    {
+      "id": "ds_fold",
+      "body": "Auntie Mo showed him the pleat. Pinch and fold, pinch and fold, like tucking in a tiny blanket.\n\nMilo's first dumpling was wonky. His second was wonkier. But his tenth stood up almost proud.\n\nPip patted the dough flat with careful paws and dusted her own nose white with flour.\n\nAuntie Mo steamed the whole wobbly batch anyway. \"Tonight's specials,\" she said.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_fold_gift",
+          "label": "See what Auntie Mo says next.",
+          "target": "ds_gift"
+        }
+      ]
+    },
+    {
+      "id": "ds_gift",
+      "body": "Auntie Mo tucked two hot dumplings into a paper bag. She pressed the bag into Pip's paws.\n\n\"A shy tummy is much braver when it's warm,\" she said. \"I'll shut my steamers in time for the ceremony. And I'll cheer for your lantern louder than anybody.\"\n\nPip hugged the warm bag with both arms.\n\nThere was still time to wander back to the square. Or they could go straight up to the steps.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_gift_hub",
+          "label": "Walk back to the lantern square.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_ds_gift_steps",
+          "label": "Head for the ceremony steps with Pip.",
+          "target": "f_steps"
+        }
+      ]
+    },
+    {
+      "id": "pf_entry",
+      "body": "Paper cranes hung all across the paper folder's stall, turning slowly in the warm air.\n\nUnderneath them, the paper folder looked ready to cry. His basket had tipped over. Squares of red and gold and blue were drifting away down the lane like slow butterflies.\n\n\"Oh, my colours,\" he said. \"Oh dear. Oh dear.\"\n\nMilo could chase the runaways. Or he could sort out the papers still left in the trays.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pf_chase",
+          "label": "Chase the drifting paper squares.",
+          "target": "pf_scraps"
+        },
+        {
+          "id": "c_pf_sort",
+          "label": "Sort the paper cranes by color.",
+          "target": "pf_sort"
+        }
+      ]
+    },
+    {
+      "id": "pf_scraps",
+      "body": "They went after the paper on tiptoe, catching each square gently so it wouldn't crumple. One off a bench. One off a lantern pole. One out of the fur of a sleeping dog, who did not wake up.\n\nThat left a single gold square, resting high on the noodle cart's awning.\n\nMilo could ask the tall noodle cook for a boost. Or he could wait for the breeze to bring it down.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pf_scraps_boost",
+          "label": "Ask the tall noodle cook for a boost.",
+          "target": "pf_last"
+        },
+        {
+          "id": "c_pf_scraps_breeze",
+          "label": "Wait for the breeze to bring it down.",
+          "target": "pf_breeze"
+        }
+      ]
+    },
+    {
+      "id": "pf_last",
+      "body": "The noodle cook laughed. He swung Milo up onto his shoulders like a sack of noodles. From up there the whole night market glittered. Lane after lane of little lights.\n\nMilo plucked the gold square down, smooth and unbent.\n\nBack on the ground, Pip carried it to the stall. She held it out in front of her, like a tiny flag.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pf_last_gift",
+          "label": "Bring the rescued papers back to the paper folder.",
+          "target": "pf_gift"
+        }
+      ]
+    },
+    {
+      "id": "pf_breeze",
+      "body": "They stood very still, with their palms up, and waited.\n\nThe breeze thought about it for a while. Then it tipped the gold square off the awning. Down it came in lazy zigzags, right into Pip's open paws.\n\n\"Oh!\" said Pip, and squeaked.\n\nIt was the first happy sound Milo had heard her make all evening.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pf_breeze_gift",
+          "label": "Carry the gold square back to the paper folder.",
+          "target": "pf_gift"
+        }
+      ]
+    },
+    {
+      "id": "pf_sort",
+      "body": "Milo sorted the squares into their trays. Reds with reds, golds with golds, blues with blues. The paper folder smoothed each one flat under his thumb.\n\nWhile they worked, he picked up a scrap and folded it. Corner to corner. Corner to corner. And then a crane sat in his palm and flapped its wings.\n\nPip watched so closely her nose almost touched it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pf_sort_gift",
+          "label": "Hand the paper folder the last tidy tray.",
+          "target": "pf_gift"
+        }
+      ]
+    },
+    {
+      "id": "pf_gift",
+      "body": "\"Now then,\" said the paper folder.\n\nHe cut a fresh square of moon-white paper and creased it once, in the special wish fold. Then he laid it in Pip's paws. It was wish paper, exactly like the paper she had lost.\n\n\"I'll sit near the front tonight,\" he said, \"and watch it fly.\"\n\nPip held it flat and level, like treasure.\n\nBack to the square? Or on to the steps?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pf_gift_hub",
+          "label": "Walk back to the lantern square.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_pf_gift_steps",
+          "label": "Head for the ceremony steps with Pip.",
+          "target": "f_steps"
+        }
+      ]
+    },
+    {
+      "id": "tc_entry",
+      "body": "Granny Osha's tea cart glowed around a little iron stove. She poured amber tea in long ribbons that steamed in the cool air.\n\nA line of thirsty stall keepers had formed, and her big kettle was running low all at once.\n\nShe winked at them over the top of her spectacles. \"Well now,\" she said. \"Are you two here to drink, or to help?\"\n\nCups needed carrying. The kettle needed filling.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tc_cups",
+          "label": "Pass out the little clay cups.",
+          "target": "tc_cups"
+        },
+        {
+          "id": "c_tc_kettle",
+          "label": "Refill the big kettle from the barrel.",
+          "target": "tc_kettle"
+        }
+      ]
+    },
+    {
+      "id": "tc_cups",
+      "body": "The little clay cups were warm as held hands, and full right to their happy brims. The waiting keepers stretched and chatted.\n\nPip walked beside him and announced each one. \"Tea,\" she said. Then, a bit louder, \"Tea.\" Then louder still.\n\nMilo could carry two cups at a time, nice and level. Or he could load the whole tray up and serve everybody in one go.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tc_cups_level",
+          "label": "Carry two cups at a time, nice and level.",
+          "target": "tc_warm"
+        },
+        {
+          "id": "c_tc_cups_tray",
+          "label": "Load up the whole tray in one go.",
+          "target": "e_tc_slosh"
+        }
+      ]
+    },
+    {
+      "id": "tc_warm",
+      "body": "Two cups at a time, steady as a bridge, Milo went all the way down the line. The keepers wrapped their hands round the warm clay and sighed happy sighs. Mr. Fez raised his cup to him. The fiddler hummed one long thank-you note.\n\nThen Granny Osha called them back to the cart, smiling like she was brewing something.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tc_warm_gift",
+          "label": "Head back to Granny Osha's cart.",
+          "target": "tc_gift"
+        }
+      ]
+    },
+    {
+      "id": "tc_kettle",
+      "body": "Milo ladled clear water from the barrel into the big kettle. One careful scoop after another. Pip counted them out loud. Eleven scoops.\n\nGranny Osha set the kettle on the little stove. Then she showed them how she banked the coals, so the fire stayed cosy and never got wild.\n\nThe kettle began to sing, low and slow. Granny Osha tapped her chin.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tc_kettle_gift",
+          "label": "See what Granny Osha has in mind.",
+          "target": "tc_gift"
+        }
+      ]
+    },
+    {
+      "id": "tc_gift",
+      "body": "Granny Osha lit a stubby candle at her stove. She stood it inside a small tin with a hinged lid.\n\n\"A travelling flame,\" she said, \"for a travelling lantern.\"\n\nIt was a candle, exactly like the candle Pip had lost. Granny Osha folded Pip's paws around the tin. It was warm as a purring kitten.\n\n\"Sweet tea at the steps afterwards. I promise.\"\n\nThe square, or the steps?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tc_gift_hub",
+          "label": "Walk back to the lantern square.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_tc_gift_steps",
+          "label": "Head for the ceremony steps with Pip.",
+          "target": "f_steps"
+        }
+      ]
+    },
+    {
+      "id": "tm_entry",
+      "body": "Mr. Fez's table was a tiny hospital for toys. Wind-up beetles lay on their backs. A one-eared rabbit waited its turn. A drum wore a brand new skin.\n\nMr. Fez squinted through a lens the size of a teacup, hunting for a runaway brass gear. By his elbow, a tin of tiny screws sat in a hopeless jumble.\n\nMilo could sort the screws. Or he could hunt the gear.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tm_screws",
+          "label": "Sort the tin of tiny screws by size.",
+          "target": "tm_screws"
+        },
+        {
+          "id": "c_tm_gear",
+          "label": "Hunt for the runaway gear under the stall.",
+          "target": "tm_gear"
+        }
+      ]
+    },
+    {
+      "id": "tm_screws",
+      "body": "The screws were as small as sesame seeds, and every single size was different. Milo spread them out on the green felt. Pip picked them up with the tips of her claws. Her claws turned out to be perfect tweezers.\n\nNearby sat a shiny wind-up beetle. Its key stuck up, just begging for a turn.\n\nNeat rows? Or one enormous wind?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tm_screws_rows",
+          "label": "Keep lining the screws up in neat rows.",
+          "target": "tm_neat"
+        },
+        {
+          "id": "c_tm_screws_wind",
+          "label": "Wind the beetle's key as far as it can go.",
+          "target": "e_tm_spring"
+        }
+      ]
+    },
+    {
+      "id": "tm_neat",
+      "body": "Row by row the screws lined up, biggest to smallest, like a tiny parade.\n\nMr. Fez looked up from his lens. He blinked at the felt, as if elves had come by while he was busy.\n\n\"I can mend three toys now in the time one used to take,\" he said. Then he reached up to his shelf.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tm_neat_gift",
+          "label": "Come see what Mr. Fez is reaching for.",
+          "target": "tm_gift"
+        }
+      ]
+    },
+    {
+      "id": "tm_gear",
+      "body": "Under the table was a shadow-land of table legs and wood shavings. Milo held a lantern low. Pip squeezed into the narrow places, where no hand could go.\n\nThere it was. The brass gear, winking in a crack between two floorboards. Pip hooked it out with one careful claw.\n\nMr. Fez cheered so loudly that the one-eared rabbit fell over.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tm_gear_gift",
+          "label": "Come see what Mr. Fez is reaching for.",
+          "target": "tm_gift"
+        }
+      ]
+    },
+    {
+      "id": "tm_gift",
+      "body": "Mr. Fez turned Pip's lantern frame in his hands and found the dent in it. Three soft taps, and the dent was gone. He oiled the little door until it swung like new.\n\nThen he clipped something onto the handle. It was a wind-up firefly.\n\n\"A night light,\" he said, \"for a walker who doesn't much like the dark.\"\n\nThe square was one way. The steps were the other.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tm_gift_hub",
+          "label": "Walk back to the lantern square.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_tm_gift_steps",
+          "label": "Head for the ceremony steps with Pip.",
+          "target": "f_steps"
+        }
+      ]
+    },
+    {
+      "id": "fs_entry",
+      "body": "Auntie Plum's fruit stand was a city of bright pyramids. Oranges. Star fruit. Plums with dusty purple cheeks.\n\nA passing cart had clipped the corner, and her grandest orange pyramid had come down. Oranges were rolling everywhere. One bumped gently into Pip's foot and stopped there.\n\nAuntie Plum was laughing about it, but both her hands were busy weighing plums.\n\n\"Don't just stand there, sweethearts,\" she said. \"Stack, or tie!\"",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fs_stack",
+          "label": "Rebuild the orange pyramid.",
+          "target": "fs_stack"
+        },
+        {
+          "id": "c_fs_bundle",
+          "label": "Tie fruit bundles with golden string.",
+          "target": "fs_bundle"
+        }
+      ]
+    },
+    {
+      "id": "fs_stack",
+      "body": "They herded the runaway oranges home. Pip rolled them in with her nose, like a small striped bulldozer.\n\nThen came the good part. Building it back up.\n\nMilo could do it the classic way. Biggest oranges on the bottom, in one good solid square.\n\nOr he could try something fancy. Stripes of green star fruit, running up through the orange.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fs_stack_classic",
+          "label": "Build it the classic way, big ones on the bottom.",
+          "target": "fs_tower"
+        },
+        {
+          "id": "c_fs_stack_fancy",
+          "label": "Try a fancy striped pattern.",
+          "target": "fs_pattern"
+        }
+      ]
+    },
+    {
+      "id": "fs_tower",
+      "body": "Big oranges on the bottom. Smaller and smaller going up. The pyramid rose steady as a castle and did not wobble once.\n\nMilo set the last orange on top like a crown, and the whole stand seemed to stand up straighter.\n\nAuntie Plum whistled. Then she dusted off her hands and went looking for a thank-you.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fs_tower_gift",
+          "label": "Go get Auntie Plum's thank-you.",
+          "target": "fs_gift"
+        }
+      ]
+    },
+    {
+      "id": "fs_pattern",
+      "body": "Orange, green, orange, green. The stripes climbed the pyramid. Up and up, like the paint on a lighthouse.\n\nPeople stopped just to look at it. One man took a picture with a very long camera. Even Pip stepped back to have a look.\n\n\"The prettiest pyramid this market has ever grown,\" said Auntie Plum. Then she waved them over, with a twinkle in her eye.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fs_pattern_gift",
+          "label": "Go see what Auntie Plum is twinkling about.",
+          "target": "fs_gift"
+        }
+      ]
+    },
+    {
+      "id": "fs_bundle",
+      "body": "Auntie Plum taught him the bundle knot. Loop, loop, pull. Soon the plums and the star fruit sat in tidy bundles, each one tied with golden string.\n\nPip held the spool and let it spin. \"Loop, loop, pull,\" she whispered along, learning it too.\n\nThe spool glinted in the lantern light as Auntie Plum reached for her scissors.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fs_bundle_gift",
+          "label": "Watch what Auntie Plum snips off the spool.",
+          "target": "fs_gift"
+        }
+      ]
+    },
+    {
+      "id": "fs_gift",
+      "body": "Auntie Plum measured out a long golden string and snipped it free. She coiled it into Pip's paws. Then she balanced one perfect star fruit on top of the coil.\n\n\"String for your lantern. Star for your luck,\" she said. \"And I'll bring a fruit plate to the steps for afterwards.\"\n\nPip practised the knot in the air. Loop, loop, pull.\n\nSquare, or steps?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fs_gift_hub",
+          "label": "Walk back to the lantern square.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_fs_gift_steps",
+          "label": "Head for the ceremony steps with Pip.",
+          "target": "f_steps"
+        }
+      ]
+    },
+    {
+      "id": "mc_entry",
+      "body": "In the musicians' corner, three players were warming up the evening's songs. A fiddler. A flute player. A girl with a drum. Their music spread over the square like warm honey.\n\nThe breeze kept flipping the pages of their songbook. On the ground by the drum lay a strap of little brass bells, waiting for extra hands.\n\nPages, or bells. Milo had to pick one.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mc_pages",
+          "label": "Hold the songbook pages against the breeze.",
+          "target": "mc_pages"
+        },
+        {
+          "id": "c_mc_bells",
+          "label": "Try the little brass bells with the drummer.",
+          "target": "mc_bells"
+        }
+      ]
+    },
+    {
+      "id": "mc_bells",
+      "body": "The drummer girl handed him the strap of bells and showed him the trick.\n\n\"Shake them soft, right on the beat,\" she said. \"Like rain agreeing with thunder.\"\n\nBeside the drum hung a great shiny gong, with a padded mallet leaning against it. Milo's hand itched.\n\nHe could ring the bells softly in time. Or he could give that gong one enormous whack.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mc_bells_time",
+          "label": "Ring the bells softly in time.",
+          "target": "mc_time"
+        },
+        {
+          "id": "c_mc_bells_gong",
+          "label": "Give the big gong one mighty whack.",
+          "target": "e_mc_gong"
+        }
+      ]
+    },
+    {
+      "id": "mc_time",
+      "body": "Shake, shake, right on the beat. The bells stitched a silver edge onto the drum song. The fiddler grinned around his bow. The flute swooped happily up and down.\n\nPip tapped her tail on the cobbles, in perfect time. She looked very surprised at herself.\n\nWhen the song landed, the whole corner clapped. Milo bowed. Pip hid behind his knee, but only a little.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mc_time_gift",
+          "label": "Take a bow with the band.",
+          "target": "mc_gift"
+        }
+      ]
+    },
+    {
+      "id": "mc_pages",
+      "body": "Milo stood like a music stand with very good manners. He held the pages flat. The breeze tried every trick it knew, and it did not win once.\n\nHe learned to turn the page exactly on the fiddler's nod. The songs poured out smooth and steady, with no flapping at all.\n\nBetween two of them, the fiddler bent down. He asked Pip something, kindly and quietly.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mc_pages_gift",
+          "label": "Listen to what the fiddler asks Pip.",
+          "target": "mc_gift"
+        }
+      ]
+    },
+    {
+      "id": "mc_gift",
+      "body": "\"We'll play the ceremony song the moment your lantern goes up,\" said the fiddler. \"Now. Here's the humming part.\"\n\nIt was low and warm, like a kettle thinking.\n\nPip hummed it once, a tiny sound. Then again, stronger.\n\n\"Official member of the band,\" said the drummer girl, and shook Pip's paw.\n\nBack to the square, then? Or up to the steps?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mc_gift_hub",
+          "label": "Walk back to the lantern square.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_mc_gift_steps",
+          "label": "Head for the ceremony steps with Pip.",
+          "target": "f_steps"
+        }
+      ]
+    },
+    {
+      "id": "f_steps",
+      "body": "The ceremony steps glowed under the thickest lantern strings of all. Keepers were setting out the long wooden launching rack.\n\nOn a table beside it lay spare wish paper. And coils of golden string. And little flames in tins. At the night market, nobody shy or late is ever left out.\n\nSo everything Pip's lantern needed was there, waiting.\n\nSteam drifted up the steps, and the fiddle floated over everything.\n\nPip took a deep breath and looked at Milo. There was a wish to write. There was a lantern to get ready. And there were friends all over the market who would come if he asked.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fsteps_paper",
+          "label": "Help Pip fold and write her wish.",
+          "target": "f_paper"
+        },
+        {
+          "id": "c_fsteps_lantern",
+          "label": "Help Pip get the wish lantern ready to fly.",
+          "target": "f_lantern"
+        },
+        {
+          "id": "c_fsteps_friends",
+          "label": "Gather the stall friends around Pip first.",
+          "target": "f_friends"
+        }
+      ]
+    },
+    {
+      "id": "f_paper",
+      "body": "They smoothed the wish paper flat on the cool stone step. A keeper lent them a thin brush. And a pot of night-blue ink.\n\nAll around, families knelt over their own wishes, whispering and folding.\n\nPip looked at her empty paper for a long time. She wanted the wish to be exactly right. She shuffled a little closer to Milo.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fpaper_whisper",
+          "label": "Lean in so Pip can whisper her wish.",
+          "target": "f_whisper"
+        }
+      ]
+    },
+    {
+      "id": "f_whisper",
+      "body": "Milo leaned down. Pip cupped her paws around his ear and whispered her wish. It came out so quietly it was almost only warm air.\n\nIt was a good one. Simple, and kind, and the sort of wish that makes you smile with your whole face.\n\nMilo nodded once, very seriously. He was the keeper of the secret now.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fwhisper_write",
+          "label": "Pick up the brush together.",
+          "target": "f_write"
+        }
+      ]
+    },
+    {
+      "id": "f_write",
+      "body": "The brush hovered over the wish paper. The night-blue ink shone in the lantern light.\n\nNow: how should the wish go down?\n\nMilo could write it exactly as Pip had whispered it, not one word changed. He could add a second line underneath, a wish for the whole night market, for its steam and its songs and its kind hands.\n\nOr he could hold the brush out to Pip, and let her write it herself.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fwrite_pip",
+          "label": "Write Pip's wish just as she whispered it.",
+          "target": "e_wish_pip"
+        },
+        {
+          "id": "c_fwrite_market",
+          "label": "Add a second wish for all of the night market.",
+          "target": "e_wish_market"
+        },
+        {
+          "id": "c_fwrite_brave",
+          "label": "Hand Pip the brush to write it herself.",
+          "target": "e_wish_brave"
+        }
+      ]
+    },
+    {
+      "id": "f_lantern",
+      "body": "Milo settled the lantern frame across his knees. Its paper walls glowed faintly, like a small moon waiting to happen. Pip crouched down until she was nose to nose with it.\n\nA keeper knelt to check the frame and gave it a tap. \"A fine flyer,\" she said.\n\nThere was string to tie yet. And a flame to set.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_flantern_string",
+          "label": "Tie on golden string first.",
+          "target": "f_string"
+        }
+      ]
+    },
+    {
+      "id": "f_string",
+      "body": "The golden string went on with a loop, loop, pull. It was a knot that small paws can manage. Now the folded wish could hang underneath, like the clapper of a tiny bell.\n\nPip drew the last loop snug herself. Then she checked it twice.\n\nThe lantern was dressed and ready. Only the flame was left now.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fstring_flame",
+          "label": "Get ready to light the wish lantern.",
+          "target": "f_flame"
+        }
+      ]
+    },
+    {
+      "id": "f_flame",
+      "body": "The flame waited in its tin, small and steady. The lantern's wick stood up, ready for it.\n\n\"Any way you like,\" said the keeper. \"It's your wish.\"\n\nPip looked at the flame. Then at Milo. Then at the oldest keeper of all, who was carrying the long brass taper.\n\nPip could light it herself. They could light it together, on three. Or they could ask for the old way, with the taper.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fflame_pip",
+          "label": "Let Pip light the wick all by herself.",
+          "target": "e_light_pip"
+        },
+        {
+          "id": "c_fflame_together",
+          "label": "Light it together on a count of three.",
+          "target": "e_light_together"
+        },
+        {
+          "id": "c_fflame_keeper",
+          "label": "Ask the oldest keeper to light it the old way.",
+          "target": "e_light_keeper"
+        }
+      ]
+    },
+    {
+      "id": "f_friends",
+      "body": "Milo went round the square to fetch company. The night market answered the way it always does.\n\nEvery keeper who had waved at them came. So did folk who simply love a ceremony. They came wiping their hands on aprons. They came with cups. They came dragging stools.\n\nBy the time Milo got back, a warm crowd stood on the steps. All of it for one small pangolin.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ffriends_circle",
+          "label": "Bring everyone into a circle around Pip.",
+          "target": "f_circle"
+        }
+      ]
+    },
+    {
+      "id": "f_circle",
+      "body": "They settled into a circle on the steps. Aprons and spectacles and one drum. Every face was turned towards Pip.\n\nAnd Pip, who had begun this evening curled up behind a barrel, stood right in the middle. She held her lantern out in front of her. She did not hide. Not even a bit.\n\nShe looked rather like a little lantern herself.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fcircle_countdown",
+          "label": "Get ready to send the wish lantern up.",
+          "target": "f_countdown"
+        }
+      ]
+    },
+    {
+      "id": "f_countdown",
+      "body": "The lantern glowed in Pip's paws, tugging gently upward like a puppy on a string. The circle leaned in.\n\nOnly the sending-off was left to choose.\n\nPip could count it down herself, in her new brave voice. The whole circle could count together, like one big warm voice. Or nobody could count at all, and the band could play instead, and let the music lift it.\n\nMilo squeezed Pip's paw.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fcount_pip",
+          "label": "Let Pip lead the count of three.",
+          "target": "e_up_pip"
+        },
+        {
+          "id": "c_fcount_chorus",
+          "label": "Count down all together.",
+          "target": "e_up_chorus"
+        },
+        {
+          "id": "c_fcount_song",
+          "label": "Hum the wish-lantern ceremony's song and let it lift.",
+          "target": "e_up_song"
+        }
+      ]
+    },
+    {
+      "id": "e_ds_spill",
+      "body": "Three trays was two trays too many.\n\nThe tower tipped. Dumplings bounced. Dumplings rolled. Dumplings went off in every direction, like little escaping balls.\n\nNobody was hurt. Auntie Mo laughed the loudest of all. But the clean-up took the whole rest of the night.\n\n\"Home time,\" said Ada at last.\n\n\"I'll save you a lantern,\" Auntie Mo called after them. \"Next market night. Front row.\"\n\nPip walked home between them, planning it all the way.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ds_spill",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Runaway Dumplings"
+      }
+    },
+    {
+      "id": "e_tc_slosh",
+      "body": "The whole tray at once was a wobbly idea.\n\nThe cups slid. The tea sloshed warm over Milo's shoes. Half the cups needed washing again.\n\nNobody was burned. Granny Osha only chuckled. But by the time the washing was done, Ada said it was home time.\n\nGranny Osha sent them off with honey tea for the road. Next market night, she said, there would be level-tray lessons.\n\nPip waved at the square the whole way out.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_tc_slosh",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "One Tray Too Full"
+      }
+    },
+    {
+      "id": "e_tm_spring",
+      "body": "Milo wound the beetle's key one turn too far.\n\nSPROING.\n\nThe spring shot out. The beetle did one heroic backflip and lay still on the felt.\n\nMr. Fez wasn't cross at all. Springs pop every week, he said. But the beetle needed a whole evening of careful surgery, and the table turned into an operating room.\n\nAda said that was their cue.\n\n\"Marching again by next market night,\" Mr. Fez promised. \"And a front stool for Pip.\"",
+      "is_ending": true,
+      "ending": {
+        "id": "end_tm_spring",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Sproing Goes the Beetle"
+      }
+    },
+    {
+      "id": "e_mc_gong",
+      "body": "BWOOOONNNG.\n\nPigeons burst off every rooftop in the square. The band stopped dead in the middle of a note.\n\nEveryone laughed, even the fiddler. But ears were ringing. The band called a long tea break. Ada decided that was the evening's big finish.\n\n\"The gong gets you exactly once,\" the drummer girl told Milo. \"Everyone. Just once.\"\n\nThen she made Pip promise to come and hum with the band next market night.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_mc_gong",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Mighty Gong Whack"
+      }
+    },
+    {
+      "id": "e_wish_pip",
+      "body": "Milo wrote the wish in careful night-blue letters. Exactly as Pip had whispered it. Not one word changed. Pip watched every single stroke.\n\nThey folded it and tied it under the lantern. They set the flame. Then they let go.\n\nUp it sailed over the night market with dozens of others. But theirs was easy to find. Theirs carried a secret that only two friends knew.\n\nThe stall keepers cheered from the steps. Pip leaned on Milo's arm and watched her own wish join the stars.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_wish_pip",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Pip's Own Wish"
+      }
+    },
+    {
+      "id": "e_wish_market",
+      "body": "Underneath Pip's wish, Milo added one more line. A wish for the whole night market. For its steam, and its songs, and its kind hands.\n\nPip nodded hard at every word.\n\nWhen the lantern rose, the keepers on the steps cheered. They cheered as though they could feel the extra wish riding along with it.\n\nIt climbed and climbed. Soon it was only a gold freckle among the stars. Up it carried kindness, for everybody who had traded a little of it that night.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_wish_market",
+        "valence": "positive",
+        "kind": "success",
+        "title": "A Wish Big Enough to Share"
+      }
+    },
+    {
+      "id": "e_wish_brave",
+      "body": "Milo held the brush out. Pip took it.\n\nShe had whispered all evening. Now she wrote her own wish, in big wobbly letters. The keepers politely pretended not to look.\n\n\"Wobbly letters fly the truest,\" said the oldest keeper. \"Always have.\"\n\nThen the lantern lifted off, with Pip's own writing swinging beneath it. And Pip found out that her voice worked out loud too. She cheered. Actually cheered.\n\nThe shy pangolin from behind the barrel was gone for good.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_wish_brave",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "Wobbly Brave Letters"
+      }
+    },
+    {
+      "id": "e_light_pip",
+      "body": "Pip touched the flame to the wick all by herself. Her paws did not shake once.\n\nThe lantern woke up glowing, like a small tame moon. The crowd on the steps went quiet. Then it cheered, as the lantern lifted out of her open paws.\n\nPip stood tall and watched her light climb over the rooftops.\n\nMilo looked at her. She didn't seem like a shy pangolin at all any more. She looked like a lighthouse keeper.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_light_pip",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Pip Lights the Way"
+      }
+    },
+    {
+      "id": "e_light_together",
+      "body": "\"One. Two. Three.\"\n\nThey touched the flame to the wick at exactly the same moment. Now the lantern belonged to both of them forever.\n\nUp it went, trailing golden string, over the steam and the music and the criss-crossing lights. The whole night market seemed to glow one shade brighter as it passed.\n\n\"Best market night ever,\" said Pip. Out loud. In a voice that did not whisper at all.\n\nTwo friends. One light. One enormous sky.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_light_together",
+        "valence": "positive",
+        "kind": "success",
+        "title": "One, Two, Three, Glow"
+      }
+    },
+    {
+      "id": "e_light_keeper",
+      "body": "The oldest keeper lit the wick with the long brass taper. It was the way it had been done when the night market was young.\n\n\"This taper has lit a thousand first wishes,\" she said.\n\n\"A thousand and one,\" said Pip.\n\nThe old keeper laughed like dry leaves.\n\nThe lantern rose slow and stately. The whole lantern square watched. Up went the newest wish, in the oldest way of all, with Pip and Milo right at the heart of it.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_light_keeper",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Old Way"
+      }
+    },
+    {
+      "id": "e_up_pip",
+      "body": "Pip lifted her chin.\n\n\"One. Two. THREE.\"\n\nHer voice came out clear and round, and it surprised even the pigeons. The lantern leapt for the sky, as if it had been waiting all evening for exactly that voice.\n\nThe circle roared. The band struck up.\n\nMilo cheered loudest of all. He knew where that voice had started tonight. Sniffling behind a barrel. And look at it now, leading the whole lantern square.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_up_pip",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Pip Counts Us Down"
+      }
+    },
+    {
+      "id": "e_up_chorus",
+      "body": "The whole circle counted together. Aprons and spectacles and drum and all. One big warm voice underneath the lantern strings.\n\n\"One. Two. Three.\"\n\nPip's lantern sailed up on the sound of it. It climbed past the rooftops with the folded wish swinging gently below. The cheering went on long after it had gone small.\n\nPip turned slowly round. She looked at every single face that had counted for her, so she would remember them all.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_up_chorus",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Whole Square Counts"
+      }
+    },
+    {
+      "id": "e_up_song",
+      "body": "Nobody counted at all.\n\nInstead the band began the ceremony song. The whole circle hummed the low warm part underneath it.\n\nThen the lantern simply rose on the swell of the music. It was as if the song itself were lifting it. Up it drifted, through the humming and the steam and the little lights, glowing gold.\n\nPip hummed until it was only a spark among the stars. The music carried her wish the whole way up.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_up_song",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Sung into the Sky"
+      }
+    }
+  ]
+}

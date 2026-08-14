@@ -1,0 +1,527 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_snow_day_expedition",
+  "version": 1,
+  "title": "The Snow Day Expedition",
+  "metadata": {
+    "age_band": "5-8",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 2.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "imagination",
+      "adventure",
+      "siblings",
+      "winter"
+    ],
+    "estimated_minutes": 5,
+    "ending_count": 10,
+    "content_flags": {
+      "violence": "mild",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "time_cave",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "The phone buzzed at seven o'clock. Mom read it out loud. No school today.\n\nNadia pressed her nose to the cold window. The glass fogged white where she breathed. Beside her, Theo drummed his fingers on it. Thump, thump, thump.\n\nThe whole backyard was gone. Deep white covered every bit of it, and the swing set wore a tall snow hat.\n\n\"That is not our backyard,\" Nadia said. \"That is the White Wild. And we are the explorers who will map it.\"\n\nThey raced each other to the mudroom.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_gear",
+          "label": "Suit up for the expedition.",
+          "target": "n_gear"
+        }
+      ]
+    },
+    {
+      "id": "n_gear",
+      "body": "In the mudroom the explorers suited up. Puffy coats became expedition parkas. Nadia pulled on her red mittens, rated for the coldest cold, and Theo's boots squeaked on the cold tile.\n\nThe sled was the supply carrier. They loaded it with the dented silver thermos of cocoa, the flat metal shovel, the notebook with the pencil on a string, and a bag of baby carrots.\n\nMom ran mission control, which looked exactly like the kitchen. She zipped Theo to the chin and waved them out the door.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gear_basecamp",
+          "label": "March out to Outpost One.",
+          "target": "n_basecamp"
+        }
+      ]
+    },
+    {
+      "id": "n_basecamp",
+      "body": "Outpost One was the top step of the back porch. From there the whole White Wild spread out below them.\n\nOn one side, a snowbank loomed up by the driveway. With her eyes half shut, Nadia saw a mountain. Under the fence beneath it ran a line of small paw prints, stitched along the boards.\n\nOn the other side lay the Powder Plains, deep and smooth and perfect for packing. The birdbath iceberg poked up out of the drifts like a lonely marker.\n\n\"Which way?\" said Theo.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_base_east",
+          "label": "Trek toward Mount Shovelheap.",
+          "target": "n_east"
+        },
+        {
+          "id": "c_base_west",
+          "label": "Trek across the Powder Plains.",
+          "target": "n_west"
+        }
+      ]
+    },
+    {
+      "id": "n_east",
+      "body": "The trek east was squeaky boot work. The powder came up over their knees, and every step said squeak, squeak.\n\nMount Shovelheap rose huge ahead. Up close it was only a snowbank. With eyes half shut it was a true peak, with icy cliffs and crusty snow near the top.\n\nRight across the trail ran the paw prints, small and round, heading for the fence.\n\nTheo gasped. \"A creature came through here.\"\n\nTwo expeditions called at once, and the explorers could pick only one.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_east_climb",
+          "label": "Climb Mount Shovelheap.",
+          "target": "m_1"
+        },
+        {
+          "id": "c_east_tracks",
+          "label": "Follow a line of mysterious paw prints.",
+          "target": "t_1"
+        }
+      ]
+    },
+    {
+      "id": "n_west",
+      "body": "Out on the Powder Plains the snow was deep and smooth. Nadia squeezed a handful. It packed into a hard white ball with a soft crunch. Perfect fort snow.\n\nFarther on, the birdbath iceberg rose out of the drifts. Ice covered its top like glass, and frozen fast in that ice stood three toy penguins. Upright. Brave. Theo had left them there before the big freeze.\n\n\"They are waiting for us,\" Theo whispered.\n\nThe explorers had to choose today's mission.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_west_igloo",
+          "label": "Build the Grand Igloo.",
+          "target": "i_1"
+        },
+        {
+          "id": "c_west_penguins",
+          "label": "Rescue the toy penguins.",
+          "target": "p_1"
+        }
+      ]
+    },
+    {
+      "id": "m_1",
+      "body": "At the foot of Mount Shovelheap the explorers roped up. The rope was the frayed yellow one off the sled, and the cold had made it stiff as a stick.\n\nUp close, the mountain was a crusty snowbank taller than the car. To the roped-up team it was all icy ledges and secret handholds.\n\nNadia spotted the first good foothold and kicked her boot in. It held. The climb began.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_up",
+          "label": "Start up the lower slopes.",
+          "target": "m_2"
+        }
+      ]
+    },
+    {
+      "id": "m_2",
+      "body": "Halfway up they reached the ledge. It was really a buried lawn chair, and it made a fine flat shelf.\n\nThen the snow-swirl storm blew in. The wind lifted loose snow-dust off the crest, and far away a machine roared and threw up a white plume. Cold sparkles stung their cheeks. Theo's nose had gone pink.\n\n\"Real explorers have to decide,\" Nadia said. On to the top, or back down to Outpost One for cocoa?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_push",
+          "label": "Push on through the snow-swirl storm.",
+          "target": "m_3"
+        },
+        {
+          "id": "c_m2_cocoa",
+          "label": "Head back down for cocoa.",
+          "target": "m_r1"
+        }
+      ]
+    },
+    {
+      "id": "m_r1",
+      "body": "They climbed down ledge by ledge, careful as real mountaineers. Behind them, the storm hissed and faded away.\n\nAhead, the mission control window glowed gold through the grey afternoon.\n\n\"This is not quitting,\" Nadia said. \"Explorers call this regrouping.\"\n\nTheo nodded hard. His toes agreed with every word.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mr1_in",
+          "label": "Tromp inside to warm up.",
+          "target": "e_m_retreat"
+        }
+      ]
+    },
+    {
+      "id": "e_m_retreat",
+      "body": "Their mittens steamed on the radiator. At mission control the explorers sat with two hot mugs of cocoa and extra marshmallows.\n\nNadia drew tomorrow's route on a paper napkin: arrows up the ridge, and a big X on the summit. Theo added a tiny flag on top.\n\nMount Shovelheap was not going anywhere.\n\n\"Next time,\" Nadia said, \"the summit is ours.\"\n\nThey clinked their warm mugs together.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m_retreat",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Turned Back at the snow-swirl storm"
+      }
+    },
+    {
+      "id": "m_3",
+      "body": "Above the storm the wind went quiet. The snow crust firmed up under their boots, hard and shiny.\n\nThey kicked toe-steps into it the way real mountaineers do, Nadia first. Theo counted every step out loud. \"Eleven. Twelve. Thirteen.\"\n\nAnd there it was. The summit of Mount Shovelheap, close now, white and sharp against the bright blue sky.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_top",
+          "label": "Scramble up the last stretch.",
+          "target": "m_4"
+        }
+      ]
+    },
+    {
+      "id": "m_4",
+      "body": "The summit! From the top the explorers could see their whole White Wild at once: the fence line, the Powder Plains, the birdbath iceberg, and their own boot trail winding back to Outpost One.\n\nNadia held up the broom handle. Her red mitten was already tied to the end of it, ready to fly.\n\nTheo was looking the other way, down the far slope. The wind had packed it smooth and hard. It was perfect sled ground.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m4_flag",
+          "label": "Plant a broom-handle flag with a red mitten.",
+          "target": "m_f1"
+        },
+        {
+          "id": "c_m4_sled",
+          "label": "Ride the sled down the far slope.",
+          "target": "m_s1"
+        }
+      ]
+    },
+    {
+      "id": "m_f1",
+      "body": "They packed the snow tight around the broom handle until it stood up straight. The red mitten snapped and flapped in the wind like a true expedition flag.\n\nNadia and Theo stood at attention beside it, puffed up with pride.\n\n\"A brand-new mountain needs a name,\" Nadia said. She had one ready.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mf1_name",
+          "label": "Name Mount Shovelheap out loud.",
+          "target": "e_m_flag"
+        }
+      ]
+    },
+    {
+      "id": "e_m_flag",
+      "body": "They shouted it across the yard together. \"MOUNT SHOVELHEAP!\"\n\nThe first explorers ever to stand on that summit. Above them the red mitten cracked and flapped in the cold wind.\n\nMom appeared at the mission control window and waved both arms. The explorers saluted back.\n\nThen they stamped their initials into the crusty summit snow, deep and big, so the whole White Wild would know who climbed it first.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m_flag",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Flag on the Summit"
+      }
+    },
+    {
+      "id": "m_s1",
+      "body": "They lined the sled up at the top of the smooth far slope. Nadia sat in front with the frayed yellow rope in both mittens. Theo wrapped around her middle like a backpack.\n\nBelow them the run flattened out into a big soft drift. A perfect landing zone.\n\n\"Three,\" said Nadia, in her best expedition voice. \"Two. One.\"",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ms1_go",
+          "label": "Push off down the slope.",
+          "target": "e_m_sled"
+        }
+      ]
+    },
+    {
+      "id": "e_m_sled",
+      "body": "Whoosh! The sled flew down the mountain and threw a tail of snow-dust up behind it. The runners hissed. Both explorers whooped the whole way down.\n\nThey landed in the deep soft drift at the bottom in a laughing tangle. Snow went down Theo's collar and he did not even mind.\n\nThe first descent of Mount Shovelheap was complete. They flopped onto their backs and stamped two snow angels into the drift. Official victory marks.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m_sled",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Great Summit Sled Run"
+      }
+    },
+    {
+      "id": "t_1",
+      "body": "Nadia knelt beside the prints like a wildlife scientist. Small. Round. Neat. They dotted away along the fence like a row of buttons pressed into the snow.\n\n\"Too big for a squirrel,\" she said. \"Too small for a deer.\"\n\n\"A mystery creature,\" Theo whispered.\n\nThe tracking team moved out with their eyes down on the trail.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1_track",
+          "label": "Track small, round paw prints along the fence.",
+          "target": "t_2"
+        }
+      ]
+    },
+    {
+      "id": "t_2",
+      "body": "The trail ran straight to the old holly bush in the corner, then dived underneath it into the shadows. Dark green leaves hung low and prickly over the snow.\n\nThe trackers huddled up to plan.\n\n\"Two ways,\" said Nadia. \"We wriggle through the low tunnel under the branches, where the prints go. Or we hurry around behind the shed and cut the creature off on the far side.\"",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2_tunnel",
+          "label": "Crawl through the tunnel under the old holly bush.",
+          "target": "t_3"
+        },
+        {
+          "id": "c_t2_shed",
+          "label": "Circle around behind the shed.",
+          "target": "t_4"
+        }
+      ]
+    },
+    {
+      "id": "t_3",
+      "body": "Under the holly bush was a secret green cave with no snow in it at all. It was hushed and dim, like a ranger's hideout, and dry leaves crunched softly under their knees.\n\nThe paw prints stitched straight through and out the far side, toward the woodpile.\n\nSomething rustled up ahead. A flick of thick gray fur showed between two logs.\n\nThe trackers held their breath and crept closer.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3_peek",
+          "label": "Peek around the woodpile.",
+          "target": "e_t_cat"
+        }
+      ]
+    },
+    {
+      "id": "e_t_cat",
+      "body": "Curled in a snug gap between the logs was Biscuit, the neighbor's fluffy gray cat. She blinked slow, warm blinks at her visitors.\n\nThe explorers knew a rare animal in a secret den when they saw one. They crouched down like wildlife scientists. Theo whispered the field notes and Nadia wrote them in the notebook. One snow leopard. Gray. Sleeping.\n\n\"Your den is safe with us,\" Nadia said.\n\nBiscuit purred. They could feel it through the wood.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_t_cat",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Snow Leopard's Den"
+      }
+    },
+    {
+      "id": "t_4",
+      "body": "Behind the shed the snow was a crisscross of prints, big ones and tiny ones, circling everywhere. Every trail led back to one dark little gap under the shed step.\n\nThe trackers crouched low behind the sled and watched. Nobody moved. Nobody made a sound.\n\n\"Whiskers,\" Theo breathed. \"I can see actual whiskers.\"",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t4_watch",
+          "label": "Hold still and watch the gap.",
+          "target": "e_t_rabbits"
+        }
+      ]
+    },
+    {
+      "id": "e_t_rabbits",
+      "body": "A plump brown rabbit hopped halfway out of the gap. Behind her, two round kits peeked over her back. A whole secret expedition team, living under the shed step.\n\nThe explorers set one baby carrot down in the snow, a polite distance away. Then they backed off, slow and quiet.\n\nThe rabbit came out and took it.\n\nNadia marked the hidden base on the expedition map with a big star.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_t_rabbits",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Hidden Rabbit Base"
+      }
+    },
+    {
+      "id": "i_1",
+      "body": "The Powder Plains snow squeaked and packed like magic. Nadia stamped out a big circle for the floor of the Grand Igloo, and Theo hauled the sled alongside as the official hauling cart.\n\nThe flat metal shovel became a snow saw. Down, across, and under. The very first brick came out crisp and square, like a slice of cake.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_i1_bricks",
+          "label": "Cut the first row of snow bricks.",
+          "target": "i_2"
+        }
+      ]
+    },
+    {
+      "id": "i_2",
+      "body": "Row by row, the spiral wall of the Grand Igloo rose up. Each brick came off the sled and got patted snug into place. Thump, thump went their mittens.\n\nThe wall climbed past Theo's shoulders and leaned inward, the way real forts do. They left a door gap just their size.\n\nNow only the tricky top of the dome was left.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_i2_dome",
+          "label": "Fit the last bricks of the dome.",
+          "target": "i_3"
+        }
+      ]
+    },
+    {
+      "id": "i_3",
+      "body": "The last brick went in. The dome of the Grand Igloo closed over their heads and the builders cheered.\n\nInside, the light came through the snow soft and blue, like the inside of an ice palace. From Outpost One it was still a snow fort in the backyard. From in here it was not.\n\n\"Two dreams left,\" said Nadia. \"A round ice window and our supplies moved in. Or a grand tunnel, long enough to crawl through.\"",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_i3_window",
+          "label": "Carve a window and move in supplies.",
+          "target": "i_f1"
+        },
+        {
+          "id": "c_i3_tunnel",
+          "label": "Dig the grand entrance tunnel.",
+          "target": "i_f2"
+        }
+      ]
+    },
+    {
+      "id": "i_f1",
+      "body": "Nadia carved a round window with the flat shovel. Cold sunshine poured through it and made a pale circle on the floor.\n\nTheo ferried the supplies in from the sled: the silver thermos, the bag of carrots, the notebook. He lined them up neatly on a shelf carved into the snow wall.\n\nThe Grand Igloo was starting to feel like a real base.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_if1_settle",
+          "label": "Settle into the new base.",
+          "target": "e_i_base"
+        }
+      ]
+    },
+    {
+      "id": "e_i_base",
+      "body": "The explorers sat shoulder to shoulder inside the Grand Igloo and sipped their cocoa. Their breath made little clouds in the blue light. Through the round ice window they watched their whole White Wild.\n\nIt was, officially, the finest base the backyard had ever had.\n\n\"BEST FORT EVER!\" they shouted toward mission control.\n\nMom's laugh floated back to them across the snow.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_i_base",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Base Camp Igloo"
+      }
+    },
+    {
+      "id": "i_f2",
+      "body": "They dug from both ends at once. Nadia dug in from outside the wall, and Theo dug out from inside the glowing dome.\n\nTheir mittens met in the middle of the snow with a muffled high five.\n\nThen they patted the tunnel walls smooth and round, long enough to crawl through like true explorers.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_if2_crawl",
+          "label": "Crawl through the finished tunnel.",
+          "target": "e_i_tunnel"
+        }
+      ]
+    },
+    {
+      "id": "e_i_tunnel",
+      "body": "Nadia crawled the whole tunnel first. Cold snow brushed her hood the whole way. She popped up inside the glowing dome with a shout. Then Theo. Then both of them again, just because.\n\nThe Grand Igloo had an official secret entrance now.\n\nFrom Outpost One, Mom clapped for the two snowy heads popping in and out.\n\nGreatest fort ever built in the White Wild. That was official too.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_i_tunnel",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Grand Snow Tunnel"
+      }
+    },
+    {
+      "id": "p_1",
+      "body": "The birdbath iceberg rose out of the drifts, alone and shining. On top, frozen fast in the ice, stood the three toy penguins. Upright. Brave. Exactly where Theo had left them before the big freeze.\n\n\"Rescue mission is open,\" Nadia said.\n\nThe sled became the rescue ambulance, and the team crunched closer to study the ice.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p1_look",
+          "label": "Look closely at the icy situation.",
+          "target": "p_2"
+        }
+      ]
+    },
+    {
+      "id": "p_2",
+      "body": "Up close, the ice sheet held each penguin tight by the feet, shiny and stubborn. Nadia tapped it with one knuckle. It went tock.\n\n\"Two plans,\" she said. \"We tap and wiggle them loose bit by bit, with mitten thumps and the ice scraper. Slow, but steady.\"\n\n\"Or?\" said Theo.\n\n\"Or we pour warm cocoa over the ice and melt them out fast. But the cocoa is our emergency fuel.\"",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p2_tap",
+          "label": "Tap the ice loose, slow and steady.",
+          "target": "p_3"
+        },
+        {
+          "id": "c_p2_cocoa",
+          "label": "Pour warm cocoa over the ice.",
+          "target": "p_r1"
+        }
+      ]
+    },
+    {
+      "id": "p_r1",
+      "body": "The last of the warm cocoa glugged out over the ice. It steamed for a moment. Then it slid down the side, made a shiny brown puddle, and froze again, slicker than before.\n\nThe penguins had not budged a single feather, and the emergency fuel was gone.\n\n\"Real rescue teams know when to regroup,\" Nadia said.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr1_retreat",
+          "label": "Call a retreat to mission control.",
+          "target": "e_p_retreat"
+        }
+      ]
+    },
+    {
+      "id": "e_p_retreat",
+      "body": "Back at mission control the explorers thawed their mittens on the radiator. Mom refilled the silver thermos and did not even laugh about the cocoa.\n\nThey planned Rescue Mission Two on the back of a napkin. A proper ice tool this time. Maybe a warm spoon.\n\nOut on the birdbath iceberg, the three penguins held their post bravely until after lunch.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_p_retreat",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Turned Back at a cocoa-melting mishap"
+      }
+    },
+    {
+      "id": "p_3",
+      "body": "Tap. Tap. Tap. Little cracks spidered out around each penguin's feet, and Theo held his breath beside the sled.\n\nOne popped free into Nadia's red mitten. Then two. Then all three.\n\nThe team wrapped them up in Nadia's spare scarf, the soft striped one, snug as tiny rescued explorers.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p3_load",
+          "label": "Load the toy penguins for transport.",
+          "target": "p_4"
+        }
+      ]
+    },
+    {
+      "id": "p_4",
+      "body": "The penguins peeked out of the scarf in the sled. Safe, but very cold. The rescue team agreed on that solemnly.\n\nNow the mission needed a proper finish.\n\n\"Rush them to Outpost One,\" said Nadia. \"Snow-pillow beds. Checkups, feather by feather.\"\n\nTheo looked out across the White Wild. \"Or a parade,\" he said. \"All the way around, so every snowdrift can cheer.\"",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p4_hospital",
+          "label": "Set up the hospital for the toy penguins.",
+          "target": "p_f1"
+        },
+        {
+          "id": "c_p4_parade",
+          "label": "Lead the rescue parade.",
+          "target": "p_f2"
+        }
+      ]
+    },
+    {
+      "id": "p_f1",
+      "body": "Outpost One became hospital row: three snow-pillow beds, patted smooth and flat.\n\nDoctor Nadia checked each penguin from beak to feet. Nurse Theo wrote it all down in the notebook and nodded very seriously after every word.\n\nAll three patients were pronounced brave, cold, and perfectly healthy.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pf1_tuck",
+          "label": "Tuck the patients into their beds.",
+          "target": "e_p_hospital"
+        }
+      ]
+    },
+    {
+      "id": "e_p_hospital",
+      "body": "The penguins lay tucked into their snow beds at Outpost One. Beside each bed the doctors scratched a certificate of bravery into the frost.\n\nThe rescue mission was complete. Doctor Nadia and Nurse Theo shook mittens over their sleeping patients.\n\nThen Mom called the team in for lunch, and the penguins came too, riding warm and proud in Nadia's coat pocket.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_p_hospital",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Penguin Hospital Heroes"
+      }
+    },
+    {
+      "id": "p_f2",
+      "body": "The sled became a parade float. The three penguins rode high on the folded scarf.\n\nNadia pulled the frayed yellow rope out front. Theo marched behind and announced the heroes to the whole White Wild in his loudest voice.\n\nThe parade set off across the Powder Plains.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pf2_lap",
+          "label": "March the full victory lap.",
+          "target": "e_p_parade"
+        }
+      ]
+    },
+    {
+      "id": "e_p_parade",
+      "body": "The parade rounded the whole White Wild: past Mount Shovelheap, along the fence line, and home to Outpost One. The explorers cheered for their heroes loud enough for every snowdrift to hear.\n\nMom waved from the window like a whole crowd at once.\n\nThe penguins rode home tall and proud, in the greatest rescue parade the White Wild has ever seen.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_p_parade",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Great Rescue Parade"
+      }
+    }
+  ]
+}
