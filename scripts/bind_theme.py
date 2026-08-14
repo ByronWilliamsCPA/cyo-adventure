@@ -178,7 +178,17 @@ def main(argv: list[str] | None = None) -> int:
     # equivalent of the) fill step.
     # #VERIFY: test_bind_theme.py's violating-bindings test asserts no output
     # file is written.
-    violations = validate_slot_bindings(contract, bindings)
+    # `is_default` must reflect where the bindings came from. The contract's
+    # own `default_binding` IS the legacy theme, so validating it as if it were
+    # a freshly proposed one fails it on the `legacy_lexicon` leak check: on
+    # `the-school-garden-mystery` that is 19 violations for the one binding the
+    # contract ships. The flag exists in `validate_slot_bindings` and is
+    # documented for exactly this case; this call site never set it, so the
+    # `--bindings`-omitted path advertised in the module docstring and in the
+    # cyo-author skill could not be used at all.
+    violations = validate_slot_bindings(
+        contract, bindings, is_default=bindings_arg is None
+    )
     if violations:
         for violation in violations:
             violation_msg = (

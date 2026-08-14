@@ -11,8 +11,11 @@ order); and omitting ``--bindings`` falls back to the contract's
 from __future__ import annotations
 
 import json
+import pathlib
 import re
 from typing import TYPE_CHECKING, cast
+
+import pytest
 
 from cyo_adventure.generation.binding import contract_path_for, render_bound_skeleton
 from cyo_adventure.storybook.models import AgeBand
@@ -26,8 +29,6 @@ from scripts import bind_theme
 
 if TYPE_CHECKING:
     from pathlib import Path
-
-    import pytest
 
 
 def _tiny_skeleton() -> dict[str, object]:
@@ -307,3 +308,39 @@ def test_missing_bindings_file_is_a_clean_failure(tmp_path: Path) -> None:
 
     assert exit_code == 1
     assert not out_bound_path.exists()
+
+
+@pytest.mark.unit
+def test_the_default_binding_path_validates_as_default(tmp_path: Path) -> None:
+    """The contract's own default binding must not fail its own leak check.
+
+    `default_binding` IS the legacy theme, so validating it as though it were a
+    freshly proposed one fails every `legacy_lexicon` rule. On
+    `the-school-garden-mystery` that was 19 violations for the one binding the
+    contract ships, which made the `--bindings`-omitted path advertised in the
+    module docstring and in the cyo-author skill unusable. `is_default` exists
+    in `validate_slot_bindings` and is documented for this case; the call site
+    simply never set it. Found by an authoring agent that had to reimplement the
+    sequence inline to get its book drafted.
+    """
+    skeleton = (
+        pathlib.Path(__file__).resolve().parents[2]
+        / "skeletons"
+        / "5-8"
+        / "the-school-garden-mystery.json"
+    )
+    if not skeleton.exists():  # pragma: no cover - corpus-dependent
+        pytest.skip("theme-contract-bearing skeleton not present")
+
+    code = bind_theme.main(
+        [
+            str(skeleton),
+            "--out-bound",
+            str(tmp_path / "b.json"),
+            "--out-binding",
+            str(tmp_path / "k.json"),
+        ]
+    )
+
+    assert code == 0, "the contract's own default binding was rejected"
+    assert (tmp_path / "b.json").exists()

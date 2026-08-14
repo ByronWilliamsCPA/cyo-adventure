@@ -1205,3 +1205,55 @@ rather than merely unsupported.
 Closed or decided: W1, W2, W3, W4, W5, W6, W7, W15. Blocked on ADR-018 consent scoping: W12,
 W13. Unblocked by `UW-C239` and not yet started: W8, W9, W10, W14. Deferred pending a whole
 instrument: W11.
+
+## 7.9 Sequencing ruling: finish the drafting workstream before training the reviewer (2026-08-14)
+
+**Owner ruling.** Complete the current workstream before starting reviewer training, so that any new
+drafts are the best the process can produce.
+
+The dependency is real and worth stating precisely: a distilled reviewer learns what "good" looks
+like from the books it is trained and validated on. Train it on books drafted by a half-finished
+drafting process and it learns to approve that half-finished output, then that judgement is frozen
+into a self-hosted model and used to gate everything after. The ordering is therefore not a
+preference about what to do first. It is the difference between a reviewer calibrated on the
+catalogue we intend to ship and one calibrated on an artefact of where the work happened to pause.
+
+**What "the current workstream" means, concretely.** Four measurement items remain that vary how a
+book is drafted, and each one is scored on **deterministic measures only**, so none of them depends
+on the judge panel or on any reviewer work:
+
+| Item | What it varies | Decision rule, in short | Cost |
+| --- | --- | --- | --- |
+| W8 | decoding parameters and reasoning effort | adopt iff a deterministic measure moves beyond its noise | $10 to $20 |
+| W9 | which model runs which stage | adopt iff cost per delivered book falls with no gate or craft regression | one matched run |
+| W10 | the premise pool (MoPS) | adopt iff convergence drops near the 3.3 idiom floor | generation for n books plus curation |
+| W14 | what context the prose stage sees | adopt iff a deterministic measure moves beyond its noise | one matched run per regime |
+
+That separation is what makes the ruling clean rather than merely cautious: the drafting
+improvements can be validated to completion without a working reviewer, and the reviewer then has a
+settled process to learn from.
+
+**W14's stated blocker is gone.** It reads "close `UW-C239` before running W14 or the cost half is
+unmeasurable and only the quality half survives". `UW-C239` closed on 2026-08-14, verified three
+ways, so W14 is runnable for the first time.
+
+**Budget is now the binding constraint, not capability.** The four items total roughly $30 to $50 of
+generation against a measured $15.60 remaining. They also want each other's results: W9 and W14 both
+change what a matched run looks like, so running them in the wrong order buys a comparison twice.
+Sequencing and funding them is the next planning decision, and it is an owner decision rather than
+one this document can settle.
+
+**Status of the reviewer work, parked rather than abandoned.** The distillation plan
+(`review-model-distillation-plan.md`) stands as written and is **parked at Phase 0**. Its trigger
+condition is the completion of W8, W9, W10 and W14, plus a drafting pass under whatever configuration
+those items adopt. Two things continue in the meantime because they cost nothing extra and inform
+whether distillation is viable at all: the open-weight judge battery already in flight, and the
+frozen artifact store, which is pure preservation and is worth more the longer the corpus grows.
+
+**The books drafted on 2026-08-14 are baseline, not final.** The eight new 3-5 and 5-8 books were
+drafted under the *current* configuration, before W8, W9, W10 and W14 have adopted anything. They
+fill a real gap (both bands had zero books left for training after the W7 battery took them) and
+they cost nothing, so they stay. But they carry their framework provenance, and a redraft under the
+completed configuration is expected rather than exceptional. Their most durable use may turn out to
+be as the before-half of a before-and-after comparison, which is a use that only exists because they
+were drafted now.
