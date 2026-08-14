@@ -131,14 +131,54 @@ The `reading_level_target` field in the concept brief sets the Flesch-Kincaid gr
 The validator checks against this target with the `tolerance` defined in the story metadata
 (advisory warning only; the parent makes the final call).
 
-| Age band | FK grade target | Guidance |
-|----------|----------------|----------|
-| 3-5 | 0.0 to 1.5 | Very short sentences (5-8 words average). Read-aloud cadence, repetition, and concrete nouns. Minimal abstraction. |
-| 5-8 | 1.5 to 3.0 | Short sentences (8-12 words average). Simple vocabulary with gentle stretch words explained in context. |
-| 8-11 | 3.0 to 4.5 | Short sentences (10-14 words average). Simple vocabulary. One idea per sentence. Concrete imagery. |
-| 10-13 | 5.0 to 7.0 | Moderate sentence length (14-18 words average). Can introduce unfamiliar words if context makes them clear. |
-| 13-16 | 7.0 to 9.5 | Longer sentences acceptable. Figurative language, irony, and ambiguous outcomes are age-appropriate. |
-| 16+ | 9.5 to 12.0 | Adult-YA register. Complex syntax, layered themes, and morally ambiguous outcomes are acceptable. |
+The `words/sentence` and `syllables/word` columns are **measured**, not aspirational: they are the
+mean and interquartile range over every committed node that actually lands inside its band under
+the corrected syllable counter (`AL-388`), 4,173 nodes across 31 books. Write to those numbers and
+the grade follows. The reference book is the highest in-band book in that band; opening it and
+matching its sentence shape is the fastest route to band, and is what four independent drafting
+agents each discovered for themselves before it was written down (`AL-381`).
+
+| Age band | FK target | words/sentence | syllables/word | Reference book | Guidance |
+|----------|-----------|----------------|----------------|----------------|----------|
+| 3-5 | 0.0 to 1.5 | **5.7** (5.0-6.3) | 1.21 | `the-clover-and-the-butterfly` | Read-aloud cadence, repetition, concrete nouns. Minimal abstraction. |
+| 5-8 | 1.5 to 3.0 | **7.8** (6.9-8.7) | 1.27 | `the-snow-day-expedition` | Simple vocabulary with gentle stretch words explained in context. |
+| 8-11 | 3.0 to 4.5 | **12.7** (11.0-14.4) | 1.29 | `the-sky-ship-stowaway` | One idea per sentence. Concrete imagery. |
+| 10-13 | 5.0 to 7.0 | **14.1** (12.7-15.4) | 1.30 | `the-midnight-museum` | Unfamiliar words are fine where context carries them. |
+| 13-16 | 7.0 to 9.5 | **18.4** (16.6-20.2) | 1.30 | `the-sunspire-ascent` | Figurative language, irony, and ambiguous outcomes are age-appropriate. |
+| 16+ | 9.5 to 12.0 | **21.0** (19.3-23.2) | 1.37 | `the-drowned-court` | Adult-YA register. Complex syntax and layered themes are acceptable. |
+
+**Sentence length carries the band; vocabulary barely moves.** Across the whole range, mean
+words-per-sentence goes 5.7 to 21.0 while mean syllables-per-word goes only 1.21 to 1.37. Put
+those through the formula and sentence length accounts for about three quarters of the grade
+spread from 3-5 to 16+. A 3-5 book and a 16+ book are built from words of nearly the same
+difficulty; what separates them is how many of those words are asked to arrive at once. So when a
+node scores high, split its sentences first and reach for shorter words second.
+
+**Draft, then measure, then repair.** Prose written to a stated FK target lands out of band
+essentially every time: all eight books drafted on 2026-08-14 did, one at 57 of 57 nodes with
+individual grades of 7 to 12 against a target of 2.5, and all eight reached `in_band` 1.00 only
+after a measured repair pass. Treat that pass as part of drafting rather than as a failure. Score
+with the checker's own function, never by eye:
+
+```python
+from cyo_adventure.validator.reading_level import score_body
+
+grade = score_body(node_body)   # None for <20 words or an unfilled <<FILL>> directive
+```
+
+**Do not chase irregular past-tense verbs.** Earlier guidance to prefer `went` over `walked` was
+an artefact of a counting bug, not a craft truth: the old counter scored every regular `-ed` past
+one syllable too high, so the swap looked like it bought something. Measured over ten
+regular/irregular pairs, it saved 10 syllables under the broken counter and 1 under the corrected
+one (`AL-388`). Choose the verb that says what happened.
+
+> **The targets themselves are under review.** The per-book `metadata.reading_level.target` values
+> were set while the counter was biased about a quarter of a grade high, so the corrected counter
+> reads the whole committed corpus roughly 0.27 grades lower than it used to. The targets have
+> deliberately not been shifted to compensate, since that would bake the bug into the spec, but
+> until they are re-derived (`UW-C254`, `AL-389`) a 3-5 or 5-8 in-band figure is provisional, and
+> the generation repair loop may push young-band prose slightly harder than the prose already
+> approved.
 
 Node body length scales with the band and with the ADR-011 length / style cell. The
 authoritative per-node envelope is the `_WORDS_PER_NODE` table in

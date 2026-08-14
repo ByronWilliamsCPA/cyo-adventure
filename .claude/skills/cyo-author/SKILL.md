@@ -87,8 +87,17 @@ Invoke when given a skeleton file under `skeletons/<band>/<slug>.json` (or any
 
 3. **Fill each `<<FILL role=... words=... beats='...'>>` body** with prose that:
 
-   - matches the band's word target and reading level (keep vocabulary/sentence length
-     age-appropriate);
+   - matches the band's word target and reading level. Write to a **measured sentence
+     length**, because that is what carries the grade: mean words per sentence across
+     in-band nodes runs 5.7 at 3-5, 7.8 at 5-8, 12.7 at 8-11, 14.1 at 10-13, 18.4 at
+     13-16 and 21.0 at 16+, while syllables per word barely moves across the whole range
+     (1.21 to 1.37). Expect the first draft to land out of band anyway (every book drafted
+     on 2026-08-14 did) and plan a **measured repair pass** using the checker's own scorer,
+     `validator.reading_level.score_body`, rather than judging by eye. The drafting guide's
+     Age-Band Reading Levels table names a reference in-band book per band; opening it and
+     matching its sentence shape is the fastest route. Do not swap regular past-tense verbs
+     for irregular ones to lower the grade: that trick was an artefact of a syllable-counting
+     bug fixed in `AL-388` and now buys essentially nothing;
    - honors the `beats=` intent and the node's `role`;
    - sets up exactly the choices on that node (each `choice.label` is the action the prose
      should make available); when a theme brief is in play, rewrite the label's surface
