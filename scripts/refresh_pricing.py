@@ -60,7 +60,11 @@ _WANTED: Final[tuple[str, ...]] = (
     # W7's arms. Priced here for the same reason as every other entry: an
     # unpriced model reports its runs as costing nothing.
     "deepseek/deepseek-v4-flash",
+    "deepseek/deepseek-v4-flash-0731",
+    "~deepseek/deepseek-v4-flash-latest",
     "qwen/qwen3-32b",
+    "qwen/qwen3.5-27b",
+    "qwen/qwen3.6-27b",
     "meta-llama/llama-3.3-70b-instruct",
     "z-ai/glm-5",
 )

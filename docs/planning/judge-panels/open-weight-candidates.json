@@ -1,30 +1,44 @@
 [
   {
-    "label": "deepseek-v4-flash",
-    "model": "deepseek/deepseek-v4-flash",
+    "label": "deepseek-flash-latest",
+    "model": "~deepseek/deepseek-v4-flash-latest",
     "provider_order": [],
     "family": "deepseek",
-    "_note": "The distillation candidate under test. $0.14/$0.28 per Mtok against $9/$48 for the whole frontier panel, so a 43-arm battery costs about two cents per judge. Open weights, so it can be fine-tuned and quantised and then frozen, which is what a measuring instrument wants."
+    "_note": "Requested candidate. $0.08/$0.16 per Mtok. A FLOATING alias: probed 2026-08-14 it resolved to deepseek/deepseek-v4-flash-0731 served by Decart, so it moves across both checkpoint and serving stack without notice. Paired with the pinned entry below precisely to measure whether that matters, because a ruler that changes when a vendor reroutes cannot support a longitudinal quality claim."
   },
   {
-    "label": "qwen3-32b",
-    "model": "qwen/qwen3-32b",
+    "label": "deepseek-flash-0731",
+    "model": "deepseek/deepseek-v4-flash-0731",
+    "provider_order": [],
+    "family": "deepseek",
+    "_note": "The dated checkpoint the floating alias serves today, at $0.14/$0.28. Same weights by name, different price and different route, so a score difference between this and the alias is evidence about routing rather than about the model."
+  },
+  {
+    "label": "qwen3.6-27b",
+    "model": "qwen/qwen3.6-27b",
     "provider_order": [],
     "family": "qwen",
-    "_note": "Nearest open-weight peer by price ($0.08/$0.28) and a different lineage, so agreement between it and deepseek is evidence about the task rather than about one training corpus."
+    "_note": "Nearest available to the requested qwen/qwen3.8-27b, which OpenRouter does not list: the 3.8 line ships only as 2.4t-a95b and max, both far larger, and 27b exists at 3.5 and 3.6. $0.60/$3.60."
+  },
+  {
+    "label": "qwen3.5-27b",
+    "model": "qwen/qwen3.5-27b",
+    "provider_order": [],
+    "family": "qwen",
+    "_note": "The other 27b qwen, at $0.195/$1.56. Included because the requested model does not exist and guessing which generation was meant is worse than testing both when a battery costs cents."
   },
   {
     "label": "llama-3.3-70b",
     "model": "meta-llama/llama-3.3-70b-instruct",
     "provider_order": [],
     "family": "meta",
-    "_note": "Larger dense open-weight model at $0.10/$0.32. Included to separate 'this criterion needs a bigger model' from 'this criterion needs a better-suited one'."
+    "_note": "Larger dense open-weight model at $0.10/$0.32, to separate 'this criterion needs a bigger model' from 'this criterion needs a better-suited one'."
   },
   {
     "label": "glm-5",
     "model": "z-ai/glm-5",
     "provider_order": [],
     "family": "zai",
-    "_note": "Strongest open-weight tier in this slate at $0.95/$2.55, and the ceiling check: if a criterion fails here too, the failure is not about model size within the open-weight family."
+    "_note": "Strongest open-weight tier in this slate at $0.95/$2.55. The ceiling check: a criterion that fails here too is not failing for want of open-weight capacity."
   }
 ]
