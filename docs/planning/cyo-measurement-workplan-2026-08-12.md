@@ -885,3 +885,49 @@ which a later reader should not mistake for a representative sample. The bands s
 6 `premise_duplicate`, 2 `dialogue_flat`, 6 `reading_level_up`. The `dialogue` criterion gets
 2 opportunities, both with strong seeds (0.818 and 0.258 to 0.000), against the 1 dead
 opportunity the previously-planned corpus offered.
+
+### 7.7.3 The reading-level seed overshot by a factor of three (2026-08-14)
+
+The `reading_level_up` seed asks a model to rewrite each passage "about 3 US reading grades
+harder". It does not take direction on magnitude. Across the six-book corpus it delivered:
+
+| Book | Band target | Control grade | Full rewrite | Delta |
+| --- | --- | --- | --- | --- |
+| `the-lost-mitten` | 1.0 | -0.02 | 8.14 | +8.16 |
+| `the-teddy-bears-picnic` | 1.0 | 0.76 | 10.40 | +9.63 |
+| `the-clover-and-the-butterfly` | 1.0 | 0.85 | 10.97 | +10.12 |
+| `the-lantern-festival` | 2.5 | 1.79 | 12.85 | +11.06 |
+| `the-backyard-treasure-map` | 2.5 | 2.65 | 12.43 | +9.78 |
+| `the-cave-of-echoes` | 4.5 | 4.55 | 13.33 | +8.78 |
+
+Books whose bands target grades 1.0 to 4.5, rewritten to grades 8.1 to 13.3. That is not a
+book too old for its band, which is the defect; it is a different genre, and it breaks the
+fixture two ways. `age_fit` detection becomes trivial, so the arm stops measuring the
+criterion's sensitivity to a realistic miss and starts confirming that the panel can read.
+And voice, engagement and dialogue all move genuinely, which this battery's false-positive
+rule (any non-target arm moving a criterion by more than 0.5) would charge against those
+criteria for correctly noticing a real change.
+
+The seed was left in place and the arm composed from it instead. `blend_to_grade` swaps
+hardened bodies into the control one at a time, spread across the book by a low-discrepancy
+order rather than front-to-back, until the whole-book grade reaches the target:
+
+| Book | Control | Blended arm | Delta | Nodes swapped |
+| --- | --- | --- | --- | --- |
+| `the-lost-mitten` | -0.02 | 3.05 | +3.07 | 3 of 11 |
+| `the-teddy-bears-picnic` | 0.76 | 4.17 | +3.41 | 7 of 29 |
+| `the-clover-and-the-butterfly` | 0.85 | 4.27 | +3.42 | 5 of 20 |
+| `the-lantern-festival` | 1.79 | 5.06 | +3.26 | 9 of 37 |
+| `the-backyard-treasure-map` | 2.65 | 5.68 | +3.03 | 18 of 62 |
+| `the-cave-of-echoes` | 4.55 | 7.63 | +3.07 | 21 of 65 |
+
+This is deterministic, exact to within one node's worth of grade, and free, since the
+generation is already paid for and `--reblend` calls no provider. It also seeds a defect
+closer to the real failure mode: a book whose passages drift too hard in places is what the
+pipeline produces when it misses a band, not one uniformly rewritten into academic prose.
+
+**A second finding from the same run.** The prepare step reported `$0.0000 spent hardening`.
+That is `UW-C239` arriving where it does damage: `core/pricing.py` leaves input rates unset
+for every cloud model, so an unpriced run and a free one print identically. The harness now
+prints "spend unpriced" and names the row, because a dollar figure in a measurement record is
+read as measured.

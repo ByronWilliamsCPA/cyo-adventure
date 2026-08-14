@@ -12,9 +12,12 @@ from __future__ import annotations
 
 import itertools
 
+import pytest
+
 from scripts.judge_books import Verdict
 from scripts.w7_battery import (
     DEFECT_CRITERION,
+    blend_to_grade,
     cohens_kappa,
     score_battery,
 )
@@ -181,3 +184,78 @@ def test_kappa_refuses_a_sample_too_small_to_mean_anything() -> None:
     """One book is not an agreement measurement."""
     assert cohens_kappa([3.0], [3.0]) is None
     assert cohens_kappa([3.0, 4.0], [3.0]) is None
+
+
+# --------------------------------------------------------------------------
+# blend_to_grade
+# --------------------------------------------------------------------------
+
+_EASY = "The dog ran. The cat sat. The sun was hot. We had fun. He got up."
+_HARD = (
+    "The domesticated canine proceeded ambulatorily, whereupon the resident "
+    "feline established a sedentary disposition beneath an atmospheric "
+    "condition of considerable thermal intensity."
+)
+
+
+def _book(bodies: list[str], *, target: float = 1.0) -> dict[str, object]:
+    """Return a minimal document `blend_to_grade` can measure."""
+    return {
+        "metadata": {"reading_level": {"target": target, "tolerance": 1.0}},
+        "nodes": [{"id": f"n{i}", "body": b} for i, b in enumerate(bodies)],
+    }
+
+
+@pytest.mark.unit
+def test_blending_stops_at_the_target_instead_of_using_the_whole_rewrite() -> None:
+    """The generation seed overshoots, and the arm's job is a stated magnitude.
+
+    Asked for three grades harder the rewriter delivered between 8.2 and 11.1
+    across the real corpus, which makes `age_fit` detection trivial and moves
+    voice and engagement genuinely. The blend exists to land the seed where it
+    was aimed, so the check is that it stops early rather than that it runs.
+    """
+    original = _book([_EASY] * 10)
+    hardened = _book([_HARD] * 10)
+    arm, note = blend_to_grade(original, hardened, grades=3.0)
+
+    swapped = sum(1 for n in arm["nodes"] if n["body"] == _HARD)  # pyright: ignore[reportIndexIssue, reportGeneralTypeIssues]
+    assert 0 < swapped < 10, note
+
+
+@pytest.mark.unit
+def test_the_note_reports_the_achieved_delta_not_the_requested_one() -> None:
+    """A seed whose strength is unreported cannot be read back against its rate.
+
+    The blend lands on or just past the target, never exactly on it, because a
+    node is the smallest unit it can swap. Reporting the request instead of the
+    achievement would hide by how much.
+    """
+    _, note = blend_to_grade(_book([_EASY] * 10), _book([_HARD] * 10), grades=3.0)
+    assert "against a +3.0 target" in note
+    assert "swapped" in note
+
+
+@pytest.mark.unit
+def test_hardened_nodes_are_spread_rather_than_stacked_at_the_front() -> None:
+    """Swapping in index order seeds a different defect from the intended one.
+
+    A book that starts hard and softens is not a book that is too old for its
+    band; it is a book with a bad opening. The low-discrepancy order is what
+    keeps the two apart.
+    """
+    arm, _ = blend_to_grade(_book([_EASY] * 12), _book([_HARD] * 12), grades=3.0)
+    indices = [i for i, n in enumerate(arm["nodes"]) if n["body"] == _HARD]  # pyright: ignore[reportIndexIssue, reportGeneralTypeIssues]
+    assert indices, "nothing was swapped, so the ordering is untested"
+    # Not all clustered in the opening third.
+    assert max(indices) >= 4
+
+
+@pytest.mark.unit
+def test_a_book_with_no_declared_reading_level_falls_back_to_the_full_rewrite() -> None:
+    """Unmeasurable is not zero, and the caller is told which it got."""
+    original = {"nodes": [{"id": "n0", "body": _EASY}]}
+    hardened = {"nodes": [{"id": "n0", "body": _HARD}]}
+    arm, note = blend_to_grade(original, hardened, grades=3.0)
+    assert arm["nodes"][0]["body"] == _HARD  # pyright: ignore[reportIndexIssue, reportGeneralTypeIssues]
+    assert "unmeasurable" in note

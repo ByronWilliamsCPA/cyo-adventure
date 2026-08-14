@@ -50,6 +50,7 @@ from cyo_adventure.core.config import Settings  # noqa: E402
 from cyo_adventure.generation.metered import MeteredProvider  # noqa: E402
 from cyo_adventure.generation.provider import build_openrouter_leg  # noqa: E402
 from cyo_adventure.generation.usage import UsageLedger  # noqa: E402
+from cyo_adventure.validator.reading_level import measure_book  # noqa: E402
 from scripts.judge_books import _CRITERIA, _PANEL, Verdict, judge_book  # noqa: E402
 from scripts.seed_defects import verify  # noqa: E402
 
@@ -364,9 +365,126 @@ async def harden_book(
     return out
 
 
+def _book_grade(doc: dict[str, Any]) -> float | None:
+    """Return the whole-book Flesch-Kincaid grade of *doc*.
+
+    Args:
+        doc: A story document.
+
+    Returns:
+        The grade, or ``None`` when the book declares no reading level or is
+        too short to measure.
+    """
+    metadata = doc.get("metadata")
+    level = metadata.get("reading_level") if isinstance(metadata, dict) else None
+    if not isinstance(level, dict):
+        return None
+    nodes = doc.get("nodes")
+    if not isinstance(nodes, list):
+        return None
+    measured = measure_book(
+        (
+            str(node.get("body", ""))
+            for node in nodes
+            if isinstance(node, dict) and str(node.get("body", "")).strip()
+        ),
+        target=float(level.get("target", 3.0)),
+        tolerance=float(level.get("tolerance", 1.0)),
+    )
+    return None if measured is None else measured.grade
+
+
+def _spread_order(count: int) -> list[int]:
+    """Return indices ordered to spread evenly over ``range(count)``.
+
+    A low-discrepancy (golden-ratio) sequence rather than ``range``: swapping
+    nodes in index order would put every hardened passage at the front of the
+    book, which is a different defect (a book that starts hard and softens)
+    from the one being seeded.
+
+    Args:
+        count: How many indices.
+
+    Returns:
+        A permutation of ``range(count)``.
+    """
+    return sorted(range(count), key=lambda i: (i * 0.6180339887498949) % 1.0)
+
+
+def blend_to_grade(
+    original: dict[str, Any], hardened: dict[str, Any], *, grades: float
+) -> tuple[dict[str, Any], str]:
+    """Compose an arm that is *grades* harder, from a rewrite that overshot.
+
+    The generation seed does not take direction on magnitude. Asked for three
+    US grades harder it delivered between 8.2 and 11.1 across the six-book
+    corpus, moving books whose bands target grades 1.0 to 4.5 up to grades 8.1
+    to 13.3. That is not a book too old for its band; it is a different genre,
+    and it breaks the fixture two ways. It makes `age_fit`'s detection trivial,
+    so the arm stops measuring the criterion's sensitivity to a realistic miss.
+    And it moves voice, engagement and dialogue genuinely, which this battery's
+    false-positive rule counts against those criteria for noticing something
+    that really did change.
+
+    Rather than re-prompting for a magnitude the model cannot hit reliably, the
+    arm is composed: hardened bodies are swapped in one at a time, spread across
+    the book, until the whole-book grade reaches the target. That is
+    deterministic, exact, free (the generation is already paid for), and it
+    seeds a more realistic defect than a uniform rewrite does, since a book
+    whose passages drift too hard in places is what the pipeline actually
+    produces when it fails this way.
+
+    Args:
+        original: The passing book.
+        hardened: The same book with every eligible body rewritten harder.
+        grades: How many US grades above the original to aim for.
+
+    Returns:
+        The blended arm, and a one-line note of what was achieved, because a
+        seed whose strength is not reported cannot be read back against the
+        detection rate computed over it.
+    """
+    base = _book_grade(original)
+    if base is None:
+        return copy.deepcopy(hardened), "unmeasurable grade; full rewrite used"
+
+    out = copy.deepcopy(original)
+    out_nodes = out.get("nodes")
+    hard_nodes = hardened.get("nodes")
+    if not isinstance(out_nodes, list) or not isinstance(hard_nodes, list):
+        return out, "no nodes to blend"
+
+    swappable = [
+        i
+        for i, (a, b) in enumerate(zip(out_nodes, hard_nodes, strict=False))
+        if isinstance(a, dict)
+        and isinstance(b, dict)
+        and a.get("body") != b.get("body")
+    ]
+    swapped = 0
+    for index in _spread_order(len(swappable)):
+        node_index = swappable[index]
+        out_nodes[node_index]["body"] = hard_nodes[node_index]["body"]
+        swapped += 1
+        current = _book_grade(out)
+        if current is not None and current - base >= grades:
+            break
+
+    achieved = _book_grade(out)
+    delta = "unmeasurable" if achieved is None else f"{achieved - base:+.2f}"
+    return out, (
+        f"{swapped} of {len(swappable)} rewritable nodes swapped, "
+        f"grade {base:.2f} -> {achieved if achieved is None else round(achieved, 2)} "
+        f"({delta} against a {grades:+.1f} target)"
+    )
+
+
 async def prepare_arms(
-    corpus: Sequence[Path], arms_dir: Path, settings: Settings
-) -> tuple[int, float]:
+    corpus: Sequence[Path],
+    arms_dir: Path,
+    harden_dir: Path,
+    settings: Settings | None,
+) -> tuple[int, float | None]:
     """Write each book's control and its generation-seeded reading-level arm.
 
     The other arms are mechanical and `seed_defects.py` writes them, control
@@ -376,17 +494,28 @@ async def prepare_arms(
     run would have scored `age_fit` with no arm to score it on and reported the
     criterion untested without saying why.
 
+    The full rewrite is kept under ``harden_dir`` and the arm is *blended* from
+    it, for the reason given in `blend_to_grade`. Keeping the rewrite means a
+    change of target costs nothing: the generation is the expensive half and it
+    is done once.
+
     Args:
         corpus: The passing books to build arms from.
         arms_dir: Directory the mechanical seeds were written to.
-        settings: Settings supplying the credential.
+        harden_dir: Directory holding, or to receive, the full rewrites.
+        settings: Settings supplying the credential, or ``None`` to blend from
+            rewrites already on disk without calling any provider.
 
     Returns:
-        The number of arms written and the dollars spent hardening.
+        The number of arms written, and the dollars spent, which is ``None``
+        when no call was made and may also be ``None`` when the models used are
+        unpriced (`UW-C239`).
     """
     ledger = UsageLedger()
-    provider = MeteredProvider(
-        build_openrouter_leg(settings, _HARDEN_MODEL), ledger=ledger
+    provider = (
+        MeteredProvider(build_openrouter_leg(settings, _HARDEN_MODEL), ledger=ledger)
+        if settings is not None
+        else None
     )
     written = 0
     for path in corpus:
@@ -398,16 +527,37 @@ async def prepare_arms(
         )
         written += 1
 
-        hardened = await harden_book(doc, provider, grades=_HARDEN_GRADES)
-        result = verify("reading_level_up", doc, hardened)
-        mark = "ok  " if result.landed else "MISS"
-        print(f"  {mark} {stem}__reading_level_up  {result.evidence}", file=sys.stderr)
+        rewrite_path = harden_dir / f"{stem}.json"
+        if provider is not None:
+            hardened = await harden_book(doc, provider, grades=_HARDEN_GRADES)
+            rewrite_path.write_text(
+                json.dumps(hardened, indent=2) + "\n", encoding="utf-8"
+            )
+        elif rewrite_path.exists():
+            hardened = json.loads(rewrite_path.read_text(encoding="utf-8"))
+        else:
+            print(f"  SKIP {stem}: no rewrite at {rewrite_path}", file=sys.stderr)
+            continue
+
+        arm, note = blend_to_grade(doc, hardened, grades=_HARDEN_GRADES)
+        result = verify("reading_level_up", doc, arm)
+        if not result.landed:
+            print(
+                f"  SKIP {stem}__reading_level_up  {result.evidence}; {note}",
+                file=sys.stderr,
+            )
+            (arms_dir / f"{stem}__reading_level_up.json").unlink(missing_ok=True)
+            continue
+        print(
+            f"  ok   {stem}__reading_level_up  {result.evidence}; {note}",
+            file=sys.stderr,
+        )
         (arms_dir / f"{stem}__reading_level_up.json").write_text(
-            json.dumps(hardened, indent=2) + "\n", encoding="utf-8"
+            json.dumps(arm, indent=2) + "\n", encoding="utf-8"
         )
         written += 1
 
-    return written, _spend(ledger)
+    return written, (_spend(ledger) if provider is not None else None)
 
 
 async def run_panel(
@@ -550,6 +700,23 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--env-file", type=Path, default=Path(".env"))
     parser.add_argument("--replay", type=Path)
     parser.add_argument(
+        "--harden-dir",
+        type=Path,
+        default=Path("out/w7/harden"),
+        help=(
+            "Where the full generation rewrites live. The arm is blended from "
+            "them to a controlled grade delta, so re-targeting costs nothing."
+        ),
+    )
+    parser.add_argument(
+        "--reblend",
+        action="store_true",
+        help=(
+            "Rebuild the reading_level_up arms from the rewrites already in "
+            "--harden-dir, calling no provider."
+        ),
+    )
+    parser.add_argument(
         "--prepare",
         nargs="+",
         type=Path,
@@ -586,8 +753,26 @@ def main(argv: Sequence[str] | None = None) -> int:
             print("Error: --prepare needs --arms.", file=sys.stderr)
             return 2
         args.arms.mkdir(parents=True, exist_ok=True)
-        written, spent = asyncio.run(prepare_arms(args.prepare, args.arms, Settings()))
-        print(f"\n{written} arm(s) written; ${spent:.4f} spent hardening.")
+        args.harden_dir.mkdir(parents=True, exist_ok=True)
+        written, spent = asyncio.run(
+            prepare_arms(
+                args.prepare,
+                args.arms,
+                args.harden_dir,
+                None if args.reblend else Settings(),
+            )
+        )
+        # Never print "$0.0000" for an unpriced run. `core/pricing.py` leaves
+        # input rates unset for every cloud model (UW-C239), so a zero here
+        # means the call was not priced, not that it was free, and printing it
+        # as a dollar figure would put a false number in the run's record.
+        if args.reblend:
+            cost = "no provider call"
+        elif not spent:
+            cost = f"spend unpriced ({_HARDEN_MODEL} has no rate; UW-C239)"
+        else:
+            cost = f"${spent:.4f} spent hardening"
+        print(f"\n{written} arm(s) written; {cost}.")
         return 0
 
     if args.arms is None or args.out is None:

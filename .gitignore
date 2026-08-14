@@ -354,11 +354,10 @@ docs/template_feedback.md
 # from git.
 .lycheecache
 
-# W7 known-bad battery arms (scripts/seed_defects.py --out out/w7/arms). The
-# mechanical arms are regenerated for free from out/w7/corpus/, so committing
-# them would just duplicate the corpus. The reading_level_up arms are the
-# exception and are kept: they are paid generation (w7_battery.py --prepare),
-# and without them the run's age_fit verdict is not reproducible without
-# spending again.
-out/w7/arms/*
-!out/w7/arms/*__reading_level_up.json
+# W7 known-bad battery arms. Every one of them is regenerated for free from
+# out/w7/corpus/ plus out/w7/harden/: the mechanical arms by seed_defects.py,
+# and the reading_level_up arm by `w7_battery.py --reblend`, which composes it
+# from the rewrites rather than calling a provider. out/w7/harden/ is the paid
+# half and stays tracked, so re-targeting the seed's magnitude never costs
+# money again.
+out/w7/arms/
