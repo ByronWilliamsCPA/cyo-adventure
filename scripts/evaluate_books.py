@@ -49,6 +49,7 @@ _REPO_ROOT: Final[Path] = Path(__file__).resolve().parent.parent
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
+from cyo_adventure.validator.dialogue import sentence_share  # noqa: E402
 from cyo_adventure.validator.layer1 import validate_layer1  # noqa: E402
 from cyo_adventure.validator.reading_level import (  # noqa: E402
     measure_book,
@@ -157,7 +158,8 @@ class BookScore:
         mean_sentence_words: Mean words per sentence.
         sentence_spread: Standard deviation of sentence length. Uniform short
             sentences and varied ones can share a mean and read nothing alike.
-        dialogue_share: Fraction of sentences carrying a quotation mark.
+        dialogue_share: Fraction of sentences carrying a spoken line, quoted
+            or tagged (``validator.dialogue``).
         total_words: Words across all filled bodies.
     """
 
@@ -301,7 +303,13 @@ def _sentence_lengths(text: str) -> list[int]:
 
 
 def _dialogue_share(text: str) -> float | None:
-    """Return the fraction of sentences carrying a quotation mark.
+    """Return the fraction of sentences carrying a spoken line.
+
+    Delegates to ``validator.dialogue``, which recognises tagged speech as well
+    as quoted. This function previously tested for a quotation mark, which
+    scored the catalogue's own house style ("Right here! he whispered.") as
+    dialogue-free; the figures that measure produced are what the quality
+    panel's `dialogue` criterion was judged against, and the criterion lost.
 
     Args:
         text: Any prose.
@@ -309,11 +317,7 @@ def _dialogue_share(text: str) -> float | None:
     Returns:
         The fraction, or ``None`` when there are no sentences.
     """
-    parts = [p for p in _SENTENCE_RE.split(text) if _words(p)]
-    if not parts:
-        return None
-    quoted = sum(1 for p in parts if '"' in p or "“" in p or "”" in p)
-    return quoted / len(parts)
+    return sentence_share(text)
 
 
 def _directives(skeleton: dict[str, object]) -> dict[str, tuple[int, set[str]]]:

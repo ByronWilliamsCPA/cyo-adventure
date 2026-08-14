@@ -211,8 +211,16 @@ from a measure no reader has been asked about. This staging is the direct applic
 criterion whose spread is below a threshold as saturated.
 
 *Test, and it is a known-answer test.* Replay the existing 84-verdict pool. **The check must flag the
-dialogue criterion**, whose mean was 3.04 at SD 0.19 across twelve cells while deterministic parsing
-found one leg at 100 percent narration. We found that by accident; the check must find it on purpose.
+dialogue criterion**, whose per-leg cell means were 3.00 for seven of eight legs and 3.25 for the
+eighth (`AL-330`), a spread of **0.088**. We found that by accident; the check must find it on
+purpose.
+
+*Correction, 2026-08-13.* This rule previously read "mean 3.04 at SD 0.19 across twelve cells",
+which spliced two different instruments: the 0.19 is section 29's spread across all 84 individual
+verdicts, and "twelve cells" comes from section 16m's six-question diversity rubric over 3 rounds by
+4 cells. `criterion_spread` averages books into `(leg, judge)` cells before taking a spread, so on
+the real pool it returns 0.088. The decision is unchanged, 0.088 still clears the 0.25 threshold,
+but a replay pinned to 0.19 would have sent someone hunting a bug in a working function.
 
 *Decision rule.* **Keep iff it flags the dialogue criterion and does not flag criteria we have
 independent reason to believe are working.** A check that flags everything is as useless as one that
@@ -410,8 +418,13 @@ floor of **kappa 0.60**, cited to Landis and Koch (1977), and explicitly **not**
 proposed 0.80, which sits in the "almost perfect" band that human raters routinely miss (see the
 review response, section 5.4).
 
-We already know one criterion this will retire: the dialogue criterion scored 3.04 at SD 0.19 while
-one leg contained no dialogue at all. If the battery does not retire it, the battery is broken.
+*Removed 2026-08-13.* This paragraph previously read "We already know one criterion this will
+retire ... If the battery does not retire it, the battery is broken." That pre-commits the verdict,
+and a seed that silently fails to land yields an arm byte-identical to its control, a detection rate
+of zero, and exactly the pre-registered reading. The battery would then have measured the fixture
+while this sentence read the result as an instrument verdict. The rule above stands on its own: a
+criterion is retired by failing to detect its own seeded defect, and the seed has to be shown to
+have landed first.
 
 *What it unblocks.* Every ranking-shaped claim, W11's scoring, and best-of-N.
 
@@ -683,3 +696,127 @@ Per the pre-registered rule, the information-state dimension **stays uninstrumen
 and is now listed in `blind_spots.UNOBSERVED` beside the four qualitative age
 dimensions. The probe stays in the test suite as the evidence, since a negative result
 is the deliverable and deleting it would leave only a commit message behind.
+
+## 7.7 Sprint: validate the rulers before the judge (2026-08-13)
+
+An adversarial review of the W7 fixture, run before any judge call was paid for, refuted the premise
+the arm was being built on and found a class of defect rather than an instance: **the deterministic
+measures W7 depends on are less sensitive than we assumed, and this plan pre-registered figures that
+do not reproduce.** Running the battery on top of that would have measured the fixture while section
+3's own wording read the result as an instrument verdict.
+
+The sprint is therefore the rulers, not the run. Every item below is unpaid.
+
+### What the review established
+
+| Claim under review | Outcome |
+| --- | --- |
+| The W7 corpus contains no dialogue | **Refuted.** `the-backyard-treasure-map` carries 15 spoken lines across 18 of 62 nodes as *unquoted tagged* speech ("Let's try this one, they said."). The corpus has dialogue; our detectors cannot see it |
+| The dialogue criterion's 3.04 is the anchor firing correctly | **Refuted as stated.** The rubric has two competing anchors and the governing one is "1 = ... absent where it is clearly needed", which was omitted. Six of eight vendor legs had nonzero dialogue, so "uniformly narration-free" is false for the pool the figure came from |
+| `AL-330` and `UW-C236` rest on that inversion | **Refuted.** `AL-330` lists "badly anchored" as one of its three disjuncts, so it does not make the claim. The real target is section 3's pre-commitment |
+| The `dialogue_flat` arm is dead on these five books | **Confirmed**, empirically, though for a different reason than argued |
+| Section 3's "if the battery does not retire it, the battery is broken" is a methodological error | **Confirmed.** A no-op seed yields an arm byte-identical to its control, detection rate 0, and the pre-registered reading is "criterion retired" |
+
+### The sprint, in dependency order
+
+1. **Fix the dialogue detector.** Three quote-only implementations (`evaluate_books.py`,
+   `check_prose_craft.py`, `seed_defects.py`) are blind to tagged direct speech. This is first
+   because it is load-bearing twice: it blocks W7's dialogue arm, and it is the deterministic
+   measure `UW-C236` proposes to **prefer over** the panel. Replacing a possibly-insensitive judge
+   with a definitely-insensitive regex is not an upgrade.
+2. **Re-measure the corpus and re-open `AL-330` / `UW-C236`.** The 25-fold spread that made the
+   panel look broken may shrink or invert once the detector sees tagged speech. Stated limit: the
+   eight vendor legs **cannot** be rechecked, because `out/vendor-comparison/` is untracked. That is
+   section 7.4 gap 3 arriving with a second bill.
+3. **Retract the "SD 0.19 across twelve cells" splice.** Two instruments spliced together: the 0.19
+   is the spread across 84 individual verdicts (section 29 of the brief); "twelve cells" is the
+   six-question diversity rubric over 3 rounds by 4 cells (section 16m). `criterion_spread` averages
+   books into `(leg, judge)` cells first and returns **0.088** on the real pool. W4's decision is
+   unchanged, 0.088 still clears the 0.25 threshold, but the pre-registered number is not one the
+   implemented function will produce.
+4. **Delete section 3's pre-committed verdict.** Replace with the per-criterion rule that section
+   already states. Cheapest item here and the largest effect on the run's validity.
+5. **Parameterise the judge prompt by age band.** `judge_books.py` hardcodes "children aged 5 to 8"
+   in three places while the panel is run across 3-5 to 16+. It is running off-prompt today,
+   independent of any corpus choice, so every existing verdict carries it. Changing it makes the new
+   pool not strictly comparable to the 84-verdict one, which is a reason to decide it before W7 runs
+   rather than during.
+6. **Then run W7.**
+
+### Not doing, and why
+
+- **The inverse seed** (add dialogue, check the score rises): confounds four criteria at once, since
+  LLM-added dialogue moves length, reading level and voice together, and it spends a generation call
+  on a defect the repo can seed deterministically.
+- **The corpus swap as proposed**: two of the three suggested books (`the-clocktower-cipher`,
+  `the-lost-mitten`) fail `Storybook.model_validate`, being pre-schema-v2 xfails. W7 needs books that
+  currently pass. Only `the-thornwood-trial` is usable and it carries one dialogue node at 27k input
+  tokens.
+
+### The generalisable finding
+
+Bigger than dialogue, and the reusable output of the whole detour: **before a judge criterion is
+compared against a deterministic measure, the deterministic measure needs its own sensitivity
+check.** We have been treating "deterministic" as a synonym for "correct". A regex that returns 0.000
+and a judge that returns 3.00 can both be wrong about the same book, and only one of them looks like
+an opinion.
+
+### 7.7.1 Outcome of items 1 to 5 (2026-08-14)
+
+All five are done and unpaid. Item 6 is treated separately in 7.7.2.
+
+**Item 1, the detector.** `src/cyo_adventure/validator/dialogue.py` now recognises quoted and
+tagged speech and is the single implementation behind all four callers: `seed_defects.py`,
+`evaluate_books.py::_dialogue_share`, `check_prose_craft.py::strip_dialogue` (composed onto its
+existing `strip_quoted`, whose single-quote-versus-possessive handling is better than a general
+detector's and was kept), and `measure_per_path.py`'s narration denominator.
+
+Writing its tests found a second instance of the bug the module was written to fix. Locating
+quoted spans over the whole text before splitting into sentences was the first fix; the *tagged*
+case had the same flaw and survived it, because a spoken line cut at its own "!" leaves the tag
+half matching on its own. The detector therefore looked correct while reporting "he whispered."
+as the spoken line, leaving "Right here!" in the narration for every caller that strips, and
+leaving the tag in place for the seeder. Regions are now found over the whole text for every
+pattern, and the halves are rejoined only when the same region reaches across both.
+
+**Item 2, the re-measurement.** Over the 23 filled books in `out/`:
+
+| | Quote-only | Quoted and tagged |
+| --- | --- | --- |
+| Books scoring exactly 0.000 | 20 of 23 | 6 of 23 |
+| Mean body-level share | 0.079 | 0.137 |
+| Books carrying any dialogue | 3 | 17 |
+
+Fourteen books the old measure called dialogue-free carry between 2 and 92 spoken lines.
+`the-backyard-treasure-map` goes 0.000 to 0.258, `the-vanishing-orchard` to 0.225,
+`the-harrowstone-keep` to 0.145 across 92 lines.
+
+The consequence for `AL-330` / `UW-C236`: the row's remedy is "prefer a deterministic measure
+wherever one exists for the same property", and the deterministic measure it would have preferred
+was wrong about 61 percent of the catalogue. The 25-fold spread that made the panel's `dialogue`
+criterion look degenerate cannot be rechecked, since the eight vendor legs are in the untracked
+`out/vendor-comparison/` (section 7.4 gap 3, second bill). What can be said is that the corpus is
+not the near-dialogue-free thing the figures implied, and that a criterion returning about 3.00
+across books clustered between 0.01 and 0.26 is a plausible reading rather than a stuck one. Both
+rows stay open, with their remedy narrowed: report per-criterion spread, yes; prefer the
+deterministic measure only after the deterministic measure has passed its own sensitivity check.
+
+**Sensitivity of the two measures that consume the exemption**, since widening it changes their
+denominators and this is exactly the check the sprint says to run:
+
+- *Told emotion* (`check_prose_craft.py`, and W2's path-scoped re-unit): narration denominators
+  fall 0 to 4 percent, and no book's per-1000 rate moves by more than 0.013. W2's told-emotion
+  figures stand as published.
+- *Tense stability*: 4 of 23 books change their unstable-node count, the largest being
+  `the-sunken-temple` at 69 to 59. The direction is almost entirely downward and the cause is
+  specific: quote-stripping leaves the attribution fragment ("he whispered.") behind, every
+  spoken line contributes one, and its tense is the tag verb's rather than the narration's. The
+  detector was taking a free tense vote per line of dialogue.
+
+**Items 3 and 4** are the workplan edits above: W4's rule no longer cites the spliced "SD 0.19
+across twelve cells", and section 3 no longer pre-commits to "if the battery does not retire it,
+the battery is broken".
+
+**Item 5**: `judge_books.py` derives the band phrase from the book's own declared band and falls
+back to the historical "5 to 8" wording when a book declares none, so the existing 84 verdicts
+remain reproducible while a book declaring 10-13 is no longer judged against a 5-to-8 rubric.

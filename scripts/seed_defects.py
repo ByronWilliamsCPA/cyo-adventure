@@ -56,6 +56,7 @@ from pydantic import ValidationError  # noqa: E402
 
 from cyo_adventure.storybook.models import Storybook  # noqa: E402
 from cyo_adventure.validator.consequence import measure_consequence  # noqa: E402
+from cyo_adventure.validator.dialogue import dialogue_share, flatten  # noqa: E402
 from cyo_adventure.validator.reading_level import measure_book  # noqa: E402
 
 if TYPE_CHECKING:
@@ -72,8 +73,6 @@ _GRADE_MIN_RISE: Final[float] = 1.5
 # that a reader would notice, not so much that the book reads as present-tense
 # throughout and the defect becomes a style rather than a break.
 _TENSE_SHARE: Final[float] = 1 / 3
-
-_QUOTED: Final[re.Pattern[str]] = re.compile(r'"[^"]*"')
 
 # Past-to-present forms for the tense seed. Deliberately small and common: the
 # seed has to be recognisable as a tense break to a reader, and a rare verb
@@ -138,7 +137,12 @@ def _bodies(doc: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 def _dialogue_share(doc: dict[str, Any]) -> float:
-    """Return the share of node bodies carrying a quotation mark.
+    """Return the share of node bodies carrying a recognised spoken line.
+
+    Delegates to the shared detector rather than counting quotation marks. The
+    quote-only version this replaced reported 0.000 for a book with fifteen
+    spoken lines, which made the `dialogue_flat` seed a silent no-op on the
+    whole corpus.
 
     Args:
         doc: The story document.
@@ -146,29 +150,24 @@ def _dialogue_share(doc: dict[str, Any]) -> float:
     Returns:
         The share, ``0.0`` for a book with no nodes.
     """
-    nodes = _bodies(doc)
-    if not nodes:
-        return 0.0
-    return sum(1 for n in nodes if '"' in str(n.get("body", ""))) / len(nodes)
+    return dialogue_share(str(n.get("body", "")) for n in _bodies(doc))
 
 
 def seed_dialogue_flat(doc: dict[str, Any]) -> dict[str, Any]:
-    """Convert every quoted line to narration.
+    """Convert every spoken line to narration, quoted or tagged.
 
     Args:
         doc: The passing book.
 
     Returns:
-        A copy with no dialogue. The quoted span becomes a reported clause rather
-        than being deleted, so the book keeps its length and its events and
-        differs only in the property under test.
+        A copy with no dialogue. The utterance is kept and its attribution
+        removed, so the book keeps its length and its events and differs only in
+        the property under test; deleting the sentences would shorten the book
+        and confound a length-sensitive criterion with the one being tested.
     """
     out = copy.deepcopy(doc)
     for node in _bodies(out):
-        body = str(node.get("body", ""))
-        node["body"] = _QUOTED.sub(
-            lambda m: m.group(0).strip('"').rstrip(".!?,") + ", they explained.", body
-        )
+        node["body"] = flatten(str(node.get("body", "")))
     return out
 
 

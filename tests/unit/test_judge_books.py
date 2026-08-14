@@ -24,7 +24,9 @@ from scripts.judge_books import (
     Judge,
     Verdict,
     _parse,  # pyright: ignore[reportPrivateUsage]
+    _band_phrase,  # pyright: ignore[reportPrivateUsage]
     _story_text,  # pyright: ignore[reportPrivateUsage]
+    _system_for,  # pyright: ignore[reportPrivateUsage]
     _z_scores,  # pyright: ignore[reportPrivateUsage]
     criterion_spread,
     judge_book,
@@ -607,3 +609,20 @@ async def test_judge_book_unwraps_the_completion_the_provider_actually_returns()
 
     assert verdict.error is None
     assert verdict.scores == dict.fromkeys(_CRITERIA_NAMES, 4.0)
+
+
+def test_the_system_block_names_the_band_the_book_declares() -> None:
+    """A 13-16 book must not be graded for a seven-year-old.
+
+    The block hardcoded "5 to 8" while the panel was run across 3-5 to 16+, so
+    every existing verdict was scored off-prompt and its ``age_fit`` column means
+    something other than the header says.
+    """
+    assert "8 to 11" in _system_for(_band_phrase({"metadata": {"age_band": "8-11"}}))
+    assert "13 to 16" in _system_for(_band_phrase({"metadata": {"age_band": "13-16"}}))
+
+
+def test_a_book_declaring_no_band_keeps_the_historical_wording() -> None:
+    """The fallback must be the old value, so an unlabelled book is unchanged."""
+    assert "5 to 8" in _system_for(_band_phrase({}))
+    assert "5 to 8" in _system_for(_band_phrase({"metadata": {"age_band": "nonsense"}}))

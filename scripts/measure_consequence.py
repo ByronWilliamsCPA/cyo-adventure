@@ -3,8 +3,11 @@
 W3's stage-one decision rule is not "is the number good" but "does the number
 distinguish our books from each other". A measure returning the same verdict for
 every book is measuring nothing, which is exactly how the judge panel's dialogue
-criterion failed: it scored 3.04 with a spread of 0.19 across twelve cells while
-deterministic parsing found one leg containing no dialogue at all.
+criterion appeared to fail: its per-leg cell means were 3.00 for seven of eight
+legs and 3.25 for the eighth, a spread of 0.088. That reading is now itself
+under review, since the deterministic measure it was compared against was
+blind to unquoted dialogue; the principle stands regardless of how that
+particular case resolves.
 
 So this prints the distribution, not a mean, and states the verdict the
 distribution supports:

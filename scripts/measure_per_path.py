@@ -55,7 +55,7 @@ from cyo_adventure.validator.paths import (  # noqa: E402
 from cyo_adventure.validator.reading_level import measure_book  # noqa: E402
 from scripts.check_prose_craft import (  # noqa: E402
     _WORD,  # pyright: ignore[reportPrivateUsage]
-    strip_quoted,
+    strip_dialogue,
     told_emotion,
 )
 
@@ -182,7 +182,7 @@ def _told_rate(bodies: Sequence[str]) -> tuple[float, int]:
     """
     story = {"nodes": [{"id": str(i), "body": b} for i, b in enumerate(bodies)]}
     report = told_emotion(story)
-    words = sum(len(_WORD.findall(strip_quoted(body))) for body in bodies)
+    words = sum(len(_WORD.findall(strip_dialogue(body))) for body in bodies)
     return (len(report.hits) / max(words, 1) * 1_000.0, words)
 
 

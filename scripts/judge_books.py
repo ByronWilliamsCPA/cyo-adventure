@@ -143,14 +143,54 @@ _CRITERIA: Final[dict[str, str]] = {
     ),
 }
 
-_SYSTEM: Final[str] = (
-    "You are an experienced children's-book editor evaluating a branching "
-    "story written for children aged 5 to 8. You are strict and calibrated: "
-    "most competent-but-unremarkable writing is a 3, and a 5 is reserved for "
-    "work you would publish as-is. Judge only the writing in front of you. You "
-    "do not know who or what wrote it, and you must not speculate. Return only "
-    "the JSON object requested, with no commentary around it."
-)
+# The band a book declares, substituted into the system block and the age_fit
+# anchor. This was hardcoded to "5 to 8" while the panel was run across books
+# from 3-5 to 16+, so every existing verdict was scored off-prompt: a 13-16 book
+# was graded for a seven-year-old and its age_fit score means something other
+# than what the column header says. Parameterising it changes the instrument, so
+# a pool scored after this point is not strictly comparable to the 84-verdict one.
+_DEFAULT_BAND: Final[str] = "5 to 8"
+
+
+def _band_phrase(doc: dict[str, object]) -> str:
+    """Return the reader age this book should be judged for.
+
+    Args:
+        doc: The story document.
+
+    Returns:
+        A phrase like ``"8 to 11"``, falling back to :data:`_DEFAULT_BAND` when
+        the book declares no band. The fallback is the historical value, so a
+        book without metadata is scored exactly as it was before.
+    """
+    metadata = doc.get("metadata")
+    band = metadata.get("age_band") if isinstance(metadata, dict) else None
+    if not isinstance(band, str) or "-" not in band:
+        return _DEFAULT_BAND
+    low, _, high = band.partition("-")
+    return f"{low.strip()} to {high.strip()}"
+
+
+def _system_for(band: str) -> str:
+    """Build the system block for one age band.
+
+    Args:
+        band: The reader age phrase.
+
+    Returns:
+        The system block.
+    """
+    return (
+        "You are an experienced children's-book editor evaluating a branching "
+        f"story written for children aged {band}. You are strict and calibrated: "
+        "most competent-but-unremarkable writing is a 3, and a 5 is reserved for "
+        "work you would publish as-is. Judge only the writing in front of you. You "
+        "do not know who or what wrote it, and you must not speculate. Return only "
+        "the JSON object requested, with no commentary around it."
+    )
+
+
+_SYSTEM: Final[str] = _system_for(_DEFAULT_BAND)
 
 # Completion budget per scoring. Sized to clear reasoning overhead plus the
 # answer, not the answer alone: a reasoning judge spends hidden tokens before it
@@ -168,9 +208,10 @@ _JUDGE_MAX_TOKENS: Final[int] = 8000
 # the spread of a criterion's cell means.
 #
 # This number is provisional and is deliberately not load-bearing. The one
-# calibration point we hold is the dialogue criterion at mean 3.04, sd 0.19
-# across twelve cells, while deterministic parsing found one leg at 100 percent
-# narration; a threshold has to sit above that. Nothing yet establishes where a
+# calibration point we hold is the dialogue criterion at cell means of 3.00 for
+# seven of eight legs and 3.25 for the eighth (AL-330), a spread of 0.088; a
+# threshold has to sit above that. The "sd 0.19 across twelve cells" phrasing
+# this once carried spliced two instruments and is not reproducible here. Nothing yet establishes where a
 # working criterion's spread starts, which is what replaying the real verdict
 # pool is for, so the report prints every criterion sorted flattest-first and
 # the flag is an annotation on a table the reader can overrule. Admission rule 3
@@ -366,7 +407,7 @@ async def judge_book(
     )
     try:
         completion = await provider.complete(
-            system=_SYSTEM,
+            system=_system_for(_band_phrase(doc)),
             prompt=_prompt(_story_text(doc)),
             max_tokens=_JUDGE_MAX_TOKENS,
         )
