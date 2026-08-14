@@ -484,11 +484,11 @@ evidence we have, and a plan that cannot produce them is not a plan, it is a bui
 | Item | Track | Built | Run | Blocker |
 | --- | --- | --- | --- | --- |
 | W1 path enumerator | D | yes, `validator/paths.py` | yes, 61/61 books at coverage 1.0 in 2.666 s | none, shipped |
-| W2 re-unit to path | D | measurement only, no committed script | yes | told-emotion needs `UW-C244` before its verdict stands |
-| W3 consequence distance | D | no | no | W1 (met) |
+| W2 re-unit to path | D | yes, `scripts/measure_per_path.py` | yes, twice | **closed**: told-emotion band is inert at path scale |
+| W3 consequence distance | D | yes, `validator/consequence.py` | yes, 61-book catalogue | **KEEP as a reported statistic** |
 | W4 criterion variance | J-adjacent | yes, `judge_books.criterion_spread` | no | needs the verdict pool, see 7.4 |
 | W5 bootstrap intervals | D | yes, `scripts/instrument.py` | no | needs the run artifacts, see 7.4 |
-| W6 blind-spot manifest | D | no | no | none |
+| W6 blind-spot manifest | D | yes, `validator/blind_spots.py` | yes | **KEEP**: declarations are drift-proof by witness |
 | W7 known-bad battery | J | no | no | none, and it blocks Track J entirely |
 | W8 decoding ablation | D | no | no | `UW-C239` (pricing) |
 | W9 cross-stage routing | D | no | no | `UW-C239` (pricing) |
@@ -497,7 +497,7 @@ evidence we have, and a plan that cannot produce them is not a plan, it is a bui
 | W12 child + expert read | H | no | no | ADR-018 consent scoping |
 | W13 age rubric | H | no | no | W12 |
 | W14 context composition | D | no | no | `UW-C239` |
-| W15 declared information state | D | no | no | W6 |
+| W15 declared information state | D | probe only, in tests | yes | **DROP**: catches no paraphrase |
 
 Two of fifteen are closed. `band_profile.py` still carries `reconvergence_ceiling` unenforced, and
 no `unknowns_to_preserve` field exists anywhere, so W3 and W15 are untouched rather than partial.
@@ -571,7 +571,7 @@ effective rather than list rates.
    before more legs are bought decides whether that spend buys a finding or decoration.
 2. ~~**Tier 0**, in the order above.~~ **Done 2026-08-13**, except that it promoted `UW-C239`
    (populate `core/pricing.py`'s input rates) into a blocker for every paid item.
-3. **W3, W6, W15, and the W2 re-run** for told-emotion once its band is re-derived at path scale.
+3. ~~**W3, W6, W15, and the W2 re-run**~~ **Done 2026-08-13.** Outcomes in 7.6.
 4. **W7**, which unblocks every ranking-shaped claim. Note that the known-bad battery already on
    file (brief section 20) validates the *diversity* metric, not the panel; W7 needs its own seeded
    corpus. `scripts/check_annotator_agreement.py` and `scripts/blind_books.py` supply the agreement
@@ -610,3 +610,76 @@ effective rather than list rates.
 surfaces only the security agent's post-steps rather than the pytest output. The full unit suite is
 green on that same commit locally: 7530 passed, 6 skipped, 3 xfailed in 9m27s, matching the PR
 description. A re-run is the cheap first move before anything is diagnosed.
+
+
+## 7.6 Track D outcomes, 2026-08-13
+
+Four items closed in one pass. Two kept, one kept with a caveat, one dropped, which
+is roughly the mix section 6 said to expect.
+
+### W2, re-run and made reproducible
+
+`scripts/measure_per_path.py` is the method the original run lacked, and it enforces
+two things the first pass needed a human to remember: a measure monotone under
+path-subsetting is **refused** rather than scored, and a rate measure reports the
+smallest nonzero value its new denominator admits.
+
+**Told-emotion: closed, and worse than `AL-342` recorded.** The band is 0.5 hits per
+1000 narration words and needs a passage over 2,000 words before one hit scores under
+it. Covering paths run in the hundreds. The band therefore cannot bind on **20 of the
+20** committed books, not the six cases the original run happened to surface. `UW-C244`
+stands as written: re-derive at path scale or express the path-scope version as a count.
+
+**Reading level: the number moved, and the reason is the corpus, not the measure.**
+The published outcome is 18.9 percent disagreement over 53 books; this run measures
+0 percent over 20. Those are different corpora. The published one included
+`out/vendor-comparison/`, which is untracked and absent from every checkout but the
+machine that produced it, and the committed books are hand-authored catalogue fills
+rather than machine-generated comparison books. **The published figure is not
+overturned and must not be reported as such.** The script prints its corpus for this
+reason. This is section 7.4 gap 3 arriving with a bill attached.
+
+### W3, fork consequence: KEEP as a reported statistic
+
+Mean 14.5 percent false choices, spread 0.190 across the 23 books that report complete.
+It separates books from each other, which is the stage-one bar.
+`BandProfile.reconvergence_ceiling` stays unenforced; promotion needs W12.
+
+Two limits the tool states itself: 47 of 61 books declare no variables at all, so their
+forks are scored on distance alone and their state delta is empty by construction; and
+a spread over fewer than three complete books is refused rather than published.
+
+The design error worth recording: the first version scored a fork whose branches run to
+different endings as an unmeasured horizon hit. Every book has such forks, so every book
+came back incomplete and the scan returned "not measured" over the whole catalogue.
+Terminal divergence is an answer, and the most consequential one a fork can have.
+
+### W6, blind-spot manifest: KEEP, because the declaration is drift-proof
+
+The rule was the demanding one: keep only if the declaration cannot drift from
+behaviour, and drop to prose otherwise. The mechanism that earns it is a **witness** per
+observed dimension, a document built to trip one of that dimension's rules.
+`verify_declarations()` runs the battery through the real gate, so a checker that stops
+checking makes its own declaration report stale. A test disables a checker and asserts
+exactly that; if it could be made to pass with the checker off, the rule says delete the
+module.
+
+The manifest reproduces both cases it was specified against. It names the four
+qualitative age dimensions as unobserved in every context (`AL-337`), and it names
+filled prose as unobserved under skeleton context and observed under fill-result
+(`AL-325`), which is the same distinction `PL-27` closed.
+
+### W15, declared information state: DROP
+
+Built and run as a probe rather than shipped. The candidate passes the three easy cases
+and fails the decisive one: a declared secret restated in different words goes
+undetected, because detecting it is an entailment question and nothing here answers one.
+"The lighthouse keeper is the thief" leaks just as completely through "the man who
+tended the light had been taking the cargo", which shares no content word with the
+declaration. No lexical or semantic resource is in the dependency set, and adding one
+would not close that gap.
+
+Per the pre-registered rule, the information-state dimension **stays uninstrumented**
+and is now listed in `blind_spots.UNOBSERVED` beside the four qualitative age
+dimensions. The probe stays in the test suite as the evidence, since a negative result
+is the deliverable and deleting it would leave only a commit message behind.
