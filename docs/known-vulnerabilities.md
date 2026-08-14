@@ -923,7 +923,8 @@ check exists to confirm rather than assume.
 
 - [ ] **Corroborate all nine on the Debian security tracker** (`trixie`,
       `trixie-security`, `sid`) from an environment that can reach it. This is the
-      blocking step; nothing below should happen first.
+      blocking step; nothing below should happen first. Tracked as issue [#711](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/711),
+      item 1.
 - [ ] **Confirm the pinned GHCR digest is still the live one**, so a base-image re-pin
       is genuinely not an available remedy, as the 2026-08-08 entry verified for its
       own CVE.
