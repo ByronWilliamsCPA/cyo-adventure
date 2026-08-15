@@ -52,6 +52,10 @@ from cyo_adventure.generation.metered import MeteredProvider  # noqa: E402
 from cyo_adventure.generation.provider import build_openrouter_leg  # noqa: E402
 from cyo_adventure.generation.usage import UsageLedger  # noqa: E402
 from cyo_adventure.validator.reading_level import measure_book  # noqa: E402
+from scripts._paid_output import (  # noqa: E402
+    ensure_persistable,
+    persistence_notice,
+)
 from scripts.judge_books import (  # noqa: E402
     _CRITERIA,
     _PANEL,
@@ -1224,6 +1228,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--arms", type=Path)
     parser.add_argument("--out", type=Path)
+    parser.add_argument(
+        "--allow-untracked-out",
+        action="store_true",
+        help="Permit a gitignored --out. Scratch runs only; see AL-368.",
+    )
     parser.add_argument("--env-file", type=Path, default=Path(".env"))
     parser.add_argument("--replay", type=Path)
     parser.add_argument(
@@ -1336,6 +1345,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         print("Error: --arms and --out are required without --replay.", file=sys.stderr)
         return 2
 
+    ensure_persistable(args.out, allow_untracked=args.allow_untracked_out)
+
     files = sorted(args.arms.glob("*.json"))
     books = [(p.stem, json.loads(p.read_text(encoding="utf-8"))) for p in files]
     arms = [tuple(p.stem.rsplit("__", 1)) for p in files]
@@ -1378,6 +1389,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     )
     _print_report(results, verdicts, spend)
     print(f"\nWrote {args.out / 'verdicts.json'}")
+    print(persistence_notice(args.out, spend or None))
     return 0
 
 

@@ -58,6 +58,10 @@ if str(_REPO_ROOT) not in sys.path:
 
 from cyo_adventure.core.config import Settings  # noqa: E402
 from cyo_adventure.generation.provider import build_openrouter_leg  # noqa: E402
+from scripts._paid_output import (  # noqa: E402
+    ensure_persistable,
+    persistence_notice,
+)
 from scripts.evaluate_books import evaluate_book  # noqa: E402
 from scripts.instrument import (  # noqa: E402
     Interval,
@@ -920,6 +924,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--out", type=Path)
     parser.add_argument("--env-file", type=Path, default=Path(".env"))
     parser.add_argument(
+        "--allow-untracked-out",
+        action="store_true",
+        help="Permit a gitignored --out. Scratch runs only; see AL-368.",
+    )
+    parser.add_argument(
         "--judgements",
         type=Path,
         help=(
@@ -944,6 +953,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             file=sys.stderr,
         )
         return 2
+
+    ensure_persistable(args.out, allow_untracked=args.allow_untracked_out)
 
     if args.env_file.exists():
         for line in args.env_file.read_text(encoding="utf-8").splitlines():
@@ -1019,6 +1030,7 @@ def _report(verdicts: Sequence[Verdict], *, out: Path | None) -> int:
         print(f"\n{failed} of {len(verdicts)} scorings failed; see judgements.json")
     if out is not None:
         print(f"Wrote {out / 'judgements.json'}")
+        print(persistence_notice(out))
     return 0
 
 
