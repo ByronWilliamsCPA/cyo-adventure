@@ -94,17 +94,31 @@ class Judge:
     family: str
 
 
-# Three labs, none of them Anthropic-only, so no single lineage can carry the
-# pooled verdict. Kept deliberately small: a fourth judge multiplies cost across
-# every book for a smaller marginal gain than a fourth generating leg would give.
+# Two labs, neither of them Anthropic, so no single lineage carries the pooled
+# verdict. Kept deliberately small: a further judge multiplies cost across every
+# book for a smaller marginal gain than a further generating leg would give.
+#
+# `judge-gemini-3.1` was REMOVED on 2026-08-15 after three independent lines of
+# evidence converged on it, none of which was available when the panel was
+# chosen:
+#
+#   1. Excluding it dropped W7's control-noise floors by 2 to 6 times.
+#   2. `AL-392`: per criterion it is the outlier on four of seven, and on
+#      `choice_quality` it correlates NEGATIVELY with both others (-0.15 and
+#      -0.02) where they agree at +0.46. Its marginals show why: it uses the
+#      full 1-to-5 range while both others compress into 2-to-4.
+#   3. `AL-397`: run to run on identical arms it averages 0.323 absolute
+#      movement against gpt-5.6's 0.120, and owns every movement past a full
+#      scale point (max 1.710 against 0.290).
+#
+# A judge that disagrees with the panel is useful; a judge that disagrees with
+# ITSELF at 2.7 times the rate of its peers is measuring something other than
+# the book. Removing it costs a third of the panel's lineage diversity, which
+# is a real loss, and buys back a noise floor that three of the seven criteria
+# could not clear. Any verdict computed with it in the panel predates this and
+# should be re-derived rather than carried forward.
 _PANEL: Final[tuple[Judge, ...]] = (
     Judge("judge-gpt-5.6", "openai/gpt-5.6-sol", ("azure",), "openai"),
-    Judge(
-        "judge-gemini-3.1",
-        "google/gemini-3.1-pro-preview",
-        ("google-vertex/global",),
-        "google",
-    ),
     Judge("judge-grok-4.6", "x-ai/grok-4.6", ("xai/zdr",), "xai"),
 )
 
