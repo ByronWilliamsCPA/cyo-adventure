@@ -347,18 +347,26 @@ export function LandingPage() {
               </p>
             </li>
           </ol>
+          {/* "on any device" contradicted both the trust card and the FAQ,
+              which correctly scope kid access to devices the guardian has
+              authorized (ADR-014). Offline reading is the part that really is
+              device-agnostic once a device is set up, so the sentence now
+              draws that line instead of blurring it. */}
           <p className="landing-section__footnote">
-            Approved books land on their shelf in minutes and work offline, on any device.
+            Once you approve a book it lands on their shelf right away, and it reads offline on any
+            device you have set up.
           </p>
         </section>
 
         {/* ── Funnel stage 3: trust. For a kids' product this section IS the
             conversion driver, so every card must stay inside what the
             product enforces today: parent verification/consent (ADR-018) is
-            built but flag-off in production and verified only against KWS's
-            Test environment, so that card speaks in design language
-            ("by design", "built into sign-up") rather than claiming a live
-            verification control. Reading-level tuning and offline reading
+            built but flag-off in production (core/config.py::
+            kws_verification_required defaults False) and verified only
+            against KWS's Test environment, so that card names what DOES gate
+            a new family today (hand approval) and dates the COPPA control to
+            public launch rather than describing it in the present tense.
+            Reading-level tuning and offline reading
             are real but are features, not trust claims; they live in the
             how-it-works steps and pricing list instead of diluting this
             section. ── */}
@@ -393,8 +401,9 @@ export function LandingPage() {
               </span>
               <h3 className="landing-trust__title">Grown-ups only, by design</h3>
               <p className="landing-trust__body">
-                Kids never get accounts of their own. Adult verification and consent are built into
-                sign-up, designed around children&apos;s-privacy rules like COPPA.
+                Kids never get accounts of their own. A grown-up signs in with their own account,
+                and a real person reviews every new family before it is switched on. Verified-parent
+                consent (COPPA) is built in and turns on with our public launch.
               </p>
             </li>
             <li className="landing-trust__card">
@@ -544,9 +553,38 @@ export function LandingPage() {
               </summary>
               <p className="landing-faq__answer">
                 Kids never get accounts, emails, or public profiles. Reading happens only on devices
-                you authorize, and there are no ads and no chat. Adult verification and consent are
-                built into sign-up, following children&apos;s-privacy rules like COPPA as we roll
-                them out. The full policy is on our <Link to={PRIVACY_PATH}>privacy page</Link>.
+                you authorize, and there are no ads and no chat. Every new family is reviewed by a
+                person before it is switched on, and verified-parent consent under
+                children&apos;s-privacy rules like COPPA turns on with our public launch. The full
+                policy is on our <Link to={PRIVACY_PATH}>privacy page</Link>.
+              </p>
+            </details>
+            {/* UX-12: deletion and training are the two questions a privacy-minded
+                parent arrives with, and both were answerable only by opening the
+                policy. Deletion mirrors PrivacyPolicyPage's split exactly (profile
+                deletion is an in-app control, family-account deletion is by email)
+                because promising a button that does not exist is the failure mode
+                this section is supposed to prevent. The training answer deliberately
+                claims nothing about any provider's behavior and points at the page
+                that names them. */}
+            <details className="landing-faq__item">
+              <summary className="landing-faq__question">Can I delete our data?</summary>
+              <p className="landing-faq__answer">
+                Yes. You can delete a single child&apos;s profile in your console. Deleting your
+                whole family account is done by email today rather than by a button, and deletion is
+                permanent either way. Our <Link to={PRIVACY_PATH}>privacy page</Link> lists every
+                right and which ones are in-app.
+              </p>
+            </details>
+            <details className="landing-faq__item">
+              <summary className="landing-faq__question">
+                Is my family&apos;s data used to train AI?
+              </summary>
+              <p className="landing-faq__answer">
+                We do not sell your information or use it for advertising. Whether a provider may
+                train on inputs is governed by that provider&apos;s terms; our{' '}
+                <Link to={PRIVACY_PATH}>privacy page</Link> names each provider and exactly what it
+                receives.
               </p>
             </details>
             <details className="landing-faq__item">

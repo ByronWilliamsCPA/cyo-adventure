@@ -121,6 +121,50 @@ describe('LandingPage', () => {
     )
   })
 
+  // Both completed review cycles caught exactly one claim that outran the
+  // product, so these pin the two that were wrong rather than trusting prose
+  // review to catch the third. The rule: a safety claim must describe
+  // something enforced today, or be explicitly dated to launch.
+  describe('claims discipline', () => {
+    it('dates verified-parent consent to launch instead of claiming it is live', () => {
+      renderLanding()
+      const safety = screen.getByRole('region', { name: 'Built so you can say yes' })
+      // KWS parent verification is built but flag-off in production
+      // (core/config.py::kws_verification_required defaults False, ADR-018),
+      // so the present-tense claim would be false for every family today.
+      expect(
+        within(safety).queryByText(/verification and consent are built into sign-up/i)
+      ).toBeNull()
+      expect(within(safety).getByText(/turns on with our public launch/i)).toBeInTheDocument()
+      // What DOES gate a new family today is the hand approval.
+      expect(
+        within(safety).getByText(/a real person reviews every new family/i)
+      ).toBeInTheDocument()
+    })
+
+    it('scopes kid reading to authorized devices everywhere it mentions devices', () => {
+      renderLanding()
+      // The how-it-works footnote used to promise "on any device" while the
+      // trust card and FAQ both scope access to devices the guardian
+      // authorized (ADR-014). Offline reading is the device-agnostic part,
+      // and only once a device is set up.
+      expect(screen.getByText(/reads offline on any device you have set up/i)).toBeInTheDocument()
+      expect(screen.queryByText(/work offline, on any device\./i)).toBeNull()
+    })
+
+    it('answers deletion and training questions without overclaiming', () => {
+      renderLanding()
+      // Mirrors PrivacyPolicyPage exactly: profile deletion is an in-app
+      // control, whole-account deletion is by email. Promising a button that
+      // does not exist is the failure this section prevents.
+      expect(
+        screen.getByText(/deleting your whole family account is done by email/i)
+      ).toBeInTheDocument()
+      // Claims nothing about any provider's training behavior.
+      expect(screen.getByText(/governed by that provider's terms/i)).toBeInTheDocument()
+    })
+  })
+
   describe('pricing (subscription-ready, nothing sold today)', () => {
     it('renders every tier from the pricing data', () => {
       renderLanding()
