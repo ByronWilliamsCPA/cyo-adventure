@@ -52,6 +52,7 @@ from cyo_adventure.utils.logging import get_logger
 from cyo_adventure.validator.gate import run_gate
 from cyo_adventure.validator.policy import node_word_count, words_per_node_profile
 from cyo_adventure.validator.reading_level import (
+    _UPPER_BOUND_ONLY_BANDS,
     BookReadingLevel,
     measure_book,
     score_body,
@@ -130,11 +131,17 @@ class _Bounds:
         tolerance (float): Half-width of the acceptable band.
         per_node_max (int | None): PL-19's absolute words-per-node wall, or
             ``None`` when the band declares no profile.
+        upper_bound_only (bool): Whether this band treats only the upper edge
+            as a defect. At 3-5 and 5-8 prose too easy for the reader is the
+            product working, and FK is extrapolating below zero there, so the
+            loop must not drive a node upward to reach a target
+            (`AL-389`, `_UPPER_BOUND_ONLY_BANDS`).
     """
 
     target: float
     tolerance: float
     per_node_max: int | None
+    upper_bound_only: bool = False
 
 
 @dataclass(frozen=True, slots=True)
@@ -221,6 +228,28 @@ class ReadingLevelResult:
                 revision was dropped to get the rest past the gate.
         """
         return self.discarded_for_gate or self.nodes_dropped > 0
+
+
+def _is_upper_bound_only(doc: dict[str, object]) -> bool:
+    """Return whether this story's band treats only the upper edge as a defect.
+
+    Reads the same constant RL-13 reads, rather than repeating the band list,
+    so the gate and the loop that feeds it cannot drift apart about which
+    direction counts as a defect.
+
+    Args:
+        doc: The story document.
+
+    Returns:
+        bool: ``True`` at 3-5 and 5-8, ``False`` elsewhere and for a document
+        declaring no band, since an unknown band gets the stricter two-sided
+        treatment rather than the looser one.
+    """
+    meta = doc.get("metadata")
+    if not isinstance(meta, dict):
+        return False
+    band = cast("dict[str, object]", meta).get("age_band")
+    return isinstance(band, str) and band in _UPPER_BOUND_ONLY_BANDS
 
 
 def _band(doc: dict[str, object]) -> tuple[float, float] | None:
@@ -347,13 +376,7 @@ def _preserves_contract(original: str, revised: str) -> bool:
     return True
 
 
-def _accept(
-    original: str,
-    revised: object,
-    *,
-    target: float,
-    per_node_max: int | None = None,
-) -> str | None:
+def _accept(original: str, revised: object, *, bounds: _Bounds) -> str | None:
     """Decide whether one revised body may replace its original.
 
     This is the loop's safety boundary and its convergence rule at once: a
@@ -372,9 +395,14 @@ def _accept(
         original (str): The current node body.
         revised (object): The model's proposed replacement, untrusted and
             untyped.
-        target (float): The story's target Flesch-Kincaid grade.
-        per_node_max (int | None): PL-19's absolute words-per-node wall for
-            this story's band, or ``None`` when the band declares no profile.
+        bounds (_Bounds): The target, the PL-19 wall, and whether this band
+            treats only the upper edge as a defect. At 3-5 and 5-8 acceptance
+            is one-sided: only revisions that LOWER the grade are taken. The
+            symmetric rule would happily raise a node to reach its target, and
+            with an accurate syllable counter it would, since `AL-389` measured
+            the corrected counter reading the corpus 0.27 grades lower. A loop
+            chasing an unchanged target would then push young-band prose harder
+            than the prose humans have already approved.
 
     Returns:
         str | None: The revised body when it is a strict improvement, else
@@ -391,6 +419,7 @@ def _accept(
     # run-6: one node at 147 words against a 155-word wall discarded 50 revised
     # nodes and shipped the book at grade 5.61 with 12 percent of nodes in band.
     # #VERIFY: test_reading_level_rejects_a_revision_that_would_breach_the_word_cap.
+    per_node_max = bounds.per_node_max
     if per_node_max is not None and node_word_count(revised) > per_node_max:
         return None
     before = score_body(original)
@@ -399,9 +428,34 @@ def _accept(
         # An unscorable result cannot be shown to be better than what it
         # replaces, so it is not taken.
         return None
-    if abs(after - target) >= abs(before - target):
-        return None
-    return revised
+    return revised if _is_improvement(before, after, bounds) else None
+
+
+def _is_improvement(before: float, after: float, bounds: _Bounds) -> bool:
+    """Return whether *after* is a strict improvement on *before*.
+
+    Two rules, because the bands disagree about what counts as worse. The
+    symmetric rule moves a node toward its target from either side. The
+    one-sided rule, used at 3-5 and 5-8, only ever simplifies: at those bands
+    reading too easy is not a defect (`AL-389`), so raising a grade to reach a
+    target is a regression dressed as convergence.
+
+    Termination holds under both. The symmetric form is strictly monotone in
+    the distance to target; the one-sided form is strictly monotone in the
+    grade itself, and the selector stops offering a node once it is under the
+    ceiling.
+
+    Args:
+        before: The original body's grade.
+        after: The revision's grade.
+        bounds: The band's acceptance rule.
+
+    Returns:
+        bool: ``True`` when the revision may be taken.
+    """
+    if bounds.upper_bound_only:
+        return after < before
+    return abs(after - bounds.target) < abs(before - bounds.target)
 
 
 def _parse_revisions(raw: str | None) -> dict[str, object]:
@@ -486,12 +540,7 @@ async def _run_batch(
             # into an unrelated node, or create one.
             # #VERIFY: test_reading_level_unknown_node_id_is_ignored.
             continue
-        good = _accept(
-            original,
-            proposed,
-            target=bounds.target,
-            per_node_max=bounds.per_node_max,
-        )
+        good = _accept(original, proposed, bounds=bounds)
         if good is not None:
             accepted[node_id] = good
     return accepted
@@ -594,7 +643,10 @@ async def run_reading_level_loop(
         )
     target, tolerance = band
     bounds = _Bounds(
-        target=target, tolerance=tolerance, per_node_max=_per_node_cap(doc)
+        target=target,
+        tolerance=tolerance,
+        per_node_max=_per_node_cap(doc),
+        upper_bound_only=_is_upper_bound_only(doc),
     )
     before = measure_book(
         (body for _id, body in pairs), target=target, tolerance=tolerance
@@ -608,7 +660,10 @@ async def run_reading_level_loop(
             (node_id, body, grade)
             for node_id, body in current.items()
             if (grade := score_body(body)) is not None
-            and abs(grade - target) > tolerance
+            and (
+                grade > target + tolerance
+                or (grade < target - tolerance and not bounds.upper_bound_only)
+            )
         ]
         if not out_of_band:
             break

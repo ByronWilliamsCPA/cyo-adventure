@@ -106,6 +106,15 @@ Invoke when given a skeleton file under `skeletons/<band>/<slug>.json` (or any
 
    Replace the entire `<<FILL ...>>` string with the prose. Leave no `<<FILL` markers.
 
+3a. **If `metadata.topology` is `loop_and_grow` at the 3-5 or 5-8 band**, the loop is a
+   **try-again** loop and nothing accumulates. Tier 1 forbids variables, so the engine cannot
+   tell a reader on their first pass from one on their third, and any hub or ending that
+   counts, collects, or refers back to something as already-met will be wrong on some path.
+   Write every revisitable node and every ending so it reads correctly whether the reader
+   took the loop once, twice, or not at all. The topology's name says "grow" and at these
+   bands it does not; three of the six committed books from this shape got that wrong. See
+   ADR-011's per-band topology note.
+
 3b. **For Tier-2 (stateful) skeletons** (`metadata.tier` is 2): read the `variables`, each
    node's `on_enter` effects, and each choice's `effects`/`conditions`. The `beats=` directive
    names the relevant state; write prose consistent with the state reachable at that node (e.g.

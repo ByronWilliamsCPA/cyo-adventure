@@ -32,7 +32,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
 from cyo_adventure.storybook.sentinels import strip_sentinels
 from cyo_adventure.validator.report import (
@@ -71,6 +71,25 @@ _WORD_RE = re.compile(r"[A-Za-z]+(?:['\-][A-Za-z]+)*")
 
 # Sentence terminators. Runs of terminators (``...``, ``?!``) count once.
 _SENTENCE_RE = re.compile(r"[.!?]+")
+
+# Bands where prose scoring BELOW the band is not a defect, so RL-13 warns on
+# the upper bound only.
+#
+# Flesch-Kincaid is extrapolating downward here. The formula was calibrated on
+# school text and has no floor: a well-formed 3-5 sentence of six monosyllables
+# scores about -1.8, which is arithmetic running off the end of its range rather
+# than a grade. Measured over the committed corpus with the corrected syllable
+# counter (`AL-389`), 3-5 nodes sit at 15.8 percent below their floor against
+# 5.1 percent above it, and the below group is prose a four-year-old can follow,
+# which is the product working rather than failing. Every other band is roughly
+# symmetric and keeps both bounds.
+#
+# This is deliberately NOT a change to the targets. Those are claims about
+# readers, they inherit the old counter's bias, and re-deriving them is a
+# separate decision (`UW-C254`); shifting them to preserve the old numbers would
+# bake a counting bug into the spec. This only stops reporting one direction at
+# the two bands where that direction cannot mean what the finding says.
+_UPPER_BOUND_ONLY_BANDS: Final[frozenset[str]] = frozenset({"3-5", "5-8"})
 
 _VOWELS = frozenset("aeiouy")
 
@@ -412,6 +431,10 @@ def check_reading_level(story: Storybook) -> ValidationReport:
     The report's ``ok`` property is always ``True`` because this check never
     emits ERROR findings.
 
+    At the bands in ``_UPPER_BOUND_ONLY_BANDS`` only the upper bound is
+    reported: prose too easy for a 3-5 or 5-8 reader is not a defect, and FK
+    is extrapolating below zero there. See that constant for the measurement.
+
     Nodes with fewer than ``_MIN_WORDS_FOR_FK`` words in their body are skipped
     because FK scores are unreliable on very short passages. Unfilled skeleton
     bodies (those carrying a ``<<FILL`` directive) are skipped too: the directive
@@ -429,6 +452,7 @@ def check_reading_level(story: Storybook) -> ValidationReport:
     tolerance = story.metadata.reading_level.tolerance
     lower = target - tolerance
     upper = target + tolerance
+    upper_bound_only = story.metadata.age_band.value in _UPPER_BOUND_ONLY_BANDS
 
     for node in story.nodes:
         # score_body applies both skips this rule needs, and is the same
@@ -443,7 +467,7 @@ def check_reading_level(story: Storybook) -> ValidationReport:
         fk_grade = score_body(node.body)
         if fk_grade is None:
             continue
-        if fk_grade < lower or fk_grade > upper:
+        if fk_grade > upper or (fk_grade < lower and not upper_bound_only):
             report.add(
                 ValidationFinding(
                     rule_id="RL-13",
@@ -452,7 +476,8 @@ def check_reading_level(story: Storybook) -> ValidationReport:
                     node_id=node.id,
                     message=(
                         f"RL-13 level: node '{node.id}' FK grade {fk_grade:.1f} "
-                        f"outside target {target} +/- {tolerance} "
+                        f"{'above' if upper_bound_only else 'outside'} target "
+                        f"{target} +/- {tolerance} "
                         f"in story '{story.id}' (advisory only)"
                     ),
                 )

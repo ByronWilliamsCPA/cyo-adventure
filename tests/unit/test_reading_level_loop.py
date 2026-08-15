@@ -675,3 +675,99 @@ async def test_generate_story_skips_stage_d_on_a_blocked_document() -> None:
     assert outcome.status != "passed"
     assert "reading_level" not in outcome.report
     assert not any(entry.startswith("reading_level") for entry in outcome.stage_log)
+
+
+# The one-sided rule at 3-5 and 5-8 (`AL-389`). With the syllable counter fixed,
+# the corpus reads 0.27 grades easier than it used to, so a loop chasing an
+# unchanged target from below would push young-band prose HARDER than the prose
+# humans have already approved. At those bands the loop may only simplify.
+def _young_doc(body: str, *, band: str = "3-5") -> dict[str, object]:
+    """Return the valid fixture re-banded to a young band, carrying *body*.
+
+    Re-bands the real fixture rather than synthesising a document, because the
+    loop re-runs the gate and a hand-made dict fails L1-1 before any of this
+    is exercised.
+
+    Args:
+        body: The prose to put in the target node.
+        band: The age band to declare.
+
+    Returns:
+        A fresh, mutable copy of the story document in the named band.
+    """
+    doc = _doc(n_open=body)
+    meta = cast("dict[str, Any]", doc["metadata"])
+    meta["age_band"] = band
+    meta["reading_level"] = {
+        "scheme": "flesch_kincaid",
+        "target": 1.0,
+        "tolerance": 1.0,
+    }
+    return doc
+
+
+@pytest.mark.asyncio
+async def test_a_young_band_node_below_its_floor_is_never_offered_for_repair() -> None:
+    """Too easy is not a defect at 3-5, so the loop must not spend a call on it.
+
+    `EASY_BODY` scores about 2.97 against a 3-5 band of 0.0 to 2.0, so it is
+    above the ceiling and IS repairable; the body here scores about -1.5, well
+    under the floor. Under the old symmetric rule that node was selected and the
+    model was asked to make it harder.
+    """
+    doc = _young_doc(
+        "The cat sat on the mat. The dog ran to the log. The pig had a fig. "
+        "The hen sat in the pen. The bat sat on the hat."
+    )
+    provider = MockProvider(responses=[])
+
+    result = await run_reading_level_loop(doc, _clean_gate(doc), _ctx(provider))
+
+    assert result.nodes_revised == 0
+    assert result.passes == 0
+
+
+@pytest.mark.asyncio
+async def test_a_young_band_revision_that_raises_the_grade_is_refused() -> None:
+    """Acceptance is one-sided, so "closer to target" is not enough at 3-5.
+
+    `MID_BODY` (about 10.05) is above the 3-5 ceiling and so is offered for
+    repair. A reply that lands at `EASY_BODY` (about 2.97) is a simplification
+    and is taken; the reverse move would be closer to nothing the band wants.
+    This asserts the direction that the symmetric rule would have got wrong: a
+    revision HARDER than its original is refused even when it moves toward the
+    declared target.
+    """
+    doc = _young_doc(HARD_BODY)
+    provider = MockProvider(responses=[json.dumps({_TARGET_NODE: MID_BODY})])
+
+    result = await run_reading_level_loop(doc, _clean_gate(doc), _ctx(provider))
+
+    assert result.nodes_revised == 1
+    assert _body_of(result.doc, _TARGET_NODE) == MID_BODY
+
+    # ...and now the reverse: MID is still above the ceiling, but a reply that
+    # makes it harder is refused rather than accepted for approaching target.
+    doc2 = _young_doc(MID_BODY)
+    provider2 = MockProvider(responses=[json.dumps({_TARGET_NODE: HARD_BODY})])
+
+    result2 = await run_reading_level_loop(doc2, _clean_gate(doc2), _ctx(provider2))
+
+    assert result2.nodes_revised == 0
+    assert _body_of(result2.doc, _TARGET_NODE) == MID_BODY
+
+
+@pytest.mark.asyncio
+async def test_an_older_band_still_accepts_a_move_toward_target_from_below() -> None:
+    """The guard on scope: only 3-5 and 5-8 changed.
+
+    The fixture document is band 8-11, where a node far below the band is a real
+    signal and moving it up is a real repair. If this ever starts failing, the
+    one-sided rule has leaked out of the two bands it was measured for.
+    """
+    doc = _doc(n_open=HARD_BODY)
+    provider = MockProvider(responses=[json.dumps({_TARGET_NODE: EASY_BODY})])
+
+    result = await run_reading_level_loop(doc, _clean_gate(doc), _ctx(provider))
+
+    assert result.nodes_revised == 1

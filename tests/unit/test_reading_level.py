@@ -17,6 +17,8 @@ import json
 import re
 from pathlib import Path
 
+import pytest
+
 from cyo_adventure.storybook.models import Storybook
 from cyo_adventure.validator.reading_level import (
     _MIN_WORDS_FOR_FK,
@@ -366,3 +368,121 @@ def test_unfilled_skeleton_bodies_are_not_scored() -> None:
     story = _make_story(directive, target=3.0)
     report = check_reading_level(story)
     assert report.warnings == [], "a FILL directive is not prose and must not score"
+
+
+# The one-sided rule at 3-5 and 5-8 (`AL-389`). Prose too easy for a young
+# reader is the product working, and FK is extrapolating below zero there, so
+# only the upper edge is reported. Measured over the committed corpus the change
+# removes 24 of 331 warnings and every one of them is at those two bands.
+_TOO_EASY_FOR_ANY_BAND = (
+    "The cat sat on the mat. The dog ran to the log. The pig had a fig. "
+    "The hen sat in the pen. The bat sat on the hat."
+)
+_TOO_HARD_FOR_A_YOUNG_BAND = (
+    "The extraordinarily complicated machinery underneath the abandoned "
+    "observatory generated unpredictable vibrations, which consequently "
+    "unsettled the surrounding community members considerably throughout the "
+    "remarkably lengthy investigation period."
+)
+
+
+def _banded_story(
+    band: str, body: str, *, target: float, tolerance: float
+) -> Storybook:
+    """Return a one-node story in *band* carrying *body*.
+
+    Args:
+        band: The age band to declare.
+        body: The single node's prose.
+        target: The declared Flesch-Kincaid target.
+        tolerance: Half-width of the declared band.
+
+    Returns:
+        Storybook: The assembled story.
+    """
+    return Storybook.model_validate(
+        {
+            "schema_version": "2.0",
+            "id": "sk_band",
+            "version": 1,
+            "title": "Band",
+            "start_node": "n1",
+            "variables": [],
+            "metadata": {
+                "age_band": band,
+                "reading_level": {
+                    "scheme": "flesch_kincaid",
+                    "target": target,
+                    "tolerance": tolerance,
+                },
+                "tier": 1,
+                "themes": ["play"],
+                "estimated_minutes": 4,
+                "ending_count": 1,
+                "content_flags": {
+                    "violence": "none",
+                    "scariness": "none",
+                    "peril": "none",
+                },
+                "topology": "time_cave",
+                "length": "short",
+                "narrative_style": "prose",
+            },
+            "nodes": [
+                {
+                    "id": "n1",
+                    "body": body,
+                    "is_ending": True,
+                    "ending": {
+                        "id": "e1",
+                        "title": "Done",
+                        "valence": "positive",
+                        "kind": "success",
+                    },
+                    "choices": [],
+                }
+            ],
+        }
+    )
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize("band", ["3-5", "5-8"])
+def test_prose_below_a_young_bands_floor_is_not_a_finding(band: str) -> None:
+    """A book a four-year-old can follow is not a defect in a 3-5 book.
+
+    Flesch-Kincaid has no floor and was calibrated on school text, so the body
+    below scores about -1.5. Reporting that as "outside target" says something
+    the number cannot support.
+    """
+    story = _banded_story(band, _TOO_EASY_FOR_ANY_BAND, target=1.0, tolerance=1.0)
+
+    assert check_reading_level(story).findings == []
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize("band", ["3-5", "5-8"])
+def test_prose_above_a_young_bands_ceiling_is_still_a_finding(band: str) -> None:
+    """The direction that matters is kept, and the message says which it is."""
+    story = _banded_story(band, _TOO_HARD_FOR_A_YOUNG_BAND, target=1.0, tolerance=1.0)
+
+    findings = check_reading_level(story).findings
+
+    assert len(findings) == 1
+    assert "above target" in findings[0].message
+
+
+@pytest.mark.unit
+def test_an_older_band_still_reports_both_directions() -> None:
+    """The change is scoped to two bands, and this is the guard on that.
+
+    At 8-11 and up, prose far below the band is a real signal: it suggests a
+    book written down to its reader rather than for them, and those grades are
+    inside the range Flesch-Kincaid was built for.
+    """
+    story = _banded_story("8-11", _TOO_EASY_FOR_ANY_BAND, target=4.5, tolerance=1.5)
+
+    findings = check_reading_level(story).findings
+
+    assert len(findings) == 1
+    assert "outside target" in findings[0].message

@@ -85,9 +85,17 @@ Other supported structure patterns (for the concept brief `structure_pattern` fi
   the oldest and simplest branching shape. Good when you want lots of divergent outcomes.
 - `gauntlet`: a mostly linear sequence with a few decision points; suitable for the 8-11
   band where too many choices are overwhelming.
-- `loop_and_grow`: the reader may revisit nodes, with state tracking their progress across
-  loops. Requires Tier 2; the loop-escape check requires that every cycle has an exit path
-  to an ending.
+- `loop_and_grow`: the reader may revisit nodes. **The band decides what the loop means, and
+  this is the one place the topology's name misleads.** At 8-11 and up it is a growth loop,
+  Tier 2, with variables tracking progress across passes. At **3-5 and 5-8 it is a try-again
+  loop and nothing accumulates**: the Tier-1 contract forbids variables, so nothing can
+  distinguish a reader on their first pass from one on their third. Every hub and every
+  ending must read correctly for a reader who took the loop once, twice, or not at all.
+  Nothing may be counted ("three rescues"), collected ("the acorn in her pocket"), or
+  referred back to as already-met ("her moonbeam"). Three of the six committed
+  `loop_and_grow` books broke this, which is what the ADR-011 amendment of 2026-08-15
+  responds to. If the story needs accumulation, it needs 8-11 or above. The loop-escape
+  check requires that every cycle has an exit path to an ending at every band.
 - `quest`: a multi-stage journey where each stage has its own branch-and-bottleneck shape.
   A distinct, requestable pattern; it is not folded into `branch_and_bottleneck`.
 
