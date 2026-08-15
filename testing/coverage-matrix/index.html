@@ -4022,8 +4022,31 @@ relate to the Supabase project constraints.</p>
 <ul>
 <li>E2E-mocked: <code>frontend/e2e/landing.spec.ts</code></li>
 <li>E2E-prod: <code>frontend/e2e-prod/landing-login.spec.ts</code></li>
-<li>Component: <code>frontend/src/landing/LandingPage.test.tsx</code></li>
+<li>Component: <code>frontend/src/landing/LandingPage.test.tsx</code>, <code>frontend/src/landing/DemoAdventure.test.tsx</code></li>
+<li>Unit: <code>frontend/src/landing/pricing.test.ts</code></li>
 <li>Integration: <code>frontend/src/test/App.test.tsx</code></li>
+<li><strong>Sales funnel (the root page as the new-visitor conversion path):</strong> the
+  landing page carries both the returning-user doors (device-grant-aware Kids
+  door, Grown-ups door) and the funnel sections for a first-time adult: hero,
+  interactive sample story, how-it-works, safety/trust, pricing, FAQ.
+  <code>LandingPage.test.tsx</code> pins the door contract and section ordering (doors
+  first when the device holds a valid grant, decided once at mount so a
+  cross-tab grant change upgrades the door href without reshuffling sections
+  under a reading visitor), the claims that must match enforced behavior (the
+  10-stories/month family quota, hand approval, KWS verification described as
+  a launch commitment rather than a live control), and that the pricing
+  section renders no purchase-looking affordance.
+  <code>DemoAdventure.test.tsx</code> covers the static two-hop demo graph: choice
+  traversal to each of the four endings, the deduplicated endings counter
+  across replays, "Back one choice" and "Start over", and the focus transfer
+  to the new passage on every user-driven transition (but not on mount).
+  <code>pricing.test.ts</code> pins <code>formatMonthlyPrice</code> (0 renders "Free", 7.5 renders
+  "$7.50" and never "$7.5", NaN/Infinity/negative throws rather than painting
+  "$NaN" on a public card) and the no-billing-yet data invariants over both
+  branches of the tier union: every available tier is free and routes to
+  guardian sign-in, and an unavailable tier carries neither a price nor a CTA. Not a user journey on its own: this
+  is the conversion surface, and its tests exist to keep marketing copy from
+  drifting ahead of what the product actually enforces.</li>
 </ul>
 <h2 id="guardian-loginauth">Guardian: login/auth<a class="headerlink" href="#guardian-loginauth" title="Permanent link">&para;</a></h2>
 <ul>
@@ -4814,7 +4837,7 @@ closure. A companion action-level verdict for this audit lives at
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 15, 2026 17:29:48 UTC">August 15, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 15, 2026 22:42:53 UTC">August 15, 2026</span>
   </span>
 
     
