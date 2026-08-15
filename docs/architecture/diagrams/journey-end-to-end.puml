@@ -145,8 +145,9 @@ else (offline)
   progress waits in a queue;
   note right: offline-first  •  shipped
   :On reconnect it syncs
-  (reconcile if it clashes);
-  note right: seq-offline / seq-reading-state
+  (a clash resolves itself,
+  newest write wins, silently);
+  note right: seq-offline / seq-reading-state\nThe child is never asked to choose. Both conflict\npaths adopt the server's newest row without a\ndialog; there is no ConflictDialog component
 endif
 :Reach an ending;
 :Rate the story

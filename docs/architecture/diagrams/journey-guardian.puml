@@ -17,6 +17,10 @@
 '     WS-J self-signup approval interstitial)
 '   frontend/src/auth/GuardianConsentPage.tsx (/guardian/consent, Phase 2 /
 '     ADR-018 D1 verifiable-parental-consent)
+'   frontend/src/auth/GuardianVerificationPage.tsx (/guardian/verify, ADR-018 D1
+'     KWS parent verification; ProtectedRoute checks it FIRST of the four
+'     interstitial statuses, ahead of awaiting-approval)
+'   frontend/src/auth/ProtectedRoute.tsx (the redirect order itself)
 '   frontend/src/admin/AdminConsolePage.tsx (review queue), admin/ReviewDetailPage.tsx
 '   frontend/src/guardian/IntakePage.tsx, ProfilesPage.tsx, AssignChildrenDialog.tsx
 '   frontend/src/guardian/RequestsPage.tsx  (/guardian/requests: approve/decline
@@ -59,6 +63,14 @@ start
 (email/password or Google,
 Apple if the flag is on);
 note right: /guardian/login  •  shipped\nADR-014 -- conditional now: only a cold entry\nor a step-up crossing UP from kid mode reaches\nthis (or the "Grown-ups only" password re-entry);\nadult<->adult navigation is free once warm
+if (Adulthood not yet\nverified by KWS?) then (yes)
+  :Start Epic KWS parent
+  verification, then wait
+  it out;
+  note right: /guardian/verify  •  shipped\nProtectedRoute redirect target (AuthStatus\n'needs-verification'), checked FIRST of the four,\nBEFORE awaiting-approval. Ratified order: proving\nadulthood is cheap and self-service, while admin\napproval is a human judgement not worth spending\non an account that may never prove adulthood.\nUser.status is still 'awaiting_approval' here, so\nrequire_principal refuses this guardian and neither\nthis page nor its endpoint may depend on GET /v1/me
+  stop
+else (no)
+endif
 if (Self-signed-up,\nnot yet admin-approved?) then (yes)
   :See "waiting for approval"
   interstitial;

@@ -15,7 +15,11 @@
 '   frontend/src/library/LibraryPage.tsx, BookCard.tsx, StarRating.tsx
 '   frontend/src/library/RequestStory.tsx  (child-initiated request, WS-B;
 '     shipped, mounted on the library page -- see api/story_requests.py)
-'   frontend/src/reader/Reader.tsx, ReaderRoute.tsx, ConflictDialog.tsx
+'   frontend/src/reader/Reader.tsx, ReaderRoute.tsx, ReaderPage.tsx
+'     (ReaderPage.tsx: the live-save 409 path; ReaderRoute.tsx
+'     handleReplayOutcome: the reconnect-replay conflict path. Both resolve
+'     newest-write-wins SILENTLY -- there is no ConflictDialog component and
+'     no child-facing conflict prompt anywhere in the kid surface)
 '   Phase 4a mobile UI wireframe concept spec (PR #47, shipped; the source doc under
 '     docs/superpowers/specs/ was retired as scratch output once its work merged)
 '
@@ -113,10 +117,14 @@ repeat :read a passage;
     :On reconnect it syncs;
     if (Did another device
     change it too?) then (yes, clash)
-      :Choose which progress to keep
-      (mine / the newer one);
-      note right: ConflictDialog  •  shipped
+      :Keep reading from the newest
+      place; the app picks it for me
+      and never asks;
+      note right: newest-write-wins, silent  •  shipped\nProduct decision: a 5-10 year old cannot reason about\na "which place do you want to keep?" prompt, so reading\nnever blocks on a conflict. ReaderPage.tsx adopts the\nserver row on a live-save 409; ReaderRoute.tsx discards\nthe held queued writes on a replay 409. Both by design\ncan drop this device's position. No dialog exists.
     else (no)
+      :A "All caught up!" toast
+      tells me it saved;
+      note right: success toast  •  shipped\nOnly on a CLEAN replay: a conflict or a\nfailure suppresses it (ReaderRoute.tsx)
     endif
   endif
 repeat while (More story to read?) is (yes) not (reached an ending)
