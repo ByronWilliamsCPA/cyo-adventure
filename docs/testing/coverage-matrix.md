@@ -33,8 +33,14 @@ relate to the Supabase project constraints.
   2.1 A/AA, across every top-level page (landing, kid picker, kid library
   populated/empty, reader, guardian login/console/intake/requests/
   books/profiles, admin console/requests/moderation-thresholds/
-  moderation-dashboard) and every modal/dialog surface (ConflictDialog,
-  AssignChildrenDialog, ProfileFormDialog). `/admin/review/:id` was excluded
+  moderation-dashboard) and every modal/dialog surface
+  (AssignChildrenDialog, ProfileFormDialog). This list named a
+  `ConflictDialog` until 2026-08-14; there is no such surface to scan. The
+  child reading path resolves a conflict silently (newest write wins) and
+  shows no dialog, so `a11y.spec.ts` contains no conflict case and never did.
+  The only `ConflictDialog` in the tree is a design-system preview fixture
+  (`frontend/design-system/.design-sync/previews/Dialog.tsx`), which no route
+  renders. `/admin/review/:id` was excluded
   through 2026-07-22, same reasoning as `e2e-prod/guardian-admin-smoke.spec.ts`:
   it needs a real storybook id and a dynamic heading. The 2026-07-27 pass lifted
   that exclusion (an axe scan needs no fixed heading, only a stable seeded
@@ -270,10 +276,38 @@ relate to the Supabase project constraints.
   redirect out on every recovered status. The three sibling status consumers
   (`LoginPage`, `GuardianConsentPage`, `GuardianAwaitingApprovalPage`) each
   carry a redirect test in their own file.
-- **Gap**: no E2E tier exercises the backend-unreachable branch. Reproducing it
-  needs the API to fail while Supabase keeps succeeding, which the mocked tier
-  can express (fulfil `/api/v1/**` with a 503 after sign-in) but no spec does
-  yet. Component coverage is the whole of it today.
+- E2E-mocked: `frontend/e2e/guardian-backend-unavailable.spec.ts` (closes the
+  gap this row described, 2026-08-14, using the recipe it named). Three tests,
+  and the first two are a matched pair that is worth little apart: a 5xx on
+  `/v1/me` parks the guardian on `/guardian/unavailable` and KEEPS both the
+  bearer and the Supabase session (the #452 fix itself), while a 401 is
+  terminal and ends at login, NOT at the retry interstitial. Assert only the
+  first and a build treating every `/me` failure as transient would pass while
+  parking genuinely rejected sessions on a screen that can never succeed;
+  assert only the second and the original loop returns. The third flips a
+  single `/me` handler from 503 to 200 and asserts that "Try again" redirects
+  out to the console, so recovery is proven as a redirect rather than as a
+  cleared banner. Only a network-tier test can see this: the loop is a property
+  of the router and the session store together, and the component tests own one
+  end each.
+  - Two findings recorded in the spec's comments, because both cost real time
+    and neither is visible from the code under test. (1) The 401 case must also
+    mock `**/auth/v1/token**`: `useApi.ts`'s P6-06 path treats a 401 as
+    possibly-stale, calls `supabase.auth.refreshSession()` and retries once, so
+    against this tier's dummy GoTrue an unmocked refresh never resolves and the
+    app sits on "Loading…" forever, failing with a message about the redirect
+    that says nothing about the branch. (2) The spec deliberately does NOT
+    assert the bearer is cleared on the terminal path. It is cleared, but not
+    durably: `safeRemoveToken()` leaves the Supabase session intact by design,
+    and every later `syncPrincipal` for a non-null session re-mints the bearer
+    from it, so "token cleared" is a transient state inside a retry loop rather
+    than a postcondition. Asserting it passed standalone and failed under a
+    loaded full-suite run.
+- **Remaining gap**: no `e2e-real`, `e2e-staging`, or `e2e-prod` coverage. The
+  scenario needs the API down while Supabase is up, which the mocked tier
+  fabricates trivially and a real tier cannot stage without deliberately
+  breaking a deployed backend. The mocked tier plus the component tests are the
+  whole of it, and for this branch that is the right ceiling.
 - **Google OAuth sign-in (decision 2.6, manual-only flow + automated option
   presence):** the full Google OAuth *round trip* is not automated at any tier
   and is not automatable without a live Google session (faking the provider
@@ -320,6 +354,31 @@ Supabase endpoints rather than `/api/v1`.
 
 ## Guardian: KWS parent verification (ADR-018 D1)
 
+- E2E-mocked: `frontend/e2e/guardian-verification.spec.ts` (added 2026-08-14,
+  closing the "client behavior around the `/start` call is proven only at the
+  component tier" gap below). Pins two things the component tier structurally
+  cannot. First, an architectural constraint: **nothing on this route may call
+  `GET /v1/me`**. ADR-018 D1 orders verification ahead of admin approval, so a
+  guardian on this screen is still `awaiting_approval` and
+  `require_principal` refuses them outright. `AuthContext.test.tsx` pins that
+  IT does not call `/me`, but that is a claim about one module, and the route
+  mounts a page inside a router alongside whatever else renders there; only a
+  test watching the wire can say nothing on the route calls it. The endpoint is
+  registered as a hard failure in all three tests, so a regression names
+  itself. Second, that the picked country actually reaches
+  `POST /v1/consent/kws/start` as `{location}` and not merely that a body was
+  sent: the value decides which verification methods KWS offers, so a form that
+  collects it and drops it fails silently, showing the parent a success screen
+  either way. Also covers the send being gated on a country (asserted before
+  the happy path, since afterwards a disabled button is indistinguishable from
+  an in-flight one) and the `pending` wait state resolving to "Check your
+  email" on first paint with the send form gone rather than merely disabled.
+  - This gap existed because the shared fixture could not express it:
+    `e2e/support/auth.ts`'s `DEFAULT_ONBOARDING_RESPONSE` omitted
+    `verification_required` / `verification_status`, and `mockOnboarding`'s
+    overrides are typed against that literal, so the gated case was
+    unreachable through the helper. Both fields were added at their ungated
+    values, which leaves every existing spec's behavior unchanged.
 - Component: `frontend/src/auth/GuardianVerificationPage.test.tsx` (the screen an
   unverified guardian is routed to: each redirect out of it, signed-out to login,
   backend-down to the interstitial, already-verified onward to approval, approved
@@ -372,8 +431,12 @@ Supabase endpoints rather than `/api/v1`.
   hosted flow and a real webhook call and stays a manual check (see the KWS wire-protocol
   memory and D1's staging note). What the new staging spec closes is narrower and different:
   proof that the return leg itself is reachable and correctly rendered by the deployed
-  origin for a signed-out client, not that a verification can complete end to end. The
-  client's behavior around the `/start` call is still proven only at the component tier.
+  origin for a signed-out client, not that a verification can complete end to end.
+  The client's behavior around the `/start` call was also listed here as
+  component-tier-only; that is no longer true as of 2026-08-14, see the
+  E2E-mocked entry above. What remains manual is the part that leaves our
+  process: Epic's hosted flow and the real webhook call. A mocked `/start`
+  proves we send the right thing to the right place, never that KWS acted on it.
 
 ## Guardian: submit story request (intake)
 
@@ -525,10 +588,32 @@ but holds none of the approve/publish authority. The passage-edit modules
 (`passageEditApi.ts`, `usePassageEdit.ts`, `ReviewPassage.tsx`) live under
 `guardian/` and are shared with the admin review page.
 
-- E2E-mocked: `frontend/e2e/review-edit.spec.ts` (the passage-edit `PATCH` contract, asserted at the network layer from the review detail; see the admin section below)
+- E2E-mocked: `frontend/e2e/guardian-review-authority.spec.ts` (the authority
+  boundary at the network tier: the route renders the story, then offers no
+  Approve, Archive, Generate cover, Send back, or version-compare control, and
+  reaches none of the admin-only endpoints, which are registered as failing
+  routes so a stray call names itself; a 403 renders the different-family
+  refusal with a way back and leaks no prose). Its second test is a **positive
+  control** on the same fixture at `/admin/review/s1`, asserting those controls
+  DO render there: without it every `toHaveCount(0)` above would also pass
+  against a page that 500s or never mounts, which is the standing failure mode
+  of absence assertions.
+  - Added 2026-08-14. This row credited `frontend/e2e/review-edit.spec.ts`
+    until then; that spec drives `/admin/review/s1` on all four of its `goto`
+    calls and never reaches this route. The shared passage-edit modules it
+    exercises do live under `guardian/`, which is how the mix-up happened, but
+    exercising a shared module through the admin route proved nothing about
+    this one.
+  - Verified by mutation before landing: adding an `Approve` button to
+    `GuardianReviewDetailPage.tsx` fails the suite, and the mutation was
+    reverted.
 - Component: `frontend/src/guardian/GuardianReviewDetailPage.test.tsx` (the route's authority boundary and edit surface: it loads the requesting family's own story via the review-surface GET, renders no Approve, Send Back, Archive, cover-generation, or version-compare control, links back to My Requests, and refuses another family's story with a clear message plus a way back. Its passage-edit block covers opening the dialog prefilled with the passage body and choice labels, saving and refreshing the surface from the response, rendering inline rule messages on a 422 gate failure while leaving the blob unchanged, editing disabled once the story is published, and a `needs_revision` status hint with editing still enabled)
 - Component (shared passage-edit modules): `frontend/src/guardian/passageEditApi.test.ts` (the `PATCH /v1/storybooks/:id/versions/:v/nodes/:nodeId` request shape, `choice_labels` sent alongside `body` when both are supplied, URL-encoding of a node id that needs it, and `asGateFailure` extracting findings from a 422 gate-failure body while returning null for a non-422, a 422 with no `details.findings` such as FastAPI's own request-body validation, and a non-axios error) and `frontend/src/guardian/usePassageEdit.test.ts` (the hook's state machine: `editingDisabled` before the surface loads and for a published surface versus enabled for `in_review`/`needs_revision`; opening is a no-op before load or for a node id absent from the blob; the dialog prefills body and choices and updates only the matching choice label; saving is a no-op with no dialog open or if the surface became unavailable after it opened; a successful save feeds the refreshed surface up and closes the dialog; a 422 surfaces gate findings without closing; a non-gate failure surfaces a generic error; and close resets error and gate-finding state)
-- **Gap**: no `e2e-real`, `e2e-staging`, or `e2e-prod` coverage yet; the route needs a real storybook id, the same constraint that keeps `/admin/review/:id` out of the staging and prod smokes.
+- **Gap (higher tiers)**: no `e2e-real`, `e2e-staging`, or `e2e-prod` coverage;
+  those need a real storybook id, the same constraint that keeps
+  `/admin/review/:id` out of the staging and prod smokes. That constraint never
+  applied to the mocked tier, which needs only a review-surface GET fixture,
+  which is why the mocked gap above was closable on its own.
 
 ## Admin: review queue (single story review)
 
@@ -747,7 +832,7 @@ read's starting variables; the client never derives a seed of its own.
 
 - E2E-mocked: `frontend/e2e/reader.spec.ts` (fully-offline play), `frontend/e2e/reader-conflict.spec.ts`, `frontend/e2e/reader-reload-resume.spec.ts`, `frontend/e2e/naive-user/naive-kid-misuse.spec.ts` (reload resume)
 - E2E-real: `frontend/e2e-real/offline-conflict-real.spec.ts` (two real `BrowserContext`s race saves on "The Clockwork Garden": device A creates the row, device B resyncs and advances it, device A's next save gets a real 409 resolved via "Keep this device", device B's next gets a real 409 resolved via "Use the newest place"; picked up by the nightly `e2e-real-nightly.yml`), `frontend/e2e-real/offline-online-parity-real.spec.ts` (G3, Phase 7.3: on "The Clockwork Garden", a condition-gated story, the identical five-choice sequence is driven online through the real backend and, in a separate profile, offline through the client player engine then synced; both land on the same final node/path/visit_set/var_state and the same ending, proving offline/online branch parity; each pass also forces a real Python-engine replay of its own choice sequence via the `choice_path` field on the reading-state PUT, so the parity is confirmed cross-engine, not just client-vs-client), `frontend/e2e-real/offline-reconnect-real.spec.ts` (reconnect replay against the real backend: every queued offline choice replays and the server row lands on the expected `current_node`/`var_state`; and a conflict case where a real second device advances the row while device A is offline, so A's stale replay takes a real 409 and never clobbers it. Runs on the nightly `real-backend` project, not on PRs)
-- Component: `frontend/src/offline/db.test.ts`, `frontend/src/offline/sync.test.ts`, `frontend/src/offline/downloadBudget.test.ts` (W4.3 250MB/500MB storage.estimate gate + least-recently-opened eviction + kid-friendly refusal), `frontend/src/offline/deviceId.test.ts` (the client-generated persistent device id: minted once, read back stable across calls, and survives a `localStorage` round-trip; the G15 download-report identity), `frontend/src/offline/readingTimeSync.test.ts` (K23 idempotent day-bucket flush: frozen flush_id/delta pairs, offline accrual), `frontend/src/offline/revocation.test.ts` (offline-copy revocation reconcile: shared-blob refcounting, cross-profile isolation, queue-drop, never-purge-on-failed-fetch, and the documented mid-read latency window), `frontend/src/reader/ReaderPage.test.tsx` (conflict dialog resolution paths), `frontend/src/reader/ReaderRoute.test.tsx` (replay-reconciliation suite), `frontend/src/reader/dialogs.test.tsx` (ConflictDialog UI), `frontend/src/hooks/useReplayOnReconnect.test.ts`, `frontend/src/hooks/useOnlineStatus.test.ts`, `frontend/src/library/LibraryPage.test.tsx` (the reconcile call-site: fires only on the success branch, re-fires on reconnect, logs a reconcile rejection)
+- Component: `frontend/src/offline/db.test.ts`, `frontend/src/offline/sync.test.ts`, `frontend/src/offline/downloadBudget.test.ts` (W4.3 250MB/500MB storage.estimate gate + least-recently-opened eviction + kid-friendly refusal), `frontend/src/offline/deviceId.test.ts` (the client-generated persistent device id: minted once, read back stable across calls, and survives a `localStorage` round-trip; the G15 download-report identity), `frontend/src/offline/readingTimeSync.test.ts` (K23 idempotent day-bucket flush: frozen flush_id/delta pairs, offline accrual), `frontend/src/offline/revocation.test.ts` (offline-copy revocation reconcile: shared-blob refcounting, cross-profile isolation, queue-drop, never-purge-on-failed-fetch, and the documented mid-read latency window), `frontend/src/reader/ReaderPage.test.tsx` (the live-save 409 path: silently adopts the server position without showing a dialog), `frontend/src/reader/ReaderRoute.test.tsx` (replay-reconciliation suite: silently discards a replayed 409, again with no dialog), `frontend/src/reader/dialogs.test.tsx` (`DownloadNeeded`, the iOS post-eviction state. This entry read "ConflictDialog UI" until 2026-08-14, which was wrong in both halves: the file has never imported a conflict dialog, and no conflict dialog exists to import), `frontend/src/hooks/useReplayOnReconnect.test.ts`, `frontend/src/hooks/useOnlineStatus.test.ts`, `frontend/src/library/LibraryPage.test.tsx` (the reconcile call-site: fires only on the success branch, re-fires on reconnect, logs a reconcile rejection)
 - **Gap**: no `e2e-staging` or `e2e-prod` coverage of conflict/sync against a real backend. Offline-copy revocation (register G8/A5) has a known mid-read latency window: a book pulled server-side is not purged from the device until the next successful library fetch drives a reconcile; closing it needs a revocation push channel or reader-route mid-session revalidation, both out of scope (pinned by the `revocation.test.ts` "mid-read latency window" characterization test).
 
 ## Kid: series continuation across storybooks

@@ -8,6 +8,18 @@
 '                                                   pipeline: generate_story();
 '                                                   also fill_skeleton() for
 '                                                   the skeleton_fill method)
+'   src/cyo_adventure/generation/reading_level_loop.py (Stage D: measure ->
+'                                                   re-prompt -> re-measure ->
+'                                                   re-gate. Its own budget,
+'                                                   deliberately NOT folded into
+'                                                   the Stage C loop, whose
+'                                                   _gate_signature filters to
+'                                                   ERROR findings so a
+'                                                   prose-only edit cannot
+'                                                   defeat the no-progress
+'                                                   abort. Called from BOTH
+'                                                   generate_story() and
+'                                                   fill_skeleton())
 '   src/cyo_adventure/generation/prompts.py       (cacheable prompt blocks)
 '   src/cyo_adventure/generation/pii.py           (PII guard: assert_prompt_pii_safe)
 '   src/cyo_adventure/generation/guarded.py       (PiiGuardedProvider: wraps a
@@ -36,9 +48,14 @@
 '   src/cyo_adventure/generation/fidelity_gate.py (run_stage1_gate(): the
 '                                                   skeleton_fill path's own
 '                                                   bounded Stage-1 fidelity
-'                                                   gate, called by
-'                                                   orchestrator.py:492 and
-'                                                   import_story.py:541.
+'                                                   gate, called from
+'                                                   orchestrator.py's
+'                                                   _next_repair_prompt and
+'                                                   import_story.py's resume
+'                                                   path (named rather than
+'                                                   line-pinned: the previous
+'                                                   :492 / :541 pins both went
+'                                                   stale when Stage D landed).
 '                                                   worker.py does NOT call it;
 '                                                   it reaches the gate only
 '                                                   indirectly, through the
@@ -117,7 +134,9 @@ package "Generation Pipeline" #FFF3E0 {
 
   component "Theme Binding\ngeneration/binding.py\nload_contract_for() + interpret_and_bind()\n+ render_bound_skeleton()\nWS-2: contract discovery, LLM theme\nbind, bound-skeleton render" as binding #FFE0B2
 
-  component "Generation Orchestrator\ngeneration/orchestrator.py\ngenerate_story() [fresh_generation:\nStage A -> B -> C]\nfill_skeleton() [skeleton_fill method]" as orchestrator #FFE0B2
+  component "Generation Orchestrator\ngeneration/orchestrator.py\ngenerate_story() [fresh_generation:\nStage A -> B -> C -> D]\nfill_skeleton() [skeleton_fill method;\nalso runs Stage D]" as orchestrator #FFE0B2
+
+  component "Stage D: Reading-Level Loop\ngeneration/reading_level_loop.py\nrun_reading_level_loop()\nmeasure -> re-prompt out-of-band\nbodies -> re-measure -> re-gate;\nkeeps a revision ONLY when the\nmeasured score improved.\nNever blocks (RL-13 stays WARNING)" as reading_level_loop #FFE0B2
 
   component "Stage-1 Fidelity Gate\ngeneration/fidelity_gate.py + fidelity.py\nrun_stage1_gate(): pure-code checks\n(fidelity.py), then one semantic\nbeats-check; called by orchestrator.py\n(skeleton_fill path) and\nimport_story.py's resume path" as fidelity_gate #FFE0B2
 
@@ -192,6 +211,11 @@ gate --> orchestrator : "GateResult\n(blocked, safety_flagged)"
 orchestrator --> fidelity_gate : "run_stage1_gate(original, filled, ...)\n(inside the shared repair loop,\nskeleton_fill/authoring path only,\nstructurally-clean doc, not\nsafety_flagged)"
 fidelity_gate --> orchestrator : "violation list\n(empty = clean)"
 
+orchestrator --> reading_level_loop : "run_reading_level_loop(doc, gate, ctx)\n[Stage D; BOTH generate_story() and\nfill_skeleton(). Skipped when the doc is\nabsent, blocked, or max_passes == 0]"
+reading_level_loop --> pii : "provider.complete()\n(ReadingLevelContext.provider is typed\nPiiGuardedProvider, so the guard is\nstructural, not remembered)"
+reading_level_loop --> gate : "re-run run_gate(doc)\nafter splicing revised bodies"
+reading_level_loop --> orchestrator : "ReadingLevelResult\n(doc, gate, report ->\noutcome.report['reading_level'])"
+
 note right of orchestrator
   fresh_generation (generate_story()):
   Stage A (Structure): build_structure_prompt ->
@@ -204,6 +228,11 @@ note right of orchestrator
     while blocked AND attempts < max_repairs:
       build_repair_prompt -> provider.complete ->
       parse JSON -> run_gate -> no-progress check
+  Stage D (Reading level, bounded
+    reading_level_passes=2 by DEFAULT, not opt-in):
+    measure each node with validator/reading_level.py
+    -> re-prompt only the out-of-band bodies ->
+    re-measure -> splice -> re-run run_gate
 
   skeleton_fill (fill_skeleton()): fills a matched
   skeleton library file's <<FILL ...>> directives
@@ -230,6 +259,36 @@ note right of orchestrator
   import_cli.py --job), which runs the filled story through the same
   validator gate + persist + moderation pipeline and settles it to "passed"
   or "needs_review" (a hard gate block instead settles it to "failed").
+end note
+
+note bottom of reading_level_loop
+  Why a harness loop and not a firmer prompt:
+  every stage prompt already states a
+  Flesch-Kincaid target, and stating it does
+  not work, because a language model cannot
+  count syllables and so cannot evaluate the
+  constraint it is given. AL-288 measured six
+  books written to an explicit "FK 4-6" target
+  and five cleared the band's 7.0 upper edge
+  anyway. AL-292 is the paired control: same
+  prompt, same target, the author who
+  instrumented reading level in the harness
+  reached whole-book FK 5.12 with 84% of nodes
+  in band, the one who did not reached FK 8.35
+  with 11%.
+
+  Its abort condition is stronger than Stage
+  C's rather than weaker: a revision is kept
+  only when the MEASURED score improved, so
+  the loop cannot spin.
+
+  It never blocks. RL-13 stays a WARNING, and
+  the measurement is recorded on the outcome
+  report even when nothing was revised,
+  because "measured, already in band" and
+  "nobody looked" are different facts (AL-209
+  is what happens when a report conflates
+  them).
 end note
 
 queue --> worker_comp : "job_id"
