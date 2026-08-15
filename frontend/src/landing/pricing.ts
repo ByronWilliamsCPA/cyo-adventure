@@ -8,7 +8,8 @@
  * without pretending to sell anything today: LandingPage renders a card per
  * AVAILABLE tier and folds unavailable tiers into a one-line futures note, so
  * flipping `available` (plus a price and CTA) makes the paid card appear with
- * no layout work.
+ * no layout work. Today that means exactly one card renders, and the Family
+ * tier is visible only as that futures line.
  *
  * The tier type is a discriminated union on `available` so that flip really
  * is a safe data change: an available tier MUST carry a price and a CTA, an

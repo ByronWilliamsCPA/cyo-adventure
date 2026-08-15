@@ -1,7 +1,7 @@
 import 'fake-indexeddb/auto'
 
 import { IDBFactory } from 'fake-indexeddb'
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { act, render, screen, waitFor, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
 import { beforeEach, describe, expect, it } from 'vitest'
 
@@ -166,11 +166,39 @@ describe('LandingPage', () => {
   })
 
   describe('pricing (subscription-ready, nothing sold today)', () => {
-    it('renders every tier from the pricing data', () => {
+    it('renders a card for every available tier and none for the rest', () => {
       renderLanding()
       for (const tier of PRICING_TIERS) {
-        expect(screen.getByRole('article', { name: tier.name })).toBeInTheDocument()
+        const card = screen.queryByRole('article', { name: tier.name })
+        if (tier.available) {
+          expect(card).toBeInTheDocument()
+        } else {
+          // An unbuyable card invites a comparison the visitor cannot act on
+          // and puts a price-shaped void beside the tier they should take.
+          expect(card).toBeNull()
+        }
       }
+    })
+
+    // The Phase 8 flip must stay a data change: this asserts the RENDER is
+    // derived from `available`, so adding a priced tier to pricing.ts makes
+    // its card appear with no JSX edit. Guards against someone hardcoding
+    // "Explorer" once the filter made a single card the visible truth.
+    it('derives the rendered cards from the data, not a hardcoded tier', () => {
+      renderLanding()
+      const availableNames = PRICING_TIERS.filter((tier) => tier.available).map((tier) => tier.name)
+      expect(screen.getAllByRole('article')).toHaveLength(availableNames.length)
+    })
+
+    it('states the paid plan as a future commitment instead of a card', () => {
+      renderLanding()
+      const pricing = screen.getByRole('region', { name: 'Simple family pricing' })
+      expect(within(pricing).getByText(/a paid family plan comes later/i)).toBeInTheDocument()
+      expect(
+        within(pricing).getByText(/books already on your shelf stay yours/i)
+      ).toBeInTheDocument()
+      // The whole section offers exactly one action, the free tier's CTA.
+      expect(within(pricing).getAllByRole('link')).toHaveLength(1)
     })
 
     it('routes the available free tier to guardian login and discloses the real quota', () => {
@@ -188,17 +216,20 @@ describe('LandingPage', () => {
       )
     })
 
-    // #VERIFY (pricing.ts #CRITICAL): with no billing backend, the unpriced
-    // tier must render NO actionable control at all; a purchase-looking
-    // button that cannot purchase would be a dark pattern aimed at parents.
-    it('renders the coming-soon tier with no actionable control and a single status chip', () => {
+    // #VERIFY (pricing.ts #CRITICAL): with no billing backend, the section
+    // must offer nothing that looks like a purchase. A control that cannot
+    // charge would be a dark pattern aimed at parents.
+    it('offers no purchase-looking control anywhere in the section', () => {
       renderLanding()
-      const family = screen.getByRole('article', { name: 'Family' })
-      // Exactly one "Coming soon" (the chip): the first version repeated it
-      // in the price slot, so a scanning eye read it as the price.
-      expect(within(family).getAllByText('Coming soon')).toHaveLength(1)
-      expect(within(family).queryByRole('link')).toBeNull()
-      expect(within(family).queryByRole('button')).toBeNull()
+      const pricing = screen.getByRole('region', { name: 'Simple family pricing' })
+      expect(within(pricing).queryByRole('button')).toBeNull()
+      // Every link in the section routes to sign-in, never to a checkout.
+      for (const link of within(pricing).getAllByRole('link')) {
+        expect(link).toHaveAttribute('href', '/guardian/login')
+      }
+      // No currency figure survives anywhere: the only price today is "Free",
+      // so a "$" on this page would mean an unbuyable amount got rendered.
+      expect(pricing.textContent).not.toMatch(/\$/)
     })
   })
 
@@ -264,6 +295,58 @@ describe('LandingPage', () => {
       // Post-hydrate: the mirror is found, valid, and the door target upgrades.
       await waitFor(() =>
         expect(screen.getByRole('link', { name: /kids/i })).toHaveAttribute('href', '/kids')
+      )
+    })
+
+    // The case LandingPage's #VERIFY names. It asserts the deliberate SPLIT:
+    // a grant minted in another tab upgrades the door href live, because a
+    // stale href would send a child through an authorize flow they no longer
+    // need, while the section ORDER stays put, because reshuffling whole
+    // sections under someone mid-read is a hostile layout shift. Both halves
+    // matter: an implementation that re-derived order from the same event
+    // would pass a href-only assertion.
+    it('upgrades the door href on a cross-tab storage event without reordering sections', () => {
+      renderLanding()
+      expect(screen.getByRole('link', { name: /kids/i })).toHaveAttribute(
+        'href',
+        '/guardian/login?intent=authorize-device'
+      )
+      const heroBefore = screen.getByRole('heading', { level: 1 })
+      const doorsBefore = screen.getByRole('navigation', { name: 'Pick who you are' })
+      // Funnel-first: the hero precedes the doors on an unknown device.
+      expect(
+        heroBefore.compareDocumentPosition(doorsBefore) & Node.DOCUMENT_POSITION_FOLLOWING
+      ).toBeTruthy()
+
+      // Another tab authorizes this device. 'storage' does not fire in the
+      // tab that wrote the value, so dispatch it the way the browser would.
+      act(() => {
+        seedValidGrant()
+        window.dispatchEvent(new StorageEvent('storage', { key: 'device_grant' }))
+      })
+
+      expect(screen.getByRole('link', { name: /kids/i })).toHaveAttribute('href', '/kids')
+      const hero = screen.getByRole('heading', { level: 1 })
+      const doors = screen.getByRole('navigation', { name: 'Pick who you are' })
+      expect(hero.compareDocumentPosition(doors) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    })
+
+    // The mirror of the above: a revoke elsewhere must downgrade the href, or
+    // the door keeps pointing at /kids and DeviceAuthorizedRoute bounces the
+    // child back with no explanation.
+    it('downgrades the door href when another tab revokes the grant', () => {
+      seedValidGrant()
+      renderLanding()
+      expect(screen.getByRole('link', { name: /kids/i })).toHaveAttribute('href', '/kids')
+
+      act(() => {
+        localStorage.removeItem('device_grant')
+        window.dispatchEvent(new StorageEvent('storage', { key: 'device_grant' }))
+      })
+
+      expect(screen.getByRole('link', { name: /kids/i })).toHaveAttribute(
+        'href',
+        '/guardian/login?intent=authorize-device'
       )
     })
   })

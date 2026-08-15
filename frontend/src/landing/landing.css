@@ -880,8 +880,34 @@ main > .landing-doors-band:first-child {
   margin: var(--space-10) auto 0;
 }
 
+/* Only available tiers get cards, so today exactly one renders. auto-fit
+   would stretch a lone card across the full 56rem and leave it looking like
+   a stray banner; cap it at a card's natural width and center it instead.
+   The modifier (rather than a :only-child rule) keeps the multi-card grid
+   intact for the Phase 8 flip, when a second tier becomes available and this
+   class simply stops applying. */
+.landing-pricing--single {
+  grid-template-columns: minmax(0, 26rem);
+  justify-content: center;
+}
+
+/* The unavailable tiers, collapsed to one line. Deliberately prose and not a
+   card: it states the commitment (announce before charging, keep what you
+   have) without rendering a price-shaped, unclickable comparison next to the
+   tier the visitor should actually take.
+   ink-secondary on parchment: 8.81:1 light / 9.72:1 dark. */
+.landing-pricing__futures {
+  max-width: 40rem;
+  margin: var(--space-6) auto 0;
+  text-align: center;
+  color: var(--color-ink-secondary);
+}
+
 /* Bookplate framing: a double line (outer border + inset hairline) instead
-   of the default SaaS card. The available tier carries the amber border. */
+   of the default SaaS card. The available tier carries the amber border.
+   Today every rendered card is --available (unavailable tiers no longer get
+   cards at all); the base rule is kept because the Phase 8 flip introduces a
+   second tier that will not be the highlighted one. */
 .landing-tier {
   display: flex;
   flex-direction: column;
@@ -919,12 +945,6 @@ main > .landing-doors-band:first-child {
 .landing-tier__status--available {
   background: var(--color-success-light);
   color: var(--color-success);
-}
-
-/* warning on warning-light: 4.85:1 light / 6.77:1 dark. */
-.landing-tier__status--coming-soon {
-  background: var(--color-warning-light);
-  color: var(--color-warning);
 }
 
 .landing-tier__name {
@@ -986,13 +1006,6 @@ main > .landing-doors-band:first-child {
 .landing-tier .landing-cta {
   margin-top: auto;
   align-self: stretch;
-}
-
-.landing-tier__waitnote {
-  margin: auto 0 0;
-  padding-top: var(--space-2);
-  color: var(--color-ink-secondary);
-  font-size: var(--text-sm);
 }
 
 /* ── FAQ ────────────────────────────────────────────────────────────── */

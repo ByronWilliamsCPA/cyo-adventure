@@ -115,12 +115,16 @@ test('the pricing section is subscription-ready but sells nothing today', async 
     '/guardian/login'
   )
 
-  // The unpriced Family tier must carry no actionable control (pricing.ts
-  // #CRITICAL): a single status chip and an invitation line only.
-  const family = page.getByRole('article', { name: 'Family' })
-  await expect(family.getByText('Coming soon')).toBeVisible()
-  await expect(family.getByRole('link')).toHaveCount(0)
-  await expect(family.getByRole('button')).toHaveCount(0)
+  // The unavailable Family tier gets NO card at all (pricing.ts #CRITICAL):
+  // an unbuyable card invites a comparison the visitor cannot act on. It
+  // survives as a one-line future commitment instead.
+  await expect(page.getByRole('article', { name: 'Family' })).toHaveCount(0)
+  const pricing = page.locator('#pricing')
+  await expect(pricing.getByText(/A paid Family plan comes later/)).toBeVisible()
+
+  // One action in the whole section, and it is sign-in, never a checkout.
+  await expect(pricing.getByRole('link')).toHaveCount(1)
+  await expect(pricing.getByRole('button')).toHaveCount(0)
 })
 
 test('the sample adventure plays through to an ending, counts it, and restarts', async ({

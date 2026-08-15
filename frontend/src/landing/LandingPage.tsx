@@ -75,16 +75,26 @@ export function LandingPage() {
   // sync-then-hydrate pattern DeviceAuthorizedRoute uses) runs once after
   // mount and upgrades the door target if it finds a valid grant localStorage
   // lost (private-mode eviction, a fresh clear).
+  // ONE mount-time read feeds both the door target and the section order.
+  // They were two separate useState initializers calling hasValidDeviceGrant()
+  // independently, which is a latent inconsistency rather than a live bug:
+  // nothing guarantees two reads of an expiry-checked value inside the same
+  // render agree, and a grant expiring between them would render doors-first
+  // ordering around a door pointing at the authorize flow. Reading once makes
+  // that state unrepresentable.
   // #ASSUME: timing dependencies: a device whose grant changes WHILE the
   // landing page is already mounted (e.g. a second tab authorizes it, or the
   // guardian console in another window removes it) is picked up by the
   // 'storage' listener below; the grant is device-local, so connectivity
   // changes never affect the door and no 'online' listener is needed. Either
   // way DeviceAuthorizedRoute re-checks when the door is followed.
-  // #VERIFY: LandingPage.test.tsx "kids door" sync + post-hydrate +
-  // storage-event cases.
+  // #VERIFY: LandingPage.test.tsx "device-state-aware Kids door" sync +
+  // post-hydrate + storage-event cases; the storage-event case asserts the
+  // href updates while the section ORDER does not.
+  const [grantAtMount] = useState(() => hasValidDeviceGrant())
+
   const [kidsDoorPath, setKidsDoorPath] = useState(() =>
-    hasValidDeviceGrant() ? KID_PICKER_PATH : AUTHORIZE_DEVICE_PATH
+    grantAtMount ? KID_PICKER_PATH : AUTHORIZE_DEVICE_PATH
   )
 
   // Section ORDER is decided once, from the synchronous mount-time check
@@ -92,9 +102,11 @@ export function LandingPage() {
   // funnel. Deliberately NOT re-derived by the hydrate/storage upgrades
   // below; reshuffling whole sections under a visitor mid-read would be a
   // jarring layout shift for no benefit, and the next visit picks up the
-  // new order. The door's HREF, which must always be correct when followed,
-  // does keep upgrading live.
-  const [doorsFirst] = useState(() => hasValidDeviceGrant())
+  // new order.
+  // #ASSUME: timing dependencies: this snapshot goes stale the moment the
+  // grant changes, and that staleness is the intended behavior, not an
+  // oversight. The door's HREF keeps upgrading live underneath it.
+  const doorsFirst = grantAtMount
 
   useEffect(() => {
     if (kidsDoorPath === KID_PICKER_PATH) return
@@ -454,33 +466,36 @@ export function LandingPage() {
             CYO Adventure is in early access: everything below is free while we grow the library
             together.
           </p>
-          <div className="landing-pricing">
-            {PRICING_TIERS.map((tier) => (
+          {/* Only AVAILABLE tiers get a card. Two independent cold reviewers
+              converged on the unbuyable "Family / Coming soon" card being a
+              de-conversion element: it invites a comparison the visitor
+              cannot act on, and it puts a price-shaped void next to the
+              thing they should be clicking. Subscription-readiness lives in
+              the data model plus this filter, not in a visible card, so the
+              Phase 8 flip is still the one-line data change pricing.ts
+              documents. Unavailable tiers collapse into the futures line
+              below, which promises exactly what ADR-008 commits to. */}
+          <div className="landing-pricing landing-pricing--single">
+            {PRICING_TIERS.filter((tier) => tier.available).map((tier) => (
               <article
                 key={tier.id}
-                className={`landing-tier${tier.available ? ' landing-tier--available' : ''}`}
+                className="landing-tier landing-tier--available"
                 aria-labelledby={`landing-tier-${tier.id}`}
               >
-                <p
-                  className={`landing-tier__status landing-tier__status--${
-                    tier.available ? 'available' : 'coming-soon'
-                  }`}
-                >
-                  {tier.available ? 'Available now' : 'Coming soon'}
+                <p className="landing-tier__status landing-tier__status--available">
+                  Available now
                 </p>
                 <h3 className="landing-tier__name" id={`landing-tier-${tier.id}`}>
                   {tier.name}
                 </h3>
-                {tier.available ? (
-                  <p className="landing-tier__price">
-                    <span className="landing-tier__price-amount">
-                      {formatMonthlyPrice(tier.priceMonthlyUsd)}
-                    </span>
-                    {tier.priceMonthlyUsd > 0 ? (
-                      <span className="landing-tier__price-cadence">/month</span>
-                    ) : null}
-                  </p>
-                ) : null}
+                <p className="landing-tier__price">
+                  <span className="landing-tier__price-amount">
+                    {formatMonthlyPrice(tier.priceMonthlyUsd)}
+                  </span>
+                  {tier.priceMonthlyUsd > 0 ? (
+                    <span className="landing-tier__price-cadence">/month</span>
+                  ) : null}
+                </p>
                 <p className="landing-tier__price-note">{tier.priceNote}</p>
                 <p className="landing-tier__tagline">{tier.tagline}</p>
                 <ul className="landing-tier__features">
@@ -493,18 +508,18 @@ export function LandingPage() {
                     </li>
                   ))}
                 </ul>
-                {tier.cta ? (
-                  <Link className="landing-cta landing-cta--primary" to={tier.cta.to}>
-                    {tier.cta.label}
-                  </Link>
-                ) : (
-                  <p className="landing-tier__waitnote">
-                    Join free today and we&apos;ll invite you first.
-                  </p>
-                )}
+                <Link className="landing-cta landing-cta--primary" to={tier.cta.to}>
+                  {tier.cta.label}
+                </Link>
               </article>
             ))}
           </div>
+          {PRICING_TIERS.some((tier) => !tier.available) ? (
+            <p className="landing-pricing__futures">
+              A paid Family plan comes later: we will announce pricing here before anything changes,
+              and books already on your shelf stay yours.
+            </p>
+          ) : null}
           <p className="landing-section__footnote">
             No payment details today. Safety features are never paywalled.
           </p>
