@@ -2,6 +2,7 @@ import { expect, test } from '@playwright/test'
 
 import { LANDING_HEADLINE } from '../src/landing/headline'
 import { seedDeviceGrant } from './support/auth'
+import { LOGIN_HEADLINE } from '../src/guardian/loginHeadline'
 
 /**
  * Landing page at `/` (sales-funnel redesign, 2026-08): one page, two jobs.
@@ -100,7 +101,7 @@ test('a new visitor follows the hero "Get started free" CTA straight to guardian
   await page.locator('.landing-hero').getByRole('link', { name: 'Get started free' }).click()
 
   await expect(page).toHaveURL('/guardian/login')
-  await expect(page.getByRole('heading', { name: 'Sign in or create your account' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: LOGIN_HEADLINE })).toBeVisible()
 })
 
 test('the pricing section is subscription-ready but sells nothing today', async ({ page }) => {
@@ -148,6 +149,12 @@ test('the sample adventure plays through to an ending, counts it, and restarts',
   await expect(page.getByText(/walls sparkle/i)).toBeVisible()
   await page.getByRole('button', { name: /giggle back, twice/i }).click()
   await expect(page.getByText(/you found 2 of 4 endings/i)).toBeVisible()
+
+  // The restart the test's name promises: back to the opening passage with its
+  // first choice available again.
+  await page.getByRole('button', { name: /start over/i }).click()
+  await expect(page.getByText(/brass lantern swings/i)).toBeVisible()
+  await expect(page.getByRole('button', { name: /slip into the glittering cave/i })).toBeVisible()
 })
 
 test('topbar anchors jump to their funnel sections', async ({ page }) => {

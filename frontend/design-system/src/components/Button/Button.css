@@ -78,8 +78,10 @@
    from the resting state. That leaves box-shadow as the only hover signal,
    and a reduced-motion user gets no transform either. Ink reads as a
    deliberate darkening of the edge against the amber fill in both palettes.
-   Found on the landing page's CTA, which forked a local copy of this fix;
-   correcting it here lets every surface inherit it. */
+   Found via the landing page's CTA, which hit the same arithmetic. Note this
+   rule reaches .cyo-btn--primary CONSUMERS only: .landing-cta is its own class
+   and never carries .cyo-btn, so the landing page keeps an equivalent rule of
+   its own. The two are deliberate parallels, not a duplication to collapse. */
 .cyo-btn--primary:hover:not(:disabled) {
   border-color: var(--color-ink);
   box-shadow: var(--shadow-md);

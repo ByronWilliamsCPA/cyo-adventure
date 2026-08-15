@@ -122,11 +122,13 @@ test('rating a book posts the upsert and fills the stars', async ({ page }) => {
   await page.goto('/library/p1')
   const shelf = page.getByRole('region', { name: 'More to Explore' })
   await shelf.getByRole('button', { name: 'Rate 5 stars' }).click()
-  await expect.poll(() => ratingBody).toEqual({
-    profile_id: 'p1',
-    storybook_id: 's3',
-    value: 5,
-  })
+  await expect
+    .poll(() => ratingBody)
+    .toEqual({
+      profile_id: 'p1',
+      storybook_id: 's3',
+      value: 5,
+    })
   await expect(shelf.getByRole('button', { name: 'Rate 5 stars' })).toHaveAttribute(
     'aria-pressed',
     'true'
@@ -429,9 +431,7 @@ test('shelf still renders from the cached list when the network fetch fails (F-6
 
 test('shows no chip when the recommendations feed is empty', async ({ page }) => {
   await page.route('**/api/v1/library*', (route) => route.fulfill({ json: STORIES }))
-  await page.route('**/api/v1/recommendations/*', (route) =>
-    route.fulfill({ json: { items: [] } })
-  )
+  await page.route('**/api/v1/recommendations/*', (route) => route.fulfill({ json: { items: [] } }))
   await page.goto('/library/p1')
   const hero = page.getByRole('region', { name: 'Continue Reading' })
   await expect(hero).toContainText('The Lantern')

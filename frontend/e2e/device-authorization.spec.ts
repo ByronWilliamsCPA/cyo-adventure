@@ -44,9 +44,7 @@ test.describe('authorize-device intent (ADR-014 section 5)', () => {
     // A child who tapped the Kids door lands on this adult login form; the
     // authorize-device framing tells them, in plain words, to fetch a grown-up
     // (LoginPage renders it ONLY for this intent).
-    await expect(
-      page.getByText('Ask a grown-up to set up this device for you.')
-    ).toBeVisible()
+    await expect(page.getByText('Ask a grown-up to set up this device for you.')).toBeVisible()
 
     // Signing in with the intent present mints a grant for THIS device and
     // returns to the picker (LoginPage's authorize-device effect), so the kid
@@ -93,9 +91,7 @@ test.describe('guardian console "This device" (ADR-014)', () => {
 
     // POST /v1/device-grants (mocked 201) flips the section to the authorized
     // state, which surfaces the hand-off launcher.
-    await expect(
-      deviceSection.getByText('This device is set up for your family')
-    ).toBeVisible()
+    await expect(deviceSection.getByText('This device is set up for your family')).toBeVisible()
     await expect(
       deviceSection.getByRole('button', { name: 'Hand device to a child' })
     ).toBeVisible()

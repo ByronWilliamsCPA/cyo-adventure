@@ -91,6 +91,12 @@ async function assertNoLandingElementOverflow(
   page: import('@playwright/test').Page,
   width: number
 ) {
+  // Sets the viewport from `width`, matching assertNoHorizontalOverflow above.
+  // When this only interpolated `width` into the failure message the two
+  // helpers read as the same contract while behaving differently, so a caller
+  // that forgot its own setViewportSize got a green assertion labelled with a
+  // width that was never applied.
+  await page.setViewportSize({ width, height: 900 })
   const offenders = await page.evaluate(() => {
     const clientWidth = document.documentElement.clientWidth
     const root = document.querySelector('.landing')
@@ -100,11 +106,13 @@ async function assertNoLandingElementOverflow(
       if (el.closest('.landing-hero__art')) continue
       const rect = el.getBoundingClientRect()
       if (rect.width === 0 && rect.height === 0) continue
-      if (rect.right > clientWidth + 1) {
+      if (rect.right > clientWidth + 1 || rect.left < -1) {
         const id = el.id ? `#${el.id}` : ''
         const cls =
           typeof el.className === 'string' ? `.${el.className.split(/\s+/).join('.')}` : ''
-        out.push(`${el.tagName.toLowerCase()}${id}${cls} right=${Math.round(rect.right)}`)
+        out.push(
+          `${el.tagName.toLowerCase()}${id}${cls} left=${Math.round(rect.left)} right=${Math.round(rect.right)}`
+        )
       }
     }
     return out

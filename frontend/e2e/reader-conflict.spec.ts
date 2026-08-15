@@ -125,9 +125,7 @@ test('a 409 on save moves the reader to the server position, no dialog', async (
  *      discovered DURING the reconnect flush, not during a live in-session
  *      save (that path is already covered by the tests above).
  */
-test('an offline choice queued for replay is silently resolved on reconnect', async ({
-  page,
-}) => {
+test('an offline choice queued for replay is silently resolved on reconnect', async ({ page }) => {
   let mode: 'normal' | 'offline' | 'reconnect' = 'normal'
   let offlineAttempts = 0
   let queuedEventId: string | null = null

@@ -83,7 +83,7 @@ test('two guardian sessions approving the same request: the second gets 409, not
     // racy, so assert the alert appears on whichever page received the 409; a
     // regression that discards the 409 without a notice drops the count to 0 and
     // turns this red.
-    const rowError = (page: (typeof pageA)) =>
+    const rowError = (page: typeof pageA) =>
       page.getByRole('alert').filter({ hasText: 'Could not update the request. Try again.' })
     await expect
       .poll(async () => (await rowError(pageA).count()) + (await rowError(pageB).count()))
@@ -110,9 +110,7 @@ test.describe('zero-child-profile empty states', () => {
   })
 
   test('visiting Books with zero children shows a coherent empty state', async ({ page }) => {
-    await page.route('**/api/v1/guardian/books', (route) =>
-      route.fulfill({ json: { books: [] } })
-    )
+    await page.route('**/api/v1/guardian/books', (route) => route.fulfill({ json: { books: [] } }))
     await page.goto('/guardian/books')
     await expect(page.getByText('No published books yet')).toBeVisible()
   })

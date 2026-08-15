@@ -4,6 +4,7 @@ import { expect, test } from '@playwright/test'
 import { GUARDIAN_CONSOLE_PATH, GUARDIAN_LOGIN_PATH } from '../src/routes'
 import { signInAsProdTestAdmin, unlockParentalGateIfPresent } from './support/auth'
 import { gotoResilient } from '../e2e-support/rate-limit'
+import { LOGIN_HEADLINE } from '../src/guardian/loginHeadline'
 
 /**
  * R1 live checklist Section 1 (guardian auth and profile management) against
@@ -43,7 +44,7 @@ test.describe('guardian auth and profile management (read-only)', () => {
     await gotoResilient(page, GUARDIAN_CONSOLE_PATH)
     await expect(page).toHaveURL(new RegExp(`${GUARDIAN_LOGIN_PATH}$`))
     await expect(
-      page.getByRole('heading', { name: 'Sign in or create your account', level: 1 })
+      page.getByRole('heading', { name: LOGIN_HEADLINE, level: 1 })
     ).toBeVisible()
   })
 
@@ -52,7 +53,7 @@ test.describe('guardian auth and profile management (read-only)', () => {
   }) => {
     await gotoResilient(page, GUARDIAN_LOGIN_PATH)
     await expect(
-      page.getByRole('heading', { name: 'Sign in or create your account', level: 1 })
+      page.getByRole('heading', { name: LOGIN_HEADLINE, level: 1 })
     ).toBeVisible()
     // Apple sign-in is hidden behind VITE_ENABLE_APPLE_OAUTH (LoginPage.tsx),
     // unset in this build because Apple's provider needs a paid Apple
@@ -119,7 +120,7 @@ test.describe('guardian auth and profile management (read-only)', () => {
     // not merely hidden by transient React state that a reload would undo.
     await gotoResilient(sharedPage, GUARDIAN_CONSOLE_PATH)
     await expect(
-      sharedPage.getByRole('heading', { name: 'Sign in or create your account', level: 1 })
+      sharedPage.getByRole('heading', { name: LOGIN_HEADLINE, level: 1 })
     ).toBeVisible()
   })
 })

@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test'
 
 import { mockMe, seedGuardianSession } from './support/auth'
+import { LOGIN_HEADLINE } from '../src/guardian/loginHeadline'
 
 /**
  * Guardian concept-intake surface (C4a-5): unauthenticated-redirect smoke
@@ -14,12 +15,10 @@ import { mockMe, seedGuardianSession } from './support/auth'
  * mocked network routes and the live 8s poll transition.
  */
 
-test('unauthenticated visit to intake redirects to guardian sign-in', async ({
-  page,
-}) => {
+test('unauthenticated visit to intake redirects to guardian sign-in', async ({ page }) => {
   await page.goto('/guardian/intake')
   await expect(page).toHaveURL(/\/guardian\/login$/)
-  await expect(page.getByRole('heading', { name: 'Sign in or create your account' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: LOGIN_HEADLINE })).toBeVisible()
 })
 
 const PROFILE = {

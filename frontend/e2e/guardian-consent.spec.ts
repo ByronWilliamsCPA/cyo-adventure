@@ -82,9 +82,7 @@ test('un-consented guardian is gated, and consenting unblocks the console', asyn
   // A protected surface bounces to the consent gate while consent is missing.
   await page.goto('/guardian/intake')
   await expect(page).toHaveURL(/\/guardian\/consent$/)
-  await expect(
-    page.getByRole('heading', { name: 'Before you get started' })
-  ).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Before you get started' })).toBeVisible()
 
   // Submit is inert until both the legal name and the checkbox are provided.
   const submit = page.getByRole('button', { name: 'Agree and continue' })
@@ -118,9 +116,7 @@ test('un-consented guardian is gated, and consenting unblocks the console', asyn
   // The gate no longer fires: intake now renders instead of redirecting.
   await page.goto('/guardian/intake')
   await expect(page).toHaveURL(/\/guardian\/intake$/)
-  await expect(
-    page.getByRole('heading', { name: 'Before you get started' })
-  ).toHaveCount(0)
+  await expect(page.getByRole('heading', { name: 'Before you get started' })).toHaveCount(0)
 })
 
 test('guardian pending admin approval sees the awaiting-approval interstitial', async ({
@@ -146,9 +142,7 @@ test('guardian pending admin approval sees the awaiting-approval interstitial', 
   await page.goto('/guardian/intake')
   await expect(page).toHaveURL(/\/guardian\/awaiting-approval$/)
   await expect(page.getByRole('heading', { name: 'Almost there' })).toBeVisible()
-  await expect(
-    page.getByText('Your account is awaiting approval')
-  ).toBeVisible()
+  await expect(page.getByText('Your account is awaiting approval')).toBeVisible()
 })
 
 // P-6d: the interstitial used to be a dead end (Sign out was the only way

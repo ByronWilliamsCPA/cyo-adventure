@@ -25,6 +25,7 @@ import {
   KID_PICKER_PATH,
 } from '../routes'
 import './guardian.css'
+import { LOGIN_HEADLINE } from './loginHeadline'
 import { ResetPasswordRequestForm } from './ResetPasswordRequestForm'
 import { SetNewPasswordForm } from './SetNewPasswordForm'
 
@@ -431,7 +432,7 @@ export function LoginPage() {
           note below the provider buttons carry that; the email/password form
           stays sign-in only, because it authenticates accounts provisioned
           directly in Supabase and cannot create one. */}
-      <h1>Sign in or create your account</h1>
+      <h1>{LOGIN_HEADLINE}</h1>
       {/* ADR-014 section 5: on a fresh (unauthorized) device the Kids door
           routes a CHILD here to fetch a grown-up, so this adult sign-in form
           is the first thing that child sees. The one plain, jargon-free line

@@ -109,12 +109,8 @@ test.beforeEach(async ({ context }) => {
 
 test('guardian browses published books and assigns a sibling', async ({ page }) => {
   await page.route('**/api/v1/me', (route) => route.fulfill({ json: ME }))
-  await page.route('**/api/v1/guardian/books', (route) =>
-    route.fulfill({ json: BOOKS })
-  )
-  await page.route('**/api/v1/profiles', (route) =>
-    route.fulfill({ json: PROFILES })
-  )
+  await page.route('**/api/v1/guardian/books', (route) => route.fulfill({ json: BOOKS }))
+  await page.route('**/api/v1/profiles', (route) => route.fulfill({ json: PROFILES }))
   await page.route('**/api/v1/storybooks/story-1/content-summary', (route) =>
     route.fulfill({ json: CONTENT_SUMMARY })
   )
@@ -167,12 +163,8 @@ test('guardian sees a catalog badge and assigns a shared book', async ({ page })
   }
 
   await page.route('**/api/v1/me', (route) => route.fulfill({ json: ME }))
-  await page.route('**/api/v1/guardian/books', (route) =>
-    route.fulfill({ json: CATALOG_BOOKS })
-  )
-  await page.route('**/api/v1/profiles', (route) =>
-    route.fulfill({ json: PROFILES })
-  )
+  await page.route('**/api/v1/guardian/books', (route) => route.fulfill({ json: CATALOG_BOOKS }))
+  await page.route('**/api/v1/profiles', (route) => route.fulfill({ json: PROFILES }))
   await page.route('**/api/v1/storybooks/story-cat/content-summary', (route) =>
     route.fulfill({ json: CATALOG_SUMMARY })
   )
@@ -202,18 +194,10 @@ test('guardian sees a catalog badge and assigns a shared book', async ({ page })
 
 test('the Books nav link reaches the page', async ({ page }) => {
   await page.route('**/api/v1/me', (route) => route.fulfill({ json: ME }))
-  await page.route('**/api/v1/guardian/books', (route) =>
-    route.fulfill({ json: BOOKS })
-  )
-  await page.route('**/api/v1/profiles', (route) =>
-    route.fulfill({ json: PROFILES })
-  )
-  await page.route('**/api/v1/generation-jobs', (route) =>
-    route.fulfill({ json: { jobs: [] } })
-  )
-  await page.route('**/api/v1/review-queue', (route) =>
-    route.fulfill({ json: { items: [] } })
-  )
+  await page.route('**/api/v1/guardian/books', (route) => route.fulfill({ json: BOOKS }))
+  await page.route('**/api/v1/profiles', (route) => route.fulfill({ json: PROFILES }))
+  await page.route('**/api/v1/generation-jobs', (route) => route.fulfill({ json: { jobs: [] } }))
+  await page.route('**/api/v1/review-queue', (route) => route.fulfill({ json: { items: [] } }))
   await page.goto('/guardian')
   // exact: the family console body now has a "Browse and assign books" quick
   // link too; target the top-nav "Books" link specifically.

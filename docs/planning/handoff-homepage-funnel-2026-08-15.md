@@ -204,7 +204,7 @@ are a separate sweep.
   night. `e2e-prod/guardian-profiles.spec.ts` carries the same heading assertion in three places.
 - **`mobile-safari` Playwright project cannot run in the container** (no WebKit binary); CI's
   required gate is the chromium project. Do not chase those local failures.
-- **The overflow gate WAS vacuous for the landing page and is not any more.** `.landing`'s
+- **The overflow gate WAS vacuous for the landing page and is not anymore.** `.landing`'s
   `overflow-x: clip` kept clipped content out of `documentElement.scrollWidth`, so the assertion
   could not fail there. The clip is now scoped to `.landing-hero__art`, and
   `mobile-viewport.spec.ts` additionally measures every `.landing` descendant's right edge. Both

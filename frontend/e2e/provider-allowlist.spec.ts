@@ -40,7 +40,10 @@ test('an admin adds, disables, and removes a provider allowlist entry', async ({
   await page.route('**/api/v1/admin/provider-allowlist/*', (route) => {
     const method = route.request().method()
     if (method === 'PUT') {
-      const body = route.request().postDataJSON() as { enabled: boolean; display_name: string | null }
+      const body = route.request().postDataJSON() as {
+        enabled: boolean
+        display_name: string | null
+      }
       const id = route.request().url().split('/provider-allowlist/')[1]
       rows = rows.map((r) => (r.id === id ? { ...r, ...body } : r))
       return route.fulfill({ json: rows.find((r) => r.id === id) })

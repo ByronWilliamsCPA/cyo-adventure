@@ -13,7 +13,12 @@ import { mockMe, seedGuardianSession } from './support/auth'
 
 const EMPTY_THRESHOLDS = {
   default_min_verdict: 'flag',
-  rows: [] as { age_band: string; category: string; min_verdict: string; min_score: number | null }[],
+  rows: [] as {
+    age_band: string
+    category: string
+    min_verdict: string
+    min_score: number | null
+  }[],
   known_categories: ['violence', 'language'],
 }
 
@@ -33,7 +38,10 @@ test.describe('moderation thresholds', () => {
     )
     await page.route('**/api/v1/admin/moderation-thresholds/*', (route) => {
       if (route.request().method() !== 'PUT') return route.fulfill({ status: 405 })
-      const body = route.request().postDataJSON() as { min_verdict: string; min_score: number | null }
+      const body = route.request().postDataJSON() as {
+        min_verdict: string
+        min_score: number | null
+      }
       const url = new URL(route.request().url())
       const category = url.searchParams.get('category') ?? ''
       const ageBand = url.pathname.split('/moderation-thresholds/')[1] ?? ''
@@ -164,9 +172,7 @@ test.describe('moderation dashboard', () => {
     // Applying a suggestion changes live surfacing behavior, so it too is
     // gated behind a confirm dialog (main's 2026-07-16 UX pass); the upsert
     // fires only from "Confirm apply", not the row button itself.
-    await page
-      .getByRole('button', { name: 'Apply: raise violence (5-8) to flag' })
-      .click()
+    await page.getByRole('button', { name: 'Apply: raise violence (5-8) to flag' }).click()
     await page.getByRole('button', { name: 'Confirm apply' }).click()
 
     await expect.poll(() => upsertPosted).toBe(true)

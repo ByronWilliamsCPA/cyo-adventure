@@ -287,10 +287,13 @@ html:has(.landing) {
   box-shadow: var(--shadow-sm);
 }
 
-/* The ink hover border this rule used to set locally now lives in the design
-   system (Button.css .cyo-btn--primary:hover), where the same 1.01:1
-   dark-mode invisibility affected every surface. Kept here: the lift, which
-   is this page's own flourish. */
+/* border-color: ink because amber-deep against amber-hover is 1.01:1 in the
+   dark palette, so the hover border was invisible there, and a reduced-motion
+   user (who gets no translateY) had the shadow as the only remaining signal.
+   This declaration is LOAD-BEARING and must stay: .landing-cta is its own
+   class and never carries .cyo-btn, so it inherits nothing from the design
+   system's matching fix in Button.css. That rule and this one are intentional
+   parallels expressing the same contract on two different classes. */
 .landing-cta--primary:hover {
   border-color: var(--color-ink);
   box-shadow: var(--shadow-md);

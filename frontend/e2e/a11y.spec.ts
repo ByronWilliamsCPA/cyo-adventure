@@ -4,6 +4,7 @@ import { expect, test, type BrowserContext, type Page } from '@playwright/test'
 import { LANDING_HEADLINE } from '../src/landing/headline'
 import { mockEmptyConsole, mockMe, seedDeviceGrant, seedGuardianSession } from './support/auth'
 import { loadLanternStory } from './support/fixtures'
+import { LOGIN_HEADLINE } from '../src/guardian/loginHeadline'
 
 /**
  * Automated accessibility smoke, WCAG 2.1 A/AA rules via axe-core, across
@@ -216,7 +217,7 @@ test('the reader page has no detectable accessibility violations', async ({ page
 
 test('the guardian login page has no detectable accessibility violations', async ({ page }) => {
   await page.goto('/guardian/login')
-  await expect(page.getByRole('heading', { name: 'Sign in or create your account' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: LOGIN_HEADLINE })).toBeVisible()
   await assertNoViolations(page)
 })
 

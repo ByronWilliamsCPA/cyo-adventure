@@ -149,10 +149,24 @@ export function LandingPage() {
   // door href ... durably".
   const hydratePromiseRef = useRef<Promise<DeviceGrant | null> | null>(null)
   const hydrateOnce = useCallback(() => {
-    hydratePromiseRef.current ??= hydrateDeviceGrant().then((grant) => {
-      if (grant) setKidsDoorPath(KID_PICKER_PATH)
-      return grant
-    })
+    hydratePromiseRef.current ??= hydrateDeviceGrant()
+      .then((grant) => {
+        if (grant) setKidsDoorPath(KID_PICKER_PATH)
+        return grant
+      })
+      .catch(() => {
+        // #EDGE: external resources: hydrateDeviceGrant handles the storage
+        // failures it expects, so reaching here means something unforeseen.
+        // The memoised promise MUST NOT stay rejected: the click handler has
+        // already called preventDefault by the time it awaits this, so a
+        // rejection with no handler leaves the Kids door doing nothing at all,
+        // permanently, for the rest of the page's life. Clearing the ref lets
+        // a second attempt retry, and resolving null sends this attempt down
+        // the authorize path, which is the correct answer when the grant
+        // cannot be read.
+        hydratePromiseRef.current = null
+        return null
+      })
     return hydratePromiseRef.current
   }, [])
 
@@ -259,13 +273,10 @@ export function LandingPage() {
           share the space with strangers.
         </p>
       </div>
-      {/* Decorative sample shelf: fake spines drawn with the same
-          --cover-* gradients the real library uses, so the art direction
-          matches the product a family actually receives. Only the front
-          cover carries a title: the fanned back covers overlap (and Pip
-          stands in front), so labels there would render half-hidden.
-          Purely illustrative, so it is hidden from assistive tech. */}
-      {/* All three spines carry titles, anchored to the TOP of each cover.
+      {/* Decorative sample shelf: fake spines drawn with the same --cover-*
+          gradients the real library uses, so the art direction matches the
+          product a family actually receives.
+          All three spines carry titles, anchored to the TOP of each cover.
           The original build bottom-anchored them, where the fan overlap and
           the mascot both occluded the text, so they were cut back to the one
           unobstructed front cover. Top anchoring dodges both, which is what

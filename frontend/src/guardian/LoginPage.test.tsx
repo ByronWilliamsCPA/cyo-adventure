@@ -8,6 +8,7 @@ import type { AuthContextValue } from '../auth/authContext'
 import { getDeviceGrant, setDeviceGrant } from '../auth/deviceGrant'
 import type { Principal } from '../auth/types'
 import { DEVICE_MINT_WATCHDOG_MS, LoginPage, SIGN_IN_WATCHDOG_MS } from './LoginPage'
+import { LOGIN_HEADLINE } from './loginHeadline'
 
 const mockSignInWithOAuth = vi.fn()
 const mockSignInWithPassword = vi.fn()
@@ -234,9 +235,7 @@ describe('LoginPage password form', () => {
   // funnel dead-ends on a page that reads as sign-in-only.
   it('tells a new family that continuing with Google creates their account', () => {
     renderLogin()
-    expect(
-      screen.getByRole('heading', { name: 'Sign in or create your account', level: 1 })
-    ).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: LOGIN_HEADLINE, level: 1 })).toBeInTheDocument()
     expect(screen.getByText(/Continuing above creates your account/)).toBeInTheDocument()
   })
 
@@ -248,9 +247,7 @@ describe('LoginPage password form', () => {
     expect(screen.queryByText(/Continuing above creates your account/)).not.toBeInTheDocument()
     expect(screen.getByText(/Ask a grown-up to set up this device for you/)).toBeInTheDocument()
     // The heading is shared by both entry points and must survive the switch.
-    expect(
-      screen.getByRole('heading', { name: 'Sign in or create your account', level: 1 })
-    ).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: LOGIN_HEADLINE, level: 1 })).toBeInTheDocument()
   })
 
   it('shows the Apple button when VITE_ENABLE_APPLE_OAUTH is true', () => {

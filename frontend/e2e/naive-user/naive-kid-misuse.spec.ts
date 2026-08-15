@@ -218,15 +218,15 @@ test.describe('stale continuation anchor', () => {
       anchor_storybook_id: 's1',
     })
     await expect(
-      page.getByText("That story can't be continued right now. Pick another one, or send a new idea!")
+      page.getByText(
+        "That story can't be continued right now. Pick another one, or send a new idea!"
+      )
     ).toBeVisible()
     // The anchor is cleared: the "Continuing: ..." banner is gone and the
     // ordinary series-name field is back, so a retry cannot repeat the same
     // stale anchor.
     await expect(page.getByText('Continuing: The Lantern')).toHaveCount(0)
-    await expect(
-      page.getByLabel('Part of a series? Give it a name! (optional)')
-    ).toBeVisible()
+    await expect(page.getByLabel('Part of a series? Give it a name! (optional)')).toBeVisible()
 
     // Retry: the same idea (untouched by the failure) now sends as a plain,
     // anchor-less request.

@@ -88,12 +88,8 @@ test('assigning a sibling posts only the new profile id', async ({ page }) => {
     family_id: 'fam-a',
     profile_ids: ['p1', 'p2'],
   })
-  await page.route('**/api/v1/generation-jobs', (route) =>
-    route.fulfill({ json: JOBS })
-  )
-  await page.route('**/api/v1/profiles', (route) =>
-    route.fulfill({ json: PROFILES })
-  )
+  await page.route('**/api/v1/generation-jobs', (route) => route.fulfill({ json: JOBS }))
+  await page.route('**/api/v1/profiles', (route) => route.fulfill({ json: PROFILES }))
   let body: unknown = null
   await page.route('**/api/v1/storybooks/story-1/assignments', (route) => {
     if (route.request().method() === 'POST') {
@@ -111,7 +107,10 @@ test('assigning a sibling posts only the new profile id', async ({ page }) => {
   // Exactly one "Assign more" button: only the Approved job-1, never the
   // needs_review negative control job-2. Pins the pill gate (see JOBS comment).
   await expect(page.getByRole('button', { name: /assign more/i })).toHaveCount(1)
-  await page.getByRole('button', { name: /assign more/i }).first().click()
+  await page
+    .getByRole('button', { name: /assign more/i })
+    .first()
+    .click()
   await page.getByRole('checkbox', { name: /Reader A2/ }).click()
   await page.getByRole('button', { name: /^Assign$/ }).click()
   await expect.poll(() => body).toEqual({ profile_ids: ['p2'] })

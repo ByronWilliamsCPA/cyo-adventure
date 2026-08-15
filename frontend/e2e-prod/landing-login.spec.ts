@@ -3,6 +3,7 @@ import { expect, test } from '@playwright/test'
 import { LANDING_HEADLINE } from '../src/landing/headline'
 import { GUARDIAN_LOGIN_PATH } from '../src/routes'
 import { gotoResilient } from '../e2e-support/rate-limit'
+import { LOGIN_HEADLINE } from '../src/guardian/loginHeadline'
 
 /**
  * Unauthenticated public surfaces on LIVE production. These are the lightest
@@ -33,14 +34,14 @@ test.describe('public surfaces (unauthenticated)', () => {
 
   test('the guardian sign-in form renders its fields', async ({ page }) => {
     await gotoResilient(page, GUARDIAN_LOGIN_PATH)
-    // The heading is "Sign in or create your account" (not "Sign in", which is
-    // the submit button): every landing-funnel CTA lands here, so the heading
-    // has to admit that continuing with Google provisions a new account.
+    // LOGIN_HEADLINE, not the "Sign in" submit button: every landing-funnel
+    // CTA lands here, so the heading has to admit that continuing with Google
+    // provisions a new account.
     // exact:true on the field labels avoids matching the reset sub-form's
     // "Email for reset link" if the "Forgot your password?" toggle ever
     // renders its input into the DOM.
     await expect(
-      page.getByRole('heading', { name: 'Sign in or create your account', level: 1 })
+      page.getByRole('heading', { name: LOGIN_HEADLINE, level: 1 })
     ).toBeVisible()
     await expect(page.getByLabel('Email', { exact: true })).toBeVisible()
     await expect(page.getByLabel('Password', { exact: true })).toBeVisible()
