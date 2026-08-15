@@ -17,6 +17,7 @@ import {
 import { ThemeToggle } from '../theme/ThemeToggle'
 
 import { DemoAdventure } from './DemoAdventure'
+import { LANDING_HEADLINE } from './headline'
 import { formatMonthlyPrice, PRICING_TIERS } from './pricing'
 import './landing.css'
 
@@ -129,7 +130,7 @@ export function LandingPage() {
     <section className="landing-hero" aria-labelledby="landing-hero-heading">
       <div className="landing-hero__copy">
         <h1 className="landing-hero__heading" id="landing-hero-heading">
-          They pick the path. You approve every page.
+          {LANDING_HEADLINE}
         </h1>
         <p className="landing-hero__lede">
           CYO Adventure turns your child&apos;s ideas into branching storybooks, written for their

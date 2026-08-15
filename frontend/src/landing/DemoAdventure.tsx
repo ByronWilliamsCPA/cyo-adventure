@@ -5,7 +5,7 @@ import { Button } from '@ds/components/Button'
 import { ChoiceButton } from '@ds/components/ChoiceButton'
 import { GUARDIAN_LOGIN_PATH } from '../routes'
 
-import { DEMO_ENDING_COUNT, DEMO_START, DEMO_STORY } from './demoStory'
+import { DEMO_ENDING_COUNT, DEMO_PARENTS, DEMO_START, DEMO_STORY } from './demoStory'
 import type { DemoNodeId } from './demoStory'
 
 /**
@@ -19,8 +19,11 @@ import type { DemoNodeId } from './demoStory'
  * Endings found are tracked across replays ("You found 2 of 4"), because the
  * outro explicitly invites a replay: a counter that stayed at 1 after the
  * second ending would make the demo look broken at the exact moment it asked
- * for engagement. Finding all of them swaps in a completion line that carries
- * the badges pitch, the one place that idea lands better than a feature card.
+ * for engagement. The outro offers both "Back one choice" (the demo's
+ * miniature of the reader's real go-back feature, and the cheap route to a
+ * sibling ending) and a full restart. Finding all of them swaps in a
+ * completion line that carries the badges pitch, the one place that idea
+ * lands better than a feature card.
  *
  * Focus management: choosing replaces the passage (and its buttons), which
  * would otherwise drop keyboard focus to <body> and strand a screen-reader
@@ -37,6 +40,7 @@ export function DemoAdventure() {
 
   const node = DEMO_STORY[nodeId]
   const isEnding = node.endingTitle !== undefined
+  const parentId = DEMO_PARENTS[nodeId]
   const foundAll = foundEndings.size === DEMO_ENDING_COUNT
 
   useEffect(() => {
@@ -80,13 +84,18 @@ export function DemoAdventure() {
             {foundAll
               ? `You found all ${DEMO_ENDING_COUNT} endings! In real books, finding every ` +
                 'ending earns badges worth bragging about at dinner.'
-              : `You found ${foundEndings.size} of ${DEMO_ENDING_COUNT} endings. A real book ` +
-                'runs far bigger, about a hundred passages and a dozen endings, every path ' +
-                'written for your reader and approved by you.'}
+              : `You found ${foundEndings.size} of ${DEMO_ENDING_COUNT} endings. Real books run ` +
+                'much bigger, from a couple dozen passages for the youngest readers to a few ' +
+                'hundred for a ten-year-old, every path approved by you.'}
           </p>
           <div className="demo-adventure__outro-actions">
+            {parentId ? (
+              <Button variant="ghost" onClick={() => goTo(parentId)}>
+                Back one choice
+              </Button>
+            ) : null}
             <Button variant="ghost" onClick={() => goTo(DEMO_START)}>
-              Try a different path
+              Start over
             </Button>
             <Link className="landing-cta landing-cta--primary" to={GUARDIAN_LOGIN_PATH}>
               Get started free

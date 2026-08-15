@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test'
 
+import { LANDING_HEADLINE } from '../src/landing/headline'
 import { seedDeviceGrant } from './support/auth'
 
 /**
@@ -59,9 +60,7 @@ test('a new visitor follows the hero "Get started free" CTA straight to guardian
 }) => {
   await page.goto('/')
 
-  await expect(
-    page.getByRole('heading', { name: 'They pick the path. You approve every page.' })
-  ).toBeVisible()
+  await expect(page.getByRole('heading', { name: LANDING_HEADLINE })).toBeVisible()
   await page.locator('.landing-hero').getByRole('link', { name: 'Get started free' }).click()
 
   await expect(page).toHaveURL('/guardian/login')
@@ -102,12 +101,12 @@ test('the sample adventure plays through to an ending, counts it, and restarts',
     page.locator('.demo-adventure').getByRole('link', { name: 'Get started free' })
   ).toHaveAttribute('href', '/guardian/login')
 
-  // Replay reaches a second ending and the counter advances (the invitation
-  // to replay must not show a stale count).
-  await page.getByRole('button', { name: /try a different path/i }).click()
-  await expect(page.getByText(/brass lantern swings/i)).toBeVisible()
-  await page.getByRole('button', { name: /climb the mossy stairs/i }).click()
-  await page.getByRole('button', { name: /race the boat along the bank/i }).click()
+  // "Back one choice" (the reader's go-back feature in miniature) reaches a
+  // sibling ending and the counter advances (the invitation to replay must
+  // not show a stale count).
+  await page.getByRole('button', { name: /back one choice/i }).click()
+  await expect(page.getByText(/walls sparkle/i)).toBeVisible()
+  await page.getByRole('button', { name: /giggle back, twice/i }).click()
   await expect(page.getByText(/you found 2 of 4 endings/i)).toBeVisible()
 })
 

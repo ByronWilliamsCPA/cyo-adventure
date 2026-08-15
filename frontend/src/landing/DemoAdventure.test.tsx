@@ -47,21 +47,23 @@ describe('DemoAdventure', () => {
 
   // The outro invites a replay, so the counter must survive it: a "1 of 4"
   // that never moved after a second ending made the demo look broken at the
-  // exact moment it asked for engagement.
-  it('counts endings across replays', () => {
+  // exact moment it asked for engagement. "Back one choice" (the demo's
+  // miniature of the reader's real go-back feature) is the cheap route to a
+  // sibling ending and must land on the ending's actual parent scene.
+  it('counts endings across replays, including via Back one choice', () => {
     renderDemo()
     fireEvent.click(screen.getByRole('button', { name: /slip into the glittering cave/i }))
     fireEvent.click(screen.getByRole('button', { name: /peek behind the stone/i }))
     expect(screen.getByText(/you found 1 of 4 endings/i)).toBeInTheDocument()
 
-    fireEvent.click(screen.getByRole('button', { name: /try a different path/i }))
-    fireEvent.click(screen.getByRole('button', { name: /slip into the glittering cave/i }))
+    // Back one choice returns to the cave scene, not the start.
+    fireEvent.click(screen.getByRole('button', { name: /back one choice/i }))
+    expect(screen.getByText(/walls sparkle like a sky full of green stars/i)).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: /giggle back, twice/i }))
     expect(screen.getByText(/you found 2 of 4 endings/i)).toBeInTheDocument()
 
     // Revisiting an already-found ending does not double-count.
-    fireEvent.click(screen.getByRole('button', { name: /try a different path/i }))
-    fireEvent.click(screen.getByRole('button', { name: /slip into the glittering cave/i }))
+    fireEvent.click(screen.getByRole('button', { name: /back one choice/i }))
     fireEvent.click(screen.getByRole('button', { name: /peek behind the stone/i }))
     expect(screen.getByText(/you found 2 of 4 endings/i)).toBeInTheDocument()
   })
@@ -80,20 +82,20 @@ describe('DemoAdventure', () => {
       // Restart between paths; after the last ending, stay on the outro so
       // the completion state below is what renders.
       if (index < paths.length - 1) {
-        fireEvent.click(screen.getByRole('button', { name: /try a different path/i }))
+        fireEvent.click(screen.getByRole('button', { name: /start over/i }))
       }
     })
     expect(screen.getByText(/you found all 4 endings!/i)).toBeInTheDocument()
     expect(screen.getByText(/earns badges/i)).toBeInTheDocument()
   })
 
-  it('restarts from the beginning via "Try a different path"', () => {
+  it('restarts from the beginning via "Start over"', () => {
     renderDemo()
     fireEvent.click(screen.getByRole('button', { name: /climb the mossy stairs/i }))
     fireEvent.click(screen.getByRole('button', { name: /race the boat along the bank/i }))
     expect(screen.getByText('Won by a Whisker')).toBeInTheDocument()
 
-    fireEvent.click(screen.getByRole('button', { name: /try a different path/i }))
+    fireEvent.click(screen.getByRole('button', { name: /start over/i }))
     expect(screen.getByText(/brass lantern swings/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /slip into the glittering cave/i })).toBeVisible()
   })

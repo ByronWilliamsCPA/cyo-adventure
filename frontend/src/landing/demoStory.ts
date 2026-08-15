@@ -17,7 +17,13 @@
  */
 
 export type DemoNodeId =
-  'start' | 'cave' | 'hill' | 'end_glowbug' | 'end_echo' | 'end_letter' | 'end_race'
+  | 'start'
+  | 'cave'
+  | 'hill'
+  | 'end_glowbug'
+  | 'end_echo'
+  | 'end_letter'
+  | 'end_race'
 
 export interface DemoChoice {
   label: string
@@ -28,9 +34,11 @@ export interface DemoChoice {
  * Discriminated: a node is either a branch (at least one choice, no ending
  * title) or an ending (a title, no choices). The union makes a dead end, a
  * node with neither, or a confused node with both a type error rather than a
- * runtime state DemoAdventure has to defend against.
+ * runtime state DemoAdventure has to defend against. Nodes are identified by
+ * their key in DEMO_STORY; there is deliberately no `id` field to drift out
+ * of sync with the key.
  */
-export type DemoNode = { id: DemoNodeId; text: string } & (
+export type DemoNode = { text: string } & (
   | { choices: [DemoChoice, ...DemoChoice[]]; endingTitle?: undefined }
   | { choices?: undefined; endingTitle: string }
 )
@@ -39,7 +47,6 @@ export const DEMO_START: DemoNodeId = 'start'
 
 export const DEMO_STORY: Record<DemoNodeId, DemoNode> = {
   start: {
-    id: 'start',
     text:
       'A brass lantern swings at the mouth of Fernwhistle Cave. Pip the fox ' +
       'sniffs the evening air and looks up at you. "Two trails," Pip ' +
@@ -50,7 +57,6 @@ export const DEMO_STORY: Record<DemoNodeId, DemoNode> = {
     ],
   },
   cave: {
-    id: 'cave',
     text:
       'Inside, the walls sparkle like a sky full of green stars. Behind a ' +
       'round stone, something tiny giggles.',
@@ -60,7 +66,6 @@ export const DEMO_STORY: Record<DemoNodeId, DemoNode> = {
     ],
   },
   hill: {
-    id: 'hill',
     text:
       'From the hilltop you spot a paper boat riding the creek below, a tiny ' +
       'letter tucked in its fold.',
@@ -70,28 +75,24 @@ export const DEMO_STORY: Record<DemoNodeId, DemoNode> = {
     ],
   },
   end_glowbug: {
-    id: 'end_glowbug',
     endingTitle: 'A New Friend',
     text:
       'A baby glowbug! She hops onto your shoulder and lights the whole way ' +
       'home. Pip names her Twinkle.',
   },
   end_echo: {
-    id: 'end_echo',
     endingTitle: 'The Laughing Cave',
     text:
       'The giggle giggles back. Then the cave giggles. Soon the whole hill ' +
       'is laughing with you, and Pip laughs loudest of all.',
   },
   end_letter: {
-    id: 'end_letter',
     endingTitle: 'The Moon Picnic',
     text:
       'The letter says: "You found me! The otters are throwing a moon ' +
       'picnic, and you are invited." Pip is already packing snacks.',
   },
   end_race: {
-    id: 'end_race',
     endingTitle: 'Won by a Whisker',
     text:
       'You win by a whisker! The boat bumps ashore at your feet and unfolds ' +
@@ -107,3 +108,19 @@ export const DEMO_STORY: Record<DemoNodeId, DemoNode> = {
 export const DEMO_ENDING_COUNT = Object.values(DEMO_STORY).filter(
   (node) => node.endingTitle !== undefined
 ).length
+
+/**
+ * Reverse edges: for each node, the branch that links to it. Drives the
+ * outro's "Back one choice" action (the demo's miniature of the reader's
+ * real go-back feature) without hand-maintaining a second copy of the graph.
+ * Derived, so it can never disagree with DEMO_STORY.
+ */
+export const DEMO_PARENTS: Partial<Record<DemoNodeId, DemoNodeId>> = (() => {
+  const parents: Partial<Record<DemoNodeId, DemoNodeId>> = {}
+  for (const [id, node] of Object.entries(DEMO_STORY) as [DemoNodeId, DemoNode][]) {
+    for (const choice of node.choices ?? []) {
+      parents[choice.to] = id
+    }
+  }
+  return parents
+})()

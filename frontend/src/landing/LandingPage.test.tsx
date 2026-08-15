@@ -8,6 +8,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { setDeviceGrant } from '../auth/deviceGrant'
 import { _resetDbHandle } from '../offline/db'
 import { ThemeProvider } from '../theme/ThemeProvider'
+import { LANDING_HEADLINE } from './headline'
 import { LandingPage } from './LandingPage'
 import { PRICING_TIERS } from './pricing'
 
@@ -48,12 +49,7 @@ describe('LandingPage', () => {
 
   it('leads with the funnel value proposition and keeps the app name as the page title', () => {
     renderLanding()
-    expect(
-      screen.getByRole('heading', {
-        level: 1,
-        name: 'They pick the path. You approve every page.',
-      })
-    ).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: LANDING_HEADLINE })).toBeInTheDocument()
     // The brand moved from the <h1> to the topbar wordmark (and the document
     // title): the heading now carries the pitch, the wordmark the identity.
     expect(document.title).toBe('CYO Adventure')
