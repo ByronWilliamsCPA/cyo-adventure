@@ -6941,6 +6941,96 @@ plan somewhere. <code>applied</code> means the change is merged and the <code>Re
 <td>applied</td>
 <td><code>src/cyo_adventure/validator/paths.py::covering_paths</code>; <code>tests/unit/test_paths.py::test_covering_paths_keeps_the_zero_edge_reading_when_the_start_node_is_an_ending</code></td>
 </tr>
+<tr>
+<td>AL-353</td>
+<td>2026-08-15</td>
+<td>W16 fill-guide ablation setup (docs/planning/evidence/w16-fill-guide-ablation)</td>
+<td>tooling</td>
+<td><code>bind_theme.py</code>'s documented no-bindings path (render the contract's <code>default_binding</code> as the reference theme) is structurally unusable on any contract whose <code>legacy_lexicon</code> names its own default values, which is by construction most of them: <code>validate_slot_bindings</code> has an <code>is_default</code> escape for exactly this self-collision (slots.py:639) and the CLI never passes it (bind_theme.py:181), so the school-garden default binding is rejected with 19 legacy-lexicon violations.</td>
+<td>Pass <code>is_default=True</code> when the bindings source is <code>contract.default_binding</code>, and add a regression test binding a contract's own default.</td>
+<td>open</td>
+<td></td>
+</tr>
+<tr>
+<td>AL-354</td>
+<td>2026-08-15</td>
+<td>W16 fill-guide ablation design</td>
+<td>process</td>
+<td>No generation run artifact records a hash of the rendered prompt or the drafting-guide text, so a prompt-content ablation cannot be mined from historical runs and had to be run forward; any past-vs-present comparison silently spans unknown prompt versions.</td>
+<td>Record a template hash and guide hash in every generation run record (books.jsonl and the pipeline event log) so prompt changes are attributable and historical comparisons can stratify by prompt version.</td>
+<td>open</td>
+<td></td>
+</tr>
+<tr>
+<td>AL-355</td>
+<td>2026-08-15</td>
+<td>D-7c binding-notes arm setup (docs/planning/evidence/d7c-binding-notes)</td>
+<td>process</td>
+<td>The D-7/D-7b author instructions were never saved, so the named third arm could not be run against the frozen fills: with the protocol unrecoverable, comparability required re-baselining both prior arms with fresh authors under a newly written instruction file. The scorer also shows every historical clocktower fill is third person (you-density 0.0 per 1000), an undeclared register no production fill would share.</td>
+<td>Every fill experiment commits its author instruction file next to its artifacts before any author runs (D-7c and W16 now do); re-derive cross-experiment comparisons only at matched instructions.</td>
+<td>open</td>
+<td></td>
+</tr>
+<tr>
+<td>AL-356</td>
+<td>2026-08-15</td>
+<td>D-7c and W16 author runs, 2026-08-15 session</td>
+<td>process</td>
+<td>Twelve parallel isolated frontier authors exhausted the shared session usage budget before any finished: all twelve terminated on the provider's usage reset with zero output files, roughly forty minutes into a window planned as six hours. Because every input was committed before launch, the arms are clean to re-run from git; had staging lived only in the session scratchpad the experiment would be unrecoverable.</td>
+<td>Size author waves to the remaining usage window (launch in waves of two to four, not twelve), and keep the commit-inputs-before-launch rule mandatory for any multi-agent experiment.</td>
+<td>open</td>
+<td></td>
+</tr>
+<tr>
+<td>AL-357</td>
+<td>2026-08-15</td>
+<td>D-7c and W16 author relaunch, second wave, 2026-08-15 session</td>
+<td>process</td>
+<td>Halving the wave (six authors, not twelve) did not survive either: the relaunch on a fresh window died on the next usage reset with four decisional strata written and zero fills, because a window already carrying a day's ordinary use does not hold six concurrent frontier-effort authors at roughly 50k context tokens each. Partial outputs from a dead author are contamination, not progress: a decisional stratum and its fill are one author's coherent work and must not be mixed across instances.</td>
+<td>Launch experiment waves of three or fewer at the start of a fresh usage window, checked against the reset clock before launch; delete any partial outputs from an interrupted wave before relaunching.</td>
+<td>open</td>
+<td></td>
+</tr>
+<tr>
+<td>AL-358</td>
+<td>2026-08-15</td>
+<td>W16 fill-guide ablation, pre-merge review of PR #715</td>
+<td>tooling</td>
+<td>The W16 prompt builder appended a <code>LABEL_FREEZE</code> block but left <code>fill.md</code>'s three label-rewrite instructions in place, and one of them sits inside <code>## Your Task</code>, AFTER the freeze, so the last word an author reads is "every choice label replaced by final choice text". All three generated prompts shipped self-contradicting. The pilot's only control is that labels stay byte-identical while bodies vary, so an author following the later instruction would have silently destroyed the measurement, and nothing in the rig checked for the contradiction.</td>
+<td>Neutralise every conflicting passage inside <code>render_prompt</code> (identically across all arms, so the ablation is not confounded) and assert each substitution lands, so a future <code>fill.md</code> edit fails the build instead of quietly emitting a contradictory prompt.</td>
+<td>applied</td>
+<td><code>docs/planning/evidence/w16-fill-guide-ablation/build_variants.py::LABEL_REWRITE_NEUTRALISATIONS</code>; all three <code>PROMPT_*.md</code> regenerated, guide word counts unchanged at 3,517/2,558/101</td>
+</tr>
+<tr>
+<td>AL-359</td>
+<td>2026-08-15</td>
+<td>Recognition protocol pilot, pre-merge review of PR #715</td>
+<td>tooling</td>
+<td>A blinding rule stated in prose is not a blinding rule. <code>render_script</code> was documented as "child-visible surfaces only" and then emitted <code>## Scene 7 (an ending: ...)</code>, printing the graph's own <code>is_ending</code> flag. Because sibling books share topology by construction, that heading told the rater "both books end at scene 7" in the renderer's voice rather than the prose's, on the single most decision-bearing instrument in the diversity programme.</td>
+<td>Render only child-visible text (keep the ending title, drop the classification), and declare the residual leak in the docstring rather than leaving it implicit. A renderer for a blind protocol should be reviewed field by field against the blinding claim.</td>
+<td>applied</td>
+<td><code>docs/planning/evidence/recognition-protocol-pilot/protocol.py::render_script</code>; verified 0 occurrences of the classification in a rendered 26-scene prompt</td>
+</tr>
+<tr>
+<td>AL-360</td>
+<td>2026-08-15</td>
+<td>Recognition protocol pilot, pre-merge review of PR #715</td>
+<td>validator</td>
+<td>The protocol pre-registered a verdict contract (one <code>per_scene</code> entry per scene, no revision of a committed yes, <code>first_yes_position</code> consistent with the array) and shipped nothing that enforced it, while <code>reading_order</code> silently skipped an unresolvable <code>start_node</code> or <code>choice.target</code>. Together those produce the worst failure mode available to an instrument: a dangling edge shortens the rendered book, the rater returns one verdict per rendered scene, and the verdict file looks well-formed while measuring a smaller book than the one named. The prompt's own example was also invalid JSON (a literal <code>...</code>).</td>
+<td>Ship the validator with the pre-registration, not after the verdicts: add <code>validate_verdict</code>, raise on unresolvable graph references instead of skipping them, and make the worked example parse. A pre-registered rule with no code behind it should be treated as unenforced.</td>
+<td>applied</td>
+<td><code>docs/planning/evidence/recognition-protocol-pilot/protocol.py::validate_verdict</code> plus the <code>validate</code> subcommand; exercised against 9 verdict shapes including the short-<code>per_scene</code> symptom</td>
+</tr>
+<tr>
+<td>AL-361</td>
+<td>2026-08-15</td>
+<td>D-7c and W16 pair scorer, pre-merge review of PR #715</td>
+<td>tooling</td>
+<td>An evidence script whose measurement target IS a repo-banned character trips the repo-wide guard by existing: <code>score_fills.py</code> counted em-dashes with a literal U+2014 and failed <code>tests/unit/test_check_no_em_dash.py</code>, which is the only enforcement CI has (the hook is <code>stages: [pre-commit]</code>, and a container without hooks installed ships the violation straight to CI).</td>
+<td>Write the banned character as an escape (<code>"\u2014"</code>), which is the identical string at runtime, or use the guard's <code>em-dash-ok</code> annotation. Worth stating once because every future prose-measurement script hits it.</td>
+<td>applied</td>
+<td>both copies of <code>score_fills.py</code>; known-answer anchors 2.33 and 13.59 per 1000 reproduce exactly after the change</td>
+</tr>
 </tbody>
 </table>
 <hr />
@@ -6980,7 +7070,7 @@ plan somewhere. <code>applied</code> means the change is merged and the <code>Re
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 14, 2026 19:09:38 UTC">August 14, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 15, 2026 19:46:46 UTC">August 15, 2026</span>
   </span>
 
     
