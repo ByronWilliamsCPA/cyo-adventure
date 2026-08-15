@@ -10,7 +10,10 @@ import { setDeviceGrant } from '../auth/deviceGrant'
 
 // One-shot failure injection for the hydrate. vi.mock is hoisted, so the flag
 // has to be too; everything else in the module is the real implementation.
-const hydrateControl = vi.hoisted(() => ({ failNext: false }))
+const hydrateControl = vi.hoisted(() => ({
+  failNext: false,
+  gate: null as Promise<void> | null,
+}))
 vi.mock('../auth/deviceGrant', async (importOriginal) => {
   const actual = await importOriginal<typeof import('../auth/deviceGrant')>()
   return {
@@ -20,6 +23,8 @@ vi.mock('../auth/deviceGrant', async (importOriginal) => {
         hydrateControl.failNext = false
         throw new Error('injected: IndexedDB unavailable')
       }
+      // Lets a test hold the read open and revoke underneath it.
+      if (hydrateControl.gate) await hydrateControl.gate
       return actual.hydrateDeviceGrant(...args)
     },
   }
@@ -60,6 +65,7 @@ function seedValidGrant() {
 
 beforeEach(() => {
   hydrateControl.failNext = false
+  hydrateControl.gate = null
   globalThis.indexedDB = new IDBFactory()
   _resetDbHandle()
   localStorage.clear()
@@ -508,6 +514,46 @@ describe('LandingPage', () => {
       hydrateControl.failNext = true
       fireEvent.click(screen.getByRole('link', { name: /kids/i }), { button: 0 })
       await waitFor(() => expect(screen.getByText('guardian login landing')).toBeInTheDocument())
+    })
+
+    // The narrow resurrection race the run-once guard does NOT cover: a single
+    // hydrate that straddles a revoke. The mirror read is already in flight
+    // when the other tab clears localStorage, clearDeviceGrantMirror has not
+    // landed yet, so the read returns the doomed grant and writes it back
+    // AFTER the storage listener downgraded the door. A revoked device must
+    // not be able to re-acquire a usable grant this way.
+    it('discards a hydrate that a revoke overtook', async () => {
+      seedValidGrant()
+      await new Promise((resolve) => setTimeout(resolve, 50))
+      localStorage.removeItem('device_grant')
+
+      renderLanding()
+      const kidDoor = screen.getByRole('link', { name: /kids/i })
+
+      // Hold the read open, then start it.
+      let openGate = () => {}
+      hydrateControl.gate = new Promise<void>((resolve) => {
+        openGate = resolve
+      })
+      fireEvent.focus(kidDoor)
+
+      // The revoke lands while the read is still in flight.
+      act(() => {
+        localStorage.removeItem('device_grant')
+        window.dispatchEvent(new StorageEvent('storage', { key: 'device_grant' }))
+      })
+
+      // Now let the mirror read complete and write its stale grant back.
+      await act(async () => {
+        openGate()
+        await new Promise((resolve) => setTimeout(resolve, 50))
+      })
+
+      expect(screen.getByRole('link', { name: /kids/i })).toHaveAttribute(
+        'href',
+        '/guardian/login?intent=authorize-device'
+      )
+      expect(localStorage.getItem('device_grant')).toBeNull()
     })
 
     // S5: hydrateDeviceGrant reaches offline/db.ts, which OPENS (and so

@@ -3,7 +3,7 @@ import type { MouseEvent } from 'react'
 import { Link, useNavigate } from 'react-router'
 
 import { SkipLink } from '@ds/components/SkipLink'
-import { hasValidDeviceGrant, hydrateDeviceGrant } from '../auth/deviceGrant'
+import { clearDeviceGrant, hasValidDeviceGrant, hydrateDeviceGrant } from '../auth/deviceGrant'
 import type { DeviceGrant } from '../auth/deviceGrant'
 import { usePageTitle } from '../hooks/usePageTitle'
 import { Mascot } from '../kid/Mascot'
@@ -147,10 +147,39 @@ export function LandingPage() {
   // #VERIFY: LandingPage.test.tsx "kids door" post-hydrate case, "recovers a
   // mirrored grant on a touch tap with no hover or focus", and "downgrades the
   // door href ... durably".
+  // Revocation generation, bumped by the storage listener below every time it
+  // observes the grant go away. A hydrate captures the value when it STARTS
+  // and discards its own result if the value moved while the read was in
+  // flight, because that means a revoke landed underneath it.
+  //
+  // Without this there is a second, narrower resurrection race than the
+  // re-arming one described above, and the run-once guard does not cover it:
+  // one hydrate straddling a revoke. The mirror read is already in flight when
+  // the other tab clears localStorage; clearDeviceGrantMirror has not landed
+  // yet (it is fire-and-forget), so the read returns the doomed grant,
+  // hydrateDeviceGrant writes it back to localStorage, and the door upgrades
+  // to /kids AFTER the storage listener downgraded it. The device then looks
+  // authorized to a child until a backend call rejects the stale token.
+  // #CRITICAL: security: a revoked device must not be able to re-acquire a
+  // usable grant from a stale mirror. The generation check is what enforces
+  // last-writer-wins in favour of the REVOKE, and clearDeviceGrant undoes the
+  // write hydrateDeviceGrant already performed.
+  // #VERIFY: LandingPage.test.tsx "discards a hydrate that a revoke overtook".
+  const revokeGenerationRef = useRef(0)
+
   const hydratePromiseRef = useRef<Promise<DeviceGrant | null> | null>(null)
   const hydrateOnce = useCallback(() => {
+    const startedAtGeneration = revokeGenerationRef.current
     hydratePromiseRef.current ??= hydrateDeviceGrant()
       .then((grant) => {
+        if (revokeGenerationRef.current !== startedAtGeneration) {
+          // A revoke overtook this read. hydrateDeviceGrant has already
+          // written the mirrored grant back into localStorage, so undo it
+          // (this also clears the mirror the revoke was racing to delete).
+          clearDeviceGrant()
+          setKidsDoorPath(AUTHORIZE_DEVICE_PATH)
+          return null
+        }
         if (grant) setKidsDoorPath(KID_PICKER_PATH)
         return grant
       })
@@ -235,7 +264,11 @@ export function LandingPage() {
   // synchronous read, and setState with an unchanged value is a no-op.
   useEffect(() => {
     function rederiveKidsDoor() {
-      setKidsDoorPath(hasValidDeviceGrant() ? KID_PICKER_PATH : AUTHORIZE_DEVICE_PATH)
+      const valid = hasValidDeviceGrant()
+      // A grant that has GONE is a revoke, and an in-flight hydrate must not
+      // be allowed to undo it (see revokeGenerationRef above).
+      if (!valid) revokeGenerationRef.current += 1
+      setKidsDoorPath(valid ? KID_PICKER_PATH : AUTHORIZE_DEVICE_PATH)
     }
     window.addEventListener('storage', rederiveKidsDoor)
     return () => {
