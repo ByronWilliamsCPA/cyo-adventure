@@ -418,6 +418,38 @@ describe('LandingPage', () => {
       await waitFor(() => expect(screen.getByText('kid picker landing')).toBeInTheDocument())
     })
 
+    // The interception exists only to resolve an UNRESOLVED door. On a device
+    // that already holds a grant the handler must get out of the way and let
+    // the Link navigate normally.
+    it('does not intercept the click when the grant is already resolved', async () => {
+      seedValidGrant()
+      renderLanding()
+      const kidDoor = screen.getByRole('link', { name: /kids/i })
+      expect(kidDoor).toHaveAttribute('href', '/kids')
+
+      fireEvent.click(kidDoor, { button: 0 })
+      await waitFor(() => expect(screen.getByText('kid picker landing')).toBeInTheDocument())
+    })
+
+    // preventDefault on a modified click would break the browser's own
+    // open-in-new-tab, so the handler leaves those alone and they follow the
+    // href as it stands. Asserted because the comment claims it.
+    it('leaves modified clicks to the browser so open-in-new-tab still works', async () => {
+      seedValidGrant()
+      await new Promise((resolve) => setTimeout(resolve, 50))
+      localStorage.removeItem('device_grant')
+
+      renderLanding()
+      const kidDoor = screen.getByRole('link', { name: /kids/i })
+      fireEvent.click(kidDoor, { button: 0, metaKey: true })
+
+      // No in-app navigation happened: the landing page is still mounted, and
+      // the visitor was NOT pulled to the picker behind a new-tab gesture.
+      await new Promise((resolve) => setTimeout(resolve, 50))
+      expect(screen.queryByText('kid picker landing')).toBeNull()
+      expect(screen.getByRole('link', { name: /kids/i })).toBeInTheDocument()
+    })
+
     // The same path with nothing to recover must still reach the authorize
     // flow rather than stranding the visitor on the landing page.
     it('falls through to device authorization when no mirrored grant exists', async () => {
