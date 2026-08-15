@@ -501,6 +501,7 @@ substantially the same work under different headings. Do not triple-book.
 | UW-C249 | `AL-354` Generation run artifacts carry no prompt or guide hash, so prompt-content changes are unattributable across runs and the W16 ablation had to run forward instead of mining history. Add template and guide hashes to run records and the pipeline event log. | now | unscheduled |
 | UW-C250 | `AL-355` Experiment author-instruction files were historically unsaved (D-7/D-7b), forcing full re-baselines to run the named third arm. Adopt the commit-instructions-before-launch rule as a standing requirement in the measurement workplan's admission rules; D-7c and W16 already comply. | now | unscheduled |
 | UW-C251 | `AL-356` Multi-agent fill experiments are usage-window-bounded: twelve parallel authors died on the provider reset with zero output. Add wave sizing and a commit-inputs-first precondition to the experiment runbook so an interrupted run always resumes from git. | now | unscheduled |
+| UW-C252 | `AL-357` A halved author wave (six) also exhausted a mid-day usage window, leaving four contaminating partial strata. Encode the experiment-wave rule (three or fewer authors, fresh-window launch, delete partials before relaunch) in the resume runbook of handoff-story-quality-techniques-2026-08-15.md and in the measurement workplan when W16 is adopted. | now | unscheduled |
 
 ## Cluster D: untracked GitHub issues
 
