@@ -198,7 +198,7 @@ Audited 2026-08-02 against twelve areas. The "can it fail" column is the one tha
 | Authentication edge cases | PARTIAL | Yes; role-change and concurrent-session slices absent |
 | Duplicate / divergent workflows | PARTIAL | Mostly no |
 | DB structure and field types | COVERED | Yes |
-| Query efficiency / N+1 | PARTIAL | Yes for 2 of 32 routers |
+| Query efficiency / N+1 | PARTIAL | Yes for 2 of 37 routers (the 2 is as measured; the denominator was recorded as 32 and is refreshed here, so the ratio does not read better than it is) |
 | Error handling and logging | PARTIAL | Yes; one test pins a gap rather than closing it |
 | Hardcoded credentials / keys | PARTIAL | Local pre-commit only; no CI secret scan |
 | Security response headers | PARTIAL | Yes for FastAPI; no gate on the nginx edge |
@@ -2261,7 +2261,7 @@ labels. Nothing currently asserts a policy over client storage and no lint rule 
 - **Status:** mechanism unproven
 - **Check:** The deployed route inventory, methods, auth dependencies, and audience designation are
   enumerated and reconciled against intent; undocumented or accidentally public routes are
-  reported. Material here: 32 routers, and orphaned endpoints outlive the UI that called them
+  reported. Material here: 37 routers, and orphaned endpoints outlive the UI that called them
   [Secondary class recorded in the source table: DYNAMIC.]
 
 URL parsing belongs to input handling; destination authorization belongs to egress. O-21 is owned

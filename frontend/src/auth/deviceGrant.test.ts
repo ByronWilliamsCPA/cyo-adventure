@@ -12,6 +12,7 @@ import {
   hydrateDeviceGrant,
   isDeviceGrantAuthRoute,
   isDeviceGrantExpired,
+  isDeviceGrantRevocation,
   setDeviceGrant,
 } from './deviceGrant'
 
@@ -210,4 +211,35 @@ describe('isDeviceGrantAuthRoute', () => {
 
 afterEach(() => {
   localStorage.clear()
+})
+
+describe('isDeviceGrantRevocation', () => {
+  // Reads the event payload rather than storage, because a landing-page
+  // hydrate can restore the grant before the event is delivered; storage is
+  // then already lying about whether a removal happened.
+  it('treats a null newValue on the grant key as a removal', () => {
+    expect(
+      isDeviceGrantRevocation(new StorageEvent('storage', { key: 'device_grant', newValue: null }))
+    ).toBe(true)
+  })
+
+  it('treats a whole-storage clear (null key) as a removal', () => {
+    expect(isDeviceGrantRevocation(new StorageEvent('storage', { key: null }))).toBe(true)
+  })
+
+  it('does not treat a grant being written as a removal', () => {
+    expect(
+      isDeviceGrantRevocation(
+        new StorageEvent('storage', { key: 'device_grant', newValue: '{"token":"t"}' })
+      )
+    ).toBe(false)
+  })
+
+  it('ignores other keys being removed', () => {
+    expect(
+      isDeviceGrantRevocation(
+        new StorageEvent('storage', { key: 'something_else', newValue: null })
+      )
+    ).toBe(false)
+  })
 })

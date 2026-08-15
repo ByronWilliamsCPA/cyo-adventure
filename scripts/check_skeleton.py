@@ -428,7 +428,7 @@ def _read_time_direction_report(skeleton: dict[str, Any]) -> str | None:
     reads a node's word count through ``node_word_count``, which substitutes
     a ``<<FILL ... words=N ...>>`` directive's declared ``N`` for its
     placeholder body. What it does not say is which way a breach runs, and
-    the two directions need different remedies (UW-C256, AL-380, AL-384): an
+    the two directions need different remedies (UW-C261, AL-391, AL-395): an
     UNDER-declared skeleton is a plain metadata error (a hint-sized fill will
     overrun the clock), while an OVER-declared one, concentrated at the
     longest cells, more often means the author recorded a typical read of a

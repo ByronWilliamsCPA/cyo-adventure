@@ -1,10 +1,10 @@
-"""Unit tests for PL-23's skeleton-context direction report (UW-C256).
+"""Unit tests for PL-23's skeleton-context direction report (UW-C261).
 
-AL-380 found that PL-23 (``metadata.estimated_minutes`` vs the derived
+AL-391 found that PL-23 (``metadata.estimated_minutes`` vs the derived
 fastest-finish clock) already fires against a catalog skeleton, since its
 node-word count reads a ``<<FILL ... words=N ...>>`` directive's declared
 ``N`` instead of prose; a skeleton can therefore declare a clock its own
-hints cannot satisfy before a single word is written. AL-384 measured the
+hints cannot satisfy before a single word is written. AL-395 measured the
 catalog-wide incidence and found the breaches split into two populations
 needing different remedies: an UNDER-declared skeleton is a plain metadata
 error (a hint-sized fill will overrun the clock), while an OVER-declared one
@@ -264,7 +264,7 @@ def test_direction_report_is_none_within_tolerance() -> None:
 
 # ---------------------------------------------------------------------------
 # End-to-end via scripts/check_skeleton.py's CLI, proving the report is
-# printed on a bare invocation: no --headroom, no --strict (UW-C256's "runs
+# printed on a bare invocation: no --headroom, no --strict (UW-C261's "runs
 # when a skeleton is validated", not only under an authoring flag).
 # ---------------------------------------------------------------------------
 

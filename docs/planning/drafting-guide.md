@@ -141,10 +141,10 @@ The validator checks against this target with the `tolerance` defined in the sto
 
 The `words/sentence` and `syllables/word` columns are **measured**, not aspirational: they are the
 mean and interquartile range over every committed node that actually lands inside its band under
-the corrected syllable counter (`AL-388`), 4,173 nodes across 31 books. Write to those numbers and
+the corrected syllable counter (`AL-399`), 4,173 nodes across 31 books. Write to those numbers and
 the grade follows. The reference book is the highest in-band book in that band; opening it and
 matching its sentence shape is the fastest route to band, and is what four independent drafting
-agents each discovered for themselves before it was written down (`AL-381`).
+agents each discovered for themselves before it was written down (`AL-392`).
 
 | Age band | FK target | words/sentence | syllables/word | Reference book | Guidance |
 |----------|-----------|----------------|----------------|----------------|----------|
@@ -171,20 +171,20 @@ with the checker's own function, never by eye:
 ```python
 from cyo_adventure.validator.reading_level import score_body
 
-grade = score_body(node_body)   # None for <20 words or an unfilled <<FILL>> directive
+grade = score_body(node_body)  # None for <20 words or an unfilled <<FILL>> directive
 ```
 
 **Do not chase irregular past-tense verbs.** Earlier guidance to prefer `went` over `walked` was
 an artefact of a counting bug, not a craft truth: the old counter scored every regular `-ed` past
 one syllable too high, so the swap looked like it bought something. Measured over ten
 regular/irregular pairs, it saved 10 syllables under the broken counter and 1 under the corrected
-one (`AL-388`). Choose the verb that says what happened.
+one (`AL-399`). Choose the verb that says what happened.
 
 > **The targets themselves are under review.** The per-book `metadata.reading_level.target` values
 > were set while the counter was biased about a quarter of a grade high, so the corrected counter
 > reads the whole committed corpus roughly 0.27 grades lower than it used to. The targets have
 > deliberately not been shifted to compensate, since that would bake the bug into the spec, but
-> until they are re-derived (`UW-C254`, `AL-389`) a 3-5 or 5-8 in-band figure is provisional, and
+> until they are re-derived (`UW-C259`, `AL-400`) a 3-5 or 5-8 in-band figure is provisional, and
 > the generation repair loop may push young-band prose slightly harder than the prose already
 > approved.
 

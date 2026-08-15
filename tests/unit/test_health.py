@@ -2,7 +2,7 @@
 
 Covers liveness, readiness, startup, and health alias endpoints, plus the
 check_database (happy path and failure path), check_cache, and
-check_external_service helper functions.
+readiness helper functions.
 
 No live database is used; get_session is patched with an async context manager.
 """
@@ -1028,37 +1028,6 @@ class TestCheckGenerationQueue:
 
 
 # ---------------------------------------------------------------------------
-# check_external_service helper
-# ---------------------------------------------------------------------------
-
-
-class TestCheckExternalService:
-    """Tests for the check_external_service() placeholder helper."""
-
-    @pytest.mark.unit
-    @pytest.mark.asyncio
-    async def test_check_external_service_returns_true_status(self) -> None:
-        """check_external_service placeholder always returns status=True."""
-        from cyo_adventure.api.health import check_external_service
-
-        result = await check_external_service()
-
-        assert result.status is True
-        assert result.name == "external_api"
-
-    @pytest.mark.unit
-    @pytest.mark.asyncio
-    async def test_check_external_service_includes_latency(self) -> None:
-        """check_external_service includes a non-negative latency_ms."""
-        from cyo_adventure.api.health import check_external_service
-
-        result = await check_external_service()
-
-        assert result.latency_ms is not None
-        assert result.latency_ms >= 0
-
-
-# ---------------------------------------------------------------------------
 # Readiness endpoint (integrates check_database)
 # ---------------------------------------------------------------------------
 
@@ -1576,50 +1545,6 @@ class TestReadinessCheckModel:
 # now covers the except branch and the OWASP A09 non-leak requirement
 # directly against the real Redis-backed implementation, with the client
 # mocked rather than relying on time.time() as an indirect failure trigger.
-
-
-# ---------------------------------------------------------------------------
-# check_external_service except branch
-# ---------------------------------------------------------------------------
-
-
-class TestCheckExternalServiceExceptBranch:
-    """Tests for the check_external_service() except branch (lines 183-186)."""
-
-    @pytest.mark.unit
-    @pytest.mark.asyncio
-    async def test_check_external_service_except_branch_returns_false_status(
-        self,
-    ) -> None:
-        """check_external_service returns status=False when time.time raises inside try."""
-        from cyo_adventure.api.health import check_external_service
-
-        raiser = _time_raiser_on_nth_call(
-            2, OSError("simulated external service failure")
-        )
-        with patch("cyo_adventure.api.health.time.time", side_effect=raiser):
-            result = await check_external_service()
-
-        assert result.status is False
-        assert result.name == "external_api"
-        assert result.error == "dependency unavailable"
-        assert result.latency_ms is not None
-
-    @pytest.mark.unit
-    @pytest.mark.asyncio
-    async def test_check_external_service_except_branch_does_not_leak_exception_text(
-        self,
-    ) -> None:
-        """check_external_service except branch must not expose the raw error (OWASP A09)."""
-        from cyo_adventure.api.health import check_external_service
-
-        internal_message = "api.example.com:443 ETIMEDOUT"
-        raiser = _time_raiser_on_nth_call(2, OSError(internal_message))
-        with patch("cyo_adventure.api.health.time.time", side_effect=raiser):
-            result = await check_external_service()
-
-        assert internal_message not in (result.error or "")
-        assert result.error == "dependency unavailable"
 
 
 # ---------------------------------------------------------------------------

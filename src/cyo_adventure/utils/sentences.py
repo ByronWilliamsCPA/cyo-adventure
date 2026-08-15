@@ -1,4 +1,4 @@
-"""Shared prose sentence splitter (UW-C255, AL-379).
+"""Shared prose sentence splitter (UW-C260, AL-390).
 
 Four independent copies of the same crude idiom, ``[^.!?]+[.!?]*``, lived in
 this repository: ``validator/dialogue.py``, ``diversity/normalize.py``,
@@ -69,7 +69,7 @@ nothing in the required case list asks for either and guessing at more
 abbreviations invites a different wrong guess. Every caller migrated to this
 splitter had its behaviour measured against its previous crude splitter
 across the full committed book catalogue before the migration landed (see
-``UW-C255``); a caller whose numbers would have moved in a way nobody
+``UW-C260``); a caller whose numbers would have moved in a way nobody
 decided on was left alone rather than silently changed.
 """
 
@@ -242,7 +242,7 @@ def sentence_spans(text: str) -> list[SentenceSpan]:
         # recognised abbreviation (handled above) or an ordinary full stop,
         # and treating every other "." followed by a lowercase word as a
         # continuation is too broad. Measured against the full committed
-        # book catalogue (UW-C255): this corpus's own dialogue convention
+        # book catalogue (UW-C260): this corpus's own dialogue convention
         # sometimes tags a line with a bare, unquoted "X. said Pip." (no
         # comma or "!"/"?" before the tag, so `validator/dialogue.py` does
         # not recognise it as dialogue either), and a single-"." version of

@@ -1,6 +1,6 @@
 """Recompute W7's inter-judge agreement the way the design actually asks for it.
 
-`AL-367` found the reported figures unusable and `UW-C251` schedules this. The
+`AL-378` found the reported figures unusable and `UW-C256` schedules this. The
 original method rounded each judge's mean **across all seven criteria** to an
 integer and ran unweighted Cohen's kappa on the result. That does two harmful
 things at once. It discards the per-criterion structure W7 exists to examine, so

@@ -44,7 +44,7 @@ _BOOKS = ("bookA", "bookB", "bookC")
 # Every entry must be a defect DEFECT_CRITERION actually maps to. `tense_break`
 # used to sit here and was removed with its mapping on 2026-08-14: it switches
 # the narrator's tense, while the `voice` rubric it was mapped to asks about the
-# main character's distinctness, so the arm tested nothing (AL-371).
+# main character's distinctness, so the arm tested nothing (AL-382).
 _DEFECTS = (
     "dialogue_flat",
     "ending_truncated",

@@ -217,7 +217,7 @@ export function ModerationThresholdsPage() {
   }
 
   return (
-    <main>
+    <div>
       <h1>Moderation thresholds</h1>
       <p>
         Default: findings surface to families at <strong>{data.default_min_verdict}</strong> and
@@ -463,6 +463,6 @@ export function ModerationThresholdsPage() {
           </p>
         </Dialog>
       ) : null}
-    </main>
+    </div>
   )
 }

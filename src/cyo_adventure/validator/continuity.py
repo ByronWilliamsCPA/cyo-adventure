@@ -22,7 +22,7 @@ believed, it produces **3.48 findings per node** over the committed corpus,
 because bridging reference is ordinary English (``the ground``, ``the light``)
 and a first mention with a definite article is usually correct. A narrower
 lexical version counting only cardinals attributed to the reader scores **1 true
-positive in 6**. Both are the wall W15 hit (`AL-355`): separating a
+positive in 6**. Both are the wall W15 hit (`AL-366`): separating a
 presupposition from an introduction is entailment, and this project has paid for
 pretending otherwise once already.
 

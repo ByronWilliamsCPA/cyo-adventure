@@ -55,7 +55,7 @@ from these reports need re-checking before they reach a ticket.
 
 ## The check this earns, and why W15 is not a precedent against it
 
-W15 was dropped because catching a paraphrased leak is entailment (`AL-355`).
+W15 was dropped because catching a paraphrased leak is entailment (`AL-366`).
 This is a different question with a cheaper answer, in two tiers:
 
 1. **Declared-state tier, deterministic and exact.** For any ending or merge node

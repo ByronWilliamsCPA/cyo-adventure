@@ -429,7 +429,7 @@ def check_fill_gate_acknowledgment(story: Storybook) -> ValidationReport:
             # #ASSUME: data-integrity: the opening sentence must come from a
             # splitter that knows an abbreviation from a full stop.
             # `utils.sentences.split_sentences` replaced a borrowed
-            # `diversity.normalize.split_sentences` here (UW-C255, AL-379): a
+            # `diversity.normalize.split_sentences` here (UW-C260, AL-390): a
             # node opening "Mr. Fez's table was..." previously had its
             # opening sentence read as the bare string "Mr.", which shares no
             # content word with any choice label and fired CG-4 unfixably.

@@ -1068,7 +1068,7 @@ async def run_panel(
             scorings, and both produced nothing: results were held in memory
             and written once at the end, so an interrupted run lost every
             call it had paid for. Appending as we go makes a killed run
-            partially usable instead of entirely wasted (`AL-396`).
+            partially usable instead of entirely wasted (`AL-407`).
 
     Returns:
         Every verdict, and the measured spend in USD.
@@ -1268,7 +1268,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument(
         "--allow-untracked-out",
         action="store_true",
-        help="Permit a gitignored --out. Scratch runs only; see AL-368.",
+        help="Permit a gitignored --out. Scratch runs only; see AL-379.",
     )
     parser.add_argument("--env-file", type=Path, default=Path(".env"))
     parser.add_argument("--replay", type=Path)

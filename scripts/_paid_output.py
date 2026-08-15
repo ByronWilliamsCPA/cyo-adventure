@@ -1,6 +1,6 @@
 """Keep a paid measurement run's output from quietly ceasing to exist.
 
-`AL-368` traces four blocked or degraded workplan items to one cause: the
+`AL-379` traces four blocked or degraded workplan items to one cause: the
 `out/vendor-comparison/` results were produced by a run that cost real money and
 then were not committed. W2's published reading-level figure became
 unreproducible, the `AL-330` dialogue recheck became impossible once the
@@ -83,7 +83,7 @@ def ensure_persistable(path: Path, *, allow_untracked: bool = False) -> None:
     message = (
         f"refusing to start: '{path}' is gitignored, so this run's output "
         "cannot be committed and the result will not survive the working tree. "
-        "AL-368 records four workplan items blocked by exactly this. Choose a "
+        "AL-379 records four workplan items blocked by exactly this. Choose a "
         "tracked path, or pass --allow-untracked-out if the run is scratch."
     )
     raise SystemExit(message)
@@ -106,5 +106,5 @@ def persistence_notice(path: Path, spend_usd: float | None = None) -> str:
         f"\nOutput written to {path}.{cost} It is NOT yet in git, so it exists "
         "only in this working tree and reproducing it means paying again:\n"
         f"    git add {path} && git commit -S -m 'chore(measurement): <what ran>'\n"
-        "See AL-368 for the four items lost to skipping this."
+        "See AL-379 for the four items lost to skipping this."
     )

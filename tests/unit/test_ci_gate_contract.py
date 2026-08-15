@@ -149,6 +149,44 @@ def _checked_jobs() -> tuple[dict[str, tuple[str, str]], list[str]]:
 CHECKED_JOBS, UNRESOLVED_RESULT_VARS = _checked_jobs()
 CHECK_JOB_CALL_COUNT = len(CHECK_JOB_CALL_RE.findall(GATE_SCRIPT))
 
+# The release branch's `for entry in "Label:$VAR" ...; do` list, and the
+# disclosure text that names the same jobs in prose. Both are derived rather
+# than transcribed, because a hand-copied list is what let `format-tree`,
+# `rad-citations` and `docstrings` each go unchecked in turn.
+RELEASE_LOOP_RE = re.compile(r"for entry in(?P<body>.*?);[ \t]*do", re.DOTALL)
+RELEASE_ENTRY_RE = re.compile(r'"(?P<label>[^"$:]+):\$(?P<result_var>[A-Za-z_]\w*)"')
+RELEASE_SUMMARY_RE = re.compile(
+    r"## CI Gate passed WITHOUT running the suite.*?exit 0", re.DOTALL
+)
+
+
+def _release_checked_jobs() -> set[str]:
+    """Resolve the release loop's entries to job ids.
+
+    Nothing raises here for the same reason ``_checked_jobs`` does not: an
+    import-time failure would take the whole module down and hide which
+    contract broke. An unparseable loop yields an empty set, which fails the
+    named tests below with a readable message.
+
+    Returns:
+        set[str]: Job ids whose result the release branch evaluates.
+    """
+    loop = RELEASE_LOOP_RE.search(GATE_SCRIPT)
+    if loop is None:
+        return set()
+    return {
+        job_id
+        for match in RELEASE_ENTRY_RE.finditer(loop.group("body"))
+        if (job_id := RESULT_VAR_TO_JOB.get(match.group("result_var"))) is not None
+    }
+
+
+RELEASE_CHECKED_JOBS = _release_checked_jobs()
+_RELEASE_SUMMARY_MATCH = RELEASE_SUMMARY_RE.search(GATE_SCRIPT)
+RELEASE_SUMMARY_TEXT = (
+    "" if _RELEASE_SUMMARY_MATCH is None else _RELEASE_SUMMARY_MATCH.group(0)
+)
+
 
 class TestGateCoversEveryRequiredJob:
     """Every job the gate depends on is either checked or explicitly exempt.
@@ -580,10 +618,14 @@ class TestGateDecisions:
         assert "no verification from this workflow" in run.summary
         # The disclosure has to carve out EVERY job that did run, or it
         # overstates the gap in the other direction. It named only
-        # `ER Diagram Drift` while three jobs really run here, so the
-        # sentence was wrong by two.
+        # `ER Diagram Drift` while three jobs really ran, so the sentence was
+        # wrong by two; `docstrings` later made it four and wrong by three.
+        # The prose is spot-checked here and enforced generically by
+        # TestEveryUnconditionalJobIsReleaseChecked, which derives the job set
+        # from the workflow rather than transcribing it.
         assert "every quality job except `ER Diagram Drift`," in run.summary
-        assert "`Format (tree-wide)` and `RAD Citation Gate`" in run.summary
+        assert "`Format (tree-wide)`, `RAD Citation Gate` and" in run.summary
+        assert "`Docstring coverage (interrogate)`" in run.summary
         assert "::warning::" in run.stdout
 
     def test_a_release_commit_with_a_failing_er_diagram_check_fails_the_gate(
@@ -730,6 +772,49 @@ class TestGateDecisions:
         assert "if" not in rad_citations
         assert "needs" not in rad_citations
 
+    def test_a_release_commit_with_a_failing_docstring_check_fails_the_gate(
+        self, run_gate
+    ) -> None:
+        """The fourth unconditional job, which inherited the hole once already.
+
+        ``docstrings`` was added to the gate carrying no ``if:`` and no
+        ``needs:``, so it really runs on a release-automation commit, but it
+        was not added to the release branch's loop. A failing docstring job
+        therefore produced a green required ``CI Gate`` on every release
+        commit. The loop's own comment predicted exactly this, which is why
+        ``TestEveryUnconditionalJobIsReleaseChecked`` below now derives the set
+        from the workflow instead of trusting the next author to remember.
+        """
+        run = run_gate(
+            EVENT_NAME="push",
+            RELEASE_PR="true",
+            CI_RESULT="skipped",
+            FRONTEND_RESULT="skipped",
+            FRONTEND_E2E_RESULT="skipped",
+            DESIGN_SYSTEM_RESULT="skipped",
+            CONTRACT_RESULT="skipped",
+            DOCSTRINGS_RESULT="failure",
+        )
+
+        assert not run.passed
+        assert "That job runs unconditionally" in run.summary
+        assert (
+            "::error::Docstring coverage (interrogate) reported failure" in run.stdout
+        )
+
+    def test_the_docstring_gate_runs_in_every_context(self) -> None:
+        """``docstrings`` is the fourth job that cannot skip, pinned as such.
+
+        Same premise as the three above: the gate passes ``false`` as its skip
+        allowance and the release branch evaluates its result before exiting 0,
+        and both readings only stay true while the job carries no job-level
+        ``if:`` and no ``needs:``.
+        """
+        docstrings = JOBS["docstrings"]
+
+        assert "if" not in docstrings
+        assert "needs" not in docstrings
+
     def test_the_rad_citation_job_keeps_its_no_growth_ratchet(self) -> None:
         """Deleting the ratchet step must not be a silent change.
 
@@ -873,6 +958,79 @@ def _triggers(workflow_path: Path) -> dict[str, Any]:
     triggers = parsed.get("on", parsed.get(True))
     assert isinstance(triggers, dict), f"{workflow_path.name} has no on: mapping"
     return triggers
+
+
+class TestEveryUnconditionalJobIsReleaseChecked:
+    """The release loop must name every job that really runs on a release commit.
+
+    The four per-job tests above each pin one member by hand, which is exactly
+    the pattern that failed: ``format-tree`` was missing until someone noticed,
+    then ``rad-citations``, then ``docstrings``. A hand-written list cannot
+    fail for a job nobody thought to add. This derives the set from the
+    workflow instead, so a fifth unconditional job joins the loop or fails
+    here, and the loop's comment stops being a promise nothing enforces.
+    """
+
+    def test_the_loop_names_every_unconditional_gated_job(self) -> None:
+        """Derive the no-``if:``/no-``needs:`` set and require the loop covers it.
+
+        ``detect-release-pr`` is excluded because it supplies the policy the
+        branch is gated on and is guarded by its own earlier exit, and jobs
+        outside ``ci-gate``'s ``needs:`` are excluded because the gate never
+        sees their result at all (``diversity`` is the documented case, tracked
+        in ``UNGATED_JOBS``).
+        """
+        unconditional = {
+            job_id
+            for job_id in GATE_NEEDS
+            if job_id != POLICY_JOB_ID
+            and "if" not in JOBS[job_id]
+            and "needs" not in JOBS[job_id]
+        }
+
+        assert unconditional <= RELEASE_CHECKED_JOBS, (
+            f"jobs that really run on a release-automation commit but whose "
+            f"result the release branch never evaluates: "
+            f"{sorted(unconditional - RELEASE_CHECKED_JOBS)}. Add each to the "
+            f"release loop in ci.yml, or give it a job-level `if:` so it "
+            f"genuinely does not run there."
+        )
+
+    def test_the_loop_names_only_real_unconditional_jobs(self) -> None:
+        """A loop entry for a job that CAN skip asserts something untrue.
+
+        The branch's whole claim is "this result is real even though the rest
+        of the suite did not run". An entry for a job carrying an ``if:`` or a
+        ``needs:`` quietly breaks that claim, and would make the failure
+        message above misleading rather than absent.
+        """
+        for job_id in RELEASE_CHECKED_JOBS:
+            assert job_id in JOBS, (
+                f"the release loop names {job_id!r}, which is not a job in ci.yml"
+            )
+            assert "if" not in JOBS[job_id], (
+                f"the release loop treats {job_id!r} as unconditional, but it "
+                f"carries a job-level `if:` and so can skip"
+            )
+            assert "needs" not in JOBS[job_id], (
+                f"the release loop treats {job_id!r} as unconditional, but it "
+                f"carries a `needs:` and so can skip"
+            )
+
+    def test_the_release_summary_names_every_job_the_loop_checks(self) -> None:
+        """The disclosure text and the loop must not drift apart.
+
+        The summary tells the reader which jobs really ran on a release commit.
+        When the loop gained a member and the prose did not, the summary
+        under-reported real coverage while the gate over-reported safety; both
+        halves have to move together.
+        """
+        for job_id in RELEASE_CHECKED_JOBS:
+            label = str(JOBS[job_id]["name"])
+            assert label in RELEASE_SUMMARY_TEXT, (
+                f"the release-skip summary does not mention {label!r}, which "
+                f"the release loop evaluates"
+            )
 
 
 class TestTheReleaseDisclosurePointsAtRealCoverage:

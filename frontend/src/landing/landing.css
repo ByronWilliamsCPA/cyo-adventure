@@ -1,60 +1,593 @@
+/*
+  Landing page (sales funnel redesign, 2026-08).
+
+  Storybook-editorial direction extending the design-system tokens: parchment
+  grounds, ink type, amber as the single interactive accent, forest reserved
+  for the one deliberate pattern-break (the final CTA band). Every color is a
+  token, with FOUR deliberate literals that behave as picture elements the
+  same way tokens.css treats the --cover-* gradients: the cover scrim wash
+  (rgb(20 12 5 / 62%)), the cover edge highlight (rgb(255 255 255 / 22%)),
+  the cover-title cream (#f8f3e8, which must stay light in BOTH palettes and
+  so cannot be --color-parchment, whose dark value is near-black), and the
+  door icons' white glyphs on their solid fills (pre-existing).
+
+  Token fallbacks (var(--x, #hex)) are deliberately omitted, unlike older
+  sheets: tokens.css is imported unconditionally by src/index.css, and a
+  light-palette fallback would silently paint wrong colors in dark mode if it
+  ever fired, which is worse than inheriting.
+
+  Contrast: every text/background pairing used here was computed with the
+  frontend-design skill's wcag-contrast.py in BOTH palettes; ratios are cited
+  next to the rules they justify. Non-token pairings that fail are not used.
+*/
+
+/* Anchor navigation glides only for users who have not asked for reduced
+   motion; scoped via :has so the rule stops applying when the landing page
+   unmounts (this stylesheet stays loaded after route changes). */
+@media (prefers-reduced-motion: no-preference) {
+  html:has(.landing) {
+    scroll-behavior: smooth;
+  }
+}
+
+/* The sticky topbar must never bury what the browser scrolls into view:
+   scroll-PADDING on the scroller (not scroll-margin on a few anchor ids)
+   covers anchor jumps, the skip link, keyboard tabbing that scrolls the
+   next focused control to the viewport top (WCAG 2.4.11 Focus Not
+   Obscured, which no axe rule detects), and the demo's programmatic
+   passage focus, all in one declaration.
+
+   This rule stays :has()-scoped because scroll-padding belongs on the
+   SCROLLER, and scoping it to the landing route is what keeps a 5rem inset
+   from outliving this page (the stylesheet stays loaded after navigation).
+   Where :has() is available that buys the broadest coverage, including
+   arbitrary keyboard-focused controls no id-based rule could enumerate. */
+html:has(.landing) {
+  scroll-padding-top: 5rem;
+}
+
+/* Vite's default browser baseline still includes Firefox 114-120, where
+   :has() is unsupported and the rule above is dropped at parse time: the
+   sticky topbar would silently bury every anchor target, with nothing in CI
+   failing to say so (the required e2e project is chromium).
+
+   The fallback is per-target scroll-margin, which needs no :has(). It is
+   confined to @supports not (selector(:has(*))) deliberately: scroll-padding
+   on the scroller and scroll-margin on the target BOTH apply where both are
+   live, which would push every anchor 10rem down instead of 5rem. Selector
+   feature queries landed in Firefox 69, well below the range this targets,
+   so the browsers that miss :has() do evaluate this correctly.
+
+   Coverage is narrower than the scroll-padding rule by construction: it
+   reaches the ids this page's own navigation targets plus the demo passage
+   the component focuses after each choice, and not the arbitrary
+   tab-into-view case. That is the honest limit of an element-level fallback,
+   and it covers every anchor a visitor can actually click here. */
+@supports not (selector(:has(*))) {
+  #landing-main,
+  #demo,
+  #how-it-works,
+  #safety,
+  #pricing,
+  .demo-adventure__passage {
+    scroll-margin-top: 5rem;
+  }
+}
+
 .landing {
+  background: var(--color-parchment);
+  color: var(--color-ink);
+}
+
+/* The clip is scoped to the ART, not to the whole page. The rotated sample
+   covers have bounding boxes wider than their laid-out size and are the only
+   thing here that needs clipping; putting `overflow-x: clip` on `.landing`
+   also swallowed REAL overflow elsewhere on the page and, worse, hid it from
+   `documentElement.scrollWidth`, so the page-level overflow gate could not
+   see it. Narrowing this restores page overflow as a detectable failure. */
+.landing-hero__art {
+  overflow-x: clip;
+}
+
+/* Skip-link target: focus arrives programmatically; the page outline would
+   ring the entire document and mean nothing. */
+#landing-main:focus {
+  outline: none;
+}
+
+/* ── Topbar ─────────────────────────────────────────────────────────── */
+
+.landing__topbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
   display: flex;
-  flex-direction: column;
+  /* Wraps by necessity, not for looks. As a nowrap row the actions cluster
+     (margin-left: auto) simply slid past the right edge as text scaled: at
+     320px/138% the theme toggle was 14px off-screen, and at 375px/200% it was
+     off-screen AND still focusable, so a keyboard user could focus a control
+     with no visible indicator anywhere on the page (WCAG 2.4.7). */
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+  row-gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-parchment);
+  border-bottom: 1px solid var(--color-border-soft);
+}
+
+.landing__wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-serif);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-lg);
+}
+
+.landing__topnav {
+  display: flex;
+  gap: var(--space-2);
+  margin-inline: auto;
+}
+
+/* ink-secondary on parchment: 8.81:1 light / 9.72:1 dark. */
+.landing__topnav-link {
+  color: var(--color-ink-secondary);
+  text-decoration: none;
+  font-weight: var(--weight-medium);
+  padding: var(--space-3) var(--space-3);
+  border-radius: var(--radius-md);
+}
+
+.landing__topnav-link:hover {
+  color: var(--color-ink);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+/* Focus indicators are non-text UI (3:1 minimum): amber-deep on parchment is
+   3.09:1 light / 3.27:1 dark, the same treatment the design system's buttons
+   use. Shared by every focusable thing on this page. */
+.landing__topnav-link:focus-visible,
+.landing__signin:focus-visible,
+.landing-faq__question:focus-visible,
+.landing__footer-link:focus-visible {
+  outline: 2px solid var(--color-amber-deep);
+  outline-offset: 2px;
+}
+
+/* border-radius here would restyle the ELEMENT, not the outline: it snapped
+   each FAQ question from --radius-lg (12px) to 4px on focus, against the
+   still-rounded card behind it. Outlines already follow the element's own
+   radius, so this is only for the two members that have none of their own. */
+.landing__signin:focus-visible,
+.landing__footer-link:focus-visible {
+  border-radius: var(--radius-sm);
+}
+
+/* The FAQ question is the one member of that group NOT sitting on plain
+   parchment: it sits on the raised card wash, and on the dark palette an
+   OPEN card drops amber-deep to 2.72:1, under the 3:1 non-text minimum. Same
+   substitution the custom marker below already makes, and for the same
+   reason: amber-text holds 7.53:1 dark / 5.96:1 light. */
+.landing-faq__question:focus-visible {
+  outline-color: var(--color-amber-text);
+}
+
+/* margin-left: auto is unconditional. The topnav's own margin-inline: auto
+   absorbs the free space while the nav is rendered, and when a breakpoint
+   removes the nav this margin is what keeps the actions pinned to the right
+   edge (the first version zeroed it via a sibling selector, which kept
+   matching the display:none nav and collapsed the whole bar to the left on
+   phones). */
+.landing__topbar-actions {
+  display: inline-flex;
+  /* The cluster has to wrap INTERNALLY too, not just as one child of the bar.
+     Left as a nowrap inline-flex it stayed a single 405px-wide box at a 32px
+     root and slid past a 375px viewport whole, taking the theme toggle with
+     it, so the bar's own flex-wrap could not help. min-width: 0 lets it
+     actually shrink rather than being floored by its content. */
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  min-width: 0;
+  align-items: center;
+  gap: var(--space-3);
+  margin-left: auto;
+}
+
+.landing__signin {
+  display: inline-flex;
+  align-items: center;
+  /* Two words that must not become two lines: at 320px this wrapped and took
+     the whole bar from 61px to 69px of a 568px viewport. */
+  white-space: nowrap;
+  min-height: 44px;
+  color: var(--color-ink-secondary);
+  font-weight: var(--weight-semibold);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  padding: var(--space-2) var(--space-2);
+}
+
+.landing__signin:hover {
+  color: var(--color-ink);
+}
+
+/* 56rem, matching the hero's own single-column breakpoint: the bar and the
+   layout beneath it now change shape at the same width instead of 2rem
+   apart, which read as two separate reflows while resizing. Anchors are a
+   convenience, not the only path (the page scrolls). */
+@media (max-width: 56rem) {
+  .landing__topnav {
+    display: none;
+  }
+}
+
+/* The phone bar keeps BOTH the sign-in link and the primary CTA. Two review
+   cycles pulled in opposite directions here: the first added a compact CTA
+   and lost Sign in to it, the second restored Sign in and dropped the CTA,
+   and each was right about what it was losing. A returning parent needs an
+   affordance in the bar, and the funnel's target audience needs the action
+   to survive a 9.6-screenful scroll on a phone. The flex-wrap added above
+   makes that a false choice: when the row runs out of width the actions drop
+   to a second line instead of sliding off-screen, so both fit. */
+
+/* ── Shared CTA links (mirror the design system's .cyo-btn contract) ──── */
+
+.landing-cta {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 1.5rem;
-  min-height: 100vh;
-  min-height: 100dvh;
-  padding: 1.5rem;
-  text-align: center;
-  background:
-    radial-gradient(130% 90% at 50% 0%, var(--color-amber-subtle, #fdf3e6) 0%, transparent 55%),
-    var(--color-parchment, #f8f3e8);
-  color: var(--color-ink, #2c1a0e);
+  gap: var(--space-2);
+  min-height: 44px;
+  /* Both in REM, so at large text scales a fixed-width button outgrows a
+     phone viewport. Let the label wrap and the box shrink instead of
+     overflowing (WCAG 1.4.4). */
+  max-width: 100%;
+  text-wrap: balance;
+  padding: var(--space-2) var(--space-6);
+  border-radius: var(--radius-md);
+  border: 2px solid transparent;
+  font-family: var(--font-serif);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-base);
+  line-height: var(--leading-tight);
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color var(--duration-fast) var(--easing-default),
+    border-color var(--duration-fast) var(--easing-default),
+    box-shadow var(--duration-fast) var(--easing-default),
+    transform var(--duration-fast) var(--easing-default);
 }
 
-.landing__theme-toggle {
-  position: fixed;
-  top: var(--space-3, 0.75rem);
-  right: var(--space-3, 0.75rem);
+.landing-cta--lg {
+  min-height: 52px;
+  font-size: var(--text-lg);
+  padding: var(--space-3) var(--space-8);
 }
 
-.landing__hero {
-  display: flex;
-  flex-direction: column;
+/* Topbar-sized: still a 44px target, tighter padding and type so the sticky
+   bar carries the primary action without dominating it. */
+.landing-cta--compact {
+  min-height: 44px;
+  font-size: var(--text-sm);
+  padding: var(--space-1) var(--space-4);
+}
+
+/* Primary: amber-deep fill with an ink label, 4.86:1 light / 4.57:1 dark
+   (the Button.css precedent). Hover keeps the fill (darkening it would sink
+   the label below AA) and signals with the darker border + raised shadow. */
+.landing-cta--primary {
+  background-color: var(--color-amber-deep);
+  color: var(--color-ink);
+  border-color: var(--color-amber-deep);
+  box-shadow: var(--shadow-sm);
+}
+
+/* border-color: ink because amber-deep against amber-hover is 1.01:1 in the
+   dark palette, so the hover border was invisible there, and a reduced-motion
+   user (who gets no translateY) had the shadow as the only remaining signal.
+   This declaration is LOAD-BEARING and must stay: .landing-cta is its own
+   class and never carries .cyo-btn, so it inherits nothing from the design
+   system's matching fix in Button.css. That rule and this one are intentional
+   parallels expressing the same contract on two different classes. */
+.landing-cta--primary:hover {
+  border-color: var(--color-ink);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+/* Ghost: sits in the hero, whose background is plain parchment: amber-text
+   label 5.62:1 light / 9.17:1 dark, amber-deep border 3.09:1 light / 3.27:1
+   dark (non-text). Hover raises the translucent card wash; on that composite
+   the label holds 5.96:1 light / 7.53:1 dark. */
+.landing-cta--ghost {
+  background-color: transparent;
+  color: var(--color-amber-text);
+  border-color: var(--color-amber-deep);
+}
+
+.landing-cta--ghost:hover {
+  background-color: var(--surface-raised);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-2px);
+}
+
+.landing-cta:focus-visible {
+  outline: 3px solid var(--color-amber-deep);
+  outline-offset: 3px;
+}
+
+.landing-cta:active {
+  transform: translateY(1px);
+}
+
+/* ── Hero ───────────────────────────────────────────────────────────── */
+
+.landing-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
   align-items: center;
-  gap: 0.25rem;
+  gap: var(--space-8);
+  max-width: 72rem;
+  margin-inline: auto;
+  padding: var(--space-12) var(--space-6) var(--space-10);
 }
 
-.landing__title {
-  font-family: var(--font-serif, Georgia, 'Times New Roman', serif);
-  font-size: clamp(2rem, 8vw, 2.75rem);
-  margin: 0.5rem 0 0;
-}
-
-.landing__tagline {
+.landing-hero__heading {
   margin: 0;
-  color: var(--color-ink-secondary, #5a3e28);
+  font-family: var(--font-serif);
+  font-size: clamp(2.1rem, 5.5vw, 3.4rem);
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  /* Keeps the two-clause parallelism intact instead of orphaning "You" at
+     the end of line one on desktop widths. Progressive enhancement. */
+  text-wrap: balance;
 }
 
+.landing-hero__lede {
+  margin: var(--space-5) 0 0;
+  max-width: 34rem;
+  font-size: var(--text-lg);
+  line-height: var(--leading-normal);
+  color: var(--color-ink-secondary);
+}
+
+.landing-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-top: var(--space-8);
+}
+
+.landing-hero__reassure {
+  margin: var(--space-4) 0 0;
+  font-size: var(--text-sm);
+  color: var(--color-ink-secondary);
+}
+
+/* Fanned sample covers: the same --cover-* gradients the real library paints
+   book spines with. rotate (the standalone property) carries the tilt so the
+   entrance animation can animate transform without flattening it. */
+.landing-hero__art {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  min-height: 17rem;
+  padding-bottom: var(--space-4);
+}
+
+.landing-cover {
+  display: flex;
+  /* flex-start: labels are TOP-anchored. Bottom anchoring put every label
+     into the zone where the fanned covers overlap each other and the mascot
+     sits, which is why the original three-label version was cut back to one.
+     The top edge of each cover is unobstructed on all three. */
+  align-items: flex-start;
+  width: 8.75rem;
+  aspect-ratio: 3 / 4.2;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  border: 2px solid rgb(255 255 255 / 22%);
+}
+
+.landing-cover--lagoon {
+  background: var(--cover-lagoon);
+  rotate: -8deg;
+  translate: 1.25rem 0.5rem;
+  z-index: 1;
+}
+
+.landing-cover--plum {
+  background: var(--cover-plum);
+  rotate: -1deg;
+  translate: 0 -1.5rem;
+  z-index: 2;
+}
+
+.landing-cover--forest {
+  background: var(--cover-forest);
+  rotate: 7deg;
+  translate: -1.25rem 0.75rem;
+  z-index: 1;
+}
+
+/* Spine label: parchment text on an ink scrim over the gradient (composited
+   worst case 10.13:1, over the lagoon cover's lighter stop, which now really
+   is the worst case: all three covers carry a label). Decorative art
+   (aria-hidden), verified anyway so it reads for everyone who can see it. */
+.landing-cover__title {
+  width: 100%;
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  /* Rounding follows the label to the TOP corners. */
+  border-radius: calc(var(--radius-lg) - 2px) calc(var(--radius-lg) - 2px) 0 0;
+  background: rgb(20 12 5 / 62%);
+  color: #f8f3e8;
+  font-family: var(--font-serif);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-tight);
+}
+
+.landing-hero__mascot {
+  position: absolute;
+  left: 0;
+  bottom: -0.5rem;
+  z-index: 3;
+}
+
+@media (max-width: 56rem) {
+  .landing-hero {
+    /* minmax(0, 1fr), not 1fr: a bare 1fr track has an AUTO minimum, so the
+       art row's 300px min-content floors the single column at 300px and the
+       copy (the reassure line is the longest) is clipped at 320px viewport
+       widths. minmax(0, 1fr) lets the track shrink below its content's
+       min-content size, which is what the two-column rule above already
+       does for the same reason. */
+    grid-template-columns: minmax(0, 1fr);
+    padding-top: var(--space-8);
+    text-align: center;
+  }
+
+  .landing-hero__lede {
+    margin-inline: auto;
+  }
+
+  .landing-hero__actions {
+    justify-content: center;
+  }
+
+  .landing-hero__art {
+    min-height: 15rem;
+  }
+
+  .landing-hero__mascot {
+    left: var(--space-4);
+  }
+}
+
+/* Phone widths: the decorative shelf goes entirely.
+   It was shrunk here rather than dropped, but at this width it degrades to
+   three unlabeled rounded rectangles (the spine titles are unreadable at
+   ~100px and were already hidden) that cost roughly a quarter of the first
+   screenful. On the one screen where a new visitor decides whether to keep
+   scrolling, that space belongs to the headline, the CTA, and the reassure
+   line. Pip still appears in the final band, so the mascot is not lost.
+   display: none, not visibility, so the row contributes no height at all. */
+@media (max-width: 30rem) {
+  .landing-hero__art {
+    display: none;
+  }
+}
+
+/* Load-in: one orchestrated stagger, entrance only, skipped entirely for
+   reduced-motion users. `backwards` holds the from-state during the delay. */
+@media (prefers-reduced-motion: no-preference) {
+  .landing-hero__copy > * {
+    animation: landing-rise 400ms ease-out backwards;
+  }
+
+  .landing-hero__copy > *:nth-child(2) {
+    animation-delay: 50ms;
+  }
+
+  .landing-hero__copy > *:nth-child(3) {
+    animation-delay: 100ms;
+  }
+
+  .landing-hero__copy > *:nth-child(4) {
+    animation-delay: 150ms;
+  }
+
+  .landing-cover,
+  .landing-hero__mascot {
+    animation: landing-rise 400ms ease-out backwards;
+  }
+
+  .landing-cover--plum {
+    animation-delay: 90ms;
+  }
+
+  .landing-cover--forest {
+    animation-delay: 160ms;
+  }
+
+  .landing-hero__mascot {
+    animation-delay: 240ms;
+  }
+}
+
+@keyframes landing-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ── Returning-user doors ───────────────────────────────────────────── */
+
+.landing-doors-band {
+  max-width: 72rem;
+  margin-inline: auto;
+  padding: 0 var(--space-6) var(--space-10);
+  text-align: center;
+}
+
+/* Zero top padding is right when the band follows the hero (the hero's own
+   bottom spacing separates them), but on a granted device the band is main's
+   FIRST child and that same zero puts its heading flush against the sticky
+   topbar's lower edge. This is the one case that needs its own top spacing;
+   :first-child keeps it from touching the funnel-first ordering. */
+main > .landing-doors-band:first-child {
+  padding-top: var(--space-8);
+}
+
+.landing-doors-band__heading {
+  margin: 0 0 var(--space-4);
+  font-family: var(--font-serif);
+  font-size: var(--text-xl);
+}
+
+/* minmax(min(15rem, 100%), 1fr), not minmax(15rem, 1fr): the floor is in REM,
+   so it grows with the user's text size. At a 32px root (200% text scale) a
+   bare 15rem floor demands 480px per column and the doors ran 153px past a
+   375px viewport, with the word "Kids" entirely off-screen: a WCAG 1.4.4
+   Resize Text failure on the two contractual entry points. min(..., 100%)
+   lets the track collapse to the container when the rem floor cannot fit.
+   Same fix applies to .landing-trust and .landing-pricing. */
 .landing__doors {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
+  gap: var(--space-4);
   width: 100%;
-  max-width: 34rem;
+  max-width: 40rem;
+  margin-inline: auto;
 }
 
+/* Resting border is amber-deep, not parchment-deeper: parchment-deeper on
+   parchment computes 1.32:1 in light mode, which left the two most
+   contractually important controls on the page looking like beige panels.
+   amber-deep holds 3.09:1 light / 3.27:1 dark; hover deepens to ink. */
 .landing-door {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  min-width: 0;
+  gap: var(--space-4);
   text-align: left;
-  padding: 1.25rem 1.25rem;
-  border: 2px solid var(--color-parchment-deeper, #e0d5b8);
-  border-radius: var(--radius-xl, 20px);
-  background: var(--color-parchment-dark, #ede6d0);
+  padding: var(--space-5) var(--space-5);
+  border: 2px solid var(--color-amber-deep);
+  border-radius: var(--radius-xl);
+  background: var(--color-parchment-dark);
   text-decoration: none;
   color: inherit;
   transition:
@@ -65,9 +598,14 @@
 
 .landing-door:hover,
 .landing-door:focus-visible {
-  border-color: var(--color-amber, #e07f2e);
+  border-color: var(--color-ink);
   transform: translateY(-3px);
-  box-shadow: var(--shadow-md, 0 4px 12px rgba(44, 26, 14, 0.14));
+  box-shadow: var(--shadow-md);
+}
+
+.landing-door:focus-visible {
+  outline: 3px solid var(--color-amber-deep);
+  outline-offset: 3px;
 }
 
 .landing-door__icon {
@@ -76,113 +614,700 @@
   width: 3.25rem;
   height: 3.25rem;
   flex-shrink: 0;
-  border-radius: var(--radius-lg, 12px);
+  border-radius: var(--radius-lg);
   color: #fff;
 }
 
 .landing-door--kids .landing-door__icon {
-  background: var(--color-amber-deep, #c17b2a);
+  background: var(--color-amber-deep);
 }
 
 .landing-door--guardian .landing-door__icon {
-  background: var(--color-forest, #2d5a3d);
+  background: var(--color-forest);
 }
 
+/* min-width: 0 so this column can shrink below its content's min-content
+   width: a flex item's default `min-width: auto` floored the door's text at
+   its longest word plus padding, and at a 32px root on a 320px viewport that
+   pushed "Guardian console" past the card edge. With it, the labels wrap
+   instead. Same reason `.landing-door` itself needs to allow shrinking. */
 .landing-door__text {
   display: flex;
   flex-direction: column;
   gap: 0.15rem;
+  min-width: 0;
 }
 
 .landing-door__heading {
   font-size: 1.4rem;
-  font-weight: 700;
+  font-weight: var(--weight-bold);
+  font-family: var(--font-serif);
 }
 
 .landing-door__sub {
-  color: var(--color-ink-secondary, #5a3e28);
+  color: var(--color-ink-secondary);
 }
 
-/* --color-ink-secondary, not --color-ink-muted: .landing-door's background
-   is --color-parchment-dark, where ink-muted only clears 3.72:1 against the
-   4.5:1 AA minimum (2026-07-16 accessibility audit, e2e/a11y.spec.ts). */
+/* --color-ink-secondary, not --color-ink-muted, on .landing-door's
+   --color-parchment-dark background. NOTE the recomputation: the widely
+   copied "ink-muted only clears 3.72:1" figure predates the token's current
+   value. Recomputed 2026-08-15, ink-muted is 4.57:1 light / 5.38:1 dark, so
+   it now PASSES the 4.5:1 AA minimum and the old justification no longer
+   holds. ink-secondary is kept anyway (7.81:1 light / 9.26:1 dark) because
+   this is small text at 0.8rem where the extra margin is worth having, but
+   the reason is headroom now, not a failing token.
+   The same stale 3.72:1 figure still appears in guardian.css, kid.css, and
+   library.css; correcting those is outside this page's diff. */
 .landing-door__note {
   font-size: 0.8rem;
-  color: var(--color-ink-secondary, #5a3e28);
+  color: var(--color-ink-secondary);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .landing-door:hover,
-  .landing-door:focus-visible {
-    transform: none;
+/* ── Generic section frame ──────────────────────────────────────────── */
+
+.landing-section {
+  max-width: 72rem;
+  margin-inline: auto;
+  padding: var(--space-12) var(--space-6);
+}
+
+/* Wayfinding eyebrow above an anchored section's h2, echoing the topnav
+   label ("How it works", "Safety", "Pricing") so an anchor click lands on a
+   heading that confirms the destination while the h2 keeps its own voice.
+   amber-text: 5.62:1 light / 9.17:1 dark on parchment. */
+.landing-section__eyebrow {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--color-amber-text);
+}
+
+.landing-section__heading {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+  text-align: center;
+}
+
+.landing-section__lede {
+  margin: var(--space-3) auto 0;
+  max-width: 40rem;
+  text-align: center;
+  color: var(--color-ink-secondary);
+  line-height: var(--leading-normal);
+}
+
+.landing-section__footnote {
+  margin: var(--space-8) auto 0;
+  max-width: 40rem;
+  text-align: center;
+  color: var(--color-ink-secondary);
+  font-size: var(--text-sm);
+}
+
+/* Mid-page conversion point (end of the safety section): the one primary
+   action between the hero and pricing, so a convinced reader never scrolls
+   screenfuls hunting for the button. */
+.landing-section__cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-10);
+}
+
+/* ── Demo ───────────────────────────────────────────────────────────── */
+
+.landing-section--demo {
+  padding-top: var(--space-8);
+}
+
+/* Asymmetric two-column frame above 56rem: the copy rail is deliberately the
+   NARROWER track so the playable demo, the thing that actually converts,
+   takes the visual weight. Every other funnel section is centered and
+   stacked; this one is the page's single interactive moment and reads better
+   framed than centered. Below the breakpoint it collapses to the same
+   stacked rhythm as its neighbours. */
+/* not(max-width) rather than a min-width 1px above it: at a FRACTIONAL
+   viewport width inside (896, 897) - reachable via display scaling or zoom -
+   a min-width boundary left the hero two-column while the demo stayed
+   stacked. This is the exact complement of the max-width rules. */
+@media not (max-width: 56rem) {
+  .landing-section--demo {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    gap: var(--space-10);
+    align-items: start;
+    max-width: 72rem;
+    margin-inline: auto;
+  }
+
+  /* Each of these sets its own text-align: center at equal specificity, so a
+     single text-align on the section was silently overridden and the "copy on
+     the left" frame rendered centred copy beside a left-aligned demo. */
+  .landing-section--demo .landing-section__eyebrow,
+  .landing-section--demo .landing-section__heading,
+  .landing-section--demo .landing-section__lede {
+    text-align: left;
+    margin-inline: 0;
+  }
+
+  /* The rail's own top margin is what the stacked layout uses to separate
+     the demo from the copy; in the framed layout they sit side by side. */
+  .landing-section--demo .demo-adventure {
+    margin-top: 0;
   }
 }
 
-/* P-6e: new-visitor affordance under the Kids/Grown-ups doors. Same
-   --color-ink-secondary as .landing__tagline on this page's
-   --color-parchment background: 8.81:1, computed with the standard WCAG
-   relative-luminance formula (well over the 4.5:1 AA text minimum;
-   .claude/skills/frontend-design/scripts/wcag-contrast.py was not present
-   in this environment, so the ratio was computed by hand with the same
-   formula the script implements). */
-.landing__new-visitor {
-  margin: 0;
-  color: var(--color-ink-secondary, #5a3e28);
+.demo-adventure {
+  max-width: 38rem;
+  margin: var(--space-8) auto 0;
 }
 
-/* --color-ink (15.05:1 on --color-parchment) plus an underline so the link
-   reads as interactive on its own, without relying on color alone. */
-.landing__new-visitor-link {
-  color: var(--color-ink, #2c1a0e);
+.demo-adventure__passage {
+  padding: var(--space-6);
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-lg);
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-sm);
+}
+
+/* :focus, not :focus-visible, deliberately: DemoAdventure moves focus here
+   programmatically after EVERY choice (mouse included), and :focus-visible
+   does not reliably match script-driven focus that follows a click. The
+   keyboard/screen-reader user must see where they landed; the cost is a
+   transient ring after mouse choices, accepted as the lesser harm. */
+.demo-adventure__passage:focus {
+  outline: 3px solid var(--color-amber-deep);
+  outline-offset: 3px;
+}
+
+.demo-adventure__text {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: var(--text-lg);
+  line-height: var(--leading-relaxed);
+}
+
+/* amber-text small caps: 5.62:1 light / 9.17:1 dark on parchment. */
+.demo-adventure__ending-kicker {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-amber-text);
+}
+
+.demo-adventure__choices {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+}
+
+.demo-adventure__outro {
+  margin-top: var(--space-5);
+  text-align: center;
+}
+
+.demo-adventure__found {
+  margin: 0 0 var(--space-5);
+  color: var(--color-ink-secondary);
+  line-height: var(--leading-normal);
+}
+
+.demo-adventure__outro-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-4);
+}
+
+/* Once these stack they read as a ragged column (170/123/175px); matching
+   their widths makes the group a single block again. */
+@media (max-width: 30rem) {
+  .demo-adventure__outro-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* ── How it works ───────────────────────────────────────────────────── */
+
+.landing-steps {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-6);
+  margin: var(--space-10) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.landing-step {
+  position: relative;
+}
+
+/* The trail: a dotted amber path threading the step medallions, the page's
+   one drawn "map" flourish. Horizontal behind the medallion row on wide
+   screens; vertical medallion-to-medallion when stacked. Decorative. The
+   right inset parks the trail's end at the fourth medallion (whose column
+   starts at 75% of the row) instead of running past it to the grid edge. */
+.landing-steps::before {
+  content: '';
+  position: absolute;
+  top: 1.375rem;
+  left: 1.5rem;
+  right: 23%;
+  border-top: 3px dotted var(--color-amber-deep);
+  opacity: 0.55;
+}
+
+.landing-step__number {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--radius-full);
+  background: var(--color-amber-deep);
+  color: var(--color-ink);
+  font-family: var(--font-serif);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-lg);
+  /* Ring that lifts the medallion off the dotted trail passing behind it. */
+  box-shadow: 0 0 0 6px var(--color-parchment);
+}
+
+.landing-step__title {
+  margin: var(--space-4) 0 0;
+  font-family: var(--font-serif);
+  font-size: var(--text-lg);
+}
+
+.landing-step__body {
+  margin: var(--space-2) 0 0;
+  color: var(--color-ink-secondary);
+  line-height: var(--leading-normal);
+}
+
+@media (max-width: 64rem) {
+  .landing-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .landing-steps::before {
+    display: none;
+  }
+}
+
+@media (max-width: 40rem) {
+  .landing-steps {
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+  }
+
+  .landing-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 3.25rem;
+    bottom: calc(-1 * var(--space-8) + 0.5rem);
+    left: 1.3rem;
+    border-left: 3px dotted var(--color-amber-deep);
+    opacity: 0.55;
+  }
+}
+
+/* ── Trust / safety ─────────────────────────────────────────────────── */
+
+.landing-section--safety {
+  max-width: none;
+  background:
+    radial-gradient(120% 100% at 50% 0%, var(--color-amber-subtle) 0%, transparent 70%),
+    var(--color-parchment);
+}
+
+.landing-section--safety > * {
+  max-width: 72rem;
+  margin-inline: auto;
+}
+
+/* Four trust cards: 15rem minimum lets a 72rem row seat all four across,
+   with a 2x2 fall-back at tablet widths and a single column on phones. */
+.landing-trust {
+  display: grid;
+  /* See .landing__doors: rem floor guarded so large text scales wrap instead
+     of overflowing. */
+  grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
+  gap: var(--space-5);
+  margin: var(--space-10) auto 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Card text sits on the translucent raised wash over the section's
+   amber-subtle gradient; axe reports gradient-backed text as "incomplete"
+   rather than pass/fail, so the composite is computed here instead: ink on
+   raised-over-subtle 16.01:1 light / 11.19:1 dark, ink-secondary 9.37:1
+   light / 7.29:1 dark. */
+.landing-trust__card {
+  padding: var(--space-6);
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-lg);
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-sm);
+}
+
+.landing-trust__icon {
+  display: inline-grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: var(--radius-lg);
+  background: var(--color-amber-subtle);
+  color: var(--color-amber-text);
+  border: 1px solid var(--color-border-soft);
+}
+
+.landing-trust__title {
+  margin: var(--space-4) 0 0;
+  font-family: var(--font-serif);
+  font-size: var(--text-lg);
+}
+
+.landing-trust__body {
+  margin: var(--space-2) 0 0;
+  color: var(--color-ink-secondary);
+  line-height: var(--leading-normal);
+}
+
+/* ── Pricing ────────────────────────────────────────────────────────── */
+
+.landing-pricing {
+  display: grid;
+  /* See .landing__doors. Currently masked by the --single override below, but
+     it bites the moment a second tier flips available in Phase 8. */
+  grid-template-columns: repeat(auto-fit, minmax(min(17rem, 100%), 1fr));
+  gap: var(--space-6);
+  max-width: 56rem;
+  margin: var(--space-10) auto 0;
+}
+
+/* Only available tiers get cards, so today exactly one renders. auto-fit
+   would stretch a lone card across the full 56rem and leave it looking like
+   a stray banner; cap it at a card's natural width and center it instead.
+   The modifier (rather than a :only-child rule) keeps the multi-card grid
+   intact for the Phase 8 flip, when a second tier becomes available and this
+   class simply stops applying. */
+.landing-pricing--single {
+  grid-template-columns: minmax(0, 26rem);
+  justify-content: center;
+}
+
+/* The unavailable tiers, collapsed to one line. Deliberately prose and not a
+   card: it states the commitment (announce before charging, keep what you
+   have) without rendering a price-shaped, unclickable comparison next to the
+   tier the visitor should actually take.
+   ink-secondary on parchment: 8.81:1 light / 9.72:1 dark. */
+.landing-pricing__futures {
+  max-width: 40rem;
+  margin: var(--space-6) auto 0;
+  text-align: center;
+  color: var(--color-ink-secondary);
+}
+
+/* Bookplate framing: a double line (outer border + inset hairline) instead
+   of the default SaaS card. The available tier carries the amber border.
+   Today every rendered card is --available (unavailable tiers no longer get
+   cards at all); the base rule is kept because the Phase 8 flip introduces a
+   second tier that will not be the highlighted one. */
+.landing-tier {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-8);
+  border: 2px solid var(--color-parchment-deeper);
+  border-radius: var(--radius-xl);
+  background: var(--color-parchment);
+  box-shadow:
+    inset 0 0 0 5px var(--color-parchment),
+    inset 0 0 0 6px var(--color-border-soft),
+    var(--shadow-sm);
+}
+
+.landing-tier--available {
+  border-color: var(--color-amber-deep);
+  box-shadow:
+    inset 0 0 0 5px var(--color-parchment),
+    inset 0 0 0 6px var(--color-border-soft),
+    var(--shadow-md);
+}
+
+.landing-tier__status {
+  margin: 0;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* success on success-light: 5.44:1 light / 6.97:1 dark. */
+.landing-tier__status--available {
+  background: var(--color-success-light);
+  color: var(--color-success);
+}
+
+.landing-tier__name {
+  margin: var(--space-3) 0 0;
+  font-family: var(--font-serif);
+  font-size: var(--text-xl);
+}
+
+.landing-tier__price {
+  margin: 0;
+  font-family: var(--font-serif);
+}
+
+.landing-tier__price-amount {
+  font-size: var(--text-3xl);
+  font-weight: var(--weight-bold);
+}
+
+.landing-tier__price-cadence {
+  font-size: var(--text-base);
+  color: var(--color-ink-secondary);
+}
+
+.landing-tier__price-note {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-ink-secondary);
+}
+
+.landing-tier__tagline {
+  margin: var(--space-3) 0 0;
+  color: var(--color-ink-secondary);
+  line-height: var(--leading-normal);
+}
+
+.landing-tier__features {
+  margin: var(--space-4) 0 var(--space-6);
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.landing-tier__feature {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  line-height: var(--leading-normal);
+}
+
+/* forest checks: 7.18:1 light / 5.25:1 dark on parchment (non-text 3:1). */
+.landing-tier__feature-mark {
+  color: var(--color-forest);
+  flex-shrink: 0;
+  margin-top: 0.3rem;
+}
+
+.landing-tier .landing-cta {
+  margin-top: auto;
+  align-self: stretch;
+}
+
+/* ── FAQ ────────────────────────────────────────────────────────────── */
+
+.landing-faq {
+  max-width: 44rem;
+  margin: var(--space-8) auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.landing-faq__item {
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-lg);
+  background: var(--surface-raised);
+}
+
+.landing-faq__item[open] {
+  border-color: var(--color-amber-text);
+}
+
+.landing-faq__question {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: 44px;
+  padding: var(--space-3) var(--space-5);
+  font-family: var(--font-serif);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-base);
+  cursor: pointer;
+  list-style: none;
+  border-radius: var(--radius-lg);
+}
+
+.landing-faq__question::-webkit-details-marker {
+  display: none;
+}
+
+/* Custom marker so the affordance is consistent cross-browser; rotates when
+   open. amber-TEXT, not amber-deep: on the dark palette's raised card wash
+   amber-deep computes to only 2.69:1 against the 3:1 non-text minimum, while
+   amber-text holds 5.96:1 light / 7.53:1 dark (wcag-contrast.py). */
+.landing-faq__question::after {
+  content: '';
+  flex-shrink: 0;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-right: 3px solid var(--color-amber-text);
+  border-bottom: 3px solid var(--color-amber-text);
+  transform: rotate(45deg);
+  transition: transform var(--duration-fast) var(--easing-default);
+}
+
+.landing-faq__item[open] > .landing-faq__question::after {
+  transform: rotate(-135deg);
+}
+
+.landing-faq__answer {
+  margin: 0;
+  padding: 0 var(--space-5) var(--space-5);
+  color: var(--color-ink-secondary);
+  line-height: var(--leading-normal);
+}
+
+/* Inline links inside answers: ink + underline, never color alone. */
+.landing-faq__answer a {
+  color: var(--color-ink);
   text-decoration: underline;
   text-underline-offset: 0.15em;
 }
 
-/* Same focus treatment as .landing-door:focus-visible; --color-amber-deep on
-   --color-parchment is 3.09:1, clearing the 3:1 AA minimum for a non-text
-   focus indicator. */
-.landing__new-visitor-link:focus-visible {
-  outline: 2px solid var(--color-amber-deep, #c17b2a);
+/* amber-TEXT, same substitution (and same reason) as the question's ring and
+   the custom marker above: these links sit INSIDE the card, where the dark
+   palette's raised wash drops amber-deep to 2.68:1, under the 3:1 non-text
+   minimum. The 2px offset stays inside the card, so the ring never reaches
+   the parchment that would have rescued it. */
+.landing-faq__answer a:focus-visible {
+  outline: 2px solid var(--color-amber-text);
   outline-offset: 2px;
 }
 
-/*
-  Footer links to the two public legal/support pages. Quiet by design: the
-  landing page's job is the two doors above, and a parent who needs the privacy
-  policy is looking for it rather than being sold it. They are real links in a
-  real <nav> rather than small print, because Epic's KWS registration points at
-  these URLs and a policy has to be findable from the site to count as
-  published.
-*/
+/* The CTA fill (amber-deep) against this band is 2.67:1 light / 2.54:1 dark,
+   under the 3:1 non-text minimum for the boundary that identifies a control.
+   Everywhere else on the page the same fill sits on parchment at 3.09/3.27:1.
+   Ink border, the same substitution this band's focus ring already makes,
+   gives a 12.97:1 edge without touching the fill or the 4.86:1 label. */
+.landing-final .landing-cta--primary {
+  border-color: var(--color-ink);
+}
+
+/* ── Final CTA band: the one deliberate palette break (forest). ─────── */
+
+.landing-final {
+  padding: var(--space-16) var(--space-6);
+  text-align: center;
+  background: var(--color-forest-light);
+}
+
+/* The shared amber-deep focus ring computes only 2.67:1 light / 2.54:1 dark
+   against this band's forest-light, under the 3:1 non-text minimum (every
+   other ring on the page sits on parchment, where it passes); ink holds
+   12.97:1 light / 11.59:1 dark here. axe has no focus-indicator-contrast
+   rule, so this override is load-bearing, not belt-and-suspenders. */
+.landing-final .landing-cta:focus-visible {
+  outline-color: var(--color-ink);
+}
+
+/* ink on forest-light: 12.97:1 light / 11.59:1 dark. */
+.landing-final__heading {
+  margin: var(--space-4) 0 0;
+  font-family: var(--font-serif);
+  font-size: clamp(1.7rem, 4vw, 2.4rem);
+  color: var(--color-ink);
+}
+
+.landing-final__lede {
+  margin: var(--space-3) auto var(--space-8);
+  max-width: 34rem;
+  color: var(--color-ink);
+  line-height: var(--leading-normal);
+}
+
+/* ── Footer ─────────────────────────────────────────────────────────── */
+
 .landing__footer {
-  margin-top: var(--space-6, 2rem);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  max-width: 72rem;
+  margin-inline: auto;
+  padding: var(--space-8) var(--space-6);
+}
+
+.landing__footer-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-serif);
+  font-weight: var(--weight-semibold);
 }
 
 .landing__footer nav {
   display: flex;
-  gap: var(--space-4, 1rem);
-  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--space-4);
 }
 
+/* ink-secondary, not ink-muted: same AA reasoning as .landing-door__note,
+   and these three links are the page's only path to the KWS-registered
+   privacy/support URLs. 8.81:1 light / 9.72:1 dark on parchment. 44px
+   targets: a parent taps Privacy/Support from a phone mid-KWS-verification,
+   which is the worst place for a 32px link. */
 .landing__footer-link {
-  color: var(--color-ink-muted, rgba(44, 26, 14, 0.7));
-  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--color-ink-secondary);
+  font-size: var(--text-sm);
   text-decoration: underline;
+  text-underline-offset: 0.15em;
+  padding: var(--space-2) 0;
 }
 
 .landing__footer-link:hover {
-  color: var(--color-ink, #2c1a0e);
+  color: var(--color-ink);
 }
 
-/*
-  Focus gets its own rule rather than sharing the hover one. A colour shift
-  alone is not a focus indicator: it fails WCAG 2.4.11 on its own, and these
-  two links are the entire keyboard path to the privacy policy from the
-  landing page.
-*/
-.landing__footer-link:focus-visible {
-  color: var(--color-ink, #2c1a0e);
-  outline: 2px solid var(--color-ink, #2c1a0e);
-  outline-offset: 3px;
-  border-radius: 2px;
+/* ── Reduced motion: hover/press nudges become static state changes. ── */
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-cta,
+  .landing-door,
+  .landing-faq__question::after {
+    transition: none;
+  }
+
+  .landing-cta:hover,
+  .landing-cta:active,
+  .landing-door:hover,
+  .landing-door:focus-visible {
+    transform: none;
+  }
 }

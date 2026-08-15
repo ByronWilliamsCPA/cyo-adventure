@@ -1,6 +1,6 @@
 """Hand-checkable answers for the two estimators W7's agreement now rests on.
 
-`AL-367` retracted the original agreement figures because the statistic was
+`AL-378` retracted the original agreement figures because the statistic was
 wrong for the data, not because the arithmetic was. So the replacement gets
 tests that pin the arithmetic against cases whose answers are known by
 construction, and one that pins the specific pathology that produced the

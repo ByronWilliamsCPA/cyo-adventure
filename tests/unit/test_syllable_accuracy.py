@@ -1,15 +1,15 @@
 """Hold `_count_syllables` to known answers, and to the accuracy it was fixed to.
 
-History, because the numbers below only mean something against it. `AL-378`
+History, because the numbers below only mean something against it. `AL-389`
 reported one defect: the reading-level checker over-counted every regular
 ``-ed`` past, and four independent drafting agents had responded by swapping
 regular verbs for irregular ones to satisfy a band the counter was
-misreporting. Characterising it (`AL-383`) found three error classes rather
+misreporting. Characterising it (`AL-394`) found three error classes rather
 than one, pointing in two directions: ``-ed`` over-counting, and ``-Cle`` and
 vowel-run under-counting. This file first landed asserting all of those WRONG
 answers on purpose, so the fix could not arrive quietly.
 
-`AL-388` is that fix, and it was built against ground truth rather than
+`AL-399` is that fix, and it was built against ground truth rather than
 intuition: CMUdict's 115,901 unambiguously-syllabified words, plus this
 corpus's own 390,334 tokens for a use-weighted view. Every rule in the counter
 earned its place by improving accuracy on that set, and several plausible ones
@@ -27,7 +27,7 @@ tolerance.
 
 This file now asserts the true answer wherever the counter reaches it, and
 pins the three it still misses with the measurement that says leaving them is
-correct. `AL-356` remains the standing rule: a deterministic measure does not
+correct. `AL-367` remains the standing rule: a deterministic measure does not
 get to arbitrate before its accuracy has been checked, and "checked" means
 against an external answer key, not against the account of it in a bug report.
 """

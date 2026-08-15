@@ -24,6 +24,14 @@
 '   src/cyo_adventure/api/approval.py             (admin-only HTTP surface:
 '                                                   submit/approve/send-back/
 '                                                   archive/review/review-queue)
+'   src/cyo_adventure/publishing/reason_codes.py  (SendBackReasonCodeLiteral +
+'                                                   validate_reason_code: the
+'                                                   closed send-back vocabulary,
+'                                                   moved OUT of api/schemas.py so
+'                                                   the domain owns it; the
+'                                                   dependency now runs one way,
+'                                                   api/schemas.py imports from
+'                                                   here. No I/O)
 '   src/cyo_adventure/api/review_surface.py       (build_review_surface,
 '                                                   build_review_queue_item)
 '   src/cyo_adventure/moderation/pipeline.py      (worker-path caller of
@@ -60,6 +68,8 @@ package "Publishing" #F3E5F5 {
 
   component "State Machine\npublishing/state_machine.py\nassert_transition()\npure, dependency-free" as state_machine #CE93D8
 
+  component "Send-Back Vocabulary\npublishing/reason_codes.py\nSendBackReasonCodeLiteral\nvalidate_reason_code()\nclosed set, no I/O" as reason_codes #CE93D8
+
   component "Publishing Service\npublishing/service.py\nsubmit()\napprove()\nsend_back()\narchive()" as service #CE93D8
 
   component "auto_reject()\npublishing/service.py\nmachine-side rejection;\nActor.system(), no principal" as auto_reject #CE93D8
@@ -90,14 +100,41 @@ service --> state_machine : "assert_transition(\ncurrent, action)"
 auto_reject --> state_machine
 
 approval_router ==> service : "approve(session, principal,\nbook, version, visibility)\n[ADMIN ONLY -- ADR-005]"
-approval_router --> service : "send_back(session,\nprincipal, book, reason)"
+approval_router --> service : "send_back(session, principal,\nbook, reason, *, reason_code)"
+service --> reason_codes : "validate_reason_code(reason_code)\n(in send_back, so the closed set holds\nfor EVERY caller, not only the API)"
 approval_router --> service : "archive(session,\nprincipal, book)"
 
 service --> storybook_row : "status, visibility,\ncurrent_published_version"
 service --> version_row : "approved_by,\npublished_at"
 auto_reject --> storybook_row : "status = needs_revision"
 
-service --> events_log : "RELEASED (approve)\nSENT_BACK (send_back)"
+service --> events_log : "RELEASED (approve)\nSENT_BACK (send_back;\npayload {reason_code})"
+
+note left of reason_codes
+  The vocabulary lives here, not in
+  api/schemas.py, and the two are easy
+  to get backwards. It moved because
+  api/schemas.py is what the API
+  boundary validates against and what
+  the OpenAPI schema is generated from,
+  so publishing importing from it while
+  it imported the vocabulary would be a
+  cycle. api/schemas.py now imports the
+  vocabulary FROM here.
+
+  Narrower claim than it looks: this is
+  not "the domain never imports from the
+  API layer". catalog_publish.py imports
+  Principal and Role from api/deps.py at
+  runtime, and service.py imports
+  Principal from it under TYPE_CHECKING.
+  The cycle is the reason, not a rule
+  without exceptions.
+
+  The reviewer's free-text `reason` is
+  logged and never persisted; only the
+  code reaches the event payload (D3).
+end note
 
 catalog_publish ==> service : "approve(...)  [standalone CLI path,\nsame approve() as the admin HTTP path]"
 

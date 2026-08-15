@@ -52,11 +52,11 @@ asking to change that.
 The frontend needs these at **build** time (Vite bakes them in, they
 cannot be injected at runtime):
 
-- `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` — pointed at the
+- `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`: pointed at the
   **staging** Supabase Cloud project, not a new one. See "Why dev shares
   staging's backend" below; there is no dev-specific Supabase project to
   point at.
-- `VITE_API_URL` — however your deployment resolves the backend API for
+- `VITE_API_URL`: however your deployment resolves the backend API for
   this environment (likely relative `/api` through the same nginx proxy
   pattern the production image uses; see `frontend/nginx.conf` and
   `frontend/Dockerfile` in this repo for the existing proxy_pass
@@ -124,17 +124,17 @@ same requirements, minus the "decoupled cadence" ask).
 
 ## Reference material in this repo
 
-- `docs/testing/README.md` — the full environment/tier model this handoff
+- `docs/testing/README.md`: the full environment/tier model this handoff
   extends.
-- `docs/testing/coverage-matrix.md` — what's tested where, useful context
+- `docs/testing/coverage-matrix.md`: what's tested where, useful context
   for why we're asking for this.
-- `docs/guides/supabase-environments.md` — the Supabase-side topology and
+- `docs/guides/supabase-environments.md`: the Supabase-side topology and
   the free-plan project-count constraint.
-- `.github/workflows/trigger-image-build.yml` — the existing dispatch
+- `.github/workflows/trigger-image-build.yml`: the existing dispatch
   mechanism into homelab-infra.
-- `.github/workflows/e2e-staging.yml` — the workflow waiting on the
+- `.github/workflows/e2e-staging.yml`: the workflow waiting on the
   secrets above.
-- `frontend/Dockerfile`, `frontend/nginx.conf`, `docker-compose.prod.yml` —
+- `frontend/Dockerfile`, `frontend/nginx.conf`, `docker-compose.prod.yml`:
   the existing production container/proxy shape to mirror for `dev`.
 
 `#ASSUME: external-resources: this handoff assumes homelab-infra's

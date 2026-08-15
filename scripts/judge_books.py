@@ -103,11 +103,11 @@ class Judge:
 # chosen:
 #
 #   1. Excluding it dropped W7's control-noise floors by 2 to 6 times.
-#   2. `AL-392`: per criterion it is the outlier on four of seven, and on
+#   2. `AL-403`: per criterion it is the outlier on four of seven, and on
 #      `choice_quality` it correlates NEGATIVELY with both others (-0.15 and
 #      -0.02) where they agree at +0.46. Its marginals show why: it uses the
 #      full 1-to-5 range while both others compress into 2-to-4.
-#   3. `AL-397`: run to run on identical arms it averages 0.323 absolute
+#   3. `AL-408`: run to run on identical arms it averages 0.323 absolute
 #      movement against gpt-5.6's 0.120, and owns every movement past a full
 #      scale point (max 1.710 against 0.290).
 #
@@ -940,7 +940,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument(
         "--allow-untracked-out",
         action="store_true",
-        help="Permit a gitignored --out. Scratch runs only; see AL-368.",
+        help="Permit a gitignored --out. Scratch runs only; see AL-379.",
     )
     parser.add_argument(
         "--judgements",

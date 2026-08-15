@@ -717,7 +717,7 @@ def words_on_shortest_satisfying_path(story: Storybook) -> int | None:
     rules can never disagree about which path is "the fastest finish".
 
     Public (not underscore-prefixed) so a skeleton-context caller
-    (``scripts/check_skeleton.py``, UW-C256/AL-380/AL-384) can compute the same
+    (``scripts/check_skeleton.py``, UW-C261/AL-391/AL-395) can compute the same
     fastest-finish clock ``_check_declared_read_time`` uses, rather than
     reimplementing this search. Both read a node's word count through
     :func:`node_word_count`, which already substitutes a ``<<FILL ... words=N
@@ -800,7 +800,7 @@ class ReadTimeDrift:
     """PL-23's declared-versus-derived clock comparison, with its direction.
 
     ``_check_declared_read_time`` folds this same comparison into a single
-    pass/fail finding and never says which way the mismatch runs. AL-384
+    pass/fail finding and never says which way the mismatch runs. AL-395
     measured that the two directions are two different defects (an
     under-declared skeleton is a plain metadata error a hint-sized fill will
     overrun; an over-declared one, concentrated at the longest cells, reads as
@@ -843,9 +843,9 @@ def read_time_drift(story: Storybook) -> ReadTimeDrift | None:
     PL-23 finding about whether the clock even applies. This is a read-only
     measurement: it does not raise a :class:`ValidationFinding` and does not
     change what ``_check_declared_read_time`` does, warns on, or skips
-    (UW-C256). ``scripts/check_skeleton.py`` calls this to report the breach
+    (UW-C261). ``scripts/check_skeleton.py`` calls this to report the breach
     direction when a skeleton is validated, before any prose exists
-    (AL-380, AL-384).
+    (AL-391, AL-395).
 
     Args:
         story: The parsed story: a catalog skeleton (node bodies still

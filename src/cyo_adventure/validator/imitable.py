@@ -4,7 +4,7 @@ Every safety check in the pipeline asks what happens **to** a character.
 `content_flags`, the L1 safety rules and the moderation classifiers all pass a
 book in which nothing bad happens, and a book that rewards an imitable hazard is
 exactly a book in which nothing bad happens. Two independent readers named the
-class from different book sets (`AL-386`): an enclosed snow tunnel crawled
+class from different book sets (`AL-397`): an enclosed snow tunnel crawled
 repeatedly as the "Greatest fort ever" ending, a bravery payoff for lighting a
 wick solo, a hot oven opened as a choice whose depicted cost is slumped buns.
 
@@ -16,7 +16,7 @@ the theory that the question "would a guardian accept a child imitating what the
 protagonist is rewarded for" is one a person answers well and a keyword list
 answers badly. The judged criterion that would answer it (`imitable_practice`)
 is proposed but unbuilt, because this project does not let a criterion arbitrate
-before W7 has shown it detects its own defect (`AL-356`).
+before W7 has shown it detects its own defect (`AL-367`).
 
 Three design choices, each of which the measurement forced:
 

@@ -13,6 +13,15 @@
 body {
   margin: 0;
   padding: 0;
+  /* The canvas behind every route. Without this the browser painted its own
+     default: #ffffff in light mode against the design system's #f8f3e8
+     parchment, and Chromium's #121212 in dark mode against our #1a130d. Most
+     surfaces hid it under a full-height wrapper, but any page whose content
+     does not fill the viewport showed the wrong ground, most visibly
+     /guardian/login, where a visitor arriving from the parchment landing page
+     landed on stark white. */
+  background: var(--color-parchment);
+  color: var(--color-ink);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

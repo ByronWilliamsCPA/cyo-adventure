@@ -50,7 +50,7 @@ is quoted from a report.
 ### The syllable counter, and everything downstream of it
 
 `validator/reading_level.py::_count_syllables` was rebuilt against CMUdict as ground truth
-(`AL-388`). This is the single highest-leverage change on the branch, because the counter feeds
+(`AL-399`). This is the single highest-leverage change on the branch, because the counter feeds
 the gate, the whole-book aggregate, and the generation repair loop.
 
 | | before | after |
@@ -66,15 +66,15 @@ records the trade.
 
 Three consequences followed, and the second is the one that matters most:
 
-1. Every committed book reads ~0.27 grades easier than it used to (`AL-389`). Nothing about the
+1. Every committed book reads ~0.27 grades easier than it used to (`AL-400`). Nothing about the
    prose changed; the books were always easier than they declared and the over-count was propping
    them into band.
-2. **RL-13 is now one-sided at 3-5 and 5-8** (`AL-399`), and so is the repair loop. The loop's
+2. **RL-13 is now one-sided at 3-5 and 5-8** (`AL-410`), and so is the repair loop. The loop's
    acceptance test was symmetric, so with an accurate counter it would have accepted revisions
    making young-band prose *harder* in order to reach target. Corpus warnings go 331 to 307, all
    removed at those two bands. The targets were deliberately **not** moved: they are claims about
    readers, and shifting them would bake the counting bug into the spec.
-3. Per-band drafting guidance was re-derived from the corpus (`AL-390`). Sentence length carries
+3. Per-band drafting guidance was re-derived from the corpus (`AL-401`). Sentence length carries
    about three quarters of the grade spread (5.7 to 21.0 words per sentence across bands) and
    vocabulary almost none (1.21 to 1.37 syllables per word), which inverts the advice authors were
    giving each other. The irregular-past rule was dropped outright: it saved 10 syllables over ten
@@ -87,13 +87,13 @@ the panel was chosen:
 
 - excluding it dropped W7's control-noise floors 2 to 6 times;
 - per criterion it is the outlier on four of seven and correlates *negatively* with both others on
-  `choice_quality` (-0.15, -0.02) where they agree at +0.46 (`AL-392`);
+  `choice_quality` (-0.15, -0.02) where they agree at +0.46 (`AL-403`);
 - run to run on identical arms it averages 0.323 absolute movement against gpt-5.6's 0.120, owning
-  every movement past a full scale point (max 1.710 against 0.290) (`AL-397`).
+  every movement past a full scale point (max 1.710 against 0.290) (`AL-408`).
 
 **Any W7 verdict computed with it in the panel should be re-derived, not carried forward.**
 
-W7's agreement statistic was also replaced (`UW-C251`): the retracted +0.16 / +0.58 / +0.14 came
+W7's agreement statistic was also replaced (`UW-C256`): the retracted +0.16 / +0.58 / +0.14 came
 from rounding each judge's mean across all seven criteria and running unweighted kappa.
 `scripts/w7_agreement.py` now reports Spearman over within-book deltas and quadratic-weighted
 kappa over raw scores, per criterion, with marginals printed beside both.
@@ -130,9 +130,9 @@ kappa over raw scores, per criterion, with marginals printed beside both.
 
 | Item | State |
 | --- | --- |
-| `UW-C253` | Partly measured. Run-to-run spread is known at leg level; **per-criterion spread still unmeasured** and needs one completed run. |
-| `UW-C250` | Needs the same completed run (control-versus-control). |
-| `UW-C259` | Screen shipped; the judged criterion is unbuilt pending W7 validation. |
+| `UW-C258` | Partly measured. Run-to-run spread is known at leg level; **per-criterion spread still unmeasured** and needs one completed run. |
+| `UW-C255` | Needs the same completed run (control-versus-control). |
+| `UW-C264` | Screen shipped; the judged criterion is unbuilt pending W7 validation. |
 | W8, W9, W10, W14 | Unblocked (the `UW-C239` pricing blocker in the workplan table is **stale**, the table has been complete since 2026-08-14). Budget-bound: roughly $30-50 against ~$11 remaining. |
 | W11, W12, W13 | Deferred by design (W11 needs W7; W12 behind ADR-018 consent scoping; W13 behind W12). |
 | Reviewer distillation | Parked at Phase 0 by owner ruling until the drafting workstream completes. |
@@ -149,12 +149,12 @@ data is still usable.
 **2. Register rows are hypotheses, not specifications.** Four claims recorded when the symptom was
 fresh did not survive being checked against the thing they described:
 
-- `AL-384`'s incidence of 40 of 61 was wrong; the true figure is 37 of 61 (12 under, 25 over).
+- `AL-395`'s incidence of 40 of 61 was wrong; the true figure is 37 of 61 (12 under, 25 over).
   The error was a one-off script that diverged from the gate's own path helper.
-- `UW-C256`'s premise that PL-23 runs only at fill time was wrong; it already ran at skeleton
+- `UW-C261`'s premise that PL-23 runs only at fill time was wrong; it already ran at skeleton
   context.
-- `UW-C255`'s quoted node text does not exist in the corpus; it is a composite of two real strings.
-- `UW-C258`'s proposed `loop_and_grow` gate contradicted ADR-011.
+- `UW-C260`'s quoted node text does not exist in the corpus; it is a composite of two real strings.
+- `UW-C263`'s proposed `loop_and_grow` gate contradicted ADR-011.
 
 Start every ticket by reproducing its stated claim, and prefer reusing the production code path
 over writing a measurement script beside it. Two of the four errors share that root: a script
@@ -170,8 +170,8 @@ The procedure is written up in `blind-spot-review-brief.md`; the verification st
 
 | Artifact | Path |
 | --- | --- |
-| Lessons `AL-378`..`AL-400` | `docs/planning/authoring-lessons-log.md` |
-| Register `UW-C250`..`UW-C260` | `docs/planning/unscheduled-work-register.md` |
+| Lessons `AL-389`..`AL-411` | `docs/planning/authoring-lessons-log.md` |
+| Register `UW-C255`..`UW-C265` | `docs/planning/unscheduled-work-register.md` |
 | Blind-spot procedure | `docs/planning/blind-spot-review-brief.md` |
 | Reader reports and verifications | `out/reviews/` |
 | W7 agreement report | `out/w7/agreement.txt` |

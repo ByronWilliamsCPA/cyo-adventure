@@ -97,7 +97,7 @@ Invoke when given a skeleton file under `skeletons/<band>/<slug>.json` (or any
      Age-Band Reading Levels table names a reference in-band book per band; opening it and
      matching its sentence shape is the fastest route. Do not swap regular past-tense verbs
      for irregular ones to lower the grade: that trick was an artefact of a syllable-counting
-     bug fixed in `AL-388` and now buys essentially nothing;
+     bug fixed in `AL-399` and now buys essentially nothing;
    - honors the `beats=` intent and the node's `role`;
    - sets up exactly the choices on that node (each `choice.label` is the action the prose
      should make available); when a theme brief is in play, rewrite the label's surface

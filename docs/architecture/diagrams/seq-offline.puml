@@ -6,9 +6,14 @@
 ' Source files:
 '   frontend/src/offline/sync.ts   (saveProgress, replayQueue, OfflineError)
 '   frontend/src/offline/db.ts     (IndexedDB: putReadingState, enqueueWrite, dequeue)
-'   frontend/src/reader/ReaderPage.tsx (triggers saveProgress on choose/auto-save)
+'   frontend/src/reader/ReaderPage.tsx (triggers saveProgress on choose/auto-save;
+'     live-save 409 -> silent newest-write-wins)
+'   frontend/src/reader/ReaderRoute.tsx (handleReplayOutcome: replay conflicts are
+'     discarded silently; only a CLEAN replay toasts)
 '   frontend/src/hooks/useReplayOnReconnect.ts (triggers replayQueue on reconnect)
-'   docs/design/offline-conflict-ux.md
+'   docs/design/offline-conflict-ux.md (section 1's conflict dialog was SUPERSEDED
+'     2026-07-22 on the child reading path; read the supersession note, not the
+'     wireframe above it)
 '   docs/planning/tech-spec.md  (Multi-device sync rules)
 ' ============================================================
 
@@ -120,7 +125,26 @@ alt "a queued write returns 409"
   api_client --> sync : "{status:409, currentRow}"
   sync -> sync : "latch: this write and every LATER write\nfor the same story go into outcome.conflicts"
   sync --> machine : "ReplayOutcome {replayed, conflicts:[...], failed:[...]}"
-  machine -> child : "show conflict UX\n(offline-conflict-ux.md options)"
+  machine -> machine : "handleReplayOutcome: discard the held\nlocal writes, keep the server's newest row"
+  note right of machine
+    NO dialog, and no message to the child.
+    Newest-write-wins is applied silently on
+    both conflict paths (this replay path in
+    ReaderRoute.tsx, and ReaderPage.tsx's
+    live-save 409), because a 5-10 year old
+    cannot reason about a "which place do you
+    want to keep?" prompt. Dropping a queued
+    local step is the accepted cost.
+    The "All caught up!" toast is suppressed
+    here: it fires only when conflicts and
+    failed are both empty. A genuine replay
+    FAILURE is the different case that does
+    surface the ask-a-grown-up banner.
+    Superseded offline-conflict-ux.md s1 on
+    2026-07-22; verified by ReaderRoute.test.tsx
+    and e2e/reader-conflict.spec.ts, which assert
+    a conflict-dialog count of zero.
+  end note
 end
 
 @enduml

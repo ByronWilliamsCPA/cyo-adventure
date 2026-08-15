@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.80.0] - 2026-08-15
+
+### Features
+
+- **landing**: Redesign the homepage as the sales funnel
+  ([#720](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/720),
+  [`5f38917`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/5f38917deafbcfd2587e00b8e219f53d97395c0d))
+
+
+## [0.79.1] - 2026-08-15
+
+### Bug Fixes
+
+- Close the cloud-actionable register backlog and align the test Postgres major
+  ([#709](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/709),
+  [`dc71080`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/dc71080fdecb498d641345e873a6710c91b8fd44))
+
+- **generation**: Reject duplicate vendor labels and cover the zero-edge reading
+  ([#712](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/712),
+  [`fc163c5`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/fc163c535cd619f1414e7b1921703632d8526c0a))
+
+
+## [0.79.0] - 2026-08-14
+
+### Features
+
+- **generation**: Add the Stage D reading-level repair loop and the cross-vendor comparison harness
+  ([#708](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/708),
+  [`0396507`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/0396507b1d5db9875e544c9cebea412694f3713b))
+
+
 ## [0.78.2] - 2026-08-13
 
 ### Bug Fixes
@@ -3398,7 +3429,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   from test code, comments, and script documentation; add `.gitguardian.yml` with
   an allowlist for remaining known-benign test patterns.
 
-## [0.1.0] - TBD
+## [0.1.0] - 2026-07-07
 
 ### Added
 - Initial project structure with Poetry package management
@@ -3429,6 +3460,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.80.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.79.1...v0.80.0
+[0.79.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.79.0...v0.79.1
+[0.79.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.78.2...v0.79.0
 [0.78.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.78.1...v0.78.2
 [0.78.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.78.0...v0.78.1
 [0.78.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.77.1...v0.78.0

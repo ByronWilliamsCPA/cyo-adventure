@@ -15,7 +15,7 @@ component: Development-Tools
 
 > **Status**: Accepted | **Updated**: 2026-08-15
 > **Serves**: [A11](./capability-register.md) (structural quality tools across the corpus)
-> **Origin**: `AL-387`, scheduled as `UW-C260`
+> **Origin**: `AL-398`, scheduled as `UW-C265`
 
 A blind-spot review asks a frontier model to read finished books and report only what the existing
 coverage misses. It is the one instrument here that can find a defect class nobody has thought to
@@ -75,12 +75,12 @@ no refuted instances has probably not been checked.
 ## What to do with a class whose instances all fail
 
 Keep the class and discard the instances. Convergence across independent readers is evidence about
-the class; the instances are evidence about that reader's attention. `UW-C258` is the worked
+the class; the instances are evidence about that reader's attention. `UW-C263` is the worked
 example: the class was real, every checker built for it failed on measurement, and the finding
 turned out to live in the skeleton catalogue rather than in any book.
 
 ## Related documents
 
-- [Authoring lessons log](./authoring-lessons-log.md), `AL-385` through `AL-387` and `AL-391`
-- [Unscheduled work register](./unscheduled-work-register.md), `UW-C258` through `UW-C260`
+- [Authoring lessons log](./authoring-lessons-log.md), `AL-396` through `AL-398` and `AL-402`
+- [Unscheduled work register](./unscheduled-work-register.md), `UW-C263` through `UW-C265`
 - `out/reviews/`, the 2026-08-14 reports and the verification write-ups

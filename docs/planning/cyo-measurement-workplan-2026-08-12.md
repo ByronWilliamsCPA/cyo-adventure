@@ -294,10 +294,29 @@ repair tier already exists as `generation/reading_level_loop.py`.
 *Test.* Cost per delivered book and gate pass rate, against the current single-model configuration
 on matched briefs.
 
-*Decision rule.* **Adopt iff cost per delivered book falls materially with no regression in gate
-pass rate or deterministic craft measures.** Cost is a fact rather than a ranking, so this is not
-blocked on W7. Note the fifth review's recommended model names are stale; the tiering transfers and
-its instantiation does not, so the slate is chosen from current models at run time.
+*Decision rule.* **Adopt iff cost per delivered book falls by at least 20 percent against the
+current single-model baseline, with no regression in gate pass rate or deterministic craft
+measures.** Pre-registered at 20 percent rather than left as "materially" because per-leg $/book
+already spans roughly $0.04 to $1.42 in the section 30/31 cost table (35x), so a routing-driven
+saving has to clear a real threshold to be distinguishable from ordinary vendor-to-vendor spread,
+not just be directionally lower. Cost is a fact rather than a ranking, so this is not blocked on
+W7. Note the fifth review's recommended model names are stale; the tiering transfers and its
+instantiation does not, so the slate is chosen from current models at run time.
+
+> **#ASSUME: external-resources.** The routing slate is chosen from whichever models are current
+> at run time (deliberately not pinned to the fifth/sixth review's stale names), so this decision
+> rule assumes the pricing and reasoning-overhead profile a chosen model exhibits at test time is
+> stable enough that the same slate, re-run later, would clear the same 20 percent bar. A
+> mid-project price change or model deprecation on the routed backend would need a re-test, not a
+> re-derivation of the threshold. "Chosen at run time" means chosen once, at the start of a given
+> W9 run, then frozen for that run: every book in one measurement is priced and gated against the
+> same slate, never a slate that drifts mid-run. Each run's results record the exact model IDs and
+> endpoint/version pins the slate resolved to, not just "current at the time", so a later reader can
+> tell whether a stored adoption decision still describes today's routing or was measured against
+> models or pricing that have since moved.
+> **#VERIFY:** re-run the cost/gate-pass-rate test in this section's *Test* line whenever the slate,
+> its endpoint pins, or its pricing changes from what a stored run recorded, not on a fixed
+> calendar cadence; the recorded model IDs and pins are what make that comparison checkable.
 
 The sixth review's staged allocation is the same tiering at finer grain and is adopted as this
 item's slate shape rather than as a new item: highest reasoning for premise, character and
@@ -321,9 +340,13 @@ cross-lab premise convergence currently measures **156.35 shared four-grams per 
 generator idiom floor of **3.3**. Generate n books from MoPS-sampled premises and measure the same
 quantity the same way.
 
-*Decision rule.* **Adopt iff convergence drops to within a small multiple of the 3.3 idiom floor.
-Drop if it stays in the tens per 1000**, because a curated space that still converges is not solving
-the problem it was chosen for. This is deterministic, pre-registered, and unambiguous.
+*Decision rule.* **Adopt iff convergence drops below 9.9 shared four-grams per 1000, exactly 3x the
+3.3 idiom floor. Drop if it stays at 9.9 or above (the "tens per 1000" range this plan's own
+comparator has repeatedly measured for a non-curated premise space)**, because a curated space
+that still converges is not solving the problem it was chosen for. One threshold, not two: an
+earlier draft paired "3x the idiom floor" (9.9) with "under 10" as if they were the same number,
+which left a measured value between 9.9 and 10 with no single classification. This is deterministic,
+pre-registered, and unambiguous.
 
 *Cost.* Generation for n books, plus curation time for the module dictionary.
 
@@ -353,6 +376,20 @@ prompt would silently drop out of Think Max, and the result would read as "less 
 book" when the actual cause is "less reasoning". **Hold the configured context window fixed at or
 above 384K across all three regimes and vary only what the prompt contains.** If a regime cannot be
 run that way, report it as a different experiment rather than as a fourth cell.
+
+> **#ASSUME: external-resources.** This confound-avoidance rule rests on the DeepSeek-V4 model
+> card's stated 384K Think Max floor holding at run time; a vendor can revise a model card's
+> documented minimum (or retire Think Max) between this plan being written and W14 actually
+> running. The three-regime design silently reacquires the confound this paragraph exists to
+> avoid if that floor moves and nobody re-checks it.
+> **#ASSUME: payment/financial.** Holding the context window at or above 384K on every regime,
+> including the two narrower ones (current-node-plus-ancestors, the compact ledger), means paying
+> for a context floor those regimes do not otherwise need, which raises W14's cost above what a
+> naive reading of "compact context should be cheap" would predict; the *Test* line's cost
+> measurement must be read with that floor in mind, not as evidence the compact regime is
+> expensive on its own terms.
+> **#VERIFY:** re-check the current DeepSeek-V4 model card's Think Max minimum immediately before
+> running W14, not from this document's 2026-08-12 citation.
 
 *Blocked, and the blocker is ours.* Half of this item is a cost measurement over input tokens, and
 `core/pricing.py` sets `input_usd_per_mtok=None` on every cloud entry, so `estimate_cost` marks every
@@ -460,6 +497,15 @@ proxy for dimensions no formula observes recreates `AL-337` rather than closing 
 failing readers.** If comprehension tracks Flesch-Kincaid closely, the quantitative leg was
 sufficient after all and the honest outcome is to say so and stop.
 
+> **Numeric threshold not pre-registered here.** "Tracks closely" needs a stated correlation
+> coefficient (or agreement statistic) and a minimum sample size before W12 runs, the same way
+> W9's cost bar and W10's convergence bar are pre-registered above. This plan does not have a
+> comprehension-versus-Flesch-Kincaid baseline to derive one from (unlike W9's cost spread or
+> W10's four-gram floor), so picking a number here would be invented, not derived. Whoever runs
+> W12 should set it (a candidate starting point: Pearson r >= 0.7 with n >= 20 books, but this is
+> a suggestion for the owner to confirm or replace, not a pre-registered value) before results are
+> in hand, so the "sufficient after all" call is not made post hoc.
+
 ## 5. Deferred, with the reason
 
 | Item | Source | Why deferred |
@@ -531,7 +577,7 @@ contributing nothing, which reads as an unlucky run against flaky endpoints. Eve
 the panel's tests returned a bare `str`, so the suite asserted against a contract that no longer
 existed, and no gate type-checks `scripts/`. This is the same defect PR #708 fixed at the
 reading-level loop's own call site, missed in the sibling script the same branch introduced.
-Recorded as `AL-351`, with the coverage gap that hid it as `AL-352` and `UW-C248`.
+Recorded as `AL-362`, with the coverage gap that hid it as `AL-363` and `UW-C253`.
 
 Consequence for sequencing: **W7 and any judged work were blocked and nobody knew.** The fix is on
 this branch with a regression test that drives a real `Completion`.
@@ -936,7 +982,7 @@ read as measured.
 
 Ran on the six-book corpus, 31 arms, 3 judges, 93 scorings, all successful (no errors, no
 empty score sets). Total spend measured against the provider's balance: **$6.29**, of which
-$0.85 was the harden and about $2.5 was a duplicate concurrent panel run (`AL-364`).
+$0.85 was the harden and about $2.5 was a duplicate concurrent panel run (`AL-375`).
 
 **The run first reported seven UNTESTED verdicts over 93 good scorings**, which was a join
 defect rather than a result: `judge_book` labels each verdict `f"{leg}#{brief_index}"`, right
@@ -1147,7 +1193,7 @@ is trusted, and membership should be a decision the evidence supports rather tha
 
 Both were built weeks ago and neither had ever been pointed at a pool with several books per
 leg, which is what they need to form cells and intervals. `out/vendor-comparison/` held such a
-pool and is gone (`UW-C252`), so one was regenerated: 3 legs by 4 briefs, of which 9 books
+pool and is gone (`UW-C257`), so one was regenerated: 3 legs by 4 briefs, of which 9 books
 survived (`anthropic-sonnet-5` lost three to the reasoning-budget cap, `AL-328` again).
 
 **Stated substitution.** W4's rule says "replay the existing 84-verdict pool". That pool no

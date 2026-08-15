@@ -334,7 +334,7 @@ class TestFillGateAcknowledgment:
     def test_opening_sentence_starting_with_an_abbreviation_is_not_misread(
         self,
     ) -> None:
-        """UW-C255/AL-379: a node opening "Mr. Fez's..." must not have its
+        """UW-C260/AL-390: a node opening "Mr. Fez's..." must not have its
         opening sentence read as the bare string "Mr.". The old code
         borrowed `diversity.normalize.split_sentences` (documented there as
         "crude, not linguistic sentences") for this extraction; that split

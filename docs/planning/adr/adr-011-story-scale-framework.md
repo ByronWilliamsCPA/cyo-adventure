@@ -209,7 +209,7 @@ try-again kind, legal at Tier 1; they are distinct from the stateful progress lo
 referenced by "loops require state (tier 2)" above, which first apply at `8-11`
 ("optional (T2)") and are required from `10-13` up.
 
-**Amendment, 2026-08-15 (`AL-398`).** The topology table's purpose column originally read
+**Amendment, 2026-08-15 (`AL-409`).** The topology table's purpose column originally read
 "state growth per loop" for `loop_and_grow` at every band, and the topology is named for
 growth. At `3-5` and `5-8` the Tier-1 contract forbids the variables that would represent
 growth, so an author was told twice by the name and the purpose column to accumulate

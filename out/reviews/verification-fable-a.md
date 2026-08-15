@@ -21,7 +21,7 @@ ticket without being re-checked.
 
 W15 proposed an author-declared secrets list plus a checker, and was DROPPED
 because catching a paraphrase is an entailment problem and no lexical resource in
-the dependency set answers one (`AL-355`).
+the dependency set answers one (`AL-366`).
 
 This is a different problem with a different solution. It does not ask whether a
 secret leaked in other words. It asks whether a **definite reference** ("the

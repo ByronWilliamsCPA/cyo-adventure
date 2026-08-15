@@ -15,7 +15,9 @@
 #   - openssl / libssl CVE-2026-45447: resolved by `apt-get upgrade`.
 #   - Go stdlib / esbuild CVEs: frontend/node_modules excluded via .dockerignore.
 #
-# Last reviewed: 2026-08-08 (added the single-CVE linux-libc-dev CVE-2026-68480
+# Last reviewed: 2026-08-14 (added the nine linux-libc-dev kernel-header CVEs
+# from the PR #709 Trivy run; see the block at the end of this file)
+# Previously: 2026-08-08 (added the single-CVE linux-libc-dev CVE-2026-68480
 # block from the PR #644 Container Security run. Note that the 2026-08-04 review
 # which added CVE-2026-64561 did not bump this stamp; it is folded in here rather
 # than backdated, so this line now covers both. Prior review 2026-08-02: added
@@ -229,3 +231,46 @@ CVE-2026-68480
 # runs on the host's kernel, whose mitigation state this image cannot influence
 # or patch. Documented in docs/known-vulnerabilities.md; reassess 2026-09-30.
 CVE-2026-68480
+
+# Nine linux-libc-dev kernel-header CVEs surfaced by the PR #709 Container
+# Security run (Trivy v0.70.0, workflow run 31760080363): all High, all with an
+# empty Fixed Version and status "affected", and the only findings in the whole
+# image (every Python package scanned reports 0).
+#
+# Feed refresh, not a PR regression. PR #709 matches no Dockerfile,
+# docker-compose*, or .dockerignore path; the last commit to touch Dockerfile is
+# bb89468 (2026-08-11); the PR's base 20e26221 passed its own Container Security
+# run on 2026-08-13T00:05, ~25h earlier; and the scheduled run on 2026-08-12T08:08
+# had already failed on main, so this class of failure predates the PR
+# independently. The base did advance since the 2026-08-08 entry: digest
+# sha256:5bbd41aef3ca86147ef389f3f0d944aa89bbae0d6c3ee31417e7bed15342aadf, with
+# linux-libc-dev at 6.12.101-1+dhi0 rather than 6.12.100-1+dhi0.
+#
+# Independently corroborated against the Debian security tracker on 2026-08-14,
+# each CVE fetched individually rather than inferred from scan absence, which
+# suppression would have masked. All nine record source package "linux" as
+# vulnerable in BOTH trixie (6.12.94-1) and trixie-security (6.12.101-1); all nine
+# are fixed only in sid (7.1.8-1), which this base image does not track. That
+# rules out the alternative remedy: a base-image digest refresh on the trixie
+# track would ship the same nine, so re-pinning is not available here. The pinned
+# GHCR digest above was confirmed still live (manifest HTTP 200) on the same date.
+#
+# The subsystems are KVM guest_memfd memslot binding (CVE-2026-64283), a libceph
+# stack out-of-bounds write (68159), arbitrary code execution (68166), an ath6kl
+# Wi-Fi use-after-free (68198), a drm/xe/pt current_op reset (68264), an idpf
+# null-pointer dereference (68291), a BPF-redirect denial of service (68337), a
+# mac80211 use-after-free (68409), and a stale skb->prev after async crypto in
+# xfrm (68426). None is reachable from this workload: same kernel-UAPI-headers
+# rationale as the blocks above, the package ships compile-time headers and no
+# kernel binary, and the container runs a FastAPI application on whatever kernel
+# the Docker host provides. Documented in docs/known-vulnerabilities.md; reassess
+# 2026-09-30.
+CVE-2026-64283
+CVE-2026-68159
+CVE-2026-68166
+CVE-2026-68198
+CVE-2026-68264
+CVE-2026-68291
+CVE-2026-68337
+CVE-2026-68409
+CVE-2026-68426

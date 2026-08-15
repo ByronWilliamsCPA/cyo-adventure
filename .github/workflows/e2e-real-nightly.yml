@@ -63,14 +63,21 @@ jobs:
       issues: write
     services:
       db:
-        # Matches docker-compose.yml's Postgres major version (16); the
-        # standard image (not the ghcr.io/byronwilliamscpa/dhi-postgres
+        # The standard image (not the ghcr.io/byronwilliamscpa/dhi-postgres
         # hardened variant docker-compose.yml uses) because GitHub Actions
         # `services:` containers cannot run the setup steps (role creation,
         # migrations) docker-compose's `depends_on: condition: service_healthy`
-        # plus a separate exec step provide; ci.yml's api-tests job already
-        # verified `postgres:16-alpine` works with this exact migration path
-        # (see its "Apply database migrations" step comment).
+        # plus a separate exec step provide.
+        #
+        # #ASSUME: external-resources: this comment previously claimed the image
+        # "matches docker-compose.yml's Postgres major version (16)" and that
+        # ci.yml verified `postgres:16-alpine` on this migration path. Both were
+        # false against the line below, which is 18: the tag moved and the prose
+        # did not. Corrected 2026-08-13; the migration path is now verified on 18
+        # by this workflow's own runs, not by an inherited claim about 16.
+        # #VERIFY: `UW-F32` tracks the real question this exposed, which is that
+        # four Postgres majors are in play at once (compose 16, this workflow 18,
+        # integration tests 17, production 17.6) with no stated policy.
         image: postgres:18-alpine@sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15
         env:
           POSTGRES_DB: cyo_adventure

@@ -198,7 +198,7 @@ export function ModerationDashboardPage() {
     (a, b) => (b.override_rate ?? -1) - (a.override_rate ?? -1)
   )
   return (
-    <main>
+    <div>
       <h1>Moderation dashboard</h1>
       {refreshError ? (
         <p role="alert" className="console__notice cyo-text-muted">
@@ -366,6 +366,6 @@ export function ModerationDashboardPage() {
           </p>
         </Dialog>
       ) : null}
-    </main>
+    </div>
   )
 }

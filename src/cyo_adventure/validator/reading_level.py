@@ -79,14 +79,14 @@ _SENTENCE_RE = re.compile(r"[.!?]+")
 # school text and has no floor: a well-formed 3-5 sentence of six monosyllables
 # scores about -1.8, which is arithmetic running off the end of its range rather
 # than a grade. Measured over the committed corpus with the corrected syllable
-# counter (`AL-389`), 3-5 nodes sit at 15.8 percent below their floor against
+# counter (`AL-400`), 3-5 nodes sit at 15.8 percent below their floor against
 # 5.1 percent above it, and the below group is prose a four-year-old can follow,
 # which is the product working rather than failing. Every other band is roughly
 # symmetric and keeps both bounds.
 #
 # This is deliberately NOT a change to the targets. Those are claims about
 # readers, they inherit the old counter's bias, and re-deriving them is a
-# separate decision (`UW-C254`); shifting them to preserve the old numbers would
+# separate decision (`UW-C259`); shifting them to preserve the old numbers would
 # bake a counting bug into the spec. This only stops reporting one direction at
 # the two bands where that direction cannot mean what the finding says.
 _UPPER_BOUND_ONLY_BANDS: Final[frozenset[str]] = frozenset({"3-5", "5-8"})
@@ -167,13 +167,13 @@ def _count_syllables(word: str) -> int:  # noqa: C901, PLR0912
 
     Starts from the vowel-group heuristic (each maximal run of vowel letters is
     one syllable) and then applies the corrections that heuristic demonstrably
-    needs. `AL-383` characterised the bare heuristic against CMUdict: it was
+    needs. `AL-394` characterised the bare heuristic against CMUdict: it was
     right on 83.0 percent of 115,901 words and 94.2 percent of this corpus's
     tokens, and its errors were systematic in both directions rather than
     random, over-counting every regular ``-ed`` past and under-counting the
     ``-Cle`` words that 3-to-5 prose is built from. That bias reached the
     catalogue: four independent drafting agents swapped regular pasts for
-    irregular ones to satisfy a band the counter was misreporting (`AL-378`).
+    irregular ones to satisfy a band the counter was misreporting (`AL-389`).
 
     With the corrections below it is right on 90.3 percent of those words and
     99.1 percent of corpus tokens, and its residual grade bias is -0.02 rather
@@ -277,7 +277,7 @@ def _has_syllabic_l(stem: str) -> bool:
     A trailing ``e`` after consonant + ``l`` is pronounced: ``lit|tle``,
     ``pud|dle``, ``ap|ple``, ``can|dle``. The bare silent-``e`` rule strips it
     and under-counts every one of them, and they are core 3-to-5 vocabulary
-    (`AL-383`). A vowel before the ``l`` keeps the ``e`` silent, which is what
+    (`AL-394`). A vowel before the ``l`` keeps the ``e`` silent, which is what
     separates ``candle`` from ``whole`` and ``smile``.
 
     Args:

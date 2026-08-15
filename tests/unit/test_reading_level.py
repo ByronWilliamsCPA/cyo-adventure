@@ -370,7 +370,7 @@ def test_unfilled_skeleton_bodies_are_not_scored() -> None:
     assert report.warnings == [], "a FILL directive is not prose and must not score"
 
 
-# The one-sided rule at 3-5 and 5-8 (`AL-389`). Prose too easy for a young
+# The one-sided rule at 3-5 and 5-8 (`AL-400`). Prose too easy for a young
 # reader is the product working, and FK is extrapolating below zero there, so
 # only the upper edge is reported. Measured over the committed corpus the change
 # removes 24 of 331 warnings and every one of them is at those two bands.

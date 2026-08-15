@@ -11,15 +11,15 @@ tags:
   - measurement
   - distillation
 component: Research
-source: "cyo-measurement-workplan-2026-08-12.md sections 7.7 and 7.8; AL-356 through AL-374; UW-C236, UW-C239, UW-C249 through UW-C253"
+source: "cyo-measurement-workplan-2026-08-12.md sections 7.7 and 7.8; AL-367 through AL-385; UW-C236, UW-C239, UW-C254 through UW-C258"
 ---
 
 # Review-model distillation plan
 
 > **Date**: 2026-08-14
 > **Derived from**: [measurement workplan](./cyo-measurement-workplan-2026-08-12.md) sections 7.7 to 7.8,
-> [authoring lessons log](./authoring-lessons-log.md) `AL-356` to `AL-374`,
-> [unscheduled work register](./unscheduled-work-register.md) `UW-C236`, `UW-C239`, `UW-C249` to `UW-C253`
+> [authoring lessons log](./authoring-lessons-log.md) `AL-367` to `AL-385`,
+> [unscheduled work register](./unscheduled-work-register.md) `UW-C236`, `UW-C239`, `UW-C254` to `UW-C258`
 > **Status**: draft, pending owner sign-off. Register rows are added on sign-off, not before.
 > **Serves**: `A11` (structural and prose quality tooling across the corpus). The distilled judge is a
 > *measurement instrument* for the research and authoring harness. It does not touch `A6` (the admin's recorded
@@ -36,7 +36,7 @@ subset* of that instrument, self-hosted, pinned, at temperature 0.
 Three findings from the 2026-08-14 W7 close define the target, and each narrows it:
 
 1. **The unit is the criterion, not the panel.** Five criteria support a ranking, one is untested, one is
-   under-powered (workplan 7.7.6, `AL-374`). A student trained to imitate "the panel" would imitate the broken
+   under-powered (workplan 7.7.6, `AL-385`). A student trained to imitate "the panel" would imitate the broken
    parts with the same fidelity as the working ones. Every phase below is therefore per criterion.
 2. **The instrument supports within-book delta comparisons, not absolute scoring.** With the drifting judge
    excluded, only `imagery` (+0.82), `ending_quality` (+0.73), `engagement` (+0.65) and `choice_quality`
@@ -47,13 +47,13 @@ Three findings from the 2026-08-14 W7 close define the target, and each narrows 
    consumer needs it, and no claim in this plan may quietly widen into one.
 3. **The strongest argument for distillation is determinism, not cost.** One frontier judge drifts 0.64 mean
    and 2.00 max on unchanged control books between runs, against a 0.5 detection margin; the two stable judges
-   drift 0.14, and excluding the drifter cut every noise floor 2x to 6x (workplan 7.7.6, `AL-369`, `AL-370`,
-   `UW-C253`). A pinned-weights local judge decoded greedily at temperature 0 removes run-to-run drift as a
+   drift 0.14, and excluding the drifter cut every noise floor 2x to 6x (workplan 7.7.6, `AL-380`, `AL-381`,
+   `UW-C258`). A pinned-weights local judge decoded greedily at temperature 0 removes run-to-run drift as a
    *class* of noise. Cost is real but secondary: 129 frontier scorings cost about $2.60 (workplan 7.7.5), so
    the panel is not expensive; it is unstable, unpinnable, and subject to other people's routing. The floating
    `~vendor/model-latest` aliases move across both checkpoint and serving provider without notice
    (`judge-panels/open-weight-candidates.json`), and this account's own data policy can silently remove a
-   judge's serving stack (`AL-373`). A measuring instrument whose identity is not under our control cannot
+   judge's serving stack (`AL-384`). A measuring instrument whose identity is not under our control cannot
    support a longitudinal quality claim, and every instrument in the current panel has that property.
 
 **Relation to the earlier deferral.** The workplan's section 5 deferred "fine-tuning anything on the Thinking
@@ -79,11 +79,11 @@ uv run python scripts/w7_battery.py --replay out/w7/verdicts.json --exclude-judg
 | `ending_quality` | `ending_truncated` | 6/6 | -1.25 | 0.12 | +0.73 | KEEP |
 | `choice_quality` | `false_choice` | 5/5 | -1.00 | 0.24 | +0.63 | KEEP |
 | `engagement` | `premise_duplicate` | 4/6 | -0.50 | 0.12 | +0.65 | KEEP, marginal |
-| `voice` | none valid | - | - | 0.35 | +0.58 | UNTESTED (`AL-371`) |
+| `voice` | none valid | - | - | 0.35 | +0.58 | UNTESTED (`AL-382`) |
 | `dialogue` | `dialogue_flat` | 1/2 | -0.75 | 0.00 | +0.49 | under-powered, confounded |
 
 W4 independently flags `dialogue` at cell spread 0.00 and flags nothing else (workplan 7.8); two instruments
-on different corpora corroborate (`AL-374`).
+on different corpora corroborate (`AL-385`).
 
 ## 1. How an item earns its place
 
@@ -94,13 +94,13 @@ to a gate for being computable (`AL-337` by inheritance).
 
 Four operating rules are inherited from this fortnight's lessons and bind every item below:
 
-- **Every paid step runs under a `single_run` lock and never retries on absent output** (`UW-C249`, `AL-364`).
-- **Every artifact this plan produces is written to a tracked path by default** (`UW-C252`, `AL-368`). The cost
+- **Every paid step runs under a `single_run` lock and never retries on absent output** (`UW-C254`, `AL-375`).
+- **Every artifact this plan produces is written to a tracked path by default** (`UW-C257`, `AL-379`). The cost
   that matters is not what a run cost to produce but what it would cost to reproduce.
 - **No cost column prints a dollar figure from an unpriced estimate**; until `UW-C239` closes, spend is
-  measured against the provider balance and the tables say so (`AL-363`).
+  measured against the provider balance and the tables say so (`AL-374`).
 - **Every availability claim about a candidate model comes from `probe_callable`**, an actual call classified
-  as ok / data-policy / no-endpoints / unknown-slug, never from a catalogue listing (`AL-372`, `AL-373`).
+  as ok / data-policy / no-endpoints / unknown-slug, never from a catalogue listing (`AL-383`, `AL-384`).
   Floating aliases are disqualified as instruments outright; only dated checkpoints enter any slate.
 
 ## 2. Tiering: which criteria are distilled, which are not, and why
@@ -112,12 +112,12 @@ evidence:
 ### Tier D: deterministic, never distilled
 
 Properties with a deterministic measure that has **passed its own sensitivity check** stay deterministic, per
-the narrowed `UW-C236` remedy and the `AL-356` rule that "deterministic" is not a synonym for "correct":
+the narrowed `UW-C236` remedy and the `AL-367` rule that "deterministic" is not a synonym for "correct":
 
 | Property | Instrument | Sensitivity evidence |
 | --- | --- | --- |
-| Narrative tense stability | `check_prose_craft.py` tense checker | `AL-358`; `tense_break` unmapped from the judge per `AL-371` |
-| Dialogue presence and share | `validator/dialogue.py` | rebuilt and span-tested after `AL-356`/`AL-357`; one detector behind all four callers |
+| Narrative tense stability | `check_prose_craft.py` tense checker | `AL-369`; `tense_break` unmapped from the judge per `AL-382` |
+| Dialogue presence and share | `validator/dialogue.py` | rebuilt and span-tested after `AL-367`/`AL-368`; one detector behind all four callers |
 | Reading level | `validator/reading_level.py` | W2 keep, path-scoped, with the concentration effect demonstrated |
 | Fork structure (false choices, reconvergence) | `validator/consequence.py` (W3) | keep as reported statistic, discriminates on the catalogue |
 | Premise convergence | shared four-gram measure | calibrated against the 3.3 idiom floor |
@@ -144,11 +144,11 @@ claim may be made by the student or its consumers.
 
 ### Tier 3: no trustworthy teacher signal; excluded from distillation
 
-- `voice`: UNTESTED. Its only arm was a wrong hypothesis (`AL-371`); no valid defect mapping exists. Distilling
+- `voice`: UNTESTED. Its only arm was a wrong hypothesis (`AL-382`); no valid defect mapping exists. Distilling
   it would distil an unvalidated signal. Precondition, not scheduled here: design a voice-targeting seed
   (e.g. swapping the protagonist's reactions across characters), validate it through W7, then revisit.
 - `dialogue`: under-powered at n=2 with the one miss explained by the rubric's own narration-led anchor
-  (`AL-371`), and flagged saturated by W4 twice (`AL-374`, `UW-C236`). Preconditions: reword the rubric so
+  (`AL-382`), and flagged saturated by W4 twice (`AL-385`, `UW-C236`). Preconditions: reword the rubric so
   "legitimately narration-led" and "had its dialogue removed" are distinguishable, and get dialogue-bearing
   books into the battery (the corpus carries 17 of 23 with dialogue since the detector was fixed, so this is
   now a fixture choice rather than a corpus gap). Until both land, the criterion has no signal to distil.
@@ -160,7 +160,7 @@ regardless of its other results.
 
 ## 3. Artifact preservation: the re-distillation contract
 
-This section is a requirement, not an appendix. The governing fact is `AL-368`: the loss of one untracked
+This section is a requirement, not an appendix. The governing fact is `AL-379`: the loss of one untracked
 directory (`out/vendor-comparison/`) has now degraded four separate measurement items, and the 84-verdict pool
 it held is unreproducible at any price because the judges that produced it will not exist at those checkpoints
 again. Distillation multiplies that exposure: a student model is a function of its teacher verdicts, its
@@ -192,7 +192,7 @@ out/distillation/
                      # arms/), relation, severity_rung, provenance: seeded|teacher_ranked|natural,
                      # generator_commit, split}. IMMUTABLE once a training run has consumed it; corrections
                      # append a superseding row, never rewrite.
-  teacher/           # teacher verdicts, raw and per judge, never only pooled (AL-370): scores, notes, model
+  teacher/           # teacher verdicts, raw and per judge, never only pooled (AL-381): scores, notes, model
                      # slug, checkpoint/date, provider actually served (from response metadata, not the
                      # request), prompt_version, rubric_version, repeat index. IMMUTABLE and irreplaceable:
                      # a retired checkpoint's opinion cannot be re-bought at any price.
@@ -233,7 +233,7 @@ out/distillation/
   one arm with a modified seeder and the regeneration audit must fail. If either can be made to pass, the
   manifest is a false assurance and gets fixed before anything else runs.
 - Every harness this plan adds takes `--scratch` to write elsewhere; the default is the tracked store. This
-  inverts today's default, per `UW-C252`.
+  inverts today's default, per `UW-C257`.
 
 ### 3.4 The battery books are test data forever
 
@@ -248,7 +248,7 @@ already measured (section 0.1) and which no student has ever seen.
 
 **The corpus.** 23 filled books are committed at `out/*.filled.json`, spanning 3-5 (3 books), 5-8 (2), 8-11
 (3), 10-13 (4), 13-16 (6), 16+ (5), from 11 to 551 nodes (counted 2026-08-14 from the tracked files). Not all
-pass: two are pre-schema-v2 and blocked by L1-7 branch depth after mechanical migration (`AL-361`), and the
+pass: two are pre-schema-v2 and blocked by L1-7 branch depth after mechanical migration (`AL-372`), and the
 usable count under `fill_result` context is roughly 20 to 21, with the exact census a Phase 0 deliverable
 (RD2). Six of those are the frozen battery (3.4), leaving **about 14 books for training and validation**, and
 their band spread is bottom-light: the youngest bands are concentrated in the battery, so training data skews
@@ -259,9 +259,9 @@ discovers it as a finding later.
 
 - *Arms*: control plus up to 7 defect arms per book (5 mechanical, free; 2 generation-seeded at measured
   $0.85 for 224 calls over the six small battery books, so the 14 larger training books are estimated at
-  $5 to $15; estimate, priced against the provider balance per `AL-363`).
+  $5 to $15; estimate, priced against the provider balance per `AL-374`).
 - *Ladders*: `blend_to_grade` and `blend_to_density` compose arbitrary severities from one paid rewrite at
-  zero marginal cost (`--reblend` calls no provider; `AL-362`). Three rungs each (+1/+2/+3 grades; keep
+  zero marginal cost (`--reblend` calls no provider; `AL-373`). Three rungs each (+1/+2/+3 grades; keep
   0.7/0.4/0.2 density) triple the reading-level and imagery arms for free. The mechanical seeds are
   parameterisable the same way (tense share, endings truncated, forks repointed), giving 2 to 3 rungs each.
 - *Units below the book*: `rewrites/` holds per-node (original, hardened) and (original, flattened) body
@@ -296,7 +296,7 @@ admits only criteria with two-instrument evidence; the blind-spot declaration (t
 not observe, W6 mechanism); and the `holdout/` set, the only labels our seeder did not write.
 
 **Trap 2: learning "this text was tampered with" rather than the property.** The arms are not single-defect
-documents (`AL-366`, `UW-C250`): `reading_level_up` genuinely moves voice and imagery, `premise_duplicate`
+documents (`AL-377`, `UW-C255`): `reading_level_up` genuinely moves voice and imagery, `premise_duplicate`
 genuinely moves engagement, and every mechanical seed has a mechanical signature a model could learn instead
 of the property. Caught by: severity ladders, because a tamper detector fires equally at every rung while a
 property judge must order them (RD7's monotonicity gate); provenance mixing, because teacher-ranked natural
@@ -318,14 +318,14 @@ quantised build is adopted only if every per-criterion verdict is unchanged and 
 0.1, with any single-book regression checked against the drop-worst column (`UW-C246`) before being attributed
 to quantisation.
 
-**Trap 5: teacher selection and pinning.** A panel mean hides a bad member (`AL-370`). The teacher is the two
+**Trap 5: teacher selection and pinning.** A panel mean hides a bad member (`AL-381`). The teacher is the two
 stable judges, `judge-gpt-5.6` and `judge-grok-4.6` (drift 0.14 against the drifter's 0.64 mean and 2.00 max),
 recorded per judge so the membership decision stays revisable. Every teacher verdict pins model, checkpoint
 date, and the provider that actually served the call; a verdict whose serving metadata is missing does not
 enter `teacher/`.
 
 **Trap 6: availability and identity of the base model.** Callable, real-but-unserved, blocked-by-our-own-policy
-and unknown-slug are four different states with four different remedies (`AL-372`, `AL-373`), and a floating
+and unknown-slug are four different states with four different remedies (`AL-383`, `AL-384`), and a floating
 alias is none of them and worse than all of them. Caught by: `probe_callable` pre-flight on every slate before
 any paid pass; dated checkpoints only; and for the eventual student base, a further requirement the API checks
 cannot see: **weights downloadable under a licence permitting local fine-tuning and self-hosted commercial
@@ -380,7 +380,7 @@ excluded from every adoption claim. This rule can return "stop before spending" 
 rungs for the two blended seeds; parameterised strengths for the mechanical ones) plus the `pairs/` manifest
 rows, provenance and split included. Deterministic; consumes existing `rewrites/` where they exist. The
 non-landing rule is inherited: a rung whose seed did not land is withheld and named, reducing n rather than
-manufacturing a zero (`AL-359`).
+manufacturing a zero (`AL-370`).
 
 *Test.* On the tracked `out/w7/harden/` rewrites, every emitted ladder's rungs are confirmed strictly ordered
 by the defect's own deterministic verifier (`verify` at each rung), and the pair manifest round-trips: each
@@ -433,7 +433,7 @@ measured anchor: 129 frontier scorings cost about $2.60; these models are 10x to
 
 *Build.* Generation rewrites (harden and flatten) for the ~14 training books, then RD3 ladders over them, then
 the teacher pair (`judge-gpt-5.6`, `judge-grok-4.6`, gemini-3.1 excluded per trap 5) scores every unit **at
-least twice** (`UW-C253`: an instrument run once cannot distinguish its noise from its signal), per judge
+least twice** (`UW-C258`: an instrument run once cannot distinguish its noise from its signal), per judge
 recorded, into `teacher/`. Teacher-ranked cross-book pairs are then derived: same criterion, teacher delta
 beyond that criterion's noise floor, both repeats agreeing on sign.
 
@@ -522,13 +522,13 @@ sentence exists.
 #### RD9. Shadow membership, then the swap
 
 *Build.* The student joins evaluation runs as a shadow: scored beside the frontier pair, never averaged in
-(`AL-370`: membership is an evidence decision, and a mean hides a member). One full evaluation cycle of
+(`AL-381`: membership is an evidence decision, and a mean hides a member). One full evaluation cycle of
 parallel scoring, written to `eval/`.
 
 *Decision rule.* **Replace the frontier pair for within-book delta comparisons iff, over the shadow cycle,
 per-criterion quadratic-weighted kappa between the student's deltas and the teacher pair's deltas is at least
 0.60 on every adopted criterion** (the house floor, Landis and Koch 1977, with marginals printed beside every
-figure per `UW-C251`). The frontier pair is retained for unadopted criteria, and the battery is re-run against
+figure per `UW-C256`). The frontier pair is retained for unadopted criteria, and the battery is re-run against
 the student on every rubric change and quarterly regardless, which self-hosting makes free; an instrument that
 is only ever validated once is on its way to being the panel this plan replaces.
 
@@ -556,7 +556,7 @@ Written before any of it runs, so a thin result cannot be renegotiated into a pi
 5. **Determinism does not survive serving.** RD7 gate 3 cannot be met on any available stack. The strongest
    argument for the whole project (section 0, point 3) is gone; what remains (pinning, sovereignty, cost) is
    re-argued to the owner from scratch rather than inherited.
-6. **The battery stops being trustworthy.** If a future finding invalidates W7's arms (the way `AL-371`
+6. **The battery stops being trustworthy.** If a future finding invalidates W7's arms (the way `AL-382`
    invalidated the voice arm), every adoption resting on it is suspended until the battery is repaired and
    re-baselined, because the acceptance test is load-bearing for every rule above it.
 
@@ -580,8 +580,8 @@ build order wearing a plan's clothes.
 ## 9. Register and log linkage
 
 On owner sign-off, this plan's items get `UW-C*` rows in the unscheduled work register; the rows cite this
-document and the lessons that shaped it (`AL-356` to `AL-374`). Lessons produced by *running* any phase go to
+document and the lessons that shaped it (`AL-367` to `AL-385`). Lessons produced by *running* any phase go to
 the authoring lessons log per the standing requirement, with the store's `eval/` entries as their `Ref`s. The
 `docs/planning/judge-panels/` slate and `out/w7/` artifacts are this plan's inputs and are already tracked;
-nothing here is permitted to depend on an untracked path, which is the one-sentence version of `UW-C252` and
+nothing here is permitted to depend on an untracked path, which is the one-sentence version of `UW-C257` and
 the reason section 3 comes before section 6.

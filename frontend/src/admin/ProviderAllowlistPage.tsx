@@ -164,7 +164,7 @@ export function ProviderAllowlistPage() {
   }
 
   return (
-    <main>
+    <div>
       <h1>Provider allowlist</h1>
       <p>
         Controls which (provider, model) pairs the generation pipeline is permitted to call. This is
@@ -254,6 +254,6 @@ export function ProviderAllowlistPage() {
           Add to allowlist
         </Button>
       </form>
-    </main>
+    </div>
   )
 }

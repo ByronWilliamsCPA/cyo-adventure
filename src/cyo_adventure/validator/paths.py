@@ -113,10 +113,28 @@ class Draw:
     Attributes:
         count (int): Number of readings to draw.
         seed (int): PRNG seed fully determining the draw.
+
+    Raises:
+        ValueError: If ``count`` is not positive. A zero or negative count
+            would make the sampling loop below draw nothing while still
+            reporting ``complete=True`` (its early-exit tracker starts
+            ``True`` and the loop that could flip it false never runs), which
+            reads as a valid, complete empty sample rather than a
+            misconfigured draw.
     """
 
     count: int
     seed: int
+
+    def __post_init__(self) -> None:
+        """Reject a non-positive draw count.
+
+        Raises:
+            ValueError: If ``count`` is not positive.
+        """
+        if self.count <= 0:
+            msg = f"Draw.count must be positive, got {self.count}"
+            raise ValueError(msg)
 
 
 @dataclass(frozen=True, slots=True)
@@ -420,6 +438,18 @@ def covering_paths(
     kept: list[list[str]] = []
     covered: set[_ChoiceEdge] = set()
     truncated = False
+
+    if graph.initial in graph.endings:
+        # #EDGE: data-integrity: a story whose start node is itself a valid
+        # ending has no choice edges, so the edge-covering loop below never
+        # runs and would otherwise leave `kept` empty. That reads as "zero
+        # readings, fully covered" (`edge_coverage` is 1.0 vacuously, since
+        # `reachable` is empty), silently dropping the one reading the book
+        # actually has. reader_sample_paths does not share this gap: each
+        # draw checks `is_ending` before ever consulting `reachable`, so it
+        # naturally records the zero-edge reading `draw.count` times.
+        # #VERIFY: test_covering_paths_keeps_the_zero_edge_reading_when_the_start_node_is_an_ending.
+        kept.append([graph.initial[0]])
 
     for edge in sorted(reachable):
         if edge in covered:

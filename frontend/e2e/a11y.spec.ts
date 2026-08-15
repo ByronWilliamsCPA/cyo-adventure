@@ -1,8 +1,10 @@
 import AxeBuilder from '@axe-core/playwright'
-import { expect, test, type Page } from '@playwright/test'
+import { expect, test, type BrowserContext, type Page } from '@playwright/test'
 
+import { LANDING_HEADLINE } from '../src/landing/headline'
 import { mockEmptyConsole, mockMe, seedDeviceGrant, seedGuardianSession } from './support/auth'
 import { loadLanternStory } from './support/fixtures'
+import { LOGIN_HEADLINE } from '../src/guardian/loginHeadline'
 
 /**
  * Automated accessibility smoke, WCAG 2.1 A/AA rules via axe-core, across
@@ -69,9 +71,10 @@ const ONE_STORY = {
 // criteria, UW-N04) plus axe's "best-practice" rules (e.g. missing
 // landmark/heading structure), without adding that scope, or run time, to
 // every PR.
-const AXE_TAGS = process.env.A11Y_EXTENDED === '1'
-  ? ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22a', 'wcag22aa', 'best-practice']
-  : ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']
+const AXE_TAGS =
+  process.env.A11Y_EXTENDED === '1'
+    ? ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22a', 'wcag22aa', 'best-practice']
+    : ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']
 
 async function assertNoViolations(page: Page) {
   // Extended-only: axe's best-practice landmark/heading rules (unlike the
@@ -130,8 +133,9 @@ test('landing page has no detectable accessibility violations', async ({ page })
   // it is the one place a scan could otherwise land before the lazy chunk
   // mounts anything at all, not just before it replaces an already-mounted
   // fallback. Waiting on the real heading closes that gap the same way the
-  // other tests' pre-existing assertions already do.
-  await expect(page.getByRole('heading', { name: 'CYO Adventure' })).toBeVisible()
+  // other tests' pre-existing assertions already do. (The h1 is the funnel
+  // headline since the 2026-08 redesign; the app name lives in the wordmark.)
+  await expect(page.getByRole('heading', { name: LANDING_HEADLINE })).toBeVisible()
   await assertNoViolations(page)
 })
 
@@ -213,7 +217,7 @@ test('the reader page has no detectable accessibility violations', async ({ page
 
 test('the guardian login page has no detectable accessibility violations', async ({ page }) => {
   await page.goto('/guardian/login')
-  await expect(page.getByRole('heading', { name: 'Guardian sign-in' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: LOGIN_HEADLINE })).toBeVisible()
   await assertNoViolations(page)
 })
 
@@ -820,4 +824,153 @@ test('the admin review detail approve-failure alert has no detectable accessibil
     'We could not approve this story'
   )
   await assertNoViolations(page)
+})
+
+// ---------------------------------------------------------------------------
+// Extended-only route coverage (UW-F29)
+// ---------------------------------------------------------------------------
+// ADR-029's Constraints forbid widening this file's scope inside the required
+// `frontend-e2e` job without an owner decision, and route the growth of
+// compliance scanning to accessibility-compliance-weekly.yml behind
+// A11Y_EXTENDED=1. These nine routes were scanned at neither tier, so they
+// are added there rather than to the per-PR gate: the weekly run gains the
+// coverage, PR run time and noise are unchanged, and promoting any of these
+// into the gate stays an explicit owner call.
+//
+// Two of the nine are the reason this matters rather than being bookkeeping:
+// ADR-029's own PR edited legal/PrivacyPolicyPage.tsx (`/privacy`, the
+// role="region" scrollable-table pattern) and guardian/PrivacyPage.tsx
+// (`/guardian/privacy`, a role="list" suppression) for accessibility without
+// axe ever scanning either page.
+const EXTENDED_ONLY = process.env.A11Y_EXTENDED === '1'
+
+// One permissive stub for every `/api/v1/**` call these pages make, rather than a
+// bespoke fixture per endpoint. The scan under test is structural (landmarks,
+// headings, roles, contrast), so what matters is that each page reaches its rendered
+// empty state; the exact payload shape does not change the accessibility tree in a way
+// these rules read. The body carries every collection key the seven API-backed pages
+// destructure, and an unrecognized extra key is inert because each component reads only
+// its own. A key that is MISSING is not inert: `readingApi.familySummary` returns
+// `res.data.children`, so omitting `children` handed ReadingPage `undefined` and threw
+// on `children.length` during render, scanning a crashed page instead of an empty one.
+//
+// #CRITICAL: data-integrity: registration ORDER is load-bearing here, twice over.
+// Playwright runs matching routes "in the order opposite to their registration" and a
+// handler that calls `route.fulfill` ends the chain, and a page-scoped route outranks a
+// context-scoped one. So (a) the catch-all is registered at CONTEXT scope BEFORE
+// `seedGuardianSession`, whose own context-scoped `**/api/v1/onboarding` route must
+// register later to win; and (b) the SSE abort is a PAGE route, which beats the
+// context-scoped catch-all whatever the order. Registering the catch-all last at page
+// scope (as this first shipped) silently swallowed both: the onboarding fixture was
+// replaced by the generic body, and `notifications/stream` was fulfilled as JSON, which
+// is precisely the indefinite-EventSource-retry the abort exists to prevent.
+// #VERIFY: keep `mockApiForScan` ahead of `seedGuardianSession` at every call site; a
+// swap reads harmlessly and fails only as a flaky or wrong-page scan.
+async function mockApiForScan(context: BrowserContext, page: Page): Promise<void> {
+  await context.route('**/api/v1/**', (route) =>
+    route.fulfill({
+      json: {
+        items: [],
+        jobs: [],
+        profiles: [],
+        books: [],
+        requests: [],
+        notifications: [],
+        connections: [],
+        grants: [],
+        downloads: [],
+        users: [],
+        families: [],
+        entries: [],
+        events: [],
+        children: [],
+        has_more: false,
+        total: 0,
+        summary: {},
+      },
+    })
+  )
+  await page.route('**/api/v1/notifications/stream', (route) => route.abort())
+}
+
+test.describe('routes covered only by the extended weekly scan', () => {
+  test.skip(
+    !EXTENDED_ONLY,
+    'A11Y_EXTENDED=1 only: per ADR-029 these stay out of the required per-PR gate'
+  )
+
+  test('the public privacy policy has no violations', async ({ page }) => {
+    await page.goto('/privacy')
+    await expect(page.getByRole('heading', { name: /Privacy Policy/i })).toBeVisible()
+    await assertNoViolations(page)
+  })
+
+  test('the support page has no violations', async ({ page }) => {
+    await page.goto('/support')
+    await expect(page.getByRole('heading', { name: 'Support', exact: true })).toBeVisible()
+    await assertNoViolations(page)
+  })
+
+  test('the guardian privacy page has no violations', async ({ page, context }) => {
+    await mockApiForScan(context, page)
+    await seedGuardianSession(context)
+    await mockMe(page)
+    await page.goto('/guardian/privacy')
+    await expect(page.getByRole('heading', { name: /How we handle/i })).toBeVisible()
+    await assertNoViolations(page)
+  })
+
+  test('the guardian reading page has no violations', async ({ page, context }) => {
+    await mockApiForScan(context, page)
+    await seedGuardianSession(context)
+    await mockMe(page)
+    await page.goto('/guardian/reading')
+    await expect(page.getByRole('heading', { name: 'Reading', exact: true })).toBeVisible()
+    await assertNoViolations(page)
+  })
+
+  test('the guardian connections page has no violations', async ({ page, context }) => {
+    await mockApiForScan(context, page)
+    await seedGuardianSession(context)
+    await mockMe(page)
+    await page.goto('/guardian/connections')
+    await expect(page.getByRole('heading', { name: 'Connections', exact: true })).toBeVisible()
+    await assertNoViolations(page)
+  })
+
+  test('the guardian devices page has no violations', async ({ page, context }) => {
+    await mockApiForScan(context, page)
+    await seedGuardianSession(context)
+    await mockMe(page)
+    await page.goto('/guardian/devices')
+    await expect(page.getByRole('heading', { name: 'Devices', exact: true })).toBeVisible()
+    await assertNoViolations(page)
+  })
+
+  test('the admin story library has no violations', async ({ page, context }) => {
+    await mockApiForScan(context, page)
+    await seedGuardianSession(context)
+    await mockMe(page, { role: 'admin' })
+    await page.goto('/admin/library')
+    await expect(page.getByRole('heading', { name: 'Story library' })).toBeVisible()
+    await assertNoViolations(page)
+  })
+
+  test('the admin user-management page has no violations', async ({ page, context }) => {
+    await mockApiForScan(context, page)
+    await seedGuardianSession(context)
+    await mockMe(page, { role: 'admin' })
+    await page.goto('/admin/users')
+    await expect(page.getByRole('heading', { name: 'User management' })).toBeVisible()
+    await assertNoViolations(page)
+  })
+
+  test('the admin audit log has no violations', async ({ page, context }) => {
+    await mockApiForScan(context, page)
+    await seedGuardianSession(context)
+    await mockMe(page, { role: 'admin' })
+    await page.goto('/admin/audit')
+    await expect(page.getByRole('heading', { name: 'Audit log' })).toBeVisible()
+    await assertNoViolations(page)
+  })
 })

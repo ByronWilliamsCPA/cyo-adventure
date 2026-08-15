@@ -1,4 +1,4 @@
-"""Tests for the shared sentence splitter (UW-C255, AL-379).
+"""Tests for the shared sentence splitter (UW-C260, AL-390).
 
 Each test pins one of the required behaviours from the register row: common
 abbreviations, terminal punctuation inside a quoted utterance, a run of
@@ -82,7 +82,7 @@ def test_a_quoted_exclamation_followed_by_a_lowercase_tag_is_one_sentence() -> N
 
 @pytest.mark.unit
 def test_an_unquoted_tagged_line_ending_in_a_bang_is_one_sentence() -> None:
-    """Mirrors the corpus's untagged-quote house style (AL-379 dialogue case)."""
+    """Mirrors the corpus's untagged-quote house style (AL-390 dialogue case)."""
     body = "Right here! he whispered."
     assert split_sentences(body) == [body]
 

@@ -23,8 +23,8 @@ from scripts.judge_books import (
     _JUDGE_MAX_TOKENS,  # pyright: ignore[reportPrivateUsage]
     Judge,
     Verdict,
-    _parse,  # pyright: ignore[reportPrivateUsage]
     _band_phrase,  # pyright: ignore[reportPrivateUsage]
+    _parse,  # pyright: ignore[reportPrivateUsage]
     _story_text,  # pyright: ignore[reportPrivateUsage]
     _system_for,  # pyright: ignore[reportPrivateUsage]
     _z_scores,  # pyright: ignore[reportPrivateUsage]

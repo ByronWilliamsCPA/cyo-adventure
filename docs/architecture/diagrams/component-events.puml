@@ -75,7 +75,12 @@
 '   src/cyo_adventure/api/notifications.py            (GET /notifications poll
 '                                                      + /notifications/stream SSE;
 '                                                      see component-api-persistence.puml)
-'   docs/planning/story-lifecycle-redesign-plan.md (spec: "Event taxonomy",
+'   src/cyo_adventure/publishing/reason_codes.py     (SendBackReasonCodeLiteral:
+'                                                     the closed send-back
+'                                                     vocabulary SENT_BACK's
+'                                                     payload carries; see
+'                                                     component-publishing.puml)
+'   docs/planning/story-lifecycle-redesign.md (spec: "Event taxonomy",
 '     decisions D1-D3, WS-D capture layer)
 ' ============================================================
 
@@ -91,7 +96,7 @@ skinparam component {
 
 package "Pipeline Event Log (WS-D)" #FFF8E1 {
 
-  component "EventType\nevents/models.py\n28-value StrEnum:\nREQUEST_CREATED/APPROVED/DECLINED,\nPLAN_ASSIGNED, GENERATION_STARTED/\nFINISHED, MODERATION_COMPLETED,\nREPAIR_APPLIED, SENT_BACK, RELEASED,\nSTORYBOOK_ARCHIVED, THRESHOLD_CHANGED,\nNOISE_FLOOR_CHANGED, BOOK_ASSIGNED,\nBOOK_UNASSIGNED, RATED,\nUSER_MANAGED, FAMILY_MANAGED,\nFAMILY_CONNECTION_CHANGED,\nKID_FLAGGED, FLAG_RESOLVED, NODE_EDITED,\nPROFILE_VIEWED, CELL_SATURATED,\nPERSONALIZATION_TOGGLED [ADR-023 P3],\nRING2_CONSENT_GRANTED/REVOKED [ADR-023 P4],\nSTORYBOOK_REMODERATED" as event_type #FFECB3
+  component "EventType\nevents/models.py\n29-value StrEnum:\nREQUEST_CREATED/APPROVED/DECLINED,\nPLAN_ASSIGNED, GENERATION_STARTED/\nFINISHED, MODERATION_COMPLETED,\nREPAIR_APPLIED, SENT_BACK, RELEASED,\nSTORYBOOK_ARCHIVED, THRESHOLD_CHANGED,\nNOISE_FLOOR_CHANGED, BOOK_ASSIGNED,\nBOOK_UNASSIGNED, RATED,\nUSER_MANAGED, FAMILY_MANAGED,\nFAMILY_CONNECTION_CHANGED,\nKID_FLAGGED, FLAG_RESOLVED, NODE_EDITED,\nPROFILE_VIEWED, CELL_SATURATED,\nPERSONALIZATION_TOGGLED [ADR-023 P3],\nRING2_CONSENT_GRANTED/REVOKED [ADR-023 P4],\nSTORYBOOK_REMODERATED,\nNOTIFICATION_DIGEST_READY" as event_type #FFECB3
 
   component "Actor\nevents/models.py\nsystem() -- worker/moderation,\nno principal\nfrom_principal(acting_role?) -- HTTP caller;\nadmin-gated calls stamp actor_role='admin'\nD2: system <-> actor_id is None" as actor #FFECB3
 
@@ -116,7 +121,7 @@ mod_pipeline ==> record_event : "MODERATION_COMPLETED\n(always; overall_verdict,
 ' --- Writers: publishing workflow ---
 component "Publishing Service\npublishing/service.py\n[see component-publishing.puml]" as pub_service #F3E5F5
 pub_service ==> record_event : "RELEASED\n(approve -> published;\nvisibility payload)"
-pub_service ==> record_event : "SENT_BACK\n(in_review -> needs_revision;\nempty payload, D3)"
+pub_service ==> record_event : "SENT_BACK\n(in_review -> needs_revision;\npayload {reason_code}, D3)"
 pub_service ==> record_event : "STORYBOOK_ARCHIVED\n(A5 admin pull-everywhere;\npublished -> archived, empty payload)"
 
 ' --- Writers: story-request lifecycle (not generation/moderation/publishing,
@@ -208,9 +213,21 @@ note right of record_event
   restricted to None/bool/int/float/a
   bounded (<=200 char) string, or a
   str->int count mapping. Free text
-  (story prose, a child's name, a
-  send-back reason) is structurally
-  rejected, never merely discouraged.
+  (story prose, a child's name, the
+  reviewer's send-back prose) is
+  structurally rejected, never merely
+  discouraged.
+
+  Note what SENT_BACK does and does not
+  carry, since the two are easy to
+  conflate. Its payload key reason_code
+  is a value from publishing/reason_codes.py's
+  CLOSED vocabulary, D3-compliant by
+  construction and persisted as the review
+  scorecard's structured label. The
+  reviewer's free-text reason travels in
+  send_back()'s separate argument, is
+  logged, and never reaches this payload.
 end note
 
 note bottom of pipeline_event_table

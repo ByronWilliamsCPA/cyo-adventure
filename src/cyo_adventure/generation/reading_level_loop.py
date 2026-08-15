@@ -135,7 +135,7 @@ class _Bounds:
             as a defect. At 3-5 and 5-8 prose too easy for the reader is the
             product working, and FK is extrapolating below zero there, so the
             loop must not drive a node upward to reach a target
-            (`AL-389`, `_UPPER_BOUND_ONLY_BANDS`).
+            (`AL-400`, `_UPPER_BOUND_ONLY_BANDS`).
     """
 
     target: float
@@ -399,7 +399,7 @@ def _accept(original: str, revised: object, *, bounds: _Bounds) -> str | None:
             treats only the upper edge as a defect. At 3-5 and 5-8 acceptance
             is one-sided: only revisions that LOWER the grade are taken. The
             symmetric rule would happily raise a node to reach its target, and
-            with an accurate syllable counter it would, since `AL-389` measured
+            with an accurate syllable counter it would, since `AL-400` measured
             the corrected counter reading the corpus 0.27 grades lower. A loop
             chasing an unchanged target would then push young-band prose harder
             than the prose humans have already approved.
@@ -437,7 +437,7 @@ def _is_improvement(before: float, after: float, bounds: _Bounds) -> bool:
     Two rules, because the bands disagree about what counts as worse. The
     symmetric rule moves a node toward its target from either side. The
     one-sided rule, used at 3-5 and 5-8, only ever simplifies: at those bands
-    reading too easy is not a defect (`AL-389`), so raising a grade to reach a
+    reading too easy is not a defect (`AL-400`), so raising a grade to reach a
     target is a regression dressed as convergence.
 
     Termination holds under both. The symmetric form is strictly monotone in

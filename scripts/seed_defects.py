@@ -490,7 +490,7 @@ def seed_ending_truncated(doc: dict[str, Any]) -> dict[str, Any]:
         The seeded copy.
     """
     # #ASSUME: data-integrity: cuts with `utils.sentences.split_sentences`
-    # (UW-C255, AL-379) rather than the old bare `[^.!?]+[.!?]*` idiom, so
+    # (UW-C260, AL-390) rather than the old bare `[^.!?]+[.!?]*` idiom, so
     # the truncation point respects an abbreviation and a quoted/tagged
     # utterance instead of landing mid-abbreviation or mid-quote. Measured
     # over the 31 committed books: 1 of 31 ending nodes truncates

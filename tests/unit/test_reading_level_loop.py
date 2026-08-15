@@ -677,7 +677,7 @@ async def test_generate_story_skips_stage_d_on_a_blocked_document() -> None:
     assert not any(entry.startswith("reading_level") for entry in outcome.stage_log)
 
 
-# The one-sided rule at 3-5 and 5-8 (`AL-389`). With the syllable counter fixed,
+# The one-sided rule at 3-5 and 5-8 (`AL-400`). With the syllable counter fixed,
 # the corpus reads 0.27 grades easier than it used to, so a loop chasing an
 # unchanged target from below would push young-band prose HARDER than the prose
 # humans have already approved. At those bands the loop may only simplify.

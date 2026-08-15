@@ -35,6 +35,10 @@ from cyo_adventure.db.models import Storybook, StorybookVersion
 from cyo_adventure.publishing import service
 from tests.conftest import make_clean_moderation_report
 
+# U+2014, referenced rather than inlined so the allow marker below cannot be
+# separated from it by a reformat. See scripts/check_no_em_dash.py.
+_EM_DASH = "—"  # em-dash-ok: asserted absent from generated SQL
+
 pytestmark = pytest.mark.unit
 
 _MIGRATION_PATH = (
@@ -354,7 +358,7 @@ def test_migration_guards_pg_cron_availability() -> None:
 def test_migration_has_no_em_dash() -> None:
     """House style (root CLAUDE.md): never use U+2014 in any project output."""
     sql = _MIGRATION_PATH.read_text(encoding="utf-8")
-    assert "—" not in sql
+    assert _EM_DASH not in sql
 
 
 # ---------------------------------------------------------------------------
@@ -512,7 +516,7 @@ def test_amendment_migration_guards_pg_cron_availability() -> None:
 def test_amendment_migration_has_no_em_dash() -> None:
     """House style (root CLAUDE.md): never use U+2014 in any project output."""
     sql = _AMENDMENT_MIGRATION_PATH.read_text(encoding="utf-8")
-    assert "—" not in sql
+    assert _EM_DASH not in sql
 
 
 def test_pipeline_event_index_is_rebuilt_concurrently() -> None:
@@ -593,7 +597,7 @@ def test_pipeline_event_index_rebuild_sorts_after_the_amendment() -> None:
 def test_pipeline_event_index_rebuild_has_no_em_dash() -> None:
     """House style (root CLAUDE.md): never use U+2014 in any project output."""
     for path in _INDEX_REBUILD_MIGRATIONS:
-        assert "—" not in path.read_text(encoding="utf-8")
+        assert _EM_DASH not in path.read_text(encoding="utf-8")
 
 
 def test_every_concurrent_migration_holds_one_statement() -> None:

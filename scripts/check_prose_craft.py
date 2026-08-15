@@ -386,7 +386,7 @@ def node_tense_counts(body: str) -> tuple[int, int]:
         A pair of counts over classifiable, non-dialogue sentences.
     """
     # #ASSUME: data-integrity: splits with `utils.sentences.split_sentences`
-    # (UW-C255, AL-379) rather than the old bare `[^.!?]+[.!?]*` idiom, so an
+    # (UW-C260, AL-390) rather than the old bare `[^.!?]+[.!?]*` idiom, so an
     # abbreviation ("Mr. Fez") or a tagged "!"/"?" line no longer produces a
     # spurious extra sentence. Measured over the 31 committed books: the
     # (past, present) totals move by at most one sentence in 3 of 31 books
@@ -555,7 +555,7 @@ def _sentences(text: str) -> list[str]:
     """Return non-empty, stripped sentences of a text.
 
     Delegates to :func:`cyo_adventure.utils.sentences.split_sentences`
-    (UW-C255, AL-379) rather than the bare ``[^.!?]+[.!?]*`` idiom this
+    (UW-C260, AL-390) rather than the bare ``[^.!?]+[.!?]*`` idiom this
     script used before: the tail-sentence extraction below is exactly the
     kind of "opening/closing sentence" use that idiom got wrong on an
     abbreviation. Measured over the 31 committed books: the extracted

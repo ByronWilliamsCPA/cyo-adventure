@@ -1,8 +1,8 @@
 @startuml seq-generation
 ' ============================================================
 ' Sequence Diagram: Staged Generation Pipeline
-' Structure -> Prose -> Repair with provider fallback cascade
-' and validation gate outcomes
+' Structure -> Prose -> Repair -> Reading level, with provider fallback
+' cascade and validation gate outcomes
 '
 ' Source files:
 '   src/cyo_adventure/generation/orchestrator.py  (module docstring +
@@ -13,6 +13,9 @@
 '   src/cyo_adventure/generation/provider.py      (build_provider(): resolves
 '     mock|ollama|anthropic|openrouter[+3-leg cascade]|modal, with optional
 '     per-job provider_override/model_override, WS-C PR1)
+'   src/cyo_adventure/generation/reading_level_loop.py  (Stage D:
+'     run_reading_level_loop(). Runs on BOTH methods, so it is the one part of
+'     this diagram that is not fresh_generation-only.)
 '   src/cyo_adventure/generation/providers/fallback.py  (FallbackProvider cascade)
 '   src/cyo_adventure/core/config.py  (openrouter_model, openrouter_fallback_model)
 '   src/cyo_adventure/generation/pii.py           (assert_prompt_pii_safe)
@@ -40,6 +43,7 @@ participant "FallbackProvider\nfallback.py" as fallback
 participant "OpenRouter\n[leg 1: primary,\nclaude-haiku-4.5]" as or_provider
 participant "OpenRouter\n[leg 2: fallback,\nclaude-sonnet-4.6]" as or_provider_fb
 participant "Ollama\n[leg 3: local fallback]" as ol_provider
+participant "Reading-Level Loop\nreading_level_loop.py\n[Stage D]" as rl
 participant "Validator Gate\ngate.py" as gate
 database "PostgreSQL\nGenerationJob" as pg
 
@@ -118,6 +122,40 @@ group "Stage C: Repair Loop [while blocked AND attempts < max_repairs=3]"
   orch -> orch : "check no-progress signature\n(same findings + same doc hash -> abort)"
   orch -> orch : "stage_log: 'repair:N' or 'repair:no_progress_abort'"
 end
+
+' --- Stage D (Reading-level loop, runs on a clean doc) ---
+group "Stage D: Reading-Level Loop [reading_level_passes=2 by default]"
+  alt doc is present, NOT blocked, and max_passes > 0
+    orch -> rl : "run_reading_level_loop(doc, gate, ctx)"
+    rl -> rl : "measure every node\n(validator/reading_level.py, deterministic)"
+    loop "per pass, only while nodes remain out of band"
+      rl -> pii : "provider.complete()\n[batched: ONLY the out-of-band bodies]"
+      pii -> pii : "assert_prompt_pii_safe()"
+      pii -> fallback : "complete()\n[forwarded, PII-safe]"
+      fallback --> pii : "raw text"
+      pii --> rl : "raw text"
+      rl -> rl : "re-measure; keep the revision ONLY\nif the score improved (the abort)"
+    end
+    rl -> gate : "run_gate(spliced_doc)"
+    gate --> rl : "GateResult"
+    rl --> orch : "ReadingLevelResult(doc, gate, report)"
+    orch -> orch : "outcome.report['reading_level'] = ...\n(recorded even when nothing was revised)"
+  else doc absent, blocked, or max_passes == 0
+    orch -> orch : "skip Stage D\n(a doc that never cleared the structural\ngate is already bound for human review;\npolishing its prose is a paid call spent\non something nobody will publish as-is)"
+  end
+end
+
+note over orch,rl
+  Stage D never blocks: RL-13 is a WARNING.
+  It is deliberately a separate stage rather
+  than another turn of Stage C, because Stage
+  C's no-progress signature filters to ERROR
+  findings so a prose-only edit cannot defeat
+  its abort. Widening that filter would break
+  a working control, so this loop carries its
+  own, stronger abort instead: the measured
+  score has to actually improve.
+end note
 
 ' --- Outcome mapping ---
 orch -> orch : "_build_outcome(gate_result, doc, attempts)"
