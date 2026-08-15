@@ -10,6 +10,24 @@ tags:
   - compliance
 ---
 
+> **Status (2026-08-15): partially superseded by PR [#720](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/720)**
+> (merged as `5f38917`, v0.80.0), which rebuilt the landing page as a sales funnel after this walkthrough
+> was run. This document is a dated snapshot and is deliberately NOT rewritten; the live status of every
+> finding lives in its register row. What changed:
+>
+> - **Finding 9** (no way back from login): closed. The login page carries a "Back to CYO Adventure" link.
+> - **Finding 4** (no create-account wording): closed. The h1 is now "Sign in or create your account", with
+>   "New family? Continuing above creates your account." under the provider buttons. The residual is
+>   narrower than this document describes; see `UW-J32`.
+> - **Finding 7** (the kid-facing line ranked third): largely closed. Under the authorize-device intent the
+>   line now replaces the adult lede instead of sitting beneath it.
+> - **Finding 5** (the reviewer misattributed to the family): widened, then closed. #720 promoted the same
+>   misattribution to the homepage and added a false claim that approval puts a book on a shelf. Both were
+>   corrected on 2026-08-15; see `UW-J28`.
+> - **Findings 1, 2, 3, 6, 8, 10**: unchanged. #720 touches none of them.
+>
+> Everything below reads as it did on 2026-08-14.
+
 ## Scope and method
 
 Two personas, walked end to end against the app as it stands on `main` (`fc163c5`):

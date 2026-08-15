@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 
 import { Button } from '@ds/components/Button'
 import { EmptyState } from '@ds/components/EmptyState'
-import { Navigate } from 'react-router'
+import { Link, Navigate } from 'react-router'
 
 import '../guardian/guardian.css'
 import { usePageTitle } from '../hooks/usePageTitle'
@@ -13,6 +13,7 @@ import {
   GUARDIAN_LOGIN_PATH,
   GUARDIAN_UNAVAILABLE_PATH,
   GUARDIAN_VERIFICATION_PATH,
+  SUPPORT_PATH,
 } from '../routes'
 import { useAuth } from './useAuth'
 
@@ -107,9 +108,25 @@ export function GuardianAwaitingApprovalPage() {
   return (
     <section className="console" aria-labelledby="awaiting-approval-title">
       <h1 id="awaiting-approval-title">Almost there</h1>
+      {/* UW-J28: the description used to say "A family administrator needs to approve your
+          account ... come back after you've heard from them". Both halves misled. Approval is
+          granted by a platform administrator (PATCH /api/v1/admin/users/{id}, admin-only), not by
+          anyone in this family, so a guardian went looking for a person who does not exist; and
+          nothing in the flow messages them when approval lands, so "heard from them" promised a
+          notification that is not sent (registered as UW-J29). The copy now names who acts, and
+          says plainly that this page is the thing that notices.
+          The support link is the other half of this row: this is the one screen in onboarding a
+          guardian can be stuck on indefinitely, and it had no route anywhere. SUPPORT_PATH is
+          public and outside every auth gate by construction (see routes.ts), which is exactly why
+          it is safe to offer to a caller whose account require_principal still refuses. */}
       <EmptyState
         title="Your account is awaiting approval"
-        description="A family administrator needs to approve your account before you can start adding profiles or requesting stories. This is usually quick -- check back soon, or come back after you've heard from them."
+        description="Someone on the CYO Adventure team reviews each new account before it can add child profiles or request stories. Nobody in your family needs to do anything, and you do not need to wait on this page: we check every few seconds while it is open, and you can close it and come back."
+        actions={
+          <Link className="console__cta" to={SUPPORT_PATH}>
+            Waiting longer than expected? Contact support
+          </Link>
+        }
       />
       <p className="console__notice cyo-text-muted">
         We'll check automatically every so often, or you can check right now.

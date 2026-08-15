@@ -172,8 +172,13 @@ export function ConsolePage() {
         </p>
       ) : (
         <p className="console__notice cyo-text-muted">
-          Stories are checked by your family&apos;s safety reviewer before they reach your children;
-          you do not need to approve them here.
+          {/* UW-J28: "your family's safety reviewer" sent guardians looking for a person who does
+              not exist. The reviewer is a platform-side admin with cross-family authority
+              (api/approval.py), not anyone in this family, so the possessive is dropped rather
+              than the sentence. Kept in step with the landing page's trust card, which makes the
+              same claim to a reader who has not signed up yet. */}
+          Stories are checked by our safety reviewer before they reach your children; you do not
+          need to approve them here.
         </p>
       )}
       {isAdminOnly ? (

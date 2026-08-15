@@ -13,6 +13,22 @@ tags:
   - scope
 ---
 
+> **Amended 2026-08-15, after PR [#720](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/720)
+> (merged as `5f38917`) rebuilt the landing page as a sales funnel.** Three consequences, none of which
+> change the wave ordering:
+>
+> 1. **Wave 2 got more urgent, not less.** #720 builds a conversion funnel whose every CTA lands on
+>    self-signup, which lands in `awaiting_approval`, a queue nobody is notified about in either
+>    direction. Its "We approve each new family by hand" copy sets the expectation honestly, which helps;
+>    the loop (`UW-J29`, `UW-J30`) is still open, and more families will now reach it.
+> 2. **Wave 2 item 2a (`UW-J28`) is done**, and grew before it closed: #720 promoted the same
+>    reviewer misattribution to the homepage and added a claim that approval puts a book on a child's
+>    shelf. Both are corrected, with mutation-verified tests.
+> 3. **Wave 4 item 4a (`UW-J32`) is mostly done**, closed incidentally by #720 rather than by this plan.
+>    Its residual is narrower and is now Low.
+>
+> Waves 1, 3, and 5 are untouched by #720 and stand exactly as written below.
+
 ## What this plan is for
 
 The [registration walkthrough](../qa/onboarding-flow-walkthrough-2026-08-14.md) found ten gaps across
