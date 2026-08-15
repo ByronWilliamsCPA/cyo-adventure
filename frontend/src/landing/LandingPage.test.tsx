@@ -7,6 +7,23 @@ import type { Mock } from 'vitest'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { setDeviceGrant } from '../auth/deviceGrant'
+
+// One-shot failure injection for the hydrate. vi.mock is hoisted, so the flag
+// has to be too; everything else in the module is the real implementation.
+const hydrateControl = vi.hoisted(() => ({ failNext: false }))
+vi.mock('../auth/deviceGrant', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../auth/deviceGrant')>()
+  return {
+    ...actual,
+    hydrateDeviceGrant: async (...args: Parameters<typeof actual.hydrateDeviceGrant>) => {
+      if (hydrateControl.failNext) {
+        hydrateControl.failNext = false
+        throw new Error('injected: IndexedDB unavailable')
+      }
+      return actual.hydrateDeviceGrant(...args)
+    },
+  }
+})
 import { _resetDbHandle } from '../offline/db'
 import { ThemeProvider } from '../theme/ThemeProvider'
 import { LANDING_HEADLINE } from './headline'
@@ -42,6 +59,7 @@ function seedValidGrant() {
 }
 
 beforeEach(() => {
+  hydrateControl.failNext = false
   globalThis.indexedDB = new IDBFactory()
   _resetDbHandle()
   localStorage.clear()
@@ -454,6 +472,40 @@ describe('LandingPage', () => {
     // flow rather than stranding the visitor on the landing page.
     it('falls through to device authorization when no mirrored grant exists', async () => {
       renderLanding()
+      fireEvent.click(screen.getByRole('link', { name: /kids/i }), { button: 0 })
+      await waitFor(() => expect(screen.getByText('guardian login landing')).toBeInTheDocument())
+    })
+
+    // The memoised promise must never stay rejected. The click handler calls
+    // preventDefault before awaiting it, so a rejection with no handler leaves
+    // the Kids door doing nothing at all, permanently, and every later attempt
+    // reuses the same rejected promise. This covers both halves: the failed
+    // attempt still reaches the authorize flow, and the NEXT attempt recovers.
+    it('survives a hydrate failure and can retry', async () => {
+      seedValidGrant()
+      await new Promise((resolve) => setTimeout(resolve, 50))
+      localStorage.removeItem('device_grant')
+
+      renderLanding()
+      const kidDoor = screen.getByRole('link', { name: /kids/i })
+
+      // Prewarm fails (and does not navigate), poisoning a naive memo.
+      hydrateControl.failNext = true
+      fireEvent.focus(kidDoor)
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 50))
+      })
+      expect(kidDoor).toHaveAttribute('href', '/guardian/login?intent=authorize-device')
+
+      // The retry now succeeds against the intact mirror and reaches the picker.
+      fireEvent.click(screen.getByRole('link', { name: /kids/i }), { button: 0 })
+      await waitFor(() => expect(screen.getByText('kid picker landing')).toBeInTheDocument())
+    })
+
+    // A failure with nothing to recover must still land the visitor somewhere.
+    it('falls through to device authorization when the hydrate fails outright', async () => {
+      renderLanding()
+      hydrateControl.failNext = true
       fireEvent.click(screen.getByRole('link', { name: /kids/i }), { button: 0 })
       await waitFor(() => expect(screen.getByText('guardian login landing')).toBeInTheDocument())
     })
