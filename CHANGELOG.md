@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.80.0] - 2026-08-15
+
+### Features
+
+- **landing**: Redesign the homepage as the sales funnel
+  ([#720](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/720),
+  [`5f38917`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/5f38917deafbcfd2587e00b8e219f53d97395c0d))
+
+
 ## [0.79.1] - 2026-08-15
 
 ### Bug Fixes
@@ -3451,6 +3460,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.80.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.79.1...v0.80.0
 [0.79.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.79.0...v0.79.1
 [0.79.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.78.2...v0.79.0
 [0.78.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.78.1...v0.78.2
