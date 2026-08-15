@@ -1054,12 +1054,21 @@ async def run_panel(
     books: Sequence[tuple[str, dict[str, Any]]],
     settings: Settings,
     panel: Sequence[Judge] = _PANEL,
+    journal: Path | None = None,
 ) -> tuple[list[Verdict], float]:
     """Score every book with every judge, blind, and meter the spend.
 
     Args:
         books: ``(identifier, document)`` pairs.
         settings: Settings supplying the credential.
+        panel: The judges to run.
+        journal: Where to append each verdict as it arrives, one JSON object
+            per line. This exists because on 2026-08-15 two runs were killed
+            mid-flight by an environment interruption after 92 and 34 paid
+            scorings, and both produced nothing: results were held in memory
+            and written once at the end, so an interrupted run lost every
+            call it had paid for. Appending as we go makes a killed run
+            partially usable instead of entirely wasted (`AL-396`).
 
     Returns:
         Every verdict, and the measured spend in USD.
@@ -1090,7 +1099,35 @@ async def run_panel(
             )
             print(f"  {judge.label} -> {identifier}: {detail}", file=sys.stderr)
             verdicts.append(verdict)
+            _journal(journal, verdict)
     return verdicts, _spend(ledger)
+
+
+def _journal(path: Path | None, verdict: Verdict) -> None:
+    """Append one verdict to the run journal, if a journal was requested.
+
+    Flushed per line rather than buffered: the whole point is to survive a
+    process that does not get to run its exit path, and a buffered write is
+    exactly what such a process loses.
+
+    Args:
+        path: The journal file, or ``None`` to skip journalling.
+        verdict: The verdict just produced.
+    """
+    if path is None:
+        return
+    row = {
+        "book": verdict.book,
+        "leg": verdict.leg,
+        "family": verdict.family,
+        "judge": verdict.judge,
+        "self_family": verdict.self_family,
+        "scores": verdict.scores,
+        "notes": verdict.notes,
+        "error": verdict.error,
+    }
+    with path.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(row) + "\n")
 
 
 def _spend(ledger: UsageLedger) -> float:
@@ -1359,7 +1396,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     )
 
     with single_run(args.out):
-        verdicts, spend = asyncio.run(run_panel(books, Settings(), panel))
+        verdicts, spend = asyncio.run(
+            run_panel(books, Settings(), panel, journal=args.out / "journal.jsonl")
+        )
     results = score_battery(verdicts, arms)  # pyright: ignore[reportArgumentType]
 
     args.out.mkdir(parents=True, exist_ok=True)
