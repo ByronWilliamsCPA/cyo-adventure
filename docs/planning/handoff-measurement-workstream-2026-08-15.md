@@ -13,34 +13,54 @@ component: Development-Tools
 
 # Handoff: Measurement Workstream, 2026-08-15
 
-> **Branch**: `claude/story-dev-testing-eval-bm0tpf` at `d297ed5`
-> **Suite**: 7793 passed, 1402 skipped, 3 xfailed (the xfails are pre-existing pre-schema-v2 fills)
-> **Gates**: `ruff check`, `ruff format --check`, `basedpyright src/` (0 errors),
-> `check_lessons_log.py`, `check_work_linkage.py` all clean
+> **Branch**: `claude/story-dev-testing-eval-bm0tpf`, `main` merged in at `42946a8`
+> **Suite**: 7800 passed, 6 skipped in `tests/unit` at 89.39% coverage
+> **Gates**: `ruff check`, `ruff format --check`, `basedpyright src/` (0 errors), `bandit`,
+> `check_rad_citations.py`, `check_lessons_log.py`, `check_work_linkage.py` all clean
 
-## Read this first: the branch does not merge cleanly
+## Read this first: the ledger ids moved
 
-`main` squash-merged PR #708 as `0396507` while this branch carries the same work as ~35
-individual commits, and `main` has since taken #709, #712, #714 and two releases. A test merge
-produces **155 conflict hunks across 25 files**. The conflicts are mostly mechanical (one side
-empty, the other adding), but three files need real judgement because both sides changed them for
-different reasons:
+**The merge is done.** The 155 conflict hunks across 25 files are resolved in `42946a8` and the
+branch no longer conflicts. What survives from that work is one thing you need before reading
+anything else in this repo written before 2026-08-15:
 
-| File | Why both sides moved |
+**This branch's lesson and register ids were renumbered.** `main` had independently used
+`AL-351`..`AL-361` and `UW-C248`..`UW-C252` for entirely different items, so this branch's rows
+shifted:
+
+| Old range | New range |
 | --- | --- |
-| `validator/paths.py` | #712 added the zero-edge reading and a `Draw.count` guard; this branch added nothing here after W1 |
-| `scripts/compare_vendors.py` | #712 added duplicate-vendor-label rejection; this branch has the older harness |
-| `validator/reading_level.py` | This branch rebuilt the syllable counter and made RL-13 one-sided; `main` has neither |
+| `AL-351`..`AL-400` | **`AL-362`..`AL-411`** |
+| `UW-C248`..`UW-C260` | **`UW-C253`..`UW-C265`** |
 
-**Recommended resolution order**: take `main` wholesale for `paths.py`, `compare_vendors.py` and
-their tests, since `main` is strictly newer there and this branch changed nothing in them after
-W1. Take this branch wholesale for `reading_level.py`, `reading_level_loop.py`, `continuity.py`,
-`imitable.py`, `utils/sentences.py`, `policy.py` and the two ledgers. Everything else is
-additive on one side only.
+`main`'s rows keep their published ids. 322 references were updated across 35 files, and every id
+from both merge parents survives exactly once with no gaps. Anything outside this repo citing the
+old numbers needs translating; anything inside it was updated.
 
-Do NOT rebase. The two ledgers (`authoring-lessons-log.md`,
-`unscheduled-work-register.md`) are append-only and both sides appended; a rebase replays that
-conflict once per commit.
+### How the conflicts were resolved, and where this document was wrong
+
+An earlier draft of this section recommended taking `main` wholesale for `paths.py` and
+`compare_vendors.py`, on the grounds that this branch "changed nothing in them after W1". That is
+true of `paths.py` and **false of `compare_vendors.py`**, which carries four branch commits after
+the merge point and is 1,770 lines against main's 1,390. Following the recipe would have discarded
+them silently: the file would still import, still pass its tests, and still look plausible
+(`AL-414`).
+
+The resolution actually used derives from each file's own history rather than from a rule about
+which branch is newer:
+
+| Set | Resolution |
+| --- | --- |
+| 18 files whose only post-base commit on `main` is the #708 squash | took this branch, a strict superset of its own squashed work |
+| `validator/paths.py` and its test | took `main`: one branch commit (W1), already squashed, plus #712's zero-edge fix |
+| `scripts/compare_vendors.py` | took this branch, then ported #712's duplicate-label rejection onto it |
+| `cyo-measurement-workplan` | took main's W9 and W10 pre-registered thresholds, kept this branch's section 7 |
+
+Do NOT rebase if this situation recurs. The two ledgers are append-only and both sides appended;
+a rebase replays that conflict once per commit. Note also that no existing check would have caught
+the wrong resolution: `check_lessons_log.py` reports `ok: well formed` over a log that has just
+lost 11 lessons, because what remains is contiguous and unique (`AL-413`, registered as
+`UW-C266`).
 
 ## What landed
 
