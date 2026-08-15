@@ -49,6 +49,21 @@ const DEFAULT_ONBOARDING_RESPONSE = {
   created: false,
   status: 'active',
   consent_recorded: true,
+  // ADR-018 D1. Added 2026-08-14: the real endpoint has returned these two
+  // since #681, and the fixture omitting them was not merely incomplete, it
+  // made the gated case INEXPRESSIBLE through this helper, because
+  // `mockOnboarding`'s overrides are typed against this literal. That is why
+  // `/guardian/verify` had no E2E coverage.
+  //
+  // These defaults are the ungated shape, so every existing spec is
+  // unaffected: AuthContext gates on `verification_required &&
+  // verification_status !== 'verified'`, and this pair fails that on both
+  // halves. Specs exercising the gate override both (see
+  // guardian-verification.spec.ts), which is deliberate: overriding only
+  // `verification_status` would still read as ungated, matching the real
+  // deployment behavior the AuthContext comment describes.
+  verification_required: false,
+  verification_status: 'verified',
 }
 
 function fulfillOnboarding(route: Route): Promise<void> {
@@ -208,9 +223,7 @@ export async function mockDeviceGrants(
     }
     return route.fulfill({ json: { device_grants: [body] } })
   })
-  await page.route('**/api/v1/device-grants/*', (route) =>
-    route.fulfill({ status: 204, body: '' })
-  )
+  await page.route('**/api/v1/device-grants/*', (route) => route.fulfill({ status: 204, body: '' }))
 }
 
 /**

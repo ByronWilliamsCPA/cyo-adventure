@@ -1,8 +1,10 @@
 import AxeBuilder from '@axe-core/playwright'
 import { expect, test, type BrowserContext, type Page } from '@playwright/test'
 
+import { LANDING_HEADLINE } from '../src/landing/headline'
 import { mockEmptyConsole, mockMe, seedDeviceGrant, seedGuardianSession } from './support/auth'
 import { loadLanternStory } from './support/fixtures'
+import { LOGIN_HEADLINE } from '../src/guardian/loginHeadline'
 
 /**
  * Automated accessibility smoke, WCAG 2.1 A/AA rules via axe-core, across
@@ -131,8 +133,9 @@ test('landing page has no detectable accessibility violations', async ({ page })
   // it is the one place a scan could otherwise land before the lazy chunk
   // mounts anything at all, not just before it replaces an already-mounted
   // fallback. Waiting on the real heading closes that gap the same way the
-  // other tests' pre-existing assertions already do.
-  await expect(page.getByRole('heading', { name: 'CYO Adventure' })).toBeVisible()
+  // other tests' pre-existing assertions already do. (The h1 is the funnel
+  // headline since the 2026-08 redesign; the app name lives in the wordmark.)
+  await expect(page.getByRole('heading', { name: LANDING_HEADLINE })).toBeVisible()
   await assertNoViolations(page)
 })
 
@@ -214,7 +217,7 @@ test('the reader page has no detectable accessibility violations', async ({ page
 
 test('the guardian login page has no detectable accessibility violations', async ({ page }) => {
   await page.goto('/guardian/login')
-  await expect(page.getByRole('heading', { name: 'Guardian sign-in' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: LOGIN_HEADLINE })).toBeVisible()
   await assertNoViolations(page)
 })
 

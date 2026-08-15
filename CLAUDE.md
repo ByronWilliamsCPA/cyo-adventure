@@ -626,7 +626,7 @@ React frontend (frontend/)
    |  npm run generate-client                  committed to git, CI fails on drift
    v  reads  http://localhost:8000/openapi.json
 FastAPI backend (src/cyo_adventure/)
-   - api/            36 routers (health, library, reading, reading_history,
+   - api/            37 routers (health, library, reading, reading_history,
                       reading_time, progress, recommendations, flags,
                       notifications, generation, profiles, personalization,
                       characters, families, ratings, assignments, approval,
@@ -635,7 +635,13 @@ FastAPI backend (src/cyo_adventure/)
                       provider_allowlist, me, story_requests, child_sessions,
                       device_grants, offline_downloads, onboarding,
                       admin_users, admin_profiles, family_connections,
-                      kws_webhook, kws_redirect)
+                      consent, kws_webhook, kws_redirect)
+                      37 distinct routers in 38 include_router() calls:
+                      health mounts twice, once under /api/v1 and once
+                      unprefixed with include_in_schema=False. Count it with
+                      `grep -c include_router src/cyo_adventure/app.py`, not by
+                      counting api/*.py: three of those files (schemas, deps,
+                      review_surface) define no router.
    - core/           config.py, database.py (async SQLAlchemy), exceptions.py
    - middleware/     correlation.py, security.py (OWASP headers),
                       unit_of_work.py (commits the request UoW pre-response)
@@ -723,7 +729,7 @@ shared code.
 src/cyo_adventure/
 ├── __init__.py
 ├── app.py                  # FastAPI app; wires all routers via include_router
-├── api/                     # FastAPI routers (36): health, library, reading,
+├── api/                     # FastAPI routers (37): health, library, reading,
 │                            # reading_history, reading_time, progress,
 │                            # recommendations, flags, notifications, generation,
 │                            # profiles, personalization, characters, families,
@@ -733,9 +739,11 @@ src/cyo_adventure/
 │                            # provider_allowlist, me, story_requests,
 │                            # child_sessions, device_grants, offline_downloads,
 │                            # onboarding, admin_users, admin_profiles,
-│                            # family_connections, kws_webhook, kws_redirect;
+│                            # family_connections, consent, kws_webhook,
+│                            # kws_redirect;
 │                            # support modules (not routers): schemas, deps,
-│                            # review_surface
+│                            # review_surface, gate_limits, residence_countries,
+│                            # sentinel_log
 ├── core/                    # config.py, database.py, exceptions.py
 ├── middleware/              # security.py, correlation.py, unit_of_work.py
 ├── db/                      # SQLAlchemy ORM models.py (domain: stories, profiles,

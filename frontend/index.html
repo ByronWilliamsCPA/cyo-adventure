@@ -16,11 +16,14 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Adventure" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="description" content="A choose-your-own-adventure reading app for kids" />
-    <!-- Canonical + social preview tags. This is a private family deployment
-         (homelab-first per the ADRs, no public marketing site), so unlike a
-         typical SPA these exist for link-preview correctness (a guardian
-         pasting the URL into a family chat) rather than search-engine SEO.
+    <meta
+      name="description"
+      content="Personalized choose-your-own-adventure storybooks for kids 4 to 13. Your child picks the path; you approve every page. Free during early access."
+    />
+    <!-- Canonical + social preview tags. Originally added for link-preview
+         correctness on a private family deployment (a guardian pasting the
+         URL into a family chat); with the landing page now doubling as the
+         product's sales funnel (2026-08 redesign), the copy also has to sell.
          Hardcoded to the one real production origin rather than computed
          from window.location, matching how the rest of this static shell
          (title, description) is already origin-agnostic markup filled in
@@ -28,35 +31,59 @@
     <link rel="canonical" href="https://cyo.williamshome.family/" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="CYO Adventure" />
-    <meta property="og:title" content="CYO Adventure" />
-    <meta property="og:description" content="A choose-your-own-adventure reading app for kids" />
+    <!-- The headline, not the bare brand: the likeliest share is a parent
+         pasting the URL into a family or school chat, where an unknown brand
+         name sells nothing and the pitch line does the work. -->
+    <meta property="og:title" content="They pick the path. You approve every page." />
+    <meta
+      property="og:description"
+      content="Personalized choose-your-own-adventure storybooks for kids 4 to 13. Your child picks the path; you approve every page."
+    />
     <meta property="og:url" content="https://cyo.williamshome.family/" />
-    <!-- #ASSUME: external-resources: reuses the existing 512px PWA icon
-         (public/pwa-icon-512.png, generated from the Mascot art) as a
-         functional stand-in. It is square, not the 1200x630 landscape most
-         link-preview surfaces prefer, so Slack/iMessage/etc. will crop it
-         into a thumbnail rather than a banner.
-         #VERIFY: swap for a proper 1200x630 og-image asset once one is
-         designed; no code change needed elsewhere, just this src/width/height. -->
-    <meta property="og:image" content="https://cyo.williamshome.family/pwa-icon-512.png" />
-    <meta property="og:image:width" content="512" />
-    <meta property="og:image:height" content="512" />
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="CYO Adventure" />
-    <meta name="twitter:description" content="A choose-your-own-adventure reading app for kids" />
-    <meta name="twitter:image" content="https://cyo.williamshome.family/pwa-icon-512.png" />
+    <!-- public/og-image.png is a real 1200x630 landscape card, captured from
+         the BUILT hero (headline, lede, both CTAs, the sample shelf and Pip)
+         rather than drawn separately, so it cannot drift from the page it
+         advertises. It replaces the square PWA icon, which every preview
+         surface cropped into a thumbnail instead of showing as a banner.
+         Regenerate it whenever the hero's copy or art changes: build, serve
+         the build, and screenshot the hero region at 1200x630 in the light
+         palette (the capture hides the sticky topbar and centres the hero in
+         the frame). -->
+    <meta property="og:image" content="https://cyo.williamshome.family/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Three sample storybook covers fanned beside Pip the fox, above the headline: they pick the path, you approve every page."
+    />
+    <!-- summary_large_image, now that the asset is genuinely landscape: with
+         a square image this rendered a stretched or letterboxed banner, which
+         is why it was previously the smaller `summary` card. -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="They pick the path. You approve every page." />
+    <meta
+      name="twitter:description"
+      content="Personalized choose-your-own-adventure storybooks for kids 4 to 13. Your child picks the path; you approve every page."
+    />
+    <meta name="twitter:image" content="https://cyo.williamshome.family/og-image.png" />
+    <meta
+      name="twitter:image:alt"
+      content="Three sample storybook covers fanned beside Pip the fox, above the headline: they pick the path, you approve every page."
+    />
     <!-- Structured data: minimal WebApplication entry so a link preview or
          AI crawler that parses JSON-LD gets a correct, machine-readable
          description instead of none at all. EducationalApplication fits a
          kids' reading app better than the schema.org default (a generic
-         'Application' subtype); no offers/price fields since this is a
-         private family app, not something sold or listed. -->
+         'Application' subtype). Offers/price fields are still intentionally
+         omitted: subscriptions are planned (Track 2 Phase 8, ADR-008) but
+         nothing is sold today, and Offer markup for an unpriced plan would
+         be a false claim; add it when real prices ship. -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "WebApplication",
         "name": "CYO Adventure",
-        "description": "A choose-your-own-adventure reading app for kids",
+        "description": "Personalized choose-your-own-adventure storybooks for kids 4 to 13. Your child picks the path; you approve every page.",
         "url": "https://cyo.williamshome.family/",
         "applicationCategory": "EducationalApplication",
         "operatingSystem": "Any (installable PWA)"
