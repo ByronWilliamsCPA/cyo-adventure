@@ -111,14 +111,27 @@ export default defineConfig({
       name: 'real-backend',
       testDir: './e2e-real',
       dependencies: ['real-backend-setup'],
-      // full-pipeline-real.spec.ts and connections-enforcement-real.spec.ts
-      // both drive a real RQ worker end-to-end (the latter to mint a fresh
-      // catalog-visible storybook); they run in their own
-      // `real-backend-pipeline` project (npm run test:e2e:real:pipeline) that
-      // additionally requires a running generation worker, so this project
-      // must not pick either up. Every other e2e-real spec has no such
-      // dependency and stays here.
-      testIgnore: ['full-pipeline-real.spec.ts', 'connections-enforcement-real.spec.ts'],
+      // full-pipeline-real.spec.ts, full-pipeline-negative-real.spec.ts and
+      // connections-enforcement-real.spec.ts all drive a real RQ worker
+      // end-to-end (the last to mint a fresh catalog-visible storybook); they
+      // run in their own `real-backend-pipeline` project (npm run
+      // test:e2e:real:pipeline) that additionally requires a running
+      // generation worker, so this project must not pick any of them up.
+      // Every other e2e-real spec has no such dependency and stays here.
+      //
+      // full-pipeline-negative-real.spec.ts was missing from this list while
+      // being just as worker-dependent as its positive twin, so the nightly
+      // ran it in THIS project, which executes before the workflow starts the
+      // worker. It therefore failed on every run with its own
+      // "worker does not appear to be consuming the generation queue"
+      // message: an accurate report of a condition the job's own ordering
+      // guaranteed. Match worker-dependence, not filename similarity, when
+      // adding specs here.
+      testIgnore: [
+        'full-pipeline-real.spec.ts',
+        'full-pipeline-negative-real.spec.ts',
+        'connections-enforcement-real.spec.ts',
+      ],
       fullyParallel: false,
       // #EDGE: data-integrity: the approve test mutates the database, so a CI
       // retry after a post-mutation failure re-enters an already-approved
@@ -151,7 +164,8 @@ export default defineConfig({
       // #VERIFY: the nightly job must start the worker before invoking this.
       name: 'real-backend-pipeline',
       testDir: './e2e-real',
-      testMatch: /(full-pipeline-real|connections-enforcement-real)\.spec\.ts/,
+      testMatch:
+        /(full-pipeline-real|full-pipeline-negative-real|connections-enforcement-real)\.spec\.ts/,
       dependencies: ['real-backend-setup'],
       fullyParallel: false,
       retries: process.env.CI ? 1 : 0,
