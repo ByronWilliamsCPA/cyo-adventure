@@ -1382,6 +1382,23 @@ def main(argv: Sequence[str] | None = None) -> int:
         print("Error: --arms and --out are required without --replay.", file=sys.stderr)
         return 2
 
+    # #CRITICAL: payment: --reblend means "rebuild the arms without calling a
+    # provider", but it is only read inside the --prepare branch above. Passed
+    # without --prepare it used to fall through to here, which is the paid
+    # judging pass: a flag whose entire purpose is to avoid spending money
+    # silently became a run that spends it. Observed 2026-08-15, killed after
+    # 17 billed scorings (AL-412). Refuse instead, because there is no reading
+    # of `--reblend` alone under which judging is what the operator asked for.
+    # #VERIFY: test_reblend_without_prepare_refuses_rather_than_judging in
+    # tests/unit/test_w7_battery.py.
+    if args.reblend:
+        print(
+            "Error: --reblend rebuilds arms and only applies with --prepare. "
+            "Refusing, because continuing would start a paid judging run.",
+            file=sys.stderr,
+        )
+        return 2
+
     ensure_persistable(args.out, allow_untracked=args.allow_untracked_out)
 
     files = sorted(args.arms.glob("*.json"))

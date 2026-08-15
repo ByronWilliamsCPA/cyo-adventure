@@ -30,6 +30,9 @@ from scripts.w7_battery import (
     single_run,
     weighted_kappa,
 )
+from scripts.w7_battery import (
+    main as w7_main,
+)
 
 _CRITERIA_NAMES = (
     "age_fit",
@@ -513,3 +516,25 @@ def test_a_panel_of_nothing_but_pending_rows_is_an_error(tmp_path: Path) -> None
 
     with pytest.raises(ValueError, match="no judge that is not pending"):
         load_panel(panel)
+
+
+@pytest.mark.unit
+def test_reblend_without_prepare_refuses_rather_than_judging(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """`--reblend` promises no provider call, so it must never start a paid run.
+
+    The flag is only read inside the `--prepare` branch. Passed on its own it
+    used to fall straight through to the judging pass, so an operator asking
+    for the free arm rebuild got a run that bills per scoring instead. That
+    happened on 2026-08-15 and was killed after 17 billed scorings (`AL-412`).
+    Exiting non-zero is the only safe reading: there is no interpretation of
+    `--reblend` alone under which judging is what was asked for.
+    """
+    arms = tmp_path / "arms"
+    arms.mkdir()
+
+    code = w7_main(["--arms", str(arms), "--out", str(tmp_path / "out"), "--reblend"])
+
+    assert code == 2
+    assert "only applies with --prepare" in capsys.readouterr().err
