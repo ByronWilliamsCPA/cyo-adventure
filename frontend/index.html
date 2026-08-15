@@ -31,7 +31,10 @@
     <link rel="canonical" href="https://cyo.williamshome.family/" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="CYO Adventure" />
-    <meta property="og:title" content="CYO Adventure" />
+    <!-- The headline, not the bare brand: the likeliest share is a parent
+         pasting the URL into a family or school chat, where an unknown brand
+         name sells nothing and the pitch line does the work. -->
+    <meta property="og:title" content="They pick the path. You approve every page." />
     <meta
       property="og:description"
       content="Personalized choose-your-own-adventure storybooks for kids 4 to 13. Your child picks the path; you approve every page."
@@ -48,7 +51,7 @@
     <meta property="og:image:width" content="512" />
     <meta property="og:image:height" content="512" />
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="CYO Adventure" />
+    <meta name="twitter:title" content="They pick the path. You approve every page." />
     <meta
       name="twitter:description"
       content="Personalized choose-your-own-adventure storybooks for kids 4 to 13. Your child picks the path; you approve every page."
@@ -58,14 +61,16 @@
          AI crawler that parses JSON-LD gets a correct, machine-readable
          description instead of none at all. EducationalApplication fits a
          kids' reading app better than the schema.org default (a generic
-         'Application' subtype); no offers/price fields since this is a
-         private family app, not something sold or listed. -->
+         'Application' subtype). Offers/price fields are still intentionally
+         omitted: subscriptions are planned (Track 2 Phase 8, ADR-008) but
+         nothing is sold today, and Offer markup for an unpriced plan would
+         be a false claim; add it when real prices ship. -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "WebApplication",
         "name": "CYO Adventure",
-        "description": "A choose-your-own-adventure reading app for kids",
+        "description": "Personalized choose-your-own-adventure storybooks for kids 4 to 13. Your child picks the path; you approve every page.",
         "url": "https://cyo.williamshome.family/",
         "applicationCategory": "EducationalApplication",
         "operatingSystem": "Any (installable PWA)"

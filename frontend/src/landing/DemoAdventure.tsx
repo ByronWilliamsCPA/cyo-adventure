@@ -16,6 +16,12 @@ import type { DemoNodeId } from './demoStory'
  * no fetching, no player engine, nothing kid-account-related, keeping the
  * landing chunk's no-data-no-auth contract intact.
  *
+ * Endings found are tracked across replays ("You found 2 of 4"), because the
+ * outro explicitly invites a replay: a counter that stayed at 1 after the
+ * second ending would make the demo look broken at the exact moment it asked
+ * for engagement. Finding all of them swaps in a completion line that carries
+ * the badges pitch, the one place that idea lands better than a feature card.
+ *
  * Focus management: choosing replaces the passage (and its buttons), which
  * would otherwise drop keyboard focus to <body> and strand a screen-reader
  * user mid-story. Each transition moves focus to the new passage instead
@@ -25,11 +31,13 @@ import type { DemoNodeId } from './demoStory'
  */
 export function DemoAdventure() {
   const [nodeId, setNodeId] = useState<DemoNodeId>(DEMO_START)
+  const [foundEndings, setFoundEndings] = useState<ReadonlySet<DemoNodeId>>(new Set())
   const passageRef = useRef<HTMLDivElement | null>(null)
   const interactedRef = useRef(false)
 
   const node = DEMO_STORY[nodeId]
-  const isEnding = !node.choices
+  const isEnding = node.endingTitle !== undefined
+  const foundAll = foundEndings.size === DEMO_ENDING_COUNT
 
   useEffect(() => {
     if (!interactedRef.current) return
@@ -38,6 +46,9 @@ export function DemoAdventure() {
 
   function goTo(next: DemoNodeId) {
     interactedRef.current = true
+    if (DEMO_STORY[next].endingTitle !== undefined) {
+      setFoundEndings((prev) => (prev.has(next) ? prev : new Set(prev).add(next)))
+    }
     setNodeId(next)
   }
 
@@ -66,15 +77,19 @@ export function DemoAdventure() {
       ) : (
         <div className="demo-adventure__outro">
           <p className="demo-adventure__found">
-            You found 1 of {DEMO_ENDING_COUNT} endings. Real books hide even more, and every path is
-            written for your reader and approved by you.
+            {foundAll
+              ? `You found all ${DEMO_ENDING_COUNT} endings! In real books, finding every ` +
+                'ending earns badges worth bragging about at dinner.'
+              : `You found ${foundEndings.size} of ${DEMO_ENDING_COUNT} endings. A real book ` +
+                'runs far bigger, about a hundred passages and a dozen endings, every path ' +
+                'written for your reader and approved by you.'}
           </p>
           <div className="demo-adventure__outro-actions">
             <Button variant="ghost" onClick={() => goTo(DEMO_START)}>
-              Read it again
+              Try a different path
             </Button>
             <Link className="landing-cta landing-cta--primary" to={GUARDIAN_LOGIN_PATH}>
-              Make their next story
+              Get started free
             </Link>
           </div>
         </div>

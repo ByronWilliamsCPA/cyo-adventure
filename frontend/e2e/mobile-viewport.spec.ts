@@ -61,6 +61,12 @@ for (const width of WIDTHS) {
   test(`landing has no horizontal overflow at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 800 })
     await page.goto('/')
+    // Wait for the lazy landing chunk to actually mount before measuring:
+    // page.goto resolves at `load`, which can be the Suspense fallback, and
+    // an empty fallback passes this check vacuously. The redesign made this
+    // load-bearing (the rotated hero covers are the first content here that
+    // can genuinely overflow, held by .landing's overflow-x: clip).
+    await expect(page.getByRole('link', { name: /Grown-ups/ })).toBeVisible()
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth > document.documentElement.clientWidth
     )

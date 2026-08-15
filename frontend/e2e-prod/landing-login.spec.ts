@@ -15,9 +15,14 @@ import { gotoResilient } from '../e2e-support/rate-limit'
  * CI deliberately.
  */
 test.describe('public surfaces (unauthenticated)', () => {
-  test('the landing page renders its title and both doors', async ({ page }) => {
+  test('the landing page renders its headline and both doors', async ({ page }) => {
     await gotoResilient(page, '/')
-    await expect(page.getByRole('heading', { name: 'CYO Adventure', level: 1 })).toBeVisible()
+    // The h1 is the funnel headline since the 2026-08 redesign; the app name
+    // moved to the topbar wordmark (a span, not a heading). Mirrors the same
+    // readiness assertion in e2e/a11y.spec.ts.
+    await expect(
+      page.getByRole('heading', { name: 'They pick the path. You approve every page.', level: 1 })
+    ).toBeVisible()
     // The two audience doors live in a labelled nav; their visible text
     // ("Kids", "Grown-ups") is span content inside the links, so match the
     // links by accessible name rather than as headings.

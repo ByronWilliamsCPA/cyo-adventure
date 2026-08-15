@@ -3,7 +3,8 @@ import { MemoryRouter } from 'react-router'
 import { describe, expect, it } from 'vitest'
 
 import { DemoAdventure } from './DemoAdventure'
-import { DEMO_STORY } from './demoStory'
+import { DEMO_ENDING_COUNT, DEMO_START, DEMO_STORY } from './demoStory'
+import type { DemoNodeId } from './demoStory'
 
 function renderDemo() {
   return render(
@@ -38,35 +39,101 @@ describe('DemoAdventure', () => {
     expect(screen.getByText('A New Friend')).toBeInTheDocument()
     expect(screen.getByText(DEMO_STORY.end_glowbug.text)).toBeInTheDocument()
     expect(screen.getByText(/you found 1 of 4 endings/i)).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /make their next story/i })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Get started free' })).toHaveAttribute(
       'href',
       '/guardian/login'
     )
   })
 
-  it('restarts from the beginning via "Read it again"', () => {
+  // The outro invites a replay, so the counter must survive it: a "1 of 4"
+  // that never moved after a second ending made the demo look broken at the
+  // exact moment it asked for engagement.
+  it('counts endings across replays', () => {
+    renderDemo()
+    fireEvent.click(screen.getByRole('button', { name: /slip into the glittering cave/i }))
+    fireEvent.click(screen.getByRole('button', { name: /peek behind the stone/i }))
+    expect(screen.getByText(/you found 1 of 4 endings/i)).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: /try a different path/i }))
+    fireEvent.click(screen.getByRole('button', { name: /slip into the glittering cave/i }))
+    fireEvent.click(screen.getByRole('button', { name: /giggle back, twice/i }))
+    expect(screen.getByText(/you found 2 of 4 endings/i)).toBeInTheDocument()
+
+    // Revisiting an already-found ending does not double-count.
+    fireEvent.click(screen.getByRole('button', { name: /try a different path/i }))
+    fireEvent.click(screen.getByRole('button', { name: /slip into the glittering cave/i }))
+    fireEvent.click(screen.getByRole('button', { name: /peek behind the stone/i }))
+    expect(screen.getByText(/you found 2 of 4 endings/i)).toBeInTheDocument()
+  })
+
+  it('celebrates completion (with the badges pitch) once every ending is found', () => {
+    renderDemo()
+    const paths: [RegExp, RegExp][] = [
+      [/slip into the glittering cave/i, /peek behind the stone/i],
+      [/slip into the glittering cave/i, /giggle back, twice/i],
+      [/climb the mossy stairs/i, /splash in and rescue the letter/i],
+      [/climb the mossy stairs/i, /race the boat along the bank/i],
+    ]
+    paths.forEach(([first, second], index) => {
+      fireEvent.click(screen.getByRole('button', { name: first }))
+      fireEvent.click(screen.getByRole('button', { name: second }))
+      // Restart between paths; after the last ending, stay on the outro so
+      // the completion state below is what renders.
+      if (index < paths.length - 1) {
+        fireEvent.click(screen.getByRole('button', { name: /try a different path/i }))
+      }
+    })
+    expect(screen.getByText(/you found all 4 endings!/i)).toBeInTheDocument()
+    expect(screen.getByText(/earns badges/i)).toBeInTheDocument()
+  })
+
+  it('restarts from the beginning via "Try a different path"', () => {
     renderDemo()
     fireEvent.click(screen.getByRole('button', { name: /climb the mossy stairs/i }))
     fireEvent.click(screen.getByRole('button', { name: /race the boat along the bank/i }))
     expect(screen.getByText('Won by a Whisker')).toBeInTheDocument()
 
-    fireEvent.click(screen.getByRole('button', { name: /read it again/i }))
+    fireEvent.click(screen.getByRole('button', { name: /try a different path/i }))
     expect(screen.getByText(/brass lantern swings/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /slip into the glittering cave/i })).toBeVisible()
   })
 
-  it('has choices for every non-ending node and an ending title for every ending', () => {
-    // Guards the demo content's shape: a node with neither choices nor an
-    // ending title would render a dead end with no way forward and no outro.
-    for (const node of Object.values(DEMO_STORY)) {
-      if (node.choices) {
-        expect(node.choices.length).toBeGreaterThan(0)
+  // Structural guards on the story data itself. The DemoNode union already
+  // makes a dead end (no choices, no ending) a type error; these pin the
+  // graph properties the type cannot express.
+  it('keeps every node reachable and every ending exactly two choices from the start', () => {
+    const reachable = new Set<DemoNodeId>([DEMO_START])
+    let frontier: DemoNodeId[] = [DEMO_START]
+    let depth = 0
+    const endingDepths: number[] = []
+    while (frontier.length > 0) {
+      const next: DemoNodeId[] = []
+      for (const id of frontier) {
+        const node = DEMO_STORY[id]
+        if (node.endingTitle !== undefined) {
+          endingDepths.push(depth)
+          continue
+        }
         for (const choice of node.choices) {
           expect(DEMO_STORY[choice.to]).toBeDefined()
+          if (!reachable.has(choice.to)) {
+            reachable.add(choice.to)
+            next.push(choice.to)
+          }
         }
-      } else {
-        expect(node.endingTitle).toBeTruthy()
       }
+      frontier = next
+      depth += 1
     }
+    // Every authored node is reachable (no orphans)...
+    expect(reachable.size).toBe(Object.keys(DEMO_STORY).length)
+    // ...every ending sits exactly two hops in (the docstring's promise)...
+    expect(endingDepths).toHaveLength(DEMO_ENDING_COUNT)
+    for (const endingDepth of endingDepths) {
+      expect(endingDepth).toBe(2)
+    }
+    // ...and the derived ending count matches the graph.
+    const endings = Object.values(DEMO_STORY).filter((n) => n.endingTitle !== undefined)
+    expect(DEMO_ENDING_COUNT).toBe(endings.length)
   })
 })

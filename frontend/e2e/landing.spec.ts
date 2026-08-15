@@ -48,10 +48,12 @@ test('landing kid door routes through guardian login when the device is not auth
   await expect(kidsDoor).toHaveAttribute('href', '/guardian/login?intent=authorize-device')
 })
 
-// P-6e, now promoted from an easily-missed text link to the hero's primary
-// CTA: this proves the funnel's main action reaches the real guardian login
-// (where "Continue with Google/Apple" is the actual self-signup mechanism),
-// not just that the href string looks right.
+// P-6e, now promoted from an easily-missed text link to the funnel's one
+// repeated primary CTA: this proves the hero instance reaches the real
+// guardian login (where "Continue with Google/Apple" is the actual
+// self-signup mechanism), not just that the href string looks right. Scoped
+// to the hero because the same label recurs (topbar, post-safety, final
+// band) by design: one action, one name.
 test('a new visitor follows the hero "Get started free" CTA straight to guardian sign-in', async ({
   page,
 }) => {
@@ -60,7 +62,7 @@ test('a new visitor follows the hero "Get started free" CTA straight to guardian
   await expect(
     page.getByRole('heading', { name: 'They pick the path. You approve every page.' })
   ).toBeVisible()
-  await page.getByRole('link', { name: /get started free/i }).click()
+  await page.locator('.landing-hero').getByRole('link', { name: 'Get started free' }).click()
 
   await expect(page).toHaveURL('/guardian/login')
   await expect(page.getByRole('heading', { name: 'Guardian sign-in' })).toBeVisible()
@@ -79,14 +81,16 @@ test('the pricing section is subscription-ready but sells nothing today', async 
   )
 
   // The unpriced Family tier must carry no actionable control (pricing.ts
-  // #CRITICAL): a status chip and an invitation line only.
+  // #CRITICAL): a single status chip and an invitation line only.
   const family = page.getByRole('article', { name: 'Family' })
-  await expect(family.getByText('Coming soon').first()).toBeVisible()
+  await expect(family.getByText('Coming soon')).toBeVisible()
   await expect(family.getByRole('link')).toHaveCount(0)
   await expect(family.getByRole('button')).toHaveCount(0)
 })
 
-test('the sample adventure plays through to an ending and restarts', async ({ page }) => {
+test('the sample adventure plays through to an ending, counts it, and restarts', async ({
+  page,
+}) => {
   await page.goto('/')
 
   await expect(page.getByText(/brass lantern swings/i)).toBeVisible()
@@ -94,13 +98,17 @@ test('the sample adventure plays through to an ending and restarts', async ({ pa
   await page.getByRole('button', { name: /peek behind the stone/i }).click()
 
   await expect(page.getByText(/you found 1 of 4 endings/i)).toBeVisible()
-  await expect(page.getByRole('link', { name: /make their next story/i })).toHaveAttribute(
-    'href',
-    '/guardian/login'
-  )
+  await expect(
+    page.locator('.demo-adventure').getByRole('link', { name: 'Get started free' })
+  ).toHaveAttribute('href', '/guardian/login')
 
-  await page.getByRole('button', { name: /read it again/i }).click()
+  // Replay reaches a second ending and the counter advances (the invitation
+  // to replay must not show a stale count).
+  await page.getByRole('button', { name: /try a different path/i }).click()
   await expect(page.getByText(/brass lantern swings/i)).toBeVisible()
+  await page.getByRole('button', { name: /climb the mossy stairs/i }).click()
+  await page.getByRole('button', { name: /race the boat along the bank/i }).click()
+  await expect(page.getByText(/you found 2 of 4 endings/i)).toBeVisible()
 })
 
 test('topbar anchors jump to their funnel sections', async ({ page }) => {

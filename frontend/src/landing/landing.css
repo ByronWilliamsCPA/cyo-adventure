@@ -4,8 +4,16 @@
   Storybook-editorial direction extending the design-system tokens: parchment
   grounds, ink type, amber as the single interactive accent, forest reserved
   for the one deliberate pattern-break (the final CTA band). Every color is a
-  token; the only literals are the cover-scrim rgb() washes, which behave as
-  picture elements the same way tokens.css treats the --cover-* gradients.
+  token, with three deliberate literals that behave as picture elements the
+  same way tokens.css treats the --cover-* gradients: the cover scrim wash,
+  the cover-title cream (#f8f3e8, which must stay light in BOTH palettes and
+  so cannot be --color-parchment, whose dark value is near-black), and the
+  door icons' white glyphs on their solid fills (pre-existing).
+
+  Token fallbacks (var(--x, #hex)) are deliberately omitted, unlike older
+  sheets: tokens.css is imported unconditionally by src/index.css, and a
+  light-palette fallback would silently paint wrong colors in dark mode if it
+  ever fired, which is worse than inheriting.
 
   Contrast: every text/background pairing used here was computed with the
   frontend-design skill's wcag-contrast.py in BOTH palettes; ratios are cited
@@ -21,6 +29,16 @@
   }
 }
 
+/* The sticky topbar must never bury what the browser scrolls into view:
+   scroll-PADDING on the scroller (not scroll-margin on a few anchor ids)
+   covers anchor jumps, the skip link, keyboard tabbing that scrolls the
+   next focused control to the viewport top (WCAG 2.4.11 Focus Not
+   Obscured, which no axe rule detects), and the demo's programmatic
+   passage focus, all in one declaration. */
+html:has(.landing) {
+  scroll-padding-top: 5rem;
+}
+
 .landing {
   background: var(--color-parchment);
   color: var(--color-ink);
@@ -34,13 +52,6 @@
    ring the entire document and mean nothing. */
 #landing-main:focus {
   outline: none;
-}
-
-/* Anchored sections stop below the sticky topbar instead of under it. */
-#how-it-works,
-#safety,
-#pricing {
-  scroll-margin-top: 5rem;
 }
 
 /* ── Topbar ─────────────────────────────────────────────────────────── */
@@ -92,7 +103,6 @@
    use. Shared by every focusable thing on this page. */
 .landing__topnav-link:focus-visible,
 .landing__signin:focus-visible,
-.landing__wordmark:focus-visible,
 .landing-faq__question:focus-visible,
 .landing__footer-link:focus-visible {
   outline: 2px solid var(--color-amber-deep);
@@ -100,6 +110,12 @@
   border-radius: var(--radius-sm);
 }
 
+/* margin-left: auto is unconditional. The topnav's own margin-inline: auto
+   absorbs the free space while the nav is rendered, and when a breakpoint
+   removes the nav this margin is what keeps the actions pinned to the right
+   edge (the first version zeroed it via a sibling selector, which kept
+   matching the display:none nav and collapsed the whole bar to the left on
+   phones). */
 .landing__topbar-actions {
   display: inline-flex;
   align-items: center;
@@ -107,31 +123,38 @@
   margin-left: auto;
 }
 
-.landing__topnav + .landing__topbar-actions {
-  margin-left: 0;
-}
-
 .landing__signin {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   color: var(--color-ink-secondary);
   font-weight: var(--weight-semibold);
   text-decoration: underline;
   text-underline-offset: 0.2em;
-  padding: var(--space-3) var(--space-2);
+  padding: var(--space-2) var(--space-2);
 }
 
 .landing__signin:hover {
   color: var(--color-ink);
 }
 
-@media (max-width: 45rem) {
-  /* Anchors are a convenience, not the only path (the page scrolls); the
-     doors, sign-in, and theme toggle keep the small-screen bar honest. */
+@media (max-width: 58rem) {
+  /* Anchors are a convenience, not the only path (the page scrolls); below
+     this width the bar keeps identity + primary action + sign-in + theme. */
   .landing__topnav {
     display: none;
   }
+}
 
-  .landing__wordmark {
-    font-size: var(--text-base);
+@media (max-width: 45rem) {
+  /* Phone bar: icon brand + the primary CTA + theme toggle. The wordmark
+     text and Sign in yield to keep the sticky CTA (finding: the funnel's
+     action must survive the whole scroll); a returning guardian still has
+     the Grown-ups door one screen down, and the CTA's login destination is
+     itself the sign-in page. */
+  .landing__wordmark-name,
+  .landing__signin {
+    display: none;
   }
 }
 
@@ -166,6 +189,14 @@
   padding: var(--space-3) var(--space-8);
 }
 
+/* Topbar-sized: still a 44px target, tighter padding and type so the sticky
+   bar carries the primary action without dominating it. */
+.landing-cta--compact {
+  min-height: 44px;
+  font-size: var(--text-sm);
+  padding: var(--space-1) var(--space-4);
+}
+
 /* Primary: amber-deep fill with an ink label, 4.86:1 light / 4.57:1 dark
    (the Button.css precedent). Hover keeps the fill (darkening it would sink
    the label below AA) and signals with the darker border + raised shadow. */
@@ -182,10 +213,10 @@
   transform: translateY(-2px);
 }
 
-/* Ghost: amber-text label (5.66:1 on light amber-subtle, 8.51:1 dark) inside
-   an amber-deep border (3.12:1 light / 3.04:1 dark non-text on amber-subtle).
-   Hover raises the card wash (label still 5.98:1 light / 6.87:1 dark on the
-   composite) rather than tinting amber-on-amber. */
+/* Ghost: sits in the hero, whose background is plain parchment: amber-text
+   label 5.62:1 light / 9.17:1 dark, amber-deep border 3.09:1 light / 3.27:1
+   dark (non-text). Hover raises the translucent card wash; on that composite
+   the label holds 5.96:1 light / 7.53:1 dark. */
 .landing-cta--ghost {
   background-color: transparent;
   color: var(--color-amber-text);
@@ -219,21 +250,15 @@
   padding: var(--space-12) var(--space-6) var(--space-10);
 }
 
-.landing-hero__eyebrow {
-  margin: 0 0 var(--space-3);
-  font-size: var(--text-sm);
-  font-weight: var(--weight-semibold);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-amber-text);
-}
-
 .landing-hero__heading {
   margin: 0;
   font-family: var(--font-serif);
   font-size: clamp(2.1rem, 5.5vw, 3.4rem);
   line-height: 1.12;
   letter-spacing: -0.01em;
+  /* Keeps the two-clause parallelism intact instead of orphaning "You" at
+     the end of line one on desktop widths. Progressive enhancement. */
+  text-wrap: balance;
 }
 
 .landing-hero__lede {
@@ -348,19 +373,23 @@
 }
 
 /* Phone widths (the 320px overflow gate): smaller covers so the fanned shelf
-   fits inside the hero padding without leaning on the page-level clip. */
+   fits inside the hero padding without leaning on the page-level clip. The
+   spine label and the mascot drop out entirely: at ~100px cover width the
+   title wraps to three lines and swallows the cover, and the free-floating
+   fox reads as clip art rather than composition (Pip still appears in the
+   final band). */
 @media (max-width: 30rem) {
   .landing-cover {
     width: 6.25rem;
   }
 
-  .landing-hero__art {
-    min-height: 11.5rem;
+  .landing-cover__title,
+  .landing-hero__mascot {
+    display: none;
   }
 
-  .landing-hero__mascot {
-    width: 60px;
-    height: 60px;
+  .landing-hero__art {
+    min-height: 10.5rem;
   }
 }
 
@@ -381,10 +410,6 @@
 
   .landing-hero__copy > *:nth-child(4) {
     animation-delay: 150ms;
-  }
-
-  .landing-hero__copy > *:nth-child(5) {
-    animation-delay: 200ms;
   }
 
   .landing-cover,
@@ -441,13 +466,17 @@
   margin-inline: auto;
 }
 
+/* Resting border is amber-deep, not parchment-deeper: parchment-deeper on
+   parchment computes 1.32:1 in light mode, which left the two most
+   contractually important controls on the page looking like beige panels.
+   amber-deep holds 3.09:1 light / 3.27:1 dark; hover deepens to ink. */
 .landing-door {
   display: flex;
   align-items: center;
   gap: var(--space-4);
   text-align: left;
   padding: var(--space-5) var(--space-5);
-  border: 2px solid var(--color-parchment-deeper);
+  border: 2px solid var(--color-amber-deep);
   border-radius: var(--radius-xl);
   background: var(--color-parchment-dark);
   text-decoration: none;
@@ -460,7 +489,7 @@
 
 .landing-door:hover,
 .landing-door:focus-visible {
-  border-color: var(--color-amber);
+  border-color: var(--color-ink);
   transform: translateY(-3px);
   box-shadow: var(--shadow-md);
 }
@@ -520,6 +549,20 @@
   padding: var(--space-12) var(--space-6);
 }
 
+/* Wayfinding eyebrow above an anchored section's h2, echoing the topnav
+   label ("How it works", "Safety", "Pricing") so an anchor click lands on a
+   heading that confirms the destination while the h2 keeps its own voice.
+   amber-text: 5.62:1 light / 9.17:1 dark on parchment. */
+.landing-section__eyebrow {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--color-amber-text);
+}
+
 .landing-section__heading {
   margin: 0;
   font-family: var(--font-serif);
@@ -543,6 +586,23 @@
   font-size: var(--text-sm);
 }
 
+/* Mid-page conversion point (end of the safety section): the one primary
+   action between the hero and pricing, so a convinced reader never scrolls
+   screenfuls hunting for the button. */
+.landing-section__cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-10);
+}
+
+.landing-section__cta-note {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-ink-secondary);
+}
+
 /* ── Demo ───────────────────────────────────────────────────────────── */
 
 .landing-section--demo {
@@ -562,6 +622,11 @@
   box-shadow: var(--shadow-sm);
 }
 
+/* :focus, not :focus-visible, deliberately: DemoAdventure moves focus here
+   programmatically after EVERY choice (mouse included), and :focus-visible
+   does not reliably match script-driven focus that follows a click. The
+   keyboard/screen-reader user must see where they landed; the cost is a
+   transient ring after mouse choices, accepted as the lesser harm. */
 .demo-adventure__passage:focus {
   outline: 3px solid var(--color-amber-deep);
   outline-offset: 3px;
@@ -709,18 +774,22 @@
   margin-inline: auto;
 }
 
-/* 18rem minimum, not 16: with six cards, 16rem lets a 72rem row fit four
-   across and strands two on a second row; 18rem caps the row at three, so
-   the section reads as a balanced 3x2 grid. */
+/* Four trust cards: 15rem minimum lets a 72rem row seat all four across,
+   with a 2x2 fall-back at tablet widths and a single column on phones. */
 .landing-trust {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
   gap: var(--space-5);
   margin: var(--space-10) auto 0;
   padding: 0;
   list-style: none;
 }
 
+/* Card text sits on the translucent raised wash over the section's
+   amber-subtle gradient; axe reports gradient-backed text as "incomplete"
+   rather than pass/fail, so the composite is computed here instead: ink on
+   raised-over-subtle 16.01:1 light / 11.19:1 dark, ink-secondary 9.37:1
+   light / 7.29:1 dark. */
 .landing-trust__card {
   padding: var(--space-6);
   border: 1px solid var(--color-border-soft);
@@ -747,36 +816,6 @@
 }
 
 .landing-trust__body {
-  margin: var(--space-2) 0 0;
-  color: var(--color-ink-secondary);
-  line-height: var(--leading-normal);
-}
-
-/* ── Kid perks ──────────────────────────────────────────────────────── */
-
-.landing-perks {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
-  gap: var(--space-5);
-  margin: var(--space-10) 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.landing-perks__card {
-  padding: var(--space-6);
-  border: 2px solid var(--color-parchment-deeper);
-  border-radius: var(--radius-xl);
-  background: var(--color-parchment-dark);
-}
-
-.landing-perks__title {
-  margin: 0;
-  font-family: var(--font-serif);
-  font-size: var(--text-lg);
-}
-
-.landing-perks__body {
   margin: var(--space-2) 0 0;
   color: var(--color-ink-secondary);
   line-height: var(--leading-normal);
@@ -852,11 +891,6 @@
 
 .landing-tier__price-amount {
   font-size: var(--text-3xl);
-  font-weight: var(--weight-bold);
-}
-
-.landing-tier__price-soon {
-  font-size: var(--text-2xl);
   font-weight: var(--weight-bold);
 }
 
@@ -992,10 +1026,18 @@
 /* ── Final CTA band: the one deliberate palette break (forest). ─────── */
 
 .landing-final {
-  max-width: none;
   padding: var(--space-16) var(--space-6);
   text-align: center;
   background: var(--color-forest-light);
+}
+
+/* The shared amber-deep focus ring computes only 2.67:1 light / 2.54:1 dark
+   against this band's forest-light, under the 3:1 non-text minimum (every
+   other ring on the page sits on parchment, where it passes); ink holds
+   12.97:1 light / 11.59:1 dark here. axe has no focus-indicator-contrast
+   rule, so this override is load-bearing, not belt-and-suspenders. */
+.landing-final .landing-cta:focus-visible {
+  outline-color: var(--color-ink);
 }
 
 /* ink on forest-light: 12.97:1 light / 11.59:1 dark. */
@@ -1042,8 +1084,13 @@
 
 /* ink-secondary, not ink-muted: same AA reasoning as .landing-door__note,
    and these three links are the page's only path to the KWS-registered
-   privacy/support URLs. 8.81:1 light / 9.72:1 dark on parchment. */
+   privacy/support URLs. 8.81:1 light / 9.72:1 dark on parchment. 44px
+   targets: a parent taps Privacy/Support from a phone mid-KWS-verification,
+   which is the worst place for a 32px link. */
 .landing__footer-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   color: var(--color-ink-secondary);
   font-size: var(--text-sm);
   text-decoration: underline;

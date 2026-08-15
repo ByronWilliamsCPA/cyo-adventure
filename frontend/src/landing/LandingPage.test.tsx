@@ -23,6 +23,15 @@ function renderLanding() {
   )
 }
 
+function seedValidGrant() {
+  setDeviceGrant({
+    token: 'tok-1',
+    expiresAt: '2099-01-01T00:00:00Z',
+    familyId: 'fam-1',
+    id: 'grant-1',
+  })
+}
+
 beforeEach(() => {
   globalThis.indexedDB = new IDBFactory()
   _resetDbHandle()
@@ -50,14 +59,26 @@ describe('LandingPage', () => {
     expect(document.title).toBe('CYO Adventure')
   })
 
-  // The funnel's primary action: the hero CTA goes straight to guardian
-  // login, whose "Continue with Google/Apple" IS the self-signup path (P-6e:
-  // there is no separate signup route).
-  it('sends the hero "Get started free" CTA straight to guardian login', () => {
+  // The funnel's primary action appears at every stage (topbar, hero, after
+  // the safety section, final band) under ONE consistent label, and every
+  // instance goes to guardian login, whose "Continue with Google/Apple" IS
+  // the self-signup path (P-6e: there is no separate signup route).
+  it('points every "Get started free" CTA at guardian login', () => {
     renderLanding()
-    const cta = screen.getByRole('link', { name: /get started free/i })
-    expect(cta).toHaveAttribute('href', '/guardian/login')
-    expect(screen.getByText(/free while in early access/i)).toBeInTheDocument()
+    const ctas = screen.getAllByRole('link', { name: 'Get started free' })
+    expect(ctas).toHaveLength(4)
+    for (const cta of ctas) {
+      expect(cta).toHaveAttribute('href', '/guardian/login')
+    }
+  })
+
+  // The deployment approves each self-signup by hand (api/onboarding.py's
+  // awaiting-approval default), so the page must set that expectation
+  // instead of promising instant access.
+  it('sets the hand-approval expectation up front', () => {
+    renderLanding()
+    expect(screen.getAllByText(/approve each new family by hand/i).length).toBeGreaterThan(0)
+    expect(screen.getByText(/free while in early access\. no ads, ever\./i)).toBeInTheDocument()
   })
 
   it('offers a returning adult a topbar sign-in into the guardian console', () => {
@@ -65,13 +86,20 @@ describe('LandingPage', () => {
     expect(screen.getByRole('link', { name: 'Sign in' })).toHaveAttribute('href', '/guardian')
   })
 
-  it('renders the funnel sections in order: demo, how it works, safety, pricing, FAQ', () => {
+  it('sends the hero secondary CTA to the sample-story demo', () => {
+    renderLanding()
+    expect(screen.getByRole('link', { name: 'Try a sample story' })).toHaveAttribute(
+      'href',
+      '#demo'
+    )
+  })
+
+  it('renders the funnel sections: demo, how it works, safety, pricing, FAQ, final CTA', () => {
     renderLanding()
     const headings = [
       'Try a ten-second adventure',
       'How a story gets made',
       'Built so you can say yes',
-      'Made for young readers',
       'Simple family pricing',
       'Questions grown-ups ask',
       'Ready for their next favorite story?',
@@ -105,11 +133,15 @@ describe('LandingPage', () => {
       }
     })
 
-    it('routes the available free tier to guardian login', () => {
+    it('routes the available free tier to guardian login and discloses the real quota', () => {
       renderLanding()
       const explorer = screen.getByRole('article', { name: 'Explorer' })
       expect(within(explorer).getByText('Available now')).toBeInTheDocument()
       expect(within(explorer).getByText('Free')).toBeInTheDocument()
+      // The free tier states the enforced backend default
+      // (core/config.py::default_monthly_story_quota) instead of hiding a
+      // cap a family would discover on day 11.
+      expect(within(explorer).getByText('Up to 10 new story requests a month')).toBeInTheDocument()
       expect(within(explorer).getByRole('link', { name: 'Start free' })).toHaveAttribute(
         'href',
         '/guardian/login'
@@ -119,12 +151,32 @@ describe('LandingPage', () => {
     // #VERIFY (pricing.ts #CRITICAL): with no billing backend, the unpriced
     // tier must render NO actionable control at all; a purchase-looking
     // button that cannot purchase would be a dark pattern aimed at parents.
-    it('renders the coming-soon tier with no actionable control', () => {
+    it('renders the coming-soon tier with no actionable control and a single status chip', () => {
       renderLanding()
       const family = screen.getByRole('article', { name: 'Family' })
-      expect(within(family).getAllByText('Coming soon').length).toBeGreaterThan(0)
+      // Exactly one "Coming soon" (the chip): the first version repeated it
+      // in the price slot, so a scanning eye read it as the price.
+      expect(within(family).getAllByText('Coming soon')).toHaveLength(1)
       expect(within(family).queryByRole('link')).toBeNull()
       expect(within(family).queryByRole('button')).toBeNull()
+    })
+  })
+
+  describe('audience-aware section order', () => {
+    it('leads with the funnel on a device without a grant', () => {
+      renderLanding()
+      const hero = screen.getByRole('heading', { level: 1 })
+      const doors = screen.getByRole('navigation', { name: 'Pick who you are' })
+      // DOCUMENT_POSITION_FOLLOWING: the doors come after the hero heading.
+      expect(hero.compareDocumentPosition(doors) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    })
+
+    it('leads with the doors on a family device (valid grant at mount)', () => {
+      seedValidGrant()
+      renderLanding()
+      const hero = screen.getByRole('heading', { level: 1 })
+      const doors = screen.getByRole('navigation', { name: 'Pick who you are' })
+      expect(doors.compareDocumentPosition(hero) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
     })
   })
 
@@ -136,12 +188,7 @@ describe('LandingPage', () => {
     })
 
     it('routes the Kids door straight to the profile picker when a valid device grant exists (sync check)', () => {
-      setDeviceGrant({
-        token: 'tok-1',
-        expiresAt: '2099-01-01T00:00:00Z',
-        familyId: 'fam-1',
-        id: 'grant-1',
-      })
+      seedValidGrant()
       renderLanding()
       const kidDoor = screen.getByRole('link', { name: /kids/i })
       expect(kidDoor).toHaveAttribute('href', '/kids')
@@ -160,12 +207,7 @@ describe('LandingPage', () => {
     })
 
     it('upgrades the Kids door to the profile picker after the async IndexedDB-mirror hydrate finds a valid grant', async () => {
-      setDeviceGrant({
-        token: 'tok-1',
-        expiresAt: '2099-01-01T00:00:00Z',
-        familyId: 'fam-1',
-        id: 'grant-1',
-      })
+      seedValidGrant()
       // Simulate a localStorage clear that leaves the IndexedDB mirror intact
       // (the mirror write is async; give it a tick before clearing).
       await new Promise((resolve) => setTimeout(resolve, 0))

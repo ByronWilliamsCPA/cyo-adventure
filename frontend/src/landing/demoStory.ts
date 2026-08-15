@@ -10,8 +10,10 @@
  * ChoiceButton primitive the real reader uses.
  *
  * Kept to two hops (start -> scene -> ending) so a curious parent, or a kid
- * peeking over their shoulder, gets the point in seconds. All endings are
- * positive-valence on purpose: this is the first taste of the product's tone.
+ * peeking over their shoulder, gets the point in seconds; the DemoAdventure
+ * test suite asserts the two-hop shape and that every ending stays reachable.
+ * All endings are positive-valence on purpose: this is the first taste of the
+ * product's tone.
  */
 
 export type DemoNodeId =
@@ -22,19 +24,18 @@ export interface DemoChoice {
   to: DemoNodeId
 }
 
-export interface DemoNode {
-  id: DemoNodeId
-  text: string
-  /** Present on branching nodes; absent on endings. */
-  choices?: DemoChoice[]
-  /** Present on endings; absent on branching nodes. */
-  endingTitle?: string
-}
+/**
+ * Discriminated: a node is either a branch (at least one choice, no ending
+ * title) or an ending (a title, no choices). The union makes a dead end, a
+ * node with neither, or a confused node with both a type error rather than a
+ * runtime state DemoAdventure has to defend against.
+ */
+export type DemoNode = { id: DemoNodeId; text: string } & (
+  | { choices: [DemoChoice, ...DemoChoice[]]; endingTitle?: undefined }
+  | { choices?: undefined; endingTitle: string }
+)
 
 export const DEMO_START: DemoNodeId = 'start'
-
-/** Number of distinct endings, shown in the "you found 1 of N" line. */
-export const DEMO_ENDING_COUNT = 4
 
 export const DEMO_STORY: Record<DemoNodeId, DemoNode> = {
   start: {
@@ -94,6 +95,15 @@ export const DEMO_STORY: Record<DemoNodeId, DemoNode> = {
     endingTitle: 'Won by a Whisker',
     text:
       'You win by a whisker! The boat bumps ashore at your feet and unfolds ' +
-      'into a map of tomorrow’s adventure.',
+      "into a map of tomorrow's adventure.",
   },
 }
+
+/**
+ * Number of distinct endings, shown in the "you found N of M" line. Derived
+ * from the data rather than hand-counted, so adding a fifth ending can never
+ * leave the user-visible copy claiming four.
+ */
+export const DEMO_ENDING_COUNT = Object.values(DEMO_STORY).filter(
+  (node) => node.endingTitle !== undefined
+).length

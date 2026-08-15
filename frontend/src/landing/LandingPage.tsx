@@ -17,7 +17,7 @@ import {
 import { ThemeToggle } from '../theme/ThemeToggle'
 
 import { DemoAdventure } from './DemoAdventure'
-import { PRICING_TIERS } from './pricing'
+import { formatMonthlyPrice, PRICING_TIERS } from './pricing'
 import './landing.css'
 
 /**
@@ -33,18 +33,23 @@ const AUTHORIZE_DEVICE_PATH = `${GUARDIAN_LOGIN_PATH}?${AUTHORIZE_DEVICE_INTENT_
  * Root landing page, redesigned as the product's sales funnel (2026-08):
  * one page that serves two audiences without shortchanging either.
  *
- * RETURNING readers and guardians get the same two doors as before, kept
- * above the marketing content: the device-state-aware Kids door and the
- * Grown-ups door into the guardian console. That flow is unchanged.
+ * RETURNING readers and guardians get the same two doors as before: the
+ * device-state-aware Kids door and the Grown-ups door into the guardian
+ * console. On a device that already holds a valid device grant (a family
+ * device, checked once at mount) the doors render ABOVE the hero, so a child
+ * handed the tablet sees their door on the first screenful; on an unknown
+ * device the funnel leads and the doors sit directly under the hero. The
+ * door behavior itself is unchanged either way.
  *
  * NEW adults (the funnel's target) get what the old page never gave them:
  * what the product is (hero + live demo), how it works (pipeline steps),
- * why to trust it (the safety section: mandatory grown-up approval, ADR-003;
- * verification/consent design, ADR-018; no ads or strangers, ADR-016), and
- * what it costs (subscription-ready pricing, see pricing.ts). Every CTA
- * lands on guardian login, whose "Continue with Google" IS the self-signup
- * path (P-6e); when Track 2 Phase 8 ships real subscriptions, the pricing
- * data flips without this page's structure changing.
+ * why to trust it (the safety section), and what it costs (subscription-
+ * ready pricing, see pricing.ts). Every CTA lands on guardian login, whose
+ * "Continue with Google" IS the self-signup path (P-6e). Note the funnel's
+ * honesty constraint: a fresh self-signup lands in AuthStatus
+ * 'awaiting-approval' (api/onboarding.py approves new families by hand), so
+ * the copy here and in the FAQ sets that expectation up front instead of
+ * promising instant access the deployment does not provide.
  *
  * Still static by design (no data fetching, no auth) so it imports neither
  * the guardian/Supabase chunk nor any kid data hooks: only presentational
@@ -81,6 +86,15 @@ export function LandingPage() {
     hasValidDeviceGrant() ? KID_PICKER_PATH : AUTHORIZE_DEVICE_PATH
   )
 
+  // Section ORDER is decided once, from the synchronous mount-time check
+  // only: a family device leads with the doors, an unknown one with the
+  // funnel. Deliberately NOT re-derived by the hydrate/storage upgrades
+  // below; reshuffling whole sections under a visitor mid-read would be a
+  // jarring layout shift for no benefit, and the next visit picks up the
+  // new order. The door's HREF, which must always be correct when followed,
+  // does keep upgrading live.
+  const [doorsFirst] = useState(() => hasValidDeviceGrant())
+
   useEffect(() => {
     if (kidsDoorPath === KID_PICKER_PATH) return
     let cancelled = false
@@ -110,13 +124,106 @@ export function LandingPage() {
     }
   }, [])
 
+  /* ── Funnel stage 1: attention. Value proposition + primary CTA. ── */
+  const hero = (
+    <section className="landing-hero" aria-labelledby="landing-hero-heading">
+      <div className="landing-hero__copy">
+        <h1 className="landing-hero__heading" id="landing-hero-heading">
+          They pick the path. You approve every page.
+        </h1>
+        <p className="landing-hero__lede">
+          CYO Adventure turns your child&apos;s ideas into branching storybooks, written for their
+          reading level and screened by strict safety checks.
+        </p>
+        <div className="landing-hero__actions">
+          <Link
+            className="landing-cta landing-cta--primary landing-cta--lg"
+            to={GUARDIAN_LOGIN_PATH}
+          >
+            Get started free
+          </Link>
+          <a className="landing-cta landing-cta--ghost landing-cta--lg" href="#demo">
+            Try a sample story
+          </a>
+        </div>
+        <p className="landing-hero__reassure">
+          Free while in early access. No ads, ever. We approve each new family by hand.
+        </p>
+      </div>
+      {/* Decorative sample shelf: fake spines drawn with the same
+          --cover-* gradients the real library uses, so the art direction
+          matches the product a family actually receives. Only the front
+          cover carries a title: the fanned back covers overlap (and Pip
+          stands in front), so labels there would render half-hidden.
+          Purely illustrative, so it is hidden from assistive tech. */}
+      <div className="landing-hero__art" aria-hidden="true">
+        <div className="landing-cover landing-cover--lagoon" />
+        <div className="landing-cover landing-cover--plum">
+          <span className="landing-cover__title">The Lantern Cave</span>
+        </div>
+        <div className="landing-cover landing-cover--forest" />
+        <Mascot size={92} className="landing-hero__mascot" />
+      </div>
+    </section>
+  )
+
+  /* ── Returning users: the two doors, unchanged behavior. Rendered above
+      the hero on a granted (family) device, below it otherwise; see the
+      doorsFirst note near the top. ── */
+  const doorsBand = (
+    <section className="landing-doors-band" aria-labelledby="landing-doors-heading">
+      <h2 className="landing-doors-band__heading" id="landing-doors-heading">
+        Already reading with us?
+      </h2>
+      <nav className="landing__doors" aria-label="Pick who you are">
+        <Link className="landing-door landing-door--kids" to={kidsDoorPath}>
+          <span className="landing-door__icon" aria-hidden="true">
+            <svg width="30" height="30" viewBox="0 0 24 24" focusable="false">
+              <path
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M4 5 C7 3 10 3 12 5 C14 3 17 3 20 5 V19 C17 17 14 17 12 19 C10 17 7 17 4 19 Z M12 5 V19"
+              />
+            </svg>
+          </span>
+          <span className="landing-door__text">
+            <span className="landing-door__heading">Kids</span>
+            <span className="landing-door__sub">Start reading</span>
+          </span>
+        </Link>
+        <Link className="landing-door landing-door--guardian" to={GUARDIAN_CONSOLE_PATH}>
+          <span className="landing-door__icon" aria-hidden="true">
+            <svg width="30" height="30" viewBox="0 0 24 24" focusable="false">
+              <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="2" />
+              <path fill="currentColor" d="M12 12 L15.5 8.5 L13 12 Z M12 12 L8.5 15.5 L11 12 Z" />
+            </svg>
+          </span>
+          <span className="landing-door__text">
+            <span className="landing-door__heading">Grown-ups</span>
+            <span className="landing-door__sub">Guardian console</span>
+            <span className="landing-door__note">Admins sign in here too</span>
+          </span>
+        </Link>
+      </nav>
+    </section>
+  )
+
   return (
     <div className="landing">
       <SkipLink targetId="landing-main" />
 
       {/* Slim persistent header: wordmark for identity, section anchors for
-          the funnel's long-page navigation, and a quiet sign-in path for a
-          returning guardian who scrolled past the doors. */}
+          the funnel's long-page navigation, the primary CTA (sticky, so the
+          action stays reachable through the whole scroll), and a quiet
+          sign-in path for a returning guardian. The anchors are plain
+          fragment hrefs on purpose: same-document jumps that never involve
+          the data router. The router does not observe hash changes, so a
+          bookmarked "/#pricing" cold-loads at the top of the page (the lazy
+          chunk mounts after the fragment resolves); acceptable for
+          convenience anchors, documented so nobody builds on location.hash. */}
       <header className="landing__topbar">
         <span className="landing__wordmark">
           <Mascot size={30} />
@@ -137,103 +244,37 @@ export function LandingPage() {
           <Link className="landing__signin" to={GUARDIAN_CONSOLE_PATH}>
             Sign in
           </Link>
-          <ThemeToggle className="landing__theme-toggle" />
+          <Link
+            className="landing-cta landing-cta--primary landing-cta--compact"
+            to={GUARDIAN_LOGIN_PATH}
+          >
+            Get started free
+          </Link>
+          <ThemeToggle />
         </span>
       </header>
 
       <main id="landing-main" tabIndex={-1}>
-        {/* ── Funnel stage 1: attention. Value proposition + primary CTA. ── */}
-        <section className="landing-hero" aria-labelledby="landing-hero-heading">
-          <div className="landing-hero__copy">
-            <p className="landing-hero__eyebrow">Choose-your-own adventures for young readers</p>
-            <h1 className="landing-hero__heading" id="landing-hero-heading">
-              They pick the path. You approve every page.
-            </h1>
-            <p className="landing-hero__lede">
-              CYO Adventure turns your child&apos;s ideas into branching storybooks written for
-              their reading level, screened by strict safety checks, and published only when you say
-              yes.
-            </p>
-            <div className="landing-hero__actions">
-              <Link
-                className="landing-cta landing-cta--primary landing-cta--lg"
-                to={GUARDIAN_LOGIN_PATH}
-              >
-                Get started free
-              </Link>
-              <a className="landing-cta landing-cta--ghost landing-cta--lg" href="#how-it-works">
-                See how it works
-              </a>
-            </div>
-            <p className="landing-hero__reassure">
-              Free while in early access. No ads, no in-app chat, ever.
-            </p>
-          </div>
-          {/* Decorative sample shelf: fake spines drawn with the same
-              --cover-* gradients the real library uses, so the art direction
-              matches the product a family actually receives. Only the front
-              cover carries a title: the fanned back covers overlap (and Pip
-              stands in front), so labels there would render half-hidden.
-              Purely illustrative, so it is hidden from assistive tech. */}
-          <div className="landing-hero__art" aria-hidden="true">
-            <div className="landing-cover landing-cover--lagoon" />
-            <div className="landing-cover landing-cover--plum">
-              <span className="landing-cover__title">The Lantern Cave</span>
-            </div>
-            <div className="landing-cover landing-cover--forest" />
-            <Mascot size={92} className="landing-hero__mascot" />
-          </div>
-        </section>
-
-        {/* ── Returning users: the two doors, unchanged behavior, kept high
-            on the page so a family that already reads here never scrolls
-            through marketing to get in. ── */}
-        <section className="landing-doors-band" aria-labelledby="landing-doors-heading">
-          <h2 className="landing-doors-band__heading" id="landing-doors-heading">
-            Already reading with us?
-          </h2>
-          <nav className="landing__doors" aria-label="Pick who you are">
-            <Link className="landing-door landing-door--kids" to={kidsDoorPath}>
-              <span className="landing-door__icon" aria-hidden="true">
-                <svg width="30" height="30" viewBox="0 0 24 24" focusable="false">
-                  <path
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M4 5 C7 3 10 3 12 5 C14 3 17 3 20 5 V19 C17 17 14 17 12 19 C10 17 7 17 4 19 Z M12 5 V19"
-                  />
-                </svg>
-              </span>
-              <span className="landing-door__text">
-                <span className="landing-door__heading">Kids</span>
-                <span className="landing-door__sub">Start reading</span>
-              </span>
-            </Link>
-            <Link className="landing-door landing-door--guardian" to={GUARDIAN_CONSOLE_PATH}>
-              <span className="landing-door__icon" aria-hidden="true">
-                <svg width="30" height="30" viewBox="0 0 24 24" focusable="false">
-                  <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="2" />
-                  <path
-                    fill="currentColor"
-                    d="M12 12 L15.5 8.5 L13 12 Z M12 12 L8.5 15.5 L11 12 Z"
-                  />
-                </svg>
-              </span>
-              <span className="landing-door__text">
-                <span className="landing-door__heading">Grown-ups</span>
-                <span className="landing-door__sub">Guardian console</span>
-                <span className="landing-door__note">Admins sign in here too</span>
-              </span>
-            </Link>
-          </nav>
-        </section>
+        {doorsFirst ? (
+          <>
+            {doorsBand}
+            {hero}
+          </>
+        ) : (
+          <>
+            {hero}
+            {doorsBand}
+          </>
+        )}
 
         {/* ── Funnel stage 2: interest. Show, don't tell: a working sample
-            of the core mechanic, built from the reader's own primitive. ── */}
+            of the core mechanic, built from the reader's own primitive. The
+            hero's secondary CTA targets this section: the demo converts
+            better than any explainer, so the "not convinced yet" path lands
+            here first. ── */}
         <section
           className="landing-section landing-section--demo"
+          id="demo"
           aria-labelledby="landing-demo-heading"
         >
           <h2 className="landing-section__heading" id="landing-demo-heading">
@@ -248,12 +289,18 @@ export function LandingPage() {
 
         {/* ── Funnel stage 2, continued: how a story is made. The pipeline
             (request -> generation -> validation gate -> human approval) is
-            the product; each step below maps to a real subsystem. ── */}
+            the product; each step below maps to a real subsystem. Section
+            eyebrows echo the topnav labels ("How it works", "Safety",
+            "Pricing") so an anchor click lands on a heading that confirms
+            where you are, while the h2s keep their own voice. ── */}
         <section
           className="landing-section"
           id="how-it-works"
           aria-labelledby="landing-how-heading"
         >
+          <p className="landing-section__eyebrow" aria-hidden="true">
+            How it works
+          </p>
           <h2 className="landing-section__heading" id="landing-how-heading">
             How a story gets made
           </h2>
@@ -305,12 +352,23 @@ export function LandingPage() {
         </section>
 
         {/* ── Funnel stage 3: trust. For a kids' product this section IS the
-            conversion driver; every card states a real, shipped guarantee. ── */}
+            conversion driver, so every card must stay inside what the
+            product enforces today: parent verification/consent (ADR-018) is
+            built but flag-off in production and verified only against KWS's
+            Test environment, so that card speaks in design language
+            ("by design", "built into sign-up") rather than claiming a live
+            verification control. Reading-level tuning and offline reading
+            are real but are features, not trust claims; they live in the
+            how-it-works steps and pricing list instead of diluting this
+            section. ── */}
         <section
           className="landing-section landing-section--safety"
           id="safety"
           aria-labelledby="landing-safety-heading"
         >
+          <p className="landing-section__eyebrow" aria-hidden="true">
+            Safety
+          </p>
           <h2 className="landing-section__heading" id="landing-safety-heading">
             Built so you can say yes
           </h2>
@@ -332,10 +390,10 @@ export function LandingPage() {
               <span className="landing-trust__icon" aria-hidden="true">
                 <ShieldIcon />
               </span>
-              <h3 className="landing-trust__title">Verified grown-ups only</h3>
+              <h3 className="landing-trust__title">Grown-ups only, by design</h3>
               <p className="landing-trust__body">
-                Parent verification and consent flows are built in, designed around
-                children&apos;s-privacy rules like COPPA. Kids never get accounts of their own.
+                Kids never get accounts of their own. Adult verification and consent are built into
+                sign-up, designed around children&apos;s-privacy rules like COPPA.
               </p>
             </li>
             <li className="landing-trust__card">
@@ -350,26 +408,6 @@ export function LandingPage() {
             </li>
             <li className="landing-trust__card">
               <span className="landing-trust__icon" aria-hidden="true">
-                <RulerIcon />
-              </span>
-              <h3 className="landing-trust__title">Tuned to their reading level</h3>
-              <p className="landing-trust__body">
-                Age bands from 4 to 13 shape vocabulary, sentence length, and themes, and you set a
-                level cap per reader.
-              </p>
-            </li>
-            <li className="landing-trust__card">
-              <span className="landing-trust__icon" aria-hidden="true">
-                <CloudOffIcon />
-              </span>
-              <h3 className="landing-trust__title">Reads offline</h3>
-              <p className="landing-trust__body">
-                Download books to a tablet for road trips and quiet time. Progress syncs when
-                you&apos;re back online.
-              </p>
-            </li>
-            <li className="landing-trust__card">
-              <span className="landing-trust__icon" aria-hidden="true">
                 <KeyIcon />
               </span>
               <h3 className="landing-trust__title">You hold the keys</h3>
@@ -379,45 +417,26 @@ export function LandingPage() {
               </p>
             </li>
           </ul>
+          {/* The reader who just finished the trust section is the page's
+              most-convinced visitor; give them the action here instead of
+              two screens later. */}
+          <div className="landing-section__cta">
+            <Link
+              className="landing-cta landing-cta--primary landing-cta--lg"
+              to={GUARDIAN_LOGIN_PATH}
+            >
+              Get started free
+            </Link>
+            <p className="landing-section__cta-note">Free while in early access.</p>
+          </div>
         </section>
 
-        {/* ── Funnel stage 4a: desire (the kid's side of the pitch). ── */}
-        <section className="landing-section" aria-labelledby="landing-kids-heading">
-          <h2 className="landing-section__heading" id="landing-kids-heading">
-            Made for young readers
-          </h2>
-          <ul className="landing-perks">
-            <li className="landing-perks__card">
-              <h3 className="landing-perks__title">Stories that fit them</h3>
-              <p className="landing-perks__body">
-                Heroes, sidekicks, and worlds shaped by what your kid loves, and favorite characters
-                can come back for sequels.
-              </p>
-            </li>
-            <li className="landing-perks__card">
-              <h3 className="landing-perks__title">Endings to collect</h3>
-              <p className="landing-perks__body">
-                Every book hides several endings. Finding them all earns badges worth bragging about
-                at dinner.
-              </p>
-            </li>
-            <li className="landing-perks__card">
-              <h3 className="landing-perks__title">A shelf of their own</h3>
-              <p className="landing-perks__body">
-                Each reader gets their own profile, their own books, and a big friendly reading view
-                with no clutter.
-              </p>
-            </li>
-          </ul>
-        </section>
-
-        {/* ── Funnel stage 4b: pricing. Subscription-ready but honest about
+        {/* ── Funnel stage 4: pricing. Subscription-ready but honest about
             today: see pricing.ts for the Phase 8 wiring contract. ── */}
-        <section
-          className="landing-section landing-section--pricing"
-          id="pricing"
-          aria-labelledby="landing-pricing-heading"
-        >
+        <section className="landing-section" id="pricing" aria-labelledby="landing-pricing-heading">
+          <p className="landing-section__eyebrow" aria-hidden="true">
+            Pricing
+          </p>
           <h2 className="landing-section__heading" id="landing-pricing-heading">
             Simple family pricing
           </h2>
@@ -429,27 +448,29 @@ export function LandingPage() {
             {PRICING_TIERS.map((tier) => (
               <article
                 key={tier.id}
-                className={`landing-tier ${tier.available ? 'landing-tier--available' : 'landing-tier--soon'}`}
+                className={`landing-tier${tier.available ? ' landing-tier--available' : ''}`}
                 aria-labelledby={`landing-tier-${tier.id}`}
               >
-                <p className={`landing-tier__status landing-tier__status--${tier.status}`}>
+                <p
+                  className={`landing-tier__status landing-tier__status--${
+                    tier.available ? 'available' : 'coming-soon'
+                  }`}
+                >
                   {tier.available ? 'Available now' : 'Coming soon'}
                 </p>
                 <h3 className="landing-tier__name" id={`landing-tier-${tier.id}`}>
                   {tier.name}
                 </h3>
-                <p className="landing-tier__price">
-                  {tier.priceMonthlyUsd === null ? (
-                    <span className="landing-tier__price-soon">Coming soon</span>
-                  ) : tier.priceMonthlyUsd === 0 ? (
-                    <span className="landing-tier__price-amount">Free</span>
-                  ) : (
-                    <>
-                      <span className="landing-tier__price-amount">${tier.priceMonthlyUsd}</span>
+                {tier.available ? (
+                  <p className="landing-tier__price">
+                    <span className="landing-tier__price-amount">
+                      {formatMonthlyPrice(tier.priceMonthlyUsd)}
+                    </span>
+                    {tier.priceMonthlyUsd > 0 ? (
                       <span className="landing-tier__price-cadence">/month</span>
-                    </>
-                  )}
-                </p>
+                    ) : null}
+                  </p>
+                ) : null}
                 <p className="landing-tier__price-note">{tier.priceNote}</p>
                 <p className="landing-tier__tagline">{tier.tagline}</p>
                 <ul className="landing-tier__features">
@@ -480,7 +501,10 @@ export function LandingPage() {
         </section>
 
         {/* ── Objection handling. Native disclosures: keyboard- and
-            screen-reader-friendly with zero script. ── */}
+            screen-reader-friendly with zero script. Answers stay inside the
+            privacy policy's enforced claims (legal/PrivacyPolicyPage.tsx):
+            no selling, no ads, prompts to named AI providers behind a
+            reject-not-edit PII gate, and no training claim we cannot back. ── */}
         <section className="landing-section" aria-labelledby="landing-faq-heading">
           <h2 className="landing-section__heading" id="landing-faq-heading">
             Questions grown-ups ask
@@ -503,20 +527,49 @@ export function LandingPage() {
             </details>
             <details className="landing-faq__item">
               <summary className="landing-faq__question">
+                What happens to my child&apos;s story ideas?
+              </summary>
+              <p className="landing-faq__answer">
+                The idea becomes the prompt that writes the book, sent to the AI provider that
+                drafts it. A check rejects any request containing a child&apos;s name, email, phone
+                number, or address before it leaves our servers. We do not sell information and
+                there are no ads; our <Link to={PRIVACY_PATH}>privacy page</Link> lists exactly
+                which providers receive what.
+              </p>
+            </details>
+            <details className="landing-faq__item">
+              <summary className="landing-faq__question">
                 How is my child&apos;s privacy protected?
               </summary>
               <p className="landing-faq__answer">
-                Kids never get accounts, emails, or public profiles. Grown-ups verify and consent up
-                front, reading happens on devices you authorize, and there are no ads and no chat.
-                The full policy is on our <Link to={PRIVACY_PATH}>privacy page</Link>.
+                Kids never get accounts, emails, or public profiles. Reading happens only on devices
+                you authorize, and there are no ads and no chat. Adult verification and consent are
+                built into sign-up, following children&apos;s-privacy rules like COPPA as we roll
+                them out. The full policy is on our <Link to={PRIVACY_PATH}>privacy page</Link>.
+              </p>
+            </details>
+            <details className="landing-faq__item">
+              <summary className="landing-faq__question">What happens after I sign up?</summary>
+              <p className="landing-faq__answer">
+                Creating your account takes about a minute. We then approve each new family by hand,
+                it is part of how we keep the space safe, and your console unlocks as soon as we do.
+                After that you add readers and request your first story.
               </p>
             </details>
             <details className="landing-faq__item">
               <summary className="landing-faq__question">How much does it cost?</summary>
               <p className="landing-faq__answer">
                 Nothing right now: early access is free. A Family subscription with the full catalog
-                is planned, and we&apos;ll announce pricing before it launches. Safety features will
-                never be behind a paywall.
+                is planned, and we&apos;ll announce pricing before it launches. Books already on
+                your shelf stay readable, and safety features will never be behind a paywall.
+              </p>
+            </details>
+            <details className="landing-faq__item">
+              <summary className="landing-faq__question">How long is a book?</summary>
+              <p className="landing-faq__answer">
+                A first read-through takes roughly five to twelve minutes depending on age and
+                length. Finding every ending in a bigger book can fill an hour, which is rather the
+                point: they come back and choose differently.
               </p>
             </details>
             <details className="landing-faq__item">
@@ -543,13 +596,14 @@ export function LandingPage() {
             Ready for their next favorite story?
           </h2>
           <p className="landing-final__lede">
-            Set up your family in about a minute. Grown-ups only; kids join from your console.
+            Create your account in about a minute. We approve each new family by hand before the
+            first story, so kids never share the space with strangers.
           </p>
           <Link
             className="landing-cta landing-cta--primary landing-cta--lg"
             to={GUARDIAN_LOGIN_PATH}
           >
-            Create your free account
+            Get started free
           </Link>
         </section>
       </main>
@@ -559,7 +613,7 @@ export function LandingPage() {
           (ADR-018 D1), so they must be discoverable from the site itself and
           not only by anyone holding the direct URL: a policy reachable only
           through a third party's consent screen is not published in any sense
-          a parent would recognise. Now a true top-level <footer> (contentinfo
+          a parent would recognise. A true top-level <footer> (contentinfo
           landmark): the redesigned page is normal document flow, so the old
           inside-<main> compromise (a 100vh flex hero) no longer applies. */}
       <footer className="landing__footer">
@@ -583,10 +637,12 @@ export function LandingPage() {
   )
 }
 
-/* Inline glyphs for the trust cards, in the door icons' visual language:
-   24-viewBox, 2px round-capped strokes, currentColor. Local to this page on
-   purpose; if a second surface ever needs them they graduate to the design
-   system. All are decorative (wrapped in aria-hidden spans above). */
+/* Inline glyphs for the trust cards and the pricing-feature bullets, in the
+   door icons' visual language: 24-viewBox, 2px round-capped strokes,
+   currentColor. Local to this page on purpose, matching the repo's idiom
+   (ThemeToggle and the door SVGs are inline too); if a second surface ever
+   needs them they graduate to the design system. All are decorative
+   (wrapped in aria-hidden spans above). */
 
 function CheckSealIcon() {
   return (
@@ -652,46 +708,6 @@ function NoMegaphoneIcon() {
         strokeLinecap="round"
         d="M20.5 3.5l-17 17"
       />
-    </svg>
-  )
-}
-
-function RulerIcon() {
-  return (
-    <svg width="26" height="26" viewBox="0 0 24 24" focusable="false" aria-hidden="true">
-      <rect
-        x="3"
-        y="9"
-        width="18"
-        height="6"
-        rx="1.5"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-      />
-      <path
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        d="M7.5 9v3M12 9v3M16.5 9v3"
-      />
-    </svg>
-  )
-}
-
-function CloudOffIcon() {
-  return (
-    <svg width="26" height="26" viewBox="0 0 24 24" focusable="false" aria-hidden="true">
-      <path
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M7 17h10a4 4 0 0 0 .8-7.9A5.5 5.5 0 0 0 7.3 7.6 4.5 4.5 0 0 0 7 17z"
-      />
-      <path fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" d="M9 20h6" />
     </svg>
   )
 }
