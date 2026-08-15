@@ -14,7 +14,7 @@
  */
 
 /**
- * Eyes and nose, as a FIXED dark literal rather than var(--color-ink).
+ * Eyes, nose and mouth, as a FIXED dark literal rather than var(--color-ink).
  *
  * They are painted on the muzzle, which is itself a fixed light literal
  * (#fdf3e6) precisely because the fox's colouring must not flip with the
@@ -26,6 +26,9 @@
  * This value is the light palette's own ink, so nothing changes in light mode;
  * it is pinned here so the pairing stays legible in both. 15.18:1 on the
  * muzzle.
+ *
+ * Applies to the mouth's STROKE as well as the eye/nose fills: it is the same
+ * pairing on the same muzzle, and it is easy to miss when scanning for `fill=`.
  */
 const FACE_INK = '#2c1a0e'
 
@@ -68,12 +71,7 @@ export function Mascot({ size = 96, title, className }: MascotProps) {
       <circle cx="39.6" cy="56.4" r="1.8" fill="#fff" />
       <circle cx="63.6" cy="56.4" r="1.8" fill="#fff" />
       <path d="M50 66 L45 72 Q50 76 55 72 Z" fill={FACE_INK} />
-      <path
-        d="M50 74 L50 79"
-        stroke="var(--color-ink, #2c1a0e)"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-      />
+      <path d="M50 74 L50 79" stroke={FACE_INK} strokeWidth="2.5" strokeLinecap="round" />
     </svg>
   )
 }

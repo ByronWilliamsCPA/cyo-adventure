@@ -163,7 +163,13 @@ export function LandingPage() {
     if (!id) return
     const target = document.getElementById(id)
     if (!target) return
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    // Guarded, matching theme.ts's readOsPreference: matchMedia is absent in
+    // jsdom and in older embedded webviews, and an unguarded call here would
+    // throw inside a mount effect and take the whole page down. Treating an
+    // absent matchMedia as "no stated preference" matches the CSS default.
+    const reduced =
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
     target.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' })
   }, [])
 

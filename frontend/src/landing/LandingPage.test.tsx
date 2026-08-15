@@ -3,7 +3,8 @@ import 'fake-indexeddb/auto'
 import { IDBFactory } from 'fake-indexeddb'
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
-import { beforeEach, describe, expect, it } from 'vitest'
+import type { Mock } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { setDeviceGrant } from '../auth/deviceGrant'
 import { _resetDbHandle } from '../offline/db'
@@ -271,6 +272,66 @@ describe('LandingPage', () => {
       const hero = screen.getByRole('heading', { level: 1 })
       const doors = screen.getByRole('navigation', { name: 'Pick who you are' })
       expect(doors.compareDocumentPosition(hero) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    })
+  })
+
+  // S6: the topnav puts "/#pricing" and friends in the address bar, so they
+  // get bookmarked and shared, but the landing route is lazy: the browser
+  // resolves the fragment against an empty document and the visitor lands at
+  // the top with no sign anything was meant to happen. The mount effect
+  // re-runs the jump once.
+  describe('bookmarked section links', () => {
+    let scrollIntoView: Mock<(arg?: boolean | ScrollIntoViewOptions) => void>
+
+    beforeEach(() => {
+      // jsdom does not implement scrollIntoView.
+      scrollIntoView = vi.fn<(arg?: boolean | ScrollIntoViewOptions) => void>()
+      Element.prototype.scrollIntoView = scrollIntoView
+      window.location.hash = ''
+    })
+
+    afterEach(() => {
+      window.location.hash = ''
+    })
+
+    it('scrolls to the fragment the browser could not resolve', () => {
+      // No matchMedia in jsdom, so this also covers the guard's absent leg:
+      // no stated preference behaves like no reduced-motion request.
+      window.location.hash = '#pricing'
+      renderLanding()
+      expect(scrollIntoView).toHaveBeenCalledTimes(1)
+      expect(scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth' })
+    })
+
+    it('jumps without animation for a reduced-motion visitor', () => {
+      // scrollIntoView's own behavior option wins over the stylesheet, so the
+      // preference has to be honored here explicitly.
+      // jsdom implements no matchMedia at all, which is exactly why the
+      // component guards the call; stub one that reports the preference.
+      vi.stubGlobal('matchMedia', (query: string) => ({
+        matches: query.includes('reduce'),
+        media: query,
+        addEventListener: () => {},
+        removeEventListener: () => {},
+      }))
+      try {
+        window.location.hash = '#pricing'
+        renderLanding()
+        expect(scrollIntoView).toHaveBeenCalledWith({ behavior: 'auto' })
+      } finally {
+        vi.unstubAllGlobals()
+      }
+    })
+
+    it('does nothing without a fragment', () => {
+      renderLanding()
+      expect(scrollIntoView).not.toHaveBeenCalled()
+    })
+
+    it('ignores a fragment that matches no section', () => {
+      window.location.hash = '#not-a-section'
+      renderLanding()
+      expect(scrollIntoView).not.toHaveBeenCalled()
     })
   })
 
