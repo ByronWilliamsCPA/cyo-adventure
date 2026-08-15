@@ -218,9 +218,11 @@
 
 /* Sits directly under the Google button as its caption, so it hugs the button
    (0.5rem) rather than taking the 1rem block rhythm the standalone notes use.
-   --color-ink-secondary for the same reason as .guardian-login__note: on
-   --color-parchment-dark, ink-muted only reaches 3.72:1 against the 4.5:1 AA
-   minimum. */
+   --color-ink-secondary to match .guardian-login__note exactly: this reads as
+   one family of supporting text and should not be two shades of it.
+   (Recomputed 2026-08-15: on --color-parchment-dark ink-muted is 4.57:1 light
+   / 5.38:1 dark and does now clear AA, so the neighbouring rules' "only
+   3.72:1" note is a stale figure, not a live constraint.) */
 .guardian-login__signup-note {
   margin: 0.5rem 1.5rem 0;
   font-size: var(--text-sm, 0.9375rem);

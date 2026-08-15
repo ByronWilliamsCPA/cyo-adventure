@@ -40,23 +40,30 @@
       content="Personalized choose-your-own-adventure storybooks for kids 4 to 13. Your child picks the path; you approve every page."
     />
     <meta property="og:url" content="https://cyo.williamshome.family/" />
-    <!-- #ASSUME: external-resources: reuses the existing 512px PWA icon
-         (public/pwa-icon-512.png, generated from the Mascot art) as a
-         functional stand-in. It is square, not the 1200x630 landscape most
-         link-preview surfaces prefer, so Slack/iMessage/etc. will crop it
-         into a thumbnail rather than a banner.
-         #VERIFY: swap for a proper 1200x630 og-image asset once one is
-         designed; no code change needed elsewhere, just this src/width/height. -->
-    <meta property="og:image" content="https://cyo.williamshome.family/pwa-icon-512.png" />
-    <meta property="og:image:width" content="512" />
-    <meta property="og:image:height" content="512" />
-    <meta name="twitter:card" content="summary" />
+    <!-- public/og-image.png is a real 1200x630 landscape card, captured from
+         the BUILT hero (headline, lede, both CTAs, the sample shelf and Pip)
+         rather than drawn separately, so it cannot drift from the page it
+         advertises. It replaces the square PWA icon, which every preview
+         surface cropped into a thumbnail instead of showing as a banner.
+         Regenerate it whenever the hero's copy or art changes: build, serve
+         the build, and screenshot the hero region at 1200x630 in the light
+         palette (the capture hides the sticky topbar and centres the hero in
+         the frame). -->
+    <meta property="og:image" content="https://cyo.williamshome.family/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="They pick the path. You approve every page." />
+    <!-- summary_large_image, now that the asset is genuinely landscape: with
+         a square image this rendered a stretched or letterboxed banner, which
+         is why it was previously the smaller `summary` card. -->
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="They pick the path. You approve every page." />
     <meta
       name="twitter:description"
       content="Personalized choose-your-own-adventure storybooks for kids 4 to 13. Your child picks the path; you approve every page."
     />
-    <meta name="twitter:image" content="https://cyo.williamshome.family/pwa-icon-512.png" />
+    <meta name="twitter:image" content="https://cyo.williamshome.family/og-image.png" />
+    <meta name="twitter:image:alt" content="They pick the path. You approve every page." />
     <!-- Structured data: minimal WebApplication entry so a link preview or
          AI crawler that parses JSON-LD gets a correct, machine-readable
          description instead of none at all. EducationalApplication fits a

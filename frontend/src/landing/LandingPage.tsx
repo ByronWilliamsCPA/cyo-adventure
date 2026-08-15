@@ -159,8 +159,12 @@ export function LandingPage() {
             Try a sample story
           </a>
         </div>
+        {/* Carries the hand-approval promise for the whole page: the final
+            band used to repeat it almost verbatim two screens later, which
+            read as padding rather than reassurance. */}
         <p className="landing-hero__reassure">
-          Free while in early access. No ads, ever. We approve each new family by hand.
+          Free while in early access. No ads, ever. We approve each family by hand, so kids never
+          share the space with strangers.
         </p>
       </div>
       {/* Decorative sample shelf: fake spines drawn with the same
@@ -169,12 +173,23 @@ export function LandingPage() {
           cover carries a title: the fanned back covers overlap (and Pip
           stands in front), so labels there would render half-hidden.
           Purely illustrative, so it is hidden from assistive tech. */}
+      {/* All three spines carry titles, anchored to the TOP of each cover.
+          The original build bottom-anchored them, where the fan overlap and
+          the mascot both occluded the text, so they were cut back to the one
+          unobstructed front cover. Top anchoring dodges both, which is what
+          lets all three carry a title: a shelf of blank rectangles reads as
+          placeholder art rather than as books. Decorative either way, hence
+          the aria-hidden wrapper. */}
       <div className="landing-hero__art" aria-hidden="true">
-        <div className="landing-cover landing-cover--lagoon" />
+        <div className="landing-cover landing-cover--lagoon">
+          <span className="landing-cover__title">The Sunken Signal</span>
+        </div>
         <div className="landing-cover landing-cover--plum">
           <span className="landing-cover__title">The Lantern Cave</span>
         </div>
-        <div className="landing-cover landing-cover--forest" />
+        <div className="landing-cover landing-cover--forest">
+          <span className="landing-cover__title">The Lost Mitten</span>
+        </div>
         <Mascot size={92} className="landing-hero__mascot" />
       </div>
     </section>
@@ -182,7 +197,17 @@ export function LandingPage() {
 
   /* ── Returning users: the two doors, unchanged behavior. Rendered above
       the hero on a granted (family) device, below it otherwise; see the
-      doorsFirst note near the top. ── */
+      doorsFirst note near the top.
+
+      UX-7 (a COMPACT variant of this band when it renders funnel-first, so
+      returning-user furniture intrudes less on a new visitor) was considered
+      and DECLINED. One band, one size: the doors are the contractual entry
+      points for both audiences (ADR-014), and a second visual treatment of
+      them means two sets of geometry, focus order, and touch targets to keep
+      correct for a purely cosmetic gain. The band is already a single row of
+      two cards under a short heading, and on an unknown device it sits below
+      the fold, where it costs the funnel nothing. Revisit only with evidence
+      that it actually diverts new visitors. ── */
   const doorsBand = (
     <section className="landing-doors-band" aria-labelledby="landing-doors-heading">
       <h2 className="landing-doors-band__heading" id="landing-doors-heading">
@@ -290,13 +315,27 @@ export function LandingPage() {
           id="demo"
           aria-labelledby="landing-demo-heading"
         >
-          <h2 className="landing-section__heading" id="landing-demo-heading">
-            Try a ten-second adventure
-          </h2>
-          <p className="landing-section__lede">
-            A tiny taste of how choices work. The real books are longer, personalized, and yours to
-            approve.
-          </p>
+          {/* Eyebrow + heading, matching every other funnel section. The
+              heading also matches the hero's ghost CTA verbatim ("Try a
+              sample story"): a visitor who clicks that CTA must land on a
+              heading that confirms they arrived, and "ten-second adventure"
+              made them check. */}
+          {/* The rail wrapper exists for the wide-viewport two-column frame
+              (see .landing-section--demo): copy on the left, the playable
+              demo on the right. Below 56rem it collapses to plain stacked
+              blocks and the wrapper is inert. */}
+          <div className="landing-section__rail">
+            <p className="landing-section__eyebrow" aria-hidden="true">
+              Sample
+            </p>
+            <h2 className="landing-section__heading" id="landing-demo-heading">
+              Try a sample story
+            </h2>
+            <p className="landing-section__lede">
+              A tiny taste of how choices work. The real books are longer, personalized, and yours
+              to approve.
+            </p>
+          </div>
           <DemoAdventure />
         </section>
 
@@ -449,7 +488,6 @@ export function LandingPage() {
             >
               Get started free
             </Link>
-            <p className="landing-section__cta-note">Free while in early access.</p>
           </div>
         </section>
 
@@ -649,10 +687,11 @@ export function LandingPage() {
           <h2 className="landing-final__heading" id="landing-final-heading">
             Ready for their next favorite story?
           </h2>
-          <p className="landing-final__lede">
-            Create your account in about a minute. We approve each new family by hand before the
-            first story, so kids never share the space with strangers.
-          </p>
+          {/* Short by design: the hand-approval promise is made in the hero
+              and again in the FAQ. A visitor who has scrolled this far has
+              read it; repeating it here delays the one action this band
+              exists for. */}
+          <p className="landing-final__lede">Create your account in about a minute and meet Pip.</p>
           <Link
             className="landing-cta landing-cta--primary landing-cta--lg"
             to={GUARDIAN_LOGIN_PATH}
@@ -682,8 +721,8 @@ export function LandingPage() {
           <Link className="landing__footer-link" to={SUPPORT_PATH}>
             Support
           </Link>
-          <Link className="landing__footer-link" to={GUARDIAN_LOGIN_PATH}>
-            Guardian sign-in
+          <Link className="landing__footer-link" to={GUARDIAN_CONSOLE_PATH}>
+            Sign in
           </Link>
         </nav>
       </footer>

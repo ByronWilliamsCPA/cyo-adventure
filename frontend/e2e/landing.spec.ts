@@ -153,8 +153,11 @@ test('the sample adventure plays through to an ending, counts it, and restarts',
 test('topbar anchors jump to their funnel sections', async ({ page }) => {
   await page.goto('/')
 
-  // Scoped to the topnav: the hero's "See how it works" CTA would otherwise
-  // also match the substring-based role-name lookup for "How it works".
+  // Scoped to the topnav rather than the page. The comment here used to
+  // blame a hero "See how it works" CTA, which no longer exists; the real
+  // reason to scope is that the how-it-works SECTION heading also matches a
+  // substring-based name lookup, and the eyebrow/heading pairs repeat the
+  // nav labels ("Pricing", "Safety") verbatim by design.
   const topnav = page.getByRole('navigation', { name: 'Page sections' })
   await topnav.getByRole('link', { name: 'Pricing' }).click()
   await expect(page.locator('#pricing')).toBeInViewport()

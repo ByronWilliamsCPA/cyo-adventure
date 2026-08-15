@@ -73,13 +73,28 @@ describe('LandingPage', () => {
   // instead of promising instant access.
   it('sets the hand-approval expectation up front', () => {
     renderLanding()
-    expect(screen.getAllByText(/approve each new family by hand/i).length).toBeGreaterThan(0)
-    expect(screen.getByText(/free while in early access\. no ads, ever\./i)).toBeInTheDocument()
+    // The hero carries it for the whole page; the final band used to repeat
+    // it nearly verbatim and no longer does.
+    const hero = screen.getByRole('region', { name: LANDING_HEADLINE })
+    expect(within(hero).getByText(/we approve each family by hand/i)).toBeInTheDocument()
+    expect(
+      within(hero).getByText(/free while in early access\. no ads, ever\./i)
+    ).toBeInTheDocument()
+    // Still answered in the FAQ for anyone who scrolled past the hero.
+    expect(screen.getByText(/we then approve each new family by hand/i)).toBeInTheDocument()
   })
 
-  it('offers a returning adult a topbar sign-in into the guardian console', () => {
+  // Two "Sign in" links by design (topbar and footer), one label and one
+  // destination between them: the footer used to say "Guardian sign-in" and
+  // point at the login route while the topbar said "Sign in" and pointed at
+  // the console, which is two names for the same errand.
+  it('offers a returning adult a sign-in into the guardian console from the bar and the footer', () => {
     renderLanding()
-    expect(screen.getByRole('link', { name: 'Sign in' })).toHaveAttribute('href', '/guardian')
+    const signIns = screen.getAllByRole('link', { name: 'Sign in' })
+    expect(signIns).toHaveLength(2)
+    for (const link of signIns) {
+      expect(link).toHaveAttribute('href', '/guardian')
+    }
   })
 
   it('sends the hero secondary CTA to the sample-story demo', () => {
@@ -93,7 +108,7 @@ describe('LandingPage', () => {
   it('renders the funnel sections: demo, how it works, safety, pricing, FAQ, final CTA', () => {
     renderLanding()
     const headings = [
-      'Try a ten-second adventure',
+      'Try a sample story',
       'How a story gets made',
       'Built so you can say yes',
       'Simple family pricing',

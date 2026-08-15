@@ -4,8 +4,9 @@
   Storybook-editorial direction extending the design-system tokens: parchment
   grounds, ink type, amber as the single interactive accent, forest reserved
   for the one deliberate pattern-break (the final CTA band). Every color is a
-  token, with three deliberate literals that behave as picture elements the
-  same way tokens.css treats the --cover-* gradients: the cover scrim wash,
+  token, with FOUR deliberate literals that behave as picture elements the
+  same way tokens.css treats the --cover-* gradients: the cover scrim wash
+  (rgb(20 12 5 / 62%)), the cover edge highlight (rgb(255 255 255 / 22%)),
   the cover-title cream (#f8f3e8, which must stay light in BOTH palettes and
   so cannot be --color-parchment, whose dark value is near-black), and the
   door icons' white glyphs on their solid fills (pre-existing).
@@ -144,6 +145,15 @@ html:has(.landing) {
   border-radius: var(--radius-sm);
 }
 
+/* The FAQ question is the one member of that group NOT sitting on plain
+   parchment: it sits on the raised card wash, and on the dark palette an
+   OPEN card drops amber-deep to 2.72:1, under the 3:1 non-text minimum. Same
+   substitution the custom marker below already makes, and for the same
+   reason: amber-text holds 7.53:1 dark / 5.96:1 light. */
+.landing-faq__question:focus-visible {
+  outline-color: var(--color-amber-text);
+}
+
 /* margin-left: auto is unconditional. The topnav's own margin-inline: auto
    absorbs the free space while the nav is rendered, and when a breakpoint
    removes the nav this margin is what keeps the actions pinned to the right
@@ -172,22 +182,30 @@ html:has(.landing) {
   color: var(--color-ink);
 }
 
-@media (max-width: 58rem) {
-  /* Anchors are a convenience, not the only path (the page scrolls); below
-     this width the bar keeps identity + primary action + sign-in + theme. */
+/* 56rem, matching the hero's own single-column breakpoint: the bar and the
+   layout beneath it now change shape at the same width instead of 2rem
+   apart, which read as two separate reflows while resizing. Anchors are a
+   convenience, not the only path (the page scrolls). */
+@media (max-width: 56rem) {
   .landing__topnav {
     display: none;
   }
 }
 
 @media (max-width: 45rem) {
-  /* Phone bar: icon brand + the primary CTA + theme toggle. The wordmark
-     text and Sign in yield to keep the sticky CTA (finding: the funnel's
-     action must survive the whole scroll); a returning guardian still has
-     the Grown-ups door one screen down, and the CTA's login destination is
-     itself the sign-in page. */
-  .landing__wordmark-name,
-  .landing__signin {
+  /* Phone bar: brand + Sign in + theme. This REVERSES the earlier decision
+     to keep a compact CTA here at the cost of the sign-in link. The CTA was
+     added for the action gap on a long scroll, but the mid-page and
+     post-safety CTAs already close that gap, and the hero's own CTA is one
+     screen away. Meanwhile Sign in was the ONLY affordance a RETURNING
+     parent had in the bar, and dropping it sent them hunting for the
+     Grown-ups door. Sign in also does double duty here: its destination is
+     the same login page the CTA pointed at.
+
+     The wordmark name comes back with it: at this width the row is short
+     enough to carry both, and an unlabeled mascot is a weak brand signal on
+     the one screen where a new visitor decides whether to keep scrolling. */
+  .landing__topbar .landing-cta--compact {
     display: none;
   }
 }
@@ -241,8 +259,13 @@ html:has(.landing) {
   box-shadow: var(--shadow-sm);
 }
 
+/* border-color: ink, not amber-hover. amber-deep against amber-hover is
+   1.01:1 in the dark palette, so the hover border was invisible there, and
+   for a reduced-motion user (who gets no translateY) the shadow change was
+   the only remaining signal. Ink reads as a deliberate darkening against the
+   amber fill in both palettes. */
 .landing-cta--primary:hover {
-  border-color: var(--color-amber-hover);
+  border-color: var(--color-ink);
   box-shadow: var(--shadow-md);
   transform: translateY(-2px);
 }
@@ -330,7 +353,11 @@ html:has(.landing) {
 
 .landing-cover {
   display: flex;
-  align-items: flex-end;
+  /* flex-start: labels are TOP-anchored. Bottom anchoring put every label
+     into the zone where the fanned covers overlap each other and the mascot
+     sits, which is why the original three-label version was cut back to one.
+     The top edge of each cover is unobstructed on all three. */
+  align-items: flex-start;
   width: 8.75rem;
   aspect-ratio: 3 / 4.2;
   border-radius: var(--radius-lg);
@@ -360,13 +387,15 @@ html:has(.landing) {
 }
 
 /* Spine label: parchment text on an ink scrim over the gradient (composited
-   worst case 10.13:1, over the lagoon cover's lighter stop). Decorative art
+   worst case 10.13:1, over the lagoon cover's lighter stop, which now really
+   is the worst case: all three covers carry a label). Decorative art
    (aria-hidden), verified anyway so it reads for everyone who can see it. */
 .landing-cover__title {
   width: 100%;
   margin: 0;
   padding: var(--space-2) var(--space-3);
-  border-radius: 0 0 calc(var(--radius-lg) - 2px) calc(var(--radius-lg) - 2px);
+  /* Rounding follows the label to the TOP corners. */
+  border-radius: calc(var(--radius-lg) - 2px) calc(var(--radius-lg) - 2px) 0 0;
   background: rgb(20 12 5 / 62%);
   color: #f8f3e8;
   font-family: var(--font-serif);
@@ -412,24 +441,17 @@ html:has(.landing) {
   }
 }
 
-/* Phone widths (the 320px overflow gate): smaller covers so the fanned shelf
-   fits inside the hero padding without leaning on the page-level clip. The
-   spine label and the mascot drop out entirely: at ~100px cover width the
-   title wraps to three lines and swallows the cover, and the free-floating
-   fox reads as clip art rather than composition (Pip still appears in the
-   final band). */
+/* Phone widths: the decorative shelf goes entirely.
+   It was shrunk here rather than dropped, but at this width it degrades to
+   three unlabeled rounded rectangles (the spine titles are unreadable at
+   ~100px and were already hidden) that cost roughly a quarter of the first
+   screenful. On the one screen where a new visitor decides whether to keep
+   scrolling, that space belongs to the headline, the CTA, and the reassure
+   line. Pip still appears in the final band, so the mascot is not lost.
+   display: none, not visibility, so the row contributes no height at all. */
 @media (max-width: 30rem) {
-  .landing-cover {
-    width: 6.25rem;
-  }
-
-  .landing-cover__title,
-  .landing-hero__mascot {
-    display: none;
-  }
-
   .landing-hero__art {
-    min-height: 10.5rem;
+    display: none;
   }
 }
 
@@ -582,9 +604,16 @@ main > .landing-doors-band:first-child {
   color: var(--color-ink-secondary);
 }
 
-/* --color-ink-secondary, not --color-ink-muted: .landing-door's background
-   is --color-parchment-dark, where ink-muted only clears 3.72:1 against the
-   4.5:1 AA minimum (2026-07-16 accessibility audit, e2e/a11y.spec.ts). */
+/* --color-ink-secondary, not --color-ink-muted, on .landing-door's
+   --color-parchment-dark background. NOTE the recomputation: the widely
+   copied "ink-muted only clears 3.72:1" figure predates the token's current
+   value. Recomputed 2026-08-15, ink-muted is 4.57:1 light / 5.38:1 dark, so
+   it now PASSES the 4.5:1 AA minimum and the old justification no longer
+   holds. ink-secondary is kept anyway (7.81:1 light / 9.26:1 dark) because
+   this is small text at 0.8rem where the extra margin is worth having, but
+   the reason is headroom now, not a failing token.
+   The same stale 3.72:1 figure still appears in guardian.css, kid.css, and
+   library.css; correcting those is outside this page's diff. */
 .landing-door__note {
   font-size: 0.8rem;
   color: var(--color-ink-secondary);
@@ -646,16 +675,38 @@ main > .landing-doors-band:first-child {
   margin-top: var(--space-10);
 }
 
-.landing-section__cta-note {
-  margin: 0;
-  font-size: var(--text-sm);
-  color: var(--color-ink-secondary);
-}
-
 /* ── Demo ───────────────────────────────────────────────────────────── */
 
 .landing-section--demo {
   padding-top: var(--space-8);
+}
+
+/* Asymmetric two-column frame above 56rem: the copy rail is deliberately the
+   NARROWER track so the playable demo, the thing that actually converts,
+   takes the visual weight. Every other funnel section is centered and
+   stacked; this one is the page's single interactive moment and reads better
+   framed than centered. Below the breakpoint it collapses to the same
+   stacked rhythm as its neighbours. */
+@media (min-width: 56.0625rem) {
+  .landing-section--demo {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    gap: var(--space-10);
+    align-items: start;
+    max-width: 72rem;
+    margin-inline: auto;
+    text-align: left;
+  }
+
+  .landing-section--demo .landing-section__lede {
+    margin-inline: 0;
+  }
+
+  /* The rail's own top margin is what the stacked layout uses to separate
+     the demo from the copy; in the framed layout they sit side by side. */
+  .landing-section--demo .demo-adventure {
+    margin-top: 0;
+  }
 }
 
 .demo-adventure {
