@@ -250,8 +250,31 @@ relate to the Supabase project constraints.
 
 - E2E-mocked: `frontend/e2e/landing.spec.ts`
 - E2E-prod: `frontend/e2e-prod/landing-login.spec.ts`
-- Component: `frontend/src/landing/LandingPage.test.tsx`
+- Component: `frontend/src/landing/LandingPage.test.tsx`, `frontend/src/landing/DemoAdventure.test.tsx`
+- Unit: `frontend/src/landing/pricing.test.ts`
 - Integration: `frontend/src/test/App.test.tsx`
+- **Sales funnel (the root page as the new-visitor conversion path):** the
+  landing page carries both the returning-user doors (device-grant-aware Kids
+  door, Grown-ups door) and the funnel sections for a first-time adult: hero,
+  interactive sample story, how-it-works, safety/trust, pricing, FAQ.
+  `LandingPage.test.tsx` pins the door contract and section ordering (doors
+  first when the device holds a valid grant, decided once at mount so a
+  cross-tab grant change upgrades the door href without reshuffling sections
+  under a reading visitor), the claims that must match enforced behavior (the
+  10-stories/month family quota, hand approval, KWS verification described as
+  a launch commitment rather than a live control), and that the pricing
+  section renders no purchase-looking affordance.
+  `DemoAdventure.test.tsx` covers the static two-hop demo graph: choice
+  traversal to each of the four endings, the deduplicated endings counter
+  across replays, "Back one choice" and "Start over", and the focus transfer
+  to the new passage on every user-driven transition (but not on mount).
+  `pricing.test.ts` pins `formatMonthlyPrice` (0 renders "Free", 7.5 renders
+  "$7.50" and never "$7.5", NaN/Infinity/negative throws rather than painting
+  "$NaN" on a public card) and the no-billing-yet data invariants over both
+  branches of the tier union: every available tier is free and routes to
+  guardian sign-in, and an unavailable tier carries neither a price nor a CTA. Not a user journey on its own: this
+  is the conversion surface, and its tests exist to keep marketing copy from
+  drifting ahead of what the product actually enforces.
 
 ## Guardian: login/auth
 

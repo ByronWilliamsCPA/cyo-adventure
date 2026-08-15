@@ -12,6 +12,7 @@ import { ToastProvider } from '../notifications/ToastProvider'
 import { _resetDbHandle } from '../offline/db'
 import { routes } from '../router'
 import { ThemeProvider } from '../theme/ThemeProvider'
+import { LOGIN_HEADLINE } from '../guardian/loginHeadline'
 
 // Mock the API adapters so the reader route mounts deterministically without a backend.
 vi.mock('../api/readerApi', () => ({
@@ -273,7 +274,7 @@ describe('router: guardian surface', () => {
 
   it('renders the login page directly', async () => {
     renderAt('/guardian/login')
-    expect(await screen.findByText(/Guardian sign-in/)).toBeInTheDocument()
+    expect(await screen.findByText(new RegExp(LOGIN_HEADLINE))).toBeInTheDocument()
   })
 
   it('renders the family console for a signed-in guardian with a warm adult gate', async () => {
@@ -477,7 +478,7 @@ describe('router: guardian surface', () => {
     })
     renderAt('/admin')
     expect(await screen.findByText(/Family console/)).toBeInTheDocument()
-    expect(screen.queryByText(/Guardian sign-in/)).not.toBeInTheDocument()
+    expect(screen.queryByText(new RegExp(LOGIN_HEADLINE))).not.toBeInTheDocument()
   })
 
   it('renders intake for a signed-in guardian with a warm adult gate', async () => {

@@ -8,6 +8,7 @@ import type { AuthContextValue } from '../auth/authContext'
 import { getDeviceGrant, setDeviceGrant } from '../auth/deviceGrant'
 import type { Principal } from '../auth/types'
 import { DEVICE_MINT_WATCHDOG_MS, LoginPage, SIGN_IN_WATCHDOG_MS } from './LoginPage'
+import { LOGIN_HEADLINE } from './loginHeadline'
 
 const mockSignInWithOAuth = vi.fn()
 const mockSignInWithPassword = vi.fn()
@@ -226,6 +227,27 @@ describe('LoginPage password form', () => {
     expect(screen.getByRole('button', { name: /Continue with Google/ })).toBeInTheDocument()
     // Apple sign-in is gated behind VITE_ENABLE_APPLE_OAUTH, unset by default.
     expect(screen.queryByRole('button', { name: /Continue with Apple/ })).not.toBeInTheDocument()
+  })
+
+  // Every "Get started free" CTA on the landing funnel lands here, so a
+  // first-time parent has to be able to tell that this page will create their
+  // account. The heading plus this note are that signal; without them the
+  // funnel dead-ends on a page that reads as sign-in-only.
+  it('tells a new family that continuing with Google creates their account', () => {
+    renderLogin()
+    expect(screen.getByRole('heading', { name: LOGIN_HEADLINE, level: 1 })).toBeInTheDocument()
+    expect(screen.getByText(/Continuing above creates your account/)).toBeInTheDocument()
+  })
+
+  // The authorize-device visitor is a CHILD fetching a grown-up (ADR-014
+  // section 5), so the signup prompt is suppressed there: it contradicts the
+  // "ask a grown-up" instruction and is not addressed to the reader.
+  it('hides the signup note for the authorize-device intent', () => {
+    renderLogin(['/guardian/login?intent=authorize-device'])
+    expect(screen.queryByText(/Continuing above creates your account/)).not.toBeInTheDocument()
+    expect(screen.getByText(/Ask a grown-up to set up this device for you/)).toBeInTheDocument()
+    // The heading is shared by both entry points and must survive the switch.
+    expect(screen.getByRole('heading', { name: LOGIN_HEADLINE, level: 1 })).toBeInTheDocument()
   })
 
   it('shows the Apple button when VITE_ENABLE_APPLE_OAUTH is true', () => {
