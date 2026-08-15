@@ -57,20 +57,71 @@ async function assertNoHorizontalOverflow(page: import('@playwright/test').Page,
   expect(overflow, `overflow at ${width}px`).toBe(false)
 }
 
+/**
+ * The landing page needs a DIFFERENT measurement from every other surface
+ * here, and the document-scrollWidth check is actively misleading on it.
+ *
+ * `.landing` carries `overflow-x: clip` (landing.css) so the rotated hero
+ * covers cannot hand the document a scrollbar. That is the right styling
+ * choice, but it also means clipped overflow never reaches
+ * documentElement.scrollWidth: the assertion above cannot fail here no
+ * matter how badly the page overflows, and it sat green through a real
+ * 320px hero clip. A gate that cannot fail reads as coverage while
+ * providing none, which is worse than no gate at all.
+ *
+ * So measure the elements instead of the document: every descendant of
+ * `.landing` must have its right edge inside the viewport. This sees
+ * content clipped by the wrapper, which is exactly the class of bug the
+ * scrollWidth check is blind to. Zero-size nodes are skipped (a
+ * display:none element reports a meaningless rect), and the 1px tolerance
+ * absorbs sub-pixel layout rounding.
+ *
+ * Decorative art is exempt by design: `.landing-hero__art` and its children
+ * are rotated on purpose and clipped on purpose, and their bounding boxes
+ * legitimately extend past the fold. Everything a visitor has to READ is in
+ * scope.
+ */
+async function assertNoLandingElementOverflow(
+  page: import('@playwright/test').Page,
+  width: number
+) {
+  const offenders = await page.evaluate(() => {
+    const clientWidth = document.documentElement.clientWidth
+    const root = document.querySelector('.landing')
+    if (!root) return ['.landing did not render']
+    const out: string[] = []
+    for (const el of root.querySelectorAll('*')) {
+      if (el.closest('.landing-hero__art')) continue
+      const rect = el.getBoundingClientRect()
+      if (rect.width === 0 && rect.height === 0) continue
+      if (rect.right > clientWidth + 1) {
+        const id = el.id ? `#${el.id}` : ''
+        const cls =
+          typeof el.className === 'string' ? `.${el.className.split(/\s+/).join('.')}` : ''
+        out.push(`${el.tagName.toLowerCase()}${id}${cls} right=${Math.round(rect.right)}`)
+      }
+    }
+    return out
+  })
+  expect(offenders, `landing elements overflowing at ${width}px`).toEqual([])
+}
+
 for (const width of WIDTHS) {
   test(`landing has no horizontal overflow at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 800 })
     await page.goto('/')
     // Wait for the lazy landing chunk to actually mount before measuring:
     // page.goto resolves at `load`, which can be the Suspense fallback, and
-    // an empty fallback passes this check vacuously. The redesign made this
-    // load-bearing (the rotated hero covers are the first content here that
-    // can genuinely overflow, held by .landing's overflow-x: clip).
+    // an empty fallback passes this check vacuously.
     await expect(page.getByRole('link', { name: /Grown-ups/ })).toBeVisible()
+    // Both assertions: the document-level one still guards against the page
+    // handing the browser a real scrollbar, and the element-level one sees
+    // the clipped overflow the first one structurally cannot.
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth > document.documentElement.clientWidth
     )
-    expect(overflow, `overflow at ${width}px`).toBe(false)
+    expect(overflow, `document overflow at ${width}px`).toBe(false)
+    await assertNoLandingElementOverflow(page, width)
   })
 }
 

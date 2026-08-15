@@ -37,6 +37,42 @@ test('landing kid door reaches the picker when the device is authorized', async 
   await expect(page.getByText('No profiles yet')).toBeVisible()
 })
 
+/**
+ * Section ORDER on a granted device, plus the spacing that ordering needs.
+ *
+ * The doors band renders above the hero so a child handed a family tablet
+ * sees their door on the first screenful. That promotion makes the band
+ * `main`'s first child, where its own `padding-top: 0` (correct when it
+ * follows the hero) left the heading flush against the sticky topbar's lower
+ * edge. Geometry is the only way to catch that: every DOM-order and
+ * visibility assertion passes while the text sits under the bar.
+ */
+test('a granted device leads with the doors band, clear of the sticky topbar', async ({
+  page,
+  context,
+}) => {
+  await seedDeviceGrant(context)
+  await page.goto('/')
+
+  const band = page.locator('.landing-doors-band')
+  const heading = page.locator('.landing-doors-band__heading')
+  await expect(heading).toBeVisible()
+
+  const bandBox = await band.boundingBox()
+  const heroBox = await page.locator('.landing-hero').boundingBox()
+  const topbarBox = await page.locator('.landing__topbar').boundingBox()
+  if (!bandBox || !heroBox || !topbarBox) throw new Error('landing geometry unavailable')
+
+  // Ordering: the band really is above the hero, not merely present.
+  expect(bandBox.y).toBeLessThan(heroBox.y)
+
+  // Spacing: the heading clears the topbar's bottom edge rather than
+  // starting underneath it.
+  const headingBox = await heading.boundingBox()
+  if (!headingBox) throw new Error('doors-band heading geometry unavailable')
+  expect(headingBox.y).toBeGreaterThan(topbarBox.y + topbarBox.height)
+})
+
 test('landing kid door routes through guardian login when the device is not authorized', async ({
   page,
 }) => {

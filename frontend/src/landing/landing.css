@@ -34,9 +34,43 @@
    covers anchor jumps, the skip link, keyboard tabbing that scrolls the
    next focused control to the viewport top (WCAG 2.4.11 Focus Not
    Obscured, which no axe rule detects), and the demo's programmatic
-   passage focus, all in one declaration. */
+   passage focus, all in one declaration.
+
+   This rule stays :has()-scoped because scroll-padding belongs on the
+   SCROLLER, and scoping it to the landing route is what keeps a 5rem inset
+   from outliving this page (the stylesheet stays loaded after navigation).
+   Where :has() is available that buys the broadest coverage, including
+   arbitrary keyboard-focused controls no id-based rule could enumerate. */
 html:has(.landing) {
   scroll-padding-top: 5rem;
+}
+
+/* Vite's default browser baseline still includes Firefox 104-120, where
+   :has() is unsupported and the rule above is dropped at parse time: the
+   sticky topbar would silently bury every anchor target, with nothing in CI
+   failing to say so (the required e2e project is chromium).
+
+   The fallback is per-target scroll-margin, which needs no :has(). It is
+   confined to @supports not (selector(:has(*))) deliberately: scroll-padding
+   on the scroller and scroll-margin on the target BOTH apply where both are
+   live, which would push every anchor 10rem down instead of 5rem. Selector
+   feature queries landed in Firefox 69, well below the range this targets,
+   so the browsers that miss :has() do evaluate this correctly.
+
+   Coverage is narrower than the scroll-padding rule by construction: it
+   reaches the ids this page's own navigation targets plus the demo passage
+   the component focuses after each choice, and not the arbitrary
+   tab-into-view case. That is the honest limit of an element-level fallback,
+   and it covers every anchor a visitor can actually click here. */
+@supports not (selector(:has(*))) {
+  #landing-main,
+  #demo,
+  #how-it-works,
+  #safety,
+  #pricing,
+  .demo-adventure__passage {
+    scroll-margin-top: 5rem;
+  }
 }
 
 .landing {
@@ -350,7 +384,13 @@ html:has(.landing) {
 
 @media (max-width: 56rem) {
   .landing-hero {
-    grid-template-columns: 1fr;
+    /* minmax(0, 1fr), not 1fr: a bare 1fr track has an AUTO minimum, so the
+       art row's 300px min-content floors the single column at 300px and the
+       copy (the reassure line is the longest) is clipped at 320px viewport
+       widths. minmax(0, 1fr) lets the track shrink below its content's
+       min-content size, which is what the two-column rule above already
+       does for the same reason. */
+    grid-template-columns: minmax(0, 1fr);
     padding-top: var(--space-8);
     text-align: center;
   }
@@ -449,6 +489,15 @@ html:has(.landing) {
   margin-inline: auto;
   padding: 0 var(--space-6) var(--space-10);
   text-align: center;
+}
+
+/* Zero top padding is right when the band follows the hero (the hero's own
+   bottom spacing separates them), but on a granted device the band is main's
+   FIRST child and that same zero puts its heading flush against the sticky
+   topbar's lower edge. This is the one case that needs its own top spacing;
+   :first-child keeps it from touching the funnel-first ordering. */
+main > .landing-doors-band:first-child {
+  padding-top: var(--space-8);
 }
 
 .landing-doors-band__heading {
