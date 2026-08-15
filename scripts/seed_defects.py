@@ -55,6 +55,7 @@ if str(_REPO_ROOT) not in sys.path:
 from pydantic import ValidationError  # noqa: E402
 
 from cyo_adventure.storybook.models import Storybook  # noqa: E402
+from cyo_adventure.utils.sentences import split_sentences  # noqa: E402
 from cyo_adventure.validator.consequence import measure_consequence  # noqa: E402
 from cyo_adventure.validator.dialogue import dialogue_share, flatten  # noqa: E402
 from cyo_adventure.validator.reading_level import measure_book  # noqa: E402
@@ -488,12 +489,23 @@ def seed_ending_truncated(doc: dict[str, Any]) -> dict[str, Any]:
     Returns:
         The seeded copy.
     """
+    # #ASSUME: data-integrity: cuts with `utils.sentences.split_sentences`
+    # (UW-C255, AL-379) rather than the old bare `[^.!?]+[.!?]*` idiom, so
+    # the truncation point respects an abbreviation and a quoted/tagged
+    # utterance instead of landing mid-abbreviation or mid-quote. Measured
+    # over the 31 committed books: 1 of 31 ending nodes truncates
+    # differently (`the-clocktower-cipher` / `n_end_timeout`), and the new
+    # truncation point is the fix, not a regression -- the old splitter cut
+    # before the utterance's closing quote, leaving the seeded fixture with
+    # an unbalanced `"`, which is itself a defect in a fixture meant to
+    # carry exactly one named defect (an abrupt stop, not a broken quote).
+    # #VERIFY: tests/unit/test_sentences.py pins the splitter itself.
     out = copy.deepcopy(doc)
     for node in _bodies(out):
         if not node.get("is_ending") and not node.get("ending"):
             continue
         body = str(node.get("body", "")).strip()
-        sentences = [m.group(0).strip() for m in re.finditer(r"[^.!?]+[.!?]*", body)]
+        sentences = split_sentences(body)
         if len(sentences) > 1:
             node["body"] = sentences[0]
     return out

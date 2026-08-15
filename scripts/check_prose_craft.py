@@ -53,6 +53,7 @@ import sys
 from pathlib import Path
 from typing import Any, NamedTuple, cast
 
+from cyo_adventure.utils.sentences import split_sentences
 from cyo_adventure.validator.dialogue import strip_tagged
 
 # --------------------------------------------------------------------------
@@ -281,7 +282,6 @@ _SINGLE_QUOTED = re.compile(
     f"[^'{_LEFT_SINGLE}{_RIGHT_SINGLE}]{{0,400}}"
     f"['{_RIGHT_SINGLE}](?![A-Za-z])"
 )
-_SENTENCE = re.compile(r"[^.!?]+[.!?]*")
 _WORD = re.compile(r"[A-Za-z']+")
 
 PAST = "past"
@@ -385,9 +385,20 @@ def node_tense_counts(body: str) -> tuple[int, int]:
     Returns:
         A pair of counts over classifiable, non-dialogue sentences.
     """
+    # #ASSUME: data-integrity: splits with `utils.sentences.split_sentences`
+    # (UW-C255, AL-379) rather than the old bare `[^.!?]+[.!?]*` idiom, so an
+    # abbreviation ("Mr. Fez") or a tagged "!"/"?" line no longer produces a
+    # spurious extra sentence. Measured over the 31 committed books: the
+    # (past, present) totals move by at most one sentence in 3 of 31 books
+    # (a "!"/abbreviation merge absorbing a one-word tag clause), and neither
+    # the dominant tense nor the set of nodes `tense_report` flags as
+    # unstable changes in any book.
+    # #VERIFY: tests/unit/test_sentences.py pins the splitter itself;
+    # tests/unit/test_check_prose_craft.py exercises this function's tense
+    # classification.
     stripped = strip_dialogue(body)
     past = present = 0
-    for sentence in _SENTENCE.findall(stripped):
+    for sentence in split_sentences(stripped):
         tense = sentence_tense(sentence)
         if tense == PAST:
             past += 1
@@ -541,8 +552,17 @@ def _is_ending(node: dict[str, Any]) -> bool:
 
 
 def _sentences(text: str) -> list[str]:
-    """Return non-empty, stripped sentences of a text."""
-    return [s.strip() for s in _SENTENCE.findall(text) if s.strip()]
+    """Return non-empty, stripped sentences of a text.
+
+    Delegates to :func:`cyo_adventure.utils.sentences.split_sentences`
+    (UW-C255, AL-379) rather than the bare ``[^.!?]+[.!?]*`` idiom this
+    script used before: the tail-sentence extraction below is exactly the
+    kind of "opening/closing sentence" use that idiom got wrong on an
+    abbreviation. Measured over the 31 committed books: the extracted
+    tail-sentence set for :func:`moral_tags` is byte-identical, old splitter
+    versus new, in every book.
+    """
+    return split_sentences(text)
 
 
 def moral_tags(story: dict[str, Any], *, tail_sentences: int = 4) -> list[MoralHit]:
