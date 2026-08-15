@@ -211,7 +211,7 @@ The kid-facing empty and error states are all written in kid language ("Ask a gr
 ## The flow at a glance
 
 | # | Step | Who acts | Blocking? |
-|---|------|----------|-----------|
+| --- | --- | --- | --- |
 | 1 | Land on `/`, pick a door | Visitor | no |
 | 2 | Sign in with Google (this is signup) | Guardian | no |
 | 3 | KWS adulthood verification | Guardian + Epic | only when `KWS_VERIFICATION_REQUIRED=true` |
@@ -231,7 +231,7 @@ Twelve steps from link to first page read, gated on a platform admin twice, with
 ## Findings, ranked
 
 | # | Finding | Where | Severity |
-|---|---------|-------|----------|
+| --- | --- | --- | --- |
 | 1 | Publishing does not assign. A guardian who does everything right still lands their child on an empty shelf, and the `story_ready` notification does not mention assigning. | `api/library.py:425`, `notifications/registry.py:147` | High |
 | 2 | Self-signup dead-ends on a platform admin nobody tells, with no notification either way, no ETA, and no support link on the waiting screen. | `api/onboarding.py`, `GuardianAwaitingApprovalPage.tsx` | High |
 | 3 | The consent screen, the legally load-bearing one, renders unstyled: no shell, no container, raw form controls. Verification and awaiting-approval share the defect. | `router.tsx`, `GuardianConsentPage.tsx`, `guardian.css` | High |
