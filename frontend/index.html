@@ -16,11 +16,14 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Adventure" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="description" content="A choose-your-own-adventure reading app for kids" />
-    <!-- Canonical + social preview tags. This is a private family deployment
-         (homelab-first per the ADRs, no public marketing site), so unlike a
-         typical SPA these exist for link-preview correctness (a guardian
-         pasting the URL into a family chat) rather than search-engine SEO.
+    <meta
+      name="description"
+      content="Personalized choose-your-own-adventure storybooks for kids 4 to 13. Your child picks the path; you approve every page. Free during early access."
+    />
+    <!-- Canonical + social preview tags. Originally added for link-preview
+         correctness on a private family deployment (a guardian pasting the
+         URL into a family chat); with the landing page now doubling as the
+         product's sales funnel (2026-08 redesign), the copy also has to sell.
          Hardcoded to the one real production origin rather than computed
          from window.location, matching how the rest of this static shell
          (title, description) is already origin-agnostic markup filled in
@@ -29,7 +32,10 @@
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="CYO Adventure" />
     <meta property="og:title" content="CYO Adventure" />
-    <meta property="og:description" content="A choose-your-own-adventure reading app for kids" />
+    <meta
+      property="og:description"
+      content="Personalized choose-your-own-adventure storybooks for kids 4 to 13. Your child picks the path; you approve every page."
+    />
     <meta property="og:url" content="https://cyo.williamshome.family/" />
     <!-- #ASSUME: external-resources: reuses the existing 512px PWA icon
          (public/pwa-icon-512.png, generated from the Mascot art) as a
@@ -43,7 +49,10 @@
     <meta property="og:image:height" content="512" />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="CYO Adventure" />
-    <meta name="twitter:description" content="A choose-your-own-adventure reading app for kids" />
+    <meta
+      name="twitter:description"
+      content="Personalized choose-your-own-adventure storybooks for kids 4 to 13. Your child picks the path; you approve every page."
+    />
     <meta name="twitter:image" content="https://cyo.williamshome.family/pwa-icon-512.png" />
     <!-- Structured data: minimal WebApplication entry so a link preview or
          AI crawler that parses JSON-LD gets a correct, machine-readable
@@ -94,7 +103,7 @@
          inline (not a module) so it runs synchronously, and wrapped in
          try/catch since localStorage can throw in private-mode Safari. -->
     <script>
-      (function () {
+      ;(function () {
         // Read the stored preference in its OWN try: if localStorage throws
         // (private-mode Safari, disabled-storage policy), fall through to the
         // OS preference below instead of skipping it and defaulting to light.

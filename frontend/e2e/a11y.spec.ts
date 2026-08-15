@@ -131,8 +131,11 @@ test('landing page has no detectable accessibility violations', async ({ page })
   // it is the one place a scan could otherwise land before the lazy chunk
   // mounts anything at all, not just before it replaces an already-mounted
   // fallback. Waiting on the real heading closes that gap the same way the
-  // other tests' pre-existing assertions already do.
-  await expect(page.getByRole('heading', { name: 'CYO Adventure' })).toBeVisible()
+  // other tests' pre-existing assertions already do. (The h1 is the funnel
+  // headline since the 2026-08 redesign; the app name lives in the wordmark.)
+  await expect(
+    page.getByRole('heading', { name: 'They pick the path. You approve every page.' })
+  ).toBeVisible()
   await assertNoViolations(page)
 })
 

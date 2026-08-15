@@ -3,13 +3,17 @@ import { expect, test } from '@playwright/test'
 import { seedDeviceGrant } from './support/auth'
 
 /**
- * Landing page at `/` (design spec 2026-07-05): the audience-neutral root
- * with a Kids door and a Grown-ups door (-> /guardian).
+ * Landing page at `/` (sales-funnel redesign, 2026-08): one page, two jobs.
  *
- * The Kids door is now device-state-aware (ADR-014 section 5): it targets the
- * `/kids` picker only when this device holds a valid device grant, otherwise
- * it routes through guardian login carrying the authorize-device intent. Both
- * branches are covered below.
+ * Returning users keep the two doors: the Kids door is device-state-aware
+ * (ADR-014 section 5), targeting the `/kids` picker only when this device
+ * holds a valid device grant and otherwise routing through guardian login
+ * with the authorize-device intent. Both branches are covered below,
+ * unchanged from before the redesign.
+ *
+ * New adults get the funnel: hero CTA into guardian login (the self-signup
+ * path, P-6e), a working sample adventure, and a subscription-ready pricing
+ * section that sells nothing until billing exists (see pricing.ts).
  */
 test('landing kid door reaches the picker when the device is authorized', async ({
   page,
@@ -44,17 +48,70 @@ test('landing kid door routes through guardian login when the device is not auth
   await expect(kidsDoor).toHaveAttribute('href', '/guardian/login?intent=authorize-device')
 })
 
-// P-6e: the Kids/Grown-ups doors both assume an existing account; a
-// brand-new visitor previously had no affordance at all. This proves the new
-// "Get started" link reaches the real ordinary guardian login page (where
-// "Continue with Google/Apple" is the actual self-signup mechanism), not
-// just that the href string looks right.
-test('a new visitor follows "Get started" straight to guardian sign-in', async ({ page }) => {
+// P-6e, now promoted from an easily-missed text link to the hero's primary
+// CTA: this proves the funnel's main action reaches the real guardian login
+// (where "Continue with Google/Apple" is the actual self-signup mechanism),
+// not just that the href string looks right.
+test('a new visitor follows the hero "Get started free" CTA straight to guardian sign-in', async ({
+  page,
+}) => {
   await page.goto('/')
 
-  await expect(page.getByText(/new here\?/i)).toBeVisible()
-  await page.getByRole('link', { name: /get started/i }).click()
+  await expect(
+    page.getByRole('heading', { name: 'They pick the path. You approve every page.' })
+  ).toBeVisible()
+  await page.getByRole('link', { name: /get started free/i }).click()
 
   await expect(page).toHaveURL('/guardian/login')
   await expect(page.getByRole('heading', { name: 'Guardian sign-in' })).toBeVisible()
+})
+
+test('the pricing section is subscription-ready but sells nothing today', async ({ page }) => {
+  await page.goto('/')
+
+  await expect(page.getByRole('heading', { name: 'Simple family pricing' })).toBeVisible()
+
+  const explorer = page.getByRole('article', { name: 'Explorer' })
+  await expect(explorer.getByText('Available now')).toBeVisible()
+  await expect(explorer.getByRole('link', { name: 'Start free' })).toHaveAttribute(
+    'href',
+    '/guardian/login'
+  )
+
+  // The unpriced Family tier must carry no actionable control (pricing.ts
+  // #CRITICAL): a status chip and an invitation line only.
+  const family = page.getByRole('article', { name: 'Family' })
+  await expect(family.getByText('Coming soon').first()).toBeVisible()
+  await expect(family.getByRole('link')).toHaveCount(0)
+  await expect(family.getByRole('button')).toHaveCount(0)
+})
+
+test('the sample adventure plays through to an ending and restarts', async ({ page }) => {
+  await page.goto('/')
+
+  await expect(page.getByText(/brass lantern swings/i)).toBeVisible()
+  await page.getByRole('button', { name: /slip into the glittering cave/i }).click()
+  await page.getByRole('button', { name: /peek behind the stone/i }).click()
+
+  await expect(page.getByText(/you found 1 of 4 endings/i)).toBeVisible()
+  await expect(page.getByRole('link', { name: /make their next story/i })).toHaveAttribute(
+    'href',
+    '/guardian/login'
+  )
+
+  await page.getByRole('button', { name: /read it again/i }).click()
+  await expect(page.getByText(/brass lantern swings/i)).toBeVisible()
+})
+
+test('topbar anchors jump to their funnel sections', async ({ page }) => {
+  await page.goto('/')
+
+  // Scoped to the topnav: the hero's "See how it works" CTA would otherwise
+  // also match the substring-based role-name lookup for "How it works".
+  const topnav = page.getByRole('navigation', { name: 'Page sections' })
+  await topnav.getByRole('link', { name: 'Pricing' }).click()
+  await expect(page.locator('#pricing')).toBeInViewport()
+
+  await topnav.getByRole('link', { name: 'How it works' }).click()
+  await expect(page.locator('#how-it-works')).toBeInViewport()
 })
