@@ -152,32 +152,43 @@ export function LandingPage() {
   // #VERIFY: LandingPage.test.tsx "kids door" post-hydrate case, "recovers a
   // mirrored grant on a touch tap with no hover or focus", and "downgrades the
   // door href ... durably".
-  // Revocation generation, bumped by the storage listener below every time it
-  // observes the grant go away. A hydrate captures the value when it STARTS
-  // and discards its own result if the value moved while the read was in
-  // flight, because that means a revoke landed underneath it.
+  // Once this device's grant has been revoked while the page is open, the
+  // IndexedDB mirror must never be trusted again for the rest of this page's
+  // life. A monotonic flag, not a generation counter: a counter only tells a
+  // hydrate whether a revoke landed DURING its own read, which leaves three
+  // other orderings open.
   //
-  // Without this there is a second, narrower resurrection race than the
-  // re-arming one described above, and the run-once guard does not cover it:
-  // one hydrate straddling a revoke. The mirror read is already in flight when
-  // the other tab clears localStorage; clearDeviceGrantMirror has not landed
-  // yet (it is fire-and-forget), so the read returns the doomed grant,
-  // hydrateDeviceGrant writes it back to localStorage, and the door upgrades
-  // to /kids AFTER the storage listener downgraded it. The device then looks
-  // authorized to a child until a backend call rejects the stale token.
-  // #CRITICAL: security: a revoked device must not be able to re-acquire a
-  // usable grant from a stale mirror. The generation check is what enforces
-  // last-writer-wins in favour of the REVOKE, and clearDeviceGrant undoes the
-  // write hydrateDeviceGrant already performed.
-  // #VERIFY: LandingPage.test.tsx "discards a hydrate that a revoke overtook".
-  const revokeGenerationRef = useRef(0)
+  //   revoke during the read  -> the .then below discards its result and
+  //     undoes the write hydrateDeviceGrant already performed.
+  //   revoke after the read   -> the memoised promise is already resolved
+  //     holding the old grant, and a later click would reuse it and navigate
+  //     to /kids. The flag makes hydrateOnce short-circuit to null instead,
+  //     and the listener drops the stale promise.
+  //   revoke before any read  -> nothing to hydrate from; the flag keeps it
+  //     that way.
+  //
+  // Re-authorization still works: another tab minting a grant fires a
+  // non-removal storage event, which sets kidsDoorPath to the picker, and the
+  // click handler returns early on that without consulting the promise.
+  // #CRITICAL: security: a revoked device must not re-acquire a usable grant
+  // from a stale mirror, by any ordering. clearDeviceGrantMirror is
+  // fire-and-forget, so the mirror can outlive the revoke and a fresh read
+  // would happily restore it; refusing to read at all is what closes that.
+  // #VERIFY: LandingPage.test.tsx "discards a hydrate that a revoke overtook",
+  // "de-authorizes when the revoke event arrives after the hydrate", and
+  // "does not reuse a cached grant after a revoke".
+  const revokedSinceMountRef = useRef(false)
 
   const hydratePromiseRef = useRef<Promise<DeviceGrant | null> | null>(null)
   const hydrateOnce = useCallback(() => {
-    const startedAtGeneration = revokeGenerationRef.current
+    // Short-circuit: once revoked, do not bother opening IndexedDB for an
+    // answer that the .then guard below would discard anyway. Correctness does
+    // NOT rest on this line (removing it keeps every test green); it just
+    // avoids a pointless read on a device we already know is unauthorized.
+    if (revokedSinceMountRef.current) return Promise.resolve(null)
     hydratePromiseRef.current ??= hydrateDeviceGrant()
       .then((grant) => {
-        if (revokeGenerationRef.current !== startedAtGeneration) {
+        if (revokedSinceMountRef.current) {
           // A revoke overtook this read. hydrateDeviceGrant has already
           // written the mirrored grant back into localStorage, so undo it
           // (this also clears the mirror the revoke was racing to delete).
@@ -273,7 +284,7 @@ export function LandingPage() {
       // that closes the second ordering. Both are possible:
       //
       //   event first, hydrate second -> the generation bump below makes the
-      //     hydrate discard its own result (see revokeGenerationRef above).
+      //     hydrate discard its own result (see revokedSinceMountRef above).
       //   hydrate first, event second -> the hydrate has ALREADY written the
       //     stale grant back, so hasValidDeviceGrant() would read the restored
       //     value, report "still valid", and leave a revoked device sitting on
@@ -283,7 +294,10 @@ export function LandingPage() {
       // clearDeviceGrant() here undoes exactly that restore; it is a no-op
       // when the hydrate has not landed yet.
       if (isDeviceGrantRevocation(event)) {
-        revokeGenerationRef.current += 1
+        revokedSinceMountRef.current = true
+        // Drop any promise resolved BEFORE the revoke: a later click would
+        // otherwise reuse its grant and navigate to /kids.
+        hydratePromiseRef.current = null
         clearDeviceGrant()
         setKidsDoorPath(AUTHORIZE_DEVICE_PATH)
         return

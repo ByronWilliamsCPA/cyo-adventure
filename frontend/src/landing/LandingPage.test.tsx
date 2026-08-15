@@ -13,6 +13,9 @@ import { setDeviceGrant } from '../auth/deviceGrant'
 const hydrateControl = vi.hoisted(() => ({
   failNext: false,
   gate: null as Promise<void> | null,
+  // Forces the next read to report a surviving mirror, standing in for a
+  // clearDeviceGrantMirror that has not landed yet.
+  mirrorSurvives: false,
 }))
 vi.mock('../auth/deviceGrant', async (importOriginal) => {
   const actual = await importOriginal<typeof import('../auth/deviceGrant')>()
@@ -25,6 +28,16 @@ vi.mock('../auth/deviceGrant', async (importOriginal) => {
       }
       // Lets a test hold the read open and revoke underneath it.
       if (hydrateControl.gate) await hydrateControl.gate
+      if (hydrateControl.mirrorSurvives) {
+        const survivor = {
+          token: 'tok-1',
+          expiresAt: '2099-01-01T00:00:00Z',
+          familyId: 'fam-1',
+          id: 'grant-1',
+        }
+        actual.setDeviceGrant(survivor)
+        return survivor
+      }
       return actual.hydrateDeviceGrant(...args)
     },
   }
@@ -66,6 +79,7 @@ function seedValidGrant() {
 beforeEach(() => {
   hydrateControl.failNext = false
   hydrateControl.gate = null
+  hydrateControl.mirrorSurvives = false
   globalThis.indexedDB = new IDBFactory()
   _resetDbHandle()
   localStorage.clear()
@@ -592,6 +606,75 @@ describe('LandingPage', () => {
         'href',
         '/guardian/login?intent=authorize-device'
       )
+      expect(localStorage.getItem('device_grant')).toBeNull()
+    })
+
+    // The memoised promise is resolved BEFORE the revoke, holding the old
+    // grant. A generation counter cannot see this: its check already ran. A
+    // later click would hand back that cached result and navigate the child
+    // to /kids on a device whose grant was taken away.
+    it('does not reuse a cached grant after a revoke', async () => {
+      seedValidGrant()
+      await new Promise((resolve) => setTimeout(resolve, 50))
+      localStorage.removeItem('device_grant')
+
+      renderLanding()
+      const kidDoor = screen.getByRole('link', { name: /kids/i })
+
+      // A successful hydrate resolves and caches the grant.
+      fireEvent.focus(kidDoor)
+      await waitFor(() =>
+        expect(screen.getByRole('link', { name: /kids/i })).toHaveAttribute('href', '/kids')
+      )
+
+      // Only now does the revoke arrive.
+      act(() => {
+        localStorage.removeItem('device_grant')
+        window.dispatchEvent(new StorageEvent('storage', { key: 'device_grant', newValue: null }))
+      })
+      expect(screen.getByRole('link', { name: /kids/i })).toHaveAttribute(
+        'href',
+        '/guardian/login?intent=authorize-device'
+      )
+
+      // The click must NOT resurrect the cached grant.
+      fireEvent.click(screen.getByRole('link', { name: /kids/i }), { button: 0 })
+      await waitFor(() => expect(screen.getByText('guardian login landing')).toBeInTheDocument())
+      expect(localStorage.getItem('device_grant')).toBeNull()
+    })
+
+    // The invariant that matters after a revoke: no path re-authorizes, even
+    // if the mirror is still readable. clearDeviceGrantMirror is
+    // fire-and-forget, so a post-revoke read genuinely can find the doomed
+    // grant; the injected survivor stands in for that delete-not-landed
+    // window, which real timing makes impossible to stage reliably here.
+    //
+    // Note this does NOT discriminate between dropping the memoised promise
+    // and refusing the read outright: the monotonic flag checked inside the
+    // hydrate's .then covers both. It is here to pin the property, not to
+    // justify one of the two mechanisms.
+    it('refuses to re-read the mirror after a revoke, even if the delete is slow', async () => {
+      seedValidGrant()
+      await new Promise((resolve) => setTimeout(resolve, 50))
+
+      renderLanding()
+      expect(screen.getByRole('link', { name: /kids/i })).toHaveAttribute('href', '/kids')
+
+      act(() => {
+        localStorage.removeItem('device_grant')
+        window.dispatchEvent(new StorageEvent('storage', { key: 'device_grant', newValue: null }))
+      })
+      expect(screen.getByRole('link', { name: /kids/i })).toHaveAttribute(
+        'href',
+        '/guardian/login?intent=authorize-device'
+      )
+
+      // From here on, ANY read would find a live grant. None must happen.
+      hydrateControl.mirrorSurvives = true
+      fireEvent.focus(screen.getByRole('link', { name: /kids/i }))
+      fireEvent.click(screen.getByRole('link', { name: /kids/i }), { button: 0 })
+
+      await waitFor(() => expect(screen.getByText('guardian login landing')).toBeInTheDocument())
       expect(localStorage.getItem('device_grant')).toBeNull()
     })
 
