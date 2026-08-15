@@ -17,13 +17,7 @@
  */
 
 export type DemoNodeId =
-  | 'start'
-  | 'cave'
-  | 'hill'
-  | 'end_glowbug'
-  | 'end_echo'
-  | 'end_letter'
-  | 'end_race'
+  'start' | 'cave' | 'hill' | 'end_glowbug' | 'end_echo' | 'end_letter' | 'end_race'
 
 export interface DemoChoice {
   label: string
