@@ -46,6 +46,15 @@
 '     src/cyo_adventure/validator/series.py (2 callers: publishing/service.py's
 '       approve() and scripts/build_series_book.py:40, NOT generation/binding.py;
 '       validator/__init__.py re-exports validate_series but does not call it)
+'     src/cyo_adventure/validator/paths.py (0 importers under src/ or scripts/;
+'       tests/unit/test_paths.py only. Root-to-ending path enumeration for the
+'       W1/W2 re-unitting of the craft measures, per
+'       docs/planning/cyo-measurement-workplan-2026-08-12.md)
+'
+'   Called BY run_gate() and easy to miss:
+'     src/cyo_adventure/validator/character.py (validate_character: CH-1..CH-8,
+'       ADR-028 character envelope. ERROR-severity and BLOCKING -- "CH" is in
+'       run_gate()'s blocked prefix set alongside L1/L2/PL)
 ' ============================================================
 
 skinparam defaultFontName "Roboto"
@@ -67,14 +76,18 @@ package "Validator Gate" #E8F5E9 {
   }
 
   package "Policy Layer: age/scale invariants (ADR-011)" #A5D6A7 {
-    component "validate_policy()\nvalidator/policy.py\nPL-15: forbidden ending kinds per band\nPL-16: content-flag ceilings per band\nPL-17: ending/decision floors per band\nPL-18: choice-graph topology\nPL-19: words-per-node cap (blocking) + story-mean (advisory)\nPL-20: fastest-finish arc floor\nPL-21: off-matrix cell rejection\nPL-22: band profile not configured -> fail closed" as policy #A5D6A7
+    component "validate_policy()\nvalidator/policy.py\nPL-15: forbidden ending kinds per band\nPL-16: content-flag ceilings per band\nPL-17: ending/decision floors per band\nPL-18: choice-graph topology\nPL-19: words-per-node cap (blocking) + story-mean (advisory)\nPL-20: fastest-finish arc length (advisory)\nPL-21: off-matrix cell rejection\nPL-22: band profile not configured -> fail closed\nPL-23, PL-24\nPL-25: depth to first decision\n  (floor blocks; ceiling advisory)\nPL-26: decision density on the\n  fastest finish (advisory)\n\ncheck_fill_residue() [same module]\nPL-27: no node body of a FILL RESULT may\n  still be a <<FILL ...>> directive. Runs\n  ONLY under context='fill_result', BEFORE\n  the rest of the policy layer, so an\n  unwritten book's first finding names the\n  real cause. Under the default 'skeleton'\n  posture it does not run at all: a catalog\n  skeleton's bodies are directives by\n  construction (AL-325)" as policy #A5D6A7
 
     component "band_profile.py\nBandProfile per age band:\n3-5 | 5-8 | 8-11 | 10-13 |\n13-16 | 16+\nnode/depth budget, content ceilings,\nforbidden endings, ending/decision floors" as band_profile #A5D6A7
   }
 
   package "Layer 2: State-Space Walk (Tier-2 only)" #C8E6C9 {
-    component "validate_layer2()\nvalidator/layer2.py\nL2-9: stateful dead-ends (reachable\n  non-ending config, no visible choices)\nL2-10: loop escape (an ending stays\n  reachable from every config)\nL2-11: dead branch (conditional choice\n  never visible)\nL2-12: walk-cap ceiling (complexity)" as layer2 #C8E6C9
+    component "validate_layer2()\nvalidator/layer2.py\nL2-9: stateful dead-ends (reachable\n  non-ending config, no visible choices)\nL2-10: loop escape (an ending stays\n  reachable from every config)\nL2-11: dead branch (conditional choice\n  never visible)\nL2-12: walk-cap ceiling (complexity)\nL2-13: scale advisory (WARNING only;\n  never sets blocked)\nL2-14: no all-forbidden decision" as layer2 #C8E6C9
     component "walk_configurations()\nvalidator/walk.py\nBFS over (node, var-state)\nconfigurations (cap 100k)" as walk_comp #C8E6C9
+  }
+
+  package "Character Envelope (ADR-028)" #A5D6A7 {
+    component "validate_character()\nvalidator/character.py\nCH-1..CH-8: character-envelope rules,\nBLOCKING (Severity.ERROR).\nParticipating books only: returns an\nempty report for a book that neither\nopts in nor uses a reserved name.\nCH-1/2/5/6/7 need no walk; CH-3a/3b/4\nwalk once per envelope entry state,\nCH-8 walks once more, always" as character #A5D6A7
   }
 
   package "Advisory Checks" #B2DFDB {
@@ -99,6 +112,7 @@ package "Related Validators\n(NOT called by run_gate();\nsiblings with their own
   component "slots.py\nvalidator/slots.py" as slots_mod #E0E0E0
   component "theme_leak.py\nvalidator/theme_leak.py" as theme_leak #E0E0E0
   component "series.py\nvalidator/series.py\nvalidate_series()" as series #E0E0E0
+  component "paths.py\nvalidator/paths.py\nroot-to-ending path enumeration\n(tests only; no src/ or scripts/\ncaller yet -- W1/W2 groundwork)" as paths_mod #E0E0E0
 }
 
 component "Storybook Model\nstorybook/models.py\n(Pydantic v2, parsed after L1 clean)" as storybook_model #E3F2FD
@@ -118,6 +132,8 @@ policy --> report : "PL findings"
 gate --> layer2 : "Storybook\n[Tier-2 only;\nTier-1 short-circuits]"
 layer2 --> walk_comp : "state-space exploration"
 layer2 --> report : "L2 findings"
+gate --> character : "Storybook\n[after Layer 2]"
+character --> report : "CH findings (ERROR)"
 gate --> reading_level : "Storybook"
 reading_level --> report : "RL-13 WARNING\n(never blocks)"
 gate --> choice_grammar : "Storybook\n(if enforce_grammar)"
@@ -131,27 +147,45 @@ note right of gate
   Rule application order (gate.py, validator-rules.md):
   1. L1 (always): graph structure + schema
   2. Early return on any L1 ERROR
-  3. Policy (PL-15..PL-22): age/scale invariants
+  3. PL-27 fill-residue, ONLY under
+     context='fill_result', ahead of the rest of
+     the policy layer
+  4. Policy (PL-15..PL-26): age/scale invariants
      (PL-22 = fail closed when band profile missing)
      on the parsed Storybook (ADR-011 band x
      length x style)
-  4. L2 (Tier-2 only): state-space walk
-  5. RL-13: advisory reading-level (WARNING)
-  6. CG-1..CG-4: advisory choice-grammar
+  5. L2 (Tier-2 only): state-space walk
+  6. CH-1..CH-8: character envelope (ADR-028),
+     participating books only. BLOCKING
+  7. RL-13: advisory reading-level (WARNING)
+  8. CG-1..CG-4: advisory choice-grammar
      (only when enforce_grammar=True)
-  7. SAFE-14: safety stub (always empty now)
+  9. SAFE-14: safety stub (always empty now)
 
   blocked = any ERROR with rule_id starting
-    with "L1", "L2", or "PL"
+    with "CH", "L1", "L2", or "PL"
+    (note CH: character-envelope errors block,
+    which is easy to miss because the package
+    reads like an add-on)
   safety_flagged = any finding with
     rule_id == "SAFE-14"
+
+  GateResult.context records the posture the
+  result was produced under, rather than leaving
+  it inferable: it distinguishes a blocked=False
+  that cleared PL-27 from one that never ran it.
+  AL-324's defect was exactly that, an optional
+  argument that changed which checks ran while
+  spelling the verdict identically.
 end note
 
 note bottom of series
-  None of the four modules in "Related
+  None of the five modules in "Related
   Validators" above are imported by
-  validator/gate.py; each is a sibling
-  with its own real, distinct caller:
+  validator/gate.py. Four are siblings
+  with their own real, distinct caller;
+  paths.py is the exception and is
+  labelled as such:
 
   Counts only; the header's "Validator siblings"
   block carries the enumerated importer lists.
@@ -171,6 +205,19 @@ note bottom of series
     (series-chain validation before publish) and
     scripts/build_series_book.py; NOT
     generation/binding.py
+
+  paths.py -> NO production caller. Its only
+    importer today is tests/unit/test_paths.py.
+    It enumerates root-to-ending paths so the
+    craft measures that currently compute over a
+    whole book (reading_level's FK grade,
+    check_prose_craft.py, moderation's
+    leaf_diversity) can be re-unitted onto the
+    thing a child actually reads, which is one
+    path (W1/W2, cyo-measurement-workplan-
+    2026-08-12.md). Listed here BECAUSE it has no
+    caller: a module in validator/ that nothing
+    calls otherwise reads as an oversight.
 end note
 
 @enduml

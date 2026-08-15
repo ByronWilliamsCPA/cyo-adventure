@@ -3802,11 +3802,23 @@ would falsify a compliance premise rather than merely a design intent. See Secti
 are ordered among themselves by sensitivity of the field set rather than by route path.</p>
 <p><strong>Sections 3.11 to 3.18</strong> were derived differently, and the difference is the point. v1.2 re-walked
 the crossings from the authorization capability instead: <code>is_admin</code> appears 124 times across 29 of
-the 36 routers, and nine of those are bypasses that skip an ownership or family check. Eight of the
+the 36 routers, and nine of those are bypasses that skip an ownership or family check.</p>
+<blockquote>
+<p><strong>Inventory note, 2026-08-14.</strong> The denominator has since moved: the app wires <strong>37</strong> distinct
+routers, not 36. <code>api/consent.py</code> (ADR-018 D1, the browser-facing KWS verification start) landed
+after this walk. The finding above is left exactly as derived rather than renumbered, because
+re-spelling a denominator would imply the new router was walked when it was not. It does not need
+to be for the conclusion to hold: <code>consent.py</code> contains <strong>zero</strong> <code>is_admin</code> references, so it is
+neither one of the 29 nor one of the nine bypasses. Re-verified 2026-08-14 that
+<code>grep -c is_admin src/cyo_adventure/api/*.py</code> still totals 124 matching lines across 29 files, so
+the numerator and the reference count are both unchanged. Note that those 29 files include
+<code>deps.py</code>, <code>review_surface.py</code>, and <code>schemas.py</code>, which define no router: "29 of the 36 routers"
+is 29 <em>files under <code>api/</code></em>, three of which are support modules. Eight of the
 resulting surfaces appear in no <code>/admin/</code> route name at all. They are ordinary endpoints, several of
 which a guardian's own app calls in normal use, that widen for an admin caller in one inline
 condition. That is why the first pass missed them, and why Section 5's negative claims were wrong
 (see the note there).</p>
+</blockquote>
 <p><strong>Read the two groups as one ranked list only with care.</strong> The appended group is ordered internally,
 but the single most severe surface in this document is <strong>Section 3.11</strong>, not Section 3.1: it hands
 the caller a credential rather than a projection. The numbering is append-only so that citations to
@@ -4232,7 +4244,9 @@ wrong when written. The cause is worth recording because it is a reusable failur
 enumerated crossings by reading route names, and <code>is_admin</code> is an orthogonal boolean rather than a
 role, so a route reads as family-scoped and still admits a global operator through one inline
 condition. Deriving the list from the authorization capability instead surfaced 124 <code>is_admin</code>
-references across 29 of the 36 routers, of which nine are ownership-check bypasses. <strong>A negative
+references across 29 of the 36 routers (denominator as at v1.2; it is 37 today, see the inventory
+note in Section 3's preamble, and the added router carries no <code>is_admin</code> so this holds), of which
+nine are ownership-check bypasses. <strong>A negative
 claim about authorization has to be derived from the authorization, not from the route name.</strong>
 That is also why the rows below now cite a construct each rather than sharing one summary line.</p>
 </blockquote>
@@ -4440,7 +4454,7 @@ in the security assurance register, with the <code>CFD-*</code> ID cited as the 
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 11, 2026 17:49:33 UTC">August 11, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 15, 2026 17:29:48 UTC">August 15, 2026</span>
   </span>
 
     

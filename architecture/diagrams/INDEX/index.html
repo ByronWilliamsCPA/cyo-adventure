@@ -3412,14 +3412,14 @@ cataloged in <a href="../../story-skeletons/">../story-skeletons.md</a>.</p>
 <tr>
 <td>Generation Pipeline</td>
 <td><a href="../component-generation.puml">component-generation.puml</a> / <a href="../component-generation.svg">.svg</a></td>
-<td><code>generation/orchestrator.py</code>, <code>prompts.py</code>, <code>pii.py</code>, <code>guarded.py</code>, <code>provider.py</code>, <code>allowlist.py</code>, <code>skeleton_catalog.py</code>, <code>binding.py</code>, <code>fidelity_gate.py</code>, <code>fidelity.py</code></td>
-<td>Orchestrator, prompts, providers, PII guard, WS-2 theme binding, Stage-1 fidelity gate</td>
+<td><code>generation/orchestrator.py</code>, <code>prompts.py</code>, <code>pii.py</code>, <code>guarded.py</code>, <code>provider.py</code>, <code>allowlist.py</code>, <code>skeleton_catalog.py</code>, <code>binding.py</code>, <code>fidelity_gate.py</code>, <code>fidelity.py</code>, <code>reading_level_loop.py</code></td>
+<td>Orchestrator, prompts, providers, PII guard, WS-2 theme binding, Stage-1 fidelity gate, Stage D reading-level loop</td>
 </tr>
 <tr>
 <td>Validator Gate</td>
 <td><a href="../component-validator.puml">component-validator.puml</a> / <a href="../component-validator.svg">.svg</a></td>
-<td><code>validator/gate.py</code>, <code>layer1.py</code>, <code>policy.py</code>, <code>band_profile.py</code>, <code>layer2.py</code>, <code>reading_level.py</code>, <code>safety.py</code>, <code>choice_grammar.py</code></td>
-<td>L1 / Policy / L2 / RL / CG / SAFE layers; also notes sentinel_integrity.py, slots.py, theme_leak.py, series.py as siblings not called by run_gate()</td>
+<td><code>validator/gate.py</code>, <code>layer1.py</code>, <code>policy.py</code>, <code>band_profile.py</code>, <code>layer2.py</code>, <code>character.py</code>, <code>reading_level.py</code>, <code>safety.py</code>, <code>choice_grammar.py</code></td>
+<td>L1 / Policy / L2 / CH / RL / CG / SAFE layers. Note CH (<code>character.py</code>, ADR-028) is BLOCKING, not advisory: <code>run_gate()</code>'s blocked prefix set is CH/L1/L2/PL. Also notes sentinel_integrity.py, slots.py, theme_leak.py, series.py, paths.py as siblings not called by run_gate()</td>
 </tr>
 <tr>
 <td>Player Engine</td>
@@ -3430,8 +3430,8 @@ cataloged in <a href="../../story-skeletons/">../story-skeletons.md</a>.</p>
 <tr>
 <td>API and Persistence</td>
 <td><a href="../component-api-persistence.puml">component-api-persistence.puml</a> / <a href="../component-api-persistence.svg">.svg</a></td>
-<td><code>app.py</code>, <code>api/health.py</code>, <code>library.py</code>, <code>reading.py</code>, <code>generation.py</code>, <code>profiles.py</code>, <code>families.py</code></td>
-<td>Routers, auth seam, ORM</td>
+<td><code>app.py</code>, <code>api/health.py</code>, <code>library.py</code>, <code>reading.py</code>, <code>generation.py</code>, <code>profiles.py</code>, <code>families.py</code>, <code>consent.py</code>, <code>characters.py</code>, <code>offline_downloads.py</code>, <code>kws_webhook.py</code>, <code>kws_redirect.py</code></td>
+<td>All 37 wired routers (38 <code>include_router()</code> calls: health mounts twice), auth seam, ORM</td>
 </tr>
 <tr>
 <td>Moderation Pipeline</td>
@@ -3442,8 +3442,8 @@ cataloged in <a href="../../story-skeletons/">../story-skeletons.md</a>.</p>
 <tr>
 <td>Publishing</td>
 <td><a href="../component-publishing.puml">component-publishing.puml</a> / <a href="../component-publishing.svg">.svg</a></td>
-<td><code>publishing/state_machine.py</code>, <code>service.py</code>, <code>catalog_publish.py</code>, <code>api/approval.py</code>, <code>review_surface.py</code>, <code>events/writer.py</code></td>
-<td>Approval state machine, admin-only approve (ADR-005), standalone catalog-publish CLI</td>
+<td><code>publishing/state_machine.py</code>, <code>service.py</code>, <code>catalog_publish.py</code>, <code>reason_codes.py</code>, <code>api/approval.py</code>, <code>review_surface.py</code>, <code>events/writer.py</code></td>
+<td>Approval state machine, admin-only approve (ADR-005), standalone catalog-publish CLI, closed send-back reason vocabulary</td>
 </tr>
 <tr>
 <td>Pipeline Event Log</td>
@@ -3467,8 +3467,8 @@ cataloged in <a href="../../story-skeletons/">../story-skeletons.md</a>.</p>
 <tr>
 <td>Generation Sequence</td>
 <td><a href="../seq-generation.puml">seq-generation.puml</a> / <a href="../seq-generation.svg">.svg</a></td>
-<td><code>generation/orchestrator.py</code>, <code>provider.py</code>, <code>providers/fallback.py</code>, <code>core/config.py</code>, <code>pii.py</code>, <code>guarded.py</code></td>
-<td>Stage A/B/C with provider fallback</td>
+<td><code>generation/orchestrator.py</code>, <code>provider.py</code>, <code>providers/fallback.py</code>, <code>core/config.py</code>, <code>pii.py</code>, <code>guarded.py</code>, <code>reading_level_loop.py</code></td>
+<td>Stage A/B/C with provider fallback, then Stage D (reading level). The diagram is otherwise fresh_generation-only; Stage D is the exception, running on both methods</td>
 </tr>
 <tr>
 <td>Reading-State PUT</td>
@@ -3479,8 +3479,8 @@ cataloged in <a href="../../story-skeletons/">../story-skeletons.md</a>.</p>
 <tr>
 <td>Offline and Reconnect</td>
 <td><a href="../seq-offline.puml">seq-offline.puml</a> / <a href="../seq-offline.svg">.svg</a></td>
-<td><code>frontend/src/offline/sync.ts</code>, <code>db.ts</code>, <code>reader/ReaderPage.tsx</code>, <code>hooks/useReplayOnReconnect.ts</code></td>
-<td>IndexedDB queue, replay, conflict</td>
+<td><code>frontend/src/offline/sync.ts</code>, <code>db.ts</code>, <code>reader/ReaderPage.tsx</code>, <code>reader/ReaderRoute.tsx</code>, <code>hooks/useReplayOnReconnect.ts</code></td>
+<td>IndexedDB queue, replay, and silent newest-write-wins conflict resolution. There is no conflict dialog on the child path and no <code>ConflictDialog</code> component: <code>offline-conflict-ux.md</code> section 1's dialog was superseded 2026-07-22</td>
 </tr>
 <tr>
 <td>Device Grant Sequence</td>
@@ -3541,8 +3541,8 @@ cataloged in <a href="../../story-skeletons/">../story-skeletons.md</a>.</p>
 <tr>
 <td>Sitemap and Flows</td>
 <td><a href="../sitemap-and-flows.puml">sitemap-and-flows.puml</a> / <a href="../sitemap-and-flows.svg">.svg</a></td>
-<td><code>frontend/src/router.tsx</code>, <code>routes.ts</code>, <code>landing/LandingPage.tsx</code>, <code>auth/DeviceAuthorizedRoute.tsx</code>, <code>AdultGate.tsx</code>, <code>ProtectedRoute.tsx</code></td>
-<td>Every route and its purpose; two auth-boundary crossings (ADR-014)</td>
+<td><code>frontend/src/router.tsx</code>, <code>routes.ts</code>, <code>routeElements.tsx</code>, <code>landing/LandingPage.tsx</code>, <code>auth/DeviceAuthorizedRoute.tsx</code>, <code>AdultGate.tsx</code>, <code>ProtectedRoute.tsx</code>, <code>GuardianVerificationPage.tsx</code>, <code>legal/PrivacyPolicyPage.tsx</code>, <code>legal/SupportPage.tsx</code>, <code>api/kws_redirect.py</code></td>
+<td>All 34 mapped surfaces: every React route, the two auth-boundary crossings (ADR-014), the four <code>ProtectedRoute</code> interstitials in the order it checks them, the <code>*</code> catch-all and the <code>RouteError</code> boundary, and the full public zone. The public zone is <strong>not</strong> derivable from <code>router.tsx</code> alone: <code>GET /api/v1/consent/kws/return</code> is a server-rendered HTML page outside the SPA</td>
 </tr>
 </tbody>
 </table>
@@ -3560,8 +3560,8 @@ cataloged in <a href="../../story-skeletons/">../story-skeletons.md</a>.</p>
 <tr>
 <td>End-to-End Journey</td>
 <td><a href="../journey-end-to-end.puml">journey-end-to-end.puml</a> / <a href="../journey-end-to-end.svg">.svg</a></td>
-<td><code>frontend/src/router.tsx</code>, <code>landing/LandingPage.tsx</code>, <code>auth/DeviceAuthorizedRoute.tsx</code>, <code>AdultGate.tsx</code>, <code>library/RequestStory.tsx</code>, <code>guardian/RequestsPage.tsx</code></td>
-<td>Target-state UX across Child/Guardian/Admin/System lanes</td>
+<td><code>frontend/src/router.tsx</code>, <code>landing/LandingPage.tsx</code>, <code>auth/DeviceAuthorizedRoute.tsx</code>, <code>AdultGate.tsx</code>, <code>library/RequestStory.tsx</code>, <code>guardian/RequestsPage.tsx</code>, <code>reader/ReaderPage.tsx</code></td>
+<td>Target-state UX across Child/Guardian/Admin/System lanes. Steady-state only: the ADR-018 D1 first-run interstitials (verify, awaiting-approval, consent) live in <a href="../journey-guardian.puml">journey-guardian</a>, and the full page map in <a href="../sitemap-and-flows.puml">sitemap-and-flows</a></td>
 </tr>
 <tr>
 <td>Kid-Surface Journey</td>
@@ -3579,7 +3579,7 @@ cataloged in <a href="../../story-skeletons/">../story-skeletons.md</a>.</p>
 <td>Journey Test Coverage</td>
 <td><a href="../journey-dev-coverage.puml">journey-dev-coverage.puml</a> / <a href="../journey-dev-coverage.svg">.svg</a></td>
 <td><code>frontend/e2e/*.spec.ts</code> (Playwright), <code>frontend/src/**/*.test.tsx</code> (Vitest)</td>
-<td>Journey recolored by e2e / unit / none coverage. The colours are a point-in-time snapshot re-verified by hand on 2026-08-04; no tool checks that date, and the diagram's own header carries the dated spec inventory. Per-element uncertainty belongs in a <code>&lt;&lt;unverified&gt;&gt;</code> stereotype (<a href="../STYLE_GUIDE/#status-stereotypes">STYLE_GUIDE.md</a>), which an audit can actually find.</td>
+<td>Journey recolored by e2e / unit / none coverage. <strong>The colours are a 2026-08-04 snapshot</strong>; the spec inventory was refreshed 2026-08-14 against the 45 files then on disk, which surfaced ten specs the inventory had never picked up (listed in the header, unmapped to nodes). No tool checks either date. This diagram bakes a claim into a committed artifact, so a stale green reads as reassurance rather than as an omission. Per-element uncertainty belongs in a <code>&lt;&lt;unverified&gt;&gt;</code> stereotype (<a href="../STYLE_GUIDE/#status-stereotypes">STYLE_GUIDE.md</a>), which an audit can actually find.</td>
 </tr>
 </tbody>
 </table>
@@ -3590,8 +3590,25 @@ cataloged in <a href="../../story-skeletons/">../story-skeletons.md</a>.</p>
   <a href="../STYLE_GUIDE/#regenerating-svgs">STYLE_GUIDE.md</a>.</li>
 <li><code>--check</code> needs no PlantUML jar and is designed to run in CI, but nothing invokes it
   today: <code>grep -rn generate_diagram_svgs .github/ .pre-commit-config.yaml noxfile.py</code>
-  returns nothing. Treat it as a command you run by hand, not a gate that will catch you.
-  Wiring it into a workflow is the open follow-up.</li>
+  returns nothing (re-verified 2026-08-14). Treat it as a command you run by hand, not a
+  gate that will catch you. Wiring it into a workflow is the open follow-up.</li>
+<li><strong>Staleness is decided by git commit time, not filesystem mtime</strong>, so an <em>uncommitted</em>
+  <code>.puml</code> edit is invisible to both <code>--check</code> and the default render mode: both will
+  report "up to date" and render nothing while your working tree disagrees with the
+  committed SVG. This is deliberate (mtimes do not survive <code>git clone</code>, so an mtime gate
+  is a no-op in CI), but it inverts the usual local workflow. Commit the <code>.puml</code> first,
+  then run the tool, then amend the SVGs into that commit. <code>--all</code> is the alternative and
+  re-renders all ~80 diagrams, including the <code>skeletons/</code> tree, for a much noisier diff.</li>
+<li>Rendering needs Graphviz on <code>PATH</code> for every component and deployment diagram; the
+  activity and sequence diagrams render without it. Without <code>dot</code>, PlantUML writes an
+  error-image SVG rather than failing, so a run that "succeeded" can still have committed
+  a placeholder. Set <code>GRAPHVIZ_DOT=$(which dot)</code> if PlantUML looks in the wrong place
+  (it defaults to <code>/opt/local/bin/dot</code>), and sanity-check output sizes before committing:
+  an error placeholder is an order of magnitude smaller than the real diagram.</li>
+<li>Prefer naming a function over pinning a line number in a traceability note. Two pins in
+  <code>component-generation.puml</code> (<code>orchestrator.py:492</code>, <code>import_story.py:541</code>) both went
+  stale the moment Stage D shifted the file, and nothing flagged them, because a line
+  number that still resolves to <em>some</em> line is not detectably wrong.</li>
 <li>The <code>Primary sources</code> column is a maintenance aid, not an exhaustive list; each
   <code>.puml</code> carries a full <code>' Source files:</code> traceability block. A source path that no
   longer exists is drift the diagram audit will flag.</li>
@@ -3618,7 +3635,7 @@ cataloged in <a href="../../story-skeletons/">../story-skeletons.md</a>.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 10, 2026 18:04:11 UTC">August 10, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 15, 2026 17:29:48 UTC">August 15, 2026</span>
   </span>
 
     

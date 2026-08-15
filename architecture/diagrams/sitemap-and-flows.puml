@@ -33,8 +33,29 @@
 '   frontend/src/auth/GuardianAwaitingApprovalPage.tsx (/guardian/awaiting-approval,
 '                                            WS-J self-signup approval interstitial)
 '   frontend/src/auth/GuardianConsentPage.tsx (/guardian/consent, ADR-018 D1 VPC)
+'   frontend/src/auth/GuardianVerificationPage.tsx (/guardian/verify, ADR-018 D1
+'                                            KWS parent verification; the FIRST
+'                                            of the interstitials ProtectedRoute
+'                                            checks)
+'   frontend/src/legal/PrivacyPolicyPage.tsx, SupportPage.tsx (/privacy, /support:
+'                                            public and ungated by construction,
+'                                            registered with KWS)
+'   frontend/src/routeElements.tsx          (NotFoundPage: the '*' catch-all;
+'                                            RouteError: the errorElement on all
+'                                            three subtrees and the catch-all)
+'   src/cyo_adventure/api/kws_redirect.py   (GET /api/v1/consent/kws/return: a
+'                                            server-rendered public HTML page,
+'                                            NOT a React route. Counting the
+'                                            public surface from router.tsx
+'                                            alone misses it)
+'   frontend/src/router.test.tsx            (asserts no gate sits between the
+'                                            route-tree root and /privacy or
+'                                            /support)
 '   frontend/src/routes.ts                  (GUARDIAN_AWAITING_APPROVAL_PATH,
-'                                            GUARDIAN_CONSENT_PATH)
+'                                            GUARDIAN_CONSENT_PATH,
+'                                            GUARDIAN_VERIFICATION_PATH,
+'                                            GUARDIAN_UNAVAILABLE_PATH,
+'                                            PRIVACY_PATH, SUPPORT_PATH)
 '   frontend/src/kid/ProfilePickerPage.tsx, library/LibraryPage.tsx,
 '     reader/ReaderRoute.tsx
 '   frontend/src/guardian/ConsolePage.tsx, IntakePage.tsx, RequestsPage.tsx,
@@ -64,9 +85,69 @@ skinparam component {
 package "Landing / Device Boundary\n(chunk-neutral, no KidShell, no Supabase)" #FFF3E0 {
   component "LandingPage\n/\nTwo doors: Kids + Grown-ups.\nKids door target depends on\nhasValidDeviceGrant()" as landing #FFE0B2
   component "LoginPage\n/guardian/login\n[?intent=authorize-device]\nSupabase sign-in; mints a\ndevice grant when the intent\nis present" as login #FFE0B2
+  component "GuardianVerificationPage\n/guardian/verify\nADR-018 D1: start, then wait out,\nEpic KWS parent verification.\nFIRST of the three interstitials" as verification_page #FFE0B2
   component "GuardianAwaitingApprovalPage\n/guardian/awaiting-approval\nSelf-signed-up guardian,\nnot yet admin-approved (WS-J)" as awaiting_approval #FFE0B2
   component "GuardianConsentPage\n/guardian/consent\nADR-018 D1 VPC: typed legal\nname + checkbox attestation" as consent_page #FFE0B2
+  component "GuardianBackendUnavailablePage\n/guardian/unavailable\nAuthStatus 'backend-unreachable'\n(#452): Supabase session is fine,\nour own API is not. Retry here\nrather than bounce to login" as unavailable_page #FFE0B2
 }
+
+package "Public / Ungated\n(reachable with NO session and NO device grant)" #FFFDE7 {
+  component "PrivacyPolicyPage\n/privacy\nfrontend/src/legal/" as public_privacy #FFF9C4
+  component "SupportPage\n/support\nfrontend/src/legal/" as public_support #FFF9C4
+  component "NotFoundPage\n*  (catch-all 404)\nfrontend/src/routeElements.tsx\nAny unmatched URL or stale deep\nlink, from any visitor. Renders\nOUTSIDE every shell, so it carries\nits own framing and offers both\naudiences a way home" as not_found #FFF9C4
+  component "RouteError\n(error boundary, not a route)\nfrontend/src/routeElements.tsx\nerrorElement on all three subtrees\nAND the catch-all, so an unexpected\nthrow degrades to a styled page\nrather than React Router's unstyled\ndefault. lazyWithReload already\nforce-reloads once on a failed\ndynamic import, so reaching this\nmeans recovery was already tried" as route_error #FFF9C4
+  component "KWS verification return\nGET /api/v1/consent/kws/return\napi/kws_redirect.py -- SERVER-RENDERED,\nNOT a React route: a self-contained HTML\npage outside the SPA entirely.\nA parent's browser lands here from Epic,\nwith no account and no session\n[see seq-kws-verification.puml]" as kws_return #FFCDD2
+}
+
+note bottom of public_support
+  #CRITICAL security: /privacy and /support MUST
+  stay outside every auth gate. Both are
+  registered with Epic's Kids Web Services
+  (ADR-018 D1) as our Privacy Policy and Support
+  URLs, and a parent follows them mid-verification
+  with no account and no session. Nesting either
+  under ProtectedRoute would send that parent to a
+  login page from a third-party consent flow,
+  which reads as a phishing redirect.
+
+  They are siblings of the landing index and sit
+  OUTSIDE the KidShell wrapper too, so they carry
+  no kid chrome either.
+
+  Do NOT confuse /privacy with the Adult Zone's
+  /guardian/privacy: different page, and that
+  one stays gated on purpose. /privacy is the
+  generic, marketing-facing statement;
+  /guardian/privacy (G11) describes how THIS
+  family's data is handled.
+
+  Enforced by router.test.tsx, which walks the
+  exported route config and asserts the chain of
+  components between the tree root and each of
+  these two paths contains no gate, with a
+  positive control so the assertion cannot pass
+  by failing to see gates at all.
+end note
+
+note bottom of kws_return
+  The one public page that is NOT a React route,
+  and so the one most easily missed when counting
+  the public surface from router.tsx alone. It is
+  a complete HTML document built by
+  kws_redirect.py::_render and served by FastAPI.
+
+  Every substitution comes from a module-level
+  literal, never from the query string, so the
+  page holds no caller-controlled text.
+
+  Display-only by construction: the redirect's
+  HMAC covers "{status}:{external_payload}" with
+  no timestamp and no nonce, so a link a parent
+  once received replays forever. Consent state is
+  written ONLY by the webhook leg. All four
+  rejection causes collapse onto one page so the
+  page cannot be used to discriminate among them.
+end note
 
 package "Kid Zone\nDeviceAuthorizedRoute: local device-grant check" #E0F7FA {
   component "ProfilePickerPage\n/kids\nPick a profile + PIN\n(mints a child session via\nthe device grant)" as picker #B2EBF2
@@ -140,14 +221,47 @@ console ..> admin_console : "dual-role adult:\n\"Admin console\" link\n(free, no
 admin_console ..> console : "dual-role adult:\n\"Guardian console\" link\n(free, no re-challenge)"
 
 ' --- Auth-boundary crossings (dashed, distinctly styled) ---
+' --- Public zone: free navigation, no credential check on any of these ---
+landing --> public_privacy : "footer link"
+landing --> public_support : "footer link"
+public_privacy --> public_support
+public_support --> public_privacy
+public_privacy --> landing : "back to /"
+public_support --> landing : "back to /"
+kws_return --> console : "\"Return to CYO Adventure\"\nroot-relative href to /guardian,\nrendered on EVERY outcome incl.\nfailure: the parent whose\nverification did not complete is\nexactly the one who most needs a\nroute back. Crosses into the Adult\nZone, so AdultGate applies there"
+not_found --> landing : "\"Go to the start\""
+not_found --> picker : "\"Who's reading?\"\n(offers BOTH audiences a way back;\nthe kid link still lands on\nDeviceAuthorizedRoute's check)"
+
 landing -[#0e8f6f,dashed]-> picker : "**DeviceAuthorizedRoute**\nvalid device grant present\n(local check, no network)"
 landing -[#a8660a,dashed]-> login : "**no valid grant**\n(Kids door) OR\nGrown-ups door"
 login -[#a8660a,dashed]-> picker : "authorize-device intent:\nmint grant, then redirect\nto /kids"
 login -[#a8660a,dashed]-> console : "normal redirect:\nguardian-only or dual-role"
 login -[#a8660a,dashed]-> admin_console : "normal redirect:\nadmin-only"
+login -[#a8660a,dashed]-> verification_page : "ProtectedRoute redirect:\nAuthStatus 'needs-verification'\n(checked FIRST, before approval)"
 login -[#a8660a,dashed]-> awaiting_approval : "ProtectedRoute redirect:\nAuthStatus 'awaiting-approval'\n(real session, not yet approved)"
 login -[#a8660a,dashed]-> consent_page : "ProtectedRoute redirect:\nAuthStatus 'needs-consent'\n(approved, VPC not yet recorded)"
+login -[#a8660a,dashed]-> unavailable_page : "ProtectedRoute redirect:\nAuthStatus 'backend-unreachable'"
 consent_page -[#a8660a,dashed]-> console : "recordConsent() succeeds\n-> AuthStatus 'signed-in'"
+
+note bottom of verification_page
+  ProtectedRoute checks the four statuses in
+  this order: needs-verification, then
+  awaiting-approval, then needs-consent, then
+  backend-unreachable. Verification coming
+  first is the ratified order and not the
+  obvious one: proving an adult is an adult is
+  cheap and entirely self-service, while admin
+  approval is a human judgement that should not
+  be spent on an account that may never prove
+  adulthood.
+
+  The consequence runs through the feature.
+  This guardian's User.status is still
+  'awaiting_approval', so
+  api/deps.py::require_principal refuses them,
+  so neither this page nor the endpoint behind
+  it may depend on GET /v1/me.
+end note
 picker -[#a8660a,dashed]-> login : "**AdultGate step-up**\ncrossing UP from kid mode\n(password re-entry if not warm)"
 
 note bottom of landing

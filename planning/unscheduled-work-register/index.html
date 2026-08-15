@@ -6387,6 +6387,30 @@ needs to become these named actions.</p>
 <td>CI hygiene</td>
 <td>decision</td>
 </tr>
+<tr>
+<td>UW-F33</td>
+<td><strong>The coverage-matrix guard runs in one direction only, so an untested PAGE is invisible to it.</strong> <code>scripts/check_coverage_matrix.py</code> fails when a test FILE is not referenced in <code>docs/testing/coverage-matrix.md</code>, which catches an untracked test and cannot catch an untested route. Found 2026-08-14 by a manual page-to-test audit of all 34 mapped surfaces: the guard was green while <code>/guardian/review/:storybookId</code> had no E2E at any tier AND the matrix credited it with <code>review-edit.spec.ts</code>, a spec that drives <code>/admin/review/s1</code> on all four of its <code>goto</code> calls. A false credit is worse than a blank, because it reads as coverage. Remedy is the mirror check: enumerate the route table from <code>frontend/src/router.tsx</code> (the same source <code>router.test.tsx</code> already walks for its no-gate assertion, so the parsing approach is proven in-repo) and fail when a route path appears in no matrix section. Deliberately a check on the ROUTE, not on the component name: the defect here was a real spec pointed at the wrong route, which a component-name check would have passed. This is the structural fix for the audit that found it, so it should land before the remaining coverage rows rather than after.</td>
+<td>CI hygiene</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-F34</td>
+<td><strong><code>tools/generate_diagram_svgs.py --check</code> is a CI-ready gate that no CI invokes.</strong> The tool documents itself as needing no PlantUML jar precisely so it can run as a freshness gate, and <code>docs/architecture/diagrams/INDEX.md</code> has carried "wiring it into a workflow is the open follow-up" as a standing note; re-verified 2026-08-14 that <code>grep -rn generate_diagram_svgs .github/ .pre-commit-config.yaml noxfile.py</code> still returns nothing. Consequence measured the same day: ten of the 21 top-level diagrams had drifted from source, including two that contradicted shipped child-facing behavior. Note one design constraint before wiring it: staleness is decided by <strong>git commit time</strong>, not filesystem mtime, which is correct for CI (mtimes do not survive a clone) and means a pre-commit hook would see nothing. It belongs in a workflow job, not in <code>.pre-commit-config.yaml</code>. Rendering also needs Graphviz on <code>PATH</code> for every component and deployment diagram, and PlantUML writes an error-image SVG rather than failing when <code>dot</code> is missing, so any render job must assert output size or content rather than trusting exit status.</td>
+<td>CI hygiene</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-F35</td>
+<td><strong><code>journey-dev-coverage.puml</code> bakes a coverage claim into a committed artifact that nothing re-derives.</strong> Its node colours are hand-assigned and were last verified 2026-08-04; its spec inventory stopped at 2026-07-27. The 2026-08-14 audit found ten of the 45 specs in <code>frontend/e2e/</code> absent from that inventory, and one colour claim stale outright (the profile-picker pill node said "pill state not asserted in e2e" after <code>visual.spec.ts</code> began pinning the pill in the kid visual baselines). The inventory is refreshed and the ten are listed as unmapped, but the colours remain a snapshot and no tool checks either date. <strong>Decide which of two shapes this diagram should have</strong> rather than re-auditing it by hand a third time: generate the colouring from the specs (a spec-to-node map plus a renderer, so the artifact cannot disagree with the suite), or keep it hand-drawn and add a staleness gate that fails when a spec file is newer than the recorded verification date. A stale green on a coverage diagram reads as reassurance rather than as an omission, which is the failure mode that makes this worth more than its size suggests. Related to <code>UW-C32</code> (skeleton-diagram render drift) but distinct: that row is about non-deterministic rendering, this one is about a hand-authored claim.</td>
+<td>4b</td>
+<td>decision</td>
+</tr>
+<tr>
+<td>UW-F36</td>
+<td><strong>Higher-tier coverage for <code>/guardian/review/:storybookId</code>.</strong> The mocked-tier gap was closed 2026-08-14 (<code>frontend/e2e/guardian-review-authority.spec.ts</code>, with a positive control on <code>/admin/review/s1</code> and mutation-verified before landing), so what remains is <code>e2e-real</code>, <code>e2e-staging</code>, and <code>e2e-prod</code>, all of which need a real storybook id, the same fixture-identity constraint that keeps <code>/admin/review/:id</code> out of the staging and prod smokes. Sequence it with <code>UW-F15</code>'s staging extension rather than on its own: both need the same seeded-fixture work, and doing it once serves both. Explicitly NOT urgent on its own merits, since the authority boundary this route exists to enforce is now covered at the tier that can catch a widened guard.</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
 </tbody>
 </table>
 <h2 id="cluster-g-content-diversity-and-catalog-workstream">Cluster G: content diversity and catalog workstream<a class="headerlink" href="#cluster-g-content-diversity-and-catalog-workstream" title="Permanent link">&para;</a></h2>
@@ -7080,6 +7104,12 @@ complete; each is filed as a GitHub issue.</p>
 <td><a href="https://github.com/ByronWilliamsCPA/cyo-adventure/issues/639">#639</a></td>
 <td>done</td>
 </tr>
+<tr>
+<td>UW-L08</td>
+<td><strong>UNCONFIRMED, and recorded as a measurement to run rather than as a defect.</strong> A terminally-rejected principal keeps its Supabase session, and the bearer is re-minted from that session. <code>AuthContext.tsx</code>'s terminal branch calls <code>safeRemoveToken()</code> and deliberately does NOT clear the GoTrue session (only the app bearer was rejected, not the session), while every <code>syncPrincipal</code> for a non-null session opens with <code>localStorage.setItem(TOKEN_STORAGE_KEY, session.access_token)</code>. So any later auth event re-mints a bearer the API has already refused. Found 2026-08-14 as a <strong>test</strong> flake, not a user report: an assertion that the bearer is cleared after a 401 held standalone and failed under a loaded full-suite run, because "token cleared" is a transient state rather than a postcondition. The routing outcome is correct and verified: the guardian lands on <code>/guardian/login</code>, not on the retry interstitial, so there is no known user-visible symptom and this is explicitly NOT being claimed as the mirror of #452. <strong>What to check, in this order.</strong> (1) Whether the re-mint is bounded: instrument or trace how many <code>/v1/me</code> requests a terminally-rejected session issues before it settles, since an unbounded cycle would be a quiet request loop against our own API and is the only outcome here that would matter. (2) If bounded, whether a stale bearer sitting in <code>localStorage</code> for a session the API refuses is acceptable, or whether the terminal branch should also call <code>supabase.auth.signOut()</code>. (3) Only if (1) shows a loop does this become a defect and warrant an issue and a phase commitment. Deliberately left as <code>verify</code>: asserting a defect from a test flake, without the measurement in (1), is the failure mode this register's evidence rule exists to prevent.</td>
+<td>5</td>
+<td>verify</td>
+</tr>
 </tbody>
 </table>
 <h2 id="cluster-m-external-and-owner-gated">Cluster M: external and owner-gated<a class="headerlink" href="#cluster-m-external-and-owner-gated" title="Permanent link">&para;</a></h2>
@@ -7315,7 +7345,7 @@ have to re-derive them.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 14, 2026 19:09:18 UTC">August 14, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 15, 2026 17:29:48 UTC">August 15, 2026</span>
   </span>
 
     
