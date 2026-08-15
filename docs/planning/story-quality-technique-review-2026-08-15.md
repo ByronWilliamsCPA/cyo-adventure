@@ -272,10 +272,13 @@ over all 23 committed catalog fills in `out/`, with dialogue share alongside:
 
 ### 6.5 Results of the three runs
 
-**Status 2026-08-15, 07:40 UTC: interrupted by the session usage limit before any fill
-landed.** All twelve isolated authors (six D-7c, six W16) were terminated by the account's
-usage reset window with zero output files written, so no result exists and nothing here is
-partial: the arms are clean to re-run. Every input needed to resume is committed (kernels,
+**Status 2026-08-15: interrupted twice by usage limits before any fill landed; handed off.**
+All twelve isolated authors (six D-7c, six W16) were terminated at the 07:40 UTC reset with
+zero output; a six-author relaunch on the fresh window died at the next reset with four
+decisional strata and zero fills (`AL-356`, `AL-357`). No result exists, the partial strata
+are contamination to delete rather than progress, and the arms are clean to re-run: the
+resume runbook is section 3 of
+[the session handoff](./handoff-story-quality-techniques-2026-08-15.md). Every input needed to resume is committed (kernels,
 bound skeleton, prompt files, instruction file, scorer, protocol), so a resume re-stages from
 git alone. The scorer's known-answer validation (it reproduces the corrected 16l anchors, 2.33
 and 13.59 per 1000, exactly on the frozen d7/d7b artifacts) and the section 6.4 catalog
