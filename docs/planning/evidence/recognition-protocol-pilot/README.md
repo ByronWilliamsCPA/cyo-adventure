@@ -36,6 +36,24 @@ Fixed before any rater ran; full statements in `protocol.py`'s docstring.
 
 ## Files
 
-- `protocol.py`: prompt builder, blinding, reading order, verdict schema.
-- `verdict_<pair>.json`: one rater verdict per pair.
+- `protocol.py`: prompt builder, blinding, reading order, verdict schema, and the
+  verdict validator.
+- `verdict_<pair>.json`: one rater verdict per pair. Not yet present: no rater has run.
 - `results.md`: the validation outcome, written after the verdicts and never edited.
+  Not yet present.
+
+## Running it
+
+```bash
+# build the rater prompt for one ordered pair
+python protocol.py build <book_one.json> <book_two.json> --out prompt.md
+
+# check a returned verdict against the pre-registered contract, before recording it
+python protocol.py validate verdict_<pair>.json --book-two <book_two.json>
+```
+
+`validate` enforces the verdict rules that were pre-registered but previously
+unchecked: one `per_scene` entry per Book Two scene, entries exactly `yes` or `no`,
+no `yes` reverting to `no`, `first_yes_position` agreeing with the array, and
+`same_adventure` agreeing with both. A verdict that fails is a failed run of the
+instrument, per known answer 3 above; it is not edited to pass.

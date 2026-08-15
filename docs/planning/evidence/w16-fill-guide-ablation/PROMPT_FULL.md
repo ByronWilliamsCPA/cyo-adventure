@@ -425,10 +425,8 @@ this exact shape: `<<FILL role=ROLE words=N beats='BEAT DESCRIPTION'>>`
 - `words` is the target word count for this node's final prose. Aim for this count; do not wildly overshoot or undershoot it.
 - `beats` is a one-line description of what must happen in this passage. Your prose MUST depict this exact beat -- the same events and outcome -- even though you are changing names, setting details, and surface theme.
 
-Every choice's `label` field, similarly, is a short action description you
-must turn into the final choice text shown to the reader (imperative or
-action phrasing, 5-12 words), matching the semantic intent of that choice's
-original label.
+Every choice's `label` field is already final for this fill. Leave each
+label byte-identical to the input (pilot override, restated below).
 
 ## Re-imagine each passage (do not substitute nouns)
 
@@ -446,9 +444,8 @@ each choice's action-semantic, the role, and the word target. Everything
 about how the passage renders that beat in this world should be original to
 this fill.
 
-Phrase each choice label in this theme's own vocabulary; do not reuse a
-generic label phrasing that ignores the theme. The frozen action-semantic is
-still checked by the Stage 1 label-intent review.
+Choice labels are frozen for this pilot and are already written for this
+theme; leave every label exactly as given.
 
 ## Choice labels (pilot override)
 
@@ -460,7 +457,7 @@ this theme.
 
 Produce the complete Storybook JSON with every `<<FILL ...>>` body replaced
 by final prose written to its role/words/beats, and every choice label
-replaced by final choice text. Re-imagine names, setting, imagery, and
+left byte-identical to the input. Re-imagine names, setting, imagery, and
 per-passage detail for the theme brief below, but do not change the plot
 beats, the branching structure, or anything the validator rules above forbid
 changing. The output must be the full Storybook JSON, not a diff or patch.
