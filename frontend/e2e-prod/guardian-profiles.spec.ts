@@ -42,14 +42,14 @@ test.describe('guardian auth and profile management (read-only)', () => {
     // alone is the thing to assert.
     await gotoResilient(page, GUARDIAN_CONSOLE_PATH)
     await expect(page).toHaveURL(new RegExp(`${GUARDIAN_LOGIN_PATH}$`))
-    await expect(page.getByRole('heading', { name: 'Guardian sign-in', level: 1 })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Sign in or create your account', level: 1 })).toBeVisible()
   })
 
   test('the login page never offers Apple sign-in (ADR-009: gated behind an unset flag)', async ({
     page,
   }) => {
     await gotoResilient(page, GUARDIAN_LOGIN_PATH)
-    await expect(page.getByRole('heading', { name: 'Guardian sign-in', level: 1 })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Sign in or create your account', level: 1 })).toBeVisible()
     // Apple sign-in is hidden behind VITE_ENABLE_APPLE_OAUTH (LoginPage.tsx),
     // unset in this build because Apple's provider needs a paid Apple
     // Developer account and a signed, expiring client secret that Supabase is
@@ -115,7 +115,7 @@ test.describe('guardian auth and profile management (read-only)', () => {
     // not merely hidden by transient React state that a reload would undo.
     await gotoResilient(sharedPage, GUARDIAN_CONSOLE_PATH)
     await expect(
-      sharedPage.getByRole('heading', { name: 'Guardian sign-in', level: 1 })
+      sharedPage.getByRole('heading', { name: 'Sign in or create your account', level: 1 })
     ).toBeVisible()
   })
 })

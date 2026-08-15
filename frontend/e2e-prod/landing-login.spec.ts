@@ -33,11 +33,13 @@ test.describe('public surfaces (unauthenticated)', () => {
 
   test('the guardian sign-in form renders its fields', async ({ page }) => {
     await gotoResilient(page, GUARDIAN_LOGIN_PATH)
-    // The heading is "Guardian sign-in" (not "Sign in", which is the submit
-    // button). exact:true on the field labels avoids matching the reset
-    // sub-form's "Email for reset link" if the "Forgot your password?" toggle
-    // ever renders its input into the DOM.
-    await expect(page.getByRole('heading', { name: 'Guardian sign-in', level: 1 })).toBeVisible()
+    // The heading is "Sign in or create your account" (not "Sign in", which is
+    // the submit button): every landing-funnel CTA lands here, so the heading
+    // has to admit that continuing with Google provisions a new account.
+    // exact:true on the field labels avoids matching the reset sub-form's
+    // "Email for reset link" if the "Forgot your password?" toggle ever
+    // renders its input into the DOM.
+    await expect(page.getByRole('heading', { name: 'Sign in or create your account', level: 1 })).toBeVisible()
     await expect(page.getByLabel('Email', { exact: true })).toBeVisible()
     await expect(page.getByLabel('Password', { exact: true })).toBeVisible()
     await expect(page.getByRole('button', { name: 'Sign in' })).toBeVisible()

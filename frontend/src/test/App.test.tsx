@@ -273,7 +273,7 @@ describe('router: guardian surface', () => {
 
   it('renders the login page directly', async () => {
     renderAt('/guardian/login')
-    expect(await screen.findByText(/Guardian sign-in/)).toBeInTheDocument()
+    expect(await screen.findByText(/Sign in or create your account/)).toBeInTheDocument()
   })
 
   it('renders the family console for a signed-in guardian with a warm adult gate', async () => {
@@ -477,7 +477,7 @@ describe('router: guardian surface', () => {
     })
     renderAt('/admin')
     expect(await screen.findByText(/Family console/)).toBeInTheDocument()
-    expect(screen.queryByText(/Guardian sign-in/)).not.toBeInTheDocument()
+    expect(screen.queryByText(/Sign in or create your account/)).not.toBeInTheDocument()
   })
 
   it('renders intake for a signed-in guardian with a warm adult gate', async () => {

@@ -216,7 +216,7 @@ test('the reader page has no detectable accessibility violations', async ({ page
 
 test('the guardian login page has no detectable accessibility violations', async ({ page }) => {
   await page.goto('/guardian/login')
-  await expect(page.getByRole('heading', { name: 'Guardian sign-in' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Sign in or create your account' })).toBeVisible()
   await assertNoViolations(page)
 })
 

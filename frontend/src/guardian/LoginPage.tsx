@@ -108,11 +108,17 @@ function isInvalidCredentials(err: unknown): boolean {
 }
 
 /**
- * Guardian sign-in via Supabase Auth (ADR-009): Google OAuth (Apple is gated,
- * see below) plus an email/password form for accounts provisioned directly in
- * Supabase (e.g. the R1 family logins). Both paths establish a Supabase session
- * that the AuthProvider resolves to a backend Principal via /me; the form adds
- * no new auth machinery, only a second entry point into the same flow.
+ * Guardian sign-in AND self-signup via Supabase Auth (ADR-009): Google OAuth
+ * (Apple is gated, see below) plus an email/password form for accounts
+ * provisioned directly in Supabase (e.g. the R1 family logins). Both paths
+ * establish a Supabase session that the AuthProvider resolves to a backend
+ * Principal via /me; the form adds no new auth machinery, only a second entry
+ * point into the same flow.
+ *
+ * Only the OAuth path can CREATE an account (Supabase provisions the user on
+ * first successful authorization); the email/password form authenticates
+ * existing accounts only. That asymmetry is why the signup affordance sits
+ * under the provider buttons rather than next to the form.
  */
 export function LoginPage() {
   const {
@@ -410,7 +416,15 @@ export function LoginPage() {
 
   return (
     <div className="guardian-login">
-      <h1>Guardian sign-in</h1>
+      {/* This page is the ONLY destination of every landing-funnel CTA
+          ("Get started free"), so it is where a brand-new parent arrives with
+          no account at all. A heading that said only "Guardian sign-in" read
+          as the wrong door to them: nothing on the page admitted that
+          continuing with Google provisions the account. The heading and the
+          note below the provider buttons carry that; the email/password form
+          stays sign-in only, because it authenticates accounts provisioned
+          directly in Supabase and cannot create one. */}
+      <h1>Sign in or create your account</h1>
       <p>Sign in to review, approve, and request stories for your family.</p>
       {/* ADR-014 section 5: on a fresh (unauthorized) device the Kids door
           routes a CHILD here to fetch a grown-up, so this bare adult
@@ -432,6 +446,14 @@ export function LoginPage() {
       >
         Continue with Google
       </button>
+      {/* Hidden for the authorize-device intent: that visitor is a CHILD who
+          was sent here to fetch a grown-up, and an account-creation prompt is
+          both wrong for them and at odds with the "ask a grown-up" line above. */}
+      {!authorizeDeviceIntent ? (
+        <p className="guardian-login__signup-note">
+          New family? Continuing with Google creates your account.
+        </p>
+      ) : null}
       {appleEnabled ? (
         <button
           type="button"

@@ -110,7 +110,7 @@ test('a signed-out guardian requests a reset link and sees the neutral confirmat
   const recoveredEmail = await mockRecover(page)
 
   await page.goto('/guardian/login')
-  await expect(page.getByRole('heading', { name: 'Guardian sign-in' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Sign in or create your account' })).toBeVisible()
 
   await page.getByRole('button', { name: 'Forgot your password?' }).click()
   await page.getByLabel('Email for reset link').fill('guardian@example.com')
@@ -174,7 +174,7 @@ test('a recovery link opened in one tab surfaces the set-new-password form in an
   // page A posts, or the message has nowhere to land.
   const pageB = await context.newPage()
   await pageB.goto('/guardian/login')
-  await expect(pageB.getByRole('heading', { name: 'Guardian sign-in' })).toBeVisible()
+  await expect(pageB.getByRole('heading', { name: 'Sign in or create your account' })).toBeVisible()
 
   // Page A: follows the recovery link. supabaseClient.ts posts to the shared
   // 'cyo-guardian-recovery' BroadcastChannel purely from the raw `type=

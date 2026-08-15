@@ -64,7 +64,7 @@ test('a new visitor follows the hero "Get started free" CTA straight to guardian
   await page.locator('.landing-hero').getByRole('link', { name: 'Get started free' }).click()
 
   await expect(page).toHaveURL('/guardian/login')
-  await expect(page.getByRole('heading', { name: 'Guardian sign-in' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Sign in or create your account' })).toBeVisible()
 })
 
 test('the pricing section is subscription-ready but sells nothing today', async ({ page }) => {

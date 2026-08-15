@@ -19,7 +19,7 @@ test('unauthenticated visit to intake redirects to guardian sign-in', async ({
 }) => {
   await page.goto('/guardian/intake')
   await expect(page).toHaveURL(/\/guardian\/login$/)
-  await expect(page.getByRole('heading', { name: 'Guardian sign-in' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Sign in or create your account' })).toBeVisible()
 })
 
 const PROFILE = {
