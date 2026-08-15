@@ -72,6 +72,31 @@ export function setDeviceGrant(grant: DeviceGrant): void {
 }
 
 /** Clear a stored device grant: on 401 (expired/revoked), or explicit removal. */
+/**
+ * Whether a `storage` event represents this device's grant being REMOVED by
+ * another tab.
+ *
+ * Reads the event's own `newValue` rather than re-reading localStorage,
+ * and that distinction is the whole point: a landing-page hydrate can restore
+ * a stale grant from the IndexedDB mirror BEFORE the queued storage event is
+ * delivered, so by the time a listener runs, localStorage may already hold the
+ * value the revoke was trying to remove. The event payload is the only
+ * ordering-independent evidence that a removal happened.
+ *
+ * A `key === null` event is a whole-storage `clear()`, which takes the grant
+ * with it and counts as a revocation too.
+ *
+ * #CRITICAL: security: this is the signal that lets a revoked device be
+ * de-authorized even when a concurrent read has already written the old grant
+ * back. Re-reading storage here would defeat it.
+ * #VERIFY: LandingPage.test.tsx "discards a hydrate that a revoke overtook"
+ * and "de-authorizes when the revoke event arrives after the hydrate".
+ */
+export function isDeviceGrantRevocation(event: StorageEvent): boolean {
+  if (event.key === null) return true
+  return event.key === GRANT_KEY && event.newValue === null
+}
+
 export function clearDeviceGrant(): void {
   try {
     localStorage.removeItem(GRANT_KEY)

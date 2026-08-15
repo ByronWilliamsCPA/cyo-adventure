@@ -540,13 +540,52 @@ describe('LandingPage', () => {
       // The revoke lands while the read is still in flight.
       act(() => {
         localStorage.removeItem('device_grant')
-        window.dispatchEvent(new StorageEvent('storage', { key: 'device_grant' }))
+        window.dispatchEvent(new StorageEvent('storage', { key: 'device_grant', newValue: null }))
       })
 
       // Now let the mirror read complete and write its stale grant back.
       await act(async () => {
         openGate()
         await new Promise((resolve) => setTimeout(resolve, 50))
+      })
+
+      expect(screen.getByRole('link', { name: /kids/i })).toHaveAttribute(
+        'href',
+        '/guardian/login?intent=authorize-device'
+      )
+      expect(localStorage.getItem('device_grant')).toBeNull()
+    })
+
+    // The OTHER ordering, and the one a revocation generation alone cannot
+    // see: the hydrate resolves and writes the stale grant back BEFORE the
+    // queued storage event is delivered. A listener that re-read localStorage
+    // would find the restored value, conclude the grant is still valid, and
+    // leave a revoked device on /kids. Detection has to come from the event's
+    // own newValue.
+    it('de-authorizes when the revoke event arrives after the hydrate', async () => {
+      seedValidGrant()
+      await new Promise((resolve) => setTimeout(resolve, 50))
+
+      renderLanding()
+      const kidDoor = screen.getByRole('link', { name: /kids/i })
+
+      let openGate = () => {}
+      hydrateControl.gate = new Promise<void>((resolve) => {
+        openGate = resolve
+      })
+      localStorage.removeItem('device_grant')
+      fireEvent.focus(kidDoor)
+
+      // Hydrate lands FIRST and restores the grant, with no event yet.
+      await act(async () => {
+        openGate()
+        await new Promise((resolve) => setTimeout(resolve, 50))
+      })
+      expect(localStorage.getItem('device_grant')).not.toBeNull()
+
+      // Only now does the revoking tab's event arrive, carrying the removal.
+      act(() => {
+        window.dispatchEvent(new StorageEvent('storage', { key: 'device_grant', newValue: null }))
       })
 
       expect(screen.getByRole('link', { name: /kids/i })).toHaveAttribute(
@@ -589,7 +628,15 @@ describe('LandingPage', () => {
       // tab that wrote the value, so dispatch it the way the browser would.
       act(() => {
         seedValidGrant()
-        window.dispatchEvent(new StorageEvent('storage', { key: 'device_grant' }))
+        // newValue carries the minted grant, as a real setItem event does.
+        // A null newValue is what marks a REMOVAL, so it must not be faked
+        // here (isDeviceGrantRevocation keys off exactly this).
+        window.dispatchEvent(
+          new StorageEvent('storage', {
+            key: 'device_grant',
+            newValue: localStorage.getItem('device_grant'),
+          })
+        )
       })
 
       expect(screen.getByRole('link', { name: /kids/i })).toHaveAttribute('href', '/kids')
@@ -613,7 +660,7 @@ describe('LandingPage', () => {
 
       act(() => {
         localStorage.removeItem('device_grant')
-        window.dispatchEvent(new StorageEvent('storage', { key: 'device_grant' }))
+        window.dispatchEvent(new StorageEvent('storage', { key: 'device_grant', newValue: null }))
       })
 
       expect(screen.getByRole('link', { name: /kids/i })).toHaveAttribute(

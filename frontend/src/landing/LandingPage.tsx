@@ -3,7 +3,12 @@ import type { MouseEvent } from 'react'
 import { Link, useNavigate } from 'react-router'
 
 import { SkipLink } from '@ds/components/SkipLink'
-import { clearDeviceGrant, hasValidDeviceGrant, hydrateDeviceGrant } from '../auth/deviceGrant'
+import {
+  clearDeviceGrant,
+  hasValidDeviceGrant,
+  hydrateDeviceGrant,
+  isDeviceGrantRevocation,
+} from '../auth/deviceGrant'
 import type { DeviceGrant } from '../auth/deviceGrant'
 import { usePageTitle } from '../hooks/usePageTitle'
 import { Mascot } from '../kid/Mascot'
@@ -258,17 +263,32 @@ export function LandingPage() {
   // Cross-tab freshness: 'storage' fires in THIS tab when ANOTHER tab or
   // window changes localStorage (minting a grant via the authorize-device
   // flow, or removing one from the guardian console), so re-derive the door
-  // target from the same reader the mount-time state used. The grant's
-  // storage key is private to deviceGrant.ts, so rather than duplicating it
-  // here we re-derive on every storage event: hasValidDeviceGrant is a cheap
-  // synchronous read, and setState with an unchanged value is a no-op.
+  // target. A REMOVAL is identified by isDeviceGrantRevocation reading the
+  // event payload (the key stays private to deviceGrant.ts); anything else
+  // re-derives from hasValidDeviceGrant, a cheap synchronous read where
+  // setState with an unchanged value is a no-op.
   useEffect(() => {
-    function rederiveKidsDoor() {
-      const valid = hasValidDeviceGrant()
-      // A grant that has GONE is a revoke, and an in-flight hydrate must not
-      // be allowed to undo it (see revokeGenerationRef above).
-      if (!valid) revokeGenerationRef.current += 1
-      setKidsDoorPath(valid ? KID_PICKER_PATH : AUTHORIZE_DEVICE_PATH)
+    function rederiveKidsDoor(event: StorageEvent) {
+      // The revoke is detected from the EVENT, not by re-reading storage, and
+      // that closes the second ordering. Both are possible:
+      //
+      //   event first, hydrate second -> the generation bump below makes the
+      //     hydrate discard its own result (see revokeGenerationRef above).
+      //   hydrate first, event second -> the hydrate has ALREADY written the
+      //     stale grant back, so hasValidDeviceGrant() would read the restored
+      //     value, report "still valid", and leave a revoked device sitting on
+      //     /kids. The event's own newValue is the only evidence that survives
+      //     the overwrite.
+      //
+      // clearDeviceGrant() here undoes exactly that restore; it is a no-op
+      // when the hydrate has not landed yet.
+      if (isDeviceGrantRevocation(event)) {
+        revokeGenerationRef.current += 1
+        clearDeviceGrant()
+        setKidsDoorPath(AUTHORIZE_DEVICE_PATH)
+        return
+      }
+      setKidsDoorPath(hasValidDeviceGrant() ? KID_PICKER_PATH : AUTHORIZE_DEVICE_PATH)
     }
     window.addEventListener('storage', rederiveKidsDoor)
     return () => {
