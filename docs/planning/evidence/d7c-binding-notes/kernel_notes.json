@@ -1,0 +1,794 @@
+{
+ "narrative_version": 1,
+ "skeleton_slug": "the-clocktower-cipher",
+ "age_band": "10-13",
+ "facts": {
+  "tower_sealed": "the clocktower stands sealed, and the seal reads like a test rather than an accident",
+  "challenge_posted": "a coded challenge is pinned to the door, clearly meant to be attempted by whoever finds it",
+  "friends_committed_together": "the friends face the challenge as a group; no one takes it alone",
+  "challenge_accepted": "the friends have chosen to take the maker's challenge seriously",
+  "patience_proven": "working the note's cipher line by line proves patience is the price of its first answer",
+  "route_named_by_note": "the proven line names a specific way in and what waits there",
+  "self_reliance_shown": "two overlooked ways in, a low gap and a high window, have been found by the friends' own persistence",
+  "keeper_tested_them": "the keeper has watched the friends and reads as gruff but fair, testing more than warning",
+  "keeper_offer_earned": "the keeper, satisfied, offers both a way in and what he knows of the maker",
+  "maker_motive_understood": "the maker built the tower's tests decades ago out of care, to find the right kind of finder",
+  "past_the_seal": "the friends stand past the tower's seal, however they earned it",
+  "trial_rooms_known": "four testing rooms are known: a climb, a study, a crossing, and a descent",
+  "logic_earned": "the friends carry a working grasp of the cipher's logic, earned by clearing some room's test",
+  "archive_beckons": "the study's archive poses its own quiet test: stay for it, or press on",
+  "crossing_dares_them": "the crossing room is the tower's most direct test of nerve",
+  "reward_glimpsed": "something the maker set aside for whoever passes waits at the crossing's far end",
+  "at_the_dial": "the friends stand at the great dial, the tower's final examiner",
+  "dial_test_live": "the dial's own markings state its test plainly: what to set, and that guessing has a cost",
+  "test_passed": "the friends passed the dial's test on the maker's own terms",
+  "test_forced": "forcing the dial fails its test and jams the mechanism instead",
+  "second_test_found": "a second, smaller test is found behind the dial",
+  "sanctum_entered": "the friends stand inside what the trial protected",
+  "sanctum_seen": "what the trial protected is seen: the maker's letter and modest things meant for everyone",
+  "composure_kept": "the friends leave with their composure intact; the outcome is a result, never a shaming",
+  "trial_reopens": "the tower's trial can be attempted again; nothing about it is used up",
+  "record_set_straight": "whatever was disturbed is put back and owned honestly to the keeper",
+  "workshop_found": "the maker's living workshop is found past the second test",
+  "stewardship_earned": "the friends earn ongoing responsibility for what they found",
+  "passing_made_public": "the friends' passing of the trial is shared with the settlement",
+  "passing_kept_private": "the friends' passing of the trial stays a private matter among them",
+  "trust_bond_formed": "the shared trial forges a lasting trust between the friends",
+  "keeper_intervenes": "the keeper turns up in the moment of temptation, mid-test whether the friends know it or not"
+ },
+ "safety_envelope": {
+  "forbid_affect": [
+   "despair",
+   "hopelessness",
+   "terror",
+   "humiliation",
+   "cruel_mockery"
+  ],
+  "forbid_facts": [
+   "anyone_injured",
+   "friends_turn_on_each_other",
+   "adult_menaces_children",
+   "theft_rewarded",
+   "gore_of_any_kind"
+  ],
+  "permitted_device_kinds": [
+   "symbol_substitution",
+   "clock_arithmetic",
+   "pictogram_code",
+   "rhythm_code",
+   "tally_cipher",
+   "hidden_key",
+   "forgotten_entrance",
+   "trusted_escort",
+   "concealed_latch",
+   "timed_opening",
+   "service_route",
+   "mechanism_operated",
+   "engraved_numbers",
+   "maker_diagram",
+   "pattern_in_mechanism",
+   "annotated_tool",
+   "calibration_scale",
+   "sorted_collection",
+   "wear_pattern",
+   "shadow_alignment",
+   "maker_relic",
+   "working_mechanism",
+   "written_record",
+   "acoustic_wonder",
+   "scale_model",
+   "light_play",
+   "resident_creature",
+   "heritage_document",
+   "handmade_keepsake",
+   "community_memory",
+   "stiff_mechanism",
+   "narrow_crossing",
+   "timed_passage",
+   "dark_passage",
+   "heavy_barrier",
+   "slick_traverse",
+   "time_pressure",
+   "sound_alarm",
+   "weight_sense",
+   "light_signal",
+   "messenger_creature",
+   "self_closing",
+   "tell_tale_mark",
+   "patience_ritual",
+   "tool_improvised",
+   "consumable_applied",
+   "mechanism_reset",
+   "knowledge_applied",
+   "shared_effort",
+   "unfinished_work",
+   "living_thing_tended",
+   "letter_waiting",
+   "tools_in_order",
+   "season_preserved",
+   "provisions_laid"
+  ],
+  "forbidden_device_kinds": [
+   "weapon",
+   "gore",
+   "cruelty",
+   "theft_rewarded",
+   "adult_menace"
+  ]
+ },
+ "world_recipe": {
+  "requires": {
+   "cipher_forms": {
+    "count": 1,
+    "kinds": [
+     "symbol_substitution",
+     "clock_arithmetic",
+     "pictogram_code",
+     "rhythm_code",
+     "tally_cipher"
+    ]
+   },
+   "access_details": {
+    "count": 3,
+    "kinds": [
+     "hidden_key",
+     "forgotten_entrance",
+     "trusted_escort",
+     "concealed_latch",
+     "timed_opening",
+     "service_route",
+     "mechanism_operated"
+    ]
+   },
+   "cipher_hint_carriers": {
+    "count": 4,
+    "kinds": [
+     "engraved_numbers",
+     "maker_diagram",
+     "pattern_in_mechanism",
+     "annotated_tool",
+     "calibration_scale",
+     "sorted_collection",
+     "wear_pattern",
+     "shadow_alignment"
+    ]
+   },
+   "room_curiosities": {
+    "count": 4,
+    "kinds": [
+     "maker_relic",
+     "working_mechanism",
+     "written_record",
+     "acoustic_wonder",
+     "handmade_keepsake",
+     "scale_model",
+     "light_play",
+     "community_memory",
+     "resident_creature"
+    ]
+   },
+   "vault_contents": {
+    "count": 3,
+    "kinds": [
+     "heritage_document",
+     "handmade_keepsake",
+     "community_memory",
+     "written_record",
+     "maker_relic",
+     "acoustic_wonder"
+    ]
+   },
+   "obstacle_kinds": {
+    "count": 1,
+    "kinds": [
+     "narrow_crossing",
+     "timed_passage",
+     "slick_traverse",
+     "dark_passage",
+     "heavy_barrier",
+     "stiff_mechanism"
+    ]
+   },
+   "safeguards": {
+    "count": 1,
+    "kinds": [
+     "sound_alarm",
+     "weight_sense",
+     "light_signal",
+     "messenger_creature",
+     "self_closing",
+     "tell_tale_mark"
+    ]
+   },
+   "remedies": {
+    "count": 1,
+    "kinds": [
+     "patience_ritual",
+     "tool_improvised",
+     "consumable_applied",
+     "mechanism_reset",
+     "knowledge_applied",
+     "shared_effort"
+    ]
+   },
+   "loft_signatures": {
+    "count": 1,
+    "kinds": [
+     "unfinished_work",
+     "living_thing_tended",
+     "letter_waiting",
+     "tools_in_order",
+     "season_preserved",
+     "provisions_laid"
+    ]
+   }
+  },
+  "identity_roles": [
+   "HEROES",
+   "KEEPER",
+   "MAKER",
+   "CIPHER",
+   "SETTLEMENT",
+   "VAULT"
+  ],
+  "texture_roles": [
+   "THRESHOLD",
+   "ACCESS_LOW",
+   "ACCESS_HIGH",
+   "OPENER",
+   "STUDY",
+   "HAZARD",
+   "LANDMARK_FACE",
+   "TOKEN",
+   "CIPHER_TOOL",
+   "ARCHIVE",
+   "REMEDY",
+   "MACHINERY",
+   "SECRET_ROOM",
+   "KEEPSAKE",
+   "CLOSING_SIGN",
+   "MECHANISM",
+   "CRAFT"
+  ]
+ },
+ "nodes": {
+  "n_open": {
+   "tier": "open",
+   "function": "pose-the-trial",
+   "entry_state": [],
+   "establishes": [
+    "tower_sealed",
+    "challenge_posted",
+    "friends_committed_together"
+   ],
+   "forbids": [
+    "past_the_seal",
+    "patience_proven",
+    "keeper_tested_them"
+   ],
+   "invention": {
+    "cipher_form": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.cipher_forms",
+     "category": "cipher_forms",
+     "unique_within_story": true,
+     "assigned_at": "bind"
+    }
+   }
+  },
+  "n_start": {
+   "tier": "open",
+   "function": "offer-virtues",
+   "entry_state": [
+    "challenge_posted",
+    "friends_committed_together"
+   ],
+   "establishes": [
+    "challenge_accepted"
+   ],
+   "forbids": [
+    "patience_proven",
+    "past_the_seal"
+   ]
+  },
+  "n_note": {
+   "tier": "open",
+   "function": "reward-patience",
+   "entry_state": [
+    "challenge_posted",
+    "challenge_accepted",
+    "friends_committed_together"
+   ],
+   "establishes": [
+    "patience_proven",
+    "route_named_by_note"
+   ],
+   "forbids": [
+    "past_the_seal"
+   ],
+   "invention": {
+    "access_route": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.access_details",
+     "category": "access_details",
+     "unique_within_story": true,
+     "assigned_at": "bind"
+    }
+   }
+  },
+  "n_door": {
+   "tier": "open",
+   "function": "prove-self-reliance",
+   "entry_state": [
+    "tower_sealed",
+    "challenge_accepted"
+   ],
+   "establishes": [
+    "self_reliance_shown"
+   ],
+   "forbids": [
+    "patience_proven",
+    "past_the_seal"
+   ],
+   "invention": {
+    "access_route": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.access_details",
+     "category": "access_details",
+     "unique_within_story": true,
+     "assigned_at": "bind"
+    }
+   }
+  },
+  "n_keeper": {
+   "tier": "open",
+   "function": "earn-the-keepers-trust",
+   "entry_state": [
+    "challenge_accepted",
+    "friends_committed_together"
+   ],
+   "establishes": [
+    "keeper_tested_them",
+    "keeper_offer_earned"
+   ],
+   "forbids": [
+    "patience_proven",
+    "past_the_seal"
+   ],
+   "invention": {
+    "access_route": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.access_details",
+     "category": "access_details",
+     "unique_within_story": true,
+     "assigned_at": "bind",
+     "kind_must_be": "trusted_escort"
+    }
+   }
+  },
+  "n_keyhunt": {
+   "tier": "open",
+   "function": "confirm-the-proof",
+   "entry_state": [
+    "patience_proven",
+    "route_named_by_note"
+   ],
+   "establishes": [
+    "logic_earned"
+   ],
+   "forbids": [
+    "past_the_seal"
+   ]
+  },
+  "n_keeper_story": {
+   "tier": "open",
+   "function": "learn-the-tests-purpose",
+   "entry_state": [
+    "keeper_tested_them",
+    "keeper_offer_earned"
+   ],
+   "establishes": [
+    "maker_motive_understood"
+   ],
+   "forbids": [
+    "past_the_seal",
+    "patience_proven"
+   ]
+  },
+  "n_window": {
+   "tier": "open",
+   "function": "earn-entry-by-nerve",
+   "entry_state": [
+    "self_reliance_shown",
+    "challenge_accepted"
+   ],
+   "establishes": [
+    "past_the_seal"
+   ],
+   "forbids": [
+    "anyone_injured"
+   ]
+  },
+  "n_inside": {
+   "tier": "open",
+   "function": "stand-past-the-seal",
+   "entry_state": [
+    "challenge_posted",
+    "challenge_accepted",
+    "friends_committed_together"
+   ],
+   "establishes": [
+    "past_the_seal",
+    "trial_rooms_known"
+   ],
+   "forbids": [
+    "at_the_dial",
+    "sanctum_entered"
+   ]
+  },
+  "n_stairs": {
+   "tier": "open",
+   "function": "pass-the-endurance-test",
+   "entry_state": [
+    "past_the_seal",
+    "trial_rooms_known"
+   ],
+   "establishes": [
+    "logic_earned"
+   ],
+   "forbids": [
+    "at_the_dial",
+    "sanctum_entered"
+   ],
+   "invention": {
+    "hint_carrier": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.cipher_hint_carriers",
+     "category": "cipher_hint_carriers",
+     "unique_within_story": true,
+     "assigned_at": "bind"
+    },
+    "curiosity": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.room_curiosities",
+     "category": "room_curiosities",
+     "unique_within_story": true,
+     "assigned_at": "bind"
+    }
+   }
+  },
+  "n_study": {
+   "tier": "open",
+   "function": "pass-the-scholarship-test",
+   "entry_state": [
+    "past_the_seal",
+    "trial_rooms_known"
+   ],
+   "establishes": [
+    "logic_earned",
+    "archive_beckons"
+   ],
+   "forbids": [
+    "at_the_dial",
+    "sanctum_entered"
+   ],
+   "invention": {
+    "hint_carrier": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.cipher_hint_carriers",
+     "category": "cipher_hint_carriers",
+     "unique_within_story": true,
+     "assigned_at": "bind"
+    },
+    "curiosity": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.room_curiosities",
+     "category": "room_curiosities",
+     "unique_within_story": true,
+     "assigned_at": "bind"
+    }
+   }
+  },
+  "n_pendulum": {
+   "tier": "open",
+   "function": "pass-the-nerve-test",
+   "entry_state": [
+    "past_the_seal",
+    "trial_rooms_known"
+   ],
+   "establishes": [
+    "logic_earned",
+    "crossing_dares_them",
+    "reward_glimpsed"
+   ],
+   "forbids": [
+    "anyone_injured",
+    "at_the_dial"
+   ],
+   "invention": {
+    "hint_carrier": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.cipher_hint_carriers",
+     "category": "cipher_hint_carriers",
+     "unique_within_story": true,
+     "assigned_at": "bind"
+    },
+    "obstacle": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.obstacle_kinds",
+     "category": "obstacle_kinds",
+     "assigned_at": "bind"
+    }
+   }
+  },
+  "n_basement": {
+   "tier": "open",
+   "function": "pass-the-steadiness-test",
+   "entry_state": [
+    "past_the_seal",
+    "trial_rooms_known"
+   ],
+   "establishes": [
+    "logic_earned"
+   ],
+   "forbids": [
+    "at_the_dial",
+    "sanctum_entered"
+   ],
+   "invention": {
+    "hint_carrier": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.cipher_hint_carriers",
+     "category": "cipher_hint_carriers",
+     "unique_within_story": true,
+     "assigned_at": "bind"
+    },
+    "curiosity": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.room_curiosities",
+     "category": "room_curiosities",
+     "unique_within_story": true,
+     "assigned_at": "bind"
+    }
+   }
+  },
+  "n_clockface": {
+   "tier": "open",
+   "function": "face-the-final-test",
+   "entry_state": [
+    "past_the_seal",
+    "logic_earned"
+   ],
+   "establishes": [
+    "at_the_dial",
+    "dial_test_live"
+   ],
+   "forbids": [
+    "sanctum_entered",
+    "test_passed"
+   ]
+  },
+  "n_setcorrect": {
+   "tier": "open",
+   "function": "pass-the-final-test",
+   "entry_state": [
+    "at_the_dial",
+    "dial_test_live",
+    "logic_earned"
+   ],
+   "establishes": [
+    "test_passed"
+   ],
+   "forbids": [
+    "test_forced"
+   ]
+  },
+  "n_setjam": {
+   "tier": "open",
+   "function": "fail-the-test-honestly",
+   "entry_state": [
+    "at_the_dial",
+    "dial_test_live"
+   ],
+   "establishes": [
+    "test_forced"
+   ],
+   "forbids": [
+    "anyone_injured",
+    "test_passed"
+   ],
+   "invention": {
+    "remedy": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.remedies",
+     "category": "remedies",
+     "assigned_at": "bind"
+    }
+   }
+  },
+  "n_backpanel": {
+   "tier": "open",
+   "function": "find-the-hidden-test",
+   "entry_state": [
+    "at_the_dial",
+    "dial_test_live"
+   ],
+   "establishes": [
+    "second_test_found"
+   ],
+   "forbids": [
+    "test_forced",
+    "sanctum_entered"
+   ]
+  },
+  "n_vault": {
+   "tier": "open",
+   "function": "pose-the-trials-verdict",
+   "entry_state": [
+    "at_the_dial",
+    "logic_earned"
+   ],
+   "establishes": [
+    "sanctum_entered",
+    "sanctum_seen"
+   ],
+   "forbids": [
+    "anyone_injured"
+   ],
+   "invention": {
+    "contents": {
+     "pick": 3,
+     "from": "bible.device_vocabulary.vault_contents",
+     "category": "vault_contents",
+     "assigned_at": "bind"
+    }
+   }
+  },
+  "n_end_library": {
+   "tier": "locked_outcome",
+   "function": "payoff-choosing-depth",
+   "entry_state": [
+    "past_the_seal",
+    "archive_beckons"
+   ],
+   "establishes": [
+    "composure_kept",
+    "trial_reopens"
+   ],
+   "forbids": [
+    "shame",
+    "regret_dominant"
+   ]
+  },
+  "n_end_giveup": {
+   "tier": "locked_outcome",
+   "function": "payoff-declining-a-test",
+   "entry_state": [
+    "crossing_dares_them",
+    "reward_glimpsed"
+   ],
+   "establishes": [
+    "composure_kept",
+    "trial_reopens"
+   ],
+   "forbids": [
+    "cowardice_implied",
+    "mockery"
+   ]
+  },
+  "n_end_timeout": {
+   "tier": "locked_outcome",
+   "function": "payoff-failing-honestly",
+   "entry_state": [
+    "at_the_dial",
+    "dial_test_live"
+   ],
+   "establishes": [
+    "composure_kept",
+    "trial_reopens"
+   ],
+   "forbids": [
+    "humiliation",
+    "permanent_damage"
+   ]
+  },
+  "n_end_stuck": {
+   "tier": "locked_outcome",
+   "function": "payoff-retaking-the-test",
+   "entry_state": [
+    "test_forced"
+   ],
+   "establishes": [
+    "composure_kept",
+    "trial_reopens"
+   ],
+   "forbids": [
+    "blame",
+    "permanent_damage"
+   ]
+  },
+  "n_end_secret": {
+   "tier": "locked_outcome",
+   "function": "payoff-the-hidden-tests-reward",
+   "entry_state": [
+    "second_test_found"
+   ],
+   "establishes": [
+    "workshop_found",
+    "stewardship_earned",
+    "trust_bond_formed"
+   ],
+   "forbids": [
+    "exploitation_of_find"
+   ],
+   "invention": {
+    "loft_signature": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.loft_signatures",
+     "category": "loft_signatures",
+     "assigned_at": "bind"
+    }
+   }
+  },
+  "n_end_hero": {
+   "tier": "locked_outcome",
+   "function": "payoff-going-public",
+   "entry_state": [
+    "sanctum_entered",
+    "sanctum_seen"
+   ],
+   "establishes": [
+    "passing_made_public",
+    "test_passed",
+    "maker_motive_understood",
+    "trust_bond_formed"
+   ],
+   "forbids": [
+    "reward_as_riches"
+   ]
+  },
+  "n_end_keepsake": {
+   "tier": "locked_outcome",
+   "function": "payoff-a-private-verdict",
+   "entry_state": [
+    "sanctum_entered",
+    "sanctum_seen"
+   ],
+   "establishes": [
+    "passing_kept_private",
+    "trust_bond_formed"
+   ],
+   "forbids": [
+    "selfishness_implied"
+   ]
+  },
+  "n_end_caught": {
+   "tier": "locked_outcome",
+   "function": "payoff-failing-the-real-test",
+   "entry_state": [
+    "sanctum_entered",
+    "sanctum_seen"
+   ],
+   "establishes": [
+    "record_set_straight",
+    "keeper_intervenes",
+    "composure_kept",
+    "trial_reopens"
+   ],
+   "forbids": [
+    "humiliation",
+    "punishment_beyond_returning",
+    "theft_rewarded"
+   ],
+   "invention": {
+    "safeguard": {
+     "pick": 1,
+     "from": "bible.device_vocabulary.safeguards",
+     "category": "safeguards",
+     "assigned_at": "bind"
+    }
+   }
+  }
+ },
+ "stratum": "structural-noteless"
+}
