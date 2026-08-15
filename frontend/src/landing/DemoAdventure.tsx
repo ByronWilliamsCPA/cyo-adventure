@@ -43,6 +43,11 @@ export function DemoAdventure() {
   const parentId = DEMO_PARENTS[nodeId]
   const foundAll = foundEndings.size === DEMO_ENDING_COUNT
 
+  // #ASSUME: timing dependencies: the guard is what keeps the INITIAL render
+  // from stealing focus. Without it this effect runs on mount, focuses the
+  // passage, and scrolls every homepage load past the hero to the demo.
+  // #VERIFY: DemoAdventure.test.tsx "does not steal focus on mount" plus the
+  // post-choice focus cases.
   useEffect(() => {
     if (!interactedRef.current) return
     passageRef.current?.focus()

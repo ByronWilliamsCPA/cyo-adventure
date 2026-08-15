@@ -1,7 +1,7 @@
 import { isAuthApiError } from '@supabase/supabase-js'
 import { useEffect, useRef, useState } from 'react'
 import type { RefObject } from 'react'
-import { Navigate, useLocation, useNavigate } from 'react-router'
+import { Link, Navigate, useLocation, useNavigate } from 'react-router'
 
 import { ErrorBanner } from '@ds/components/ErrorBanner'
 import { LoadingStatus } from '@ds/components/LoadingStatus'
@@ -416,6 +416,13 @@ export function LoginPage() {
 
   return (
     <div className="guardian-login">
+      {/* The page had NO links at all: a visitor who followed a funnel CTA
+          here had no way back to the page that sent them, and no route to
+          Privacy or Support, which every other public page carries. Matches
+          the legal pages' "Back to CYO Adventure" convention. */}
+      <Link className="guardian-login__back" to="/">
+        Back to CYO Adventure
+      </Link>
       {/* This page is the ONLY destination of every landing-funnel CTA
           ("Get started free"), so it is where a brand-new parent arrives with
           no account at all. A heading that said only "Guardian sign-in" read
@@ -425,15 +432,16 @@ export function LoginPage() {
           stays sign-in only, because it authenticates accounts provisioned
           directly in Supabase and cannot create one. */}
       <h1>Sign in or create your account</h1>
-      <p>Sign in to review, approve, and request stories for your family.</p>
       {/* ADR-014 section 5: on a fresh (unauthorized) device the Kids door
-          routes a CHILD here to fetch a grown-up, so this bare adult
-          email/password form is the first thing that child sees. One plain,
-          jargon-free line tells them what to do; it shows ONLY for the
-          authorize-device intent, so the ordinary guardian login is unchanged. */}
+          routes a CHILD here to fetch a grown-up, so this adult sign-in form
+          is the first thing that child sees. The one plain, jargon-free line
+          for them comes FIRST when that intent is present, ahead of the adult
+          lede, which is noise to its intended reader. */}
       {authorizeDeviceIntent ? (
         <p className="guardian-login__note">Ask a grown-up to set up this device for you.</p>
-      ) : null}
+      ) : (
+        <p>Sign in to review, approve, and request stories for your family.</p>
+      )}
       {recoveryError ? (
         <ErrorBanner className="guardian-login__error">
           That password reset link is invalid or has expired. Request a new one below.
@@ -446,14 +454,6 @@ export function LoginPage() {
       >
         Continue with Google
       </button>
-      {/* Hidden for the authorize-device intent: that visitor is a CHILD who
-          was sent here to fetch a grown-up, and an account-creation prompt is
-          both wrong for them and at odds with the "ask a grown-up" line above. */}
-      {!authorizeDeviceIntent ? (
-        <p className="guardian-login__signup-note">
-          New family? Continuing with Google creates your account.
-        </p>
-      ) : null}
       {appleEnabled ? (
         <button
           type="button"
@@ -462,6 +462,17 @@ export function LoginPage() {
         >
           Continue with Apple
         </button>
+      ) : null}
+      {/* Captions the whole provider block, so it sits AFTER Apple rather
+          than wedged between the two buttons, and it names no single provider
+          because either OAuth path provisions the account.
+          Hidden for the authorize-device intent: that visitor is a CHILD sent
+          to fetch a grown-up, and an account-creation prompt is both wrong for
+          them and at odds with the "ask a grown-up" line above. */}
+      {!authorizeDeviceIntent ? (
+        <p className="guardian-login__signup-note">
+          New family? Continuing above creates your account.
+        </p>
       ) : null}
       {signInError ? (
         <ErrorBanner className="guardian-login__error">

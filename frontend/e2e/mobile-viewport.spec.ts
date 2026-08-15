@@ -80,6 +80,12 @@ async function assertNoHorizontalOverflow(page: import('@playwright/test').Page,
  * are rotated on purpose and clipped on purpose, and their bounding boxes
  * legitimately extend past the fold. Everything a visitor has to READ is in
  * scope.
+ *
+ * NOTE the exemption does not fire at any width in WIDTHS: landing.css hides
+ * `.landing-hero__art` below 30rem (480px) and every width here is narrower,
+ * so those nodes are already dropped by the zero-rect guard. It is kept for
+ * the wider viewports this helper would cover if WIDTHS ever grows, and is
+ * called out so nobody reads it as load-bearing today.
  */
 async function assertNoLandingElementOverflow(
   page: import('@playwright/test').Page,
@@ -122,6 +128,49 @@ for (const width of WIDTHS) {
     )
     expect(overflow, `document overflow at ${width}px`).toBe(false)
     await assertNoLandingElementOverflow(page, width)
+  })
+}
+
+/**
+ * WCAG 1.4.4 Resize Text: content and functionality must survive 200% text
+ * scale. Nothing in CI covered this, and two real failures hid behind that
+ * gap: the doors and trust grids used `minmax(15rem, 1fr)`, whose REM floor
+ * grows with the root font size until each column demands 480px and the cards
+ * run off a 375px viewport; and the topbar's non-wrapping actions cluster slid
+ * the theme toggle off-screen while leaving it focusable, so a keyboard user
+ * could focus a control with no visible indicator anywhere.
+ *
+ * Simulating scale by setting the root font size is what a browser's own
+ * text-size setting does, and unlike page zoom it does not change the layout
+ * viewport, which is exactly the case that broke.
+ */
+for (const width of [320, 375]) {
+  test(`landing survives 200% text scale at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 })
+    await page.goto('/')
+    await expect(page.getByRole('link', { name: /Grown-ups/ })).toBeVisible()
+    // 32px root = 200% of the 16px default.
+    await page.addStyleTag({ content: 'html { font-size: 32px }' })
+    await assertNoLandingElementOverflow(page, width)
+
+    // The doors are contractual entry points: their labels must still be
+    // readable, not merely present in the DOM.
+    for (const name of [/Kids/, /Grown-ups/]) {
+      await expect(page.getByRole('link', { name })).toBeVisible()
+    }
+
+    // Every focusable control in the sticky bar has to stay on-screen, or a
+    // keyboard user can focus something invisible (WCAG 2.4.7).
+    const clientWidth = await page.evaluate(() => document.documentElement.clientWidth)
+    const barControls = page.locator('.landing__topbar a, .landing__topbar button')
+    for (let i = 0; i < (await barControls.count()); i += 1) {
+      const box = await barControls.nth(i).boundingBox()
+      if (!box) continue
+      expect(
+        box.x + box.width,
+        `topbar control ${i} right edge at ${width}px/200%`
+      ).toBeLessThanOrEqual(clientWidth + 1)
+    }
   })
 }
 

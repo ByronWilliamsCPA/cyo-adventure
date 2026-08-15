@@ -1,7 +1,7 @@
 import 'fake-indexeddb/auto'
 
 import { IDBFactory } from 'fake-indexeddb'
-import { act, render, screen, waitFor, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
 import { beforeEach, describe, expect, it } from 'vitest'
 
@@ -202,7 +202,15 @@ describe('LandingPage', () => {
     it('derives the rendered cards from the data, not a hardcoded tier', () => {
       renderLanding()
       const availableNames = PRICING_TIERS.filter((tier) => tier.available).map((tier) => tier.name)
-      expect(screen.getAllByRole('article')).toHaveLength(availableNames.length)
+      // Compare the NAMES, not just the count: a length check is 1 === 1
+      // today whether the JSX maps over PRICING_TIERS or hardcodes an
+      // Explorer card, so it could not catch the hardcoding it is named for
+      // until the Phase 8 flip made a second card appear.
+      const rendered = screen
+        .getAllByRole('article')
+        .map((article) => article.getAttribute('aria-labelledby'))
+        .map((id) => (id ? (document.getElementById(id)?.textContent ?? '') : ''))
+      expect(rendered).toEqual(availableNames)
     })
 
     it('states the paid plan as a future commitment instead of a card', () => {
@@ -307,10 +315,26 @@ describe('LandingPage', () => {
         '/guardian/login?intent=authorize-device'
       )
 
+      // The hydrate is DEFERRED to first interest in the door, so that a
+      // visitor who never goes near it leaves no IndexedDB database behind.
+      // Nothing should have opened one yet.
+      expect(await indexedDB.databases()).toEqual([])
+
+      fireEvent.focus(screen.getByRole('link', { name: /kids/i }))
+
       // Post-hydrate: the mirror is found, valid, and the door target upgrades.
       await waitFor(() =>
         expect(screen.getByRole('link', { name: /kids/i })).toHaveAttribute('href', '/kids')
       )
+    })
+
+    // S5: hydrateDeviceGrant reaches offline/db.ts, which OPENS (and so
+    // creates) the reader's IndexedDB database. Running it on mount meant
+    // every anonymous marketing visit provisioned one.
+    it('leaves no client-side database behind for a visitor who ignores the Kids door', async () => {
+      renderLanding()
+      await new Promise((resolve) => setTimeout(resolve, 50))
+      expect(await indexedDB.databases()).toEqual([])
     })
 
     // The case LandingPage's #VERIFY names. It asserts the deliberate SPLIT:
@@ -349,8 +373,13 @@ describe('LandingPage', () => {
     // The mirror of the above: a revoke elsewhere must downgrade the href, or
     // the door keeps pointing at /kids and DeviceAuthorizedRoute bounces the
     // child back with no explanation.
-    it('downgrades the door href when another tab revokes the grant', () => {
+    it('downgrades the door href when another tab revokes the grant, durably', async () => {
       seedValidGrant()
+      // Let the IndexedDB mirror write land, so this exercises the real
+      // situation: a revoke that clears localStorage while the mirror is
+      // still present. clearDeviceGrant's mirror delete is fire-and-forget,
+      // so that window genuinely exists in production.
+      await new Promise((resolve) => setTimeout(resolve, 0))
       renderLanding()
       expect(screen.getByRole('link', { name: /kids/i })).toHaveAttribute('href', '/kids')
 
@@ -363,6 +392,27 @@ describe('LandingPage', () => {
         'href',
         '/guardian/login?intent=authorize-device'
       )
+
+      // The assertion that matters, and the one a synchronous-only test
+      // missed: the downgrade must SURVIVE. When the hydrate effect was keyed
+      // on [kidsDoorPath], this downgrade re-armed it, the mirror was found,
+      // and hydrateDeviceGrant wrote the revoked grant back into localStorage,
+      // restoring the /kids href.
+      //
+      // The settle is a real timer, not a microtask flush: an IndexedDB read
+      // through fake-indexeddb takes milliseconds, and a single await tick is
+      // NOT enough to observe the resurrection. Verified by reverting the
+      // effect's dep array to [kidsDoorPath]: with a 0ms settle this test
+      // still passes (it measures nothing), with this one it fails on both
+      // assertions below.
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 50))
+      })
+      expect(screen.getByRole('link', { name: /kids/i })).toHaveAttribute(
+        'href',
+        '/guardian/login?intent=authorize-device'
+      )
+      expect(localStorage.getItem('device_grant')).toBeNull()
     })
   })
 })

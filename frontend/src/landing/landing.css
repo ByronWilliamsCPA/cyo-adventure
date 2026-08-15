@@ -46,7 +46,7 @@ html:has(.landing) {
   scroll-padding-top: 5rem;
 }
 
-/* Vite's default browser baseline still includes Firefox 104-120, where
+/* Vite's default browser baseline still includes Firefox 114-120, where
    :has() is unsupported and the rule above is dropped at parse time: the
    sticky topbar would silently bury every anchor target, with nothing in CI
    failing to say so (the required e2e project is chromium).
@@ -77,9 +77,15 @@ html:has(.landing) {
 .landing {
   background: var(--color-parchment);
   color: var(--color-ink);
-  /* The hero's rotated sample covers have bounding boxes wider than their
-     laid-out size; clip at the page wrapper so their tilt can never hand the
-     document a horizontal scrollbar (mobile-viewport.spec.ts gates 320px). */
+}
+
+/* The clip is scoped to the ART, not to the whole page. The rotated sample
+   covers have bounding boxes wider than their laid-out size and are the only
+   thing here that needs clipping; putting `overflow-x: clip` on `.landing`
+   also swallowed REAL overflow elsewhere on the page and, worse, hid it from
+   `documentElement.scrollWidth`, so the page-level overflow gate could not
+   see it. Narrowing this restores page overflow as a detectable failure. */
+.landing-hero__art {
   overflow-x: clip;
 }
 
@@ -96,8 +102,15 @@ html:has(.landing) {
   top: 0;
   z-index: 40;
   display: flex;
+  /* Wraps by necessity, not for looks. As a nowrap row the actions cluster
+     (margin-left: auto) simply slid past the right edge as text scaled: at
+     320px/138% the theme toggle was 14px off-screen, and at 375px/200% it was
+     off-screen AND still focusable, so a keyboard user could focus a control
+     with no visible indicator anywhere on the page (WCAG 2.4.7). */
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--space-4);
+  row-gap: var(--space-2);
   padding: var(--space-2) var(--space-4);
   background: var(--color-parchment);
   border-bottom: 1px solid var(--color-border-soft);
@@ -142,6 +155,14 @@ html:has(.landing) {
 .landing__footer-link:focus-visible {
   outline: 2px solid var(--color-amber-deep);
   outline-offset: 2px;
+}
+
+/* border-radius here would restyle the ELEMENT, not the outline: it snapped
+   each FAQ question from --radius-lg (12px) to 4px on focus, against the
+   still-rounded card behind it. Outlines already follow the element's own
+   radius, so this is only for the two members that have none of their own. */
+.landing__signin:focus-visible,
+.landing__footer-link:focus-visible {
   border-radius: var(--radius-sm);
 }
 
@@ -162,6 +183,14 @@ html:has(.landing) {
    phones). */
 .landing__topbar-actions {
   display: inline-flex;
+  /* The cluster has to wrap INTERNALLY too, not just as one child of the bar.
+     Left as a nowrap inline-flex it stayed a single 405px-wide box at a 32px
+     root and slid past a 375px viewport whole, taking the theme toggle with
+     it, so the bar's own flex-wrap could not help. min-width: 0 lets it
+     actually shrink rather than being floored by its content. */
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  min-width: 0;
   align-items: center;
   gap: var(--space-3);
   margin-left: auto;
@@ -170,6 +199,9 @@ html:has(.landing) {
 .landing__signin {
   display: inline-flex;
   align-items: center;
+  /* Two words that must not become two lines: at 320px this wrapped and took
+     the whole bar from 61px to 69px of a 568px viewport. */
+  white-space: nowrap;
   min-height: 44px;
   color: var(--color-ink-secondary);
   font-weight: var(--weight-semibold);
@@ -192,23 +224,14 @@ html:has(.landing) {
   }
 }
 
-@media (max-width: 45rem) {
-  /* Phone bar: brand + Sign in + theme. This REVERSES the earlier decision
-     to keep a compact CTA here at the cost of the sign-in link. The CTA was
-     added for the action gap on a long scroll, but the mid-page and
-     post-safety CTAs already close that gap, and the hero's own CTA is one
-     screen away. Meanwhile Sign in was the ONLY affordance a RETURNING
-     parent had in the bar, and dropping it sent them hunting for the
-     Grown-ups door. Sign in also does double duty here: its destination is
-     the same login page the CTA pointed at.
-
-     The wordmark name comes back with it: at this width the row is short
-     enough to carry both, and an unlabeled mascot is a weak brand signal on
-     the one screen where a new visitor decides whether to keep scrolling. */
-  .landing__topbar .landing-cta--compact {
-    display: none;
-  }
-}
+/* The phone bar keeps BOTH the sign-in link and the primary CTA. Two review
+   cycles pulled in opposite directions here: the first added a compact CTA
+   and lost Sign in to it, the second restored Sign in and dropped the CTA,
+   and each was right about what it was losing. A returning parent needs an
+   affordance in the bar, and the funnel's target audience needs the action
+   to survive a 9.6-screenful scroll on a phone. The flex-wrap added above
+   makes that a false choice: when the row runs out of width the actions drop
+   to a second line instead of sliding off-screen, so both fit. */
 
 /* ── Shared CTA links (mirror the design system's .cyo-btn contract) ──── */
 
@@ -218,6 +241,11 @@ html:has(.landing) {
   justify-content: center;
   gap: var(--space-2);
   min-height: 44px;
+  /* Both in REM, so at large text scales a fixed-width button outgrows a
+     phone viewport. Let the label wrap and the box shrink instead of
+     overflowing (WCAG 1.4.4). */
+  max-width: 100%;
+  text-wrap: balance;
   padding: var(--space-2) var(--space-6);
   border-radius: var(--radius-md);
   border: 2px solid transparent;
@@ -259,11 +287,10 @@ html:has(.landing) {
   box-shadow: var(--shadow-sm);
 }
 
-/* border-color: ink, not amber-hover. amber-deep against amber-hover is
-   1.01:1 in the dark palette, so the hover border was invisible there, and
-   for a reduced-motion user (who gets no translateY) the shadow change was
-   the only remaining signal. Ink reads as a deliberate darkening against the
-   amber fill in both palettes. */
+/* The ink hover border this rule used to set locally now lives in the design
+   system (Button.css .cyo-btn--primary:hover), where the same 1.01:1
+   dark-mode invisibility affected every surface. Kept here: the lift, which
+   is this page's own flourish. */
 .landing-cta--primary:hover {
   border-color: var(--color-ink);
   box-shadow: var(--shadow-md);
@@ -528,9 +555,16 @@ main > .landing-doors-band:first-child {
   font-size: var(--text-xl);
 }
 
+/* minmax(min(15rem, 100%), 1fr), not minmax(15rem, 1fr): the floor is in REM,
+   so it grows with the user's text size. At a 32px root (200% text scale) a
+   bare 15rem floor demands 480px per column and the doors ran 153px past a
+   375px viewport, with the word "Kids" entirely off-screen: a WCAG 1.4.4
+   Resize Text failure on the two contractual entry points. min(..., 100%)
+   lets the track collapse to the container when the rem floor cannot fit.
+   Same fix applies to .landing-trust and .landing-pricing. */
 .landing__doors {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
   gap: var(--space-4);
   width: 100%;
   max-width: 40rem;
@@ -544,6 +578,7 @@ main > .landing-doors-band:first-child {
 .landing-door {
   display: flex;
   align-items: center;
+  min-width: 0;
   gap: var(--space-4);
   text-align: left;
   padding: var(--space-5) var(--space-5);
@@ -588,10 +623,16 @@ main > .landing-doors-band:first-child {
   background: var(--color-forest);
 }
 
+/* min-width: 0 so this column can shrink below its content's min-content
+   width: a flex item's default `min-width: auto` floored the door's text at
+   its longest word plus padding, and at a 32px root on a 320px viewport that
+   pushed "Guardian console" past the card edge. With it, the labels wrap
+   instead. Same reason `.landing-door` itself needs to allow shrinking. */
 .landing-door__text {
   display: flex;
   flex-direction: column;
   gap: 0.15rem;
+  min-width: 0;
 }
 
 .landing-door__heading {
@@ -687,7 +728,11 @@ main > .landing-doors-band:first-child {
    stacked; this one is the page's single interactive moment and reads better
    framed than centered. Below the breakpoint it collapses to the same
    stacked rhythm as its neighbours. */
-@media (min-width: 56.0625rem) {
+/* not(max-width) rather than a min-width 1px above it: at a FRACTIONAL
+   viewport width inside (896, 897) - reachable via display scaling or zoom -
+   a min-width boundary left the hero two-column while the demo stayed
+   stacked. This is the exact complement of the max-width rules. */
+@media not (max-width: 56rem) {
   .landing-section--demo {
     display: grid;
     grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
@@ -695,10 +740,15 @@ main > .landing-doors-band:first-child {
     align-items: start;
     max-width: 72rem;
     margin-inline: auto;
-    text-align: left;
   }
 
+  /* Each of these sets its own text-align: center at equal specificity, so a
+     single text-align on the section was silently overridden and the "copy on
+     the left" frame rendered centred copy beside a left-aligned demo. */
+  .landing-section--demo .landing-section__eyebrow,
+  .landing-section--demo .landing-section__heading,
   .landing-section--demo .landing-section__lede {
+    text-align: left;
     margin-inline: 0;
   }
 
@@ -772,6 +822,15 @@ main > .landing-doors-band:first-child {
   flex-wrap: wrap;
   justify-content: center;
   gap: var(--space-4);
+}
+
+/* Once these stack they read as a ragged column (170/123/175px); matching
+   their widths makes the group a single block again. */
+@media (max-width: 30rem) {
+  .demo-adventure__outro-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
 }
 
 /* ── How it works ───────────────────────────────────────────────────── */
@@ -878,7 +937,9 @@ main > .landing-doors-band:first-child {
    with a 2x2 fall-back at tablet widths and a single column on phones. */
 .landing-trust {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  /* See .landing__doors: rem floor guarded so large text scales wrap instead
+     of overflowing. */
+  grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
   gap: var(--space-5);
   margin: var(--space-10) auto 0;
   padding: 0;
@@ -925,7 +986,9 @@ main > .landing-doors-band:first-child {
 
 .landing-pricing {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  /* See .landing__doors. Currently masked by the --single override below, but
+     it bites the moment a second tier flips available in Phase 8. */
+  grid-template-columns: repeat(auto-fit, minmax(min(17rem, 100%), 1fr));
   gap: var(--space-6);
   max-width: 56rem;
   margin: var(--space-10) auto 0;
@@ -1131,9 +1194,23 @@ main > .landing-doors-band:first-child {
   text-underline-offset: 0.15em;
 }
 
+/* amber-TEXT, same substitution (and same reason) as the question's ring and
+   the custom marker above: these links sit INSIDE the card, where the dark
+   palette's raised wash drops amber-deep to 2.68:1, under the 3:1 non-text
+   minimum. The 2px offset stays inside the card, so the ring never reaches
+   the parchment that would have rescued it. */
 .landing-faq__answer a:focus-visible {
-  outline: 2px solid var(--color-amber-deep);
+  outline: 2px solid var(--color-amber-text);
   outline-offset: 2px;
+}
+
+/* The CTA fill (amber-deep) against this band is 2.67:1 light / 2.54:1 dark,
+   under the 3:1 non-text minimum for the boundary that identifies a control.
+   Everywhere else on the page the same fill sits on parchment at 3.09/3.27:1.
+   Ink border, the same substitution this band's focus ring already makes,
+   gives a 12.97:1 edge without touching the fill or the 4.86:1 label. */
+.landing-final .landing-cta--primary {
+  border-color: var(--color-ink);
 }
 
 /* ── Final CTA band: the one deliberate palette break (forest). ─────── */

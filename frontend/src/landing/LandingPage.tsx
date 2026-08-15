@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router'
 
 import { SkipLink } from '@ds/components/SkipLink'
@@ -108,17 +108,64 @@ export function LandingPage() {
   // oversight. The door's HREF keeps upgrading live underneath it.
   const doorsFirst = grantAtMount
 
-  useEffect(() => {
-    if (kidsDoorPath === KID_PICKER_PATH) return
-    let cancelled = false
+  // DEFERRED, and guarded so it runs at most once.
+  //
+  // Two problems with running this on mount. First, hydrateDeviceGrant reaches
+  // offline/db.ts, which OPENS (and therefore creates) the reader's IndexedDB
+  // database: a marketing visit by someone who never touches the Kids door
+  // left a `cyo-reader` database behind, on a page that sells "No ads, ever"
+  // and whose privacy notice is registered with KWS. Second, when this was an
+  // effect keyed on [kidsDoorPath], a cross-tab REVOKE re-armed it: the
+  // storage listener downgraded the href, that flipped kidsDoorPath, the
+  // effect re-fired, found the IndexedDB mirror the revoke had not finished
+  // deleting, and wrote the revoked grant back into localStorage, silently
+  // restoring the door it had just taken away. clearDeviceGrant's mirror
+  // delete is fire-and-forget (deviceGrant.ts:81-85, whose own comment allows
+  // the mirror to outlive the localStorage clear), so that was a race the
+  // delete usually won and sometimes lost.
+  //
+  // Running it on first interest in the Kids door fixes both: no database for
+  // a visitor who never goes near it, and no re-arming, so a downgrade is
+  // durable. The mirror only ever repairs a localStorage loss that predates
+  // mount (private-mode eviction, a manual clear), and DeviceAuthorizedRoute
+  // performs its own hydrate when the door is actually followed, so the worst
+  // case here is a cosmetically stale href for a visitor who never hovers or
+  // focuses the link.
+  // #ASSUME: timing dependencies: pointer-enter and focus cover mouse and
+  // keyboard; a touch user taps straight through, where DeviceAuthorizedRoute's
+  // own hydrate is what repairs the route.
+  // #VERIFY: LandingPage.test.tsx "kids door" post-hydrate case (which fires
+  // the trigger) and "downgrades the door href ... durably".
+  const didHydrateRef = useRef(false)
+  const hydrateOnce = useCallback(() => {
+    if (didHydrateRef.current) return
+    didHydrateRef.current = true
     void hydrateDeviceGrant().then((grant) => {
-      if (cancelled) return
       if (grant) setKidsDoorPath(KID_PICKER_PATH)
     })
-    return () => {
-      cancelled = true
-    }
-  }, [kidsDoorPath])
+  }, [])
+
+  // The topnav puts "/#pricing" and friends in the address bar, so those URLs
+  // get bookmarked and shared. But this route is lazy: by the time the chunk
+  // mounts, the browser has already tried and failed to resolve the fragment
+  // against an empty document, leaving the visitor at the top of the page with
+  // no indication anything was meant to happen. Re-run the jump once on mount.
+  // Honors reduced motion explicitly: 'smooth' here would animate even though
+  // the stylesheet disables scroll-behavior, because scrollIntoView's own
+  // behavior option wins over CSS.
+  // #ASSUME: timing dependencies: the element is in the DOM by the time this
+  // effect runs, since the whole page renders synchronously; no data gates any
+  // section. A stale or unknown fragment simply finds nothing and is ignored.
+  // #VERIFY: landing.spec.ts "a bookmarked section link cold-loads at that
+  // section".
+  useEffect(() => {
+    const id = window.location.hash.slice(1)
+    if (!id) return
+    const target = document.getElementById(id)
+    if (!target) return
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    target.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' })
+  }, [])
 
   // Cross-tab freshness: 'storage' fires in THIS tab when ANOTHER tab or
   // window changes localStorage (minting a grant via the authorize-device
@@ -211,10 +258,15 @@ export function LandingPage() {
   const doorsBand = (
     <section className="landing-doors-band" aria-labelledby="landing-doors-heading">
       <h2 className="landing-doors-band__heading" id="landing-doors-heading">
-        Already reading with us?
+        {doorsFirst ? 'Pick up where you left off' : 'Already reading with us?'}
       </h2>
       <nav className="landing__doors" aria-label="Pick who you are">
-        <Link className="landing-door landing-door--kids" to={kidsDoorPath}>
+        <Link
+          className="landing-door landing-door--kids"
+          to={kidsDoorPath}
+          onPointerEnter={hydrateOnce}
+          onFocus={hydrateOnce}
+        >
           <span className="landing-door__icon" aria-hidden="true">
             <svg width="30" height="30" viewBox="0 0 24 24" focusable="false">
               <path
@@ -258,10 +310,11 @@ export function LandingPage() {
           action stays reachable through the whole scroll), and a quiet
           sign-in path for a returning guardian. The anchors are plain
           fragment hrefs on purpose: same-document jumps that never involve
-          the data router. The router does not observe hash changes, so a
-          bookmarked "/#pricing" cold-loads at the top of the page (the lazy
-          chunk mounts after the fragment resolves); acceptable for
-          convenience anchors, documented so nobody builds on location.hash. */}
+          the data router. The router does not observe hash changes, and the
+          lazy landing chunk mounts AFTER the browser has resolved the
+          fragment, so a bookmarked "/#pricing" used to cold-load at the top
+          of the page with nothing to scroll to; the mount effect above
+          repairs that once. Nothing else should build on location.hash. */}
       <header className="landing__topbar">
         <span className="landing__wordmark">
           <Mascot size={30} />
@@ -325,9 +378,7 @@ export function LandingPage() {
               demo on the right. Below 56rem it collapses to plain stacked
               blocks and the wrapper is inert. */}
           <div className="landing-section__rail">
-            <p className="landing-section__eyebrow" aria-hidden="true">
-              Sample
-            </p>
+            <p className="landing-section__eyebrow">Sample</p>
             <h2 className="landing-section__heading" id="landing-demo-heading">
               Try a sample story
             </h2>
@@ -350,9 +401,7 @@ export function LandingPage() {
           id="how-it-works"
           aria-labelledby="landing-how-heading"
         >
-          <p className="landing-section__eyebrow" aria-hidden="true">
-            How it works
-          </p>
+          <p className="landing-section__eyebrow">How it works</p>
           <h2 className="landing-section__heading" id="landing-how-heading">
             How a story gets made
           </h2>
@@ -426,9 +475,7 @@ export function LandingPage() {
           id="safety"
           aria-labelledby="landing-safety-heading"
         >
-          <p className="landing-section__eyebrow" aria-hidden="true">
-            Safety
-          </p>
+          <p className="landing-section__eyebrow">Safety</p>
           <h2 className="landing-section__heading" id="landing-safety-heading">
             Built so you can say yes
           </h2>
@@ -473,8 +520,8 @@ export function LandingPage() {
               </span>
               <h3 className="landing-trust__title">You hold the keys</h3>
               <p className="landing-trust__body">
-                Approve devices, assign books per child, and follow reading time from your family
-                console. Access you grant, you can revoke.
+                Approve devices, assign books per child, and see what they have started, finished,
+                and discovered from your family console. Access you grant, you can revoke.
               </p>
             </li>
           </ul>
@@ -494,9 +541,7 @@ export function LandingPage() {
         {/* ── Funnel stage 4: pricing. Subscription-ready but honest about
             today: see pricing.ts for the Phase 8 wiring contract. ── */}
         <section className="landing-section" id="pricing" aria-labelledby="landing-pricing-heading">
-          <p className="landing-section__eyebrow" aria-hidden="true">
-            Pricing
-          </p>
+          <p className="landing-section__eyebrow">Pricing</p>
           <h2 className="landing-section__heading" id="landing-pricing-heading">
             Simple family pricing
           </h2>
@@ -643,7 +688,7 @@ export function LandingPage() {
             <details className="landing-faq__item">
               <summary className="landing-faq__question">What happens after I sign up?</summary>
               <p className="landing-faq__answer">
-                Creating your account takes about a minute. We then approve each new family by hand,
+                Creating your account takes about a minute. We then approve each new family by hand;
                 it is part of how we keep the space safe, and your console unlocks as soon as we do.
                 After that you add readers and request your first story.
               </p>
@@ -687,11 +732,14 @@ export function LandingPage() {
           <h2 className="landing-final__heading" id="landing-final-heading">
             Ready for their next favorite story?
           </h2>
-          {/* Short by design: the hand-approval promise is made in the hero
-              and again in the FAQ. A visitor who has scrolled this far has
-              read it; repeating it here delays the one action this band
-              exists for. */}
-          <p className="landing-final__lede">Create your account in about a minute and meet Pip.</p>
+          {/* Short, but not at the expense of the approval expectation: this
+              is the last thing a scrolled visitor reads before clicking, and
+              "a minute, then Pip" quietly promised the instant access the
+              rest of the page is careful not to. */}
+          <p className="landing-final__lede">
+            Create your account in about a minute. We approve each family by hand, then Pip is
+            waiting.
+          </p>
           <Link
             className="landing-cta landing-cta--primary landing-cta--lg"
             to={GUARDIAN_LOGIN_PATH}

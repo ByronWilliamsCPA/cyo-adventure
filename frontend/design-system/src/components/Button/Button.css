@@ -73,8 +73,15 @@
   box-shadow: var(--shadow-sm);
 }
 
+/* border-color: ink, not amber-hover. In the DARK palette amber-deep against
+   amber-hover is 1.01:1, so the hover border was invisible: indistinguishable
+   from the resting state. That leaves box-shadow as the only hover signal,
+   and a reduced-motion user gets no transform either. Ink reads as a
+   deliberate darkening of the edge against the amber fill in both palettes.
+   Found on the landing page's CTA, which forked a local copy of this fix;
+   correcting it here lets every surface inherit it. */
 .cyo-btn--primary:hover:not(:disabled) {
-  border-color: var(--color-amber-hover);
+  border-color: var(--color-ink);
   box-shadow: var(--shadow-md);
 }
 

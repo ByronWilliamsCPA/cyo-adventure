@@ -144,7 +144,12 @@
   border-radius: var(--radius-full, 999px);
   border: 2px solid var(--color-amber-deep, #c17b2a);
   background: var(--color-amber-deep, #c17b2a);
-  color: white;
+  /* ink, not white. White on amber-deep is 3.42:1, which only clears AA
+     because this label is large text; ink is 4.86:1 and clears the normal-text
+     minimum outright. It also matches .landing-cta--primary, which uses the
+     same fill: this is the button every landing-funnel CTA hands off to, so
+     the two should not look like different components. */
+  color: var(--color-ink, #2c1a0e);
   font-size: var(--text-lg, 1.25rem);
   font-weight: var(--weight-bold, 700);
   cursor: pointer;
@@ -216,7 +221,26 @@
   color: var(--color-ink-secondary, #5a3e28);
 }
 
-/* Sits directly under the Google button as its caption, so it hugs the button
+/* Escape hatch back to the landing page, mirroring .legal__back. Sits above
+   the card's heading, ink-secondary for the same AA reasoning as the notes
+   below (8.81:1 on parchment). */
+.guardian-login__back {
+  display: inline-block;
+  margin: 0 0 var(--space-4, 1rem);
+  color: var(--color-ink-secondary, #5a3e28);
+  font-size: var(--text-sm, 0.9375rem);
+  font-weight: var(--weight-semibold, 600);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.guardian-login__back:focus-visible {
+  outline: 2px solid var(--color-amber-deep, #c17b2a);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm, 4px);
+}
+
+/* Captions the whole provider block, so it hugs the last provider button
    (0.5rem) rather than taking the 1rem block rhythm the standalone notes use.
    --color-ink-secondary to match .guardian-login__note exactly: this reads as
    one family of supporting text and should not be two shades of it.

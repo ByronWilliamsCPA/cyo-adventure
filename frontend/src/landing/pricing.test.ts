@@ -46,6 +46,14 @@ describe('PRICING_TIERS data invariants', () => {
       if (tier.available) {
         expect(tier.priceMonthlyUsd).toBe(0)
         expect(tier.cta.to).toBe(GUARDIAN_LOGIN_PATH)
+      } else {
+        // The unavailable branch was previously unexercised, so the property
+        // "an unavailable tier carries neither a price nor a CTA" rested
+        // entirely on the discriminated union. That holds for data written in
+        // TypeScript, but the assertion is cheap and states the invariant
+        // where a reader looks for it.
+        expect(tier.priceMonthlyUsd).toBeNull()
+        expect(tier.cta).toBeNull()
       }
     }
   })

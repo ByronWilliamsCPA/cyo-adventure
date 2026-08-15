@@ -159,9 +159,40 @@ test('topbar anchors jump to their funnel sections', async ({ page }) => {
   // substring-based name lookup, and the eyebrow/heading pairs repeat the
   // nav labels ("Pricing", "Safety") verbatim by design.
   const topnav = page.getByRole('navigation', { name: 'Page sections' })
-  await topnav.getByRole('link', { name: 'Pricing' }).click()
-  await expect(page.locator('#pricing')).toBeInViewport()
 
-  await topnav.getByRole('link', { name: 'How it works' }).click()
-  await expect(page.locator('#how-it-works')).toBeInViewport()
+  // toBeInViewport() alone is NOT enough here, and that is the whole point of
+  // the geometry below. Measured with scroll-padding-top removed, #pricing
+  // lands at y=-0 with the topbar occupying 0..61: still "in viewport", still
+  // green, and the section heading sits underneath the sticky bar. The
+  // scroll-padding rule and its @supports fallback in landing.css exist for
+  // exactly this, so they need an assertion that can see it.
+  const topbar = page.locator('.landing__topbar')
+  const topbarBox = await topbar.boundingBox()
+  if (!topbarBox) throw new Error('topbar geometry unavailable')
+  const topbarBottom = topbarBox.y + topbarBox.height
+
+  for (const [label, id] of [
+    ['Pricing', '#pricing'],
+    ['How it works', '#how-it-works'],
+  ] as const) {
+    await topnav.getByRole('link', { name: label }).click()
+    const section = page.locator(id)
+    await expect(section).toBeInViewport()
+    await expect
+      .poll(async () => (await section.boundingBox())?.y ?? -1, {
+        message: `${id} should come to rest clear of the sticky topbar`,
+      })
+      .toBeGreaterThanOrEqual(topbarBottom)
+  }
+})
+
+// S6: the topnav puts these URLs in the address bar, so they get bookmarked
+// and shared. The landing route is lazy, so the browser resolves the fragment
+// against an empty document and the visitor lands at the top with no sign
+// anything was meant to happen.
+test('a bookmarked section link cold-loads at that section', async ({ page }) => {
+  await page.goto('/#pricing')
+  await expect(page.getByRole('heading', { name: 'Simple family pricing' })).toBeVisible()
+  await expect.poll(async () => page.evaluate(() => window.scrollY)).toBeGreaterThan(0)
+  await expect(page.locator('#pricing')).toBeInViewport()
 })

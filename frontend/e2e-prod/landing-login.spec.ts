@@ -39,7 +39,9 @@ test.describe('public surfaces (unauthenticated)', () => {
     // exact:true on the field labels avoids matching the reset sub-form's
     // "Email for reset link" if the "Forgot your password?" toggle ever
     // renders its input into the DOM.
-    await expect(page.getByRole('heading', { name: 'Sign in or create your account', level: 1 })).toBeVisible()
+    await expect(
+      page.getByRole('heading', { name: 'Sign in or create your account', level: 1 })
+    ).toBeVisible()
     await expect(page.getByLabel('Email', { exact: true })).toBeVisible()
     await expect(page.getByLabel('Password', { exact: true })).toBeVisible()
     await expect(page.getByRole('button', { name: 'Sign in' })).toBeVisible()

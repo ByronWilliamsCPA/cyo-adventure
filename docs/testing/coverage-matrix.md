@@ -270,9 +270,9 @@ relate to the Supabase project constraints.
   to the new passage on every user-driven transition (but not on mount).
   `pricing.test.ts` pins `formatMonthlyPrice` (0 renders "Free", 7.5 renders
   "$7.50" and never "$7.5", NaN/Infinity/negative throws rather than painting
-  "$NaN" on a public card) and the no-billing-yet data invariants: every
-  available tier is free and routes to guardian sign-in, and an unavailable
-  tier carries neither a price nor a CTA. Not a user journey on its own: this
+  "$NaN" on a public card) and the no-billing-yet data invariants over both
+  branches of the tier union: every available tier is free and routes to
+  guardian sign-in, and an unavailable tier carries neither a price nor a CTA. Not a user journey on its own: this
   is the conversion surface, and its tests exist to keep marketing copy from
   drifting ahead of what the product actually enforces.
 

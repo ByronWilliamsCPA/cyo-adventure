@@ -43,8 +43,8 @@ export const DEMO_STORY: Record<DemoNodeId, DemoNode> = {
   start: {
     text:
       'A brass lantern swings at the mouth of Fernwhistle Cave. Pip the fox ' +
-      'sniffs the evening air and looks up at you. "Two trails," Pip ' +
-      'whispers. "You pick."',
+      'sniffs the evening air and looks up at you. “Two trails,” Pip ' +
+      'whispers. “You pick.”',
     choices: [
       { label: 'Slip into the glittering cave', to: 'cave' },
       { label: 'Climb the mossy stairs up the hill', to: 'hill' },
@@ -83,14 +83,14 @@ export const DEMO_STORY: Record<DemoNodeId, DemoNode> = {
   end_letter: {
     endingTitle: 'The Moon Picnic',
     text:
-      'The letter says: "You found me! The otters are throwing a moon ' +
-      'picnic, and you are invited." Pip is already packing snacks.',
+      'The letter says: “You found me! The otters are throwing a moon ' +
+      'picnic, and you are invited.” Pip is already packing snacks.',
   },
   end_race: {
     endingTitle: 'Won by a Whisker',
     text:
       'You win by a whisker! The boat bumps ashore at your feet and unfolds ' +
-      "into a map of tomorrow's adventure.",
+      'into a map of tomorrow\u2019s adventure.',
   },
 }
 

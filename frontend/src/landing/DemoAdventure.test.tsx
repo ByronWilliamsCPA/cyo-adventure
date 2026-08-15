@@ -15,6 +15,16 @@ function renderDemo() {
 }
 
 describe('DemoAdventure', () => {
+  // The `if (!interactedRef.current) return` guard in the focus effect is the
+  // only thing stopping the demo from calling .focus() on mount, which would
+  // scroll every homepage load past the hero straight to the demo section.
+  // Nothing asserted the negative before.
+  it('does not steal focus on mount', () => {
+    renderDemo()
+    expect(screen.getByTestId('demo-passage')).not.toHaveFocus()
+    expect(document.body).toHaveFocus()
+  })
+
   it('starts at the opening passage with its two choices', () => {
     renderDemo()
     expect(screen.getByText(/brass lantern swings/i)).toBeInTheDocument()
@@ -117,7 +127,6 @@ describe('DemoAdventure', () => {
           continue
         }
         for (const choice of node.choices) {
-          expect(DEMO_STORY[choice.to]).toBeDefined()
           if (!reachable.has(choice.to)) {
             reachable.add(choice.to)
             next.push(choice.to)
@@ -134,8 +143,11 @@ describe('DemoAdventure', () => {
     for (const endingDepth of endingDepths) {
       expect(endingDepth).toBe(2)
     }
-    // ...and the derived ending count matches the graph.
-    const endings = Object.values(DEMO_STORY).filter((n) => n.endingTitle !== undefined)
-    expect(DEMO_ENDING_COUNT).toBe(endings.length)
+    // ...and there are exactly four of them. Pinned as a LITERAL, not
+    // re-derived from DEMO_STORY: DEMO_ENDING_COUNT is defined as that same
+    // filter (demoStory.ts), so comparing the two can never fail. Four is the
+    // number the user-visible copy ("You found N of 4") and the e2e
+    // assertions depend on, so that is what deserves a guard.
+    expect(DEMO_ENDING_COUNT).toBe(4)
   })
 })

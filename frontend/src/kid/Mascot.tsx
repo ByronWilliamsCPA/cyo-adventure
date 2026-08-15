@@ -13,6 +13,22 @@
  * callers.
  */
 
+/**
+ * Eyes and nose, as a FIXED dark literal rather than var(--color-ink).
+ *
+ * They are painted on the muzzle, which is itself a fixed light literal
+ * (#fdf3e6) precisely because the fox's colouring must not flip with the
+ * palette. --color-ink does flip: it resolves to #2c1a0e in the light palette
+ * but #f3e6d2 in the dark one, which is 1.12:1 against that muzzle. The
+ * result was a faceless fox everywhere the mascot appears in dark mode, with
+ * only the two 1.8px white catchlights surviving.
+ *
+ * This value is the light palette's own ink, so nothing changes in light mode;
+ * it is pinned here so the pairing stays legible in both. 15.18:1 on the
+ * muzzle.
+ */
+const FACE_INK = '#2c1a0e'
+
 export interface MascotProps {
   /** Pixel size of the square viewport. Defaults to 96. */
   size?: number
@@ -47,11 +63,11 @@ export function Mascot({ size = 96, title, className }: MascotProps) {
         d="M50 52 C36 52 26 60 24 72 C30 86 40 92 50 92 C60 92 70 86 76 72 C74 60 64 52 50 52 Z"
         fill="#fdf3e6"
       />
-      <circle cx="38" cy="58" r="5.5" fill="var(--color-ink, #2c1a0e)" />
-      <circle cx="62" cy="58" r="5.5" fill="var(--color-ink, #2c1a0e)" />
+      <circle cx="38" cy="58" r="5.5" fill={FACE_INK} />
+      <circle cx="62" cy="58" r="5.5" fill={FACE_INK} />
       <circle cx="39.6" cy="56.4" r="1.8" fill="#fff" />
       <circle cx="63.6" cy="56.4" r="1.8" fill="#fff" />
-      <path d="M50 66 L45 72 Q50 76 55 72 Z" fill="var(--color-ink, #2c1a0e)" />
+      <path d="M50 66 L45 72 Q50 76 55 72 Z" fill={FACE_INK} />
       <path
         d="M50 74 L50 79"
         stroke="var(--color-ink, #2c1a0e)"
