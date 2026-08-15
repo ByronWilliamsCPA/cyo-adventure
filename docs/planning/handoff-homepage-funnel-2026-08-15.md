@@ -1,8 +1,9 @@
 # Session Handoff: homepage sales-funnel redesign (2026-08-15)
 
-Branch: `claude/homepage-redesign-sales-funnel-o5bshc`. Written for the team taking this work over
-mid-stream; the paired PR carries the same branch. Treat "What Remains" as a hypothesis and re-verify
-against the live branch before acting.
+Branch: `claude/pr-717-review-e01svz`. Originally written mid-stream, when cycle 2 was partly
+applied and cycle 3 unrun; UPDATED on completion of the full three-cycle protocol, so it now records
+what was done rather than what was left. Still verify against the live branch before acting on any
+specific claim.
 
 ## Goal / Intent
 
@@ -13,128 +14,93 @@ backend; Track 2 Phase 8 per ADR-008), so the pricing section must be structural
 without selling or implying anything today.
 
 The owner's review protocol: three cycles of paired adversarial reviews (one UX, one code quality),
-each pair COLD (no access to earlier reports), fixing between cycles. Cycles completed: cycle 1 fully
-applied; cycle 2 reviews completed and triaged, fixes PARTIALLY applied (see What Remains); cycle 3
-not yet run. The handoff request arrived mid-cycle-2.
+each pair COLD (no access to earlier reports), fixing between cycles. All three cycles are complete
+and applied.
+
+What the protocol was worth, since that is the question a future reader will have: each cycle found
+defects the previous one could not. Cycle 1 caught claim overreach and a focus-ring contrast
+failure. Cycle 2 caught a conversion dead end and an overflow gate that could not fail. Cycle 3,
+the only cycle to simulate large text scale, caught two WCAG blockers on the contractual entry
+points plus a grant-resurrection race, and it found three defects that turned out to live in shared
+code rather than on this page at all. The pattern to keep: reviewers who MEASURE the built artifact
+rather than reading the source find a different class of defect than reviewers who read.
 
 ## Current State
 
-- Branch `claude/homepage-redesign-sales-funnel-o5bshc`, 3 commits at handoff time (a 4th adds this
-  doc), all pushed. Working tree clean.
-  - `cfb4bdd` feat(landing): redesign the homepage as the sales funnel
-  - `d09025e` fix(landing): apply adversarial UX and code review findings (cycle 1)
-  - `7d6a704` fix(landing): first slice of cycle-2 cold-start review fixes
-- Gates green at the last commit: `tsc -b`, ESLint (one pre-existing FlagBadge.tsx warning,
-  untouched), 31 landing unit tests (2307 repo-wide at last full run), landing e2e 6/6, axe on `/`
-  (per-PR tags and A11Y_EXTENDED=1), 320/375/414 overflow checks, visual baseline passing.
-- No active errors. No failing tests.
-- PR: opened at handoff (same branch); see the PR description for the reviewer-facing summary.
+**The three-cycle review protocol is COMPLETE.** All three paired cold-start review cycles have
+run (one UX reviewer + one code-quality reviewer per cycle, each pair with no access to earlier
+reports), and every accepted finding has been applied. There is no outstanding remediation list.
+
+Branch: `claude/pr-717-review-e01svz` (successor to `claude/homepage-redesign-sales-funnel-o5bshc`;
+see the note under "What Was Done"). Working tree clean.
+
+Gates at the final commit: `tsc -b`, ESLint (one pre-existing `FlagBadge.tsx` warning, untouched),
+`prettier --check`, 2318 frontend unit tests across 174 files, 59 Playwright cases across
+`landing`/`mobile-viewport`/`a11y`/`keyboard-nav`, 18 visual baselines, the coverage-matrix
+drift-guard, the RAD citation gate, the lessons-log and work-linkage checks, and a clean
+`npm run build`.
 
 ## What Was Done
 
-- Commit 1: full landing rebuild (`frontend/src/landing/*`: LandingPage, landing.css, DemoAdventure,
-  demoStory, pricing) plus e2e/spec updates and a regenerated `landing-page-chromium-linux.png`.
-- Commit 2 (cycle-1 fixes, both reviews fully applied): production-canary h1 assertion fix
-  (`frontend/e2e-prod/landing-login.spec.ts`), COPPA-claim softening, approval-wall expectation
-  copy, sticky-topbar CTA, mid-page CTA, doors-first ordering on granted devices, demo endings
-  counter, pricing discriminated union, quota disclosure, focus-ring fix on the forest band,
-  `scroll-padding-top`, mobile topbar alignment, dead CSS and citation corrections.
-- Commit 3 (cycle-2 slice): read-aloud moved to the free Explorer tier (it shipped in Phase 4b;
-  advertising it as future-paid was UX finding 2), `formatMonthlyPrice` input guard plus strengthened
-  data invariants, demo "Back one choice" action (`DEMO_PARENTS` in `demoStory.ts`), demo scale copy
-  spanning the real band range, dead `id` field removed from `DemoNode`, and the h1 moved to a shared
-  `LANDING_HEADLINE` constant (`frontend/src/landing/headline.ts`) imported by the unit test, the
-  landing spec, the a11y readiness assertion, and the prod smoke test.
+- **Original build and cycles 1-2** (commits `cfb4bdd`, `d09025e`, `7d6a704`, `03937463`): the full
+  landing rebuild plus the first cycle's fixes and the first slice of cycle 2. Recorded in the
+  original version of this document.
+- **Branch move.** The work now lives on `claude/pr-717-review-e01svz`, which carries those four
+  commits unchanged plus the remediation below. PR #717 was closed in favour of its successor
+  rather than continuing on a branch whose review history predated the remaining work.
+- **CI repair.** The `Frontend (Node 22)` job was failing at `format:check` on `demoStory.ts`, and
+  the coverage-matrix drift-guard behind it had not been reached: the two new landing test files
+  were never registered. Both fixed, and `main` merged in.
+- **Cycle-2 remainder (items 1-16 of the original list), all applied.** The signup dead end, the
+  present-tense KWS consent claim, the device contradiction, the 320px hero clip and the overflow
+  gate that could not fail, the `:has()` dependency, the doors-band gap, the unbuyable pricing card,
+  the doubled device-grant read and its missing storage-event test, the phone topbar, the
+  dark-mode contrast states, the cover labels, the copy dedupe, the FAQ additions, the share image,
+  and the comment-accuracy sweep.
+- **Cycle 3, run cold and fully applied.** Two blockers, seven should-fixes and seventeen polish
+  items. Highlights:
+  - **WCAG 1.4.4 / 2.4.7 at large text scale**, the cycle's most valuable finding and one no
+    previous cycle or CI gate could see. `minmax(15rem, 1fr)` grids overflowed by 153px at 200%
+    text scale, and the non-wrapping topbar pushed the theme toggle off-screen while leaving it
+    focusable. A 200% text-scale e2e case now guards both.
+  - **`overflow-x: clip` narrowed from `.landing` to `.landing-hero__art`.** On the wrapper it hid
+    real overflow from `documentElement.scrollWidth`, which is precisely why the page-level gate
+    stayed green through both blockers.
+  - **A cross-tab revoke could resurrect the revoked grant** from the IndexedDB mirror, because the
+    hydrate effect re-armed on the downgrade it had just caused. The hydrate is now deferred to
+    first interest in the Kids door, which also stops an anonymous marketing visit from creating
+    the reader's database at all.
+  - **Pip rendered faceless in dark mode** (1.12:1), **`body` had no background** so short pages
+    painted browser-default white, and the design system's primary-button hover border was
+    invisible in dark mode (1.01:1) app-wide. All three were found via the landing page and fixed
+    at their real source.
+  - **Five tests that could not fail** were rewritten, and the two mechanisms most relied on
+    (the element-overflow gate and the durable-downgrade test) were verified by reintroducing the
+    bugs and confirming the tests fail.
 
 ## What Remains
 
-Cycle-2 findings triaged and accepted but NOT yet applied, in priority order. UX-n / CQ-n reference
-the two cycle-2 reports (full texts in the session transcript; the specs below are self-sufficient).
+Nothing from the review protocol. The list that stood here is fully applied; see "What Was Done".
 
-1. **UX-1 signup dead end (top priority).** Every funnel CTA lands on `/guardian/login`, whose h1 is
-   "Guardian sign-in" with no signup affordance; a new parent reads it as "wrong door". GOAL: the
-   destination must say an account gets CREATED here. Mechanism (assumed, verify against design
-   taste): in `frontend/src/guardian/LoginPage.tsx` retitle the h1 to "Sign in or create your
-   account" and add, under the Google button and only when the authorize-device intent is absent, a
-   line such as "New family? Continuing with Google creates your account." Then update every
-   "Guardian sign-in" heading assertion: `frontend/src/test/App.test.tsx` (2), `frontend/e2e/
-   landing.spec.ts`, `frontend/e2e/intake.spec.ts`, `frontend/e2e/a11y.spec.ts:220`,
-   `frontend/e2e/guardian-password-reset.spec.ts` (2), `frontend/e2e-prod/landing-login.spec.ts`,
-   `frontend/e2e-prod/guardian-profiles.spec.ts` (2). Grep for the string before trusting this list.
-2. **UX-3 verification claim.** Trust card 2's body still says "Adult verification and consent are
-   built into sign-up" in present tense; KWS is flag-off in production (`core/config.py::
-   kws_verification_required` default False; ADR-018). Replace the body with: "Kids never get
-   accounts of their own. A grown-up signs in with their own account, and a real person reviews
-   every new family before it is switched on. Verified-parent consent (COPPA) is built in and turns
-   on with our public launch."
-3. **UX-4 device contradiction.** How-it-works footnote says "on any device" while the trust card
-   and FAQ say "devices you authorize". New footnote: "Once you approve a book it lands on their
-   shelf right away, and it reads offline on any device you have set up."
-4. **CQ-1 320px hero overflow.** At <=56rem the hero grid is `grid-template-columns: 1fr`; the art
-   row's 300px min-content floors the track and clips the reassure line at 320px. Fix:
-   `minmax(0, 1fr)`. ALSO the overflow gate cannot fail: `.landing { overflow-x: clip }` hides
-   overflow from `scrollWidth`. Rewrite the landing case in `frontend/e2e/mobile-viewport.spec.ts`
-   to assert every `.landing *` descendant's `getBoundingClientRect().right <= clientWidth + 1`.
-5. **CQ-2 doors-first top gap.** With a valid grant the doors band starts 0px under the sticky bar
-   (`.landing-doors-band` has no top padding). Fix:
-   `main > .landing-doors-band:first-child { padding-top: var(--space-8) }` and add a granted-device
-   geometry assertion to `frontend/e2e/landing.spec.ts` (band above hero AND band heading below the
-   topbar's bottom edge).
-6. **CQ-5 `:has()` support.** `html:has(.landing)` no-ops on Firefox 104-120 (Vite's default
-   baseline), silently dropping `scroll-padding-top`. Keep `:has()` for `scroll-behavior` only; add
-   universal `scroll-margin-top: 5rem` on `#demo`, `#how-it-works`, `#safety`, `#pricing`,
-   `#landing-main`, and `.demo-adventure__passage`.
-7. **UX-5 phone topbar swap + hero art.** Below 45rem, hide the topbar compact CTA and show
-   `.landing__signin` and the wordmark name instead (returning parents lost their only sign-in
-   affordance; the hero CTA is one screen away and mid-page CTAs exist). Below 30rem hide
-   `.landing-hero__art` entirely (three unlabeled rectangles cost a quarter of screen one). This
-   REVERSES part of cycle 1; see Key Decisions.
-8. **UX-6 pricing render.** Render a card only for `PRICING_TIERS.filter(t => t.available)`; render
-   each unavailable tier as one line under the grid: "A paid Family plan comes later: we will
-   announce pricing here before anything changes, and books already on your shelf stay yours." Keep
-   the existing footnote sentence about safety never being paywalled. Update the pricing unit and
-   e2e tests (the Family ARTICLE disappears; assert the futures line and that the whole section has
-   exactly one link). Center the single card (`max-width: ~26rem`).
-9. **CQ-3/CQ-4 grant read + RAD.** Derive both `kidsDoorPath`'s initializer and `doorsFirst` from a
-   single `const [grantAtMount] = useState(() => hasValidDeviceGrant())`; tag `doorsFirst` with an
-   `#ASSUME` timing tag; fix the `#VERIFY` that names a nonexistent "storage-event" unit test by
-   ADDING that test: fire a `StorageEvent` after seeding/removing the grant, assert the door HREF
-   updates while the section ORDER does not.
-10. **UX-8/UX-9 dark-mode states.** FAQ focus ring: `.landing-faq__question:focus-visible
-    { outline-color: var(--color-amber-text) }` (amber-deep computes 2.72:1 on the open dark card;
-    amber-text 7.53:1 dark / 5.96:1 light, verified). Primary CTA hover:
-    `border-color: var(--color-ink)` (amber-deep to amber-hover is 1.01:1 in dark mode, invisible
-    under reduced motion).
-11. **UX-14/16 + CQ-20 layout polish.** Demo section: retitle h2 to "Try a sample story" (matches
-    the hero ghost CTA), add the eyebrow, and give it the asymmetric left-rail frame
-    (`minmax(0,0.8fr) minmax(0,1.2fr)` above 56rem). Align the topnav-hide breakpoint to 56rem.
-    Compact doors-band variant when funnel-first (UX-7), or explicitly decline it.
-12. **Copy dedupe (UX-10/16).** Hero reassure becomes: "Free while in early access. No ads, ever. We
-    approve each family by hand, so kids never share the space with strangers." Final-band lede
-    becomes: "Create your account in about a minute and meet Pip." Delete the mid-page CTA's note
-    line. Footer link "Guardian sign-in" becomes "Sign in" pointing at `/guardian` (update the unit
-    test for two same-name links).
-13. **UX-12 FAQ additions.** Deletion rights (mirror the policy exactly: profile deletion is in-app,
-    family-account deletion is by email; see `frontend/src/legal/PrivacyPolicyPage.tsx:443`) and a
-    training-question clause that claims nothing unverified: "Whether a provider may train on inputs
-    is governed by that provider's terms; the privacy page names each provider and exactly what it
-    receives."
-14. **Comment accuracy (CQ-7/8/9/10/21).** landing.css header says three literals, there are four
-    (the cover edge highlight); the cover-title citation names lagoon but only plum ships a label
-    (moot if UX-15's all-three-labels lands: then lagoon IS the worst case at 10.13:1); the
-    ink-muted "3.72:1" figure predates UX-C2 (now 4.57:1 light); `frontend/e2e/landing.spec.ts`'s
-    topnav-scoping comment cites a "See how it works" CTA that no longer exists; soften the
-    "must always be correct" wording on the door-href comment (cross-tab revoke has a benign
-    known race; the server is the boundary).
-15. **UX-13 share preview.** Produce a 1200x630 `frontend/public/og-image.png` (screenshot the built
-    hero region), point `og:image` at it with correct dimensions, switch `twitter:card` to
-    `summary_large_image`.
-16. **UX-15 cover labels.** Restore titles on all three hero covers, anchored to the TOP of each
-    spine (top labels dodge both the fan overlap and Pip, which is why the bottom-label version was
-    removed in cycle 1); keep them hidden below 30rem if the art survives UX-5 there.
-17. **Cycle 3.** After the remainder lands and gates pass, run the third cold-start pair (UX +
-    code quality, Opus, no access to earlier reports), triage, fix, push. The cycle-2 prompts are a
-    good template: constraints block, screenshot paths, "measure the built page" instruction.
+Two items were considered and **declined**, each documented at the point in the code where a future
+reader will ask:
+
+- **A compact doors-band variant when the band renders funnel-first (UX-7).** Two visual treatments
+  of a contractual entry point is ongoing upkeep (geometry, focus order, touch targets) for a
+  cosmetic gain, and on an unknown device the band sits below the fold. Revisit only with evidence
+  that it diverts new visitors.
+- **Replacing the landing page's `.landing-cta` and card treatments with the design system's
+  `.cyo-btn` / `.cyo-card` primitives.** Cycle 3 counted 11 duplicated `.landing-cta` rules against
+  13 `.cyo-btn` rules already loaded on the page, so the observation is correct and the cleanup is
+  real. It is declined *here* only because it is a broad visual-equivalence refactor landing at the
+  end of a large PR, where the risk of silent visual drift outweighs the tidiness. It wants its own
+  change with its own visual-baseline review.
+
+One finding was **narrowed** rather than fully applied: the stale `ink-muted only clears 3.72:1`
+contrast figure appears in `guardian.css`, `kid.css`, and `library.css` as well as `landing.css`.
+Recomputed it is 4.57:1 light / 5.38:1 dark, so ink-muted now passes AA and the justification those
+comments give no longer holds. Only the two rules this PR already touches were corrected; the rest
+are a separate sweep.
 
 ## Key Decisions
 
@@ -144,16 +110,18 @@ the two cycle-2 reports (full texts in the session transcript; the specs below a
   test green.
 - **Doors order is decided once at mount** and never reshuffles mid-view (href still upgrades live);
   chose over live reordering because a section reshuffle under a reading visitor is hostile CLS.
-- **Family card kept in cycle 1, slated for a one-line futures note in cycle 2**: two independent
-  cold reviewers converged on the card being a de-conversion element; subscription-readiness now
-  lives in the data model plus the render filter, not in a visible unbuyable card.
+- **The unbuyable Family card was removed**: two independent cold reviewers converged on it as a
+  de-conversion element. Subscription-readiness lives in the data model plus a render filter over
+  `available`, not in a visible card, so the Phase 8 flip is still a data change in `pricing.ts`.
 - **Demo passage uses `:focus`, not `:focus-visible`**, deliberately (script-driven focus after
   mouse clicks must stay visible for AT users); documented in landing.css.
 - **Token fallbacks are omitted in landing.css** (header note): tokens.css loads unconditionally
   and a light-only fallback would paint wrong colors in dark mode.
 - **Claims discipline**: every safety/limit claim must match something enforced today
-  (10-story quota, hand approval, KWS flag-off). Two review cycles each caught one overreach;
-  assume cycle 3 will hunt for more.
+  (10-story quota, hand approval, KWS flag-off). Every cycle caught at least one overreach, the
+  last being a trust card that promised reading-time tracking the guardian console does not have.
+  `LandingPage.test.tsx`'s "claims discipline" block now pins the corrected ones; assume the next
+  copy change needs the same scrutiny.
 
 ## Dead Ends / Rejected Approaches
 
@@ -196,11 +164,11 @@ the two cycle-2 reports (full texts in the session transcript; the specs below a
 - `frontend/e2e/visual.spec.ts-snapshots/landing-page-chromium-linux.png`: regenerated baseline
   (off-runner; see Gotchas).
 
-## How to Resume
+## How to Verify
 
-1. `git fetch origin && git checkout claude/homepage-redesign-sales-funnel-o5bshc && git pull`
+1. `git fetch origin && git checkout claude/pr-717-review-e01svz && git pull`
 2. `cd frontend && npm ci`
-3. Recreate the Playwright browser shim (container ships Chromium build 1194; Playwright 1.62.1
+3. Recreate the Playwright browser shim (the container ships Chromium build 1194; Playwright 1.62.1
    expects 1234; do NOT run `playwright install`):
 
    ```bash
@@ -213,51 +181,62 @@ the two cycle-2 reports (full texts in the session transcript; the specs below a
    touch "$SHIM"/chromium{_headless_shell,}-1234/INSTALLATION_COMPLETE 2>/dev/null || true
    ```
 
-4. Work "What Remains" top-down. Gate loop:
-   `npm run typecheck && npm run lint && npx vitest run src/landing` then
-   `VITE_SUPABASE_URL=https://example.supabase.co VITE_SUPABASE_ANON_KEY=dummy VITE_API_URL= npm run build`,
-   `npm run preview -- --port 4173 --strictPort &`,
-   `PLAYWRIGHT_BROWSERS_PATH=/root/.pw-shim npx playwright test landing.spec.ts` plus the a11y and
-   mobile-viewport landing cases; regenerate the visual baseline with
+4. Gate loop:
+   `npm run typecheck && npm run lint && npm run format:check && npm run test:run`, then
+   `VITE_SUPABASE_URL=https://example.supabase.co VITE_SUPABASE_ANON_KEY=dummy VITE_API_URL= npm run build`
+   and
+   `PLAYWRIGHT_BROWSERS_PATH=/root/.pw-shim npx playwright test landing.spec.ts mobile-viewport.spec.ts a11y.spec.ts keyboard-nav.spec.ts --project=chromium`.
+   From the repo root: `python3 scripts/check_coverage_matrix.py`.
+5. Regenerate the visual baseline with
    `CI=1 PLAYWRIGHT_BROWSERS_PATH=/root/.pw-shim npx playwright test visual.spec.ts -g landing --update-snapshots`
-   whenever anything above the 1280x720 fold changes.
-5. Push each verified batch; the PR tracks the branch. Then run cycle 3 (What Remains 17).
+   whenever anything above the 1280x720 fold changes, and regenerate `frontend/public/og-image.png`
+   whenever the hero's copy or art changes (build, serve, screenshot the hero at 1200x630 in the
+   light palette with the topbar hidden).
 
 ## Gotchas
 
 - **Visual baseline provenance**: the committed `landing-page-chromium-linux.png` was regenerated in
   the CCR container, not on the GitHub runner. If the required `frontend-e2e` job fails on sub-pixel
   antialiasing, run the repo's `update-visual-snapshots.yml` workflow rather than hand-tuning.
-- **Daily prod canary coupling**: `e2e-prod/landing-login.spec.ts` now asserts the NEW headline
-  against LIVE production; between merge and the frontend deploy, the nightly run will fail. Time
-  the merge with a deploy or expect one noisy night.
+- **Daily prod canary coupling**: `e2e-prod/landing-login.spec.ts` asserts the NEW headline AND the
+  new login heading ("Sign in or create your account") against LIVE production; between merge and
+  the frontend deploy, the nightly run will fail. Time the merge with a deploy or expect one noisy
+  night. `e2e-prod/guardian-profiles.spec.ts` carries the same heading assertion in three places.
 - **`mobile-safari` Playwright project cannot run in the container** (no WebKit binary); CI's
   required gate is the chromium project. Do not chase those local failures.
-- **The overflow gate is currently vacuous for the landing page** (see What Remains 4): passing it
-  today proves nothing about horizontal overflow there.
+- **The overflow gate WAS vacuous for the landing page and is not any more.** `.landing`'s
+  `overflow-x: clip` kept clipped content out of `documentElement.scrollWidth`, so the assertion
+  could not fail there. The clip is now scoped to `.landing-hero__art`, and
+  `mobile-viewport.spec.ts` additionally measures every `.landing` descendant's right edge. Both
+  mechanisms were verified by reintroducing the bug: the gate fails and names the clipped elements.
+  Keep that habit for any new gate on this page.
 - **A first cycle-2 attempt died mid-run on a session usage limit**; its partial outputs were
   discarded and the pair re-ran cold. Only the re-run's findings are reflected here.
+- **`body` now carries the app background** (`src/index.css`). That is a global change made from
+  this page's diff, because the funnel's destination painted browser-default white. If a surface
+  ever wants a different ground it must set it explicitly rather than relying on the old
+  transparent default.
+- **The design system's primary-button hover border changed** (`Button.css`): amber-hover was
+  invisible against amber-deep in dark mode (1.01:1) and is now ink. This affects every button in
+  the app, by design; no visual baseline captures a hover state, so nothing needed regenerating.
 - **`docs/template_feedback.md`** (gitignored): no template-level findings this session; nothing
   filed. The authoring-lessons log was not touched: this was frontend work, not a story authoring
   run.
 
 ## Next-Session Kickoff Prompt
 
-Resuming work on ByronWilliamsCPA/cyo-adventure (branch
-`claude/homepage-redesign-sales-funnel-o5bshc`). Goal: finish the homepage sales-funnel redesign's
-review remediations, then run review cycle 3.
+The homepage sales-funnel redesign is COMPLETE through all three review cycles; there is no
+remediation backlog. Pick this up only for one of:
 
-First, refresh state before acting (the handoff is a snapshot; treat What Remains as a hypothesis):
+- **The two declined items** above (the compact doors-band variant, and the design-system primitive
+  refactor), if either is scheduled. The refactor in particular wants its own change and its own
+  visual-baseline review.
+- **The `ink-muted` comment sweep** in `guardian.css`, `kid.css`, and `library.css`: the cited
+  3.72:1 figure is stale everywhere it appears, and the conclusion it supports is now false.
+- **Phase 8 billing** (ADR-008), where `frontend/src/landing/pricing.ts` is the flip point: give the
+  Family tier `available: true`, a price, and a CTA, and its card renders with no layout work.
 
-    git fetch --all && git status --short && git log --oneline -5
-
-Immediate next action: item 1 of "What Remains" in
-`docs/planning/handoff-homepage-funnel-2026-08-15.md` (the guardian login page must say it CREATES
-accounts; every funnel CTA lands there and new parents currently bounce off "Guardian sign-in").
-
-Hard constraints: no em-dash characters; signed Conventional Commits; the landing chunk stays
-static (no Supabase or data hooks); Kids/Grown-ups door behavior and names are contractual; never
-render a purchase-looking control while no billing backend exists; do not widen
+Hard constraints, unchanged: no em-dash characters; signed Conventional Commits; the landing chunk
+stays static (no Supabase or data hooks); Kids/Grown-ups door behavior and accessible names are
+contractual; never render a purchase-looking control while no billing backend exists; do not widen
 `frontend/e2e/a11y.spec.ts`'s per-PR scope (ADR-029).
-
-Full handoff (read on demand): `docs/planning/handoff-homepage-funnel-2026-08-15.md` on the branch.
