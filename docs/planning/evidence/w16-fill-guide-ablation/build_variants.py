@@ -104,6 +104,42 @@ rewrite, rephrase, or re-theme any label. The labels are already written for
 this theme.
 """
 
+# fill.md tells an author three separate times to rewrite choice labels. Left in
+# place they contradict LABEL_FREEZE, and one of them sits in "## Your Task",
+# AFTER the freeze block, so it reads as the final word. An author who follows
+# it varies labels as well as bodies, which destroys the pilot's only control:
+# W16 measures body prose with the label surface held constant.
+#
+# Each passage is neutralised here rather than in the template, because fill.md
+# is production text and its label-rewrite rule is correct outside this pilot.
+# The substitutions are identical across all three arms, so they cannot confound
+# the FULL/NOCRAFT/MIN comparison. Every replacement is asserted below: if a
+# future fill.md edit moves this text, the build fails loudly instead of
+# quietly emitting a prompt that contradicts itself again.
+LABEL_REWRITE_NEUTRALISATIONS = [
+    (
+        """Every choice's `label` field, similarly, is a short action description you
+must turn into the final choice text shown to the reader (imperative or
+action phrasing, 5-12 words), matching the semantic intent of that choice's
+original label.""",
+        """Every choice's `label` field is already final for this fill. Leave each
+label byte-identical to the input (pilot override, restated below).""",
+    ),
+    (
+        """Phrase each choice label in this theme's own vocabulary; do not reuse a
+generic label phrasing that ignores the theme. The frozen action-semantic is
+still checked by the Stage 1 label-intent review.""",
+        """Choice labels are frozen for this pilot and are already written for this
+theme; leave every label exactly as given.""",
+    ),
+    (
+        """by final prose written to its role/words/beats, and every choice label
+replaced by final choice text.""",
+        """by final prose written to its role/words/beats, and every choice label
+left byte-identical to the input.""",
+    ),
+]
+
 
 def guide_variants() -> dict[str, str]:
     """Build the three guide texts from the production template."""
@@ -137,6 +173,19 @@ def render_prompt(guide: str, skeleton_json: str) -> str:
         .replace("{theme_brief}", THEME_BRIEF)
         .replace("{differentiation_directive}", DIFF_DIRECTIVE)
     )
+    # Remove fill.md's label-rewrite instructions before the freeze block is
+    # injected, so no surviving text contradicts it.
+    for original, frozen in LABEL_REWRITE_NEUTRALISATIONS:
+        if original not in out:
+            msg = (
+                "fill.md no longer contains an expected label-rewrite passage; "
+                "re-check the template before regenerating the W16 prompts, or "
+                "the pilot's frozen-label control is silently lost. Passage: "
+                f"{original[:60]!r}"
+            )
+            raise RuntimeError(msg)
+        out = out.replace(original, frozen, 1)
+
     # Two pilot overrides, appended where fill.md states the task: freeze
     # labels, and write to a file instead of replying with JSON.
     out = out.replace(

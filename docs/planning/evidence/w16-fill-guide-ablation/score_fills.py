@@ -85,6 +85,14 @@ def book_stats(story: dict[str, Any], shell: dict[str, Any]) -> dict[str, Any]:
         tolerance=float(rl.get("tolerance", 1.5)),
     )
     grade = getattr(level, "grade", None)
+    if isinstance(grade, (int, float)):
+        fk_grade: Any = round(grade, 2)
+    else:
+        # A missing grade stays null in the report rather than becoming the
+        # string "None", which would lose the null signal for a consumer. Any
+        # other non-numeric value is stringified so an unexpected grade type
+        # stays visible instead of being silently coerced.
+        fk_grade = None if grade is None else str(grade)
     in_band = None
     for name in ("in_band", "in_band_rate", "in_band_share"):
         if hasattr(level, name):
@@ -95,13 +103,16 @@ def book_stats(story: dict[str, Any], shell: dict[str, Any]) -> dict[str, Any]:
         "body_words": words,
         "mean_words_per_node": round(words / max(1, len(bodies)), 1),
         "shell_target_mean": round(target_mean, 1) if target_mean else None,
-        "fk_grade": round(grade, 2) if isinstance(grade, (int, float)) else str(grade),
+        "fk_grade": fk_grade,
         "in_band": in_band if not isinstance(in_band, float) else round(in_band, 3),
         "dialogue_share": round(dialogue, 4),
         "you_per_1000": round(
             len(_YOU_RE.findall(text.lower())) / max(1, words) * 1000, 1
         ),
-        "em_dashes": text.count("—"),
+        # Escaped rather than literal: the repo forbids a literal U+2014 in
+        # tracked source, and this counter is the one place that needs the
+        # character as data. "\u2014" is the same string at runtime.
+        "em_dashes": text.count("\u2014"),
         "fill_residue": len(_FILL_RE.findall(text)),
         "level_repr": repr(level),
     }

@@ -37,11 +37,14 @@ memory. Verdicts:
   does not cover**: W8 ablates decoding parameters and W14 ablates context composition, but no
   experiment has ever varied what the prompt says. The one proposal in that direction
   (skeleton-free alternatives proposal, section 9 step 0d and section 11.3) was never run.
-  **A pilot ran today** (section 3).
-- **Three further families were run today** in some form: the brief's own named highest-value
-  experiment (the D-7c binding-notes arm, with matched re-baselines), the fill-prompt guide
-  ablation above, and an automated, frozen version of the blind recognition protocol with a
-  pre-registered known-answer validation.
+  **A pilot is staged and pre-registered** (section 3); it has not yet run.
+- **Three rigs were built and pre-registered today, and none of them produced a result**: the
+  brief's own named highest-value experiment (the D-7c binding-notes arm, with matched
+  re-baselines), the fill-prompt guide ablation above, and an automated, frozen version of the
+  blind recognition protocol with a pre-registered known-answer validation. Two usage-window
+  exhaustions killed every author wave before a fill landed (section 6.5). What the session
+  completed is the technique audit itself, the catalog baseline in section 6.4, and a
+  known-answer-validated pair scorer.
 - Everything else is either already designed, already refuted, or on the accepted stop list;
   section 5 lists those with citations so they are not re-proposed.
 
@@ -76,8 +79,8 @@ Two distinct questions hide under "A/B test the prompts", and they need differen
 
 The right experimental shape is **component ablation with deterministic outcomes and
 pre-registered rules**, not vibes-based prompt comparison, and not judge-scored comparison (the
-panel is unvalidated until W7). The pilot that ran today (`docs/planning/evidence/
-w16-fill-guide-ablation/`, results in section 6.2) instantiates the shape: three guide variants
+panel is unvalidated until W7). The pilot staged today (`docs/planning/evidence/
+w16-fill-guide-ablation/`, status in section 6.2) instantiates the shape: three guide variants
 (FULL 3,517 words / NOCRAFT 2,558 / MIN 101), two isolated authors per variant on one bound
 skeleton, everything else byte-constant, scored only on deterministic measures (gate pass, FK and
 in-band, words per node, dialogue share, second-person density, told-emotion, within-arm shared
@@ -228,29 +231,38 @@ library plus recombination, grammar over patterns, planner-based, decision-first
 explicit inter-book repulsion) remain open design directions the brief itself holds; nothing
 here duplicates them, and T1 is deliberately the cheapest entry into the planner-shaped family.
 
-## 6. What ran today
+## 6. What was staged today
 
 Three experiments, all pre-registered before any author or rater ran, all committed under
-`docs/planning/evidence/`. Numbers below are filled in from the frozen results files; the
-directories are the source of record.
+`docs/planning/evidence/`. **All three carry zero results**: the author waves were killed twice
+by usage-window exhaustion (section 6.5). Sections 6.1 to 6.3 below describe rigs that are
+staged and ready to resume, not runs that produced numbers; no `results.md` exists in any of the
+three directories yet. Section 6.4 is the one completed measurement of the session, alongside
+the scorer's known-answer validation. When the fills are re-run, each directory's `results.md`
+becomes the frozen source of record and these sections gain their numbers.
 
-### 6.1 D-7c: the binding-notes arm, with matched re-baselines
+### 6.1 D-7c: the binding-notes arm, with matched re-baselines (staged, no results)
 
 The brief's named highest-value experiment (16l correction block): delete the 473 words of
 non-gloss free text while keeping the 422 gloss words, closing the confound D-7/D-7b left open.
 Because the historical fills were authored by a different model generation (and, the scorer
 shows, in third person throughout: `you_per_1000 = 0.0` on every historical clocktower fill),
-all three kernels were re-authored today by same-generation isolated authors under one fixed
-instruction file. Results: section 6.4 table and `d7c-binding-notes/results.md`.
+the design re-authors all three kernels with same-generation isolated authors under one fixed
+instruction file. The kernels and that instruction file are committed; **no author completed, so
+there is no fill to score**. Results pending in `d7c-binding-notes/results.md`.
 
-### 6.2 W16 pilot: fill-prompt guide ablation
+### 6.2 W16 pilot: fill-prompt guide ablation (staged, no results)
 
-Section 2's pilot. Results: section 6.4 table and `w16-fill-guide-ablation/results.md`.
+Section 2's pilot. The three guide variants and their rendered prompts are committed; **no
+author completed**. Results pending in `w16-fill-guide-ablation/results.md`.
 
-### 6.3 Recognition protocol validation
+### 6.3 Recognition protocol: frozen, validation pending
 
-Known-answer validation of the frozen automated protocol on today's same-armature pairs plus a
-cross-skeleton control. Results: `recognition-protocol-pilot/results.md`.
+The protocol itself is frozen as runnable code, with its blinding rule, reading order, verdict
+contract, and a validator that enforces that contract. Its known-answer validation (the three
+same-armature pairs plus a cross-skeleton control) **has not run**: it needs the section 6.1
+fills, which do not exist. The instrument is staged, not validated. Results pending in
+`recognition-protocol-pilot/results.md`.
 
 ### 6.4 A catalog baseline nobody had computed: the W2.3 measure on the committed fills
 
