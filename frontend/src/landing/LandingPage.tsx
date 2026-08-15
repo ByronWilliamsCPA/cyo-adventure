@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router'
+import type { MouseEvent } from 'react'
+import { Link, useNavigate } from 'react-router'
 
 import { SkipLink } from '@ds/components/SkipLink'
 import { hasValidDeviceGrant, hydrateDeviceGrant } from '../auth/deviceGrant'
+import type { DeviceGrant } from '../auth/deviceGrant'
 import { usePageTitle } from '../hooks/usePageTitle'
 import { Mascot } from '../kid/Mascot'
 import {
@@ -65,6 +67,7 @@ export function LandingPage() {
   // matching index.html's static default rather than getting a redundant
   // "Home - CYO Adventure" suffix.
   usePageTitle('CYO Adventure', { bare: true })
+  const navigate = useNavigate()
 
   // Device-state-aware Kids door (ADR-014 section 5): an authorized device
   // sends a child straight to the profile picker; an unauthorized one routes
@@ -108,42 +111,78 @@ export function LandingPage() {
   // oversight. The door's HREF keeps upgrading live underneath it.
   const doorsFirst = grantAtMount
 
-  // DEFERRED, and guarded so it runs at most once.
+  // DEFERRED to first contact with the Kids door, and resolved BEFORE the
+  // navigation completes.
   //
-  // Two problems with running this on mount. First, hydrateDeviceGrant reaches
-  // offline/db.ts, which OPENS (and therefore creates) the reader's IndexedDB
-  // database: a marketing visit by someone who never touches the Kids door
-  // left a `cyo-reader` database behind, on a page that sells "No ads, ever"
-  // and whose privacy notice is registered with KWS. Second, when this was an
-  // effect keyed on [kidsDoorPath], a cross-tab REVOKE re-armed it: the
-  // storage listener downgraded the href, that flipped kidsDoorPath, the
-  // effect re-fired, found the IndexedDB mirror the revoke had not finished
-  // deleting, and wrote the revoked grant back into localStorage, silently
-  // restoring the door it had just taken away. clearDeviceGrant's mirror
-  // delete is fire-and-forget (deviceGrant.ts:81-85, whose own comment allows
-  // the mirror to outlive the localStorage clear), so that was a race the
-  // delete usually won and sometimes lost.
+  // Not on mount, for two reasons. hydrateDeviceGrant reaches offline/db.ts,
+  // which OPENS (and therefore creates) the reader's IndexedDB database: a
+  // marketing visit by someone who never touches the Kids door left a
+  // `cyo-reader` database behind, on a page that sells "No ads, ever" and
+  // whose privacy notice is registered with KWS. And when this was an effect
+  // keyed on [kidsDoorPath], a cross-tab REVOKE re-armed it: the storage
+  // listener downgraded the href, that flipped kidsDoorPath, the effect
+  // re-fired, found the IndexedDB mirror the revoke had not finished deleting,
+  // and wrote the revoked grant back into localStorage, silently restoring the
+  // door it had just taken away. clearDeviceGrant's mirror delete is
+  // fire-and-forget (deviceGrant.ts:81-85, whose own comment allows the mirror
+  // to outlive the localStorage clear), so that was a race the delete usually
+  // won and sometimes lost.
   //
-  // Running it on first interest in the Kids door fixes both: no database for
-  // a visitor who never goes near it, and no re-arming, so a downgrade is
-  // durable. The mirror only ever repairs a localStorage loss that predates
-  // mount (private-mode eviction, a manual clear), and DeviceAuthorizedRoute
-  // performs its own hydrate when the door is actually followed, so the worst
-  // case here is a cosmetically stale href for a visitor who never hovers or
-  // focuses the link.
-  // #ASSUME: timing dependencies: pointer-enter and focus cover mouse and
-  // keyboard; a touch user taps straight through, where DeviceAuthorizedRoute's
-  // own hydrate is what repairs the route.
-  // #VERIFY: LandingPage.test.tsx "kids door" post-hydrate case (which fires
-  // the trigger) and "downgrades the door href ... durably".
-  const didHydrateRef = useRef(false)
+  // But prefetching on pointer-enter/focus ALONE is not enough, and assuming
+  // otherwise was a real bug: a touch user taps with no pointer-enter and no
+  // focus, so the stale authorize-device href is followed immediately. That
+  // destination is the guardian LOGIN page, which never hydrates (only
+  // DeviceAuthorizedRoute does, and the authorize href does not route through
+  // it), so a family whose localStorage was evicted got sent through device
+  // authorization again while a perfectly good mirrored grant sat unread.
+  //
+  // So: pointer-enter and focus PREWARM the read for mouse and keyboard users,
+  // and the click handler AWAITS it before navigating. The promise is memoised,
+  // so a prewarmed read is already settled by click time and the handler adds
+  // nothing; an unwarmed one costs a single IndexedDB open on a tap the visitor
+  // has already committed to.
+  // #ASSUME: timing dependencies: modified and non-primary clicks are left
+  // alone so the browser's own open-in-new-tab still works; those follow the
+  // href as it currently stands, which is the pre-hydrate value at worst.
+  // #VERIFY: LandingPage.test.tsx "kids door" post-hydrate case, "recovers a
+  // mirrored grant on a touch tap with no hover or focus", and "downgrades the
+  // door href ... durably".
+  const hydratePromiseRef = useRef<Promise<DeviceGrant | null> | null>(null)
   const hydrateOnce = useCallback(() => {
-    if (didHydrateRef.current) return
-    didHydrateRef.current = true
-    void hydrateDeviceGrant().then((grant) => {
+    hydratePromiseRef.current ??= hydrateDeviceGrant().then((grant) => {
       if (grant) setKidsDoorPath(KID_PICKER_PATH)
+      return grant
     })
+    return hydratePromiseRef.current
   }, [])
+
+  // Prewarm wrapper: hydrateOnce returns the memoised promise so the click
+  // handler can await it, but an event handler must return void.
+  const prewarmKidsDoor = useCallback(() => {
+    void hydrateOnce()
+  }, [hydrateOnce])
+
+  const handleKidsDoorClick = useCallback(
+    (event: MouseEvent<HTMLAnchorElement>) => {
+      // Already resolved to the picker: nothing to wait for.
+      if (kidsDoorPath === KID_PICKER_PATH) return
+      if (
+        event.defaultPrevented ||
+        event.button !== 0 ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey
+      ) {
+        return
+      }
+      event.preventDefault()
+      void hydrateOnce().then((grant) => {
+        void navigate(grant ? KID_PICKER_PATH : AUTHORIZE_DEVICE_PATH)
+      })
+    },
+    [kidsDoorPath, hydrateOnce, navigate]
+  )
 
   // The topnav puts "/#pricing" and friends in the address bar, so those URLs
   // get bookmarked and shared. But this route is lazy: by the time the chunk
@@ -270,8 +309,9 @@ export function LandingPage() {
         <Link
           className="landing-door landing-door--kids"
           to={kidsDoorPath}
-          onPointerEnter={hydrateOnce}
-          onFocus={hydrateOnce}
+          onPointerEnter={prewarmKidsDoor}
+          onFocus={prewarmKidsDoor}
+          onClick={handleKidsDoorClick}
         >
           <span className="landing-door__icon" aria-hidden="true">
             <svg width="30" height="30" viewBox="0 0 24 24" focusable="false">

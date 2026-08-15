@@ -2,7 +2,7 @@ import 'fake-indexeddb/auto'
 
 import { IDBFactory } from 'fake-indexeddb'
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
-import { MemoryRouter } from 'react-router'
+import { MemoryRouter, Route, Routes } from 'react-router'
 import type { Mock } from 'vitest'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -17,9 +17,16 @@ function renderLanding() {
   return render(
     // ThemeProvider: the page's ThemeToggle calls useTheme(), which throws
     // outside one; every real route already sits under it (App.tsx).
+    // Stand-in targets so a programmatic navigation is observable: the Kids
+    // door's click handler resolves the device grant before navigating, so
+    // asserting the href alone would miss where a tap actually lands.
     <ThemeProvider>
-      <MemoryRouter>
-        <LandingPage />
+      <MemoryRouter initialEntries={['/']}>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/kids" element={<div>kid picker landing</div>} />
+          <Route path="/guardian/login" element={<div>guardian login landing</div>} />
+        </Routes>
       </MemoryRouter>
     </ThemeProvider>
   )
@@ -387,6 +394,36 @@ describe('LandingPage', () => {
       await waitFor(() =>
         expect(screen.getByRole('link', { name: /kids/i })).toHaveAttribute('href', '/kids')
       )
+    })
+
+    // A touch tap fires neither pointerenter nor focus, so the prewarm never
+    // runs and the door still carries the stale authorize-device href. The
+    // destination is the guardian LOGIN page, which never hydrates (only
+    // DeviceAuthorizedRoute does, and this href does not route through it), so
+    // without the click handler awaiting the read, a family whose localStorage
+    // was evicted is sent through device authorization again while a valid
+    // mirrored grant sits unread.
+    it('recovers a mirrored grant on a touch tap with no hover or focus', async () => {
+      seedValidGrant()
+      await new Promise((resolve) => setTimeout(resolve, 50))
+      localStorage.removeItem('device_grant')
+
+      renderLanding()
+      const kidDoor = screen.getByRole('link', { name: /kids/i })
+      expect(kidDoor).toHaveAttribute('href', '/guardian/login?intent=authorize-device')
+
+      // No pointerEnter, no focus: straight to the activation a tap produces.
+      fireEvent.click(kidDoor, { button: 0 })
+
+      await waitFor(() => expect(screen.getByText('kid picker landing')).toBeInTheDocument())
+    })
+
+    // The same path with nothing to recover must still reach the authorize
+    // flow rather than stranding the visitor on the landing page.
+    it('falls through to device authorization when no mirrored grant exists', async () => {
+      renderLanding()
+      fireEvent.click(screen.getByRole('link', { name: /kids/i }), { button: 0 })
+      await waitFor(() => expect(screen.getByText('guardian login landing')).toBeInTheDocument())
     })
 
     // S5: hydrateDeviceGrant reaches offline/db.ts, which OPENS (and so
