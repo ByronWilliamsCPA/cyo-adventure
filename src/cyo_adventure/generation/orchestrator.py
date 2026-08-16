@@ -51,6 +51,7 @@ from cyo_adventure.generation.reading_level_loop import (
     ReadingLevelResult,
     run_reading_level_loop,
 )
+from cyo_adventure.generation.skeleton import MAX_FILL_OUTPUT_TOKENS
 from cyo_adventure.utils.logging import get_logger
 from cyo_adventure.validator.gate import GateContext, GateResult, run_gate
 from cyo_adventure.validator.report import (
@@ -101,7 +102,9 @@ __all__ = [
 # up to 60 nodes; a full-prose story of that size at 250 words/node runs well past
 # 8192 output tokens, and even the one-line Stage A skeleton exceeds 4096.
 _MAX_TOKENS_STRUCTURE = 16384
-_MAX_TOKENS_PROSE = 32000
+# Owned by generation/skeleton.py so the fill-feasibility screen in
+# skeleton_match cannot disagree with the budget this call actually uses.
+_MAX_TOKENS_PROSE = MAX_FILL_OUTPUT_TOKENS
 _MAX_TOKENS_REPAIR = 32000
 
 # Reading-level repair passes (Stage D). On by default rather than opt-in, which

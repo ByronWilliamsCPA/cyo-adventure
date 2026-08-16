@@ -749,3 +749,66 @@ def test_select_skeleton_for_cell_band_and_cell_filtering_unchanged() -> None:
     )
     assert selection.slug in candidates
     assert set(selection.alternatives) == set(candidates)
+
+
+def _write_sized_skeleton(band_dir: Path, stem: str, *, fill_words: int) -> None:
+    """Write a skeleton whose declared fill target is *fill_words* words."""
+    band_dir.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "metadata": {
+            "age_band": "5-8",
+            "reading_level": {"target": 3.0},
+            "tier": 1,
+            "estimated_minutes": 5,
+            "ending_count": 1,
+            "topology": "time_cave",
+            "length": "short",
+            "narrative_style": "prose",
+        },
+        "nodes": [
+            {
+                "id": "n0",
+                "body": f"<<FILL role=rising words={fill_words} beats='x'>>",
+                "is_ending": False,
+                "choices": [],
+            }
+        ],
+    }
+    (band_dir / f"{stem}.json").write_text(json.dumps(payload), encoding="utf-8")
+
+
+@pytest.mark.unit
+def test_an_over_cap_skeleton_is_reported_but_still_offered(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    """An infeasible skeleton is logged, and deliberately NOT yet excluded.
+
+    Excluding is the obvious reading of UW-C07 and is a one-line change from
+    here. It is not made yet because the measurement that arrived with the
+    predicate moved the decision: at the 32,000-token cap, 36 of 59 production
+    skeletons are infeasible and 13-16 and 16+ are infeasible entirely, so
+    enforcing would leave two bands with nothing selectable. That is an owner
+    call. This test pins the current, deliberate behaviour so a later flip is a
+    visible change rather than a silent one.
+    """
+    _write_sized_skeleton(tmp_path / "5-8", "too-big", fill_words=99_999)
+    monkeypatch.setattr(skeleton_match, "_SKELETON_ROOT", tmp_path)
+
+    with caplog.at_level("WARNING"):
+        slugs = [slug for slug, _ in skeleton_match._production_candidates("5-8")]  # pyright: ignore[reportPrivateUsage]
+
+    assert slugs == ["too-big"]
+    assert "skeleton.fill_infeasible" in caplog.text
+
+
+@pytest.mark.unit
+def test_a_within_cap_skeleton_is_still_a_candidate(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The screen must refuse only what cannot fit, not narrow the catalog."""
+    _write_sized_skeleton(tmp_path / "5-8", "fits", fill_words=500)
+    monkeypatch.setattr(skeleton_match, "_SKELETON_ROOT", tmp_path)
+
+    slugs = [slug for slug, _ in skeleton_match._production_candidates("5-8")]  # pyright: ignore[reportPrivateUsage]
+
+    assert slugs == ["fits"]

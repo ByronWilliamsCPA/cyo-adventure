@@ -20,7 +20,12 @@ from sqlalchemy import select
 from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.db.models import Storybook, StorybookVersion
 from cyo_adventure.diversity.normalize import containment, similarity_signature
-from cyo_adventure.generation.skeleton import is_sidecar
+from cyo_adventure.generation.skeleton import (
+    MAX_FILL_OUTPUT_TOKENS,
+    expected_output_tokens,
+    is_fill_feasible,
+    is_sidecar,
+)
 from cyo_adventure.storybook.models import StoryMetadata
 from cyo_adventure.utils.logging import get_logger
 
@@ -30,6 +35,11 @@ if TYPE_CHECKING:
     from collections.abc import Mapping, Sequence
 
     from sqlalchemy.ext.asyncio import AsyncSession
+
+# The output cap `fill_skeleton` runs under. Imported from the orchestrator
+# rather than restated, so the feasibility screen and the call it screens for
+# can never disagree about the budget.
+_FILL_MAX_TOKENS: Final[int] = MAX_FILL_OUTPUT_TOKENS
 
 logger = get_logger(__name__)
 
@@ -110,6 +120,53 @@ def _load_metadata(path: Path) -> StoryMetadata | None:
         return None
 
 
+def _read_story(path: Path) -> dict[str, object] | None:
+    """Return the decoded skeleton document, or None when it cannot be read.
+
+    Args:
+        path: Path to a skeleton JSON file.
+
+    Returns:
+        dict[str, object] | None: The decoded document, or None on failure.
+    """
+    try:
+        return cast("dict[str, object]", json.loads(path.read_text(encoding="utf-8")))
+    except (OSError, json.JSONDecodeError):
+        return None
+
+
+def _expected_tokens(path: Path) -> int:
+    """Return the expected fill output size for a skeleton file.
+
+    Args:
+        path: Path to a skeleton JSON file.
+
+    Returns:
+        int: Expected completion tokens, or 0 when the file cannot be read.
+    """
+    story = _read_story(path)
+    return 0 if story is None else expected_output_tokens(story)
+
+
+def _is_feasible(path: Path) -> bool:
+    """Return whether a skeleton's fill fits the configured output cap.
+
+    An unreadable file is treated as feasible so this predicate cannot become a
+    second, silent reason a skeleton disappears; `_load_metadata` already logs
+    and drops that case.
+
+    Args:
+        path: Path to a skeleton JSON file.
+
+    Returns:
+        bool: True when the fill is expected to fit under the cap.
+    """
+    story = _read_story(path)
+    if story is None:
+        return True
+    return is_fill_feasible(story, max_tokens=_FILL_MAX_TOKENS)
+
+
 def _production_candidates(band: str) -> list[tuple[str, StoryMetadata]]:
     """Return (slug, metadata) for every production-eligible skeleton in a band.
 
@@ -140,6 +197,34 @@ def _production_candidates(band: str) -> list[tuple[str, StoryMetadata]]:
         metadata = _load_metadata(path)
         if metadata is None or not metadata.production_eligible:
             continue
+        # #CRITICAL: payment: a skeleton the one-shot fill provably cannot emit
+        # must not be selectable. `fill_skeleton` has no chunking, so an
+        # over-cap skeleton does not degrade, it truncates, parses as nothing,
+        # and burns the whole repair budget (roughly four rounds of ~100k input
+        # tokens) before failing deterministically on every retry, forever.
+        # Screening here costs one file read and no provider call. UW-C07 /
+        # AL-046.
+        # #VERIFY: test_skeleton_match.py::
+        # test_an_over_cap_skeleton_is_not_a_candidate.
+        if not _is_feasible(path):
+            # OBSERVE, DO NOT EXCLUDE. Excluding is the obvious reading of
+            # UW-C07 and it is deliberately not done here yet, because the
+            # measurement that arrived with the predicate changes the decision:
+            # at the current 32,000-token cap, 36 of the 59 production
+            # skeletons are infeasible and the 13-16 and 16+ bands are
+            # infeasible in their ENTIRETY. Enforcing here would therefore not
+            # trim an edge case, it would leave two whole bands with nothing
+            # selectable, which is a product call and not a validator's to
+            # make. Logging it turns an invisible, expensive, deterministic
+            # failure into a visible one at zero cost; flipping this to
+            # `continue` is the one-line change once the owner has ruled on the
+            # cap, on chunking, or on retiring the over-cap cells.
+            logger.warning(
+                "skeleton.fill_infeasible",
+                path=str(path),
+                expected_output_tokens=_expected_tokens(path),
+                max_tokens=_FILL_MAX_TOKENS,
+            )
         candidates.append((path.stem, metadata))
     return candidates
 
