@@ -1607,14 +1607,24 @@
   min-height: 44px;
   padding: 0.5rem 1.25rem;
   border-radius: var(--radius-full, 999px);
-  background: var(--color-amber-deep, #c17b2a);
+  /* --color-amber-text, not --color-amber-deep: this is white text ON the
+     amber, so the amber is doing text-background duty and owes 4.5:1. The
+     deep token is documented as 3:1-safe/non-text (see .guardian-shell__
+     sign-out above, 2026-07-16 audit) and gave white only 3.42:1 here; the
+     text token gives 6.21:1. Found by the weekly extended scan, which is
+     the only tier that scans /guardian/reading at all. */
+  background: var(--color-amber-text, #87561d);
   color: white;
   font-weight: var(--weight-bold, 700);
   text-decoration: none;
 }
 
 .reading__cta:hover {
-  background: var(--color-amber-hover, #c4681c);
+  /* Darker than the resting state so hover still reads as a change, and 8.27:1
+     against white. The previous --color-amber-hover (#c4681c) was 3.93:1: a
+     static scan never catches a hover state, so this one was invisible to axe
+     in either tier and is fixed alongside the resting state it belongs to. */
+  background: var(--color-amber-hover-strong, #6f4517);
 }
 
 .reading__list {

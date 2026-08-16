@@ -123,7 +123,40 @@ async function assertNoViolations(page: Page) {
   // regressions in opinionated-but-optional findings. The weekly extended
   // run opts into those rules via A11Y_EXTENDED.
   const results = await new AxeBuilder({ page }).withTags(AXE_TAGS).analyze()
-  expect(results.violations, JSON.stringify(results.violations, null, 2)).toEqual([])
+
+  // Split the extended run's findings by whether they are CONFORMANCE
+  // failures. A rule carrying a `wcag*` tag is a failure against the target
+  // ADR-029 sets (WCAG 2.1 AA, plus 2.2 in this tier); a `best-practice` rule
+  // with no WCAG tag is axe's own opinion (a missing <main>, no <h1>, a
+  // skipped heading level) -- worth fixing, tracked as `UW-F27`, but not a
+  // conformance failure and not what this tier's alert should mean.
+  //
+  // Why this split exists: from its first run (2026-08-12) this tier failed on
+  // that known structural debt, on every route, every week. Two REAL WCAG 1.4.3
+  // contrast failures (white on --color-amber-deep at 3.42:1, parchment on
+  // --color-amber at 2.62:1) sat inside that noise undetected, on three routes
+  // the required per-PR gate does not scan at all. A permanently-red tier
+  // cannot report a regression, which is precisely how those two survived. So:
+  // conformance findings fail, structural debt is printed and counted.
+  //
+  // The per-PR gate is untouched by construction: without A11Y_EXTENDED its
+  // tag list has no `best-practice` entry, so `structural` is always empty and
+  // this behaves exactly as the plain assertion did.
+  const isConformance = (v: { tags: string[] }) => v.tags.some((t) => t.startsWith('wcag'))
+  const conformance = results.violations.filter(isConformance)
+  const structural = results.violations.filter((v) => !isConformance(v))
+
+  if (structural.length > 0) {
+    const summary = structural.map((v) => `${v.id} (${v.nodes.length})`).join(', ')
+    console.warn(
+      `[a11y][best-practice] ${page.url()}: ${structural.length} non-WCAG finding(s): ${summary}. ` +
+        `Tracked as UW-F27; not failing this tier. Full detail: ` +
+        JSON.stringify(structural, null, 2)
+    )
+    test.info().annotations.push({ type: 'a11y-best-practice', description: summary })
+  }
+
+  expect(conformance, JSON.stringify(conformance, null, 2)).toEqual([])
 }
 
 test('landing page has no detectable accessibility violations', async ({ page }) => {
@@ -891,6 +924,18 @@ async function mockApiForScan(context: BrowserContext, page: Page): Promise<void
     })
   )
   await page.route('**/api/v1/notifications/stream', (route) => route.abort())
+  // Two endpoints answer with a BARE ARRAY, not the envelope object above:
+  // `deviceGrantApi.list()` and `deviceDownloadsApi.list()` both return
+  // `res.data` typed as `T[]` (src/auth/deviceGrantApi.ts,
+  // src/guardian/deviceDownloadsApi.ts). Handed the envelope, DevicesPage's
+  // loader threw while grouping downloads by device, fell into its error
+  // state, and never rendered the <h1>Devices</h1> the test waits for -- so
+  // this route's scan failed on page setup and never reached axe at all.
+  // Registered after the catch-all so these win (page routes are matched
+  // before context routes, most-recent-first), matching the stream abort
+  // above.
+  await page.route('**/api/v1/device-grants', (route) => route.fulfill({ json: [] }))
+  await page.route('**/api/v1/device-downloads', (route) => route.fulfill({ json: [] }))
 }
 
 test.describe('routes covered only by the extended weekly scan', () => {

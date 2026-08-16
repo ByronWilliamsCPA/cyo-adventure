@@ -190,7 +190,14 @@
 }
 
 .admin-library__filter--active {
-  background: var(--color-amber, #e07f2e);
+  /* Background is --color-amber-text, not --color-amber: parchment on the
+     plain amber was 2.62:1, and this label is 10pt bold, which is not "large
+     text" (that needs 14pt bold / 18pt regular), so it owes the full 4.5:1.
+     The text token gives 5.62:1. The BORDER keeps the brighter amber: a
+     non-text boundary owes 3:1, which it meets, and keeping it preserves the
+     selected chip's brand edge. Found by the weekly extended scan, the only
+     tier that scans /admin/library. */
+  background: var(--color-amber-text, #87561d);
   border-color: var(--color-amber, #e07f2e);
   color: var(--color-parchment, #f8f3e8);
 }
