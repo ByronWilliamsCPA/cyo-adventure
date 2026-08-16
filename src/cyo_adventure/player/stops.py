@@ -10,11 +10,22 @@ delegated to :meth:`StoryEngine.choose`, so a flowed run applies `on_enter`
 effects, appends to `path`, and adds to `visit_set` exactly as if the reader
 had tapped that single choice (ADR-026 decision 2).
 
-This module is pure: no I/O, no async, no shared mutable state. It mirrors
-``frontend/src/player/stops.ts`` exactly; the shared conformance corpus at
+This module is pure: no I/O, no async, no shared mutable state.
+:func:`compose_stop` mirrors ``composeStop`` in
+``frontend/src/player/stops.ts``; the shared conformance corpus at
 ``schema/conformance/stop_traces.json`` (run by both
 ``tests/unit/test_stop_conformance.py`` and
-``frontend/src/player/stops.test.ts``) proves the two stay in lock-step.
+``frontend/src/player/stops.test.ts``) proves THOSE TWO stay in lock-step.
+
+The mirror is not total, and the corpus does not claim it is. The TypeScript
+side additionally exports ``flowedPrefix`` and ``composeStopWithHistory``
+(UW-F38), which reconstruct a resumed stop's already-walked prefix from the
+recorded ``path``. Neither has a counterpart here, and the corpus cannot reach
+them: every case composes from a freshly-tapped state, never a resumed one.
+That is currently harmless because :func:`compose_stop` has no production
+caller on this side (only ``test_stop_conformance.py``, plus the structural
+walk documented in ``validator/choice_grammar.py``), but do not read a green
+corpus as cross-verification of resumed-stop behaviour.
 
 AL-030: composing a stop walks every node in the run, so a caller (the reader)
 MUST NOT call :func:`compose_stop` again on every render of an already-flowed
