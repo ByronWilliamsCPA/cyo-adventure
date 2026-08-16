@@ -42,11 +42,40 @@ async function capturePageState(page: Page): Promise<PageState> {
   // path that is already failing, and a diagnostic that throws would replace
   // the real assertion error with its own, which is strictly worse than a
   // partial capture.
+  //
+  // Guarding against a THROW is not enough on its own, though. The two reads
+  // that round-trip to the page (`title()` and `body`'s `innerText()`) also
+  // auto-wait, and playwright.e2e-prod.config.ts sets no `actionTimeout`, so
+  // by default they are bounded only by the tier's 45s test timeout. A test
+  // timeout is not catchable: it would discard the diagnostic AND the original
+  // assertion error, which is the precise outcome this module exists to
+  // prevent, and it is likeliest in the wedged-renderer case we are most
+  // trying to diagnose. So `safe` bounds time as well as catching throws.
+  //
+  // It races rather than passing `{ timeout }` per call, deliberately:
+  // `locator.innerText()` accepts one but `page.title()` takes no options at
+  // all, so a race is the only form that covers every read uniformly. The
+  // fallback on timeout is the same '<unavailable>' as on error, because for
+  // this file's purpose "the page would not answer" and "the read failed" are
+  // the same evidence.
+  // #ASSUME: timing dependency: 2s is ample for a page that renders at all,
+  // and a page that cannot answer in 2s has told us what we needed anyway.
+  // #VERIFY: a capture reporting '<unavailable>' for every field means the
+  // page was unresponsive; read that as the finding, not as a tooling bug.
+  const READ_TIMEOUT_MS = 2_000
   const safe = async <T>(read: () => Promise<T>, fallback: T): Promise<T> => {
+    let timer: ReturnType<typeof setTimeout> | undefined
     try {
-      return await read()
+      return await Promise.race([
+        read(),
+        new Promise<T>((resolve) => {
+          timer = setTimeout(() => resolve(fallback), READ_TIMEOUT_MS)
+        }),
+      ])
     } catch {
       return fallback
+    } finally {
+      if (timer !== undefined) clearTimeout(timer)
     }
   }
   return {
