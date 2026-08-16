@@ -143,6 +143,16 @@ class TestMain:
 class TestRepositoryIsClean:
     """The regression guard: the tree this hook governs must stay clean."""
 
+    # mutation_deselect: this guard enumerates the tree with `git ls-files`
+    # against `parents[2]`, which under mutmut is the generated `mutants/`
+    # copy, not a git worktree. `git ls-files` there returns nothing, and the
+    # test's own anti-vacuity assertion then fires -- correctly, since a guard
+    # over zero files proves nothing. It is asserting a property of the real
+    # repository, so a copy of the repository is the wrong place to run it, and
+    # the mutants it could kill are none: it mutates no source under
+    # `only_mutate`. Deselecting it is the fix rather than teaching it about
+    # `mutants/`, which would make the guard silently narrower in CI too.
+    @pytest.mark.mutation_deselect
     def test_tracked_authored_files_have_no_em_dashes(
         self, checker: ModuleType
     ) -> None:

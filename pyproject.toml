@@ -918,10 +918,26 @@ also_copy = [
     #     | sort -u | while read -r m; do [ -e "$m" ] && echo "$m"; done
     # (`tests/` itself is copied by mutmut and needs no entry.)
     #
+    # That command finds IMPORTS only, and an import is not the only way a unit
+    # test depends on a repo-root path. `.github/` was missed for exactly that
+    # reason: `test_ci_gate_contract.py` and `test_pr_validation_gate_contract.py`
+    # OPEN workflow YAML rather than importing anything, so the derivation above
+    # was clean while every run since 2026-07-19 died on
+    # `FileNotFoundError: mutants/.github/workflows/ci.yml` (issue #302). Run
+    # this second command too, which finds root-relative path literals:
+    #   grep -rhoP '(?:REPO_ROOT|ROOT|_ROOT|parents\[\d+\])\s*/\s*"\K[^"]+' \
+    #     tests/unit/*.py | sort -u | while read -r m; do [ -e "$m" ] && echo "$m"; done
+    #
     # fuzz/  -> tests/unit/test_fuzz_harnesses.py; exercises the condition
     #           evaluator and storybook validation, both inside only_mutate, so
     #           these are real mutant killers rather than dead weight here.
     # tools/ -> tests/unit/test_generate_diagram_svgs.py.
+    # .github/ -> tests/unit/test_ci_gate_contract.py and
+    #             test_pr_validation_gate_contract.py, which parse workflow YAML
+    #             straight from the tree. The whole directory, not just the two
+    #             files they name: test_ci_gate_contract.py also resolves other
+    #             workflows by name at runtime.
+    ".github/",
     "fuzz/",
     "tools/",
     "schema/",
