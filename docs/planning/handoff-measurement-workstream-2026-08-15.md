@@ -150,11 +150,14 @@ kappa over raw scores, per criterion, with marginals printed beside both.
 
 | Item | State |
 | --- | --- |
-| `UW-C258` | Partly measured. Run-to-run spread is known at leg level; **per-criterion spread still unmeasured** and needs one completed run. |
-| `UW-C255` | Needs the same completed run (control-versus-control). |
+| `UW-C258` | **Done.** W7 run 4 measured per-criterion spread over 84 matched pairs; it differs fourfold across criteria, so the old pooled 0.217 described none of them. `out/w7-run4/findings.md`. |
+| `UW-C255` | **Done.** The false-positive column is restated against control arms by the same run. |
 | `UW-C264` | Screen shipped; the judged criterion is unbuilt pending W7 validation. |
-| W8, W9, W10, W14 | Unblocked (the `UW-C239` pricing blocker in the workplan table is **stale**, the table has been complete since 2026-08-14). Budget-bound: roughly $30-50 against ~$11 remaining. |
-| W11, W12, W13 | Deferred by design (W11 needs W7; W12 behind ADR-018 consent scoping; W13 behind W12). |
+| `UW-C267` | New. W7 prints which side of the detection threshold a criterion fell on but not how far, and `engagement` KEEPs by exact equality. |
+| `UW-C266` | New. Nothing detects a ledger merge that silently drops one parent's rows. |
+| W11 | **Unblocked.** W7 is complete on the two-judge panel; W11's pilot scoring can proceed against it. |
+| W8, W9, W10, W14 | Unblocked (the `UW-C239` pricing blocker in the workplan table is **stale**, the table has been complete since 2026-08-14). Budget-bound: roughly $30-50 against ~$7 remaining after run 4. |
+| W12, W13 | Deferred by design: W12 sits behind ADR-018 consent scoping, W13 behind W12. **W12 is the only item that checks whether any of this correlates with a real child's reading**; everything else measures internal consistency. |
 | Reviewer distillation | Parked at Phase 0 by owner ruling until the drafting workstream completes. |
 
 ## Three traps
@@ -164,7 +167,8 @@ container restarts, after 92, 34 and 20 scorings. Two produced nothing because r
 in memory and written at the end; the third survived because journalling had landed. Roughly
 $2.31 bought no durable artifact. **Do not assume a run completes unattended.** Commit
 `journal.jsonl` mid-flight; `out/w7-run3/journal.jsonl` is a worked example of a partial run whose
-data is still usable.
+data is still usable. **Run 4 (2026-08-16) is the first to complete**, 86 scorings for $2.59, with
+the journal committed at three checkpoints along the way; that is the pattern to repeat.
 
 **2. Register rows are hypotheses, not specifications.** Four claims recorded when the symptom was
 fresh did not survive being checked against the thing they described:
@@ -191,12 +195,13 @@ The procedure is written up in `blind-spot-review-brief.md`; the verification st
 | Artifact | Path |
 | --- | --- |
 | Lessons `AL-389`..`AL-411` | `docs/planning/authoring-lessons-log.md` |
-| Register `UW-C255`..`UW-C265` | `docs/planning/unscheduled-work-register.md` |
+| Register `UW-C255`..`UW-C267` | `docs/planning/unscheduled-work-register.md` |
 | Blind-spot procedure | `docs/planning/blind-spot-review-brief.md` |
 | Reader reports and verifications | `out/reviews/` |
 | W7 agreement report | `out/w7/agreement.txt` |
 | Run-to-run analysis | `out/w7-repeat/run-to-run.txt` |
 | Partial run 3 journal | `out/w7-run3/journal.jsonl` |
+| **W7 run 4 (complete, 2 judges)** | `out/w7-run4/`: `verdicts.json`, `journal.jsonl`, `findings.md`, `run-to-run.txt`, `agreement.txt` |
 | Band guidance | `docs/planning/drafting-guide.md`, `.claude/skills/cyo-author/SKILL.md` |
 | ADR amendment | `docs/planning/adr/adr-011-story-scale-framework.md` |
 
