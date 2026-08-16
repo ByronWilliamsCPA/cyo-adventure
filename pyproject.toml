@@ -800,7 +800,7 @@ markers = [
     "regression: Regression tests for previously fixed bugs",
     "llm_eval: Tier 3 behavioral LLM evaluation (scheduled, not run in CI PRs)",
     "ai_security: adversarial AI security tests",
-    "mutation_deselect: excluded under mutation testing (mutmut's trampoline cannot forward athrow into async generators)",
+    "mutation_deselect: excluded under mutation testing; the marked test says why (reasons so far: mutmut's trampoline cannot forward athrow into async generators; the test asserts a property of the real git worktree, which the generated mutants/ copy is not)",
 ]
 
 # Coverage Configuration
