@@ -62,3 +62,58 @@ def admissible_topologies(graph: nx.DiGraph[str]) -> set[Topology]:
         admissible.add(Topology.GAUNTLET)
 
     return admissible
+
+
+# ADR-011 section 7: which topologies each age band may declare. This is a
+# product restriction on top of `admissible_topologies`, which only answers
+# what a graph's SHAPE could legitimately be called. The two are independent
+# and both must hold: `branch_and_bottleneck` is a perfectly well-formed shape
+# that a 5-8 book may not use.
+#
+# #CRITICAL: data-integrity: this table lived only in `mutation/identity.py`,
+# so the offline mutation core enforced it and the authoring gate did not.
+# Three skeletons drafted 2026-08-16 declared `branch_and_bottleneck` at 3-5
+# and 5-8, passed `check_skeleton --strict` clean, and were rejected only when
+# the mutation operators ran over them. A rule enforced in the layer authors do
+# not run is not enforced. Kept here rather than in `policy.py` because
+# `validator/topology.py` is already the shared import for both PL-18 and
+# `mutation/identity.py`, so one definition serves both without the offline
+# core becoming a dependency of the gate.
+# #VERIFY: test_topology.py::test_band_topologies_match_the_committed_catalog
+# asserts every committed skeleton satisfies its row, and
+# test_policy.py::test_pl29_rejects_a_topology_the_band_forbids covers the rule.
+BAND_TOPOLOGIES: dict[str, frozenset[Topology]] = {
+    "3-5": frozenset({Topology.LOOP_AND_GROW, Topology.TIME_CAVE}),
+    "5-8": frozenset({Topology.TIME_CAVE, Topology.LOOP_AND_GROW, Topology.OPEN_MAP}),
+    "8-11": frozenset(
+        {
+            Topology.BRANCH_AND_BOTTLENECK,
+            Topology.TIME_CAVE,
+            Topology.OPEN_MAP,
+            Topology.SORTING_HAT,
+        }
+    ),
+    "10-13": frozenset(
+        {
+            Topology.BRANCH_AND_BOTTLENECK,
+            Topology.OPEN_MAP,
+            Topology.SORTING_HAT,
+        }
+    ),
+    "13-16": frozenset(
+        {
+            Topology.BRANCH_AND_BOTTLENECK,
+            Topology.GAUNTLET,
+            Topology.OPEN_MAP,
+            Topology.SORTING_HAT,
+        }
+    ),
+    "16+": frozenset(
+        {
+            Topology.BRANCH_AND_BOTTLENECK,
+            Topology.GAUNTLET,
+            Topology.OPEN_MAP,
+            Topology.SORTING_HAT,
+        }
+    ),
+}

@@ -1710,3 +1710,56 @@ def test_pl24_gamebook_floor_rounds_up_not_down() -> None:
         "3 wins in 61 endings is below the ceil-scaled floor of 4"
     )
     assert "below the gamebook floor of 4" in winnable[0].message
+
+
+@pytest.mark.unit
+def test_pl29_rejects_a_topology_the_band_forbids() -> None:
+    """A well-formed shape can still be wrong for its band (ADR-011 s7).
+
+    `branch_and_bottleneck` first becomes legal at 8-11. Three skeletons
+    drafted 2026-08-16 declared it at 3-5 and 5-8, cleared
+    `check_skeleton --strict`, and were caught only by the offline mutation
+    core, which is far too late and does not run on the authoring path.
+    """
+    story = _two_ending_story("5-8", Topology.BRANCH_AND_BOTTLENECK)
+
+    report = validate_policy(story)
+
+    assert any(
+        f.rule_id == "PL-29" and f.severity is Severity.ERROR for f in report.findings
+    )
+
+
+@pytest.mark.unit
+def test_pl29_allows_a_topology_the_band_permits() -> None:
+    """The rule must key off the band row alone, not reject broadly."""
+    story = _two_ending_story("5-8", Topology.TIME_CAVE)
+
+    assert not any(f.rule_id == "PL-29" for f in validate_policy(story).findings)
+
+
+@pytest.mark.unit
+def test_pl29_accepts_every_committed_skeleton() -> None:
+    """The rule blocks nothing that already exists.
+
+    Measured before shipping it: all 61 committed skeletons satisfy their
+    band's row, so this is a guard against new drafts rather than a
+    retroactive judgement on the catalog. If this fails, either a skeleton
+    landed that should not have or the row itself moved.
+    """
+    import json
+    from pathlib import Path
+
+    from cyo_adventure.validator.topology import BAND_TOPOLOGIES
+
+    offenders: list[str] = []
+    for path in sorted(Path("skeletons").glob("*/*.json")):
+        if path.name.endswith((".lineage.json", ".narrative.json", ".contract.json")):
+            continue
+        metadata = json.loads(path.read_text())["metadata"]
+        allowed = BAND_TOPOLOGIES.get(metadata.get("age_band"))
+        topology = metadata.get("topology")
+        if allowed and topology not in {t.value for t in allowed}:
+            offenders.append(f"{path}: {metadata.get('age_band')} declares {topology}")
+
+    assert offenders == []

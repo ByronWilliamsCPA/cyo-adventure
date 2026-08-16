@@ -64,7 +64,10 @@ from cyo_adventure.validator.report import (
     ValidationFinding,
     ValidationReport,
 )
-from cyo_adventure.validator.topology import admissible_topologies
+from cyo_adventure.validator.topology import (
+    BAND_TOPOLOGIES,
+    admissible_topologies,
+)
 
 # A skeleton node body is a ``<<FILL role=... words=N ...>>`` directive carrying
 # the author's declared word target; a filled node body is prose. The
@@ -241,6 +244,7 @@ def validate_policy(story: Storybook) -> ValidationReport:
         )
         return report
     _check_forbidden_kinds(story, profile, report)
+    _check_band_topology(story, report)
     _check_content_ceiling(story, profile, report)
     _check_floors(story, profile, report)
     _check_topology(story, report)
@@ -401,6 +405,46 @@ def _check_topology(story: Storybook, report: ValidationReport) -> None:
                 ),
             )
         )
+
+
+def _check_band_topology(story: Storybook, report: ValidationReport) -> None:
+    """PL-29: declared topology must be allowed for the band (ADR-011 s7).
+
+    Independent of PL-18 and both must hold. PL-18 asks whether the declared
+    label fits the graph's *shape*; PL-29 asks whether the band is permitted to
+    use that label at all. ``branch_and_bottleneck`` is a well-formed shape that
+    a 3-5 or 5-8 book may not declare, so a skeleton can satisfy PL-18 and still
+    be wrong for its band.
+
+    #CRITICAL: data-integrity: the band row was enforced only by the offline
+    mutation core, never by the gate authors actually run. Three skeletons
+    drafted 2026-08-16 declared ``branch_and_bottleneck`` at 3-5 and 5-8,
+    passed ``check_skeleton --strict`` clean, and failed only once the mutation
+    operators ran over them, which is far too late and only happens for
+    catalog-time work. Every committed skeleton already satisfies its row, so
+    this rule blocks nothing that exists and would have blocked all three.
+    #VERIFY: test_policy.py::test_pl29_rejects_a_topology_the_band_forbids and
+    ::test_pl29_accepts_every_committed_skeleton.
+
+    Args:
+        story: The validated Storybook.
+        report: The report to add findings to.
+    """
+    allowed = BAND_TOPOLOGIES.get(story.metadata.age_band.value)
+    if allowed is None or story.metadata.topology in allowed:
+        return
+    report.add(
+        ValidationFinding(
+            rule_id="PL-29",
+            severity=Severity.ERROR,
+            story_id=story.id,
+            message=(
+                f"PL-29 topology: band '{story.metadata.age_band.value}' may not "
+                f"declare '{story.metadata.topology.value}' (allowed: "
+                f"{sorted(t.value for t in allowed)}) in story '{story.id}'"
+            ),
+        )
+    )
 
 
 def node_word_count(body: str) -> int:
