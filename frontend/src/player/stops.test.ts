@@ -363,4 +363,53 @@ describe('composeStopWithHistory (UW-F38)', () => {
       'n_a',
     ])
   })
+
+  it('refuses a predecessor whose single choice does not lead where the path went', () => {
+    // The one structural guard the other fail-closed cases never reach: every
+    // one of them trips an EARLIER check (unknown node, repeat, path not
+    // ending at current_node), so deleting the target comparison left all of
+    // them green. This is the guard that catches a republish which kept a
+    // node's id and its single-choice shape but re-pointed the edge, which is
+    // the exact class the version check above is a coarser backstop for.
+    //
+    // n_a is a real single-choice node, but c_go targets n_mid, not n_b, so
+    // this path never happened in this topology and nothing may be inferred.
+    expect(flowedPrefix(seededFlowStory, resumedAt('n_b', ['n_a', 'n_b']))).toEqual([])
+  })
+
+  it('refuses an ending as a flowed predecessor even when it carries a choice', () => {
+    // composeStop's forward walk tests is_ending BEFORE counting choices, so
+    // the walk-back must too. An ending with an onward choice is schema-
+    // invalid, which is the point: this function's contract is to fail closed
+    // on inconsistent data rather than assume it is consistent. Without the
+    // is_ending check the choices.length === 1 test passes and the ending is
+    // absorbed into the stop, so the two directions disagree about where the
+    // stop begins.
+    const endingWithChoice: Storybook = {
+      ...seededFlowStory,
+      id: 's_ending_with_choice',
+      start_node: 'n_finish',
+      nodes: [
+        {
+          id: 'n_finish',
+          body: 'An ending that should not flow onward.',
+          is_ending: true,
+          ending: { id: 'e_f', valence: 'positive', kind: 'success', title: 'Fin' },
+          choices: [{ id: 'c_onward', label: 'On', target: 'n_after' }],
+        },
+        {
+          id: 'n_after',
+          body: 'Past the ending.',
+          is_ending: false,
+          choices: [
+            { id: 'c_p', label: 'Up', target: 'n_finish' },
+            { id: 'c_q', label: 'Down', target: 'n_finish' },
+          ],
+        },
+      ],
+    }
+    expect(flowedPrefix(endingWithChoice, resumedAt('n_after', ['n_finish', 'n_after']))).toEqual(
+      []
+    )
+  })
 })

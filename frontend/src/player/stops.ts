@@ -3,17 +3,28 @@
  *
  * At bands 8-11 and up the reader flows consecutive single-choice, non-ending
  * nodes into one scrollable "stop" instead of stopping at every node, so
- * every stop a reader makes ends at a real choice (or an ending). This
- * mirrors `src/cyo_adventure/player/stops.py` exactly: it introduces no new
- * traversal semantics, it only decides where one stop ends and the next
- * begins. Every node-to-node transition inside a stop is delegated to
- * `choose()` from `./engine`, so a flowed run applies `on_enter` effects,
- * appends to `path`, and adds to `visit_set` exactly as if the reader had
- * tapped that single choice (ADR-026 decision 2).
+ * every stop a reader makes ends at a real choice (or an ending). It
+ * introduces no new traversal semantics, it only decides where one stop ends
+ * and the next begins. Every node-to-node transition inside a stop is
+ * delegated to `choose()` from `./engine`, so a flowed run applies `on_enter`
+ * effects, appends to `path`, and adds to `visit_set` exactly as if the reader
+ * had tapped that single choice (ADR-026 decision 2).
  *
- * The shared conformance corpus at `schema/conformance/stop_traces.json` (run
+ * `composeStop` mirrors `src/cyo_adventure/player/stops.py::compose_stop`, and
+ * the shared conformance corpus at `schema/conformance/stop_traces.json` (run
  * by both `stops.test.ts` here and `tests/unit/test_stop_conformance.py`)
- * proves this stays in lock-step with the Python side.
+ * proves THAT function stays in lock-step with the Python side.
+ *
+ * Scope of that guarantee, precisely: `flowedPrefix` and
+ * `composeStopWithHistory` have no Python counterpart, and the corpus cannot
+ * cover them, because every corpus case composes from a freshly-tapped state
+ * (`engine.start()` plus `prefix_choices`) and so never exercises a resumed
+ * one. They are frontend-only reader concerns (UW-F38) and the Python
+ * `compose_stop` has no production caller today: its only consumers are
+ * `test_stop_conformance.py` and the structural walk documented in
+ * `validator/choice_grammar.py`. A green corpus therefore attests that
+ * `composeStop` parity is UNCHANGED, not that resumed-stop behaviour is
+ * cross-verified. Port both functions before relying on it for that.
  *
  * AL-030: composing a stop walks every node in the run, so a caller (the
  * reader) MUST NOT call `composeStop` again on every render of an
@@ -222,6 +233,12 @@ export function flowedPrefix(story: Storybook, state: ReadingState): string[] {
     // A node the story no longer contains, or one already inside this stop
     // (the same cycle `composeStop`'s loop guard refuses to walk), ends it.
     if (predecessor === undefined || seen.has(predecessorId)) break
+    // `composeStop`'s forward walk tests `is_ending` BEFORE it counts choices,
+    // so the walk-back has to as well or the two disagree on an ending that
+    // carries a choice. That shape is schema-invalid, which is exactly why it
+    // is checked here: this function's contract is to fail closed on
+    // inconsistent data, not to assume the data is consistent.
+    if (predecessor.is_ending) break
     // 2+ choices is the previous stop's terminal (a real decision the child
     // stopped at); 0 is an ending. Only a single-choice node ever flows.
     if (predecessor.choices.length !== 1) break
