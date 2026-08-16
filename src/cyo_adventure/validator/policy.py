@@ -132,6 +132,68 @@ def check_fill_residue(story: Storybook) -> ValidationReport:
     return report
 
 
+def check_mvp_firewall(story: Storybook) -> ValidationReport:
+    """Run PL-28: an MVP/Test seed may not be imported as a child-facing book.
+
+    ADR-011 section 1a creates a below-Short **MVP/Test tier** for cheap
+    prototyping shells and its Consequences require that the tier be
+    "firewalled from production: a skeleton tagged ``tier = 'mvp'`` must never
+    be selectable for a child-facing story. The selection layer, not just the
+    validator, has to enforce the exclusion."
+
+    The selection layer does enforce it:
+    ``generation/skeleton_match.py::_candidates`` drops any skeleton whose
+    ``production_eligible`` is ``False``, so the automated request path cannot
+    pick a seed to fill. That covers generation and nothing else.
+
+    #CRITICAL: security: the *manual* path had no such guard. A seed filled by
+    hand (the `cyo-author` skill) and imported through
+    ``generation/import_cli`` reached the store, publishing and a child's
+    library with nothing anywhere reading ``production_eligible``: the flag's
+    only other consumers are ``generation/diagram.py`` (rendering) and
+    ``generation/import_catalog.py`` (backfill). Worse than a missing check,
+    the flag makes the gate *more* permissive rather than less, because
+    ``validator/layer1.py`` budgets an MVP story against the loosest cell. So
+    a prototype shell was both easier to validate and unblocked to publish.
+    Measured 2026-08-16: all three seeds ADR-011 names by slug (Lost Mitten,
+    Clocktower Cipher, Sunken Signal) already had filled books sitting in the
+    corpus.
+    #VERIFY: see test_gate.py::test_fill_result_context_blocks_an_mvp_seed and
+    ::test_skeleton_context_tolerates_an_mvp_seed, plus
+    test_policy.py::test_mvp_firewall_passes_a_production_story.
+
+    Context-gated for the same reason PL-27 is: at catalog time a seed is a
+    legitimate object that ``check_skeleton.py --allow-mvp`` is built to
+    inspect, so this must stay silent under the ``"skeleton"`` posture and
+    fire only once the document is being treated as a finished book.
+
+    Args:
+        story: The validated Storybook (Layer 1 has already passed).
+
+    Returns:
+        ValidationReport: One ERROR finding when the story is an MVP seed,
+        empty otherwise.
+    """
+    report = ValidationReport()
+    if story.metadata.production_eligible:
+        return report
+    report.add(
+        ValidationFinding(
+            rule_id="PL-28",
+            severity=Severity.ERROR,
+            story_id=story.id,
+            node_id=None,
+            message=(
+                f"PL-28 policy: story '{story.id}' declares "
+                f"production_eligible=false (the ADR-011 MVP/Test tier) and so "
+                f"may not be imported as a child-facing book; MVP seeds are "
+                f"prototyping shells and are budgeted against the loosest cell"
+            ),
+        )
+    )
+    return report
+
+
 def validate_policy(story: Storybook) -> ValidationReport:
     """Run PL-15..PL-18 over a parsed story.
 
