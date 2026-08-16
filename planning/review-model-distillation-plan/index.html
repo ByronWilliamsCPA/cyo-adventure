@@ -1,0 +1,4290 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A choose-your-own-adventure reading app for kids">
+      
+      
+        <meta name="author" content="Byron Williams">
+      
+      
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/review-model-distillation-plan/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Review-model distillation plan: a small, pinned, self-hosted judge, earned per criterion - CYO Adventure</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config",""),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#review-model-distillation-plan" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            CYO Adventure
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Review-model distillation plan: a small, pinned, self-hosted judge, earned per criterion
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../guides/overview/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  User Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api-reference/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../operations/runbook/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Operations
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../security/assurance-spine/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Security
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../development/architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../project/roadmap/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Project
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Planning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../PROJECT_SETUP/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Supplementary Docs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../ADRs/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    CYO Adventure
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/usage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/supabase-environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supabase environments
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Operations
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/runbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator Runbook
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/kws-test-runbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    KWS Test-Environment Runbook
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/authoring-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authoring Guide
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/security-events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security Event Catalog
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../architecture/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/user-journeys/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Journeys
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/system-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/generation-pipeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Generation Pipeline
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/validation-and-player/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation and Player
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/data-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Model
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/assurance-spine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assurance Spine
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/assurance-register/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assurance Register
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/control-inheritance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Control Inheritance Map
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/crypto-inventory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cryptographic Inventory
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/red-team-design-review-2026-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Red Team Design Review
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../api/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/code-quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code Quality
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/license/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    License
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planning
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Planning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../project-vision/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Vision
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tech-spec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tech Specification
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROJECT-PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Plan
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../adr/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADRs
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9_6" id="__nav_9_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ADRs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-001-story-format-json-storybook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-002-client-pwa/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-002
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-003-frontier-llm-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-003
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-004-homelab-first-deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-004
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-005-mandatory-human-approval/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-005
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-006
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-007-raw-output-retention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-008-public-app-store-launch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-008
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-009-supabase-platform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-009
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-010
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-011-story-scale-framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-011
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../research/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Story Structure Diversity
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9_7" id="__nav_9_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Story Structure Diversity
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../story-structure-diversity-critical-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Critical Analysis
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../story-structure-improvement-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Improvement Plan
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../story-structure-implementation-briefs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation Briefs
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supplementary Docs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Supplementary Docs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PROJECT_SETUP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Setup
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPENSSF_COMPLIANCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenSSF Compliance
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PYTHON_COMPATIBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python Compatibility
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../ADRs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_11" id="__nav_11_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ADRs/adr-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR Template
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-what-is-being-distilled-and-why-the-answer-is-not-the-panel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. What is being distilled, and why the answer is not "the panel"
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="0. What is being distilled, and why the answer is not &#34;the panel&#34;">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#01-the-evidence-base-verified" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0.1 The evidence base, verified
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-how-an-item-earns-its-place" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. How an item earns its place
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-tiering-which-criteria-are-distilled-which-are-not-and-why" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Tiering: which criteria are distilled, which are not, and why
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Tiering: which criteria are distilled, which are not, and why">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tier-d-deterministic-never-distilled" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tier D: deterministic, never distilled
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tier-1-distillation-targets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tier 1: distillation targets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tier-2-conditional-targets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tier 2: conditional targets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tier-3-no-trustworthy-teacher-signal-excluded-from-distillation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tier 3: no trustworthy teacher signal; excluded from distillation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-artifact-preservation-the-re-distillation-contract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Artifact preservation: the re-distillation contract
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Artifact preservation: the re-distillation contract">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-layout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Layout
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-what-must-be-immutable-versus-what-may-be-regenerated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 What must be immutable versus what may be regenerated
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-enforcement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Enforcement
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-the-battery-books-are-test-data-forever" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 The battery books are test data forever
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-data-budget-what-the-generator-can-actually-yield-said-plainly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Data budget: what the generator can actually yield, said plainly
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-the-traps-and-where-each-is-caught" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. The traps, and where each is caught
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-the-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. The work
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. The work">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-0-free-and-deterministic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 0: free and deterministic
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-1-the-cheap-paid-pass-that-could-end-the-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 1: the cheap paid pass that could end the plan
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2-labels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 2: labels
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-3-the-student" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 3: the student
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-4-adoption" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 4: adoption
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-kill-criteria-what-would-mean-distillation-is-the-wrong-answer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Kill criteria: what would mean distillation is the wrong answer
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-sequencing-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Sequencing summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-register-and-log-linkage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Register and log linkage
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="review-model-distillation-plan">Review-model distillation plan<a class="headerlink" href="#review-model-distillation-plan" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>Date</strong>: 2026-08-14
+<strong>Derived from</strong>: <a href="../cyo-measurement-workplan-2026-08-12/">measurement workplan</a> sections 7.7 to 7.8,
+<a href="../authoring-lessons-log/">authoring lessons log</a> <code>AL-367</code> to <code>AL-385</code>,
+<a href="../unscheduled-work-register/">unscheduled work register</a> <code>UW-C236</code>, <code>UW-C239</code>, <code>UW-C254</code> to <code>UW-C258</code>
+<strong>Status</strong>: draft, pending owner sign-off. Register rows are added on sign-off, not before.
+<strong>Serves</strong>: <code>A11</code> (structural and prose quality tooling across the corpus). The distilled judge is a
+<em>measurement instrument</em> for the research and authoring harness. It does not touch <code>A6</code> (the admin's recorded
+approval remains the only path from generated content to a child, ADR-005) and it does not replace any part of
+<code>S7</code>'s moderation pipeline. Nothing in this plan changes what a child can be shown.</p>
+</blockquote>
+<h2 id="0-what-is-being-distilled-and-why-the-answer-is-not-the-panel">0. What is being distilled, and why the answer is not "the panel"<a class="headerlink" href="#0-what-is-being-distilled-and-why-the-answer-is-not-the-panel" title="Permanent link">&para;</a></h2>
+<p>The review agent under discussion is the blind judge panel in <code>scripts/judge_books.py</code>: seven anchored 1-to-5
+criteria (<code>_CRITERIA</code>), scored by three frontier models, used by the measurement programme to rank books and by
+W7 to validate itself. Distillation here means training a small open-weight model to reproduce the <em>validated
+subset</em> of that instrument, self-hosted, pinned, at temperature 0.</p>
+<p>Three findings from the 2026-08-14 W7 close define the target, and each narrows it:</p>
+<ol>
+<li><strong>The unit is the criterion, not the panel.</strong> Five criteria support a ranking, one is untested, one is
+   under-powered (workplan 7.7.6, <code>AL-385</code>). A student trained to imitate "the panel" would imitate the broken
+   parts with the same fidelity as the working ones. Every phase below is therefore per criterion.</li>
+<li><strong>The instrument supports within-book delta comparisons, not absolute scoring.</strong> With the drifting judge
+   excluded, only <code>imagery</code> (+0.82), <code>ending_quality</code> (+0.73), <code>engagement</code> (+0.65) and <code>choice_quality</code>
+   (+0.63) clear the 0.60 weighted-kappa floor on absolute scores between the two stable judges; <code>age_fit</code>
+   sits at +0.51 even while detecting its defect 6 of 6 (replay of <code>out/w7/verdicts.json</code> with
+   <code>--exclude-judge judge-gemini-3.1</code>, 2026-08-14). The student is therefore trained and validated <strong>for the
+   delta use</strong>: ordering two versions of a book on one criterion. Absolute calibration is out of scope until a
+   consumer needs it, and no claim in this plan may quietly widen into one.</li>
+<li><strong>The strongest argument for distillation is determinism, not cost.</strong> One frontier judge drifts 0.64 mean
+   and 2.00 max on unchanged control books between runs, against a 0.5 detection margin; the two stable judges
+   drift 0.14, and excluding the drifter cut every noise floor 2x to 6x (workplan 7.7.6, <code>AL-380</code>, <code>AL-381</code>,
+   <code>UW-C258</code>). A pinned-weights local judge decoded greedily at temperature 0 removes run-to-run drift as a
+   <em>class</em> of noise. Cost is real but secondary: 129 frontier scorings cost about $2.60 (workplan 7.7.5), so
+   the panel is not expensive; it is unstable, unpinnable, and subject to other people's routing. The floating
+   <code>~vendor/model-latest</code> aliases move across both checkpoint and serving provider without notice
+   (<code>judge-panels/open-weight-candidates.json</code>), and this account's own data policy can silently remove a
+   judge's serving stack (<code>AL-384</code>). A measuring instrument whose identity is not under our control cannot
+   support a longitudinal quality claim, and every instrument in the current panel has that property.</li>
+</ol>
+<p><strong>Relation to the earlier deferral.</strong> The workplan's section 5 deferred "fine-tuning anything on the Thinking
+Machines credit" because every proposed use trained on an unvalidated instrument, and because the credit
+cannot touch the generation model (no DeepSeek-V4 in the Tinker catalogue; verified 2026-08-12). Both reasons
+have now expired for <em>this</em> use and only this use: W7 has validated the instrument per criterion, so training
+on its keeps is no longer laundering a saturated score into weights; and a judge, unlike a generator, is
+exactly the "different, smaller companion model" the deferral said nothing then needed. The deferral's warning
+is retained as this plan's trap 1.</p>
+<h3 id="01-the-evidence-base-verified">0.1 The evidence base, verified<a class="headerlink" href="#01-the-evidence-base-verified" title="Permanent link">&para;</a></h3>
+<p>The figures below were re-derived on 2026-08-14 from the frozen artifact, not quoted from memory:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/w7_battery.py<span class="w"> </span>--replay<span class="w"> </span>out/w7/verdicts.json<span class="w"> </span>--exclude-judge<span class="w"> </span>judge-gemini-3.1
+</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Defect</th>
+<th>Detected</th>
+<th>Median delta</th>
+<th>Noise floor</th>
+<th>Teacher-pair kappa (absolute)</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>imagery</code></td>
+<td><code>imagery_flat</code></td>
+<td>6/6</td>
+<td>-2.00</td>
+<td>0.24</td>
+<td>+0.82</td>
+<td>KEEP</td>
+</tr>
+<tr>
+<td><code>age_fit</code></td>
+<td><code>reading_level_up</code></td>
+<td>6/6</td>
+<td>-1.75</td>
+<td>0.35</td>
+<td>+0.51</td>
+<td>KEEP (delta use only)</td>
+</tr>
+<tr>
+<td><code>ending_quality</code></td>
+<td><code>ending_truncated</code></td>
+<td>6/6</td>
+<td>-1.25</td>
+<td>0.12</td>
+<td>+0.73</td>
+<td>KEEP</td>
+</tr>
+<tr>
+<td><code>choice_quality</code></td>
+<td><code>false_choice</code></td>
+<td>5/5</td>
+<td>-1.00</td>
+<td>0.24</td>
+<td>+0.63</td>
+<td>KEEP</td>
+</tr>
+<tr>
+<td><code>engagement</code></td>
+<td><code>premise_duplicate</code></td>
+<td>4/6</td>
+<td>-0.50</td>
+<td>0.12</td>
+<td>+0.65</td>
+<td>KEEP, marginal</td>
+</tr>
+<tr>
+<td><code>voice</code></td>
+<td>none valid</td>
+<td>-</td>
+<td>-</td>
+<td>0.35</td>
+<td>+0.58</td>
+<td>UNTESTED (<code>AL-382</code>)</td>
+</tr>
+<tr>
+<td><code>dialogue</code></td>
+<td><code>dialogue_flat</code></td>
+<td>&frac12;</td>
+<td>-0.75</td>
+<td>0.00</td>
+<td>+0.49</td>
+<td>under-powered, confounded</td>
+</tr>
+</tbody>
+</table>
+<p>W4 independently flags <code>dialogue</code> at cell spread 0.00 and flags nothing else (workplan 7.8); two instruments
+on different corpora corroborate (<code>AL-385</code>).</p>
+<h2 id="1-how-an-item-earns-its-place">1. How an item earns its place<a class="headerlink" href="#1-how-an-item-earns-its-place" title="Permanent link">&para;</a></h2>
+<p>The three admission constraints of the measurement workplan apply unchanged: every item carries a decision
+rule written before it runs and able to return "drop"; no rule may appeal to the <em>student</em> until the student
+has passed its own battery (the same discipline that blocked ranking claims on W7); and no measure is promoted
+to a gate for being computable (<code>AL-337</code> by inheritance).</p>
+<p>Four operating rules are inherited from this fortnight's lessons and bind every item below:</p>
+<ul>
+<li><strong>Every paid step runs under a <code>single_run</code> lock and never retries on absent output</strong> (<code>UW-C254</code>, <code>AL-375</code>).</li>
+<li><strong>Every artifact this plan produces is written to a tracked path by default</strong> (<code>UW-C257</code>, <code>AL-379</code>). The cost
+  that matters is not what a run cost to produce but what it would cost to reproduce.</li>
+<li><strong>No cost column prints a dollar figure from an unpriced estimate</strong>; until <code>UW-C239</code> closes, spend is
+  measured against the provider balance and the tables say so (<code>AL-374</code>).</li>
+<li><strong>Every availability claim about a candidate model comes from <code>probe_callable</code></strong>, an actual call classified
+  as ok / data-policy / no-endpoints / unknown-slug, never from a catalogue listing (<code>AL-383</code>, <code>AL-384</code>).
+  Floating aliases are disqualified as instruments outright; only dated checkpoints enter any slate.</li>
+</ul>
+<h2 id="2-tiering-which-criteria-are-distilled-which-are-not-and-why">2. Tiering: which criteria are distilled, which are not, and why<a class="headerlink" href="#2-tiering-which-criteria-are-distilled-which-are-not-and-why" title="Permanent link">&para;</a></h2>
+<p>Not every criterion should be distilled, and pretending otherwise would rebuild the panel's weaknesses in
+weights, where they are harder to see (workplan section 5's own warning). Assignment, from the W7 and W4
+evidence:</p>
+<h3 id="tier-d-deterministic-never-distilled">Tier D: deterministic, never distilled<a class="headerlink" href="#tier-d-deterministic-never-distilled" title="Permanent link">&para;</a></h3>
+<p>Properties with a deterministic measure that has <strong>passed its own sensitivity check</strong> stay deterministic, per
+the narrowed <code>UW-C236</code> remedy and the <code>AL-367</code> rule that "deterministic" is not a synonym for "correct":</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Instrument</th>
+<th>Sensitivity evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Narrative tense stability</td>
+<td><code>check_prose_craft.py</code> tense checker</td>
+<td><code>AL-369</code>; <code>tense_break</code> unmapped from the judge per <code>AL-382</code></td>
+</tr>
+<tr>
+<td>Dialogue presence and share</td>
+<td><code>validator/dialogue.py</code></td>
+<td>rebuilt and span-tested after <code>AL-367</code>/<code>AL-368</code>; one detector behind all four callers</td>
+</tr>
+<tr>
+<td>Reading level</td>
+<td><code>validator/reading_level.py</code></td>
+<td>W2 keep, path-scoped, with the concentration effect demonstrated</td>
+</tr>
+<tr>
+<td>Fork structure (false choices, reconvergence)</td>
+<td><code>validator/consequence.py</code> (W3)</td>
+<td>keep as reported statistic, discriminates on the catalogue</td>
+</tr>
+<tr>
+<td>Premise convergence</td>
+<td>shared four-gram measure</td>
+<td>calibrated against the 3.3 idiom floor</td>
+</tr>
+</tbody>
+</table>
+<p>A student judge is never trained on these properties and never asked about them; asking it would be preferring
+the more expensive, less checkable instrument, which inverts the house rule.</p>
+<h3 id="tier-1-distillation-targets">Tier 1: distillation targets<a class="headerlink" href="#tier-1-distillation-targets" title="Permanent link">&para;</a></h3>
+<p><code>imagery</code>, <code>ending_quality</code>, <code>age_fit</code>. All three detect 6 of 6 with medians 3x to 10x their noise floors and
+survived a change of run (workplan 7.7.5, 7.7.6). <code>age_fit</code> carries a stated restriction: its teacher-pair
+absolute agreement is +0.51, below floor, so it is distilled <strong>for delta use only</strong> and no absolute <code>age_fit</code>
+claim may be made by the student or its consumers.</p>
+<h3 id="tier-2-conditional-targets">Tier 2: conditional targets<a class="headerlink" href="#tier-2-conditional-targets" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>choice_quality</code> (5/5, -1.00 against 0.24). Conditional because it half-overlaps Tier D: the <em>structural</em>
+  half of "do the branch points matter" is W3's, deterministic and already kept. What the judge adds is the
+  semantic half, options that are cosmetic restatements of each other while pointing at different nodes, which
+  no graph measure sees. The student inherits only the semantic half, and RD5 must show the teacher signal for
+  it survives on arms whose structure W3 calls clean.</li>
+<li><code>engagement</code> (4/6, -0.50 against 0.12). Marginal by the workplan's own reading; distilled only if RD5's
+  teacher-consistency gate passes, and flagged as the first criterion to drop if data volume binds.</li>
+</ul>
+<h3 id="tier-3-no-trustworthy-teacher-signal-excluded-from-distillation">Tier 3: no trustworthy teacher signal; excluded from distillation<a class="headerlink" href="#tier-3-no-trustworthy-teacher-signal-excluded-from-distillation" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>voice</code>: UNTESTED. Its only arm was a wrong hypothesis (<code>AL-382</code>); no valid defect mapping exists. Distilling
+  it would distil an unvalidated signal. Precondition, not scheduled here: design a voice-targeting seed
+  (e.g. swapping the protagonist's reactions across characters), validate it through W7, then revisit.</li>
+<li><code>dialogue</code>: under-powered at n=2 with the one miss explained by the rubric's own narration-led anchor
+  (<code>AL-382</code>), and flagged saturated by W4 twice (<code>AL-385</code>, <code>UW-C236</code>). Preconditions: reword the rubric so
+  "legitimately narration-led" and "had its dialogue removed" are distinguishable, and get dialogue-bearing
+  books into the battery (the corpus carries 17 of 23 with dialogue since the detector was fixed, so this is
+  now a fixture choice rather than a corpus gap). Until both land, the criterion has no signal to distil.</li>
+</ul>
+<p><strong>Pre-registered consequence of the tiering.</strong> The student ships with a declared observation set, wired into
+the W6 blind-spot manifest mechanism: the criteria it does not score are listed as unobserved, exactly as the
+four qualitative age dimensions are today. A student that silently answers on <code>voice</code> or <code>dialogue</code> fails RD7
+regardless of its other results.</p>
+<h2 id="3-artifact-preservation-the-re-distillation-contract">3. Artifact preservation: the re-distillation contract<a class="headerlink" href="#3-artifact-preservation-the-re-distillation-contract" title="Permanent link">&para;</a></h2>
+<p>This section is a requirement, not an appendix. The governing fact is <code>AL-379</code>: the loss of one untracked
+directory (<code>out/vendor-comparison/</code>) has now degraded four separate measurement items, and the 84-verdict pool
+it held is unreproducible at any price because the judges that produced it will not exist at those checkpoints
+again. Distillation multiplies that exposure: a student model is a function of its teacher verdicts, its
+corpus, its rubric version, its splits and its hyperparameters, and losing any one of them means the next
+distillation (new base model, revised rubric, grown corpus) starts from zero instead of from a diff.</p>
+<p><strong>The test the layout has to pass</strong>: a fresh checkout, with no access to any frontier model that has since
+retired, must be able to (a) regenerate every derived artifact bit-identically from the frozen ones, and
+(b) train and evaluate a <em>new</em> student against the <em>same</em> labels, splits and battery, so that "better than the
+last student" is a measurement rather than a vibe.</p>
+<h3 id="31-layout">3.1 Layout<a class="headerlink" href="#31-layout" title="Permanent link">&para;</a></h3>
+<p>All tracked, following the <code>out/w7/</code> precedent (its corpus, paid rewrites and verdicts are already in git;
+only the regenerable <code>arms/</code> is ignored):</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>out/distillation/
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>  MANIFEST.json      # the root: content hashes and generator commits for everything below; the one file a
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>                     # re-distillation starts from. CI-checked: a hash mismatch or dangling reference fails.
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>  corpus/            # frozen copies of every book any pair references, at the exact bytes judged. IMMUTABLE.
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>  rewrites/          # the paid generation rewrites (harden/, flatten/) per book, full strength. IMMUTABLE:
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>                     # these are the raw material every ladder is blended from, already paid for once.
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>  arms/              # REGENERABLE: mechanical seeds and blends, derivable from corpus/ + rewrites/ + the
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>                     # seeder at the pinned commit recorded in MANIFEST. Stored anyway (cheap), but audited
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>                     # by regeneration, never edited.
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>  pairs/             # the labelled pair and ladder corpus, JSONL. One row per ordered pair:
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>                     # {pair_id, criterion, band, unit: book|path|node, a_ref, b_ref (hashes into corpus/
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>                     # arms/), relation, severity_rung, provenance: seeded|teacher_ranked|natural,
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>                     # generator_commit, split}. IMMUTABLE once a training run has consumed it; corrections
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>                     # append a superseding row, never rewrite.
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>  teacher/           # teacher verdicts, raw and per judge, never only pooled (AL-381): scores, notes, model
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>                     # slug, checkpoint/date, provider actually served (from response metadata, not the
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>                     # request), prompt_version, rubric_version, repeat index. IMMUTABLE and irreplaceable:
+</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>                     # a retired checkpoint&#39;s opinion cannot be re-bought at any price.
+</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>  rubric/            # versioned rubric and prompt templates: _CRITERIA text, _system_for template, _prompt
+</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>                     # shape, band-phrase logic, each version content-addressed. Needed because a one-word
+</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>                     # prompt change makes pools non-comparable (the &quot;5 to 8&quot; hardcoding cost us exactly
+</span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>                     # this; judge_books.py item 5). IMMUTABLE per version.
+</span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>  splits/            # train/validation/test membership BY BOOK (never by arm: every arm of a book shares
+</span><span id="__span-1-24"><a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>                     # its book&#39;s split), plus the generating rule: RNG seed, stratification by band and
+</span><span id="__span-1-25"><a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a>                     # node count. IMMUTABLE. The six W7 battery books are assigned test forever (3.4).
+</span><span id="__span-1-26"><a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a>  holdout/           # the naturally-occurring failure set: books or nodes a human sent back at review, with
+</span><span id="__span-1-27"><a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a>                     # the send-back reason. Never enters any train or validation set, ever. The only data
+</span><span id="__span-1-28"><a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a>                     # not produced by our own seeder, hence the only check on trap 2. IMMUTABLE, append-only.
+</span><span id="__span-1-29"><a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a>  eval/              # per evaluation run: the verdicts file, harness commit, exact replay command, panel or
+</span><span id="__span-1-30"><a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a>                     # student identity. Every number this plan ever reports must be replayable from here at
+</span><span id="__span-1-31"><a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a>                     # zero cost, the way section 0.1&#39;s table was replayed from out/w7/verdicts.json.
+</span><span id="__span-1-32"><a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a>  training/          # per training run: base model id AND weights revision hash, tokenizer hash,
+</span><span id="__span-1-33"><a id="__codelineno-1-33" name="__codelineno-1-33" href="#__codelineno-1-33"></a>                     # hyperparameters, data manifest hash, training-code commit, loss curves, and the
+</span><span id="__span-1-34"><a id="__codelineno-1-34" name="__codelineno-1-34" href="#__codelineno-1-34"></a>                     # adapter weights themselves (LoRA adapters are megabytes and are committed; any
+</span><span id="__span-1-35"><a id="__codelineno-1-35" name="__codelineno-1-35" href="#__codelineno-1-35"></a>                     # full-weight artifact goes to the R2 bucket with its hash and retrieval path recorded
+</span><span id="__span-1-36"><a id="__codelineno-1-36" name="__codelineno-1-36" href="#__codelineno-1-36"></a>                     # here, following the supabase-backup marker discipline).
+</span></code></pre></div>
+<h3 id="32-what-must-be-immutable-versus-what-may-be-regenerated">3.2 What must be immutable versus what may be regenerated<a class="headerlink" href="#32-what-must-be-immutable-versus-what-may-be-regenerated" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Members</th>
+<th>Why re-distillation dies without it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Immutable, irreplaceable</td>
+<td><code>teacher/</code>, <code>holdout/</code></td>
+<td>teacher checkpoints retire (the 84-verdict pool is the proof); human send-backs cannot be re-elicited</td>
+</tr>
+<tr>
+<td>Immutable, expensive</td>
+<td><code>rewrites/</code>, <code>corpus/</code></td>
+<td>a <em>re-generated</em> rewrite is different text, silently changing every ladder built on it</td>
+</tr>
+<tr>
+<td>Immutable, identity-bearing</td>
+<td><code>rubric/</code>, <code>splits/</code>, <code>pairs/</code>, <code>eval/</code></td>
+<td>free to recreate <em>differently</em>, which is the failure: new splits or a reworded rubric is a new experiment in the old one's name</td>
+</tr>
+<tr>
+<td>Regenerable</td>
+<td><code>arms/</code>, blends, derived statistics</td>
+<td>deterministic functions of immutable inputs at a pinned commit; MANIFEST records the function, CI re-derives and compares</td>
+</tr>
+</tbody>
+</table>
+<h3 id="33-enforcement">3.3 Enforcement<a class="headerlink" href="#33-enforcement" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>MANIFEST.json</code> is checked in CI the way the lessons log is: hashes verified, references resolved, and any
+  file under an IMMUTABLE directory whose hash changed fails the build.</li>
+<li>Mutation test, in the W6 style: delete one rewrite file locally and the manifest check must fail; regenerate
+  one arm with a modified seeder and the regeneration audit must fail. If either can be made to pass, the
+  manifest is a false assurance and gets fixed before anything else runs.</li>
+<li>Every harness this plan adds takes <code>--scratch</code> to write elsewhere; the default is the tracked store. This
+  inverts today's default, per <code>UW-C257</code>.</li>
+</ul>
+<h3 id="34-the-battery-books-are-test-data-forever">3.4 The battery books are test data forever<a class="headerlink" href="#34-the-battery-books-are-test-data-forever" title="Permanent link">&para;</a></h3>
+<p>The six W7 corpus books (<code>the-lost-mitten</code>, <code>the-clover-and-the-butterfly</code>, <code>the-teddy-bears-picnic</code>,
+<code>the-lantern-festival</code>, <code>the-backyard-treasure-map</code>, <code>the-cave-of-echoes</code>), their paid rewrites and their
+43-arm battery are already tracked under <code>out/w7/</code>. They are assigned to the test split permanently and no
+student may train on them or on any arm or ladder derived from them. This costs us their already-paid rewrites
+as training data, and buys the only thing worth more: an acceptance battery whose frontier baselines are
+already measured (section 0.1) and which no student has ever seen.</p>
+<h2 id="4-data-budget-what-the-generator-can-actually-yield-said-plainly">4. Data budget: what the generator can actually yield, said plainly<a class="headerlink" href="#4-data-budget-what-the-generator-can-actually-yield-said-plainly" title="Permanent link">&para;</a></h2>
+<p><strong>The corpus.</strong> 23 filled books are committed at <code>out/*.filled.json</code>, spanning 3-5 (3 books), 5-8 (2), 8-11
+(3), 10-13 (4), 13-16 (6), 16+ (5), from 11 to 551 nodes (counted 2026-08-14 from the tracked files). Not all
+pass: two are pre-schema-v2 and blocked by L1-7 branch depth after mechanical migration (<code>AL-372</code>), and the
+usable count under <code>fill_result</code> context is roughly 20 to 21, with the exact census a Phase 0 deliverable
+(RD2). Six of those are the frozen battery (3.4), leaving <strong>about 14 books for training and validation</strong>, and
+their band spread is bottom-light: the youngest bands are concentrated in the battery, so training data skews
+8-11 through 16+ while the acceptance battery spans 3-5 through 10-13. That asymmetry is stated here so nobody
+discovers it as a finding later.</p>
+<p><strong>Yield per book.</strong> The seeder plus blenders are a known-answer generator with three multipliers:</p>
+<ul>
+<li><em>Arms</em>: control plus up to 7 defect arms per book (5 mechanical, free; 2 generation-seeded at measured
+  $0.85 for 224 calls over the six small battery books, so the 14 larger training books are estimated at
+  $5 to $15; estimate, priced against the provider balance per <code>AL-374</code>).</li>
+<li><em>Ladders</em>: <code>blend_to_grade</code> and <code>blend_to_density</code> compose arbitrary severities from one paid rewrite at
+  zero marginal cost (<code>--reblend</code> calls no provider; <code>AL-373</code>). Three rungs each (+1/+2/+3 grades; keep
+  0.7/0.4/0.2 density) triple the reading-level and imagery arms for free. The mechanical seeds are
+  parameterisable the same way (tense share, endings truncated, forks repointed), giving 2 to 3 rungs each.</li>
+<li><em>Units below the book</em>: <code>rewrites/</code> holds per-node (original, hardened) and (original, flattened) body
+  pairs, roughly 213 to 224 nodes per seed type on the battery corpus alone, and W1's <code>path_bodies</code> can cut
+  book arms into path-scoped units for the prose criteria. These are auxiliary signal only; <code>choice_quality</code>
+  and <code>ending_quality</code> are meaningless below the book, and the <code>AL-342</code> rule applies: any per-unit measure
+  needs its threshold re-derived at the new denominator.</li>
+</ul>
+<p><strong>The arithmetic, as an estimate.</strong> 14 books x 4 target criteria x ~3 rungs gives roughly 170 seeded ordered
+ladder pairs at book scope; teacher-ranked cross-book pairs (pairs of different books whose teacher delta on a
+criterion exceeds that criterion's noise floor) add up to 91 same-criterion pairs per criterion before
+filtering, perhaps a third usable; node- and path-scoped auxiliary pairs add several hundred more for
+<code>imagery</code> and <code>age_fit</code>. Order of magnitude: <strong>500 to 1,500 usable ordered pairs</strong>, concentrated in two
+criteria.</p>
+<p><strong>Is that enough?</strong> For the stated target, a LoRA adapter on a small instruction-tuned base, learning a
+<em>pairwise ordinal</em> task per criterion, it is plausibly sufficient: the task is narrow, the base model already
+reads, and the label is an ordering rather than a calibration. For anything more, it is not: absolute-scale
+calibration, band-general claims, or criteria beyond the top three would need the corpus the flywheel is
+supposed to grow. This plan does not assume the favourable answer; RD6 carries a pre-registered learning-curve
+rule that halts training and says "grow the corpus first" the moment the data, rather than the method, is the
+binding constraint. Growing the corpus means generating books, which is the expensive half of this programme
+(wall clock estimated at roughly ten minutes per book from the vendor-comparison runs, plus gate attrition),
+and pretending pairs are free would hide that behind the seeder.</p>
+<h2 id="5-the-traps-and-where-each-is-caught">5. The traps, and where each is caught<a class="headerlink" href="#5-the-traps-and-where-each-is-caught" title="Permanent link">&para;</a></h2>
+<p><strong>Trap 1: distilling the teacher's blind spots.</strong> A student imitates its teacher's misses as faithfully as its
+hits, and a preference model fitted to a saturated criterion launders the saturation into weights where it is
+far harder to detect than in a score column (workplan section 5). Caught by: the tiering (section 2), which
+admits only criteria with two-instrument evidence; the blind-spot declaration (the student names what it does
+not observe, W6 mechanism); and the <code>holdout/</code> set, the only labels our seeder did not write.</p>
+<p><strong>Trap 2: learning "this text was tampered with" rather than the property.</strong> The arms are not single-defect
+documents (<code>AL-377</code>, <code>UW-C255</code>): <code>reading_level_up</code> genuinely moves voice and imagery, <code>premise_duplicate</code>
+genuinely moves engagement, and every mechanical seed has a mechanical signature a model could learn instead
+of the property. Caught by: severity ladders, because a tamper detector fires equally at every rung while a
+property judge must order them (RD7's monotonicity gate); provenance mixing, because teacher-ranked natural
+pairs and human send-backs carry no seeder signature; and the holdout sign-agreement gate, where a student
+that aces seeded arms and fails natural pairs is convicted of learning the seeder.</p>
+<p><strong>Trap 3: band conditioning.</strong> The rubric is band-parameterised and the corpus spans 3-5 to 16+; the panel ran
+off-prompt on a hardcoded band for its whole first pool (judge_books.py item 5). A student can satisfy every
+in-band metric while ignoring its band input entirely, because band correlates with style in this corpus.
+Caught by: band recorded on every pair; the RD7 band-swap probe (the same text judged under its own band and
+an adjacent one must move <code>age_fit</code> in the direction the rubric implies); and the scope rule that adoption
+claims extend only to bands the acceptance battery covers (3-5 through 10-13 today; extending to 13-16 means
+seeding arms on a held-out older book, <code>the-thornwood-trial</code> being the named candidate, with its roughly 27k
+input tokens per scoring priced in).</p>
+<p><strong>Trap 4: quantisation effects within noise.</strong> Self-hosting means quantising, and run-6 nearly published a
+22-point "quantisation effect" that was one book's discarded repair (<code>AL-349</code>). Caught by: RD8's rule that a
+quantised build is adopted only if every per-criterion verdict is unchanged and the noise floor moves at most
+0.1, with any single-book regression checked against the drop-worst column (<code>UW-C246</code>) before being attributed
+to quantisation.</p>
+<p><strong>Trap 5: teacher selection and pinning.</strong> A panel mean hides a bad member (<code>AL-381</code>). The teacher is the two
+stable judges, <code>judge-gpt-5.6</code> and <code>judge-grok-4.6</code> (drift 0.14 against the drifter's 0.64 mean and 2.00 max),
+recorded per judge so the membership decision stays revisable. Every teacher verdict pins model, checkpoint
+date, and the provider that actually served the call; a verdict whose serving metadata is missing does not
+enter <code>teacher/</code>.</p>
+<p><strong>Trap 6: availability and identity of the base model.</strong> Callable, real-but-unserved, blocked-by-our-own-policy
+and unknown-slug are four different states with four different remedies (<code>AL-383</code>, <code>AL-384</code>), and a floating
+alias is none of them and worse than all of them. Caught by: <code>probe_callable</code> pre-flight on every slate before
+any paid pass; dated checkpoints only; and for the eventual student base, a further requirement the API checks
+cannot see: <strong>weights downloadable under a licence permitting local fine-tuning and self-hosted commercial
+use, pinned by revision hash before training starts.</strong> The data policy that blocks some serving stacks is a
+standing constraint correct for a children's product; candidates it blocks are dropped, and the policy is
+never relaxed for a measurement convenience.</p>
+<h2 id="6-the-work">6. The work<a class="headerlink" href="#6-the-work" title="Permanent link">&para;</a></h2>
+<p>Ordered cheapest-first; the free and deterministic items run before anything paid, and Phase 1 exists to make
+Phase 3 unnecessary. Costs are money plus wall clock; dollar figures are measured where cited, estimates where
+marked, and always read against the provider balance until <code>UW-C239</code> closes.</p>
+<h3 id="phase-0-free-and-deterministic">Phase 0: free and deterministic<a class="headerlink" href="#phase-0-free-and-deterministic" title="Permanent link">&para;</a></h3>
+<h4 id="rd1-the-frozen-store-and-its-manifest">RD1. The frozen store and its manifest<a class="headerlink" href="#rd1-the-frozen-store-and-its-manifest" title="Permanent link">&para;</a></h4>
+<p><strong>Infrastructure, not a candidate.</strong> Everything else writes into it.</p>
+<p><em>Build.</em> The section 3 layout, the manifest writer, the CI hash check, and the migration of the existing
+<code>out/w7/</code> artifacts (corpus, rewrites, verdicts, replay commands) into it as the first frozen generation.</p>
+<p><em>Test.</em> The two mutation tests of 3.3: a deleted rewrite and a modified-seeder regeneration must each fail
+the check. A clean checkout must rebuild <code>arms/</code> bit-identically from <code>corpus/</code> + <code>rewrites/</code> + the pinned
+commit.</p>
+<p><em>Decision rule.</em> Infrastructure ships without a keep/drop rule, but with the W6 discipline: <strong>if the manifest
+cannot be made drift-proof against the mutation tests, it is demoted to a documentation-only inventory and
+this plan's reproducibility claims are weakened in writing</strong>, because a manifest that lies converts an unknown
+gap into a false assurance.</p>
+<p><em>Cost.</em> Zero spend, one to two days.</p>
+<h4 id="rd2-corpus-census-and-frozen-splits">RD2. Corpus census and frozen splits<a class="headerlink" href="#rd2-corpus-census-and-frozen-splits" title="Permanent link">&para;</a></h4>
+<p><em>Build.</em> Run the gate over every committed filled book under <code>fill_result</code> context; record pass/fail and
+reason per book; assign train/validation/test by book, stratified by band and node count, seeded; the six
+battery books are pre-assigned test (3.4). Freeze into <code>splits/</code>.</p>
+<p><em>Test.</em> Re-running the assignment with the recorded seed reproduces the membership exactly; no book appears
+in two splits; no arm's split differs from its book's.</p>
+<p><em>Decision rule.</em> <strong>If fewer than 12 gate-passing non-battery books exist, Phase 3 is blocked</strong> and the plan's
+next action is corpus growth, not training; bands with zero test-split books are named in the manifest and
+excluded from every adoption claim. This rule can return "stop before spending" and that is its point.</p>
+<p><em>Cost.</em> Zero spend, half a day.</p>
+<h4 id="rd3-the-ladder-generator">RD3. The ladder generator<a class="headerlink" href="#rd3-the-ladder-generator" title="Permanent link">&para;</a></h4>
+<p><em>Build.</em> Extend <code>seed_defects.py</code> and the <code>w7_battery.py</code> blenders to emit graded severities per defect (three
+rungs for the two blended seeds; parameterised strengths for the mechanical ones) plus the <code>pairs/</code> manifest
+rows, provenance and split included. Deterministic; consumes existing <code>rewrites/</code> where they exist. The
+non-landing rule is inherited: a rung whose seed did not land is withheld and named, reducing n rather than
+manufacturing a zero (<code>AL-370</code>).</p>
+<p><em>Test.</em> On the tracked <code>out/w7/harden/</code> rewrites, every emitted ladder's rungs are confirmed strictly ordered
+by the defect's own deterministic verifier (<code>verify</code> at each rung), and the pair manifest round-trips: each
+row's <code>a_ref</code>/<code>b_ref</code> resolve and the claimed severity ordering matches the verifier's.</p>
+<p><em>Decision rule.</em> <strong>Keep ladders as graded training data iff at least 90 percent of generated ladders verify
+strictly ordered rungs; below that, ladders collapse to their strongest rung and training proceeds on binary
+pairs only</strong>, because an unordered ladder teaches the ordering task noise. Applies per defect type, so one
+badly-behaved seed does not take the others' gradations with it.</p>
+<p><em>Cost.</em> Zero spend for the code and the battery-corpus dry run, two to three days.</p>
+<h3 id="phase-1-the-cheap-paid-pass-that-could-end-the-plan">Phase 1: the cheap paid pass that could end the plan<a class="headerlink" href="#phase-1-the-cheap-paid-pass-that-could-end-the-plan" title="Permanent link">&para;</a></h3>
+<h4 id="rd4-zero-shot-open-weight-battery">RD4. Zero-shot open-weight battery<a class="headerlink" href="#rd4-zero-shot-open-weight-battery" title="Permanent link">&para;</a></h4>
+<p>Do not assume the answer is "train a model". <code>w7_battery.py --panel</code> was built for exactly this (its
+<code>load_panel</code> docstring says so): run each candidate in
+<a href="../judge-panels/open-weight-candidates.json"><code>judge-panels/open-weight-candidates.json</code></a> as a one-judge panel
+over the frozen 43-arm battery, twice, plus a repeated pass over the six controls for a drift measurement.</p>
+<p><em>Build.</em> A slate pre-flight via <code>probe_callable</code> (trap 6), then per candidate: two full battery passes and the
+control repeats, written to <code>eval/</code> with full identity metadata. The floating <code>deepseek-flash-latest</code> alias
+runs beside its pinned <code>deepseek-flash-0731</code> twin precisely to measure whether the float matters, per the
+slate's own note; only the pinned entry is eligible for adoption.</p>
+<p><em>Test.</em> The replay of each candidate's verdicts reproduces its table; the frontier teacher-pair baselines for
+comparison are the section 0.1 figures, replayed not retyped.</p>
+<p><em>Decision rule, pre-registered in full.</em></p>
+<ul>
+<li><strong>Adopt a zero-shot candidate outright, and skip Phase 3, iff</strong> on the frozen battery it (a) matches the
+  teacher pair's KEEP set on every Tier 1 criterion with median deltas clearing the same per-criterion noise
+  floors, and (b) shows repeat drift on unchanged controls of at most 0.25 mean per criterion, half the
+  detection margin. Fine-tuning a model that already does the job is spend without a question attached.</li>
+<li><strong>Drop a candidate from all further consideration iff</strong> it detects at or below 0.5 on every Tier 1
+  criterion in both passes.</li>
+<li><strong>If <code>glm-5</code>, the slate's capacity ceiling, also detects at or below 0.5 on every Tier 1 criterion</strong>,
+  record that zero-shot open-weight judging fails on this task at this scale, and Phase 3 may proceed only
+  with RD6's learning-curve guard armed, because the remaining hypothesis is that fine-tuning closes what
+  scale did not, and that hypothesis now carries the burden of proof.</li>
+</ul>
+<p><em>Cost.</em> Estimate under $5: roughly 8 slate entries x 2 passes x 43 arms plus control repeats, at the slate's
+listed $0.08 to $0.95 per MTok input on books of 663 to 4,906 words. Wall clock: an evening. (The prior
+measured anchor: 129 frontier scorings cost about $2.60; these models are 10x to 100x cheaper per token.)</p>
+<h3 id="phase-2-labels">Phase 2: labels<a class="headerlink" href="#phase-2-labels" title="Permanent link">&para;</a></h3>
+<h4 id="rd5-teacher-label-pass-over-the-training-corpus">RD5. Teacher label pass over the training corpus<a class="headerlink" href="#rd5-teacher-label-pass-over-the-training-corpus" title="Permanent link">&para;</a></h4>
+<p><em>Build.</em> Generation rewrites (harden and flatten) for the ~14 training books, then RD3 ladders over them, then
+the teacher pair (<code>judge-gpt-5.6</code>, <code>judge-grok-4.6</code>, gemini-3.1 excluded per trap 5) scores every unit <strong>at
+least twice</strong> (<code>UW-C258</code>: an instrument run once cannot distinguish its noise from its signal), per judge
+recorded, into <code>teacher/</code>. Teacher-ranked cross-book pairs are then derived: same criterion, teacher delta
+beyond that criterion's noise floor, both repeats agreeing on sign.</p>
+<p><em>Test.</em> Every teacher verdict carries complete identity metadata or is rejected at write time; ladder rungs
+withheld by RD3 have no teacher rows; the pair-derivation is a pure function of <code>teacher/</code> and reproduces
+bit-identically.</p>
+<p><em>Decision rule.</em> <strong>A criterion's labels enter training iff the teacher pair (a) orders that criterion's
+ladder rungs correctly on at least 80 percent of ladders and (b) shows repeat drift on that criterion at or
+under 0.25.</strong> A criterion failing either has no signal worth distilling, whatever W7 said about its
+detection: detection at one severity is not the same claim as a usable ordering, and a teacher that cannot
+order its own rungs would teach the student its confusion. Such a criterion moves to Tier 3 and its
+frontier-pair scoring continues unchanged.</p>
+<p><em>Cost.</em> Estimate $40 to $120: the rewrites at $5 to $15 (scaled from the measured $0.85 over six small
+books), then roughly 250 units x 2 judges x 2 repeats = 1,000 scorings, where the per-scoring anchor of about
+$0.02 (7.7.5) understates the large books, some of which run to hundreds of nodes. Wall clock: one to two
+days including verification. This is the plan's largest spend, and it is also the purchase of the permanent
+<code>teacher/</code> asset that every future re-distillation reuses for free.</p>
+<h3 id="phase-3-the-student">Phase 3: the student<a class="headerlink" href="#phase-3-the-student" title="Permanent link">&para;</a></h3>
+<h4 id="rd6-training">RD6. Training<a class="headerlink" href="#rd6-training" title="Permanent link">&para;</a></h4>
+<p><em>Build.</em> LoRA fine-tuning of the RD4-surviving candidate base (or, absent a survivor, the cheapest catalogued
+base: the Tinker catalogue's Qwen3-8B at $0.44/MTok, verified 2026-08-12 in the workplan's deferred table,
+with DeepSeek-V3.1 at $3.718/MTok as the larger fallback). Task format: given the criterion's rubric text, the
+band, and two texts, output which is worse on that criterion and a coarse margin bucket. One adapter per
+criterion or a shared adapter with per-criterion heads; that choice is an experiment inside RD6, decided on
+validation pairs, never on the battery. Tokenizer, hyperparameters, data hash and code commit frozen into
+<code>training/</code> per run.</p>
+<p><em>Test.</em> Reproducibility first: the same manifest, seed and hyperparameters retrain to validation metrics
+within run-to-run tolerance on the training stack before any result is read. The acceptance battery is not
+touched during training; it is scored once per frozen candidate student, and that look is logged in <code>eval/</code>.</p>
+<p><em>Decision rule (the learning-curve guard).</em> Train at 50, 75 and 100 percent of pairs. <strong>If validation
+pairwise accuracy at 100 percent exceeds accuracy at 75 percent by more than 2 points, data is the binding
+constraint: stop, record it, and route the next dollar to corpus growth rather than to hyperparameters.</strong>
+This is the honest answer to section 4's volume question, decided by measurement instead of optimism.</p>
+<p><em>Cost.</em> Estimate $5 to $30 on the Tinker credit at catalogued rates for tens of millions of training tokens,
+or homelab GPU time under ADR-004 at zero marginal spend; days of wall clock either way.</p>
+<h4 id="rd7-acceptance-which-is-w7">RD7. Acceptance, which is W7<a class="headerlink" href="#rd7-acceptance-which-is-w7" title="Permanent link">&para;</a></h4>
+<p>The battery already exists, its frontier baselines are measured, and its books were never trained on. "As
+good as the teacher" is therefore quantitative, per criterion, against section 0.1.</p>
+<p><em>Build.</em> Run the frozen student as a one-judge panel over the 43 arms (one command, existing harness), plus
+three probes the frontier run never needed: repeat determinism (the full battery scored twice on the serving
+stack that will host it), the band-swap probe (trap 3), and the natural-holdout comparison.</p>
+<p><em>Decision rule, per criterion, all five gates required.</em> <strong>Adopt the student for a criterion iff:</strong></p>
+<ol>
+<li>detection rate on the criterion's defect arms is at least the teacher pair's (section 0.1 column 3);</li>
+<li>median delta is within one teacher noise floor of the teacher's median;</li>
+<li>repeat drift on unchanged controls is at most 0.1 at temperature 0 on the hosting stack, and any nonzero
+   drift is explained (batching nondeterminism, kernel choice) before adoption rather than after;</li>
+<li>held-out ladder rungs are ordered correctly on at least 80 percent of ladders (the anti-tamper gate:
+   a seeder-signature detector cannot order severities);</li>
+<li>on <code>holdout/</code> natural pairs whose teacher delta exceeds the noise floor, sign agreement with the teacher
+   is at least 80 percent (the second anti-tamper gate: text no seeder touched).</li>
+</ol>
+<p><strong>One revision cycle is permitted per criterion; a criterion failing twice is not shipped and stays with the
+frontier pair.</strong> Additionally, <code>age_fit</code> adoption requires the band-swap probe: on at least 8 of 10 probe
+texts, judging under a younger band than the text's own must lower <code>age_fit</code>. And a student that emits scores
+for <code>voice</code> or <code>dialogue</code> at all fails the run (section 2's declared-observation rule).</p>
+<p><em>Cost.</em> Zero marginal spend once self-hosted; the point of the exercise. Wall clock: hours.</p>
+<h4 id="rd8-quantisation-and-serving">RD8. Quantisation and serving<a class="headerlink" href="#rd8-quantisation-and-serving" title="Permanent link">&para;</a></h4>
+<p><em>Build.</em> The deployment builds (fp16 reference, then the quantised candidates) on the homelab target, each
+put through the full RD7 battery.</p>
+<p><em>Decision rule.</em> <strong>Adopt a quantised build iff every RD7 per-criterion verdict is unchanged and the control
+noise floor moves by at most 0.1.</strong> A regression concentrated in one book is checked with the drop-worst
+column (<code>UW-C246</code>) and per-book deltas before being attributed to quantisation; <code>AL-349</code> is the reason this
+sentence exists.</p>
+<p><em>Cost.</em> Zero spend, GPU hours.</p>
+<h3 id="phase-4-adoption">Phase 4: adoption<a class="headerlink" href="#phase-4-adoption" title="Permanent link">&para;</a></h3>
+<h4 id="rd9-shadow-membership-then-the-swap">RD9. Shadow membership, then the swap<a class="headerlink" href="#rd9-shadow-membership-then-the-swap" title="Permanent link">&para;</a></h4>
+<p><em>Build.</em> The student joins evaluation runs as a shadow: scored beside the frontier pair, never averaged in
+(<code>AL-381</code>: membership is an evidence decision, and a mean hides a member). One full evaluation cycle of
+parallel scoring, written to <code>eval/</code>.</p>
+<p><em>Decision rule.</em> <strong>Replace the frontier pair for within-book delta comparisons iff, over the shadow cycle,
+per-criterion quadratic-weighted kappa between the student's deltas and the teacher pair's deltas is at least
+0.60 on every adopted criterion</strong> (the house floor, Landis and Koch 1977, with marginals printed beside every
+figure per <code>UW-C256</code>). The frontier pair is retained for unadopted criteria, and the battery is re-run against
+the student on every rubric change and quarterly regardless, which self-hosting makes free; an instrument that
+is only ever validated once is on its way to being the panel this plan replaces.</p>
+<p><em>Cost.</em> One shadow cycle at frontier prices, roughly the cost of the evaluation it shadows (measured anchor:
+$2.60 per 129 scorings).</p>
+<h2 id="7-kill-criteria-what-would-mean-distillation-is-the-wrong-answer">7. Kill criteria: what would mean distillation is the wrong answer<a class="headerlink" href="#7-kill-criteria-what-would-mean-distillation-is-the-wrong-answer" title="Permanent link">&para;</a></h2>
+<p>Written before any of it runs, so a thin result cannot be renegotiated into a pivot:</p>
+<ol>
+<li><strong>No trustworthy teacher.</strong> RD5's ordering gate fails on every Tier 1 criterion. Then there is nothing to
+   distil, from anyone, and the next dollar goes to W12's human read, which is the programme's referee for
+   exactly this situation.</li>
+<li><strong>Capacity is not the gap and training does not close it.</strong> <code>glm-5</code> fails zero-shot (RD4) <em>and</em> the
+   fine-tuned student fails RD7 on every criterion after its revision cycle. Stop; record that the task
+   exceeds small open-weight models on this data; the fallback is the frontier teacher pair with repeat
+   scorings, which is stable (drift 0.14), already validated, and costs about $2.60 per full battery pass.
+   Cost was never the binding constraint, so this fallback is a good outcome, not a defeat.</li>
+<li><strong>Data volume binds.</strong> RD6's learning-curve rule fires and corpus growth is not scheduled. The plan parks,
+   openly, rather than squeezing more epochs out of the same 500 pairs and calling the memorisation a student.</li>
+<li><strong>The student learned the seeder.</strong> RD7 gates 4 or 5 fail while gates 1 to 3 pass: strong on seeded arms,
+   wrong on natural text. Retraining with a higher share of teacher-ranked and holdout-adjacent pairs is the
+   one permitted response; a second conviction kills the criterion, and a conviction on all criteria kills
+   the plan, because it means our labelled-data generator cannot teach the property, only its own signature.</li>
+<li><strong>Determinism does not survive serving.</strong> RD7 gate 3 cannot be met on any available stack. The strongest
+   argument for the whole project (section 0, point 3) is gone; what remains (pinning, sovereignty, cost) is
+   re-argued to the owner from scratch rather than inherited.</li>
+<li><strong>The battery stops being trustworthy.</strong> If a future finding invalidates W7's arms (the way <code>AL-382</code>
+   invalidated the voice arm), every adoption resting on it is suspended until the battery is repaired and
+   re-baselined, because the acceptance test is load-bearing for every rule above it.</li>
+</ol>
+<h2 id="8-sequencing-summary">8. Sequencing summary<a class="headerlink" href="#8-sequencing-summary" title="Permanent link">&para;</a></h2>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>Phase 0 (free):     RD1 store+manifest -&gt; RD2 census+splits -&gt; RD3 ladder generator
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>Phase 1 (~$5):      RD4 zero-shot slate  == can terminate the plan (adopt) or arm the burden-of-proof guard
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>Phase 2 (~$40-120): RD5 teacher labels   == can demote criteria to Tier 3; buys the permanent teacher/ asset
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>Phase 3 (~$5-30):   RD6 train -&gt; RD7 accept (W7, five gates) -&gt; RD8 quantise
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>Phase 4 (~$3):      RD9 shadow cycle -&gt; swap for delta use, frontier retained elsewhere
+</span></code></pre></div>
+<p>The outcome we should be least surprised by, and pre-commit to accepting: <strong>RD4 or RD5 ends the plan early.</strong>
+Either a zero-shot open-weight judge is already adequate for the three strong criteria, in which case training
+was never needed, or the teacher cannot order its own severity ladders, in which case there was nothing to
+distil and the honest product of this plan is the frozen store, the ladders, and a documented negative. Both
+are cheaper than discovering the same thing after Phase 3, and a plan that could not produce them would be a
+build order wearing a plan's clothes.</p>
+<h2 id="9-register-and-log-linkage">9. Register and log linkage<a class="headerlink" href="#9-register-and-log-linkage" title="Permanent link">&para;</a></h2>
+<p>On owner sign-off, this plan's items get <code>UW-C*</code> rows in the unscheduled work register; the rows cite this
+document and the lessons that shaped it (<code>AL-367</code> to <code>AL-385</code>). Lessons produced by <em>running</em> any phase go to
+the authoring lessons log per the standing requirement, with the store's <code>eval/</code> entries as their <code>Ref</code>s. The
+<code>docs/planning/judge-panels/</code> slate and <code>out/w7/</code> artifacts are this plan's inputs and are already tracked;
+nothing here is permitted to depend on an untracked path, which is the one-sentence version of <code>UW-C257</code> and
+the reason section 3 comes before section 6.</p>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 16, 2026 02:31:02 UTC">August 16, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 16, 2026 02:31:02 UTC">August 16, 2026</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025 Byron Williams
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/williaby" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

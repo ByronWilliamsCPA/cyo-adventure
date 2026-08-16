@@ -3577,13 +3577,8 @@ does.</p>
 </table>
 <p>Both Anthropic legs share one backend deliberately, so the version-bump control differs by checkpoint
 and nothing else.</p>
-<p>The two Anthropic legs declare <code>"family": "anthropic"</code> so their pair reads as the version-bump
-control rather than a cross-vendor pair. The other four single-checkpoint lab legs (OpenAI, xAI,
-Moonshot, Google) each also declare their own family (<code>"openai"</code>, <code>"xai"</code>, <code>"moonshot"</code>,
-<code>"google"</code>), one lineage apiece, which is the same outcome an unset <code>family</code> would fall back to
-(its own label); declaring it explicitly documents the lineage rather than leaving it implicit. A
-vendor slate that adds a second checkpoint from one of those labs would leave <code>family</code> unset only
-if it wants that pair to also read as a version-bump control.</p>
+<p>The two Anthropic legs declare <code>"family": "anthropic"</code>. Everything else leaves <code>family</code> unset and
+falls back to its own label, so it is its own lineage.</p>
 <p>Matching is on <strong>tier, not price</strong>. OpenAI's flagship costs 2.5x Anthropic's, and the cheaper
 <code>gpt-5.6-terra</code> and <code>-luna</code> exist; a surprising result from a mid-tier model could not be told apart
 from a house-style finding, so the slate compares flagships and accepts the uneven bill.</p>
@@ -3705,11 +3700,10 @@ per-MTok rates fetched 2026-08-12 and listed in the vendor table above:</p>
 <p>A structural repair on a third of the books puts it near $4.76; two repairs on every book, which
 would be a bad day, caps it near $10.71. Wall clock is dominated by 24 sequential long completions
 plus the throttle, so budget roughly 40 to 80 minutes.</p>
-<p>Per-book token cost is not reported by the harness. <code>#701</code> (<code>feat/generation-cost-instrumentation</code>)
-has merged: <code>GenerationProvider.complete</code> now returns a <code>Completion</code> carrying per-call <code>TokenUsage</code>.
-The gap is local to this harness, which does not yet read that usage or thread it into <code>BookRecord</code>
-(<code>UW-C245</code>); a future run populates the column once that wiring lands, rather than this doc building
-a second counter that would conflict with it.</p>
+<p>Per-book token cost is not reported by the harness. <code>GenerationProvider.complete</code> discards usage on
+this branch; capture lands with #701 (<code>feat/generation-cost-instrumentation</code>), which changes that
+return type across 52 files. Re-run after it merges to populate the column rather than building a
+second counter that would conflict with it.</p>
 <h3 id="what-it-actually-cost">What it actually cost<a class="headerlink" href="#what-it-actually-cost" title="Permanent link">&para;</a></h3>
 <p>Measured 2026-08-12 by reissuing the fill call directly against OpenRouter at the same 32,000-token
 cap and reading the billed <code>usage.cost</code>, because the runs themselves recorded <code>cost: null</code> for every
@@ -4176,7 +4170,7 @@ either way.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 14, 2026 17:31:04 UTC">August 14, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 16, 2026 02:31:02 UTC">August 16, 2026</span>
   </span>
 
     

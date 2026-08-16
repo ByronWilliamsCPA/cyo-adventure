@@ -3459,9 +3459,17 @@ the budget.</p>
   the oldest and simplest branching shape. Good when you want lots of divergent outcomes.</li>
 <li><code>gauntlet</code>: a mostly linear sequence with a few decision points; suitable for the 8-11
   band where too many choices are overwhelming.</li>
-<li><code>loop_and_grow</code>: the reader may revisit nodes, with state tracking their progress across
-  loops. Requires Tier 2; the loop-escape check requires that every cycle has an exit path
-  to an ending.</li>
+<li><code>loop_and_grow</code>: the reader may revisit nodes. <strong>The band decides what the loop means, and
+  this is the one place the topology's name misleads.</strong> At 8-11 and up it is a growth loop,
+  Tier 2, with variables tracking progress across passes. At <strong>3-5 and 5-8 it is a try-again
+  loop and nothing accumulates</strong>: the Tier-1 contract forbids variables, so nothing can
+  distinguish a reader on their first pass from one on their third. Every hub and every
+  ending must read correctly for a reader who took the loop once, twice, or not at all.
+  Nothing may be counted ("three rescues"), collected ("the acorn in her pocket"), or
+  referred back to as already-met ("her moonbeam"). Three of the six committed
+  <code>loop_and_grow</code> books broke this, which is what the ADR-011 amendment of 2026-08-15
+  responds to. If the story needs accumulation, it needs 8-11 or above. The loop-escape
+  check requires that every cycle has an exit path to an ending at every band.</li>
 <li><code>quest</code>: a multi-stage journey where each stage has its own branch-and-bottleneck shape.
   A distinct, requestable pattern; it is not folded into <code>branch_and_bottleneck</code>.</li>
 </ul>
@@ -3498,11 +3506,20 @@ water drips from a stone alcove.</p>
 <p>The <code>reading_level_target</code> field in the concept brief sets the Flesch-Kincaid grade target.
 The validator checks against this target with the <code>tolerance</code> defined in the story metadata
 (advisory warning only; the parent makes the final call).</p>
+<p>The <code>words/sentence</code> and <code>syllables/word</code> columns are <strong>measured</strong>, not aspirational: they are the
+mean and interquartile range over every committed node that actually lands inside its band under
+the corrected syllable counter (<code>AL-399</code>), 4,173 nodes across 31 books. Write to those numbers and
+the grade follows. The reference book is the highest in-band book in that band; opening it and
+matching its sentence shape is the fastest route to band, and is what four independent drafting
+agents each discovered for themselves before it was written down (<code>AL-392</code>).</p>
 <table>
 <thead>
 <tr>
 <th>Age band</th>
-<th>FK grade target</th>
+<th>FK target</th>
+<th>words/sentence</th>
+<th>syllables/word</th>
+<th>Reference book</th>
 <th>Guidance</th>
 </tr>
 </thead>
@@ -3510,35 +3527,82 @@ The validator checks against this target with the <code>tolerance</code> defined
 <tr>
 <td>3-5</td>
 <td>0.0 to 1.5</td>
-<td>Very short sentences (5-8 words average). Read-aloud cadence, repetition, and concrete nouns. Minimal abstraction.</td>
+<td><strong>5.7</strong> (5.0-6.3)</td>
+<td>1.21</td>
+<td><code>the-clover-and-the-butterfly</code></td>
+<td>Read-aloud cadence, repetition, concrete nouns. Minimal abstraction.</td>
 </tr>
 <tr>
 <td>5-8</td>
 <td>1.5 to 3.0</td>
-<td>Short sentences (8-12 words average). Simple vocabulary with gentle stretch words explained in context.</td>
+<td><strong>7.8</strong> (6.9-8.7)</td>
+<td>1.27</td>
+<td><code>the-snow-day-expedition</code></td>
+<td>Simple vocabulary with gentle stretch words explained in context.</td>
 </tr>
 <tr>
 <td>8-11</td>
 <td>3.0 to 4.5</td>
-<td>Short sentences (10-14 words average). Simple vocabulary. One idea per sentence. Concrete imagery.</td>
+<td><strong>12.7</strong> (11.0-14.4)</td>
+<td>1.29</td>
+<td><code>the-sky-ship-stowaway</code></td>
+<td>One idea per sentence. Concrete imagery.</td>
 </tr>
 <tr>
 <td>10-13</td>
 <td>5.0 to 7.0</td>
-<td>Moderate sentence length (14-18 words average). Can introduce unfamiliar words if context makes them clear.</td>
+<td><strong>14.1</strong> (12.7-15.4)</td>
+<td>1.30</td>
+<td><code>the-midnight-museum</code></td>
+<td>Unfamiliar words are fine where context carries them.</td>
 </tr>
 <tr>
 <td>13-16</td>
 <td>7.0 to 9.5</td>
-<td>Longer sentences acceptable. Figurative language, irony, and ambiguous outcomes are age-appropriate.</td>
+<td><strong>18.4</strong> (16.6-20.2)</td>
+<td>1.30</td>
+<td><code>the-sunspire-ascent</code></td>
+<td>Figurative language, irony, and ambiguous outcomes are age-appropriate.</td>
 </tr>
 <tr>
 <td>16+</td>
 <td>9.5 to 12.0</td>
-<td>Adult-YA register. Complex syntax, layered themes, and morally ambiguous outcomes are acceptable.</td>
+<td><strong>21.0</strong> (19.3-23.2)</td>
+<td>1.37</td>
+<td><code>the-drowned-court</code></td>
+<td>Adult-YA register. Complex syntax and layered themes are acceptable.</td>
 </tr>
 </tbody>
 </table>
+<p><strong>Sentence length carries the band; vocabulary barely moves.</strong> Across the whole range, mean
+words-per-sentence goes 5.7 to 21.0 while mean syllables-per-word goes only 1.21 to 1.37. Put
+those through the formula and sentence length accounts for about three quarters of the grade
+spread from 3-5 to 16+. A 3-5 book and a 16+ book are built from words of nearly the same
+difficulty; what separates them is how many of those words are asked to arrive at once. So when a
+node scores high, split its sentences first and reach for shorter words second.</p>
+<p><strong>Draft, then measure, then repair.</strong> Prose written to a stated FK target lands out of band
+essentially every time: all eight books drafted on 2026-08-14 did, one at 57 of 57 nodes with
+individual grades of 7 to 12 against a target of 2.5, and all eight reached <code>in_band</code> 1.00 only
+after a measured repair pass. Treat that pass as part of drafting rather than as a failure. Score
+with the checker's own function, never by eye:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">cyo_adventure.validator.reading_level</span><span class="w"> </span><span class="kn">import</span> <span class="n">score_body</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">grade</span> <span class="o">=</span> <span class="n">score_body</span><span class="p">(</span><span class="n">node_body</span><span class="p">)</span>  <span class="c1"># None for &lt;20 words or an unfilled &lt;&lt;FILL&gt;&gt; directive</span>
+</span></code></pre></div>
+<p><strong>Do not chase irregular past-tense verbs.</strong> Earlier guidance to prefer <code>went</code> over <code>walked</code> was
+an artefact of a counting bug, not a craft truth: the old counter scored every regular <code>-ed</code> past
+one syllable too high, so the swap looked like it bought something. Measured over ten
+regular/irregular pairs, it saved 10 syllables under the broken counter and 1 under the corrected
+one (<code>AL-399</code>). Choose the verb that says what happened.</p>
+<blockquote>
+<p><strong>The targets themselves are under review.</strong> The per-book <code>metadata.reading_level.target</code> values
+were set while the counter was biased about a quarter of a grade high, so the corrected counter
+reads the whole committed corpus roughly 0.27 grades lower than it used to. The targets have
+deliberately not been shifted to compensate, since that would bake the bug into the spec, but
+until they are re-derived (<code>UW-C259</code>, <code>AL-400</code>) a 3-5 or 5-8 in-band figure is provisional, and
+the generation repair loop may push young-band prose slightly harder than the prose already
+approved.</p>
+</blockquote>
 <p>Node body length scales with the band and with the ADR-011 length / style cell. The
 authoritative per-node envelope is the <code>_WORDS_PER_NODE</code> table in
 <code>validator/band_profile.py</code>; do not hardcode from memory. As a story-mean advisory band
@@ -3569,14 +3633,14 @@ every variable multiplies the state space (see the configuration cap below).</p>
   for v1; model categorical choices as a set of boolean flags instead.</li>
 </ul>
 <p><strong>Condition rules</strong> (the JSONLogic shape, restricted to 10 operators):</p>
-<div class="language-json highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1">// &quot;you have the lantern&quot;</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="p">{</span><span class="w"> </span><span class="nt">&quot;==&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;var&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;has_lantern&quot;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="p">}</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1">// &quot;courage is at least 3 and you do not have the curse&quot;</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="p">{</span><span class="w"> </span><span class="nt">&quot;and&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;&gt;=&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;var&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;courage&quot;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="p">},</span>
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;!&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;var&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;has_curse&quot;</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="p">]</span><span class="w"> </span><span class="p">}</span>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1">// &quot;you have the lantern&quot;</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="p">{</span><span class="w"> </span><span class="nt">&quot;==&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;var&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;has_lantern&quot;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="p">}</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1">// &quot;courage is at least 3 and you do not have the curse&quot;</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="p">{</span><span class="w"> </span><span class="nt">&quot;and&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;&gt;=&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;var&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;courage&quot;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="p">},</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;!&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;var&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;has_curse&quot;</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="p">]</span><span class="w"> </span><span class="p">}</span>
 </span></code></pre></div>
 <p>Permitted operators: <code>var</code>, <code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>, <code>and</code>, <code>or</code>, <code>!</code>.</p>
 <p>Excluded (the validator rejects these): arithmetic (<code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>%</code>), <code>in</code>,
@@ -3603,12 +3667,12 @@ branch by the Layer-2 validator.</p>
 with <code>is_ending: true</code> and checks that <code>ending_count</code> in the metadata matches the actual
 count of ending nodes.</p>
 <p>Each ending node requires an <code>ending</code> block:</p>
-<div class="language-json highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="p">{</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ending_sunrise&quot;</span><span class="p">,</span>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span><span class="nt">&quot;valence&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;positive&quot;</span><span class="p">,</span>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span><span class="nt">&quot;kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;success&quot;</span><span class="p">,</span>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">  </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The sunrise ending&quot;</span>
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="p">}</span>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="p">{</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ending_sunrise&quot;</span><span class="p">,</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span><span class="nt">&quot;valence&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;positive&quot;</span><span class="p">,</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">  </span><span class="nt">&quot;kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;success&quot;</span><span class="p">,</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">  </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The sunrise ending&quot;</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="p">}</span>
 </span></code></pre></div>
 <p>The <code>id</code> is stable across prose edits and is the anchor for the ending tracker (Phase 4b).
 Use a slug that describes the outcome, not a number ("ending_escape", "ending_captured",
@@ -3795,7 +3859,7 @@ the provider.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 3, 2026 22:35:07 UTC">July 3, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 16, 2026 02:31:02 UTC">August 16, 2026</span>
   </span>
 
     

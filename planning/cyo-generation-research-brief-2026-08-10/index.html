@@ -4379,12 +4379,6 @@ this document, then use Parts I to IV as evidence rather than as a specification
 (publisher page, ACL Anthology, or proceedings entry). Six entries in an earlier draft were
 wrong and are corrected here; two claims that could not be verified were removed rather
 than softened. Where a finding is ours rather than published, it is marked as such.</p>
-</blockquote>
-<!-- Two distinct blockquotes below: a plain blank line here would trip MD028's ambiguity
-     check, and prefixing it with ">" would merge this into one blockquote with the
-     [!IMPORTANT] callout that follows, breaking that callout's GitHub rendering. -->
-
-<blockquote>
 <p>[!IMPORTANT]
 <strong>Provenance of every rating in this document.</strong> All ratings, annotations and "reader"
 judgments reported here, in all four parts, were produced by <strong>LLM agent instances</strong>. <strong>No human
@@ -4441,11 +4435,10 @@ for children that are <strong>good</strong>, that are <strong>genuinely differen
 standards a children's product has to meet. Every question in this document is instrumental to
 that. Where a section treats one of those four as the whole problem, the section is narrower than
 the goal, not the other way round.</p>
-<p><em>(Historical framing, not a live instruction: this section originally continued "read sections 1
-through 7, then produce what section 8 asks for: two to four concrete architectures we could
-build and test," which is the request section 32 has superseded. It is kept below, unexecuted,
-because sections 8.1 through 8.4 and Parts I to III were written against it and read oddly without
-the context. Do not act on it; act on section 32.)</em></p>
+<p>Read sections 1 through 7, then produce what section 8 asks for: <strong>two to four concrete
+architectures we could build and test.</strong> Section 8.1 gives the specification each proposal
+should meet, 8.2 the hard constraints, 8.3 the design questions we expect a good proposal to
+take a position on, and 8.4 some undeveloped families you are free to extend or dismiss.</p>
 <p>We are not asking whether LLMs can write stories. They can. We are asking something
 narrower: <strong>what architecture lets one reusable story graph produce many books in which the
 reader is asked to decide genuinely different things?</strong></p>
@@ -7826,20 +7819,6 @@ rather than a price"</em>. We bought the number.</p>
 the actually-charged amount and splits it into prompt and completion components, at the same
 32,000-token cap and with the same prompt as the runs. Nine models, four briefs each. Total
 measurement spend, $5.86.</p>
-<blockquote>
-<p><strong>#ASSUME: payment/financial.</strong> Every dollar figure below is what the gateway billed for
-this one re-issue, not a guaranteed production price: model pricing can change between this
-measurement and any later run, and a re-issued call is not contractually the same call the
-original comparison paid for, only a same-prompt, same-cap proxy for it.
-<strong>#VERIFY:</strong> treat this table as a point-in-time measurement to re-run before quoting a
-production cost estimate, not as a standing price list.</p>
-<p><strong>#ASSUME: external-resources.</strong> The per-call figures depend on the gateway's own billing
-report being accurate and on the routed backend for each model being the one actually billed
-(a fallback or region reroute mid-call would attribute cost to the wrong leg).
-<strong>#VERIFY:</strong> the <code>provider_order</code> backend pin on each vendor entry (<code>docs/planning/vendor-comparison/vendors.json</code>)
-is what makes a leg's spend attributable to one serving stack; a slate that omits the pin
-loses that guarantee.</p>
-</blockquote>
 <table>
 <thead>
 <tr>
@@ -8142,17 +8121,6 @@ will be consumed by thinking before the story starts.</p>
 <p><strong>Scope.</strong> These are fill-stage figures. Only 5 of the 40 books in the comparison required
 any repair attempt, so fill dominates the bill, but a production path that runs the section 23
 repair loop will cost more than this table on the books that need it.</p>
-<blockquote>
-<p><strong>Denominator flagged, not resolved.</strong> Section 27 defines this comparison's cohort as eight
-models times four briefs, thirty-two books; this section's own Method paragraph above re-issued
-the cost measurement over nine models times four briefs, thirty-six calls. Neither is forty, and
-nothing else in this document defines a forty-book cohort (the only other "forty" in this
-document, in section 12, counts shared four-grams in an unrelated diversity experiment and is not
-a book count). Whoever holds the underlying run data should confirm which denominator this "5"
-was actually counted against (32, 36, or a genuinely distinct cohort this brief never states) and
-correct the rate here; recomputing without that data would replace one unverified number with
-another.</p>
-</blockquote>
 <h3 id="31-where-the-three-axes-leave-the-decision">31. Where the three axes leave the decision<a class="headerlink" href="#31-where-the-three-axes-leave-the-decision" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -8475,7 +8443,7 @@ should be consistent with them:</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 14, 2026 17:31:04 UTC">August 14, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 16, 2026 02:31:02 UTC">August 16, 2026</span>
   </span>
 
     

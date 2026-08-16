@@ -3863,23 +3863,6 @@ fast model is an obvious lever we never wrote down. It is testable with the harn
 frontier tier), so the tiering idea transfers and its instantiation does not. And the prompt-caching
 advice, static content first and dynamic content last, is sound and orthogonal; it should be checked
 against what our prompt templates already do rather than adopted blind.</p>
-<blockquote>
-<p><strong>#ASSUME: external-resources.</strong> "Adopted blind" is the failure mode this caution names, and it
-is a real risk here specifically: <code>generation/prompts.py</code>'s templates already split into a
-static system block and a volatile user block on a <code>&lt;!-- @user --&gt;</code> marker, precisely so an
-adapter can cache the system prefix. Assuming this advice is still needed without checking that
-split first could duplicate work already done, or worse, reorder a template in a way that
-breaks the existing marker-based split.
-<strong>#VERIFY:</strong> confirm against <code>generation/prompts.py</code>'s current system/user split (see its module
-docstring) before treating prompt-caching as unaddressed.
-<strong>#ASSUME: payment/financial.</strong> The routing item above assumes a 36x per-book cost spread
-(tracking reasoning tokens) is the same spread a routed slate would still see when the models
-chosen at run time differ from those measured in section 30; pricing and reasoning-token
-behavior are properties of specific models, not a stable multiplier across arbitrary
-replacements.
-<strong>#VERIFY:</strong> re-measure the cost spread on whichever models the routing slate actually names at
-test time, per W9's pre-registered 20 percent decision rule (<code>cyo-measurement-workplan-2026-08-12.md</code>).</p>
-</blockquote>
 <h3 id="44-prose-first-generation-is-a-real-alternative-ordering-with-a-named-risk">4.4 Prose-first generation is a real alternative ordering with a named risk<a class="headerlink" href="#44-prose-first-generation-is-a-real-alternative-ordering-with-a-named-risk" title="Permanent link">&para;</a></h3>
 <p>The Dual-Stage Refinement proposal inverts our order: draft unconstrained prose first, then slice it
 onto the skeleton in a second pass. Our Stage A/Stage B split is structure-first and fill-second.</p>
@@ -4143,22 +4126,6 @@ returned <code>finish_reason=error</code> on every call while the same model unp
 reported <code>reasoning_tokens=0</code> while emitting 5,339 characters of reasoning. None of those is
 downstream of the quality instrument, none would have been found by building the instrument first,
 and every one of them was found by running a sweep.</p>
-<blockquote>
-<p><strong>#ASSUME: external-resources.</strong> Both findings above are properties of a specific provider's
-serving stack observed on a specific day, not guaranteed-stable facts: a pinned endpoint that
-works today can regress to <code>finish_reason=error</code> again after a vendor-side change, and a
-provider that misreports <code>reasoning_tokens=0</code> may fix or worsen that reporting without notice.
-Any downstream decision (routing, cost accounting) that treats these as settled facts rather
-than point-in-time observations inherits the same staleness risk <code>UW-C235</code> already tracks for
-<code>finish_reason</code>/<code>reasoning_tokens</code> surfacing.
-<strong>#VERIFY:</strong> re-probe the specific pinned endpoint before relying on its reachability in a
-paid run; <code>scripts/compare_vendors.py</code>'s reachability pre-flight is the existing mechanism for
-this, not a one-time finding recorded here.
-<strong>#EDGE: data-integrity.</strong> The quantization claim this section relies on ("quantization
-degrades lexical diversity") is being tested on our own task specifically because the fifth
-review's own evidence for it (a forum post about multilingual mathematics) does not transfer;
-treat the in-flight run's result, not the forum post, as the evidence once it completes.</p>
-</blockquote>
 <p>The fifth review sharpens this rather than contradicting it. It asserts as established that
 quantization degrades lexical diversity and that procurement should mandate precision floors, and it
 supports that with a forum post about small models doing multilingual mathematics. <strong>That claim, on
@@ -4189,7 +4156,7 @@ ranking; keep the sweeps whose output is a fact about the supplier.</strong></p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 14, 2026 17:31:04 UTC">August 14, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 16, 2026 02:31:02 UTC">August 16, 2026</span>
   </span>
 
     

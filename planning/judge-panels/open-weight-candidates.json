@@ -1,0 +1,52 @@
+[
+  {
+    "label": "deepseek-flash-latest",
+    "model": "~deepseek/deepseek-v4-flash-latest",
+    "provider_order": [],
+    "family": "deepseek",
+    "_note": "Requested candidate. $0.08/$0.16 per Mtok. A FLOATING alias: probed 2026-08-14 it resolved to deepseek/deepseek-v4-flash-0731 served by Decart, so it moves across both checkpoint and serving stack without notice. Paired with the pinned entry below precisely to measure whether that matters, because a ruler that changes when a vendor reroutes cannot support a longitudinal quality claim."
+  },
+  {
+    "label": "deepseek-flash-0731",
+    "model": "deepseek/deepseek-v4-flash-0731",
+    "provider_order": [],
+    "family": "deepseek",
+    "_note": "The dated checkpoint the floating alias serves today, at $0.14/$0.28. Same weights by name, different price and different route, so a score difference between this and the alias is evidence about routing rather than about the model."
+  },
+  {
+    "label": "qwen3.8-27b",
+    "model": "qwen/qwen3.8-27b",
+    "provider_order": [],
+    "family": "qwen",
+    "pending": true,
+    "_note": "Slot held open deliberately. This is a real OpenRouter model ('Qwen: Qwen3.8 27B') with zero endpoints as of 2026-08-14, so it returns 404 'No endpoints found' rather than 400 'not a valid model ID'. Nothing to change and nothing to decide: when a provider serves it, `probe_callable` returns ok, this row's `pending` flag comes off, and it joins the battery against the same arms as everyone else. Kept here rather than in a comment so the gap is visible in the slate itself and cannot be forgotten."
+  },
+  {
+    "label": "qwen3.6-27b",
+    "model": "qwen/qwen3.6-27b",
+    "provider_order": [],
+    "family": "qwen",
+    "_note": "Stand-in for qwen/qwen3.8-27b, which is a REAL OpenRouter model (catalogue name 'Qwen: Qwen3.8 27B') currently served by zero providers. It returns 404 'No endpoints found', not 400 'not a valid model ID', and the /models list omits zero-endpoint models, which is why a first pass wrongly called it nonexistent. Re-check and slate it the moment an endpoint appears. $0.60/$3.60."
+  },
+  {
+    "label": "qwen3.5-27b",
+    "model": "qwen/qwen3.5-27b",
+    "provider_order": [],
+    "family": "qwen",
+    "_note": "Stands in for the requested qwen 3.7, which is unreachable from this account at EVERY tier: flash, plus and max all return 404 'No endpoints available matching your guardrail restrictions and data policy'. That is our own policy excluding their serving stacks, which is the right setting for a children's product and still leaves the models uncallable, so waiting will not help. There is no 27b in the 3.7 line either way. $0.195/$1.56, served by SiliconFlow."
+  },
+  {
+    "label": "llama-3.3-70b",
+    "model": "meta-llama/llama-3.3-70b-instruct",
+    "provider_order": [],
+    "family": "meta",
+    "_note": "Larger dense open-weight model at $0.10/$0.32, to separate 'this criterion needs a bigger model' from 'this criterion needs a better-suited one'."
+  },
+  {
+    "label": "glm-5",
+    "model": "z-ai/glm-5",
+    "provider_order": [],
+    "family": "zai",
+    "_note": "Strongest open-weight tier in this slate at $0.95/$2.55. The ceiling check: a criterion that fails here too is not failing for want of open-weight capacity."
+  }
+]
