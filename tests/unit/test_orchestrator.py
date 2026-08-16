@@ -29,7 +29,7 @@ from typing import cast
 import pytest
 
 from cyo_adventure.core.config import Settings
-from cyo_adventure.core.exceptions import ValidationError
+from cyo_adventure.core.exceptions import ConfigurationError, ValidationError
 from cyo_adventure.generation.concept import ConceptBrief, StructurePattern
 from cyo_adventure.generation.orchestrator import (
     GenerationOutcome,
@@ -675,18 +675,28 @@ async def test_fill_skeleton_returns_passed_on_clean_fill() -> None:
 
 
 @pytest.mark.asyncio
-async def test_fill_skeleton_repair_exhaustion_is_needs_review_not_failed() -> None:
-    """A malformed first response routes into the same repair loop as generate_story.
+async def test_fill_skeleton_repair_exhaustion_is_failed_not_a_returned_skeleton() -> (
+    None
+):
+    """A fill that never produces prose is a failure, not a review item.
 
     Every provider response is malformed (fill call + max_repairs repairs), so
-    the repair loop runs to exhaustion. Because fill_skeleton always has the
-    caller-supplied skeleton as a non-None fallback document (unlike
-    generate_story's Stage A, which can genuinely produce no document), the
-    outcome is "needs_review" with the original skeleton surfaced, not
-    "failed". attempts==max_repairs since no-progress detection does not
-    short-circuit before the cap here (each repair sees the same skeleton
-    payload as the previous one, but this is the first differing signature
-    from the seed, so no early abort occurs before the cap is hit).
+    the repair loop runs to exhaustion having never parsed anything. This test
+    previously asserted the opposite contract: that the caller-supplied
+    skeleton, sitting in ``last_valid_doc`` as a non-None fallback, was surfaced
+    as the storybook with ``needs_review``. `AL-327` is what that cost. Four
+    books across two labs came back with every node body still holding its
+    ``<<FILL ...>>`` directive, and an unfilled skeleton reached a human review
+    queue dressed as a story.
+
+    The verdict is taken regardless of the gate. `PL-27` now blocks a retained
+    directive, so this document would arrive as ``needs_review`` rather than the
+    ``passed`` those four books recorded, but a total generation failure must
+    not depend on one checker that could later be scoped or relaxed.
+
+    ``attempts == max_repairs`` because no-progress detection does not
+    short-circuit before the cap here: each repair sees the same payload as the
+    previous one, but that is the first differing signature from the seed.
     """
     skeleton = _skeleton_with_fill_placeholder()
     provider = MockProvider(responses=["not json", "still not json", "nope"])
@@ -696,11 +706,35 @@ async def test_fill_skeleton_repair_exhaustion_is_needs_review_not_failed() -> N
         skeleton, {"premise": "a fox"}, provider, pii, max_repairs=2
     )
 
-    assert outcome.status == "needs_review"
-    assert outcome.storybook is not None
+    assert outcome.status == "failed"
+    assert outcome.storybook is None
+    assert outcome.report["unfilled_skeleton_returned"] is True
     assert outcome.attempts == 2
     assert len(provider.calls) == 3
+
+
+@pytest.mark.asyncio
+async def test_fill_skeleton_still_recovers_when_a_repair_parses() -> None:
+    """Refusing to return the skeleton must not cost the recovery path.
+
+    The skeleton is still handed to the repair prompt as context, and that is
+    load-bearing: a first fill whose output does not parse is routinely rescued
+    by the next attempt. The narrower rule (never return the input as the
+    result) has to leave this working, or closing `AL-327` would have bought a
+    correct failure at the price of a real capability.
+    """
+    skeleton = _skeleton_with_fill_placeholder()
+    provider = MockProvider(responses=["not json", json.dumps(VALID_STORY)])
+    pii = PiiContext(child_names=frozenset())
+
+    outcome = await fill_skeleton(
+        skeleton, {"premise": "a fox"}, provider, pii, max_repairs=2
+    )
+
+    assert outcome.status == "passed"
+    assert outcome.storybook is not None
     assert outcome.storybook["id"] == VALID_STORY["id"]
+    assert outcome.attempts == 1
 
 
 @pytest.mark.asyncio
@@ -1006,3 +1040,78 @@ async def test_fill_skeleton_slot_bindings_default_is_byte_identical_prompt() ->
     await fill_skeleton(skeleton, theme_brief, provider, pii)
 
     assert provider.calls[0] == expected.user
+
+
+# ---------------------------------------------------------------------------
+# Test: the Stage 1 fidelity posture is stated and recorded (AL-324 / UW-C230)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_an_ungated_fill_records_that_it_was_ungated() -> None:
+    """A ``passed`` must carry what it passed.
+
+    ``fill_skeleton``'s Stage 1 gate arms only when ``settings`` is supplied, so
+    three harness scripts ran ungated while reading the same ``status`` field as
+    the production path. Nothing in the outcome distinguished the two, which is
+    how three vendor-comparison books that were entirely unfilled were quoted
+    beside gated results (`AL-324`).
+    """
+    skeleton = _skeleton_with_fill_placeholder()
+    provider = MockProvider(responses=[json.dumps(VALID_STORY)])
+    pii = PiiContext(child_names=frozenset())
+
+    outcome = await fill_skeleton(
+        skeleton, {"premise": "a fox"}, provider, pii, reading_level_passes=0
+    )
+
+    assert outcome.status == "passed"
+    assert outcome.report["stage1_gate"] == "skipped"
+
+
+@pytest.mark.asyncio
+async def test_skipped_posture_disarms_the_gate_even_with_settings() -> None:
+    """A caller may state the ungated posture out loud and be believed."""
+    skeleton = _skeleton_with_fill_placeholder()
+    provider = MockProvider(responses=[json.dumps(VALID_STORY)])
+    pii = PiiContext(child_names=frozenset())
+
+    outcome = await fill_skeleton(
+        skeleton,
+        {"premise": "a fox"},
+        provider,
+        pii,
+        settings=Settings(),
+        stage1_gate="skipped",
+        reading_level_passes=0,
+    )
+
+    assert outcome.report["stage1_gate"] == "skipped"
+    # One fill call and no review call: the gate genuinely did not run.
+    assert len(provider.calls) == 1
+
+
+@pytest.mark.asyncio
+async def test_required_posture_without_settings_raises_rather_than_downgrading() -> (
+    None
+):
+    """Asking to be gated and silently not being is the failure to prevent.
+
+    Every other resolution of this mismatch reintroduces `AL-324`: the caller
+    believes the fill was checked for fidelity, the outcome says ``passed``, and
+    no field anywhere records that the check never ran.
+    """
+    skeleton = _skeleton_with_fill_placeholder()
+    provider = MockProvider(responses=[json.dumps(VALID_STORY)])
+    pii = PiiContext(child_names=frozenset())
+
+    with pytest.raises(ConfigurationError, match="stage1_gate='required'"):
+        _ = await fill_skeleton(
+            skeleton,
+            {"premise": "a fox"},
+            provider,
+            pii,
+            stage1_gate="required",
+        )
+
+    assert provider.calls == []

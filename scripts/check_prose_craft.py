@@ -28,9 +28,12 @@ asks about structure, safety, or sameness and none asks about craft:
    for staged behavior.
 
 Deterministic and dependency-free: verb-form cues for tense, curated
-pattern sets for the other two. Dialogue is exempt throughout (text inside
-quotation marks is stripped before matching), because a present-tense line
-of speech inside past narration is correct English, not a defect.
+pattern sets for the other two. Dialogue is exempt throughout, because a
+present-tense line of speech inside past narration is correct English, not a
+defect. Exemption is by ``strip_dialogue``, which covers quoted spans *and*
+tagged ones ("Almost there, Nina whispered."); it covered only quoted spans
+until 2026-08-14, which exempted nothing at all in a catalogue that writes
+its speech untagged by quotation marks.
 
 Thresholds are calibrated against the nine-book clocktower tier corpus
 (AL-168: blind craft means 4.9 frontier, 4.0 Sonnet, 2.2 Haiku); every
@@ -49,6 +52,9 @@ import re
 import sys
 from pathlib import Path
 from typing import Any, NamedTuple, cast
+
+from cyo_adventure.utils.sentences import split_sentences
+from cyo_adventure.validator.dialogue import strip_tagged
 
 # --------------------------------------------------------------------------
 # Tense
@@ -276,7 +282,6 @@ _SINGLE_QUOTED = re.compile(
     f"[^'{_LEFT_SINGLE}{_RIGHT_SINGLE}]{{0,400}}"
     f"['{_RIGHT_SINGLE}](?![A-Za-z])"
 )
-_SENTENCE = re.compile(r"[^.!?]+[.!?]*")
 _WORD = re.compile(r"[A-Za-z']+")
 
 PAST = "past"
@@ -286,9 +291,11 @@ PRESENT = "present"
 def strip_quoted(text: str) -> str:
     """Return text with quoted dialogue replaced by whitespace.
 
-    Dialogue is exempt from every detector in this script: a child speaking
-    in the present tense inside a past-tense book is correct English, and a
-    character may say "my heart sank" without the narrator telling emotion.
+    Handles quotation marks only. Callers wanting the exemption this script
+    actually intends want :func:`strip_dialogue`; this stays separate because
+    the single-quote handling below is more careful than a general detector
+    should be, and is worth keeping distinct rather than folding away.
+
     Double quotes are removed first; single-quoted spans are then removed
     only where the opening quote is not preceded by a letter, so
     possessives and contractions ("Elara's", "isn't") survive.
@@ -300,6 +307,26 @@ def strip_quoted(text: str) -> str:
         The body with quoted spans blanked out.
     """
     return _SINGLE_QUOTED.sub(" ", _DOUBLE_QUOTED.sub(" ", text))
+
+
+def strip_dialogue(text: str) -> str:
+    """Return text with all recognised dialogue removed, quoted or tagged.
+
+    Dialogue is exempt from every detector in this script: a child speaking
+    in the present tense inside a past-tense book is correct English, and a
+    character may say "my heart sank" without the narrator telling emotion.
+    That rationale never depended on quotation marks, but the implementation
+    did, so the catalogue's own unquoted house style ("Almost there, Nina
+    whispered.") was being classified for tense and scanned for told emotion
+    as though the narrator had said it.
+
+    Args:
+        text: Raw node body.
+
+    Returns:
+        The body with quoted spans blanked and tagged sentences dropped.
+    """
+    return strip_tagged(strip_quoted(text))
 
 
 def _words(sentence: str) -> list[str]:
@@ -358,9 +385,20 @@ def node_tense_counts(body: str) -> tuple[int, int]:
     Returns:
         A pair of counts over classifiable, non-dialogue sentences.
     """
-    stripped = strip_quoted(body)
+    # #ASSUME: data-integrity: splits with `utils.sentences.split_sentences`
+    # (UW-C260, AL-390) rather than the old bare `[^.!?]+[.!?]*` idiom, so an
+    # abbreviation ("Mr. Fez") or a tagged "!"/"?" line no longer produces a
+    # spurious extra sentence. Measured over the 31 committed books: the
+    # (past, present) totals move by at most one sentence in 3 of 31 books
+    # (a "!"/abbreviation merge absorbing a one-word tag clause), and neither
+    # the dominant tense nor the set of nodes `tense_report` flags as
+    # unstable changes in any book.
+    # #VERIFY: tests/unit/test_sentences.py pins the splitter itself;
+    # tests/unit/test_check_prose_craft.py exercises this function's tense
+    # classification.
+    stripped = strip_dialogue(body)
     past = present = 0
-    for sentence in _SENTENCE.findall(stripped):
+    for sentence in split_sentences(stripped):
         tense = sentence_tense(sentence)
         if tense == PAST:
             past += 1
@@ -514,8 +552,17 @@ def _is_ending(node: dict[str, Any]) -> bool:
 
 
 def _sentences(text: str) -> list[str]:
-    """Return non-empty, stripped sentences of a text."""
-    return [s.strip() for s in _SENTENCE.findall(text) if s.strip()]
+    """Return non-empty, stripped sentences of a text.
+
+    Delegates to :func:`cyo_adventure.utils.sentences.split_sentences`
+    (UW-C260, AL-390) rather than the bare ``[^.!?]+[.!?]*`` idiom this
+    script used before: the tail-sentence extraction below is exactly the
+    kind of "opening/closing sentence" use that idiom got wrong on an
+    abbreviation. Measured over the 31 committed books: the extracted
+    tail-sentence set for :func:`moral_tags` is byte-identical, old splitter
+    versus new, in every book.
+    """
+    return split_sentences(text)
 
 
 def moral_tags(story: dict[str, Any], *, tail_sentences: int = 4) -> list[MoralHit]:
@@ -537,7 +584,7 @@ def moral_tags(story: dict[str, Any], *, tail_sentences: int = 4) -> list[MoralH
         if not _is_ending(node):
             continue
         node_id = str(node.get("id", "?"))
-        body = strip_quoted(str(node.get("body", "")))
+        body = strip_dialogue(str(node.get("body", "")))
         # A tail of 0 would slice [-0:], i.e. the WHOLE body, and a negative
         # value inverts the window; both silently widen the scan.
         tail = _sentences(body)[-tail_sentences:] if tail_sentences > 0 else []
@@ -644,7 +691,7 @@ def told_emotion(story: dict[str, Any]) -> TellReport:
     words = 0
     for node in cast("list[dict[str, Any]]", story.get("nodes") or []):
         node_id = str(node.get("id", "?"))
-        body = strip_quoted(str(node.get("body", "")))
+        body = strip_dialogue(str(node.get("body", "")))
         words += len(_WORD.findall(body))
         for pattern in _TOLD_COMPILED:
             hits.extend(

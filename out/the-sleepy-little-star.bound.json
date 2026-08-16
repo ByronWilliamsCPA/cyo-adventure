@@ -1,0 +1,277 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_sleepy_little_star",
+  "version": 1,
+  "title": "The Sleepy Little Star",
+  "metadata": {
+    "age_band": "3-5",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 1.0,
+      "tolerance": 1.0
+    },
+    "tier": 1,
+    "themes": [
+      "bedtime",
+      "courage",
+      "gentleness",
+      "perseverance"
+    ],
+    "estimated_minutes": 3,
+    "ending_count": 3,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "loop_and_grow",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL role=setup words=42 beats='dusk, as the sky turns soft purple over the wide night sky above the sleepy meadow; high above, Twinkle, the littlest star, wakes up in her fluffy cloud bed and rubs her eyes; tonight is her very first night to shine all by herself'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_peek",
+          "label": "Peek out at the wide night sky above the sleepy meadow.",
+          "target": "n_moon"
+        }
+      ]
+    },
+    {
+      "id": "n_moon",
+      "body": "<<FILL role=setup words=40 beats='kind, round Moon rises slowly and smiles at Twinkle; kind, round Moon whispers that the wide night sky above the sleepy meadow is waiting for her little light; Twinkle feels fluttery and shy in her tummy, so she squeezes her points tight and gets ready to be brave'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_moon_breath",
+          "label": "Take a big, brave breath.",
+          "target": "n_ready"
+        }
+      ]
+    },
+    {
+      "id": "n_ready",
+      "body": "<<FILL role=choice words=40 beats='Twinkle floats to her very own spot in the sky and wonders how to start shining; she could hide behind the fluffy cloud first, or do a big sparkle wiggle to wake up her sparkle, or scoot down to peek at the world below'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ready_cloud",
+          "label": "Hide behind the fluffy cloud.",
+          "target": "n_cloud"
+        },
+        {
+          "id": "c_ready_wiggle",
+          "label": "Do a big sparkle wiggle.",
+          "target": "n_wiggle"
+        },
+        {
+          "id": "c_ready_low",
+          "label": "Scoot down to peek at the world below.",
+          "target": "n_slide"
+        }
+      ]
+    },
+    {
+      "id": "n_cloud",
+      "body": "<<FILL role=choice words=40 beats='Twinkle tucks herself behind the fluffy cloud so only the very tip of her glow peeks out; the fluffy cloud is soft and cozy, but her very own spot in the sky stays dark and empty; she can snuggle deeper into the fluffy cloud or peek out one tiny sparkle'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cloud_snuggle",
+          "label": "Snuggle deeper into the fluffy cloud.",
+          "target": "n_cozy_retry"
+        },
+        {
+          "id": "c_cloud_peek",
+          "label": "Peek out one tiny sparkle.",
+          "target": "n_peek"
+        }
+      ]
+    },
+    {
+      "id": "n_cozy_retry",
+      "body": "<<FILL role=rising words=38 beats='deep in the fluffy cloud Twinkle rests a little while and kind, round Moon hums one soft low note; the fluffy cloud tickles her nose and she giggles a tiny giggle; the rest makes her feel a little braver, so she floats back toward her very own spot in the sky to try again'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cozy_again",
+          "label": "Float back and try again.",
+          "target": "n_ready"
+        }
+      ]
+    },
+    {
+      "id": "n_peek",
+      "body": "<<FILL role=rising words=38 beats='one tiny sparkle slips out and drifts all the way down to the wide night sky above the sleepy meadow, where a firefly blinks hello back up at her; Twinkle gasps with joy, her little light reached somebody; her glow steadies and grows a bit warmer and bolder'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_peek_more",
+          "label": "Let the glow grow bigger.",
+          "target": "n_almost"
+        }
+      ]
+    },
+    {
+      "id": "n_wiggle",
+      "body": "<<FILL role=choice words=40 beats='Twinkle wiggles and jiggles to wake up her sparkle, and gold glitter shakes off her points in every direction; it is very fun but very wobbly, and her light flickers like a hiccup; she can wiggle even faster or slow down and sway like a lullaby'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wiggle_faster",
+          "label": "Wiggle even faster!",
+          "target": "n_giggle_retry"
+        },
+        {
+          "id": "c_wiggle_sway",
+          "label": "Slow down and sway like a lullaby.",
+          "target": "n_sway"
+        }
+      ]
+    },
+    {
+      "id": "n_giggle_retry",
+      "body": "<<FILL role=rising words=38 beats='Twinkle wiggles so fast she spins in a dizzy circle and plops onto a puff of cloud, giggling; her sparkle goes all fizzy like tiny bubbles; kind, round Moon chuckles kindly and says gently does it, little one, so she dusts off her points and floats back to try again'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_giggle_again",
+          "label": "Float back and try again.",
+          "target": "n_ready"
+        }
+      ]
+    },
+    {
+      "id": "n_sway",
+      "body": "<<FILL role=rising words=36 beats='Twinkle sways slowly, side to side, like the tall grass far below; her sparkle settles into one warm, steady glow; the swaying feels just like a lullaby and she hums along softly, calm and ready at last'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sway_spot",
+          "label": "Glide to her very own spot in the sky.",
+          "target": "n_almost"
+        }
+      ]
+    },
+    {
+      "id": "n_slide",
+      "body": "<<FILL role=choice words=40 beats='Twinkle scoots down the wide night sky above the sleepy meadow to peek at the world below, but whoops, the wide night sky above the sleepy meadow is slippery tonight and she slides down, down, down to just above the treetops; she can grab a silvery moonbeam and climb right back up, or take a little peek around from down low'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_slide_climb",
+          "label": "Climb the silvery moonbeam back up.",
+          "target": "n_ready"
+        },
+        {
+          "id": "c_slide_look",
+          "label": "Take a peek from down low.",
+          "target": "n_low"
+        }
+      ]
+    },
+    {
+      "id": "n_low",
+      "body": "<<FILL role=rising words=40 beats='from down low Twinkle sees little houses with warm yellow windows, and children in pajamas peeking up, waiting for the littlest star; her heart glows warm as toast; children in pajamas need her light tonight, so she floats up and up toward her very own spot in the sky'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_low_up",
+          "label": "Float up to her very own spot in the sky.",
+          "target": "n_almost"
+        }
+      ]
+    },
+    {
+      "id": "n_almost",
+      "body": "<<FILL role=choice words=40 beats='back at her very own spot in the sky, the wide night sky above the sleepy meadow finally feels just right, soft and dark and quiet as a blanket; kind, round Moon nods proudly and the whole night seems to wait; Twinkle can try one tiny practice sparkle first, or hold onto a silvery moonbeam and shine all at once'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_almost_tiny",
+          "label": "Try one tiny practice sparkle.",
+          "target": "n_first_sparkle"
+        },
+        {
+          "id": "c_almost_all",
+          "label": "Hold a silvery moonbeam and shine all at once.",
+          "target": "n_shine"
+        }
+      ]
+    },
+    {
+      "id": "n_first_sparkle",
+      "body": "<<FILL role=rising words=36 beats='Twinkle lets out one small practice sparkle and it glows steady and bright, not wobbly at all; she laughs out loud with happy surprise; her shyness floats away like a little cloud, and now she is truly ready to shine her whole light'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sparkle_shine",
+          "label": "Shine with all her light.",
+          "target": "n_shine"
+        }
+      ]
+    },
+    {
+      "id": "n_shine",
+      "body": "<<FILL role=choice words=42 beats='Twinkle takes the biggest breath of all and shines, and her silver light spills soft and bright across the wide night sky above the sleepy meadow; kind, round Moon beams with pride; now Twinkle can wink goodnight to children in pajamas below, or sing a twinkle song with kind, round Moon, or invite the other little stars to shine along'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_shine_wink",
+          "label": "Wink goodnight to children in pajamas.",
+          "target": "e_goodnight"
+        },
+        {
+          "id": "c_shine_song",
+          "label": "Sing a twinkle song with kind, round Moon.",
+          "target": "e_lullaby"
+        },
+        {
+          "id": "c_shine_stars",
+          "label": "Invite the other little stars.",
+          "target": "e_friends"
+        }
+      ]
+    },
+    {
+      "id": "e_goodnight",
+      "body": "<<FILL role=completion words=44 beats='Twinkle twinkles a slow, gentle goodnight wink, and far below children in pajamas wave from their windows and snuggle into their beds; the wide night sky above the sleepy meadow grows quiet and dreamy under her soft silver light; Twinkle shines calm and proud, the littlest star, right where she belongs'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_goodnight",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Goodnight, Little World"
+      }
+    },
+    {
+      "id": "e_lullaby",
+      "body": "<<FILL role=completion words=44 beats='Twinkle and kind, round Moon hum a twinkle song together while the wide night sky above the sleepy meadow rocks slow and gentle like a cradle; her light glows in time with the tune; down below, sleepy eyes close one by one; Twinkle sings the whole world to sleep and is not one bit shy anymore'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_lullaby",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Twinkle Lullaby"
+      }
+    },
+    {
+      "id": "e_friends",
+      "body": "<<FILL role=completion words=44 beats='Twinkle calls out softly and one by one the other little stars pop out beside her, blinking hello until the wide night sky above the sleepy meadow is full of friendly lights; shining is easy with friends all around; Twinkle glows happiest of all, the littlest star who lit up the whole night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_friends",
+        "valence": "positive",
+        "kind": "success",
+        "title": "A Sky Full of Friends"
+      }
+    }
+  ]
+}

@@ -49,8 +49,8 @@ _REPO_ROOT: Final[Path] = Path(__file__).resolve().parent.parent
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
+from cyo_adventure.validator.dialogue import sentence_share  # noqa: E402
 from cyo_adventure.validator.layer1 import validate_layer1  # noqa: E402
-from cyo_adventure.validator.policy import FILL_MARKER  # noqa: E402
 from cyo_adventure.validator.reading_level import (  # noqa: E402
     measure_book,
     score_body,
@@ -65,6 +65,7 @@ if TYPE_CHECKING:
 _FILL_RE: Final[re.Pattern[str]] = re.compile(
     r"<<FILL\s+role=(?P<role>\w+)\s+words=(?P<words>\d+)\s+beats='(?P<beats>[^']*)'",
 )
+_FILL_MARKER: Final[str] = "<<FILL"
 
 # Binding slots the generator is supposed to replace. Any survivor in a filled
 # book is a hard compliance failure: the child would read a literal {HERO}.
@@ -102,6 +103,27 @@ __all__ = [
 ]
 
 
+# Fields where a LARGE value is the bad one, so the drop-worst comparison has to
+# remove the top of the distribution rather than the bottom. Everything else in
+# BookScore is oriented lower-is-worse (a compliance share, a recall, a grade
+# sitting in band). Getting this backwards would turn a robustness check into a
+# flattering one, which is the failure mode drop-worst exists to catch.
+_LOWER_IS_BETTER: Final[frozenset[str]] = frozenset(
+    {
+        "grade_spread",
+        "sentence_spread",
+        "placeholder_leaks",
+        "l1_errors",
+        "l1_warnings",
+    }
+)
+
+# Below this, removing a book leaves too little to average. Dropping one of two
+# leaves a single observation, which is not a robustness check but a different
+# and weaker claim wearing its name.
+_MIN_BOOKS_FOR_DROP_WORST: Final[int] = 3
+
+
 @dataclass(frozen=True, slots=True)
 class BookScore:
     """Every deterministic measurement for one filled book.
@@ -136,7 +158,8 @@ class BookScore:
         mean_sentence_words: Mean words per sentence.
         sentence_spread: Standard deviation of sentence length. Uniform short
             sentences and varied ones can share a mean and read nothing alike.
-        dialogue_share: Fraction of sentences carrying a quotation mark.
+        dialogue_share: Fraction of sentences carrying a spoken line, quoted
+            or tagged (``validator.dialogue``).
         total_words: Words across all filled bodies.
     """
 
@@ -175,6 +198,14 @@ class LegSummary:
             Books that produced no prose are excluded from prose means but
             still counted in ``books``, so a leg cannot raise its average by
             failing.
+        drop_worst: The same means recomputed with each field's single worst
+            book removed. At four books per leg one silently degraded book moves
+            a leg mean by roughly twenty points, which is larger than any effect
+            this design can resolve; run-6's apparent 22-point band-compliance
+            penalty for fp4 quantisation was one such book, and dropping each
+            leg's worst put fp4 at 0.89 against unquantised 0.88 (`AL-349`).
+            Empty when a leg has fewer than three books, since dropping one of
+            two leaves a single observation rather than a robustness check.
     """
 
     leg: str
@@ -182,6 +213,7 @@ class LegSummary:
     books: int
     complete_books: int
     means: dict[str, float | None]
+    drop_worst: dict[str, float | None] = dataclasses.field(default_factory=dict)
 
 
 def _words(text: str) -> list[str]:
@@ -271,7 +303,13 @@ def _sentence_lengths(text: str) -> list[int]:
 
 
 def _dialogue_share(text: str) -> float | None:
-    """Return the fraction of sentences carrying a quotation mark.
+    """Return the fraction of sentences carrying a spoken line.
+
+    Delegates to ``validator.dialogue``, which recognises tagged speech as well
+    as quoted. This function previously tested for a quotation mark, which
+    scored the catalogue's own house style ("Right here! he whispered.") as
+    dialogue-free; the figures that measure produced are what the quality
+    panel's `dialogue` criterion was judged against, and the criterion lost.
 
     Args:
         text: Any prose.
@@ -279,11 +317,7 @@ def _dialogue_share(text: str) -> float | None:
     Returns:
         The fraction, or ``None`` when there are no sentences.
     """
-    parts = [p for p in _SENTENCE_RE.split(text) if _words(p)]
-    if not parts:
-        return None
-    quoted = sum(1 for p in parts if '"' in p or "“" in p or "”" in p)
-    return quoted / len(parts)
+    return sentence_share(text)
 
 
 def _directives(skeleton: dict[str, object]) -> dict[str, tuple[int, set[str]]]:
@@ -354,11 +388,6 @@ def _band(doc: dict[str, object]) -> tuple[float, float] | None:
         return None
     target = level.get("target")  # pyright: ignore[reportUnknownMemberType]
     tolerance = level.get("tolerance")  # pyright: ignore[reportUnknownMemberType]
-    # bool is an int subclass; a JSON `true`/`false` here is malformed
-    # metadata, not a target/tolerance of 1.0, so it must not silently
-    # become one (mirrors reading_level_loop.py's _band guard).
-    if isinstance(target, bool) or isinstance(tolerance, bool):
-        return None
     if not isinstance(target, (int, float)) or not isinstance(tolerance, (int, float)):
         return None
     return float(target), float(tolerance)
@@ -381,7 +410,7 @@ def _fidelity(
     recalls: list[float] = []
     for node_id, body in bodies:
         request = directives.get(node_id)
-        if request is None or FILL_MARKER in body:
+        if request is None or _FILL_MARKER in body:
             continue
         requested, terms = request
         tokens = _words(body)
@@ -421,7 +450,7 @@ def evaluate_book(
         Every deterministic measurement for the book.
     """
     bodies = _bodies(doc)
-    filled = [(nid, b) for nid, b in bodies if FILL_MARKER not in b]
+    filled = [(nid, b) for nid, b in bodies if _FILL_MARKER not in b]
     prose = " ".join(b for _, b in filled)
     tokens = _words(prose)
 
@@ -496,43 +525,50 @@ def summarize_leg(scores: Sequence[BookScore]) -> LegSummary:
         books=len(scores),
         complete_books=sum(1 for s in scores if s.fill_completeness >= 1.0),
         means=means,
+        drop_worst=_drop_worst_means(scores, numeric),
     )
 
 
-def _skeleton_for(
-    skeletons: Sequence[dict[str, object]], index: int, *, run_dir: Path
-) -> dict[str, object]:
-    """Select the skeleton a book's ``brief_index`` maps to.
+def _drop_worst_means(
+    scores: Sequence[BookScore], numeric: Sequence[str]
+) -> dict[str, float | None]:
+    """Recompute each mean with that field's single worst book removed.
 
-    A run's report declares either one shared skeleton (every book in the run
-    was filled from the same structure) or one skeleton per brief. Sharing
-    collapses every index to the single skeleton; otherwise the index selects
-    directly.
+    "Worst" is per field, not per book: a leg's weakest book on reading level is
+    not necessarily its weakest on beat recall, and picking one book to drop
+    across all fields would be a different, less informative statistic.
 
     Args:
-        skeletons: The run's loaded skeleton documents, in report order.
-        index: The book's ``brief_index``.
-        run_dir: The run directory, folded into the error message so an
-            out-of-range index names which run and row produced it.
+        scores: Every book from one leg.
+        numeric: The field names to recompute.
 
     Returns:
-        The skeleton document this book was filled from.
+        The robust means, or an empty mapping when the leg has too few books for
+        the comparison to mean anything.
 
-    Raises:
-        ValueError: If ``index`` is out of range for a per-brief run (more
-            than one skeleton declared) and there is no shared skeleton to
-            fall back to. A bare ``IndexError`` here would name neither the
-            run nor the offending index.
+    Note:
+        Every field here is oriented so that lower is worse, except the two
+        spreads in :data:`_LOWER_IS_BETTER`, where a large value is the bad one.
+        Dropping the wrong tail would turn a robustness check into a flattering
+        one, so the orientation is stated rather than assumed.
     """
-    if len(skeletons) == 1:
-        return skeletons[0]
-    if not 0 <= index < len(skeletons):
-        msg = (
-            f"{run_dir}: brief_index {index} has no matching skeleton "
-            f"({len(skeletons)} declared in report.json)"
-        )
-        raise ValueError(msg)
-    return skeletons[index]
+    if len(scores) < _MIN_BOOKS_FOR_DROP_WORST:
+        return {}
+    robust: dict[str, float | None] = {}
+    for name in numeric:
+        values = [
+            v
+            for s in scores
+            if isinstance(v := getattr(s, name), (int, float)) and v is not None
+        ]
+        if len(values) < _MIN_BOOKS_FOR_DROP_WORST:
+            robust[name] = None
+            continue
+        worst = max(values) if name in _LOWER_IS_BETTER else min(values)
+        remaining = list(values)
+        remaining.remove(worst)
+        robust[name] = statistics.fmean(remaining)
+    return robust
 
 
 def _load_run(run_dir: Path, skeleton_dir: Path) -> list[BookScore]:
@@ -544,11 +580,6 @@ def _load_run(run_dir: Path, skeleton_dir: Path) -> list[BookScore]:
 
     Returns:
         One score per book that has a document on disk.
-
-    Raises:
-        ValueError: If a book's ``brief_index`` does not match any skeleton
-            the run declared (see :func:`_skeleton_for`); a malformed
-            ``report.json`` produces this rather than a bare ``IndexError``.
     """
     payload = json.loads((run_dir / "report.json").read_text(encoding="utf-8"))
     skeleton_names: list[str] = list(payload["skeletons"])
@@ -565,7 +596,7 @@ def _load_run(run_dir: Path, skeleton_dir: Path) -> list[BookScore]:
         scores.append(
             evaluate_book(
                 doc,
-                _skeleton_for(skeletons, index, run_dir=run_dir),
+                skeletons[index if len(skeletons) > 1 else 0],
                 leg=row["vendor"],
                 family=row["family"],
                 brief_index=index,
@@ -612,6 +643,7 @@ def _print_table(summaries: Iterable[LegSummary]) -> None:
             f"{_fmt(m['word_ratio_median']):>10} {_fmt(m['word_on_budget']):>9} "
             f"{_fmt(m['beat_recall']):>6}"
         )
+    _print_drop_worst(rows, width)
     print("\nPROSE CHARACTER  (descriptive; how the leg writes, not how well)")
     print(
         f"  {'leg':<{width}}  {'MATTR':>6} {'sent len':>9} {'sent sd':>8} "
@@ -624,6 +656,59 @@ def _print_table(summaries: Iterable[LegSummary]) -> None:
             f"{_fmt(m['mean_sentence_words'], 1):>9} "
             f"{_fmt(m['sentence_spread'], 1):>8} "
             f"{_fmt(m['dialogue_share'], 3):>9} {_fmt(m['total_words'], 0):>7}"
+        )
+
+
+def _print_drop_worst(rows: Sequence[LegSummary], width: int) -> None:
+    """Print in-band compliance with each leg's worst book removed, and flag movers.
+
+    At four books per leg, one silently degraded book moves a leg mean by
+    roughly twenty points, which is larger than any effect this design can
+    resolve. Run-6's headline was exactly that: `deepseek-v4-pro-fp4` read 0.70
+    in band against fp8's 0.92 and was written up as a 22-point quantisation
+    penalty, when dropping each leg's worst book put fp4 at 0.89 against
+    unquantised 0.88 and the effect vanished (`AL-349`).
+
+    A leg whose mean moves more than one between-leg standard deviation when its
+    worst book is removed is flagged, because at that size the single book is
+    outweighing the variable under test.
+
+    Args:
+        rows: The leg summaries, already sorted.
+        width: Column width for the leg label.
+    """
+    movable = [s for s in rows if s.drop_worst.get("in_band") is not None]
+    if not movable:
+        return
+    full = [s.means["in_band"] for s in movable if s.means["in_band"] is not None]
+    between_leg_sd = statistics.stdev(full) if len(full) > 1 else 0.0
+
+    print("\nDROP-WORST  (in band, each leg's weakest book removed)")
+    print(
+        f"  {'leg':<{width}}  {'all':>6} {'drop1':>6} {'delta':>7}  "
+        f"(between-leg sd {between_leg_sd:.3f})"
+    )
+    flagged: list[str] = []
+    for s in movable:
+        base = s.means["in_band"]
+        robust = s.drop_worst["in_band"]
+        if base is None or robust is None:
+            continue
+        delta = robust - base
+        mover = between_leg_sd > 0 and abs(delta) > between_leg_sd
+        if mover:
+            flagged.append(s.leg)
+        print(
+            f"  {s.leg:<{width}}  {base:>6.2f} {robust:>6.2f} {delta:>+7.2f}"
+            f"{'  <-- ONE BOOK IS CARRYING THIS LEG' if mover else ''}"
+        )
+    if flagged:
+        print(
+            f"\n  {len(flagged)} leg(s) move more than one between-leg sd on a "
+            f"single book: {', '.join(flagged)}. Quote the drop-worst column for "
+            "these, and say which you used. A difference this design cannot "
+            "resolve must not be reported as a property of the variable under "
+            "test."
         )
 
 

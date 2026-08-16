@@ -1,0 +1,43 @@
+judges: judge-gpt-5.6, judge-grok-4.6
+records: 86
+
+Per criterion. rho is Spearman over WITHIN-BOOK DELTAS (agreement about
+what a defect did); qwk is quadratic-weighted kappa over RAW scores
+(agreement about level). Marginals are raw, and a low coefficient beside
+a one-sided marginal is a scale artefact, not a disagreement.
+
+== age_fit
+   judge-gpt-5.6      vs judge-grok-4.6     rho   +0.19 (n=36)  qwk   +0.39
+   marginal judge-gpt-5.6      1:6 2:14 3:13 4:9
+   marginal judge-grok-4.6     2:14 3:20 4:9
+
+== imagery
+   judge-gpt-5.6      vs judge-grok-4.6     rho   +0.70 (n=36)  qwk   +0.77
+   marginal judge-gpt-5.6      2:6 3:16 4:20
+   marginal judge-grok-4.6     1:3 2:3 3:24 4:13
+
+== voice
+   judge-gpt-5.6      vs judge-grok-4.6     rho   +0.31 (n=36)  qwk   +0.40
+   marginal judge-gpt-5.6      1:6 2:31 3:5
+   marginal judge-grok-4.6     1:2 2:25 3:15 4:1
+
+== dialogue
+   judge-gpt-5.6      vs judge-grok-4.6     rho   +0.65 (n=36)  qwk   +0.65
+   marginal judge-gpt-5.6      1:2 2:11 3:29
+   marginal judge-grok-4.6     1:1 2:5 3:37
+
+== choice_quality
+   judge-gpt-5.6      vs judge-grok-4.6     rho   +0.61 (n=36)  qwk   +0.61
+   marginal judge-gpt-5.6      1:4 2:18 3:15 4:5
+   marginal judge-grok-4.6     1:1 2:13 3:19 4:10
+
+== ending_quality
+   judge-gpt-5.6      vs judge-grok-4.6     rho   +0.39 (n=36)  qwk   +0.58
+   marginal judge-gpt-5.6      1:5 2:19 3:18
+   marginal judge-grok-4.6     1:4 2:11 3:26 4:2
+
+== engagement
+   judge-gpt-5.6      vs judge-grok-4.6     rho   +0.34 (n=36)  qwk   +0.56
+   marginal judge-gpt-5.6      2:11 3:29 4:2
+   marginal judge-grok-4.6     2:11 3:25 4:7
+

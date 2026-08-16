@@ -1,0 +1,904 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_tide_pool_rescue",
+  "version": 1,
+  "title": "The Tide Pool Rescue",
+  "metadata": {
+    "age_band": "5-8",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 2.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "kindness",
+      "helping",
+      "perseverance",
+      "friendship"
+    ],
+    "estimated_minutes": 10,
+    "ending_count": 12,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "loop_and_grow",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "The back garden shines with fresh snow this morning. School is closed today! You and your big brother Leo step outside. Leo wears his furry hat and brings a cup of hot cocoa. You swing your bright red snow shovel. The morning wind swept the yard. Now slick ice is dotted with deep snow-caves. Leo says the Great Flurry always comes back later. It is like a friend bringing extra blankets. Warm in your snowsuit, you cannot wait to explore the Uncharted Lawn.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_go",
+          "label": "Follow Leo down the snowy path.",
+          "target": "n_walk"
+        }
+      ]
+    },
+    {
+      "id": "n_walk",
+      "body": "Leo marches down the clear path like a brave explorer. He spreads a thick wool blanket on the Base Camp Porch. From there, he can see the whole yard. He tells you the rules. Stay on the firm ice. Snowy boots are fine. Call out if you need a rescue hand. You promise with a crisp salute. You pull your goggles down. Ahead, the shining snow-caves wait for you to find them.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_walk_rocks",
+          "label": "Step out onto the flat icy glacier.",
+          "target": "n_meet"
+        }
+      ]
+    },
+    {
+      "id": "n_meet",
+      "body": "Out on the glacier, you hear tiny voices! The windy morning has left some toy friends stranded on the ice. Zorp the five-armed alien is stuck on a high branch. Pip the wind-up penguin is trapped in a slush puddle. Clanks the robot is tangled in frozen fairy lights. And Shelly the tiny toy turtle is lost on an icy stone. Above, fluffy grey clouds show the Great Flurry is coming soon. They are all squeaking at once! Who will you rescue first?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_meet_star",
+          "label": "Hurry to the toy alien on the branch.",
+          "target": "st_scene"
+        },
+        {
+          "id": "c_meet_fish",
+          "label": "Follow the penguin tracks across the ice.",
+          "target": "t_st_fi"
+        },
+        {
+          "id": "c_meet_crab",
+          "label": "Follow the robot clanks to the fairy lights.",
+          "target": "t_fi_cr"
+        },
+        {
+          "id": "c_meet_snail",
+          "label": "Climb toward the tiny shell on the bare icy rock.",
+          "target": "t_cr_pw"
+        }
+      ]
+    },
+    {
+      "id": "st_scene",
+      "body": "You hurry to the frosty stump. Zorp the alien sits shivering above your head. His five green arms hang down like sad celery. He squeaks down at you. He says the icy wood is very slick. He wants to go back to his cozy snow-cave right below him.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st_scene",
+          "label": "Climb the ice steps for a closer look.",
+          "target": "st_meet"
+        }
+      ]
+    },
+    {
+      "id": "st_meet",
+      "body": "You climb two safe, flat ice steps and say hello. Zorp perks up one green arm to wave. The stump is as slippery as glass, and his perfect snow-cave waits right beneath it. Zorp says any rescue plan is fine with him, as he is a very patient space explorer. You look at your red plastic shovel, at your thick mittens, and at the slick little slope.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st_meet",
+          "label": "Think up a rescue plan for Zorp.",
+          "target": "st_plan"
+        }
+      ]
+    },
+    {
+      "id": "st_plan",
+      "body": "You think of ideas while Zorp waves at you from his frosty spot. You could toss up soft snow to make a cushion. You could carry him down in your red shovel. Or you could make a fun slide for him. Back at the Base Camp Porch, Leo watches closely. He takes a sip of hot cocoa. He is ready to share an explorer tip if you want one.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st_plan_hands",
+          "label": "Toss soft snow up with your mittens.",
+          "target": "st_flop_hands"
+        },
+        {
+          "id": "c_st_plan_bucket",
+          "label": "Carry your red shovel up the little slope.",
+          "target": "st_flop_bucket"
+        },
+        {
+          "id": "c_st_plan_slide",
+          "label": "Pack the snow to slide Zorp gently down.",
+          "target": "st_win"
+        }
+      ]
+    },
+    {
+      "id": "st_flop_hands",
+      "body": "You scoop a pile of soft snow in your mittens and toss it up toward the stump, but the powder rains straight back down on your own head, poof! Zorp giggles so hard his green arms wiggle. You laugh and shake your snowy hat like a wet puppy. No harm done, just a chilly nose! You can line your plans up again or trot over and ask Leo for a tip.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st_hands_again",
+          "label": "Line up your ideas and try again.",
+          "target": "st_plan"
+        },
+        {
+          "id": "c_st_hands_gran",
+          "label": "Ask Leo for an explorer tip.",
+          "target": "st_gran"
+        }
+      ]
+    },
+    {
+      "id": "st_flop_bucket",
+      "body": "You scoop up Zorp in your red shovel and start down the slippery slope, but the plastic wobbles, tips, and whooshes Zorp and a pile of snow right onto your own boots! Your toes feel extra frosty. Zorp claps two arms for the amazing snowy ride. You grin and wiggle your chilly toes. Nothing lost, the garden has plenty more snow. You can go back to your plans or ask Leo for a tip.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st_bucket_again",
+          "label": "Brush off the snow and try again.",
+          "target": "st_plan"
+        },
+        {
+          "id": "c_st_bucket_gran",
+          "label": "Ask Leo for an explorer tip.",
+          "target": "st_gran"
+        }
+      ]
+    },
+    {
+      "id": "st_gran",
+      "body": "Leo pushes up his furry trapper hat and smiles. \"Space aliens like a smooth landing,\" he calls out. \"Pack the snow tight so Zorp can slide down to his cave like a playground chute!\" You can try the gentle sliding idea right away or look over your polar plans once more.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st_gran_try",
+          "label": "Try Leo's gentle sliding chute idea.",
+          "target": "st_win"
+        },
+        {
+          "id": "c_st_gran_back",
+          "label": "Look over your polar plans once more.",
+          "target": "st_plan"
+        }
+      ]
+    },
+    {
+      "id": "st_win",
+      "body": "You pat the snow with your mittens. You make a smooth, perfect ramp. You reach up and give Zorp a tiny push. He holds on with all five arms. Swoosh! He glides slow and gentle down the icy ramp. He lands in his cozy snow-cave with a soft poof. Zorp stretches every green arm wide. He does a happy alien dance in the soft snow.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st_win",
+          "label": "Watch Zorp settle into his snow-cave.",
+          "target": "st_thanks"
+        }
+      ]
+    },
+    {
+      "id": "st_thanks",
+      "body": "Zorp pushes one arm up against the cave roof. It looks like a high five. He squeaks a happy thank you. Back across the ice, other small voices are still calling. The Great Flurry is gathering in the sky. You can walk out to the snow-caves again. You can watch the flurry arrive. Or you can sit with Leo and let the snow finish the rescue.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st_back",
+          "label": "Pick your way back out to the snow-caves.",
+          "target": "n_meet"
+        },
+        {
+          "id": "c_st_done",
+          "label": "Watch the Great Flurry arrive over the yard.",
+          "target": "n_alldone"
+        },
+        {
+          "id": "c_st_rest",
+          "label": "Sit with Leo and let the snow finish the rescuing.",
+          "target": "e_tide_star"
+        }
+      ]
+    },
+    {
+      "id": "t_st_fi",
+      "body": "You hop carefully from ice patch to ice patch toward the little penguin tracks. Out past the snow-caves, the Great Flurry drops a few sparkly flakes, getting closer! Leo waves his furry hat from the Base Camp Porch. Up ahead, splashing sounds come from a slushy puddle no bigger than a dinner plate.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1",
+          "label": "Kneel beside the shrinking slush puddle.",
+          "target": "fi_scene"
+        }
+      ]
+    },
+    {
+      "id": "fi_scene",
+      "body": "A wind-up silver penguin spins in the slush puddle. He zips in busy, whirring circles. The icy water is only as deep as a soup bowl. The morning sun makes the puddle smaller. He pops his shiny beak up. He says his name is Pip. Pip wants a deeper snow-lake, please! He is hopeful and loves to chat. He is not scared at all.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fi_scene",
+          "label": "Lean in and say hello to little Pip.",
+          "target": "fi_meet"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "fi_meet",
+      "body": "You tell Pip that the rescue patrol is here! His big snow-lake waits just two hops away, nice and deep. Pip zooms an excited, whirring lap around his slush puddle. You look from your two warm mittens to the strip of dry winter grass between the puddles, and then to your red snow shovel. There are three ways this polar rescue might go.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fi_meet",
+          "label": "Think up a plan to move Pip.",
+          "target": "fi_plan"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "fi_plan",
+      "body": "You study the slush while Pip swims hopeful, whirring loops. You could try to catch him with your mittens. You could dig a little slush-river over to his snow-lake. Or you could scoop him and the water into your shovel. Pip clicks his beak. It seems to say, \"You can do it, explorer!\" Back at the porch, Leo takes a warm sip of his cocoa.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fi_plan_hands",
+          "label": "Catch Pip with your thick mittens.",
+          "target": "fi_flop_hands"
+        },
+        {
+          "id": "c_fi_plan_dig",
+          "label": "Dig a slushy river over to his snow-lake.",
+          "target": "fi_flop_dig"
+        },
+        {
+          "id": "c_fi_plan_scoop",
+          "label": "Scoop slush and Pip up together in your shovel.",
+          "target": "fi_win"
+        }
+      ]
+    },
+    {
+      "id": "fi_flop_hands",
+      "body": "You cup your mittens and reach into the slush, but Pip is quicker than a sneeze! He zips right between your thumbs, tickles your wrist, and splashes a tiny wave of icy water right onto your nose. You snort with laughter and Pip does a proud little flip. No harm done to anyone, just a chilly face! You can pick a plan again or ask Leo for a tip.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fi_hands_again",
+          "label": "Line up your ideas and try again.",
+          "target": "fi_plan"
+        },
+        {
+          "id": "c_fi_hands_gran",
+          "label": "Ask Leo for an explorer tip.",
+          "target": "fi_gran"
+        }
+      ]
+    },
+    {
+      "id": "fi_flop_dig",
+      "body": "You drag your shovel handle through the ice. You try to dig a river. But the dry winter grass drinks the slushy water. It makes a polite slurp before it travels anywhere! The little ditch just sits there. It is muddy and empty. You pat the grass and giggle at your missing river. Pip just shrugs his silver flippers. You can pick a plan again. Or you can ask Leo for an explorer tip.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fi_dig_again",
+          "label": "Smooth the snow and try again.",
+          "target": "fi_plan"
+        },
+        {
+          "id": "c_fi_dig_gran",
+          "label": "Ask Leo for an explorer tip.",
+          "target": "fi_gran"
+        }
+      ]
+    },
+    {
+      "id": "fi_gran",
+      "body": "Leo leans forward on the Base Camp Porch and smiles. \"Wind-up penguins do not like to be squeezed,\" he calls out, \"but they do love to swim! Scoop him up in your shovel so he can ride to his lake swimming the whole way.\" You can try the gentle shovel scoop or look over your plans once more.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fi_gran_try",
+          "label": "Scoop slush and Pip up together, Leo's way.",
+          "target": "fi_win"
+        },
+        {
+          "id": "c_fi_gran_back",
+          "label": "Look over your polar plans once more.",
+          "target": "fi_plan"
+        }
+      ]
+    },
+    {
+      "id": "fi_win",
+      "body": "You lower your red shovel slowly into the puddle. Pip swims right in! He rides his very own scoop of winter sea. You take two careful hops. Then you tip the shovel at the edge of the deep snow-lake. Pip pours out with a happy splash. He zooms one giant, whirring loop around his cool, perfect new home.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fi_win",
+          "label": "Watch Pip zoom around his big new lake.",
+          "target": "fi_thanks"
+        }
+      ]
+    },
+    {
+      "id": "fi_thanks",
+      "body": "Pip leaps one bright thank-you hop. Then he races another lap. Out across the ice, someone else is squeaking for help. The Great Flurry is surely coming. You wave goodbye to Pip! You can head back out toward the calling voices. Or you can stay and watch the fluffy snow arrive.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fi_back",
+          "label": "Head back out toward the calling voices.",
+          "target": "n_meet"
+        },
+        {
+          "id": "c_fi_done",
+          "label": "Watch the Great Flurry come in over the yard.",
+          "target": "n_alldone"
+        }
+      ]
+    },
+    {
+      "id": "t_fi_cr",
+      "body": "You cross the ice toward the clink and clank sounds. Behind you, the Great Flurry steps closer. It fills the far snow-caves with soft powder. The frozen patch of fairy lights ahead is tangled and shiny. Something right in the middle of it is waving wildly.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2",
+          "label": "Cross the ice to the fairy lights patch.",
+          "target": "cr_scene"
+        }
+      ]
+    },
+    {
+      "id": "cr_scene",
+      "body": "In the middle of the lights, a small toy robot is tangled up. He looks like a silver present that tied itself! He clacks his little metal claws to say hello. He says his name is Clanks. He was walking by when the wire fell over. Now his legs are in a friendly mess. He sounds happy, not scared at all.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cr_scene",
+          "label": "Crouch down beside the tangled toy robot.",
+          "target": "cr_meet"
+        }
+      ]
+    },
+    {
+      "id": "cr_meet",
+      "body": "You get close. Clanks wiggles to show which gears are stuck. The green wire of the fairy lights is slippery like icy noodles. Clanks says his metal claws only grab things that poke too fast. You look at the tricky mess. Then you look at the marshmallow spoon in your coat pocket. You start to think like a brave explorer.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cr_meet",
+          "label": "Think up a plan to untangle Clanks.",
+          "target": "cr_plan"
+        }
+      ]
+    },
+    {
+      "id": "cr_plan",
+      "body": "You look at the wire mess while Clanks waits. He waves one free claw like a tiny flag. You could give the lights one quick pull. You could hold out your marshmallow spoon for Clanks to grab. Or you could undo the wire one loop at a time. Leo hums a winter song from the Base Camp porch nearby. He keeps an eye on the rescue.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cr_plan_tug",
+          "label": "Give the fairy lights one quick tug.",
+          "target": "cr_flop_tug"
+        },
+        {
+          "id": "c_cr_plan_spoon",
+          "label": "Hold out your spoon for Clanks to grab.",
+          "target": "cr_flop_spoon"
+        },
+        {
+          "id": "c_cr_plan_ribbon",
+          "label": "Untangle one wire loop at a time.",
+          "target": "cr_win"
+        }
+      ]
+    },
+    {
+      "id": "cr_flop_tug",
+      "body": "You grip the slippery wire and give one quick tug! The frozen plastic slides straight through your mittens, and you sit down plop in a soft snowdrift. Clanks waves both pinchers as if to say, \"Whoa, nice splash!\" You laugh and stand up brushing powder off your snowsuit, completely fine. The tangle is still tangled. You can pick a plan again or ask Leo for a tip.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cr_tug_again",
+          "label": "Stand up and try your ideas again.",
+          "target": "cr_plan"
+        },
+        {
+          "id": "c_cr_tug_gran",
+          "label": "Ask Leo for an explorer tip.",
+          "target": "cr_gran"
+        }
+      ]
+    },
+    {
+      "id": "cr_flop_spoon",
+      "body": "You hold out your marshmallow spoon, and Clanks grabs it! But he does not climb free. The little robot holds on tight. He waves the spoon around like a shiny silver prize. You have a soft, silly tug-of-war just to get your spoon back. You tuck it safely in your pocket. The wire is still tangled. You can pick a plan again or ask Leo for a tip.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cr_spoon_again",
+          "label": "Pocket the spoon and try your ideas again.",
+          "target": "cr_plan"
+        },
+        {
+          "id": "c_cr_spoon_gran",
+          "label": "Ask Leo for an explorer tip.",
+          "target": "cr_gran"
+        }
+      ]
+    },
+    {
+      "id": "cr_gran",
+      "body": "Leo calls over softly from the Base Camp Porch. \"Tangles hate hurrying,\" he says. \"Hum a slow winter song and untangle it one loop at a time, and the whole knot will give up all by itself!\" You can try the slow loop-by-loop way or look over your plans once more.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cr_gran_try",
+          "label": "Untangle one loop at a time, Leo's way.",
+          "target": "cr_win"
+        },
+        {
+          "id": "c_cr_gran_back",
+          "label": "Look over your polar plans once more.",
+          "target": "cr_plan"
+        }
+      ]
+    },
+    {
+      "id": "cr_win",
+      "body": "You hum a slow winter song. You undo one frozen wire loop, then another, and another. The mess gives up with a soft clink! Clanks steps out. He stretches each metal leg one by one like a tiny gym class. His perfect, deep snow-cave is right next door. It is ready for a brave robot to jump in.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cr_win",
+          "label": "Watch Clanks scuttle into his snow-cave.",
+          "target": "cr_thanks"
+        }
+      ]
+    },
+    {
+      "id": "cr_thanks",
+      "body": "Clanks taps a happy drum beat on a rock. He walks a thank-you circle around his cave. Another voice is still squeaking somewhere back across the ice. The Great Flurry is coming fast. You can go and find who is calling. You can stay and watch the snow arrive. Or you can watch from Leo's blanket while the Flurry does the rest.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cr_back",
+          "label": "Go and find who is calling.",
+          "target": "n_meet"
+        },
+        {
+          "id": "c_cr_done",
+          "label": "Watch the Great Flurry come in over the yard.",
+          "target": "n_alldone"
+        },
+        {
+          "id": "c_cr_rest",
+          "label": "Watch from Leo's blanket while the Flurry fetches the turtle.",
+          "target": "e_tide_snail"
+        }
+      ]
+    },
+    {
+      "id": "t_cr_pw",
+      "body": "You tiptoe up the icy garden gnome stump. You keep your boots on the rough snowy parts, just like Leo taught you. The Great Flurry is closer now. It fills snow-caves behind you with fluffy white powder. Near the very top, a green shell sits in the winter sun. It is no bigger than a button.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3",
+          "label": "Tiptoe up the frosty stump to the tiny shell.",
+          "target": "pw_scene"
+        }
+      ]
+    },
+    {
+      "id": "pw_scene",
+      "body": "Near the top of the frosty stump sits a toy turtle shell. It is no bigger than a button. It is far from any soft snow. A tiny voice inside gives a polite little cough. The sun is bright, and the wood is icy and bare. The top of the stump is a very long walk from home for someone so small.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pw_scene",
+          "label": "Bend down and greet the little toy turtle.",
+          "target": "pw_meet"
+        }
+      ]
+    },
+    {
+      "id": "pw_meet",
+      "body": "You bend down, and the tiny plastic turtle peeks out. Her name is Shelly. She went exploring on this bright morning and walked much too far! Her cozy snow-cave is way down at the bottom of the stump. Toy turtles are the slowest walkers in the whole garden. You dip one mitten in a fluffy pile of snow while you think.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pw_meet",
+          "label": "Think up a plan to bring Shelly home.",
+          "target": "pw_plan"
+        }
+      ]
+    },
+    {
+      "id": "pw_plan",
+      "body": "You think while Shelly waits in her snug green shell. You could roll her along like a tiny wheel. You could cheer for her to walk faster. Or you could offer her a ride on your snowy mitten. Shelly squeaks that any way is fine. She is in no hurry at all! But the dark clouds say the Great Flurry is in a rush.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pw_plan_roll",
+          "label": "Roll Shelly along like a tiny wheel.",
+          "target": "pw_flop_roll"
+        },
+        {
+          "id": "c_pw_plan_cheer",
+          "label": "Cheer for Shelly to walk faster.",
+          "target": "pw_flop_cheer"
+        },
+        {
+          "id": "c_pw_plan_palm",
+          "label": "Offer Shelly a ride on your snowy mitten.",
+          "target": "pw_win"
+        }
+      ]
+    },
+    {
+      "id": "pw_flop_roll",
+      "body": "You give Shelly a soft push to roll her like a tiny wheel. But she tucks herself deep into her shell. She will not move at all. She is stuck fast as a frozen pebble! \"No rolling today, thank you,\" says a tiny, quiet voice. You laugh at your silly idea. Shelly peeks back out, looking very comfy. You can pick a plan again or ask Leo for a tip.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pw_roll_again",
+          "label": "Smile at the stubborn shell and try again.",
+          "target": "pw_plan"
+        },
+        {
+          "id": "c_pw_roll_gran",
+          "label": "Ask Leo for an explorer tip.",
+          "target": "pw_gran"
+        }
+      ]
+    },
+    {
+      "id": "pw_flop_cheer",
+      "body": "You clap and cheer loudly, \"Go Shelly, go!\" Shelly tries her very best. After one full minute of hard work, she travels the width of a single ice cube. She puffs with pride! At this speed, you might arrive by next Tuesday. You cheer once more anyway. Doing your best deserves a nice cheer. You can pick a plan again, or you can ask Leo for a tip.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pw_cheer_again",
+          "label": "Line up your ideas and try again.",
+          "target": "pw_plan"
+        },
+        {
+          "id": "c_pw_cheer_gran",
+          "label": "Ask Leo for an explorer tip.",
+          "target": "pw_gran"
+        }
+      ]
+    },
+    {
+      "id": "pw_gran",
+      "body": "Leo cups his hands around his mouth. He calls up softly. \"Little turtles ride better than they roll,\" he says. \"Put some snow on your mitten so it feels like home. Let Shelly hold on tight. Then walk her down super slow!\" You can offer the snowy mitten ride. Or you can look over your plans one more time.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pw_gran_try",
+          "label": "Offer Shelly a snowy-mitten ride, Leo's way.",
+          "target": "pw_win"
+        },
+        {
+          "id": "c_pw_gran_back",
+          "label": "Look over your polar plans once more.",
+          "target": "pw_plan"
+        }
+      ]
+    },
+    {
+      "id": "pw_win",
+      "body": "You scoop snow onto your mitten. You lay your hand flat next to Shelly. She slides on and holds tight. This is the longest, highest, most careful polar rescue of the day! You take slow steps down the icy stump. The Great Flurry drops thick, soft flakes behind you. The snow falls like a happy crowd. At last, you kneel at her snow-cave.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pw_win",
+          "label": "Lower Shelly into her cozy snow-cave.",
+          "target": "pw_thanks"
+        }
+      ]
+    },
+    {
+      "id": "pw_thanks",
+      "body": "Shelly rests on her favorite frozen leaf. She makes a happy little squeak. She is home at last! A soft, cold wind blows all over the garden. The Great Flurry comes down hard now. You can look back across the ice for anyone calling. Or you can stay and watch the deep snow fall.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pw_back",
+          "label": "Look back across the ice for anyone else.",
+          "target": "n_meet"
+        },
+        {
+          "id": "c_pw_done",
+          "label": "Watch the Great Flurry come in over the yard.",
+          "target": "n_alldone"
+        }
+      ]
+    },
+    {
+      "id": "n_alldone",
+      "body": "You stand tall on the icy glacier. You look back at the snow-caves you reached. Every toy friend you got to is safe and happy. They wave or buzz or zoom in the snow. The Great Flurry sweeps closer. Thick, soft stripes of snow fall down. It is snug and friendly. It comes to blanket everyone and finish your work. From the Base Camp porch, Leo gives you a proud thumbs up!",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_alldone",
+          "label": "Watch the first wave of heavy snow slide in.",
+          "target": "n_tide"
+        }
+      ]
+    },
+    {
+      "id": "n_tide",
+      "body": "The first thick wave of the Great Flurry dances across the ice. It fills the closest dent right to the top with fresh snow. The soft snow is home. It reaches every spot you could not get to! The new snow-caves shine like a winter party. You can follow the Flurry from cave to cave to see friends greet it. You can climb up next to Leo on the porch. Or you can open the thermos to cheer the rescue team.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tide_follow",
+          "label": "Follow the Great Flurry from cave to cave.",
+          "target": "n_fill"
+        },
+        {
+          "id": "c_tide_gran",
+          "label": "Climb up beside Leo on the Base Camp Porch.",
+          "target": "n_wave"
+        },
+        {
+          "id": "c_tide_picnic",
+          "label": "Open the thermos of cocoa to celebrate.",
+          "target": "n_picnic"
+        }
+      ]
+    },
+    {
+      "id": "n_fill",
+      "body": "You trot beside the falling snow. It fills cave after cave like a row of white tea cups. Zorp's snow-cave is next. It is already piling up right to the top! You can stay and cheer as Zorp's cave fills with fluffy snow. You can race the spinning wind back up the cleared path for fun. Or you can look around for anyone else who might still need a rescue hand.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fill_cheer",
+          "label": "Cheer as Zorp's snow-cave fills up.",
+          "target": "e_cartwheel"
+        },
+        {
+          "id": "c_fill_race",
+          "label": "Race the swirling snow up the shoveled path.",
+          "target": "n_race"
+        },
+        {
+          "id": "c_fill_check",
+          "label": "Peek around for anyone else who needs help.",
+          "target": "n_check"
+        }
+      ]
+    },
+    {
+      "id": "n_race",
+      "body": "You line up your boots on the cleared path. You stand far ahead of the falling flakes. Then you wait for the spinning snow to catch up. Leo calls \"Ready, steady, go!\" from the porch. The Flurry blows softly forward. You take off running and giggling along the icy path right beside it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_race_go",
+          "label": "Run the last few snowy-sounding steps.",
+          "target": "e_race_win"
+        }
+      ]
+    },
+    {
+      "id": "n_check",
+      "body": "You block the sun with your mitten. You look over the busy snow-caves as they fill. Nobody calls for help. But under a snowy bush, something small peeks out of the fresh snow. On the ice, a shiny frost trail winds toward a pile of frozen rocks! Both look like tiny winter puzzles. They are worth one last look before hot cocoa.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_check_ledge",
+          "label": "Peek under the shadowy snowy bush.",
+          "target": "e_hermit"
+        },
+        {
+          "id": "c_check_trail",
+          "label": "Follow the glittery frosty trail.",
+          "target": "e_shell"
+        }
+      ]
+    },
+    {
+      "id": "n_wave",
+      "body": "You climb up next to Leo on the Base Camp porch. He wraps you in the warm corner of the wool blanket. Below you, the Great Flurry fills every snow-cave one by one. The toys wave, whir, and clack. Leo asks how the rescue team would like to celebrate! You could sing a winter song. You could shout three big cheers. Or you could call each friend by name as their cave fills.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wave_song",
+          "label": "Sing the welcome-home winter song.",
+          "target": "e_song"
+        },
+        {
+          "id": "c_wave_cheer",
+          "label": "Shout three hip-hip-hoorays!",
+          "target": "e_hooray"
+        },
+        {
+          "id": "c_wave_names",
+          "label": "Call each friend's name as their cave fills.",
+          "target": "e_names"
+        }
+      ]
+    },
+    {
+      "id": "n_picnic",
+      "body": "Leo opens the thermos on the porch. He pours two hot cups of cocoa with extra marshmallows. Below you both, the Great Flurry falls into the last icy spots. The toys wave hello to the snow. You can raise your mugs to cheer the rescue team. You can tell Leo the whole story of the snowy day. Or you can start to plan the next polar rescue patrol!",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_picnic_toast",
+          "label": "Raise cocoa mugs to the rescue team.",
+          "target": "e_toast"
+        },
+        {
+          "id": "c_picnic_story",
+          "label": "Tell Leo the whole snowy rescue story.",
+          "target": "e_story"
+        },
+        {
+          "id": "c_picnic_patrol",
+          "label": "Plan the next polar rescue patrol.",
+          "target": "e_patrol"
+        }
+      ]
+    },
+    {
+      "id": "e_tide_star",
+      "body": "You snuggle next to Leo on the wool blanket. You share marshmallows while the Great Flurry drifts down. The thick snow reaches Pip and turns his slush into a deep lake. It covers the wire to free Clanks. It buries the stump to carry Shelly gently home. The snow does the rest of the rescuing all by itself! You wave to each toy. \"One rescue by you and three by the snow,\" says Leo. \"What a fine team.\" You snuggle deeper. You are proud of Zorp's rescue and ready to explore the filled snow-caves tomorrow.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_tide_star",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "{SETBACK1_PRIZE}"
+      }
+    },
+    {
+      "id": "e_tide_snail",
+      "body": "You sit on Leo's wool blanket. You watch the sparkly Flurry climb the stump. It goes higher and higher. It piles up right next to tiny Shelly's shell. This makes a perfect snowy ramp. The little plastic turtle slides down the fresh snow in style. A tiny faraway \"wheee!\" floats across the icy yard. \"Three rescues by you and one by the snow,\" says Leo. \"Sounds like a fine team.\" You wave. The little shell settles safely into her soft, deep snow-cave.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_tide_snail",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "{SETBACK2_PRIZE}"
+      }
+    },
+    {
+      "id": "e_cartwheel",
+      "body": "The Great Flurry spills into Zorp's snow-cave. The fresh snow rises around him like a big hug! Zorp does a slow, great snowy cartwheel to say thank you. All five of his green arms sparkle in the flakes. You cheer. Leo cheers from the Base Camp Porch. The Flurry keeps rolling gently in. It welcomes every rescued toy home. This is the best snow day ever, you decide. Zorp cartwheels once more. He acts like he completely agrees.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_cartwheel",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{Q1_PRIZE}"
+      }
+    },
+    {
+      "id": "e_race_win",
+      "body": "You and the swirling snow-line race up the shoveled path. You win by exactly one giggling, frosty toe! The Great Flurry pit-pats little flake-claps behind you. It fills the last icy spots. Leo shouts, \"Hooray!\" You take a big bow to the falling snow. A sudden sparkly gust seems to bow right back. Every toy friend is home. The winter magic is back where it belongs. You are the fastest polar explorer in the whole back garden.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_race_win",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{RACE_PRIZE}"
+      }
+    },
+    {
+      "id": "e_hermit",
+      "body": "A bright red plastic cardinal sits under the snowy bush. He is already perfectly cozy in the new snow. He needs no rescue at all! He tips his little beak to you. He does it exactly the way Leo tips his furry trapper hat. You tip an unseen hat right back. He is a new explorer friend to wave to. The Flurry blankets the garden. All the rescued toys settle happily into their deep, soft snow-caves.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_hermit",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "{BONUS1_PRIZE}"
+      }
+    },
+    {
+      "id": "e_shell",
+      "body": "The shiny path winds past two frozen pebbles. It stops at a smooth piece of blue sea-glass. It was dropped there long ago! Leo says it is a thank-you gift from the winter garden. It is for a hard-working explorer. You hold it to your ear. You hear the snowy wind blowing around you. You carry the glass back in your red shovel. It is a frozen treasure. It will help you remember the great snow day rescue forever.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_shell",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "{BONUS2_PRIZE}"
+      }
+    },
+    {
+      "id": "e_song",
+      "body": "You and Leo make up a welcome-home winter song right there on the porch. It has a happy sound for Zorp, Pip, Clanks, and little Shelly! The toys join in from their deep snow-caves. They whir and clack along in time. The Great Flurry keeps the beat with soft, windy whooshes. The song floats out over the icy yard. It plays until every snow-cave is full of snow. At last, everybody is perfectly home.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_song",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Welcome-Home Song"
+      }
+    },
+    {
+      "id": "e_hooray",
+      "body": "\"Hip, hip, hooray! Hip, hip, hooray! Hip, hip, hooray!\" You and Leo shout three big cheers. The Great Flurry rolls home across the yard. The toys answer with whirs, beeps, and claw-clacks from their snow-caves. The Flurry fills the very last icy patch with a happy poof of powder. Every friend is safe. Every snow-cave is brimming with snow. The whole winter garden feels like it is clapping along!",
+      "is_ending": true,
+      "ending": {
+        "id": "end_hooray",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Three Cheers for Everyone"
+      }
+    },
+    {
+      "id": "e_names",
+      "body": "As each snow-cave fills, you call its friend by name. \"Welcome home, Zorp! Welcome home, Pip! Welcome home, Clanks! Welcome home, Shelly!\" Each toy pops up and waves an alien arm, a silver flipper, a metal pincher, or a tiny shell, then settles snug into the deep, soft powder. Leo squeezes your shoulder. Every single toy friend is home in the snow, and you are the reason why!",
+      "is_ending": true,
+      "ending": {
+        "id": "end_names",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Everyone Home"
+      }
+    },
+    {
+      "id": "e_toast",
+      "body": "You and Leo clink your little cocoa mugs together on the Base Camp Porch. \"To the rescue team,\" says Leo. \"To Zorp, Pip, Clanks, and Shelly! And to the polar explorer who never gave up!\" Below you, the Great Flurry sparkles into every snow-cave. The toys wave a snowy toast of their own. You sip your hot chocolate. You decide that winter rescue days taste very sweet.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_toast",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "A Toast to the Rescue Team"
+      }
+    },
+    {
+      "id": "e_story",
+      "body": "You tell Leo the whole story of the rescue day. Zorp slipped on the frosty stump. Pip was trapped in the slush. Clanks got tangled in the lights. Then there was the long, slow ride home for the littlest turtle shell. Leo listens under his trapper hat. He calls it the best garden explorer story he has ever heard. Below you, the full snow-caves sparkle. The toys wiggle. They act as if they are adding their own favorite parts to the tale.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_story",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "{STORY_PRIZE}"
+      }
+    },
+    {
+      "id": "e_patrol",
+      "body": "You and Leo plan the next snow day rescue patrol. You make marshmallow-crumb maps on the wool blanket. Leo will bring his furry hat and hot cocoa. You will bring your red shovel and your gentle, warm mittens. Below you, the Great Flurry tucks every toy into the deep snow. They will rest there for the afternoon. The garden will freeze into hard ice again someday, Leo says. When it does, the polar rescue patrol will be ready!",
+      "is_ending": true,
+      "ending": {
+        "id": "end_patrol",
+        "valence": "positive",
+        "kind": "success",
+        "title": "{PATROL_PRIZE}"
+      }
+    }
+  ]
+}

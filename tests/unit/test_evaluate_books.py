@@ -12,9 +12,13 @@ No test here makes a network call.
 
 from __future__ import annotations
 
-from typing import Any
+import dataclasses
+from typing import TYPE_CHECKING, Any
+
+import pytest
 
 from scripts.evaluate_books import (
+    BookScore,
     _beat_terms,  # pyright: ignore[reportPrivateUsage]
     _directives,  # pyright: ignore[reportPrivateUsage]
     _fidelity,  # pyright: ignore[reportPrivateUsage]
@@ -23,6 +27,9 @@ from scripts.evaluate_books import (
     evaluate_book,
     summarize_leg,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 _BAND: dict[str, Any] = {
     "scheme": "flesch_kincaid",
@@ -212,3 +219,93 @@ def test_summarize_leg_keeps_a_failed_book_in_the_denominator() -> None:
     assert summary.books == 4
     assert summary.complete_books == 1
     assert summary.means["fill_completeness"] == 0.25
+
+
+# ---------------------------------------------------------------------------
+# Drop-worst: a single book must not become a property of the variable (AL-349)
+# ---------------------------------------------------------------------------
+
+
+def _leg_scores(in_band_values: Sequence[float]) -> list[BookScore]:
+    """Build one leg's book scores with the given in-band figures.
+
+    Every other field is held constant, so a change in the summary is
+    attributable to the values under test rather than to the fixture.
+
+    Args:
+        in_band_values: One in-band share per book.
+
+    Returns:
+        The book scores.
+    """
+    return [
+        BookScore(
+            leg="alpha",
+            family="alpha",
+            brief_index=index,
+            nodes=10,
+            filled_nodes=10,
+            fill_completeness=1.0,
+            placeholder_leaks=0,
+            l1_errors=0,
+            l1_warnings=0,
+            grade=3.0,
+            in_band=value,
+            grade_spread=0.5,
+            word_ratio_median=1.0,
+            word_on_budget=1.0,
+            beat_recall=0.9,
+            mattr=0.7,
+            mean_sentence_words=9.0,
+            sentence_spread=3.0,
+            dialogue_share=0.0,
+            total_words=800,
+        )
+        for index, value in enumerate(in_band_values)
+    ]
+
+
+def test_drop_worst_removes_the_single_book_that_carried_a_leg() -> None:
+    """Reproduces run-6's fp4 headline, which was one book rather than an effect.
+
+    `deepseek-v4-pro-fp4` read 0.70 in band against fp8's 0.92 and was written
+    up as a 22-point quantisation penalty. Dropping each leg's worst book put it
+    at 0.89 against unquantised 0.88, so the effect was not there (AL-349).
+    """
+    summary = summarize_leg(_leg_scores([0.12, 0.92, 0.86, 0.89]))
+
+    assert summary.means["in_band"] == pytest.approx(0.6975, abs=0.001)
+    assert summary.drop_worst["in_band"] == pytest.approx(0.89, abs=0.001)
+
+
+def test_drop_worst_removes_the_top_of_a_lower_is_better_field() -> None:
+    """Orientation is per field, and getting it backwards flatters the leg.
+
+    ``grade_spread`` is bad when large, so its worst book is the widest one.
+    Dropping the smallest instead would raise the reported spread and read as a
+    robustness check while being the opposite of one.
+    """
+    scores = _leg_scores([1.0, 1.0, 1.0, 1.0])
+    scores[0] = dataclasses.replace(scores[0], grade_spread=4.0)
+
+    summary = summarize_leg(scores)
+
+    # Means over 4.0, 0.5, 0.5, 0.5; dropping the 4.0 leaves 0.5.
+    assert summary.means["grade_spread"] == pytest.approx(1.375, abs=0.001)
+    assert summary.drop_worst["grade_spread"] == pytest.approx(0.5, abs=0.001)
+
+
+def test_drop_worst_is_withheld_when_a_leg_has_too_few_books() -> None:
+    """Dropping one of two leaves a single observation, not a robustness check."""
+    assert summarize_leg(_leg_scores([0.9, 0.3])).drop_worst == {}
+
+
+def test_drop_worst_barely_moves_a_leg_with_no_outlier() -> None:
+    """The check must stay quiet when nothing is being carried by one book."""
+    summary = summarize_leg(_leg_scores([0.88, 0.90, 0.89, 0.91]))
+
+    base = summary.means["in_band"]
+    robust = summary.drop_worst["in_band"]
+    assert base is not None
+    assert robust is not None
+    assert abs(robust - base) < 0.02

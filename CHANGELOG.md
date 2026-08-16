@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.81.0] - 2026-08-16
+
+### Features
+
+- **measurement**: Rebuild the syllable counter against ground truth, and close the W7 instrument
+  ([#719](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/719),
+  [`edfc3b3`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/edfc3b383005373bd40a97e3a418b2c52130f47a))
+
+
+## [0.80.1] - 2026-08-16
+
+### Bug Fixes
+
+- **landing**: Correct the approval claims, and plan the onboarding overhaul
+  ([#718](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/718),
+  [`765415c`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/765415c8a8b1d79fa41af63fd1dc7bd007cd0b1c))
+
+
 ## [0.80.0] - 2026-08-15
 
 ### Features
@@ -3460,6 +3478,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.81.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.80.1...v0.81.0
+[0.80.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.80.0...v0.80.1
 [0.80.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.79.1...v0.80.0
 [0.79.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.79.0...v0.79.1
 [0.79.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.78.2...v0.79.0

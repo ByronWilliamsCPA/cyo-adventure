@@ -173,24 +173,28 @@ def test_no_seeded_price_is_negative() -> None:
 
 
 @pytest.mark.unit
-def test_fully_priced_is_false_while_the_input_gap_stands() -> None:
-    """The known gap is asserted, so filling it later is a visible change.
+def test_every_entry_is_fully_priced() -> None:
+    """Was the inverse assertion until 2026-08-14, and it did its job.
 
-    This is a documented-state test rather than a desired-state one: every
-    seeded entry sourced from the phase 2b analysis has no input price. When
-    someone fills those in, this test fails and points at the entries that
-    changed, which is the intended way to find out.
+    This test used to pin the *gap*: it named the three phase-2b entries with
+    no input price and said that filling them in would fail this test and point
+    at what changed. That is what happened (`UW-C239`), so the assertion is now
+    the one the module always wanted. Every entry carries both halves, read live
+    from the vendor by `scripts/refresh_pricing.py`.
+
+    It stays an exhaustive check rather than a spot check, because the way this
+    gap reopens is a model added to the allowlist and not to the price table:
+    its calls then price as unknown and every job touching it reports
+    incomplete, exactly as before.
     """
-    unpriced_input = {
-        key for key, entry in PRICES.items() if entry.input_usd_per_mtok is None
+    unpriced = {
+        key
+        for key, entry in PRICES.items()
+        if entry.input_usd_per_mtok is None or entry.output_usd_per_mtok is None
     }
 
-    assert unpriced_input == {
-        ("openrouter", "anthropic/claude-haiku-4.5"),
-        ("openrouter", "anthropic/claude-sonnet-4.6"),
-        ("openrouter", "google/gemini-2.5-flash"),
-    }
-    assert not PRICES[("openrouter", "anthropic/claude-haiku-4.5")].fully_priced
+    assert unpriced == set()
+    assert PRICES[("openrouter", "anthropic/claude-haiku-4.5")].fully_priced
     assert PRICES[("ollama", "qwen2.5:14b")].fully_priced
 
 

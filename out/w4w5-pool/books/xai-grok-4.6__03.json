@@ -1,0 +1,904 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_tide_pool_rescue",
+  "version": 1,
+  "title": "The White Garden Rescue",
+  "metadata": {
+    "age_band": "5-8",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 2.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "kindness",
+      "helping",
+      "perseverance",
+      "friendship"
+    ],
+    "estimated_minutes": 10,
+    "ending_count": 12,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "loop_and_grow",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "You crunch into the White Garden with Nell on a bright Snow Day morning. School is closed. Nell wears her red pom-pom expedition hat. She carries the biscuit tin of cocoa and jam sandwiches. You swing your tin snow-scoop. Fresh snow has gone way out across the lawn. The paths look shiny and dotted with hollows. Nell says the Melt always comes back, like a friend coming home. You cannot wait to explore the Driftlands. The sun is warm. You feel excited, never worried.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_go",
+          "label": "Follow Nell down the snowy explorer path.",
+          "target": "n_walk"
+        }
+      ]
+    },
+    {
+      "id": "n_walk",
+      "body": "You follow Nell down the snowy explorer path. She names the first drift Sleeping Bear. On Base Camp, the back-door step, she spreads the wool expedition blanket where she can see everything. She reminds you of the garden rules. Stay on the packed snow. Wet boots are fine. Call if you ever want a hand. You promise with a salute, explorer-style. Then you turn toward the shining hollows, ready to map them.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_walk_rocks",
+          "label": "Step out onto the packed low snow.",
+          "target": "n_meet"
+        }
+      ]
+    },
+    {
+      "id": "n_meet",
+      "body": "Out on the drifts you hear tiny voices. Snow Day morning left garden friends stuck too high and dry. A felt star sits on a high ledge. A silver rain-newt goes in circles in a saucer that is getting small. An earwig is tied in pea-netting. An acorn-cap walker is alone on dry brick. Far off, icicles drip. They say the Melt is already coming. It will reach the garden by lunch. They all call at once. You can only reach one at a time. You pick who to go to first.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_meet_star",
+          "label": "Hurry to the felt star on the high ledge.",
+          "target": "st_scene"
+        },
+        {
+          "id": "c_meet_fish",
+          "label": "Follow the glittery drip-trail across the snow.",
+          "target": "t_st_fi"
+        },
+        {
+          "id": "c_meet_crab",
+          "label": "Follow the green flutter to the pea-patch.",
+          "target": "t_fi_cr"
+        },
+        {
+          "id": "c_meet_snail",
+          "label": "Climb toward the button-shine on the dry brick.",
+          "target": "t_cr_pw"
+        }
+      ]
+    },
+    {
+      "id": "st_scene",
+      "body": "You hurry across a drift you name High Ledge. You reach the tall brick barbecue where Luma the felt star sits perched above your head. Her five arms droop like a tired star sticker. She calls down that the ledge is getting warm in the sun. She would very much like to be back in the cool snow-wreath hollow below. You tip your head back and wave.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st_scene",
+          "label": "Climb the low bricks for a closer look.",
+          "target": "st_meet"
+        }
+      ]
+    },
+    {
+      "id": "st_meet",
+      "body": "You climb two safe flat bricks and say hello. Luma perks up one floppy arm to wave. The ledge is dry as toast, and the snow-wreath hollow waits just below. Luma says any rescue plan is fine with her. She is a very patient felt star. You look at your tin snow-scoop, at your own two hands, and at the little packed-snow slope. You grin at her.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st_meet",
+          "label": "Think up a rescue plan for Luma.",
+          "target": "st_plan"
+        }
+      ]
+    },
+    {
+      "id": "st_plan",
+      "body": "You line up your ideas while Luma waves cheerfully from her dry brick ledge. You could toss meltwater up with your cupped hands. You could carry the tin snow-scoop up the little slope to pour her a waterfall. Or you could wet your hands and slide her down yourself. Nell watches from Base Camp, ready with a tip whenever you want one. The sun warms the bricks. Patient Luma waits, still waving.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st_plan_hands",
+          "label": "Toss meltwater up with your cupped hands.",
+          "target": "st_flop_hands"
+        },
+        {
+          "id": "c_st_plan_bucket",
+          "label": "Carry the tin scoop up the little slope.",
+          "target": "st_flop_bucket"
+        },
+        {
+          "id": "c_st_plan_slide",
+          "label": "Wet your hands and gently slide Luma down.",
+          "target": "st_win"
+        }
+      ]
+    },
+    {
+      "id": "st_flop_hands",
+      "body": "You scoop meltwater from a shiny hollow and toss it up toward the ledge. The water rains straight back down on your own head. Plip. Plop. Luma giggles so hard her five arms wiggle. You laugh and shake your wet hair like a puppy. No harm done, just a soggy fringe dripping on your scarf. You can line the plans up again, or trot over and ask Nell for a tip.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st_hands_again",
+          "label": "Line up the plans and try again.",
+          "target": "st_plan"
+        },
+        {
+          "id": "c_st_hands_gran",
+          "label": "Ask Nell for a tip.",
+          "target": "st_gran"
+        }
+      ]
+    },
+    {
+      "id": "st_flop_bucket",
+      "body": "You fill the tin snow-scoop at a hollow and start up the little packed-snow slope. It wobbles, tips, and whooshes every drop over your own boots. Your toes squelch inside your socks. Luma claps two floppy arms for the amazing splash. You grin and wiggle your soggy toes. Nothing lost. The Melt has plenty more water waiting. You can go back to your plans or ask Nell for a tip.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st_bucket_again",
+          "label": "Shake off the splash and try again.",
+          "target": "st_plan"
+        },
+        {
+          "id": "c_st_bucket_gran",
+          "label": "Ask Nell for a tip.",
+          "target": "st_gran"
+        }
+      ]
+    },
+    {
+      "id": "st_gran",
+      "body": "Nell tips back her red pom-pom hat and smiles from Base Camp. Felt stars like slow and gentle, she says. Wet your hands first so Luma can hold on comfy. Then slide her down to the snow-wreath hollow like a little slide ride. You can try the gentle sliding idea right away, or look over your plans once more.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st_gran_try",
+          "label": "Try Nell's gentle sliding idea.",
+          "target": "st_win"
+        },
+        {
+          "id": "c_st_gran_back",
+          "label": "Look over the plans once more.",
+          "target": "st_plan"
+        }
+      ]
+    },
+    {
+      "id": "st_win",
+      "body": "You dip your hands in a melt hollow until they are cool and wet. You reach up toward the warm ledge. Luma holds on with all five arms, snug as a hug. Slow and gentle, you carry her down the brick into the snow-wreath hollow with a soft ploop. Luma stretches every arm wide, like a happy dance in the cold sparkle. She looks cozy at last.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st_win",
+          "label": "Watch Luma settle into her snow hollow.",
+          "target": "st_thanks"
+        }
+      ]
+    },
+    {
+      "id": "st_thanks",
+      "body": "Luma presses one arm up against the glassy meltwater like a high five. She burbles thank you. Back across the drifts, other small voices are still calling. The Melt is coming on. You can pick your way out to the hollows again. You can watch the Melt arrive. Or you can sit with Nell and let it finish the rescuing.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st_back",
+          "label": "Pick your way back out to the hollows.",
+          "target": "n_meet"
+        },
+        {
+          "id": "c_st_done",
+          "label": "Watch the Melt come in over the garden.",
+          "target": "n_alldone"
+        },
+        {
+          "id": "c_st_rest",
+          "label": "Sit with Nell and let the Melt finish the rescuing.",
+          "target": "e_tide_star"
+        }
+      ]
+    },
+    {
+      "id": "t_st_fi",
+      "body": "You hop with care from packed patch to packed patch toward the glittery drip-trail. You name this crossing Drip Lane. Out past the hollows the Melt crept one sparkly step closer. It glitters as it comes. Nell waves her pom-pom hat from Base Camp. The splash gets louder in a saucer no bigger than a dinner plate.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1",
+          "label": "Kneel beside the shrinking melt-saucer.",
+          "target": "fi_scene"
+        }
+      ]
+    },
+    {
+      "id": "fi_scene",
+      "body": "In the little saucer a small silver rain-newt zips in busy circles. The saucer is only as deep as a soup bowl, and the warm sun is sipping it smaller. He pops his mouth up. He says his name is Skip, and he would very much like a bigger pool please. He sounds hopeful and chatty, never scared. Tiny bubbles chase his tail as he talks.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fi_scene",
+          "label": "Lean in and say hello to the little rain-newt.",
+          "target": "fi_meet"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "fi_meet",
+      "body": "You lean in and tell Skip that help is here. The shady birdbath waits just two hops away, calm and cool. Skip zooms an excited lap around his saucer, flicking silver. You look from your two quick hands, to the strip of slush between the hollows, to your tin snow-scoop. Three ways this rescue might go. Skip waits, still chatting in tiny pops.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fi_meet",
+          "label": "Think up a plan to move Skip.",
+          "target": "fi_plan"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "fi_plan",
+      "body": "You study the shrinking saucer while Skip swims hopeful loops. You could catch him with your bare hands. You could dig a little river in the slush so the saucer can flow to the birdbath. Or you could scoop water and Skip up together in the tin snow-scoop. Skip blows a bright bubble that seems to say you can do it. Meltwater ticks at the rim. Skip loops again, still hopeful.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fi_plan_hands",
+          "label": "Catch Skip with your bare hands.",
+          "target": "fi_flop_hands"
+        },
+        {
+          "id": "c_fi_plan_dig",
+          "label": "Dig a little river over to the birdbath.",
+          "target": "fi_flop_dig"
+        },
+        {
+          "id": "c_fi_plan_scoop",
+          "label": "Scoop water and Skip up together in the tin.",
+          "target": "fi_win"
+        }
+      ]
+    },
+    {
+      "id": "fi_flop_hands",
+      "body": "You cup your hands and reach into the chilly saucer. Skip is quicker than a sneeze. He zips between your fingers, tickles your thumb, and splashes a tiny wave right up your nose. You snort with laughter. Skip does a proud little flip. No harm done to anyone at all. You wipe your nose on your sleeve. You can pick a plan again, or ask Nell for a tip.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fi_hands_again",
+          "label": "Line up the plans and try again.",
+          "target": "fi_plan"
+        },
+        {
+          "id": "c_fi_hands_gran",
+          "label": "Ask Nell for a tip.",
+          "target": "fi_gran"
+        }
+      ]
+    },
+    {
+      "id": "fi_flop_dig",
+      "body": "You drag your finger through the slush. You dig a little river toward the birdbath. The thirsty snow drinks the water down with a polite glug. It does not travel anywhere. The channel just sits there, damp and empty. You pat the slush and giggle at your river that is gone. Skip shrugs his tiny fins, still looping. You can pick a plan again, or ask Nell for a tip.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fi_dig_again",
+          "label": "Smooth the slush and try again.",
+          "target": "fi_plan"
+        },
+        {
+          "id": "c_fi_dig_gran",
+          "label": "Ask Nell for a tip.",
+          "target": "fi_gran"
+        }
+      ]
+    },
+    {
+      "id": "fi_gran",
+      "body": "Nell leans forward on Base Camp and smiles, pom-pom bobbing. Rain-newts do not like to be squeezed, she says, but they do love to swim. Scoop water and Skip up together in the tin. He can ride to the birdbath swimming the whole way. You can try the gentle scoop, or look over your plans once more.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fi_gran_try",
+          "label": "Scoop water and Skip up together, Nell's way.",
+          "target": "fi_win"
+        },
+        {
+          "id": "c_fi_gran_back",
+          "label": "Look over the plans once more.",
+          "target": "fi_plan"
+        }
+      ]
+    },
+    {
+      "id": "fi_win",
+      "body": "You lower the tin snow-scoop slowly into the saucer. Skip swims right in, riding his very own cupful of melt like a captain. Two careful hops later, naming each one, you tip the scoop at the edge of the birdbath. Skip pours out with the water. He zooms one giant loop around his cool new home. The shade makes the water wink. Skip looks delighted.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fi_win",
+          "label": "Watch Skip zoom around his big new bath.",
+          "target": "fi_thanks"
+        }
+      ]
+    },
+    {
+      "id": "fi_thanks",
+      "body": "Skip leaps one sparkly thank-you hop. He races another lap of the birdbath. Out across the drifts somebody else is still calling, high and small. The Melt is coming on. It glitters through the grass. You wave goodbye with your scoop. You can head back toward the calling, or stay and watch the water come.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fi_back",
+          "label": "Head back out toward the calling.",
+          "target": "n_meet"
+        },
+        {
+          "id": "c_fi_done",
+          "label": "Watch the Melt come in over the garden.",
+          "target": "n_alldone"
+        }
+      ]
+    },
+    {
+      "id": "t_fi_cr",
+      "body": "You cross the drifts toward the green flutter in the pea-patch. You name this one Pea-Patch Pass. Behind you the Melt has slid another sparkly step up the path. It fills the far hollows first like little cups. The pea-patch ahead is green and shiny with ice. Something in the middle of it is waving.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2",
+          "label": "Cross the snow to the pea-patch.",
+          "target": "cr_scene"
+        }
+      ]
+    },
+    {
+      "id": "cr_scene",
+      "body": "In the pea-patch a small earwig is tied in frozen netting. He looks like a present that tied itself. He clacks his pincers hello. He says his name is Snip. He was climbing through when the icy netting flopped over. Now his legs are in a friendly muddle. He sounds glad, not scared. A green ribbon of netting wiggles when he waves.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cr_scene",
+          "label": "Crouch down beside the tangled earwig.",
+          "target": "cr_meet"
+        }
+      ]
+    },
+    {
+      "id": "cr_meet",
+      "body": "You crouch close beside the pea-patch, knees in the snow. Snip wiggles to show which legs are stuck. The frozen netting is shiny and slippery as wet noodles. Snip promises his pincers only pinch things that poke too fast. You look at the tangle, then at the picnic spoon peeking out of your pocket, and start to think. A jam crumb still clings to it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cr_meet",
+          "label": "Think up a plan to untangle Snip.",
+          "target": "cr_plan"
+        }
+      ]
+    },
+    {
+      "id": "cr_plan",
+      "body": "You consider the netting muddle while Snip waits, waving one free pincer like a tiny flag. You could give the icy netting one quick tug. You could hold out the picnic spoon for Snip to grab. Or you could untangle one netting ribbon at a time. Nell hums a snow-day tune from Base Camp nearby. The pea-vines tick in the breeze. Snip keeps waving, still cheerful as jam.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cr_plan_tug",
+          "label": "Give the netting one quick tug.",
+          "target": "cr_flop_tug"
+        },
+        {
+          "id": "c_cr_plan_spoon",
+          "label": "Hold out the picnic spoon for Snip to grab.",
+          "target": "cr_flop_spoon"
+        },
+        {
+          "id": "c_cr_plan_ribbon",
+          "label": "Untangle one netting ribbon at a time.",
+          "target": "cr_win"
+        }
+      ]
+    },
+    {
+      "id": "cr_flop_tug",
+      "body": "You grip the slippery netting and give one quick tug. The wet ribbon slides straight through your fingers. You sit down plop in a shallow warm puddle of melt. Snip waves both pincers as if to say whoa, nice splash. You laugh and stand up dripping and completely fine. The tangle is still tangled. Your seat is soggy. You can pick a plan again or ask Nell for a tip.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cr_tug_again",
+          "label": "Stand up and try again.",
+          "target": "cr_plan"
+        },
+        {
+          "id": "c_cr_tug_gran",
+          "label": "Ask Nell for a tip.",
+          "target": "cr_gran"
+        }
+      ]
+    },
+    {
+      "id": "cr_flop_spoon",
+      "body": "You hold out the picnic spoon, still jammy at the tip. Snip grabs it. Instead of climbing free, the earwig pinches on tight and waves the spoon around like a shiny trophy. You have a gentle giggly tug-of-war just to get your spoon back. You tuck it safely in your pocket. The tangle is still tangled. You can pick a plan again, or ask Nell for a tip.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cr_spoon_again",
+          "label": "Pocket the spoon and try again.",
+          "target": "cr_plan"
+        },
+        {
+          "id": "c_cr_spoon_gran",
+          "label": "Ask Nell for a tip.",
+          "target": "cr_gran"
+        }
+      ]
+    },
+    {
+      "id": "cr_gran",
+      "body": "Nell calls over softly from Base Camp, hands around her mouth. Tangles hate hurrying, she says. Hum a slow song and loosen one netting ribbon at a time, and the whole knot will give up all by itself. You can try the slow ribbon-by-ribbon way, or look over your plans once more. Her pom-pom nods. Take your time, explorer.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cr_gran_try",
+          "label": "Untangle one ribbon at a time, Nell's way.",
+          "target": "cr_win"
+        },
+        {
+          "id": "c_cr_gran_back",
+          "label": "Look over the plans once more.",
+          "target": "cr_plan"
+        }
+      ]
+    },
+    {
+      "id": "cr_win",
+      "body": "You hum a slow snow-day song under your breath. You loosen one green ribbon of netting, then another, then another. The tangle gives up with a soft slurp. Snip steps out, stretching each leg one by one like a tiny gym class. The cool crack under the flowerpot is deep and ready for him. Snip tests the dark with one careful pincer.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cr_win",
+          "label": "Watch Snip scuttle into the cool pot-crack.",
+          "target": "cr_thanks"
+        }
+      ]
+    },
+    {
+      "id": "cr_thanks",
+      "body": "Snip clacks a happy drumroll on a pebble. He scuttles a thank-you circle around his pot. Another voice is still calling somewhere back across the drifts. The Melt is coming on. You can go and find it. You can watch the water arrive. Or you can watch from Nell's blanket while the Melt does the rest.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cr_back",
+          "label": "Go and find who is calling.",
+          "target": "n_meet"
+        },
+        {
+          "id": "c_cr_done",
+          "label": "Watch the Melt come in over the garden.",
+          "target": "n_alldone"
+        },
+        {
+          "id": "c_cr_rest",
+          "label": "Watch from Nell's blanket while the Melt fetches Nim.",
+          "target": "e_tide_snail"
+        }
+      ]
+    },
+    {
+      "id": "t_cr_pw",
+      "body": "You tiptoe up the dry brick path toward the button-shine. You keep your feet on the rough gray parts the way Nell likes. You name the path Brick Ridge. The Melt is closer now. It fills hollow after hollow behind you with happy gurgles. Near the top, a shell no bigger than a button sits all alone in the sunshine.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3",
+          "label": "Tiptoe up the dry bricks to the tiny shell.",
+          "target": "pw_scene"
+        }
+      ]
+    },
+    {
+      "id": "pw_scene",
+      "body": "Near the top of the dry brick path sits an acorn-cap walker no bigger than a button, far from any damp leaves. A tiny voice inside gives a tiny polite cough. The sun is warm. The brick is very dry. The shell is a very long walk from home for someone so small. You shade her with your glove so the sun is kinder.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pw_scene",
+          "label": "Bend down and greet the little acorn-cap walker.",
+          "target": "pw_meet"
+        }
+      ]
+    },
+    {
+      "id": "pw_meet",
+      "body": "You bend down, and the tiny acorn-cap peeks out. Her name is Nim. She went exploring at Snow Day morning and wandered much too far up Brick Ridge. The damp leaf-pile home is way down the bricks. Acorn-cap walkers are the slowest walkers in the whole garden. You dip one hand in a nearby melt hollow while you think. Nim watches your wet fingers.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pw_meet",
+          "label": "Think up a plan to bring Nim home.",
+          "target": "pw_plan"
+        }
+      ]
+    },
+    {
+      "id": "pw_plan",
+      "body": "You think it over while Nim waits, snug in her acorn-cap. You could roll her along like a tiny wheel. You could cheer for her to walk faster. Or you could offer her a ride on your wet palm. Nim says any way is fine. She is in no hurry at all, though the Melt rather is. The dry brick ticks in the sun. Nim tucks in, perfectly patient as a button.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pw_plan_roll",
+          "label": "Roll Nim along like a tiny wheel.",
+          "target": "pw_flop_roll"
+        },
+        {
+          "id": "c_pw_plan_cheer",
+          "label": "Cheer for Nim to walk faster.",
+          "target": "pw_flop_cheer"
+        },
+        {
+          "id": "c_pw_plan_palm",
+          "label": "Offer Nim a ride on your wet palm.",
+          "target": "pw_win"
+        }
+      ]
+    },
+    {
+      "id": "pw_flop_roll",
+      "body": "You give Nim the gentlest nudge to start her rolling like a tiny wheel. Nim tucks herself snugly into her acorn-cap. She simply will not budge, stuck fast as a pebble glued to the brick. No rolling today, thank you, says a tiny muffled voice. You laugh at your silly fizzled idea. Nim peeks back out, completely comfy. You can pick a plan again or ask Nell for a tip.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pw_roll_again",
+          "label": "Smile at the stubborn shell and try again.",
+          "target": "pw_plan"
+        },
+        {
+          "id": "c_pw_roll_gran",
+          "label": "Ask Nell for a tip.",
+          "target": "pw_gran"
+        }
+      ]
+    },
+    {
+      "id": "pw_flop_cheer",
+      "body": "You clap your mittens and cheer, go Nim go. Nim tries her very fastest. After one whole minute of mighty effort she has traveled the width of a single pebble. She puffs proudly. At this speed you might arrive by next Tuesday. You cheer once more anyway, because trying deserves a cheer. You can pick a plan again, or ask Nell for a tip.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pw_cheer_again",
+          "label": "Line up the plans and try again.",
+          "target": "pw_plan"
+        },
+        {
+          "id": "c_pw_cheer_gran",
+          "label": "Ask Nell for a tip.",
+          "target": "pw_gran"
+        }
+      ]
+    },
+    {
+      "id": "pw_gran",
+      "body": "Nell cups her hands around her mouth and calls up gently from Base Camp. Little acorn-cap walkers ride better than they roll, she says. Wet your palm so it feels like home. Let Nim hold on tight, and walk her down slow as a Sunday. You can offer the wet-palm ride, or look over your plans once more.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pw_gran_try",
+          "label": "Offer Nim a wet-palm ride, Nell's way.",
+          "target": "pw_win"
+        },
+        {
+          "id": "c_pw_gran_back",
+          "label": "Look over the plans once more.",
+          "target": "pw_plan"
+        }
+      ]
+    },
+    {
+      "id": "pw_win",
+      "body": "You wet your palm in a hollow and lay your hand flat beside Nim. She slides aboard and holds on snug as a button. This is the longest, highest, most careful rescue of the whole day. You step slow down the big brick path. The Melt gurgles behind you like a cheering crowd. At last you kneel at the edge of the damp leaf-pile. Nim is silent with wonder.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pw_win",
+          "label": "Lower Nim into her cool leaf-pile.",
+          "target": "pw_thanks"
+        }
+      ]
+    },
+    {
+      "id": "pw_thanks",
+      "body": "Nim settles onto her favorite green leaf with a tiny happy squeak, home at last. A bright gurgle runs all along the garden as the Melt comes on. You can look back across the drifts for anyone still calling, or stay and watch the water arrive. Nim tucks in, safe and small. You whisper goodbye.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pw_back",
+          "label": "Look back across the drifts for anyone else.",
+          "target": "n_meet"
+        },
+        {
+          "id": "c_pw_done",
+          "label": "Watch the Melt come in over the garden.",
+          "target": "n_alldone"
+        }
+      ]
+    },
+    {
+      "id": "n_alldone",
+      "body": "You stand tall on the packed snow. You look back over the hollows you reached. Every friend you got to is safe and settled. They wave or drum or zoom in the melt. The Melt sweeps closer in sparkly stripes. It is warm and friendly. It comes to welcome everyone home. It will finish what you started. Nell gives you a proud thumbs up from Base Camp. Your chest feels big and bright.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_alldone",
+          "label": "Watch the first melt-finger slide in.",
+          "target": "n_tide"
+        }
+      ]
+    },
+    {
+      "id": "n_tide",
+      "body": "The first thin finger of the Melt slides across the packed snow. It fills the nearest hollow right up to its brim. The water is home. It is reaching every hollow you could not get to as well. The hollows fizz and sparkle like a celebration. You can follow the Melt from hollow to hollow to see each friend greet it. You can climb up beside Nell on Base Camp to watch it all at once. Or you can open the biscuit tin to celebrate the rescue team.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tide_follow",
+          "label": "Follow the Melt from hollow to hollow.",
+          "target": "n_fill"
+        },
+        {
+          "id": "c_tide_gran",
+          "label": "Climb up beside Nell on Base Camp.",
+          "target": "n_wave"
+        },
+        {
+          "id": "c_tide_picnic",
+          "label": "Open the biscuit tin to celebrate.",
+          "target": "n_picnic"
+        }
+      ]
+    },
+    {
+      "id": "n_fill",
+      "body": "You trot beside the Melt as it fills hollow after hollow like a row of tea cups. Luma's snow-wreath is next and already trembling at the brim. Sparkles skip along the rim. You can stay and cheer as Luma's hollow spills over. You can race the soft foam line up the dry path just for fun. Or you can peek around for anyone else who might still need a hand.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fill_cheer",
+          "label": "Cheer as Luma's hollow spills over.",
+          "target": "e_cartwheel"
+        },
+        {
+          "id": "c_fill_race",
+          "label": "Race the foam line up the dry path.",
+          "target": "n_race"
+        },
+        {
+          "id": "c_fill_check",
+          "label": "Peek around for anyone else who needs help.",
+          "target": "n_check"
+        }
+      ]
+    },
+    {
+      "id": "n_race",
+      "body": "You line up your toes on the dry path, well ahead of the water. You wait for the soft foam line to catch up. Nell calls ready, steady, go from Base Camp. The Melt whooshes gently forward. You take off giggling along the dry path beside it, boots slapping, scarf flying.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_race_go",
+          "label": "Run the last few splashy-sounding steps.",
+          "target": "e_race_win"
+        }
+      ]
+    },
+    {
+      "id": "n_check",
+      "body": "You shade your eyes. You look over the busy, filling hollows. Nobody calls for help. Something small bobs under a dim brick ledge. It is on the new water. A glittery trail winds along the wet path. It goes to a heap of shiny pebbles. Both look like tiny mysteries. They are worth one last look before cocoa and jam sandwiches. Your explorer heart ticks.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_check_ledge",
+          "label": "Peek under the shadowy brick ledge.",
+          "target": "e_hermit"
+        },
+        {
+          "id": "c_check_trail",
+          "label": "Follow the glittery trail between the pebbles.",
+          "target": "e_shell"
+        }
+      ]
+    },
+    {
+      "id": "n_wave",
+      "body": "You climb up beside Nell on Base Camp. She wraps you in the warm corner of the wool blanket. Below you the Melt fills every hollow one by one. The friends wave, splash, and clack. Nell asks how the rescue team would like to celebrate. You could sing a welcome-home song. You could shout three hip-hip-hoorays. Or you could call each friend by name as their hollow fills.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wave_song",
+          "label": "Sing the welcome-home song together.",
+          "target": "e_song"
+        },
+        {
+          "id": "c_wave_cheer",
+          "label": "Shout three big hip-hip-hoorays.",
+          "target": "e_hooray"
+        },
+        {
+          "id": "c_wave_names",
+          "label": "Call each friend's name as their hollow fills.",
+          "target": "e_names"
+        }
+      ]
+    },
+    {
+      "id": "n_picnic",
+      "body": "Nell opens the biscuit tin on Base Camp. Inside are crackers, berries, and two little cups of juice. Below you the Melt sparkles into the last hollows. The friends splash hello to it. You can raise juice cups in a toast to the rescue team. You can tell Nell the whole story of the rescue day. Or you can start planning the next Snow Day morning rescue patrol.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_picnic_toast",
+          "label": "Raise juice cups to the rescue team.",
+          "target": "e_toast"
+        },
+        {
+          "id": "c_picnic_story",
+          "label": "Tell Nell the whole rescue story.",
+          "target": "e_story"
+        },
+        {
+          "id": "c_picnic_patrol",
+          "label": "Plan the next Snow Day morning rescue patrol.",
+          "target": "e_patrol"
+        }
+      ]
+    },
+    {
+      "id": "e_tide_star",
+      "body": "You snuggle next to Nell on the wool blanket and share crackers while the Melt slides in. Skip's saucer grows into a lake. The water unwraps Snip and carries Nim home, finishing the rest of the rescuing itself. You wave as each friend floats free and happy. One rescue by you and three by the Melt, says Nell. What a fine team. You snuggle deeper into the warm blanket, proud of Luma and eager to visit the brimming hollows again.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_tide_star",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Melt Finishes the Rest"
+      }
+    },
+    {
+      "id": "e_tide_snail",
+      "body": "From Nell's wool blanket you watch the sparkly Melt climb the brick path, higher and higher. It reaches tiny Nim's shell and lifts her like a leaf on a stream. The little acorn-cap walker sails down to her leaf-pile in style. A tiny faraway wheee floats across the garden. Three rescues by you and one by the Melt, says Nell. Sounds like a fine team. You wave until the little shell settles safely into deep cool damp.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_tide_snail",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Nim Sails Home"
+      }
+    },
+    {
+      "id": "e_cartwheel",
+      "body": "The Melt tips over the rim of Luma's snow-wreath hollow. The water rises around her like a big cool hug. Luma does a slow grand cartwheel under the water to say thank you. All five arms sparkle. You cheer. Nell cheers from Base Camp. The Melt keeps rolling in with care. It welcomes every saved friend home. Best Snow Day morning ever, you decide. Luma cartwheels once more as if she agrees for sure. The garden feels like it is smiling.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_cartwheel",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Luma's Sparkly Cartwheel"
+      }
+    },
+    {
+      "id": "e_race_win",
+      "body": "You and the foam line race up the garden. You win by exactly one giggling toe. The Melt pit-pats little wave-claps behind you and fills the last hollows while Nell shouts hooray. You take a big bow to the Melt. It seems to bow back with one soft sparkly wave. Every friend is home. The water is back where it belongs. You are the fastest rescuer in the whole White Garden. Your scarf feels like a medal.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_race_win",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Fastest Rescuer in the White Garden"
+      }
+    },
+    {
+      "id": "e_hermit",
+      "body": "Under the dim brick ledge bobs a walnut-shell rover. He is already floating home on the new water. He needs no rescue at all. He tips his shell to you just like Nell tips her pom-pom hat. You tip an unseen hat right back. Here is a new friend to wave to. The Melt carries him past the bricks. All the saved friends settle with joy into their full hollows. You whisper, See you next snow.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_hermit",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "A New Friend in a Walnut Shell"
+      }
+    },
+    {
+      "id": "e_shell",
+      "body": "The glittery trail winds between two pebbles. It stops at a milk-bottle marble made smooth by the Melt. Nell says it is a thank-you gift from the White Garden for a hard-working rescuer. You hold it to your ear. You hear the Melt inside, whooshing home. You carry it back in the tin snow-scoop. It is a treasure to remember the rescue day forever. It winks like a tiny frozen moon.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_shell",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Milk-Bottle Marble"
+      }
+    },
+    {
+      "id": "e_song",
+      "body": "You and Nell make up a welcome-home song right there on Base Camp. There is a happy sound for Luma, for Skip, for Snip, and for Nim. The friends join in from their full hollows. They splash along in time. The Melt keeps the beat with soft whooshes. The song floats out over the garden. Soon every hollow is full and everybody is home. Your voices puff white in the cold air, warm as cocoa.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_song",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Welcome-Home Song"
+      }
+    },
+    {
+      "id": "e_hooray",
+      "body": "Hip hip hooray, hip hip hooray, hip hip hooray. You and Nell shout three big cheers as the Melt rolls home across the garden. The friends answer with splashes, bubbles, and pincer-clacks from their hollows. The Melt fills the very last hollow with a happy gulp. Every friend is safe. Every hollow is brimming. The whole White Garden feels like it is clapping along. Even Nell's pom-pom bounces to the cheers.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_hooray",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Three Cheers for Everyone"
+      }
+    },
+    {
+      "id": "e_names",
+      "body": "As each hollow fills, you call its friend by name. Welcome home, Luma. Welcome home, Skip. Welcome home, Snip. Welcome home, Nim. Each friend pops up and waves an arm or a fin or a pincer or a tiny shell, then settles snug into deep cool water. Nell squeezes your shoulder. Every single friend is home, and you are the reason why. The names hang in the cold air like little flags.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_names",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Everyone Home"
+      }
+    },
+    {
+      "id": "e_toast",
+      "body": "You and Nell clink your little juice cups together on Base Camp. To the rescue team, says Nell. To Luma, Skip, Snip, and Nim, and to the helper who never gave up. Below you the Melt sparkles into every hollow while the friends splash a fizzy toast of their own. You sip your juice and decide that rescue days taste especially sweet. Berry juice stains your grin. The garden toasts you back in sparkles.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_toast",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "A Toast to the Rescue Team"
+      }
+    },
+    {
+      "id": "e_story",
+      "body": "You tell Nell the whole story of the rescue day. Luma sat too high. Skip went around a saucer that got small. Snip was tied in a knot. And the long slow ride home for the littlest shell. Nell listens under her pom-pom hat. She says it is the best White Garden story she has ever heard. Below you the full hollows sparkle. The friends splash. It is like they add their own favorite parts to the tale. You talk until the crackers are gone.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_story",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Best White Garden Story"
+      }
+    },
+    {
+      "id": "e_patrol",
+      "body": "You and Nell plan the next Snow Day morning rescue patrol. You use cracker-crumb maps on the wool blanket. Nell will bring her pom-pom hat and the biscuit tin. You will bring the tin snow-scoop and your gentle wet hands. Below you the Melt tucks every friend into deep cool water for the afternoon. The Melt will go out again someday, Nell says. When it does, the rescue patrol will be ready.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_patrol",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Next Snow Day Patrol"
+      }
+    }
+  ]
+}

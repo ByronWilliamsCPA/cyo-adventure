@@ -333,6 +333,54 @@ class TestFillGateAcknowledgment:
         assert cg4[0].choice_id == "c0"
         assert cg4[0].severity is Severity.WARNING
 
+    def test_opening_sentence_starting_with_an_abbreviation_is_not_misread(
+        self,
+    ) -> None:
+        """UW-C260/AL-390: a node opening "Mr. Fez's..." must not have its
+        opening sentence read as the bare string "Mr.". The old code
+        borrowed `diversity.normalize.split_sentences` (documented there as
+        "crude, not linguistic sentences") for this extraction; that split
+        on any "." followed by whitespace, so the real opening sentence
+        never reached the content-word comparison and CG-4 fired
+        unfixably. `utils.sentences.split_sentences` reads the whole first
+        sentence instead, so the shared word "toys" is found and CG-4 stays
+        silent.
+        """
+        nodes: list[dict[str, object]] = [
+            {
+                "id": "n0",
+                "body": "Pick a path.",
+                "is_ending": False,
+                "choices": [
+                    {
+                        "id": "c0",
+                        "label": "Look at the broken toys.",
+                        "target": "n_toys",
+                    },
+                    {"id": "c1", "label": "Enter the cave.", "target": "n_cave"},
+                ],
+            },
+            {
+                "id": "n_toys",
+                "body": (
+                    "Mr. Fez's table was a tiny hospital for toys. "
+                    "Wind-up beetles lay on their backs."
+                ),
+                "is_ending": True,
+                "choices": [],
+                "ending": {
+                    "id": "e_toys",
+                    "valence": "positive",
+                    "kind": "success",
+                    "title": "Toy Mender",
+                },
+            },
+            _ending_node("n_cave", "e_cave", body="You enter the cave, cool and dark."),
+        ]
+        story = _story("8-11", nodes, "n0", ending_count=2)
+        report = check_fill_gate_acknowledgment(story)
+        assert [f for f in report.findings if f.node_id == "n_toys"] == []
+
     def test_unfilled_target_is_skipped(self) -> None:
         nodes: list[dict[str, object]] = [
             {

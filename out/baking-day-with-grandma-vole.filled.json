@@ -1,0 +1,440 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_baking_day_grandma_vole",
+  "version": 1,
+  "title": "Baking Day with Grandma Vole",
+  "metadata": {
+    "age_band": "3-5",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 1.0,
+      "tolerance": 1.0
+    },
+    "tier": 1,
+    "themes": [
+      "family",
+      "patience",
+      "perseverance",
+      "baking"
+    ],
+    "estimated_minutes": 4,
+    "ending_count": 6,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "loop_and_grow",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "Morning light peeked into the cozy burrow. Pip's nose went sniff, sniff. A warm, toasty smell! It came from the kitchen. It was baking day with Grandma Vole. The best day of all! Pip hopped out of bed. He ran down the root tunnel.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_kitchen",
+          "label": "Scamper to the burrow kitchen.",
+          "target": "n_kitchen"
+        }
+      ]
+    },
+    {
+      "id": "n_kitchen",
+      "body": "\"Good morning, little baker!\" said Grandma Vole. She tied Pip's apron in a bow. She propped up the old recipe card. \"Seed-honey buns,\" she read. \"First we need the big brown mixing bowl.\" Pip rolled up his sleeves. He was ready to help!",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_kitchen_bowl",
+          "label": "Go get the big brown bowl.",
+          "target": "n_bowls"
+        }
+      ]
+    },
+    {
+      "id": "n_bowls",
+      "body": "The bowls stood in a tall wobbly stack on the low shelf. The big brown mixing bowl sat at the very bottom. Pip reached out his paws. Should he lift the top bowls off one at a time? Or slide the bottom bowl out fast?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bowls_lift",
+          "label": "Lift the top bowls off one at a time.",
+          "target": "n_bowl_ok"
+        },
+        {
+          "id": "c_bowls_slide",
+          "label": "Slide the big brown mixing bowl out from the bottom.",
+          "target": "n_bowl_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_bowl_oops",
+      "body": "The stack gave a big wobble. Down came the bowls! Clatter, clatter, clatter! One sat on Pip's head like a silly hat. Nothing broke. No one was hurt. Grandma Vole just chuckled. \"One at a time, little paws,\" she said. They stacked the tower back up.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bowloops_again",
+          "label": "Try the bowl shelf again.",
+          "target": "n_bowls"
+        }
+      ]
+    },
+    {
+      "id": "n_bowl_ok",
+      "body": "Pip lifted the bowls off one by one, steady and slow. The big brown bowl was free! He carried it to the table like a treasure. Grandma Vole patted his ears. \"Next we need soft pale flour,\" she said.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bowlok_flour",
+          "label": "Fetch the flour crock.",
+          "target": "n_flour"
+        }
+      ]
+    },
+    {
+      "id": "n_flour",
+      "body": "The flour crock sat open, full to the brim with soft pale flour. Grandma Vole held the bowl steady. Pip picked up the little wooden scoop. He could scoop small scoops, nice and slow. Or he could tip the whole crock at once!",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_flour_scoop",
+          "label": "Scoop small scoops, nice and slow.",
+          "target": "n_flour_ok"
+        },
+        {
+          "id": "c_flour_tip",
+          "label": "Tip the flour crock over all at once.",
+          "target": "n_flour_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_flour_oops",
+      "body": "POOF! A white cloud puffed up. Pip sneezed the squeakiest sneeze. Achoo! Now he had a flour mustache and flour eyebrows. Grandma Vole giggled. She wiped his nose with her apron. \"Little scoops, slow paws,\" she said. Pip dusted off. He was set to try again.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_flouroops_again",
+          "label": "Dust off and scoop again.",
+          "target": "n_flour"
+        }
+      ]
+    },
+    {
+      "id": "n_flour_ok",
+      "body": "Pip scooped three soft scoops. One, two, three. The flour whispered into the big bowl. Grandma Vole peeked in. \"Just right, little baker!\" she said. Pip beamed. Next the recipe card said stripy sunflower seeds.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_flourok_seeds",
+          "label": "Open the seed jar.",
+          "target": "n_seeds"
+        }
+      ]
+    },
+    {
+      "id": "n_seeds",
+      "body": "The seed jar sparkled with stripy sunflower seeds. On top sat the shiny acorn. It would crown the biggest bun! Pip hugged the jar close. He could pour the seeds in a slow soft stream. Or shake the jar hard, upside down, to hurry!",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_seeds_pour",
+          "label": "Pour the seeds in a gentle stream.",
+          "target": "n_seeds_ok"
+        },
+        {
+          "id": "c_seeds_shake",
+          "label": "Shake the jar hard upside down.",
+          "target": "n_acorn_chase"
+        }
+      ]
+    },
+    {
+      "id": "n_acorn_chase",
+      "body": "Seeds flew this way and that! The shiny acorn plopped out. It bounced off the table. It rolled down the burrow hall. Pip ran after it. Past the pantry! Around the root cellar! Grandma Vole swept up the spill. She laughed her warm laugh.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chase_catch",
+          "label": "Catch the shiny acorn!",
+          "target": "n_acorn_back"
+        }
+      ]
+    },
+    {
+      "id": "n_acorn_back",
+      "body": "The acorn spun to a stop. It hit Grandma Vole's slipper. Pip pounced with both paws. Got it! He trotted back. He held it high like a prize. \"Gentle pours, no shakes,\" said Grandma Vole. She gave him the seed jar again.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_back_again",
+          "label": "Pour the seeds again, gently.",
+          "target": "n_seeds"
+        }
+      ]
+    },
+    {
+      "id": "n_seeds_ok",
+      "body": "The seeds fell in a slow soft stream. Pit, pat, pit! They made little dots in the flour. Like freckles! The shiny acorn was safe in Grandma Vole's pocket. Next the recipe card said honey. That was the part Pip loved best!",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_seedsok_honey",
+          "label": "Bring the golden honey pot.",
+          "target": "n_honey"
+        }
+      ]
+    },
+    {
+      "id": "n_honey",
+      "body": "Grandma Vole took the lid off the golden honey pot. She cupped her warm paws over Pip's paws. They held the wooden spoon. Round and round went the shiny swirl of honey. One sweet drip fell on Pip's thumb. Pip licked it off. Yum!",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_honey_stir",
+          "label": "Stir it all together.",
+          "target": "n_mix"
+        }
+      ]
+    },
+    {
+      "id": "n_mix",
+      "body": "Pip stirred slow circles, like stirring soup. Grandma Vole turned the big bowl. The mix hugged into a soft dough. Dots of seeds all through it! Pip poked it. It sprang right back! \"Now the dough needs a nap,\" said Grandma Vole. \"It will grow puffy.\"",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mix_rest",
+          "label": "Let the dough have a little nap.",
+          "target": "n_rest"
+        }
+      ]
+    },
+    {
+      "id": "n_rest",
+      "body": "The dough took a nap under a checked cloth by the warm stove. Pip and Grandma Vole sipped mint tea. She told him a story. She baked these buns with her own grandma, long ago! Then she peeked under the cloth. Puffy! The dough was ready.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rest_shape",
+          "label": "Shape the seed-honey buns with Grandma Vole.",
+          "target": "n_shape"
+        }
+      ]
+    },
+    {
+      "id": "n_shape",
+      "body": "Grandma Vole dusted the table with flour. She rolled a round bun. Smooth as a river stone! \"The shiny acorn will crown the biggest one,\" she said. Pip patted his lump of dough. Roll neat round buns like Grandma's? Or squish wiggly stars and curly snails?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_shape_neat",
+          "label": "Roll neat round buns like Grandma Vole's.",
+          "target": "n_tray_neat"
+        },
+        {
+          "id": "c_shape_funny",
+          "label": "Squish fun shapes, wiggly stars and curly snails.",
+          "target": "n_tray_funny"
+        }
+      ]
+    },
+    {
+      "id": "n_tray_neat",
+      "body": "Pip rolled bun after bun. Round and smooth! He set them on the tray in neat rows. Grandma Vole put the shiny acorn on the biggest bun. The tray slid into the warm oven. Mmm! Soon the whole burrow smelled sweet and toasty.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_neat_oven",
+          "label": "Watch and wait by the warm oven.",
+          "target": "n_oven"
+        }
+      ]
+    },
+    {
+      "id": "n_tray_funny",
+      "body": "Pip squished wiggly stars. He squished curly snails. One bun was just like Grandma's sun hat! Grandma Vole gave a big laugh. She put the shiny acorn on the snail bun. In went the tray, into the warm oven. Mmm! Soon the whole burrow smelled so good.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_funny_oven",
+          "label": "Watch and wait by the warm oven.",
+          "target": "n_oven_funny"
+        }
+      ]
+    },
+    {
+      "id": "n_oven",
+      "body": "Pip watched through the little window. The buns puffed up fat and round! The burrow smelled of honey. \"The bell will ting when they are done,\" said Grandma Vole. Should Pip wait for the bell? Or open the door for a tiny peek?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oven_wait",
+          "label": "Wait for the little bell.",
+          "target": "n_golden"
+        },
+        {
+          "id": "c_oven_peek",
+          "label": "Open the door for a tiny peek.",
+          "target": "n_peek_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_peek_oops",
+      "body": "Pip cracked the oven door open. Whoosh! Warm air rushed out. The buns sighed. They slumped down a little. Grandma Vole shut the door. \"Buns need their beauty sleep,\" she said. Soon the buns puffed right back up. Pip hummed a waiting song.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_peek_again",
+          "label": "Wait by the warm oven again.",
+          "target": "n_oven"
+        }
+      ]
+    },
+    {
+      "id": "n_golden",
+      "body": "Ting! went the little bell. Grandma Vole slid out the tray. Golden seed-honey buns, round and just right! Steam curled off their tops. The shiny acorn shone on the biggest one. Pip clapped his floury paws. Now came the very best part of baking day!",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_golden_teatime",
+          "label": "Have a mint tea picnic with Grandma Vole.",
+          "target": "e_teatime"
+        },
+        {
+          "id": "c_golden_neighbors",
+          "label": "Take warm seed-honey buns to the neighbors.",
+          "target": "e_neighbors"
+        },
+        {
+          "id": "c_golden_admire",
+          "label": "Line up the batch on the windowsill.",
+          "target": "e_perfect"
+        }
+      ]
+    },
+    {
+      "id": "n_oven_funny",
+      "body": "Pip watched through the oven window. The star points turned golden. The snail bun puffed up round. \"The bell will ting when they are done,\" said Grandma Vole. Should Pip wait? Or open the door for a tiny peek?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ofunny_wait",
+          "label": "Wait for the little bell.",
+          "target": "n_funny_out"
+        },
+        {
+          "id": "c_ofunny_peek",
+          "label": "Open the door for a tiny peek.",
+          "target": "n_funny_peek"
+        }
+      ]
+    },
+    {
+      "id": "n_funny_peek",
+      "body": "Pip cracked the door open. Out came a puff of warm steam. It curled his whiskers into silly squiggles! Grandma Vole gave a soft laugh. She shut the door. \"The steam stays in with the buns,\" she said. Pip patted his whiskers flat. The wiggly shapes kept puffing.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fpeek_again",
+          "label": "Wait by the warm oven again.",
+          "target": "n_oven_funny"
+        }
+      ]
+    },
+    {
+      "id": "n_funny_out",
+      "body": "Ting! went the little bell. Out came the funniest tray ever. A golden star! A curly snail with the shiny acorn on top! And a bun just like Grandma's sun hat! Pip and Grandma Vole giggled together. Now came the very best part of baking day.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fout_taste",
+          "label": "Taste the wiggly star bun first.",
+          "target": "e_funny"
+        },
+        {
+          "id": "c_fout_recipe",
+          "label": "Draw the new seed-honey buns on the old recipe card.",
+          "target": "e_recipe"
+        },
+        {
+          "id": "c_fout_neighbors",
+          "label": "Show the silly seed-honey buns to the neighbors.",
+          "target": "e_silly"
+        }
+      ]
+    },
+    {
+      "id": "e_teatime",
+      "body": "Pip and Grandma Vole spread the checked cloth. They sat under the round window. Warm buns and mint tea, just for two! The honey was sweet. The seeds went crunch, crunch. Pip snuggled under Grandma Vole's arm. He could not wait for the next baking day.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_teatime",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "A Teatime Picnic for Two"
+      }
+    },
+    {
+      "id": "e_neighbors",
+      "body": "Pip carried the basket of warm buns down the burrow hall. Knock, knock, knock, on each round door! The mouse twins sniffed the sweet smell. They cheered! Old Mister Mole cheered too. Soon the whole burrow was munching away. \"Pip is a real little baker now,\" they all said.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_neighbors",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Warm Buns for the Whole Burrow"
+      }
+    },
+    {
+      "id": "e_perfect",
+      "body": "Pip set the golden buns on the windowsill. A proud, tidy row! The acorn bun sat in the middle. Like a little king! Grandma Vole counted them. Each one was just right! \"You tried and tried till you got it,\" she said. \"That makes a perfect batch.\"",
+      "is_ending": true,
+      "ending": {
+        "id": "end_perfect",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Perfect Golden Batch"
+      }
+    },
+    {
+      "id": "e_funny",
+      "body": "Pip bit the wiggly star bun. It was still warm and sweet. It was the best bun he had ever tasted! Grandma Vole tried the hat bun. \"Scrumptious!\" said Grandma Vole. Funny buns, it turns out, taste the very best!",
+      "is_ending": true,
+      "ending": {
+        "id": "end_funny",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Funny Shapes, Yummy Buns"
+      }
+    },
+    {
+      "id": "e_recipe",
+      "body": "Grandma Vole fetched her pen. Pip drew on the old recipe card. A star bun! A snail bun! A hat bun! Right next to the writing from long ago. Under it, Grandma Vole wrote \"Pip's Wiggly Buns.\" A brand-new family recipe! To bake for ever and ever!",
+      "is_ending": true,
+      "ending": {
+        "id": "end_recipe",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "A Brand-New Family Recipe"
+      }
+    },
+    {
+      "id": "e_silly",
+      "body": "Pip marched the funny tray down the burrow hall. Neighbors peeked out of each round door. The mouse twins picked the star. Old Mister Mole picked the hat. They all giggled. They all munched. Silly buns, it turns out, make the whole burrow smile!",
+      "is_ending": true,
+      "ending": {
+        "id": "end_silly",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Silly Buns Make Everyone Smile"
+      }
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+judges: judge-gemini-3.1, judge-gpt-5.6, judge-grok-4.6
+records: 129
+
+Per criterion. rho is Spearman over WITHIN-BOOK DELTAS (agreement about
+what a defect did); qwk is quadratic-weighted kappa over RAW scores
+(agreement about level). Marginals are raw, and a low coefficient beside
+a one-sided marginal is a scale artefact, not a disagreement.
+
+== age_fit
+   judge-gemini-3.1   vs judge-gpt-5.6      rho   +0.70 (n=36)  qwk   +0.53
+   judge-gemini-3.1   vs judge-grok-4.6     rho   +0.58 (n=37)  qwk   +0.55
+   judge-gpt-5.6      vs judge-grok-4.6     rho   +0.45 (n=36)  qwk   +0.51
+   marginal judge-gemini-3.1   1:14 2:17 3:5 4:4 5:3
+   marginal judge-gpt-5.6      1:6 2:13 3:16 4:7
+   marginal judge-grok-4.6     2:18 3:16 4:9
+
+== imagery
+   judge-gemini-3.1   vs judge-gpt-5.6      rho   +0.49 (n=36)  qwk   +0.70
+   judge-gemini-3.1   vs judge-grok-4.6     rho   +0.67 (n=37)  qwk   +0.81
+   judge-gpt-5.6      vs judge-grok-4.6     rho   +0.76 (n=36)  qwk   +0.82
+   marginal judge-gemini-3.1   1:6 2:6 3:18 4:8 5:5
+   marginal judge-gpt-5.6      2:6 3:17 4:19
+   marginal judge-grok-4.6     1:4 2:2 3:24 4:13
+
+== voice
+   judge-gemini-3.1   vs judge-gpt-5.6      rho   +0.23 (n=36)  qwk   +0.40
+   judge-gemini-3.1   vs judge-grok-4.6     rho   +0.04 (n=37)  qwk   +0.29
+   judge-gpt-5.6      vs judge-grok-4.6     rho   +0.27 (n=36)  qwk   +0.58
+   marginal judge-gemini-3.1   1:27 2:12 3:3 4:1
+   marginal judge-gpt-5.6      1:6 2:30 3:6
+   marginal judge-grok-4.6     1:3 2:24 3:16
+
+== dialogue
+   judge-gemini-3.1   vs judge-gpt-5.6      rho   +0.60 (n=36)  qwk   +0.44
+   judge-gemini-3.1   vs judge-grok-4.6     rho   +0.30 (n=37)  qwk   +0.30
+   judge-gpt-5.6      vs judge-grok-4.6     rho   +0.43 (n=36)  qwk   +0.49
+   marginal judge-gemini-3.1   1:11 2:6 3:26
+   marginal judge-gpt-5.6      1:3 2:7 3:32
+   marginal judge-grok-4.6     1:1 2:5 3:37
+
+== choice_quality
+   judge-gemini-3.1   vs judge-gpt-5.6      rho   -0.15 (n=36)  qwk   +0.47
+   judge-gemini-3.1   vs judge-grok-4.6     rho   -0.02 (n=37)  qwk   +0.37
+   judge-gpt-5.6      vs judge-grok-4.6     rho   +0.46 (n=36)  qwk   +0.63
+   marginal judge-gemini-3.1   1:7 2:19 3:6 4:6 5:5
+   marginal judge-gpt-5.6      1:3 2:18 3:15 4:6
+   marginal judge-grok-4.6     1:1 2:11 3:23 4:8
+
+== ending_quality
+   judge-gemini-3.1   vs judge-gpt-5.6      rho   +0.27 (n=36)  qwk   +0.47
+   judge-gemini-3.1   vs judge-grok-4.6     rho   +0.24 (n=37)  qwk   +0.44
+   judge-gpt-5.6      vs judge-grok-4.6     rho   +0.49 (n=36)  qwk   +0.73
+   marginal judge-gemini-3.1   1:20 2:13 3:3 4:6 5:1
+   marginal judge-gpt-5.6      1:4 2:20 3:18
+   marginal judge-grok-4.6     1:4 2:15 3:24
+
+== engagement
+   judge-gemini-3.1   vs judge-gpt-5.6      rho   +0.28 (n=36)  qwk   +0.26
+   judge-gemini-3.1   vs judge-grok-4.6     rho   +0.31 (n=37)  qwk   +0.36
+   judge-gpt-5.6      vs judge-grok-4.6     rho   +0.57 (n=36)  qwk   +0.65
+   marginal judge-gemini-3.1   1:27 2:5 3:6 4:3 5:2
+   marginal judge-gpt-5.6      2:10 3:28 4:4
+   marginal judge-grok-4.6     2:14 3:21 4:8
+

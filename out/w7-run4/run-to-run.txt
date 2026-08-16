@@ -1,0 +1,39 @@
+W7 run-to-run variation, per criterion (UW-C258, UW-C255)
+==================================================================
+
+Matched (judge, arm) pairs: 84
+  control arms: 12   defect arms: 72
+  judges: judge-gpt-5.6, judge-grok-4.6
+
+Detection margin: 0.5
+
+UW-C258: per-criterion run-to-run spread, ALL arms
+------------------------------------------------------------------
+  age_fit          n=84  mean |d| 0.214  median 0.000  max 1.000  signed +0.071  >=margin 21.4%
+  imagery          n=84  mean |d| 0.071  median 0.000  max 1.000  signed +0.024  >=margin 7.1%
+  voice            n=84  mean |d| 0.179  median 0.000  max 1.000  signed +0.012  >=margin 17.9%
+  dialogue         n=84  mean |d| 0.119  median 0.000  max 1.000  signed -0.024  >=margin 11.9%
+  choice_quality   n=84  mean |d| 0.286  median 0.000  max 1.000  signed -0.048  >=margin 28.6%
+  ending_quality   n=84  mean |d| 0.119  median 0.000  max 1.000  signed +0.048  >=margin 11.9%
+  engagement       n=84  mean |d| 0.179  median 0.000  max 1.000  signed -0.012  >=margin 17.9%
+
+UW-C255: the same spread on CONTROL arms only, where movement is
+         unambiguously noise rather than collateral detection
+------------------------------------------------------------------
+  age_fit          n=12  mean |d| 0.333  median 0.000  max 1.000  signed +0.167  >=margin 33.3%
+  imagery          n=12  mean |d| 0.000  median 0.000  max 0.000  signed +0.000  >=margin 0.0%
+  voice            n=12  mean |d| 0.167  median 0.000  max 1.000  signed +0.000  >=margin 16.7%
+  dialogue         n=12  mean |d| 0.000  median 0.000  max 0.000  signed +0.000  >=margin 0.0%
+  choice_quality   n=12  mean |d| 0.333  median 0.000  max 1.000  signed -0.167  >=margin 33.3%
+  ending_quality   n=12  mean |d| 0.250  median 0.000  max 1.000  signed +0.083  >=margin 25.0%
+  engagement       n=12  mean |d| 0.000  median 0.000  max 0.000  signed +0.000  >=margin 0.0%
+
+Per judge, pooled across criteria
+------------------------------------------------------------------
+  judge-gpt-5.6        n=287 mean |d| 0.164  median 0.000  max 1.000  signed -0.031  >=margin 16.4%
+  judge-grok-4.6       n=301 mean |d| 0.169  median 0.000  max 1.000  signed +0.050  >=margin 16.9%
+
+Per judge, control arms only
+------------------------------------------------------------------
+  judge-gpt-5.6        n=42  mean |d| 0.143  median 0.000  max 1.000  signed +0.000  >=margin 14.3%
+  judge-grok-4.6       n=42  mean |d| 0.167  median 0.000  max 1.000  signed +0.024  >=margin 16.7%

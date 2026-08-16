@@ -20,6 +20,7 @@ import httpx
 import pytest
 
 from cyo_adventure.core.config import Settings
+from cyo_adventure.core.exceptions import ProviderError
 from cyo_adventure.generation.provider import build_openrouter_leg
 from cyo_adventure.generation.providers import OpenRouterProvider
 
@@ -113,11 +114,6 @@ def _leg_kwargs(model: str, **extra: object) -> dict[str, Any]:
     instead tests exactly what the factory is responsible for: threading the pin
     through unchanged.
 
-    Uses ``create_autospec(OpenRouterProvider, spec_set=True)`` rather than a
-    permissive ``**kwargs`` stub, so a removed or renamed constructor keyword
-    fails this call with a real ``TypeError`` instead of being silently
-    swallowed and recorded as if it were still accepted.
-
     Args:
         model: The model slug to build a leg for.
         **extra: Extra keyword arguments forwarded to the factory.
@@ -125,12 +121,19 @@ def _leg_kwargs(model: str, **extra: object) -> dict[str, Any]:
     Returns:
         The keyword arguments the factory passed to ``OpenRouterProvider``.
     """
-    autospec = mock.create_autospec(OpenRouterProvider, spec_set=True)
+    recorded: dict[str, Any] = {}
+
+    def _record(**kwargs: object) -> object:
+        """Stand in for the adapter constructor and record its kwargs."""
+        recorded.update(kwargs)
+        return object()
+
     settings = Settings(openrouter_api_key="test-key")
-    with mock.patch("cyo_adventure.generation.provider.OpenRouterProvider", autospec):
+    with mock.patch(
+        "cyo_adventure.generation.provider.OpenRouterProvider", side_effect=_record
+    ):
         build_openrouter_leg(settings, model, **extra)  # pyright: ignore[reportArgumentType]
-    assert autospec.call_args is not None
-    return dict(autospec.call_args.kwargs)
+    return recorded
 
 
 def test_build_openrouter_leg_defaults_to_no_pin() -> None:
@@ -144,3 +147,144 @@ def test_build_openrouter_leg_forwards_the_pin() -> None:
 
     assert recorded["provider_order"] == ("OpenAI",)
     assert recorded["model"] == "openai/gpt-5.4"
+
+
+# ---------------------------------------------------------------------------
+# Telemetry the retry policy needs (AL-329 / UW-C235)
+# ---------------------------------------------------------------------------
+
+
+def _client_returning(payload: dict[str, Any]) -> tuple[list[int], httpx.AsyncClient]:
+    """Return an attempt counter and a client answering with one fixed payload.
+
+    Args:
+        payload: The JSON body every attempt receives.
+
+    Returns:
+        The list appended to once per attempt, and the client to inject.
+    """
+    attempts: list[int] = []
+
+    def handler(_request: httpx.Request) -> httpx.Response:
+        """Count the attempt and answer with the fixed payload."""
+        attempts.append(1)
+        return httpx.Response(200, json=payload)
+
+    return attempts, httpx.AsyncClient(transport=httpx.MockTransport(handler))
+
+
+def _leg(client: httpx.AsyncClient) -> OpenRouterProvider:
+    """Build an adapter over an injected client with no real sleeping.
+
+    Args:
+        client: The MockTransport-backed client.
+
+    Returns:
+        The adapter.
+    """
+    return OpenRouterProvider(
+        api_key="k",
+        model="vendor/model",
+        base_url="https://example.invalid",
+        timeout_seconds=5,
+        effort="off",
+        backoff_base_seconds=0,
+        client=client,
+    )
+
+
+@pytest.mark.asyncio
+async def test_a_completion_truncated_at_the_budget_is_not_retried() -> None:
+    """A budget failure must cost one attempt, not three.
+
+    An empty body from a truncated completion and an empty body from a dead
+    endpoint are the same bytes. Retrying the first re-buys the identical wall
+    at the identical cap: the comparison harness spent three attempts at roughly
+    eleven minutes and fifty cents each doing exactly that, because no retry
+    policy could see ``finish_reason`` (AL-329).
+    """
+    attempts, client = _client_returning(
+        {
+            "choices": [{"message": {"content": ""}, "finish_reason": "length"}],
+            "usage": {"completion_tokens_details": {"reasoning_tokens": 30872}},
+        }
+    )
+
+    with pytest.raises(ProviderError, match="hit the token budget") as excinfo:
+        _ = await _leg(client).complete(system="s", prompt="p", max_tokens=10)
+
+    assert len(attempts) == 1
+    assert excinfo.value.leg_fatal is True
+    # The reasoning spend is named in the message, because run_with_retries logs
+    # the exception string and that log is where an operator sees this first.
+    assert "30872" in str(excinfo.value)
+
+
+@pytest.mark.asyncio
+async def test_an_empty_body_without_a_length_reason_is_still_retried() -> None:
+    """Not every empty body is a budget failure; a dead endpoint is transient."""
+    attempts, client = _client_returning(
+        {"choices": [{"message": {"content": ""}, "finish_reason": "error"}]}
+    )
+
+    with pytest.raises(ProviderError, match="transient failure persisted") as excinfo:
+        _ = await _leg(client).complete(system="s", prompt="p", max_tokens=10)
+
+    assert len(attempts) == 3
+    assert excinfo.value.leg_fatal is False
+    # The exhaustion error is raised `from` the last attempt's, so the reason the
+    # body was empty survives into the traceback rather than being replaced by a
+    # generic retry message.
+    assert "no message content" in str(excinfo.value.__cause__)
+
+
+@pytest.mark.asyncio
+async def test_a_successful_completion_carries_finish_reason_and_reasoning() -> None:
+    """Reasoning share must be observable in production, not bought afterwards.
+
+    Cost per delivered book spans 36x across legs asked for the identical book
+    while the prose written spans 1.36x, and reasoning share is the discriminator
+    (AL-332). It was measured by reissuing calls against the billing API because
+    the pipeline recorded nothing.
+    """
+    _attempts, client = _client_returning(
+        {
+            "choices": [
+                {"message": {"content": '{"ok": true}'}, "finish_reason": "stop"}
+            ],
+            "usage": {
+                "prompt_tokens": 100,
+                "completion_tokens": 250,
+                "completion_tokens_details": {"reasoning_tokens": 200},
+            },
+        }
+    )
+
+    completion = await _leg(client).complete(system="s", prompt="p", max_tokens=10)
+
+    assert completion.finish_reason == "stop"
+    assert completion.usage.reasoning_tokens == 200
+    assert completion.usage.output_tokens == 250
+
+
+@pytest.mark.asyncio
+async def test_a_backend_reporting_no_reasoning_block_reports_unknown() -> None:
+    """Absent must stay None, never 0.
+
+    A provider has been observed reporting ``reasoning_tokens=0`` while emitting
+    5,339 characters of reasoning, so a reported zero is already only a claim.
+    Flattening an absent block into the same zero would make the two
+    indistinguishable and quietly credit a reasoning leg with none.
+    """
+    _attempts, client = _client_returning(
+        {
+            "choices": [
+                {"message": {"content": '{"ok": true}'}, "finish_reason": "stop"}
+            ],
+            "usage": {"prompt_tokens": 100, "completion_tokens": 250},
+        }
+    )
+
+    completion = await _leg(client).complete(system="s", prompt="p", max_tokens=10)
+
+    assert completion.usage.reasoning_tokens is None

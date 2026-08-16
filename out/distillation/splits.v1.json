@@ -1,0 +1,58 @@
+{
+  "rule_version": 1,
+  "frozen_at": "2026-08-14",
+  "frozen_before_books_existed": true,
+  "rule": "Within each band, rank the new skeleton slugs by sha256 of the slug, ascending. The first is test_reserve, the rest are train_val. Deterministic, computable before any prose exists, and independent of how any book turns out.",
+  "why": "Assigning after drafting would let book quality influence which split it lands in, which is selection leakage into the acceptance set. The plan makes splits immutable (review-model-distillation-plan.md section 3); this is that rule, fixed in advance.",
+  "battery_unchanged": "The six W7 battery books stay the battery. Swapping in new books now would move the acceptance bar mid-plan and break comparability with the W7 numbers measured on 2026-08-14. test_reserve books are held for a future battery refresh that is a deliberate, separate decision.",
+  "assignments": {
+    "the-big-red-balloon": {
+      "band": "3-5",
+      "split": "test_reserve",
+      "sha256": "3689ded51917620f",
+      "rank_in_band": 0
+    },
+    "puddle-jumping-day": {
+      "band": "3-5",
+      "split": "train_val",
+      "sha256": "395298ab919d6b26",
+      "rank_in_band": 1
+    },
+    "the-sleepy-little-star": {
+      "band": "3-5",
+      "split": "train_val",
+      "sha256": "697a1257ce585a3d",
+      "rank_in_band": 2
+    },
+    "baking-day-with-grandma-vole": {
+      "band": "3-5",
+      "split": "train_val",
+      "sha256": "78f91c86afd4b459",
+      "rank_in_band": 3
+    },
+    "the-snow-day-expedition": {
+      "band": "5-8",
+      "split": "test_reserve",
+      "sha256": "03b19c4e34bf280b",
+      "rank_in_band": 0
+    },
+    "the-night-market": {
+      "band": "5-8",
+      "split": "train_val",
+      "sha256": "1e4f460221ab330f",
+      "rank_in_band": 1
+    },
+    "the-school-garden-mystery": {
+      "band": "5-8",
+      "split": "train_val",
+      "sha256": "e3d59c747db4721c",
+      "rank_in_band": 2
+    },
+    "the-tide-pool-rescue": {
+      "band": "5-8",
+      "split": "train_val",
+      "sha256": "f68420bd395134cd",
+      "rank_in_band": 3
+    }
+  }
+}

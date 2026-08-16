@@ -140,6 +140,63 @@ def dig_usage(payload: object) -> tuple[int | None, int | None]:
     )
 
 
+def dig_finish_reason(payload: object) -> str | None:
+    """Safely extract ``choices[0].finish_reason`` from a response payload.
+
+    Shared by every OpenAI-chat-completions-shaped adapter. Narrowed the same
+    defensive way :func:`dig_content` is, so an unexpected shape yields ``None``
+    rather than raising.
+
+    Args:
+        payload: The decoded JSON response (untrusted shape).
+
+    Returns:
+        The reason string as reported, or ``None`` when absent or non-string.
+        Deliberately not normalised to an enum: the value is a vendor's word for
+        what happened, and mapping an unrecognised one onto a known member would
+        invent a fact about a call we did not observe.
+    """
+    top = as_str_map(payload)
+    if top is None:
+        return None
+    choices = top.get("choices")
+    if not isinstance(choices, list) or not choices:
+        return None
+    first = as_str_map(choices[0])
+    if first is None:
+        return None
+    reason = first.get("finish_reason")
+    return reason if isinstance(reason, str) else None
+
+
+def dig_reasoning_tokens(payload: object) -> int | None:
+    """Safely extract ``usage.completion_tokens_details.reasoning_tokens``.
+
+    Args:
+        payload: The decoded JSON response (untrusted shape).
+
+    Returns:
+        The reasoning-token count, or ``None`` when absent or unusable.
+
+    Note:
+        The same ``None`` versus ``0`` discipline :func:`dig_usage` documents
+        applies, and here it is load-bearing in a second way: one provider has
+        been observed reporting ``reasoning_tokens=0`` while emitting 5,339
+        characters of reasoning, so a reported zero is a vendor's claim rather
+        than a measurement, and an absent block must not be flattened into one.
+    """
+    top = as_str_map(payload)
+    if top is None:
+        return None
+    usage = as_str_map(top.get("usage"))
+    if usage is None:
+        return None
+    details = as_str_map(usage.get("completion_tokens_details"))
+    if details is None:
+        return None
+    return coerce_token_count(details.get("reasoning_tokens"))
+
+
 def elapsed_ms(start: float) -> int:
     """Return whole milliseconds elapsed since a :func:`time.monotonic` reading.
 

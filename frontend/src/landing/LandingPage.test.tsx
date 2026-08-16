@@ -130,6 +130,54 @@ describe('LandingPage', () => {
     expect(screen.getByText(/we then approve each new family by hand/i)).toBeInTheDocument()
   })
 
+  // Publication approval is admin-only and cross-family: every mutating handler
+  // in api/approval.py requires the admin role, and api/node_edit.py says so in
+  // its module docstring ("approval itself stays admin-only regardless"). The
+  // page previously told a prospective parent "You approve, then they read" and
+  // "you always have the final word", which describes authority they will not
+  // have. It reads as true only on a deployment whose one family is dual-role,
+  // so it fails for exactly the new families this funnel is built to attract.
+  //
+  // Asserted as an absence AND a presence: the negative alone would pass if the
+  // whole section were deleted, so the replacement claim is pinned beside it.
+  it('does not claim the guardian approves stories', () => {
+    renderLanding()
+    expect(screen.queryByText(/you approve, then they read/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/you always have the final word/i)).not.toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: /a reviewer approves, you choose who reads it/i })
+    ).toBeInTheDocument()
+    // The two controls a guardian really holds: passage editing (G6) and
+    // per-child assignment (G16).
+    expect(screen.getByText(/you can edit any passage first/i)).toBeInTheDocument()
+    expect(screen.getByText(/you decide which of your children it goes to/i)).toBeInTheDocument()
+  })
+
+  // api/library.py's list_library requires an EXISTS on storybook_assignment
+  // for the requested profile, and api/assignments.py::assign_storybook is that
+  // row's only writer; publishing/service.py::approve writes none. So approval
+  // does not put a book on a shelf, and the page must not say it does: a
+  // guardian who believed it would hand over a tablet and find an empty
+  // library. Tracked as UW-J01; this test holds the copy honest until it ships,
+  // and the replacement wording stays true afterwards too.
+  it('does not promise a book reaches a shelf on approval', () => {
+    renderLanding()
+    expect(screen.queryByText(/lands on their shelf right away/i)).not.toBeInTheDocument()
+    expect(
+      screen.getByText(/you choose which child each approved book goes to/i)
+    ).toBeInTheDocument()
+  })
+
+  // The reviewer is platform-side, not a member of the reader's family. The
+  // possessive is the whole defect (UW-J28), so it is pinned as an absence
+  // here and in ConsolePage.test.tsx, which makes the same claim to a guardian
+  // who has already signed up.
+  it('does not attribute the safety reviewer to the reader family', () => {
+    renderLanding()
+    expect(screen.queryByText(/your family's safety reviewer/i)).not.toBeInTheDocument()
+    expect(screen.getByText(/until our safety reviewer has read it/i)).toBeInTheDocument()
+  })
+
   // Two "Sign in" links by design (topbar and footer), one label and one
   // destination between them: the footer used to say "Guardian sign-in" and
   // point at the login route while the topbar said "Sign in" and pointed at

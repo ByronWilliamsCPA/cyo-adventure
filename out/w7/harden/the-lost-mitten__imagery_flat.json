@@ -1,0 +1,201 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_lost_mitten",
+  "version": 1,
+  "title": "The Lost Mitten",
+  "metadata": {
+    "age_band": "3-5",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 1.0,
+      "tolerance": 1.0
+    },
+    "tier": 1,
+    "themes": [
+      "friendship",
+      "winter",
+      "problem-solving"
+    ],
+    "estimated_minutes": 5,
+    "ending_count": 3,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "none",
+      "peril": "none"
+    },
+    "topology": "loop_and_grow"
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "Pip the little fox played outside. Up the hill! Down the hill! Pip had two mittens. They were nice. But wait. One mitten was gone! Pip looked at one bare paw. It felt bad. \"Oh no,\" said Pip. \"Where is my mitten?\" Pip wanted to find it. The ground was covered. Pip could look by the tree. Pip could ask Hoppy the rabbit. Or Pip could check the sled track. Where should Pip look first?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pine",
+          "label": "Look under the big pine tree.",
+          "target": "n_pine"
+        },
+        {
+          "id": "c_rabbit",
+          "label": "Ask Hoppy the rabbit.",
+          "target": "n_rabbit"
+        },
+        {
+          "id": "c_sled",
+          "label": "Check the sledding track.",
+          "target": "n_sled"
+        }
+      ]
+    },
+    {
+      "id": "n_pine",
+      "body": "Pip ran to the tree. The tree was full of weather. Pip looked down low. Pip looked up high. No item was here. But look! Small marks went through the area. They went along, along, along. They went all the way to the water. \"A clue!\" said Pip. Pip felt happy. Maybe the item was that way. But the other place was near and comfortable. Should Pip follow the marks to the water? Or go back to the first place?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pine_creek",
+          "label": "Follow the footprints to the creek.",
+          "target": "n_creek"
+        },
+        {
+          "id": "c_pine_back",
+          "label": "Go back to the snowy hill.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_rabbit",
+      "body": "Pip went over to Hoppy the animal. Hoppy had certain features. \"Hello, Hoppy,\" said Pip. \"Have you seen my item?\" Hoppy made a gesture. \"No, Pip. I have not. But I noticed some other animals today. They were near the water. They made some noise. They saw something!\" \"Thank you, Hoppy!\" said Pip. The water was not far. But maybe the item was still in the other place. Should Pip go to the water? Or look again in the other place?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rabbit_creek",
+          "label": "Hop down to the creek.",
+          "target": "n_creek"
+        },
+        {
+          "id": "c_rabbit_back",
+          "label": "Look again on the hill.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_sled",
+      "body": "Pip went to the usual place. The conditions there were suitable for the activity. Pip looked all around. No item was found. But wait! On a small object, Pip saw one small piece of material. It had a certain texture. \"This is from my item!\" said Pip. The piece of material indicated a direction. It indicated the way to another location. Pip could go that way. Or Pip could try the other place again. What should Pip do?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sled_creek",
+          "label": "Follow the red thread to the creek.",
+          "target": "n_creek"
+        },
+        {
+          "id": "c_sled_back",
+          "label": "Try the hill one more time.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_creek",
+      "body": "Pip came to the creek. There was something there, and it was a certain way. Pip stopped and looked. Something was in the area! Up above, there was a noise from the birds. And far away, Pip was aware of something from home. It seemed good. So many things to do. Pip could get the thing that was there. Pip could look up at the birds. Or Pip could go home for that thing. What should Pip do?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_creek_red",
+          "label": "Reach for the red thing in the snow.",
+          "target": "n_found"
+        },
+        {
+          "id": "c_creek_birds",
+          "label": "Look up at the chirping birds.",
+          "target": "n_birds"
+        },
+        {
+          "id": "c_creek_home",
+          "label": "Follow the smell of cocoa home.",
+          "target": "n_cocoa"
+        }
+      ]
+    },
+    {
+      "id": "n_birds",
+      "body": "Pip looked up at the animals. They made sounds and moved. Then Pip saw it. The item was stuck on part of a tree! It was just out of reach. Pip jumped up. Pip stretched tall. So close! But not close enough. Maybe Pip could reach it alone. Or maybe Pip's friends could help. Should Pip get the item down? Or call friends to help?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_birds_lift",
+          "label": "Gently lift the mitten down.",
+          "target": "n_found"
+        },
+        {
+          "id": "c_birds_help",
+          "label": "Call your friends to help.",
+          "target": "n_help"
+        }
+      ]
+    },
+    {
+      "id": "n_help",
+      "body": "Pip called out, \"Friends! I need help!\" Hoppy came quickly. The others came too. They all wanted to help Pip. \"Let's make a chain!\" said Hoppy. So they did. Pip held Hoppy. Hoppy held another. They wobbled. They made a sound. Up, up, up they reached, all together. The place was close now. It was time to get the item!",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_help_together",
+          "label": "Reach the mitten together.",
+          "target": "n_together"
+        }
+      ]
+    },
+    {
+      "id": "n_cocoa",
+      "body": "Pip followed the smell home. Someone was waiting at the door. \"Come in, Pip! It is nice in here.\" Pip sat down inside. It felt so good. Pip took off one boot. Then Pip took off the other boot. Something fell out onto the floor. \"What is that?\" said Pip. Pip leaned down to look.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cocoa_surprise",
+          "label": "See what fell out of the boot.",
+          "target": "n_surprise"
+        }
+      ]
+    },
+    {
+      "id": "n_found",
+      "body": "Pip reached down and picked it up. It was the item! It had a little something on it. But it was still comfortable. Pip put it on. Now both paws felt fine again! \"I found you!\" said Pip. Pip moved all ten toes. Pip clapped both paws. The area was affected by the weather. It was a good, good day. The end.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_found",
+        "title": "The Red Mitten",
+        "kind": "completion",
+        "valence": "positive"
+      }
+    },
+    {
+      "id": "n_together",
+      "body": "All together, the friends lowered the item down. \"Hooray!\" they cheered. Pip put it on right away. Both paws felt fine now. \"Thank you, friends,\" said Pip. \"You are the best.\" They all hugged in the outdoors. Good friends help each other. And good friends play together. So they did, all afternoon. The end.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_together",
+        "title": "Found Together",
+        "kind": "completion",
+        "valence": "positive"
+      }
+    },
+    {
+      "id": "n_surprise",
+      "body": "It was the item! It had been in Pip's belonging the whole time. \"It was with me all along!\" Pip laughed. Mama Fox laughed too. Pip put on the item. Then Pip drank a warm drink. What a funny day this was. Pip was warm. Pip was full. And Pip was happy. The end.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_surprise",
+        "title": "A Cozy Surprise",
+        "kind": "success",
+        "valence": "positive"
+      }
+    }
+  ]
+}

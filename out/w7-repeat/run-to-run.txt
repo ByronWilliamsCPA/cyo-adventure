@@ -1,0 +1,29 @@
+W7 run-to-run variation on identical arms (UW-C258)
+====================================================
+Run 1: out/w7/panel2.log (128 scorings, 2026-08-14)
+Run 2: out/w7-repeat/run.log (92 scorings, 2026-08-15, killed at 92/129
+       by an environment interruption; salvaged from the log because
+       the harness wrote results only at the end. See AL-407.)
+Matched (judge, arm) pairs: 91
+
+These are per-leg MEAN scores across the seven criteria, which is what
+the log carries. Per-criterion run-to-run spread needs verdicts.json
+and is still unmeasured.
+
+|delta| mean 0.217  median 0.140  p90 0.430  max 1.710
+signed mean -0.010  (no systematic drift between runs)
+share exceeding the 0.5 detection margin: 8.8%
+
+judge                   n  mean |delta|     max
+judge-gemini-3.1       43         0.323   1.710
+judge-gpt-5.6          42         0.120   0.290
+judge-grok-4.6          6         0.143   0.290
+
+control arms only (any movement is pure noise): n=13 mean 0.274 max 0.710
+
+Reading: gemini-3.1 is 2.7x less stable run to run than gpt-5.6 and
+carries the only movements past a full scale point. This is the THIRD
+independent line of evidence against it, after the 2-to-6x noise-floor
+drop when it is excluded and AL-403's per-criterion agreement, where it
+is the outlier on four of seven criteria. grok-4.6's n=6 is thin; its
+figure should not be leaned on.

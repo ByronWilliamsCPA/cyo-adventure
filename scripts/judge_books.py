@@ -50,7 +50,7 @@ import statistics
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Any, Final, cast
 
 _REPO_ROOT: Final[Path] = Path(__file__).resolve().parent.parent
 if str(_REPO_ROOT) not in sys.path:
@@ -58,7 +58,16 @@ if str(_REPO_ROOT) not in sys.path:
 
 from cyo_adventure.core.config import Settings  # noqa: E402
 from cyo_adventure.generation.provider import build_openrouter_leg  # noqa: E402
-from scripts.evaluate_books import _skeleton_for, evaluate_book  # noqa: E402
+from scripts._paid_output import (  # noqa: E402
+    ensure_persistable,
+    persistence_notice,
+)
+from scripts.evaluate_books import evaluate_book  # noqa: E402
+from scripts.instrument import (  # noqa: E402
+    Interval,
+    bootstrap_interval,
+    rank_separation,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -85,17 +94,31 @@ class Judge:
     family: str
 
 
-# Three labs, none of them Anthropic-only, so no single lineage can carry the
-# pooled verdict. Kept deliberately small: a fourth judge multiplies cost across
-# every book for a smaller marginal gain than a fourth generating leg would give.
+# Two labs, neither of them Anthropic, so no single lineage carries the pooled
+# verdict. Kept deliberately small: a further judge multiplies cost across every
+# book for a smaller marginal gain than a further generating leg would give.
+#
+# `judge-gemini-3.1` was REMOVED on 2026-08-15 after three independent lines of
+# evidence converged on it, none of which was available when the panel was
+# chosen:
+#
+#   1. Excluding it dropped W7's control-noise floors by 2 to 6 times.
+#   2. `AL-403`: per criterion it is the outlier on four of seven, and on
+#      `choice_quality` it correlates NEGATIVELY with both others (-0.15 and
+#      -0.02) where they agree at +0.46. Its marginals show why: it uses the
+#      full 1-to-5 range while both others compress into 2-to-4.
+#   3. `AL-408`: run to run on identical arms it averages 0.323 absolute
+#      movement against gpt-5.6's 0.120, and owns every movement past a full
+#      scale point (max 1.710 against 0.290).
+#
+# A judge that disagrees with the panel is useful; a judge that disagrees with
+# ITSELF at 2.7 times the rate of its peers is measuring something other than
+# the book. Removing it costs a third of the panel's lineage diversity, which
+# is a real loss, and buys back a noise floor that three of the seven criteria
+# could not clear. Any verdict computed with it in the panel predates this and
+# should be re-derived rather than carried forward.
 _PANEL: Final[tuple[Judge, ...]] = (
     Judge("judge-gpt-5.6", "openai/gpt-5.6-sol", ("azure",), "openai"),
-    Judge(
-        "judge-gemini-3.1",
-        "google/gemini-3.1-pro-preview",
-        ("google-vertex/global",),
-        "google",
-    ),
     Judge("judge-grok-4.6", "x-ai/grok-4.6", ("xai/zdr",), "xai"),
 )
 
@@ -138,14 +161,54 @@ _CRITERIA: Final[dict[str, str]] = {
     ),
 }
 
-_SYSTEM: Final[str] = (
-    "You are an experienced children's-book editor evaluating a branching "
-    "story written for children aged 5 to 8. You are strict and calibrated: "
-    "most competent-but-unremarkable writing is a 3, and a 5 is reserved for "
-    "work you would publish as-is. Judge only the writing in front of you. You "
-    "do not know who or what wrote it, and you must not speculate. Return only "
-    "the JSON object requested, with no commentary around it."
-)
+# The band a book declares, substituted into the system block and the age_fit
+# anchor. This was hardcoded to "5 to 8" while the panel was run across books
+# from 3-5 to 16+, so every existing verdict was scored off-prompt: a 13-16 book
+# was graded for a seven-year-old and its age_fit score means something other
+# than what the column header says. Parameterising it changes the instrument, so
+# a pool scored after this point is not strictly comparable to the 84-verdict one.
+_DEFAULT_BAND: Final[str] = "5 to 8"
+
+
+def _band_phrase(doc: dict[str, object]) -> str:
+    """Return the reader age this book should be judged for.
+
+    Args:
+        doc: The story document.
+
+    Returns:
+        A phrase like ``"8 to 11"``, falling back to :data:`_DEFAULT_BAND` when
+        the book declares no band. The fallback is the historical value, so a
+        book without metadata is scored exactly as it was before.
+    """
+    metadata = doc.get("metadata")
+    band = metadata.get("age_band") if isinstance(metadata, dict) else None
+    if not isinstance(band, str) or "-" not in band:
+        return _DEFAULT_BAND
+    low, _, high = band.partition("-")
+    return f"{low.strip()} to {high.strip()}"
+
+
+def _system_for(band: str) -> str:
+    """Build the system block for one age band.
+
+    Args:
+        band: The reader age phrase.
+
+    Returns:
+        The system block.
+    """
+    return (
+        "You are an experienced children's-book editor evaluating a branching "
+        f"story written for children aged {band}. You are strict and calibrated: "
+        "most competent-but-unremarkable writing is a 3, and a 5 is reserved for "
+        "work you would publish as-is. Judge only the writing in front of you. You "
+        "do not know who or what wrote it, and you must not speculate. Return only "
+        "the JSON object requested, with no commentary around it."
+    )
+
+
+_SYSTEM: Final[str] = _system_for(_DEFAULT_BAND)
 
 # Completion budget per scoring. Sized to clear reasoning overhead plus the
 # answer, not the answer alone: a reasoning judge spends hidden tokens before it
@@ -157,14 +220,33 @@ _SYSTEM: Final[str] = (
 # mid-note, which surfaced as a JSONDecodeError and read as a malformed answer;
 # see _parse for why that misreads. This is AL-323 recurring: size a budget by
 # what the model spends before it can answer, not by the answer.
-# #ASSUME: external-resources: a reasoning model's hidden-token spend before
-# its first content token stays within this margin as models change; if a
-# future judge model spends more, its replies truncate mid-note the same way
-# Gemini 3.1 Pro's did at 2,000.
-# #VERIFY: test_judge_budget_exceeds_the_measured_answer_by_a_reasoning_margin.
 _JUDGE_MAX_TOKENS: Final[int] = 8000
 
-__all__ = ["Judge", "Verdict", "judge_book", "panel_participation", "pool_scores"]
+# W4's saturation threshold, in raw scale points on the 1-to-5 scale, applied to
+# the spread of a criterion's cell means.
+#
+# This number is provisional and is deliberately not load-bearing. The one
+# calibration point we hold is the dialogue criterion at cell means of 3.00 for
+# seven of eight legs and 3.25 for the eighth (AL-330), a spread of 0.088; a
+# threshold has to sit above that. The "sd 0.19 across twelve cells" phrasing
+# this once carried spliced two instruments and is not reproducible here. Nothing yet establishes where a
+# working criterion's spread starts, which is what replaying the real verdict
+# pool is for, so the report prints every criterion sorted flattest-first and
+# the flag is an annotation on a table the reader can overrule. Admission rule 3
+# of the workplan is the reason it stays that way: a measure does not become a
+# gate by being computable.
+_SATURATION_SD: Final[float] = 0.25
+
+__all__ = [
+    "CriterionSpread",
+    "Judge",
+    "Verdict",
+    "criterion_spread",
+    "judge_book",
+    "leg_intervals",
+    "panel_participation",
+    "pool_scores",
+]
 
 
 @dataclass(frozen=True, slots=True)
@@ -172,10 +254,7 @@ class Verdict:
     """One judge's scoring of one book.
 
     Attributes:
-        book: Identifier of the book scored, ``"<run>:<leg>#<brief>"``. The run
-            label disambiguates the same leg/brief-index pair scored across
-            two different ``--run`` directories, which would otherwise
-            collide onto the same book identifier.
+        book: Identifier of the book scored, ``"<leg>#<brief>"``.
         leg: The generating leg's label.
         family: The generating leg's lineage.
         judge: The scoring judge's label.
@@ -299,36 +378,16 @@ def _parse(raw: str) -> tuple[dict[str, float], dict[str, str]]:
     notes: dict[str, str] = {}
     for name in _CRITERIA:
         entry = payload.get(name)
-        candidate = entry.get("score") if isinstance(entry, dict) else entry
-        score = _valid_rubric_score(candidate)
-        if score is None:
-            continue
-        scores[name] = score
-        notes[name] = str(entry.get("note", "")) if isinstance(entry, dict) else ""
+        if isinstance(entry, dict) and isinstance(entry.get("score"), (int, float)):
+            scores[name] = float(entry["score"])
+            notes[name] = str(entry.get("note", ""))
+        elif isinstance(entry, (int, float)):
+            scores[name] = float(entry)
+            notes[name] = ""
     if not scores:
         msg = f"reply carried no recognised criterion: {raw[:120]!r}"
         raise ValueError(msg)
     return scores, notes
-
-
-def _valid_rubric_score(candidate: object) -> float | None:
-    """Narrow a judge-reported score to a valid 1-to-5 rubric value.
-
-    Args:
-        candidate: The raw ``score`` value from the judge's reply (untrusted
-            shape).
-
-    Returns:
-        The score as ``float`` when it is a non-bool ``int``/``float`` inside
-        the inclusive 1-to-5 rubric, else ``None``.
-    """
-    # bool is an int subclass; a JSON `true`/`false` here is a malformed
-    # reply, not a score of 1/0, and must not silently become one.
-    if isinstance(candidate, bool) or not isinstance(candidate, (int, float)):
-        return None
-    if not 1 <= candidate <= 5:
-        return None
-    return float(candidate)
 
 
 async def judge_book(
@@ -336,7 +395,6 @@ async def judge_book(
     judge: Judge,
     doc: dict[str, object],
     *,
-    run: str,
     leg: str,
     family: str,
     brief_index: int,
@@ -347,9 +405,6 @@ async def judge_book(
         provider: The judge's provider leg.
         judge: The judge being asked.
         doc: The filled story document.
-        run: The ``--run`` directory's name the book was collected from, so
-            the same leg/brief-index pair from two different runs does not
-            collide onto one book identifier.
         leg: The generating leg's label.
         family: The generating leg's lineage.
         brief_index: Which brief the book was written from.
@@ -357,7 +412,7 @@ async def judge_book(
     Returns:
         The verdict, carrying ``error`` when scoring failed.
     """
-    book = f"{run}:{leg}#{brief_index}"
+    book = f"{leg}#{brief_index}"
     blank = Verdict(
         book=book,
         leg=leg,
@@ -370,10 +425,17 @@ async def judge_book(
     )
     try:
         completion = await provider.complete(
-            system=_SYSTEM,
+            system=_system_for(_band_phrase(doc)),
             prompt=_prompt(_story_text(doc)),
             max_tokens=_JUDGE_MAX_TOKENS,
         )
+        # #CRITICAL: data integrity: `complete` returns a Completion, not a str,
+        # since #701 wrapped the provider result to capture token usage. Passing
+        # the wrapper to _parse raises inside the broad handler below, which
+        # records every scoring as a failed one; the panel then returns an empty
+        # scorecard that looks like an unlucky run rather than a wiring bug.
+        # #VERIFY: test_judge_books.py stubs the provider with a real Completion
+        # rather than a str, so the unwrap cannot be removed without a failure.
         scores, notes = _parse(completion.text)
     except Exception as exc:
         # Deliberately broad: one judge failing on one book must not abandon the
@@ -457,6 +519,204 @@ def pool_scores(
     return pooled
 
 
+@dataclass(frozen=True, slots=True)
+class CriterionSpread:
+    """How much one criterion varied across the cells it was asked to separate.
+
+    Attributes:
+        criterion: The criterion's name.
+        cells: How many ``(leg, judge)`` cells contributed a mean.
+        mean: The mean of the cell means, on the raw 1-to-5 scale.
+        sd: Standard deviation of the cell means, or ``None`` when fewer than
+            two cells scored it and no spread exists to report.
+        saturated: Whether the spread sits below the stated threshold, which
+            makes the criterion a constant entering the composite mean and
+            diluting the criteria that do discriminate.
+    """
+
+    criterion: str
+    cells: int
+    mean: float
+    sd: float | None
+    saturated: bool
+
+
+def criterion_spread(
+    verdicts: Sequence[Verdict], *, threshold: float = _SATURATION_SD
+) -> list[CriterionSpread]:
+    """Report each criterion's spread across cells, flattest first (W4).
+
+    A criterion returning nearly the same score for every leg is measuring
+    nothing, and it does harm rather than merely wasting a column: the composite
+    mean averages it in, so a constant pulls every leg toward the same figure and
+    shrinks the differences the discriminating criteria found. The dialogue
+    criterion did exactly this, and it was caught by accident when deterministic
+    parsing showed one leg contained no dialogue at all while the criterion
+    scored it 3.00 like everything else.
+
+    The cell is ``(leg, judge)`` rather than the book. A judge's scoring of one
+    leg's four books is one opinion about that leg, and pooling books into the
+    cell first stops a leg with more books from widening the spread on volume.
+
+    Args:
+        verdicts: Every verdict, successful or not; failures are dropped.
+        threshold: Spread below which a criterion is flagged saturated.
+
+    Returns:
+        One entry per criterion that was scored at all, ascending by spread so
+        the flattest criterion is first whatever the threshold is set to.
+    """
+    good = [v for v in verdicts if v.scores and v.error is None]
+    cells: dict[str, dict[tuple[str, str], list[float]]] = {}
+    for v in good:
+        for name, score in v.scores.items():
+            cells.setdefault(name, {}).setdefault((v.leg, v.judge), []).append(score)
+
+    out: list[CriterionSpread] = []
+    for name, by_cell in cells.items():
+        values = [statistics.fmean(scores) for scores in by_cell.values()]
+        sd = statistics.stdev(values) if len(values) > 1 else None
+        out.append(
+            CriterionSpread(
+                criterion=name,
+                cells=len(values),
+                mean=statistics.fmean(values),
+                sd=sd,
+                # A criterion scored in a single cell has no spread to be below
+                # a threshold. Calling that saturated would flag thin data as a
+                # broken instrument, which is a different finding.
+                saturated=sd is not None and sd < threshold,
+            )
+        )
+    return sorted(out, key=lambda row: (row.sd is None, row.sd or 0.0, row.criterion))
+
+
+def leg_intervals(
+    verdicts: Sequence[Verdict],
+    *,
+    seed: int = 20260813,
+    resamples: int = 2000,
+) -> dict[str, Interval]:
+    """Bootstrap an interval around each leg's judge-normalised score (W5).
+
+    The unit resampled is the **book**, not the scoring. Three judges grading one
+    book are three opinions about one observation, and resampling scorings would
+    narrow every interval by roughly the panel size while adding no evidence.
+
+    Args:
+        verdicts: Every verdict, successful or not; failures are dropped.
+        seed: Seed for the resampling generator.
+        resamples: How many resamples to draw per leg.
+
+    Returns:
+        Leg label to its interval. A leg with one book yields an incomplete
+        interval rather than a zero-width one.
+    """
+    good = [v for v in verdicts if v.scores and v.error is None]
+    z = _z_scores(good)
+    per_book: dict[str, dict[str, list[float]]] = {}
+    for v in good:
+        if (v.judge, v.book) in z:
+            per_book.setdefault(v.leg, {}).setdefault(v.book, []).append(
+                z[v.judge, v.book]
+            )
+    return {
+        leg: bootstrap_interval(
+            [statistics.fmean(scores) for scores in books.values()],
+            seed=seed,
+            resamples=resamples,
+        )
+        for leg, books in per_book.items()
+    }
+
+
+def _print_criterion_spread(rows: Sequence[CriterionSpread]) -> None:
+    """Print the per-criterion spread table and name any saturated criterion.
+
+    Args:
+        rows: Output of :func:`criterion_spread`, flattest first.
+    """
+    if not rows:
+        print("\nNo criterion was scored, so no spread can be reported.")
+        return
+    print("\nCRITERION SPREAD  (W4; sd of cell means, flattest first)")
+    width = max(len(row.criterion) for row in rows)
+    print(f"  {'criterion':<{width}}  {'cells':>5} {'mean':>5} {'sd':>6}")
+    for row in rows:
+        sd = f"{row.sd:>6.2f}" if row.sd is not None else f"{'-':>6}"
+        flag = "  <-- SATURATED" if row.saturated else ""
+        print(f"  {row.criterion:<{width}}  {row.cells:>5} {row.mean:>5.2f} {sd}{flag}")
+    flagged = [row.criterion for row in rows if row.saturated]
+    if flagged:
+        print(
+            f"\n  {len(flagged)} criterion(s) below sd {_SATURATION_SD}: "
+            f"{', '.join(flagged)}. A criterion that does not vary across cells "
+            "carries no ordering information and dilutes the composite mean; "
+            "prefer a deterministic measure where one exists for the same "
+            "property, and retire the criterion otherwise."
+        )
+
+
+def _print_intervals(intervals: dict[str, Interval]) -> None:
+    """Print each leg's interval and say plainly whether the ranking stands.
+
+    Args:
+        intervals: Output of :func:`leg_intervals`.
+    """
+    if not intervals:
+        print("\nNo leg was scored, so no interval can be reported.")
+        return
+    ranking = rank_separation(intervals)
+    width = max(len(leg) for leg in intervals)
+    print("\nUNCERTAINTY  (W5; 95% bootstrap over books, on the normalised score)")
+    print(f"  {'leg':<{width}}  {'point':>6} {'95% interval':>18} {'books':>5}")
+    for leg in ranking.ordered:
+        row = intervals[leg]
+        bounds = (
+            f"[{row.lo:+.2f}, {row.hi:+.2f}]" if row.complete else "incomplete, n<2"
+        )
+        print(f"  {leg:<{width}}  {row.point:>+6.2f} {bounds:>18} {row.n:>5}")
+
+    if ranking.excluded:
+        print(
+            f"\n  Excluded from pair counting for having no usable interval: "
+            f"{', '.join(ranking.excluded)}."
+        )
+    print(
+        f"\n  {ranking.separated_pairs} of {ranking.total_pairs} pairs are "
+        f"separated; best and worst "
+        f"{'are' if ranking.extremes_separated else 'are NOT'} disjoint."
+    )
+    if not ranking.supported:
+        print(
+            "\n  RANKING NOT SUPPORTED. Every pair of intervals overlaps, so this "
+            "slate establishes no ordering. Per the workplan's pre-registered "
+            "rule (W5), the ranking is retracted rather than caveated."
+        )
+
+
+def _verdicts_from_payload(payload: dict[str, object]) -> list[Verdict]:
+    """Rebuild verdicts from a previously written ``judgements.json``.
+
+    Replaying a finished pool is what W4's decision rule asks for and is the
+    only way to run either instrument check without paying for the panel again.
+
+    Args:
+        payload: The parsed ``judgements.json``.
+
+    Returns:
+        Every verdict the file recorded.
+
+    Raises:
+        KeyError: If the file carries no ``verdicts`` array.
+    """
+    rows = payload["verdicts"]
+    if not isinstance(rows, list):
+        msg = "judgements.json 'verdicts' must be an array"
+        raise TypeError(msg)
+    return [Verdict(**cast("dict[str, Any]", row)) for row in rows]
+
+
 def _complete_books(
     run_dirs: Sequence[Path], skeleton_dir: Path
 ) -> list[dict[str, object]]:
@@ -483,7 +743,7 @@ def _complete_books(
             index = int(row["brief_index"])
             score = evaluate_book(
                 doc,
-                _skeleton_for(skeletons, index, run_dir=run_dir),
+                skeletons[index if len(skeletons) > 1 else 0],
                 leg=row["vendor"],
                 family=row["family"],
                 brief_index=index,
@@ -498,10 +758,6 @@ def _complete_books(
             out.append(
                 {
                     "doc": doc,
-                    # run_dir.name, not the full path: kept short and stable
-                    # for the book identifier below, and distinct --run
-                    # directories are exactly what this field disambiguates.
-                    "run": run_dir.name,
                     "leg": row["vendor"],
                     "family": row["family"],
                     "brief_index": index,
@@ -532,7 +788,6 @@ async def _run_panel(
                 provider,
                 judge,
                 entry["doc"],  # pyright: ignore[reportArgumentType]
-                run=str(entry["run"]),
                 leg=str(entry["leg"]),
                 family=str(entry["family"]),
                 brief_index=int(entry["brief_index"]),  # pyright: ignore[reportArgumentType]
@@ -678,11 +933,42 @@ def main(argv: Sequence[str] | None = None) -> int:
         Process exit status.
     """
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--run", required=True, action="append", type=Path, dest="runs")
-    parser.add_argument("--skeletons", required=True, type=Path)
-    parser.add_argument("--out", required=True, type=Path)
+    parser.add_argument("--run", action="append", type=Path, dest="runs")
+    parser.add_argument("--skeletons", type=Path)
+    parser.add_argument("--out", type=Path)
     parser.add_argument("--env-file", type=Path, default=Path(".env"))
+    parser.add_argument(
+        "--allow-untracked-out",
+        action="store_true",
+        help="Permit a gitignored --out. Scratch runs only; see AL-379.",
+    )
+    parser.add_argument(
+        "--judgements",
+        type=Path,
+        help=(
+            "Replay a previously written judgements.json instead of calling the "
+            "panel. Prints participation, the scorecard and both instrument "
+            "checks with no network call and no cost."
+        ),
+    )
     args = parser.parse_args(argv)
+
+    if args.judgements is not None:
+        payload = cast(
+            "dict[str, object]",
+            json.loads(args.judgements.read_text(encoding="utf-8")),
+        )
+        return _report(_verdicts_from_payload(payload), out=args.out)
+
+    if args.runs is None or args.skeletons is None or args.out is None:
+        print(
+            "Error: --run, --skeletons and --out are all required unless "
+            "--judgements is given.",
+            file=sys.stderr,
+        )
+        return 2
+
+    ensure_persistable(args.out, allow_untracked=args.allow_untracked_out)
 
     if args.env_file.exists():
         for line in args.env_file.read_text(encoding="utf-8").splitlines():
@@ -702,39 +988,63 @@ def main(argv: Sequence[str] | None = None) -> int:
     )
 
     verdicts = asyncio.run(_run_panel(books, Settings()))
+    return _report(verdicts, out=args.out)
+
+
+def _report(verdicts: Sequence[Verdict], *, out: Path | None) -> int:
+    """Print every panel report and write the artifact when asked to.
+
+    Shared by the live path and the replay path so a replayed pool cannot
+    silently be analysed differently from the run that produced it.
+
+    Args:
+        verdicts: Every verdict, successful or not.
+        out: Directory to write ``judgements.json`` into, or ``None`` to print
+            only.
+
+    Returns:
+        Process exit status.
+    """
     pooled = pool_scores(verdicts)
     peers = pool_scores(verdicts, peers_only=True)
     participation = panel_participation(verdicts)
+    spread = criterion_spread(verdicts)
+    intervals = leg_intervals(verdicts)
 
-    args.out.mkdir(parents=True, exist_ok=True)
-    (args.out / "judgements.json").write_text(
-        json.dumps(
-            {
-                "panel": [dataclasses.asdict(j) for j in _PANEL],
-                "participation": participation,
-                "criteria": _CRITERIA,
-                "verdicts": [dataclasses.asdict(v) for v in verdicts],
-                "pooled": pooled,
-                "pooled_peers_only": peers,
-            },
-            indent=2,
+    if out is not None:
+        out.mkdir(parents=True, exist_ok=True)
+        (out / "judgements.json").write_text(
+            json.dumps(
+                {
+                    "panel": [dataclasses.asdict(j) for j in _PANEL],
+                    "participation": participation,
+                    "criteria": _CRITERIA,
+                    "verdicts": [dataclasses.asdict(v) for v in verdicts],
+                    "pooled": pooled,
+                    "pooled_peers_only": peers,
+                    "criterion_spread": [dataclasses.asdict(row) for row in spread],
+                    "intervals": {
+                        leg: dataclasses.asdict(row) for leg, row in intervals.items()
+                    },
+                    "ranking": dataclasses.asdict(rank_separation(intervals))
+                    if intervals
+                    else None,
+                },
+                indent=2,
+            )
+            + "\n",
+            encoding="utf-8",
         )
-        + "\n",
-        encoding="utf-8",
-    )
     _print_participation(participation)
     _print_table(pooled, peers)
+    _print_criterion_spread(spread)
+    _print_intervals(intervals)
     failed = sum(1 for v in verdicts if v.error is not None)
     if failed:
         print(f"\n{failed} of {len(verdicts)} scorings failed; see judgements.json")
-    print(f"Wrote {args.out / 'judgements.json'}")
-    if not pooled:
-        # No leg received a single usable verdict: the panel judged nothing,
-        # not "judged everything as mediocre". A caller scripting this (the
-        # comparison harness, CI) must be able to tell that apart from a
-        # normal run, so this is not a 0 like every other empty-but-fine exit.
-        print("\nNo judge contributed a usable verdict; treating this as a failed run.")
-        return 1
+    if out is not None:
+        print(f"Wrote {out / 'judgements.json'}")
+        print(persistence_notice(out))
     return 0
 
 

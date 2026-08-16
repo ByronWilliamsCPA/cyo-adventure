@@ -1,0 +1,440 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_big_red_balloon",
+  "version": 1,
+  "title": "The Big Red Balloon",
+  "metadata": {
+    "age_band": "3-5",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 1.0,
+      "tolerance": 1.0
+    },
+    "tier": 1,
+    "themes": [
+      "play",
+      "family",
+      "kindness",
+      "letting go",
+      "wonder"
+    ],
+    "estimated_minutes": 4,
+    "ending_count": 6,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "time_cave",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_park",
+  "nodes": [
+    {
+      "id": "n_park",
+      "body": "Lila held Grandpa's hand. They walked into the sunny park. A big red balloon bounced on her wrist, tied with a floppy yellow bow. It was round and shiny. A soft breeze blew. Tap, tap, tap, went the balloon. \"Let's see the ducks!\" said Lila, and she skipped down the path.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_skip_path",
+          "label": "Skip down the park path.",
+          "target": "n_slip"
+        }
+      ]
+    },
+    {
+      "id": "n_slip",
+      "body": "Whoosh! A big gust of wind rushed by. The yellow bow wiggled loose. The big red balloon slipped off Lila's wrist. Up, up it floated, past her fingers. \"Oh!\" Lila gasped. Grandpa held her hand tight. \"Quick,\" he said. \"Let's follow it!\"",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chase_balloon",
+          "label": "Chase the big red balloon!",
+          "target": "n_run"
+        }
+      ]
+    },
+    {
+      "id": "n_run",
+      "body": "They ran down the path. The big red balloon bounced on the wind, red and round in the blue sky. It stayed just out of reach. It drifted on, past the trees, to the spot where the path split in two.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_run_fork",
+          "label": "Run to where the path splits.",
+          "target": "n_fork"
+        }
+      ]
+    },
+    {
+      "id": "n_fork",
+      "body": "At the fork, the big red balloon hung in the air. It looked like it was choosing too. Down on the left, the path went to the shiny duck pond. Up on the right, it climbed grassy kite hill. The wind tugged the balloon up, high and far.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_down_pond",
+          "label": "Follow it down to the shiny duck pond.",
+          "target": "n_pond"
+        },
+        {
+          "id": "c_up_hill",
+          "label": "Follow it up grassy kite hill.",
+          "target": "n_hill"
+        }
+      ]
+    },
+    {
+      "id": "n_pond",
+      "body": "Down by the shiny pond, the balloon skimmed low. It skimmed the cool water. Its string trailed like a tail. Ducks paddled after it. Splish, splash! They swam in a line. The balloon drifted on. It went to the old willow tree.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_round_pond",
+          "label": "Hurry around the shiny duck pond.",
+          "target": "n_ducks"
+        }
+      ]
+    },
+    {
+      "id": "n_ducks",
+      "body": "Lila and Grandpa hurried along the bank. It was soft and muddy. Ducks paddled beside them in a line. Up ahead, the string got caught. It caught in green reeds. It caught by the old willow tree.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_to_reeds",
+          "label": "Go to the reeds by the old willow tree.",
+          "target": "n_reeds"
+        }
+      ]
+    },
+    {
+      "id": "n_reeds",
+      "body": "The balloon bobbed over the reeds. Its string was stuck. It was out of reach. Smooth stones led to the willow tree. The boat lady waved. She waved from her small boat. \"Which way, Lila?\" asked Grandpa.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_stones",
+          "label": "Tiptoe across flat stepping stones.",
+          "target": "n_stones"
+        },
+        {
+          "id": "c_boat",
+          "label": "Wave to the paddle-boat lady.",
+          "target": "n_boat"
+        }
+      ]
+    },
+    {
+      "id": "n_stones",
+      "body": "Lila held Grandpa's hand tight. She stepped from stone to stone. Splish, steady, splish. The ducks watched, quiet and still. At the last stone, the big red balloon bobbed in the willow twigs. It bobbed right above her head.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_under_willow",
+          "label": "Stop under the old willow tree.",
+          "target": "n_willow"
+        }
+      ]
+    },
+    {
+      "id": "n_willow",
+      "body": "The string looped around a bendy twig. It was just too high. Grandpa spotted a long smooth stick by the bank. A soft wind rustled the leaves. \"Stick, or wind?\" he asked. \"You choose, Lila.\"",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_stick",
+          "label": "Reach up with a long smooth stick.",
+          "target": "n_stick"
+        },
+        {
+          "id": "c_breeze",
+          "label": "Wait for a puffing breeze to help.",
+          "target": "n_breeze"
+        }
+      ]
+    },
+    {
+      "id": "n_stick",
+      "body": "Grandpa held Lila steady. She stretched the smooth stick up high. It nudged the string loop. Slowly, it slid down the twig. It came close to her hand.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_catch_string",
+          "label": "Catch the string!",
+          "target": "n_catch_end"
+        }
+      ]
+    },
+    {
+      "id": "n_catch_end",
+      "body": "The string dropped into her hand. Got it! Lila held on tight. She wound it round her wrist. Grandpa tied a big bow. The ducks quacked. They quacked with joy. The willow tree waved its leaves. Lila and Grandpa walked home. The red balloon bounced along.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_willow_catch",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Caught Under the Willow"
+      }
+    },
+    {
+      "id": "n_breeze",
+      "body": "Lila and Grandpa sat still on the smooth stone. They watched and waited. The wind puffed once, twice. The string slipped free of the twig. But the balloon did not come down. It floated out over the calm middle of the pond.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_watch_drift",
+          "label": "Watch where it goes.",
+          "target": "n_drift"
+        }
+      ]
+    },
+    {
+      "id": "n_drift",
+      "body": "The big red balloon drifted down. It landed softly on the water. It was calm and glassy. It looked round and red, like a little boat. One by one, ducks paddled over. They circled it slowly. It was like a brand new friend.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wave_parade",
+          "label": "Wave to the duck parade.",
+          "target": "n_parade_end"
+        }
+      ]
+    },
+    {
+      "id": "n_parade_end",
+      "body": "The ducks swam in a circle. Their feathers were soft and white. They quacked a happy song. A little duck bobbed near, like a small guard. Lila giggled. She waved from the bank. Her balloon led the parade now. What a happy trade.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_duck_parade",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "Leader of the Duck Parade"
+      }
+    },
+    {
+      "id": "n_boat",
+      "body": "The boat lady rowed to the bank. It was soft and muddy. She helped Lila and Grandpa climb in. They held on tight. Out on the pond, the balloon bobbed low. Its string danced on the ripples.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pedal",
+          "label": "Pedal after the big red balloon.",
+          "target": "n_pedal"
+        }
+      ]
+    },
+    {
+      "id": "n_pedal",
+      "body": "They pedaled and pedaled. Splish, splash, splish! It was cool. It was wet. Ducks raced along with them. The balloon skipped on the wind. It went straight for the fountain.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_to_fountain",
+          "label": "Follow it to the big whooshing fountain.",
+          "target": "n_fountain"
+        }
+      ]
+    },
+    {
+      "id": "n_fountain",
+      "body": "The fountain sprayed a cool, silver mist. The balloon bounced on top of it. Boing, boing! It was like the fountain was playing. Then it rolled down the spray. It slid close to the boat.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hands_out",
+          "label": "Hold out both hands.",
+          "target": "n_boat_end"
+        }
+      ]
+    },
+    {
+      "id": "n_boat_end",
+      "body": "Plop! The balloon rolled off the spray. It landed in Lila's arms, cool and wet. The boat lady cheered. The ducks quacked with joy. They rowed back to shore. The balloon rode in her lap, big and red.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_fountain_catch",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Fountain Catch"
+      }
+    },
+    {
+      "id": "n_hill",
+      "body": "Up the grassy hill they climbed. Puff, puff! The balloon climbed too, a red dot in the white clouds. Partway up, Lila heard a bell. She saw kids flying kites at the top.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_keep_climbing",
+          "label": "Keep climbing toward the sounds.",
+          "target": "n_bell"
+        }
+      ]
+    },
+    {
+      "id": "n_bell",
+      "body": "A jingly bell rang. It came from an ice cream cart. The cart had a striped top. Kids flew bright kites above it. The balloon wobbled in between, not sure which way to go.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_see_where",
+          "label": "See where the big red balloon goes.",
+          "target": "n_hillside"
+        }
+      ]
+    },
+    {
+      "id": "n_hillside",
+      "body": "The big red balloon dipped low toward the cart. Then it bobbed up toward the bright kites at the top. It could not make up its mind. Grandpa squeezed Lila's hand. \"You pick where we try to catch it,\" he said.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_to_cart",
+          "label": "Run to the ice-cream cart.",
+          "target": "n_cart"
+        },
+        {
+          "id": "c_to_top",
+          "label": "Climb up to the kite kids.",
+          "target": "n_top"
+        }
+      ]
+    },
+    {
+      "id": "n_cart",
+      "body": "They got to the cart. The balloon bumped the striped top. Its string wrapped around the pole. The ice cream man looked up. He smiled at his new balloon friend.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_look_up_string",
+          "label": "Look up at the tangled string.",
+          "target": "n_umbrella"
+        }
+      ]
+    },
+    {
+      "id": "n_umbrella",
+      "body": "The string was wound around the pole, up where the striped umbrella spread wide. It was too high for Lila. The ice cream man was tall. He kept a small stool by the cart. \"Ask him, or climb the stool?\" said Grandpa.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ask_man",
+          "label": "Ask the ice-cream man to reach it.",
+          "target": "n_reachup"
+        },
+        {
+          "id": "c_try_stool",
+          "label": "Climb a little step stool and try.",
+          "target": "n_stool"
+        }
+      ]
+    },
+    {
+      "id": "n_reachup",
+      "body": "The ice cream man wiped his sticky hands. He stood up on his toes. He unwound the string, loop by loop. He caught the balloon before it could float away. Then he bowed, like a fancy waiter.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_take_back",
+          "label": "Take the big red balloon back.",
+          "target": "n_sundae_end"
+        }
+      ]
+    },
+    {
+      "id": "n_sundae_end",
+      "body": "The ice cream man handed Lila the balloon. He said it was like a fancy treat. He gave her a small strawberry scoop too. Lila tied the string tight. She licked her cold, sweet ice cream. She grinned at Grandpa. What a tasty rescue.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_fanciest_rescue",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Fanciest Rescue"
+      }
+    },
+    {
+      "id": "n_stool",
+      "body": "Lila climbed on the smooth stool. Grandpa held her steady. She stretched up high on her toes. Her hand reached for the string. Almost, almost, so close. Just a little more to go.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_one_more_inch",
+          "label": "Reach one more inch.",
+          "target": "n_gust"
+        }
+      ]
+    },
+    {
+      "id": "n_gust",
+      "body": "Just then, wind swept by. It swept over the hill. The string spun off the pole. It hopped past her fingers. The big red balloon sailed up and away. It grew smaller and smaller.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_watch_go",
+          "label": "Watch it go.",
+          "target": "n_goodbye_end"
+        }
+      ]
+    },
+    {
+      "id": "n_goodbye_end",
+      "body": "Lila's chin wobbled. The red dot winked away behind the trees. The ice cream man said she deserved a treat. He gave her a strawberry cone. Grandpa hugged her close. The ice cream was sweet and cold. Next park day, they would pick a new balloon.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_strawberry_goodbye",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Strawberry Goodbye"
+      }
+    },
+    {
+      "id": "n_top",
+      "body": "At the top of the hill, the big red balloon rose up. It rose among the bright kites. It bobbed like a kite with no tail. A kid named Jo grinned. \"My kite can help,\" she said.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ask_jo",
+          "label": "Ask Jo to try.",
+          "target": "n_kites"
+        }
+      ]
+    },
+    {
+      "id": "n_kites",
+      "body": "Jo let out more string. Her yellow kite swooped up beside the balloon. Its long ribbon tail twirled around the string. It was soft, like a hug. It held on tight.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_reel_together",
+          "label": "Reel them in together.",
+          "target": "n_reel"
+        }
+      ]
+    },
+    {
+      "id": "n_reel",
+      "body": "Hand over hand, Lila and Jo wound the reel. Down came the kite. Down came the balloon too. They spun slowly, like falling leaves. Lower and lower they came. The string touched Lila's hands.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_take_string",
+          "label": "Take hold of the string.",
+          "target": "n_kite_end"
+        }
+      ]
+    },
+    {
+      "id": "n_kite_end",
+      "body": "Lila held the balloon at last. Jo took back her yellow kite. The kite kids cheered from the hilltop. Grandpa tied the string with a bow. Lila and her new friend flew one more kite before home.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_kindest_kite",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Kindest Kite"
+      }
+    }
+  ]
+}

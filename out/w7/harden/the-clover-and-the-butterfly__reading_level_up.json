@@ -1,0 +1,299 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_clover_butterfly",
+  "version": 1,
+  "title": "Clover and the Butterfly",
+  "metadata": {
+    "age_band": "3-5",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 1.0,
+      "tolerance": 1.0
+    },
+    "tier": 1,
+    "themes": [
+      "nature",
+      "curiosity",
+      "friendship",
+      "gentleness"
+    ],
+    "estimated_minutes": 3,
+    "ending_count": 7,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "time_cave",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "Clover is a diminutive kitten, still in the earliest stage of her young existence. She had situated herself within a sun-drenched garden, basking in the warmth that permeated the tranquil space. Suddenly, a butterfly of striking azure coloration traversed the air before her! It proceeded past a cluster of flowers, continued onward beyond a small pond, and ultimately made its way toward a patch of towering grass. Clover observed its trajectory with keen attention. An overwhelming impulse arose within her to pursue the fluttering creature! Yet she found herself confronted with an important question: which direction ought she to choose?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_daisies",
+          "label": "Follow it to the daisy patch.",
+          "target": "n_daisies"
+        },
+        {
+          "id": "c_pond",
+          "label": "Follow it to the little pond.",
+          "target": "n_pond"
+        },
+        {
+          "id": "c_grass",
+          "label": "Follow it to the tall grass.",
+          "target": "n_grass"
+        }
+      ]
+    },
+    {
+      "id": "n_daisies",
+      "body": "The butterfly performed its delicate dance above a cluster of pale, snowy blossoms before proceeding onward to yet another gathering of the same white flowers. There, quite unexpectedly, a bee had already established itself! The bee emitted its characteristic buzzing sound, drifting methodically from one blossom to the next in search of nectar. Eventually, the butterfly departed from this floral scene altogether, redirecting its flight toward a nearby bird bath. What, one might wonder, did Clover do in response to all of this?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_watch_bee",
+          "label": "Stop and watch the bumblebee.",
+          "target": "n_bee_end"
+        },
+        {
+          "id": "c_to_birdbath",
+          "label": "Keep following the butterfly.",
+          "target": "n_birdbath"
+        }
+      ]
+    },
+    {
+      "id": "n_bee_end",
+      "body": "Clover remained precisely where she stood, her attention wholly absorbed by the meticulous industry of the bee. Buzz, buzz, buzz! The diligent insect proceeded methodically from blossom to blossom, and Clover found the spectacle utterly captivating to observe. Presently, however, she raised her gaze, only to discover that the blue butterfly had vanished without a trace. Nevertheless, Clover remained undeterred in her contentment, and she made her way homeward with a heart full of joy.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_bee_setback",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Busy Bumblebee"
+      }
+    },
+    {
+      "id": "n_birdbath",
+      "body": "A modest little bird had situated itself at the bird bath, its feathers thoroughly saturated as it stirred the water into small, splashing eruptions. Meanwhile, a blue butterfly had alighted delicately upon the rim, though it remained there only momentarily before departing on its fluttering journey toward a cluster of ripened red strawberries. Clover, without hesitation, pursued it in that very direction.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_to_strawberries",
+          "label": "Follow the butterfly to the strawberries.",
+          "target": "n_strawberries"
+        }
+      ]
+    },
+    {
+      "id": "n_strawberries",
+      "body": "Beneath the verdant foliage lay clusters of crimson berries, their sweetness undeniable, awaiting discovery. The butterfly, in its languid passage, drifted above them momentarily before continuing onward toward an entirely different location. It settled upon a gentle expanse of tender green leaves. It was then that Clover approached.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_to_meadow",
+          "label": "Tiptoe after the butterfly.",
+          "target": "n_meadow"
+        }
+      ]
+    },
+    {
+      "id": "n_meadow",
+      "body": "The butterfly proceeded with exceeding sluggishness, deliberately, as though unhurried by any urgency whatsoever. It advanced directly toward the vicinity of Clover's nose, arriving there with peculiar precision, and thereupon ceased its movement entirely, suspended in place. Clover, to her astonishment, found herself able to observe it with remarkable clarity. In close proximity there existed a modest circular arrangement of flowers. Clover remained motionless, retaining her position without the slightest alteration, refraining from any movement whatsoever.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hold_still",
+          "label": "Hold still and wait.",
+          "target": "n_nose_end"
+        },
+        {
+          "id": "c_flower_ring",
+          "label": "Peek at the little flower ring.",
+          "target": "n_crown_end"
+        }
+      ]
+    },
+    {
+      "id": "n_nose_end",
+      "body": "The butterfly had positioned itself delicately upon Clover's nose! Its wings rose and descended in a rhythmic, unhurried motion. Upward, then downward, again and again. Clover erupted into giggles! Haha! Yet she remained perfectly motionless, resisting the urge to move. An overwhelming sense of happiness washed over her. Without question, it was the most wonderful day she had ever experienced!",
+      "is_ending": true,
+      "ending": {
+        "id": "e_nose",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "On Clover\u2019s Nose"
+      }
+    },
+    {
+      "id": "n_crown_end",
+      "body": "Clover happened upon a diminutive, encircling arrangement of flowers, its shape reminiscent of a crown fashioned for royalty. Remarkably, it conformed perfectly to the contours of her head. The butterfly circled the floral coronet a single time, its motion imbued with an unmistakable gentleness. Clover, without hesitation, placed the crown upon her head, and an unmistakable, radiant pride swelled within her.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_crown",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Daisy Crown"
+      }
+    },
+    {
+      "id": "n_pond",
+      "body": "There existed a pond of modest proportions, upon whose surface a green frog reposed atop a floating lily pad, its eyes protuberant and disproportionately large. A butterfly, meanwhile, traversed the expanse of water above, proceeding onward until it arrived among a cluster of reeds. What, one might inquire, did Clover proceed to do?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_play_frog",
+          "label": "Play peekaboo with the frog.",
+          "target": "n_frog_end"
+        },
+        {
+          "id": "c_to_reeds",
+          "label": "Follow the butterfly to the reeds.",
+          "target": "n_reeds"
+        }
+      ]
+    },
+    {
+      "id": "n_frog_end",
+      "body": "Clover and the frog engaged in playful activity together, indulging in peek-a-boo, splashing about with great enthusiasm, and hopping in delighted succession. The frog proceeded in one particular direction while Clover ventured in another, each pursuing their own amusing course. Their merriment continued unabated until the butterfly, without warning, departed and vanished into the distance. Clover then made her way homeward, her body weary from the day's exertions, yet her spirit nonetheless suffused with contentment and joy.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_frog_setback",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Peekaboo Frog"
+      }
+    },
+    {
+      "id": "n_reeds",
+      "body": "The butterfly proceeded through a corridor of verdant reeds, which, disturbed by its passage, emitted a rhythmic swishing sound as they brushed against one another. A dragonfly, appearing with sudden velocity, sped past in a manner strikingly reminiscent of a helicopter's swift maneuvering. Undeterred, the butterfly continued onward, eventually encountering a fallen log whose surface was blanketed in a thick layer of moss.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_to_hedgehog",
+          "label": "Follow past the mossy log.",
+          "target": "n_hedgehog"
+        }
+      ]
+    },
+    {
+      "id": "n_hedgehog",
+      "body": "Beneath the fallen timber lay curled a diminutive sphere. It was, remarkably, a hedgehog! The creature lay wrapped in slumber, utterly undisturbed. Clover, sensing the delicacy of the moment, grew exceptionally still and hushed, careful not to rouse the sleeping animal from its peaceful rest. Resuming her pursuit, she continued onward in search of the elusive butterfly. There, beneath the overhanging shadows, the air remained pleasantly cool and refreshing.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_to_friend",
+          "label": "Tiptoe into the shady corner.",
+          "target": "n_friend"
+        }
+      ]
+    },
+    {
+      "id": "n_friend",
+      "body": "A diminutive rabbit had situated himself beneath the shelter of the shade, and his name, as it happened, was Pip. Pip occupied himself with the leisurely nibbling of sweet green leaves, producing a contented, rhythmic nom, nom, nom as he chewed. Meanwhile, a butterfly had alighted upon a leaf positioned high above him. It was then that Pip caught sight of Clover, and, upon noticing her, he offered a friendly greeting of hello.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_share_berries",
+          "label": "Share the sweet berries with Pip.",
+          "target": "n_share_end"
+        }
+      ]
+    },
+    {
+      "id": "n_share_end",
+      "body": "Clover and Pip discovered a cluster of crimson berries growing nearby. Together, the two of them consumed the fruit in unison, their jaws working steadily\u2014munch, munch, munch! Meanwhile, the butterfly remained perched close by, observing the scene with quiet interest. Two companions, newly acquainted, shared this simple pleasure, their paws growing increasingly sticky with berry juice as they ate. It was, altogether, a splendid day to be outdoors\u2014undoubtedly the most wonderful occasion either of them had yet experienced!",
+      "is_ending": true,
+      "ending": {
+        "id": "e_share",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Berries to Share"
+      }
+    },
+    {
+      "id": "n_grass",
+      "body": "In every direction stretched an expanse of towering grass, its blades swaying with quiet persistence. The butterfly ascended and descended through the air in rhythmic undulations, resembling nothing so much as a kite tethered to some invisible string. The grass itself possessed a softness that invited touch. Clover, for her part, was capable of considerable speed when she chose to run, yet she might equally choose to move with deliberate slowness, her steps hushed and unobtrusive. Which of these did she, in this particular instance, decide to do?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dash",
+          "label": "Dash after it fast!",
+          "target": "n_lost_end"
+        },
+        {
+          "id": "c_tiptoe",
+          "label": "Tiptoe slow and quiet.",
+          "target": "n_sunflower"
+        }
+      ]
+    },
+    {
+      "id": "n_lost_end",
+      "body": "Clover propelled herself forward with remarkable swiftness, her small paws striking the ground in a rapid, rhythmic pattern\u2014tap, tap, tap\u2014as she pursued her fluttering quarry. The butterfly, however, ascended abruptly into the air, soaring upward and over a fence that presented an insurmountable barrier to her pursuit. Recognizing that such an obstacle lay beyond her capability to overcome, Clover reluctantly abandoned the chase and made her way homeward instead. Despite the disappointment of an unfinished pursuit, she felt both a profound contentment and an agreeable exhaustion settle over her.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_lost_setback",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Too Fast!"
+      }
+    },
+    {
+      "id": "n_sunflower",
+      "body": "Tall, sunflowers of a golden hue surrounded the area on all sides, swaying rhythmically as gusts of wind passed through them. The butterfly navigated its way among the towering stalks, proceeding steadily toward a gate constructed entirely of wood. Clover pursued it without hesitation.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_to_gate",
+          "label": "Follow toward the garden gate.",
+          "target": "n_gate"
+        }
+      ]
+    },
+    {
+      "id": "n_gate",
+      "body": "The butterfly proceeded through the gateway, and Clover, following closely behind, passed through it as well. An abundance of flowers greeted them there\u2014blossoms of pink, blossoms of purple. Such a multitude of them! Such extraordinary beauty they possessed!",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_to_arch",
+          "label": "Follow into the flower corner.",
+          "target": "n_arch"
+        }
+      ]
+    },
+    {
+      "id": "n_arch",
+      "body": "Above them arched a canopy of verdant foliage, from which sweetly fragrant blossoms depended. Beneath this arch the butterfly proceeded, circling repeatedly in looping, meandering flight. Presently it settled into stillness, motionless and expectant, awaiting Clover's arrival.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sit_arch",
+          "label": "Sit quietly beneath the arch.",
+          "target": "n_perch_end"
+        }
+      ]
+    },
+    {
+      "id": "n_perch_end",
+      "body": "Clover positioned herself beneath the archway, remaining there in quiet contentment. The butterfly, meanwhile, had settled delicately upon her ear, resembling nothing so much as an ornamental bow perched there by design. Together they lingered in that spot, motionless and companionable. The air possessed a pleasant coolness, and everything about the moment felt agreeable and right. A profound sense of gladness washed over them both. It was, without question, the most wonderful day either of them had ever experienced.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_perch",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Under the Flower Arch"
+      }
+    }
+  ]
+}

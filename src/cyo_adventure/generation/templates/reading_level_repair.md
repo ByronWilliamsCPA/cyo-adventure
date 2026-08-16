@@ -59,7 +59,7 @@ include markdown fences.
 The output must be a single JSON object mapping each `node_id` to its revised body
 string, and nothing else:
 
-```json
+```
 {"node_id_1": "revised text of the first passage", "node_id_2": "revised text ..."}
 ```
 

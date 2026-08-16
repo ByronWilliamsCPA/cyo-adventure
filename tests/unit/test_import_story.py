@@ -168,7 +168,7 @@ def _filled_story() -> dict[str, object]:
 
 @pytest.mark.unit
 @pytest.mark.asyncio
-async def test_import_story_with_unwritten_nodes_raises_validation_error(
+async def test_import_rejects_a_story_whose_nodes_were_never_written(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """A blob still carrying ``<<FILL`` directives is not a filled story.

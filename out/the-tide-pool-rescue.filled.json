@@ -1,0 +1,904 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_tide_pool_rescue",
+  "version": 1,
+  "title": "The Tide Pool Rescue",
+  "metadata": {
+    "age_band": "5-8",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 2.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "kindness",
+      "helping",
+      "perseverance",
+      "friendship"
+    ],
+    "estimated_minutes": 10,
+    "ending_count": 12,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "loop_and_grow",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "The sun was warm. The sand was warm too. The sea had gone far out. It was low tide, Milo's favorite time. Gran wore her big beach hat. She carried the picnic basket. Milo swung his red bucket. Clank, clank, it went. Ahead, the wet rocks shone. Little tide pools dotted every one, like small mirrors in the sun. \"The sea always comes back,\" Gran said. \"Just like a friend coming home.\" Milo grinned. He could not wait to explore the rocks and pools.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_go",
+          "label": "Follow Gran down the sandy path.",
+          "target": "n_walk"
+        }
+      ]
+    },
+    {
+      "id": "n_walk",
+      "body": "Gran led the way down the sandy path. She spread her towel on her flat rock. From there she could see the whole beach. \"Remember the rules,\" she said. She tucked a strand of hair under her hat. \"Stay on the dry rocks. Wet feet are just fine. Call if you want a hand.\" Milo saluted like a sailor. \"Yes, Gran!\" he said. Then he turned toward the shining pools. He was humming with excitement. He stepped off the sand and onto the rocks.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_walk_rocks",
+          "label": "Step out onto the flat low-tide rocks.",
+          "target": "n_meet"
+        }
+      ]
+    },
+    {
+      "id": "n_meet",
+      "body": "Out on the rocks, Milo heard tiny voices. Low tide had left some friends stuck. A sea star was stuck on a bare ledge. A fish was trapped in a shrinking puddle. A crab was tangled in the seaweed. A periwinkle was stranded on a sunny rock. Far off, the sea sparkled. It was already turning around to come home. Milo could only help one friend at a time. Who should he help first?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_meet_star",
+          "label": "Hurry to the sea star on the high ledge.",
+          "target": "st_scene"
+        },
+        {
+          "id": "c_meet_fish",
+          "label": "Follow a flappy splashing sound across the rocks.",
+          "target": "t_st_fi"
+        },
+        {
+          "id": "c_meet_crab",
+          "label": "Follow a busy clack-clack-clack sound to the seaweed patch.",
+          "target": "t_fi_cr"
+        },
+        {
+          "id": "c_meet_snail",
+          "label": "Climb toward something tiny gleaming in the sunshine on the dry rock.",
+          "target": "t_cr_pw"
+        }
+      ]
+    },
+    {
+      "id": "st_scene",
+      "body": "Milo reached the tall rock. Stella the sea star sat on her high ledge. Her five arms drooped, tired and dry. \"Down here!\" Milo called. Stella lifted one arm to wave. \"The ledge is getting warm,\" she said. Her voice was small and patient. \"I would very much like to be back in my cool pool.\"",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st_scene",
+          "label": "Climb the low steps for a closer look.",
+          "target": "st_meet"
+        }
+      ]
+    },
+    {
+      "id": "st_meet",
+      "body": "Milo climbed two safe, flat steps. He got a closer look. Stella waved one arm, like a tiny flag. The ledge was dry as toast. Her cool pool waited just below. \"Any rescue plan is fine with me,\" Stella said. \"I am a very patient sea star.\" Milo looked at his red bucket. Then he looked at his own two hands. Then he looked at the little slope. He began to think hard.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st_meet",
+          "label": "Think up a rescue plan for Stella.",
+          "target": "st_plan"
+        }
+      ]
+    },
+    {
+      "id": "st_plan",
+      "body": "Milo lined up his ideas. Stella waved from her dry ledge. He could toss water up with his hands. He could carry his bucket up the slope. He could wet his hands and slide her down himself. Over on her flat rock, Gran watched and waited. She was ready with a tip, if he wanted one. Milo rubbed his chin. Which plan should he try first?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st_plan_hands",
+          "label": "Toss water up with your cupped hands.",
+          "target": "st_flop_hands"
+        },
+        {
+          "id": "c_st_plan_bucket",
+          "label": "Carry his red bucket up the little slope.",
+          "target": "st_flop_bucket"
+        },
+        {
+          "id": "c_st_plan_slide",
+          "label": "Wet your hands and gently slide Stella down.",
+          "target": "st_win"
+        }
+      ]
+    },
+    {
+      "id": "st_flop_hands",
+      "body": "Milo scooped water in his cupped hands. He tossed it up toward the ledge. Splash! It rained straight back down on his own head. Plip, plop. Stella giggled so hard her arms wiggled. Milo laughed too. He shook his wet hair like a puppy. No harm done, just a soggy fringe. He could try his plans again. Or he could ask Gran for a tip.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st_hands_again",
+          "label": "Line up the plans and try again.",
+          "target": "st_plan"
+        },
+        {
+          "id": "c_st_hands_gran",
+          "label": "Ask Gran for a tip.",
+          "target": "st_gran"
+        }
+      ]
+    },
+    {
+      "id": "st_flop_bucket",
+      "body": "Milo filled his red bucket at the pool. He started up the little slope. The bucket wobbled. It tipped. It whooshed every drop over his own shoes. Squelch, squelch went his toes. Stella clapped two arms for the splash. Milo grinned at his soggy feet. No harm done. The tide had plenty more water. He could go back to his plans. Or he could ask Gran for a tip.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st_bucket_again",
+          "label": "Shake off the splash and try again.",
+          "target": "st_plan"
+        },
+        {
+          "id": "c_st_bucket_gran",
+          "label": "Ask Gran for a tip.",
+          "target": "st_gran"
+        }
+      ]
+    },
+    {
+      "id": "st_gran",
+      "body": "Gran tipped back her big beach hat and smiled. \"Sea stars like things slow and gentle,\" she said. \"Wet your hands first, so Stella can hold on comfy. Then slide her down to her pool, like a little water slide.\" Milo could try the gentle sliding idea. Or he could look over his plans once more.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st_gran_try",
+          "label": "Try Gran's gentle sliding idea.",
+          "target": "st_win"
+        },
+        {
+          "id": "c_st_gran_back",
+          "label": "Look over the plans once more.",
+          "target": "st_plan"
+        }
+      ]
+    },
+    {
+      "id": "st_win",
+      "body": "Milo dipped his hands in the pool. They went cool and wet. He reached up, and Stella held on tight with all five arms. Slow and gentle, he carried her down the rock. She slipped into her cool pool with a soft ploop. Once she was settled, Stella stretched every arm out wide. It looked like a happy dance underwater.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st_win",
+          "label": "Watch Stella settle into her pool.",
+          "target": "st_thanks"
+        }
+      ]
+    },
+    {
+      "id": "st_thanks",
+      "body": "Stella pressed one arm against the top of the water. It was like a high five just for Milo. She burbled a bubbly thank you. Back across the rocks, other small voices were still calling. The tide was coming on. Milo could pick his way out to the pools again. He could watch the tide arrive. Or he could sit with Gran and let the sea finish the rescuing.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st_back",
+          "label": "Pick your way back out to the pools.",
+          "target": "n_meet"
+        },
+        {
+          "id": "c_st_done",
+          "label": "Watch the tide come in over the pools.",
+          "target": "n_alldone"
+        },
+        {
+          "id": "c_st_rest",
+          "label": "Sit with Gran and let the tide finish the rescuing.",
+          "target": "e_tide_star"
+        }
+      ]
+    },
+    {
+      "id": "t_st_fi",
+      "body": "Milo hopped from flat rock to flat rock. He followed a flappy, splashing sound. Out past the pools, the tide had crept one sparkly step closer. It glittered as it came. Gran waved her big beach hat from her flat rock. Ahead, the splashing grew louder. It came from a puddle no bigger than a dinner plate.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1",
+          "label": "Kneel beside the shrinking puddle.",
+          "target": "fi_scene"
+        }
+      ]
+    },
+    {
+      "id": "fi_scene",
+      "body": "In the little puddle, a small silver fish zipped in busy circles. Round and round he went. The puddle was only as deep as a soup bowl. The warm sun was sipping it smaller every minute. He popped his mouth up. \"My name's Flick,\" he said. \"I would very much like a bigger pool, please!\" He sounded hopeful and chatty. He was never scared at all.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fi_scene",
+          "label": "Lean in and say hello to the little fish.",
+          "target": "fi_meet"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "fi_meet",
+      "body": "Milo crouched beside the puddle. \"Help is here, Flick,\" he said. \"The big deep pool is just two hops away. It is calm and shady there.\" Flick zoomed an excited lap around his shrinking puddle. Little drops sparkled up. Milo looked from his own quick hands, to the sand between the puddles, to his red bucket. There were three ways this rescue might go.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fi_meet",
+          "label": "Think up a plan to move Flick.",
+          "target": "fi_plan"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "fi_plan",
+      "body": "Milo studied the puddle. Flick swam hopeful loops around and around. Milo could try to catch him with his bare hands. He could dig a little river through the sand. Then the puddle could flow to the big pool. Or he could dip his bucket and scoop the whole puddle up, fish and all. Flick blew a bubble. It seemed to say, you can do it! Milo tapped his chin. He was thinking it over.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fi_plan_hands",
+          "label": "Catch Flick with your bare hands.",
+          "target": "fi_flop_hands"
+        },
+        {
+          "id": "c_fi_plan_dig",
+          "label": "Dig a little river over to the big deep pool.",
+          "target": "fi_flop_dig"
+        },
+        {
+          "id": "c_fi_plan_scoop",
+          "label": "Scoop water and Flick up together in his red bucket.",
+          "target": "fi_win"
+        }
+      ]
+    },
+    {
+      "id": "fi_flop_hands",
+      "body": "Milo cupped his hands and reached in. But Flick was quicker than a sneeze. He zipped between Milo's fingers. He tickled his thumb. He splashed a tiny wave right up Milo's nose! Milo snorted with laughter. Flick did a proud little flip. No harm done to anyone, just a wet nose and a giggling fish. Milo could pick a plan again. Or he could ask Gran for a tip.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fi_hands_again",
+          "label": "Line up the plans and try again.",
+          "target": "fi_plan"
+        },
+        {
+          "id": "c_fi_hands_gran",
+          "label": "Ask Gran for a tip.",
+          "target": "fi_gran"
+        }
+      ]
+    },
+    {
+      "id": "fi_flop_dig",
+      "body": "Milo dragged his finger through the sand. He was digging a little river. But the thirsty sand drank the water down. It went with a polite little glug, before it could travel anywhere. The channel just sat there, damp and empty. Milo patted the sand. He giggled at his own disappearing river. Flick shrugged his fins in the puddle. Milo could pick a plan again. Or he could ask Gran for a tip.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fi_dig_again",
+          "label": "Smooth the sand and try again.",
+          "target": "fi_plan"
+        },
+        {
+          "id": "c_fi_dig_gran",
+          "label": "Ask Gran for a tip.",
+          "target": "fi_gran"
+        }
+      ]
+    },
+    {
+      "id": "fi_gran",
+      "body": "Gran leaned forward from her flat rock and smiled. \"Fish don't like to be squeezed,\" she said, \"but they do love to swim. Dip your bucket, and scoop him up, water and all. He can ride to the big pool, swimming the whole way.\" Milo could try the gentle scoop. Or he could look over his plans once more.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fi_gran_try",
+          "label": "Scoop water and Flick up together, Gran's way.",
+          "target": "fi_win"
+        },
+        {
+          "id": "c_fi_gran_back",
+          "label": "Look over the plans once more.",
+          "target": "fi_plan"
+        }
+      ]
+    },
+    {
+      "id": "fi_win",
+      "body": "Milo lowered his bucket slowly into the puddle. Flick swam right in. He rode his very own cup of sea. Two hops later, Milo tipped the bucket at the edge of the big pool. Flick poured out with the water in one splash. He zoomed a big loop around his new home.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fi_win",
+          "label": "Watch Flick zoom around his big new pool.",
+          "target": "fi_thanks"
+        }
+      ]
+    },
+    {
+      "id": "fi_thanks",
+      "body": "Flick leaped in one happy hop. He raced another lap around his new pool. Out across the rocks, somebody else was still calling. The tide was coming on. Milo waved goodbye and grinned. He could head back toward the calling. Or he could stay and watch the water come in.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fi_back",
+          "label": "Head back out toward the calling.",
+          "target": "n_meet"
+        },
+        {
+          "id": "c_fi_done",
+          "label": "Watch the tide come in over the pools.",
+          "target": "n_alldone"
+        }
+      ]
+    },
+    {
+      "id": "t_fi_cr",
+      "body": "Milo crossed the rocks. He followed a busy clack-clack-clack sound. Behind him, the tide had slid another sparkly step up the sand. It filled the farthest pools first, like a row of little cups. Ahead, the seaweed patch was green and glossy in the sun. Something in the middle of it was waving.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2",
+          "label": "Cross the rocks to the seaweed patch.",
+          "target": "cr_scene"
+        }
+      ]
+    },
+    {
+      "id": "cr_scene",
+      "body": "In the seaweed patch, a small crab sat tangled in slippery ribbons. He looked like a present that had wrapped itself. He clacked his claws in a friendly hello. \"I'm Pinch,\" he said. \"I was climbing through, when the seaweed flopped right over me. Now my legs are in a friendly muddle.\" He sounded cheerful, not frightened at all. He waved one loose claw like a little flag.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cr_scene",
+          "label": "Crouch down beside the tangled crab.",
+          "target": "cr_meet"
+        }
+      ]
+    },
+    {
+      "id": "cr_meet",
+      "body": "Milo crouched close. Pinch wiggled to show which legs were stuck. The seaweed was shiny and slippery, like wet noodles. \"Don't worry,\" Pinch said. \"My claws only pinch things that poke too fast.\" Milo looked at the tangle. Then he looked at the picnic spoon poking out of his pocket. He began to think hard about the best way to help.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cr_meet",
+          "label": "Think up a plan to untangle Pinch.",
+          "target": "cr_plan"
+        }
+      ]
+    },
+    {
+      "id": "cr_plan",
+      "body": "Milo looked over the seaweed muddle. Pinch waited, waving his one free claw like a tiny flag. Milo could give the seaweed one quick tug. He could hold out the picnic spoon for Pinch to grab. Or he could untangle one ribbon at a time, nice and slow. Nearby, Gran hummed a beach tune from her flat rock. Milo looked at the tangle from every angle. Which plan would work best?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cr_plan_tug",
+          "label": "Give the seaweed one quick tug.",
+          "target": "cr_flop_tug"
+        },
+        {
+          "id": "c_cr_plan_spoon",
+          "label": "Hold out the picnic spoon for Pinch to grab.",
+          "target": "cr_flop_spoon"
+        },
+        {
+          "id": "c_cr_plan_ribbon",
+          "label": "Untangle one seaweed ribbon at a time.",
+          "target": "cr_win"
+        }
+      ]
+    },
+    {
+      "id": "cr_flop_tug",
+      "body": "Milo gripped the slippery seaweed. He gave one quick tug. The wet ribbon slid straight through his fingers. Milo sat down, plop, in a shallow warm puddle! Pinch waved both claws, as if to say, whoa, nice splash. Milo laughed and stood up dripping, completely fine. But the tangle was still very much tangled. He could pick a plan again. Or he could ask Gran for a tip.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cr_tug_again",
+          "label": "Stand up and try again.",
+          "target": "cr_plan"
+        },
+        {
+          "id": "c_cr_tug_gran",
+          "label": "Ask Gran for a tip.",
+          "target": "cr_gran"
+        }
+      ]
+    },
+    {
+      "id": "cr_flop_spoon",
+      "body": "Milo held out the picnic spoon. Pinch grabbed it. But instead of climbing free, the little crab pinched on tight. He waved the spoon around like a shiny trophy. Milo had a gentle, giggly tug-of-war just to get his spoon back. Then he tucked it safely into his pocket. The tangle was still tangled. He could pick a plan again. Or he could ask Gran for a tip.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cr_spoon_again",
+          "label": "Pocket the spoon and try again.",
+          "target": "cr_plan"
+        },
+        {
+          "id": "c_cr_spoon_gran",
+          "label": "Ask Gran for a tip.",
+          "target": "cr_gran"
+        }
+      ]
+    },
+    {
+      "id": "cr_gran",
+      "body": "Gran called over softly from her flat rock. \"Tangles hate hurrying,\" she said. \"Hum a slow song. Untangle one ribbon at a time. The whole knot will give up all by itself.\" Milo could try the slow, ribbon-by-ribbon way. Or he could look over his plans once more.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cr_gran_try",
+          "label": "Untangle one ribbon at a time, Gran's way.",
+          "target": "cr_win"
+        },
+        {
+          "id": "c_cr_gran_back",
+          "label": "Look over the plans once more.",
+          "target": "cr_plan"
+        }
+      ]
+    },
+    {
+      "id": "cr_win",
+      "body": "Milo hummed a slow beach song. He loosened one green ribbon. Then another. Then another. The tangle gave up at last with a soft slurp. Pinch stepped free. He stretched each leg out one by one, like a tiny gym class. The cool pool beside the seaweed waited for him, deep and ready, right where he belonged.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cr_win",
+          "label": "Watch Pinch scuttle into the cool pool.",
+          "target": "cr_thanks"
+        }
+      ]
+    },
+    {
+      "id": "cr_thanks",
+      "body": "Pinch clacked a happy drumroll on a pebble. He scuttled a thank-you circle around his pool. Another voice was still calling somewhere back across the rocks. The tide was coming on. Milo could go and find who was calling. He could watch the water arrive. Or he could curl up on Gran's towel and let the tide fetch the periwinkle instead.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cr_back",
+          "label": "Go and find who is calling.",
+          "target": "n_meet"
+        },
+        {
+          "id": "c_cr_done",
+          "label": "Watch the tide come in over the pools.",
+          "target": "n_alldone"
+        },
+        {
+          "id": "c_cr_rest",
+          "label": "Watch from Gran's her towel while the tide fetches the periwinkle.",
+          "target": "e_tide_snail"
+        }
+      ]
+    },
+    {
+      "id": "t_cr_pw",
+      "body": "Milo tiptoed up the dry rock. He followed something tiny gleaming in the sunshine. He kept his feet on the rough gray parts, the way Gran liked. The tide was closer now. It filled pool after pool behind him, with happy gurgles. Near the top, a shell no bigger than a button sat all alone in the sun.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3",
+          "label": "Tiptoe up the dry rock to the tiny shell.",
+          "target": "pw_scene"
+        }
+      ]
+    },
+    {
+      "id": "pw_scene",
+      "body": "Near the top of the dry rock sat a periwinkle shell. It was no bigger than a button, far from any water at all. A tiny voice inside gave a small, polite cough. The sun was warm. The rock was very dry. The shell was a very long walk from home, for someone so small.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pw_scene",
+          "label": "Bend down and greet the little periwinkle.",
+          "target": "pw_meet"
+        }
+      ]
+    },
+    {
+      "id": "pw_meet",
+      "body": "Milo bent down. The tiny shell peeked out. \"My name is Winnie,\" she said. \"I went exploring at low tide, and wandered much too far.\" Her cool pool was down the rock, a very long way for a periwinkle. Periwinkles are the slowest walkers on the whole beach. Milo dipped one hand into a nearby pool. He thought hard about how to help.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pw_meet",
+          "label": "Think up a plan to bring Winnie home.",
+          "target": "pw_plan"
+        }
+      ]
+    },
+    {
+      "id": "pw_plan",
+      "body": "Milo thought it over. Winnie waited, snug inside her shell. He could roll her along like a tiny wheel. He could cheer her on to walk faster. Or he could offer her a slow, steady ride on his wet palm. \"Any way is fine with me,\" Winnie said. \"I am in no hurry at all, though the tide rather is.\" Milo weighed each idea carefully before choosing.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pw_plan_roll",
+          "label": "Roll Winnie along like a tiny wheel.",
+          "target": "pw_flop_roll"
+        },
+        {
+          "id": "c_pw_plan_cheer",
+          "label": "Cheer for Winnie to walk faster.",
+          "target": "pw_flop_cheer"
+        },
+        {
+          "id": "c_pw_plan_palm",
+          "label": "Offer Winnie a ride on your wet palm.",
+          "target": "pw_win"
+        }
+      ]
+    },
+    {
+      "id": "pw_flop_roll",
+      "body": "Milo gave Winnie the gentlest nudge. He hoped she would roll like a tiny wheel. But she tucked herself snugly into her shell. She simply would not budge, stuck fast as a pebble glued to the rock. \"No rolling today, thank you,\" came a tiny muffled voice. Milo laughed at his own fizzled idea. Winnie peeked back out, perfectly comfy. He could pick a plan again. Or he could ask Gran for a tip.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pw_roll_again",
+          "label": "Smile at the stubborn shell and try again.",
+          "target": "pw_plan"
+        },
+        {
+          "id": "c_pw_roll_gran",
+          "label": "Ask Gran for a tip.",
+          "target": "pw_gran"
+        }
+      ]
+    },
+    {
+      "id": "pw_flop_cheer",
+      "body": "Milo clapped and cheered, \"Go, Winnie, go!\" Winnie tried her very fastest. After one whole minute of mighty effort, she had traveled the width of a single pebble. She puffed proudly. At this speed, they might arrive by next Tuesday! Milo cheered once more anyway, because trying always deserves a cheer. He could pick a plan again. Or he could ask Gran for a tip.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pw_cheer_again",
+          "label": "Line up the plans and try again.",
+          "target": "pw_plan"
+        },
+        {
+          "id": "c_pw_cheer_gran",
+          "label": "Ask Gran for a tip.",
+          "target": "pw_gran"
+        }
+      ]
+    },
+    {
+      "id": "pw_gran",
+      "body": "Gran cupped her hands around her mouth. She called up gently. \"Little periwinkles ride better than they roll,\" she said. \"Wet your palm, so it feels like home. Let Winnie hold on tight, and walk her down slow as a Sunday.\" Milo could offer the wet-palm ride. Or he could look over his plans once more.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pw_gran_try",
+          "label": "Offer Winnie a wet-palm ride, Gran's way.",
+          "target": "pw_win"
+        },
+        {
+          "id": "c_pw_gran_back",
+          "label": "Look over the plans once more.",
+          "target": "pw_plan"
+        }
+      ]
+    },
+    {
+      "id": "pw_win",
+      "body": "Milo wet his palm in a pool. He laid his hand flat beside Winnie. She slid aboard and held on snug. This was the longest, highest, most careful rescue of the whole day. Step by slow step, down the big rock he went. The tide gurgled behind him like a cheering crowd. At last he knelt at the edge of her cool pool.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pw_win",
+          "label": "Lower Winnie into her cool pool.",
+          "target": "pw_thanks"
+        }
+      ]
+    },
+    {
+      "id": "pw_thanks",
+      "body": "Winnie settled onto her favorite green stone. She gave a tiny, happy squeak. She was home at last. A bright gurgle ran all along the rocks, as the tide came on. Milo could look back across the rocks for anyone else still calling. Or he could stay right there and watch the water arrive.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pw_back",
+          "label": "Look back across the rocks for anyone else.",
+          "target": "n_meet"
+        },
+        {
+          "id": "c_pw_done",
+          "label": "Watch the tide come in over the pools.",
+          "target": "n_alldone"
+        }
+      ]
+    },
+    {
+      "id": "n_alldone",
+      "body": "Milo stood tall on the flat rocks. He looked back over all the pools he had reached. Every friend he had helped was safe and settled. They were waving, drumming, or zooming happily in the water. The tide swept closer in sparkly stripes, warm and friendly. It was coming to welcome everyone home. It would finish what Milo had started. From her flat rock, Gran gave Milo a proud thumbs up. Her hat was tipped back in the sun.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_alldone",
+          "label": "Watch the first wave-finger slide in.",
+          "target": "n_tide"
+        }
+      ]
+    },
+    {
+      "id": "n_tide",
+      "body": "The first thin finger of the tide slid across the rocks. It filled the nearest pool right up to its brim. The water was home. It was reaching every pool Milo could not get to as well. The pools fizzed and sparkled like a celebration. Milo could follow the tide from pool to pool, to watch each friend greet it. He could climb up beside Gran on her flat rock, to watch it all at once. Or he could open the picnic basket, to celebrate the rescue team.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tide_follow",
+          "label": "Follow the tide from pool to pool.",
+          "target": "n_fill"
+        },
+        {
+          "id": "c_tide_gran",
+          "label": "Climb up beside Gran on Gran's flat rock.",
+          "target": "n_wave"
+        },
+        {
+          "id": "c_tide_picnic",
+          "label": "Open the picnic basket to celebrate.",
+          "target": "n_picnic"
+        }
+      ]
+    },
+    {
+      "id": "n_fill",
+      "body": "Milo trotted beside the tide. It filled pool after pool, like a row of teacups being poured one by one. Stella's pool was next. It was already trembling at the brim. Milo could stay and cheer as her pool spilled over. He could race the soft foam line up the dry sand, just for fun. Or he could peek around for anyone else who might still need a hand.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fill_cheer",
+          "label": "Cheer as Stella's pool spills over.",
+          "target": "e_cartwheel"
+        },
+        {
+          "id": "c_fill_race",
+          "label": "Race the foam line up the dry sand.",
+          "target": "n_race"
+        },
+        {
+          "id": "c_fill_check",
+          "label": "Peek around for anyone else who needs help.",
+          "target": "n_check"
+        }
+      ]
+    },
+    {
+      "id": "n_race",
+      "body": "Milo lined up his toes on the dry sand, well ahead of the water. He waited for the soft foam line to catch up. \"Ready, steady, go!\" Gran called from her flat rock. The tide whooshed gently forward. Milo took off giggling. He raced along the dry sand, right beside it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_race_go",
+          "label": "Run the last few splashy-sounding steps.",
+          "target": "e_race_win"
+        }
+      ]
+    },
+    {
+      "id": "n_check",
+      "body": "Milo shaded his eyes. He looked over the busy pools. Nobody was calling for help now. But under a shady ledge, something small bobbed on the water. Along the wet sand was a trail of glitter. It wound toward a heap of shiny stones. Both looked like small puzzles. They were worth one look before the picnic.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_check_ledge",
+          "label": "Peek under the shadowy ledge.",
+          "target": "e_hermit"
+        },
+        {
+          "id": "c_check_trail",
+          "label": "Follow the glittery trail.",
+          "target": "e_shell"
+        }
+      ]
+    },
+    {
+      "id": "n_wave",
+      "body": "Milo climbed up beside Gran on her flat rock. She wrapped him in the warm corner of her towel. Below them, the tide filled every pool one by one. The friends waved, splashed, and clacked happily. \"How should the rescue team celebrate?\" Gran asked. They could sing a welcome-home song. They could shout three hip-hip-hoorays. Or they could call each friend by name, as their pool filled up.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wave_song",
+          "label": "Sing the welcome-home song.",
+          "target": "e_song"
+        },
+        {
+          "id": "c_wave_cheer",
+          "label": "Shout three hip-hip-hoorays.",
+          "target": "e_hooray"
+        },
+        {
+          "id": "c_wave_names",
+          "label": "Call each friend's name as their pool fills.",
+          "target": "e_names"
+        }
+      ]
+    },
+    {
+      "id": "n_picnic",
+      "body": "Gran opened the picnic basket on her flat rock. Inside were crackers, berries, and two little cups of juice. Below them, the tide sparkled into the last pools. The friends splashed a happy hello to it. Milo could raise his juice cup in a toast to the rescue team. He could tell Gran the whole story of the rescue day. Or he could start planning the next low-tide rescue patrol.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_picnic_toast",
+          "label": "Raise juice cups to the rescue team.",
+          "target": "e_toast"
+        },
+        {
+          "id": "c_picnic_story",
+          "label": "Tell Gran the whole rescue story.",
+          "target": "e_story"
+        },
+        {
+          "id": "c_picnic_patrol",
+          "label": "Plan the next low tide rescue patrol.",
+          "target": "e_patrol"
+        }
+      ]
+    },
+    {
+      "id": "e_tide_star",
+      "body": "Milo snuggled next to Gran on her towel. They shared crackers while the tide slid in. The water reached Flick, and his puddle grew into a lake. It unwrapped Pinch from his seaweed. It carried Winnie gently home, doing the rest of the rescuing all by itself. Milo waved to each friend as they floated free and happy. \"One rescue by you, and three by the tide,\" Gran said. \"What a fine team.\" Milo snuggled deeper into the warm towel. He was proud of Stella's rescue, and already excited to come back and visit the brimming pools.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_tide_star",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Tide Lends a Hand"
+      }
+    },
+    {
+      "id": "e_tide_snail",
+      "body": "From Gran's towel, Milo watched the tide climb the rock. Higher and higher it went. At last it reached tiny Winnie's shell. It lifted her like a leaf on a stream. The little periwinkle sailed down to her pool in style. A tiny, far-off wheee floated across the rocks. \"Three rescues by you, and one by the tide,\" Gran said. \"Sounds like a fine team to me.\" Milo waved and waved. At last the little shell was safe in her cool water.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_tide_snail",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Periwinkle Rides the Waves"
+      }
+    },
+    {
+      "id": "e_cartwheel",
+      "body": "The tide tipped over the rim of Stella's pool. The water rose around her like a big, cool hug. Stella did a slow cartwheel of thank you. She did it right there in the water. All five arms sparkled in the sun. Milo cheered. Gran cheered too, from her flat rock. The tide kept rolling gently in. It was welcoming every friend home. \"Best low tide ever,\" Milo said. Stella cartwheeled once more, as if she agreed.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_cartwheel",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Stella's Thank-You Cartwheel"
+      }
+    },
+    {
+      "id": "e_race_win",
+      "body": "Milo and the foam line raced up the beach. Milo won, by exactly one giggling toe. The tide pit-pattered little wave-claps behind him. It filled the last pools while Gran shouted hooray from her flat rock. Milo took a big bow toward the tide. It seemed to bow back, with one soft, sparkly wave. Every friend was home. The water was back where it belonged. And Milo was, without a doubt, the fastest rescuer on the whole beach.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_race_win",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Racing the Friendly Tide"
+      }
+    },
+    {
+      "id": "e_hermit",
+      "body": "Under the shady ledge bobbed a hermit crab. He wore a curly, borrowed shell. He was already floating home on the new water. He did not need a rescue at all. He tipped his shell to Milo. It was just the way Gran tipped her beach hat. Milo tipped a pretend hat right back, and grinned. Here was a new friend to wave to. The tide carried him gently past the rocks. All the other friends settled happily into their full pools.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_hermit",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Hermit Crab Surprise"
+      }
+    },
+    {
+      "id": "e_shell",
+      "body": "The glittery trail wound between two pebbles. It stopped at a pretty shell. It was striped like a candy cane, and smooth as glass. \"A gift from the beach,\" Gran said, \"for a good, hard-working helper.\" Milo held it to his ear. He heard the tide inside, softly humming home. He carried it back in his red bucket. It would help him remember this rescue day always.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_shell",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Glitter-Trail Shell"
+      }
+    },
+    {
+      "id": "e_song",
+      "body": "Milo and Gran made up a song, right there on her flat rock. It was a welcome-home song. There was a happy sound for Stella, for Flick, for Pinch, and for Winnie. The friends joined in from their full pools. They splashed along in time. The tide kept the beat with soft whooshes. The song floated out over the water. Soon every pool was full. Every friend was home at last.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_song",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Welcome-Home Song"
+      }
+    },
+    {
+      "id": "e_hooray",
+      "body": "\"Hip hip hooray! Hip hip hooray! Hip hip hooray!\" Milo and Gran shouted three big cheers. The tide rolled home across the rocks. The friends answered back, with splashes, bubbles, and happy claw-clacks from their pools. The tide filled the very last pool, with one happy gulp. Every friend was safe. Every pool was brimming. The whole beach felt like it was clapping right along with them.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_hooray",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Three Cheers for Everyone"
+      }
+    },
+    {
+      "id": "e_names",
+      "body": "As each pool filled, Milo called its friend by name. \"Welcome home, Stella. Welcome home, Flick. Welcome home, Pinch. Welcome home, Winnie.\" Each friend popped up and waved an arm, or a fin, or a claw, or a tiny shell. Then they settled snug into the deep cool water. Gran squeezed Milo's shoulder, smiling. Every single friend was home again, safe and happy. And Milo was the reason why.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_names",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Everyone Home"
+      }
+    },
+    {
+      "id": "e_toast",
+      "body": "Milo and Gran clinked their little juice cups together, on her flat rock. \"To the rescue team,\" Gran said. \"To Stella, Flick, Pinch, and Winnie. And to the helper who never gave up.\" Below them, the tide sparkled into every pool. The friends splashed a fizzy toast of their own. Milo sipped his juice slowly. He watched the whole shining beach settle into place. He decided that rescue days tasted especially sweet.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_toast",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "A Toast to the Rescue Team"
+      }
+    },
+    {
+      "id": "e_story",
+      "body": "Milo told Gran the whole story of the rescue day. Stella was stranded on her bare high ledge. Flick was trapped in his shrinking puddle. Pinch was tangled up in slippery seaweed. And there was the long, slow ride home, for the littlest shell of all. Gran listened under her big beach hat. She declared it the best beach story she had ever heard. Below them, the full pools sparkled, and the friends splashed, as if adding in their own favorite parts of the tale.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_story",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Best Beach Story"
+      }
+    },
+    {
+      "id": "e_patrol",
+      "body": "Milo and Gran planned the next low-tide rescue patrol. They drew cracker-crumb maps on her towel. Gran would bring her big beach hat and the picnic basket. Milo would bring his red bucket and his gentle hands. Below them, the tide tucked every friend into cool water for the day. \"The tide will go back out again,\" Gran said, smiling. \"And when it does, the rescue patrol will be ready.\"",
+      "is_ending": true,
+      "ending": {
+        "id": "end_patrol",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Low-Tide Rescue Patrol"
+      }
+    }
+  ]
+}

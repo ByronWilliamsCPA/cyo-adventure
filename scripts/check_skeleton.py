@@ -43,10 +43,12 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, cast
 
 import networkx as nx
+from pydantic import ValidationError as PydanticValidationError
 
 from cyo_adventure.core.exceptions import ProjectBaseError
 from cyo_adventure.generation.skeleton import FILL_MARKER, load_skeleton
 from cyo_adventure.mutation.identity import recompute_estimated_minutes
+from cyo_adventure.storybook.models import Storybook
 from cyo_adventure.validator.band_profile import (
     breadth_scaled_floors,
     is_offered_cell,
@@ -54,7 +56,7 @@ from cyo_adventure.validator.band_profile import (
     production_cell_budget,
     words_per_node_profile,
 )
-from cyo_adventure.validator.policy import node_word_count
+from cyo_adventure.validator.policy import node_word_count, read_time_drift
 
 if TYPE_CHECKING:
     from cyo_adventure.validator.gate import GateResult
@@ -418,6 +420,57 @@ def walk_floor(band: str, style: str | None) -> float | None:
     return _WALK_FLOORS.get(band)
 
 
+def _read_time_direction_report(skeleton: dict[str, Any]) -> str | None:
+    """Return a skeleton-context PL-23 direction report, or None.
+
+    PL-23 (``validator/policy.py::_check_declared_read_time``) already runs
+    against a skeleton exactly as it does against a filled book, because it
+    reads a node's word count through ``node_word_count``, which substitutes
+    a ``<<FILL ... words=N ...>>`` directive's declared ``N`` for its
+    placeholder body. What it does not say is which way a breach runs, and
+    the two directions need different remedies (UW-C261, AL-391, AL-395): an
+    UNDER-declared skeleton is a plain metadata error (a hint-sized fill will
+    overrun the clock), while an OVER-declared one, concentrated at the
+    longest cells, more often means the author recorded a typical read of a
+    branching book instead of ADR-011's fastest-finish definition. This
+    function adds that direction without touching PL-23 itself: it calls
+    :func:`cyo_adventure.validator.policy.read_time_drift`, the same
+    comparison ``_check_declared_read_time`` makes, reusing
+    ``words_on_shortest_satisfying_path`` rather than recomputing the fastest
+    finish, so this can never disagree with the gate's own PL-23 finding
+    about whether the tolerance is breached.
+
+    Parses ``skeleton`` into a :class:`Storybook` directly; this always
+    succeeds here because ``load_skeleton`` already proved the document
+    parses (a failed parse contributes an L1-1 ERROR that blocks the loader
+    before this function is ever reached), but the parse is still guarded
+    defensively rather than assumed.
+
+    Args:
+        skeleton: The decoded skeleton dict, as returned by ``load_skeleton``.
+
+    Returns:
+        str | None: A one-line report naming the declared minutes, the
+            derived minutes, and the breach direction, or None when the
+            clock is unmeasurable (short fastest-finish path, no positive
+            declared value) or the declared value is within PL-23's
+            tolerance.
+    """
+    try:
+        story = Storybook.model_validate(skeleton)
+    except PydanticValidationError:
+        return None
+    drift = read_time_drift(story)
+    if drift is None or not drift.breaches_tolerance:
+        return None
+    return (
+        f"skeleton clock: PL-23 estimated_minutes {drift.declared_minutes} is "
+        f"{drift.direction.upper()} vs the derived fastest-finish clock "
+        f"{drift.derived_minutes} min ({drift.words} words at {drift.wpm} wpm) "
+        f"by {drift.drift:.0%} (tolerance 25%)"
+    )
+
+
 def _fail(message: str) -> bool:
     """Write one FAIL line to stderr.
 
@@ -514,6 +567,9 @@ def main(argv: list[str] | None = None) -> int:
 
     failed = False
     _print_findings(gate_results)
+    read_time_report = _read_time_direction_report(skeleton)
+    if read_time_report is not None:
+        sys.stdout.write(f"{read_time_report}\n")
     if args.strict:
         for result in gate_results:
             for finding in result.report.findings:
