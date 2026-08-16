@@ -313,6 +313,12 @@ describe('composeStopWithHistory (UW-F38)', () => {
     const stop = composeStopWithHistory(cycle, resumed)
     expect(stop.nodeIds).toEqual(['n_a', 'n_b'])
     expect(stop.originNode).toBe('n_a')
+    // The stop TYPE has to survive reconstruction too, not just its node list:
+    // terminalReason drives real behavior downstream (an 'ending' renders the
+    // ending screen, a 'branch' renders choices), so a regression that kept the
+    // right nodes while returning the wrong reason would pass every other
+    // assertion here.
+    expect(stop.terminalReason).toBe('loop')
     expect(new Set(stop.nodeIds).size).toBe(stop.nodeIds.length)
     // The engine is already at the terminal, so nothing remains to walk.
     expect(stop.state.current_node).toBe('n_b')
