@@ -232,6 +232,13 @@ path = [
     "out/reports/**/*.md",      # Story design and compliance review reports
     "out/pilot/**/*.md",        # Parameterized-skeleton pilot notes and bindings
     "out/ws2/**/*.txt",         # WS-2 gate/acceptance evidence logs
+    # Measurement-run evidence. Deliberately extension-wide rather than
+    # per-run-directory: each paid run writes into a new `out/<run>/` and the
+    # per-directory pattern above meant every run re-broke this gate after the
+    # money was already spent.
+    "out/**/*.jsonl",           # Per-scoring run journals (W4/W5, W7)
+    "out/**/*.txt",             # Run reports, agreement and run-to-run tables
+    "out/**/*.md",              # Run findings and frontier-reader reviews
 ]
 SPDX-License-Identifier = "CC-BY-4.0"
 SPDX-FileCopyrightText = "2026 Byron Williams"
