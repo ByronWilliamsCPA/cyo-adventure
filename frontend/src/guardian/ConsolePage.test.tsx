@@ -87,9 +87,15 @@ describe('ConsolePage', () => {
     expect(screen.queryByRole('link', { name: /request a story/i })).not.toBeInTheDocument()
   })
 
+  // UW-J28: the reviewer is a platform-side admin with cross-family authority
+  // (api/approval.py), not a member of this family. The old copy said "your
+  // family's safety reviewer", which sent guardians looking for a person who
+  // does not exist, so the possessive is pinned as an absence rather than the
+  // phrase merely being asserted present.
   it('tells a plain guardian that reviews are handled by the safety reviewer', async () => {
     renderPage()
-    expect(await screen.findByText(/safety reviewer/i)).toBeInTheDocument()
+    expect(await screen.findByText(/our safety reviewer/i)).toBeInTheDocument()
+    expect(screen.queryByText(/your family's safety reviewer/i)).not.toBeInTheDocument()
     expect(screen.queryByRole('link', { name: /admin console/i })).not.toBeInTheDocument()
   })
 

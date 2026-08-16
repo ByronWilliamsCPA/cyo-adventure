@@ -49,6 +49,33 @@ describe('GuardianAwaitingApprovalPage', () => {
     expect(screen.getByText(/awaiting approval/i)).toBeInTheDocument()
   })
 
+  // UW-J28. Two separate defects in one sentence, so two separate assertions.
+  // "A family administrator needs to approve your account" named an authority
+  // inside the reader's family; approval is granted by a platform admin
+  // (PATCH /api/v1/admin/users/{id}). And "come back after you've heard from
+  // them" promised a message nothing sends: no notification fires on approval
+  // (UW-J29), so this page's own poll is the entire feedback channel.
+  it('does not blame a family member or promise a message that is never sent', () => {
+    renderWithRouter()
+    expect(screen.queryByText(/family administrator/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/heard from them/i)).not.toBeInTheDocument()
+    expect(
+      screen.getByText(/someone on the cyo adventure team reviews each new account/i)
+    ).toBeInTheDocument()
+  })
+
+  // The one screen in onboarding a guardian can sit on indefinitely had no
+  // route anywhere. SUPPORT_PATH is public and outside every auth gate by
+  // construction (routes.ts), which is what makes it reachable for a caller
+  // whose account require_principal still refuses.
+  it('offers a support route for a guardian who is stuck', () => {
+    renderWithRouter()
+    expect(screen.getByRole('link', { name: /contact support/i })).toHaveAttribute(
+      'href',
+      '/support'
+    )
+  })
+
   // P-6d: this page used to be a true dead end while still pending; it now
   // shows a manual recheck action alongside Sign out.
   it('still pending: shows the waiting copy and a Check again action', () => {

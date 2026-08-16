@@ -564,10 +564,23 @@ export function LandingPage() {
               <span className="landing-step__number" aria-hidden="true">
                 4
               </span>
-              <h3 className="landing-step__title">You approve, then they read</h3>
+              {/* #CRITICAL: security: this step used to read "You approve, then they read" and
+                  "you always have the final word", which describes an authority a guardian does
+                  not hold. Publication approval is admin-only and cross-family: every mutating
+                  handler in api/approval.py requires the admin role, and api/node_edit.py's
+                  module docstring says so outright ("approval itself stays admin-only
+                  regardless"). It read as true only because this deployment's one family is
+                  dual-role; it becomes false for exactly the new families this funnel exists to
+                  attract, which is the worst possible time for a safety claim to turn out
+                  overstated. The two controls a guardian really holds are named instead, both
+                  real: passage editing (G6, /guardian/review/:storybookId) and per-child
+                  assignment (G16, POST /v1/storybooks/{id}/assignments), with G8 unassign behind
+                  it.
+                  #VERIFY: LandingPage.test.tsx "does not claim the guardian approves stories". */}
+              <h3 className="landing-step__title">A reviewer approves, you choose who reads it</h3>
               <p className="landing-step__body">
-                Nothing reaches a child until a grown-up reads it and approves it. Edit any passage
-                first if you like; you always have the final word.
+                Nothing reaches a child until a person has read it and approved it. You can edit any
+                passage first, and you decide which of your children it goes to.
               </p>
             </li>
           </ol>
@@ -576,9 +589,20 @@ export function LandingPage() {
               authorized (ADR-014). Offline reading is the part that really is
               device-agnostic once a device is set up, so the sentence now
               draws that line instead of blurring it. */}
+          {/* #CRITICAL: security: "Once you approve a book it lands on their shelf right away"
+              was wrong twice over. The guardian does not approve (see the step above), and
+              approval does not put a book on any shelf: api/library.py's list_library requires an
+              EXISTS on storybook_assignment for that exact profile, and api/assignments.py's
+              assign_storybook is the only writer of that row. publishing/service.py::approve
+              creates no assignment, so a guardian who believed this sentence would hand over a
+              tablet and find an empty library. That gap is registered as UW-J01 (auto-assign on
+              publish); this sentence is deliberately worded to stay true either way, since "you
+              choose which child" describes the request-time choice as accurately as the
+              assign-time one.
+              #VERIFY: LandingPage.test.tsx "does not promise a book reaches a shelf on approval". */}
           <p className="landing-section__footnote">
-            Once you approve a book it lands on their shelf right away, and it reads offline on any
-            device you have set up.
+            You choose which child each approved book goes to, and it reads offline on any device
+            you have set up.
           </p>
         </section>
 
@@ -611,10 +635,17 @@ export function LandingPage() {
               <span className="landing-trust__icon" aria-hidden="true">
                 <CheckSealIcon />
               </span>
-              <h3 className="landing-trust__title">A grown-up approves every story</h3>
+              {/* "A grown-up approves every story" was literally true and still misled: sitting
+                  beside a step that said "You approve", a new parent read it as themselves. The
+                  approver is a platform-side safety reviewer with cross-family authority
+                  (api/approval.py), so the card names them rather than leaving "a grown-up" to be
+                  filled in with the reader. Note the possessive that is deliberately absent:
+                  "our safety reviewer", never "your family's", which is the same misattribution
+                  UW-J28 corrects in ConsolePage.tsx. */}
+              <h3 className="landing-trust__title">A person approves every story</h3>
               <p className="landing-trust__body">
                 Machine checks come first, but a human decision comes last. Nothing is published to
-                your family until an adult reads and approves it.
+                your family until our safety reviewer has read it and approved it.
               </p>
             </li>
             <li className="landing-trust__card">
