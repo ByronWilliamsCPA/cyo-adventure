@@ -51,7 +51,11 @@ from cyo_adventure.generation.reading_level_loop import (
     ReadingLevelResult,
     run_reading_level_loop,
 )
-from cyo_adventure.generation.skeleton import MAX_FILL_OUTPUT_TOKENS
+from cyo_adventure.generation.skeleton import (
+    MAX_FILL_OUTPUT_TOKENS,
+    active_fill_model,
+    resolve_output_cap,
+)
 from cyo_adventure.utils.logging import get_logger
 from cyo_adventure.validator.gate import GateContext, GateResult, run_gate
 from cyo_adventure.validator.report import (
@@ -961,6 +965,11 @@ async def generate_story(
         current_doc, gate_result = await _run_one_stage(
             stage_b_prompt,
             provider=guarded_provider,
+            # generate_story takes no Settings, so it cannot resolve a
+            # per-model cap and uses the raised default. Safe: the clamp only
+            # ever lowers the cap for a small-output backend, and a completion
+            # stopped on `length` is leg-fatal rather than retried (AL-329), so
+            # this path fails fast instead of silently truncating.
             max_tokens=_MAX_TOKENS_PROSE,
             scale=scale,
             context="fill_result",
@@ -1163,7 +1172,9 @@ async def fill_skeleton(
     current_doc, gate_result = await _run_one_stage(
         fill_prompt,
         provider=guarded_provider,
-        max_tokens=_MAX_TOKENS_PROSE,
+        max_tokens=resolve_output_cap(active_fill_model(settings))
+        if settings is not None
+        else _MAX_TOKENS_PROSE,
         context="fill_result",
     )
     _append_stage_log(stage_log, "stage_fill", current_doc, gate_result)

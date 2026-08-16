@@ -778,26 +778,27 @@ def _write_sized_skeleton(band_dir: Path, stem: str, *, fill_words: int) -> None
 
 
 @pytest.mark.unit
-def test_an_over_cap_skeleton_is_reported_but_still_offered(
+def test_an_over_cap_skeleton_is_not_a_candidate(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
 ) -> None:
-    """An infeasible skeleton is logged, and deliberately NOT yet excluded.
+    """Selection must not offer a skeleton the one-shot fill cannot emit.
 
-    Excluding is the obvious reading of UW-C07 and is a one-line change from
-    here. It is not made yet because the measurement that arrived with the
-    predicate moved the decision: at the 32,000-token cap, 36 of 59 production
-    skeletons are infeasible and 13-16 and 16+ are infeasible entirely, so
-    enforcing would leave two bands with nothing selectable. That is an owner
-    call. This test pins the current, deliberate behaviour so a later flip is a
-    visible change rather than a silent one.
+    `fill_skeleton` has no chunking, so an over-cap skeleton does not degrade,
+    it truncates: nothing parses, the orchestrator burns its whole repair
+    budget, and the job fails deterministically on every retry, forever.
+
+    This was observe-only while the cap was 32,000, because enforcing then
+    would have emptied the 13-16 and 16+ bands. At 131,072 it excludes nothing
+    in the current catalog, so it guards future skeletons rather than filtering
+    today's. UW-C07 / AL-046.
     """
-    _write_sized_skeleton(tmp_path / "5-8", "too-big", fill_words=99_999)
+    _write_sized_skeleton(tmp_path / "5-8", "too-big", fill_words=999_999)
     monkeypatch.setattr(skeleton_match, "_SKELETON_ROOT", tmp_path)
 
     with caplog.at_level("WARNING"):
-        slugs = [slug for slug, _ in skeleton_match._production_candidates("5-8")]  # pyright: ignore[reportPrivateUsage]
+        candidates = skeleton_match._production_candidates("5-8")  # pyright: ignore[reportPrivateUsage]
 
-    assert slugs == ["too-big"]
+    assert candidates == []
     assert "skeleton.fill_infeasible" in caplog.text
 
 

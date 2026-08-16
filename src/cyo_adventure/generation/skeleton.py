@@ -151,12 +151,84 @@ def is_production_eligible(story: dict[str, object]) -> bool:
 # only ones that come near the cap. Cross-checked against AL-328's direct
 # measurement of 6,054 completion tokens on a 5-8 skeleton, which implies 1.40
 # to 2.33 for that band; the two methods agree.
-# The output cap a one-shot fill runs under. Owned here rather than in the
-# orchestrator so the feasibility screen and the call it screens for read one
-# constant and cannot drift. Still 32,000: raising it is UW-C07's other half
-# and is bounded by what a backend will emit in a single response, which is
-# below what the largest skeletons need (~76,000).
-MAX_FILL_OUTPUT_TOKENS = 32_000
+# The default output cap a one-shot fill runs under. Owned here rather than in
+# the orchestrator so the feasibility screen and the call it screens for read
+# one constant and cannot drift.
+#
+# Raised from 32,000 to 131,072 on 2026-08-16. The old value dated from initial
+# testing and made 36 of the 59 production skeletons unfillable, with the 13-16
+# and 16+ bands unfillable in their entirety. Measured against the catalog: the
+# largest skeleton needs 87,200 output tokens, so 131,072 clears every cell with
+# 20 percent headroom, and the next step down (65,536) still leaves 12 short.
+# Cost is not the constraint at this size: one full 59-book catalog fill is
+# about $6.42 on deepseek-v4-pro and $0.33 on deepseek-v4-flash.
+MAX_FILL_OUTPUT_TOKENS = 131_072
+
+# Per-model output ceilings, used to CLAMP the default DOWN for a backend that
+# cannot emit it. Only ever lowers the cap, never raises it.
+#
+# #CRITICAL: external-resources: AL-328's finding was that one fixed cap across
+# models silently converts a verbose model into a failing one, so raising the
+# default without this table would repeat that defect in the other direction: a
+# model with a 32,000-token ceiling asked for 131,072 truncates, and a truncated
+# completion parses as nothing. Values are transcribed from the OpenRouter
+# models endpoint on 2026-08-16, not estimated. A model absent from this table
+# gets the default; that is the permissive direction, and it is survivable
+# because a completion stopped on `length` is leg-fatal rather than retried
+# (AL-329), so an unknown small-output model fails fast and loudly rather than
+# burning the repair budget.
+# #VERIFY: test_skeleton_feasibility covers the clamp and the passthrough.
+MODEL_OUTPUT_CAPS: dict[str, int] = {
+    "deepseek/deepseek-v4-pro": 393_216,
+    "deepseek/deepseek-v4-flash": 384_000,
+    "deepseek/deepseek-v3.2": 65_536,
+    "deepseek/deepseek-chat-v3.1": 32_768,
+    "deepseek/deepseek-r1-0528": 32_768,
+}
+
+
+def active_fill_model(settings: object) -> str | None:
+    """Return the model id the configured provider will fill with, if knowable.
+
+    Mirrors ``provider.build_provider``'s selection so the cap resolves against
+    the model the call will actually use. Returns None for backends with no
+    model concept (mock) or an unrecognised provider, which resolves to the
+    default cap.
+
+    Args:
+        settings: The application settings object.
+
+    Returns:
+        str | None: The model id, or None when it cannot be determined.
+    """
+    backend = getattr(settings, "generation_provider", None)
+    field = {
+        "openrouter": "openrouter_model",
+        "ollama": "ollama_model",
+        "anthropic": "anthropic_model",
+    }.get(str(backend))
+    if field is None:
+        return None
+    model = getattr(settings, field, None)
+    return model if isinstance(model, str) else None
+
+
+def resolve_output_cap(
+    model: str | None, *, default: int = MAX_FILL_OUTPUT_TOKENS
+) -> int:
+    """Return the output cap to use for *model*, never above *default*.
+
+    Args:
+        model: The backend model id, or None when it is not known.
+        default: The configured cap to use when the model imposes none lower.
+
+    Returns:
+        int: The effective cap.
+    """
+    if model is None:
+        return default
+    return min(default, MODEL_OUTPUT_CAPS.get(model, default))
+
 
 _TOKENS_PER_FILL_WORD = 2.0
 

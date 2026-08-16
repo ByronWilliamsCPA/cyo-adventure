@@ -207,24 +207,25 @@ def _production_candidates(band: str) -> list[tuple[str, StoryMetadata]]:
         # #VERIFY: test_skeleton_match.py::
         # test_an_over_cap_skeleton_is_not_a_candidate.
         if not _is_feasible(path):
-            # OBSERVE, DO NOT EXCLUDE. Excluding is the obvious reading of
-            # UW-C07 and it is deliberately not done here yet, because the
-            # measurement that arrived with the predicate changes the decision:
-            # at the current 32,000-token cap, 36 of the 59 production
-            # skeletons are infeasible and the 13-16 and 16+ bands are
-            # infeasible in their ENTIRETY. Enforcing here would therefore not
-            # trim an edge case, it would leave two whole bands with nothing
-            # selectable, which is a product call and not a validator's to
-            # make. Logging it turns an invisible, expensive, deterministic
-            # failure into a visible one at zero cost; flipping this to
-            # `continue` is the one-line change once the owner has ruled on the
-            # cap, on chunking, or on retiring the over-cap cells.
+            # A skeleton the one-shot fill provably cannot emit must not be
+            # offered: `fill_skeleton` has no chunking, so an over-cap skeleton
+            # truncates, parses as nothing, and burns the whole repair budget
+            # before failing deterministically on every retry, forever.
+            #
+            # This was observe-only from 2026-08-16 until the cap was raised the
+            # same day, because at 32,000 it would have excluded 36 of 59
+            # skeletons and emptied the 13-16 and 16+ bands. At 131,072 it
+            # excludes nothing in the current catalog, so it is a safety net for
+            # future skeletons rather than a live filter. UW-C07 / AL-046.
+            # #VERIFY: test_skeleton_match.py::
+            # test_an_over_cap_skeleton_is_not_a_candidate.
             logger.warning(
                 "skeleton.fill_infeasible",
                 path=str(path),
                 expected_output_tokens=_expected_tokens(path),
                 max_tokens=_FILL_MAX_TOKENS,
             )
+            continue
         candidates.append((path.stem, metadata))
     return candidates
 
