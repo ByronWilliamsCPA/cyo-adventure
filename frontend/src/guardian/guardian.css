@@ -1617,8 +1617,10 @@
      Pairing amber-text with --color-parchment fixes it in both directions,
      because the two flip together: 5.62:1 light (#87561d on #f8f3e8) and
      9.17:1 dark (#f0a860 on #1a130d). This is the same pairing
-     .admin-library__filter--active uses, which is why that rule was correct in
-     both palettes and this one was not.
+     .admin-library__filter--active now uses. Note that rule was NOT already
+     correct: on this branch's base it was parchment on the plain --color-amber
+     at 2.62:1, and it was fixed in this same change. Both rules arrived at the
+     pairing here; neither predates it.
      #ASSUME: data-integrity: a foreground token that flips WITH its background
      is what keeps this ratio stable; a literal on either side re-breaks it in
      one palette. #VERIFY: recompute both palettes if either token moves. */
