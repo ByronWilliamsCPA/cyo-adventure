@@ -325,6 +325,27 @@ describe('composeStopWithHistory (UW-F38)', () => {
     expect(flowedPrefix(seededFlowStory, resumedAt('n_mid', []))).toEqual([])
   })
 
+  it('infers nothing when the state was recorded against a different story version', () => {
+    // Greptile flagged this on PR #724: ReaderPage keys reading state on
+    // (profileId, storybookId) with no version, while loading the story at a
+    // route-selected version, so a republish can pair a path with a topology
+    // it never described. The structural guards would still refuse a missing
+    // edge, but a republish that happens to preserve this single-choice edge
+    // would let the stale path look walkable.
+    const resumed = { ...playedToFlowedTerminal(), version: 2 }
+    expect(seededFlowStory.version).toBe(1)
+    expect(flowedPrefix(seededFlowStory, resumed)).toEqual([])
+    // ...and the composed stop falls back to forward-only, which is exactly
+    // the pre-reconstruction behavior rather than a wrong one.
+    expect(composeStopWithHistory(seededFlowStory, resumed).nodeIds).toEqual(['n_mid'])
+  })
+
+  it('infers nothing for a state carrying no usable version', () => {
+    // A legacy or hand-built row reads 0 and must not be treated as matching.
+    const resumed = { ...playedToFlowedTerminal(), version: 0 }
+    expect(flowedPrefix(seededFlowStory, resumed)).toEqual([])
+  })
+
   it('fails closed on an unknown node in the recorded path', () => {
     expect(flowedPrefix(seededFlowStory, resumedAt('n_mid', ['n_gone', 'n_mid']))).toEqual([])
   })

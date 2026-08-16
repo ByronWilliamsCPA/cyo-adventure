@@ -186,6 +186,27 @@ export function composeStop(
  * worst case is today's behavior rather than a wrong one.
  */
 export function flowedPrefix(story: Storybook, state: ReadingState): string[] {
+  // #CRITICAL: data-integrity: the recorded path describes a traversal of the
+  // story version the state was made against; `engine.ts` stamps
+  // `version: story.version` on every transition precisely so that is
+  // knowable. `ReaderPage` loads the story at a route-selected version and the
+  // reading state by `(profileId, storybookId)` alone, with no version in the
+  // key and no check between them, so a republish CAN hand this function a
+  // path recorded against a different topology.
+  //
+  // The structural guards below already refuse to walk an edge the loaded
+  // story does not have, so a mismatch degrades rather than corrupts. This is
+  // stricter on purpose: a republish that happens to preserve a single-choice
+  // edge would otherwise let a path from another version look walkable, and
+  // "it coincidentally still fits" is not a basis for re-rendering prose a
+  // child already read or for sizing a Go back rewind.
+  //
+  // Fails closed for a state that carries no usable version too (a legacy or
+  // hand-built row reads 0), which yields today's un-reconstructed behavior.
+  // #VERIFY: stops.test.ts "infers nothing when the state was recorded against
+  // a different story version".
+  if (state.version !== story.version) return []
+
   const nodes = nodeIndex(story)
   const path = state.path
   let i = path.length - 1
