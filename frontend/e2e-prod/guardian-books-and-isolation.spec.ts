@@ -2,6 +2,7 @@ import type { Page } from '@playwright/test'
 import { expect, test } from '@playwright/test'
 
 import { signInAsProdTestAdmin, unlockParentalGateIfPresent } from './support/auth'
+import { expectConsoleHeading } from './support/diagnostics'
 import { gotoResilient } from '../e2e-support/rate-limit'
 
 /**
@@ -132,7 +133,7 @@ test.describe('guardian books, assignment, and cross-family isolation', () => {
     // Positive control: a failed render (error boundary, ErrorBanner, or a
     // stuck loading state) also shows zero rows, so the heading must be
     // visible before the row count below means anything.
-    await expect(sharedPage.getByRole('heading', { name: 'Books', level: 1 })).toBeVisible()
+    await expectConsoleHeading(sharedPage, 'Books')
     // The E2E Test Family (84b96700) has 5 storybook assignments, so this
     // page is never legitimately empty; a zero count here is a real
     // regression, not live-data noise.
