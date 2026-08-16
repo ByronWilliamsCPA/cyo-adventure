@@ -84,6 +84,24 @@
 # the diff for two underlined links appearing under the landing hero and
 # nothing else moving; the footer sits inside the existing .landing flex column
 # so it should not shift the elements above it.
+#
+# Baseline bump 2026-08-15: ConsolePage's reviewer line changed from "Stories
+# are checked by your family's safety reviewer" to "our safety reviewer"
+# (UW-J28: the possessive named an authority inside the reader's family, while
+# approval is admin-only and cross-family per api/approval.py). That line sits
+# above the fold on the guardian console, so guardian-console-page.png
+# legitimately moves and it should be the ONLY baseline that does.
+#
+# Two specific things to check in the diff, because this bump has a wider
+# blast radius than its one-line cause suggests. First, the replacement is
+# SHORTER than the original, so the paragraph may reflow from two lines to one
+# and lift everything below it; that is expected, and anything moving on a
+# page other than the guardian console is not. Second, the same PR changed the
+# landing page's how-it-works step 4 and its safety trust card, which do NOT
+# appear here on purpose: landing-page.png is a viewport screenshot, not
+# fullPage, and both edits sit below the fold. If landing-page.png moves in
+# this run, that is a real finding rather than an expected update, and it
+# means the funnel's above-the-fold content shifted for some other reason.
 name: Update Visual Snapshots
 
 on:
