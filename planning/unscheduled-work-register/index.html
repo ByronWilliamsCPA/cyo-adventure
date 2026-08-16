@@ -6802,10 +6802,108 @@ not scheduled: that is its accurate state.</p>
 <tbody>
 <tr>
 <td>UW-J01</td>
-<td><code>P7</code> auto-assign-on-publish, blocked on a <code>requested_by_profile_id</code> migration. Raised independently by the persona audit.</td>
-<td>remediation, persona audit</td>
+<td><code>P7</code> auto-assign-on-publish, blocked on a <code>requested_by_profile_id</code> migration. Raised independently by the persona audit. <strong>Unblocked 2026-08-15: the named blocker does not exist and probably has not since before this row was written.</strong> The 2026-07-17 remediation plan recorded it as "auto-assign needs a schema migration threading <code>requested_by_profile_id</code> request -&gt; concept -&gt; storybook (no such link exists)", and this row inherited that wording. The link is complete in the shipped schema, under a different column name than the blocker named, which is the likeliest reason nobody re-checked: <code>story_request.profile_id</code> holds the requesting child profile and <code>story_request.resulting_storybook_id</code> holds the storybook the request produced (both <code>db/models.py</code>), and <code>publishing/service.py::approve</code> already calls <code>_stamp_resulting_storybook_id</code> and emits <code>EventType.RELEASED</code> at the exact point an auto-assign hook would run, so both ends are in scope of one function and no migration is required. Re-raised independently by the 2026-08-14 registration walkthrough (<a href="../../qa/onboarding-flow-walkthrough-2026-08-14/">onboarding-flow-walkthrough-2026-08-14.md</a>) as its highest-severity finding: <code>api/library.py:425</code> hard-requires a <code>storybook_assignment</code> row and <code>api/assignments.py:328</code> is its only writer, so a guardian who requested a story for a named child still lands that child on an empty shelf. Scheduled as Wave 1 item 1a of <a href="../onboarding-overhaul-plan-2026-08-15/">onboarding-overhaul-plan-2026-08-15.md</a>, which also carries the three constraints the implementation must reuse rather than reimplement (the K13 age-band ceiling in <code>assign_storybook</code>, assignment idempotency, and the <code>BOOK_ASSIGNED</code> event that drives the notification split in <code>UW-J23</code>). Note the remediation plan's own P7 row still carries the stale blocker text; it is left as the historical record and this row is canonical.</td>
+<td>remediation, persona audit, registration walkthrough</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-J23</td>
+<td>The <code>story_ready</code> notification claims a shelf the book did not reach. <code>notifications/registry.py:147</code> composes "It has been approved and published to your family library", which a guardian reads as "it is on the shelf", while the book is assigned to nobody; the correct-sounding sibling composer <code>_compose_book_assigned</code> (line 159) is the one that only fires on a real assignment. Rewrite the published-but-unassigned message to name the remaining step and link to the assign control. Stays worth doing after <code>UW-J01</code> lands, because auto-assign covers only the single-child request path: catalog books, second children, and profile-less requests still publish unassigned, and a rare wrong message is worse than a common one because nobody is looking for it. Wave 1 item 1b of the onboarding overhaul plan. <strong>Scope grew 2026-08-15</strong>: PR #720 put the same false promise on the marketing homepage ("Once you approve a book it lands on their shelf right away"). That sentence was corrected on branch <code>claude/minor-guardian-registration-flow-o0cmaf</code> and reworded to stay true after auto-assign ships, so it needs no second pass; the notification copy this row covers is still outstanding. Treat the landing footnote, the <code>story_ready</code> composer, and <code>UW-J26</code>'s Books page state as one claim that must agree.</td>
+<td>registration walkthrough, PR #720</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-J24</td>
+<td><strong>Does an uninvited self-signup stay behind the admin approval gate?</strong> Today it does: <code>api/onboarding.py</code> provisions every uninvited subject at <code>status="awaiting_approval"</code> and <code>require_principal</code> then refuses them everything including <code>GET /v1/me</code>, so a brand-new family waits on a platform admin they have no relationship with and no channel to reach, with nothing notifying either party in either direction. Coherent for an invite-shaped deployment; a dead end for anything resembling public signup, which is how the 2026-08-14 walkthrough hit it. The ruling decides the shape of the work, not merely its timing: keeping the gate makes it a notification and queue problem (<code>UW-J29</code>, <code>UW-J30</code>), while opening it makes it a compensating-controls problem, and the guardian-created invite path must keep its gate either way for the reason <code>api/onboarding.py</code> already documents (a guardian can name any address and would otherwise capture a stranger into their family on that person's first sign-in). Sits next to the still-open VPC method decision (<code>UW-N02</code>, <code>UW-A52</code>) and interacts with <code>UW-J25</code>: opening this gate while KWS verification stays off leaves no adulthood check anywhere in the product. Owner to rule: the project owner. Wave 0 item D1 of the onboarding overhaul plan.</td>
+<td>registration walkthrough</td>
+<td>4b</td>
+<td>decision</td>
+</tr>
+<tr>
+<td>UW-J25</td>
+<td><strong>Is <code>kws_verification_required</code> turned on, and does a plain age affirmation ship regardless?</strong> The flag defaults to <code>False</code> (<code>core/config.py:1159</code>), so on a default deployment the adulthood-verification step is skipped entirely and the only checks are the self-attestation checkbox on the consent form and the admin gate <code>UW-J24</code> may remove. The flag flip itself is counsel-gated and already tracked (<code>UW-M03</code>, <code>UW-N02</code>); this row exists to make the <em>combination</em> visible, because the two decisions have never been read together and the unsafe pairing is not obvious from either one alone. The separable half is the age affirmation before the OAuth button (<code>UW-J33</code>), which is not verification, must not be worded as though it were, and needs no counsel ruling. Owners to rule: the project owner with privacy counsel. Wave 0 item D2 of the onboarding overhaul plan.</td>
+<td>registration walkthrough</td>
+<td>4b</td>
+<td>decision</td>
+</tr>
+<tr>
+<td>UW-J26</td>
+<td><code>frontend/src/guardian/BooksPage.tsx</code> lists published books without distinguishing one on a child's shelf from one on nobody's, so the gap <code>UW-J01</code> and <code>UW-J23</code> describe is invisible on the one page a guardian would look at to find it. Add the unassigned state and a direct assign affordance from the list. This is the recovery path for any guardian who already hit the gap, including everyone who hit it before auto-assign shipped, which is why it is not made redundant by <code>UW-J01</code>. Wave 1 item 1c of the onboarding overhaul plan.</td>
+<td>registration walkthrough</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-J27</td>
+<td>Nothing holds the request-to-shelf path in place end to end. Needs an <code>e2e-real</code> spec walking request -&gt; publish -&gt; child library that asserts the book is readable with <strong>no manual assign step</strong>, plus an integration test that a band-exceeding auto-assign is refused while the publish still succeeds (the K13 ceiling must fail the assign, not the publish). Without it <code>UW-J01</code> is a behavior no test pins, which is the same condition that let the original gap survive a persona audit in July and be re-found by hand in August. Wave 1 item 1d of the onboarding overhaul plan.</td>
+<td>registration walkthrough</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-J28</td>
+<td>Two strings describe a platform admin as though they were family, sending a guardian looking for a person who does not exist: <code>GuardianAwaitingApprovalPage.tsx</code> ("A family administrator needs to approve your account") and <code>ConsolePage.tsx</code> ("Stories are checked by your family's safety reviewer"). Both are wrong under either outcome of <code>UW-J24</code>, so this does not wait on that ruling. Same change adds the existing public <code>/support</code> link to the awaiting-approval screen, which is the one screen in the flow where a stuck guardian currently has nowhere to go and no ETA. Wave 2 item 2a of the onboarding overhaul plan. <strong>Widened 2026-08-15, then closed the same day.</strong> PR <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/pull/720">#720</a> (merged as <code>5f38917</code>) promoted the same misattribution to the marketing homepage, which grew the row from two console strings to five strings across three files and raised it from a console-copy defect to a claims-accuracy one: the new landing page carried "You approve, then they read" plus "you always have the final word" (an authority a guardian does not hold: <code>api/approval.py</code> requires the admin role on every mutating handler, and <code>api/node_edit.py</code>'s docstring states "approval itself stays admin-only regardless"), a trust card titled "A grown-up approves every story", and a footnote promising "Once you approve a book it lands on their shelf right away" (false a second way, see <code>UW-J01</code>: <code>api/library.py</code> requires a <code>storybook_assignment</code> row that publishing never writes). #720's own honesty pass audited claims against ADR-018 and ADR-014 but not against the authorization model, which is why all five survived it. Note the reason these read as true to their authors: on this deployment the single family's adult is dual-role, so "you approve" holds for them and fails for exactly the new families the funnel exists to attract. <strong>Closed</strong> on branch <code>claude/minor-guardian-registration-flow-o0cmaf</code>: the guardian's two real controls are named instead (passage editing, G6; per-child assignment, G16), the reviewer is named as ours rather than the reader's ("our safety reviewer", the possessive dropped in both the trust card and <code>ConsolePage.tsx</code>), the awaiting-approval copy names who actually acts and stops promising a message nothing sends (that promise is <code>UW-J29</code>), and the <code>/support</code> link this row asked for is on the waiting screen. Pinned by five tests across <code>LandingPage.test.tsx</code>, <code>ConsolePage.test.tsx</code>, and <code>GuardianAwaitingApprovalPage.test.tsx</code>, each asserting the old string's ABSENCE alongside the replacement's presence so deleting the section cannot pass; the two landing assertions were mutation-verified by reintroducing the old copy and confirming they fail.</td>
+<td>registration walkthrough, PR #720</td>
+<td>now</td>
+<td>done</td>
+</tr>
+<tr>
+<td>UW-J29</td>
+<td>Nothing fires when a self-signup lands and nothing fires when it clears. <code>EventType</code> carries <code>USER_MANAGED</code> but no signup event, and <code>notifications/service.py</code> resolves every recipient through a family, so there is no admin-facing delivery path at all; the awaiting-approval page's own 20-second poll is the only feedback in the entire loop. Needs a signup event, an admin-scoped delivery path for it (the first admin-facing notification, so this is where the family-scoping assumption gets its first real test), and a guardian-facing notification on approval. Blocked on <code>UW-J24</code>: if that ruling opens the gate, most of this work does not need doing. Wave 2 item 2b of the onboarding overhaul plan.</td>
+<td>registration walkthrough</td>
 <td>4b</td>
 <td>blocked</td>
+</tr>
+<tr>
+<td>UW-J30</td>
+<td><code>admin/UserManagementPage.tsx</code>'s Users tab lists users with no status filter and no pending-accounts view, so approving a self-signup requires knowing to go looking for one. Add the filtered queue and a pending count on the admin console home. Blocked on <code>UW-J24</code> for the same reason as <code>UW-J29</code>. Wave 2 item 2c of the onboarding overhaul plan.</td>
+<td>registration walkthrough</td>
+<td>4b</td>
+<td>blocked</td>
+</tr>
+<tr>
+<td>UW-J31</td>
+<td>The three onboarding interstitials (<code>/guardian/verify</code>, <code>/guardian/awaiting-approval</code>, <code>/guardian/consent</code>) render with no page container: they sit outside <code>GuardianShell</code> in <code>router.tsx</code>, so they inherit none of <code>.guardian-shell__main</code>'s padding or max-width, and <code>.console</code> has no rule of its own anywhere in the CSS. The consent page additionally applies <code>guardian-login__field</code> without the <code>cyo-field</code> design-system class that carries the field layout (<code>LoginPage.tsx:461</code> applies both, which is why only the login page looks right), so it renders with raw browser-default checkboxes and select. The VPC consent screen is the legally load-bearing screen in the product and currently looks like an unstyled prototype. Fix with a minimal <code>OnboardingShell</code> inside the existing <code>GuardianAuthLayout</code>; do <strong>not</strong> fix it by moving the routes under <code>GuardianShell</code>, which would reintroduce the <code>GET /v1/me</code> dependency those routes' own docstrings explain they must not have (their callers are precisely the users <code>require_principal</code> refuses). Add a visual-regression snapshot for the consent page in the same change. Wave 3 item 3a of the onboarding overhaul plan.</td>
+<td>registration walkthrough</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-J32</td>
+<td>"New here? Get started" and the Grown-ups door both land on a page headed "Guardian sign-in" whose only kid-facing line ("Ask a grown-up to set up this device for you") is gated behind the <code>intent=authorize-device</code> parameter neither of them carries, so the most inviting link on the landing page, the one written for someone with no account, offers the least guidance to a visitor of any age. The page also never says that "Continue with Google" creates an account, which is the only signup path there is (<code>LoginPage.tsx</code> says so in a comment). Give the new-visitor link its own intent with signup-appropriate copy, carry the grown-ups line into that variant, add a link back to the landing page, and raise the kid-facing line out of the smallest, lowest-contrast slot on a page whose heading and subtitle are both adult-voiced. Wave 4 item 4a of the onboarding overhaul plan. <strong>Mostly closed 2026-08-15 by PR <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/pull/720">#720</a> (merged as <code>5f38917</code>), independently of this row.</strong> Three of the four asks shipped: the page now says it creates accounts (<code>guardian/loginHeadline.ts</code>'s <code>LOGIN_HEADLINE</code> is "Sign in or create your account", plus "New family? Continuing above creates your account." captioning the provider block), it carries a "Back to CYO Adventure" link, and the kid-facing line was raised: under the authorize-device intent it now REPLACES the adult lede rather than sitting beneath it, so it is second in reading order behind the h1 instead of third behind an adult subtitle. <strong>The residual is narrower and lower severity than the original row</strong>, so read this rather than the paragraph above as the remaining work: a minor who follows a funnel CTA still meets no "this is for grown-ups" signal on the login page itself, because the note is deliberately hidden for the non-intent path (#720's own comment explains why: it is an account-creation prompt, wrong for a child sent to fetch an adult). The landing page's "Grown-ups only, by design" trust card partly covers this, but it sits in funnel stage 3, well below the hero CTA a visitor is most likely to take. Reduced from Medium to Low; overlaps <code>UW-J33</code>, which is the stronger fix for the same reader.</td>
+<td>registration walkthrough, PR #720</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-J33</td>
+<td>No age gate of any kind precedes the OAuth button, so a minor can complete sign-in and be provisioned a family and a guardian row before anything asks. Add a plain age affirmation ahead of it, worded as an affirmation and never as verification. Ships regardless of how <code>UW-J25</code> rules, and becomes the only pre-account check standing if <code>UW-J24</code> opens the approval gate. Wave 4 item 4b of the onboarding overhaul plan.</td>
+<td>registration walkthrough</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-J34</td>
+<td><code>ProfileFormDialog.tsx</code> presents seventeen controls at create time where only Name is required, and nothing marks which, so a first-time guardian is asked for sixteen policy decisions before seeing a single story. Every control is a capability somebody asked for (G2 content limits, G3 request permissions, G19 gamification), so the fix is progressive disclosure rather than removal: name and age band up front, the rest behind an "Advanced" section that states the defaults it is applying. Edit mode may stay expanded. Wave 4 item 4c of the onboarding overhaul plan.</td>
+<td>registration walkthrough</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-J35</td>
+<td>Nothing sets the guardian's expectation that a generation and admin review cycle stands between a story request and the shelf, so <code>IntakePage.tsx</code> implies a faster result than the pipeline delivers. Set the expectation at the point of request, and give the empty console a first-run checklist showing the real remaining sequence (profile, device, request, and assign for the cases <code>UW-J01</code> does not cover). Wave 4 item 4d of the onboarding overhaul plan.</td>
+<td>registration walkthrough</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-J36</td>
+<td><code>frontend/e2e/naive-user/</code> covers kid, guardian and admin misuse but has no first-run journey spec, which is why a twelve-step flow carrying two blocking gates and one silent required step was found by hand in August rather than by the suite. Add a first-run spec walking the whole path, and add the missing signed-out first-visit scenario to <code>.claude/skills/naive-ux-check/prompts/guardian.md</code>, whose set currently starts from an account that already exists and therefore cannot reach signup, verification, or awaiting-approval at all. Wave 5 of the onboarding overhaul plan.</td>
+<td>registration walkthrough</td>
+<td>5</td>
+<td>unscheduled</td>
 </tr>
 <tr>
 <td>UW-J02</td>
@@ -7381,7 +7479,7 @@ have to re-derive them.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 15, 2026 22:42:53 UTC">August 15, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 16, 2026 02:17:27 UTC">August 16, 2026</span>
   </span>
 
     
