@@ -53,21 +53,22 @@ test('the seeded child continues a real series into book 2', async ({ page }) =>
   await expect(page).toHaveURL(/\/read\//)
   await expect(page.getByTestId('reader')).toBeVisible()
 
-  // Book 1's start node (n_e1_start) no longer carries a choice straight
-  // into the fork: PL-25 (see scripts/seed_dev_data.py's _series_blob
-  // docstring) requires the first real decision to sit at least 2 nodes in
-  // for band 10-13, so a single-choice prelude (c_n_e1_start_on) now
-  // precedes it. From there the walk is: take the brave fork
-  // (c_n_e1_brave, sets courage=3, the value this test proves carries into
-  // book 2 below), through its own single onward choice
-  // (c_n_e1_fork_brave_on) into the shared hub, then explore
-  // (c_n_e1_explore) and its onward choice (c_n_e1_explore_on) into the
-  // success ending. Five clicks total.
-  await page.getByTestId('choice-c_n_e1_start_on').click()
+  // TWO clicks, not five. This series is band 10-13, a flowed band (ADR-026,
+  // FLOWED_BANDS in reader/readerProgress.ts), so a single-choice node never
+  // renders a button: it flows into the same stop as the branch it leads to.
+  // Only real decisions are tappable here.
+  //
+  // The walk: stop 1 is n_e1_start flowed into n_e1_decision1, where the
+  // brave fork (c_n_e1_brave, sets courage=3, the value this test proves
+  // carries into book 2 below) is taken; that flows n_e1_fork_brave into the
+  // shared hub n_e1_hub, where explore (c_n_e1_explore) is taken; that flows
+  // n_e1_explore straight into the success ending.
+  //
+  // The prelude/onward ids (c_n_e1_start_on, c_n_e1_fork_brave_on,
+  // c_n_e1_explore_on) are real choices the ENGINE still takes; they are just
+  // never rendered as buttons at this band, so clicking them timed out.
   await page.getByTestId('choice-c_n_e1_brave').click()
-  await page.getByTestId('choice-c_n_e1_fork_brave_on').click()
   await page.getByTestId('choice-c_n_e1_explore').click()
-  await page.getByTestId('choice-c_n_e1_explore_on').click()
   await expect(page.getByTestId('ending-screen')).toBeVisible()
 
   const continueButton = page.getByTestId('continue-series')
@@ -84,13 +85,12 @@ test('the seeded child continues a real series into book 2', async ({ page }) =>
   // _series_blob), so taking the brave fork here would unlock
   // c_n_e2_carried regardless of anything carried from book 1, and the
   // carries_state proof below would show nothing. By taking the plain fork
-  // instead (c_n_e2_start_on, then c_n_e2_plain, then
-  // c_n_e2_fork_plain_on), book 2's own courage stays at its initial 0, so
-  // the only way c_n_e2_carried's courage>=2 condition can be true is a
-  // real carry-in from book 1's brave path above.
-  await page.getByTestId('choice-c_n_e2_start_on').click()
+  // instead (c_n_e2_plain, the one tappable choice on the way), book 2's own
+  // courage stays at its initial 0, so the only way c_n_e2_carried's
+  // courage>=2 condition can be true is a real carry-in from book 1's brave
+  // path above. c_n_e2_start_on and c_n_e2_fork_plain_on are flowed, not
+  // tapped, at this band.
   await page.getByTestId('choice-c_n_e2_plain').click()
-  await page.getByTestId('choice-c_n_e2_fork_plain_on').click()
 
   // carries_state:true proof (the point of the whole flow): book 1's brave path
   // set courage=3, and that var_state carried through the real reading-state
@@ -119,11 +119,10 @@ test('book 2 played fresh, without a carried courage, hides the gated choice', a
   await expect(page.getByTestId('reader')).toBeVisible()
   await expect(page.getByTestId('passage-body')).toContainText('Ember Trail 2: the trail begins.')
 
-  // Landing on n_e2_start only offers the single prelude choice
-  // (c_n_e2_plain lives one node deeper, on n_e2_decision1); click through
-  // it before the plain choice exists to assert on.
-  await page.getByTestId('choice-c_n_e2_start_on').click()
-
+  // n_e2_start's single prelude choice is flowed, not tapped (band 10-13), so
+  // the opening stop already reaches n_e2_decision1 and its choices are on
+  // screen without any click.
+  //
   // The plain choice is always offered on the decision node.
   await expect(page.getByTestId('choice-c_n_e2_plain')).toBeVisible()
 
@@ -132,7 +131,6 @@ test('book 2 played fresh, without a carried courage, hides the gated choice', a
   // (n_e2_hub) rather than on the entry passage where the gated choice
   // does not even live anymore.
   await page.getByTestId('choice-c_n_e2_plain').click()
-  await page.getByTestId('choice-c_n_e2_fork_plain_on').click()
 
   // Assert we are actually ON the hub (its own always-visible choices are
   // present, and its passage body matches) IN THE SAME assertion block as

@@ -145,6 +145,87 @@ export function composeStop(story: Storybook, state: ReadingState): Stop {
   }
 }
 
+/**
+ * The already-traversed node ids that flowed INTO `state.current_node`, oldest
+ * first, or `[]` when `current_node` is a genuine stop origin.
+ *
+ * `composeStop` only walks forward, by design (see its doc). That is complete
+ * for a state produced by a real tap, and incomplete for a state RESUMED from
+ * storage: a flowed run persists its terminal (ADR-026 decision 2 requires the
+ * hops' effects to apply for real), so re-entering a book, or any remount of
+ * the reader, hands `composeStop` the terminal of a stop whose earlier nodes
+ * it cannot see. Composed forward from there the stop is length 1 and the
+ * flowed prose is silently dropped: the child resumes at the fork and never
+ * reads the passage that set it up (UW-F38).
+ *
+ * This re-derives that missing prefix from `state.path`, which already records
+ * the real traversal, so nothing is re-simulated and no effect is re-applied.
+ * A predecessor belongs to the same stop exactly when it has one choice
+ * targeting the next node in the path, which is the same boundary rule
+ * `composeStop` applies walking the other way.
+ *
+ * Deliberately structural, with no condition re-evaluation: `var_state` has
+ * moved on since those hops were taken, so re-evaluating a hop's condition now
+ * could answer a different question than the one the traversal already
+ * answered. The recorded path is the authority on what happened.
+ *
+ * Fails closed. Any ambiguity (a path that does not end at `current_node`, an
+ * unknown node, a repeat) stops the walk and yields the shorter prefix, so the
+ * worst case is today's behavior rather than a wrong one.
+ */
+export function flowedPrefix(story: Storybook, state: ReadingState): string[] {
+  const nodes = nodeIndex(story)
+  const path = state.path
+  let i = path.length - 1
+  // The path must actually end where we are, or it is not describing this
+  // position and nothing may be inferred from it.
+  if (i < 0 || path[i] !== state.current_node) return []
+
+  const prefix: string[] = []
+  const seen = new Set<string>([state.current_node])
+  while (i > 0) {
+    const predecessorId = path[i - 1]
+    const predecessor = nodes.get(predecessorId)
+    // A node the story no longer contains, or one already inside this stop
+    // (the same cycle `composeStop`'s loop guard refuses to walk), ends it.
+    if (predecessor === undefined || seen.has(predecessorId)) break
+    // 2+ choices is the previous stop's terminal (a real decision the child
+    // stopped at); 0 is an ending. Only a single-choice node ever flows.
+    if (predecessor.choices.length !== 1) break
+    if (predecessor.choices[0].target !== path[i]) break
+    prefix.unshift(predecessorId)
+    seen.add(predecessorId)
+    i -= 1
+  }
+  return prefix
+}
+
+/**
+ * `composeStop`, plus any flowed prefix already recorded in `state.path`.
+ *
+ * Use this wherever a stop is composed from a state that may have been resumed
+ * rather than freshly tapped into (the reader's mount path). Forward behavior
+ * is `composeStop`'s, unchanged: the terminal `state` and `terminalReason` are
+ * taken from it verbatim, and only `nodeIds`/`originNode` widen to include
+ * nodes the reader already walked.
+ *
+ * Widening `nodeIds` also repairs Go back on a resumed read: `backOneStop`
+ * calls `back()` once per node in the stop, so a stop truncated to its
+ * terminal rewound into the middle of its own flow instead of to the previous
+ * stop's terminal.
+ */
+export function composeStopWithHistory(story: Storybook, state: ReadingState): Stop {
+  const forward = composeStop(story, state)
+  const prefix = flowedPrefix(story, state)
+  if (prefix.length === 0) return forward
+  return {
+    originNode: prefix[0],
+    nodeIds: [...prefix, ...forward.nodeIds],
+    state: forward.state,
+    terminalReason: forward.terminalReason,
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Go back one stop (ADR-026 decision 3, ADR-024). Frontend-only, exactly like
 // `back()`/`canGoBack()` in engine.ts, which this delegates to rather than
