@@ -1,37 +1,45 @@
 # Trivy ignore file for CYO Adventure container image scanning.
 #
 # Scope: ONLY base-image (Debian trixie) OS-package CVEs that currently have NO
-# fixed version available upstream. Every entry below was confirmed via
+# fixed version available upstream, EXCEPT `linux-libc-dev`. Every entry below
+# was confirmed via
 #   trivy image --scanners vuln --severity CRITICAL,HIGH <image>
 # to report an empty "Fixed Version" with status "affected" or "fix_deferred".
+#
+# linux-libc-dev is NOT listed here any more. Its 59 accepted kernel-header
+# CVEs were removed on 2026-08-16 and replaced by a single package-scoped rule
+# in .trivy/ignore-policy.rego, wired through trivy.yaml. The judgment being
+# made about that package ("kernel UAPI headers, no kernel binary in the image,
+# the container runs the host's kernel") was always a property of the package
+# rather than of any individual CVE, and re-deriving it per CVE cost nine
+# rounds of manual triage in four weeks while leaving CI red between rounds.
+# That rule deliberately does NOT cover linux-libc-dev findings that carry a
+# fixed version: those still fail the scan, because they are actionable via a
+# base-image digest refresh. See docs/known-vulnerabilities.md, entry
+# "linux-libc-dev kernel UAPI headers (package-scoped acceptance)".
 #
 # Policy (per CLAUDE.md "Unfixed CVEs"): these are not suppressions of fixable
 # issues. They are unavoidable until Debian ships patched packages. Re-evaluate
 # on each base-image bump; remove any entry once a fixed version lands, and let
 # the patched package flow in via the runtime stage `apt-get upgrade`.
 #
+# Every entry here must have a matching entry in docs/known-vulnerabilities.md
+# carrying a Reassessment Due date, and that date is now machine-enforced by
+# scripts/check_known_vulnerabilities.py (pre-commit hook `check-known-vulns`
+# plus the Planning Linkage workflow). An entry whose date passes fails the
+# build instead of quietly ageing, which is what the Release Gate Policy in
+# that document always said should happen.
+#
 # Remediation already applied in the Dockerfile (so these do NOT need ignores):
 #   - curl / libcurl4t64 / libssh2-1t64 CVEs: curl is no longer installed.
 #   - openssl / libssl CVE-2026-45447: resolved by `apt-get upgrade`.
 #   - Go stdlib / esbuild CVEs: frontend/node_modules excluded via .dockerignore.
 #
-# Last reviewed: 2026-08-14 (added the nine linux-libc-dev kernel-header CVEs
-# from the PR #709 Trivy run; see the block at the end of this file)
-# Previously: 2026-08-08 (added the single-CVE linux-libc-dev CVE-2026-68480
-# block from the PR #644 Container Security run. Note that the 2026-08-04 review
-# which added CVE-2026-64561 did not bump this stamp; it is folded in here rather
-# than backdated, so this line now covers both. Prior review 2026-08-02: added
-# the single-CVE linux-libc-dev 6.12.100-1+dhi0
-# block from the PR #547 Container Security run. CVE-2026-64530 and
-# CVE-2026-64531 were never added here: they were fixed outright by that same
-# base-image digest bump, which is why they are recorded in
-# docs/known-vulnerabilities.md as resolved rather than accepted. Prior review
-# 2026-07-30: added the 7-CVE linux-libc-dev block from the PR #494 Container
-# Security run; removed the CVE-2026-53399 / CVE-2026-64600 block, whose own
-# removal condition was met when the dhi-python:3.14-debian13 base advanced from
-# 6.12.95-1+dhi0 to 6.12.96-1+dhi0, the version Debian records as fixing both.
-# gawk block 2026-07-14). See each block's own "Confirmed via" comment below for
-# when it was individually last re-verified against a live Trivy run.
+# Last reviewed: 2026-08-16 (removed all linux-libc-dev blocks in favour of the
+# package-scoped Rego policy; the duplicate CVE-2026-68480 block introduced by
+# the 2026-08-08 review went with them). The six blocks below are unchanged and
+# retain their own individually verified reassessment dates; see each block's
+# "Confirmed via" comment for when it was last re-verified against a live run.
 
 # --- perl-base (Perl + bundled Archive::Tar / IO-Compress); no Debian fix yet ---
 CVE-2026-42496
@@ -76,201 +84,3 @@ CVE-2026-45186
 CVE-2026-56131
 CVE-2026-56407
 CVE-2026-56408
-
-# --- linux-libc-dev (6.12.95-1+dhi0); kernel UAPI headers only, no running
-# kernel code in this image; no Debian fix yet ---
-# Confirmed via the same PR #299 run: all 34 report an empty Fixed Version
-# with status "affected". The 34 span unrelated kernel subsystems (GEM, f2fs,
-# Bluetooth, ksmbd, wifi drivers, RDMA, ARM64 KVM, netfilter, TCP, ALSA...),
-# consistent with linux-libc-dev's known false-positive pattern: it carries
-# kernel UAPI headers used at compile time, not a running kernel binary.
-# Documented in docs/known-vulnerabilities.md; reassess 2026-09-17.
-CVE-2026-43185
-CVE-2013-7445
-CVE-2019-19449
-CVE-2019-19814
-CVE-2021-3847
-CVE-2021-3864
-CVE-2024-21803
-CVE-2024-58015
-CVE-2025-22104
-CVE-2025-38137
-CVE-2025-38187
-CVE-2025-38204
-CVE-2025-38206
-CVE-2025-38421
-CVE-2025-38636
-CVE-2025-39859
-CVE-2025-39862
-CVE-2025-39958
-CVE-2026-23102
-CVE-2026-23208
-CVE-2026-23327
-CVE-2026-31493
-CVE-2026-31536
-CVE-2026-31568
-CVE-2026-43198
-CVE-2026-43263
-CVE-2026-46130
-CVE-2026-46181
-CVE-2026-46279
-CVE-2026-52991
-CVE-2026-53000
-CVE-2026-53010
-CVE-2026-53091
-CVE-2026-53277
-
-# linux-libc-dev newly-disclosed CVEs, confirmed via the PR #394 Container
-# Security run against dhi-python:3.14-debian13 (linux-libc-dev 6.12.95-1+dhi0):
-# these six report an empty Fixed Version with status "affected". Same
-# kernel-UAPI-headers non-applicability rationale as the block above (compile-
-# time headers, no running kernel binary in this image). Documented in
-# docs/known-vulnerabilities.md; reassess 2026-09-24.
-CVE-2026-53089
-CVE-2026-53109
-CVE-2026-53118
-CVE-2026-53330
-CVE-2026-63970
-CVE-2026-64017
-
-# --- linux-libc-dev (6.12.96-1+dhi0); kernel UAPI headers only, no running
-# kernel code in this image; no Debian fix on the trixie track ---
-# Confirmed via the PR #494 Container Security run against
-# ghcr.io/byronwilliamscpa/dhi-python:3.14-debian13: all seven report an empty
-# Fixed Version with status "affected", and were that run's only findings
-# (Total: 7, HIGH: 7, CRITICAL: 0). Independently corroborated against the
-# Debian security tracker, which records both trixie (6.12.94-1) and
-# trixie-security (6.12.96-1) as "vulnerable" for all seven; the fix landed only
-# in sid (7.1.5-1), which this base image does not track. Same kernel-UAPI-
-# headers non-applicability rationale as the blocks above: compile-time headers,
-# not a running kernel binary, and the container runs on the host's kernel.
-# Documented in docs/known-vulnerabilities.md; reassess 2026-09-28.
-CVE-2026-64287
-CVE-2026-64364
-CVE-2026-64375
-CVE-2026-64434
-CVE-2026-64534
-CVE-2026-64552
-CVE-2026-64558
-
-# --- linux-libc-dev (6.12.100-1+dhi0); kernel UAPI headers only, no running
-# kernel code in this image; no Debian fix on the trixie track ---
-# Confirmed via the PR #547 Container Security run against
-# ghcr.io/byronwilliamscpa/dhi-python:3.14-debian13
-# (workflow run 30733734393): this is the image's only remaining finding
-# (Total: 1, HIGH: 1, CRITICAL: 0), reported with an empty Fixed Version and
-# status "affected". Independently corroborated against the Debian security
-# tracker on 2026-08-02: trixie (6.12.94-1) and trixie-security (6.12.100-1)
-# both record "vulnerable"; the fix landed only in sid (7.0.12-1), which this
-# base image does not track. The defect is an AMD GPU DRM fix in
-# amdgpu_hmm_range_get_pages, hardware this deployment does not use at all.
-# Same kernel-UAPI-headers non-applicability rationale as the blocks above:
-# compile-time headers, not a running kernel binary, and the container runs on
-# the host's kernel. Documented in docs/known-vulnerabilities.md; reassess
-# 2026-09-30.
-CVE-2026-63879
-
-# linux-libc-dev newly-disclosed CVE, confirmed via the PR #597 Container
-# Security run against ghcr.io/byronwilliamscpa/dhi-python:3.14-debian13
-# (workflow run 30950314291, job 92130520302): empty Fixed Version, status
-# "affected", and the run's only finding (Total: 1, HIGH: 1, CRITICAL: 0). The
-# base-image version is unchanged at 6.12.100-1+dhi0, and the run on main 3.5
-# hours earlier was clean, so this is a Trivy feed refresh rather than anything
-# that PR introduced. Independently corroborated against the Debian security
-# tracker on 2026-08-04: trixie (6.12.94-1) and trixie-security (6.12.100-1)
-# both record "vulnerable"; the fix landed only in sid (7.1.6-1), which this
-# base image does not track. The defect is in KVM's x86 shadow-paging MMU,
-# reachable only by a host process driving /dev/kvm ioctls; this image contains
-# no hypervisor and requests no KVM device access. Same kernel-UAPI-headers
-# non-applicability rationale as the blocks above: compile-time headers, not a
-# running kernel binary, and the container runs on the host's kernel.
-# Documented in docs/known-vulnerabilities.md; reassess 2026-09-30.
-CVE-2026-64561
-
-# linux-libc-dev newly-disclosed CVE, confirmed via the PR #644 Container
-# Security run against ghcr.io/byronwilliamscpa/dhi-python:3.14-debian13
-# (workflow run 31262431949): empty Fixed Version, status "affected", and the
-# run's only finding (Total: 1, HIGH: 1, CRITICAL: 0). The base-image version is
-# unchanged at 6.12.100-1+dhi0 and the pinned digest is byte-identical on main
-# and the PR head (sha256:f4a77e21...), while the last run that actually
-# executed this job (30973596262, 2026-08-05) was clean, so this is a Trivy feed
-# refresh rather than anything that PR introduced. Note that main's own tip
-# shows this job "skipped", because container-security.yml skips on
-# chore(release): tips; a green main is not evidence either way here.
-# Independently corroborated against the Debian security tracker on 2026-08-08:
-# trixie (6.12.94-1) and trixie-security (6.12.101-1) both record "vulnerable",
-# as do bookworm and forky (7.1.6-1); the fix landed only in sid (7.1.7-1),
-# which this base image does not track. The defect is in the x86 SRSO Safe-RET
-# speculative-execution mitigation, which is running-kernel CPU-mitigation code
-# whose exploitation requires injecting interrupts on the host. Same
-# kernel-UAPI-headers non-applicability rationale as the blocks above:
-# compile-time headers, not a running kernel binary, and the container runs on
-# the host's kernel. Documented in docs/known-vulnerabilities.md; reassess
-# 2026-09-30.
-CVE-2026-68480
-
-# linux-libc-dev newly-disclosed CVE, confirmed via the PR #644 Container
-# Security run against ghcr.io/byronwilliamscpa/dhi-python:3.14-debian13
-# (workflow run 31262431949): empty Fixed Version, status "affected", and the
-# run's only finding (Total: 1, HIGH: 1, CRITICAL: 0). The base-image digest is
-# unchanged at sha256:f4a77e21fb25b71ccb183a25a53a1e87db2a3c11b422941b25708c2b5f3b1b13
-# (linux-libc-dev 6.12.100-1+dhi0) and is byte-identical on main and the PR head,
-# and the last run that actually executed this workflow (30973596262, 2026-08-05)
-# was clean, so this is a Trivy feed refresh rather than anything PR #644
-# introduced: that PR changes three lockfiles and no Dockerfile. Note main's own
-# tip reports this job as skipped, because container-security.yml skips on
-# `chore(release):` tips, so a green main is not evidence either way here.
-# Independently corroborated against the Debian security tracker on 2026-08-08:
-# trixie (6.12.94-1) and trixie-security (6.12.101-1) both record "vulnerable",
-# as do bookworm, bullseye, and forky (7.1.6-1); the fix landed only in sid
-# (7.1.7-1), which this base image does not track. The defect is in the x86
-# Safe-RET speculative-execution mitigation for AMD SRSO hardware, reachable only
-# by an attacker able to inject interrupts into a running kernel's mitigation
-# sequence. Same kernel-UAPI-headers non-applicability rationale as the blocks
-# above: compile-time headers, not a running kernel binary, and the container
-# runs on the host's kernel, whose mitigation state this image cannot influence
-# or patch. Documented in docs/known-vulnerabilities.md; reassess 2026-09-30.
-CVE-2026-68480
-
-# Nine linux-libc-dev kernel-header CVEs surfaced by the PR #709 Container
-# Security run (Trivy v0.70.0, workflow run 31760080363): all High, all with an
-# empty Fixed Version and status "affected", and the only findings in the whole
-# image (every Python package scanned reports 0).
-#
-# Feed refresh, not a PR regression. PR #709 matches no Dockerfile,
-# docker-compose*, or .dockerignore path; the last commit to touch Dockerfile is
-# bb89468 (2026-08-11); the PR's base 20e26221 passed its own Container Security
-# run on 2026-08-13T00:05, ~25h earlier; and the scheduled run on 2026-08-12T08:08
-# had already failed on main, so this class of failure predates the PR
-# independently. The base did advance since the 2026-08-08 entry: digest
-# sha256:5bbd41aef3ca86147ef389f3f0d944aa89bbae0d6c3ee31417e7bed15342aadf, with
-# linux-libc-dev at 6.12.101-1+dhi0 rather than 6.12.100-1+dhi0.
-#
-# Independently corroborated against the Debian security tracker on 2026-08-14,
-# each CVE fetched individually rather than inferred from scan absence, which
-# suppression would have masked. All nine record source package "linux" as
-# vulnerable in BOTH trixie (6.12.94-1) and trixie-security (6.12.101-1); all nine
-# are fixed only in sid (7.1.8-1), which this base image does not track. That
-# rules out the alternative remedy: a base-image digest refresh on the trixie
-# track would ship the same nine, so re-pinning is not available here. The pinned
-# GHCR digest above was confirmed still live (manifest HTTP 200) on the same date.
-#
-# The subsystems are KVM guest_memfd memslot binding (CVE-2026-64283), a libceph
-# stack out-of-bounds write (68159), arbitrary code execution (68166), an ath6kl
-# Wi-Fi use-after-free (68198), a drm/xe/pt current_op reset (68264), an idpf
-# null-pointer dereference (68291), a BPF-redirect denial of service (68337), a
-# mac80211 use-after-free (68409), and a stale skb->prev after async crypto in
-# xfrm (68426). None is reachable from this workload: same kernel-UAPI-headers
-# rationale as the blocks above, the package ships compile-time headers and no
-# kernel binary, and the container runs a FastAPI application on whatever kernel
-# the Docker host provides. Documented in docs/known-vulnerabilities.md; reassess
-# 2026-09-30.
-CVE-2026-64283
-CVE-2026-68159
-CVE-2026-68166
-CVE-2026-68198
-CVE-2026-68264
-CVE-2026-68291
-CVE-2026-68337
-CVE-2026-68409
-CVE-2026-68426

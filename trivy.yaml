@@ -1,0 +1,31 @@
+# Trivy configuration for the CYO Adventure container image scan.
+#
+# Trivy auto-discovers `trivy.yaml` in its working directory, which for the
+# Container Security workflow is the checked-out repository root. That is the
+# same mechanism by which `.trivyignore` has always been picked up: the
+# reusable workflow (ByronWilliamsCPA/.github/.github/workflows/
+# python-container-security.yml) passes neither `--ignorefile` nor
+# `--ignore-policy` to aquasecurity/trivy-action, so both are supplied here
+# rather than upstream. No change to the org workflow is required.
+#
+# Precedence is CLI flag > TRIVY_* env var > this file. The action sets
+# TRIVY_SEVERITY / TRIVY_EXIT_CODE / TRIVY_FORMAT and friends from its own
+# inputs, so the keys below must stay disjoint from those to take effect;
+# verified against Trivy 0.70.0, the version the action pins.
+#
+# #ASSUME: external resources: the action continues to invoke Trivy with the
+# repository root as its working directory. If a future action release runs
+# Trivy from elsewhere, this file stops being read and the scan goes RED with
+# every suppressed finding at once, which is a loud failure rather than a
+# silent one.
+# #VERIFY: a scan whose output shows 0 findings while `linux-libc-dev` CVEs
+# exist in the feed proves this file was read.
+
+# Two-CVE-classes, two mechanisms, deliberately:
+#   ignorefile     - per-CVE acceptances, each with its own reachability
+#                    assessment and reassessment date (perl-base, libexpat1,
+#                    libsqlite3-0, ncurses, libuuid1, gawk).
+#   ignore-policy  - the single package-level judgment for linux-libc-dev
+#                    kernel UAPI headers, which no longer needs a CVE list.
+ignorefile: .trivyignore
+ignore-policy: .trivy/ignore-policy.rego

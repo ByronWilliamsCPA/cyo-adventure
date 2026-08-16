@@ -31,8 +31,12 @@ on:
   pull_request:
     paths:
       - 'docs/planning/**'
+      - 'docs/known-vulnerabilities.md'
+      - 'known-vulnerabilities-baseline.toml'
+      - '.trivyignore'
       - 'scripts/check_work_linkage.py'
       - 'scripts/check_lessons_log.py'
+      - 'scripts/check_known_vulnerabilities.py'
       - '.github/workflows/planning-linkage.yml'
   schedule:
     # 07:11 UTC every Monday: off-peak, and offset from both the hour and the
@@ -89,6 +93,20 @@ jobs:
         # cancellation the way always() would.
         if: ${{ !cancelled() }}
         run: python scripts/check_lessons_log.py
+
+      - name: Check known-vulnerability reassessment dates
+        # Lives in this workflow rather than a security one because it needs
+        # exactly what this workflow already provides and a per-PR gate cannot:
+        # a SCHEDULE. A known-vulnerability entry expires through the passage
+        # of time, not because someone edited a file, so a pull_request trigger
+        # alone would never fire on the case that matters. The weekly cron plus
+        # the file-drift-issue job below turn an expiring acceptance into a
+        # filed issue without anyone remembering to look.
+        #
+        # Same posture as the two steps above: no flags, no network, no token,
+        # byte-for-byte the invocation the check-known-vulns hook runs locally.
+        if: ${{ !cancelled() }}
+        run: python scripts/check_known_vulnerabilities.py
 
   file-drift-issue:
     name: File drift issue

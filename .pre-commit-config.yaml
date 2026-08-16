@@ -358,6 +358,21 @@ repos:
         pass_filenames: false
         stages: [pre-commit]
 
+      # The Release Gate Policy in docs/known-vulnerabilities.md has said since
+      # 2026-07-29 that an entry past its reassessment date blocks releases
+      # whatever its "Blocking Release" value reads. Nothing enforced that until
+      # this hook; the dates were prose in a table. Note the hook alone is not
+      # sufficient, because an entry expires with time rather than with an edit:
+      # the weekly Planning Linkage schedule is what catches that.
+      - id: check-known-vulns
+        name: Known-vulnerability entries are current
+        entry: python scripts/check_known_vulnerabilities.py
+        language: system
+        files: >-
+          ^(docs/known-vulnerabilities\.md|\.trivyignore|known-vulnerabilities-baseline\.toml|scripts/check_known_vulnerabilities\.py)$
+        pass_filenames: false
+        stages: [pre-commit]
+
       - id: check-pytest-raises-scope
         name: pytest.raises blocks invoke at most one non-safe call in their body
         entry: python scripts/check_pytest_raises_scope.py

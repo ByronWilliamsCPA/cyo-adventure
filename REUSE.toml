@@ -92,6 +92,7 @@ path = [
     ".gitignore",
     ".gitattributes",
     ".trivyignore",  # Trivy CVE suppression list for container scanning
+    ".trivy/**",  # Trivy Rego ignore policy (package-scoped suppression)
     ".pre-commit-config.yaml",
     ".readthedocs.yaml",
     "mkdocs.yml",
