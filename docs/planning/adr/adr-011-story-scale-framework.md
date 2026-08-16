@@ -181,7 +181,7 @@ ending -> start/checkpoint).
 | Topology | Built from | Fastest-finish | Reread driver |
 | --- | --- | --- | --- |
 | time_cave | branch, terminal | low | many divergent endings |
-| loop_and_grow | branch, loop, bottleneck, terminal | low-med | state growth per loop |
+| loop_and_grow | branch, loop, bottleneck, terminal | low-med | **8-11 and up**: state growth per loop. **3-5 and 5-8**: try-again per loop, with NO growth (see the band note below) |
 | branch_and_bottleneck (incl. **quest** variant) | branch, bottleneck, terminal | med | different routes, same beats |
 | open_map | hub, branch, loop/return, bottleneck, terminal | med | explore in any order |
 | sorting_hat | branch (sort), parallel subtrees, terminal; no cross-track bottleneck | med | play each track |
@@ -208,6 +208,23 @@ The `3-5` and `5-8` Loops entries ("gentle try-again", "comic") are the non-stat
 try-again kind, legal at Tier 1; they are distinct from the stateful progress loops
 referenced by "loops require state (tier 2)" above, which first apply at `8-11`
 ("optional (T2)") and are required from `10-13` up.
+
+**Amendment, 2026-08-15 (`AL-409`).** The topology table's purpose column originally read
+"state growth per loop" for `loop_and_grow` at every band, and the topology is named for
+growth. At `3-5` and `5-8` the Tier-1 contract forbids the variables that would represent
+growth, so an author was told twice by the name and the purpose column to accumulate
+something, and once by the band table that the mechanism did not exist. That is not a
+theoretical tension: of the six `loop_and_grow` skeletons in the catalogue, all at `3-5` or
+`5-8` and all declaring no variables, no `on_enter` effects and no conditional choices,
+**three produced prose asserting accumulated state that no path could establish**, including
+one ending that counts "Three rescues by you" on a path containing one. The purpose column
+above now names the two readings separately.
+
+At `3-5` and `5-8`, a `loop_and_grow` hub is a **try-again** shape: the reader returns to the
+same choice having learned something, and the prose at the hub and at every ending must read
+correctly for a reader who took the loop once, twice, or not at all. Nothing may be counted,
+collected, or referred back to as already-met. Authors who want accumulation want `8-11` or
+above, where Tier 2 can carry it.
 
 `sorting_hat` costs `sort + N x (track arc)` nodes, so it buys replay diversity at a node
 premium and lives in Medium/Long cells, not Short; the table above annotates every band

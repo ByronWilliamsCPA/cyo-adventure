@@ -1,0 +1,277 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_sleepy_little_star",
+  "version": 1,
+  "title": "The Sleepy Little Star",
+  "metadata": {
+    "age_band": "3-5",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 1.0,
+      "tolerance": 1.0
+    },
+    "tier": 1,
+    "themes": [
+      "bedtime",
+      "courage",
+      "gentleness",
+      "perseverance"
+    ],
+    "estimated_minutes": 3,
+    "ending_count": 3,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "loop_and_grow",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "Dusk fell over the sleepy meadow. The sky turned soft and purple. High above, Twinkle woke up. She was the littlest star. She rubbed her sleepy eyes. Tonight was special. It was her very first night to shine all by herself.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_peek",
+          "label": "Peek out at the wide night sky above the sleepy meadow.",
+          "target": "n_moon"
+        }
+      ]
+    },
+    {
+      "id": "n_moon",
+      "body": "Kind, round Moon rose slowly. Moon smiled right at her. \"The sky is waiting,\" Moon whispered. \"Waiting for your little light.\" Twinkle felt fluttery inside. She felt shy too. She squeezed her two points tight. Then she took one big breath. She was ready to be brave.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_moon_breath",
+          "label": "Take a big, brave breath.",
+          "target": "n_ready"
+        }
+      ]
+    },
+    {
+      "id": "n_ready",
+      "body": "Twinkle floated to her very own spot in the sky. She looked around. How should a star start to shine? She could hide behind the fluffy cloud. She could do a big sparkle wiggle. Or she could scoot down low to peek at the world below.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ready_cloud",
+          "label": "Hide behind the fluffy cloud.",
+          "target": "n_cloud"
+        },
+        {
+          "id": "c_ready_wiggle",
+          "label": "Do a big sparkle wiggle.",
+          "target": "n_wiggle"
+        },
+        {
+          "id": "c_ready_low",
+          "label": "Scoot down to peek at the world below.",
+          "target": "n_slide"
+        }
+      ]
+    },
+    {
+      "id": "n_cloud",
+      "body": "Twinkle tucked behind the fluffy cloud. Only her glow's tiny tip peeked out. The cloud felt soft. The cloud felt cozy. But her own spot stayed dark. It stayed empty too. Should she snuggle in deeper? Or peek out one tiny sparkle?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cloud_snuggle",
+          "label": "Snuggle deeper into the fluffy cloud.",
+          "target": "n_cozy_retry"
+        },
+        {
+          "id": "c_cloud_peek",
+          "label": "Peek out one tiny sparkle.",
+          "target": "n_peek"
+        }
+      ]
+    },
+    {
+      "id": "n_cozy_retry",
+      "body": "Deep in the cloud, Twinkle rested a little while. Kind Moon hummed one soft, low note. The cloud's fluff tickled her nose, and she giggled a tiny giggle. The rest made her feel a bit braver. She floated back to try again.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cozy_again",
+          "label": "Float back and try again.",
+          "target": "n_ready"
+        }
+      ]
+    },
+    {
+      "id": "n_peek",
+      "body": "Twinkle let one sparkle slip out. It drifted down, down, down. It landed in the meadow. There, a firefly blinked back. \"My light reached somebody!\" Twinkle gasped. She felt so much joy. Her glow grew steady. It grew warm and bold.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_peek_more",
+          "label": "Let the glow grow bigger.",
+          "target": "n_almost"
+        }
+      ]
+    },
+    {
+      "id": "n_wiggle",
+      "body": "Twinkle wiggled and jiggled. She wanted to wake her sparkle. Gold glitter shook loose! It flew all around. It was so much fun. But it was very wobbly. Her light blinked like a hiccup. Should she wiggle faster? Or sway slow like a lullaby?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wiggle_faster",
+          "label": "Wiggle even faster!",
+          "target": "n_giggle_retry"
+        },
+        {
+          "id": "c_wiggle_sway",
+          "label": "Slow down and sway like a lullaby.",
+          "target": "n_sway"
+        }
+      ]
+    },
+    {
+      "id": "n_giggle_retry",
+      "body": "Twinkle wiggled so fast! She spun in a dizzy circle. Plop! She landed on soft cloud fluff, giggling. Her sparkle went all fizzy. It fizzed like tiny bubbles. \"Gently does it, little one,\" chuckled kind Moon. Twinkle dusted off her points. She floated back to try again.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_giggle_again",
+          "label": "Float back and try again.",
+          "target": "n_ready"
+        }
+      ]
+    },
+    {
+      "id": "n_sway",
+      "body": "Twinkle swayed slowly. Side to side she swayed. Just like tall grass far below. Her sparkle settled down. It settled into one warm glow. The swaying felt like a lullaby. She hummed along softly. Now she felt calm. She felt ready at last.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sway_spot",
+          "label": "Glide to her very own spot in the sky.",
+          "target": "n_almost"
+        }
+      ]
+    },
+    {
+      "id": "n_slide",
+      "body": "Twinkle scooted down low. She wanted to peek at the world. But whoops! The sky was slippery tonight. She slid down, down, down. She slid right past the treetops. She could grab a silvery moonbeam. She could climb right back up. Or she could peek around from down low.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_slide_climb",
+          "label": "Climb the silvery moonbeam back up.",
+          "target": "n_ready"
+        },
+        {
+          "id": "c_slide_look",
+          "label": "Take a peek from down low.",
+          "target": "n_low"
+        }
+      ]
+    },
+    {
+      "id": "n_low",
+      "body": "From down low, Twinkle looked around. She saw small houses. Warm yellow lights glowed below. Children peeked out in pajamas. They were waiting just for her. Her heart felt warm as toast. They needed her light tonight. So up, up, up she flew.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_low_up",
+          "label": "Float up to her very own spot in the sky.",
+          "target": "n_almost"
+        }
+      ]
+    },
+    {
+      "id": "n_almost",
+      "body": "Twinkle floated back to her spot. At last, it felt just right. The sky was soft and dark. It was quiet as a blanket. Kind Moon nodded, proud and happy. The whole night seemed to wait. Should Twinkle try one tiny sparkle first? Or hold her moonbeam and shine all at once?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_almost_tiny",
+          "label": "Try one tiny practice sparkle.",
+          "target": "n_first_sparkle"
+        },
+        {
+          "id": "c_almost_all",
+          "label": "Hold a silvery moonbeam and shine all at once.",
+          "target": "n_shine"
+        }
+      ]
+    },
+    {
+      "id": "n_first_sparkle",
+      "body": "Twinkle let out one small sparkle. It glowed steady and bright. It was not wobbly at all! She laughed with happy surprise. Her shyness floated away. It floated off like a little cloud. Now she felt ready. She was ready to shine her whole light.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sparkle_shine",
+          "label": "Shine with all her light.",
+          "target": "n_shine"
+        }
+      ]
+    },
+    {
+      "id": "n_shine",
+      "body": "Twinkle took the biggest breath of all. She shone! Soft, silver light spilled bright across the whole sky. Kind Moon beamed with pride. Now Twinkle could wink goodnight to the children below. She could sing a twinkle song with Moon. Or she could invite the other little stars to shine along too.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_shine_wink",
+          "label": "Wink goodnight to children in pajamas.",
+          "target": "e_goodnight"
+        },
+        {
+          "id": "c_shine_song",
+          "label": "Sing a twinkle song with kind, round Moon.",
+          "target": "e_lullaby"
+        },
+        {
+          "id": "c_shine_stars",
+          "label": "Invite the other little stars.",
+          "target": "e_friends"
+        }
+      ]
+    },
+    {
+      "id": "e_goodnight",
+      "body": "Twinkle gave one slow wink. It was a gentle goodnight wink. Far below, children waved from windows. They snuggled into their warm beds. The sky grew quiet. It grew soft and dreamy. Twinkle shone calm and proud. She was right where she belonged.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_goodnight",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Goodnight, Little World"
+      }
+    },
+    {
+      "id": "e_lullaby",
+      "body": "Twinkle and kind Moon hummed a twinkle song together. The whole sky rocked slow and gentle, like a cradle. Her light glowed in time with the tune. Down below, sleepy eyes closed, one by one. Twinkle sang the whole world to sleep. She was not one bit shy anymore.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_lullaby",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Twinkle Lullaby"
+      }
+    },
+    {
+      "id": "e_friends",
+      "body": "Twinkle called out, soft and clear. One by one, stars popped out. They blinked hello beside her. Soon the whole sky was full. It was full of friendly lights. Shining was easy with friends near. Twinkle glowed the happiest of all. She lit up the whole night.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_friends",
+        "valence": "positive",
+        "kind": "success",
+        "title": "A Sky Full of Friends"
+      }
+    }
+  ]
+}

@@ -71,8 +71,9 @@ import re
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from cyo_adventure.diversity.normalize import STOPWORDS, split_sentences, tokenize
+from cyo_adventure.diversity.normalize import STOPWORDS, tokenize
 from cyo_adventure.storybook.sentinels import strip_sentinels
+from cyo_adventure.utils.sentences import split_sentences
 from cyo_adventure.validator.report import Severity, ValidationFinding, ValidationReport
 
 if TYPE_CHECKING:
@@ -425,6 +426,16 @@ def check_fill_gate_acknowledgment(story: Storybook) -> ValidationReport:
             body = strip_sentinels(target.body).strip()
             if not body:
                 continue
+            # #ASSUME: data-integrity: the opening sentence must come from a
+            # splitter that knows an abbreviation from a full stop.
+            # `utils.sentences.split_sentences` replaced a borrowed
+            # `diversity.normalize.split_sentences` here (UW-C260, AL-390): a
+            # node opening "Mr. Fez's table was..." previously had its
+            # opening sentence read as the bare string "Mr.", which shares no
+            # content word with any choice label and fired CG-4 unfixably.
+            # #VERIFY: tests/unit/test_choice_grammar.py's
+            # TestFillGateAcknowledgment covers the abbreviation-opening case;
+            # tests/unit/test_sentences.py pins the splitter itself.
             sentences = split_sentences(body)
             opening = sentences[0] if sentences else body
             body_tokens = {

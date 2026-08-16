@@ -34,6 +34,7 @@ import json
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Literal, cast
 
+from cyo_adventure.core.exceptions import ConfigurationError
 from cyo_adventure.generation.fidelity_gate import run_stage1_gate
 from cyo_adventure.generation.guarded import PiiGuardedProvider
 from cyo_adventure.generation.metered import ledger_of
@@ -50,6 +51,7 @@ from cyo_adventure.generation.reading_level_loop import (
     ReadingLevelResult,
     run_reading_level_loop,
 )
+from cyo_adventure.utils.logging import get_logger
 from cyo_adventure.validator.gate import GateContext, GateResult, run_gate
 from cyo_adventure.validator.report import (
     Severity,
@@ -118,6 +120,12 @@ _DEFAULT_READING_LEVEL_PASSES = 2
 
 # Type alias: (sorted_findings_tuple, doc_sha256_hex)
 _Signature = tuple[tuple[tuple[str, str | None, str | None, str], ...], str]
+
+# What a caller is asking of the Stage 1 fidelity gate. See fill_skeleton's
+# `stage1_gate` argument for why this is stated rather than inferred.
+Stage1Posture = Literal["auto", "required", "skipped"]
+
+_logger = get_logger(__name__)
 
 
 @dataclass(frozen=True, slots=True)
@@ -459,7 +467,6 @@ def _build_outcome(
         The appropriate :class:`GenerationOutcome`.
     """
     final_report = gate_result.report.to_dict()
-    final_report["gate_context"] = gate_result.context
 
     if not gate_result.blocked:
         status: Literal["passed", "needs_review", "failed"] = (
@@ -482,6 +489,116 @@ def _build_outcome(
         storybook=current_doc,
         report=final_report,
         attempts=attempts,
+        stage_log=stage_log,
+    )
+
+
+def _resolve_stage1_posture(
+    stage1_gate: Stage1Posture, settings: Settings | None
+) -> bool:
+    """Decide whether the Stage 1 fidelity gate runs, and refuse a false promise.
+
+    Args:
+        stage1_gate: The posture the caller asked for.
+        settings: The settings the gate needs, or ``None``.
+
+    Returns:
+        Whether the gate is armed for this call.
+
+    Raises:
+        ConfigurationError: If ``"required"`` was asked for without the
+            ``settings`` the gate cannot run without. Raising is the point:
+            the failure this closes is a caller believing it is gated and not
+            being, so the one outcome that must not exist is a quiet downgrade
+            to ungated.
+    """
+    if stage1_gate == "skipped":
+        return False
+    if stage1_gate == "required" and settings is None:
+        msg = (
+            "stage1_gate='required' needs settings; the Stage 1 fidelity gate "
+            "cannot run without them, and silently skipping it would report an "
+            "ungated fill as a gated one"
+        )
+        raise ConfigurationError(msg)
+    return settings is not None
+
+
+def _with_stage1_posture(
+    outcome: GenerationOutcome, *, armed: bool
+) -> GenerationOutcome:
+    """Record which fidelity posture produced this outcome.
+
+    Stamped unconditionally, including on a failure, because the question a
+    reader asks of a ``status`` field is "what did this pass?" and the answer
+    must not depend on remembering which caller supplied ``settings``. Three
+    vendor-comparison books that were 100 percent unfilled were recorded
+    ``passed`` and read alongside gated results as though they meant the same
+    thing (`AL-324`); the field is what makes them separable after the fact.
+
+    Args:
+        outcome: The outcome to annotate.
+        armed: Whether the Stage 1 fidelity gate actually ran.
+
+    Returns:
+        The outcome with a ``"stage1_gate"`` report key.
+    """
+    return GenerationOutcome(
+        status=outcome.status,
+        storybook=outcome.storybook,
+        report={**outcome.report, "stage1_gate": "armed" if armed else "skipped"},
+        attempts=outcome.attempts,
+        stage_log=outcome.stage_log,
+        sentinel_manifest=outcome.sentinel_manifest,
+        personalization_eligible=outcome.personalization_eligible,
+    )
+
+
+def _fail_on_unfilled_skeleton(
+    outcome: GenerationOutcome,
+    skeleton: dict[str, object],
+    stage_log: list[str],
+) -> GenerationOutcome:
+    """Refuse to return the caller's own unfilled skeleton as a storybook.
+
+    A skeleton's node bodies are ``<<FILL ...>>`` directives, so a fill result
+    equal to its input is not a story by any reading: no prose was produced.
+    That state is reachable, and `AL-327` is what it cost. A fill whose output
+    never parses seeds the repair loop with the skeleton as context, which is
+    useful (a repair genuinely does recover from a parse failure and must keep
+    being able to); the harm is that a repair which merely echoes its input, or
+    a loop that exhausts its budget without ever parsing anything, leaves the
+    skeleton sitting in ``last_valid_doc`` and hands it back as the deliverable.
+
+    The verdict here is deliberately taken **regardless of the gate**. `PL-27`
+    now blocks a retained directive, so this document currently arrives as
+    ``needs_review`` rather than the ``passed`` four run-6 books recorded, but
+    that is one checker standing between a total generation failure and a human
+    review queue. A total failure should not depend on a rule that could be
+    scoped, relaxed, or skipped later.
+
+    Args:
+        outcome: The outcome built from the final gate result.
+        skeleton: The unfilled skeleton this call was asked to fill.
+        stage_log: The run's stage log, appended to when this fires.
+
+    Returns:
+        The outcome unchanged, or a ``"failed"`` outcome carrying no storybook.
+    """
+    if outcome.storybook is None or outcome.storybook != skeleton:
+        return outcome
+    _logger.warning(
+        "fill_returned_the_unfilled_skeleton",
+        attempts=outcome.attempts,
+        gate_status=outcome.status,
+        reason="no stage produced prose; the input skeleton is not a result",
+    )
+    stage_log.append("stage_fill:unfilled_skeleton_returned")
+    return GenerationOutcome(
+        status="failed",
+        storybook=None,
+        report={**outcome.report, "unfilled_skeleton_returned": True},
+        attempts=outcome.attempts,
         stage_log=stage_log,
     )
 
@@ -511,17 +628,6 @@ async def _repair_reading_level(
     Raises:
         ValidationError: If an assembled prompt contains forbidden PII.
     """
-    # #CRITICAL: external-resources: this call reaches a real LLM provider
-    # (billed, network-dependent) whenever a document is present, clean, and
-    # the budget is positive; a blocked or absent document, or a zero budget,
-    # must skip it rather than spend a call polishing something bound for
-    # human review or explicitly disabled.
-    # #CRITICAL: security: current_doc's prose descends from an untrusted
-    # guardian/child brief; run_reading_level_loop requires a PII-guarded
-    # provider (ctx.provider) for exactly this reason.
-    # #VERIFY: test_generate_story_skips_stage_d_on_a_blocked_document asserts
-    # the skip; test_reading_level_pii_guard_aborts_before_any_egress asserts
-    # the guard.
     if current_doc is None or gate_result.blocked or ctx.max_passes <= 0:
         return current_doc, gate_result, None
     result = await run_reading_level_loop(current_doc, gate_result, ctx)
@@ -557,8 +663,6 @@ def _with_reading_level(
         report={**outcome.report, "reading_level": result.to_report()},
         attempts=outcome.attempts,
         stage_log=outcome.stage_log,
-        sentinel_manifest=outcome.sentinel_manifest,
-        personalization_eligible=outcome.personalization_eligible,
     )
 
 
@@ -781,11 +885,7 @@ async def generate_story(
     4. **Stage D (Reading level)**: on an unblocked document, measure every
        node's Flesch-Kincaid grade and re-prompt the out-of-band ones toward
        the band. Never blocks: a revision is taken only when it strictly
-       improves. If splicing every accepted revision back in regresses the
-       gate, the gate's own findings name the offending nodes; those are
-       dropped and the remainder re-spliced and kept if that salvage clears
-       the gate. The whole pass is discarded only when the block is
-       unsalvageable (the salvaged splice still fails).
+       improves, and the whole pass is discarded if it regresses the gate.
 
     PII enforcement: ``provider`` is wrapped in a
     :class:`~cyo_adventure.generation.guarded.PiiGuardedProvider` at entry.
@@ -921,6 +1021,7 @@ async def fill_skeleton(
     *,
     max_repairs: int = 3,
     settings: Settings | None = None,
+    stage1_gate: Stage1Posture = "auto",
     review_stage1_model: str | None = None,
     prep_model: str | None = None,
     slot_bindings: Mapping[str, str] | None = None,
@@ -969,6 +1070,16 @@ async def fill_skeleton(
         settings: Application settings enabling the Stage 1 fidelity gate. When
             ``None`` (default) the fidelity gate is off and the fill is
             structural-only, so existing non-authoring callers are unaffected.
+        stage1_gate: Which fidelity posture this call is asking for.
+            ``"auto"`` (default) preserves the historical rule, arming the gate
+            exactly when ``settings`` is supplied. ``"required"`` arms it and
+            raises when ``settings`` is absent, so a caller that means to be
+            gated cannot silently not be. ``"skipped"`` states the ungated
+            posture out loud and never arms it, even with ``settings`` present.
+            Whichever is chosen, the resolved posture is stamped on the outcome
+            report as ``"stage1_gate"``, because a ``"passed"`` from an ungated
+            fill and a ``"passed"`` from a gated one are different claims and
+            four harness scripts were reading them as the same one (`AL-324`).
         review_stage1_model: Optional admin-chosen review-model override for the
             Stage 1 semantic fidelity check. Ignored when ``settings`` is
             ``None``.
@@ -1010,6 +1121,7 @@ async def fill_skeleton(
     # needs the UNFILLED skeleton (`original`) plus the review-model resolution
     # inputs; the guarded provider above is the fill/repair provider, distinct
     # from the review provider run_stage1_gate builds internally.
+    armed = _resolve_stage1_posture(stage1_gate, settings)
     stage1_config = (
         _Stage1Config(
             original=skeleton,
@@ -1021,7 +1133,7 @@ async def fill_skeleton(
             # has to learn about metering to be metered.
             ledger=ledger_of(provider),
         )
-        if settings is not None
+        if armed and settings is not None
         else None
     )
 
@@ -1085,7 +1197,14 @@ async def fill_skeleton(
         ),
     )
 
-    outcome = _build_outcome(gate_result, current_doc, attempts, stage_log)
+    outcome = _with_stage1_posture(
+        _fail_on_unfilled_skeleton(
+            _build_outcome(gate_result, current_doc, attempts, stage_log),
+            skeleton,
+            stage_log,
+        ),
+        armed=armed,
+    )
 
     # A structurally-clean fill that still fails Stage 1 after the shared budget
     # is exhausted downgrades from "passed" to "needs_review". The storybook is
@@ -1107,7 +1226,5 @@ async def fill_skeleton(
             },
             attempts=outcome.attempts,
             stage_log=outcome.stage_log,
-            sentinel_manifest=outcome.sentinel_manifest,
-            personalization_eligible=outcome.personalization_eligible,
         )
     return _with_reading_level(outcome, reading_level)

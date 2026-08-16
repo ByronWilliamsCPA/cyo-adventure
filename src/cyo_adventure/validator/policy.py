@@ -35,6 +35,8 @@ from __future__ import annotations
 import heapq
 import math
 import re
+from dataclasses import dataclass
+from typing import Literal
 
 import networkx as nx
 
@@ -67,12 +69,10 @@ from cyo_adventure.validator.topology import admissible_topologies
 # A skeleton node body is a ``<<FILL role=... words=N ...>>`` directive carrying
 # the author's declared word target; a filled node body is prose. The
 # words-per-node check reads the declared target for skeletons and the actual
-# word count for prose, so it applies pre-fill and post-fill. Public (not
-# imported from generation.diagram, which keeps the validator from depending
-# on the generation layer) so generation/ and scripts/ callers that need the
-# same literal (reading_level_loop.py, evaluate_books.py) import it from here
-# rather than each redeclaring it.
-FILL_MARKER = "<<FILL"
+# word count for prose, so it applies pre-fill and post-fill. This regex is a
+# local copy (not imported from generation.diagram) to keep the validator from
+# depending on the generation layer.
+_FILL_MARKER = "<<FILL"
 _FILL_WORDS_RE = re.compile(r"\bwords=(\d+)")
 
 # Endings that count as a *satisfying* completion for the PL-20 arc floor. A
@@ -114,7 +114,7 @@ def check_fill_residue(story: Storybook) -> ValidationReport:
     """
     report = ValidationReport()
     for node in story.nodes:
-        if FILL_MARKER not in node.body:
+        if _FILL_MARKER not in node.body:
             continue
         report.add(
             ValidationFinding(
@@ -125,7 +125,7 @@ def check_fill_residue(story: Storybook) -> ValidationReport:
                 message=(
                     f"PL-27 policy: node '{node.id}' of story '{story.id}' was "
                     f"validated as a fill result but its body still holds a "
-                    f"'{FILL_MARKER}' directive, so the node was never written"
+                    f"'{_FILL_MARKER}' directive, so the node was never written"
                 ),
             )
         )
@@ -355,7 +355,7 @@ def node_word_count(body: str) -> int:
     Returns:
         The word count used by the PL-19 words-per-node check.
     """
-    if FILL_MARKER in body:
+    if _FILL_MARKER in body:
         match = _FILL_WORDS_RE.search(body)
         return int(match.group(1)) if match is not None else 0
     return len(body.split())
@@ -701,7 +701,7 @@ _POSITIVE_ENDING_COUNT_FLOOR_GAMEBOOK = 3
 _POSITIVE_ENDING_SHARE_FLOOR_GAMEBOOK = 0.05
 
 
-def _words_on_shortest_satisfying_path(story: Storybook) -> int | None:
+def words_on_shortest_satisfying_path(story: Storybook) -> int | None:
     """Return the fewest words on any satisfying path, or None.
 
     Node-weighted uniform-cost (Dijkstra) search from the start node, each node
@@ -715,6 +715,15 @@ def _words_on_shortest_satisfying_path(story: Storybook) -> int | None:
 
     Reuses the same satisfying-ending definition and graph as PL-20, so the two
     rules can never disagree about which path is "the fastest finish".
+
+    Public (not underscore-prefixed) so a skeleton-context caller
+    (``scripts/check_skeleton.py``, UW-C261/AL-391/AL-395) can compute the same
+    fastest-finish clock ``_check_declared_read_time`` uses, rather than
+    reimplementing this search. Both read a node's word count through
+    :func:`node_word_count`, which already substitutes a ``<<FILL ... words=N
+    ...>>`` directive's declared ``N`` for its placeholder body, so calling this
+    on an unfilled skeleton yields the fastest-finish clock the shell's own word
+    hints promise, before any prose exists.
 
     Args:
         story: The parsed story.
@@ -760,7 +769,7 @@ def _check_declared_read_time(story: Storybook, report: ValidationReport) -> Non
     choosing a book. Advisory, because a rounded or deliberately padded editorial
     number is a legitimate choice; a large mismatch is not.
     """
-    words = _words_on_shortest_satisfying_path(story)
+    words = words_on_shortest_satisfying_path(story)
     if words is None or words < _MIN_PATH_WORDS_FOR_CLOCK:
         return
     derived = max(1, round(words / reading_pace_wpm(story.metadata.age_band.value)))
@@ -783,6 +792,95 @@ def _check_declared_read_time(story: Storybook, report: ValidationReport) -> Non
                 f"{drift:.0%} in story '{story.id}' (advisory only)"
             ),
         )
+    )
+
+
+@dataclass(frozen=True, slots=True)
+class ReadTimeDrift:
+    """PL-23's declared-versus-derived clock comparison, with its direction.
+
+    ``_check_declared_read_time`` folds this same comparison into a single
+    pass/fail finding and never says which way the mismatch runs. AL-395
+    measured that the two directions are two different defects (an
+    under-declared skeleton is a plain metadata error a hint-sized fill will
+    overrun; an over-declared one, concentrated at the longest cells, reads as
+    the author recording a typical read instead of ADR-011's fastest-finish
+    definition), so a caller that wants to name the remedy needs the
+    direction, not just the drift.
+
+    Attributes:
+        declared_minutes: The story's ``metadata.estimated_minutes``.
+        derived_minutes: The fastest-finish clock computed from
+            :func:`words_on_shortest_satisfying_path`.
+        words: Words on the fewest-word satisfying path.
+        wpm: The band's reading-pace anchor used to derive the clock.
+        drift: The fractional difference, ``abs(declared - derived) / derived``.
+        direction: ``"under-declared"`` when the declared value is below the
+            derived clock, ``"over-declared"`` when it is above, or
+            ``"exact"`` when they match exactly (``drift == 0``).
+        breaches_tolerance: Whether ``drift`` exceeds PL-23's own tolerance
+            (``_READ_TIME_TOLERANCE``), i.e. whether this is the same breach
+            ``_check_declared_read_time`` would warn on.
+    """
+
+    declared_minutes: int
+    derived_minutes: int
+    words: int
+    wpm: int
+    drift: float
+    direction: Literal["under-declared", "over-declared", "exact"]
+    breaches_tolerance: bool
+
+
+def read_time_drift(story: Storybook) -> ReadTimeDrift | None:
+    """Compute PL-23's clock comparison at any context, skeleton or filled.
+
+    Reuses :func:`words_on_shortest_satisfying_path`, the same search
+    ``_check_declared_read_time`` uses, and applies the identical skip
+    conditions (the fastest-finish path must clear
+    ``_MIN_PATH_WORDS_FOR_CLOCK`` words, and ``estimated_minutes`` must be
+    declared positive) so a caller here can never disagree with the fill-time
+    PL-23 finding about whether the clock even applies. This is a read-only
+    measurement: it does not raise a :class:`ValidationFinding` and does not
+    change what ``_check_declared_read_time`` does, warns on, or skips
+    (UW-C261). ``scripts/check_skeleton.py`` calls this to report the breach
+    direction when a skeleton is validated, before any prose exists
+    (AL-391, AL-395).
+
+    Args:
+        story: The parsed story: a catalog skeleton (node bodies still
+            ``<<FILL ... words=N ...>>`` directives) or a filled book.
+
+    Returns:
+        ReadTimeDrift | None: ``None`` under the same conditions
+            ``_check_declared_read_time`` silently skips (no satisfying path
+            long enough to measure, or a non-positive declared value);
+            otherwise the comparison, whether or not it breaches tolerance.
+    """
+    words = words_on_shortest_satisfying_path(story)
+    if words is None or words < _MIN_PATH_WORDS_FOR_CLOCK:
+        return None
+    wpm = reading_pace_wpm(story.metadata.age_band.value)
+    derived = max(1, round(words / wpm))
+    declared = story.metadata.estimated_minutes
+    if declared <= 0:
+        return None
+    drift = abs(declared - derived) / derived
+    direction: Literal["under-declared", "over-declared", "exact"]
+    if declared < derived:
+        direction = "under-declared"
+    elif declared > derived:
+        direction = "over-declared"
+    else:
+        direction = "exact"
+    return ReadTimeDrift(
+        declared_minutes=declared,
+        derived_minutes=derived,
+        words=words,
+        wpm=wpm,
+        drift=drift,
+        direction=direction,
+        breaches_tolerance=drift > _READ_TIME_TOLERANCE,
     )
 
 

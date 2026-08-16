@@ -1,0 +1,478 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_teddy_bears_picnic",
+  "version": 1,
+  "title": "The Teddy Bears' Picnic",
+  "metadata": {
+    "age_band": "3-5",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 1.0,
+      "tolerance": 1.0
+    },
+    "tier": 1,
+    "themes": [
+      "friendship",
+      "sharing",
+      "kindness",
+      "celebration"
+    ],
+    "estimated_minutes": 5,
+    "ending_count": 11,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "loop_and_grow",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "Clover is a little bear. She spreads an item in an outdoor area. It has a pattern. The ground affects her paws. A small container waits. A small object sits ready on the item. She smiles. She looks around at all the things to do. She claps her paws. What should she do next?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_honey",
+          "label": "Go ask the bees for honey.",
+          "target": "n_honey1"
+        },
+        {
+          "id": "c_start_berry",
+          "label": "Go pick red berries at the bramble.",
+          "target": "n_berry1"
+        },
+        {
+          "id": "c_start_ball",
+          "label": "Go find the big red ball.",
+          "target": "n_ball1"
+        },
+        {
+          "id": "c_start_kite",
+          "label": "Go fetch the bright paper kite.",
+          "target": "n_kite1"
+        },
+        {
+          "id": "c_start_owl",
+          "label": "Go wake sleepy Owl in the oak.",
+          "target": "n_owl1"
+        },
+        {
+          "id": "c_start_music",
+          "label": "Go find the little music box.",
+          "target": "n_music1"
+        }
+      ]
+    },
+    {
+      "id": "n_honey1",
+      "body": "Clover goes to the beehive. The bees make a sound in the weather. The sound is a certain sound. She stops and thinks. Should she ask nicely and wait? Or bother the hive?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_honey_ask",
+          "label": "Ask the bees nicely and wait.",
+          "target": "n_honey2"
+        },
+        {
+          "id": "c_honey_poke",
+          "label": "Poke the hive to hurry.",
+          "target": "e_honey_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_honey2",
+      "body": "The bees fill a container with a substance. The substance has a pleasant quality. Clover holds it close to her chest. The picnic is growing! She looks at the substance. Should she go back? Or start now?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_honey_back",
+          "label": "Carry the honey back to the blanket.",
+          "target": "n_start"
+        },
+        {
+          "id": "c_honey_start",
+          "label": "Ring the bell and start the picnic.",
+          "target": "n_gather"
+        }
+      ]
+    },
+    {
+      "id": "e_honey_oops",
+      "body": "Clover touches the object. Some creatures come out quickly! They chase her around and around the area. She moves and reacts happily, again and again. There is a repeated sound as she goes. Nobody gets hurt. She reacts happily. She goes back.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_honey_oops",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Oops, Buzzy Bees"
+      }
+    },
+    {
+      "id": "n_berry1",
+      "body": "Clover moves to the bush. Some fruit is present in the light. It looks appealing. Some sit in a position that is easy to reach. Some sit in a position that is harder to reach. Pick the easy ones? Or reach for the harder ones?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_berry_low",
+          "label": "Pick the easy low berries.",
+          "target": "n_berry2"
+        },
+        {
+          "id": "c_berry_high",
+          "label": "Stretch for the wobbly high ones.",
+          "target": "e_berry_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_berry2",
+      "body": "Clover gathers a large quantity of the food item. It has a certain taste. The container becomes full. Something about her changes slightly from the activity. She notices the smell. The picnic grows! Should she go back? Or start now?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_berry_back",
+          "label": "Carry the berries back to the blanket.",
+          "target": "n_start"
+        },
+        {
+          "id": "c_berry_start",
+          "label": "Ring the bell and start the picnic.",
+          "target": "n_gather"
+        }
+      ]
+    },
+    {
+      "id": "e_berry_oops",
+      "body": "Clover reaches for something up there. The branch moves back very fast. The container tips into the ground. Something happens! The contents go everywhere. Some land in one place. Some go down the slope. She laughs and laughs so much. She goes back.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_berry_oops",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Oops, Tumbling Berries"
+      }
+    },
+    {
+      "id": "n_ball1",
+      "body": "Clover remembers the object. It is somewhere in the area. The area is nice. She hunts for it happily. She looks left. She looks right. She sees some marks. Should she follow them? Or go in?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ball_track",
+          "label": "Follow the little bounce marks.",
+          "target": "n_ball2"
+        },
+        {
+          "id": "c_ball_dive",
+          "label": "Dive into the tall grass.",
+          "target": "e_ball_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_ball2",
+      "body": "There sits the object! It has certain qualities that make it suitable. Just right for games and play. The fun is growing! She can move it back. Or use the signal and start now.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ball_back",
+          "label": "Roll the ball back to the blanket.",
+          "target": "n_start"
+        },
+        {
+          "id": "c_ball_start",
+          "label": "Ring the bell and start the picnic.",
+          "target": "n_gather"
+        }
+      ]
+    },
+    {
+      "id": "e_ball_oops",
+      "body": "Clover moves through an outdoor area. A small creature lands on part of her. Not the object she wanted. It causes a reaction! She reacts with a sound of amusement. Something happens to her. She reacts again and again. The creature moves away. She continues what she was doing.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ball_oops",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Oops, a Ticklish Hopper"
+      }
+    },
+    {
+      "id": "n_kite1",
+      "body": "Clover wants the item. The item has some colors. It lies folded by the fence. Something moves past her. She can carry it gently and safely. Or let it open in the moving air.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_kite_carry",
+          "label": "Carry the kite gently under her arm.",
+          "target": "n_kite2"
+        },
+        {
+          "id": "c_kite_flap",
+          "label": "Let the kite flap open in the wind.",
+          "target": "e_kite_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_kite2",
+      "body": "Clover holds the folded item safely under her arm. It feels a certain way. It is ready to be used. She can sense the conditions outside. The gathering grows! Should she go back? Or signal and start now?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_kite_back",
+          "label": "Bring the kite back to the blanket.",
+          "target": "n_start"
+        },
+        {
+          "id": "c_kite_start",
+          "label": "Ring the bell and start the picnic.",
+          "target": "n_gather"
+        }
+      ]
+    },
+    {
+      "id": "e_kite_oops",
+      "body": "Clover lets the kite open up. A gust of wind pulls at it. The wind blows. It tumbles and tangles up. The string wraps around a fixed object nearby. It is a muddle. She laughs. She untangles it. She goes back.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_kite_oops",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Oops, a Windy Muddle"
+      }
+    },
+    {
+      "id": "n_owl1",
+      "body": "Sleepy Owl rests in his usual spot. His feathers have a certain quality. His eyes are closed. A small sound comes from him. Clover wants him at the gathering. She can make a soft sound to wake him. Or move the spot he is resting on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_owl_hoot",
+          "label": "Hoot softly to wake Owl gently.",
+          "target": "n_owl2"
+        },
+        {
+          "id": "c_owl_shake",
+          "label": "Shake the whole branch.",
+          "target": "e_owl_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_owl2",
+      "body": "Owl opens his eyes. He yawns. It makes a sound. He looks at Clover. Yes! He makes a happy sound! The friends are growing! Should she go back? Or signal and start now?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_owl_back",
+          "label": "Walk Owl back to the blanket.",
+          "target": "n_start"
+        },
+        {
+          "id": "c_owl_start",
+          "label": "Ring the bell and start the picnic.",
+          "target": "n_gather"
+        }
+      ]
+    },
+    {
+      "id": "e_owl_oops",
+      "body": "Clover shakes the branch hard. So many things fall down! Dry items. They fall on her. She is covered by a pile! A pile with feeling! Owl continues louder. She can still hear him. She brushes off the items. She goes back.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_owl_oops",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Oops, a Pile of Leaves"
+      }
+    },
+    {
+      "id": "n_music1",
+      "body": "Clover looks for the little item. It sits closed on a surface. The surface is old and worn. Some growth is on it. The item is silent and waiting. She can move the part carefully. Or work the mechanism fast.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_music_lift",
+          "label": "Lift the lid carefully.",
+          "target": "n_music2"
+        },
+        {
+          "id": "c_music_wind",
+          "label": "Give the handle a big fast wind.",
+          "target": "e_music_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_music2",
+      "body": "The music box makes a sound. It plays repeatedly. Clover makes a sound along with it, feeling good. The sound makes her paws move. The picnic grows! She notices the sound. Should she go back? Or ring the bell and start now?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_music_back",
+          "label": "Carry the music box back to the blanket.",
+          "target": "n_start"
+        },
+        {
+          "id": "c_music_start",
+          "label": "Ring the bell and start the picnic.",
+          "target": "n_gather"
+        }
+      ]
+    },
+    {
+      "id": "e_music_oops",
+      "body": "Clover operates the handle too quickly. The music box plays an odd, unusual tune. The sound speeds up in an unusual way. Her movements go a bit off. She turns around. She laughs a lot. She tries to stop laughing. She returns to what she was doing.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_music_oops",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Oops, a Jumbled Tune"
+      }
+    },
+    {
+      "id": "n_gather",
+      "body": "Clover rings the small bell. There is a sound. The bears move over quickly. They move in their usual way. Some come from one place. Some come from another place. They come from everywhere around. They come to the blanket now.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gather_welcome",
+          "label": "Welcome the teddy bears in.",
+          "target": "n_welcome"
+        }
+      ]
+    },
+    {
+      "id": "n_welcome",
+      "body": "The teddy bears sit in a group on the item. They move around with joy and glee. They have a certain texture. Everything Clover fetched is piled in the middle. What a fine pile!",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_welcome_arrange",
+          "label": "Lay out all the picnic treats.",
+          "target": "n_arrange"
+        }
+      ]
+    },
+    {
+      "id": "n_arrange",
+      "body": "Clover puts out the food items and the fruit. All the treats sit in the pleasant weather. The food looks a certain way. The fruit looks a certain way. The friends show they are eager. They make small movements. What should Clover do?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrange_share",
+          "label": "Share the honey and berries.",
+          "target": "n_share"
+        },
+        {
+          "id": "c_arrange_game",
+          "label": "Start a picnic game.",
+          "target": "n_game"
+        }
+      ]
+    },
+    {
+      "id": "n_share",
+      "body": "The food is passed around the group. The other food is passed around too. Everyone eats happily. Eating sounds continue. The weather is pleasant. The conditions outside are fine. The day is happy. Clover thinks of what to do next.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_share_song",
+          "label": "Sing the teddy bears' picnic song.",
+          "target": "e_song"
+        },
+        {
+          "id": "c_share_music",
+          "label": "Wind up the music box and sway.",
+          "target": "e_music_finale"
+        },
+        {
+          "id": "c_share_nap",
+          "label": "Curl up for a cozy nap in the sun.",
+          "target": "e_nap"
+        }
+      ]
+    },
+    {
+      "id": "n_game",
+      "body": "The teddy bears are ready to play in the outdoor area. Air moves around them. Clover claps with joy. Some toys sit on the blanket, waiting for fun. The picnic is a happy party! Which game should they play?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_game_ball",
+          "label": "Roll the big red ball around the ring.",
+          "target": "e_ball_game"
+        },
+        {
+          "id": "c_game_kite",
+          "label": "Fly the bright kite in the breeze.",
+          "target": "e_kite_game"
+        }
+      ]
+    },
+    {
+      "id": "e_song",
+      "body": "Everyone joins together and sings the picnic song outside. They sway and sway. Clover sings too. Their voices go round and round. The song sounds nice. Her heart feels full. The picnic is good.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_song",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Picnic Song"
+      }
+    },
+    {
+      "id": "e_music_finale",
+      "body": "The little music box plays. It makes a sound. All the bears sway and hum along. They make a sound. They sit on the blanket outside. Their fur feels a certain way. Clover smiles at every happy friend. The picnic is nice and complete.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_music_finale",
+        "valence": "positive",
+        "kind": "success",
+        "title": "A Sweet Little Tune"
+      }
+    },
+    {
+      "id": "e_nap",
+      "body": "Full of provisions. Full of positive experiences. All the bears position themselves together. They form a group in a comfortable area. The light is present on their exterior. The picnic she prepared is satisfactory. Everything is pleasant.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_nap",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "A Cozy Sunny Nap"
+      }
+    },
+    {
+      "id": "e_ball_game",
+      "body": "The item moves repeatedly around the area. All the animals sit and watch it go. They react with amusement. They express approval. Do it again! The event is a lively, happy success!",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ball_game",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Rolling Red Ball"
+      }
+    },
+    {
+      "id": "e_kite_game",
+      "body": "The kite moves and moves. It goes up up up very high. The wind carries it far. All the bears cheer. Hooray hooray! Clover flies the kite with pride.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_kite_game",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The High Bright Kite"
+      }
+    }
+  ]
+}

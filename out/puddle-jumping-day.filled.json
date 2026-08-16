@@ -1,0 +1,276 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_puddle_jumping_day",
+  "version": 1,
+  "title": "Puddle Jumping Day",
+  "metadata": {
+    "age_band": "3-5",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 1.0,
+      "tolerance": 1.0
+    },
+    "tier": 1,
+    "themes": [
+      "rain",
+      "family",
+      "play",
+      "kindness",
+      "wonder"
+    ],
+    "estimated_minutes": 3,
+    "ending_count": 4,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "time_cave",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_window",
+  "nodes": [
+    {
+      "id": "n_window",
+      "body": "Rain tapped the window. Tap, tap, tap. Milo pressed his nose to the glass. The big rain slowed to a soft drizzle. Grandma smiled. \"Do you know what day this is? Puddle Jumping Day!\" \"Hooray!\" cried Milo. He ran to get his rain things.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_get_ready",
+          "label": "Put on red rubber boots and a yellow raincoat.",
+          "target": "n_door"
+        }
+      ]
+    },
+    {
+      "id": "n_door",
+      "body": "Milo pulled on his red boots. He put on his yellow coat. Zip! Grandma opened the front door. The world was wet and shiny. It smelled like wet leaves. The sidewalk shone. It had waited all day, just for Milo.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_step_out",
+          "label": "Step outside with Grandma.",
+          "target": "n_gate"
+        }
+      ]
+    },
+    {
+      "id": "n_gate",
+      "body": "By the garden gate sat the first puddle. It was round like a cookie. Milo did one warm-up hop. Splish! The water jumped too. \"Good hop,\" laughed Grandma. She took his hand, and they walked down to the corner.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_to_corner",
+          "label": "Walk to the corner.",
+          "target": "n_corner"
+        }
+      ]
+    },
+    {
+      "id": "n_corner",
+      "body": "At the corner the walk went two ways. One way was the tree lane. The trees dripped there. Small puddles dotted the path like polka dots. The other way was the hill. Rain water raced down the curb. It chattered and splashed. \"You pick,\" said Grandma.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lane",
+          "label": "Take the quiet, dripping tree lane.",
+          "target": "n_lane"
+        },
+        {
+          "id": "c_hill",
+          "label": "Take the hill with its chattering stream.",
+          "target": "n_hill"
+        }
+      ]
+    },
+    {
+      "id": "n_lane",
+      "body": "Under the trees, drops fell on Milo's hood. Plip. Plop. He hopped from puddle to puddle down the polka-dot lane. Then he stopped. Something on the wet path was wiggling, small and slow, right by his boot. \"Grandma, look!\" he whispered.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_look_close",
+          "label": "Look closer at a tiny wiggle.",
+          "target": "n_wiggle"
+        }
+      ]
+    },
+    {
+      "id": "n_wiggle",
+      "body": "It was a little earthworm. It wiggled on the hard wet path, far from any soft dirt. Just past it shone a huge puddle, flat as a mirror. \"What shall we do?\" asked Grandma. \"Help the worm home? Or go look in that big puddle?\"",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_help_worm",
+          "label": "Help the little earthworm home.",
+          "target": "n_worm_carry"
+        },
+        {
+          "id": "c_mirror",
+          "label": "Tiptoe to the huge, mirror-flat puddle.",
+          "target": "n_mirror"
+        }
+      ]
+    },
+    {
+      "id": "n_worm_carry",
+      "body": "Milo found a big wet leaf. Grandma helped him scoot the worm on, gentle as a feather. It was a tiny stretcher. Step. Step. Step. They carried the worm to the soft brown dirt of the flower bed.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_set_down",
+          "label": "Set the little earthworm down gently.",
+          "target": "n_worm_end"
+        }
+      ]
+    },
+    {
+      "id": "n_worm_end",
+      "body": "The worm slid into the dirt. It gave one happy wiggle. Home at last! Grandma gave Milo a high five. Her wet glove went squelch. They splashed all the way home for warm cocoa. At dinner, Milo told everyone about the worm.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_worm_home",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "A Home for the Worm"
+      }
+    },
+    {
+      "id": "n_mirror",
+      "body": "This puddle was the biggest one Milo had ever seen. It held a whole upside-down sky. Milo saw clouds in it. He saw two faces too. They were his and Grandma's. He backed up three big steps. He bent his knees.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_count",
+          "label": "Count one, two, three!",
+          "target": "n_mirror_climax"
+        }
+      ]
+    },
+    {
+      "id": "n_mirror_climax",
+      "body": "\"One,\" said Grandma. \"Two. Three!\" Milo ran. His boots went thump, thump, thump. His raincoat flapped like wings. He jumped as high as he could, up over the shiny puddle. For one whole second, Milo was flying.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_splash",
+          "label": "Come down with a great big Splash.",
+          "target": "n_splash_end"
+        }
+      ]
+    },
+    {
+      "id": "n_splash_end",
+      "body": "SPLASH! Silver drops flew up like a firework. They came down on two hoods, pat, pat, pat. The puddle shook into rings. Milo was wet. Grandma was wet. No one minded one bit. That was the best splash of the whole day.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_biggest_splash",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Biggest Splash"
+      }
+    },
+    {
+      "id": "n_hill",
+      "body": "Rain water ran along the curb. It rushed downhill like a small river. A leaf sailed by. It was a little boat! It spun once and zoomed away. Far down the hill, the clouds opened. A warm sunbeam poked through.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_follow_stream",
+          "label": "Follow the busy stream.",
+          "target": "n_stream_fork"
+        }
+      ]
+    },
+    {
+      "id": "n_stream_fork",
+      "body": "Milo trotted beside the stream. It chattered all the way. Grandma picked up a wide brown leaf. \"Here is a boat,\" she said. Down below, the sunbeam grew warm and bright. Milo could race the boat down the stream. Or he could walk down to the sun.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_race",
+          "label": "Race a leaf boat.",
+          "target": "n_race"
+        },
+        {
+          "id": "c_sun",
+          "label": "Follow the warm sunbeam down.",
+          "target": "n_downhill"
+        }
+      ]
+    },
+    {
+      "id": "n_race",
+      "body": "Milo set the leaf boat on the water. Off it went! It bobbed. It twirled. It bumped past a twig and swung around a gray pebble. Milo ran along beside it. \"Go, boat, go!\" he cheered.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chase",
+          "label": "Run to the finish line.",
+          "target": "n_race_finish"
+        }
+      ]
+    },
+    {
+      "id": "n_race_finish",
+      "body": "Near the bottom of the hill, the water swirled. It ran to the drain grate. That was the finish line! The leaf boat wobbled. It tipped. Then it popped up straight. It shot ahead. Milo reached out his hand.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_catch",
+          "label": "Catch a leaf boat.",
+          "target": "n_race_end"
+        }
+      ]
+    },
+    {
+      "id": "n_race_end",
+      "body": "Got it! Milo scooped up the leaf boat at the finish line. It was wet. He was proud. \"Hooray!\" cheered Grandma. Milo put the leaf in his pocket. It was his medal now. Then they stomped and splashed all the way home to tell the news.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_leaf_boat",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Champion Leaf Boat"
+      }
+    },
+    {
+      "id": "n_downhill",
+      "body": "They followed the sun down the hill. The rain went soft. Then it stopped. Milo held out his hand. He felt no rain at all. Every puddle turned gold. They looked like little mirrors full of treasure. The whole street shone.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_look_up",
+          "label": "Look up at the sky.",
+          "target": "n_sky"
+        }
+      ]
+    },
+    {
+      "id": "n_sky",
+      "body": "At the foot of the hill, Grandma stopped. She pointed up over the roofs. \"Milo,\" she said. \"Look.\" He held her hand tight. He tipped his head way back. He looked up, up, up.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_see",
+          "label": "See what the sky made.",
+          "target": "n_rainbow_end"
+        }
+      ]
+    },
+    {
+      "id": "n_rainbow_end",
+      "body": "A rainbow! It arched over the whole town. Its stripes glowed in the clean blue sky. \"Red,\" said Milo. \"Orange. Yellow. Green. Blue. Purple.\" They named them all. Then they walked home right under it. What a fine surprise on Puddle Jumping Day!",
+      "is_ending": true,
+      "ending": {
+        "id": "e_rainbow",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Rainbow Surprise"
+      }
+    }
+  ]
+}

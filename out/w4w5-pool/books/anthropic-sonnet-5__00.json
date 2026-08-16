@@ -1,0 +1,575 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_lantern_festival",
+  "version": 1,
+  "title": "The Lantern Festival",
+  "metadata": {
+    "age_band": "5-8",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 2.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "friendship",
+      "community",
+      "celebration",
+      "perseverance"
+    ],
+    "estimated_minutes": 6,
+    "ending_count": 10,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "none",
+      "peril": "none"
+    },
+    "topology": "loop_and_grow",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_open",
+  "nodes": [
+    {
+      "id": "n_open",
+      "body": "Pip the young raccoon stands inside Driftwood Hollow. Her whiskers twitch. Tonight is River Lantern Night. The whole river bend will glow gold. On the shelf, her little test lantern wobbles. It tips over and rolls on its side. Pip laughs and sets it up again. She still has a lot to gather. But she is not worried at all.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Count what is still needed.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_start",
+      "body": "Pip counts on her paws: moonberries for glow, friends to invite, reeds for frames, honeycakes for the feast, old decorations to dust off, and crickets to bring their fiddles. So many places along the river to visit before dusk. Where should she go first?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_berries",
+          "label": "Go pick moonberries by Otter Rock.",
+          "target": "n_berry1"
+        },
+        {
+          "id": "c_start_willow",
+          "label": "Go invite your friends at the sandbar den.",
+          "target": "n_willow1"
+        },
+        {
+          "id": "c_start_reeds",
+          "label": "Go cut reeds for lantern frames.",
+          "target": "n_reed1"
+        },
+        {
+          "id": "c_start_honey",
+          "label": "Go ask the honeybees for honeycakes.",
+          "target": "n_honey1"
+        },
+        {
+          "id": "c_start_shed",
+          "label": "Go fetch the paper river-flower strings.",
+          "target": "n_shed1"
+        },
+        {
+          "id": "c_start_crickets",
+          "label": "Go ask the cricket fiddlers to play.",
+          "target": "n_cricket1"
+        }
+      ]
+    },
+    {
+      "id": "n_berry1",
+      "body": "At the moonberry brambles by Otter Rock, the low berries hang heavy. They glow like tiny lanterns. But way up high, one fat cluster hangs from a branch. It sways when the river breeze blows. Pip could fill her basket with the easy berries she can reach. Or she could climb up for that plumper, brighter cluster at the very top.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_berry_low",
+          "label": "Pick the ripe low moonberries.",
+          "target": "n_berry2"
+        },
+        {
+          "id": "c_berry_high",
+          "label": "Climb for the high, wobbly cluster.",
+          "target": "e_berry_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_berry2",
+      "body": "Pip's basket fills with glowing moonberries. Their light feels warm on her chin when she peeks inside. The pile back home is already growing. This basket is heavy and bright. Should Pip carry the moonberries down to Willow Bend, where the festival will glow tonight? Or should she trot back to Driftwood Hollow to check her list first?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_berry_meadow",
+          "label": "Carry the moonberries to Willow Bend.",
+          "target": "n_meadow"
+        },
+        {
+          "id": "c_berry_back",
+          "label": "Go back to Driftwood Hollow for more.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_willow1",
+      "body": "Under the old dock, Pip finds her friends. They are dozing in their den, a heap of tails and sleepy yawns. She wants to invite them all to River Lantern Night. Should she creep up and knock softly on the reed-curtain door? Then they can wake up slow and happy. Or should she grab the old dock bell and clang it to hurry them along?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_willow_knock",
+          "label": "Knock gently on the den's reed door.",
+          "target": "n_willow2"
+        },
+        {
+          "id": "c_willow_bell",
+          "label": "Clang the old dock bell.",
+          "target": "e_willow_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_willow2",
+      "body": "Her friends yawn, blink, and grin. They reach for their little lanterns. \"Of course we'll come!\" they chirp. They tumble out from under the dock. The happy little group is growing bigger every minute. Should Pip lead her friends down to Willow Bend? Or should she swing back to Driftwood Hollow first, to grab the next thing on her list before dusk?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_willow_meadow",
+          "label": "Lead your friends to Willow Bend.",
+          "target": "n_meadow"
+        },
+        {
+          "id": "c_willow_back",
+          "label": "Pop back to Driftwood Hollow first.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_reed1",
+      "body": "At the reed shallows downstream, Pip needs strong stalks for lantern frames. Tall, dry reeds rustle along the bank. They are golden and stiff. Fresh green reeds lean low over the water. They look easy to reach. Should Pip cut the tall dry reeds that crackle when she touches them? Or should she cut the soft green ones by the water's edge?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_reed_dry",
+          "label": "Cut the tall dry reeds.",
+          "target": "n_reed2"
+        },
+        {
+          "id": "c_reed_wet",
+          "label": "Cut the fresh green reeds.",
+          "target": "e_reed_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_reed2",
+      "body": "The dry reeds snap free easily. They gather into one neat golden bundle. It is just right for bending into shape. Pip could sit here by the reed shallows. She could start weaving the lantern frames now, and listen to the river slide by. Or she could carry the whole bundle back to Driftwood Hollow. She could work by her favorite stump instead.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_reed_weave",
+          "label": "Weave the frames here by the reed shallows.",
+          "target": "n_reed3"
+        },
+        {
+          "id": "c_reed_back",
+          "label": "Carry the bundle back to Driftwood Hollow.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_reed3",
+      "body": "Pip bends the reeds into round little frames. She hums a small tune as her paws work quick and sure. Soon a wobbly stack balances in her arms. Each frame is ready for paper and a moonberry glow. There is only one thing left to do now. Pip must carry the finished lantern frames down to Willow Bend.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_reed_meadow",
+          "label": "Carry the lantern frames to Willow Bend.",
+          "target": "n_meadow"
+        }
+      ]
+    },
+    {
+      "id": "n_honey1",
+      "body": "At the honeybees' hollow stump, Pip asks nicely for some honeycakes. She needs them for the festival feast. The bees hum kindly. They start their sticky work. Should Pip wait here while they pack a warm, golden basket? Or should she run back to Driftwood Hollow now, and come back for the honeycakes later?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_honey_wait",
+          "label": "Wait politely for the honeycakes.",
+          "target": "n_honey2"
+        },
+        {
+          "id": "c_honey_back",
+          "label": "Head back to Driftwood Hollow for now.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_honey2",
+      "body": "The honeybees fill Pip's basket with warm, golden honeycakes. They smell like clover and sunshine. The festival feast is coming together, bit by bit. Pip thanks the buzzing bees with a happy little bow. Then she carries the sweet basket down toward Willow Bend. She is careful not to drop even one honeycake.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_honey_meadow",
+          "label": "Carry the honeycakes to Willow Bend.",
+          "target": "n_meadow"
+        }
+      ]
+    },
+    {
+      "id": "n_shed1",
+      "body": "Inside the old boathouse, strings of paper river-flowers sit on a high shelf. They are from last year's festival. They are dusty, and their colors are hidden under cobwebs. Should Pip climb up and dust off each paper flower right now? Or should she head back to Driftwood Hollow, and come fetch them next time?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_shed_dust",
+          "label": "Dust off the paper river-flowers.",
+          "target": "n_shed2"
+        },
+        {
+          "id": "c_shed_back",
+          "label": "Go back to Driftwood Hollow for now.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_shed2",
+      "body": "Under Pip's little cloth, the paper river-flowers pop up bright and cheerful. Their painted petals look as good as new. Her armful of festival gifts grows bigger and prettier at every stop. Pip hums a happy tune. She carries the flowers off toward Willow Bend. She holds them tight so the breeze can't tangle them.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_shed_meadow",
+          "label": "Carry the paper river-flowers to Willow Bend.",
+          "target": "n_meadow"
+        }
+      ]
+    },
+    {
+      "id": "n_cricket1",
+      "body": "By the tall grass near the dock, the cricket fiddlers are tuning their tiny fiddles. They scritch and scratch a happy warm-up tune. Pip asks if they will play at River Lantern Night. They chirp with joy and lift their bows. Should Pip lead the whole chirping band with her right now? Or should she pop back to Driftwood Hollow first for one more thing?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cricket_lead",
+          "label": "Ask the cricket fiddlers to follow now.",
+          "target": "n_cricket2"
+        },
+        {
+          "id": "c_cricket_back",
+          "label": "Go back to Driftwood Hollow first.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_cricket2",
+      "body": "The cricket fiddlers hop into a cheerful little parade behind Pip. Their tiny fiddles are tucked under their arms. Music is the one thing that will make tonight just right. The whole tiny band chirps and bows as they go. They follow Pip all the way down to Willow Bend.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cricket_meadow",
+          "label": "Lead the cricket fiddlers to Willow Bend.",
+          "target": "n_meadow"
+        }
+      ]
+    },
+    {
+      "id": "n_meadow",
+      "body": "Willow Bend opens up wide at dusk. An old silver willow stands on one side. A slow amber river flows on the other. Everything Pip has gathered piles up in a happy heap. There are moonberries, reeds, honeycakes, flowers, friends, and fiddles. More neighbors keep coming with baskets of their own. Should Pip start setting up the festival right now? Or should she make one more trip back to Driftwood Hollow, just to be sure she didn't forget something?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_meadow_setup",
+          "label": "Start setting up the festival.",
+          "target": "n_setup"
+        },
+        {
+          "id": "c_meadow_back",
+          "label": "Make one last trip to Driftwood Hollow.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_setup",
+      "body": "At Willow Bend, the lantern frames get wrapped in bright colored paper. Glowing moonberries get tucked inside each one. They shine through the paper. Friends bustle around, tying ribbons and laughing. Should Pip help hang the finished lanterns in the old silver willow's branches? Or should everyone spread out the picnic food on the grass first?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_setup_hang",
+          "label": "Hang the lanterns in the old silver willow.",
+          "target": "n_hang"
+        },
+        {
+          "id": "c_setup_picnic",
+          "label": "Spread out the picnic feast.",
+          "target": "n_picnic"
+        }
+      ]
+    },
+    {
+      "id": "n_hang",
+      "body": "Friends lift the finished lanterns up into the branches of the old silver willow. The lanterns sway gently, like sleepy fireflies caught in the leaves. The sky above turns a deep, dusky purple. Should Pip light the lanterns right now? Or should she wait a bit longer for the first star to wake up overhead?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hang_light",
+          "label": "Light the lanterns right now.",
+          "target": "n_light"
+        },
+        {
+          "id": "c_hang_star",
+          "label": "Wait for the first star.",
+          "target": "n_star"
+        }
+      ]
+    },
+    {
+      "id": "n_light",
+      "body": "One by one, the lanterns wake up with warm moonberry light. Willow Bend glows all gold. Even Pip's own little lantern wobbles once on its string before it settles down, steady and bright. Everyone gasps with joy at the glowing branches. Should Pip and her friends set some lanterns floating out on the river? Or should they leave every one glowing high in the old silver willow?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_light_pond",
+          "label": "Float lanterns out on the river.",
+          "target": "e_finale_pond"
+        },
+        {
+          "id": "c_light_oak",
+          "label": "Keep the lanterns in the old silver willow.",
+          "target": "e_finale_oak"
+        }
+      ]
+    },
+    {
+      "id": "n_star",
+      "body": "Everyone grows quiet. They watch the dark sky above Willow Bend, until one tiny star blinks awake at last. A happy cheer rises up from the riverbank. That's the signal! Pip lifts a twist of glowing moss to the wick of the very first lantern. She lights it, and the festival's warm golden glow begins.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_star_glow",
+          "label": "Light the first lantern and begin.",
+          "target": "n_glow"
+        }
+      ]
+    },
+    {
+      "id": "n_glow",
+      "body": "Lantern after lantern flickers on. Soon Willow Bend is a whole sea of soft golden light. The river below mirrors every glow. The cricket fiddlers lift their tiny fiddles, ready to play. Should Pip start the Lantern Boat Song for everyone to sing? Or should she gather her friends in a circle to make a wish instead?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_glow_song",
+          "label": "Start the Lantern Boat Song.",
+          "target": "n_song"
+        },
+        {
+          "id": "c_glow_wish",
+          "label": "Make a wish together.",
+          "target": "n_wish"
+        }
+      ]
+    },
+    {
+      "id": "n_song",
+      "body": "The cricket fiddlers strike up a bouncy tune. Pip leads the very first verse of the Lantern Boat Song. Friends join in, line by line. Soon all of Willow Bend rings with singing. The old silver willow glows bright above every happy face.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_song_end",
+          "label": "Sing the festival into the night.",
+          "target": "e_finale_song"
+        }
+      ]
+    },
+    {
+      "id": "n_wish",
+      "body": "The friends gather in a ring around the brightest lantern. They close their eyes and hold paws tight. Pip counts softly: one, two, three. Now everyone can make the same warm wish for the whole riverbank, right there under the glowing willow.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wish_end",
+          "label": "Make the wish all together.",
+          "target": "e_finale_wish"
+        }
+      ]
+    },
+    {
+      "id": "n_picnic",
+      "body": "Pip spreads a checked cloth on the grass. She lays out honeycakes and moonberry treats while lanterns glow softly above. Friends sit down all around, paws reaching out hungrily. Should Pip start passing the honeycakes around right now? Or should she wait a little longer for old Moss the river turtle? He comes every year to bless the feast.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_picnic_feast",
+          "label": "Start sharing the honeycakes.",
+          "target": "n_feast"
+        },
+        {
+          "id": "c_picnic_bless",
+          "label": "Wait for Old Moss.",
+          "target": "n_bless"
+        }
+      ]
+    },
+    {
+      "id": "n_feast",
+      "body": "Honeycakes go round and round the glowing circle. Lanterns sway above. Everyone eats and smiles under the light. Paws get sticky. No one minds at all. Should Pip let the happy feast go on quietly into the night? Or should she start a fun round of river riddles between bites of honeycake?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_feast_end",
+          "label": "Let the happy feast roll on.",
+          "target": "e_finale_feast"
+        },
+        {
+          "id": "c_feast_riddle",
+          "label": "Start a round of river riddles.",
+          "target": "n_riddle"
+        }
+      ]
+    },
+    {
+      "id": "n_riddle",
+      "body": "Between bites of honeycake, the friends trade silly river riddles. Each one is sillier than the last. Soon everyone is laughing so hard, the lantern light seems to wobble and giggle too. Pip grins. She saves her very best riddle for the very end.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_riddle_end",
+          "label": "Tell the very best river riddle.",
+          "target": "e_finale_riddle"
+        }
+      ]
+    },
+    {
+      "id": "n_bless",
+      "body": "Old Moss arrives at last. His shell is freckled with lily pads. He moves slow and steady up the muddy bank. The friends get quiet and make room, settling close together. Old Moss smiles and clears his throat. Then he begins the tale of the very first river lantern, just like he does every year at Willow Bend.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bless_end",
+          "label": "Listen to Old Moss's lantern story.",
+          "target": "e_finale_story"
+        }
+      ]
+    },
+    {
+      "id": "e_berry_oops",
+      "body": "Pip stretches on her tiptoes for the fat top cluster. The wobbly branch springs back like a slingshot. Boing! Her whole basket of moonberries bounces down the slope. It lands with a plop in the tall reeds below. Nobody is hurt, not even a whisker. Pip just laughs. She dusts off her paws and trots back to Driftwood Hollow to start gathering again.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_berry_oops",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Bouncing Basket"
+      }
+    },
+    {
+      "id": "e_willow_oops",
+      "body": "The old dock bell clangs. Every sleepy otter pup tumbles out of the den at once. They land in a giggly, grumbly heap, blankets still over their heads. It takes a long time to sort out all the paws and yawns. Pip decides she will knock the gentle way next time. She heads off to try inviting her friends again.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_willow_oops",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Big Bell Muddle"
+      }
+    },
+    {
+      "id": "e_reed_oops",
+      "body": "The fresh green reeds are far too soft and wet. They cannot hold any shape at all. Every frame Pip tries to bend flops over like a cooked noodle. River water drips onto her paws. Pip laughs at the soggy, drippy mess she made. Then she heads back to Driftwood Hollow to start again with dry reeds instead.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_reed_oops",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Soggy Reeds"
+      }
+    },
+    {
+      "id": "e_finale_pond",
+      "body": "Pip and her friends set the glowing lanterns on the river. They float like little gold moons. The dark water below shines with their light. Pip's own small lantern wobbles once at the water's edge. Then it stands up straight and glides away smooth and steady. Everyone at Willow Bend says \"ohhh\" at the river of light. The festival is beautiful and done. Pip glows just as bright as her lanterns.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_pond",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Lanterns on the River"
+      }
+    },
+    {
+      "id": "e_finale_oak",
+      "body": "The old silver willow glows with hanging lanterns. Every branch looks dressed in warm little stars. Everyone dances slowly under its glowing arms. They link paws. They hum along with the crickets. Pip looks up at all she and her friends made tonight. Her heart feels full and bright, just like the festival glow above her.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_oak",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Stars in the Willow"
+      }
+    },
+    {
+      "id": "e_finale_song",
+      "body": "Willow Bend rings with the Lantern Boat Song. The old silver willow glows above. The cricket fiddlers play over every voice. The song rolls out across the river. It flows into the warm, dark night. Pip sings the loudest of all. She is proud of the festival her small gathering has grown into.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_song",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Song on the Water"
+      }
+    },
+    {
+      "id": "e_finale_wish",
+      "body": "In the ring of lantern light, the friends make one warm wish together. They wish for a happy year for the whole riverbank. Then they open their eyes. Willow Bend glows gently all around them. Pip squeezes her friends' paws tight. She is sure this is the best River Lantern Night ever.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_wish",
+        "valence": "positive",
+        "kind": "success",
+        "title": "One Warm Wish"
+      }
+    },
+    {
+      "id": "e_finale_feast",
+      "body": "Honeycakes and moonberry treats go round and round. Lanterns sway above them. Everyone laughs and nibbles late into the night. Pip gathered this feast bit by bit, stop by stop. Now it has brought the whole neighborhood together. They are warm and happy under the willow's light.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_feast",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Honeycakes by Lantern Light"
+      }
+    },
+    {
+      "id": "e_finale_riddle",
+      "body": "Pip tells the best river riddle of the whole night. The circle roars with laughter. Everyone forgets about their honeycakes for a moment. The lanterns overhead seem to twinkle along with the giggles. Everyone agrees: this is the merriest River Lantern Night the riverbank friends can remember.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_riddle",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Best River Riddle"
+      }
+    },
+    {
+      "id": "e_finale_story",
+      "body": "Old Moss finishes his tale about the first river lantern. Right then, every lantern at Willow Bend glows bright. The friends clap softly. They do not want to startle the quiet night. Pip leans against Old Moss's old shell. She feels happy. Her hard work kept this cozy festival glowing for one more year.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_story",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Old Moss's Tale"
+      }
+    }
+  ]
+}

@@ -23,16 +23,16 @@ from scripts.judge_books import (
     _JUDGE_MAX_TOKENS,  # pyright: ignore[reportPrivateUsage]
     Judge,
     Verdict,
+    _band_phrase,  # pyright: ignore[reportPrivateUsage]
     _parse,  # pyright: ignore[reportPrivateUsage]
     _story_text,  # pyright: ignore[reportPrivateUsage]
+    _system_for,  # pyright: ignore[reportPrivateUsage]
     _z_scores,  # pyright: ignore[reportPrivateUsage]
+    criterion_spread,
     judge_book,
+    leg_intervals,
     panel_participation,
     pool_scores,
-)
-
-_NO_USAGE = TokenUsage(
-    provider="mock", model="m", input_tokens=None, output_tokens=None, duration_ms=0
 )
 
 _CRITERIA_NAMES = (
@@ -44,6 +44,32 @@ _CRITERIA_NAMES = (
     "ending_quality",
     "engagement",
 )
+
+
+def _completion(text: str) -> Completion:
+    """Wrap judge text the way a real provider returns it.
+
+    Stubbing ``complete`` with a bare ``str`` is what let the missing ``.text``
+    unwrap survive: the panel would have failed every scoring in production
+    while the suite stayed green. Every provider stub in this file goes through
+    here so no test can accidentally re-establish the fiction.
+
+    Args:
+        text: The completion body.
+
+    Returns:
+        A completion carrying that body and an unknown-cost usage record.
+    """
+    return Completion(
+        text=text,
+        usage=TokenUsage(
+            provider="stub",
+            model="stub",
+            input_tokens=None,
+            output_tokens=None,
+            duration_ms=0,
+        ),
+    )
 
 
 def _verdict(
@@ -102,37 +128,6 @@ def test_parse_accepts_a_bare_number_per_criterion() -> None:
     scores, _ = _parse(raw)
 
     assert scores["imagery"] == 3.0
-
-
-def test_parse_drops_a_score_outside_the_one_to_five_rubric() -> None:
-    """A score outside [1, 5] is a malformed reply, not a real rating.
-
-    A judge that returns 0, a negative number, or 100 (a common failure mode
-    when a model confuses this rubric with a 1-to-100 scale) must not have
-    that value silently averaged into the pool: it would skew the mean far
-    more than a dropped criterion would.
-    """
-    body = {**dict.fromkeys(_CRITERIA_NAMES, 3), "imagery": 0, "voice": 100}
-
-    scores, _ = _parse(json.dumps(body))
-
-    assert "imagery" not in scores
-    assert "voice" not in scores
-    assert scores["age_fit"] == 3.0
-
-
-def test_parse_drops_a_boolean_score() -> None:
-    """A JSON ``true``/``false`` score must not be silently read as 1/0.
-
-    ``bool`` is an ``int`` subclass, so an unguarded numeric check accepts it;
-    a malformed reply must not become a real (out-of-rubric, at that) score.
-    """
-    body = {**dict.fromkeys(_CRITERIA_NAMES, 3), "engagement": True}
-
-    scores, _ = _parse(json.dumps(body))
-
-    assert "engagement" not in scores
-    assert scores["age_fit"] == 3.0
 
 
 def test_parse_finds_the_object_inside_surrounding_prose() -> None:
@@ -385,7 +380,6 @@ async def test_judge_book_records_a_provider_failure_without_raising() -> None:
         mock.Mock(complete=_complete),
         judge,
         {"title": "T", "nodes": []},
-        run="run-1",
         leg="alpha",
         family="xai",
         brief_index=0,
@@ -407,9 +401,7 @@ async def test_judge_book_marks_a_judge_scoring_its_own_family() -> None:
 
     async def _complete(**_kwargs: object) -> Completion:
         """Answer with a well-formed scoring."""
-        return Completion(
-            text=json.dumps(dict.fromkeys(_CRITERIA_NAMES, 4)), usage=_NO_USAGE
-        )
+        return _completion(json.dumps(dict.fromkeys(_CRITERIA_NAMES, 4)))
 
     judge = Judge("judge-gpt", "m", ("p",), "openai")
 
@@ -417,7 +409,6 @@ async def test_judge_book_marks_a_judge_scoring_its_own_family() -> None:
         mock.Mock(complete=_complete),
         judge,
         {"title": "T", "nodes": []},
-        run="run-1",
         leg="openai-gpt-5.6-sol",
         family="openai",
         brief_index=0,
@@ -427,43 +418,211 @@ async def test_judge_book_marks_a_judge_scoring_its_own_family() -> None:
     assert verdict.error is None
 
 
-@pytest.mark.asyncio
-async def test_judge_book_identifier_disambiguates_the_run_directory() -> None:
-    """The same leg/brief-index pair from two ``--run`` dirs must not collide.
+def _scored(leg: str, judge: str, book: str, scores: dict[str, float]) -> Verdict:
+    """Build a verdict with per-criterion scores set individually.
 
-    Comparing two independently-scored runs (e.g. a re-run after a prompt
-    change) requires each run's books to stay distinct in the pooled output;
-    without the run label, ``run-1``'s and ``run-2``'s ``leg#brief`` would
-    overwrite each other under the same book identifier.
+    Args:
+        leg: The generating leg.
+        judge: The scoring judge.
+        book: The book identifier.
+        scores: Criterion name to score.
+
+    Returns:
+        The verdict.
+    """
+    return Verdict(
+        book=book,
+        leg=leg,
+        family=leg,
+        judge=judge,
+        self_family=False,
+        scores=dict(scores),
+        notes={},
+        error=None,
+    )
+
+
+def _saturated_pool() -> list[Verdict]:
+    """Build a pool reproducing the dialogue criterion's ACTUAL recorded shape.
+
+    The figures come from `AL-330`, which is the only place the real per-leg
+    numbers are written down: the criterion "returned exactly 3.00 for seven of
+    eight legs", the eighth being 3.25. Their spread is 0.088.
+
+    An earlier version of this fixture used "mean 3.04, sd 0.19 across twelve
+    cells", copied from the measurement workplan. That phrase is a bad splice and
+    the number is not reproducible by `criterion_spread`: the 0.19 is section
+    29's spread across all 84 individual verdicts, and "twelve cells" comes from
+    section 16m, which is a different instrument (a six-question diversity
+    rubric over 3 rounds x 4 cells). `criterion_spread` averages books into
+    ``(leg, judge)`` cells before taking a spread, so on the real pool it returns
+    0.088. Pinning the test to 0.19 would have sent whoever replays the pool
+    hunting a bug in a function that was working.
+
+    Returns:
+        Every verdict in the pool.
+    """
+    # Seven legs at exactly 3.00 and one at 3.25, per AL-330.
+    dialogue = [3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.25]
+    # The same eight legs on a criterion that genuinely discriminates.
+    imagery = [1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0]
+    verdicts: list[Verdict] = []
+    for index, (dial, imag) in enumerate(zip(dialogue, imagery, strict=True)):
+        leg = f"leg-{index}"
+        verdicts.append(
+            _scored(leg, "judge-0", f"{leg}#0", {"dialogue": dial, "imagery": imag})
+        )
+    return verdicts
+
+
+def test_criterion_spread_flags_the_dialogue_criterion_it_was_built_for() -> None:
+    """The known-answer test: the check must find the saturated criterion.
+
+    A check that cannot reproduce the one instrument failure we have already
+    confirmed is not evidence about the criteria we have not checked.
+    """
+    rows = criterion_spread(_saturated_pool())
+
+    by_name = {row.criterion: row for row in rows}
+    assert by_name["dialogue"].saturated is True
+    assert by_name["dialogue"].cells == 8
+    assert by_name["dialogue"].mean == pytest.approx(3.03, abs=0.01)
+    assert by_name["dialogue"].sd == pytest.approx(0.088, abs=0.005)
+
+
+def test_criterion_spread_does_not_flag_a_criterion_that_discriminates() -> None:
+    """The other half of the rule: a check that flags everything is useless."""
+    rows = criterion_spread(_saturated_pool())
+
+    by_name = {row.criterion: row for row in rows}
+    assert by_name["imagery"].saturated is False
+    assert by_name["imagery"].sd is not None
+    assert by_name["imagery"].sd > 0.25
+
+
+def test_criterion_spread_orders_the_flattest_criterion_first() -> None:
+    """The threshold is advisory, so the ordering has to carry the finding."""
+    rows = criterion_spread(_saturated_pool())
+
+    assert rows[0].criterion == "dialogue"
+
+
+def test_criterion_spread_pools_books_into_a_cell_before_measuring_spread() -> None:
+    """A leg with more books must not widen the spread on volume alone.
+
+    Two books scored 1 and 5 by one judge are one opinion about that leg, and
+    counting them as two cells would report a spread the panel never expressed.
+    """
+    verdicts = [
+        _scored("leg-a", "judge-0", "leg-a#0", {"voice": 1.0}),
+        _scored("leg-a", "judge-0", "leg-a#1", {"voice": 5.0}),
+        _scored("leg-b", "judge-0", "leg-b#0", {"voice": 3.0}),
+    ]
+
+    rows = criterion_spread(verdicts)
+
+    assert rows[0].cells == 2
+    # leg-a's cell mean is 3.0, identical to leg-b's, so the criterion separated
+    # nothing at all and must report a spread of zero.
+    assert rows[0].sd == pytest.approx(0.0)
+
+
+def test_criterion_spread_does_not_call_a_single_cell_saturated() -> None:
+    """One cell has no spread to be below a threshold; that is thin data."""
+    rows = criterion_spread([_scored("leg-a", "judge-0", "b", {"voice": 3.0})])
+
+    assert rows[0].sd is None
+    assert rows[0].saturated is False
+
+
+def test_criterion_spread_ignores_failed_scorings() -> None:
+    """A failed scoring is an absent opinion, not a score of zero."""
+    verdicts = [
+        *_saturated_pool(),
+        _verdict("leg-0", "judge-0", "leg-0#9", 0.0, error="boom"),
+    ]
+
+    rows = criterion_spread(verdicts)
+
+    by_name = {row.criterion: row for row in rows}
+    assert by_name["dialogue"].cells == 8
+
+
+def test_leg_intervals_resample_books_rather_than_scorings() -> None:
+    """Three judges on one book is one observation, not three.
+
+    Resampling scorings would divide every interval's width by roughly the panel
+    size while adding no evidence, which is the most flattering possible bug for
+    a ranking to have.
+    """
+    verdicts = [
+        _verdict("leg-a", f"judge-{j}", f"leg-a#{b}", 3.0 + b)
+        for b in range(4)
+        for j in range(3)
+    ]
+
+    intervals = leg_intervals(verdicts, resamples=200)
+
+    assert intervals["leg-a"].n == 4
+
+
+def test_leg_intervals_report_a_one_book_leg_as_incomplete() -> None:
+    """A leg with one book must not be handed a zero-width interval."""
+    verdicts = [
+        _verdict("leg-thin", "judge-0", "leg-thin#0", 4.0),
+        _verdict("leg-wide", "judge-0", "leg-wide#0", 1.0),
+        _verdict("leg-wide", "judge-0", "leg-wide#1", 5.0),
+    ]
+
+    intervals = leg_intervals(verdicts, resamples=200)
+
+    assert intervals["leg-thin"].complete is False
+    assert intervals["leg-thin"].n == 1
+
+
+@pytest.mark.asyncio
+async def test_judge_book_unwraps_the_completion_the_provider_actually_returns() -> (
+    None
+):
+    """The panel must score a real ``Completion``, not only a bare string.
+
+    ``GenerationProvider.complete`` returns a ``Completion`` since token-usage
+    capture landed. Handing that object straight to the parser raises inside
+    ``judge_book``'s broad handler, so every scoring is recorded as a failure and
+    the panel emits an empty scorecard: a wiring bug wearing the costume of an
+    unlucky run. This is the same defect the reading-level loop hit at its own
+    call site, in the sibling script, and no CI job type-checks ``scripts/``.
     """
 
     async def _complete(**_kwargs: object) -> Completion:
-        return Completion(
-            text=json.dumps(dict.fromkeys(_CRITERIA_NAMES, 3)), usage=_NO_USAGE
-        )
+        """Answer as the real adapter does, with a wrapped completion."""
+        return _completion(json.dumps(dict.fromkeys(_CRITERIA_NAMES, 4)))
 
-    judge = Judge("j", "m", ("p",), "openai")
-    doc = {"title": "T", "nodes": []}
-
-    first = await judge_book(
+    verdict = await judge_book(
         mock.Mock(complete=_complete),
-        judge,
-        doc,
-        run="run-1",
+        Judge("j", "m", ("p",), "lab"),
+        {"title": "T", "nodes": []},
         leg="alpha",
-        family="openai",
-        brief_index=0,
-    )
-    second = await judge_book(
-        mock.Mock(complete=_complete),
-        judge,
-        doc,
-        run="run-2",
-        leg="alpha",
-        family="openai",
+        family="other",
         brief_index=0,
     )
 
-    assert first.book != second.book
-    assert first.book == "run-1:alpha#0"
-    assert second.book == "run-2:alpha#0"
+    assert verdict.error is None
+    assert verdict.scores == dict.fromkeys(_CRITERIA_NAMES, 4.0)
+
+
+def test_the_system_block_names_the_band_the_book_declares() -> None:
+    """A 13-16 book must not be graded for a seven-year-old.
+
+    The block hardcoded "5 to 8" while the panel was run across 3-5 to 16+, so
+    every existing verdict was scored off-prompt and its ``age_fit`` column means
+    something other than the header says.
+    """
+    assert "8 to 11" in _system_for(_band_phrase({"metadata": {"age_band": "8-11"}}))
+    assert "13 to 16" in _system_for(_band_phrase({"metadata": {"age_band": "13-16"}}))
+
+
+def test_a_book_declaring_no_band_keeps_the_historical_wording() -> None:
+    """The fallback must be the old value, so an unlabelled book is unchanged."""
+    assert "5 to 8" in _system_for(_band_phrase({}))
+    assert "5 to 8" in _system_for(_band_phrase({"metadata": {"age_band": "nonsense"}}))

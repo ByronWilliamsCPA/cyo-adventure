@@ -203,6 +203,7 @@ def run_mock_sample_fill(
                 _DEFAULT_THEME_BRIEF,
                 provider,
                 pii,
+                stage1_gate="skipped",
                 slot_bindings=dict(contract.default_binding),
             )
         )
@@ -210,7 +211,13 @@ def run_mock_sample_fill(
         filled_doc = _mock_fill_document(candidate)
         provider = MockProvider(responses=[json.dumps(filled_doc)] * 4)
         outcome = asyncio.run(
-            fill_skeleton(dict(candidate), _DEFAULT_THEME_BRIEF, provider, pii)
+            fill_skeleton(
+                dict(candidate),
+                _DEFAULT_THEME_BRIEF,
+                provider,
+                pii,
+                stage1_gate="skipped",
+            )
         )
 
     blocked, downgrade = _classify(outcome.status, outcome.report)

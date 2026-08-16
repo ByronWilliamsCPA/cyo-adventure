@@ -211,8 +211,16 @@ from a measure no reader has been asked about. This staging is the direct applic
 criterion whose spread is below a threshold as saturated.
 
 *Test, and it is a known-answer test.* Replay the existing 84-verdict pool. **The check must flag the
-dialogue criterion**, whose mean was 3.04 at SD 0.19 across twelve cells while deterministic parsing
-found one leg at 100 percent narration. We found that by accident; the check must find it on purpose.
+dialogue criterion**, whose per-leg cell means were 3.00 for seven of eight legs and 3.25 for the
+eighth (`AL-330`), a spread of **0.088**. We found that by accident; the check must find it on
+purpose.
+
+*Correction, 2026-08-13.* This rule previously read "mean 3.04 at SD 0.19 across twelve cells",
+which spliced two different instruments: the 0.19 is section 29's spread across all 84 individual
+verdicts, and "twelve cells" comes from section 16m's six-question diversity rubric over 3 rounds by
+4 cells. `criterion_spread` averages books into `(leg, judge)` cells before taking a spread, so on
+the real pool it returns 0.088. The decision is unchanged, 0.088 still clears the 0.25 threshold,
+but a replay pinned to 0.19 would have sent someone hunting a bug in a working function.
 
 *Decision rule.* **Keep iff it flags the dialogue criterion and does not flag criteria we have
 independent reason to believe are working.** A check that flags everything is as useless as one that
@@ -447,8 +455,13 @@ floor of **kappa 0.60**, cited to Landis and Koch (1977), and explicitly **not**
 proposed 0.80, which sits in the "almost perfect" band that human raters routinely miss (see the
 review response, section 5.4).
 
-We already know one criterion this will retire: the dialogue criterion scored 3.04 at SD 0.19 while
-one leg contained no dialogue at all. If the battery does not retire it, the battery is broken.
+*Removed 2026-08-13.* This paragraph previously read "We already know one criterion this will
+retire ... If the battery does not retire it, the battery is broken." That pre-commits the verdict,
+and a seed that silently fails to land yields an arm byte-identical to its control, a detection rate
+of zero, and exactly the pre-registered reading. The battery would then have measured the fixture
+while this sentence read the result as an instrument verdict. The rule above stands on its own: a
+criterion is retired by failing to detect its own seeded defect, and the seed has to be shown to
+have landed first.
 
 *What it unblocks.* Every ranking-shaped claim, W11's scoring, and best-of-N.
 
@@ -516,3 +529,777 @@ deterministic work can settle.
 The outcome we should be least surprised by, and are pre-committing to accepting: **W2 returns
 "drop" and Part IV's supplier ranking is retracted by W5.** Both are live possibilities on the
 evidence we have, and a plan that cannot produce them is not a plan, it is a build order.
+
+---
+
+## 7. Status as of 2026-08-13, and the order the rest should run in
+
+> Written against `feat/reading-level-repair-loop` at `20dec2e5` (PR #708, open). Section 2's
+> per-item *Outcome* notes stay authoritative for W1 and W2; this section is the whole-plan view
+> and the running order, and it is meant to be edited in place as items close.
+
+### 7.1 Where the fifteen items stand
+
+| Item | Track | Built | Run | Blocker |
+| --- | --- | --- | --- | --- |
+| W1 path enumerator | D | yes, `validator/paths.py` | yes, 61/61 books at coverage 1.0 in 2.666 s | none, shipped |
+| W2 re-unit to path | D | yes, `scripts/measure_per_path.py` | yes, twice | **closed**: told-emotion band is inert at path scale |
+| W3 consequence distance | D | yes, `validator/consequence.py` | yes, 61-book catalogue | **KEEP as a reported statistic** |
+| W4 criterion variance | J-adjacent | yes, `judge_books.criterion_spread` | yes, 2026-08-14 | **KEEP**: flags `dialogue` at 0.00, flags no working criterion |
+| W5 bootstrap intervals | D | yes, `scripts/instrument.py` | yes, 2026-08-14 | **infrastructure**; ranking retracted per its pre-committed rule |
+| W6 blind-spot manifest | D | yes, `validator/blind_spots.py` | yes | **KEEP**: declarations are drift-proof by witness |
+| W7 known-bad battery | J | yes | yes, twice | 5 KEEP, 1 UNTESTED, 1 under-powered; see 7.7.4 to 7.7.6 |
+| W8 decoding ablation | D | no | no | `UW-C239` (pricing) |
+| W9 cross-stage routing | D | no | no | `UW-C239` (pricing) |
+| W10 MoPS premise pool | D | no | no | `UW-C239` (pricing) |
+| W11 prose-first pilot | deferred | no | no | W7 |
+| W12 child + expert read | H | no | no | ADR-018 consent scoping |
+| W13 age rubric | H | no | no | W12 |
+| W14 context composition | D | no | no | `UW-C239` |
+| W15 declared information state | D | probe only, in tests | yes | **DROP**: catches no paraphrase |
+
+Two of fifteen are closed. `band_profile.py` still carries `reconvergence_ceiling` unenforced, and
+no `unknowns_to_preserve` field exists anywhere, so W3 and W15 are untouched rather than partial.
+
+W4 and W5 are built but not decided, and the distinction is the whole point of this plan: each now
+computes on demand, and neither has been pointed at the real pool, so neither has returned the
+evidence its rule asks for. Both are wired into `scripts/judge_books.py`, which grew a
+`--judgements` replay mode so a finished pool can be re-analysed with no network call and no cost.
+That mode is what W4's rule means by "replay the existing 84-verdict pool".
+
+### 7.1.1 A blocker found while wiring them, and fixed here
+
+The panel could not have scored a single book. `GenerationProvider.complete` returns a `Completion`
+rather than a `str` since #701, and `judge_books.judge_book` handed that object straight to a parser
+that runs a regex over it. The broad handler one line below turns the resulting `TypeError` into a
+per-book recorded failure, so the panel would emit an empty scorecard and report all three judges
+contributing nothing, which reads as an unlucky run against flaky endpoints. Every provider stub in
+the panel's tests returned a bare `str`, so the suite asserted against a contract that no longer
+existed, and no gate type-checks `scripts/`. This is the same defect PR #708 fixed at the
+reading-level loop's own call site, missed in the sibling script the same branch introduced.
+Recorded as `AL-362`, with the coverage gap that hid it as `AL-363` and `UW-C253`.
+
+Consequence for sequencing: **W7 and any judged work were blocked and nobody knew.** The fix is on
+this branch with a regression test that drives a real `Completion`.
+
+### 7.2 Tier 0: harness repairs that precede any further paid run
+
+This tier is not in section 2, because these are not candidate measures. They are the register rows
+this branch filed, and each one silently corrupts a deterministic measure that W8, W9, W10 and W14
+are scored on. Run-6 is the demonstration rather than the hypothesis: one book whose repair was
+discarded moved a leg mean 22 points and was written up as a quantisation effect.
+
+**Closed 2026-08-13.** All eight rows are `done`; the table below is kept as the record of what
+each one corrupted, since the next paid run's results have to be read against it.
+
+| Row | What it corrupted | How it closed |
+| --- | --- | --- |
+| `UW-C233` | an unparseable fill returned the skeleton, so a total failure counted as a delivered book | `fill_skeleton` never returns its own input; verdict taken regardless of the gate |
+| `UW-C230` | `settings` alone armed the Stage 1 gate, so three harness scripts ran ungated against the same `status` field | explicit `stage1_gate` posture, stamped on every outcome report |
+| `UW-C240` | the diversity verdict participated any book that parsed | participation is content completeness; exclusions named; median beside every mean, and a verdict the two disagree on is refused |
+| `UW-C247` | Stage D's discard and partial salvage reached no artifact | `nodes_dropped` and `degraded` on the result and in `books.jsonl` |
+| `UW-C246` | no drop-worst column, so one book could be a property of the variable | drop-worst column plus a one-sd mover flag |
+| `UW-C245` | no refusal when a column the run exists to populate cannot be | `unpopulable_fields` refuses; per-book metering now populates cost |
+| `UW-C234` | the cap was not reported as a condition | cap on every row, mixed-cap warning, fill rate suppressed with no headroom |
+| `UW-C235` | a budget failure and a dead endpoint looked alike | `finish_reason` and `reasoning_tokens` surfaced; a truncation is no longer retried |
+
+**Rule for this tier**: no item in Tier 3 is worth its spend until every row above is closed, because
+each of them can produce the effect the item is looking for. That condition is now met.
+
+**One thing this surfaced, and it is a real blocker rather than a side effect.** `UW-C245`'s refusal
+fires on every live slate today, because no cloud entry in `core/pricing.py` is fully priced: every
+one sets `input_usd_per_mtok=None` (`AL-333` / `UW-C239`). That is the correct reading rather than an
+accident, and `--allow-unpriced` is the deliberate override, but it means **`UW-C239` is now on the
+critical path for every paid item, not just W14.** Prices were deliberately not invented here; the
+vendor-comparison README carries measured per-MTok rates from the 2026-08-12 billing probe, and
+seeding the table from them is a decision for the owner because the cached legs' figures are
+effective rather than list rates.
+
+### 7.3 Running order
+
+1. **W4 and W5 first.** Both are now built, so what remains is one command each against a real
+   `judgements.json`:
+
+   ```bash
+   uv run python scripts/judge_books.py --judgements out/vendor-comparison/evaluation/judgements.json
+   ```
+
+   Zero spend, no network call. W4's rule is met if the run flags `dialogue` and leaves the
+   criteria we believe are working unflagged; W5's pre-registered consequence fires if the printed
+   pair count is zero, in which case the ranking is retracted rather than caveated. Running this
+   before more legs are bought decides whether that spend buys a finding or decoration.
+2. ~~**Tier 0**, in the order above.~~ **Done 2026-08-13**, except that it promoted `UW-C239`
+   (populate `core/pricing.py`'s input rates) into a blocker for every paid item.
+3. ~~**W3, W6, W15, and the W2 re-run**~~ **Done 2026-08-13.** Outcomes in 7.6.
+4. **W7**, which unblocks every ranking-shaped claim. Note that the known-bad battery already on
+   file (brief section 20) validates the *diversity* metric, not the panel; W7 needs its own seeded
+   corpus. `scripts/check_annotator_agreement.py` and `scripts/blind_books.py` supply the agreement
+   and blinding legs.
+5. **W8, W9, W10, W14**, the paid ablations, W14 last because `UW-C239` gates its cost half.
+6. **W12 and W13.**
+
+### 7.4 Five gaps in the plan itself
+
+1. **Nothing measures the thing this branch built.** Stage D drives reading grade into band. Section
+   31 of the brief puts compliance against judged quality at rho +0.50, so in-band is related to good
+   and is not the same as it. No item asks whether the repair loop trades voice for compliance, and
+   that question only became load-bearing when Stage D started shipping. It wants a pre-registered
+   rule of its own before the loop's parameters are tuned on anything.
+2. **W1's output has no caller.** `covering_paths`, `reader_sample_paths` and `path_bodies` are
+   imported by nothing outside `validator/paths.py` and its tests. W2's measurement was run ad hoc
+   and no committed script reproduces it, so the W2 table cannot be regenerated and the five items
+   that depend on W1 will each rebuild the same plumbing.
+3. **The measurement artifacts are not in the repository.** `out/vendor-comparison/` is untracked and
+   is not in `.gitignore` either. The vendor-comparison README instructs anyone quoting the fp4 leg
+   to use 0.89 rather than 0.70, but `evaluation.json`, the file that correction was computed from,
+   exists only on the machine that ran it. W4's decision rule says to replay the existing 84-verdict
+   pool and W5 resamples books within each cell; **both are implemented and neither can be run by
+   anyone but the machine holding the artifacts.** Decide between committing the frozen artifacts
+   and accepting that both items are single-machine. This is the one blocker on section 7.3 step 1,
+   and it is a `git add` rather than a measurement.
+4. **The W5 pre-commitment interacts with sample size.** At four books per leg, overlapping intervals
+   across the slate are the likely outcome, and the plan pre-commits to retracting rather than
+   caveating. That is the right commitment and it should be made before more legs are bought.
+5. **The `AL-343` monotonicity precondition is documented, not enforced.** W3 and W6 are told to
+   inherit it. Nothing makes them.
+
+### 7.5 One note on PR #708 itself
+
+`CI (Python 3.14) / Unit Tests` is red on `20dec2e5`, taking `CI Gate` with it, and the workflow API
+surfaces only the security agent's post-steps rather than the pytest output. The full unit suite is
+green on that same commit locally: 7530 passed, 6 skipped, 3 xfailed in 9m27s, matching the PR
+description. A re-run is the cheap first move before anything is diagnosed.
+
+
+## 7.6 Track D outcomes, 2026-08-13
+
+Four items closed in one pass. Two kept, one kept with a caveat, one dropped, which
+is roughly the mix section 6 said to expect.
+
+### W2, re-run and made reproducible
+
+`scripts/measure_per_path.py` is the method the original run lacked, and it enforces
+two things the first pass needed a human to remember: a measure monotone under
+path-subsetting is **refused** rather than scored, and a rate measure reports the
+smallest nonzero value its new denominator admits.
+
+**Told-emotion: closed, and worse than `AL-342` recorded.** The band is 0.5 hits per
+1000 narration words and needs a passage over 2,000 words before one hit scores under
+it. Covering paths run in the hundreds. The band therefore cannot bind on **20 of the
+20** committed books, not the six cases the original run happened to surface. `UW-C244`
+stands as written: re-derive at path scale or express the path-scope version as a count.
+
+**Reading level: the number moved, and the reason is the corpus, not the measure.**
+The published outcome is 18.9 percent disagreement over 53 books; this run measures
+0 percent over 20. Those are different corpora. The published one included
+`out/vendor-comparison/`, which is untracked and absent from every checkout but the
+machine that produced it, and the committed books are hand-authored catalogue fills
+rather than machine-generated comparison books. **The published figure is not
+overturned and must not be reported as such.** The script prints its corpus for this
+reason. This is section 7.4 gap 3 arriving with a bill attached.
+
+### W3, fork consequence: KEEP as a reported statistic
+
+Mean 14.5 percent false choices, spread 0.190 across the 23 books that report complete.
+It separates books from each other, which is the stage-one bar.
+`BandProfile.reconvergence_ceiling` stays unenforced; promotion needs W12.
+
+Two limits the tool states itself: 47 of 61 books declare no variables at all, so their
+forks are scored on distance alone and their state delta is empty by construction; and
+a spread over fewer than three complete books is refused rather than published.
+
+The design error worth recording: the first version scored a fork whose branches run to
+different endings as an unmeasured horizon hit. Every book has such forks, so every book
+came back incomplete and the scan returned "not measured" over the whole catalogue.
+Terminal divergence is an answer, and the most consequential one a fork can have.
+
+### W6, blind-spot manifest: KEEP, because the declaration is drift-proof
+
+The rule was the demanding one: keep only if the declaration cannot drift from
+behaviour, and drop to prose otherwise. The mechanism that earns it is a **witness** per
+observed dimension, a document built to trip one of that dimension's rules.
+`verify_declarations()` runs the battery through the real gate, so a checker that stops
+checking makes its own declaration report stale. A test disables a checker and asserts
+exactly that; if it could be made to pass with the checker off, the rule says delete the
+module.
+
+The manifest reproduces both cases it was specified against. It names the four
+qualitative age dimensions as unobserved in every context (`AL-337`), and it names
+filled prose as unobserved under skeleton context and observed under fill-result
+(`AL-325`), which is the same distinction `PL-27` closed.
+
+### W15, declared information state: DROP
+
+Built and run as a probe rather than shipped. The candidate passes the three easy cases
+and fails the decisive one: a declared secret restated in different words goes
+undetected, because detecting it is an entailment question and nothing here answers one.
+"The lighthouse keeper is the thief" leaks just as completely through "the man who
+tended the light had been taking the cargo", which shares no content word with the
+declaration. No lexical or semantic resource is in the dependency set, and adding one
+would not close that gap.
+
+Per the pre-registered rule, the information-state dimension **stays uninstrumented**
+and is now listed in `blind_spots.UNOBSERVED` beside the four qualitative age
+dimensions. The probe stays in the test suite as the evidence, since a negative result
+is the deliverable and deleting it would leave only a commit message behind.
+
+## 7.7 Sprint: validate the rulers before the judge (2026-08-13)
+
+An adversarial review of the W7 fixture, run before any judge call was paid for, refuted the premise
+the arm was being built on and found a class of defect rather than an instance: **the deterministic
+measures W7 depends on are less sensitive than we assumed, and this plan pre-registered figures that
+do not reproduce.** Running the battery on top of that would have measured the fixture while section
+3's own wording read the result as an instrument verdict.
+
+The sprint is therefore the rulers, not the run. Every item below is unpaid.
+
+### What the review established
+
+| Claim under review | Outcome |
+| --- | --- |
+| The W7 corpus contains no dialogue | **Refuted.** `the-backyard-treasure-map` carries 15 spoken lines across 18 of 62 nodes as *unquoted tagged* speech ("Let's try this one, they said."). The corpus has dialogue; our detectors cannot see it |
+| The dialogue criterion's 3.04 is the anchor firing correctly | **Refuted as stated.** The rubric has two competing anchors and the governing one is "1 = ... absent where it is clearly needed", which was omitted. Six of eight vendor legs had nonzero dialogue, so "uniformly narration-free" is false for the pool the figure came from |
+| `AL-330` and `UW-C236` rest on that inversion | **Refuted.** `AL-330` lists "badly anchored" as one of its three disjuncts, so it does not make the claim. The real target is section 3's pre-commitment |
+| The `dialogue_flat` arm is dead on these five books | **Confirmed**, empirically, though for a different reason than argued |
+| Section 3's "if the battery does not retire it, the battery is broken" is a methodological error | **Confirmed.** A no-op seed yields an arm byte-identical to its control, detection rate 0, and the pre-registered reading is "criterion retired" |
+
+### The sprint, in dependency order
+
+1. **Fix the dialogue detector.** Three quote-only implementations (`evaluate_books.py`,
+   `check_prose_craft.py`, `seed_defects.py`) are blind to tagged direct speech. This is first
+   because it is load-bearing twice: it blocks W7's dialogue arm, and it is the deterministic
+   measure `UW-C236` proposes to **prefer over** the panel. Replacing a possibly-insensitive judge
+   with a definitely-insensitive regex is not an upgrade.
+2. **Re-measure the corpus and re-open `AL-330` / `UW-C236`.** The 25-fold spread that made the
+   panel look broken may shrink or invert once the detector sees tagged speech. Stated limit: the
+   eight vendor legs **cannot** be rechecked, because `out/vendor-comparison/` is untracked. That is
+   section 7.4 gap 3 arriving with a second bill.
+3. **Retract the "SD 0.19 across twelve cells" splice.** Two instruments spliced together: the 0.19
+   is the spread across 84 individual verdicts (section 29 of the brief); "twelve cells" is the
+   six-question diversity rubric over 3 rounds by 4 cells (section 16m). `criterion_spread` averages
+   books into `(leg, judge)` cells first and returns **0.088** on the real pool. W4's decision is
+   unchanged, 0.088 still clears the 0.25 threshold, but the pre-registered number is not one the
+   implemented function will produce.
+4. **Delete section 3's pre-committed verdict.** Replace with the per-criterion rule that section
+   already states. Cheapest item here and the largest effect on the run's validity.
+5. **Parameterise the judge prompt by age band.** `judge_books.py` hardcodes "children aged 5 to 8"
+   in three places while the panel is run across 3-5 to 16+. It is running off-prompt today,
+   independent of any corpus choice, so every existing verdict carries it. Changing it makes the new
+   pool not strictly comparable to the 84-verdict one, which is a reason to decide it before W7 runs
+   rather than during.
+6. **Then run W7.**
+
+### Not doing, and why
+
+- **The inverse seed** (add dialogue, check the score rises): confounds four criteria at once, since
+  LLM-added dialogue moves length, reading level and voice together, and it spends a generation call
+  on a defect the repo can seed deterministically.
+- **The corpus swap as proposed**: two of the three suggested books (`the-clocktower-cipher`,
+  `the-lost-mitten`) fail `Storybook.model_validate`, being pre-schema-v2 xfails. W7 needs books that
+  currently pass. Only `the-thornwood-trial` is usable and it carries one dialogue node at 27k input
+  tokens.
+
+### The generalisable finding
+
+Bigger than dialogue, and the reusable output of the whole detour: **before a judge criterion is
+compared against a deterministic measure, the deterministic measure needs its own sensitivity
+check.** We have been treating "deterministic" as a synonym for "correct". A regex that returns 0.000
+and a judge that returns 3.00 can both be wrong about the same book, and only one of them looks like
+an opinion.
+
+### 7.7.1 Outcome of items 1 to 5 (2026-08-14)
+
+All five are done and unpaid. Item 6 is treated separately in 7.7.2.
+
+**Item 1, the detector.** `src/cyo_adventure/validator/dialogue.py` now recognises quoted and
+tagged speech and is the single implementation behind all four callers: `seed_defects.py`,
+`evaluate_books.py::_dialogue_share`, `check_prose_craft.py::strip_dialogue` (composed onto its
+existing `strip_quoted`, whose single-quote-versus-possessive handling is better than a general
+detector's and was kept), and `measure_per_path.py`'s narration denominator.
+
+Writing its tests found a second instance of the bug the module was written to fix. Locating
+quoted spans over the whole text before splitting into sentences was the first fix; the *tagged*
+case had the same flaw and survived it, because a spoken line cut at its own "!" leaves the tag
+half matching on its own. The detector therefore looked correct while reporting "he whispered."
+as the spoken line, leaving "Right here!" in the narration for every caller that strips, and
+leaving the tag in place for the seeder. Regions are now found over the whole text for every
+pattern, and the halves are rejoined only when the same region reaches across both.
+
+**Item 2, the re-measurement.** Over the 23 filled books in `out/`:
+
+| | Quote-only | Quoted and tagged |
+| --- | --- | --- |
+| Books scoring exactly 0.000 | 20 of 23 | 6 of 23 |
+| Mean body-level share | 0.079 | 0.137 |
+| Books carrying any dialogue | 3 | 17 |
+
+Fourteen books the old measure called dialogue-free carry between 2 and 92 spoken lines.
+`the-backyard-treasure-map` goes 0.000 to 0.258, `the-vanishing-orchard` to 0.225,
+`the-harrowstone-keep` to 0.145 across 92 lines.
+
+The consequence for `AL-330` / `UW-C236`: the row's remedy is "prefer a deterministic measure
+wherever one exists for the same property", and the deterministic measure it would have preferred
+was wrong about 61 percent of the catalogue. The 25-fold spread that made the panel's `dialogue`
+criterion look degenerate cannot be rechecked, since the eight vendor legs are in the untracked
+`out/vendor-comparison/` (section 7.4 gap 3, second bill). What can be said is that the corpus is
+not the near-dialogue-free thing the figures implied, and that a criterion returning about 3.00
+across books clustered between 0.01 and 0.26 is a plausible reading rather than a stuck one. Both
+rows stay open, with their remedy narrowed: report per-criterion spread, yes; prefer the
+deterministic measure only after the deterministic measure has passed its own sensitivity check.
+
+**Sensitivity of the two measures that consume the exemption**, since widening it changes their
+denominators and this is exactly the check the sprint says to run:
+
+- *Told emotion* (`check_prose_craft.py`, and W2's path-scoped re-unit): narration denominators
+  fall 0 to 4 percent, and no book's per-1000 rate moves by more than 0.013. W2's told-emotion
+  figures stand as published.
+- *Tense stability*: 4 of 23 books change their unstable-node count, the largest being
+  `the-sunken-temple` at 69 to 59. The direction is almost entirely downward and the cause is
+  specific: quote-stripping leaves the attribution fragment ("he whispered.") behind, every
+  spoken line contributes one, and its tense is the tag verb's rather than the narration's. The
+  detector was taking a free tense vote per line of dialogue.
+
+**Items 3 and 4** are the workplan edits above: W4's rule no longer cites the spliced "SD 0.19
+across twelve cells", and section 3 no longer pre-commits to "if the battery does not retire it,
+the battery is broken".
+
+**Item 5**: `judge_books.py` derives the band phrase from the book's own declared band and falls
+back to the historical "5 to 8" wording when a book declares none, so the existing 84 verdicts
+remain reproducible while a book declaring 10-13 is no longer judged against a 5-to-8 rubric.
+
+### 7.7.2 W7's corpus, and three harness defects found building it (2026-08-14)
+
+The corpus was rebuilt rather than reused, because the fixed detector changed which books
+can carry the `dialogue_flat` arm and because pricing the previously-planned corpus made it
+unaffordable.
+
+**Why not the corpus in the "Not doing" note above.** That note ruled the swap out on the
+grounds that `the-clocktower-cipher` and `the-lost-mitten` fail `Storybook.model_validate`
+as pre-schema-v2 documents. Correct as far as it went, and it stopped one step early: the
+three failures (`schema_version` "1.0", absent `metadata.topology`, `ending.type` where v2
+wants `kind` and `valence`) are all mechanically derivable. `scripts/normalize_pre_v2.py`
+derives the topology from `validator.topology.admissible_topologies`, the classifier the
+gate itself uses for PL-18, and maps the five `type` values the corpus uses onto
+`(kind, valence)` from a fixed exhaustive table that raises on anything unlisted. It writes
+copies and never touches the tracked fixtures.
+
+That produced a finding worth keeping: the xfail reason on all three legacy books reads
+"migrate to v2 then drop from `_LEGACY_PRE_V2`", and after migration only `the-lost-mitten`
+passes the gate. `the-clocktower-cipher` and `the-sunken-signal` are blocked by L1-7 on
+branch depth (9 against a limit of 8, and 13 against 12), which is a content property, not a
+schema gap. The xfail reason is therefore accurate for one of the three books and misleading
+for the other two.
+
+**The corpus.** Six books, every one gate-passing under `fill_result` context, chosen
+smallest-first for cost with the two dialogue-carrying books included deliberately:
+
+| Book | Nodes | Words | Dialogue share |
+| --- | --- | --- | --- |
+| `the-lost-mitten` (normalised) | 11 | 760 | 0.818 |
+| `the-clover-and-the-butterfly` | 20 | 663 | 0.000 |
+| `the-teddy-bears-picnic` | 29 | 1,172 | 0.000 |
+| `the-lantern-festival` | 37 | 1,948 | 0.000 |
+| `the-backyard-treasure-map` | 62 | 4,052 | 0.258 |
+| `the-cave-of-echoes` | 65 | 4,906 | 0.000 |
+
+Stated limits. These are the small end of a catalogue running to 551 nodes, which the
+per-criterion rule tolerates (the question is the judge's sensitivity to a seeded defect, and
+a shorter book gives the defect less room to be noticed, so the bias runs conservative) but
+which a later reader should not mistake for a representative sample. The bands span 3-5 to
+10-13, which item 5's per-book band phrasing now handles.
+
+**Three harness defects, all found before spending:**
+
+1. **`harden_book` had no caller.** The function that seeds `reading_level_up` was defined
+   and never invoked from `main`, so a run would have judged five arms, found no
+   `reading_level_up` arm, and reported `age_fit` UNTESTED without saying why. Now behind
+   `--prepare`, deliberately a separate invocation so a retried judging pass does not repeat
+   the paid rewrite.
+2. **The seeder wrote arms that did not land.** `seed_defects.py` reported MISS and wrote the
+   file anyway. A non-landing seed yields an arm byte-identical to its control, the battery
+   counts it as an opportunity, the delta is zero, and the pre-registered reading of a zero
+   detection rate is "retire the criterion". That is precisely the error item 4 deleted from
+   section 3, sitting in the harness rather than in the prose. Non-landing arms are now
+   withheld and named, so the affected criterion runs at reduced n instead of being handed a
+   manufactured failure. Five arms were withheld on this corpus: `dialogue_flat` on the four
+   books with no dialogue, and `false_choice` on `the-lost-mitten`, whose forks are already
+   false (4 of 4).
+3. **`harden_book` was sequential.** 224 rewrite calls at one at a time is most of an hour of
+   wall clock. Bounded to 6 concurrent.
+
+**Arm counts going into the run**: 6 controls, 6 `tense_break`, 5 `false_choice`,
+6 `premise_duplicate`, 2 `dialogue_flat`, 6 `reading_level_up`. The `dialogue` criterion gets
+2 opportunities, both with strong seeds (0.818 and 0.258 to 0.000), against the 1 dead
+opportunity the previously-planned corpus offered.
+
+### 7.7.3 The reading-level seed overshot by a factor of three (2026-08-14)
+
+The `reading_level_up` seed asks a model to rewrite each passage "about 3 US reading grades
+harder". It does not take direction on magnitude. Across the six-book corpus it delivered:
+
+| Book | Band target | Control grade | Full rewrite | Delta |
+| --- | --- | --- | --- | --- |
+| `the-lost-mitten` | 1.0 | -0.02 | 8.14 | +8.16 |
+| `the-teddy-bears-picnic` | 1.0 | 0.76 | 10.40 | +9.63 |
+| `the-clover-and-the-butterfly` | 1.0 | 0.85 | 10.97 | +10.12 |
+| `the-lantern-festival` | 2.5 | 1.79 | 12.85 | +11.06 |
+| `the-backyard-treasure-map` | 2.5 | 2.65 | 12.43 | +9.78 |
+| `the-cave-of-echoes` | 4.5 | 4.55 | 13.33 | +8.78 |
+
+Books whose bands target grades 1.0 to 4.5, rewritten to grades 8.1 to 13.3. That is not a
+book too old for its band, which is the defect; it is a different genre, and it breaks the
+fixture two ways. `age_fit` detection becomes trivial, so the arm stops measuring the
+criterion's sensitivity to a realistic miss and starts confirming that the panel can read.
+And voice, engagement and dialogue all move genuinely, which this battery's false-positive
+rule (any non-target arm moving a criterion by more than 0.5) would charge against those
+criteria for correctly noticing a real change.
+
+The seed was left in place and the arm composed from it instead. `blend_to_grade` swaps
+hardened bodies into the control one at a time, spread across the book by a low-discrepancy
+order rather than front-to-back, until the whole-book grade reaches the target:
+
+| Book | Control | Blended arm | Delta | Nodes swapped |
+| --- | --- | --- | --- | --- |
+| `the-lost-mitten` | -0.02 | 3.05 | +3.07 | 3 of 11 |
+| `the-teddy-bears-picnic` | 0.76 | 4.17 | +3.41 | 7 of 29 |
+| `the-clover-and-the-butterfly` | 0.85 | 4.27 | +3.42 | 5 of 20 |
+| `the-lantern-festival` | 1.79 | 5.06 | +3.26 | 9 of 37 |
+| `the-backyard-treasure-map` | 2.65 | 5.68 | +3.03 | 18 of 62 |
+| `the-cave-of-echoes` | 4.55 | 7.63 | +3.07 | 21 of 65 |
+
+This is deterministic, exact to within one node's worth of grade, and free, since the
+generation is already paid for and `--reblend` calls no provider. It also seeds a defect
+closer to the real failure mode: a book whose passages drift too hard in places is what the
+pipeline produces when it misses a band, not one uniformly rewritten into academic prose.
+
+**A second finding from the same run.** The prepare step reported `$0.0000 spent hardening`.
+That is `UW-C239` arriving where it does damage: `core/pricing.py` leaves input rates unset
+for every cloud model, so an unpriced run and a free one print identically. The harness now
+prints "spend unpriced" and names the row, because a dollar figure in a measurement record is
+read as measured.
+
+### 7.7.4 W7 result: three criteria kept, two retired, and half the instrument still unvalidated (2026-08-14)
+
+Ran on the six-book corpus, 31 arms, 3 judges, 93 scorings, all successful (no errors, no
+empty score sets). Total spend measured against the provider's balance: **$6.29**, of which
+$0.85 was the harden and about $2.5 was a duplicate concurrent panel run (`AL-375`).
+
+**The run first reported seven UNTESTED verdicts over 93 good scorings**, which was a join
+defect rather than a result: `judge_book` labels each verdict `f"{leg}#{brief_index}"`, right
+for the vendor comparison it was written for, and the battery joined on the bare stem. The
+tell was that the failure was total; a battery merely short of data reports some numbers. The
+fix was free, and the numbers below come from replaying the same verdicts.
+
+#### Detection, per criterion
+
+| Criterion | Defect | Detected | Median delta | Verdict |
+| --- | --- | --- | --- | --- |
+| `age_fit` | `reading_level_up` | 6/6 | -2.00 | **KEEP** |
+| `choice_quality` | `false_choice` | 5/5 | -1.33 | **KEEP** |
+| `engagement` | `premise_duplicate` | 4/6 | -0.67 | **KEEP** |
+| `voice` | `tense_break` | 2/6 | -0.17 | **RETIRE** |
+| `dialogue` | `dialogue_flat` | 1/2 | -0.83 | **RETIRE** |
+| `imagery` | none | - | - | UNTESTED |
+| `ending_quality` | none | - | - | UNTESTED |
+
+`age_fit` and `choice_quality` are unambiguous: every book, every time, with deltas from
+-0.67 to -2.33 against a 0.5 margin. Note that `age_fit` cleared it on the *blended* seed, at
++3 grades rather than the +9.6 the raw rewrite would have given it, so this is a pass at a
+realistic defect size rather than a demonstration that the panel can read.
+
+`voice` fails outright. Its six deltas are -0.33, 0.00, 0.00, -0.67, +0.33, -0.67: noise
+around zero, including a book where the criterion moved *up* after the tense was broken.
+
+`engagement` is a marginal keep and should be read as one. Its four detections are -0.67,
+-0.67, -0.67 and -1.00, so three of the four sit one third of a point past the margin, and
+the two misses are -0.33 and 0.00. The verdict is what the pre-registered rule says; the
+effect size is small enough that a slightly different margin would flip it.
+
+`dialogue` retires on n=2, which is thin, but the *shape* is worse than the count suggests.
+The book it missed is `the-lost-mitten`, whose 0.818 dialogue share is the highest in the
+catalogue: every spoken line in the book was converted to narration and the criterion scored
+it 2.67 before and 2.67 after. The arm where detection should have been easiest is the one it
+failed. Set against `AL-330`, this is the answer that section could not previously give: the
+`dialogue` criterion really is insensitive, and the earlier evidence for that claim was
+simply the wrong evidence.
+
+#### Two parts of the battery's own rule that do not hold up
+
+**The false-positive column measures something other than false positives.** The rule counts
+any non-target arm moving a criterion by more than 0.5. But `reading_level_up` rewrites a
+third of the prose, so `voice` and `imagery` genuinely change; `premise_duplicate` replaces
+the opening node, so `engagement` genuinely changes. Every one of the 4-to-10 "false
+positives" per criterion is of that kind. The column charges a criterion for correctly
+noticing a real change. It drives no verdict here (the KEEP/RETIRE strings cite detection
+only) and no conclusion above rests on it, but it must not be read as evidence against any
+criterion, and the rule needs restating before it is.
+
+**The agreement figure is not interpretable as computed.** All three pairs came in below the
+0.60 floor (+0.16, +0.58, +0.14), and that number should not be quoted. `cohens_kappa` is a
+categorical statistic and it is being fed the *mean across all seven criteria*, rounded to an
+integer. After rounding, `judge-gpt-5.6` uses two categories with 24 of 31 books in one, and
+`judge-grok-4.6` uses three with 23 of 31 in one. That is the classic skewed-marginals regime
+where kappa collapses despite high raw agreement, and it explains the pattern exactly: the
+two judges with similarly skewed marginals score +0.58, while both pairings with
+`judge-gemini-3.1` (four categories, sd 0.79 against 0.31) fall to about +0.15. Rounding a
+seven-criterion mean also discards the per-criterion structure that W7 exists to examine.
+Agreement has to be computed per criterion, and with a statistic suited to ordinal data, before
+this half of the instrument says anything.
+
+**Where that leaves W7.** The detection half is done and gives a usable answer: three criteria
+support a ranking, two do not, two were never exercised. The agreement half is unrun, because
+what ran was the wrong calculation. Any Part IV claim resting on the panel may use `age_fit`,
+`choice_quality` and (with the caveat above) `engagement`; it may not use `voice` or
+`dialogue`, and it may not yet cite inter-judge agreement at all.
+
+### 7.7.5 W7 complete: all seven criteria, and the panel's own noise (2026-08-14)
+
+Second run, 43 arms, 3 judges, 129 scorings, all successful. Every criterion now has a
+verdict, including the two the first run could not test.
+
+| Criterion | Defect | Detected | Median delta | Noise floor | Verdict |
+| --- | --- | --- | --- | --- | --- |
+| `imagery` | `imagery_flat` | 6/6 | -2.00 | 0.29 | **KEEP** |
+| `age_fit` | `reading_level_up` | 6/6 | -1.67 | 0.53 | **KEEP** |
+| `ending_quality` | `ending_truncated` | 6/6 | -1.33 | 0.67 | **KEEP** |
+| `choice_quality` | `false_choice` | 4/5 | -1.00 | 0.74 | **KEEP**, marginal |
+| `engagement` | `premise_duplicate` | 4/6 | -0.67 | 0.77 | **INCONCLUSIVE** |
+| `voice` | `tense_break` | 1/6 | +0.00 | 0.62 | **RETIRE** |
+| `dialogue` | `dialogue_flat` | 1/2 | -0.83 | 0.29 | **RETIRE** |
+
+The two new arms produced the two cleanest results in the battery. `imagery` is the
+strongest criterion the panel has: a -2.00 median against a 0.29 noise floor, and the only
+criterion clearing the 0.60 agreement floor on all three judge pairs (+0.70, +0.82, +0.81).
+`ending_quality` detects 6 of 6. Neither had been tested at all before this run, and the
+first run's report called both UNTESTED without being able to say whether they worked.
+
+#### The finding that matters most: the panel is not stable between runs
+
+The same three judges scored the same six control books twice, hours apart, with no change
+to the documents or the prompt:
+
+| Criterion | Run 1 mean | Run 2 mean | Shift | Largest per-book shift |
+| --- | --- | --- | --- | --- |
+| `age_fit` | 3.22 | 3.00 | -0.22 | 0.67 |
+| `imagery` | 3.67 | 3.50 | -0.17 | 0.33 |
+| `voice` | 2.44 | 2.22 | -0.22 | 0.67 |
+| `dialogue` | 2.94 | 2.83 | -0.11 | 0.67 |
+| `choice_quality` | 2.94 | 2.83 | -0.11 | 1.00 |
+| `ending_quality` | 2.78 | 2.61 | -0.17 | 0.67 |
+| `engagement` | 3.11 | 2.94 | -0.17 | 0.67 |
+
+**A book that did not change moved by up to a full scale point.** The detection margin is
+0.5. That is an independent estimate of the same quantity the control-noise floor measures
+from between-judge spread, and the two agree in size (0.29 to 0.77 between judges, 0.33 to
+1.00 between runs), which is the strongest evidence available that the floor is measuring
+something real rather than an artefact of how it is computed.
+
+Within-run pairing protects the deltas from the run-level drift, since each arm is scored
+against a control from its own run. What it cannot remove is the per-book residual, and that
+residual is the size of the effect for the weaker criteria. Three verdicts moved between the
+two runs on that basis alone: `engagement` KEEP to INCONCLUSIVE, `choice_quality` 5/5 to 4/5,
+`voice` 2/6 to 1/6.
+
+The practical reading, and the one Part IV should carry:
+
+- **`imagery`, `age_fit` and `ending_quality` are usable.** Their effects are two to seven
+  times their noise floors and they survived a change of run.
+- **`choice_quality` is usable with care.** A -1.00 effect against a 0.74 floor clears, but a
+  control book moved 1.00 between runs on this very criterion, so a single-run
+  `choice_quality` difference near one point is not evidence.
+- **`engagement` is not usable as scored.** Its detections are real but smaller than the
+  instrument's own noise. It needs either a stronger seed or repeat scorings.
+- **`voice` and `dialogue` stay retired**, and both runs agree.
+- **No criterion clears the 0.60 agreement floor on all three pairs except `imagery`.** The
+  panel supports within-book delta comparisons, not absolute scoring.
+
+A W7 verdict from one run is therefore provisional near the margin. Any future battery should
+score each arm more than once and report the spread, which is a cost decision (129 scorings
+cost about $2.60) rather than a design problem.
+
+### 7.7.6 Three corrections to 7.7.5, and a much better instrument (2026-08-14)
+
+Asked whether the two retired criteria failed because an LLM cannot judge them or because
+the judges were badly chosen, and the answer is neither. Three separate causes, all found by
+breaking the panel mean back out per judge, which 7.7.5 did not do.
+
+**`voice` was never tested. The mapping was wrong.** Its rubric reads "Distinctness and
+consistency of the *main character*. 1 = interchangeable narrator with no personality." The
+defect mapped to it, `tense_break`, switches the *narrator's tense*. Those are different
+properties, and a judge assessing whether the protagonist is a distinct person is right not
+to move when the narrator's grammar wobbles. Per judge, on the six `tense_break` arms:
+
+| Judge | Deltas on the six arms |
+| --- | --- |
+| `judge-gpt-5.6` | 0.00 on all six |
+| `judge-grok-4.6` | 0.00 on five, -1.00 on one |
+| `judge-gemini-3.1` | -2.00, -1.00, 0.00, +1.00, +1.00, +1.00 |
+
+Two judges held flat throughout; only the noisiest moved, and it moved both ways. The
+RETIRE verdict is withdrawn and `voice` is now UNTESTED. `tense_break` is removed from
+`DEFECT_CRITERION` rather than remapped, because no criterion in the panel covers narrative
+tense stability, and none needs to: `check_prose_craft.py` measures it deterministically and
+is the better instrument for it.
+
+**`dialogue`'s miss is a rubric anchor, not blindness.** All three judges detected the seed
+on `the-backyard-treasure-map` (-2.00, -2.00, -1.00: unanimous and strong). All three
+returned exactly 0.00 on `the-lost-mitten`, and the rubric says why in its own last sentence:
+"Score 3 if the story is legitimately narration-led with little dialogue." A 760-word
+3-to-5-band book with its dialogue flattened *is* narration-led, so the rubric instructs the
+score that makes the delta zero. The criterion cannot distinguish "legitimately narration-led"
+from "had its dialogue removed", which is a real limitation of the rubric rather than of the
+judge, and the 1-of-2 rate rests on one confounded book. The claim in 7.7.4 that the criterion
+"really is insensitive" is withdrawn.
+
+**One judge supplies most of the panel's noise.** Same control books, same criteria, run 1
+against run 2:
+
+| Judge | Mean shift | Max shift |
+| --- | --- | --- |
+| `judge-gemini-3.1` | **0.64** | **2.00** |
+| `judge-gpt-5.6` | 0.14 | 1.00 |
+| `judge-grok-4.6` | 0.14 | 1.00 |
+
+Its mean drift on unchanged text exceeds the 0.5 detection margin by itself. 7.7.5 reported
+run-to-run instability as a property of the panel; it is substantially the property of one
+member, contaminating the mean the battery scores against.
+
+#### The same 129 scorings, re-scored with that judge dropped
+
+| Criterion | Three judges | Two judges | Noise floor |
+| --- | --- | --- | --- |
+| `imagery` | KEEP 6/6 | KEEP 6/6 | 0.29 to **0.24** |
+| `age_fit` | KEEP 6/6 | KEEP 6/6 | 0.53 to **0.35** |
+| `ending_quality` | KEEP 6/6 | KEEP 6/6 | 0.67 to **0.12** |
+| `choice_quality` | KEEP 4/5 | **KEEP 5/5** | 0.74 to **0.24** |
+| `engagement` | INCONCLUSIVE | **KEEP 4/6** | 0.77 to **0.12** |
+| `dialogue` | RETIRE 1/2 | RETIRE 1/2 | 0.29 to **0.00** |
+| `voice` | RETIRE 1/6 | **UNTESTED** | corrected mapping |
+
+Every noise floor falls, by between 2x and 6x. `choice_quality` recovers its sixth book and
+`engagement` clears its floor by four times over. The third judge was not adding a
+perspective; it was adding variance to a mean, and the battery scored the sum.
+
+**Five criteria now support a ranking** (`imagery`, `age_fit`, `ending_quality`,
+`choice_quality`, `engagement`), one is untested (`voice`) and one is under-powered on a
+confounded n=2 (`dialogue`). That is a materially different instrument from the one 7.7.5
+described, and the difference cost nothing: same verdicts, re-scored.
+
+The general form, worth keeping: **a panel mean hides a bad member, and averaging is what
+hides it.** Any panel should report per-member stability on unchanged inputs before its mean
+is trusted, and membership should be a decision the evidence supports rather than a default.
+
+### 7.8 W4 and W5 close (2026-08-14)
+
+Both were built weeks ago and neither had ever been pointed at a pool with several books per
+leg, which is what they need to form cells and intervals. `out/vendor-comparison/` held such a
+pool and is gone (`UW-C257`), so one was regenerated: 3 legs by 4 briefs, of which 9 books
+survived (`anthropic-sonnet-5` lost three to the reasoning-budget cap, `AL-328` again).
+
+**Stated substitution.** W4's rule says "replay the existing 84-verdict pool". That pool no
+longer exists on any checkout, so the known-answer test ran on a 27-verdict replacement. The
+substantive requirement is unchanged and arguably better evidenced, since the result
+reproduces on an independent pool.
+
+#### W4, per-criterion instrument variance: KEEP
+
+| Criterion | Cells | Mean | SD |
+| --- | --- | --- | --- |
+| `dialogue` | 9 | 3.00 | **0.00 SATURATED** |
+| `age_fit` | 9 | 4.14 | 0.38 |
+| `voice` | 9 | 2.97 | 0.40 |
+| `engagement` | 9 | 3.86 | 0.42 |
+| `imagery` | 9 | 4.28 | 0.46 |
+| `ending_quality` | 9 | 3.50 | 0.47 |
+| `choice_quality` | 9 | 3.25 | 0.62 |
+
+The rule is "keep iff it flags the dialogue criterion and does not flag criteria we have
+independent reason to believe are working", and both directions pass. It flags `dialogue`, at
+a spread of exactly 0.00 here against the 0.088 recorded on the lost pool. It flags nothing
+else, and the six it leaves alone include all five W7 keeps.
+
+That agreement is the part worth keeping. W4 and W7 are independent instruments run on
+different corpora by different methods, one measuring spread across vendor legs and the other
+measuring response to a seeded defect, and they single out the same criterion. `dialogue`'s
+weakness is now attested twice.
+
+#### W5, bootstrap intervals: infrastructure, and its pre-committed consequence fires
+
+| Leg | Point | 95% interval | Books |
+| --- | --- | --- | --- |
+| `xai-grok-4.6` | +0.57 | [+0.07, +1.08] | 4 |
+| `google-gemini-3.1-pro` | -0.48 | [-1.33, +0.46] | 4 |
+| `anthropic-sonnet-5` | -0.36 | incomplete, n<2 | 1 |
+
+Zero of one comparable pair separated. Per the rule pre-committed in W5, **Part IV's ranking
+is retracted rather than caveated.** That was written down in advance precisely because
+single-digit n per cell made this the likely outcome, and honouring it now is the whole point
+of having written it.
+
+The instrument itself works: it produced intervals, refused a ranking the data does not
+support, and excluded the leg it could not bootstrap rather than quietly bootstrapping n=1.
+
+**The limitation, stated plainly.** One comparable pair is the thinnest test that exists.
+`anthropic-sonnet-5` was excluded for having a single usable book, so "every pair overlaps"
+is a claim about one pair. The retraction still stands, because the rule was pre-registered
+and the point of pre-registration is that a thin result does not become a reason to
+renegotiate. But a future slate should carry enough legs that the ranking claim is tested
+rather than merely unsupported.
+
+#### Where the fifteen now stand
+
+Closed or decided: W1, W2, W3, W4, W5, W6, W7, W15. Blocked on ADR-018 consent scoping: W12,
+W13. Unblocked by `UW-C239` and not yet started: W8, W9, W10, W14. Deferred pending a whole
+instrument: W11.
+
+## 7.9 Sequencing ruling: finish the drafting workstream before training the reviewer (2026-08-14)
+
+**Owner ruling.** Complete the current workstream before starting reviewer training, so that any new
+drafts are the best the process can produce.
+
+The dependency is real and worth stating precisely: a distilled reviewer learns what "good" looks
+like from the books it is trained and validated on. Train it on books drafted by a half-finished
+drafting process and it learns to approve that half-finished output, then that judgement is frozen
+into a self-hosted model and used to gate everything after. The ordering is therefore not a
+preference about what to do first. It is the difference between a reviewer calibrated on the
+catalogue we intend to ship and one calibrated on an artefact of where the work happened to pause.
+
+**What "the current workstream" means, concretely.** Four measurement items remain that vary how a
+book is drafted, and each one is scored on **deterministic measures only**, so none of them depends
+on the judge panel or on any reviewer work:
+
+| Item | What it varies | Decision rule, in short | Cost |
+| --- | --- | --- | --- |
+| W8 | decoding parameters and reasoning effort | adopt iff a deterministic measure moves beyond its noise | $10 to $20 |
+| W9 | which model runs which stage | adopt iff cost per delivered book falls with no gate or craft regression | one matched run |
+| W10 | the premise pool (MoPS) | adopt iff convergence drops near the 3.3 idiom floor | generation for n books plus curation |
+| W14 | what context the prose stage sees | adopt iff a deterministic measure moves beyond its noise | one matched run per regime |
+
+That separation is what makes the ruling clean rather than merely cautious: the drafting
+improvements can be validated to completion without a working reviewer, and the reviewer then has a
+settled process to learn from.
+
+**W14's stated blocker is gone.** It reads "close `UW-C239` before running W14 or the cost half is
+unmeasurable and only the quality half survives". `UW-C239` closed on 2026-08-14, verified three
+ways, so W14 is runnable for the first time.
+
+**Budget is now the binding constraint, not capability.** The four items total roughly $30 to $50 of
+generation against a measured $15.60 remaining. They also want each other's results: W9 and W14 both
+change what a matched run looks like, so running them in the wrong order buys a comparison twice.
+Sequencing and funding them is the next planning decision, and it is an owner decision rather than
+one this document can settle.
+
+**Status of the reviewer work, parked rather than abandoned.** The distillation plan
+(`review-model-distillation-plan.md`) stands as written and is **parked at Phase 0**. Its trigger
+condition is the completion of W8, W9, W10 and W14, plus a drafting pass under whatever configuration
+those items adopt. Two things continue in the meantime because they cost nothing extra and inform
+whether distillation is viable at all: the open-weight judge battery already in flight, and the
+frozen artifact store, which is pure preservation and is worth more the longer the corpus grows.
+
+**The books drafted on 2026-08-14 are baseline, not final.** The eight new 3-5 and 5-8 books were
+drafted under the *current* configuration, before W8, W9, W10 and W14 have adopted anything. They
+fill a real gap (both bands had zero books left for training after the W7 battery took them) and
+they cost nothing, so they stay. But they carry their framework provenance, and a redraft under the
+completed configuration is expected rather than exceptional. Their most durable use may turn out to
+be as the before-half of a before-and-after comparison, which is a use that only exists because they
+were drafted now.

@@ -88,14 +88,24 @@ def test_sentence_tense_ignores_a_participle_after_an_auxiliary() -> None:
 
 @pytest.mark.unit
 def test_node_tense_counts_exempts_present_tense_dialogue_in_past_narration() -> None:
-    """Dialogue is legitimately present tense; only narration is evidence."""
+    """Dialogue is legitimately present tense; only narration is evidence.
+
+    Counted 4 past until 2026-08-14, when the exemption widened from quoted
+    spans to whole tagged sentences. The two it lost were "he said." and "Nia
+    added.", the attribution fragments quote-stripping leaves behind. Those are
+    not narration evidence: their tense is the tag verb's, and every dialogue
+    line in a book contributes one, so the previous count handed the tense
+    detector a free vote per spoken line and biased mixed-tense detection
+    toward whichever tense the tags happened to use. Two is the number of
+    narrative sentences in this body.
+    """
     body = (
         "Tom opened the hatch. 'I see it,' he said. "
         '"It is right there and it looks fine," Nia added. '
         "Sef climbed after them."
     )
     past, present = node_tense_counts(body)
-    assert past == 4
+    assert past == 2
     assert present == 0
 
 

@@ -87,8 +87,17 @@ Invoke when given a skeleton file under `skeletons/<band>/<slug>.json` (or any
 
 3. **Fill each `<<FILL role=... words=... beats='...'>>` body** with prose that:
 
-   - matches the band's word target and reading level (keep vocabulary/sentence length
-     age-appropriate);
+   - matches the band's word target and reading level. Write to a **measured sentence
+     length**, because that is what carries the grade: mean words per sentence across
+     in-band nodes runs 5.7 at 3-5, 7.8 at 5-8, 12.7 at 8-11, 14.1 at 10-13, 18.4 at
+     13-16 and 21.0 at 16+, while syllables per word barely moves across the whole range
+     (1.21 to 1.37). Expect the first draft to land out of band anyway (every book drafted
+     on 2026-08-14 did) and plan a **measured repair pass** using the checker's own scorer,
+     `validator.reading_level.score_body`, rather than judging by eye. The drafting guide's
+     Age-Band Reading Levels table names a reference in-band book per band; opening it and
+     matching its sentence shape is the fastest route. Do not swap regular past-tense verbs
+     for irregular ones to lower the grade: that trick was an artefact of a syllable-counting
+     bug fixed in `AL-399` and now buys essentially nothing;
    - honors the `beats=` intent and the node's `role`;
    - sets up exactly the choices on that node (each `choice.label` is the action the prose
      should make available); when a theme brief is in play, rewrite the label's surface
@@ -96,6 +105,15 @@ Invoke when given a skeleton file under `skeletons/<band>/<slug>.json` (or any
    - obeys the band fail-state policy (no death endings for 3-5 / 5-8).
 
    Replace the entire `<<FILL ...>>` string with the prose. Leave no `<<FILL` markers.
+
+3a. **If `metadata.topology` is `loop_and_grow` at the 3-5 or 5-8 band**, the loop is a
+   **try-again** loop and nothing accumulates. Tier 1 forbids variables, so the engine cannot
+   tell a reader on their first pass from one on their third, and any hub or ending that
+   counts, collects, or refers back to something as already-met will be wrong on some path.
+   Write every revisitable node and every ending so it reads correctly whether the reader
+   took the loop once, twice, or not at all. The topology's name says "grow" and at these
+   bands it does not; three of the six committed books from this shape got that wrong. See
+   ADR-011's per-band topology note.
 
 3b. **For Tier-2 (stateful) skeletons** (`metadata.tier` is 2): read the `variables`, each
    node's `on_enter` effects, and each choice's `effects`/`conditions`. The `beats=` directive

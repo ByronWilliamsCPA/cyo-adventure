@@ -1,0 +1,823 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_backyard_treasure_map",
+  "version": 1,
+  "title": "The Midnight Bean Mystery",
+  "metadata": {
+    "age_band": "5-8",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 2.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "friendship",
+      "adventure",
+      "curiosity",
+      "discovery"
+    ],
+    "estimated_minutes": 7,
+    "ending_count": 12,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "time_cave",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_open",
+  "nodes": [
+    {
+      "id": "n_open",
+      "body": "You and Pip kneel in the sunny school garden. Under the giant sunflower sits a dusty jam jar. Inside is a crayon map. A green line wiggles past the raised beds. A bitten-leaf mark sits at the end. The young bean shoots look nibbled. You both grin, ready to hunt the midnight eater.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Spread the crayon map flat.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_start",
+      "body": "You spread the crayon map flat between you on a warm raised bed. Dirt specks stick to the paper. Pip taps three spots with a grubby finger. The sunflower, the shed, or the ditch? Which landmark first?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_oak",
+          "label": "Follow the map to the giant sunflower.",
+          "target": "o_intro"
+        },
+        {
+          "id": "c_start_shed",
+          "label": "Follow the map to the potting shed.",
+          "target": "r_intro"
+        },
+        {
+          "id": "c_start_stream",
+          "label": "Follow the map down to the leaky ditch.",
+          "target": "s_intro"
+        }
+      ]
+    },
+    {
+      "id": "o_intro",
+      "body": "You follow the crayon line straight to the giant sunflower at the top of the garden. Late-spring bees hum. You hold the map while Pip counts the paces out loud. One, two, three. The sunflower is so big that three kids could hide behind its fuzzy yellow face. Near its roots, the green line seems to split in two.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_go",
+          "label": "Search around the sunflower's roots.",
+          "target": "o_fork"
+        }
+      ]
+    },
+    {
+      "id": "o_fork",
+      "body": "You kneel at the sunflower's dusty roots. The green line splits into two faint trails in the dirt. One wiggles toward a hollow clay pipe lying in the long grass. Cheerful clicking spills from deep inside it, like rain on a tin roof. The other trail loops toward a hanging tire planter that slowly turns in the breeze. A drip ticks from the leaky can. You and Pip squint and try to guess which way the mapmaker means.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_hollow",
+          "label": "Take the trail to the hollow clay pipe.",
+          "target": "o_hollow_1"
+        },
+        {
+          "id": "c_o_swing",
+          "label": "Take the trail to the hanging tire planter.",
+          "target": "o_swing_1"
+        }
+      ]
+    },
+    {
+      "id": "o_hollow_1",
+      "body": "You take the faint trail through the uncut grass. The hollow clay pipe lies on its side, bigger than a rain barrel. One end is dark and cool. The clicking comes from deep inside, busy and happy. A drip from the leaky can ticks on the clay. Pip whispers, \"Something lives in there.\"",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_hollow_1",
+          "label": "Peek inside the hollow clay pipe.",
+          "target": "o_hollow_2"
+        }
+      ]
+    },
+    {
+      "id": "o_hollow_2",
+      "body": "You shine your flashlight into the dark cool pipe. Pip holds the map up to the sun. The green line goes right through the pipe and out the other side. The clicking grows busier, like a tiny cheerful crowd all talking at once. Cool air smells like wet potting soil and crushed mint.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_hollow_2",
+          "label": "Follow the map through the clay pipe.",
+          "target": "o_hollow_app"
+        }
+      ]
+    },
+    {
+      "id": "o_hollow_app",
+      "body": "You crawl through and pop out the far end with mud on your knees. Past the pipe the map is smudged by an old raindrop. Two little paths lead away. One is a dry mulch strip along the fence. The other is a springy moss path under the lettuce leaves. You must guess which one the mapmaker meant.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hollow_dry",
+          "label": "Try the dry mulch strip.",
+          "target": "e_set_hollow"
+        },
+        {
+          "id": "c_hollow_moss",
+          "label": "Try the mossy lettuce path.",
+          "target": "o_hollow_3"
+        }
+      ]
+    },
+    {
+      "id": "e_set_hollow",
+      "body": "The dry mulch strip just curves back to the fence. It stops at a pile of old cracked flowerpots. No bitten-leaf mark. No treasure. No midnight snack thief. You and Pip laugh. You roll up the map and skip back to the garden gate for cold lemonade, happy to try again tomorrow.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_hollow",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Back to the Cracked Flowerpots"
+      }
+    },
+    {
+      "id": "o_hollow_3",
+      "body": "You choose the mossy lettuce path. It feels springy and cool under your sneakers. Ferny carrot tops brush your knees. The clicking grows louder and happier. Pip whispers that it sounds like hundreds of tiny voices all talking at once. You both tiptoe so you will not squash anyone.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_hollow_3",
+          "label": "Follow the mossy path deeper.",
+          "target": "o_hollow_4"
+        }
+      ]
+    },
+    {
+      "id": "o_hollow_4",
+      "body": "The path dips into a soggy rhubarb hollow where the ground is soft. Each stone looks a little like a tiny doorway. You step carefully and follow the green line deeper. Drips from the leaky can make silver dots on the rhubarb leaves. The air smells green and wet.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_hollow_4",
+          "label": "Step into the soggy rhubarb hollow.",
+          "target": "o_hollow_5"
+        }
+      ]
+    },
+    {
+      "id": "o_hollow_5",
+      "body": "In the rhubarb hollow you find a ring of smooth stones set out like a tiny wall. Behind it, spotted garden toads sit on leaf-thrones and lily-pad chairs. Not one of them hops away. Their throats bubble. A slug-shell plate sits empty, as if dinner just ended.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_hollow_5",
+          "label": "Tiptoe up to the stone ring.",
+          "target": "o_hollow_6"
+        }
+      ]
+    },
+    {
+      "id": "o_hollow_6",
+      "body": "The oldest toad wears a crown of strawberry leaves. He blinks slowly at his visitors. You and Pip kneel down very gently. You do not want to frighten anyone. The bitten-leaf mark is drawn right here in the corner of the map. The toads look proud, like night guards after a long shift.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_hollow_6",
+          "label": "Kneel down by the crowned toad.",
+          "target": "e_toad_king"
+        }
+      ]
+    },
+    {
+      "id": "e_toad_king",
+      "body": "You have found the Toad Night Watch hidden in the rhubarb hollow. The oldest toad wears his strawberry-leaf crown on his leafy throne. These toads eat the slugs that nibble beans. You promise to keep their home secret and safe. You leave a soft green leaf as a gift. All the way to class you can hardly stop grinning.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_toad_king",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Toad Night Watch"
+      }
+    },
+    {
+      "id": "o_swing_1",
+      "body": "You follow the looping trail to a hanging tire planter swinging from a low sunflower stem. The tire turns slowly in the breeze. Someone has tied shiny foil pie tins to the rope. They flutter and flash like little moons. Pip's eyes go wide. A bee inspects your ear, then zooms off.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_swing_1",
+          "label": "Look at the shiny pie tins on the tire.",
+          "target": "o_swing_2"
+        }
+      ]
+    },
+    {
+      "id": "o_swing_2",
+      "body": "Pip gives the tire a gentle push and hears a ringing from higher up in the sunflower. You look at the map. The green line climbs the thick fuzzy stalk toward the leaves. The ringing sounds just like tiny bells. Seed husks drift down like confetti. You tip your head and listen harder.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_swing_2",
+          "label": "Listen for the tiny ringing bells.",
+          "target": "o_swing_app"
+        }
+      ]
+    },
+    {
+      "id": "o_swing_app",
+      "body": "The ringing splits left and right. At a sticky knot in the stalk, the green line forks. One branch climbs toward a snarl of pea netting that looks scratchy and tight. The other walks along a wide, easy sunflower rib. The pie tins wink. You and Pip choose which way to follow the bells.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_swing_left",
+          "label": "Climb toward the pea-netting tangle.",
+          "target": "e_set_swing"
+        },
+        {
+          "id": "c_swing_right",
+          "label": "Walk along the wide sunflower rib.",
+          "target": "o_swing_3"
+        }
+      ]
+    },
+    {
+      "id": "e_set_swing",
+      "body": "The pea-netting tangle is a mess of twigs and string. It leads nowhere but an empty seed tin. You and Pip give up on that route with a giggle. You hop down from the tire planter. You head back to the garden gate for lemonade and a rest. You are sure the bitten-leaf mark is hiding somewhere else.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_swing",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Just an Empty Seed Tin"
+      }
+    },
+    {
+      "id": "o_swing_3",
+      "body": "The wide sunflower rib is easy to balance along. The ringing gets clearer with every step. You keep one hand on the fuzzy stalk. Pip watches the map. The rib curves toward a hidden pocket of leaves. Warm pollen dusts your wrists like gold flour.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_swing_3",
+          "label": "Balance along toward the ringing.",
+          "target": "o_swing_4"
+        }
+      ]
+    },
+    {
+      "id": "o_swing_4",
+      "body": "You reach a hidden pocket. Hundreds of little things dangle from the twigs on bits of garden twine. Bottle caps, spoons, and pie tins all knock together in the wind. The whole sunflower seems to be singing softly. Even the leaky can below keeps time with a drip.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_swing_4",
+          "label": "Look at the dangling garden chimes.",
+          "target": "o_swing_5"
+        }
+      ]
+    },
+    {
+      "id": "o_swing_5",
+      "body": "Someone hung chimes on every branch. They made them at home long ago. This is a hidden corner of the sunflower. Sunlight bounces off the shiny bits. It sends little rainbows on the leaves. You and Pip stand very still. You just listen. A cabbage white butterfly lands on Pip's hair. It stays.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_swing_5",
+          "label": "Stand still and listen.",
+          "target": "o_swing_6"
+        }
+      ]
+    },
+    {
+      "id": "o_swing_6",
+      "body": "In the middle of the singing branches hangs a big silver serving spoon. The bitten-leaf mark floats right beside it on the map. You reach out and give the spoon the gentlest touch. It answers with one warm, bright note. That note makes the smaller chimes shiver awake.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_swing_6",
+          "label": "Touch the big silver spoon gently.",
+          "target": "e_chime"
+        }
+      ]
+    },
+    {
+      "id": "e_chime",
+      "body": "You have found the singing sunflower. It is a garden that sings all by itself when the breeze blows. You add one small snail shell of your own to the twine. It will sing a little louder. You walk back toward class humming its happy tune. For a minute even the nibbled beans seem to sway along.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_chime",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Singing Sunflower"
+      }
+    },
+    {
+      "id": "r_intro",
+      "body": "The green line points next across the lawn to the potting shed near the fence. Pip hops over a bed of baby lettuce while you read the map. The shed door hangs open just a crack. Something inside gives a soft creak. It smells like wet potting mix and last week's rain.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_go",
+          "label": "Sneak up to the potting shed.",
+          "target": "r_fork"
+        }
+      ]
+    },
+    {
+      "id": "r_fork",
+      "body": "You sneak up until the shed's shadow covers your shoes. Behind the potting shed the trail on the map splits in two. One line slips inside the open door into the cool shadows. The other runs off toward a stack of paving stones against the back fence. A drip ticks on the roof. You and Pip pick which to explore.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_shed",
+          "label": "Slip inside the potting shed's door.",
+          "target": "r_shed_1"
+        },
+        {
+          "id": "c_r_rock",
+          "label": "Head to the stacked paving stones.",
+          "target": "r_rock_1"
+        }
+      ]
+    },
+    {
+      "id": "r_shed_1",
+      "body": "You push the creaky shed door. Dusty golden light spills across cracked flowerpots and coiled hoses. It smells of potting soil and dry wood. The crayon line leads straight to the old potting bench. In the corner a watering can drips, tick, tick, like a shy clock.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_shed_1",
+          "label": "Follow the light to the potting bench.",
+          "target": "r_shed_2"
+        }
+      ]
+    },
+    {
+      "id": "r_shed_2",
+      "body": "You tiptoe past rakes and watering cans while Pip holds the map steady. By the potting bench, strawberry crates are piled up like steps. Warm lantern light glows up in the rafters. Something up there looks cozy, like a nest built for people. A seed packet flutters as you pass.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_shed_2",
+          "label": "Look at the stacked strawberry crates.",
+          "target": "r_shed_app"
+        }
+      ]
+    },
+    {
+      "id": "r_shed_app",
+      "body": "You study the stacked crates. The map is torn right at this spot, and two ways go on. A low crawlspace under the bench leads into the dark. A crate staircase climbs up toward the glowing rafters. Mouse dust puffs. You and Pip decide which way the bitten-leaf mark wants you to go.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_shed_back",
+          "label": "Crawl through the dark space under the bench.",
+          "target": "e_set_shed"
+        },
+        {
+          "id": "c_shed_in",
+          "label": "Climb the crate stairs up.",
+          "target": "r_shed_3"
+        }
+      ]
+    },
+    {
+      "id": "e_set_shed",
+      "body": "The crawl under the bench is just a cobwebby dead end. Old plant pots lean on a dried-up rubber boot. No midnight thief. No treasure. You back out sneezing and laughing. You dust the map off and trot to the garden gate for lemonade before you try another trail.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_shed",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "A Cobwebby Dead End"
+      }
+    },
+    {
+      "id": "r_shed_3",
+      "body": "The crate stairs wobble just a little but hold as you climb toward the glowing rafters. Pip goes first and gasps softly at what he sees, and you scramble up right behind him. Warm light paints your hands gold. The shed smells sweeter up here, like dry hay and crayon wax.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_shed_3",
+          "label": "Climb toward the glowing rafters.",
+          "target": "r_shed_4"
+        }
+      ]
+    },
+    {
+      "id": "r_shed_4",
+      "body": "Up past the rafters someone has built a secret loft. They used feed sacks, milk crates, and a lantern that runs on batteries. A painted sign hangs above the doorway. It feels warm and secret, like a held breath. A ladybug ticks across the floorboards. It does not mind you at all.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_shed_4",
+          "label": "Peek into the secret loft.",
+          "target": "r_shed_5"
+        }
+      ]
+    },
+    {
+      "id": "r_shed_5",
+      "body": "Inside the loft are two comfy seats. A shelf holds adventure books. A jar holds shiny paper stars. A blanket is folded neatly in the corner. It is as if it is waiting for visitors. The bitten-leaf mark is right here on the map. You almost whisper so you will not wake the quiet.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_shed_5",
+          "label": "Step into the secret loft.",
+          "target": "r_shed_6"
+        }
+      ]
+    },
+    {
+      "id": "r_shed_6",
+      "body": "You step inside like honored guests. The sign over the doorway reads Garden Detectives Welcome in bright friendly letters. You and Pip realize this must be a secret fort. It was built by kids long ago. It was left ready for whoever found the map next. A pencil still waits in a cup.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_shed_6",
+          "label": "Read the painted doorway sign.",
+          "target": "e_fort"
+        }
+      ]
+    },
+    {
+      "id": "e_fort",
+      "body": "You have found the secret garden fort, snug and hidden in the top of the potting shed, all ready for new explorers. You write your own names in the little logbook on the shelf. You promise to come back and take good care of it. This will be your headquarters from now on. The bean thief should beware.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fort",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Secret Garden Fort"
+      }
+    },
+    {
+      "id": "r_rock_1",
+      "body": "You head for the stacked paving stones, warm from the afternoon sun. A few marigolds grow in the cracks and smell peppery. The green line points to a loose flagstone near the bottom. It looks slightly tilted, like a wink. An ant hurries across it with a crumb as big as its head.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_rock_1",
+          "label": "Look at the loose flagstone.",
+          "target": "r_rock_2"
+        }
+      ]
+    },
+    {
+      "id": "r_rock_2",
+      "body": "Pip taps the flagstone and it sounds hollow, like there is a space underneath. You check the map, where the bitten-leaf mark sits just below the rocks. A faint chalk arrow seems to mark the very spot. Your fingers tingle. Somewhere a watering can drips, as if it is nodding yes.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_rock_2",
+          "label": "Tap the hollow flagstone.",
+          "target": "r_rock_app"
+        }
+      ]
+    },
+    {
+      "id": "r_rock_app",
+      "body": "You tap again, and two small arrows show, scratched faintly into the warm flagstone. One points toward a busy crack by the marigold edge. The other points straight down at the sandy soil right under the stone. A drip from the leaky can dots the dust. You choose where to look.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rock_left",
+          "label": "Check the crack by the marigolds.",
+          "target": "e_set_rock"
+        },
+        {
+          "id": "c_rock_dig",
+          "label": "Dig into the sandy soil underneath.",
+          "target": "r_rock_3"
+        }
+      ]
+    },
+    {
+      "id": "e_set_rock",
+      "body": "The crack by the marigolds is just a snug home for a line of busy ants. They march to and fro with tiny crumbs. No treasure. No bean thief. You say a polite hello, roll up the map, and wander back to the garden gate for cold lemonade. The ants do not even look up.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_rock",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Only a Line of Ants"
+      }
+    },
+    {
+      "id": "r_rock_3",
+      "body": "You gently lift the flagstone aside. The sandy soil underneath is soft. It brushes away like sugar. Pip digs with a garden trowel. You cup your hands to catch the dirt. Something smooth and round soon appears, cool as a washed pebble. Both of you stop breathing for a second.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_rock_3",
+          "label": "Brush away the sandy soil.",
+          "target": "r_rock_4"
+        }
+      ]
+    },
+    {
+      "id": "r_rock_4",
+      "body": "A dented lunch tin with a rusty latch sits nestled in the sand, just where the mark promised. It is exactly the size for two hands to lift. You wiggle it free. Pip blows the dust off the lid. The leaky can applauds with one drip. Your names could almost fit on that lid.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_rock_4",
+          "label": "Wiggle the lunch tin free.",
+          "target": "r_rock_5"
+        }
+      ]
+    },
+    {
+      "id": "r_rock_5",
+      "body": "The rusty latch pops open with a happy click. Inside, wrapped in a folded seed-catalog page, is a heap of glass marbles. They catch the garden sunlight in swirls of blue, green, and gold. You gasp. Pip nearly drops the tin, then laughs at his own wobbly hands.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_rock_5",
+          "label": "Open the rusty latch.",
+          "target": "r_rock_6"
+        }
+      ]
+    },
+    {
+      "id": "r_rock_6",
+      "body": "There are cats-eyes and swirlies. There is one big shooter as clear as a raindrop. Some other kid saved dozens of marbles years and years ago. Maybe after a garden party. The note on the seed catalog page just says share and enjoy. You and Pip read it twice. You whisper so the beans will not hear you.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_rock_6",
+          "label": "Look closely at the glass marbles.",
+          "target": "e_marbles"
+        }
+      ]
+    },
+    {
+      "id": "e_marbles",
+      "body": "You have dug up a tin of garden marbles. A kid from long ago left them as treasure. You choose two favorites to keep. You tuck the rest back with a note of your own. It is for the next lucky finder. You walk toward class. A marble clinks in each pocket. They sound like tiny answers.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_marbles",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Buried Marble Tin"
+      }
+    },
+    {
+      "id": "s_intro",
+      "body": "The last part of the green line runs down the sloping lawn. It stops at the leaky ditch at the bottom of the garden, where overflow water meets the park. The water chatters over smooth stones. Pip holds the crayon map high so it will not get wet. Nibbled bean leaves tremble in the breeze.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_go",
+          "label": "Head down to the leaky ditch.",
+          "target": "s_fork"
+        }
+      ]
+    },
+    {
+      "id": "s_fork",
+      "body": "You scramble down to the chattering water. The green line splits one last time. One branch curves into a thicket of raspberry canes along the bank. The other hops out across a row of flat stepping stones to the far side. A frog plops. You and Pip decide which way the treasure lies.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bramble",
+          "label": "Follow the line into the raspberry canes.",
+          "target": "s_bramble_1"
+        },
+        {
+          "id": "c_s_bank",
+          "label": "Cross the stepping stones.",
+          "target": "s_bank_1"
+        }
+      ]
+    },
+    {
+      "id": "s_bramble_1",
+      "body": "You follow the line into the shade of the raspberry canes, already heavy with the first ripe purple berries. The leaves make a cool green tunnel. From somewhere deeper inside comes a soft, rumbly sound. It is not a slug. It is not the leaky can. Pip's eyebrows climb up.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bramble_1",
+          "label": "Follow the rumbly sound into the bushes.",
+          "target": "s_bramble_2"
+        }
+      ]
+    },
+    {
+      "id": "s_bramble_2",
+      "body": "You hold a cane aside so no thorns catch your sleeves. The rumbly sound comes again, closer this time. Pip checks the map. The green line winds right into the middle of the thicket. You step in gently. Berries tap your shoulders like small polite fingers.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bramble_2",
+          "label": "Hold the thorns aside and go in.",
+          "target": "s_bramble_app"
+        }
+      ]
+    },
+    {
+      "id": "s_bramble_app",
+      "body": "Inside the canes the trail on the map is faded, and two little tunnels lead on through the leaves. One tunnel goes low toward a thorny dead end by the compost heap. The other goes toward a brighter gap where the rumbly sound seems happiest. Berry juice dots your wrist. You pick a way.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bramble_back",
+          "label": "Take the low thorny tunnel.",
+          "target": "e_set_bramble"
+        },
+        {
+          "id": "c_bramble_push",
+          "label": "Take the brighter happier tunnel.",
+          "target": "s_bramble_3"
+        }
+      ]
+    },
+    {
+      "id": "e_set_bramble",
+      "body": "The low tunnel just ends. A thick tangle of thorns is too prickly to pass. Only a lost garden glove hangs caught on a branch. It is floppy as a tired fish. You back out with care. You do not get a scratch. You laugh at the silly glove and head up to the garden gate for lemonade.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_bramble",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Lost Garden Glove"
+      }
+    },
+    {
+      "id": "s_bramble_3",
+      "body": "The brighter tunnel opens into a grassy nest. It is right in the heart of the canes. Soft dry leaves cover the floor. The rumbly sound turns into a purr. Two green eyes blink at you from a warm nest of grass. A raspberry rolls to your shoe like a tiny welcome gift.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bramble_3",
+          "label": "Step into the grassy nest.",
+          "target": "s_bramble_4"
+        }
+      ]
+    },
+    {
+      "id": "s_bramble_4",
+      "body": "A white-pawed tabby is curled up in the grassy nest. It does not run away at all. Instead it stretches. It yawns. It pads right over to say hello. It wears a faded blue collar. A berry stain dots one whisker. You decide at once that this cat is a pro greeter.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bramble_4",
+          "label": "Say hello to the white-pawed tabby.",
+          "target": "s_bramble_5"
+        }
+      ]
+    },
+    {
+      "id": "s_bramble_5",
+      "body": "The tabby winds around your ankles. It purrs like a tiny engine. It flops over for a belly rub. You and Pip laugh and stroke its soft fur. The bitten-leaf mark is drawn right where the cat made its cozy hideaway. Maybe this is the garden's night-shift boss.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bramble_5",
+          "label": "Give the tabby a belly rub.",
+          "target": "s_bramble_6"
+        }
+      ]
+    },
+    {
+      "id": "s_bramble_6",
+      "body": "The collar has a round tag that reads Moth, and please be my friend, but no address at all. The cat clearly knows this nest well and treats you like old pals. You and Pip wonder if it has been waiting for the map to be found. Maybe Moth watches the beans after dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bramble_6",
+          "label": "Read the round collar tag.",
+          "target": "e_cat"
+        }
+      ]
+    },
+    {
+      "id": "e_cat",
+      "body": "You have found Moth the garden cat. He lives happily in the raspberry nest. You share your afternoon crackers with your new pal. You promise to visit every single day. You will help find where he belongs. He walks you halfway to the classroom. His tail is held high. It is as if he solved the case first.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_cat",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Moth the Garden Cat"
+      }
+    },
+    {
+      "id": "s_bank_1",
+      "body": "The stepping stones cross the chattering ditch in a neat flat row. They are dry on top and easy to hop. You cross one careful stone at a time to the mossy far bank. Pip pinwheels his arms and does not fall in. The green line points to the roots of a young willow.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bank_1",
+          "label": "Hop across to the far bank.",
+          "target": "s_bank_2"
+        }
+      ]
+    },
+    {
+      "id": "s_bank_2",
+      "body": "On the far bank the willow trails its long green fingers in the water. The ground beneath its roots is soft and cool. Pip studies the map. The bitten-leaf mark sits tucked among the tangled roots. A metal glint shows in the shade. A water-skater writes secret letters on the ditch.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bank_2",
+          "label": "Look among the willow roots.",
+          "target": "s_bank_app"
+        }
+      ]
+    },
+    {
+      "id": "s_bank_app",
+      "body": "You peer among the willow's tangled roots and two hollows show. One is a wet pocket right at the water's edge, slick with mud. The other is a higher dry hollow where the metal glint winks. A drip from upstream keeps time. You choose where the bitten-leaf mark is pointing.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bank_back",
+          "label": "Search the wet pocket at the water.",
+          "target": "e_set_bank"
+        },
+        {
+          "id": "c_bank_cross",
+          "label": "Search the higher dry hollow.",
+          "target": "s_bank_3"
+        }
+      ]
+    },
+    {
+      "id": "e_set_bank",
+      "body": "The wet pocket holds nothing but a shiny wet pebble and one very surprised frog. It blinks. You blink back. You grin at your muddy sneakers, wave a polite hello, and hop back across the stones for lemonade at the garden gate. The map can wait. The frog has work to do.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_bank",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "A Surprised Frog"
+      }
+    },
+    {
+      "id": "s_bank_3",
+      "body": "The higher dry hollow is just the right size to kneel in. The glint comes from something half-buried in the cool soil. You brush the earth away gently while Pip holds the willow branches back. A corner of metal appears, green at the rim. Your pulse hops like a cricket.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bank_3",
+          "label": "Brush away the cool soil.",
+          "target": "s_bank_4"
+        }
+      ]
+    },
+    {
+      "id": "s_bank_4",
+      "body": "It is a biscuit tin, green at the edges but still shut tight, exactly where the mark promised. You work the stiff lid with careful fingers. At last it opens with a soft puff of old air. It smells like attics and mint. Pip leans so close his nose almost goes in.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bank_4",
+          "label": "Open the biscuit tin.",
+          "target": "s_bank_5"
+        }
+      ]
+    },
+    {
+      "id": "s_bank_5",
+      "body": "Inside the tin, gleaming on a bed of faded velvet, is a heap of buttons. Brass buttons. Glass buttons. Pearly ones shaped like little flowers. They sparkle like real jewels in the willow's dappled light. Pip's mouth makes a round O. A button winks the same green as new bean leaves.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bank_5",
+          "label": "Look at the sparkling buttons.",
+          "target": "s_bank_6"
+        }
+      ]
+    },
+    {
+      "id": "s_bank_6",
+      "body": "Someone has kept these buttons safe here for years. Each one is different and lovely. They are a true garden treasure. A scrap of notebook paper inside reads for the finder, with love. You and Pip feel like you have opened a chest of pirate gold beside the beans. The leaky can drips a tiny cheer.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bank_6",
+          "label": "Read the scrap of paper.",
+          "target": "e_buttons"
+        }
+      ]
+    },
+    {
+      "id": "e_buttons",
+      "body": "You have dug up the button tin. It is the real treasure at the end of the map. You pick one shiny button each to keep as a memory. You bury the tin again with a new note for the next explorer. You cross the stepping stones. You feel rich as kings. Tonight you will watch the beans together.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_buttons",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Willow Button Tin"
+      }
+    }
+  ]
+}

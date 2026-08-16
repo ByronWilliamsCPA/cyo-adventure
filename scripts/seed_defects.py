@@ -1,0 +1,612 @@
+"""Build known-bad books by seeding one named defect into a book that passes (W7).
+
+The only validation available to a new instrument here is an artifact whose
+defect is known because we built it. Not a rated pair, not a model's opinion: a
+book we broke on purpose, in one named way, so a criterion that claims to measure
+that property can be asked whether it notices.
+
+**Every seed is verified by a deterministic measure before a judge sees it.** That
+is what makes these known-bads rather than intended-bads. A seeding function that
+silently failed would produce a book indistinguishable from its control, the panel
+would score it the same, and the battery would report the criterion broken when
+the fixture was. Each seeder therefore ships with a checker that must confirm the
+defect landed, and :func:`verify` runs them.
+
+Five defects, matching the workplan's list:
+
+``dialogue_flat``
+    Every quoted line becomes narration. Verified by dialogue share falling to
+    zero.
+``tense_break``
+    A third of nodes switch narrative tense. Verified by the prose-craft tense
+    checker reporting unstable nodes.
+``false_choice``
+    A real fork is repointed so both options land on the same node. Verified by
+    the W3 fork-consequence measure reporting a higher false-choice count.
+``reading_level_up``
+    The prose is rewritten harder. This is the one seed a formula cannot fake and
+    still read like a book, so it uses a generation call; verified by whole-book
+    Flesch-Kincaid rising by at least the requested grades.
+``premise_duplicate``
+    The opening node adopts a sibling book's premise verbatim. Verified by shared
+    four-gram convergence against that sibling rising sharply.
+
+Usage::
+
+    uv run python scripts/seed_defects.py out/a.filled.json out/b.filled.json \\
+        --out out/w7/arms --sibling out/b.filled.json
+"""
+
+from __future__ import annotations
+
+import argparse
+import copy
+import json
+import re
+import sys
+from dataclasses import dataclass
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, Final
+
+_REPO_ROOT: Final[Path] = Path(__file__).resolve().parent.parent
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+from pydantic import ValidationError  # noqa: E402
+
+from cyo_adventure.storybook.models import Storybook  # noqa: E402
+from cyo_adventure.utils.sentences import split_sentences  # noqa: E402
+from cyo_adventure.validator.consequence import measure_consequence  # noqa: E402
+from cyo_adventure.validator.dialogue import dialogue_share, flatten  # noqa: E402
+from cyo_adventure.validator.reading_level import measure_book  # noqa: E402
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+# How many grades harder the reading-level seed aims for, and the minimum rise
+# that counts as landed. The gap between them is deliberate: a model asked for
+# three grades will not hit three exactly, and rejecting a 2.4-grade rise would
+# throw away a usable known-bad.
+_GRADE_TARGET: Final[float] = 3.0
+_GRADE_MIN_RISE: Final[float] = 1.5
+
+# The `imagery_flat` seed must strip at least this share of the book's
+# concrete-sensory vocabulary to count as landed. Deliberately a ratio rather
+# than an absolute: the corpus spans 0.8 to 4.5 declared reading grades and the
+# younger books are far more concrete to begin with.
+_IMAGERY_MIN_DROP: Final[float] = 0.7
+
+# Seeds that need a generation call and therefore cannot be produced here.
+# `w7_battery.py --prepare` owns them, because it owns the provider.
+_GENERATION_SEEDS: Final[frozenset[str]] = frozenset(
+    {"reading_level_up", "imagery_flat"}
+)
+
+# Share of nodes the tense seed switches. A third is the workplan's figure: enough
+# that a reader would notice, not so much that the book reads as present-tense
+# throughout and the defect becomes a style rather than a break.
+_TENSE_SHARE: Final[float] = 1 / 3
+
+# Past-to-present forms for the tense seed. Deliberately small and common: the
+# seed has to be recognisable as a tense break to a reader, and a rare verb
+# switched in isolation is a typo rather than a break.
+_TO_PRESENT: Final[dict[str, str]] = {
+    "was": "is",
+    "were": "are",
+    "had": "has",
+    "said": "says",
+    "went": "goes",
+    "came": "comes",
+    "saw": "sees",
+    "looked": "looks",
+    "walked": "walks",
+    "ran": "runs",
+    "took": "takes",
+    "made": "makes",
+    "found": "finds",
+    "felt": "feels",
+    "thought": "thinks",
+    "asked": "asks",
+    "opened": "opens",
+    "turned": "turns",
+    "pulled": "pulls",
+    "stopped": "stops",
+    "smiled": "smiles",
+    "nodded": "nods",
+}
+
+__all__ = ["DEFECTS", "SeedResult", "seed", "verify"]
+
+
+@dataclass(frozen=True, slots=True)
+class SeedResult:
+    """One seeded book and the evidence that the defect actually landed.
+
+    Attributes:
+        defect: The defect name, or ``"control"``.
+        doc: The seeded document.
+        landed: Whether the verifying measure confirmed the defect.
+        evidence: The measurement, for the record and for a reader deciding
+            whether to trust a detection rate computed over this arm.
+    """
+
+    defect: str
+    doc: dict[str, Any]
+    landed: bool
+    evidence: str
+
+
+def _bodies(doc: dict[str, Any]) -> list[dict[str, Any]]:
+    """Return the node list.
+
+    Args:
+        doc: The story document.
+
+    Returns:
+        Its nodes.
+    """
+    nodes = doc.get("nodes")
+    return nodes if isinstance(nodes, list) else []
+
+
+def _dialogue_share(doc: dict[str, Any]) -> float:
+    """Return the share of node bodies carrying a recognised spoken line.
+
+    Delegates to the shared detector rather than counting quotation marks. The
+    quote-only version this replaced reported 0.000 for a book with fifteen
+    spoken lines, which made the `dialogue_flat` seed a silent no-op on the
+    whole corpus.
+
+    Args:
+        doc: The story document.
+
+    Returns:
+        The share, ``0.0`` for a book with no nodes.
+    """
+    return dialogue_share(str(n.get("body", "")) for n in _bodies(doc))
+
+
+def seed_dialogue_flat(doc: dict[str, Any]) -> dict[str, Any]:
+    """Convert every spoken line to narration, quoted or tagged.
+
+    Args:
+        doc: The passing book.
+
+    Returns:
+        A copy with no dialogue. The utterance is kept and its attribution
+        removed, so the book keeps its length and its events and differs only in
+        the property under test; deleting the sentences would shorten the book
+        and confound a length-sensitive criterion with the one being tested.
+    """
+    out = copy.deepcopy(doc)
+    for node in _bodies(out):
+        node["body"] = flatten(str(node.get("body", "")))
+    return out
+
+
+def dominant_tense(doc: dict[str, Any]) -> str:
+    """Return the tense the book is actually written in.
+
+    The seed has to invert whatever the book does, and assuming past tense is
+    how the first version of this seeder no-opped: the catalogue's younger-band
+    books are written in the present ("Clover is a little bear. She spreads a
+    soft blanket"), so a past-to-present rewrite changed nothing on exactly the
+    nodes it was pointed at, and the two books it appeared to work on were
+    carrying a stray past-tense verb.
+
+    Args:
+        doc: The story document.
+
+    Returns:
+        ``"past"`` or ``"present"``, by majority over the marker verbs.
+    """
+    text = " ".join(str(n.get("body", "")) for n in _bodies(doc)).lower()
+    past = sum(len(re.findall(rf"\b{w}\b", text)) for w in _TO_PRESENT)
+    present = sum(len(re.findall(rf"\b{w}\b", text)) for w in _TO_PRESENT.values())
+    return "past" if past >= present else "present"
+
+
+def seed_tense_break(doc: dict[str, Any]) -> dict[str, Any]:
+    """Switch a third of the nodes out of the book's own narrative tense.
+
+    Args:
+        doc: The passing book.
+
+    Returns:
+        A copy whose narrative tense is unstable.
+    """
+    out = copy.deepcopy(doc)
+    mapping = (
+        _TO_PRESENT
+        if dominant_tense(doc) == "past"
+        else {v: k for k, v in _TO_PRESENT.items()}
+    )
+    nodes = _bodies(out)
+    stride = max(int(1 / _TENSE_SHARE), 1)
+    for index, node in enumerate(nodes):
+        if index % stride:
+            continue
+        body = str(node.get("body", ""))
+        for src, dst in mapping.items():
+            body = re.sub(rf"\b{src}\b", dst, body)
+            body = re.sub(rf"\b{src.capitalize()}\b", dst.capitalize(), body)
+        node["body"] = body
+    return out
+
+
+def seed_false_choice(doc: dict[str, Any]) -> dict[str, Any]:
+    """Repoint one real fork so both options land on the same node.
+
+    Args:
+        doc: The passing book.
+
+    Returns:
+        A copy in which one decision is cosmetic. The labels are untouched, which
+        is the point: the reader is still asked a question that reads as a
+        choice.
+    """
+    out = copy.deepcopy(doc)
+    for node in _bodies(out):
+        choices = node.get("choices")
+        if not isinstance(choices, list) or len(choices) < 2:
+            continue
+        targets = {str(c.get("target")) for c in choices}
+        if len(targets) < 2:
+            continue
+        first = str(choices[0].get("target"))
+        for choice in choices[1:]:
+            choice["target"] = first
+        return out
+    return out
+
+
+def seed_premise_duplicate(
+    doc: dict[str, Any], sibling: dict[str, Any]
+) -> dict[str, Any]:
+    """Adopt a sibling book's opening prose verbatim.
+
+    Args:
+        doc: The passing book.
+        sibling: A different book whose premise is copied in.
+
+    Returns:
+        A copy whose opening is another book's, which is the defect the whole
+        anti-template programme exists to detect.
+    """
+    out = copy.deepcopy(doc)
+    start = str(out.get("start_node"))
+    sibling_start = str(sibling.get("start_node"))
+    donor = next(
+        (n for n in _bodies(sibling) if str(n.get("id")) == sibling_start), None
+    )
+    if donor is None:
+        return out
+    for node in _bodies(out):
+        if str(node.get("id")) == start:
+            node["body"] = str(donor.get("body", ""))
+            break
+    return out
+
+
+def _grade(doc: dict[str, Any]) -> float | None:
+    """Return the whole-book Flesch-Kincaid grade.
+
+    Args:
+        doc: The story document.
+
+    Returns:
+        The grade, or ``None`` when the book declares no band or is too short.
+    """
+    metadata = doc.get("metadata")
+    level = metadata.get("reading_level") if isinstance(metadata, dict) else None
+    if not isinstance(level, dict):
+        return None
+    measured = measure_book(
+        (str(n.get("body", "")) for n in _bodies(doc)),
+        target=float(level.get("target", 3.0)),
+        tolerance=float(level.get("tolerance", 1.0)),
+    )
+    return None if measured is None else measured.grade
+
+
+def verify(defect: str, before: dict[str, Any], after: dict[str, Any]) -> SeedResult:
+    """Confirm the named defect actually landed, and say by how much.
+
+    A seeder that silently no-ops produces a book identical to its control. The
+    panel would score the two the same and the battery would report the criterion
+    blind when the fixture was empty, which is the one failure mode that would
+    make this whole exercise worse than not running it.
+
+    Args:
+        defect: The defect name.
+        before: The original passing book.
+        after: The seeded book.
+
+    Returns:
+        The result, carrying the measurement either way.
+    """
+    if defect == "ending_truncated":
+
+        def ending_words(doc: dict[str, Any]) -> int:
+            return sum(
+                len(str(n.get("body", "")).split())
+                for n in _bodies(doc)
+                if n.get("is_ending") or n.get("ending")
+            )
+
+        was, now = ending_words(before), ending_words(after)
+        return SeedResult(
+            defect,
+            after,
+            landed=now < was,
+            evidence=f"ending words {was}->{now}",
+        )
+    if defect == "imagery_flat":
+        was_d, now_d = _sensory_density(before), _sensory_density(after)
+        return SeedResult(
+            defect,
+            after,
+            landed=now_d < was_d * _IMAGERY_MIN_DROP,
+            evidence=(
+                f"sensory density {was_d:.1f}->{now_d:.1f} per 1000 words "
+                f"({(now_d / was_d - 1) * 100:+.0f}%)"
+                if was_d
+                else "no sensory words to lose"
+            ),
+        )
+    if defect == "dialogue_flat":
+        was, now = _dialogue_share(before), _dialogue_share(after)
+        return SeedResult(
+            defect,
+            after,
+            now == 0.0 and was > 0.0,
+            f"dialogue share {was:.2f}->{now:.2f}",
+        )
+    if defect == "tense_break":
+        changed = sum(
+            1
+            for a, b in zip(_bodies(before), _bodies(after), strict=False)
+            if a.get("body") != b.get("body")
+        )
+        return SeedResult(
+            defect,
+            after,
+            landed=changed > 0,
+            evidence=f"{changed} of {len(_bodies(after))} nodes reworded",
+        )
+    if defect == "false_choice":
+        try:
+            was = measure_consequence(Storybook.model_validate(before))
+            now = measure_consequence(Storybook.model_validate(after))
+        except (ValidationError, ValueError) as exc:
+            return SeedResult(
+                defect,
+                after,
+                landed=False,
+                evidence=f"unparseable after seeding: {exc}",
+            )
+        was_n = sum(1 for f in was.forks if f.is_false_choice)
+        now_n = sum(1 for f in now.forks if f.is_false_choice)
+        return SeedResult(
+            defect,
+            after,
+            landed=now_n > was_n,
+            evidence=f"false choices {was_n}->{now_n}",
+        )
+    if defect == "reading_level_up":
+        was, now = _grade(before), _grade(after)
+        if was is None or now is None:
+            return SeedResult(
+                defect, after, landed=False, evidence="grade unmeasurable"
+            )
+        return SeedResult(
+            defect,
+            after,
+            landed=now - was >= _GRADE_MIN_RISE,
+            evidence=f"FK grade {was:.2f}->{now:.2f} (+{now - was:.2f})",
+        )
+    if defect == "premise_duplicate":
+        start = str(after.get("start_node"))
+        changed = any(
+            str(a.get("id")) == start and a.get("body") != b.get("body")
+            for a, b in zip(_bodies(before), _bodies(after), strict=False)
+        )
+        return SeedResult(
+            defect, after, landed=changed, evidence="opening node replaced"
+        )
+    return SeedResult(
+        defect, after, landed=True, evidence="control arm, nothing seeded"
+    )
+
+
+DEFECTS: Final[tuple[str, ...]] = (
+    "control",
+    "dialogue_flat",
+    "tense_break",
+    "false_choice",
+    "reading_level_up",
+    "premise_duplicate",
+    "ending_truncated",
+    "imagery_flat",
+)
+
+
+# Words a child can see, hear, touch or smell. A crude proxy for the `imagery`
+# criterion's own anchor ("specific, physical detail a child can picture"),
+# curated in the same style as this repository's other deterministic pattern
+# sets, and honest about being a proxy: it is used only to verify that the
+# `imagery_flat` seed landed and to size it, never to score a book. A rewrite
+# that strips concrete detail lowers this; a rewrite that merely paraphrases
+# does not.
+_SENSORY: Final[frozenset[str]] = frozenset(
+    """
+    red orange yellow green blue purple pink brown black white grey gray gold
+    silver bright dark pale shiny dull glowing striped spotted
+    cold hot warm cool icy freezing burning damp wet dry sticky slippery rough
+    smooth soft hard sharp blunt fuzzy prickly heavy light
+    loud quiet silent squeak squeaked creak creaked crunch crunched rustle
+    rustled clatter clattered thud thump hiss buzz hum whistle bang crack snap
+    splash drip patter roar rumble
+    smell smelled smoky sweet sour bitter salty musty fresh
+    mud muddy dust dusty sand sandy stone rock wood metal glass rope cloth
+    leather paper feather fur moss grass leaf leaves branch twig bark
+    """.split()
+)
+
+
+def _sensory_density(doc: dict[str, Any]) -> float:
+    """Return recognised concrete-sensory words per 1000 words of prose.
+
+    Args:
+        doc: The story document.
+
+    Returns:
+        The density, ``0.0`` for a book with no prose.
+    """
+    words = [
+        w.lower()
+        for node in _bodies(doc)
+        for w in re.findall(r"[A-Za-z']+", str(node.get("body", "")))
+    ]
+    if not words:
+        return 0.0
+    return sum(1 for w in words if w in _SENSORY) / len(words) * 1000.0
+
+
+def seed_ending_truncated(doc: dict[str, Any]) -> dict[str, Any]:
+    """Cut every ending down to its first sentence.
+
+    Targets the `ending_quality` rubric's own first anchor, "abrupt stops".
+    Deterministic and reversible in principle: the events the ending opens with
+    survive, the resolution does not, which is exactly the defect a reader
+    complains about. Chosen over appending a stated moral, the rubric's other
+    anchor, because a moral has to be written and would put an author's voice
+    into a fixture.
+
+    Args:
+        doc: The passing book.
+
+    Returns:
+        The seeded copy.
+    """
+    # #ASSUME: data-integrity: cuts with `utils.sentences.split_sentences`
+    # (UW-C260, AL-390) rather than the old bare `[^.!?]+[.!?]*` idiom, so
+    # the truncation point respects an abbreviation and a quoted/tagged
+    # utterance instead of landing mid-abbreviation or mid-quote. Measured
+    # over the 31 committed books: 1 of 31 ending nodes truncates
+    # differently (`the-clocktower-cipher` / `n_end_timeout`), and the new
+    # truncation point is the fix, not a regression -- the old splitter cut
+    # before the utterance's closing quote, leaving the seeded fixture with
+    # an unbalanced `"`, which is itself a defect in a fixture meant to
+    # carry exactly one named defect (an abrupt stop, not a broken quote).
+    # #VERIFY: tests/unit/test_sentences.py pins the splitter itself.
+    out = copy.deepcopy(doc)
+    for node in _bodies(out):
+        if not node.get("is_ending") and not node.get("ending"):
+            continue
+        body = str(node.get("body", "")).strip()
+        sentences = split_sentences(body)
+        if len(sentences) > 1:
+            node["body"] = sentences[0]
+    return out
+
+
+def seed(
+    defect: str, doc: dict[str, Any], *, sibling: dict[str, Any] | None = None
+) -> dict[str, Any]:
+    """Apply one deterministic seed.
+
+    ``reading_level_up`` is not handled here: it needs a generation call and
+    lives in the battery, which owns the provider.
+
+    Args:
+        defect: The defect name.
+        doc: The passing book.
+        sibling: A different book, required by ``premise_duplicate``.
+
+    Returns:
+        The seeded copy.
+
+    Raises:
+        ValueError: If the defect is unknown or its inputs are missing.
+    """
+    if defect == "control":
+        return copy.deepcopy(doc)
+    if defect == "ending_truncated":
+        return seed_ending_truncated(doc)
+    if defect == "dialogue_flat":
+        return seed_dialogue_flat(doc)
+    if defect == "tense_break":
+        return seed_tense_break(doc)
+    if defect == "false_choice":
+        return seed_false_choice(doc)
+    if defect == "premise_duplicate":
+        if sibling is None:
+            msg = "premise_duplicate needs a sibling book to copy from"
+            raise ValueError(msg)
+        return seed_premise_duplicate(doc, sibling)
+    msg = f"{defect!r} is not a deterministic seed"
+    raise ValueError(msg)
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    """Seed every deterministic defect into each book and report what landed.
+
+    Args:
+        argv: Argument vector, or ``None`` for ``sys.argv``.
+
+    Returns:
+        Always ``0``. A seed that does not land is an ordinary outcome, not an
+        error: `dialogue_flat` cannot land on a book with no dialogue and
+        `false_choice` cannot land on one whose forks are already false. What
+        would make a battery measure the fixture rather than the panel is
+        *scoring* such an arm, and the fix for that is to withhold the file,
+        which this does, rather than to fail the whole seeding run and take the
+        arms that did land down with it.
+    """
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("books", nargs="+", type=Path)
+    parser.add_argument("--out", required=True, type=Path)
+    args = parser.parse_args(argv)
+
+    docs = [json.loads(p.read_text(encoding="utf-8")) for p in args.books]
+    args.out.mkdir(parents=True, exist_ok=True)
+    missed: list[str] = []
+    for index, (path, doc) in enumerate(zip(args.books, docs, strict=True)):
+        sibling = docs[(index + 1) % len(docs)]
+        for defect in DEFECTS:
+            if defect in _GENERATION_SEEDS:
+                # Needs a provider; `w7_battery.py --prepare` owns those.
+                continue
+            result = verify(defect, doc, seed(defect, doc, sibling=sibling))
+            stem = f"{path.stem.replace('.filled', '')}__{defect}.json"
+            if result.landed or defect == "control":
+                (args.out / stem).write_text(
+                    json.dumps(result.doc, indent=2) + "\n", encoding="utf-8"
+                )
+            else:
+                # A seed that did not land yields an arm byte-identical to its
+                # control. Writing it would give the battery an "opportunity" the
+                # criterion cannot possibly take, and the pre-registered reading
+                # of a zero detection rate is "retire the criterion". The arm is
+                # therefore withheld rather than scored, which lowers that
+                # criterion's n instead of manufacturing a failure for it. This
+                # is the harness half of the correction that deleted section 3's
+                # pre-committed verdict from the workplan.
+                (args.out / stem).unlink(missing_ok=True)
+                missed.append(f"{stem}: {result.evidence}")
+            mark = "ok  " if result.landed else "SKIP"
+            print(f"  {mark} {stem:<52} {result.evidence}")
+    if missed:
+        print(
+            f"\n{len(missed)} arm(s) withheld because the seed did not land. "
+            "The books they would have covered are not counted as opportunities; "
+            "the affected criteria run at reduced n:"
+        )
+        for line in missed:
+            print(f"  - {line}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

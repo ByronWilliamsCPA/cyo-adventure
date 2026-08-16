@@ -1,0 +1,823 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_backyard_treasure_map",
+  "version": 1,
+  "title": "The Backyard Treasure Map",
+  "metadata": {
+    "age_band": "5-8",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 2.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "friendship",
+      "adventure",
+      "curiosity",
+      "discovery"
+    ],
+    "estimated_minutes": 7,
+    "ending_count": 12,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "time_cave",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_open",
+  "nodes": [
+    {
+      "id": "n_open",
+      "body": "Nina and Theo, who had long been considered inseparable companions, found themselves engaged in play within Grandpa's backyard one particularly sunny afternoon. Beneath the sprawling, venerable oak tree that dominated the landscape, they stumbled upon an object of considerable curiosity. It was a jar, coated thickly in the dust of neglect and age. Contained within its glass confines was a map, tightly rolled into a cylindrical form! The document had evidently been rendered by hand, its lines betraying the imperfect artistry of a human creator rather than a machine. A meandering, dotted trajectory wound its way circuitously across the expanse of the yard, ultimately culminating at a conspicuous red X.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Spread out the map.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_start",
+      "body": "Prior to any further deliberation, the trajectory had grazed the imposing oak, its course subsequently curving beyond the modest, unassuming shed, before ultimately descending toward the meandering stream. A question thus presented itself: which of these landmarks warranted their initial attention? Nina's countenance broke into an expression of unmistakable delight, and Theo, mirroring her sentiment entirely, grinned in equal measure.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_oak",
+          "label": "Follow the map to the great old oak.",
+          "target": "o_intro"
+        },
+        {
+          "id": "c_start_shed",
+          "label": "Follow the map to the garden shed.",
+          "target": "r_intro"
+        },
+        {
+          "id": "c_start_stream",
+          "label": "Follow the map down to the stream.",
+          "target": "s_intro"
+        }
+      ]
+    },
+    {
+      "id": "o_intro",
+      "body": "Beneath the topmost reaches of the garden stood the venerable oak, and it was toward this ancient sentinel that the dotted line upon the map resolutely gestured. Nina, entrusted with the map itself, held it aloft with careful attention while Theo, methodical in his purpose, enumerated their advancing steps aloud\u2014one, two, three, four\u2014each number issued with deliberate emphasis. So immense was the oak's girth that a trio of children might easily have concealed themselves behind its massive trunk without fear of detection. Yet as the two companions drew nearer, an unexpected complication presented itself: the dotted line, upon nearing the gnarled roots below, appeared to diverge into a bifurcation, producing two faint and uncertain trails, each one meandering off toward an entirely different destination.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_go",
+          "label": "Search around the roots of the oak.",
+          "target": "o_fork"
+        }
+      ]
+    },
+    {
+      "id": "o_fork",
+      "body": "At the base of the oak tree, the dotted line upon the map diverged into a pair of faint, barely discernible trails, each beckoning in a different direction. One pathway meandered with wandering hesitation toward a moss-covered, hollow log that lay abandoned in the grass, from within which something produced a soft, intermittent croaking sound. The other trail curved in a looping arc toward an aging tire swing, suspended precariously from a low, drooping branch, its rope adorned with bright ribbons that fluttered restlessly in the passing breeze. Which of these two directions could the map possibly be intending for them to follow? Nina and Theo regarded the diverging trails with careful consideration before gesturing toward one with evident conviction. \"Let us attempt this particular route,\" they declared.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_hollow",
+          "label": "Take the trail to the hollow log.",
+          "target": "o_hollow_1"
+        },
+        {
+          "id": "c_o_swing",
+          "label": "Take the trail to the tire swing.",
+          "target": "o_swing_1"
+        }
+      ]
+    },
+    {
+      "id": "o_hollow_1",
+      "body": "They proceeded along the pathway until they arrived at the hollow log, which lay concealed within the overgrown grass, its girth exceeding that of a barrel. One extremity of the log presented a dim, cool, shadowed interior. From some indeterminate point within its depths emanated a congenial croaking sound, entirely devoid of menace. Rather, it resonated with a warmth and cheerfulness, reminiscent of a multitude of diminutive companions conversing among themselves. Nina and Theo advanced a fraction closer, inclining themselves forward in order to investigate.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_hollow_1",
+          "label": "Peek inside the hollow log.",
+          "target": "o_hollow_2"
+        }
+      ]
+    },
+    {
+      "id": "o_hollow_2",
+      "body": "Nina directed the concentrated ray of her flashlight into the hollowed interior of the log, and the diminutive beam journeyed an impressive distance into its depths. Theo, meanwhile, consulted the map with studious attention before an expression of delight overtook his features. The dotted trajectory, he discovered, proceeded directly through the log's interior and emerged on the opposite side! The croaking, meanwhile, had intensified into something considerably more animated\u2014it resembled nothing so much as a diminutive, jubilant assembly, wherein countless small voices contributed their calls in boisterous unison. Nina, overcome with curiosity, inclined herself nearer still in order to investigate.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_hollow_2",
+          "label": "Follow the map through the log.",
+          "target": "o_hollow_app"
+        }
+      ]
+    },
+    {
+      "id": "o_hollow_app",
+      "body": "On the far side of the fallen log, an errant droplet of long-ago rain had blurred a portion of the map into illegibility. From that obscured point, two diminutive trails diverged, branching off in opposite directions. One route was parched and dust-laden, meandering backward toward the boundary of the garden fence. The other, by contrast, was yielding and carpeted with moss, descending gradually toward the yard's shadowed, moisture-laden corner. Which of these paths had the map's original creator intended to indicate? Theo tapped a finger against the weathered parchment, absorbed in deliberation. Nina, meanwhile, gestured decisively toward one direction. \"I believe it proceeds this way,\" she declared.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hollow_dry",
+          "label": "Try the dry dusty path.",
+          "target": "e_set_hollow"
+        },
+        {
+          "id": "c_hollow_moss",
+          "label": "Try the soft mossy path.",
+          "target": "o_hollow_3"
+        }
+      ]
+    },
+    {
+      "id": "e_set_hollow",
+      "body": "The parched trail meandered before terminating abruptly at an accumulation of weathered flowerpots, forsaken and unremarkable. No crimson X materialized here, nor did any hidden treasure reveal itself\u2014merely a collection of vacant vessels absorbing the sun's warmth in idle stillness. Nina and Theo exchanged a fleeting glance before erupting into uncontrollable laughter, marveling at the sheer absurdity of such an elaborate ruse. Rolling the map into a tight cylinder, they bounded gleefully toward the porch, where two substantial glasses of chilled lemonade awaited their arrival, promising refreshment both sweet and impeccably cold. Tomorrow, they resolved, would bring another trail worthy of exploration.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_hollow",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Back to the Flowerpots"
+      }
+    },
+    {
+      "id": "o_hollow_3",
+      "body": "They proceeded along the plush, moss-carpeted trail, its surface yielding a springy coolness that seemed to rise up through the soles of their feet with every step. Ferns, brushing against their knees with a delicate, tickling insistence, seemed to usher them onward. The croaking, meanwhile, intensified, swelling into something more jubilant and pronounced. Theo halted abruptly, his voice dropping to a hushed whisper. \"Listen,\" he murmured, \"it sounds as though hundreds of tiny voices are chattering all at once, an entire chorus conversing simultaneously!\" Exchanging delighted smiles, the friends ventured a little farther into the unfolding mystery ahead.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_hollow_3",
+          "label": "Follow the mossy path deeper.",
+          "target": "o_hollow_4"
+        }
+      ]
+    },
+    {
+      "id": "o_hollow_4",
+      "body": "The pathway descended into a shadowed, verdant hollow, a place suffused with a cool and almost reverent quietness. The earth beneath their feet yielded softly, as though cushioned by some unseen hand. Smooth, flattened stones lay scattered in irregular clusters throughout the hollow, and each diminutive stone bore an uncanny resemblance to a miniature doorway. Perhaps, they mused, some impossibly small creature made its home just beyond one of these tiny thresholds! Nina and Theo advanced with deliberate caution, wary of stumbling upon the uneven ground, and continued to trace the dotted line as it wound ever deeper into the enveloping shade.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_hollow_4",
+          "label": "Step into the shady green hollow.",
+          "target": "o_hollow_5"
+        }
+      ]
+    },
+    {
+      "id": "o_hollow_5",
+      "body": "In the verdant hollow, they discovered a circular arrangement of rounded pebbles, situated with the deliberate precision of a diminutive wall. Ensconced behind this modest barrier sat an assembly of toads\u2014corpulent, spotted creatures, plump as freshly baked biscuits\u2014reposing regally upon thrones fashioned from leaves and chairs improvised from lily pads. Their bearing was so dignified that they resembled nothing less than royalty, kings and queens surveying their domain. Not a single one retreated with a hop; instead, the toads merely blinked, regarding their visitors with placid, unhurried curiosity.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_hollow_5",
+          "label": "Tiptoe up to the ring of pebbles.",
+          "target": "o_hollow_6"
+        }
+      ]
+    },
+    {
+      "id": "o_hollow_6",
+      "body": "Amid the assembled congregation, the most substantial toad of all bore atop his head a crown fashioned from clover leaves, and he blinked with a deliberate, unhurried slowness that lent him an air of wisdom and considerable antiquity, as though he were a diminutive monarch presiding over some ancient realm. Nina and Theo lowered themselves into the moss with the utmost gentleness, mindful not to inspire alarm in any of the gathered creatures, however insignificant even the smallest toad among them might appear. It was then that Theo's attention was drawn to a peculiar detail tucked within the corner of their vision: the map's crimson X, inscribed with unmistakable precision directly beside the toad king himself. Right here! he whispered, his voice barely audible.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_hollow_6",
+          "label": "Kneel down by the toad king.",
+          "target": "e_toad_king"
+        }
+      ]
+    },
+    {
+      "id": "e_toad_king",
+      "body": "Nina and Theo had, quite unexpectedly, stumbled upon an entire kingdom belonging to toads, concealed within a shadowy, verdant hollow that scarcely anyone else might ever discover. A diminutive monarch, adorned with a crown fashioned from clover, presided regally atop his throne of woven leaves. The two companions solemnly vowed to preserve the secrecy and safety of this hidden realm, ensuring that its existence would remain undisclosed. Before departing, they carefully placed a soft, verdant leaf upon the ground\u2014an offering intended as a gift befitting the diminutive sovereign. Afterward, they withdrew on tiptoe, taking the utmost care not to disturb the tranquility of the place. Throughout the entirety of their journey homeward, an irrepressible smile lingered upon their faces, refusing to fade.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_toad_king",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Toad Kingdom"
+      }
+    },
+    {
+      "id": "o_swing_1",
+      "body": "Diligently, they traced the meandering loop of the trail until it delivered them to the weathered tire swing, suspended from a low-hanging oak branch. It rotated with unhurried deliberation in the mild currents of the breeze. Someone had affixed vibrant ribbons in a continuous procession along the entirety of the rope\u2014hues of yellow, blue, and red interwoven together. These fluttered and cavorted animatedly in the wind's persistent motion, and, illuminated by the sun's radiance, they bore an uncanny resemblance to a series of diminutive flags.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_swing_1",
+          "label": "Look at the ribbons on the swing.",
+          "target": "o_swing_2"
+        }
+      ]
+    },
+    {
+      "id": "o_swing_2",
+      "body": "Theo administered a gentle nudge to the tire. High above him, ensconced within the tree's upper reaches, he detected a faint, tinkling resonance\u2014ting, ting, ting. Nina scrutinized the map. The dotted line ascended directly along the trunk before disappearing into the branches. That tinkling seemed remarkably akin to the ringing of tiny bells, emanating from somewhere overhead. The two companions tilted their heads backward, straining to listen more attentively. Bells! they exclaimed in unison.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_swing_2",
+          "label": "Listen for the tinkling sound.",
+          "target": "o_swing_app"
+        }
+      ]
+    },
+    {
+      "id": "o_swing_app",
+      "body": "At the point where the trunk bore a gnarled knot, the dotted trail diverged, branching into two distinct possibilities. The leftward path meandered toward a dense clustering of thick, thorny foliage, forbidding in its prickliness. The rightward course, by contrast, extended along a smooth, low-slung limb that appeared far more navigable underfoot. All the while, the bells persisted in their distant chiming, resonating from some unseen point ahead. Faced with this fork, they found themselves confronted by an essential question: in which direction ought they proceed to trace the source of that cheerful ringing? Nina, having listened carefully, became convinced that the pealing sound emanated with greater intensity from the rightward branch. \"Let us attempt that route,\" she proposed, her tone certain.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_swing_left",
+          "label": "Climb toward the prickly leaves.",
+          "target": "e_set_swing"
+        },
+        {
+          "id": "c_swing_right",
+          "label": "Walk along the smooth low limb.",
+          "target": "o_swing_3"
+        }
+      ]
+    },
+    {
+      "id": "e_set_swing",
+      "body": "The prickly left branch presented itself as nothing more than a chaotic snarl of twigs, a pathway that ultimately led nowhere whatsoever. At its very terminus dangled an antiquated bird box, entirely devoid of contents. No treasure lay concealed within it. No crimson X marked its surface. Nina and Theo erupted into giggles at this absurdly anticlimactic dead end. Descending from their perch, they leapt off the swing and subsequently made their way back toward the porch, where cold lemonade and a well-deserved respite awaited them. Evidently, the elusive X must be concealed somewhere else entirely.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_swing",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Just an Empty Bird Box"
+      }
+    },
+    {
+      "id": "o_swing_3",
+      "body": "The polished limb afforded an untroubled surface upon which to maintain one's equilibrium. With every successive step, the faint tinkling resolved into something increasingly distinct\u2014ting, ting, ting\u2014as if beckoning them onward. Nina, in the interest of preserving her stability and averting any misfortune, kept one hand pressed firmly against the trunk. Theo, meanwhile, remained absorbed in the map, indicating with outstretched finger the trajectory they ought to pursue. Presently, the branch commenced a gradual curvature, guiding them toward a luminous, sunlit aperture amid the verdant foliage. It was from that very location, unmistakably, that the ringing sound emanated.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_swing_3",
+          "label": "Balance along toward the ringing.",
+          "target": "o_swing_4"
+        }
+      ]
+    },
+    {
+      "id": "o_swing_4",
+      "body": "They arrived at an enchanted region of the tree, where hundreds of diminutive objects dangled precariously, suspended from the twigs by delicate lengths of string. Keys and shells, spoons and buttons intermingled there, perpetually colliding with one another in gentle, unhurried collisions. Each infinitesimal impact produced a soft, resonant tone, so that the entirety of the tree appeared to be intoning a hushed, secret melody, composed exclusively for their benefit. Nina and Theo gazed upward, their eyes widened in astonishment.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_swing_4",
+          "label": "Look at the dangling things.",
+          "target": "o_swing_5"
+        }
+      ]
+    },
+    {
+      "id": "o_swing_5",
+      "body": "Long ago, someone had taken it upon themselves to suspend a wind chime from every branch in this place. The sun, catching each glinting fragment, cast diminutive rainbows scattering across the leaves, and these small arcs of color performed a delicate dance whenever the breeze stirred. Nina and Theo remained utterly motionless, uttering not a single syllable, absorbed instead in listening to the soft, resonant melody. It was extraordinarily beautiful.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_swing_5",
+          "label": "Stand still and listen.",
+          "target": "o_swing_6"
+        }
+      ]
+    },
+    {
+      "id": "o_swing_6",
+      "body": "Suspended precisely at the epicenter of those melodiously murmuring branches hung the most magnificent chime of the entire collection. Someone, at some unrecorded moment, had fashioned it from a weathered watering can and a succession of gleaming spoons arranged in careful sequence. And there, hovering with uncanny proximity beside it, was the map's elusive red X\u2014the very object of their quest! Theo, overcome with anticipation, suspended his breathing entirely and observed with unwavering attention. Nina extended her hand with deliberate slowness and bestowed upon the chime the most delicate and tentative of touches imaginable. Ting, it responded, softly and without hesitation. It was but one small, sweetly resonant sound, offered exclusively to them, as though the universe itself had conspired to grant this singular moment their due.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_swing_6",
+          "label": "Touch the biggest chime gently.",
+          "target": "e_chime"
+        }
+      ]
+    },
+    {
+      "id": "e_chime",
+      "body": "Nina and Theo had, in the course of their wanderings, stumbled upon a concealed and hitherto unknown wind-chime tree, a solitary specimen that, whenever the faintest breeze happened to infiltrate the labyrinth of its branches, would erupt into an unceasing, self-generated melody, entirely without human assistance. The two companions, moved by an inexplicable impulse toward generosity, resolved that this remarkable tree deserved some manner of tribute. Accordingly, they affixed a single diminutive shell to one of the lower, more accessible twigs, positioning it with great care so that it might contribute its own faint resonance to the chorus already produced by the tree's other ornaments. Consequently, the tree's song was rendered marginally more resonant and considerably more mellifluous than before. Throughout the entirety of their journey homeward, the two friends could not help but hum, under their breath, the cheerful and lingering melody it had bestowed upon them.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_chime",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Wind-Chime Tree"
+      }
+    },
+    {
+      "id": "r_intro",
+      "body": "The dotted line indicated a trajectory extending across the lawn toward the diminutive green shed positioned by the rear fence. Theo, in his eagerness to arrive with greater expediency, vaulted directly over a vividly colored flowerbed. Nina, meanwhile, held the map aloft and perused it as she proceeded on foot. The shed's door remained suspended in a state of partial openness, revealing merely a slender crack. From somewhere within its dim interior emanated a soft, creaking noise. Creak, went the door, again and again. It was a sound both antiquated and companionable in character\u2014decidedly not one intended to inspire fear or apprehension.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_go",
+          "label": "Sneak up to the garden shed.",
+          "target": "r_fork"
+        }
+      ]
+    },
+    {
+      "id": "r_fork",
+      "body": "Behind the shed, the pathway depicted upon the map diverged abruptly into two distinct routes. One trajectory slipped furtively through the shed's yawning, open doorway, leading onward into the cool, dim shadows that dwelt within. The other route meandered instead toward the imposing rock pile, where tall, grey stones had been stacked precariously against the rear fence, their surfaces warmed by the persistent sun. Which direction, then, ought they to investigate first? Nina and Theo shifted their gazes between the shadowed entrance and the sun-warmed stones, deliberating. Then, at last, they arrived at their decision.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_shed",
+          "label": "Slip inside the shed door.",
+          "target": "r_shed_1"
+        },
+        {
+          "id": "c_r_rock",
+          "label": "Head to the big rock pile.",
+          "target": "r_rock_1"
+        }
+      ]
+    },
+    {
+      "id": "r_shed_1",
+      "body": "Together, they eased the shed door open, and it swung backward with a languid, creaking slowness. A cascade of dust-mottled, golden light spilled inward, settling upon the collection of aging pots and the coiled lengths of garden hose scattered about. The shed exuded an earthen, woody fragrance\u2014a warm, horticultural scent reminiscent of soil left undisturbed. Nina, with deliberate concentration, traced the dotted line inscribed upon her map, her finger guiding her toward the far, shadowed corner, concealed just beyond the resting bulk of an old wheelbarrow.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_shed_1",
+          "label": "Follow the light to the corner.",
+          "target": "r_shed_2"
+        }
+      ]
+    },
+    {
+      "id": "r_shed_2",
+      "body": "Nina advanced with deliberate caution, edging past the assembled rakes and watering cans without disturbing them in the slightest. Theo, meanwhile, gripped the map with unwavering steadiness, determined not to forfeit the trail they had labored so diligently to follow. In the most remote corner of the space rose an imposing stack of crates, arranged in a manner that suggested a makeshift staircase ascending toward the shadows above. A faint luminescence emanated from a narrow gap near the roofline, casting an inviting, almost hospitable glow across the surrounding darkness. Whatever lay concealed within that elevated space seemed to promise warmth and comfort in equal measure. Nina and Theo regarded the towering crates with careful, searching scrutiny.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_shed_2",
+          "label": "Look at the stack of crates.",
+          "target": "r_shed_app"
+        }
+      ]
+    },
+    {
+      "id": "r_shed_app",
+      "body": "Precisely at this juncture the map had suffered a tear, so that two divergent paths presented themselves for consideration. One route, a low aperture, extended beneath the workbench, granting passage into a chamber both shadowed and thick with accumulated dust. The other consisted of a precarious, unsteady ladder fashioned from stacked crates, ascending toward that luminous gap situated near the roof. The crates themselves inclined slightly to one side, as though reluctant to remain perfectly upright. Toward which destination, then, did the X truly intend to guide them? Nina fixed her gaze upon the darkened opening, while Theo regarded the towering crates with equal scrutiny. And it was only after this deliberation that the two of them arrived, finally, at their decision.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_shed_back",
+          "label": "Crawl under the workbench.",
+          "target": "e_set_shed"
+        },
+        {
+          "id": "c_shed_in",
+          "label": "Climb the crate ladder up.",
+          "target": "r_shed_3"
+        }
+      ]
+    },
+    {
+      "id": "e_set_shed",
+      "body": "The low, cramped recess beneath the workbench proved, upon investigation, to be nothing more than an unpromising cul-de-sac\u2014a cavity choked with tangled cobwebs and the accumulated debris of long-abandoned plant pots. In one shadowed corner, a drowsy woodlouse lay curled in oblivious repose. Not a single trace of treasure could be discovered within this dismal enclosure. Nina and Theo withdrew from the space, sneezing repeatedly and dissolving into laughter at the clouds of dust they had disturbed. Carefully, they wiped the map clean of grime before making their way back toward the porch, where a pitcher of chilled lemonade awaited their return. Once they had sufficiently rested and refreshed themselves, they resolved to embark upon the exploration of yet another trail.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_shed",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "A Cobwebby Dead End"
+      }
+    },
+    {
+      "id": "r_shed_3",
+      "body": "The improvised ladder of stacked crates swayed with a faint, unsettling wobble, though it nonetheless conveyed an impression of underlying sturdiness. Theo, unwilling to entrust his weight to any surface without prior verification, pressed his foot against each crate before conceding it was safe. He ascended in a slow, deliberate progression, one crate at a time, gripping the makeshift rungs with both hands as though his caution alone could guarantee his balance. Nina remained below, patient and observant, until he had gained the summit, whereupon she began her own ascent, replicating his careful method with identical precision. As Theo neared the topmost point, he angled his gaze through a narrow, luminous gap, and what he glimpsed there elicited from him a soft, astonished exhalation. Oh, wow, he murmured, his voice hushed with wonder. Below him, Nina scrambled up the final crate with hurried urgency. What is it? she demanded, her curiosity unable to wait a moment longer.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_shed_3",
+          "label": "Climb toward the glowing gap.",
+          "target": "r_shed_4"
+        }
+      ]
+    },
+    {
+      "id": "r_shed_4",
+      "body": "Situated in the upper reaches of the loft was a snug and secluded refuge, fashioned at some indeterminate point in bygone days by a person or persons unknown. Within it lay a collection of weathered cushions, softened by age, arranged as seating, alongside a table improvised from an upturned milk crate. Suspended from a solitary nail, a diminutive lantern emitted a faint glow, sustained by the modest charge of its batteries. Positioned above the entryway was a sign, its lettering rendered by hand. The entirety of the loft exuded an atmosphere both comforting and clandestine, as though it were a space patiently biding its time until someone might chance upon its existence.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_shed_4",
+          "label": "Peek into the little loft.",
+          "target": "r_shed_5"
+        }
+      ]
+    },
+    {
+      "id": "r_shed_5",
+      "body": "Within the concealed retreat resided a pair of extraordinarily comfortable seats, so yielding in their cushioned softness that one could scarcely resist sinking entirely into their embrace. A diminutive shelf, mounted nearby, supported a neatly arranged row of adventure novels, while beside it rested a jar brimming with iridescent paper stars, each one glinting radiantly beneath the lantern's flickering illumination. In the far corner, a blanket had been folded with meticulous precision, as though patiently anticipating the arrival of guests. And there, situated precisely at the center of it all, lay the red X that the map had so mysteriously indicated.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_shed_5",
+          "label": "Step into the cozy hideaway.",
+          "target": "r_shed_6"
+        }
+      ]
+    },
+    {
+      "id": "r_shed_6",
+      "body": "Above the entryway hung a hand-lettered sign proclaiming Explorers Welcome, its letters rendered in cheerful, inviting hues. In an instant, comprehension dawned upon Nina and Theo. This structure, they realized, was nothing less than a clandestine hideaway! Children long departed had constructed it in some distant era, abandoning it in a state of perfect readiness, patiently awaiting the eventual arrival of whichever fortunate individuals might someday decipher the map that led to it. And now, remarkably, that distinction belonged to them. The two companions crossed the threshold with the solemn dignity befitting honored guests.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_shed_6",
+          "label": "Read the painted sign.",
+          "target": "e_fort"
+        }
+      ]
+    },
+    {
+      "id": "e_fort",
+      "body": "Nina and Theo had discovered a cozy, concealed hideaway, tucked away at the very top of the garden shed, seemingly prepared and waiting for whichever adventurers might happen upon it. Now, as fate would have it, they themselves had become those very adventurers. Upon a shelf within the hideaway, they came across a small logbook, into which they carefully inscribed their own names, solemnly vowing that they would return often and tend to the place with diligence and care. From that moment onward, this secret fort belonged to them alone.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fort",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Secret Fort"
+      }
+    },
+    {
+      "id": "r_rock_1",
+      "body": "The alternative pathway meandered toward the substantial grey accumulation of stones heaped near the rear boundary fence. The rocks had been piled to a considerable height, retaining warmth from the sun's afternoon exposure. Within the narrow fissures separating them, a scattering of marigolds had taken root, their blossoms vivid and golden against the stone. Nina consulted the map once more, scrutinizing its markings. The dotted trajectory indicated, with apparent precision, a particular flat stone of diminished height, situated near the pile's foundation. \"There it is,\" she pronounced.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_rock_1",
+          "label": "Look at the low flat stone.",
+          "target": "r_rock_2"
+        }
+      ]
+    },
+    {
+      "id": "r_rock_2",
+      "body": "Theo rapped his knuckles against the flattened stone, and the sound that answered him was unmistakably hollow, as though some vacant cavity lay concealed beneath its surface. Nina, meanwhile, consulted the map once more, scrutinizing it with care. The red X was positioned directly beneath the rocky outcropping\u2014precisely, unmistakably here. And observe: a modest ring of pebbles encircled the very spot, as though deliberately arranged to designate it. \"This is it!\" they exclaimed in unison, their voices merging in shared astonishment. This, at last, was the location for which they had been searching so persistently all along.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_rock_2",
+          "label": "Tap the hollow-sounding stone.",
+          "target": "r_rock_app"
+        }
+      ]
+    },
+    {
+      "id": "r_rock_app",
+      "body": "Etched into the flat surface of the stone were two diminutive arrows, their outlines faint and nearly imperceptible upon casual inspection, yet undeniably present nonetheless. The first of these markings indicated a leftward direction, gesturing toward a narrow gap that separated a pair of moss-encrusted boulders. The second arrow, by contrast, pointed in a vertical descent, directing attention toward the loose, granular soil concealed beneath the stone itself. In which direction, then, ought the excavation to proceed? Nina and Theo lingered in contemplation, scrutinizing both arrows with prolonged and deliberate attention. Surely one of these markings would prove to be the true path toward the treasure. Which direction, they wondered, felt instinctively correct?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rock_left",
+          "label": "Check the gap between boulders.",
+          "target": "e_set_rock"
+        },
+        {
+          "id": "c_rock_dig",
+          "label": "Dig under the flat stone.",
+          "target": "r_rock_3"
+        }
+      ]
+    },
+    {
+      "id": "e_set_rock",
+      "body": "The fissure separating the moss-encrusted boulders proved, upon closer inspection, to harbor no concealed riches whatsoever. Rather, it constituted a modest yet thriving domicile for a colony of ants! An industrious procession of them advanced in orderly formation, ferrying crumbs back and forth with unwavering diligence. No treasure had ever lain hidden amid those stones, as it turned out. Nina and Theo extended a courteous greeting to the diminutive laborers before carefully re-rolling their map. Afterward, they made their way back toward the porch, where a refreshingly cool glass of lemonade awaited their return.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_rock",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Only a Line of Ants"
+      }
+    },
+    {
+      "id": "r_rock_3",
+      "body": "Exercising the utmost delicacy, they raised the loosened, level stone and repositioned it a short distance away. The sandy substrate concealed beneath proved yielding and readily dislodged with the slightest effort. Theo excavated methodically, employing a diminutive garden trowel, extracting the earth scoop by deliberate scoop, while Nina, cupping her palms together, whisked the accumulated loose soil to the side. Presently, an object\u2014smooth in texture and rounded in form\u2014commenced its gradual emergence from beneath the sand. Overcome with curiosity, they mused aloud upon the identity of this mysterious, half-buried thing.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_rock_3",
+          "label": "Brush away the sandy soil.",
+          "target": "r_rock_4"
+        }
+      ]
+    },
+    {
+      "id": "r_rock_4",
+      "body": "It was a diminutive tin container secured by a corroded latch! It reposed, half-embedded, in the sand, situated precisely where the X had assured them it would be found. The box was fashioned to a dimension that permitted exactly two hands to elevate it. Nina and Theo, with deliberate caution, worked it loose from the earth that had cradled it. Thereafter, they exhaled the accumulated dust from its lid. Poof, the dust departed, drifting away into the sunlit atmosphere. The box now belonged, irrevocably, to them.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_rock_4",
+          "label": "Wiggle the little box free.",
+          "target": "r_rock_5"
+        }
+      ]
+    },
+    {
+      "id": "r_rock_5",
+      "body": "Nina disengaged the corroded latch, which sprang upward with a small, satisfied click of contentment. Beneath the lid rested an antiquated checkered cloth, one whose fibers had grown soft and attenuated through years of handling. Upon lifting this cloth aside, she discovered, concealed underneath, an entire accumulation of glass marbles. These small spheres captured the afternoon's luminescence, radiating in intricate, swirling patterns of blue, green, and gold. \"Oh!\" Nina exclaimed, her breath catching in astonishment. \"They are magnificent!\" The marbles existed in such profusion that an accurate accounting of their number proved altogether impossible.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_rock_5",
+          "label": "Open the rusty latch.",
+          "target": "r_rock_6"
+        }
+      ]
+    },
+    {
+      "id": "r_rock_6",
+      "body": "Nina and Theo subjected the marbles to careful, deliberate scrutiny. Among the collection were cat's-eyes and swirlies, each harboring intricate patterns within its glassy interior. One substantial shooter possessed a clarity comparable to that of a single raindrop. Some child, evidently, had accumulated this collection in bygone days. Nestled at the very bottom lay a diminutive, easily overlooked note, upon which only three words had been inscribed: share and enjoy. The two companions perused this brief message not once, but twice, before exchanging a glance accompanied by knowing smiles.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_rock_6",
+          "label": "Look closely at the marbles.",
+          "target": "e_marbles"
+        }
+      ]
+    },
+    {
+      "id": "e_marbles",
+      "body": "Nina and Theo had unearthed a concealed cache of glass marbles, buried long ago by some child whose identity remained a mystery to them entirely. Each of the two companions selected, from among the assembled treasures, a singular favorite to retain for themselves. Subsequently, they returned the remaining marbles to their original container, nestling them carefully within. To this collection they appended a brief message of their own composition, intended for whichever fortunate individual might chance upon the box thereafter. Throughout the entirety of their journey homeward, a solitary marble could be heard clinking rhythmically within each of their pockets.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_marbles",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Box of Marbles"
+      }
+    },
+    {
+      "id": "s_intro",
+      "body": "Beneath his careful scrutiny, the final segment of the dotted trajectory descended along the gently inclined expanse of grass, culminating at the modest brook situated at the garden's furthest boundary, where the cultivated yard surrendered its edges to the untamed sprawl of the park beyond. There, the water chattered ceaselessly over stones worn smooth by its ceaseless passage, splashing and bubbling with irrepressible energy as it wound its course. Theo, mindful of the map's fragility, elevated it high above the moisture below, resolute in his determination that not even a single errant droplet should be permitted to compromise its integrity.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_go",
+          "label": "Head down to the little stream.",
+          "target": "s_fork"
+        }
+      ]
+    },
+    {
+      "id": "s_fork",
+      "body": "Beside the water's edge, the map's traced route bifurcated for the final time. One branch curved inward toward the towering blackberry thickets, which flourished along the embankment, laden with berries swollen to a deep purple ripeness. The other branch proceeded, in a series of hops, across a row of flattened stepping stones, which conveyed a traveler to the stream's opposing shore. In which direction, then, did the treasure truly lie? Nina and Theo surveyed both possible routes with careful consideration. Only after this deliberation did they commit themselves to a single path.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bramble",
+          "label": "Follow the line into the brambles.",
+          "target": "s_bramble_1"
+        },
+        {
+          "id": "c_s_bank",
+          "label": "Cross the stepping stones.",
+          "target": "s_bank_1"
+        }
+      ]
+    },
+    {
+      "id": "s_bramble_1",
+      "body": "Following the thread, they proceeded into the shadowed enclosure formed by the blackberry thicket. The bushes hung heavy with berries ripened to a deep purple, their burden almost excessive in its abundance. Overhead, the leaves converged into a canopy, fashioning a cool, verdant passageway that seemed to swallow the light. From some indeterminate point within this concealed depth emerged a faint, delicate sound. Meow, it uttered\u2014a vocalization suffused with warmth and gentleness, entirely devoid of menace. It possessed the quality of an invitation, as though some patient presence lingered there, anticipating their arrival with quiet expectation.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bramble_1",
+          "label": "Follow the meow into the bushes.",
+          "target": "s_bramble_2"
+        }
+      ]
+    },
+    {
+      "id": "s_bramble_2",
+      "body": "Nina held a thorn-studded branch to one side, an act of caution intended to prevent it from snagging their sleeves. Once again the meow sounded, this time nearer than before. Theo consulted the map to confirm their position, tracing the dotted line as it wound its way into the very heart of the thicket. \"Come on,\" he whispered, urging his companion forward. The two friends advanced into the undergrowth with deliberate gentleness, their footsteps soft and unhurried, careful not to startle the small creature they sought.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bramble_2",
+          "label": "Hold the thorns aside and go in.",
+          "target": "s_bramble_app"
+        }
+      ]
+    },
+    {
+      "id": "s_bramble_app",
+      "body": "Within the tangled undergrowth, the pathway depicted upon the map had dissolved into obscurity, leaving no discernible trace. A pair of diminutive passageways extended onward through the dense foliage, each beckoning toward a different destiny. One burrowed downward at a lowly angle, meandering toward a shadowy, thorn-infested thicket whose bristling brambles seemed to promise nothing but discomfort. The other ascended gently toward a radiant clearing awash with warm, golden sunlight. The plaintive meowing of the cat resonated with unmistakable contentment whenever it drifted from the direction of that luminous patch. Confronted with this dilemma, which passage ought they to traverse on their hands and knees? Nina and Theo paused, straining their ears intently to discern the feline's whereabouts, before ultimately committing themselves to a chosen route.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bramble_back",
+          "label": "Take the low thorny tunnel.",
+          "target": "e_set_bramble"
+        },
+        {
+          "id": "c_bramble_push",
+          "label": "Take the sunny tunnel.",
+          "target": "s_bramble_3"
+        }
+      ]
+    },
+    {
+      "id": "e_set_bramble",
+      "body": "The low, constricted passage ultimately terminated in a dense and impenetrable snarl of thorns, far too formidable to be breached by any reasonable effort. The sole object occupying that forsaken spot was a solitary, abandoned sock, ensnared upon a branch and undulating idly in the passing breeze. Nina and Theo withdrew with deliberate caution, retreating step by careful step, and emerged entirely unscathed, without so much as a single scratch marking their skin. \"A sock!\" they exclaimed in unison, dissolving into laughter at the absurdity of the spectacle before them. Thereafter, they made their way to the porch, in pursuit of a refreshingly cool glass of lemonade.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_bramble",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Lost Sock"
+      }
+    },
+    {
+      "id": "s_bramble_3",
+      "body": "Emerging from the sunlit passageway, they discovered a snug, secluded glade nestled squarely within the heart of the tangled brambles. Beneath their feet, the earth lay cushioned by a carpet of desiccated leaves, whose fragrance drifted upward\u2014sweet, warm, and unmistakably inviting. The plaintive meowing gradually transformed into a deep, resonant purring, and, quite suddenly, a pair of luminous green eyes blinked open to regard them. Nestled within a makeshift nest woven from grass, some creature lay curled in quiet repose, its gaze fixed intently upon the two companions as they cautiously drew nearer.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bramble_3",
+          "label": "Step into the sunny clearing.",
+          "target": "s_bramble_4"
+        }
+      ]
+    },
+    {
+      "id": "s_bramble_4",
+      "body": "It was a cat of downy grey fur, its paws cushioned in tufts of immaculate white, and it exhibited not the slightest inclination toward flight. Rather than fleeing, it indulged in an elaborate stretch, followed by a languorous, wide-mouthed yawn, as though utterly unbothered by the prospect of company. It then advanced, unhurried, to offer its greeting, radiating an affability that seemed almost deliberate in its warmth. Encircling its neck was a modest collar, from which dangled a diminutive bell, one that produced a delicate chime with each measured step. Jingle, jingle, the bell announced, its tone gentle and faintly melodious.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bramble_4",
+          "label": "Say hello to the fluffy cat.",
+          "target": "s_bramble_5"
+        }
+      ]
+    },
+    {
+      "id": "s_bramble_5",
+      "body": "Weaving in and out around their ankles with an air of unhurried satisfaction, the cat produced a purring so vigorous it might have been mistaken for a diminutive engine idling nearby\u2014purrrr, went that contented resonance, a sound sufficient to coax smiles from both Nina and Theo without effort. Presently the creature collapsed sideways upon the ground, its posture an unmistakable solicitation for a belly rub, and the two companions, unable to resist, obliged with laughter, their fingers sinking into its soft grey fur. And it was here, precisely at this unassuming spot the cat had claimed as its own cozy dwelling, that the map's red X had been inscribed all along.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bramble_5",
+          "label": "Give the cat a belly rub.",
+          "target": "s_bramble_6"
+        }
+      ]
+    },
+    {
+      "id": "s_bramble_6",
+      "body": "Suspended from the collar was a diminutive tag, its inscription modest yet earnest: *Please be my friend*. Beneath this plea was inscribed a name\u2014Pepper\u2014though, curiously, the tag bore no trace of an address whatsoever. This particular feline demonstrated an unmistakable familiarity with the bramble clearing, navigating it with the ease of long acquaintance. Indeed, he comported himself toward Nina and Theo with the easy affection one reserves for companions known since time immemorial. Consequently, the pair found themselves entertaining a curious speculation: might Pepper have been lingering in this very spot, patiently anticipating the arrival of whoever was destined to discover the map?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bramble_6",
+          "label": "Read the little collar tag.",
+          "target": "e_cat"
+        }
+      ]
+    },
+    {
+      "id": "e_cat",
+      "body": "Nina and Theo had happened upon an amiable, ownerless feline whom they addressed as Pepper! He subsisted contentedly in solitary independence, his residence being an obscure clearing concealed among the brambles. The companions apportioned their afternoon provisions with him and pledged, in the most solemn terms, to return without fail on each successive day, vowing further to assist in ascertaining the whereabouts to which he properly belonged. When the moment of departure at last arrived, Pepper accompanied them for a portion of the journey homeward, his tail elevated in an attitude of unmistakable pride.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_cat",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Pepper the Bramble Cat"
+      }
+    },
+    {
+      "id": "s_bank_1",
+      "body": "Positioned in an orderly, level sequence, the stepping stones traversed the width of the stream. Their upper surfaces, being dry, permitted an unhazardous progression from one to the next. Nina and Theo advanced with deliberate caution, negotiating the stones individually, so as to avoid any unfortunate descent into the water below. Presently, they attained the moss-covered bank on the opposite side. According to the map, the dotted line indicated the location of an enormous willow tree, one which inclined dramatically, extending its branches directly over the stream itself.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bank_1",
+          "label": "Hop across to the far bank.",
+          "target": "s_bank_2"
+        }
+      ]
+    },
+    {
+      "id": "s_bank_2",
+      "body": "On the opposite shore stood the willow tree, its trunk inclined at a perpetual angle, as though perpetually bowing toward the water it so persistently caressed. Its long, verdant branches trailed downward into the current, submerging themselves with the deliberate patience of slender fingers testing an unfamiliar surface. Beneath the gnarled lattice of its roots, the earth remained perpetually soft and cool, untouched by the harsher warmth of open sunlight. Theo bent his attention to the map with meticulous concentration, tracing the markings until his gaze settled upon the small red X positioned precisely amid that tangle of roots. And there\u2014unmistakably\u2014something diminutive caught the light, glinting with a faint, persistent luster from within the willow's deep and shadowed concealment.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bank_2",
+          "label": "Look among the willow roots.",
+          "target": "s_bank_app"
+        }
+      ]
+    },
+    {
+      "id": "s_bank_app",
+      "body": "Amid the tangled willow roots, a pair of diminutive hollows revealed themselves, each distinct in character. The first constituted a sodden, mud-laden depression, situated precisely at the water's very edge. The second, by contrast, formed a dry, sheltered recess, positioned somewhat farther above the waterline. It was from this arid nook that the faint, glimmering luster emanated. Yet the question persisted: toward which of these two locations did the X genuinely direct their attention? Nina and Theo, casting their gazes alternately between the muddy depression and the sheltered dry recess, deliberated momentarily before ultimately arriving at their decision.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bank_back",
+          "label": "Search the muddy dip.",
+          "target": "e_set_bank"
+        },
+        {
+          "id": "c_bank_cross",
+          "label": "Search the dry sheltered nook.",
+          "target": "s_bank_3"
+        }
+      ]
+    },
+    {
+      "id": "e_set_bank",
+      "body": "The mud-slicked hollow contained but a single, glistening, moisture-laden pebble. Adjacent to it reposed a diminutive water beetle, whose expression, upon their unexpected arrival, betrayed unmistakable astonishment. There existed, evidently, no treasure whatsoever in this location. Nina and Theo exchanged amused glances, regarding their mud-spattered footwear with wry acknowledgment. They bid the beetle a parting farewell before retracing their path across the scattered stones. Upon the porch awaited a refreshingly chilled glass of lemonade\u2014a reward they had, without question, thoroughly earned.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_bank",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "A Surprised Water Beetle"
+      }
+    },
+    {
+      "id": "s_bank_3",
+      "body": "Beneath the sheltering canopy, the parched hollow proved precisely accommodating to a kneeling posture. The source of that faint glimmer emanated from something nestled within the cool, undisturbed soil\u2014an object lying partially concealed beneath its surface. With painstaking delicacy, Nina began clearing away the accumulated earth, brushing it aside in careful increments. Theo, meanwhile, drew the willow branches aside, ensuring they remained clear of her efforts and did not impede her progress. Gradually, almost imperceptibly, the corner of a gleaming metallic object began to reveal itself. \"Almost there,\" Nina murmured under her breath.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bank_3",
+          "label": "Brush away the cool soil.",
+          "target": "s_bank_4"
+        }
+      ]
+    },
+    {
+      "id": "s_bank_4",
+      "body": "Behold a diminutive tin fashioned of brass! Its edges bore a greenish patina of age, and its lid remained obstinately sealed. It reposed precisely at the location the map's X had foretold. Nina and Theo labored intently upon the unyielding lid, employing deliberate, methodical fingers. They maneuvered it this way and that, coaxing it with patient persistence. Eventually, the lid relented, yielding with a faint, muffled exhalation. Whoosh, escaped the ancient, long-imprisoned air within.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bank_4",
+          "label": "Open the little brass tin.",
+          "target": "s_bank_5"
+        }
+      ]
+    },
+    {
+      "id": "s_bank_5",
+      "body": "Within the confines of the tin reposed a bed of soft, faded velvet, and upon this cushioned surface rested an accumulated heap of lustrous buttons. Buttons of every conceivable variety presented themselves to view! There were buttons fashioned from brass and others crafted from glass. Certain pearly specimens had been shaped into the delicate semblance of tiny flowers. These objects gleamed and sparkled with a radiance comparable to genuine jewels. Filtering downward through the willow leaves, a greenish light descended, intensifying still further the luminous quality of the buttons. Nina and Theo found themselves capable of nothing but staring, utterly transfixed.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bank_5",
+          "label": "Look at the shiny buttons.",
+          "target": "s_bank_6"
+        }
+      ]
+    },
+    {
+      "id": "s_bank_6",
+      "body": "Someone had, across the passage of many years, preserved these buttons with meticulous care. Each one possessed its own distinct character; each one exhibited a loveliness peculiar to itself. They constituted, in the truest sense, a genuine treasure unearthed from the backyard's depths. Tucked into a corner lay a slip of paper, folded with evident deliberation. The companions, retrieving it, deciphered the words inscribed within: For the finder, with love, it proclaimed. In that instant, they were overcome by a sensation akin to discovering a chest brimming with pirate gold.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bank_6",
+          "label": "Read the folded paper.",
+          "target": "e_buttons"
+        }
+      ]
+    },
+    {
+      "id": "e_buttons",
+      "body": "Nina and Theo had unearthed, quite unexpectedly, a concealed tin container brimming with lustrous buttons! This constituted the genuine treasure, the very culmination toward which the map had been steadily guiding them. Each of them selected a single radiant button to retain as their own, a memento intended to preserve the recollection of that momentous day in perpetuity. Subsequently, they reinterred the tin, ensuring its safety remained undisturbed, while tucking within it a freshly composed message destined for whichever explorer might chance upon it next. Thereafter, they traversed the stepping stones leading homeward, their spirits buoyed by a sensation of opulence rivaling that of monarchs themselves.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_buttons",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Tin of Shiny Buttons"
+      }
+    }
+  ]
+}

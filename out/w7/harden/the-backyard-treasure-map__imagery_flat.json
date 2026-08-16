@@ -1,0 +1,823 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_backyard_treasure_map",
+  "version": 1,
+  "title": "The Backyard Treasure Map",
+  "metadata": {
+    "age_band": "5-8",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 2.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "friendship",
+      "adventure",
+      "curiosity",
+      "discovery"
+    ],
+    "estimated_minutes": 7,
+    "ending_count": 12,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "time_cave",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_open",
+  "nodes": [
+    {
+      "id": "n_open",
+      "body": "Nina and Theo were best friends. At some point during the day, they were playing in Grandpa's backyard. Near a large tree, they found something special. It was a container. Inside was an item! Someone had made it by hand. A marked line went across the yard to a marked spot.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Spread out the map.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_start",
+      "body": "The line touched the large landmark. It went past the small structure. Then it went down toward the water feature. Which landmark should they follow first? Nina reacted with pleasure. Theo reacted with pleasure too.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_oak",
+          "label": "Follow the map to the great old oak.",
+          "target": "o_intro"
+        },
+        {
+          "id": "c_start_shed",
+          "label": "Follow the map to the garden shed.",
+          "target": "r_intro"
+        },
+        {
+          "id": "c_start_stream",
+          "label": "Follow the map down to the stream.",
+          "target": "s_intro"
+        }
+      ]
+    },
+    {
+      "id": "o_intro",
+      "body": "The marked path pointed to the large old tree at the top of the garden. Nina held the map while Theo counted their steps out loud. One, two, three, four. The tree was so big that several kids could have hidden behind it. As they walked up close, the marked path seemed to split near the base. It made two faint trails, and each one went a different way.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_go",
+          "label": "Search around the roots of the oak.",
+          "target": "o_fork"
+        }
+      ]
+    },
+    {
+      "id": "o_fork",
+      "body": "At the foot of the oak, the dotted line split into two faint trails. One trail went toward an object lying in the grass. Something was making a sound inside it. The other trail looped around toward an old swing. The swing hung from a low branch, and some things moved on its rope. Which way did the map want them to go? Nina and Theo looked at the trails and pointed. Let's try this one, they said.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_hollow",
+          "label": "Take the trail to the hollow log.",
+          "target": "o_hollow_1"
+        },
+        {
+          "id": "c_o_swing",
+          "label": "Take the trail to the tire swing.",
+          "target": "o_swing_1"
+        }
+      ]
+    },
+    {
+      "id": "o_hollow_1",
+      "body": "They followed the trail to the hollow log. It lay in the long area, larger than a common container. One end was dark and had a certain quality inside. From somewhere deep in the log came a sound. It was not scary at all. It seemed pleasant, like a group of small friends. Nina and Theo stepped a little closer to look.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_hollow_1",
+          "label": "Peek inside the hollow log.",
+          "target": "o_hollow_2"
+        }
+      ]
+    },
+    {
+      "id": "o_hollow_2",
+      "body": "Nina used her light to look into the log. It reached some distance inside. Theo checked the map and reacted with pleasure. The marked path went through the log and continued on the other side. The sounds grew busier now. It seemed like a small group of creatures, with several voices making noise at once. Nina moved closer to look.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_hollow_2",
+          "label": "Follow the map through the log.",
+          "target": "o_hollow_app"
+        }
+      ]
+    },
+    {
+      "id": "o_hollow_app",
+      "body": "On the other side of the object, something had affected the map. Two small paths led away from there. One path had a certain quality and led toward one part of the area. The other path had a different quality and led toward another part of the area. Which one did the mapmaker mean? Theo tapped the map and thought hard. Nina pointed one way. I think it goes here, she said.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hollow_dry",
+          "label": "Try the dry dusty path.",
+          "target": "e_set_hollow"
+        },
+        {
+          "id": "c_hollow_moss",
+          "label": "Try the soft mossy path.",
+          "target": "o_hollow_3"
+        }
+      ]
+    },
+    {
+      "id": "e_set_hollow",
+      "body": "The path curved back and stopped at a pile of old items. There was no marking here, and no treasure either. Just empty items in the outdoor conditions. Nina and Theo looked at each other and reacted with amusement. What a funny trick! they said. They put the map away and went back to the porch, where two servings of a beverage were waiting. Pleasant and satisfying. Tomorrow they would try another trail.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_hollow",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Back to the Flowerpots"
+      }
+    },
+    {
+      "id": "o_hollow_3",
+      "body": "They took a path. It felt a certain way underfoot. Plants brushed against them along the way. The sound grew louder and happier. Theo stopped and whispered. Listen, he said. It sounds like a large number of small voices! They are all talking at once. The friends smiled and walked a little farther in.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_hollow_3",
+          "label": "Follow the mossy path deeper.",
+          "target": "o_hollow_4"
+        }
+      ]
+    },
+    {
+      "id": "o_hollow_4",
+      "body": "The path went down into a hollow area. It was a certain way there. The ground felt a certain way under their feet. Some objects were dotted all around. Each object looked like something else. Maybe someone lived behind it! Nina and Theo stepped with care. They did not want to trip. Then they followed the dotted line deeper into the area.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_hollow_4",
+          "label": "Step into the shady green hollow.",
+          "target": "o_hollow_5"
+        }
+      ]
+    },
+    {
+      "id": "o_hollow_5",
+      "body": "In the hollow they found an arrangement of small objects. It was set out like a tiny boundary. Behind the little boundary sat some creatures. They were plump creatures. They rested on makeshift seats. They looked important! Not one of them moved away. The creatures just looked at their visitors.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_hollow_5",
+          "label": "Tiptoe up to the ring of pebbles.",
+          "target": "o_hollow_6"
+        }
+      ]
+    },
+    {
+      "id": "o_hollow_6",
+      "body": "The largest toad wore an item made of plant material. It blinked slowly and appeared wise and very old, like a small figure of authority. Nina and Theo knelt down carefully on the ground. They did not want to frighten anyone, not even the smallest toad. Then Theo spotted something in the corner. It was the map's marking, positioned right beside the toad figure himself. Right here! he whispered.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_hollow_6",
+          "label": "Kneel down by the toad king.",
+          "target": "e_toad_king"
+        }
+      ]
+    },
+    {
+      "id": "e_toad_king",
+      "body": "Nina and Theo had found a whole community of creatures! It was hidden in a quiet spot. A small figure wearing a simple crown sat on a makeshift seat. The friends promised to keep it secret and safe. Before they left, they set down an item. It was a gift for the figure. Then they moved away quietly. All the way home, they could not stop feeling happy.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_toad_king",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Toad Kingdom"
+      }
+    },
+    {
+      "id": "o_swing_1",
+      "body": "They followed the loop of the trail to a familiar spot. An object hung from a tree. It moved slowly in the moving air. Someone had tied decorations along the rope. The decorations were of different colors. They moved about in the air. In the light, they resembled small markers.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_swing_1",
+          "label": "Look at the ribbons on the swing.",
+          "target": "o_swing_2"
+        }
+      ]
+    },
+    {
+      "id": "o_swing_2",
+      "body": "Theo gave the object a gentle push. High up in the tree, he heard a soft sound. Nina looked at the map. The dotted line climbed right up the trunk and into the branches. That sound seemed like something ringing somewhere above them. The friends tipped their heads back and listened. Bells! they said together.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_swing_2",
+          "label": "Listen for the tinkling sound.",
+          "target": "o_swing_app"
+        }
+      ]
+    },
+    {
+      "id": "o_swing_app",
+      "body": "The marked path divided at a point in the trunk and continued in two directions. One direction led one way, toward some vegetation. The other direction led the other way, along a surface that looked manageable to move along. A sound continued somewhere ahead. Which way should they follow the pleasant sound? Nina thought the sound was most noticeable in one direction. Let's try that way, she said.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_swing_left",
+          "label": "Climb toward the prickly leaves.",
+          "target": "e_set_swing"
+        },
+        {
+          "id": "c_swing_right",
+          "label": "Walk along the smooth low limb.",
+          "target": "o_swing_3"
+        }
+      ]
+    },
+    {
+      "id": "e_set_swing",
+      "body": "The uncomfortable left branch was a mass of small parts. It led nowhere at all. At the very end hung an old container. It was completely empty. No treasure. No marker. Nina and Theo reacted with amusement at the pointless dead end. They climbed down and stopped using the swing. Then they walked back to the porch. A cold drink and a little rest were waiting. The marker must be hiding somewhere else.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_swing",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Just an Empty Bird Box"
+      }
+    },
+    {
+      "id": "o_swing_3",
+      "body": "The surface was easy to balance along. With every step, the sound grew clearer. It repeated steadily. Nina kept one hand on the trunk to stay steady and safe. Theo watched the map and pointed the way ahead. Soon the path began to curve, and it led them toward an open gap in the surroundings. The sound was coming from right up there.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_swing_3",
+          "label": "Balance along toward the ringing.",
+          "target": "o_swing_4"
+        }
+      ]
+    },
+    {
+      "id": "o_swing_4",
+      "body": "They reached a special spot in the tree. A large number of little things hung there, attached to the branches by lengths of string. There were several kinds of small objects, all touching together now and then. Each contact made a faint sound. The whole tree seemed to be making a quiet sound, just for them. Nina and Theo looked up, taking it in.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_swing_4",
+          "label": "Look at the dangling things.",
+          "target": "o_swing_5"
+        }
+      ]
+    },
+    {
+      "id": "o_swing_5",
+      "body": "Long ago, someone had placed an item on every branch here. The light caught the surfaces. It caused some effects across the leaves. The effects moved when the air moved. Nina and Theo stood very still. They did not say a word. They just listened to the sound. It was very pleasant.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_swing_5",
+          "label": "Stand still and listen.",
+          "target": "o_swing_6"
+        }
+      ]
+    },
+    {
+      "id": "o_swing_6",
+      "body": "In the middle of the sound-making branches hung the largest one of all. Someone had made it from an old container and a row of items. And there, positioned right beside it, was the map's marked spot! Theo held his breath and watched. Nina reached out slowly and gave it the gentlest little touch. It made a sound in response. It was one small sound, just for them.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_o_swing_6",
+          "label": "Touch the biggest chime gently.",
+          "target": "e_chime"
+        }
+      ]
+    },
+    {
+      "id": "e_chime",
+      "body": "Nina and Theo had found a secret item that made a sound whenever the air moved around it. The friends wanted to give it a present. So they attached a small object to a low part of it, where it could add to the sound. Now the item would produce a sound that was a little louder and a little nicer. All the way home, the two friends made a noise reflecting its pleasant pattern.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_chime",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Wind-Chime Tree"
+      }
+    },
+    {
+      "id": "r_intro",
+      "body": "The dotted line pointed across the lawn to the small structure by the back fence. Theo hopped right over a garden area to get there faster. Nina held the map up high and read it as she walked. The structure's door hung open, just a bit. From somewhere inside came a faint sound. There was a noise. It was an old and familiar sound, not a scary one.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_go",
+          "label": "Sneak up to the garden shed.",
+          "target": "r_fork"
+        }
+      ]
+    },
+    {
+      "id": "r_fork",
+      "body": "Behind the shed, the trail on the map split in two. One line went in through an opening in the shed. It led to the area inside. The other line went toward a pile of objects. A group of items was stacked against the back fence. They were in a particular condition. Which way should they explore first? Nina and Theo looked from the entrance to the pile. Then they chose.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_shed",
+          "label": "Slip inside the shed door.",
+          "target": "r_shed_1"
+        },
+        {
+          "id": "c_r_rock",
+          "label": "Head to the big rock pile.",
+          "target": "r_rock_1"
+        }
+      ]
+    },
+    {
+      "id": "r_shed_1",
+      "body": "The shed door was opened. It moved slowly. Light came in and fell across some old items stored inside. The shed had a familiar smell. Nina traced the dotted line with her finger. It led to a far corner that was less visible. That was behind an old object.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_shed_1",
+          "label": "Follow the light to the corner.",
+          "target": "r_shed_2"
+        }
+      ]
+    },
+    {
+      "id": "r_shed_2",
+      "body": "Nina moved carefully past the tools stored nearby. Theo held the map steady. He did not want to lose the trail. In the far corner stood a stack of containers. They were arranged in a way that resembled steps. A faint light came from an opening in the upper area. Whatever was up there seemed pleasant. Nina and Theo looked at the containers.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_shed_2",
+          "label": "Look at the stack of crates.",
+          "target": "r_shed_app"
+        }
+      ]
+    },
+    {
+      "id": "r_shed_app",
+      "body": "The map was torn right at this spot, and two ways led on. One way went into a lower space, into an area without much light. Another way went upward, made of stacked items, toward a lit area near the top. The stacked items were not quite even. Which way did the mark on the map want them to go? Nina looked at one option. Theo looked at the other. Then they made their choice.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_shed_back",
+          "label": "Crawl under the workbench.",
+          "target": "e_set_shed"
+        },
+        {
+          "id": "c_shed_in",
+          "label": "Climb the crate ladder up.",
+          "target": "r_shed_3"
+        }
+      ]
+    },
+    {
+      "id": "e_set_shed",
+      "body": "The low gap under the workbench was just a dead end. It was full of clutter and old objects. A small creature rested in one corner. There was no treasure here at all. Nina and Theo backed out, reacting to the dust. They cleaned off the map. Then they went back to the porch. A drink was waiting there. After a rest, they would try another trail.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_shed",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "A Cobwebby Dead End"
+      }
+    },
+    {
+      "id": "r_shed_3",
+      "body": "The stack of containers moved a bit, but it felt sturdy. Theo tested each one with his foot before trusting it. He climbed one at a time, slow and steady, holding on with both hands. Nina waited until he was up, then climbed the same way. Near the top, Theo looked through a gap. He made a small sound of surprise. Nina hurried up the last one. What is it? she asked.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_shed_3",
+          "label": "Climb toward the glowing gap.",
+          "target": "r_shed_4"
+        }
+      ]
+    },
+    {
+      "id": "r_shed_4",
+      "body": "Up in the loft was a small hidden space. Someone had built it a long time ago. There were things to sit on and a table made from an old container. A light source hung from a fixture and gave off a glow. Above the entrance hung a sign someone had made. The whole loft felt pleasant and secret, like a place just waiting to be found.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_shed_4",
+          "label": "Peek into the little loft.",
+          "target": "r_shed_5"
+        }
+      ]
+    },
+    {
+      "id": "r_shed_5",
+      "body": "Inside the hideaway were two seats. They were comfortable enough to sink right into. A small shelf held a number of books. Beside it sat a container of decorative items. They stood out in the light. A blanket lay folded in the corner. It looked like it was waiting for visitors. And there, right in the middle, was the map's marked spot.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_shed_5",
+          "label": "Step into the cozy hideaway.",
+          "target": "r_shed_6"
+        }
+      ]
+    },
+    {
+      "id": "r_shed_6",
+      "body": "The sign over the doorway had words on it. The words looked bright and friendly. Suddenly Nina and Theo understood. This was a secret fort! Kids had built it long, long ago. They left it all ready. It had waited here for whoever found the map. And that was them! The two friends stepped inside like special guests.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_shed_6",
+          "label": "Read the painted sign.",
+          "target": "e_fort"
+        }
+      ]
+    },
+    {
+      "id": "e_fort",
+      "body": "Nina and Theo had found a comfortable secret place! It was hidden in a certain part of the garden structure. It was all ready for new explorers. And now the new explorers were them. In the space they found a small book for recording. They wrote their own names inside. They promised to come back and take good care of it. From now on, this place would be their own.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fort",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Secret Fort"
+      }
+    },
+    {
+      "id": "r_rock_1",
+      "body": "The other line led to the rock pile by the back fence. The rocks were stacked up and had absorbed some warmth. A few flowers grew in the small gaps between them. Nina looked at the map again. The dotted line pointed straight to a flat stone, down near the bottom of the pile. There it is, she said.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_rock_1",
+          "label": "Look at the low flat stone.",
+          "target": "r_rock_2"
+        }
+      ]
+    },
+    {
+      "id": "r_rock_2",
+      "body": "Theo touched the object with his hand. It made a sound, suggesting there was space underneath. Nina checked the map once more. The mark sat in the area shown, exactly here. And there was also an arrangement of small items around the spot, as if to mark it. This is it! they said together. This was the place they had been looking for all along.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_rock_2",
+          "label": "Tap the hollow-sounding stone.",
+          "target": "r_rock_app"
+        }
+      ]
+    },
+    {
+      "id": "r_rock_app",
+      "body": "Two small marks were scratched onto the surface. They were faint and hard to notice, but they were there. One mark pointed in one direction, toward a space between two objects. The other mark pointed straight down, at the ground beneath the surface. Where should they dig? Nina and Theo studied both marks for a long moment. One of them had to lead to the treasure. Which way felt right?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rock_left",
+          "label": "Check the gap between boulders.",
+          "target": "e_set_rock"
+        },
+        {
+          "id": "c_rock_dig",
+          "label": "Dig under the flat stone.",
+          "target": "r_rock_3"
+        }
+      ]
+    },
+    {
+      "id": "e_set_rock",
+      "body": "The space between the two rocks was not a treasure spot. It was a home for some small creatures. A number of them moved along in a line. They carried small items to and fro. No treasure was hiding between those objects after all. Nina and Theo said a polite hello to the creatures. Then they rolled up the map. They wandered back to the house area. A drink was waiting there.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_rock",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Only a Line of Ants"
+      }
+    },
+    {
+      "id": "r_rock_3",
+      "body": "They carefully lifted the object and set it to one side. The material underneath was easy to move. Theo dug with a small tool, bit by bit. Nina used her hands to clear the loose material aside. Then something began to show through. What could it be? they wondered out loud.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_rock_3",
+          "label": "Brush away the sandy soil.",
+          "target": "r_rock_4"
+        }
+      ]
+    },
+    {
+      "id": "r_rock_4",
+      "body": "It was a small container with a worn fastening. It sat in the ground, right where the mark had promised it would be. The container was just the right size for two hands to lift. Nina and Theo carefully worked it loose from the ground. Then they cleared the covering off the top. It drifted away into the air. The container was theirs now.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_rock_4",
+          "label": "Wiggle the little box free.",
+          "target": "r_rock_5"
+        }
+      ]
+    },
+    {
+      "id": "r_rock_5",
+      "body": "Nina opened the old latch, and it made a small sound. Inside was an old cloth, soft and worn from use. She lifted the cloth, and underneath lay a whole heap of small round objects. They caught the light and had various patterns and colors. Oh! Nina gasped. They are wonderful! There were more of them than she could count.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_rock_5",
+          "label": "Open the rusty latch.",
+          "target": "r_rock_6"
+        }
+      ]
+    },
+    {
+      "id": "r_rock_6",
+      "body": "Nina and Theo looked closely at the objects. There were several kinds. Each one had patterns inside. One larger item was very clear. Someone had saved them long ago. Down at the bottom was a small note. It said just three words: share and enjoy. The friends read the note twice. Then they smiled at each other.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_rock_6",
+          "label": "Look closely at the marbles.",
+          "target": "e_marbles"
+        }
+      ]
+    },
+    {
+      "id": "e_marbles",
+      "body": "Nina and Theo had dug up a hidden container of small objects! Someone from long ago had buried it there. The friends each picked one favorite to keep. Then they put the rest back in the container. They added a small note of their own. It was for the next person who found it. All the way home, an object moved in each pocket.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_marbles",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Box of Marbles"
+      }
+    },
+    {
+      "id": "s_intro",
+      "body": "The last part of the dotted line ran down the area. It led to a natural feature at the edge of the property. There it joined another area. The water moved as it went. It made a sound as it did so. Theo held the map up high. He did not want anything to get it affected.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_go",
+          "label": "Head down to the little stream.",
+          "target": "s_fork"
+        }
+      ]
+    },
+    {
+      "id": "s_fork",
+      "body": "Down by the water, the map's line split one last time. One branch went into the bushes. They grew along the bank, full of fruit. The other branch crossed over stones. They led to the far side of the stream. Which way did the treasure lie? Nina and Theo looked at both trails. Then they picked one to follow.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bramble",
+          "label": "Follow the line into the brambles.",
+          "target": "s_bramble_1"
+        },
+        {
+          "id": "c_s_bank",
+          "label": "Cross the stepping stones.",
+          "target": "s_bank_1"
+        }
+      ]
+    },
+    {
+      "id": "s_bramble_1",
+      "body": "They followed the line into the shade of the bushes. The bushes were heavy with growth. The plants met overhead and made a covered area. From somewhere deeper inside came a small sound. It went in a certain way. It was a friendly, gentle sound. It was not scary at all. It seemed like someone was waiting for them.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bramble_1",
+          "label": "Follow the meow into the bushes.",
+          "target": "s_bramble_2"
+        }
+      ]
+    },
+    {
+      "id": "s_bramble_2",
+      "body": "Nina held an object aside so it would not catch their clothing. The sound came again, nearer this time. Theo checked the map to be sure. The marked path led into the middle of the plants. Come on, he whispered. The two friends stepped in gently. They took careful, quiet steps. They did not want to scare the small animal.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bramble_2",
+          "label": "Hold the thorns aside and go in.",
+          "target": "s_bramble_app"
+        }
+      ]
+    },
+    {
+      "id": "s_bramble_app",
+      "body": "Inside the plants, the trail on the map had disappeared. Two little openings led on through the growth. One opening went a certain way. It led toward an unpleasant area. The other opening led toward a pleasant area. The sound seemed happiest by the pleasant area. Which opening should they go through? Nina and Theo listened for the animal. Then they chose their way.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bramble_back",
+          "label": "Take the low thorny tunnel.",
+          "target": "e_set_bramble"
+        },
+        {
+          "id": "c_bramble_push",
+          "label": "Take the sunny tunnel.",
+          "target": "s_bramble_3"
+        }
+      ]
+    },
+    {
+      "id": "e_set_bramble",
+      "body": "The low passage ended in a thick tangle of obstruction, too much to get through. The only thing there was a lost item, caught on something and moving slightly. Nina and Theo backed out slowly and carefully. They did not get any marks on them. An item! they said, and reacted with amusement at the sight. Then they went to a nearby area for a refreshing drink.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_bramble",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Lost Sock"
+      }
+    },
+    {
+      "id": "s_bramble_3",
+      "body": "The bright tunnel opened into a small clearing. It sat right in the middle of the brambles. The ground was covered with material. It gave off a pleasant impression. The sound turned into a low, steady noise. Then two eyes looked at them. Something was resting in a spot made of plant material. It watched the two friends come closer.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bramble_3",
+          "label": "Step into the sunny clearing.",
+          "target": "s_bramble_4"
+        }
+      ]
+    },
+    {
+      "id": "s_bramble_4",
+      "body": "It was an animal of a certain kind. The animal did not run away at all. Instead it gave a big stretch and a wide yawn. Then it moved right over to say hello, as friendly as could be. An item hung around its neck, with a small object that made a noise as it walked. There was a sound, soft and sweet.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bramble_4",
+          "label": "Say hello to the fluffy cat.",
+          "target": "s_bramble_5"
+        }
+      ]
+    },
+    {
+      "id": "s_bramble_5",
+      "body": "The animal moved around them in a pattern, making a contented sound. There was a small repeated noise that showed it was happy. It made Nina and Theo smile. Then the animal changed position, asking for attention in a certain way. The friends laughed and gave it what it wanted. And the map's marking was right here, where the animal had made its comfortable place to stay.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bramble_5",
+          "label": "Give the cat a belly rub.",
+          "target": "s_bramble_6"
+        }
+      ]
+    },
+    {
+      "id": "s_bramble_6",
+      "body": "The collar had something small attached to it. It had a message, and under that was a name: Pepper. But there was no information about where he lived. This animal was clearly familiar with the location. He treated Nina and Theo like old friends he had known forever. The two of them began to wonder. Had Pepper been waiting here for someone to find the map?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bramble_6",
+          "label": "Read the little collar tag.",
+          "target": "e_cat"
+        }
+      ]
+    },
+    {
+      "id": "e_cat",
+      "body": "Nina and Theo had found a friendly lost animal. He lived happily all on his own. His home was a hidden outdoor spot. The friends shared their afternoon snack with him. They promised to visit every single day. They would help find where he belonged, too. Then it was time to go. The animal walked them partway home. He carried himself with a proud manner.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_cat",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Pepper the Bramble Cat"
+      }
+    },
+    {
+      "id": "s_bank_1",
+      "body": "The stepping stones crossed the stream in a neat row. They were easy to cross. Nina and Theo went one at a time. That way they would not slip into the water. Soon they reached the far bank. On the map, the dotted line pointed to a large tree. It leaned out over the stream.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bank_1",
+          "label": "Hop across to the far bank.",
+          "target": "s_bank_2"
+        }
+      ]
+    },
+    {
+      "id": "s_bank_2",
+      "body": "On the far bank grew a tree. It touched the water with parts of itself. They looked like something familiar. The ground beneath it was in a certain condition. Theo studied the map closely. The marked spot sat among the tangled roots. And look, something small was there! It gave off a faint sign, deep in the shade.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bank_2",
+          "label": "Look among the willow roots.",
+          "target": "s_bank_app"
+        }
+      ]
+    },
+    {
+      "id": "s_bank_app",
+      "body": "Two small spaces showed among the roots of the tree. One was in poor condition and located near the water. The other was in better condition and located a bit farther away. Something coming from a distance was noticeable near the second space. Where was the mark really pointing? Nina and Theo looked from one space to the other. Then they made up their minds.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bank_back",
+          "label": "Search the muddy dip.",
+          "target": "e_set_bank"
+        },
+        {
+          "id": "c_bank_cross",
+          "label": "Search the dry sheltered nook.",
+          "target": "s_bank_3"
+        }
+      ]
+    },
+    {
+      "id": "e_set_bank",
+      "body": "The low area held just one small object. Beside it sat a little creature. It seemed very surprised to see them! There was no treasure here after all. Nina and Theo grinned at their affected shoes. They waved goodbye to the creature. Then they made their way back across the path. A refreshing drink was waiting at their destination. They had surely earned it.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_set_bank",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "A Surprised Water Beetle"
+      }
+    },
+    {
+      "id": "s_bank_3",
+      "body": "The space was just the right size to kneel in. The reflection came from something in the ground. It was half-buried there. Very gently, Nina cleared the material away. Theo held the branches back. That way they stayed out of her path. Little by little, a portion of an object was revealed. Almost there, Nina said.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bank_3",
+          "label": "Brush away the cool soil.",
+          "target": "s_bank_4"
+        }
+      ]
+    },
+    {
+      "id": "s_bank_4",
+      "body": "It was a small container! It had signs of age around its edges and was shut tight. It lay right where the map's mark had promised. Nina and Theo worked at the stiff lid. They used slow, careful fingers. They wiggled it this way and that. At last the lid gave way. It opened with a small release. Air that had been sealed inside came out.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bank_4",
+          "label": "Open the little brass tin.",
+          "target": "s_bank_5"
+        }
+      ]
+    },
+    {
+      "id": "s_bank_5",
+      "body": "Inside the container was some lining. On it sat a quantity of buttons. There were buttons of every kind! Buttons of one material and buttons of another. Some were shaped a certain way. They caught the light in a pleasing manner. Light fell through the leaves above. It made the buttons visible in a different way. Nina and Theo could only stare.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bank_5",
+          "label": "Look at the shiny buttons.",
+          "target": "s_bank_6"
+        }
+      ]
+    },
+    {
+      "id": "s_bank_6",
+      "body": "Someone had kept these items safe for many years. Each one was different. Each one had its own value. They really were a true backyard find. In the corner was a folded slip of paper. The friends read the words inside. For the finder, with love, it said. They felt like they had opened something of great value.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_bank_6",
+          "label": "Read the folded paper.",
+          "target": "e_buttons"
+        }
+      ]
+    },
+    {
+      "id": "e_buttons",
+      "body": "Nina and Theo had found a hidden container of small items! This was the real treasure. It waited at the very end of the map. They each picked one item to keep. It would help them remember this day. Then they put the container away again, safe and sound. They put a new note inside for the next explorer. Then they went across the path home. They felt as rich as kings.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_buttons",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Tin of Shiny Buttons"
+      }
+    }
+  ]
+}

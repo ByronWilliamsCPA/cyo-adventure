@@ -8,17 +8,22 @@ single un-costable call makes the whole run's figure a lower bound.
 
 from __future__ import annotations
 
+from datetime import date
 from decimal import Decimal
 
 import pytest
 
+from cyo_adventure.core.pricing import ModelPrice, estimate_cost
 from cyo_adventure.generation.cost import estimate_run_cost, fit_cost_to_column
 from cyo_adventure.generation.usage import TokenUsage
 
-# Both are real entries in core/pricing.py: output-priced, input-unpriced.
-_HAIKU = ("openrouter", "anthropic/claude-haiku-4.5")  # $5.00/Mtok out
-_SONNET = ("openrouter", "anthropic/claude-sonnet-4.6")  # $15.00/Mtok out
+# Real entries in core/pricing.py. Both halves of each have been priced since
+# UW-C239 closed on 2026-08-14; before that these were output-only, which is
+# why two tests below now build their own half-priced fixture instead.
+_HAIKU = ("openrouter", "anthropic/claude-haiku-4.5")  # $1 in / $5 out per Mtok
+_SONNET = ("openrouter", "anthropic/claude-sonnet-4.6")  # $3 in / $15 out
 _FREE = ("ollama", "qwen2.5:14b")  # fully priced at zero
+_UNPRICED = ("acme", "acme-1")  # absent from the table entirely
 
 
 def _call(
@@ -62,7 +67,10 @@ def test_each_call_is_costed_at_its_own_models_price() -> None:
     """
     estimate = estimate_run_cost([_call(_HAIKU), _call(_SONNET)])
 
-    assert estimate.amount_usd == Decimal("2.0")
+    # 2.000 until UW-C239 closed on 2026-08-14 and the input halves began to
+    # cost something: 1k input tokens is $0.001 on Haiku and $0.003 on Sonnet.
+    assert estimate.amount_usd == Decimal("2.004")
+    assert estimate.complete is True
 
 
 @pytest.mark.unit
@@ -93,13 +101,26 @@ def test_a_fully_priced_run_reports_itself_complete() -> None:
 
 @pytest.mark.unit
 def test_a_partly_priced_model_still_bills_the_half_it_knows() -> None:
-    """The output half is billed even though the input price is missing.
+    """The output half is billed even when the input price is missing.
 
-    Every OpenRouter entry is in this state today, so this is the production
-    path: the run reports what it can and flags the gap, rather than reporting
-    nothing because it cannot report everything.
+    This used to be the production path: every OpenRouter entry lacked an input
+    price. Since `UW-C239` closed on 2026-08-14 no entry in the table is in that
+    state, so the case is now exercised against a deliberately half-priced
+    fixture rather than a real model. It is still worth holding: the gap reopens
+    the moment a model is added to the allowlist without a price, and the
+    behaviour that matters is reporting what can be reported and flagging the
+    rest, not reporting nothing.
     """
-    estimate = estimate_run_cost([_call(_HAIKU, output_tokens=1_000_000)])
+    estimate = estimate_cost(
+        ModelPrice(
+            input_usd_per_mtok=None,
+            output_usd_per_mtok=Decimal(5),
+            as_of=date(2026, 8, 14),
+            source="fixture: a model priced on one half only",
+        ),
+        input_tokens=1_000,
+        output_tokens=1_000_000,
+    )
 
     assert estimate.amount_usd == Decimal("5.00")
     assert estimate.complete is False

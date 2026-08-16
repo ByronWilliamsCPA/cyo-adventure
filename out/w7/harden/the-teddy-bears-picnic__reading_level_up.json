@@ -1,0 +1,478 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_teddy_bears_picnic",
+  "version": 1,
+  "title": "The Teddy Bears' Picnic",
+  "metadata": {
+    "age_band": "3-5",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 1.0,
+      "tolerance": 1.0
+    },
+    "tier": 1,
+    "themes": [
+      "friendship",
+      "sharing",
+      "kindness",
+      "celebration"
+    ],
+    "estimated_minutes": 5,
+    "ending_count": 11,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "loop_and_grow",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "In the sun-drenched meadow, Clover, a small and unassuming bear, undertakes the deliberate unfurling of a plush, checkered blanket across the grass. Blades of grass, tickling insistently at her paws, seem almost to punctuate the stillness of the afternoon. Nearby, a modest picnic basket awaits her attention, and upon the blanket itself rests a diminutive bell, poised and ready for use. A smile settles across her face as she surveys the array of possibilities before her\u2014so many potential activities beckoning simultaneously. Overcome with anticipation, she claps her paws together. What, then, ought she to do next?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_honey",
+          "label": "Go ask the bees for honey.",
+          "target": "n_honey1"
+        },
+        {
+          "id": "c_start_berry",
+          "label": "Go pick red berries at the bramble.",
+          "target": "n_berry1"
+        },
+        {
+          "id": "c_start_ball",
+          "label": "Go find the big red ball.",
+          "target": "n_ball1"
+        },
+        {
+          "id": "c_start_kite",
+          "label": "Go fetch the bright paper kite.",
+          "target": "n_kite1"
+        },
+        {
+          "id": "c_start_owl",
+          "label": "Go wake sleepy Owl in the oak.",
+          "target": "n_owl1"
+        },
+        {
+          "id": "c_start_music",
+          "label": "Go find the little music box.",
+          "target": "n_music1"
+        }
+      ]
+    },
+    {
+      "id": "n_honey1",
+      "body": "Clover proceeds cautiously toward the rounded, dome-shaped beehive, her footsteps deliberate upon the ground. Within its confines, the bees produce a gentle, murmuring melody, harmonizing with the warmth of the afternoon sun that bathes the scene in golden light. Their collective hum resonates with a persistent buzzzz, vibrating through the still air. Pausing abruptly, Clover finds herself immersed in contemplation, weighing the consequences of her potential actions. Ought she to approach with courtesy, requesting permission and exercising the virtue of patience? Or might she instead succumb to impulsivity, disturbing the hive with a reckless prod?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_honey_ask",
+          "label": "Ask the bees nicely and wait.",
+          "target": "n_honey2"
+        },
+        {
+          "id": "c_honey_poke",
+          "label": "Poke the hive to hurry.",
+          "target": "e_honey_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_honey2",
+      "body": "Beneath the diligent ministrations of the bees, a modest vessel becomes replete with warm, amber-hued honey, its viscous sweetness emanating an aroma so pronounced that the fragrance itself seems almost tangible. Clover clutches the container protectively against her chest, cradling it as though it were a treasure of considerable worth. The picnic, meanwhile, continues its steady accumulation of provisions! She contemplates the glistening abundance of golden honey before her, weighing the possibilities with evident deliberation. Ought she to venture back for additional supplies? Or would it be more prudent to commence the festivities without delay?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_honey_back",
+          "label": "Carry the honey back to the blanket.",
+          "target": "n_start"
+        },
+        {
+          "id": "c_honey_start",
+          "label": "Ring the bell and start the picnic.",
+          "target": "n_gather"
+        }
+      ]
+    },
+    {
+      "id": "e_honey_oops",
+      "body": "Clover prods the rounded, cavernous hive with unmistakable curiosity. Immediately, an eruption of bees bursts forth in a startlingly rapid, swirling cloud! They pursue her relentlessly, circling again and again throughout the meadow's expanse. She dashes about, overtaken by uncontrollable laughter that continues without pause. Her paws produce a rhythmic tapping sound against the ground. Miraculously, not a single sting is inflicted upon her. She dissolves into giggles. Undeterred, she returns once more.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_honey_oops",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Oops, Buzzy Bees"
+      }
+    },
+    {
+      "id": "n_berry1",
+      "body": "Clover proceeds toward the bramble bush with a light, skipping gait. Beneath the brilliant sun, the crimson berries gleam with an almost luminous intensity, their appearance suggesting a succulent sweetness. Certain clusters rest at a modest, easily attainable height, while others perch precariously above, swaying with a conspicuous instability. Ought she content herself with the effortlessly accessible fruit below, or should she instead extend herself upward, risking the treacherous heights, in pursuit of that which dangles farther from reach?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_berry_low",
+          "label": "Pick the easy low berries.",
+          "target": "n_berry2"
+        },
+        {
+          "id": "c_berry_high",
+          "label": "Stretch for the wobbly high ones.",
+          "target": "e_berry_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_berry2",
+      "body": "Clover devotes herself, with meticulous persistence, to gathering an abundance of crimson berries, harvesting them one by one until her hands grow weary. Their flavor presents a delicate balance\u2014predominantly sweet, yet tinged with a subtle tartness that lingers pleasantly upon the tongue. Gradually, the wicker basket becomes laden, its contents mounting higher and higher with each successive addition of the ruby-hued fruit. Meanwhile, her diminutive paws, through repeated contact with the berries' juice, undergo a gradual transformation, deepening progressively into shades of pink. The fragrant aroma of the berries wafts insistently toward her, impossible to ignore. All the while, the picnic continues to expand in scope and abundance! Consequently, she finds herself confronted with an uncertain decision: ought she to return to the gathering already assembled, or should she instead commence the festivities without further delay?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_berry_back",
+          "label": "Carry the berries back to the blanket.",
+          "target": "n_start"
+        },
+        {
+          "id": "c_berry_start",
+          "label": "Ring the bell and start the picnic.",
+          "target": "n_gather"
+        }
+      ]
+    },
+    {
+      "id": "e_berry_oops",
+      "body": "Clover extends herself toward the berries situated well above her, clustered high upon the branch. With startling swiftness, the branch recoils, snapping backward the instant she releases her grip. Consequently, the basket tumbles, overturning into the yielding grass below. Plop! The berries scatter in every conceivable direction, their trajectories unpredictable and dispersed. Several come to rest upon scattered leaves, while others tumble and continue their descent down the incline of the slope. Overcome with amusement, she erupts into prolonged, uncontrollable laughter. Undeterred, she returns to resume her task.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_berry_oops",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Oops, Tumbling Berries"
+      }
+    },
+    {
+      "id": "n_ball1",
+      "body": "Clover recalls, with vivid clarity, the enormous crimson sphere that once occupied her attention. It lies concealed somewhere amid the towering blades of grass, verdant and yielding underfoot. She commences her search with unmistakable delight, scanning first to the left, then pivoting her gaze to the right. Presently, she discerns a series of impressions\u2014faint traces left by successive bounces upon the earth. A question now confronts her: ought she to trace the trail these marks suggest, or should she instead plunge headlong into the grass itself?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ball_track",
+          "label": "Follow the little bounce marks.",
+          "target": "n_ball2"
+        },
+        {
+          "id": "c_ball_dive",
+          "label": "Dive into the tall grass.",
+          "target": "e_ball_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_ball2",
+      "body": "There, resplendent in its glistening crimson hue, rests the enormous ball! So vivid in its redness, so perfectly spherical, so impeccably smooth is its surface. Ideally suited for recreation and amusement. The merriment continues to intensify! She possesses the capability to roll it back in return. Or, alternatively, she might sound the bell and commence the activity without further delay.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ball_back",
+          "label": "Roll the ball back to the blanket.",
+          "target": "n_start"
+        },
+        {
+          "id": "c_ball_start",
+          "label": "Ring the bell and start the picnic.",
+          "target": "n_gather"
+        }
+      ]
+    },
+    {
+      "id": "e_ball_oops",
+      "body": "Clover plunges herself deeply into the towering blades of grass, submerging with enthusiasm. Unexpectedly, a diminutive grasshopper alights upon the very tip of her nose\u2014decidedly not the ball she had been pursuing! The sensation proves so intensely ticklish that she cannot suppress a response. She releases a sneeze accompanied by unrestrained giggling. Her nose erupts with an emphatic \"achoo!\" Overcome with mirth, she giggles uncontrollably, again and again. The grasshopper, startled, springs away and vanishes into the grass. Undeterred, Clover resumes her search, returning once more to her task.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ball_oops",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Oops, a Ticklish Hopper"
+      }
+    },
+    {
+      "id": "n_kite1",
+      "body": "Clover covets the vividly hued kite, its surface a patchwork of red, yellow, and blue, which lies folded near the weathered wooden fence. A breeze drifts past her fur, stirring the quiet air. She might convey it with careful, gentle deliberation, or, alternatively, permit it to unfurl and flutter freely upon the wind.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_kite_carry",
+          "label": "Carry the kite gently under her arm.",
+          "target": "n_kite2"
+        },
+        {
+          "id": "c_kite_flap",
+          "label": "Let the kite flap open in the wind.",
+          "target": "e_kite_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_kite2",
+      "body": "Clover secures the neatly folded kite beneath her arm, cradling it with protective care. Its weightlessness is unmistakable, a sure indication that it stands prepared for flight. The stirring breeze registers unmistakably against her skin. Meanwhile, the picnic continues expanding in size and activity! Ought she return to the gathering? Or should she instead sound the bell and commence the endeavor without further delay?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_kite_back",
+          "label": "Bring the kite back to the blanket.",
+          "target": "n_start"
+        },
+        {
+          "id": "c_kite_start",
+          "label": "Ring the bell and start the picnic.",
+          "target": "n_gather"
+        }
+      ]
+    },
+    {
+      "id": "e_kite_oops",
+      "body": "Clover permits the kite to unfurl itself to its fullest extent. An abrupt gust seizes it with considerable force. The wind emits a resounding whoooosh! It tumbles and becomes ensnared in a hopelessly intricate knot. The string coils itself around the fence post with maddening thoroughness. It is an utter muddle. She laughs. She patiently unravels the tangled mess. She proceeds to return.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_kite_oops",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Oops, a Windy Muddle"
+      }
+    },
+    {
+      "id": "n_owl1",
+      "body": "Upon a bough of the venerable oak tree, Sleepy Owl reposes in slumber, his plumage arranged in soft, downy tufts of extraordinary fluffiness. His rounded eyes remain sealed shut, unmoving, while a faint, rhythmic snore escapes him, betraying the depth of his rest. Clover, however, wishes for his presence at the picnic and must therefore choose between two possible methods of roused him from his dormant state: she might utter a gentle, low-pitched hoot to summon him from sleep, or alternatively, she could disturb the branch itself with a deliberate shake.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_owl_hoot",
+          "label": "Hoot softly to wake Owl gently.",
+          "target": "n_owl2"
+        },
+        {
+          "id": "c_owl_shake",
+          "label": "Shake the whole branch.",
+          "target": "e_owl_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_owl2",
+      "body": "Owl unseals his enormous, circular eyes with deliberate slowness, wrenching himself from the grip of slumber. He releases a prolonged, drowsy yawn, its sound stretching into an unmistakable \"awwwww.\" His gaze drifts toward Clover, and recognition dawns. Yes! He emits a jubilant hoot of satisfaction! The bonds of friendship among the companions are deepening and expanding! Ought she retreat homeward, or instead sound the bell and commence the endeavor without further delay?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_owl_back",
+          "label": "Walk Owl back to the blanket.",
+          "target": "n_start"
+        },
+        {
+          "id": "c_owl_start",
+          "label": "Ring the bell and start the picnic.",
+          "target": "n_gather"
+        }
+      ]
+    },
+    {
+      "id": "e_owl_oops",
+      "body": "Clover seizes the branch and shakes it with considerable vigor. An astonishing multitude of leaves comes tumbling downward\u2014brittle, desiccated leaves, crackling as they descend\u2014showering upon her head until she finds herself entirely submerged beneath an accumulated mound of foliage, a heap that provokes within her an irrepressible fit of giggling. Meanwhile, Owl's snoring intensifies, growing ever more thunderous, so that she can still discern the sound distinctly despite her leafy predicament. She proceeds to brush the clinging leaves from her person and, having done so, makes her way back once more.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_owl_oops",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Oops, a Pile of Leaves"
+      }
+    },
+    {
+      "id": "n_music1",
+      "body": "Clover embarks upon a search for the diminutive music box, that small vessel of dormant melody. It rests, shut tight, upon a moss-laden stump\u2014an aged, yielding relic softened by time, its surface overtaken by verdant moss. The music box remains silent, poised in expectant stillness, awaiting the moment of its awakening. She might, with deliberate care, lift its lid; or, alternatively, she could seize the handle and wind it with rapid, unrestrained motion.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_music_lift",
+          "label": "Lift the lid carefully.",
+          "target": "n_music2"
+        },
+        {
+          "id": "c_music_wind",
+          "label": "Give the handle a big fast wind.",
+          "target": "e_music_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_music2",
+      "body": "The music box emits a delicate, dulcet melody, its tinkling notes cascading one upon another in gentle succession. Clover hums along in a state of unmistakable contentment, the tune coaxing an involuntary dance from her paws, as if the rhythm itself possessed her limbs. Meanwhile, the picnic continues to expand in scope and abundance. She feels the music resonate within her, a sensation both pleasurable and consuming. Ought she to return to where she had been? Or, alternatively, should she ring the bell and commence the festivities without further delay?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_music_back",
+          "label": "Carry the music box back to the blanket.",
+          "target": "n_start"
+        },
+        {
+          "id": "c_music_start",
+          "label": "Ring the bell and start the picnic.",
+          "target": "n_gather"
+        }
+      ]
+    },
+    {
+      "id": "e_music_oops",
+      "body": "Clover rotates the handle with excessive haste. The music box, in response, emits an absurdly comical melody! The sound produces an increasingly rapid series of boinging noises! Her paws, consequently, dance in an utterly incorrect manner. She whirls about in circles. She giggles uncontrollably. She attempts to suppress her giggling. She returns to her previous task.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_music_oops",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Oops, a Jumbled Tune"
+      }
+    },
+    {
+      "id": "n_gather",
+      "body": "Clover vigorously sounds the diminutive picnic bell, its clamor resounding without pause\u2014ding, ding, ding! At once, the teddy bears commence their lumbering approach, hastening toward the source of the summons with an unmistakable, rolling gait\u2014waddle, waddle, waddle. Some emerge from beneath the concealment of low shrubbery, while others materialize from behind the towering trunks of nearby trees. From every conceivable direction across the surrounding landscape, they converge, drawn inexorably onward until, at last, they assemble upon the waiting blanket.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gather_welcome",
+          "label": "Welcome the teddy bears in.",
+          "target": "n_welcome"
+        }
+      ]
+    },
+    {
+      "id": "n_welcome",
+      "body": "In a circle upon the blanket, the teddy bears arrange themselves, quivering with an exuberant, unrestrained delight. Their fur possesses a warmth and a plushness that seems almost luxurious. Everything that Clover had industriously gathered now rests, heaped, at the very center of their assembly. What a magnificent accumulation it is!",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_welcome_arrange",
+          "label": "Lay out all the picnic treats.",
+          "target": "n_arrange"
+        }
+      ]
+    },
+    {
+      "id": "n_arrange",
+      "body": "Clover arrays the honey pot and the crimson berries with deliberate care, positioning each delicacy beneath the sun's persistent warmth. The honey radiates a resplendent golden luster, while the berries glisten with a vivid, ruby-like intensity. Overcome by anticipation, the assembled companions moisten their lips and shift their paws in restless, fidgeting eagerness. What course of action ought Clover to pursue?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrange_share",
+          "label": "Share the honey and berries.",
+          "target": "n_share"
+        },
+        {
+          "id": "c_arrange_game",
+          "label": "Start a picnic game.",
+          "target": "n_game"
+        }
+      ]
+    },
+    {
+      "id": "n_share",
+      "body": "The honey circulates methodically around the assembled circle. The berries likewise pass from participant to participant. Every creature present consumes its portion with evident contentment. Munch munch munch. The sun's warmth settles pleasantly upon their fur. Overhead, the sky stretches in unbroken blue. The day itself seems suffused with happiness. Meanwhile, Clover deliberates over what activity should follow next.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_share_song",
+          "label": "Sing the teddy bears' picnic song.",
+          "target": "e_song"
+        },
+        {
+          "id": "c_share_music",
+          "label": "Wind up the music box and sway.",
+          "target": "e_music_finale"
+        },
+        {
+          "id": "c_share_nap",
+          "label": "Curl up for a cozy nap in the sun.",
+          "target": "e_nap"
+        }
+      ]
+    },
+    {
+      "id": "n_game",
+      "body": "Assembled amid the gently undulating meadow, the teddy bears stood poised in eager anticipation of the recreational pursuits soon to commence. A mild, intermittent breeze rippled languidly across their plush, fur-covered forms. Clover, overcome with an irrepressible exuberance, clasped her paws together in jubilant celebration. Meanwhile, several other playthings remained arranged upon the outspread blanket, patiently anticipating the commencement of amusement. The picnic had blossomed into an occasion of unmistakable merriment and festivity! Which delightfully spirited diversion, one might wonder, would they ultimately select to engage in?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_game_ball",
+          "label": "Roll the big red ball around the ring.",
+          "target": "e_ball_game"
+        },
+        {
+          "id": "c_game_kite",
+          "label": "Fly the bright kite in the breeze.",
+          "target": "e_kite_game"
+        }
+      ]
+    },
+    {
+      "id": "e_song",
+      "body": "Beneath the sun's benevolent warmth, every creature present interlaces paws in unison, giving voice to the picnic song with collective enthusiasm. Their bodies sway rhythmically, back and forth, in continuous motion. Clover, too, lends her voice to the chorus. The melody circulates among them, round and round, weaving through the gathered assembly. The song resonates with such sweetness and jubilation that it seems to fill the very air. Her heart swells with an overwhelming sense of fullness, brimming with contentment. The picnic, in this moment, achieves an unblemished perfection.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_song",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Picnic Song"
+      }
+    },
+    {
+      "id": "e_music_finale",
+      "body": "The diminutive music box emits its melody, a delicate tinkle tinkle tinkle, and in response, all the bears begin to sway rhythmically, humming along in gentle accompaniment\u2014hummmm. Settled upon the sun-drenched blanket, their fur radiates a comforting warmth, cozy against the afternoon light. Clover, surveying the gathering, beams with evident delight at each contented companion, for the picnic has achieved a state of complete and unblemished coziness.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_music_finale",
+        "valence": "positive",
+        "kind": "success",
+        "title": "A Sweet Little Tune"
+      }
+    },
+    {
+      "id": "e_nap",
+      "body": "Replete with an abundance of savory provisions and suffused with the residual warmth of joyous occasions, all the bears convene in a collective embrace, arranging themselves into a gently undulating mound atop the sun-warmed blanket beneath them. The sunlight settles upon their fur with an almost imperceptible tenderness. The picnic that she had so carefully assembled proves thoroughly satisfactory in every regard. An atmosphere of comfort and contentment pervades the entirety of the scene.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_nap",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "A Cozy Sunny Nap"
+      }
+    },
+    {
+      "id": "e_ball_game",
+      "body": "The oversized crimson sphere revolves repeatedly around the perimeter of the ring, its momentum carrying it in an unbroken circuit. Every bear remains seated, transfixed, following its trajectory with rapt attention. Their laughter erupts again and again, uncontainable! Their cheers resound without pause! \"Set it rolling once more!\" they implore. The picnic, buoyant with merriment, proves to be an unqualified triumph!",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ball_game",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Rolling Red Ball"
+      }
+    },
+    {
+      "id": "e_kite_game",
+      "body": "The luminous kite, buoyed by unseen currents, dips and soars with graceful unpredictability. It ascends higher and higher still, climbing toward the vast expanse above. The persistent wind conveys it an astonishing distance across the sky. All the bears, thoroughly delighted, erupt into enthusiastic cheering. Hooray, hooray, they exclaim! Clover, brimming with pride, guides the kite through the air with evident satisfaction.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_kite_game",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The High Bright Kite"
+      }
+    }
+  ]
+}

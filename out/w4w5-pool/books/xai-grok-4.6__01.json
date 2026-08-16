@@ -1,0 +1,891 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_night_market",
+  "version": 1,
+  "title": "The Night Market",
+  "metadata": {
+    "age_band": "5-8",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 2.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "kindness",
+      "friendship",
+      "community",
+      "courage"
+    ],
+    "estimated_minutes": 7,
+    "ending_count": 13,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "open_map",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "You tuck your hand into Grandad Moss's big warm one. You both duck under the old trolley arch. The String-Light Market blinks awake above you. Yellow bulbs buzz on in long wiggly lines. Ginger steam floats from the food carts. Craft paper crinkles at the folding tables. Somewhere a fiddle tries a shy note. Then it tries another. Tonight ends with the Wish-Rise. That is the part you love best. Near the arch a small sniffling sound hides behind a pickle barrel. The bulbs make everything gold and kind. It is never scary.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_peek",
+          "label": "Peek behind the pickle barrel.",
+          "target": "n_meet"
+        }
+      ]
+    },
+    {
+      "id": "n_meet",
+      "body": "You peek behind the pickle barrel. A small sandy puppy is curled almost into a ball. She is shy and no bigger than a loaf. Her name is Mallow. She is new to the String-Light Market and very shy. Between sniffles she explains in a tiny voice. She lost her little basket. Inside were the three things she needs for the closing Wish-Rise. Wish-paper. Gold string. And a traveling flame. You kneel down slowly. You keep your voice very gentle.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_meet_promise",
+          "label": "Promise to help Mallow before the Wish-Rise.",
+          "target": "n_promise"
+        }
+      ]
+    },
+    {
+      "id": "n_promise",
+      "body": "You promise you will sort it out together before the Wish-Rise. Grandad Moss nods. The stall keepers of the String-Light Market are the kindest anywhere, he says. Helping hands are always welcome here. A small kindness at a stall is worth more than coins. Mallow uncurls a little. She slips one sandy paw into your hand and sneezes a tiny sneeze. Together the three of you walk into the Fountain Ring.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_promise_hub",
+          "label": "Step into the Fountain Ring.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "n_hub",
+      "body": "The Fountain Ring is the round heart of the String-Light Market. Paper lanterns cross overhead. The cobbles are sticky with sugar. Lanes lead to Miss Kettle wrapped in ginger steam. Then Mr. Finch with his turning paper moths. Then Aunt Saffron with her singing kettle. Then Mr. Tock bent over a half-fixed beetle. Then Miss Zest stacked with bright fruit. Then Fiddler Bram where songs drip like honey. At the head of the square the Glow Steps shine. They are ready any time you are. Mallow stays close while you pick where to go.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hub_dumpling",
+          "label": "Follow the ginger steam to Miss Kettle.",
+          "target": "ds_entry"
+        },
+        {
+          "id": "c_hub_paper",
+          "label": "Visit Mr. Finch and his paper moths.",
+          "target": "pf_entry"
+        },
+        {
+          "id": "c_hub_tea",
+          "label": "Stop by Aunt Saffron's singing kettle.",
+          "target": "tc_entry"
+        },
+        {
+          "id": "c_hub_toys",
+          "label": "Look in at Mr. Tock's toy stall.",
+          "target": "tm_entry"
+        },
+        {
+          "id": "c_hub_fruit",
+          "label": "Wander over to Miss Zest's fruit.",
+          "target": "fs_entry"
+        },
+        {
+          "id": "c_hub_music",
+          "label": "Drift toward Fiddler Bram's corner.",
+          "target": "mc_entry"
+        },
+        {
+          "id": "c_hub_steps",
+          "label": "Head to the Glow Steps with Mallow.",
+          "target": "f_steps"
+        }
+      ]
+    },
+    {
+      "id": "ds_entry",
+      "body": "You follow the ginger steam to Miss Kettle's cart. She is a one-woman whirlwind. Bamboo steamers puff. Orders fly. A wobbling tower of trays waits to go out to the little tables. She spots you and Mallow through the steam. She laughs that she could use four more hands tonight. Sesame and onion smell like a hug. You could carry the warm trays out to the tables. Or you could join the folding table and help pleat the hot moons.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_carry",
+          "label": "Carry the warm trays to the tables.",
+          "target": "ds_carry"
+        },
+        {
+          "id": "c_ds_fold",
+          "label": "Join the folding table and pleat hot moons.",
+          "target": "ds_fold"
+        }
+      ]
+    },
+    {
+      "id": "ds_carry",
+      "body": "You take the trays. They are as warm as sun baked stones. They smell of hot-moon spice. A drop of broth ticks on the rim. Hungry folks wave from every side. Their tables are lit by lanterns. Mallow trots by you with the napkins in her teeth. You could take one tray at a time. Go slow and steady like a waiter in a fancy restaurant. Or you could stack three trays high. Bring it all in one brave trip.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_carry_steady",
+          "label": "Take one tray at a time, slow and steady.",
+          "target": "ds_happy"
+        },
+        {
+          "id": "c_ds_carry_stack",
+          "label": "Stack three trays high for one big trip.",
+          "target": "e_ds_spill"
+        }
+      ]
+    },
+    {
+      "id": "ds_happy",
+      "body": "You take one tray at a time. Tray by careful tray, every table gets its hot moons, hot and perfect. Customers cheer for the small waiter and his puppy napkin helper. Miss Kettle watches from the steam. She beams like a bulb herself. When the last tray lands, she waves you and Mallow back to her cart for a thank-you. Mallow wags so hard her ears flop.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_happy_gift",
+          "label": "Go collect Miss Kettle's thank-you.",
+          "target": "ds_gift"
+        }
+      ]
+    },
+    {
+      "id": "ds_fold",
+      "body": "You join the folding table. Miss Kettle shows you the pleat. Pinch and fold. Pinch and fold. It is like tucking a tiny blanket. Your first hot moon is wonky. Your second is wonkier. But the tenth stands up almost proud. Mallow pats the dough flat with careful paws. Miss Kettle steams the whole wobbly batch anyway. She calls them the night specials. They look like sleepy hats.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_fold_gift",
+          "label": "See what Miss Kettle says next.",
+          "target": "ds_gift"
+        }
+      ]
+    },
+    {
+      "id": "ds_gift",
+      "body": "Miss Kettle tucks two warm hot moons into a paper bag. She presses it into Mallow's paws. Shy tummies are much braver when they are warm, she says. She promises to close her steamers in time for the Wish-Rise. She will cheer for Mallow's lantern extra loud. Mallow hugs the warm bag and sneezes happily. You can walk back to the Fountain Ring. Or you can take Mallow on toward the Glow Steps.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_gift_hub",
+          "label": "Walk back to the Fountain Ring.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_ds_gift_steps",
+          "label": "Head for the Glow Steps with Mallow.",
+          "target": "f_steps"
+        }
+      ]
+    },
+    {
+      "id": "pf_entry",
+      "body": "You visit Mr. Finch. His stall is strung with paper moths that turn slowly in the warm bulb-air. Mr. Finch looks up in dismay. His basket of colored paper has tipped. Squares of red and gold and blue drift across the lane like slow butterflies. A red square lands on Mallow's ear like a hat. You could chase and gather the drifting paper squares. Or you could help sort the moth papers back into their color trays.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pf_chase",
+          "label": "Chase the drifting paper squares.",
+          "target": "pf_scraps"
+        },
+        {
+          "id": "c_pf_sort",
+          "label": "Sort the paper moths by color.",
+          "target": "pf_sort"
+        }
+      ]
+    },
+    {
+      "id": "pf_scraps",
+      "body": "You and Mallow tiptoe after the paper squares and catch them gently so they do not crumple. You lift them off a bench, off a bulb pole, and out of a sleepy dog's fur. Soon only one runaway square remains. The last square is gold, resting high on the noodle cart's awning. You could ask the tall noodle cook for a boost, or wait for the breeze to bring it down.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pf_scraps_boost",
+          "label": "Ask the tall noodle cook for a boost.",
+          "target": "pf_last"
+        },
+        {
+          "id": "c_pf_scraps_breeze",
+          "label": "Wait for the breeze to bring it down.",
+          "target": "pf_breeze"
+        }
+      ]
+    },
+    {
+      "id": "pf_last",
+      "body": "You ask the tall noodle cook. He laughs and lifts you onto his shoulders like a sack of noodles. You pluck the gold square, safe and smooth. From up high all of the String-Light Market glitters. Back on the ground Mallow carries the rescued square to Mr. Finch like a tiny flag. Her tail ticks like a happy clock.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pf_last_gift",
+          "label": "Bring the rescued papers back to Mr. Finch.",
+          "target": "pf_gift"
+        }
+      ]
+    },
+    {
+      "id": "pf_breeze",
+      "body": "You and Mallow stand very still, palms and paws up, and wait. The breeze thinks about it. Then it tips the gold square off the awning. It floats down in lazy zigzags right into Mallow's open paws. Mallow squeaks with delight. It is the first happy squeak of the night. Even the sleepy dog thumps its tail.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pf_breeze_gift",
+          "label": "Carry the gold square back to Mr. Finch.",
+          "target": "pf_gift"
+        }
+      ]
+    },
+    {
+      "id": "pf_sort",
+      "body": "You sort the squares into their trays. Reds with reds. Golds with golds. Blues with blues. Mr. Finch smooths each one flat with his thumb. As you work he folds a scrap into a crane right before your eyes. Corner to corner, until it flaps. Mallow watches so closely her nose nearly touches the paper. She almost goes cross-eyed. Then she sneezes a paper-soft sneeze.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pf_sort_gift",
+          "label": "Hand Mr. Finch the last tidy tray.",
+          "target": "pf_gift"
+        }
+      ]
+    },
+    {
+      "id": "pf_gift",
+      "body": "Mr. Finch thanks you both. Then he cuts a fresh square of moon-white paper. He creases it once into the special wish fold. He gives it to Mallow. Wish-paper, just like the one she lost. He promises to sit near the front at the Wish-Rise to watch it fly. Mallow holds it flat like treasure. She does not wrinkle even one corner. You can walk back to the Fountain Ring. Or on toward the Glow Steps.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pf_gift_hub",
+          "label": "Walk back to the Fountain Ring.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_pf_gift_steps",
+          "label": "Head for the Glow Steps with Mallow.",
+          "target": "f_steps"
+        }
+      ]
+    },
+    {
+      "id": "tc_entry",
+      "body": "You stop by Aunt Saffron. Her stall glows with a tiny iron stove. She pours amber ember cider in ribbons that steam in the night air. Cinnamon tickles your nose. A line of thirsty stall keepers has formed. Her kettle is running low all at once. She winks at you and Mallow over her spectacles. You could help pass out the little clay cups. Or you could help refill the big kettle from the water barrel.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tc_cups",
+          "label": "Pass out the little clay cups.",
+          "target": "tc_cups"
+        },
+        {
+          "id": "c_tc_kettle",
+          "label": "Refill the big kettle from the barrel.",
+          "target": "tc_kettle"
+        }
+      ]
+    },
+    {
+      "id": "tc_cups",
+      "body": "You pick up the little clay cups. They are warm as held hands and full to their happy brims. The waiting stall keepers chat and stretch. Mallow walks beside you announcing each cup in her small voice. It gets a tiny bit louder each time. You could carry two cups at a time, nice and level. Or you could load the whole tray up and serve everyone in one go.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tc_cups_level",
+          "label": "Carry two cups at a time, nice and level.",
+          "target": "tc_warm"
+        },
+        {
+          "id": "c_tc_cups_tray",
+          "label": "Load up the whole tray in one go.",
+          "target": "e_tc_slosh"
+        }
+      ]
+    },
+    {
+      "id": "tc_warm",
+      "body": "You carry two cups at a time, nice and level. Steady as a bridge, you deliver ember cider all down the line. Keepers warm their hands and sigh happy sighs. Mr. Tock toasts you with a raised cup. Fiddler Bram hums a thank-you note. Aunt Saffron calls you back to the cart with a smile brewing. Mallow bows like a tiny waiter.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tc_warm_gift",
+          "label": "Head back to Aunt Saffron's cart.",
+          "target": "tc_gift"
+        }
+      ]
+    },
+    {
+      "id": "tc_kettle",
+      "body": "You go to refill the big kettle. You ladle clear water from the barrel, one careful scoop after another, while Mallow counts the scoops. Four, she says. Then four again. Aunt Saffron sets the kettle on the tiny stove. She shows you how she banks the coals so the fire stays cozy but calm all night. The kettle begins its low singing. She looks like she has an idea.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tc_kettle_gift",
+          "label": "See what Aunt Saffron has in mind.",
+          "target": "tc_gift"
+        }
+      ]
+    },
+    {
+      "id": "tc_gift",
+      "body": "Aunt Saffron lights a stubby candle from her stove. She sets it inside a little tin with a hinged lid. A traveling flame for Mallow's lantern, just like the one she lost. She tucks it into Mallow's paws. She promises to bring her sweet ember cider to the Glow Steps. The tin is warm as a purring kitten. Mallow guards it with both paws. You can walk back to the Fountain Ring. Or on toward the Glow Steps.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tc_gift_hub",
+          "label": "Walk back to the Fountain Ring.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_tc_gift_steps",
+          "label": "Head for the Glow Steps with Mallow.",
+          "target": "f_steps"
+        }
+      ]
+    },
+    {
+      "id": "tm_entry",
+      "body": "You look in at Mr. Tock's stall. It is a tiny hospital for clockwork toys. Wind-up beetles. One-eared rabbits. A drum with a new skin. Oil and sawdust tickle your nose. Mr. Tock peers through a lens the size of a teacup. He is hunting for a runaway brass gear. His tin of tiny screws sits in a jumble. You could sort the tin of tiny screws by size. Or you could hunt for the runaway gear under the stall.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tm_screws",
+          "label": "Sort the tin of tiny screws by size.",
+          "target": "tm_screws"
+        },
+        {
+          "id": "c_tm_gear",
+          "label": "Hunt for the runaway gear under the stall.",
+          "target": "tm_gear"
+        }
+      ]
+    },
+    {
+      "id": "tm_screws",
+      "body": "You tip the screws onto the green felt. They are small as sesame seeds, and every size is different. Mallow sorts with the tips of her claws, which turn out to be perfect tweezers. Nearby a shiny wind-up beetle sits waiting. Its key just begs for a turn. You could keep lining the screws up in neat rows. Or you could wind the beetle's key as far as it can go.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tm_screws_rows",
+          "label": "Keep lining the screws up in neat rows.",
+          "target": "tm_neat"
+        },
+        {
+          "id": "c_tm_screws_wind",
+          "label": "Wind the beetle's key as far as it can go.",
+          "target": "e_tm_spring"
+        }
+      ]
+    },
+    {
+      "id": "tm_neat",
+      "body": "You keep lining the screws up in neat rows. Row by row they become a tiny parade, big to small. Mr. Tock looks up from his lens. He blinks at the tidy felt as if elves had visited. Now he can fix three clockwork toys in the time one used to take. He waves you and Mallow closer, reaching for something on his shelf.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tm_neat_gift",
+          "label": "Come see what Mr. Tock is reaching for.",
+          "target": "tm_gift"
+        }
+      ]
+    },
+    {
+      "id": "tm_gear",
+      "body": "You hunt under the stall. It is a shadow-land of table legs and wood shavings. You borrow a lantern. Mallow squeezes into the narrow places. There, winking in a floorboard crack, is the brass gear. Mallow hooks it out with one careful claw. Mr. Tock cheers so loudly the one-eared rabbit falls over. He beckons you close, reaching for his shelf. Sawdust dots Mallow's nose.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tm_gear_gift",
+          "label": "Come see what Mr. Tock is reaching for.",
+          "target": "tm_gift"
+        }
+      ]
+    },
+    {
+      "id": "tm_gift",
+      "body": "Mr. Tock notices the little dent in Mallow's carrying lantern frame. He taps it round again with three soft taps. Then he oils the tiny door until it swings like new. Last of all he clips a brass firefly to the handle. A night-light friend for a shy walker. The firefly winks once. He promises to watch the Wish-Rise from his stool. You can walk back to the Fountain Ring. Or on toward the Glow Steps.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tm_gift_hub",
+          "label": "Walk back to the Fountain Ring.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_tm_gift_steps",
+          "label": "Head for the Glow Steps with Mallow.",
+          "target": "f_steps"
+        }
+      ]
+    },
+    {
+      "id": "fs_entry",
+      "body": "You wander over to Miss Zest. Her stall is a city of bright pyramids. Oranges. Star fruit. Plums with dusty purple cheeks. A passing cart has bumped the corner. Her grandest orange pyramid has tumbled into a rolling puddle of oranges. She is laughing about it, but her hands are full weighing plums. One orange tries to escape toward your shoe. You could rebuild the orange pyramid. Or you could help tie fruit bundles with her gold string.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fs_stack",
+          "label": "Rebuild Miss Zest's orange pyramid.",
+          "target": "fs_stack"
+        },
+        {
+          "id": "c_fs_bundle",
+          "label": "Tie fruit bundles with gold string.",
+          "target": "fs_bundle"
+        }
+      ]
+    },
+    {
+      "id": "fs_stack",
+      "body": "You and Mallow herd the runaway oranges home. Mallow rolls them in with her nose. That makes her sneeze from the citrus. Now comes the fun building part. Juice sparkles on the boards like little suns. You could build it the old way. Put the biggest oranges on the bottom in a solid square. Or you could try a fancy pattern. Use stripes of orange and green star fruit.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fs_stack_classic",
+          "label": "Build it the classic way, big ones on the bottom.",
+          "target": "fs_tower"
+        },
+        {
+          "id": "c_fs_stack_fancy",
+          "label": "Try a fancy striped pattern.",
+          "target": "fs_pattern"
+        }
+      ]
+    },
+    {
+      "id": "fs_tower",
+      "body": "You build it the classic way. Big oranges on the bottom, smaller and smaller to the top. The pyramid rises steady as a castle. You place the last orange like a crown. The whole stand seems to stand up straighter. Miss Zest whistles, impressed, and dusts off her hands to find you a thank-you. Mallow sits at attention like a guard.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fs_tower_gift",
+          "label": "Go get Miss Zest's thank-you.",
+          "target": "fs_gift"
+        }
+      ]
+    },
+    {
+      "id": "fs_pattern",
+      "body": "You try the fancy stripes. Orange, green, orange, green. The stripes climb the pyramid like a lighthouse. A few folks stop just to look at it. One takes a picture with a very long camera. Miss Zest says it is the prettiest pyramid. The String-Light Market has never grown one so pretty. She waves you and Mallow over with a twinkle. Mallow poses. Her ear is in the photo.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fs_pattern_gift",
+          "label": "Go see what Miss Zest is twinkling about.",
+          "target": "fs_gift"
+        }
+      ]
+    },
+    {
+      "id": "fs_bundle",
+      "body": "You stay to tie the bundles. Miss Zest teaches you the knot. Loop, loop, pull. Soon plums and star fruit sit in tidy golden-tied bundles ready for shoppers. Mallow holds the string spool and lets it spin. Loop, loop, pull, she whispers along, learning it too. The spool of gold string glints in the bulb light as Miss Zest reaches for her scissors.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fs_bundle_gift",
+          "label": "Watch what Miss Zest snips off the spool.",
+          "target": "fs_gift"
+        }
+      ]
+    },
+    {
+      "id": "fs_gift",
+      "body": "Miss Zest measures out a long gold string from her spool, just like the one Mallow lost. She coils it into Mallow's paws along with one perfect star fruit for luck. She promises to bring a fruit plate to the Glow Steps for after the lanterns fly. Mallow practices the knot in the air. Loop, loop, pull. The star fruit smells like sunshine. You can walk back to the Fountain Ring. Or on toward the Glow Steps.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fs_gift_hub",
+          "label": "Walk back to the Fountain Ring.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_fs_gift_steps",
+          "label": "Head for the Glow Steps with Mallow.",
+          "target": "f_steps"
+        }
+      ]
+    },
+    {
+      "id": "mc_entry",
+      "body": "You drift toward Fiddler Bram's corner. Bram, a flute player, and a girl with a drum are warming up the evening's songs. The music pours like warm honey over the whole square. The breeze keeps flipping the songbook pages. The drummer's little brass bells sit waiting for extra hands. Mallow's ears tick-tock with the beat. You could hold the songbook pages open against the breeze. Or you could try the little brass bells with the drummer girl.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mc_pages",
+          "label": "Hold the songbook pages against the breeze.",
+          "target": "mc_pages"
+        },
+        {
+          "id": "c_mc_bells",
+          "label": "Try the little brass bells with the drummer.",
+          "target": "mc_bells"
+        }
+      ]
+    },
+    {
+      "id": "mc_bells",
+      "body": "The drummer girl hands you the strap of little brass bells. She shows you the trick. Shake them soft on the drumbeat, like rain agreeing with thunder. Beside the drum hangs a great shiny gong with a padded mallet that is very tempting. The mallet seems to wink. You could ring the bells softly in time with the drum. Or you could give the big gong one mighty whack.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mc_bells_time",
+          "label": "Ring the bells softly in time.",
+          "target": "mc_time"
+        },
+        {
+          "id": "c_mc_bells_gong",
+          "label": "Give the big gong one mighty whack.",
+          "target": "e_mc_gong"
+        }
+      ]
+    },
+    {
+      "id": "mc_time",
+      "body": "You ring the bells softly in time. Shake, shake, on the beat. The bells stitch a silver edge onto the drum song. Fiddler Bram grins around his bow. The flute swoops happily. Mallow taps her tail on the cobbles in perfect time, surprising herself. When the song lands, the whole corner applauds its two newest musicians. You both bow until you wobble.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mc_time_gift",
+          "label": "Take a bow with the band.",
+          "target": "mc_gift"
+        }
+      ]
+    },
+    {
+      "id": "mc_pages",
+      "body": "You hold the songbook pages against the breeze. You stand like a music stand with very good manners. The breeze tries every trick it knows. You learn to turn the page exactly on Fiddler Bram's nod. The songs pour out smooth with no flapping at all. Between songs Fiddler Bram leans down to ask Mallow a question in a kind, quiet voice. Mallow's ears lift.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mc_pages_gift",
+          "label": "Listen to what Fiddler Bram asks Mallow.",
+          "target": "mc_gift"
+        }
+      ]
+    },
+    {
+      "id": "mc_gift",
+      "body": "The band promises Mallow they will play the Wish-Rise song the moment her lantern rises. Right there they teach you and Mallow the humming part, low and warm like a kettle thinking. Mallow hums it once, a tiny brave sound. Then again a little stronger. The drummer girl declares Mallow an official member of the band. She gets a ribbon tied to her collar. You can walk back to the Fountain Ring. Or on toward the Glow Steps.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mc_gift_hub",
+          "label": "Walk back to the Fountain Ring.",
+          "target": "n_hub"
+        },
+        {
+          "id": "c_mc_gift_steps",
+          "label": "Head for the Glow Steps with Mallow.",
+          "target": "f_steps"
+        }
+      ]
+    },
+    {
+      "id": "f_steps",
+      "body": "You and Mallow reach the Glow Steps. They shine under the thickest bulb strings. Keepers set out the Wish-Rise rack. On a long tray sit spare wish-paper, coils of gold string, and little flames in tins. No shy latecomer is ever left out here. Between Mallow's basket and that tray, her lantern has all it needs. Steam drifts up. Paper crinkles. Music floats over. Yellow bulbs hum like friendly bees. Helpers gather. Mallow takes a deep breath and looks at you. You could write the wish, ready the sky-lantern, or gather friends first.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fsteps_paper",
+          "label": "Help Mallow fold and write her wish.",
+          "target": "f_paper"
+        },
+        {
+          "id": "c_fsteps_lantern",
+          "label": "Help Mallow get her sky-lantern ready to fly.",
+          "target": "f_lantern"
+        },
+        {
+          "id": "c_fsteps_friends",
+          "label": "Gather the stall friends around Mallow first.",
+          "target": "f_friends"
+        }
+      ]
+    },
+    {
+      "id": "f_paper",
+      "body": "You help Mallow fold and write. You both smooth the wish-paper flat on the cool stone step. A keeper lends you a thin brush and a pot of night-blue ink. All around, other families are folding their own wishes. Mallow stares at the empty paper. She wants the wish to be exactly right. She shuffles a little closer to you. Her whiskers tickle your wrist.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fpaper_whisper",
+          "label": "Lean in so Mallow can whisper her wish.",
+          "target": "f_whisper"
+        }
+      ]
+    },
+    {
+      "id": "f_whisper",
+      "body": "You lean in. Mallow cups her paws around your ear and whispers the wish. It is so quiet it is almost only warm air. It is a good one, simple and kind. The sort of wish that makes you smile with your whole face. You nod solemnly. You are the keeper of the secret. Now there is just the writing to decide. You will not tell. Not ever.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fwhisper_write",
+          "label": "Pick up the brush together.",
+          "target": "f_write"
+        }
+      ]
+    },
+    {
+      "id": "f_write",
+      "body": "You pick up the brush together. It hovers over the wish-paper. The night-blue ink shines. You and Mallow decide how the wish should go down. You can write Mallow's wish exactly as she whispered it. Or you can add a second line wishing something warm for all of the String-Light Market too. Or you can hand Mallow the brush so she writes it herself in her own wobbly letters. Each way feels right in its own way.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fwrite_pip",
+          "label": "Write Mallow's wish just as she whispered it.",
+          "target": "e_wish_pip"
+        },
+        {
+          "id": "c_fwrite_market",
+          "label": "Add a second wish for the whole market.",
+          "target": "e_wish_market"
+        },
+        {
+          "id": "c_fwrite_brave",
+          "label": "Hand Mallow the brush to write it herself.",
+          "target": "e_wish_brave"
+        }
+      ]
+    },
+    {
+      "id": "f_lantern",
+      "body": "You help get the sky-lantern ready. You settle its little frame on your knees. Its paper walls glow faintly like a small moon waiting to happen. Mallow crouches beside you, nose to nose with it. A keeper kneels to check the frame and pronounces it a fine flyer. There is string to tie and a flame to set before it can go anywhere. Mallow's breath fogs the paper.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_flantern_string",
+          "label": "Tie on the gold string first.",
+          "target": "f_string"
+        }
+      ]
+    },
+    {
+      "id": "f_string",
+      "body": "You tie on the gold string first. It goes on with a simple loop-loop-pull knot, easy enough for small paws. The folded wish can hang beneath the sky-lantern like the clapper of a tiny bell. Mallow pulls the last loop snug herself and checks it twice. The sky-lantern is dressed and ready. Now only the flame is left. It is the biggest moment of all.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fstring_flame",
+          "label": "Get ready to light the sky-lantern.",
+          "target": "f_flame"
+        }
+      ]
+    },
+    {
+      "id": "f_flame",
+      "body": "You get ready to light the sky-lantern. A small flame waits in its tin, steady and warm. The wick stands ready. The keepers say the lighting can be done any way the wisher likes best. Mallow can touch the flame to the wick first, all by herself. Or you and Mallow can light it together on a count of three. Or you can ask the oldest keeper to light it the old way with the long brass taper. Mallow looks at each in turn.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fflame_pip",
+          "label": "Let Mallow light the wick all by herself.",
+          "target": "e_light_pip"
+        },
+        {
+          "id": "c_fflame_together",
+          "label": "Light it together on a count of three.",
+          "target": "e_light_together"
+        },
+        {
+          "id": "c_fflame_keeper",
+          "label": "Ask the oldest keeper to light it the old way.",
+          "target": "e_light_keeper"
+        }
+      ]
+    },
+    {
+      "id": "f_friends",
+      "body": "You trot around the Fountain Ring to get friends for Mallow. The String-Light Market answers like it always does. Each stall keeper who waved to you tonight comes over. Lots of folks who live near come too. They just love a ceremony. They wipe hands on aprons. They carry cups and stools. Someone brings a cushion for her paws. A warm crowd meets at the steps. They stand around one small pup.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ffriends_circle",
+          "label": "Bring everyone into a circle around Mallow.",
+          "target": "f_circle"
+        }
+      ]
+    },
+    {
+      "id": "f_circle",
+      "body": "You bring everyone into a circle around Mallow. Faces lit by lanterns sit on the steps. There are aprons and spectacles and one drum. All of them smile at Mallow. Mallow began the evening curled behind a barrel. Now she stands in the very middle. She holds her lantern. She does not hide at all. She shines like a little lantern herself. The launch is very near. You squeeze her paw.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fcircle_countdown",
+          "label": "Get ready to send the sky-lantern up.",
+          "target": "f_countdown"
+        }
+      ]
+    },
+    {
+      "id": "f_countdown",
+      "body": "You get ready to send the sky-lantern up. It glows in Mallow's paws, tugging gently upward like a puppy on a string. The circle leans in. All that is left is choosing how to send it off. Mallow can lead the count of three in her new brave voice. Or the whole circle can count together like one big warm voice. Or instead of counting everyone can hum the Wish-Rise song and let the music lift it. You squeeze Mallow's paw.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fcount_pip",
+          "label": "Let Mallow lead the count of three.",
+          "target": "e_up_pip"
+        },
+        {
+          "id": "c_fcount_chorus",
+          "label": "Count down all together as one voice.",
+          "target": "e_up_chorus"
+        },
+        {
+          "id": "c_fcount_song",
+          "label": "Hum the Wish-Rise song and let it lift.",
+          "target": "e_up_song"
+        }
+      ]
+    },
+    {
+      "id": "e_ds_spill",
+      "body": "You stack three trays high. Three trays is two trays too many. The tower tips. Hot moons bounce and roll everywhere like escaping ping-pong balls. Nobody is hurt. Miss Kettle laughs loudest of all. But the big cleanup eats the rest of the evening. Grandad Moss calls it a night. The keepers promise to save Mallow a lantern for the very next market night. Mallow walks home between you and Grandad, already planning her next try.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ds_spill",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Runaway Hot Moons"
+      }
+    },
+    {
+      "id": "e_tc_slosh",
+      "body": "You load up the whole tray in one go. It is a wobbly idea. The cups slide. Cozy-warm ember cider sloshes over your shoes. Half the cups need washing before anyone else can drink. No one is burned. Aunt Saffron only chuckles. But by the time the washing is done Grandad says it is home time. Aunt Saffron sends you off with honey cider for the road and a promise of level-tray lessons next market night. Mallow waves at the glowing bulbs as if to say, see you soon.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_tc_slosh",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Sloshed Ember Cider"
+      }
+    },
+    {
+      "id": "e_tm_spring",
+      "body": "You wind the beetle's key as far as it can go. One turn too far. SPROING! The spring pops out. The beetle does one heroic backflip and lies still. Mr. Tock is not cross at all. Springs pop every week. But the beetle needs a whole evening of careful surgery, and the table becomes an operating room. Grandad says that is your cue to head home. Mr. Tock promises the beetle will be marching by next market night. He saves Mallow a front-row stool for the next ceremony.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_tm_spring",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Sprung Beetle"
+      }
+    },
+    {
+      "id": "e_mc_gong",
+      "body": "You give the big gong one mighty whack. It says BWOOONNNG so loud that pigeons burst off every roof. The whole band stops in the middle of a note. Everyone laughs, even Fiddler Bram. But ears are ringing. The band calls a long cider break to rest. Grandad says that is the night's big finish. The drummer girl says the gong gets everyone just once. She makes Mallow promise to come hum with the band next market night.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_mc_gong",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Mighty Gong"
+      }
+    },
+    {
+      "id": "e_wish_pip",
+      "body": "You write Mallow's wish in careful night-blue letters, exactly as whispered. Not one word changed. Mallow watches every stroke. The folded wish is tied beneath the sky-lantern. The flame is set. Up it sails over the String-Light Market with dozens of others. But theirs is easy to spot. It carries a secret only two friends know. The stall keepers cheer from the steps. Mallow leans on your arm and watches her very own wish join the stars.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_wish_pip",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Mallow's Secret Wish"
+      }
+    },
+    {
+      "id": "e_wish_market",
+      "body": "Under Mallow's wish you add one more line. It is a warm wish for all of the String-Light Market. For its steam and songs and kind hands. Mallow nods hard at every word. When the sky-lantern rises the stall keepers on the steps cheer. It is as if they can feel the extra wish riding along. The lantern climbs until it is a gold freckle among the stars. It carries kindness up for everyone who traded a little of it tonight.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_wish_market",
+        "valence": "positive",
+        "kind": "success",
+        "title": "A Wish for the Whole Market"
+      }
+    },
+    {
+      "id": "e_wish_brave",
+      "body": "You hand Mallow the brush. Mallow whispered all evening. Now she writes her own wish in wobbly, proud letters. The keepers pretend not to peek. The oldest keeper says the most wobbly letters always fly the most true. The sky-lantern lifts off. Mallow's own writing swings under it. Then Mallow finds that her voice works out loud too. She cheers. She truly cheers as her wish climbs the dark. The shy puppy from behind the barrel is gone for good.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_wish_brave",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "Mallow Writes It Herself"
+      }
+    },
+    {
+      "id": "e_light_pip",
+      "body": "Mallow touches the little flame to the wick all by herself. She is steady as anything. The sky-lantern wakes up glowing like a small tame moon. The crowd on the steps hushes. Then it cheers as the lantern rises from her open paws. Mallow stands tall watching her light climb over the rooftops. You think she does not look like a shy puppy at all anymore. She looks like a lighthouse keeper.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_light_pip",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Mallow Lights It Alone"
+      }
+    },
+    {
+      "id": "e_light_together",
+      "body": "One, two, three. You and Mallow touch the flame to the wick at the exact same moment. So the sky-lantern belongs to both of you forever. It rises trailing gold string over the steam and the music and the bulb strings. All of the String-Light Market seems to glow a shade brighter as it goes. Best market night ever, Mallow says, out loud, in a voice that does not whisper at all. Two friends. One light. One sky.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_light_together",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Lit on Three"
+      }
+    },
+    {
+      "id": "e_light_keeper",
+      "body": "The oldest keeper lights the wick with the long brass taper. It is the way it was done when the String-Light Market was young. He tells you the taper has lit a thousand first wishes. A thousand and one now, says Mallow. The old keeper laughs like dry leaves. The sky-lantern rises slow and stately. The Fountain Ring watches the newest wish go up the oldest way. You and Mallow stand right at the heart of the tradition.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_light_keeper",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Oldest Way"
+      }
+    },
+    {
+      "id": "e_up_pip",
+      "body": "Mallow lifts her chin and counts. One. Two. THREE. Her voice is clear and little. It surprises even the pigeons. The sky-lantern leaps for the sky as if it had been waiting for exactly that voice. The circle of stall keepers roars. The band strikes up. You cheer loudest. You heard where that voice began tonight, in a whisper behind a barrel. And look at it now, leading all of the Fountain Ring.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_up_pip",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Mallow Counts to Three"
+      }
+    },
+    {
+      "id": "e_up_chorus",
+      "body": "The whole circle counts together. One, two, three. Aprons and spectacles and drum and all. One big warm voice under the bulb strings. Mallow's sky-lantern sails up on the sound. It climbs past the rooftops with its wish swinging gently below. The crowd keeps cheering long after. Mallow spins slowly to look at every single face that counted for her. She is memorizing the best crowd a small puppy ever had.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_up_chorus",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Whole Circle Counts"
+      }
+    },
+    {
+      "id": "e_up_song",
+      "body": "Nobody counts at all. Instead the band begins the Wish-Rise song. The whole circle hums the low warm part. On the swell of the music Mallow's sky-lantern simply rises. It is as if the song itself were lifting it. It drifts up through the humming and the steam and the strings of little lights, glowing gold. Mallow hums until the lantern is a spark among the stars. The music sends the wish the whole way up.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_up_song",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Lifted by the Song"
+      }
+    }
+  ]
+}

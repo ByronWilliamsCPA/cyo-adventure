@@ -1,0 +1,20 @@
+{
+  "artifact": "the-big-red-balloon.haiku.filled.json",
+  "skeleton": "skeletons/3-5/the-big-red-balloon.json",
+  "drafted_by": "claude-haiku-4.5 subagent via cyo-author, 2026-08-14",
+  "why_kept": "A gate-passing book that is not a good book, which is the failure mode the deterministic gate cannot see and the judge exists to catch. It clears every validator error and lands its band envelope (39.8 mean words against a ~40 target), while its concrete-sensory density is 25.9 per 1000 words against 60.5 and 64.7 for the two existing 3-5 books. Imagery is W7's strongest criterion (6/6 detection, median -2.00 against a 0.24 noise floor), so this is a naturally-occurring negative on the criterion we can measure best.",
+  "why_not_in_the_corpus": "The operator's prior experience is that Haiku drafts are not publishable, and the measurement agrees. It is not an ordinary book and must never be counted as one; it is a labelled negative.",
+  "split": "test_reserve",
+  "split_reason": "Inherits its SKELETON's frozen split, not its own. A weak draft of a test_reserve skeleton cannot go into training: the Sonnet redraft of the same skeleton is test data, and training on this one would leak the plot, the characters and the choice structure into the acceptance set.",
+  "measured_2026_08_14": {
+    "gate_fill_result": "pass, 0 errors",
+    "nodes": 32,
+    "mean_words_per_node": 39.8,
+    "dialogue_share": 0.12,
+    "sensory_per_1000": 25.9,
+    "band_peers_sensory_per_1000": {
+      "the-clover-and-the-butterfly": 64.7,
+      "the-lost-mitten": 60.5
+    }
+  }
+}
