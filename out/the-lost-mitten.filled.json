@@ -16,7 +16,7 @@
       "winter",
       "problem-solving"
     ],
-    "estimated_minutes": 5,
+    "estimated_minutes": 3,
     "ending_count": 3,
     "content_flags": {
       "violence": "none",
@@ -172,7 +172,7 @@
       "ending": {
         "id": "e_found",
         "valence": "positive",
-        "kind": "completion",
+        "kind": "discovery",
         "title": "The {ITEM_COLOR} {LOST_ITEM}"
       }
     },
