@@ -93,10 +93,22 @@ function nodeIndex(story: Storybook): Map<string, StoryNode> {
  * `choose()` as a free function this module imports directly. Both delegate
  * every transition to the engine identically.
  */
-export function composeStop(story: Storybook, state: ReadingState): Stop {
+export function composeStop(
+  story: Storybook,
+  state: ReadingState,
+  alreadyInStop: readonly string[] = []
+): Stop {
   const nodes = nodeIndex(story)
   const nodeIds = [state.current_node]
-  const seen = new Set(nodeIds)
+  // `alreadyInStop` is the flowed prefix `composeStopWithHistory` re-derived
+  // from history, and it participates in loop detection without being walked
+  // again. A resumed cycle is why: for a persisted `n_a -> n_b -> n_a` stop
+  // resumed at `n_b`, a forward pass with a fresh `seen` retakes the
+  // `n_b -> n_a` edge and yields `[n_a, n_b, n_a]`, duplicating that node's
+  // prose and making `backOneStop` call `back()` once too often. The stop must
+  // end at `n_b`, exactly where it ended before the read was persisted.
+  // Default empty, so a direct `composeStop` call behaves as it always has.
+  const seen = new Set([...alreadyInStop, ...nodeIds])
   let current = state
   for (;;) {
     const node = nodes.get(current.current_node)
@@ -215,8 +227,11 @@ export function flowedPrefix(story: Storybook, state: ReadingState): string[] {
  * stop's terminal.
  */
 export function composeStopWithHistory(story: Storybook, state: ReadingState): Stop {
-  const forward = composeStop(story, state)
+  // Prefix first, then compose forward with it already counted as part of this
+  // stop, so a resumed cycle closes where it originally closed instead of
+  // retaking an edge the reader already took.
   const prefix = flowedPrefix(story, state)
+  const forward = composeStop(story, state, prefix)
   if (prefix.length === 0) return forward
   return {
     originNode: prefix[0],

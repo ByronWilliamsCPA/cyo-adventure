@@ -1607,24 +1607,36 @@
   min-height: 44px;
   padding: 0.5rem 1.25rem;
   border-radius: var(--radius-full, 999px);
-  /* --color-amber-text, not --color-amber-deep: this is white text ON the
-     amber, so the amber is doing text-background duty and owes 4.5:1. The
-     deep token is documented as 3:1-safe/non-text (see .guardian-shell__
-     sign-out above, 2026-07-16 audit) and gave white only 3.42:1 here; the
-     text token gives 6.21:1. Found by the weekly extended scan, which is
-     the only tier that scans /guardian/reading at all. */
+  /* BOTH colours are theme-flipping tokens, and that pairing is the point.
+     `--color-amber-deep` gave white only 3.42:1 here (it is documented as
+     3:1-safe/non-text, see .guardian-shell__sign-out above, 2026-07-16 audit),
+     so this moved to `--color-amber-text` with a literal white foreground.
+     That was wrong in the dark palette: tokens.css redefines
+     --color-amber-text to #f0a860, a LIGHT amber, and white on it is 2.00:1.
+     The axe tiers never saw it because both scan the light theme only.
+     Pairing amber-text with --color-parchment fixes it in both directions,
+     because the two flip together: 5.62:1 light (#87561d on #f8f3e8) and
+     9.17:1 dark (#f0a860 on #1a130d). This is the same pairing
+     .admin-library__filter--active uses, which is why that rule was correct in
+     both palettes and this one was not.
+     #ASSUME: data-integrity: a foreground token that flips WITH its background
+     is what keeps this ratio stable; a literal on either side re-breaks it in
+     one palette. #VERIFY: recompute both palettes if either token moves. */
   background: var(--color-amber-text, #87561d);
-  color: white;
+  color: var(--color-parchment, #f8f3e8);
   font-weight: var(--weight-bold, 700);
   text-decoration: none;
 }
 
 .reading__cta:hover {
-  /* Darker than the resting state so hover still reads as a change, and 8.27:1
-     against white. The previous --color-amber-hover (#c4681c) was 3.93:1: a
-     static scan never catches a hover state, so this one was invisible to axe
-     in either tier and is fixed alongside the resting state it belongs to. */
-  background: var(--color-amber-hover-strong, #6f4517);
+  /* Deliberately NOT a colour swap. Every other amber in the palette
+     (amber-deep, amber-hover) lands between 3.09:1 and 3.55:1 against
+     parchment in one palette or the other, so any of them would reintroduce
+     the failure this rule just fixed, in the hover state where no static scan
+     would catch it. Keeping the fill and carrying the affordance on shadow
+     plus underline leaves the contrast exactly as the resting state's. */
+  box-shadow: var(--shadow-md, 0 4px 12px #2c1a0e24);
+  text-decoration: underline;
 }
 
 .reading__list {

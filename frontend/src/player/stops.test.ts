@@ -274,6 +274,50 @@ describe('composeStopWithHistory (UW-F38)', () => {
     expect(flowedPrefix(seededFlowStory, start(seededFlowStory))).toEqual([])
   })
 
+  it('ends a resumed cycle where it originally ended, without repeating a node', () => {
+    // A two-node cycle: n_a's only choice targets n_b, n_b's only choice
+    // targets n_a. Composed fresh from n_a the stop is [n_a, n_b], closing on
+    // the loop guard; it is persisted at its terminal, n_b.
+    const cycle: Storybook = {
+      schema_version: '2.0',
+      id: 's_cycle',
+      version: 1,
+      title: 'Cycle',
+      metadata: {},
+      variables: [],
+      start_node: 'n_a',
+      nodes: [
+        {
+          id: 'n_a',
+          body: 'Around again.',
+          is_ending: false,
+          choices: [{ id: 'c_ab', label: 'On', target: 'n_b' }],
+        },
+        {
+          id: 'n_b',
+          body: 'And back.',
+          is_ending: false,
+          choices: [{ id: 'c_ba', label: 'Back', target: 'n_a' }],
+        },
+      ],
+    }
+    const fresh = composeStop(cycle, start(cycle))
+    expect(fresh.nodeIds).toEqual(['n_a', 'n_b'])
+    expect(fresh.terminalReason).toBe('loop')
+
+    // Resuming at that terminal must reproduce the SAME stop. Without the
+    // prefix participating in loop detection the forward pass retakes
+    // n_b -> n_a and returns [n_a, n_b, n_a]: the node's prose renders twice
+    // and backOneStop calls back() three times instead of two.
+    const resumed = resumedAt('n_b', ['n_a', 'n_b'])
+    const stop = composeStopWithHistory(cycle, resumed)
+    expect(stop.nodeIds).toEqual(['n_a', 'n_b'])
+    expect(stop.originNode).toBe('n_a')
+    expect(new Set(stop.nodeIds).size).toBe(stop.nodeIds.length)
+    // The engine is already at the terminal, so nothing remains to walk.
+    expect(stop.state.current_node).toBe('n_b')
+  })
+
   it('fails closed when the path does not end where the state says it is', () => {
     // A truncated or foreign path describes some other position, so nothing
     // may be inferred from it; the result is today's behavior, not a guess.
