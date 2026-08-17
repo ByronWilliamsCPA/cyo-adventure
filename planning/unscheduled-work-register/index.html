@@ -6099,16 +6099,16 @@ linkage contract, which every row in this table is still bound by.</p>
 <tr>
 <td>UW-D18</td>
 <td>#535</td>
-<td>3 linux-libc-dev kernel-header CVEs in the production base image, 2 of them fixable by a base-image refresh. Also needs a <code>docs/known-vulnerabilities.md</code> entry per the unfixed-CVE rule; no entry may age past 60 days without reassessment.</td>
+<td>3 linux-libc-dev kernel-header CVEs, 2 of them fixable by a base-image refresh. DONE: CVE-2026-64530 and CVE-2026-64531 were cleared on 2026-08-02 by the bump to 6.12.100-1+dhi0 and are in the Resolved Entries table; CVE-2026-63879 (no trixie fix) is now covered by the package-scoped acceptance rather than a per-CVE entry. Closed by the 2026-08-16 base-image CVE change on branch <code>claude/trivy-base-image-cves-vixpcq</code>: <code>.trivy/ignore-policy.rego</code> (+ <code>trivy.yaml</code>) and the consolidated <code>docs/known-vulnerabilities.md</code> entry. Issue #535 has no residual work and can be closed.</td>
 <td>5</td>
-<td>unscheduled</td>
+<td>done</td>
 </tr>
 <tr>
 <td>UW-D19</td>
 <td>#505</td>
-<td>7 unfixed linux-libc-dev kernel-header CVEs with no Debian trixie fix published. Blocked on an upstream trixie kernel-header release; nothing in this repo can close it. Re-triage quarterly, because the OpenSSF release gate blocks a release on any vulnerability older than 60 days regardless of reassessment status.</td>
+<td>7 unfixed linux-libc-dev kernel-header CVEs with no Debian trixie fix. Superseded rather than fixed: all 7 are absorbed into the package-scoped acceptance, so they no longer need individual tracking, and the upstream blocker (no trixie-track fix) is unchanged. The remaining actionable item is the upstream ask that <code>linux-libc-dev</code> be dropped from the DHI runtime image, which is <code>external:container-images</code> only in routing: the mirror is <code>disposition: mirror_only</code>, so it is really an ask to Docker. Closed by the 2026-08-16 base-image CVE change on branch <code>claude/trivy-base-image-cves-vixpcq</code>: <code>.trivy/ignore-policy.rego</code> (+ <code>trivy.yaml</code>) and the consolidated <code>docs/known-vulnerabilities.md</code> entry.</td>
 <td>5</td>
-<td>blocked</td>
+<td>done</td>
 </tr>
 <tr>
 <td>UW-D20</td>
@@ -6185,6 +6185,27 @@ linkage contract, which every row in this table is still bound by.</p>
 <td>(no issue)</td>
 <td>No custom SMTP provider is configured on either Supabase project, so <code>[auth.rate_limit].email_sent</code> in <code>supabase/config.toml</code> is <strong>not deployed</strong>. Split out of UW-D29, which found it: the CLI sends <code>rate_limit_email_sent</code> only when <code>[auth.email.smtp]</code> is enabled, and <code>smtp_host</code> reads null on both project refs, so auth email goes through Supabase's built-in service under that service's own project-wide cap. The practical effect is that the value in the file is inert, and the only throttles actually protecting the unauthenticated <code>resetPasswordForEmail</code> path (<code>frontend/src/auth/AuthContext.tsx</code>) are <code>smtp_max_frequency</code>, set to 60s, plus the built-in cap, which is not ours to tune. A config value that looks like policy but is inert is worse than an absent one, so the file carries a <code>#CRITICAL</code> marker saying so until this is fixed. Also blocks any transactional email beyond the built-in service's deliverability and volume limits. <strong>To do:</strong> provision an SMTP provider, add <code>[auth.email.smtp]</code>, then confirm the configured <code>email_sent</code> starts appearing in the Management API's <code>rate_limit_email_sent</code>. Related: leaked-password protection (<code>password_hibp_enabled</code>) is separately unavailable, returning HTTP 402 on the free plan and having no <code>config.toml</code> key at CLI 2.109.1; both are recorded in the file's <code>[auth]</code> comments.</td>
 <td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-D31</td>
+<td>(no issue)</td>
+<td>8 CVEs suppressed in <code>.trivyignore</code> with no entry in <code>docs/known-vulnerabilities.md</code>: perl-base (5), libsqlite3-0 (2), ncurses (1), all introduced undocumented by <code>d1907a8</code> (PR #668). DONE 2026-08-17: all three entries written with per-package reachability analysis, <code>known-vulnerabilities-baseline.toml</code> deleted, and <code>tests/unit/test_check_known_vulnerabilities.py::test_repository_carries_no_grandfathered_debt</code> added so the baseline cannot quietly reappear. Two findings worth carrying forward: two of the perl CVEs are <strong>Critical</strong> (CVE-2026-8376, CVE-2026-42496) and were accepted silently for a week, and the two libsqlite3-0 CVEs are Medium, so they sit below the <code>CRITICAL,HIGH</code> scan threshold and their ignore entries suppress nothing today. <strong>Residual, deliberately not closed here:</strong> fix status came from Trivy's own Debian advisory records, not from an independent Debian tracker check, because that host is unreachable from cloud sessions; each entry says so and carries the re-verification as an open task. Tracked onward by #711 item 1.</td>
+<td>5</td>
+<td>done</td>
+</tr>
+<tr>
+<td>UW-D32</td>
+<td>(no issue)</td>
+<td>Decide whether to adopt <code>python-container-revisit.yml</code> from <code>ByronWilliamsCPA/.github</code> v10.1.0. It runs a weekly full-scope scan and maintains one tracker issue via <code>track_unfixed_cves.py</code>, giving every unfixed CVE a first-seen and a due date. Deliberately NOT adopted on 2026-08-17: that is per-CVE enumeration, which is exactly what the <code>linux-libc-dev</code> consolidation removed, and our Rego policy filters those findings before the tracker would ever see them. It also needs <code>issues: write</code> on the caller. Revisit if the weekly Container Security run stops being a sufficient backstop, or if a second package ever needs package-scoped acceptance. Owner ruling needed on whether org uniformity outweighs the enumeration cost.</td>
+<td>5</td>
+<td>decision</td>
+</tr>
+<tr>
+<td>UW-D33</td>
+<td>(no issue)</td>
+<td><code>tests/unit/test_trivy_ignore_policy.py::TestPolicyEvaluation</code> is skipped whenever the <code>trivy</code> binary is absent, which is every CI unit-test run: no job installs it. The structural assertions still run and catch the three ways the policy silently becomes a no-op (wrong <code>FixedVersion</code> comparison, a second permissive <code>ignore</code> rule, a missing expiry), so the loss is the end-to-end tier only, which was verified locally against Trivy 0.70.0. Either install Trivy in the unit-test job or move this tier into the Container Security workflow, which already has the binary. Raised by Greptile on PR #725 against the tests/CLAUDE.md rule that a conditional skip carries a tracking reference.</td>
+<td>CI hygiene</td>
 <td>unscheduled</td>
 </tr>
 </tbody>
@@ -7129,15 +7150,15 @@ project's own inventory.</p>
 </tr>
 <tr>
 <td>UW-K02</td>
-<td><code>docs/known-vulnerabilities.md</code>: libuuid1 and gawk entries name base image <code>dhi-python:3.12-debian13</code>; the project runs <code>3.14-debian13</code>. The Review History row is a <code>2026-MM-DD</code> placeholder and the Resolved Entries table is header-only.</td>
+<td><code>docs/known-vulnerabilities.md</code>: libuuid1 and gawk entries name base image <code>dhi-python:3.12-debian13</code>; the project runs <code>3.14-debian13</code>. The Review History row is a <code>2026-MM-DD</code> placeholder and the Resolved Entries table is header-only. DONE 2026-08-16: both entries corrected to <code>3.14-debian13</code> (the third <code>3.12</code> mention, in the libexpat1 entry, is correct and was left alone: it records an independent cross-check against the 3.12 image). Placeholder replaced with 2026-05-21. The Resolved Entries table has carried six rows since 2026-08-02, so that clause was already stale. Closed by the 2026-08-16 base-image CVE change on branch <code>claude/trivy-base-image-cves-vixpcq</code>: <code>.trivy/ignore-policy.rego</code> (+ <code>trivy.yaml</code>) and the consolidated <code>docs/known-vulnerabilities.md</code> entry.</td>
 <td>doc</td>
-<td>unscheduled</td>
+<td>done</td>
 </tr>
 <tr>
 <td>UW-K03</td>
-<td>2 fixable linux-libc-dev CVEs due 2026-08-24, blocked on a Renovate digest bump to a base carrying <code>linux-libc-dev</code> 6.12.96-1</td>
+<td>2 fixable linux-libc-dev CVEs due 2026-08-24, blocked on a Renovate digest bump to a base carrying <code>linux-libc-dev</code> 6.12.96-1. DONE: the base reached 6.12.96-1+dhi0 on 2026-07-30, clearing CVE-2026-53399 and CVE-2026-64600; both are in the Resolved Entries table. The row outlived the work it described.</td>
 <td>5</td>
-<td>blocked</td>
+<td>done</td>
 </tr>
 <tr>
 <td>UW-K04</td>
@@ -7527,7 +7548,7 @@ have to re-derive them.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 16, 2026 02:31:02 UTC">August 16, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 17, 2026 03:10:28 UTC">August 17, 2026</span>
   </span>
 
     
