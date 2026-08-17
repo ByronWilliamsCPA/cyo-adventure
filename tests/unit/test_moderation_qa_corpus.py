@@ -157,8 +157,13 @@ def test_gate_blocked_books_are_exactly_the_declared_exceptions() -> None:
         f"gate-blocked books changed: {blocked}"
     )
     for book_id, rule_ids in blocked.items():
-        assert set(rule_ids) <= _GATE_BLOCKED_BY_DESIGN[book_id], (
-            f"{book_id} is blocked by more than its declared exception: {rule_ids}"
+        # Exact, not a subset: `<=` also passed when a declared rule STOPPED
+        # firing, so a stale exception could outlive the behaviour it excuses and
+        # keep a real regression pre-authorised (`AL-440`).
+        assert set(rule_ids) == _GATE_BLOCKED_BY_DESIGN[book_id], (
+            f"{book_id}'s gate-blocking rules no longer match its declared "
+            f"exception: {sorted(rule_ids)} vs "
+            f"{sorted(_GATE_BLOCKED_BY_DESIGN[book_id])}"
         )
 
 

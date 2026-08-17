@@ -310,14 +310,23 @@ def is_fill_feasible(story: dict[str, object], *, max_tokens: int) -> bool:
     """Return whether a one-shot fill of *story* can fit under *max_tokens*.
 
     #CRITICAL: payment: without this predicate selection could pick a skeleton
-    the fill pipeline provably cannot emit. ``fill_skeleton`` is one-shot with
-    no chunking anywhere in ``generation/``, so an over-cap skeleton does not
+    the fill pipeline provably cannot emit. An over-cap one-shot fill does not
     degrade, it fails: the completion truncates, no document parses, and the
     orchestrator burns its whole repair budget (roughly four rounds of ~100k
     input tokens) before failing deterministically, forever, on every retry.
-    Measured 2026-08-16: 26 of the 62 production skeletons exceed the current
+    Measured 2026-08-16: 26 of the 62 production skeletons exceed the then-current
     32,000-token cap, the largest needing about 76,000. This is `UW-C07` and
     `AL-046`.
+
+    This predicate now serves two callers at two different caps, and conflating
+    them is the trap. ``fill_skeleton`` is no longer one-shot-only: asked at the
+    *resolved* (per-model) cap it decides whether to chunk, so False there means
+    "batch this", not "refuse this". ``skeleton_match`` asks at the
+    model-independent DEFAULT cap instead, where False means the skeleton is too
+    large for ANY backend and is dropped from selection. Do not "simplify" the
+    two call sites onto one cap: matching at the resolved cap would delete a
+    skeleton from the catalog because of today's configured model, and chunking
+    at the default cap would never fire at all (`AL-437`).
     #VERIFY: test_fill_output_cap.py::
     test_feasibility_is_measured_against_the_declared_fill_targets asserts the
     predicate itself, and test_skeleton_match.py::

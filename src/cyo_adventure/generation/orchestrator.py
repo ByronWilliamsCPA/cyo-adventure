@@ -36,6 +36,7 @@ from typing import TYPE_CHECKING, Literal, cast
 
 from cyo_adventure.core.exceptions import ConfigurationError, ValidationError
 from cyo_adventure.generation.chunking import (
+    UnpartitionableSkeletonError,
     batch_request,
     merge_fill_batch,
     plan_fill_batches,
@@ -1010,12 +1011,20 @@ async def generate_story(
         current_doc, gate_result = await _run_one_stage(
             stage_b_prompt,
             provider=guarded_provider,
-            # generate_story takes no Settings, so it cannot resolve a
-            # per-model cap and uses the raised default. Safe: the clamp only
-            # ever lowers the cap for a small-output backend, and a completion
-            # stopped on `length` is leg-fatal rather than retried (AL-329), so
-            # this path fails fast instead of silently truncating.
-            max_tokens=_MAX_TOKENS_PROSE,
+            # #CRITICAL: external resources: this is the only stage whose ask
+            # can exceed a model's output ceiling, and neither provider clamps:
+            # `providers/openrouter.py` and `providers/anthropic.py` both put
+            # `max_tokens` straight into the request payload, so an over-ask is
+            # rejected by the API rather than quietly lowered. Asking 131,072 of
+            # the shipped default (`anthropic/claude-haiku-4.5`, ceiling 64,000)
+            # therefore fails EVERY Stage B call, not merely oversized ones, and
+            # `worker.py` reaches this function on the provider-override path.
+            # `generate_story` takes no Settings, but it builds `guarded_provider`
+            # itself, so the provider's own declared model is available here and
+            # is the authoritative answer anyway (`AL-436`).
+            # #VERIFY: test_orchestrator.py::
+            # test_generate_story_stage_b_asks_no_more_than_the_model_can_emit.
+            max_tokens=resolve_output_cap(guarded_provider.model),
             scale=scale,
             context="fill_result",
         )
@@ -1262,7 +1271,7 @@ async def fill_skeleton(
     on a large-output backend, and that path is unchanged. When the configured
     model's own ceiling clamps the cap below what the skeleton needs, the fill
     is instead run a batch at a time via :func:`_fill_in_batches`, so the
-    catalog is not coupled to one vendor's output ceiling. Three consequences a
+    catalog is not coupled to one vendor's output ceiling. Four consequences a
     caller should know about:
 
     * A batch that returns nothing usable fails the whole job. Merging what
@@ -1408,11 +1417,19 @@ async def fill_skeleton(
                     stage_log=stage_log,
                 ),
             )
-        except ValidationError as exc:
+        except UnpartitionableSkeletonError as exc:
             # No partition of this skeleton fits the cap, so no amount of
             # retrying changes the answer. Returned as a failed outcome rather
             # than raised, so an RQ job records a deterministic failure instead
             # of retrying a call that provably cannot succeed (`AL-329`).
+            #
+            # Narrowed from `except ValidationError` deliberately: that also
+            # caught a PII abort from `PiiGuardedProvider.complete` and a
+            # rejected model reply from `merge_fill_batch`, reporting both as
+            # "unfillable under cap". The PII case is the serious one, since it
+            # is a security stop that propagates on the one-shot path and must
+            # do the same here rather than being recorded as a capacity limit
+            # (`AL-435`).
             return _unfillable_outcome(exc, stage_log, armed=armed)
     else:
         # WS-2: a parameterized fill (slot_bindings supplied) already has its

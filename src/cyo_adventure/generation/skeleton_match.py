@@ -118,7 +118,7 @@ def _load_metadata(path: Path) -> StoryMetadata | None:
     try:
         raw = path.read_text(encoding="utf-8")
         data = cast("dict[str, object]", json.loads(raw))
-    except (OSError, json.JSONDecodeError) as exc:
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
         logger.warning("skeleton.unreadable", path=str(path), error=str(exc))
         return None
     meta = data.get("metadata") if isinstance(data, dict) else None
@@ -141,9 +141,17 @@ def _read_story(path: Path) -> dict[str, object] | None:
     Returns:
         dict[str, object] | None: The decoded document, or None on failure.
     """
+    # #EDGE: data-integrity: `read_text` raises UnicodeDecodeError on a file that
+    # is not valid UTF-8, and that is a ValueError, not an OSError and not a
+    # JSONDecodeError, so it escaped this handler and crashed the scan the same
+    # way a corrupt file was supposed not to. Reachable from any mangled commit
+    # or partial write under `skeletons/`, and this runs synchronously inside
+    # POST /authoring-plan (`AL-438`).
+    # #VERIFY: test_skeleton_match.py::
+    # test_a_skeleton_that_is_not_valid_utf8_is_skipped_not_raised.
     try:
         return cast("dict[str, object]", json.loads(path.read_text(encoding="utf-8")))
-    except (OSError, json.JSONDecodeError):
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
         return None
 
 
@@ -239,10 +247,14 @@ def _production_candidates(band: str) -> list[tuple[str, StoryMetadata]]:
         # #VERIFY: test_skeleton_match.py::
         # test_an_over_cap_skeleton_is_not_a_candidate.
         if not _is_feasible(path):
-            # A skeleton the one-shot fill provably cannot emit must not be
-            # offered: `fill_skeleton` has no chunking, so an over-cap skeleton
-            # truncates, parses as nothing, and burns the whole repair budget
-            # before failing deterministically on every retry, forever.
+            # A skeleton no backend can emit must not be offered. `fill_skeleton`
+            # does chunk now, but only against the RESOLVED (per-model) cap;
+            # `_is_feasible` screens against the model-independent DEFAULT cap,
+            # so reaching here means the skeleton is over-cap for every backend,
+            # where chunking cannot save it: the completion truncates, parses as
+            # nothing, and burns the whole repair budget before failing
+            # deterministically on every retry, forever. See `is_fill_feasible`
+            # on why the two callers must keep asking at different caps.
             #
             # This was observe-only from 2026-08-16 until the cap was raised the
             # same day, because at 32,000 it would have excluded 36 of 59

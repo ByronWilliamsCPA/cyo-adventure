@@ -1752,8 +1752,16 @@ def test_pl29_accepts_every_committed_skeleton() -> None:
 
     from cyo_adventure.validator.topology import BAND_TOPOLOGIES
 
+    # Anchored to this file, not to the cwd: `Path("skeletons")` resolved to
+    # nothing whenever pytest ran from anywhere but the repo root, and a glob
+    # that matches nothing makes this a silently vacuous pass rather than a
+    # failure (`AL-439`).
+    skeletons_dir = Path(__file__).resolve().parents[2] / "skeletons"
+
     offenders: list[str] = []
-    for path in sorted(Path("skeletons").glob("*/*.json")):
+    paths = sorted(skeletons_dir.glob("*/*.json"))
+    assert paths, f"no skeletons found under {skeletons_dir}; the glob is wrong"
+    for path in paths:
         if path.name.endswith((".lineage.json", ".narrative.json", ".contract.json")):
             continue
         metadata = json.loads(path.read_text())["metadata"]

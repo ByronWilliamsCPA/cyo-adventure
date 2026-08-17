@@ -851,3 +851,25 @@ def test_a_live_skeleton_in_the_same_band_still_selects(
     slugs = [slug for slug, _ in skeleton_match._production_candidates("3-5")]  # pyright: ignore[reportPrivateUsage]
 
     assert slugs == ["live"]
+
+
+def test_a_skeleton_that_is_not_valid_utf8_is_skipped_not_raised(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A mis-encoded file must be skipped like any other corrupt one.
+
+    Both readers open with ``encoding="utf-8"``, and on invalid bytes
+    ``read_text`` raises ``UnicodeDecodeError``: a ``ValueError``, so neither
+    ``OSError`` nor ``json.JSONDecodeError`` caught it and the scan crashed the
+    way a corrupt file was specifically meant not to. This scan runs
+    synchronously inside POST /authoring-plan, so the escape surfaced as a 500
+    on a guardian request rather than as one skipped skeleton (`AL-438`).
+    """
+    band_dir = tmp_path / "8-11"
+    band_dir.mkdir()
+    # 0x80 is a continuation byte with no lead byte: never valid UTF-8.
+    (band_dir / "aaa-mis-encoded.json").write_bytes(b'{"metadata": "\x80\x81"}')
+    _write_skeleton(band_dir, "zzz-good", age_band="8-11")
+    monkeypatch.setattr(skeleton_match, "_SKELETON_ROOT", tmp_path)
+
+    assert candidates_for_cell("8-11", "short", "prose") == ["zzz-good"]

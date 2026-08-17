@@ -71,6 +71,9 @@ _TEMPLATES = files("cyo_adventure.generation.templates")
 # the volatile (per-job) user region. Everything before the marker is the system
 # block; everything after is the user block.
 _USER_MARKER = "<!-- @user -->"
+# Inert stand-in for a forged stage marker inside an untrusted payload; see
+# `_neutralize_fence`.
+_USER_MARKER_DEFANGED = "<!-- @user_NEUTRALIZED -->"
 
 # Placeholder tokens shared by every stage template (structure/prose/fill). Named
 # once so the substitution sites cannot drift from the template text.
@@ -189,7 +192,19 @@ def _neutralize_fence(text: str) -> str:
     Returns:
         The payload with any fence terminator rendered inert.
     """
-    return text.replace(_FENCE_TERMINATOR, _FENCE_TERMINATOR_DEFANGED)
+    # The stage-split marker is the second delimiter an untrusted payload can
+    # forge, and forging it is worse than forging the fence: `_split_stage_prompt`
+    # requires EXACTLY one marker, so a second one raises BusinessLogicError,
+    # which is not a ValidationError and therefore escapes `_fill_in_batches` and
+    # `fill_skeleton` entirely. An RQ job then retries a deterministic failure
+    # forever. Reachable from model-written prose the moment a chunked fill runs:
+    # `json.dumps` escapes quotes and newlines but leaves this literal intact.
+    # Confirmed by construction, not inferred (`AL-434`).
+    # #VERIFY: test_chunked_fill.py::
+    # test_the_subset_prompt_neutralizes_a_literal_stage_marker.
+    return text.replace(_FENCE_TERMINATOR, _FENCE_TERMINATOR_DEFANGED).replace(
+        _USER_MARKER, _USER_MARKER_DEFANGED
+    )
 
 
 def _drafting_guide() -> str:

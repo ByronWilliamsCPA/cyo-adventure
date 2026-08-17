@@ -52,11 +52,26 @@ if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
 
 __all__ = [
+    "UnpartitionableSkeletonError",
     "batch_request",
     "merge_fill_batch",
     "plan_fill_batches",
     "written_prose",
 ]
+
+
+class UnpartitionableSkeletonError(ValidationError):
+    """No partition of this skeleton fits the cap, so retrying cannot help.
+
+    Distinct from a plain :class:`ValidationError` because `fill_skeleton`
+    converts THIS case into a deterministic failed outcome rather than raising.
+    A blanket `except ValidationError` around the chunked fill also swallowed
+    two unrelated failures and reported both as "unfillable under cap": a PII
+    abort from `PiiGuardedProvider.complete` (a security stop that must
+    propagate, and does on the one-shot path) and a rejected model reply from
+    `merge_fill_batch` (retryable, and not a capacity problem at all).
+    Mislabelling a PII abort as a capacity limit is the serious half (`AL-435`).
+    """
 
 
 def _nodes(document: dict[str, object]) -> list[dict[str, object]]:
@@ -245,7 +260,9 @@ def plan_fill_batches(
                 f"does not fit a {max_tokens}-token cap even alone; no partition "
                 f"of this skeleton is fillable on this backend"
             )
-            raise ValidationError(msg, field="max_tokens", value=max_tokens)
+            raise UnpartitionableSkeletonError(
+                msg, field="max_tokens", value=max_tokens
+            )
         if open_batch and not is_fill_feasible(
             {"nodes": [*open_batch, node]}, max_tokens=max_tokens
         ):
