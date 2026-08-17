@@ -2,6 +2,7 @@ import type { Page } from '@playwright/test'
 import { expect, test } from '@playwright/test'
 
 import { signInAsProdTestAdmin, unlockParentalGateIfPresent } from './support/auth'
+import { expectConsoleHeading } from './support/diagnostics'
 import { gotoResilient } from '../e2e-support/rate-limit'
 
 /**
@@ -75,7 +76,7 @@ test.describe('dual-role account across both adult consoles', () => {
       await expect(
         sharedPage.getByRole('heading', { name: 'Something went wrong', level: 1 })
       ).not.toBeVisible()
-      await expect(sharedPage.getByRole('heading', { name: heading, level: 1 })).toBeVisible()
+      await expectConsoleHeading(sharedPage, heading)
     })
   }
 })

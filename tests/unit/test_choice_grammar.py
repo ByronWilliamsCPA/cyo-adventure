@@ -13,6 +13,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 from cyo_adventure.storybook.models import Storybook
 from cyo_adventure.validator.choice_grammar import (
     check_choice_grammar,
@@ -484,3 +486,111 @@ class TestRunGateForwardsTheFlag:
         raw = self._raw()
         assert run_gate(raw, enforce_grammar=True).blocked is False
         assert run_gate(raw, enforce_grammar=True).report.ok is True
+
+
+# ---------------------------------------------------------------------------
+# Exact cap and ceiling boundaries for CG-1 and CG-3.
+#
+# Added against the 2026-08-15 mutation run, which left 16 surviving mutants in
+# `check_choiceless_run_cap` and 13 in `check_words_per_stop` even though both
+# rules already had firing and non-firing tests. That is the signature of a
+# boundary asserted loosely: a run of 10 against a cap of 6 fires for the same
+# reason a run of 7 does, and neither distinguishes `<=` from `<`. Every case
+# below pins the last quiet value against the first noisy one, per band, so the
+# comparison operator and the table entry are both load-bearing.
+# ---------------------------------------------------------------------------
+
+# (band, cap) straight from ADR-011 section 10, restated here on purpose: a
+# test that imports the module's own table cannot detect that table changing.
+_RUN_CAP_BY_BAND: tuple[tuple[str, int], ...] = (
+    ("3-5", 3),
+    ("5-8", 2),
+    ("8-11", 6),
+    ("10-13", 6),
+    ("13-16", 6),
+    ("16+", 6),
+)
+
+# (band, ceiling) for the flowed bands only; the discrete bands have no
+# composed stop and so no entry.
+_WORDS_CEILING_BY_BAND: tuple[tuple[str, int], ...] = (
+    ("8-11", 135),
+    ("10-13", 150),
+    ("13-16", 200),
+    ("16+", 230),
+)
+
+
+class TestChoicelessRunCapBoundary:
+    """CG-1 fires on the first run longer than the band's cap, never at it."""
+
+    @pytest.mark.parametrize(("band", "cap"), _RUN_CAP_BY_BAND)
+    def test_a_run_exactly_at_the_cap_is_quiet(self, band: str, cap: int) -> None:
+        report = check_choiceless_run_cap(_chain_story(band, cap))
+        assert [f.rule_id for f in report.findings] == []
+
+    @pytest.mark.parametrize(("band", "cap"), _RUN_CAP_BY_BAND)
+    def test_a_run_one_past_the_cap_fires_once(self, band: str, cap: int) -> None:
+        report = check_choiceless_run_cap(_chain_story(band, cap + 1))
+        findings = [f for f in report.findings if f.rule_id == "CG-1"]
+        assert len(findings) == 1
+        # The reported length is the run's own, not the cap: a message that
+        # echoed the cap back would read plausibly and say nothing.
+        assert f"run of {cap + 1} " in findings[0].message
+        assert f"(cap {cap})" in findings[0].message
+
+    @pytest.mark.parametrize(("band", "cap"), _RUN_CAP_BY_BAND)
+    def test_the_finding_is_advisory_only(self, band: str, cap: int) -> None:
+        # Severity is the whole contract of these rules: a CG-* finding must
+        # never fail the gate, whatever its band.
+        report = check_choiceless_run_cap(_chain_story(band, cap + 1))
+        assert all(f.severity is Severity.WARNING for f in report.findings)
+        assert report.ok
+
+
+class TestWordsPerStopBoundary:
+    """CG-3 fires on the first composed stop above the band's ceiling."""
+
+    @staticmethod
+    def _stop_words(story: Storybook) -> int:
+        # The composed stop is every run node PLUS its terminal, which is the
+        # part a per-node word check would miss.
+        return sum(len(node.body.split()) for node in story.nodes)
+
+    @pytest.mark.parametrize(("band", "ceiling"), _WORDS_CEILING_BY_BAND)
+    def test_a_stop_exactly_at_the_ceiling_is_quiet(
+        self, band: str, ceiling: int
+    ) -> None:
+        # A ONE-node run plus its ending terminal, so each filler word moves
+        # the composed total by exactly one. A two-node run steps by two and
+        # can stride straight over an odd ceiling without ever landing on it.
+        for extra in range(ceiling + 40):
+            story = _chain_story(band, 1, extra_words=extra)
+            if self._stop_words(story) == ceiling:
+                break
+        else:  # pragma: no cover - the loop always finds an exact hit
+            pytest.fail(f"could not size a stop to exactly {ceiling} words")
+        assert self._stop_words(story) == ceiling
+        assert list(check_words_per_stop(story).findings) == []
+
+    @pytest.mark.parametrize(("band", "ceiling"), _WORDS_CEILING_BY_BAND)
+    def test_a_stop_above_the_ceiling_fires(self, band: str, ceiling: int) -> None:
+        for extra in range(ceiling + 40):
+            story = _chain_story(band, 1, extra_words=extra)
+            if self._stop_words(story) > ceiling:
+                break
+        else:  # pragma: no cover - the loop always exceeds the ceiling
+            pytest.fail(f"could not size a stop above {ceiling} words")
+        findings = [
+            f for f in check_words_per_stop(story).findings if f.rule_id == "CG-3"
+        ]
+        assert len(findings) == 1
+        assert f"ceiling {ceiling}" in findings[0].message
+        assert findings[0].severity is Severity.WARNING
+
+    @pytest.mark.parametrize("band", ["3-5", "5-8"])
+    def test_a_discrete_band_has_no_composed_stop_to_cap(self, band: str) -> None:
+        # No ceiling entry means the rule returns before walking any run, so
+        # even a very wordy chain stays quiet.
+        story = _chain_story(band, 4, extra_words=300)
+        assert check_words_per_stop(story).findings == []

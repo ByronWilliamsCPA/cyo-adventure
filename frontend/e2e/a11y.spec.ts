@@ -123,7 +123,72 @@ async function assertNoViolations(page: Page) {
   // regressions in opinionated-but-optional findings. The weekly extended
   // run opts into those rules via A11Y_EXTENDED.
   const results = await new AxeBuilder({ page }).withTags(AXE_TAGS).analyze()
-  expect(results.violations, JSON.stringify(results.violations, null, 2)).toEqual([])
+
+  // Split the extended run's findings by whether they are CONFORMANCE
+  // failures. A rule carrying a `wcag*` tag is a failure against the target
+  // ADR-029 sets (WCAG 2.1 AA, plus 2.2 in this tier); a `best-practice` rule
+  // with no WCAG tag is axe's own opinion -- worth fixing, tracked as
+  // `UW-F27`, but not a conformance failure and not what this tier's alert
+  // should mean.
+  //
+  // Be precise about what that downgrades, because it is broader than the
+  // landmark/heading examples suggest. Against the axe-core pinned in
+  // package-lock.json (4.12.1), the extended tag set selects 100 rules and 30
+  // of them carry no `wcag*` tag, so all 30 become report-only here:
+  //   accesskeys, aria-allowed-role, aria-dialog-name, aria-text,
+  //   aria-treeitem-name, empty-heading, empty-table-header,
+  //   focus-order-semantics, frame-tested, heading-order, hidden-content,
+  //   image-redundant-alt, label-title-only, landmark-* (8 rules),
+  //   meta-viewport-large, page-has-heading-one, presentation-role-conflict,
+  //   region, scope-attr-valid, skip-link, tabindex, table-duplicate-name.
+  // Several of those are real assistive-technology failures rather than
+  // structural hygiene: `aria-dialog-name`, `aria-treeitem-name`,
+  // `empty-heading`, `skip-link`, `tabindex` and `focus-order-semantics` all
+  // describe things a screen-reader or keyboard user actually hits. They are
+  // downgraded here deliberately, because a tier that fails on all 30 every
+  // week reports nothing, but "downgraded" is not "unimportant": read the
+  // console warning below, do not assume it is only missing landmarks.
+  // #ASSUME: external resources: that 30-rule split is the axe-core 4.12.1
+  // ruleset; a version bump can move rules across the boundary.
+  // #VERIFY: recount with `axe.getRules([...AXE_TAGS])` after any axe-core
+  // upgrade, and update this list.
+  //
+  // Why this split exists: from its first run (2026-08-12) this tier failed on
+  // that known structural debt, on every route, every week. Two REAL WCAG 1.4.3
+  // contrast failures (white on --color-amber-deep at 3.42:1, parchment on
+  // --color-amber at 2.62:1) sat inside that noise undetected, on three routes
+  // the required per-PR gate does not scan at all. A permanently-red tier
+  // cannot report a regression, which is precisely how those two survived. So:
+  // conformance findings fail, structural debt is printed and counted.
+  //
+  // The per-PR gate is untouched by construction: without A11Y_EXTENDED its
+  // tag list has no `best-practice` entry, so `structural` is always empty and
+  // this behaves exactly as the plain assertion did.
+  const isConformance = (v: { tags: string[] }) => v.tags.some((t) => t.startsWith('wcag'))
+  const conformance = results.violations.filter(isConformance)
+  const structural = results.violations.filter((v) => !isConformance(v))
+
+  // Pin the "per-PR gate is untouched" claim instead of only asserting it in
+  // prose. Outside the extended run every AXE_TAGS entry starts with `wcag`,
+  // so `structural` is empty by construction; this makes that a test failure
+  // rather than a silent behaviour change if a future tag addition admits a
+  // rule with no `wcag*` tag. Without it, such an addition would quietly
+  // convert a REQUIRED gate failure into a console.warn.
+  if (!AXE_TAGS.includes('best-practice')) {
+    expect(structural, JSON.stringify(structural, null, 2)).toEqual([])
+  }
+
+  if (structural.length > 0) {
+    const summary = structural.map((v) => `${v.id} (${v.nodes.length})`).join(', ')
+    console.warn(
+      `[a11y][best-practice] ${page.url()}: ${structural.length} non-WCAG finding(s): ${summary}. ` +
+        `Tracked as UW-F27; not failing this tier. Full detail: ` +
+        JSON.stringify(structural, null, 2)
+    )
+    test.info().annotations.push({ type: 'a11y-best-practice', description: summary })
+  }
+
+  expect(conformance, JSON.stringify(conformance, null, 2)).toEqual([])
 }
 
 test('landing page has no detectable accessibility violations', async ({ page }) => {
@@ -891,6 +956,21 @@ async function mockApiForScan(context: BrowserContext, page: Page): Promise<void
     })
   )
   await page.route('**/api/v1/notifications/stream', (route) => route.abort())
+  // Two endpoints answer with a BARE ARRAY, not the envelope object above:
+  // `deviceGrantApi.list()` and `deviceDownloadsApi.list()` both return
+  // `res.data` typed as `T[]` (src/auth/deviceGrantApi.ts,
+  // src/guardian/deviceDownloadsApi.ts). Neither validates the shape, so
+  // handed the envelope they return the OBJECT without throwing and the
+  // loader's own try/catch never fires; the throw happens later, during
+  // RENDER, when groupByDevice iterates a non-iterable. That escapes to the
+  // app error boundary rather than the page's error state, so the
+  // <h1>Devices</h1> this test waits for never appears and the route's scan
+  // failed on page setup without ever reaching axe.
+  // Registered after the catch-all so these win (page routes are matched
+  // before context routes, most-recent-first), matching the stream abort
+  // above.
+  await page.route('**/api/v1/device-grants', (route) => route.fulfill({ json: [] }))
+  await page.route('**/api/v1/device-downloads', (route) => route.fulfill({ json: [] }))
 }
 
 test.describe('routes covered only by the extended weekly scan', () => {

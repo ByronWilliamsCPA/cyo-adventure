@@ -190,7 +190,20 @@
 }
 
 .admin-library__filter--active {
-  background: var(--color-amber, #e07f2e);
+  /* Background is --color-amber-text, not --color-amber: parchment on the
+     plain amber was 2.62:1, and this label is 10pt bold, which is not "large
+     text" (that needs 14pt bold / 18pt regular), so it owes the full 4.5:1.
+     The text token gives 5.62:1. The BORDER keeps the brighter amber purely
+     for the selected chip's brand edge, and it is NOT carrying the 1.4.11
+     boundary requirement: measured, --color-amber is 2.62:1 against the page
+     parchment and 2.14:1 against this rule's own fill (1.12:1 in dark), so it
+     meets 3:1 against neither. What identifies the control is the FILL against
+     the page, at the 5.62:1 computed above, which is why axe's
+     non-text-contrast rule does not fire here. Do not cite this border as a
+     measured 3:1 boundary; if the fill ever stops carrying that job, the
+     border needs a real value, not this one. Found by the weekly extended
+     scan, the only tier that scans /admin/library. */
+  background: var(--color-amber-text, #87561d);
   border-color: var(--color-amber, #e07f2e);
   color: var(--color-parchment, #f8f3e8);
 }

@@ -10,6 +10,19 @@ import { BACKEND, requireBackend } from './real-stack'
 // like full-pipeline-real.spec.ts, since real-stack.ts does not export it.
 const GUARDIAN_BEARER = 'dev-guardian'
 
+// The success notice RequestStoryForm renders in `mode="guardian"`, which is
+// the mode RequestsPage mounts at /guardian/requests. Both tests below
+// previously asserted 'Request approved and sent for authoring.', a string
+// that has never existed in frontend/src in any revision: it matched neither
+// the guardian-mode copy below nor the intake-mode 'Request approved. Story
+// generation has started.'. The specs were authored against it and so failed
+// on every run from the day they landed, which is part of why the nightly
+// real-backend tier stayed red. Asserted against `role="status"` rather than
+// a bare text lookup so a copy change fails here loudly instead of silently
+// matching nothing.
+const GUARDIAN_SUCCESS_NOTICE =
+  "Sent! Your story is being made. You'll find it under Books once it's ready."
+
 /**
  * Authenticated backend fetch, mirroring full-pipeline-real.spec.ts's helper
  * (that constant is spec-local there too). Body-stream discipline: the caller
@@ -81,7 +94,9 @@ test('a guardian submits an authored request and sees the success notice', async
   await page.getByLabel('Story length').selectOption('short')
   await page.getByRole('button', { name: 'Send request' }).click()
 
-  await expect(page.getByText('Request approved and sent for authoring.')).toBeVisible()
+  await expect(page.locator('form.request-form').getByRole('status')).toHaveText(
+    GUARDIAN_SUCCESS_NOTICE
+  )
 
   // Downstream materialization (S-6): the success toast alone would pass even
   // against a backend that 201s and does nothing. Read the request back through
@@ -117,7 +132,9 @@ test('a guardian submits an authored request with a series title and sees the su
   await page.getByLabel('Series title (optional)').fill('Lighthouse Keeper Tales')
   await page.getByRole('button', { name: 'Send request' }).click()
 
-  await expect(page.getByText('Request approved and sent for authoring.')).toBeVisible()
+  await expect(page.locator('form.request-form').getByRole('status')).toHaveText(
+    GUARDIAN_SUCCESS_NOTICE
+  )
 
   // Downstream materialization (S-6): prove the request persisted AND that the
   // optional series title actually reached the backend, not just that the toast

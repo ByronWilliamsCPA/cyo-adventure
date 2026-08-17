@@ -6,8 +6,8 @@ import pytest
 
 from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.player import StoryEngine
-from cyo_adventure.player.replay import validate_reading_state
-from cyo_adventure.storybook.models import Storybook
+from cyo_adventure.player.replay import _check_var_value, validate_reading_state
+from cyo_adventure.storybook.models import Storybook, Variable, VariableType
 
 
 def _meta() -> dict[str, object]:
@@ -695,3 +695,119 @@ def test_a_forged_slot_is_refused_before_the_structural_floor_runs() -> None:
             save_slots={"forged": {}},
             seed_var_state=None,
         )
+
+
+# ---------------------------------------------------------------------------
+# Boundary and branch cover for `_check_var_value`.
+#
+# Exercised directly rather than through `validate_reading_state`: this is a
+# pure, total function over (key, value, var), and driving it straight lets a
+# test name the exact boundary it pins. Going through the public entry point
+# would need a whole blob per case and could still only reach one side of each
+# comparison.
+#
+# Written against the 2026-08-15 mutation run, which left 30 surviving mutants
+# in this function (the single largest cluster in `player/replay.py`) while
+# every one of its error MESSAGES was already asserted elsewhere in this file.
+# That combination is the signature of untested comparison boundaries: an
+# `is out of declared bounds` test that passes `min - 5` kills nothing that
+# `min - 1` does not, and says nothing about `<` versus `<=`. Each case below
+# is therefore paired: the last accepted value and the first rejected one.
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+class TestCheckVarValueBoundaries:
+    """Exact accept/reject boundaries for a declared variable's value."""
+
+    @staticmethod
+    def _int_var(*, minimum: int | None = None, maximum: int | None = None) -> Variable:
+        return Variable(
+            name="courage", type=VariableType.INT, initial=0, min=minimum, max=maximum
+        )
+
+    def test_value_equal_to_declared_min_is_accepted(self) -> None:
+        # Pins `<` rather than `<=`: at exactly the minimum the value is legal.
+        _check_var_value("courage", -3, self._int_var(minimum=-3, maximum=3))
+
+    def test_value_one_below_declared_min_is_rejected(self) -> None:
+        with pytest.raises(ValidationError, match=r"is out of declared bounds"):
+            _check_var_value("courage", -4, self._int_var(minimum=-3, maximum=3))
+
+    def test_value_equal_to_declared_max_is_accepted(self) -> None:
+        _check_var_value("courage", 3, self._int_var(minimum=-3, maximum=3))
+
+    def test_value_one_above_declared_max_is_rejected(self) -> None:
+        with pytest.raises(ValidationError, match=r"is out of declared bounds"):
+            _check_var_value("courage", 4, self._int_var(minimum=-3, maximum=3))
+
+    def test_only_a_min_is_enforced_when_max_is_absent(self) -> None:
+        # Pins the `var.max is not None` guard: with no declared max, a large
+        # value must pass rather than be compared against `None`.
+        var = self._int_var(minimum=0)
+        _check_var_value("courage", 10**6, var)
+        with pytest.raises(ValidationError, match=r"is out of declared bounds"):
+            _check_var_value("courage", -1, var)
+
+    def test_only_a_max_is_enforced_when_min_is_absent(self) -> None:
+        var = self._int_var(maximum=0)
+        _check_var_value("courage", -(10**6), var)
+        with pytest.raises(ValidationError, match=r"is out of declared bounds"):
+            _check_var_value("courage", 1, var)
+
+    def test_unbounded_variable_accepts_any_in_range_value(self) -> None:
+        _check_var_value("courage", 0, self._int_var())
+
+    def test_float64_safe_boundary_is_inclusive(self) -> None:
+        # `> _MAX_FLOAT64_SAFE_INT`, not `>=`: 2**53 - 1 is exactly
+        # representable and must be accepted.
+        _check_var_value("courage", 2**53 - 1, self._int_var())
+
+    def test_one_past_the_float64_safe_boundary_is_rejected(self) -> None:
+        with pytest.raises(
+            ValidationError, match=r"exceeds the float64-safe integer range"
+        ):
+            _check_var_value("courage", 2**53, self._int_var())
+
+    def test_the_float64_check_is_on_magnitude_not_sign(self) -> None:
+        # Pins the `abs()`: without it a large NEGATIVE value slips through,
+        # which is the half a positive-only test never reaches.
+        _check_var_value("courage", -(2**53 - 1), self._int_var())
+        with pytest.raises(
+            ValidationError, match=r"exceeds the float64-safe integer range"
+        ):
+            _check_var_value("courage", -(2**53), self._int_var())
+
+    def test_bool_is_not_accepted_for_an_int_variable(self) -> None:
+        # `isinstance(True, int)` is True in Python, so the explicit bool
+        # rejection is load-bearing; both bools are checked because only one
+        # of them is falsy.
+        for value in (True, False):
+            with pytest.raises(ValidationError, match=r"requires an integer value"):
+                _check_var_value("courage", value, self._int_var())
+
+    def test_non_integer_is_rejected_for_an_int_variable(self) -> None:
+        for value in ("3", 3.0, None):
+            with pytest.raises(ValidationError, match=r"requires an integer value"):
+                _check_var_value("courage", value, self._int_var())
+
+    def test_bool_variable_accepts_only_real_bools(self) -> None:
+        var = Variable(name="has_key", type=VariableType.BOOL, initial=False)
+        # Passed through a name, not as a bare literal: ruff's FBT003 flags a
+        # boolean positional argument, and both values matter here because
+        # only one of them is falsy.
+        for accepted in (True, False):
+            _check_var_value("has_key", accepted, var)
+        for value in (1, 0, "true"):
+            with pytest.raises(ValidationError, match=r"requires a boolean value"):
+                _check_var_value("has_key", value, var)
+
+    def test_the_raised_error_carries_field_and_value_context(self) -> None:
+        # The message alone is asserted throughout this file; the structured
+        # context is what an API caller actually reads back. Both land in
+        # `details` (ValidationError folds `field`/`value` in there), and the
+        # value is stringified on the way.
+        with pytest.raises(ValidationError) as excinfo:
+            _check_var_value("courage", 99, self._int_var(maximum=3))
+        assert excinfo.value.details["field"] == "var_state"
+        assert excinfo.value.details["value"] == "99"

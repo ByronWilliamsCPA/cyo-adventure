@@ -37,12 +37,18 @@ const GUARDIAN_BEARER = 'dev-guardian' // scripts/seed_dev_data.py _GUARDIAN_SUB
 const ADMIN_BEARER = 'dev-admin' // scripts/seed_dev_data.py _ADMIN_SUBJECT
 
 // scripts/seed_dev_data.py `_REVIEW_STORY` ("08_tier2_bridge_builder.json"):
-// in_review, flagged, first node "n_riverbank". reset_e2e_real_state.py
+// in_review, flagged, first node "n_open". reset_e2e_real_state.py
 // reverts this story to in_review before every real-backend run, and
 // approval-flow.spec.ts's approve() never clears its moderation_report, so
 // the /review detail assertions below hold regardless of run order.
+//
+// This constant read "n_riverbank" from the day it landed, which is a real
+// node in that fixture but the SECOND one. The seed flags whichever node is
+// first (`_flagged_moderation_report(first_node_id)`, seed_dev_data.py), so
+// the lookup below never matched and this spec failed on every run. Keep it
+// pinned to nodes[0] of the fixture, not to any node that merely exists.
 const REVIEW_STORY_ID = 's_bridge_builder'
-const REVIEW_STORY_FIRST_NODE = 'n_riverbank'
+const REVIEW_STORY_FIRST_NODE = 'n_open'
 
 async function apiGet(bearer: string, path: string) {
   return fetch(`${BACKEND}${path}`, {

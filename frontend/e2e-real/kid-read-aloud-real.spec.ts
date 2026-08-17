@@ -163,7 +163,15 @@ test('a kid toggles real read-aloud on and off once the real tts_enabled flag is
   // The passage actually available for narration is real content: the toggle
   // speaks whatever PassageText currently renders (Reader.tsx's
   // handleToggleSpeak reads node.body directly), not a placeholder.
-  const passageText = await page.getByTestId('passage-body').textContent()
+  //
+  // `innerText`, not `textContent`. A flowed stop (ADR-026) renders one
+  // paragraph per node, and read-aloud is handed those bodies joined on a
+  // blank line, so the two agree only if the DOM read also treats a paragraph
+  // break as whitespace. `textContent` concatenates block elements with no
+  // separator at all, which glued "...come to." to "Low tide..." and made the
+  // normalized comparison below fail on a two-node stop while passing on a
+  // one-node one.
+  const passageText = await page.getByTestId('passage-body').innerText()
   expect(passageText?.trim().length ?? 0).toBeGreaterThan(0)
 
   const listenToggle = page.getByRole('button', { name: 'Read this page aloud' })
