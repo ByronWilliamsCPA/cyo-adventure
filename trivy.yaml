@@ -22,10 +22,15 @@
 # exist in the feed proves this file was read.
 
 # Two-CVE-classes, two mechanisms, deliberately:
-#   ignorefile     - per-CVE acceptances, each with its own reachability
-#                    assessment and reassessment date (perl-base, libexpat1,
-#                    libsqlite3-0, ncurses, libuuid1, gawk).
+#   ignorefile     - per-CVE acceptances, each with its own `statement`,
+#                    `expired_at` and reachability assessment (perl-base,
+#                    libexpat1, libsqlite3-0, ncurses, libuuid1, gawk).
+#                    Trivy's built-in default is the plain-text
+#                    `.trivyignore` and it does NOT auto-detect the YAML
+#                    variant, so naming it here is what makes local runs
+#                    match CI, where the reusable workflow passes the same
+#                    path via `trivyignores`.
 #   ignore-policy  - the single package-level judgment for linux-libc-dev
 #                    kernel UAPI headers, which no longer needs a CVE list.
-ignorefile: .trivyignore
+ignorefile: .trivyignore.yaml
 ignore-policy: .trivy/ignore-policy.rego

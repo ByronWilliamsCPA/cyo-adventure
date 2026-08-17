@@ -6,7 +6,7 @@ between "one well-understood acceptance" and "a blanket silencer". These tests
 pin both guards:
 
 - the rule matches ``linux-libc-dev`` and nothing else, so the per-CVE
-  acceptances for perl-base, libexpat1 and friends keep their own review;
+  acceptances in ``.trivyignore.yaml`` keep their own dates and review;
 - the rule matches only findings with NO fixed version, so a
   ``linux-libc-dev`` CVE that Debian HAS fixed still fails the scan and
   prompts a base-image digest refresh (the CVE-2026-64530 / CVE-2026-64531
@@ -102,7 +102,7 @@ class TestPolicyStructure:
         """trivy.yaml references the policy by its real repo-relative path."""
         config = CONFIG_PATH.read_text(encoding="utf-8")
         assert "ignore-policy: .trivy/ignore-policy.rego" in config
-        assert "ignorefile: .trivyignore" in config
+        assert "ignorefile: .trivyignore.yaml" in config
 
     @pytest.mark.unit
     def test_scoped_to_linux_libc_dev_only(self) -> None:
@@ -141,14 +141,33 @@ class TestPolicyStructure:
 
     @pytest.mark.unit
     def test_package_is_not_also_listed_per_cve(self) -> None:
-        """`.trivyignore` must not re-enumerate what the policy now covers.
+        """`.trivyignore.yaml` must not re-enumerate what the policy now covers.
 
         Both mechanisms suppressing the same package would hide whether either
         one still works, and would resurrect the maintenance cost the policy
         exists to remove.
         """
-        ignorefile = (REPO_ROOT / ".trivyignore").read_text(encoding="utf-8")
-        assert "linux-libc-dev (6.12" not in ignorefile
+        ignorefile = (REPO_ROOT / ".trivyignore.yaml").read_text(encoding="utf-8")
+        document = (REPO_ROOT / "docs" / "known-vulnerabilities.md").read_text(
+            encoding="utf-8"
+        )
+
+        suppressed = set(
+            re.findall(r"^\s*-\s+id:\s*(CVE-\d{4}-\d+)", ignorefile, re.MULTILINE)
+        )
+        assert suppressed, "the ignore file parsed to no entries at all"
+
+        # The consolidated entry's "CVEs Absorbed To Date" table is the record of
+        # what the policy covers. No id may appear in both places.
+        absorbed_section = document.split("### CVEs Absorbed To Date", 1)[1]
+        absorbed = set(
+            re.findall(
+                r"(CVE-\d{4}-\d+)", absorbed_section.split("### References", 1)[0]
+            )
+        )
+        assert absorbed, "the absorbed-CVE table parsed to nothing"
+
+        assert suppressed.isdisjoint(absorbed)
 
 
 @pytest.mark.skipif(shutil.which("trivy") is None, reason="trivy binary not on PATH")

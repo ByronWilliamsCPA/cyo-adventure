@@ -24,6 +24,7 @@ from check_known_vulnerabilities import (
     check_suppression_coverage,
     load_baseline,
     parse_entries,
+    parse_ignore_file,
 )
 
 _TODAY: Final = date(2026, 8, 16)
@@ -138,14 +139,41 @@ class TestReleaseGate:
         )
 
     @pytest.mark.unit
-    def test_window_over_sixty_days_is_rejected(self) -> None:
-        """A future date cannot be pushed past the 60-day maximum."""
+    def test_window_over_ninety_days_is_rejected(self) -> None:
+        """A future date cannot be pushed past the 90-day maximum."""
         entry = parse_entries(_document("2026-12-01", discovered="2026-08-01"))[0]
 
         problems = check_entry(entry, _TODAY)
 
         assert len(problems) == 1
-        assert "over the 60-day maximum" in problems[0]
+        assert "over the 90-day maximum" in problems[0]
+
+    @pytest.mark.unit
+    def test_last_reassessed_moves_the_window_anchor(self) -> None:
+        """A reassessed entry measures its window from the reassessment.
+
+        Without this, the first legitimate renewal of any entry would exceed 90
+        days from discovery and fail, pushing authors toward editing
+        `Discovered` and destroying the record of when the finding appeared.
+        """
+        document = _document("2026-12-01", discovered="2026-08-01").replace(
+            "| **Reassessment Due** |",
+            "| **Last Reassessed** | 2026-09-15 |\n| **Reassessment Due** |",
+        )
+
+        assert check_entry(parse_entries(document)[0], _TODAY) == []
+
+    @pytest.mark.unit
+    def test_last_reassessed_before_discovered_is_rejected(self) -> None:
+        """An impossible ordering means the fields cannot both be trusted."""
+        document = _document("2026-09-17", discovered="2026-08-01").replace(
+            "| **Reassessment Due** |",
+            "| **Last Reassessed** | 2026-07-01 |\n| **Reassessment Due** |",
+        )
+
+        problems = check_entry(parse_entries(document)[0], _TODAY)
+
+        assert any("precedes 'Discovered'" in problem for problem in problems)
 
     @pytest.mark.unit
     @pytest.mark.parametrize("value", ["Yes", "Undetermined"])
@@ -170,12 +198,18 @@ class TestReleaseGate:
 
 
 class TestSuppressionCoverage:
-    """The `.trivyignore` cross-check and its shrink-only baseline."""
+    """The `.trivyignore.yaml` cross-check, date agreement, and the baseline."""
 
     @staticmethod
-    def _write(tmp_path: Path, cves: list[str]) -> Path:
-        ignorefile = tmp_path / ".trivyignore"
-        ignorefile.write_text("# comment\n" + "\n".join(cves) + "\n", encoding="utf-8")
+    def _write(tmp_path: Path, cves: list[str], *, expires: str = "2026-09-17") -> Path:
+        """Write a fixture ignore file in the real `.trivyignore.yaml` shape."""
+        ignorefile = tmp_path / ".trivyignore.yaml"
+        body = "# comment\nvulnerabilities:\n"
+        for cve in cves:
+            body += (
+                f"  - id: {cve}\n    statement: fixture\n    expired_at: {expires}\n"
+            )
+        ignorefile.write_text(body, encoding="utf-8")
         return ignorefile
 
     @pytest.mark.unit
@@ -245,6 +279,51 @@ class TestSuppressionCoverage:
         """An absent baseline means no grandfathered debt, not an error."""
         assert load_baseline(tmp_path / "absent.toml") == set()
 
+    @pytest.mark.unit
+    def test_expiry_must_match_the_entry_reassessment_date(
+        self, tmp_path: Path
+    ) -> None:
+        """The enforced date and the written assessment cannot drift apart.
+
+        `expired_at` is what Trivy acts on; `Reassessment Due` is what a human
+        reads. A mismatch means the document describes a suppression that is
+        not the one in force.
+        """
+        entries = parse_entries(_document("2026-09-17"))
+        ignorefile = self._write(tmp_path, ["CVE-2026-00001"], expires="2026-10-01")
+
+        problems, _ = check_suppression_coverage(entries, ignorefile, set())
+
+        assert len(problems) == 1
+        assert "expires 2026-10-01" in problems[0]
+        assert "due 2026-09-17" in problems[0]
+
+    @pytest.mark.unit
+    def test_missing_expiry_is_reported(self, tmp_path: Path) -> None:
+        """A dateless suppression is permanent, which the rule forbids."""
+        entries = parse_entries(_document("2026-09-17"))
+        ignorefile = tmp_path / ".trivyignore.yaml"
+        ignorefile.write_text(
+            "vulnerabilities:\n  - id: CVE-2026-00001\n    statement: no date\n",
+            encoding="utf-8",
+        )
+
+        problems, _ = check_suppression_coverage(entries, ignorefile, set())
+
+        assert any("no parseable `expired_at`" in problem for problem in problems)
+
+    @pytest.mark.unit
+    def test_ignore_file_parses_ids_and_dates(self, tmp_path: Path) -> None:
+        """The stdlib parser reads the real file shape, comments included."""
+        ignorefile = self._write(tmp_path, ["CVE-2026-00001", "CVE-2026-00002"])
+
+        parsed = parse_ignore_file(ignorefile)
+
+        assert parsed == {
+            "CVE-2026-00001": date(2026, 9, 17),
+            "CVE-2026-00002": date(2026, 9, 17),
+        }
+
 
 class TestRepositoryState:
     """The live repository must satisfy its own gate."""
@@ -261,10 +340,23 @@ class TestRepositoryState:
 
         problems, _ = check_document(
             repo_root / "docs" / "known-vulnerabilities.md",
-            repo_root / ".trivyignore",
+            repo_root / ".trivyignore.yaml",
             repo_root / "known-vulnerabilities-baseline.toml",
             _TODAY,
             warn_within=14,
         )
 
         assert problems == []
+
+    @pytest.mark.unit
+    def test_repository_carries_no_grandfathered_debt(self) -> None:
+        """Every suppression is documented, so no baseline file should exist.
+
+        UW-D31 cleared the eight undocumented suppressions on 2026-08-17 and the
+        baseline was deleted with them. Re-introducing it is legitimate but must
+        be a visible, deliberate act rather than a quiet way to park a new
+        undocumented suppression, so this test fails when the file reappears.
+        """
+        repo_root = Path(__file__).resolve().parents[2]
+
+        assert not (repo_root / "known-vulnerabilities-baseline.toml").exists()

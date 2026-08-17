@@ -369,7 +369,7 @@ repos:
         entry: python scripts/check_known_vulnerabilities.py
         language: system
         files: >-
-          ^(docs/known-vulnerabilities\.md|\.trivyignore|known-vulnerabilities-baseline\.toml|scripts/check_known_vulnerabilities\.py)$
+          ^(docs/known-vulnerabilities\.md|\.trivyignore\.yaml|known-vulnerabilities-baseline\.toml|scripts/check_known_vulnerabilities\.py)$
         pass_filenames: false
         stages: [pre-commit]
 

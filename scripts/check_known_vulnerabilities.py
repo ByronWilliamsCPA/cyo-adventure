@@ -21,16 +21,20 @@ Checks:
    ``Discovered``, ``Reassessment Due`` and ``Blocking Release``.
 2. Every ``Discovered`` and ``Reassessment Due`` value contains an ISO date.
 3. No entry's reassessment date has passed (the release gate).
-4. No entry's reassessment window exceeds the documented 60 days from its
+4. No entry's reassessment window exceeds the documented 90 days from its
    discovery or last reassessment, so the deadline cannot be reopened by
    editing the date alone.
 5. ``Blocking Release`` reads ``Yes``, ``No``, or ``Undetermined``. An entry
    marked ``Yes`` or ``Undetermined`` fails: a known release blocker should
    stop the build rather than sit in a document.
-6. Every CVE suppressed in ``.trivyignore`` is covered by an active entry, so a
-   suppression cannot outlive its justification.
+6. Every CVE suppressed in ``.trivyignore.yaml`` is covered by an active entry,
+   so a suppression cannot outlive its justification.
+7. Each suppression's ``expired_at`` equals its entry's ``Reassessment Due``.
+   Trivy enforces the former by dropping the suppression once it passes; the
+   latter carries the assessment a human reads. If they drift, the document
+   stops describing what the scanner actually does.
 
-Check 6 deliberately does NOT require the reverse. Findings suppressed by
+Checks 6 and 7 deliberately do NOT require the reverse. Findings suppressed by
 ``.trivy/ignore-policy.rego`` are accepted at package scope and by design carry
 no CVE list; see that file and the "package-scoped acceptance" entry.
 
@@ -59,11 +63,14 @@ from typing import Final
 
 _REPO_ROOT: Final = Path(__file__).resolve().parent.parent
 _DEFAULT_DOC: Final = _REPO_ROOT / "docs" / "known-vulnerabilities.md"
-_DEFAULT_IGNOREFILE: Final = _REPO_ROOT / ".trivyignore"
+_DEFAULT_IGNOREFILE: Final = _REPO_ROOT / ".trivyignore.yaml"
 _DEFAULT_BASELINE: Final = _REPO_ROOT / "known-vulnerabilities-baseline.toml"
 
-# The reassessment window the Release Gate Policy fixes at 60 days.
-_MAX_WINDOW_DAYS: Final = 60
+# The reassessment window the Release Gate Policy fixes at 90 days. Aligned to
+# the org-wide default in ByronWilliamsCPA/.github (`ignore-expiry-horizon-days`,
+# PR #293) on 2026-08-17, so this repository and the reusable container-security
+# workflow cannot disagree about how long a suppression may live.
+_MAX_WINDOW_DAYS: Final = 90
 
 # Sections that are not vulnerability entries and carry no field table.
 _NON_ENTRY_HEADINGS: Final = frozenset(
@@ -78,7 +85,6 @@ _FIELD_RE: Final = re.compile(
     r"^\|\s*\*\*(?P<name>[^*]+)\*\*\s*\|\s*(?P<value>.*?)\s*\|\s*$"
 )
 _ISO_DATE_RE: Final = re.compile(r"(\d{4})-(\d{2})-(\d{2})")
-_CVE_RE: Final = re.compile(r"^(CVE-\d{4}-\d+)\s*$", re.MULTILINE)
 
 
 @dataclass(frozen=True)
@@ -189,6 +195,26 @@ def check_entry(entry: Entry, today: date) -> list[str]:
     if "Discovered" in entry.fields and discovered is None:
         problems.append(f"'Discovered' carries no ISO date: {discovered_raw!r}")
 
+    # The window runs from the last time evidence was actually gathered. The
+    # policy allows a new date "within 90 days of that check", so an entry that
+    # has been reassessed measures from `Last Reassessed`; one that never has
+    # measures from `Discovered`. Without this an entry could never legitimately
+    # be reassessed: the first renewal would always exceed 90 days from
+    # discovery and fail, which would push authors toward editing `Discovered`
+    # and destroying the record of when the finding actually appeared.
+    reassessed_raw = entry.fields.get("Last Reassessed", "")
+    reassessed = _parse_iso_date(reassessed_raw)
+    if reassessed_raw and reassessed is None:
+        problems.append(f"'Last Reassessed' carries no ISO date: {reassessed_raw!r}")
+    if reassessed is not None and discovered is not None and reassessed < discovered:
+        problems.append(
+            f"'Last Reassessed' ({reassessed.isoformat()}) precedes 'Discovered' "
+            f"({discovered.isoformat()})"
+        )
+
+    anchor = reassessed if reassessed is not None else discovered
+    anchor_name = "Last Reassessed" if reassessed is not None else "Discovered"
+
     if due is not None:
         overdue = (today - due).days
         if overdue > 0:
@@ -200,12 +226,14 @@ def check_entry(entry: Entry, today: date) -> list[str]:
                 f"date, then set a new date within {_MAX_WINDOW_DAYS} days. Bumping the date "
                 f"without new evidence is not a reassessment."
             )
-        elif discovered is not None and (due - discovered).days > _MAX_WINDOW_DAYS:
+        elif anchor is not None and (due - anchor).days > _MAX_WINDOW_DAYS:
             problems.append(
-                f"reassessment window is {(due - discovered).days} days from the "
-                f"'Discovered' date ({discovered.isoformat()}), over the "
-                f"{_MAX_WINDOW_DAYS}-day maximum. If this entry has been reassessed, "
-                f"update 'Discovered' or record the reassessment date in the entry."
+                f"reassessment window is {(due - anchor).days} days from the "
+                f"'{anchor_name}' date ({anchor.isoformat()}), over the "
+                f"{_MAX_WINDOW_DAYS}-day maximum. If this entry has just been "
+                f"reassessed against fresh evidence, add or update a "
+                f"'Last Reassessed' field rather than editing 'Discovered', which "
+                f"records when the finding appeared and should not move."
             )
 
     blocking = entry.fields.get("Blocking Release", "")
@@ -241,10 +269,104 @@ def load_baseline(path: Path) -> set[str]:
     }
 
 
+def parse_ignore_file(path: Path) -> dict[str, date | None]:
+    """Read ``.trivyignore.yaml`` into a CVE-to-expiry mapping.
+
+    Parsed by line rather than with a YAML library on purpose. The Planning
+    Linkage workflow runs this script straight after ``setup-python`` with no
+    install step, matching the two checkers beside it, so only the standard
+    library is available; adding PyYAML would mean adding a network install to
+    a job that deliberately has none. The file's shape is flat, fixed and owned
+    by this repository, and it is separately validated as real YAML by the
+    ``check-yaml`` pre-commit hook and by the org workflow's own checker, which
+    does have PyYAML.
+
+    Args:
+        path: Path to the ignore file.
+
+    Returns:
+        Each suppressed CVE id mapped to its ``expired_at`` date, or ``None``
+        when the entry carries no parseable date.
+    """
+    entries: dict[str, date | None] = {}
+    current: str | None = None
+
+    for line in path.read_text(encoding="utf-8").splitlines():
+        stripped = line.strip()
+        if stripped.startswith("#"):
+            continue
+
+        id_match = re.match(r"-\s+id:\s*(CVE-\d{4}-\d+)\s*$", stripped)
+        if id_match is not None:
+            current = id_match.group(1)
+            entries[current] = None
+            continue
+
+        expiry_match = re.match(r"expired_at:\s*(\S+)\s*$", stripped)
+        if expiry_match is not None and current is not None:
+            entries[current] = _parse_iso_date(expiry_match.group(1))
+
+    return entries
+
+
+def _check_date_agreement(
+    entries: list[Entry],
+    suppressions: dict[str, date | None],
+    uncovered: set[str],
+    ignorefile_name: str,
+) -> list[str]:
+    """Check each suppression's expiry matches its entry's reassessment date.
+
+    Args:
+        entries: Parsed active entries.
+        suppressions: CVE-to-expiry mapping from the ignore file.
+        uncovered: CVEs with no entry at all; already reported elsewhere.
+        ignorefile_name: Display name of the ignore file.
+
+    Returns:
+        Human-readable problems; empty when every pair agrees.
+    """
+    problems: list[str] = []
+
+    for cve, expires in sorted(suppressions.items()):
+        if cve in uncovered:
+            continue
+
+        owner = next((entry for entry in entries if cve in entry.body), None)
+        if owner is None:  # pragma: no cover - implied by `uncovered`
+            continue
+
+        if expires is None:
+            problems.append(
+                f"{ignorefile_name}: {cve} has no parseable `expired_at`. Trivy treats a "
+                f"dateless suppression as permanent, which is what the revisit rule exists "
+                f"to prevent."
+            )
+            continue
+
+        due = _parse_iso_date(owner.fields.get("Reassessment Due", ""))
+        if due is not None and due != expires:
+            problems.append(
+                f"{ignorefile_name}: {cve} expires {expires.isoformat()} but its entry "
+                f"({owner.title}) is due {due.isoformat()}. The enforced date and the "
+                f"written assessment must match, or the document stops describing what "
+                f"the scanner does."
+            )
+
+    return problems
+
+
 def check_suppression_coverage(
     entries: list[Entry], ignorefile: Path, baseline: set[str]
 ) -> tuple[list[str], list[str]]:
-    """Check every ``.trivyignore`` CVE is justified by an active entry.
+    """Check every suppression is justified by an active entry, on the same date.
+
+    Two mechanisms now carry a date for the same acceptance: ``expired_at`` in
+    the ignore file, which Trivy actually enforces by dropping the suppression,
+    and ``Reassessment Due`` in the document, which carries the assessment a
+    human reads. They must agree, or the operative date and the written
+    justification drift apart and the document stops describing what the scanner
+    does.
 
     Baselined CVEs are reported as warnings rather than failures, so a bounded
     pre-existing backlog does not block the build while any NEW undocumented
@@ -254,7 +376,7 @@ def check_suppression_coverage(
 
     Args:
         entries: Parsed active entries.
-        ignorefile: Path to ``.trivyignore``.
+        ignorefile: Path to ``.trivyignore.yaml``.
         baseline: Grandfathered CVE IDs from the baseline file.
 
     Returns:
@@ -263,8 +385,9 @@ def check_suppression_coverage(
     if not ignorefile.is_file():
         return ([f"{ignorefile} not found"], [])
 
+    suppressions = parse_ignore_file(ignorefile)
     documented = "\n".join(entry.body for entry in entries)
-    suppressed = set(_CVE_RE.findall(ignorefile.read_text(encoding="utf-8")))
+    suppressed = set(suppressions)
 
     uncovered = {cve for cve in suppressed if cve not in documented}
     problems: list[str] = []
@@ -292,6 +415,10 @@ def check_suppression_coverage(
             f"{len(still_baselined)} suppression(s) remain undocumented and grandfathered "
             f"in {_DEFAULT_BASELINE.name}: {', '.join(still_baselined)}"
         )
+
+    problems.extend(
+        _check_date_agreement(entries, suppressions, uncovered, ignorefile.name)
+    )
 
     return (problems, warnings)
 

@@ -24,7 +24,7 @@ Two independent gates govern a release. Either one, on its own, is enough to hol
    the most recent reassessment." It is a dated verdict with an expiry, not a standing
    exemption.
 2. **Process gate, derived per entry from `Reassessment Due`.** Every entry must be
-   reassessed within 60 days. Once an entry passes its `Reassessment Due` date it blocks
+   reassessed within 90 days. Once an entry passes its `Reassessment Due` date it blocks
    releases per the OpenSSF release gate policy, whatever its `Blocking Release` value
    says, because that value has expired and no longer rests on verified evidence.
 
@@ -32,13 +32,23 @@ Two independent gates govern a release. Either one, on its own, is enough to hol
 governs. An overdue entry closes the release gate even when it reads
 `Blocking Release | No`. The opposite reading, that `Blocking Release | No` exempts an
 entry from the deadline, is rejected: it would let any entry opt out of reassessment
-permanently and would drain the 60-day rule of any force. This resolves the
+permanently and would drain the 90-day rule of any force. This resolves the
 contradiction between the former preamble and the two entries that sat overdue and
 non-blocking from 2026-07-20 to 2026-07-29.
 
+**Where the dates live (2026-08-17).** Two files carry a date for each acceptance and they
+must agree. `.trivyignore.yaml` carries `expired_at`, which is the *operative* date: Trivy stops
+honouring a suppression once it passes, so the finding returns to the gate on its own rather than
+waiting for anyone to notice. The `Reassessment Due` field in each entry below carries the same
+date alongside the assessment that justifies it. `scripts/check_known_vulnerabilities.py` fails the
+build if the two ever disagree, because a document describing a suppression that is not the one in
+force is worse than no document. The 90-day maximum is shared with the org-wide
+`ignore-expiry-horizon-days` default in the reusable container-security workflow, and this
+repository pins it explicitly rather than inheriting it.
+
 **Reopening the gate.** Reassess the entry: re-verify fix status, reachability, and
 severity against current sources; record what was checked, on what date, and what
-evidence would change the verdict; then set a new `Reassessment Due` date within 60 days
+evidence would change the verdict; then set a new `Reassessment Due` date within 90 days
 of that check. Bumping the date without new evidence is not a reassessment and does not
 reopen the gate.
 
@@ -233,6 +243,254 @@ upgrade in PR #299.
 
 ---
 
+## CVE-2026-8376, CVE-2026-42496 and 3 further CVEs | perl-base | Critical/High
+
+| Field | Value |
+|-------|-------|
+| **CVE ID** | CVE-2026-8376, CVE-2026-42496 (Critical); CVE-2026-42497, CVE-2026-48962, CVE-2026-9538 (High) |
+| **Package** | perl-base (Debian binary package from the `perl` source package) |
+| **Affected Version** | As shipped by the pinned base image (Debian 13 "trixie", DHI mirror build) |
+| **Fixed Version** | No fix available on the trixie track. CVE-2026-42496, CVE-2026-42497 and CVE-2026-9538 are recorded `fix_deferred`; CVE-2026-8376 and CVE-2026-48962 are `affected` |
+| **Severity** | Critical (CVE-2026-8376, CVE-2026-42496); High (CVE-2026-42497, CVE-2026-48962, CVE-2026-9538) |
+| **CVSS Score** | Not carried in the advisory records consulted |
+| **Discovered** | 2026-08-10 |
+| **Reassessment Due** | 2026-11-08 |
+| **Blocking Release** | No |
+
+### Description
+
+Five defects in Perl and its bundled modules: path traversal via crafted
+symlinks in `Archive::Tar` (CVE-2026-42496), arbitrary file modification via
+crafted hardlinks during archive extraction (CVE-2026-42497), denial of service
+via a crafted tar header with a large entry size (CVE-2026-9538), arbitrary
+code execution via an attacker-controlled output glob in `IO::Compress`
+(CVE-2026-48962), and a heap buffer overflow when compiling regular expressions
+**on 32-bit builds** (CVE-2026-8376).
+
+These were suppressed in `.trivyignore` without documentation on 2026-08-10, in
+commit `d1907a8` (PR #668, "publish public privacy and support pages"). That
+provenance is recorded because it is the lesson: eight suppressions entered the
+tree inside an unrelated frontend change, carrying no assessment, no severity
+and no reassessment date, and nothing detected that for a week.
+
+### Impact on This Project
+
+The application never shells out. `grep -rn "subprocess\|os.system" src/`
+returns nothing across the whole package, so no runtime code path can invoke
+another program at all, let alone one of these. The container runs a single
+uvicorn process as `USER 1000:1000`.
+
+Nothing in the image invokes perl. The application is Python; `perl-base` is
+present only because the Debian base layer ships it. Every one of these defects
+requires perl to process attacker-controlled input: a crafted tar archive for
+the three `Archive::Tar` CVEs, an attacker-controlled output glob for
+`IO::Compress`, an attacker-controlled regular expression for CVE-2026-8376.
+The application feeds perl nothing, because it never runs perl.
+
+CVE-2026-8376 is additionally **not applicable by architecture**: the defect is
+specific to 32-bit builds, and both the base image and this project's build are
+`linux/amd64` only (the `ByronWilliamsCPA/container-images` catalog declares
+`platform_compatibility.supported: [linux/amd64]` for `dhi-python-314`, and CI
+builds with a plain `docker build` on an amd64 runner).
+
+The two Critical ratings are why this entry exists rather than a shrug. A
+Critical CVE accepted silently is the failure mode the Release Gate Policy was
+written to prevent, and until today these two were accepted with no written
+justification at all.
+
+### Remediation Plan
+
+- [ ] The durable fix is upstream: `perl-base` has no role in a Python runtime
+  image. Removing it from `dhi.io/python:3.14-debian13` would close this entry
+  and shrink the attack surface. Same routing as the `linux-libc-dev` ask: the
+  mirror is `disposition: mirror_only`, so this is an ask to Docker.
+- [ ] Re-verify fix status against the Debian security tracker from a session
+  with network access to it, and record the result here (issue #711 item 1).
+- [ ] Reassess by 2026-11-08.
+
+### Why Not Fixed Yet
+
+Debian records no fixed version on the trixie track for any of these. Three of
+the perl-base CVEs carry Debian's `fix_deferred` status, which is not an absence
+of a decision but an explicit one: the security team has ruled the defect will
+not be fixed in the current stable release. The package is provided by the
+hardened base image (`ghcr.io/byronwilliamscpa/dhi-python:3.14-debian13`), not
+by this project's dependency set, and the DHI runtime image ships no shell and
+no package manager, so it cannot upgrade itself even once a fix exists upstream.
+
+**Provenance of this assessment, stated plainly.** Fix status and severity were
+read from Trivy's Debian advisory records (Trivy 0.70.0's vulnerability
+database, queried directly on 2026-08-17 rather than inferred from scan
+absence, which suppression would have masked). That is the same data source the
+Container Security workflow scans against, so it is not the independent
+corroboration the earlier `linux-libc-dev` entries carried:
+`security-tracker.debian.org`, `api.osv.dev`, `salsa.debian.org` and the Debian
+mirrors are all unreachable from this project's cloud sessions (issue #711,
+item 1). The reachability analysis below is independent of that source and is
+the load-bearing part of the verdict. Confirming fix status against the Debian
+tracker from a networked session remains outstanding.
+
+### References
+
+- [Debian security tracker: perl](https://security-tracker.debian.org/tracker/source-package/perl)
+- Individual CVEs follow the `security-tracker.debian.org/tracker/<CVE-ID>` pattern
+- Suppressed without documentation in commit `d1907a8`; documented 2026-08-17
+
+---
+
+## CVE-2026-11822, CVE-2026-11824 | libsqlite3-0 | Medium
+
+| Field | Value |
+|-------|-------|
+| **CVE ID** | CVE-2026-11822, CVE-2026-11824 |
+| **Package** | libsqlite3-0 (Debian binary package from the `sqlite3` source package) |
+| **Affected Version** | As shipped by the pinned base image (SQLite before 3.53.2) |
+| **Fixed Version** | No fix available on the trixie track; both recorded `affected` |
+| **Severity** | Medium (both). **Below the scan threshold**, see below |
+| **CVSS Score** | Not carried in the advisory records consulted |
+| **Discovered** | 2026-08-10 |
+| **Reassessment Due** | 2026-11-08 |
+| **Blocking Release** | No |
+
+### Description
+
+Memory corruption in SQLite before 3.53.2 (CVE-2026-11822) and a heap-based
+buffer overflow in the same range (CVE-2026-11824). Exploitation requires
+SQLite to parse attacker-controlled SQL or a crafted database file.
+
+### Impact on This Project
+
+The application never shells out. `grep -rn "subprocess\|os.system" src/`
+returns nothing across the whole package, so no runtime code path can invoke
+another program at all, let alone one of these. The container runs a single
+uvicorn process as `USER 1000:1000`.
+
+This project does not use SQLite. Persistence is PostgreSQL over async
+SQLAlchemy with `asyncpg` (`core/database.py`); `grep -rn -i sqlite src/`
+returns a single hit, a comment in `generation/worker_main.py` about a test
+limitation, and no import. CPython's stdlib `sqlite3` module links this library
+but is never imported by the application, so the vulnerable parser is never
+handed input.
+
+**These two suppressions are currently inert.** The Container Security workflow
+is called with `severity-threshold: CRITICAL,HIGH`, and both are Medium, so
+Trivy never reports them and the ignore entries suppress nothing. They are
+documented rather than deleted because the threshold is a caller input that
+could reasonably widen, and an undocumented entry that becomes live later is the
+exact failure this document exists to prevent. If the threshold is ever widened
+to Medium, this entry is already in place.
+
+### Remediation Plan
+
+- [ ] Monitor for a trixie-track `sqlite3` at 3.53.2 or later; on arrival, let
+  it flow in via a base-image digest refresh and delete both entries.
+- [ ] Re-verify fix status against the Debian security tracker from a networked
+  session (issue #711 item 1).
+- [ ] Reassess by 2026-11-08.
+
+### Why Not Fixed Yet
+
+Debian records no fixed version on the trixie track for any of these. Three of
+the perl-base CVEs carry Debian's `fix_deferred` status, which is not an absence
+of a decision but an explicit one: the security team has ruled the defect will
+not be fixed in the current stable release. The package is provided by the
+hardened base image (`ghcr.io/byronwilliamscpa/dhi-python:3.14-debian13`), not
+by this project's dependency set, and the DHI runtime image ships no shell and
+no package manager, so it cannot upgrade itself even once a fix exists upstream.
+
+**Provenance of this assessment, stated plainly.** Fix status and severity were
+read from Trivy's Debian advisory records (Trivy 0.70.0's vulnerability
+database, queried directly on 2026-08-17 rather than inferred from scan
+absence, which suppression would have masked). That is the same data source the
+Container Security workflow scans against, so it is not the independent
+corroboration the earlier `linux-libc-dev` entries carried:
+`security-tracker.debian.org`, `api.osv.dev`, `salsa.debian.org` and the Debian
+mirrors are all unreachable from this project's cloud sessions (issue #711,
+item 1). The reachability analysis below is independent of that source and is
+the load-bearing part of the verdict. Confirming fix status against the Debian
+tracker from a networked session remains outstanding.
+
+### References
+
+- [Debian security tracker: sqlite3](https://security-tracker.debian.org/tracker/source-package/sqlite3)
+- Suppressed without documentation in commit `d1907a8`; documented 2026-08-17
+
+---
+
+## CVE-2025-69720 | ncurses (libncursesw6, libtinfo6, ncurses-base, ncurses-bin) | High
+
+| Field | Value |
+|-------|-------|
+| **CVE ID** | CVE-2025-69720 |
+| **Package** | ncurses family (Debian binary packages from the `ncurses` source package) |
+| **Affected Version** | As shipped by the pinned base image (Debian 13 "trixie", DHI mirror build) |
+| **Fixed Version** | No fix available on the trixie track; recorded `affected` |
+| **Severity** | High |
+| **CVSS Score** | Not carried in the advisory records consulted |
+| **Discovered** | 2026-08-10 |
+| **Reassessment Due** | 2026-11-08 |
+| **Blocking Release** | No |
+
+### Description
+
+A buffer overflow in ncurses that may lead to arbitrary code execution.
+Exploitation requires an ncurses-linked program to process attacker-controlled
+terminal description data (a crafted `terminfo` entry, typically reached via
+`TERM` or `TERMINFO` pointing at attacker-supplied content).
+
+### Impact on This Project
+
+The application never shells out. `grep -rn "subprocess\|os.system" src/`
+returns nothing across the whole package, so no runtime code path can invoke
+another program at all, let alone one of these. The container runs a single
+uvicorn process as `USER 1000:1000`.
+
+Nothing in the image links or calls ncurses at runtime. There is no terminal
+user interface: `grep -rn "import curses" src/` returns nothing, and the DHI
+hardened runtime image ships **no shell at all**, which is both why the
+Dockerfile uses a numeric `USER 1000:1000` and why the compose files must
+override the command rather than relying on shell expansion. The container's
+only process is uvicorn serving HTTP, with no controlling terminal and no
+attacker-influenced `TERM` or `TERMINFO`.
+
+### Remediation Plan
+
+- [ ] Monitor the Debian security tracker for a fixed `ncurses` on the trixie
+  track; on arrival, let it flow in via a base-image digest refresh and delete
+  the entry.
+- [ ] Re-verify fix status against the Debian security tracker from a networked
+  session (issue #711 item 1).
+- [ ] Reassess by 2026-11-08.
+
+### Why Not Fixed Yet
+
+Debian records no fixed version on the trixie track for any of these. Three of
+the perl-base CVEs carry Debian's `fix_deferred` status, which is not an absence
+of a decision but an explicit one: the security team has ruled the defect will
+not be fixed in the current stable release. The package is provided by the
+hardened base image (`ghcr.io/byronwilliamscpa/dhi-python:3.14-debian13`), not
+by this project's dependency set, and the DHI runtime image ships no shell and
+no package manager, so it cannot upgrade itself even once a fix exists upstream.
+
+**Provenance of this assessment, stated plainly.** Fix status and severity were
+read from Trivy's Debian advisory records (Trivy 0.70.0's vulnerability
+database, queried directly on 2026-08-17 rather than inferred from scan
+absence, which suppression would have masked). That is the same data source the
+Container Security workflow scans against, so it is not the independent
+corroboration the earlier `linux-libc-dev` entries carried:
+`security-tracker.debian.org`, `api.osv.dev`, `salsa.debian.org` and the Debian
+mirrors are all unreachable from this project's cloud sessions (issue #711,
+item 1). The reachability analysis below is independent of that source and is
+the load-bearing part of the verdict. Confirming fix status against the Debian
+tracker from a networked session remains outstanding.
+
+### References
+
+- [Debian security tracker: ncurses](https://security-tracker.debian.org/tracker/source-package/ncurses)
+- Suppressed without documentation in commit `d1907a8`; documented 2026-08-17
+
+---
+
 ## linux-libc-dev kernel UAPI headers (package-scoped acceptance) | linux-libc-dev | High
 
 | Field | Value |
@@ -334,7 +592,7 @@ package manager, so it cannot upgrade itself even once a fix exists upstream.
 anything this entry covers, so holding a release buys no remediation. Per the
 Release Gate Policy this is a dated verdict, not a standing exemption. The
 2026-09-17 date is deliberately the *earliest* reassessment date carried by any
-of the eight entries this replaces, not a fresh 60-day window: consolidating
+of the eight entries this replaces, not a fresh 90-day window: consolidating
 records must not silently extend a deadline that was already running.
 
 ### CVEs Absorbed To Date
@@ -500,3 +758,5 @@ re-verified rather than carried forward:
 | 2026-08-08  | Byron Williams | Added linux-libc-dev CVE-2026-68480 (x86 SRSO Safe-RET) from the PR #644 Trivy run (run 31262431949); High, empty Fixed Version, and the run's only finding. Established it as a feed refresh rather than a PR regression by pinned-digest identity across main and head plus the last executing run (30973596262, 2026-08-05) being clean, since main's own tip shows the job `skipped` and proves nothing either way. Verified on the Debian tracker before accepting into .trivyignore: trixie (6.12.94-1) and trixie-security (6.12.101-1) both vulnerable, fix is sid-only (7.1.7-1). Confirmed the pinned GHCR digest is still the live one, so a base-image re-pin was not an available remedy. Reassessment aligned to 2026-09-30 with CVE-2026-63879 and CVE-2026-64561. |
 | 2026-08-14  | Byron Williams | Added linux-libc-dev CVE-2026-64283/68159/68166/68198/68264/68291/68337/68409/68426 from the PR #709 Container Security run (run 31760080363); all High, empty Fixed Version, status `affected`, base advanced to 6.12.101-1+dhi0 at digest `sha256:5bbd41ae...`. Established as a feed refresh rather than a PR regression: no container file in the diff, Dockerfile untouched since `bb89468`, base commit `20e26221` green 2026-08-13T00:05, the scheduled 2026-08-12 run already red on main, and 0 findings across every Python package. Verified on the Debian tracker before accepting into `.trivyignore`, each CVE fetched individually: all nine vulnerable in trixie (6.12.94-1) and trixie-security (6.12.101-1), fix is sid-only (7.1.8-1), which rules out a base-image re-pin as an alternative remedy. Confirmed the pinned GHCR digest still resolves (HTTP 200); the `3.14-debian13` tag did not resolve from that session, noted as unconfirmed rather than assumed. Reassessment aligned to 2026-09-30 with CVE-2026-63879, CVE-2026-64561 and CVE-2026-68480. Closes item 1 of issue #711. |
 | 2026-08-16  | Byron Williams | Consolidated all eight `linux-libc-dev` per-CVE entries (61 CVEs) into a single package-scoped acceptance, enforced by `.trivy/ignore-policy.rego` via `trivy.yaml` rather than by 61 `.trivyignore` lines. The policy suppresses only findings with NO fixed version, so the CVE-2026-64530 / CVE-2026-64531 case (cleared by a base-image bump) would still surface today. Reassessment set to 2026-09-17, the earliest date carried by any superseded entry, so consolidation extends no deadline. Removed the duplicate CVE-2026-68480 block introduced on 2026-08-08. Corrected the libuuid1 and gawk entries, which named the 3.12 base image while the project has run 3.14 since #295, and replaced the placeholder creation date (UW-K02). Reassessment dates are now machine-enforced by `scripts/check_known_vulnerabilities.py`; two entries surfaced by the 2026-08-16 scan (CVE-2025-68174, CVE-2025-68735) are covered by the policy without individual entries. Answers item 2 of issue #711: the reusable workflow exposes no `ignore-unfixed` input, and none is needed. |
+| 2026-08-17  | Byron Williams | Reassessment window widened from 60 to 90 days, aligning this document with the org-wide `ignore-expiry-horizon-days` default in `ByronWilliamsCPA/.github` PR #293 so the repository and the reusable container-security workflow cannot disagree about how long a suppression may live. Added a `Last Reassessed` field: the window now runs from the last time evidence was gathered, so renewing an entry no longer requires editing `Discovered`. Closed UW-D31 by documenting the eight suppressions that entered the tree undocumented in `d1907a8` (PR #668, a frontend change): perl-base (5, including two Critical), libsqlite3-0 (2, both Medium and therefore inert at the CRITICAL,HIGH scan threshold) and ncurses (1). Fix status read directly from Trivy 0.70.0's Debian advisory records rather than inferred from scan absence; three perl CVEs carry Debian's `fix_deferred` status. Independent Debian-tracker corroboration is still outstanding and is recorded as such in each entry, since that host is unreachable from cloud sessions (#711 item 1). `known-vulnerabilities-baseline.toml` deleted: no grandfathered debt remains. |
+| 2026-08-17  | Byron Williams | Migrated `.trivyignore` to `.trivyignore.yaml`, adopting the org revisit-date format from `ByronWilliamsCPA/.github` PR #293 and bumping the reusable workflow pin to v10.1.0 (`07f56c2`). All 19 per-CVE suppressions now carry a `statement` and an `expired_at`; the plain-text format could not express an expiry, so every entry in it was permanent by construction. Verified both directions against Trivy 0.70.0: an unexpired entry suppresses, an expired one lets the finding back into the gate. The org's own `check_trivy_ignore_expiry.py` passes on the new file (19/19 within 90 days), and would have failed the bump had the plain file remained. Adopted `ignore-unfixed` scoped by trigger so only fixable findings gate a merge while push, schedule and manual runs keep the full inventory and the Security tab. Pinned `central-checker-ref` to a SHA rather than the default floating `main`, which would otherwise execute a moving third-party script in this repository's CI. Declined `python-container-revisit.yml`: its per-CVE tracker issue would rebuild the enumeration the 2026-08-16 consolidation removed. |

@@ -33,7 +33,7 @@ on:
       - 'docs/planning/**'
       - 'docs/known-vulnerabilities.md'
       - 'known-vulnerabilities-baseline.toml'
-      - '.trivyignore'
+      - '.trivyignore.yaml'
       - 'scripts/check_work_linkage.py'
       - 'scripts/check_lessons_log.py'
       - 'scripts/check_known_vulnerabilities.py'

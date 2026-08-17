@@ -20,8 +20,9 @@
 # #CRITICAL: security: this rule suppresses a whole package, so its narrowness
 # is the only thing keeping it honest. Two guards do that work:
 #   1. `input.PkgName` is matched exactly, so no other package is affected.
-#      Every non-kernel acceptance stays enumerated per-CVE in .trivyignore
-#      with its own documented reachability assessment.
+#      Every non-kernel acceptance stays enumerated per-CVE in
+#      .trivyignore.yaml with its own statement, expiry date and documented
+#      reachability assessment.
 #   2. `not input.FixedVersion` restricts this to findings Debian has NOT
 #      fixed on the tracked release. A linux-libc-dev CVE that DOES carry a
 #      fixed version still fails the scan, which is the signal that a
