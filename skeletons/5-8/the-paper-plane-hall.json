@@ -1,0 +1,739 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_paper_plane_hall",
+  "version": 1,
+  "title": "The Paper Plane Hall",
+  "metadata": {
+    "age_band": "5-8",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 2.5,
+      "tolerance": 1.0
+    },
+    "tier": 1,
+    "themes": [
+      "school",
+      "friendship",
+      "making things",
+      "trying again",
+      "curiosity"
+    ],
+    "estimated_minutes": 8,
+    "ending_count": 13,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "none",
+      "peril": "none"
+    },
+    "topology": "loop_and_grow",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_rain",
+  "nodes": [
+    {
+      "id": "n_rain",
+      "body": "<<FILL role=setup words=72 beats='rain runs down the tall hall windows and lunch has to be indoors again; the wet coat smell is everywhere and nobody is allowed on the field; Mr Odeyemi the caretaker sets out a cardboard tray of old newsletters at the back of the hall and says the blank sides are for planes only'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_go_in",
+          "label": "Go into the hall.",
+          "target": "n_hall"
+        }
+      ]
+    },
+    {
+      "id": "n_hall",
+      "body": "<<FILL role=setup words=70 beats='the hall is huge and echoey with the dinner tables pushed back; there is a chalk line drawn across the floor to throw from, the red stage curtain at the far end, and a row of radiators under the high windows breathing out warm air; Priya is already at the paper table waiting'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_to_table",
+          "label": "Join Priya at the paper table.",
+          "target": "n_table"
+        }
+      ]
+    },
+    {
+      "id": "n_table",
+      "body": "<<FILL role=choice words=80 beats='the paper table has more sheets than anyone could ever use, warm from the radiator and smelling faintly of the photocopier; three folds are chalked on the tabletop where somebody drew them; a dart with a long sharp nose, a glider with wide flat wings, and a loop wing with curled tips; a fresh sheet is always waiting for whoever wants one'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fold_dart",
+          "label": "Fold a sharp-nosed dart.",
+          "target": "n_dart_1"
+        },
+        {
+          "id": "c_fold_glider",
+          "label": "Fold a wide-winged glider.",
+          "target": "n_glider_1"
+        },
+        {
+          "id": "c_fold_loop",
+          "label": "Fold a curled loop wing.",
+          "target": "n_loop_1"
+        }
+      ]
+    },
+    {
+      "id": "n_dart_1",
+      "body": "<<FILL role=rising words=66 beats='the dart takes four folds and every one of them has to be pressed flat; the nose comes down to a point that could poke a hole in a cloud; held up it is heavy at the front and light at the back, which is the whole idea; Priya says it looks fast just sitting there'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dart_finish",
+          "label": "Finish the dart.",
+          "target": "n_dart_shape"
+        }
+      ]
+    },
+    {
+      "id": "n_dart_shape",
+      "body": "<<FILL role=choice words=76 beats='there is one thing left to do before it flies and Priya has an opinion about each; the creases can be run over with a thumbnail until they are knife sharp, or a paperclip can go on the nose to make it heavier and steadier; the paperclips live in a tin on the paper table'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dart_thumb",
+          "label": "Press the creases sharp.",
+          "target": "n_dart_thumb"
+        },
+        {
+          "id": "c_dart_clip",
+          "label": "Clip the nose.",
+          "target": "n_dart_clip"
+        }
+      ]
+    },
+    {
+      "id": "n_dart_thumb",
+      "body": "<<FILL role=rising words=62 beats='the thumbnail goes along every fold and the paper squeaks; the creases go from soft grey lines to hard bright edges; the finished dart is stiff enough to stand on its nose on the table without falling over, and it hums a little when it is waved'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_thumb_to_line",
+          "label": "Carry it to the chalk line.",
+          "target": "n_dart_line"
+        }
+      ]
+    },
+    {
+      "id": "n_dart_clip",
+      "body": "<<FILL role=rising words=62 beats='a paperclip goes over the nose and the whole plane changes; it wants to tip forward out of the hand now instead of drifting; Priya says it feels like a real thing rather than a piece of paper, and holds hers up to compare'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_clip_to_line",
+          "label": "Carry it to the chalk line.",
+          "target": "n_dart_line"
+        }
+      ]
+    },
+    {
+      "id": "n_dart_line",
+      "body": "<<FILL role=choice words=76 beats='toes go behind the chalk line and the whole length of the hall opens up ahead; there are three ways to send a dart down it; a hard flat throw straight along the floor, a steep throw up towards the high windows, or a throw from the two stage steps for extra height'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dart_flat",
+          "label": "Throw it hard and flat.",
+          "target": "n_dart_flat"
+        },
+        {
+          "id": "c_dart_high",
+          "label": "Throw it steeply upward.",
+          "target": "n_dart_high"
+        },
+        {
+          "id": "c_dart_steps",
+          "label": "Throw it from the stage steps.",
+          "target": "n_dart_steps"
+        }
+      ]
+    },
+    {
+      "id": "n_dart_flat",
+      "body": "<<FILL role=rising words=64 beats='the throw is flat and hard and the dart makes a small tearing sound in the air; it goes down the hall in a dead straight line about waist high, not rising and not dropping, past the dinner trolley and past the piano'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_flat_watch",
+          "label": "Watch where it lands.",
+          "target": "n_dart_far"
+        }
+      ]
+    },
+    {
+      "id": "n_dart_steps",
+      "body": "<<FILL role=rising words=64 beats='from the top step the hall looks longer and the chalk line looks a long way back; the dart leaves the hand with a click of the wrist and drops a little at first, then flattens out and keeps going, and going'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_steps_watch",
+          "label": "Watch where it lands.",
+          "target": "n_dart_far"
+        }
+      ]
+    },
+    {
+      "id": "n_dart_far",
+      "body": "<<FILL role=choice words=74 beats='the dart is still travelling and the far wall is coming up fast; Priya is already running down the side of the hall to see where it stops; there is the clear floor by the fire door, and there is the dark gap under the long radiator, and the sheet of paper at the table is still there for anyone who wants to start over'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_far_floor",
+          "label": "Follow it to the fire door.",
+          "target": "n_end_dart_record"
+        },
+        {
+          "id": "c_far_radiator",
+          "label": "Check under the radiator.",
+          "target": "n_end_dart_skid"
+        },
+        {
+          "id": "c_far_again",
+          "label": "Go back and fold a different plane.",
+          "target": "n_table"
+        }
+      ]
+    },
+    {
+      "id": "n_end_dart_record",
+      "body": "<<FILL role=completion words=80 beats='the dart touches down past the fire door, further than any plane has gone all lunchtime, and slides the last bit on its nose; Priya marks the spot with a shoe and then with a chalk cross; a small crowd comes over to look at the cross and then walks back to the line to measure it with steps; the dart is handed back very carefully'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_dart_record",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Past the Fire Door"
+      }
+    },
+    {
+      "id": "n_end_dart_skid",
+      "body": "<<FILL role=ending words=76 beats='the dart skids the last two metres and disappears under the long radiator; it comes back out on the end of a ruler, warm and furry with grey dust and bent along one wing; Priya laughs so hard she has to sit down; the dart is retired to the windowsill where it stays for the rest of the week'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_dart_skid",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Dusty Retirement"
+      }
+    },
+    {
+      "id": "n_dart_high",
+      "body": "<<FILL role=rising words=64 beats='the throw goes up instead of along and the dart climbs towards the high windows, steeper and steeper, until it runs out of speed; for a second it hangs there with its nose up and nothing happening at all'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_high_watch",
+          "label": "Wait to see what it does.",
+          "target": "n_dart_stall"
+        }
+      ]
+    },
+    {
+      "id": "n_dart_stall",
+      "body": "<<FILL role=choice words=74 beats='the dart tips over sideways and comes down nose first, spinning slowly; below it are two things it could reach; the flat cap that Mr Odeyemi has left on the end of the piano, and the narrow gap between two ceiling tiles where the light fitting is'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_stall_cap",
+          "label": "Watch it drop towards the cap.",
+          "target": "n_end_dart_hat"
+        },
+        {
+          "id": "c_stall_ceiling",
+          "label": "Watch it rise towards the tiles.",
+          "target": "n_end_dart_ceiling"
+        }
+      ]
+    },
+    {
+      "id": "n_end_dart_hat",
+      "body": "<<FILL role=ending words=76 beats='the dart lands nose down in the flat cap on the piano and stands straight up out of it like a small paper feather; Mr Odeyemi puts the cap on without looking, walks four steps, and only then notices that everybody in the hall has gone quiet; he wears it that way until the bell'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_dart_hat",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Feather in the Cap"
+      }
+    },
+    {
+      "id": "n_end_dart_ceiling",
+      "body": "<<FILL role=ending words=74 beats='the dart slides its nose into the gap beside a ceiling tile and stops there, stuck fast, pointing down at the hall like a small white arrow; nobody can reach it and nobody wants it taken down; it is still up there weeks later and new children keep asking how it got there'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_dart_ceiling",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Arrow in the Ceiling"
+      }
+    },
+    {
+      "id": "n_glider_1",
+      "body": "<<FILL role=rising words=66 beats='the glider is folded the other way round from a dart, wide and flat with hardly any nose at all; the wings come out almost as broad as two hands side by side; it weighs nothing and it will not stand up on the table, it just lies there like a leaf'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_glider_finish",
+          "label": "Finish the glider.",
+          "target": "n_glider_shape"
+        }
+      ]
+    },
+    {
+      "id": "n_glider_shape",
+      "body": "<<FILL role=choice words=78 beats='Priya says a glider is all about what you do to the back of it and there are three tricks chalked on the table; the wingtips can be turned up so it holds itself steady, a little tail fin can be folded so it flies straight, or the nose can be blunted with one extra fold so it does not dive'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_glider_wide",
+          "label": "Turn the wingtips up.",
+          "target": "n_glider_wide"
+        },
+        {
+          "id": "c_glider_tail",
+          "label": "Fold a tail fin.",
+          "target": "n_glider_tail"
+        },
+        {
+          "id": "c_glider_blunt",
+          "label": "Blunt the nose.",
+          "target": "n_glider_blunt"
+        }
+      ]
+    },
+    {
+      "id": "n_glider_wide",
+      "body": "<<FILL role=rising words=62 beats='both wingtips get turned up along a ruler so they stand like tiny walls; the glider sits differently in the hand now, level and calm, and when it is tipped it comes back level by itself as if it does not want to be crooked'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wide_to_line",
+          "label": "Carry it to the chalk line.",
+          "target": "n_glider_line"
+        }
+      ]
+    },
+    {
+      "id": "n_glider_tail",
+      "body": "<<FILL role=rising words=62 beats='a thin strip at the back is folded up into a fin, no bigger than a thumbnail; Priya blows on it and the whole glider swings round to point away from her breath, which is exactly what a fin is supposed to do'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail_to_line",
+          "label": "Carry it to the chalk line.",
+          "target": "n_glider_line"
+        }
+      ]
+    },
+    {
+      "id": "n_glider_blunt",
+      "body": "<<FILL role=rising words=62 beats='one extra fold turns the sharp nose into a short square front; it looks wrong and slow and a bit silly; but it also stops being nose heavy, and when it is dropped from table height it swings gently instead of diving at the floor'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_blunt_to_line",
+          "label": "Carry it to the chalk line.",
+          "target": "n_glider_line"
+        }
+      ]
+    },
+    {
+      "id": "n_glider_line",
+      "body": "<<FILL role=choice words=78 beats='a glider will not go anywhere if it is thrown hard, so the chalk line offers three careful ways instead; a slow push at head height straight down the hall, a soft release right over a radiator where the warm air comes up, or the long climb up the side stairs to the balcony rail above the stage'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_glider_gentle",
+          "label": "Push it gently down the hall.",
+          "target": "n_glider_gentle"
+        },
+        {
+          "id": "c_glider_radiator",
+          "label": "Let it go over a radiator.",
+          "target": "n_glider_radiator"
+        },
+        {
+          "id": "c_glider_balcony",
+          "label": "Climb to the balcony rail.",
+          "target": "n_glider_balcony"
+        }
+      ]
+    },
+    {
+      "id": "n_glider_gentle",
+      "body": "<<FILL role=rising words=64 beats='the glider leaves the hand at walking speed with no force behind it at all; it does not shoot away, it just carries on, sinking a hand width every few steps, so slowly that it is possible to walk along underneath it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gentle_watch",
+          "label": "Walk along underneath it.",
+          "target": "n_glider_float"
+        }
+      ]
+    },
+    {
+      "id": "n_glider_radiator",
+      "body": "<<FILL role=rising words=64 beats='the glider is held over the radiator grille where the air comes up warm enough to feel on a wrist; the moment it is let go it lifts instead of falling, rising past the window catch, and Priya makes a noise she has to cover with both hands'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_radiator_watch",
+          "label": "Watch it rise.",
+          "target": "n_glider_float"
+        }
+      ]
+    },
+    {
+      "id": "n_glider_float",
+      "body": "<<FILL role=choice words=74 beats='the glider is hanging in the middle of the hall going nowhere in particular and everybody nearby has stopped to watch it; it can be left completely alone to see how long it stays up, or it can be followed to where the dinner trolleys are stacked, and there is always more paper on the table for a different idea'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_float_leave",
+          "label": "Leave it completely alone.",
+          "target": "n_end_glider_hover"
+        },
+        {
+          "id": "c_float_follow",
+          "label": "Follow it towards the trolleys.",
+          "target": "n_end_glider_bell"
+        },
+        {
+          "id": "c_float_again",
+          "label": "Go back and fold a different plane.",
+          "target": "n_table"
+        }
+      ]
+    },
+    {
+      "id": "n_end_glider_hover",
+      "body": "<<FILL role=ending words=78 beats='nobody touches it and the glider stays up far longer than a piece of paper has any right to; the warm air off the radiators holds it in slow circles near the ceiling while the whole hall counts out loud; when it finally comes down it lands flat on a dinner table without a sound, and the counting turns into a cheer'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_glider_hover",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Long Count"
+      }
+    },
+    {
+      "id": "n_end_glider_bell",
+      "body": "<<FILL role=ending words=74 beats='the glider drifts over the stacked trolleys just as the bell goes and lands neatly in a tray of clean forks; the dinner staff hand it back with the forks still in it, which takes a while to sort out; lunch is over and the hall has to be swept, and the glider goes home in a coat pocket instead'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_glider_bell",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "A Trayful of Forks"
+      }
+    },
+    {
+      "id": "n_glider_balcony",
+      "body": "<<FILL role=rising words=66 beats='the side stairs go up behind the stage and come out on a narrow balcony with a wooden rail; from up here the hall looks like a map, with the chalk line thin and white and the paper table small at the far end; the air is warmer and stiller up here'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_balcony_rail",
+          "label": "Lean out over the rail.",
+          "target": "n_glider_rail"
+        }
+      ]
+    },
+    {
+      "id": "n_glider_rail",
+      "body": "<<FILL role=choice words=72 beats='there is a long way down to the stage and the glider will get one attempt at it; it can be dropped over the rail with no push at all and left to find its own way, or it can be launched forward hard enough to clear the stage completely'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rail_drop",
+          "label": "Drop it with no push at all.",
+          "target": "n_glider_drop"
+        },
+        {
+          "id": "c_rail_launch",
+          "label": "Launch it out over the stage.",
+          "target": "n_glider_launch"
+        }
+      ]
+    },
+    {
+      "id": "n_glider_drop",
+      "body": "<<FILL role=rising words=64 beats='the glider falls for half a second, catches the air, and turns the fall into a long slow slide; it goes out from the balcony in a wide curve instead of straight down, crossing above the stage with the whole hall watching from below'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_drop_watch",
+          "label": "Lean over and watch it go.",
+          "target": "n_glider_watch"
+        }
+      ]
+    },
+    {
+      "id": "n_glider_launch",
+      "body": "<<FILL role=rising words=64 beats='the launch is a firm level push and the glider goes out fast and flat over the rail; it holds its height right across the stage, higher than the curtain rail, and then begins the slow part of the journey down towards the boards'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_launch_watch",
+          "label": "Lean over and watch it go.",
+          "target": "n_glider_watch"
+        }
+      ]
+    },
+    {
+      "id": "n_glider_watch",
+      "body": "<<FILL role=choice words=76 beats='the glider is over the stage now and running out of height, and there are three places below it; the bright circle where the spotlight is left switched on, the heavy red curtain hanging in deep folds at the side, and the open lid of the school piano with all its strings showing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_watch_light",
+          "label": "Watch the bright circle.",
+          "target": "n_end_glider_stage"
+        },
+        {
+          "id": "c_watch_curtain",
+          "label": "Watch the folds of the curtain.",
+          "target": "n_end_glider_curtain"
+        },
+        {
+          "id": "c_watch_piano",
+          "label": "Watch the open piano.",
+          "target": "n_end_glider_piano"
+        }
+      ]
+    },
+    {
+      "id": "n_end_glider_stage",
+      "body": "<<FILL role=completion words=80 beats='the glider comes down into the circle of spotlight in the middle of the empty stage and stops there, white and lit up and perfectly still; the hall goes quiet and then claps, because it looks exactly like something that was meant to happen; Priya bows from the balcony as if she planned every part of it, and gets clapped too'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_glider_stage",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Into the Spotlight"
+      }
+    },
+    {
+      "id": "n_end_glider_curtain",
+      "body": "<<FILL role=ending words=74 beats='the glider slides into the deep red folds of the curtain and is swallowed without a sound; shaking the curtain does nothing and reaching in finds only dusty velvet; it turns up on Friday when the curtain is opened for assembly, and comes sailing out over three hundred heads on its own'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_glider_curtain",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Friday Assembly"
+      }
+    },
+    {
+      "id": "n_end_glider_piano",
+      "body": "<<FILL role=ending words=76 beats='the glider drops in through the open lid of the piano and lands across the strings, and the piano makes one soft note all by itself; putting a hand in to fetch it makes three more notes; in the end it is left where it is, and the piano hums quietly every time somebody walks heavily past'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_glider_piano",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "One Soft Note"
+      }
+    },
+    {
+      "id": "n_loop_1",
+      "body": "<<FILL role=rising words=66 beats='the loop wing starts as a short fat plane with a stubby body and wings that curve instead of lying flat; it looks least like a plane of the three and Priya pulls a face at it; the chalk drawing beside it on the table shows the finished plane coming round in a wide circle back towards whoever threw it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_loop_finish",
+          "label": "Finish the loop wing.",
+          "target": "n_loop_shape"
+        }
+      ]
+    },
+    {
+      "id": "n_loop_shape",
+      "body": "<<FILL role=choice words=76 beats='the curve has to come from somewhere and there are two ways to put it in; the back edge of each wing can be curled upward over the edge of a ruler, or a small slit can be cut in the tail and one side bent up so the plane leans as it flies'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_loop_curl",
+          "label": "Curl the back of the wings.",
+          "target": "n_loop_curl"
+        },
+        {
+          "id": "c_loop_slit",
+          "label": "Cut and bend the tail.",
+          "target": "n_loop_slit"
+        }
+      ]
+    },
+    {
+      "id": "n_loop_curl",
+      "body": "<<FILL role=rising words=62 beats='the back edges are pulled over the ruler until they hold a soft upward curve; the wings look like two small waves now; held out flat and let go from waist height the plane immediately tries to climb instead of falling, which is a strange thing to feel'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curl_to_line",
+          "label": "Carry it to the chalk line.",
+          "target": "n_loop_line"
+        }
+      ]
+    },
+    {
+      "id": "n_loop_slit",
+      "body": "<<FILL role=rising words=62 beats='the scissors make one short cut in the tail and one flap is bent upward, no more than a finger width; the plane now leans slightly to the left when it is held level, and no amount of straightening makes it want to sit even'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_slit_to_line",
+          "label": "Carry it to the chalk line.",
+          "target": "n_loop_line"
+        }
+      ]
+    },
+    {
+      "id": "n_loop_line",
+      "body": "<<FILL role=choice words=76 beats='a curved wing needs a different kind of throw and there are three worth trying from the chalk line; a soft underarm lob that lets the curve do the work, a hard flat throw to see whether it can be beaten into flying straight, or a throw aimed almost at the ceiling'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_loop_soft",
+          "label": "Lob it gently underarm.",
+          "target": "n_loop_soft"
+        },
+        {
+          "id": "c_loop_spin",
+          "label": "Throw it hard and flat.",
+          "target": "n_loop_spin"
+        },
+        {
+          "id": "c_loop_up",
+          "label": "Throw it at the ceiling.",
+          "target": "n_loop_up"
+        }
+      ]
+    },
+    {
+      "id": "n_loop_soft",
+      "body": "<<FILL role=rising words=64 beats='the underarm lob sends the plane out slowly and it starts to climb almost at once, nose rising, going up and over in a way that looks wrong for a piece of paper; Priya stops talking halfway through a word and tips her head back to follow it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_soft_watch",
+          "label": "Follow it with your eyes.",
+          "target": "n_loop_circle"
+        }
+      ]
+    },
+    {
+      "id": "n_loop_spin",
+      "body": "<<FILL role=rising words=64 beats='the hard throw does not beat the curve out of it at all; the plane goes out fast, banks over on one wing, and comes round in a wide flat circle instead of carrying on; it is travelling sideways past the chalk line before anyone has moved'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spin_watch",
+          "label": "Follow it with your eyes.",
+          "target": "n_loop_circle"
+        }
+      ]
+    },
+    {
+      "id": "n_loop_circle",
+      "body": "<<FILL role=choice words=74 beats='the plane is coming round and it is going to end up somewhere behind the chalk line rather than in front of it, which is not where a plane is supposed to finish; it could finish the whole circle and be caught out of the air, or be left alone to land wherever it likes, and the paper table is right there for a different idea'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_circle_catch",
+          "label": "Try to catch it out of the air.",
+          "target": "n_end_loop_loop"
+        },
+        {
+          "id": "c_circle_leave",
+          "label": "Stand still and let it land.",
+          "target": "n_end_loop_boomerang"
+        },
+        {
+          "id": "c_circle_again",
+          "label": "Go back and fold a different plane.",
+          "target": "n_table"
+        }
+      ]
+    },
+    {
+      "id": "n_end_loop_loop",
+      "body": "<<FILL role=ending words=78 beats='the plane completes the whole circle and comes back at chest height, and the catch is made with both hands like catching a bird; the hall makes a noise; other children copy the fold at the paper table until curled wings are going round in circles all down the hall, and Mr Odeyemi has stopped even trying to sweep'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_loop_loop",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "Caught With Both Hands"
+      }
+    },
+    {
+      "id": "n_end_loop_boomerang",
+      "body": "<<FILL role=ending words=74 beats='standing still turns out to be the right thing to do; the plane finishes its circle, slows, and settles on the floor between two shoes without being touched at all; it lands there every single time it is thrown, which is somehow more impressive than catching it would have been'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_loop_boomerang",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Between Two Shoes"
+      }
+    },
+    {
+      "id": "n_loop_up",
+      "body": "<<FILL role=rising words=64 beats='the throw goes almost straight upward and the curved wings turn the climb into a spiral; the plane screws itself up towards the ceiling, higher than anything has gone all lunchtime, and it does not look like coming down any time soon'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_up_watch",
+          "label": "Watch it spiral upward.",
+          "target": "n_loop_high"
+        }
+      ]
+    },
+    {
+      "id": "n_loop_high",
+      "body": "<<FILL role=choice words=72 beats='up near the ceiling there are two places the plane is drifting between; the dark painted beams that cross the hall well out of anybody reach, and the row of high windows where one narrow pane has been propped open all lunchtime to let the wet air out'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_high_beam",
+          "label": "Watch it drift towards the beams.",
+          "target": "n_end_loop_rafter"
+        },
+        {
+          "id": "c_high_window",
+          "label": "Watch it drift towards the open pane.",
+          "target": "n_end_loop_window"
+        }
+      ]
+    },
+    {
+      "id": "n_end_loop_rafter",
+      "body": "<<FILL role=ending words=74 beats='the plane settles on top of a painted beam and stays there, white against the dark wood, far out of reach of anybody standing on anything; Mr Odeyemi looks up, says he has a pole for exactly this, and does not go and get it; by home time there are four more up there keeping it company'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_loop_rafter",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Up on the Beam"
+      }
+    },
+    {
+      "id": "n_end_loop_window",
+      "body": "<<FILL role=ending words=76 beats='the plane finds the propped open pane, turns on its side, and goes out through the gap into the rain; from the window it can be seen going down slowly across the wet playground, soaking up the weather as it drops; it is fetched at home time, grey and soft and completely finished, and kept anyway'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_loop_window",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Out Into the Rain"
+      }
+    }
+  ]
+}
