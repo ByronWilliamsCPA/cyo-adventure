@@ -42,6 +42,24 @@
 # an image that has no compiler, and the upstream ask is tracked alongside the
 # documented entry.
 
+# #CRITICAL: security: the third guard is the expiry, and without it this rule
+# outlives its own justification. Every `.trivyignore.yaml` entry carries an
+# `expired_at` that Trivy itself honours, so a lapsed per-CVE acceptance puts
+# its finding back in the gate automatically. A package-scoped rule with no
+# date would not: the documented reassessment date could pass, the release-gate
+# checker could go red over it, and the SCAN would still report zero, leaving
+# the Security tab and every push, schedule and manual inventory silent on an
+# acceptance nobody had renewed. The date below must equal the
+# `Reassessment Due` of the "linux-libc-dev kernel UAPI headers" entry in
+# docs/known-vulnerabilities.md; scripts/check_known_vulnerabilities.py fails
+# the build if the two drift apart, exactly as it does for the YAML dates.
+# #VERIFY: tests/unit/test_trivy_ignore_policy.py asserts the expiry is present,
+# matches the documented entry, and that a lapsed date stops suppressing.
+#
+# `time.now_ns()` and `time.parse_rfc3339_ns()` are OPA builtins available to
+# Trivy's Rego evaluation; confirmed working against Trivy 0.70.0 on 2026-08-17
+# in both directions (a future date suppresses, a past date does not).
+
 package trivy
 
 default ignore = false
@@ -49,4 +67,5 @@ default ignore = false
 ignore {
 	input.PkgName == "linux-libc-dev"
 	not input.FixedVersion
+	time.now_ns() < time.parse_rfc3339_ns("2026-09-17T00:00:00Z")
 }

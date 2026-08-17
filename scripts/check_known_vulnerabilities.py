@@ -33,6 +33,10 @@ Checks:
    Trivy enforces the former by dropping the suppression once it passes; the
    latter carries the assessment a human reads. If they drift, the document
    stops describing what the scanner actually does.
+8. The package-scoped Rego policy carries an expiry, and that expiry equals its
+   entry's ``Reassessment Due`` too. A package rule with no date would suppress
+   its package forever: the documented acceptance could lapse and this checker
+   go red over it while the SCAN still reported zero.
 
 Checks 6 and 7 deliberately do NOT require the reverse. Findings suppressed by
 ``.trivy/ignore-policy.rego`` are accepted at package scope and by design carry
@@ -65,6 +69,7 @@ _REPO_ROOT: Final = Path(__file__).resolve().parent.parent
 _DEFAULT_DOC: Final = _REPO_ROOT / "docs" / "known-vulnerabilities.md"
 _DEFAULT_IGNOREFILE: Final = _REPO_ROOT / ".trivyignore.yaml"
 _DEFAULT_BASELINE: Final = _REPO_ROOT / "known-vulnerabilities-baseline.toml"
+_DEFAULT_POLICY: Final = _REPO_ROOT / ".trivy" / "ignore-policy.rego"
 
 # The reassessment window the Release Gate Policy fixes at 90 days. Aligned to
 # the org-wide default in ByronWilliamsCPA/.github (`ignore-expiry-horizon-days`,
@@ -85,6 +90,12 @@ _FIELD_RE: Final = re.compile(
     r"^\|\s*\*\*(?P<name>[^*]+)\*\*\s*\|\s*(?P<value>.*?)\s*\|\s*$"
 )
 _ISO_DATE_RE: Final = re.compile(r"(\d{4})-(\d{2})-(\d{2})")
+# Trailing \b so a longer id cannot satisfy a shorter one by prefix.
+_CVE_ID_RE: Final = re.compile(r"\bCVE-\d{4}-\d+\b")
+_POLICY_PKG_RE: Final = re.compile(r'input\.PkgName\s*==\s*"([^"]+)"')
+_POLICY_EXPIRY_RE: Final = re.compile(
+    r'time\.parse_rfc3339_ns\(\s*"(\d{4}-\d{2}-\d{2})T'
+)
 
 
 @dataclass(frozen=True)
@@ -95,13 +106,15 @@ class Entry:
         title: The entry's ``##`` heading text.
         line: 1-based line number of that heading.
         fields: The entry's field table, keyed by bolded field name.
-        body: The entry's full text, used for CVE coverage matching.
+        body: The entry's full text, kept for context in messages.
+        accepted: Exact CVE ids drawn from the entry's ``CVE ID`` field.
     """
 
     title: str
     line: int
     fields: dict[str, str]
     body: str
+    accepted: frozenset[str]
 
 
 def _parse_iso_date(value: str) -> date | None:
@@ -158,6 +171,13 @@ def parse_entries(text: str) -> list[Entry]:
                 line=text[: heading.start()].count("\n") + 1,
                 fields=fields,
                 body=body,
+                # ONLY the `CVE ID` field counts as an acceptance. Scanning the
+                # whole body would let a passing prose mention stand in for a
+                # written acceptance, and substring matching would let a short
+                # id ride on a longer documented one: `CVE-2026-4249` is a
+                # prefix of `CVE-2026-42496`. Both would pass the release gate
+                # on a CVE nobody assessed.
+                accepted=frozenset(_CVE_ID_RE.findall(fields.get("CVE ID", ""))),
             )
         )
 
@@ -210,6 +230,23 @@ def check_entry(entry: Entry, today: date) -> list[str]:
         problems.append(
             f"'Last Reassessed' ({reassessed.isoformat()}) precedes 'Discovered' "
             f"({discovered.isoformat()})"
+        )
+
+    # A future anchor is the bypass this whole field would otherwise open: set
+    # `Last Reassessed` a year out, set `Reassessment Due` 90 days after that,
+    # and the window check passes on a reassessment that has not happened. The
+    # same reasoning applies to `Discovered`, which anchors the window whenever
+    # no reassessment is recorded.
+    if reassessed is not None and reassessed > today:
+        problems.append(
+            f"'Last Reassessed' ({reassessed.isoformat()}) is in the future as of "
+            f"{today.isoformat()}. A reassessment cannot be dated before it happens, "
+            f"and a future anchor would extend the window without any evidence."
+        )
+    if discovered is not None and discovered > today:
+        problems.append(
+            f"'Discovered' ({discovered.isoformat()}) is in the future as of "
+            f"{today.isoformat()}"
         )
 
     anchor = reassessed if reassessed is not None else discovered
@@ -332,7 +369,7 @@ def _check_date_agreement(
         if cve in uncovered:
             continue
 
-        owner = next((entry for entry in entries if cve in entry.body), None)
+        owner = next((entry for entry in entries if cve in entry.accepted), None)
         if owner is None:  # pragma: no cover - implied by `uncovered`
             continue
 
@@ -386,10 +423,10 @@ def check_suppression_coverage(
         return ([f"{ignorefile} not found"], [])
 
     suppressions = parse_ignore_file(ignorefile)
-    documented = "\n".join(entry.body for entry in entries)
+    accepted = {cve for entry in entries for cve in entry.accepted}
     suppressed = set(suppressions)
 
-    uncovered = {cve for cve in suppressed if cve not in documented}
+    uncovered = suppressed - accepted
     problems: list[str] = []
     warnings: list[str] = []
 
@@ -423,8 +460,78 @@ def check_suppression_coverage(
     return (problems, warnings)
 
 
+def check_policy_expiry(entries: list[Entry], policy_path: Path) -> list[str]:
+    """Check the Rego policy carries an expiry matching its documented entry.
+
+    The package-scoped policy accepts a whole package with no CVE list, so its
+    expiry is the only thing bounding it. Trivy honours the date directly (a
+    lapsed policy stops suppressing), which mirrors ``expired_at`` in the ignore
+    file. This check keeps that date tied to the written assessment, so the
+    scan and the document cannot disagree about when the acceptance ran out.
+
+    Args:
+        entries: Parsed active entries.
+        policy_path: Path to the Rego ignore policy.
+
+    Returns:
+        Human-readable problems; empty when the policy is bounded and matches.
+    """
+    if not policy_path.is_file():
+        return []
+
+    source = "\n".join(
+        line
+        for line in policy_path.read_text(encoding="utf-8").splitlines()
+        if not line.lstrip().startswith("#")
+    )
+
+    packages = _POLICY_PKG_RE.findall(source)
+    if not packages:
+        return [f"{policy_path.name}: no `input.PkgName ==` guard found"]
+
+    expiries = _POLICY_EXPIRY_RE.findall(source)
+    if not expiries:
+        return [
+            (
+                f"{policy_path.name}: the package-scoped rule carries no expiry. A "
+                f"rule with no date suppresses its package forever, so the scan stays "
+                f"silent even after the documented acceptance lapses."
+            )
+        ]
+
+    problems: list[str] = []
+    for package in set(packages):
+        owner = next(
+            (e for e in entries if e.fields.get("Package", "").startswith(package)),
+            None,
+        )
+        if owner is None:
+            problems.append(
+                f"{policy_path.name}: suppresses package {package!r}, which has no "
+                f"active entry in the document"
+            )
+            continue
+
+        due = _parse_iso_date(owner.fields.get("Reassessment Due", ""))
+        for expiry_raw in set(expiries):
+            expiry = _parse_iso_date(expiry_raw)
+            if due is not None and expiry is not None and expiry != due:
+                problems.append(
+                    f"{policy_path.name}: rule expires {expiry.isoformat()} but the "
+                    f"{package} entry is due {due.isoformat()}. The date Trivy enforces "
+                    f"and the date the document records must match."
+                )
+
+    return problems
+
+
 def check_document(
-    path: Path, ignorefile: Path, baseline_path: Path, today: date, warn_within: int
+    path: Path,
+    ignorefile: Path,
+    baseline_path: Path,
+    today: date,
+    warn_within: int,
+    policy_path: Path | None = None,
 ) -> tuple[list[str], list[str]]:
     """Validate the whole document.
 
@@ -432,6 +539,7 @@ def check_document(
         path: Path to ``known-vulnerabilities.md``.
         ignorefile: Path to ``.trivyignore``.
         baseline_path: Path to the undocumented-suppression baseline.
+        policy_path: Path to the Rego ignore policy, or ``None`` to skip it.
         today: The date to evaluate expiry against.
         warn_within: Emit a warning for entries due within this many days.
 
@@ -470,6 +578,7 @@ def check_document(
     )
     problems.extend(coverage_problems)
     warnings.extend(coverage_warnings)
+    problems.extend(check_policy_expiry(entries, policy_path or _DEFAULT_POLICY))
     return (problems, warnings)
 
 
@@ -501,6 +610,11 @@ def main(argv: list[str] | None = None) -> int:
         help="Path to the undocumented-suppression baseline.",
     )
     parser.add_argument(
+        "--policy",
+        default=str(_DEFAULT_POLICY),
+        help="Path to the Rego ignore policy.",
+    )
+    parser.add_argument(
         "--today",
         default=None,
         help="ISO date to evaluate expiry against (defaults to the system date).",
@@ -526,7 +640,12 @@ def main(argv: list[str] | None = None) -> int:
 
     path = Path(args.doc)
     problems, warnings = check_document(
-        path, Path(args.ignorefile), Path(args.baseline), today, args.warn_within
+        path,
+        Path(args.ignorefile),
+        Path(args.baseline),
+        today,
+        args.warn_within,
+        Path(args.policy),
     )
 
     for warning in warnings:

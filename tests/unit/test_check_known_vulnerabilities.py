@@ -155,10 +155,16 @@ class TestReleaseGate:
         Without this, the first legitimate renewal of any entry would exceed 90
         days from discovery and fail, pushing authors toward editing
         `Discovered` and destroying the record of when the finding appeared.
+
+        The dates are chosen so the anchor is load-bearing: 2026-11-01 is 92
+        days after `Discovered` (over the maximum) but 83 days after
+        `Last Reassessed` (inside it), so this passes only because the anchor
+        moved. The reassessment itself is in the past, which
+        `test_future_last_reassessed_is_rejected` requires.
         """
-        document = _document("2026-12-01", discovered="2026-08-01").replace(
+        document = _document("2026-11-01", discovered="2026-08-01").replace(
             "| **Reassessment Due** |",
-            "| **Last Reassessed** | 2026-09-15 |\n| **Reassessment Due** |",
+            "| **Last Reassessed** | 2026-08-10 |\n| **Reassessment Due** |",
         )
 
         assert check_entry(parse_entries(document)[0], _TODAY) == []
@@ -174,6 +180,32 @@ class TestReleaseGate:
         problems = check_entry(parse_entries(document)[0], _TODAY)
 
         assert any("precedes 'Discovered'" in problem for problem in problems)
+
+    @pytest.mark.unit
+    def test_future_last_reassessed_is_rejected(self) -> None:
+        """A future anchor would extend the window with no evidence.
+
+        Without this, `Last Reassessed` a year out plus a due date 90 days
+        after that passes the window check on a reassessment that has not
+        happened. Found by CodeRabbit on PR #725.
+        """
+        document = _document("2027-08-01", discovered="2026-08-01").replace(
+            "| **Reassessment Due** |",
+            "| **Last Reassessed** | 2027-06-01 |\n| **Reassessment Due** |",
+        )
+
+        problems = check_entry(parse_entries(document)[0], _TODAY)
+
+        assert any("is in the future" in problem for problem in problems)
+
+    @pytest.mark.unit
+    def test_future_discovered_is_rejected(self) -> None:
+        """`Discovered` anchors the window when no reassessment is recorded."""
+        document = _document("2030-02-01", discovered="2030-01-01")
+
+        problems = check_entry(parse_entries(document)[0], _TODAY)
+
+        assert any("'Discovered'" in p and "future" in p for p in problems)
 
     @pytest.mark.unit
     @pytest.mark.parametrize("value", ["Yes", "Undetermined"])
@@ -323,6 +355,38 @@ class TestSuppressionCoverage:
             "CVE-2026-00001": date(2026, 9, 17),
             "CVE-2026-00002": date(2026, 9, 17),
         }
+
+    @pytest.mark.unit
+    def test_prefix_collision_does_not_count_as_documented(
+        self, tmp_path: Path
+    ) -> None:
+        """A shorter id must not ride on a longer documented one.
+
+        `CVE-2026-0000` is a prefix of the documented `CVE-2026-00001`.
+        Substring matching accepted it; exact-id matching must not.
+        """
+        entries = parse_entries(_document("2026-09-17"))
+        ignorefile = self._write(tmp_path, ["CVE-2026-0000"])
+
+        problems, _ = check_suppression_coverage(entries, ignorefile, set())
+
+        assert len(problems) == 1
+        assert "CVE-2026-0000" in problems[0]
+
+    @pytest.mark.unit
+    def test_prose_mention_does_not_count_as_documented(self, tmp_path: Path) -> None:
+        """Only the `CVE ID` field is an acceptance, not a passing reference."""
+        document = _document("2026-09-17").replace(
+            "Text.", "We also considered CVE-2026-77777 while writing this."
+        )
+        ignorefile = self._write(tmp_path, ["CVE-2026-77777"])
+
+        problems, _ = check_suppression_coverage(
+            parse_entries(document), ignorefile, set()
+        )
+
+        assert len(problems) == 1
+        assert "CVE-2026-77777" in problems[0]
 
 
 class TestRepositoryState:

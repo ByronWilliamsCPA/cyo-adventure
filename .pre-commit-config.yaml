@@ -368,8 +368,16 @@ repos:
         name: Known-vulnerability entries are current
         entry: python scripts/check_known_vulnerabilities.py
         language: system
-        files: >-
-          ^(docs/known-vulnerabilities\.md|\.trivyignore\.yaml|known-vulnerabilities-baseline\.toml|scripts/check_known_vulnerabilities\.py)$
+        # Verbose regex (?x): whitespace and newlines are ignored, so the
+        # alternation can wrap inside the project's 120-char YAML guideline
+        # without changing what it matches.
+        files: |
+          (?x)^(
+            docs/known-vulnerabilities\.md
+            |\.trivyignore\.yaml
+            |known-vulnerabilities-baseline\.toml
+            |scripts/check_known_vulnerabilities\.py
+          )$
         pass_filenames: false
         stages: [pre-commit]
 

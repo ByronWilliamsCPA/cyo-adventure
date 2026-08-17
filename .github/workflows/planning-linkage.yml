@@ -63,6 +63,13 @@ jobs:
       # being granted here on every pull_request run too (PR #465).
       contents: read
 
+    outputs:
+      # Which checker failed, so file-drift-issue below can title and explain
+      # the issue correctly. Without this it reports every scheduled failure as
+      # planning-linkage drift, including an expired vulnerability acceptance,
+      # and tells the responder to run a script that will pass.
+      failed_checks: ${{ steps.classify.outputs.failed_checks }}
+
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18
@@ -79,6 +86,7 @@ jobs:
           python-version: '3.14'
 
       - name: Check work linkage
+        id: work-linkage
         # No flags, no network, no token: this is byte-for-byte the invocation
         # the check-work-linkage pre-commit hook runs locally. Two GitHub-facing
         # checks used to run here and nowhere else, which meant CI enforced a
@@ -91,6 +99,7 @@ jobs:
         # rather than making the author fix one, push, and discover the
         # other; !cancelled() keeps that intent without overriding a workflow
         # cancellation the way always() would.
+        id: lessons-log
         if: ${{ !cancelled() }}
         run: python scripts/check_lessons_log.py
 
@@ -105,8 +114,26 @@ jobs:
         #
         # Same posture as the two steps above: no flags, no network, no token,
         # byte-for-byte the invocation the check-known-vulns hook runs locally.
+        id: known-vulns
         if: ${{ !cancelled() }}
         run: python scripts/check_known_vulnerabilities.py
+
+      - name: Classify which checks failed
+        id: classify
+        # Runs whatever the outcomes were, so the classification exists even
+        # when an earlier step failed. Each step above uses `!cancelled()`, so
+        # all three have a real outcome by the time this runs.
+        if: ${{ !cancelled() }}
+        env:
+          WORK_LINKAGE: ${{ steps.work-linkage.outcome }}
+          LESSONS_LOG: ${{ steps.lessons-log.outcome }}
+          KNOWN_VULNS: ${{ steps.known-vulns.outcome }}
+        run: |
+          FAILED=""
+          [ "$WORK_LINKAGE" = "failure" ] && FAILED="${FAILED}work-linkage "
+          [ "$LESSONS_LOG" = "failure" ] && FAILED="${FAILED}lessons-log "
+          [ "$KNOWN_VULNS" = "failure" ] && FAILED="${FAILED}known-vulns "
+          echo "failed_checks=${FAILED% }" >> "$GITHUB_OUTPUT"
 
   file-drift-issue:
     name: File drift issue
@@ -132,27 +159,78 @@ jobs:
 
       - name: File a drift issue
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          # Space-separated ids from the linkage job. This workflow runs three
+          # independent checkers, so the issue has to say which one failed:
+          # an expired vulnerability acceptance reported as "planning linkage
+          # has drifted", pointing at check_work_linkage.py, sends the
+          # responder to a script that will pass and hides a closed release
+          # gate.
+          FAILED_CHECKS: ${{ needs.linkage.outputs.failed_checks }}
         with:
           script: |
-            const title = 'Planning linkage has drifted';
+            const failed = (process.env.FAILED_CHECKS || '').split(' ').filter(Boolean);
+            const detail = {
+              'work-linkage': {
+                label: 'Planning linkage',
+                cause: [
+                  'At least one register row no longer resolves to a phase or a proof.',
+                  'This usually means one of three things:',
+                  '',
+                  '1. A row was added to the debt register or the lessons log without',
+                  '   a corresponding UW-B*/UW-C* row in the unscheduled work register.',
+                  '2. A phase was added to or renamed in roadmap.md without the',
+                  '   vocabulary in the linkage contract being updated.',
+                  '3. A row was edited into a state the contract does not allow.',
+                  '',
+                  'The contract is the "linkage contract" section of',
+                  'docs/planning/unscheduled-work-register.md.',
+                ],
+                command: 'uv run python scripts/check_work_linkage.py',
+              },
+              'lessons-log': {
+                label: 'Authoring lessons log',
+                cause: [
+                  'docs/planning/authoring-lessons-log.md is malformed, or a row claims',
+                  'a status (applied, rejected, superseded) with nothing in Ref to prove it.',
+                ],
+                command: 'uv run python scripts/check_lessons_log.py',
+              },
+              'known-vulns': {
+                label: 'Known-vulnerability release gate',
+                cause: [
+                  'A vulnerability acceptance in docs/known-vulnerabilities.md has passed',
+                  'its Reassessment Due date, or a suppression no longer matches its entry.',
+                  '',
+                  'Per the Release Gate Policy an overdue entry BLOCKS RELEASES whatever its',
+                  'Blocking Release value reads, because that verdict has expired. Reassess it',
+                  'against current evidence rather than moving the date; the checker rejects a',
+                  'window longer than 90 days from the last recorded assessment.',
+                  '',
+                  'Note this is time-triggered: no file changed, the deadline simply passed.',
+                ],
+                command: 'uv run python scripts/check_known_vulnerabilities.py',
+              },
+            };
+            const hit = failed.filter((id) => detail[id]);
+            const title = hit.length === 1
+              ? `${detail[hit[0]].label} check is failing`
+              : 'Scheduled repository checks are failing';
             const body = [
-              'The scheduled Planning Linkage check failed, which means at least',
-              'one register row no longer resolves to a phase or a proof.',
+              hit.length
+                ? `The scheduled Planning Linkage workflow failed: ${hit.map((id) => detail[id].label).join(', ')}.`
+                : 'The scheduled Planning Linkage workflow failed; the failing check could not be identified.',
               '',
               `Run: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
               '',
-              'This usually means one of three things:',
-              '',
-              '1. A row was added to the debt register or the lessons log without',
-              '   a corresponding UW-B*/UW-C* row in the unscheduled work register.',
-              '2. A phase was added to or renamed in roadmap.md without the',
-              '   vocabulary in the linkage contract being updated.',
-              '3. A row was edited into a state the contract does not allow.',
-              '',
-              'Reproduce locally with `uv run python scripts/check_work_linkage.py`.',
-              'The contract is the "linkage contract" section of',
-              'docs/planning/unscheduled-work-register.md.',
-              '',
+              ...hit.flatMap((id) => [
+                `## ${detail[id].label}`,
+                '',
+                ...detail[id].cause,
+                '',
+                `Reproduce locally with \`${detail[id].command}\`.`,
+                '',
+              ]),
               'This issue is filed automatically because schedule-only workflows',
               'never surface failures on a pull request. Close it once a scheduled',
               'run succeeds again.',

@@ -70,22 +70,38 @@ def _policy_source() -> str:
     return POLICY_PATH.read_text(encoding="utf-8")
 
 
-def _rule_body() -> str:
-    """Return the policy's rule body, comments stripped.
-
-    Returns:
-        The text between the ``ignore {`` opening brace and its closing brace,
-        with ``#`` comment lines removed so assertions read real Rego rather
-        than the explanatory prose above it.
-    """
-    source = "\n".join(
+def _uncommented_source() -> str:
+    """Return the policy with ``#`` comment lines removed."""
+    return "\n".join(
         line
         for line in _policy_source().splitlines()
         if not line.lstrip().startswith("#")
     )
-    match = re.search(r"\bignore\s*\{(.*?)\}", source, re.DOTALL)
-    assert match is not None, "no `ignore { ... }` rule found in the policy"
-    return match.group(1)
+
+
+def _rule_bodies() -> list[str]:
+    """Return every ``ignore`` rule body in the policy.
+
+    Rego combines same-name rules with OR, so a second ``ignore`` rule is not
+    a refinement of the first, it is an independent way for a finding to be
+    suppressed. Returning all of them is what lets the callers assert on the
+    policy as a whole rather than on whichever rule happens to appear first.
+
+    Returns:
+        One entry per ``ignore { ... }`` rule, in source order.
+    """
+    return re.findall(r"\bignore\s*\{(.*?)\}", _uncommented_source(), re.DOTALL)
+
+
+def _rule_body() -> str:
+    """Return the policy's single ``ignore`` rule body.
+
+    Returns:
+        The text between the ``ignore {`` opening brace and its closing brace.
+    """
+    bodies = _rule_bodies()
+    assert len(bodies) == 1, f"expected exactly one `ignore` rule, found {len(bodies)}"
+    return bodies[0]
 
 
 class TestPolicyStructure:
@@ -103,6 +119,18 @@ class TestPolicyStructure:
         config = CONFIG_PATH.read_text(encoding="utf-8")
         assert "ignore-policy: .trivy/ignore-policy.rego" in config
         assert "ignorefile: .trivyignore.yaml" in config
+
+    @pytest.mark.unit
+    def test_policy_declares_exactly_one_ignore_rule(self) -> None:
+        """A second `ignore` rule is a second, unreviewed way to suppress.
+
+        Rego ORs same-name rules, so appending `ignore { input.Severity ==
+        "HIGH" }` would silence every High finding in the image while each
+        assertion about the first rule still passed. Every other structural
+        test here inspects one rule body, so this is the test that makes those
+        assertions mean anything about the policy as a whole.
+        """
+        assert len(_rule_bodies()) == 1
 
     @pytest.mark.unit
     def test_scoped_to_linux_libc_dev_only(self) -> None:
@@ -169,18 +197,59 @@ class TestPolicyStructure:
 
         assert suppressed.isdisjoint(absorbed)
 
+    @pytest.mark.unit
+    def test_policy_carries_an_expiry(self) -> None:
+        """A package-scoped rule with no date suppresses its package forever.
 
-@pytest.mark.skipif(shutil.which("trivy") is None, reason="trivy binary not on PATH")
+        Every `.trivyignore.yaml` entry self-expires, so a lapsed per-CVE
+        acceptance returns to the gate on its own. Without this guard the
+        package rule would not, leaving the scan silent after the documented
+        acceptance ran out. Raised by Greptile on PR #725.
+        """
+        body = _rule_body()
+
+        assert "time.now_ns()" in body
+        assert "time.parse_rfc3339_ns(" in body
+
+    @pytest.mark.unit
+    def test_policy_expiry_matches_the_documented_entry(self) -> None:
+        """The date Trivy enforces equals the date the document records."""
+        document = (REPO_ROOT / "docs" / "known-vulnerabilities.md").read_text(
+            encoding="utf-8"
+        )
+
+        expiry = re.search(
+            r'time\.parse_rfc3339_ns\(\s*"(\d{4}-\d{2}-\d{2})T', _rule_body()
+        )
+        assert expiry is not None
+
+        entry = document.split("## linux-libc-dev kernel UAPI headers", 1)[1]
+        due = re.search(r"\| \*\*Reassessment Due\*\* \| (\d{4}-\d{2}-\d{2})", entry)
+        assert due is not None
+
+        assert expiry.group(1) == due.group(1)
+
+
+@pytest.mark.skipif(
+    shutil.which("trivy") is None,
+    reason=(
+        "trivy binary not on PATH; the CI unit-test job does not install it. "
+        "Restoring this tier is tracked by UW-D33."
+    ),
+)
 class TestPolicyEvaluation:
     """End-to-end evaluation through Trivy itself, where it is available."""
 
     @staticmethod
-    def _convert(tmp_path: Path, *, with_policy: bool) -> set[str]:
+    def _convert(
+        tmp_path: Path, *, with_policy: bool, policy: Path | None = None
+    ) -> set[str]:
         """Run `trivy convert` over the fixture and return surviving CVE IDs.
 
         Args:
             tmp_path: pytest-provided scratch directory.
-            with_policy: whether to apply the repository's ignore policy.
+            with_policy: whether to apply an ignore policy at all.
+            policy: policy file to apply; defaults to the repository's.
 
         Returns:
             The set of vulnerability IDs left in the converted report.
@@ -207,7 +276,7 @@ class TestPolicyEvaluation:
 
         command = ["trivy", "convert", "--format", "json"]
         if with_policy:
-            command += ["--ignore-policy", str(POLICY_PATH)]
+            command += ["--ignore-policy", str(policy or POLICY_PATH)]
         command.append(str(report))
 
         completed = subprocess.run(
@@ -219,6 +288,24 @@ class TestPolicyEvaluation:
             for result in converted.get("Results", [])
             for vulnerability in (result.get("Vulnerabilities") or [])
         }
+
+    @pytest.mark.unit
+    def test_lapsed_policy_stops_suppressing(self, tmp_path: Path) -> None:
+        """Trivy honours the expiry itself, so the acceptance is self-limiting."""
+        lapsed = tmp_path / "lapsed.rego"
+        lapsed.write_text(
+            _policy_source().replace(
+                re.search(
+                    r'time\.parse_rfc3339_ns\(\s*"(\d{4}-\d{2}-\d{2})T', _rule_body()
+                ).group(1),
+                "2020-01-01",
+            ),
+            encoding="utf-8",
+        )
+
+        surviving = self._convert(tmp_path, with_policy=True, policy=lapsed)
+
+        assert _SUPPRESSED in surviving
 
     @pytest.mark.unit
     def test_fixture_is_meaningful_without_the_policy(self, tmp_path: Path) -> None:

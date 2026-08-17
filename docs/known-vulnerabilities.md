@@ -544,8 +544,20 @@ outside this repository and unaffected by anything shipped in the image.
 ignore {
 	input.PkgName == "linux-libc-dev"
 	not input.FixedVersion
+	time.now_ns() < time.parse_rfc3339_ns("2026-09-17T00:00:00Z")
 }
 ```
+
+The third guard is the expiry, and it is what stops this acceptance outliving
+its own justification. Trivy evaluates the date itself, so once
+`Reassessment Due` passes, the rule stops matching and every suppressed finding
+returns to the scan. Without it the documented date could lapse, the
+release-gate checker could go red over it, and the scan would still report
+zero, leaving the Security tab and every push, schedule and manual inventory
+silent on an acceptance nobody had renewed. That date and this entry's
+`Reassessment Due` are cross-checked by
+`scripts/check_known_vulnerabilities.py`, so they cannot drift apart, and the
+same script fails the build if the rule ever loses its expiry.
 
 The second guard is what keeps this honest, and it is not decorative. On
 2026-08-02 the base image advanced to 6.12.100-1+dhi0 and cleared
