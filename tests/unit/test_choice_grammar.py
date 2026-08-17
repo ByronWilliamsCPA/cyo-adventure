@@ -125,11 +125,15 @@ class TestChoicelessRunCap:
         assert cg1[0].node_id == "n0"
         assert cg1[0].severity is Severity.WARNING
 
-    def test_5_8_band_cap_is_two(self) -> None:
+    def test_5_8_band_cap_is_three(self) -> None:
+        """Raised from 2 on 2026-08-17 with the CG-1 share allowance: a cap that
+        binds before the share would make the share a dead letter, and section
+        10's 5-8 cadence is an average ("choice every 1st-2nd page") that the
+        share now carries. The local cap stays as a backstop only."""
         assert (
-            check_choiceless_run_cap(_chain_story("5-8", run_length=2)).findings == []
+            check_choiceless_run_cap(_chain_story("5-8", run_length=3)).findings == []
         )
-        over = check_choiceless_run_cap(_chain_story("5-8", run_length=3))
+        over = check_choiceless_run_cap(_chain_story("5-8", run_length=4))
         assert len(over.findings) == 1
 
     def test_flowed_band_tolerates_up_to_six(self) -> None:
@@ -221,6 +225,138 @@ def _mixed_fan_story(band: str, fans: list[int], corridors: int = 0) -> Storyboo
         )
     nodes.append(_ending_node("n_end", "e_done"))
     return _story(band, nodes, "k0" if corridors else first_decision)
+
+
+class TestChoicelessShareAllowance:
+    """CG-1's 2026-08-17 second axis: a per-band share of no-decision nodes,
+    carrying section 10's AVERAGE cadence, with the run cap left as a local
+    backstop."""
+
+    def test_a_long_scene_is_allowed_when_the_story_spends_decisions_elsewhere(
+        self,
+    ) -> None:
+        """The point of the change: a 3-corridor scene at 5-8 no longer blocks
+        on its own, provided the story's overall cadence stays inside 50%."""
+        nodes: list[dict[str, object]] = [
+            {
+                "id": "k0",
+                "body": "A long scene begins.",
+                "is_ending": False,
+                "choices": [{"id": "a", "label": "Read on.", "target": "k1"}],
+            },
+            {
+                "id": "k1",
+                "body": "It continues.",
+                "is_ending": False,
+                "choices": [{"id": "b", "label": "Read on.", "target": "k2"}],
+            },
+            {
+                "id": "k2",
+                "body": "And again.",
+                "is_ending": False,
+                "choices": [{"id": "c", "label": "Read on.", "target": "d0"}],
+            },
+        ]
+        # five decision nodes, so 3 of 8 non-ending nodes are choiceless (37%)
+        nodes.extend(
+            {
+                "id": f"d{index}",
+                "body": "Pick a path.",
+                "is_ending": False,
+                "choices": [
+                    {
+                        "id": f"e{index}_{j}",
+                        "label": f"Option {j}.",
+                        "target": f"d{index + 1}" if index < 4 else "n_end",
+                    }
+                    for j in range(2)
+                ],
+            }
+            for index in range(5)
+        )
+        nodes.append(_ending_node("n_end", "e_done"))
+        report = check_choiceless_run_cap(_story("5-8", nodes, "k0"))
+        assert [f for f in report.findings if f.rule_id == "CG-1"] == []
+
+    def test_share_above_the_band_allowance_fires(self) -> None:
+        """Three choiceless nodes against one decision is 75% at 5-8, over 50%."""
+        nodes: list[dict[str, object]] = [
+            {
+                "id": f"k{i}",
+                "body": "Run up.",
+                "is_ending": False,
+                "choices": [
+                    {"id": f"a{i}", "label": "Read on.", "target": f"k{i + 1}"}
+                ],
+            }
+            for i in range(2)
+        ]
+        nodes.append(
+            {
+                "id": "k2",
+                "body": "Still going.",
+                "is_ending": False,
+                "choices": [{"id": "a2", "label": "Read on.", "target": "d0"}],
+            }
+        )
+        nodes.append(
+            {
+                "id": "d0",
+                "body": "Pick a path.",
+                "is_ending": False,
+                "choices": [
+                    {"id": "c0", "label": "One.", "target": "n_end"},
+                    {"id": "c1", "label": "Two.", "target": "n_end"},
+                ],
+            }
+        )
+        nodes.append(_ending_node("n_end", "e_done"))
+        report = check_choiceless_run_cap(_story("5-8", nodes, "k0"))
+        share = [f for f in report.findings if "allowance" in f.message]
+        assert len(share) == 1
+        assert "3 of 4 non-ending nodes are single-choice" in share[0].message
+
+    def test_a_story_with_no_decision_at_all_is_left_to_pl_17(self) -> None:
+        """Cadence is undefined with nothing to pace against, so an
+        all-corridor graph draws no share finding from this rule."""
+        report = check_choiceless_run_cap(_chain_story("5-8", run_length=2))
+        assert [f for f in report.findings if "allowance" in f.message] == []
+
+    def test_choiceless_share_ignores_endings_in_the_denominator(self) -> None:
+        """An ending can never be single-choice, so counting endings in the
+        denominator would hand a story a larger allowance purely for having
+        more endings, which is unrelated to its cadence."""
+        base: list[dict[str, object]] = [
+            {
+                "id": "k0",
+                "body": "Run up.",
+                "is_ending": False,
+                "choices": [{"id": "a", "label": "Read on.", "target": "d0"}],
+            },
+            {
+                "id": "d0",
+                "body": "Pick a path.",
+                "is_ending": False,
+                "choices": [
+                    {"id": "c0", "label": "One.", "target": "n_end"},
+                    {"id": "c1", "label": "Two.", "target": "n_end2"},
+                ],
+            },
+            _ending_node("n_end", "e_done"),
+        ]
+        two_endings = [*base, _ending_node("n_end2", "e_done2")]
+        many_endings = [
+            *base,
+            _ending_node("n_end2", "e_done2"),
+            _ending_node("n_end3", "e_done3"),
+            _ending_node("n_end4", "e_done4"),
+            _ending_node("n_end5", "e_done5"),
+        ]
+        few = check_choiceless_run_cap(_story("5-8", two_endings, "k0", ending_count=2))
+        lots = check_choiceless_run_cap(
+            _story("5-8", many_endings, "k0", ending_count=5)
+        )
+        assert [f.message for f in few.findings] == [f.message for f in lots.findings]
 
 
 class TestOptionsVarianceAllowance:
@@ -602,7 +738,7 @@ class TestRunGateForwardsTheFlag:
 # test that imports the module's own table cannot detect that table changing.
 _RUN_CAP_BY_BAND: tuple[tuple[str, int], ...] = (
     ("3-5", 3),
-    ("5-8", 2),
+    ("5-8", 3),  # raised from 2 on 2026-08-17 alongside the CG-1 share allowance
     ("8-11", 6),
     ("10-13", 6),
     ("13-16", 6),

@@ -112,8 +112,45 @@ _FILL_WORDS_RE = re.compile(r"\bwords=(\d+)")
 # is not a section 10 violation at all.
 # #VERIFY: UW-C10 tracks implementing the stop-level rule; until it lands,
 # CG-1's own message says "advisory only".
-_DISCRETE_RUN_CAP: dict[str, int] = {"3-5": 3, "5-8": 2}
+_DISCRETE_RUN_CAP: dict[str, int] = {"3-5": 3, "5-8": 3}
 _FLOWED_RUN_CAP = 6
+
+# Share of a story's non-ending nodes that may be single-choice, per band.
+# RULED 2026-08-17 (owner): every band gets an allowed portion of no-decision
+# nodes, so a scene that needs runway can take it.
+#
+# This is the faithful reading of ADR-011 section 10's cadence column, which
+# states an AVERAGE ("choice every 2nd-4th page" at 3-5, "every 1st-2nd" at
+# 5-8) rather than a local maximum. The run cap alone could not express an
+# average: it forbade a single four-page scene even in a story whose overall
+# cadence was well inside the research. The two rules now split that work, the
+# share carrying the average and the run cap remaining as a local backstop
+# against one endless corridor. The 5-8 run cap rises 2 to 3 in the same
+# change, because a cap that binds before the share makes the share dead
+# letter.
+#
+# Derivation, so these are not free parameters:
+#   3-5   section 10 allows up to 4 pages per choice, so 3 corridors in 4 nodes.
+#   5-8   section 10 allows up to 2 pages per choice, so 1 corridor in 2 nodes.
+#   8-11+ a node is not a page; nodes inside a stop are flowed and invisible
+#         (ADR-026), so the meaningful figure is how many nodes compose one
+#         stop: the top of the band's words-per-stop range over the low end of
+#         its per-node band gives 1.8 to 2.1 nodes, i.e. about one corridor per
+#         decision.
+#
+# #ASSUME: data-integrity: the share is measured over non-ending nodes, since
+# an ending can never be single-choice and would otherwise dilute the ratio in
+# proportion to how many endings a story happens to have.
+# #VERIFY: tests/unit/test_choice_grammar.py::
+# test_choiceless_share_ignores_endings_in_the_denominator
+_CHOICELESS_SHARE: dict[str, float] = {
+    "3-5": 0.75,
+    "5-8": 0.50,
+    "8-11": 0.50,
+    "10-13": 0.50,
+    "13-16": 0.50,
+    "16+": 0.50,
+}
 _FLOWED_BANDS: frozenset[str] = frozenset({"8-11", "10-13", "13-16", "16+"})
 
 # The global envelope every decision node sits inside regardless of band, and
@@ -314,6 +351,36 @@ def check_choiceless_run_cap(story: Storybook) -> ValidationReport:
                 ),
             )
         )
+
+    share_cap = _CHOICELESS_SHARE.get(band)
+    if share_cap is not None:
+        non_ending = [node for node in story.nodes if not node.is_ending]
+        choiceless = [node for node in non_ending if _is_single_choice(node)]
+        # A share is a statement about cadence, and cadence is undefined with
+        # nothing to pace against. A story with no decision at all is PL-17's
+        # subject (it floors decision count), not this rule's, so skip rather
+        # than report every such graph as 100 percent over its allowance.
+        if not any(_is_decision(node) for node in non_ending):
+            return report
+        allowed = int(len(non_ending) * share_cap)
+        if len(choiceless) > allowed:
+            report.add(
+                ValidationFinding(
+                    rule_id="CG-1",
+                    severity=Severity.WARNING,
+                    story_id=story.id,
+                    node_id=choiceless[allowed].id,
+                    message=(
+                        f"CG-1 grammar: {len(choiceless)} of {len(non_ending)} "
+                        f"non-ending nodes are single-choice, above band "
+                        f"'{band}'s {share_cap:.0%} allowance of {allowed} in "
+                        f"story '{story.id}'; the band's cadence is an average, "
+                        f"so a long scene is fine only if the story spends "
+                        f"decisions elsewhere (advisory only, new-content "
+                        "grammar per ADR-011 section 10)"
+                    ),
+                )
+            )
     return report
 
 
