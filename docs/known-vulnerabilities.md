@@ -390,10 +390,9 @@ to Medium, this entry is already in place.
 
 ### Why Not Fixed Yet
 
-Debian records no fixed version on the trixie track for any of these. Three of
-the perl-base CVEs carry Debian's `fix_deferred` status, which is not an absence
-of a decision but an explicit one: the security team has ruled the defect will
-not be fixed in the current stable release. The package is provided by the
+Debian records no fixed version on the trixie track for either CVE; both are
+recorded `affected`, not `fix_deferred`, so Debian has neither shipped a fix nor
+ruled one out. The package is provided by the
 hardened base image (`ghcr.io/byronwilliamscpa/dhi-python:3.14-debian13`), not
 by this project's dependency set, and the DHI runtime image ships no shell and
 no package manager, so it cannot upgrade itself even once a fix exists upstream.
@@ -464,10 +463,9 @@ attacker-influenced `TERM` or `TERMINFO`.
 
 ### Why Not Fixed Yet
 
-Debian records no fixed version on the trixie track for any of these. Three of
-the perl-base CVEs carry Debian's `fix_deferred` status, which is not an absence
-of a decision but an explicit one: the security team has ruled the defect will
-not be fixed in the current stable release. The package is provided by the
+Debian records no fixed version on the trixie track for this CVE, which is
+recorded `affected`, not `fix_deferred`, so Debian has neither shipped a fix nor
+ruled one out. The package is provided by the
 hardened base image (`ghcr.io/byronwilliamscpa/dhi-python:3.14-debian13`), not
 by this project's dependency set, and the DHI runtime image ships no shell and
 no package manager, so it cannot upgrade itself even once a fix exists upstream.
