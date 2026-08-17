@@ -44,30 +44,29 @@ _REPO_ROOT = Path(__file__).resolve().parents[2]
 # The 3 manifest entries documented (draft-stories-manifest.md) as carrying
 # the older metadata shape; used to prove the normalization recipe against
 # the real files, not a synthetic stand-in.
-_LEGACY_TITLES = (
-    "The Lost Mitten",
-    "The Clocktower Cipher",
-    "The Sunken Signal",
+# The three legacy-shape files are deliberately NOT in CATALOG_ENTRIES: they are
+# filled from the repo's only `production_eligible: false` skeletons (ADR-011
+# MVP/Test tier), so PL-28 refuses them as child-facing books and they were
+# removed from the manifest enumeration on 2026-08-17. They remain on disk as the
+# normalization fixtures, so the recipe is still covered here; they are named as
+# ad-hoc entries rather than looked up (`AL-441`).
+_LEGACY_ENTRIES: tuple[CatalogEntry, ...] = (
+    CatalogEntry(
+        "The Lost Mitten", "out/the-lost-mitten.filled.json", "3-5", "the-lost-mitten"
+    ),
+    CatalogEntry(
+        "The Clocktower Cipher",
+        "out/the-clocktower-cipher.filled.json",
+        "10-13",
+        "the-clocktower-cipher",
+    ),
+    CatalogEntry(
+        "The Sunken Signal",
+        "out/the-sunken-signal.filled.json",
+        "16+",
+        "the-sunken-signal",
+    ),
 )
-
-
-def _entry(title: str) -> CatalogEntry:
-    """Return the CATALOG_ENTRIES row with the given title, or raise.
-
-    Args:
-        title: The entry's ``title`` field.
-
-    Returns:
-        The matching CatalogEntry.
-
-    Raises:
-        AssertionError: If no entry has this title (a manifest/test drift).
-    """
-    for entry in CATALOG_ENTRIES:
-        if entry.title == title:
-            return entry
-    msg = f"no CATALOG_ENTRIES row titled {title!r}"
-    raise AssertionError(msg)
 
 
 def _minimal_current_blob() -> dict[str, object]:
@@ -452,12 +451,11 @@ class TestRealLegacyFilesNormalizeCleanly:
     are small (11-32 nodes), so running the real validator gate here stays fast.
     """
 
-    @pytest.mark.parametrize("title", _LEGACY_TITLES)
+    @pytest.mark.parametrize("entry", _LEGACY_ENTRIES, ids=lambda e: e.title)
     def test_normalized_blob_passes_the_validation_gate(
-        self, title: str, monkeypatch: pytest.MonkeyPatch
+        self, entry: CatalogEntry, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         monkeypatch.chdir(_REPO_ROOT)
-        entry = _entry(title)
         blob = _to_legacy_shape(_load_blob(_REPO_ROOT, entry.path))
         assert _needs_legacy_normalization(blob) is True
 
@@ -467,17 +465,16 @@ class TestRealLegacyFilesNormalizeCleanly:
         result = run_gate(normalized)
         assert result.blocked is False, [f.message for f in result.report.errors]
 
-    @pytest.mark.parametrize("title", _LEGACY_TITLES)
+    @pytest.mark.parametrize("entry", _LEGACY_ENTRIES, ids=lambda e: e.title)
     def test_committed_file_needs_no_normalization(
-        self, title: str, monkeypatch: pytest.MonkeyPatch
+        self, entry: CatalogEntry, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         """The committed files are v2, so the import path must leave them alone.
 
         The other half of the migration: if a file regressed to the legacy shape, or a
-        new legacy fill were committed under one of these entries, this fails.
+        new legacy fill were committed under one of these files, this fails.
         """
         monkeypatch.chdir(_REPO_ROOT)
-        entry = _entry(title)
         blob = _load_blob(_REPO_ROOT, entry.path)
         assert _needs_legacy_normalization(blob) is False
         assert run_gate(blob).blocked is False
@@ -661,8 +658,13 @@ class TestCatalogEntriesManifestIntegrity:
             ids.append(effective_id)
         assert len(ids) == len(set(ids)), "duplicate effective story ids"
 
-    def test_has_exactly_twenty_five_entries(self) -> None:
-        assert len(CATALOG_ENTRIES) == 25
+    def test_has_exactly_twenty_two_entries(self) -> None:
+        """20 production stories plus the 2 pilot re-theme variants.
+
+        Was 25 until 2026-08-17, when the three MVP/Test-tier rows were removed;
+        see the note on ``CATALOG_ENTRIES`` (`AL-441`).
+        """
+        assert len(CATALOG_ENTRIES) == 22
 
     def test_pilot_entries_share_the_cave_of_echoes_skeleton(self) -> None:
         pilot_entries = [e for e in CATALOG_ENTRIES if e.id_suffix is not None]
@@ -918,3 +920,25 @@ class TestImportOneTransientErrorHandling:
         assert outcome.outcome == "error"
         assert outcome.story_id == "sk_unit_test"
         assert "pool exhausted" in outcome.detail
+
+
+@pytest.mark.unit
+def test_no_catalog_entry_declares_itself_non_production() -> None:
+    """Every manifest row must be production content, checked against the file.
+
+    PL-28 is the gate rule and fires at import time; this is the cheap structural
+    check that stops a non-production story being LISTED as catalog content in the
+    first place, which is where the three MVP seeds got in. Reads the filled file
+    rather than trusting the manifest prose (`AL-441`).
+    """
+    offenders: list[str] = []
+    for entry in CATALOG_ENTRIES:
+        blob = json.loads((_REPO_ROOT / entry.path).read_text(encoding="utf-8"))
+        metadata = blob.get("metadata") or {}
+        if metadata.get("production_eligible") is False:
+            offenders.append(f"{entry.title} ({entry.path})")
+
+    assert CATALOG_ENTRIES, "the manifest is empty; the enumeration is wrong"
+    assert offenders == [], (
+        f"catalog rows declaring production_eligible=false: {offenders}"
+    )
