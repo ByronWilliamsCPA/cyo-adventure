@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.82.0] - 2026-08-17
+
+### Features
+
+- **generation**: Make every production skeleton fillable, and close two gate gaps that let
+  unfillable books through ([#727](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/727),
+  [`a26718b`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/a26718bb831e8171f2153c4bebdc20d5f70a8417))
+
+
 ## [0.81.1] - 2026-08-17
 
 ### Bug Fixes
@@ -3487,6 +3496,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.82.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.81.1...v0.82.0
 [0.81.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.81.0...v0.81.1
 [0.81.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.80.1...v0.81.0
 [0.80.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.80.0...v0.80.1
