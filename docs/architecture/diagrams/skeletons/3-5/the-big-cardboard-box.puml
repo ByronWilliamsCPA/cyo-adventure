@@ -1,0 +1,186 @@
+@startuml the-big-cardboard-box
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_doorstep
+state n_doorstep #BBDEFB
+n_doorstep : setup · 42w
+state n_tip_out #BBDEFB
+n_tip_out : setup · 40w
+state n_two_ways #FFF9C4
+n_two_ways : choice · 46w
+state n_on_side #D1C4E9
+n_on_side : rising · 40w
+state n_door_or_in #FFF9C4
+n_door_or_in : choice · 44w
+state n_flap_cut #FFF9C4
+n_flap_cut : choice · 44w
+state n_knocker #FFF9C4
+n_knocker : choice · 42w
+state n_end_knock_knock #E0E0E0
+n_end_knock_knock : discovery (neutral)
+n_end_knock_knock : "Knock Knock"
+state n_end_cat_den #E0E0E0
+n_end_cat_den : setback (neutral)
+n_end_cat_den : "The Cat Moves In"
+state n_letter_slot #D1C4E9
+n_letter_slot : rising · 38w
+state n_post #FFF9C4
+n_post : choice · 42w
+state n_end_secret_post #C8E6C9
+n_end_secret_post : discovery (positive)
+n_end_secret_post : "The Post Office"
+state n_end_leaf_letters #E0E0E0
+n_end_leaf_letters : discovery (neutral)
+n_end_leaf_letters : "Leaf Letters"
+state n_crawl_in #FFF9C4
+n_crawl_in : choice · 44w
+state n_torch #FFF9C4
+n_torch : choice · 44w
+state n_end_star_roof #C8E6C9
+n_end_star_roof : completion (positive)
+n_end_star_roof : "A Sky of Little Holes"
+state n_blanket #D1C4E9
+n_blanket : rising · 38w
+state n_snug #FFF9C4
+n_snug : choice · 42w
+state n_end_story_den #E0E0E0
+n_end_story_den : discovery (neutral)
+n_end_story_den : "Story Through the Doorway"
+state n_end_box_nap #C8E6C9
+n_end_box_nap : success (positive)
+n_end_box_nap : "Asleep in the Box"
+state n_window #D1C4E9
+n_window : rising · 38w
+state n_window_view #FFF9C4
+n_window_view : choice · 42w
+state n_end_bus_window #E0E0E0
+n_end_bus_window : discovery (neutral)
+n_end_bus_window : "Three Red Buses"
+state n_end_wave_home #E0E0E0
+n_end_wave_home : discovery (neutral)
+n_end_wave_home : "The Waving Rule"
+state n_stand_up #FFF9C4
+n_stand_up : choice · 46w
+state n_end_flat_puddle #E0E0E0
+n_end_flat_puddle : setback (neutral)
+n_end_flat_puddle : "A Cardboard Puddle"
+state n_draw_first #D1C4E9
+n_draw_first : rising · 40w
+state n_what_tower #FFF9C4
+n_what_tower : choice · 44w
+state n_rocket #FFF9C4
+n_rocket : choice · 44w
+state n_end_countdown #C8E6C9
+n_end_countdown : completion (positive)
+n_end_countdown : "Liftoff on the Carpet"
+state n_porthole #D1C4E9
+n_porthole : rising · 38w
+state n_out_the_window #FFF9C4
+n_out_the_window : choice · 42w
+state n_end_moon_garden #E0E0E0
+n_end_moon_garden : discovery (neutral)
+n_end_moon_garden : "The Afternoon Moon"
+state n_end_helmet #C8E6C9
+n_end_helmet : discovery (positive)
+n_end_helmet : "The Astronaut in the Mirror"
+state n_lift #FFF9C4
+n_lift : choice · 44w
+state n_top_floor #D1C4E9
+n_top_floor : rising · 38w
+state n_ping #FFF9C4
+n_ping : choice · 42w
+state n_end_roof_garden #C8E6C9
+n_end_roof_garden : success (positive)
+n_end_roof_garden : "The Garden on the Roof"
+state n_end_lift_music #E0E0E0
+n_end_lift_music : discovery (neutral)
+n_end_lift_music : "Lift Music Forever"
+state n_basement #FFF9C4
+n_basement : choice · 44w
+state n_end_cellar_giggle #E0E0E0
+n_end_cellar_giggle : setback (neutral)
+n_end_cellar_giggle : "The Floor With Nothing On It"
+state n_deeper #FFF9C4
+n_deeper : choice · 42w
+state n_end_dinosaur_floor #E0E0E0
+n_end_dinosaur_floor : discovery (neutral)
+n_end_dinosaur_floor : "The Floor With Footsteps"
+state n_end_paper_sea #E0E0E0
+n_end_paper_sea : setback (neutral)
+n_end_paper_sea : "The Paper Sea"
+n_doorstep --> n_tip_out : Peek inside the box.
+n_tip_out --> n_two_ways : Decide what the box will be.
+n_two_ways --> n_on_side : Tip the box on its side.
+n_two_ways --> n_stand_up : Stand the box up tall.
+n_on_side --> n_door_or_in : Look for a way in.
+n_door_or_in --> n_flap_cut : Cut a doorway flap.
+n_door_or_in --> n_crawl_in : Crawl straight in.
+n_flap_cut --> n_knocker : Draw a big knocker.
+n_flap_cut --> n_letter_slot : Cut a letter slot.
+n_knocker --> n_end_knock_knock : Let the grown up knock.
+n_knocker --> n_end_cat_den : See what the cat does.
+n_letter_slot --> n_post : Wait for the post.
+n_post --> n_end_secret_post : Post a folded drawing.
+n_post --> n_end_leaf_letters : Post the red leaves.
+n_crawl_in --> n_torch : Fetch the torch.
+n_crawl_in --> n_window : Cut a little window.
+n_torch --> n_end_star_roof : Poke stars in the roof.
+n_torch --> n_blanket : Fetch the blanket.
+n_blanket --> n_snug : Settle down inside.
+n_snug --> n_end_story_den : Ask for a story.
+n_snug --> n_end_box_nap : Have a little lie down.
+n_window --> n_window_view : Look out of the window.
+n_window_view --> n_end_bus_window : Watch the bus stop.
+n_window_view --> n_end_wave_home : Watch the kitchen door.
+n_stand_up --> n_end_flat_puddle : Climb straight in.
+n_stand_up --> n_draw_first : Draw on it first.
+n_draw_first --> n_what_tower : Decide what machine it is.
+n_what_tower --> n_rocket : Make it a rocket.
+n_what_tower --> n_lift : Make it a lift.
+n_rocket --> n_end_countdown : Count down from ten.
+n_rocket --> n_porthole : Cut a round porthole.
+n_porthole --> n_out_the_window : Look through the porthole.
+n_out_the_window --> n_end_moon_garden : Point it at the moon.
+n_out_the_window --> n_end_helmet : Point it at the mirror.
+n_lift --> n_top_floor : Press the top button.
+n_lift --> n_basement : Press the bottom button.
+n_top_floor --> n_ping : Open the doors.
+n_ping --> n_end_roof_garden : Step out on the roof.
+n_ping --> n_end_lift_music : Ride a bit longer.
+n_basement --> n_end_cellar_giggle : Stop at the basement.
+n_basement --> n_deeper : Press the button with no number.
+n_deeper --> n_end_dinosaur_floor : Say it has feet.
+n_deeper --> n_end_paper_sea : Say it has fins.
+n_end_knock_knock --> [*]
+n_end_cat_den --> [*]
+n_end_secret_post --> [*]
+n_end_leaf_letters --> [*]
+n_end_star_roof --> [*]
+n_end_story_den --> [*]
+n_end_box_nap --> [*]
+n_end_bus_window --> [*]
+n_end_wave_home --> [*]
+n_end_flat_puddle --> [*]
+n_end_countdown --> [*]
+n_end_moon_garden --> [*]
+n_end_helmet --> [*]
+n_end_roof_garden --> [*]
+n_end_lift_music --> [*]
+n_end_cellar_giggle --> [*]
+n_end_dinosaur_floor --> [*]
+n_end_paper_sea --> [*]
+
+legend right
+  The Big Cardboard Box
+  Band 3-5 · Tier 1 · ~3 min
+  Topology: time_cave
+  44 nodes · 18 endings (6+ / 12n / 0-)
+  Production-eligible
+  Scale: medium · prose
+endlegend
+@enduml
