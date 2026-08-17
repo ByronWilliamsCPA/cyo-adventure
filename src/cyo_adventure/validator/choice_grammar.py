@@ -116,7 +116,24 @@ _DISCRETE_RUN_CAP: dict[str, int] = {"3-5": 3, "5-8": 2}
 _FLOWED_RUN_CAP = 6
 _FLOWED_BANDS: frozenset[str] = frozenset({"8-11", "10-13", "13-16", "16+"})
 
-# Options-per-choice bounds (inclusive), ADR-011 section 10 "Options per
+# The global envelope every decision node sits inside regardless of band, and
+# the share of a story's decision nodes that may sit one step outside their
+# band's target. RULED 2026-08-17 (owner): the per-band rows below became
+# targets rather than hard bounds, because three of the six bands pinned the fan
+# to a single value, which left an author no way to vary rhythm and, combined
+# with the walk and arc floors, made the no-reconvergence topologies unbuildable
+# above 3-5 (`AL-442`, `UW-C272`).
+#
+# The allowance is deliberately expressed against the band's whole target range
+# rather than a single number, so a band that already carries a range (5-8 at
+# [2, 3], the teen bands at [3, 4]) keeps it and gains one step either side.
+# Every skeleton passing --strict when this landed used zero variance, so the
+# change cannot retroactively invalidate committed work.
+_OPTIONS_HARD_FLOOR = 2
+_OPTIONS_HARD_CEILING = 4
+_OPTIONS_VARIANCE_SHARE = 0.20
+
+# Options-per-choice targets (inclusive), ADR-011 section 10 "Options per
 # choice" column.
 _OPTIONS_BOUNDS: dict[str, tuple[int, int]] = {
     "3-5": (2, 2),
@@ -303,12 +320,28 @@ def check_choiceless_run_cap(story: Storybook) -> ValidationReport:
 def check_options_per_choice(story: Storybook) -> ValidationReport:
     """CG-2: bound how many choices a decision node offers, per band.
 
+    Three tiers, ruled 2026-08-17 (owner). A band's ``_OPTIONS_BOUNDS`` entry is
+    its *target* set, and a node inside it always conforms. Beyond that:
+
+    - **One step outside the target, within the global [2, 4] envelope**: a
+      permitted variant, capped at :data:`_OPTIONS_VARIANCE_SHARE` of the
+      story's decision nodes. This is the flexibility the rule exists to give:
+      pinning a band to a single fan (3-5, 8-11 and 10-13 are all exact) left an
+      author no way to vary rhythm, and made the reconverging topologies the
+      only buildable ones above 3-5.
+    - **Outside the global envelope**, fewer than 2 or more than 4: always a
+      finding, at any share. A two-way fan is the least a decision can be and a
+      five-way fan is past what any band's reader is asked to hold.
+    - **Two or more steps from the target** while still inside [2, 4]: a
+      finding, because the variance allowance is for a step of rhythm, not for
+      a different grammar.
+
     Args:
         story: The parsed Storybook to check.
 
     Returns:
-        ValidationReport: WARNING findings, one per out-of-bounds decision
-            node.
+        ValidationReport: WARNING findings, one per offending decision node,
+            plus one summary finding when permitted variants exceed their share.
     """
     report = ValidationReport()
     band = story.metadata.age_band.value
@@ -316,11 +349,16 @@ def check_options_per_choice(story: Storybook) -> ValidationReport:
     if bounds is None:
         return report
     lo, hi = bounds
-    for node in story.nodes:
-        if not _is_decision(node):
-            continue
+    decisions = [node for node in story.nodes if _is_decision(node)]
+    variants: list[str] = []
+    for node in decisions:
         count = len(node.choices)
         if lo <= count <= hi:
+            continue
+        one_step = count in {lo - 1, hi + 1}
+        in_envelope = _OPTIONS_HARD_FLOOR <= count <= _OPTIONS_HARD_CEILING
+        if one_step and in_envelope:
+            variants.append(node.id)
             continue
         report.add(
             ValidationFinding(
@@ -330,9 +368,36 @@ def check_options_per_choice(story: Storybook) -> ValidationReport:
                 node_id=node.id,
                 message=(
                     f"CG-2 grammar: node '{node.id}' offers {count} choices, "
-                    f"outside band '{band}' bounds [{lo}, {hi}] in story "
+                    f"outside band '{band}' target [{lo}, {hi}] by more than one "
+                    f"step or outside the global envelope "
+                    f"[{_OPTIONS_HARD_FLOOR}, {_OPTIONS_HARD_CEILING}] in story "
                     f"'{story.id}' (advisory only, new-content grammar per "
                     "ADR-011 section 10)"
+                ),
+            )
+        )
+
+    # #ASSUME: data-integrity: the share is measured against decision nodes
+    # only, not all nodes, because a story's single-choice corridors are CG-1's
+    # subject and would otherwise dilute the allowance into meaninglessness (a
+    # corridor-heavy story could carry far more odd fans than a branchy one).
+    # #VERIFY: tests/unit/test_choice_grammar.py::
+    # test_variance_share_is_measured_against_decision_nodes_not_all_nodes
+    allowance = int(len(decisions) * _OPTIONS_VARIANCE_SHARE)
+    if len(variants) > allowance:
+        report.add(
+            ValidationFinding(
+                rule_id="CG-2",
+                severity=Severity.WARNING,
+                story_id=story.id,
+                node_id=variants[allowance],
+                message=(
+                    f"CG-2 grammar: {len(variants)} of {len(decisions)} decision "
+                    f"nodes vary from band '{band}' target [{lo}, {hi}], above the "
+                    f"{_OPTIONS_VARIANCE_SHARE:.0%} allowance of {allowance} in "
+                    f"story '{story.id}'; varying nodes: "
+                    f"{', '.join(sorted(variants))} (advisory only, new-content "
+                    "grammar per ADR-011 section 10)"
                 ),
             )
         )

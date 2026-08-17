@@ -182,6 +182,112 @@ def _decision_story(band: str, option_count: int) -> Storybook:
     return _story(band, nodes, "n0")
 
 
+def _mixed_fan_story(band: str, fans: list[int], corridors: int = 0) -> Storybook:
+    """Build a story whose decision nodes offer the given per-node fan counts.
+
+    Args:
+        band: The age band to declare.
+        fans: One entry per decision node, giving how many choices it offers.
+        corridors: How many single-choice nodes to prepend, which are NOT
+            decision nodes and so must not dilute the CG-2 variance share.
+
+    Returns:
+        Storybook: A story with ``len(fans)`` decision nodes and ``corridors``
+            single-choice nodes, every choice landing on one shared ending.
+    """
+    nodes: list[dict[str, object]] = []
+    first_decision = f"d{0}"
+    for index in range(corridors):
+        nxt = f"k{index + 1}" if index + 1 < corridors else first_decision
+        nodes.append(
+            {
+                "id": f"k{index}",
+                "body": "Walk on.",
+                "is_ending": False,
+                "choices": [{"id": f"ck{index}", "label": "Go on.", "target": nxt}],
+            }
+        )
+    for index, fan in enumerate(fans):
+        nodes.append(
+            {
+                "id": f"d{index}",
+                "body": "Pick a path.",
+                "is_ending": False,
+                "choices": [
+                    {"id": f"c{index}_{j}", "label": f"Option {j}.", "target": "n_end"}
+                    for j in range(fan)
+                ],
+            }
+        )
+    nodes.append(_ending_node("n_end", "e_done"))
+    return _story(band, nodes, "k0" if corridors else first_decision)
+
+
+class TestOptionsVarianceAllowance:
+    """CG-2's 2026-08-17 tiers: a band target, a one-step allowance capped at
+    20 percent of decision nodes, and a hard [2, 4] envelope."""
+
+    def test_one_step_variance_inside_the_allowance_is_silent(self) -> None:
+        # 10 decision nodes at 8-11 (target exactly 3); two may vary by one.
+        report = check_options_per_choice(
+            _mixed_fan_story("8-11", [3] * 8 + [2, 4])
+        )
+        assert [f for f in report.findings if f.rule_id == "CG-2"] == []
+
+    def test_variance_above_the_allowance_fires_once(self) -> None:
+        # 3 of 10 vary, against an allowance of 2.
+        report = check_options_per_choice(
+            _mixed_fan_story("8-11", [3] * 7 + [2, 2, 4])
+        )
+        cg2 = [f for f in report.findings if f.rule_id == "CG-2"]
+        assert len(cg2) == 1
+        assert "above the 20% allowance of 2" in cg2[0].message
+
+    @pytest.mark.parametrize("fan", [5, 7])
+    def test_over_the_global_ceiling_fires_at_any_share(self, fan: int) -> None:
+        """A fan over 4 is never a permitted variant, even as a lone node.
+
+        Only the ceiling is testable here. The envelope's floor of 2 is already
+        structural rather than enforced: :func:`_is_decision` requires two or
+        more choices, so a one-choice node is CG-1's subject (a choiceless
+        corridor) and never reaches CG-2 at all.
+        """
+        report = check_options_per_choice(
+            _mixed_fan_story("13-16", [3] * 19 + [fan])
+        )
+        cg2 = [f for f in report.findings if f.rule_id == "CG-2"]
+        assert len(cg2) == 1
+        assert "outside the global envelope" in cg2[0].message
+
+    def test_two_steps_from_the_target_is_not_a_permitted_variant(self) -> None:
+        """3-5 targets exactly 2, so a 4-way fan is two steps out and blocks
+        even though 4 is inside the global envelope."""
+        report = check_options_per_choice(_mixed_fan_story("3-5", [2] * 19 + [4]))
+        cg2 = [f for f in report.findings if f.rule_id == "CG-2"]
+        assert len(cg2) == 1
+        assert "by more than one step" in cg2[0].message
+
+    def test_variance_share_is_measured_against_decision_nodes_not_all_nodes(
+        self,
+    ) -> None:
+        """The allowance counts decision nodes only.
+
+        A story padded with single-choice corridors has the same number of
+        decisions, so it must get the same allowance; counting all nodes would
+        let a corridor-heavy story carry more odd fans than a branchy one for
+        no reason a reader would recognise.
+        """
+        fans = [3] * 7 + [2, 2, 4]  # 3 of 10 vary, one over the allowance of 2
+        bare = check_options_per_choice(_mixed_fan_story("8-11", fans))
+        padded = check_options_per_choice(
+            _mixed_fan_story("8-11", fans, corridors=40)
+        )
+        bare_cg2 = [f for f in bare.findings if f.rule_id == "CG-2"]
+        padded_cg2 = [f for f in padded.findings if f.rule_id == "CG-2"]
+        assert len(bare_cg2) == 1
+        assert [f.message for f in padded_cg2] == [f.message for f in bare_cg2]
+
+
 class TestOptionsPerChoice:
     def test_3_5_two_options_is_silent(self) -> None:
         report = check_options_per_choice(_decision_story("3-5", 2))
