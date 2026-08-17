@@ -714,6 +714,60 @@ def test_skeleton_context_tolerates_retained_directive() -> None:
     assert not any(f.rule_id == "PL-27" for f in result.report.findings)
 
 
+def _mvp_seed_story() -> dict[str, object]:
+    """A fully written story that declares itself an ADR-011 MVP/Test seed.
+
+    Deliberately built from a story whose bodies are real prose, so the only
+    thing separating it from a publishable book is the flag: if PL-28 were
+    absent this document would validate clean and import.
+    """
+    story = _load(_VALID / "01_hello_world.json")
+    metadata = story["metadata"]
+    assert isinstance(metadata, dict)
+    metadata["production_eligible"] = False
+    return story
+
+
+@pytest.mark.unit
+def test_fill_result_context_blocks_an_mvp_seed() -> None:
+    """A prototyping shell must not become a child-facing book.
+
+    ADR-011 requires the MVP tier be firewalled from production and says the
+    selection layer has to enforce it. It does, for generation. The manual
+    `cyo-author` plus `import_cli` path had no guard at all, so all three seeds
+    the ADR names by slug already had filled books in the corpus.
+    """
+    result = run_gate(_mvp_seed_story(), context="fill_result")
+
+    assert result.blocked
+    assert any(f.rule_id == "PL-28" for f in result.report.errors)
+
+
+@pytest.mark.unit
+def test_skeleton_context_tolerates_an_mvp_seed() -> None:
+    """At catalog time a seed is a legitimate object, not a defect.
+
+    `check_skeleton.py --allow-mvp` exists to inspect these, and the mutation
+    core reads them. PL-28 firing under the skeleton posture would break the
+    prototyping tier the ADR deliberately created.
+    """
+    result = run_gate(_mvp_seed_story())
+
+    assert not any(f.rule_id == "PL-28" for f in result.report.findings)
+
+
+@pytest.mark.unit
+def test_a_production_story_is_untouched_by_the_mvp_firewall() -> None:
+    """The firewall must key off the flag alone and nothing else.
+
+    Every real book in the corpus is production-eligible; a rule that fired on
+    any of them would block the whole beta rather than the three seeds.
+    """
+    result = run_gate(_load(_VALID / "01_hello_world.json"), context="fill_result")
+
+    assert not any(f.rule_id == "PL-28" for f in result.report.findings)
+
+
 @pytest.mark.unit
 def test_gate_result_records_the_context_it_ran_under() -> None:
     """A verdict names the posture that produced it (AL-324).
@@ -724,3 +778,32 @@ def test_gate_result_records_the_context_it_ran_under() -> None:
     """
     assert run_gate(_unfilled_story()).context == "skeleton"
     assert run_gate(_unfilled_story(), context="fill_result").context == "fill_result"
+
+
+@pytest.mark.unit
+def test_fill_result_context_blocks_a_directive_in_a_choice_label() -> None:
+    """PL-27's floor covers labels, not just bodies.
+
+    A choice label is fillable prose and reader-visible button text, but it was
+    the one piece of it no deterministic rule checked, so a document with written
+    bodies and an unwritten label cleared this gate unblocked (`AL-430`). Guarded
+    at the merge as well; this is the check that holds regardless of which fill
+    path wrote the document.
+    """
+    story = _load(_VALID / "01_hello_world.json")
+    nodes = story["nodes"]
+    assert isinstance(nodes, list)
+    node = next(n for n in nodes if isinstance(n, dict) and n.get("choices"))
+    choices = node["choices"]
+    assert isinstance(choices, list)
+    first = choices[0]
+    assert isinstance(first, dict)
+    first["label"] = "<<FILL role=choice words=8>>"
+
+    result = run_gate(story, context="fill_result")
+
+    assert result.blocked
+    assert any(
+        f.rule_id == "PL-27" and "label still holds" in f.message
+        for f in result.report.errors
+    )

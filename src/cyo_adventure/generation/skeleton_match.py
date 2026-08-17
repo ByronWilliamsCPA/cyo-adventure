@@ -20,7 +20,12 @@ from sqlalchemy import select
 from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.db.models import Storybook, StorybookVersion
 from cyo_adventure.diversity.normalize import containment, similarity_signature
-from cyo_adventure.generation.skeleton import is_sidecar
+from cyo_adventure.generation.skeleton import (
+    MAX_FILL_OUTPUT_TOKENS,
+    expected_output_tokens,
+    is_fill_feasible,
+    is_sidecar,
+)
 from cyo_adventure.storybook.models import StoryMetadata
 from cyo_adventure.utils.logging import get_logger
 
@@ -30,6 +35,23 @@ if TYPE_CHECKING:
     from collections.abc import Mapping, Sequence
 
     from sqlalchemy.ext.asyncio import AsyncSession
+
+# The cap this screen runs against: the model-independent DEFAULT, imported
+# from generation/skeleton.py rather than restated so the default cannot drift
+# between the two files.
+#
+# It is deliberately NOT the cap `fill_skeleton` resolves. That call clamps to
+# the configured model's own ceiling (`resolve_output_cap(active_fill_model())`,
+# 32,768 on `deepseek/deepseek-chat-v3.1`), so screening against it would make
+# the catalog a child can be offered depend on which backend happens to be
+# configured, and swapping models would silently change the library rather than
+# the plumbing. Selection is therefore a claim about the skeleton, not about the
+# backend; the per-model shortfall is absorbed downstream by the chunked fill
+# (`generation/chunking.py`), which fills a batch at a time under whatever cap
+# the backend actually offers. An earlier version of this comment claimed the
+# sharing meant the two sites "can never disagree about the budget", which
+# stopped being true the moment the clamp landed (`AL-425`).
+_FILL_MAX_TOKENS: Final[int] = MAX_FILL_OUTPUT_TOKENS
 
 logger = get_logger(__name__)
 
@@ -96,7 +118,7 @@ def _load_metadata(path: Path) -> StoryMetadata | None:
     try:
         raw = path.read_text(encoding="utf-8")
         data = cast("dict[str, object]", json.loads(raw))
-    except (OSError, json.JSONDecodeError) as exc:
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
         logger.warning("skeleton.unreadable", path=str(path), error=str(exc))
         return None
     meta = data.get("metadata") if isinstance(data, dict) else None
@@ -108,6 +130,67 @@ def _load_metadata(path: Path) -> StoryMetadata | None:
     except PydanticValidationError as exc:
         logger.warning("skeleton.schema_invalid", path=str(path), error=str(exc))
         return None
+
+
+def _read_story(path: Path) -> dict[str, object] | None:
+    """Return the decoded skeleton document, or None when it cannot be read.
+
+    Args:
+        path: Path to a skeleton JSON file.
+
+    Returns:
+        dict[str, object] | None: The decoded document, or None on failure.
+    """
+    # #EDGE: data-integrity: `read_text` raises UnicodeDecodeError on a file that
+    # is not valid UTF-8, and that is a ValueError, not an OSError and not a
+    # JSONDecodeError, so it escaped this handler and crashed the scan the same
+    # way a corrupt file was supposed not to. Reachable from any mangled commit
+    # or partial write under `skeletons/`, and this runs synchronously inside
+    # POST /authoring-plan (`AL-438`).
+    # #VERIFY: test_skeleton_match.py::
+    # test_a_skeleton_that_is_not_valid_utf8_is_skipped_not_raised.
+    try:
+        return cast("dict[str, object]", json.loads(path.read_text(encoding="utf-8")))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+        return None
+
+
+def _expected_tokens(path: Path) -> int:
+    """Return the expected fill output size for a skeleton file.
+
+    Args:
+        path: Path to a skeleton JSON file.
+
+    Returns:
+        int: Expected completion tokens, or 0 when the file cannot be read.
+    """
+    story = _read_story(path)
+    return 0 if story is None else expected_output_tokens(story)
+
+
+def _is_feasible(path: Path) -> bool:
+    """Return whether a skeleton's fill fits the model-independent DEFAULT cap.
+
+    Deliberately not the cap `fill_skeleton` resolves. That call clamps to the
+    serving model's own ceiling, so screening against it would make the catalog a
+    child can be offered depend on which backend happens to be configured. See
+    `_FILL_MAX_TOKENS` for the full rationale; the per-model shortfall is absorbed
+    downstream by the chunked fill, not by narrowing selection.
+
+    An unreadable file is treated as feasible so this predicate cannot become a
+    second, silent reason a skeleton disappears; `_load_metadata` already logs
+    and drops that case.
+
+    Args:
+        path: Path to a skeleton JSON file.
+
+    Returns:
+        bool: True when the fill is expected to fit under the cap.
+    """
+    story = _read_story(path)
+    if story is None:
+        return True
+    return is_fill_feasible(story, max_tokens=_FILL_MAX_TOKENS)
 
 
 def _production_candidates(band: str) -> list[tuple[str, StoryMetadata]]:
@@ -139,6 +222,53 @@ def _production_candidates(band: str) -> list[tuple[str, StoryMetadata]]:
             continue
         metadata = _load_metadata(path)
         if metadata is None or not metadata.production_eligible:
+            continue
+        # ADR-011 D11: a retired skeleton is superseded, not defective. It stays
+        # in the catalog (as a mutation parent, as provenance for the books
+        # already filled from it, and as history) and simply stops being drawn
+        # for new stories. Books already published from it are untouched.
+        # #VERIFY: test_skeleton_match.py::
+        # test_a_deprecated_skeleton_is_not_a_candidate.
+        if metadata.deprecated:
+            continue
+        # #CRITICAL: payment: a skeleton that fits NO backend must not be
+        # selectable. This screens against the model-independent default, so it
+        # refuses only what is unfillable in principle; a skeleton that merely
+        # exceeds the serving model's ceiling is chunked instead of excluded.
+        # Without the screen an over-cap skeleton does not degrade, it
+        # truncates, parses as nothing, and burns the whole repair budget
+        # (roughly four rounds of ~100k input tokens) before failing
+        # deterministically on every retry, forever.
+        # Screening here costs a file read and no provider call, which is the
+        # trade: `_load_metadata` has already read this path, and the
+        # infeasible branch reads it again to report the size, so an excluded
+        # skeleton costs three reads rather than one. Cheap against a provider
+        # call, but do not describe it as free. UW-C07 / AL-046.
+        # #VERIFY: test_skeleton_match.py::
+        # test_an_over_cap_skeleton_is_not_a_candidate.
+        if not _is_feasible(path):
+            # A skeleton no backend can emit must not be offered. `fill_skeleton`
+            # does chunk now, but only against the RESOLVED (per-model) cap;
+            # `_is_feasible` screens against the model-independent DEFAULT cap,
+            # so reaching here means the skeleton is over-cap for every backend,
+            # where chunking cannot save it: the completion truncates, parses as
+            # nothing, and burns the whole repair budget before failing
+            # deterministically on every retry, forever. See `is_fill_feasible`
+            # on why the two callers must keep asking at different caps.
+            #
+            # This was observe-only from 2026-08-16 until the cap was raised the
+            # same day, because at 32,000 it would have excluded 36 of 59
+            # skeletons and emptied the 13-16 and 16+ bands. At 131,072 it
+            # excludes nothing in the current catalog, so it is a safety net for
+            # future skeletons rather than a live filter. UW-C07 / AL-046.
+            # #VERIFY: test_skeleton_match.py::
+            # test_an_over_cap_skeleton_is_not_a_candidate.
+            logger.warning(
+                "skeleton.fill_infeasible",
+                path=str(path),
+                expected_output_tokens=_expected_tokens(path),
+                max_tokens=_FILL_MAX_TOKENS,
+            )
             continue
         candidates.append((path.stem, metadata))
     return candidates

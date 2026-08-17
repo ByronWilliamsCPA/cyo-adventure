@@ -34,14 +34,23 @@ import json
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Literal, cast
 
-from cyo_adventure.core.exceptions import ConfigurationError
+from cyo_adventure.core.exceptions import ConfigurationError, ValidationError
+from cyo_adventure.generation.chunking import (
+    UnpartitionableSkeletonError,
+    batch_request,
+    merge_fill_batch,
+    plan_fill_batches,
+    written_prose,
+)
 from cyo_adventure.generation.fidelity_gate import run_stage1_gate
 from cyo_adventure.generation.guarded import PiiGuardedProvider
 from cyo_adventure.generation.metered import ledger_of
 from cyo_adventure.generation.prompts import (
+    FillBatchPayload,
     build_bound_fill_prompt,
     build_fidelity_repair_prompt,
     build_fill_prompt,
+    build_fill_subset_prompt,
     build_prose_prompt,
     build_repair_prompt,
     build_structure_prompt,
@@ -50,6 +59,12 @@ from cyo_adventure.generation.reading_level_loop import (
     ReadingLevelContext,
     ReadingLevelResult,
     run_reading_level_loop,
+)
+from cyo_adventure.generation.skeleton import (
+    MAX_FILL_OUTPUT_TOKENS,
+    active_fill_model,
+    is_fill_feasible,
+    resolve_output_cap,
 )
 from cyo_adventure.utils.logging import get_logger
 from cyo_adventure.validator.gate import GateContext, GateResult, run_gate
@@ -101,7 +116,16 @@ __all__ = [
 # up to 60 nodes; a full-prose story of that size at 250 words/node runs well past
 # 8192 output tokens, and even the one-line Stage A skeleton exceeds 4096.
 _MAX_TOKENS_STRUCTURE = 16384
-_MAX_TOKENS_PROSE = 32000
+# Owned by generation/skeleton.py so this file and the feasibility screen in
+# skeleton_match hold ONE default rather than two that drift. It is the default,
+# not necessarily the cap a given call runs under: `fill_skeleton` clamps it to
+# the configured model's own ceiling when it has Settings, and falls back to
+# this value when it does not. See the note on `skeleton_match._FILL_MAX_TOKENS`
+# for why the screen deliberately stays on the unclamped default (`AL-425`).
+_MAX_TOKENS_PROSE = MAX_FILL_OUTPUT_TOKENS
+# The FLOOR for a repair completion, not the value every repair uses. A repair
+# prompt asks for the whole corrected document, so the effective cap is
+# max(this, the cap the fill ran under); see `_RepairContext.max_tokens`.
 _MAX_TOKENS_REPAIR = 32000
 
 # Reading-level repair passes (Stage D). On by default rather than opt-in, which
@@ -231,6 +255,16 @@ class _RepairContext:
         stage1: The Stage 1 fidelity-gate config for the authoring skeleton-fill
             path, or ``None`` (the default) for callers that do no Stage 1 and
             must retain the pre-fold structural-only loop behavior.
+        max_tokens: Output cap for each repair completion. Defaults to
+            ``_MAX_TOKENS_REPAIR``, which is only right for a document that fits
+            it. Every repair prompt asks for the WHOLE corrected Storybook back,
+            so the repair cap has to be at least the cap the fill itself ran
+            under; a fill at 131,072 followed by a repair at 32,000 asks the
+            model to re-emit a document larger than the ceiling it is given, the
+            completion stops on ``length``, nothing parses, and the loop burns
+            its whole budget re-requesting a document that can never arrive.
+            That was invisible while the fill cap was also 32,000, because the
+            books that exceed it could not be filled at all (`AL-431`).
     """
 
     provider: PiiGuardedProvider
@@ -239,6 +273,7 @@ class _RepairContext:
     scale: Scale = "standard"
     context: GateContext = "skeleton"
     stage1: _Stage1Config | None = None
+    max_tokens: int = _MAX_TOKENS_REPAIR
 
 
 # ---------------------------------------------------------------------------
@@ -320,6 +355,33 @@ def _gate_signature(
     return findings_tuple, _doc_hash(doc)
 
 
+def _synthetic_blocked_gate(message: str, context: GateContext) -> GateResult:
+    """Synthesise a blocked gate result carrying one ``L1-1`` ERROR finding.
+
+    Args:
+        message: The finding's message, describing why no usable document
+            exists.
+        context: The posture the caller was validating under, recorded on the
+            synthetic result so the verdict is not reported under a laxer
+            posture than the one that was asked for.
+
+    Returns:
+        A blocked :class:`~cyo_adventure.validator.gate.GateResult`.
+    """
+    report = ValidationReport()
+    report.add(
+        ValidationFinding(
+            rule_id="L1-1",
+            severity=Severity.ERROR,
+            story_id="<unknown>",
+            message=message,
+        )
+    )
+    return GateResult(
+        report=report, blocked=True, safety_flagged=False, context=context
+    )
+
+
 def _empty_blocked_gate(context: GateContext = "skeleton") -> GateResult:
     """Synthesise a minimal blocked gate result for parse-error cases.
 
@@ -333,17 +395,8 @@ def _empty_blocked_gate(context: GateContext = "skeleton") -> GateResult:
         A :class:`~cyo_adventure.validator.gate.GateResult` with one
         synthetic ``L1-1`` ERROR finding indicating a parse failure.
     """
-    report = ValidationReport()
-    report.add(
-        ValidationFinding(
-            rule_id="L1-1",
-            severity=Severity.ERROR,
-            story_id="<unknown>",
-            message="L1-1 schema: provider output was not valid JSON or not a dict",
-        )
-    )
-    return GateResult(
-        report=report, blocked=True, safety_flagged=False, context=context
+    return _synthetic_blocked_gate(
+        "L1-1 schema: provider output was not valid JSON or not a dict", context
     )
 
 
@@ -811,7 +864,7 @@ async def _run_repair_loop(
         new_doc, new_gate = await _run_one_stage(
             repair_prompt,
             provider=ctx.provider,
-            max_tokens=_MAX_TOKENS_REPAIR,
+            max_tokens=ctx.max_tokens,
             scale=ctx.scale,
             context=ctx.context,
         )
@@ -958,7 +1011,20 @@ async def generate_story(
         current_doc, gate_result = await _run_one_stage(
             stage_b_prompt,
             provider=guarded_provider,
-            max_tokens=_MAX_TOKENS_PROSE,
+            # #CRITICAL: external resources: this is the only stage whose ask
+            # can exceed a model's output ceiling, and neither provider clamps:
+            # `providers/openrouter.py` and `providers/anthropic.py` both put
+            # `max_tokens` straight into the request payload, so an over-ask is
+            # rejected by the API rather than quietly lowered. Asking 131,072 of
+            # the shipped default (`anthropic/claude-haiku-4.5`, ceiling 64,000)
+            # therefore fails EVERY Stage B call, not merely oversized ones, and
+            # `worker.py` reaches this function on the provider-override path.
+            # `generate_story` takes no Settings, but it builds `guarded_provider`
+            # itself, so the provider's own declared model is available here and
+            # is the authoritative answer anyway (`AL-436`).
+            # #VERIFY: test_orchestrator.py::
+            # test_generate_story_stage_b_asks_no_more_than_the_model_can_emit.
+            max_tokens=resolve_output_cap(guarded_provider.model),
             scale=scale,
             context="fill_result",
         )
@@ -1013,6 +1079,149 @@ async def generate_story(
     )
 
 
+def _unfillable_outcome(
+    exc: ValidationError, stage_log: list[str], *, armed: bool
+) -> GenerationOutcome:
+    """Return the failed outcome for a skeleton no partition can fill.
+
+    Args:
+        exc: The partitioning error naming the node that does not fit.
+        stage_log: The run's stage log, appended to.
+        armed: Whether the Stage 1 fidelity gate was armed, stamped on the
+            outcome like every other terminal state.
+
+    Returns:
+        A ``"failed"`` :class:`GenerationOutcome` with no storybook.
+    """
+    _logger.warning("fill_skeleton_unfillable", reason=str(exc))
+    stage_log.append("stage_fill:unfillable_under_cap")
+    return _with_stage1_posture(
+        _build_outcome(
+            _synthetic_blocked_gate(f"L1-1 schema: {exc}", "fill_result"),
+            None,
+            0,
+            stage_log,
+        ),
+        armed=armed,
+    )
+
+
+@dataclass(frozen=True, slots=True)
+class _ChunkedFillContext:
+    """Everything a chunked fill needs beyond the skeleton and the brief.
+
+    Attributes:
+        provider: The PII-guarded provider every batch call goes through.
+        cap: The resolved output cap one batch call runs under. Batches are
+            partitioned to fit it, so it is both the partitioning budget and
+            the per-call ``max_tokens``.
+        differentiation_directive: The trusted A6/A7 block, passed to every
+            batch so anti-repetition steering is not confined to the first one.
+        stage_log: The run's stage log, appended to per batch.
+    """
+
+    provider: PiiGuardedProvider
+    cap: int
+    differentiation_directive: str
+    stage_log: list[str]
+
+
+async def _fill_in_batches(
+    skeleton: dict[str, object],
+    theme_brief: dict[str, object],
+    ctx: _ChunkedFillContext,
+) -> tuple[dict[str, object] | None, GateResult]:
+    """Fill a skeleton a batch at a time and gate the reassembled document.
+
+    Used only when the whole skeleton provably does not fit the backend's
+    output cap. Each batch asks for prose covering its own nodes and nothing
+    else, and every reply is folded in by
+    :func:`~cyo_adventure.generation.chunking.merge_fill_batch`, which reads
+    only body and choice-label text.
+
+    # #CRITICAL: data-integrity: a batch that returns nothing usable fails the
+    # whole fill here rather than merging what it can. A partially-merged
+    # document is the dangerous artifact in this pipeline: every gate checker
+    # SKIPS a ``<<FILL ...>>`` body rather than failing on it (`AL-325`), so a
+    # document half of which is still directives can clear topology, safety,
+    # choice grammar, and reading level by abstention. `PL-27` is the one rule
+    # that objects, and `AL-327` is what it cost the last time a total fill
+    # failure was allowed to depend on the gate's opinion of a document the
+    # model never wrote.
+    # #VERIFY: test_chunked_fill.py::
+    # test_a_batch_that_returns_nothing_fails_the_whole_fill asserts the
+    # outcome is ``failed`` with no storybook, and that no later batch is
+    # attempted.
+
+    # #ASSUME: external-resources: each batch is one network completion, so a
+    # chunked fill costs as many calls as batches, each re-sending the skeleton
+    # and the prose written so far. Input tokens are the price of the output
+    # ceiling this path exists to work around; a provider error propagates to
+    # the caller for rollback and RQ retry exactly as the one-shot call does.
+    # #VERIFY: no provider exception is caught here; only a malformed reply is
+    # turned into a failure.
+
+    Args:
+        skeleton: The unfilled skeleton.
+        theme_brief: The concept brief driving the reskin.
+        ctx: The grouped chunked-fill context.
+
+    Returns:
+        ``(document, gate_result)`` with the merged document and its
+        ``"fill_result"`` gate verdict, or ``(None, blocked_gate)`` when any
+        batch failed. The shape matches :func:`_run_one_stage` so the caller
+        treats both fill paths identically.
+
+    Raises:
+        ValidationError: Propagated from
+            :func:`~cyo_adventure.generation.chunking.plan_fill_batches` when a
+            single node cannot fit the cap even alone. Handled by
+            :func:`fill_skeleton`; no provider call has been made at that point.
+    """
+    batches = plan_fill_batches(skeleton, max_tokens=ctx.cap)
+    skeleton_json = json.dumps(skeleton)
+    brief_json = json.dumps(theme_brief)
+    document = skeleton
+    for index, node_ids in enumerate(batches, start=1):
+        prompt = build_fill_subset_prompt(
+            skeleton_json,
+            FillBatchPayload(
+                nodes_to_fill_json=json.dumps(batch_request(document, node_ids)),
+                prose_so_far_json=json.dumps(written_prose(document)),
+            ),
+            brief_json,
+            ctx.differentiation_directive,
+        )
+        completion = await ctx.provider.complete(
+            system=prompt.system, prompt=prompt.user, max_tokens=ctx.cap
+        )
+        try:
+            payload: object = json.loads(completion.text)  # pyright: ignore[reportAny]
+        except (json.JSONDecodeError, RecursionError):
+            # Caught for the same reason _run_one_stage catches both: a deeply
+            # nested reply raises RecursionError rather than JSONDecodeError
+            # under CPython 3.14.
+            payload = None
+        try:
+            document = merge_fill_batch(document, node_ids, payload)
+        except ValidationError as exc:
+            _logger.warning(
+                "fill_batch_rejected",
+                batch=index,
+                batches=len(batches),
+                nodes=len(node_ids),
+                reason=str(exc),
+            )
+            ctx.stage_log.append(f"stage_fill:batch_{index}_of_{len(batches)}_rejected")
+            where = f"batch {index} of {len(batches)}"
+            failure = (
+                f"L1-1 schema: chunked fill {where} produced no usable prose: {exc}"
+            )
+            return None, _synthetic_blocked_gate(failure, "fill_result")
+        ctx.stage_log.append(f"stage_fill:batch_{index}_of_{len(batches)}_merged")
+    return document, run_gate(document, "standard", context="fill_result")
+
+
 async def fill_skeleton(
     skeleton: dict[str, object],
     theme_brief: dict[str, object],
@@ -1056,6 +1265,32 @@ async def fill_skeleton(
     Scale is always "standard": skeleton library files use genre-faithful
     authored node counts (ADR-011), never the "compact" live-model budget
     profile that exists only to bound LLM-invented structure.
+
+    Chunked fill (portability): the fill is one-shot whenever the skeleton's
+    expected output fits the resolved cap, which is every production skeleton
+    on a large-output backend, and that path is unchanged. When the configured
+    model's own ceiling clamps the cap below what the skeleton needs, the fill
+    is instead run a batch at a time via :func:`_fill_in_batches`, so the
+    catalog is not coupled to one vendor's output ceiling. Four consequences a
+    caller should know about:
+
+    * A batch that returns nothing usable fails the whole job. Merging what
+      parsed would leave ``<<FILL ...>>`` directives in the book, and every
+      gate checker skips a directive rather than failing on it (`AL-325`).
+    * The repair budget is zero on that path. Every repair prompt asks for the
+      whole document back, which is what does not fit; the Stage 1 fidelity
+      CHECK still runs and can still downgrade to ``needs_review``.
+    * A bound fill (``slot_bindings`` supplied) is never chunked. WS-2 bound
+      skeletons are rendered against a theme contract before the fill, and the
+      subset prompt has no bound-fill variant.
+    * Ending ``title`` text is not re-themed. One-shot fill returns the whole
+      document and ``fill.md`` does not list ``title`` among the fields it may
+      not change, so a one-shot book gets themed ending titles; the batch merge
+      reads only ``body`` and choice ``label``, so a chunked book keeps the
+      skeleton's authored titles under every theme. That is the safe direction
+      (an untrusted reply cannot reach the ending block at all) but it is
+      reader-visible, and it is one of the things `UW-C269` compares before this
+      path writes anything a child reads.
 
     Args:
         skeleton: The matched skeleton dict, FILL directives intact.
@@ -1137,33 +1372,103 @@ async def fill_skeleton(
         else None
     )
 
-    # WS-2: a parameterized fill (slot_bindings supplied) already has its
-    # beats/titles/labels rendered onto `skeleton` by render_bound_skeleton;
-    # the bound-fill prompt variant carries those validated values as labeled
-    # data alongside the byte-identical untrusted-brief fence. `slot_bindings
-    # is None` (the default) is the only path every existing caller exercises,
-    # so this keeps their prompt byte-identical.
-    fill_prompt = (
-        build_bound_fill_prompt(
-            json.dumps(skeleton),
-            json.dumps(dict(slot_bindings)),
-            json.dumps(theme_brief),
-            differentiation_directive,
-        )
-        if slot_bindings is not None
-        else build_fill_prompt(
-            json.dumps(skeleton),
-            json.dumps(theme_brief),
-            differentiation_directive,
-        )
+    # Resolve the cap against the model that will actually serve the call. The
+    # PROVIDER is asked first, because it is the only object built with a per-job
+    # model override (`worker.py` passes `model_override=` when constructing it,
+    # while handing this function the module-level `_default_settings`), so
+    # reading `Settings` alone silently resolves the cap for the process default
+    # instead of for the job's model (`AL-432`).
+    #
+    # #ASSUME: external-resources: a provider that declares no `model` (a mock,
+    # or `FallbackProvider`'s cascade, which has no single answer) falls back to
+    # the configured default. The cascade case is a KNOWN residual gap: its
+    # fallback legs can run under a cap resolved for the primary. Deciding what a
+    # cascade should report is an owner call, not something to infer here, so it
+    # is registered as `UW-C271` rather than guessed at.
+    # #VERIFY: test_fill_output_cap.py::
+    # test_the_provider_model_outranks_the_configured_default.
+    provider_model: object = getattr(provider, "model", None)
+    resolved_model = (
+        provider_model
+        if isinstance(provider_model, str)
+        else (active_fill_model(settings) if settings is not None else None)
     )
-    current_doc, gate_result = await _run_one_stage(
-        fill_prompt,
-        provider=guarded_provider,
-        max_tokens=_MAX_TOKENS_PROSE,
-        context="fill_result",
+    cap = (
+        resolve_output_cap(resolved_model)
+        if (resolved_model is not None or settings is not None)
+        else _MAX_TOKENS_PROSE
     )
+    # Chunking is the exception, not the rule: a skeleton takes the byte-identical
+    # one-shot path whenever it fits the resolved cap. It becomes True only when
+    # the backend's own output ceiling clamps the cap under what this skeleton
+    # needs, which is the portability case this whole path exists for. On the
+    # shipped default (`anthropic/claude-haiku-4.5`, ceiling 64,000) that is 15 of
+    # the 55 production skeletons, so this path IS live rather than theoretical.
+    chunked = slot_bindings is None and not is_fill_feasible(skeleton, max_tokens=cap)
+    if chunked:
+        try:
+            current_doc, gate_result = await _fill_in_batches(
+                skeleton,
+                theme_brief,
+                _ChunkedFillContext(
+                    provider=guarded_provider,
+                    cap=cap,
+                    differentiation_directive=differentiation_directive,
+                    stage_log=stage_log,
+                ),
+            )
+        except UnpartitionableSkeletonError as exc:
+            # No partition of this skeleton fits the cap, so no amount of
+            # retrying changes the answer. Returned as a failed outcome rather
+            # than raised, so an RQ job records a deterministic failure instead
+            # of retrying a call that provably cannot succeed (`AL-329`).
+            #
+            # Narrowed from `except ValidationError` deliberately: that also
+            # caught a PII abort from `PiiGuardedProvider.complete` and a
+            # rejected model reply from `merge_fill_batch`, reporting both as
+            # "unfillable under cap". The PII case is the serious one, since it
+            # is a security stop that propagates on the one-shot path and must
+            # do the same here rather than being recorded as a capacity limit
+            # (`AL-435`).
+            return _unfillable_outcome(exc, stage_log, armed=armed)
+    else:
+        # WS-2: a parameterized fill (slot_bindings supplied) already has its
+        # beats/titles/labels rendered onto `skeleton` by render_bound_skeleton;
+        # the bound-fill prompt variant carries those validated values as
+        # labeled data alongside the byte-identical untrusted-brief fence.
+        # `slot_bindings is None` (the default) is the only path every existing
+        # caller exercises, so this keeps their prompt byte-identical.
+        fill_prompt = (
+            build_bound_fill_prompt(
+                json.dumps(skeleton),
+                json.dumps(dict(slot_bindings)),
+                json.dumps(theme_brief),
+                differentiation_directive,
+            )
+            if slot_bindings is not None
+            else build_fill_prompt(
+                json.dumps(skeleton),
+                json.dumps(theme_brief),
+                differentiation_directive,
+            )
+        )
+        current_doc, gate_result = await _run_one_stage(
+            fill_prompt,
+            provider=guarded_provider,
+            max_tokens=cap,
+            context="fill_result",
+        )
     _append_stage_log(stage_log, "stage_fill", current_doc, gate_result)
+    if chunked and current_doc is None:
+        # A batch produced nothing usable. Terminate here rather than entering
+        # the repair loop: the repair prompt asks for the WHOLE document back,
+        # and the whole document not fitting the cap is precisely why this fill
+        # was chunked, so every repair attempt would truncate at the same
+        # budget (`AL-329`). Failing is also the only honest verdict about a
+        # book no model wrote (`AL-327`).
+        return _with_stage1_posture(
+            _build_outcome(gate_result, None, 0, stage_log), armed=armed
+        )
     last_valid_doc = current_doc if current_doc is not None else skeleton
 
     attempts = 0
@@ -1171,12 +1476,24 @@ async def fill_skeleton(
     # Enter the loop when there is structural repair to do OR a Stage 1 fidelity
     # check to run on the clean fill; the loop itself decides which per iteration.
     if gate_result.blocked or stage1_config is not None:
+        # A chunked fill gets no repair budget: every prompt the loop can send
+        # (structural repair, fidelity repair) asks for the whole document
+        # back, which is the thing that does not fit. With the budget at zero
+        # the loop still runs the Stage 1 fidelity CHECK, whose own output is a
+        # short violation list rather than a book, so the authoring gate is not
+        # skipped and the outcome's ``stage1_gate`` posture stays truthful
+        # (`AL-324`); only the un-emittable repair call is withheld.
         repair_ctx = _RepairContext(
             provider=guarded_provider,
-            max_repairs=max_repairs,
+            max_repairs=0 if chunked else max_repairs,
             stage_log=stage_log,
             stage1=stage1_config,
             context="fill_result",
+            # A repair asks for the whole corrected book, so it needs at least
+            # the room the fill itself had. `max` rather than plain `cap` so a
+            # backend whose clamped ceiling is BELOW the 32,000 floor does not
+            # also shrink the repair budget for a document that fits it.
+            max_tokens=max(_MAX_TOKENS_REPAIR, cap),
         )
         repair_seed = current_doc if current_doc is not None else last_valid_doc
         current_doc, gate_result, attempts, stage1_violations = await _run_repair_loop(

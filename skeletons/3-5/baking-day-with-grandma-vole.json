@@ -17,7 +17,7 @@
       "perseverance",
       "baking"
     ],
-    "estimated_minutes": 4,
+    "estimated_minutes": 6,
     "ending_count": 6,
     "content_flags": {
       "violence": "none",
@@ -27,7 +27,8 @@
     "topology": "loop_and_grow",
     "length": "medium",
     "narrative_style": "prose",
-    "production_eligible": true
+    "production_eligible": true,
+    "deprecated": true
   },
   "variables": [],
   "start_node": "n_start",

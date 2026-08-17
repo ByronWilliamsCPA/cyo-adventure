@@ -749,3 +749,127 @@ def test_select_skeleton_for_cell_band_and_cell_filtering_unchanged() -> None:
     )
     assert selection.slug in candidates
     assert set(selection.alternatives) == set(candidates)
+
+
+def _write_sized_skeleton(band_dir: Path, stem: str, *, fill_words: int) -> None:
+    """Write a skeleton whose declared fill target is *fill_words* words."""
+    band_dir.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "metadata": {
+            "age_band": "5-8",
+            "reading_level": {"target": 3.0},
+            "tier": 1,
+            "estimated_minutes": 5,
+            "ending_count": 1,
+            "topology": "time_cave",
+            "length": "short",
+            "narrative_style": "prose",
+        },
+        "nodes": [
+            {
+                "id": "n0",
+                "body": f"<<FILL role=rising words={fill_words} beats='x'>>",
+                "is_ending": False,
+                "choices": [],
+            }
+        ],
+    }
+    (band_dir / f"{stem}.json").write_text(json.dumps(payload), encoding="utf-8")
+
+
+@pytest.mark.unit
+def test_an_over_cap_skeleton_is_not_a_candidate(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    """Selection must not offer a skeleton the one-shot fill cannot emit.
+
+    `fill_skeleton` has no chunking, so an over-cap skeleton does not degrade,
+    it truncates: nothing parses, the orchestrator burns its whole repair
+    budget, and the job fails deterministically on every retry, forever.
+
+    This was observe-only while the cap was 32,000, because enforcing then
+    would have emptied the 13-16 and 16+ bands. At 131,072 it excludes nothing
+    in the current catalog, so it guards future skeletons rather than filtering
+    today's. UW-C07 / AL-046.
+    """
+    _write_sized_skeleton(tmp_path / "5-8", "too-big", fill_words=999_999)
+    monkeypatch.setattr(skeleton_match, "_SKELETON_ROOT", tmp_path)
+
+    with caplog.at_level("WARNING"):
+        candidates = skeleton_match._production_candidates("5-8")  # pyright: ignore[reportPrivateUsage]
+
+    assert candidates == []
+    assert "skeleton.fill_infeasible" in caplog.text
+
+
+@pytest.mark.unit
+def test_a_within_cap_skeleton_is_still_a_candidate(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The screen must refuse only what cannot fit, not narrow the catalog."""
+    _write_sized_skeleton(tmp_path / "5-8", "fits", fill_words=500)
+    monkeypatch.setattr(skeleton_match, "_SKELETON_ROOT", tmp_path)
+
+    slugs = [slug for slug, _ in skeleton_match._production_candidates("5-8")]  # pyright: ignore[reportPrivateUsage]
+
+    assert slugs == ["fits"]
+
+
+@pytest.mark.unit
+def test_a_deprecated_skeleton_is_not_a_candidate(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """ADR-011 D11: a retired skeleton stops being drawn for new stories.
+
+    Retirement is not deletion. The file stays in the catalog as a mutation
+    parent, as provenance for the books already filled from it, and as history;
+    it simply leaves the selection pool.
+    """
+    _write_skeleton(tmp_path / "3-5", "retired", age_band="3-5")
+    path = tmp_path / "3-5" / "retired.json"
+    payload = json.loads(path.read_text())
+    payload["metadata"]["deprecated"] = True
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    monkeypatch.setattr(skeleton_match, "_SKELETON_ROOT", tmp_path)
+
+    assert skeleton_match._production_candidates("3-5") == []  # pyright: ignore[reportPrivateUsage]
+
+
+@pytest.mark.unit
+def test_a_live_skeleton_in_the_same_band_still_selects(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Retiring one skeleton must not empty its band."""
+    _write_skeleton(tmp_path / "3-5", "live", age_band="3-5")
+    _write_skeleton(tmp_path / "3-5", "retired", age_band="3-5")
+    path = tmp_path / "3-5" / "retired.json"
+    payload = json.loads(path.read_text())
+    payload["metadata"]["deprecated"] = True
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    monkeypatch.setattr(skeleton_match, "_SKELETON_ROOT", tmp_path)
+
+    slugs = [slug for slug, _ in skeleton_match._production_candidates("3-5")]  # pyright: ignore[reportPrivateUsage]
+
+    assert slugs == ["live"]
+
+
+def test_a_skeleton_that_is_not_valid_utf8_is_skipped_not_raised(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A mis-encoded file must be skipped like any other corrupt one.
+
+    Both readers open with ``encoding="utf-8"``, and on invalid bytes
+    ``read_text`` raises ``UnicodeDecodeError``: a ``ValueError``, so neither
+    ``OSError`` nor ``json.JSONDecodeError`` caught it and the scan crashed the
+    way a corrupt file was specifically meant not to. This scan runs
+    synchronously inside POST /authoring-plan, so the escape surfaced as a 500
+    on a guardian request rather than as one skipped skeleton (`AL-438`).
+    """
+    band_dir = tmp_path / "8-11"
+    band_dir.mkdir()
+    # 0x80 is a continuation byte with no lead byte: never valid UTF-8.
+    (band_dir / "aaa-mis-encoded.json").write_bytes(b'{"metadata": "\x80\x81"}')
+    _write_skeleton(band_dir, "zzz-good", age_band="8-11")
+    monkeypatch.setattr(skeleton_match, "_SKELETON_ROOT", tmp_path)
+
+    assert candidates_for_cell("8-11", "short", "prose") == ["zzz-good"]

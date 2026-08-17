@@ -1,0 +1,307 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_market_morning",
+  "version": 1,
+  "title": "The Market Morning",
+  "metadata": {
+    "age_band": "3-5",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 1.0,
+      "tolerance": 1.0
+    },
+    "tier": 1,
+    "themes": [
+      "family",
+      "choosing",
+      "generosity",
+      "wonder"
+    ],
+    "estimated_minutes": 3,
+    "ending_count": 6,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "none",
+      "peril": "none"
+    },
+    "topology": "time_cave",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_wake",
+  "nodes": [
+    {
+      "id": "n_wake",
+      "body": "<<FILL role=setup words=40 beats='Saturday morning light comes through the curtains; Mama is already awake and has the cloth bag on her arm; she tells Nia the market is open and she may choose one thing for the table; Nia hops on one foot while she finds her shoes'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_go",
+          "label": "Walk to the market.",
+          "target": "n_walk"
+        }
+      ]
+    },
+    {
+      "id": "n_walk",
+      "body": "<<FILL role=rising words=40 beats='the walk is three streets long; a dog behind a green fence says hello and Nia says hello back; she can smell the market before she can see it, warm bread and something sweet; then the stalls open in front of her, striped and loud and full'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_look",
+          "label": "Look at all the stalls.",
+          "target": "n_stalls"
+        }
+      ]
+    },
+    {
+      "id": "n_stalls",
+      "body": "<<FILL role=choice words=44 beats='two stalls face each other across the little lane; on one side the fruit is stacked in bright hills, peaches and berries in small green boxes; on the other side buckets hold flowers with wet stems; Mama waits and lets Nia decide which way to go first'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fruit",
+          "label": "Go to the fruit stall.",
+          "target": "n_fruit"
+        },
+        {
+          "id": "c_flowers",
+          "label": "Go to the flower buckets.",
+          "target": "n_flowers"
+        }
+      ]
+    },
+    {
+      "id": "n_fruit",
+      "body": "<<FILL role=choice words=42 beats='the fruit seller has flour on his apron and a pencil behind his ear; he tips a box so Nia can see; the peaches are fuzzy and warm from the sun, the berries are cold and shining and small enough to hide in her fist; both smell like summer'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_peach",
+          "label": "Pick up a peach.",
+          "target": "n_peach"
+        },
+        {
+          "id": "c_berries",
+          "label": "Pick up the berries.",
+          "target": "n_berries"
+        }
+      ]
+    },
+    {
+      "id": "n_peach",
+      "body": "<<FILL role=choice words=40 beats='the peach fits exactly in Nia hands and it is heavier than it looks; the seller says a good peach smells like a peach even before you bite it; Nia holds it up to her nose; she could keep it for herself or she could think of someone else'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_taste",
+          "label": "Smell the peach first.",
+          "target": "n_taste"
+        },
+        {
+          "id": "c_share",
+          "label": "Choose a second peach for Mama.",
+          "target": "n_share"
+        }
+      ]
+    },
+    {
+      "id": "n_taste",
+      "body": "<<FILL role=rising words=38 beats='Nia closes her eyes and breathes in; the smell is sweet and a little green, like the garden after rain; the seller laughs and says she is a proper picker now; Mama counts out the coins and the peach goes into the cloth bag'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_home_taste",
+          "label": "Carry the bag home.",
+          "target": "e_taste"
+        }
+      ]
+    },
+    {
+      "id": "e_taste",
+      "body": "<<FILL role=ending words=42 beats='at home the peach sits on the windowsill until lunch; when Mama cuts it the juice runs down and they both laugh and lick their wrists; Nia says she chose it by smelling it; Mama says that is exactly how you choose a peach'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_taste",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "How to Choose a Peach"
+      }
+    },
+    {
+      "id": "n_share",
+      "body": "<<FILL role=rising words=38 beats='Nia looks for a second peach and picks the one with the reddest cheek; she tells the seller it is for Mama; he wraps both in paper without being asked; Mama pretends she has not heard and looks very hard at the sky'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_home_share",
+          "label": "Carry the bag home.",
+          "target": "e_share"
+        }
+      ]
+    },
+    {
+      "id": "e_share",
+      "body": "<<FILL role=ending words=42 beats='at the kitchen table Nia puts the reddest peach on Mama plate; Mama says oh, and then says nothing for a moment; they eat them together with the paper still on the table; it is a small thing and it makes the whole morning bigger'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_share",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Reddest One"
+      }
+    },
+    {
+      "id": "n_berries",
+      "body": "<<FILL role=rising words=40 beats='the little green box is colder than Nia expected; the berries roll when she tips it and she tips it back quickly; the seller says they are best today, not tomorrow; Mama says then today is the day and finds her purse'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_carry",
+          "label": "Carry the box yourself.",
+          "target": "n_berries_two"
+        }
+      ]
+    },
+    {
+      "id": "n_berries_two",
+      "body": "<<FILL role=rising words=38 beats='Nia carries the box with both hands, slowly, the way you carry something that matters; she does not swing her arms once; at the corner she checks and not one berry has jumped out; Mama says she is a very good carrier'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_home_berries",
+          "label": "Take them all the way home.",
+          "target": "e_berries"
+        }
+      ]
+    },
+    {
+      "id": "e_berries",
+      "body": "<<FILL role=ending words=42 beats='the box arrives home with every berry still inside; Nia sets it on the table and lets out a big breath; they wash the berries in the blue bowl and eat them straight from it, cold and sweet; she carried them the whole way and not one was lost'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_berries",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Every Berry Home"
+      }
+    },
+    {
+      "id": "n_flowers",
+      "body": "<<FILL role=choice words=42 beats='the flower buckets are wet around the bottom and the stems stand in dark water; the big yellow ones are taller than Nia arm and open like plates; the small ones are white and blue together, tied with string, and would fit in one hand'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_yellow",
+          "label": "Choose the big yellow flowers.",
+          "target": "n_yellow"
+        },
+        {
+          "id": "c_small",
+          "label": "Choose the small tied bunch.",
+          "target": "n_small"
+        }
+      ]
+    },
+    {
+      "id": "n_yellow",
+      "body": "<<FILL role=choice words=40 beats='the yellow flowers are so tall that Nia has to hold them like a flag; people smile at her all the way down the lane because she is mostly hidden behind them; on the corner Mrs Okafor is sitting outside with her door open and no flowers on her step at all'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gift",
+          "label": "Give one to Mrs Okafor.",
+          "target": "n_yellow_gift"
+        },
+        {
+          "id": "c_keep",
+          "label": "Keep the whole armful.",
+          "target": "n_yellow_keep"
+        }
+      ]
+    },
+    {
+      "id": "n_yellow_gift",
+      "body": "<<FILL role=rising words=38 beats='Nia pulls one yellow flower out of the middle of the armful and holds it out with both hands; Mrs Okafor takes a long time to stand up and says nobody has given her a flower in a while; she puts it in a glass by her chair where she can see it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_home_gift",
+          "label": "Walk the rest of the way home.",
+          "target": "e_gift"
+        }
+      ]
+    },
+    {
+      "id": "e_gift",
+      "body": "<<FILL role=ending words=42 beats='the flowers at home fill the jug a little less full than before, and Nia does not mind; on the way to the shop the next day she looks at Mrs Okafor window and the yellow flower is still there in its glass; it is the one she chose'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_gift",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "One for the Window"
+      }
+    },
+    {
+      "id": "n_yellow_keep",
+      "body": "<<FILL role=rising words=38 beats='Nia holds the whole armful all the way down the lane and does not let Mama take even one; her arms ache by the corner and she keeps going anyway; when they reach the door she has to turn sideways to get the flowers through it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_home_yellow",
+          "label": "March them home like a flag.",
+          "target": "e_yellow"
+        }
+      ]
+    },
+    {
+      "id": "e_yellow",
+      "body": "<<FILL role=ending words=42 beats='the yellow flowers go in the tall jug on the table and they take up the whole middle of it; the kitchen looks like somebody is having a party; every time Nia walks past she looks at them; she chose them and everyone can tell'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_yellow",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Tall as a Flag"
+      }
+    },
+    {
+      "id": "n_small",
+      "body": "<<FILL role=rising words=38 beats='the small bunch is white and blue and tied with rough string; it fits in Nia hand with room left over; the flower seller says the blue ones open more each day, so it will not look the same tomorrow; Nia asks if that is true and she says wait and see'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ask",
+          "label": "Carry them home and wait.",
+          "target": "n_small_two"
+        }
+      ]
+    },
+    {
+      "id": "n_small_two",
+      "body": "<<FILL role=rising words=38 beats='at home the bunch goes in a jam jar on the windowsill because it is too small for the tall jug; Nia looks at it before bed; the blue ones are still shut tight, like little fists, and she is not sure she believes the flower seller'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_morning",
+          "label": "Look again in the morning.",
+          "target": "e_small"
+        }
+      ]
+    },
+    {
+      "id": "e_small",
+      "body": "<<FILL role=ending words=42 beats='in the morning two of the blue flowers have opened while Nia was asleep; she runs to tell Mama before she has even found her shoes; they were shut and now they are open and nobody did anything at all; Nia decides to check again tomorrow'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_small",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Blue Ones Open"
+      }
+    }
+  ]
+}

@@ -64,7 +64,10 @@ from cyo_adventure.validator.report import (
     ValidationFinding,
     ValidationReport,
 )
-from cyo_adventure.validator.topology import admissible_topologies
+from cyo_adventure.validator.topology import (
+    BAND_TOPOLOGIES,
+    admissible_topologies,
+)
 
 # A skeleton node body is a ``<<FILL role=... words=N ...>>`` directive carrying
 # the author's declared word target; a filled node body is prose. The
@@ -82,7 +85,10 @@ _SATISFYING_KINDS = frozenset({EndingKind.SUCCESS, EndingKind.COMPLETION})
 
 
 def check_fill_residue(story: Storybook) -> ValidationReport:
-    """Run PL-27: no node body of a *fill result* may still be a directive.
+    """Run PL-27: no prose of a *fill result* may still be a directive.
+
+    Covers node bodies and choice labels: both are fillable, both are
+    reader-visible, and only the body was checked until `AL-430`.
 
     Deliberately not part of :func:`validate_policy`, because it is the one
     policy rule whose correctness depends on what the caller is validating.
@@ -110,25 +116,113 @@ def check_fill_residue(story: Storybook) -> ValidationReport:
 
     Returns:
         ValidationReport: One ERROR finding per node whose body retains a
-        directive; empty when every body holds prose.
+        directive, plus one per choice whose label retains one; empty when every
+        body and every label holds prose.
     """
     report = ValidationReport()
     for node in story.nodes:
-        if _FILL_MARKER not in node.body:
-            continue
-        report.add(
-            ValidationFinding(
-                rule_id="PL-27",
-                severity=Severity.ERROR,
-                story_id=story.id,
-                node_id=node.id,
-                message=(
-                    f"PL-27 policy: node '{node.id}' of story '{story.id}' was "
-                    f"validated as a fill result but its body still holds a "
-                    f"'{_FILL_MARKER}' directive, so the node was never written"
-                ),
+        if _FILL_MARKER in node.body:
+            report.add(
+                ValidationFinding(
+                    rule_id="PL-27",
+                    severity=Severity.ERROR,
+                    story_id=story.id,
+                    node_id=node.id,
+                    message=(
+                        f"PL-27 policy: node '{node.id}' of story '{story.id}' was "
+                        f"validated as a fill result but its body still holds a "
+                        f"'{_FILL_MARKER}' directive, so the node was never written"
+                    ),
+                )
             )
+        # A choice label is reader-visible button text, and it was the one piece
+        # of fillable prose no deterministic rule covered: this checker tested
+        # `node.body` only, `has_unfilled_directives` likewise, and `Choice.label`
+        # carries only `min_length=1`. The chunked fill writes labels as well as
+        # bodies, so a reply echoing its directive back under `choices` produced a
+        # book that cleared this gate unblocked with a raw directive on a button.
+        # Guarded at the merge too (`generation/chunking.py::_merged_labels`);
+        # this is the deterministic floor that does not depend on which fill path
+        # wrote the document (`AL-430`).
+        for choice in node.choices:
+            if _FILL_MARKER not in choice.label:
+                continue
+            report.add(
+                ValidationFinding(
+                    rule_id="PL-27",
+                    severity=Severity.ERROR,
+                    story_id=story.id,
+                    node_id=node.id,
+                    message=(
+                        f"PL-27 policy: choice '{choice.id}' of node '{node.id}' in "
+                        f"story '{story.id}' was validated as a fill result but its "
+                        f"label still holds a '{_FILL_MARKER}' directive, so the "
+                        f"choice text was never written"
+                    ),
+                )
+            )
+    return report
+
+
+def check_mvp_firewall(story: Storybook) -> ValidationReport:
+    """Run PL-28: an MVP/Test seed may not be imported as a child-facing book.
+
+    ADR-011 section 1a creates a below-Short **MVP/Test tier** for cheap
+    prototyping shells and its Consequences require that the tier be
+    "firewalled from production: a skeleton tagged ``tier = 'mvp'`` must never
+    be selectable for a child-facing story. The selection layer, not just the
+    validator, has to enforce the exclusion."
+
+    The selection layer does enforce it:
+    ``generation/skeleton_match.py::_production_candidates`` drops any skeleton whose
+    ``production_eligible`` is ``False``, so the automated request path cannot
+    pick a seed to fill. That covers generation and nothing else.
+
+    #CRITICAL: security: the *manual* path had no such guard. A seed filled by
+    hand (the `cyo-author` skill) and imported through
+    ``generation/import_cli`` reached the store, publishing and a child's
+    library with nothing anywhere reading ``production_eligible``: the flag's
+    only other consumers are ``generation/diagram.py`` (rendering) and
+    ``generation/import_catalog.py`` (backfill). Worse than a missing check,
+    the flag makes the gate *more* permissive rather than less, because
+    ``validator/layer1.py`` budgets an MVP story against the loosest cell. So
+    a prototype shell was both easier to validate and unblocked to publish.
+    Measured 2026-08-16: all three seeds ADR-011 names by slug (Lost Mitten,
+    Clocktower Cipher, Sunken Signal) already had filled books sitting in the
+    corpus.
+    #VERIFY: see test_gate.py::test_fill_result_context_blocks_an_mvp_seed,
+    ::test_skeleton_context_tolerates_an_mvp_seed, and
+    ::test_a_production_story_is_untouched_by_the_mvp_firewall.
+
+    Context-gated for the same reason PL-27 is: at catalog time a seed is a
+    legitimate object that ``check_skeleton.py --allow-mvp`` is built to
+    inspect, so this must stay silent under the ``"skeleton"`` posture and
+    fire only once the document is being treated as a finished book.
+
+    Args:
+        story: The validated Storybook (Layer 1 has already passed).
+
+    Returns:
+        ValidationReport: One ERROR finding when the story is an MVP seed,
+        empty otherwise.
+    """
+    report = ValidationReport()
+    if story.metadata.production_eligible:
+        return report
+    report.add(
+        ValidationFinding(
+            rule_id="PL-28",
+            severity=Severity.ERROR,
+            story_id=story.id,
+            node_id=None,
+            message=(
+                f"PL-28 policy: story '{story.id}' declares "
+                f"production_eligible=false (the ADR-011 MVP/Test tier) and so "
+                f"may not be imported as a child-facing book; MVP seeds are "
+                f"prototyping shells and are budgeted against the loosest cell"
+            ),
         )
+    )
     return report
 
 
@@ -179,6 +273,7 @@ def validate_policy(story: Storybook) -> ValidationReport:
         )
         return report
     _check_forbidden_kinds(story, profile, report)
+    _check_band_topology(story, report)
     _check_content_ceiling(story, profile, report)
     _check_floors(story, profile, report)
     _check_topology(story, report)
@@ -339,6 +434,46 @@ def _check_topology(story: Storybook, report: ValidationReport) -> None:
                 ),
             )
         )
+
+
+def _check_band_topology(story: Storybook, report: ValidationReport) -> None:
+    """PL-29: declared topology must be allowed for the band (ADR-011 s7).
+
+    Independent of PL-18 and both must hold. PL-18 asks whether the declared
+    label fits the graph's *shape*; PL-29 asks whether the band is permitted to
+    use that label at all. ``branch_and_bottleneck`` is a well-formed shape that
+    a 3-5 or 5-8 book may not declare, so a skeleton can satisfy PL-18 and still
+    be wrong for its band.
+
+    #CRITICAL: data-integrity: the band row was enforced only by the offline
+    mutation core, never by the gate authors actually run. Three skeletons
+    drafted 2026-08-16 declared ``branch_and_bottleneck`` at 3-5 and 5-8,
+    passed ``check_skeleton --strict`` clean, and failed only once the mutation
+    operators ran over them, which is far too late and only happens for
+    catalog-time work. Every committed skeleton already satisfies its row, so
+    this rule blocks nothing that exists and would have blocked all three.
+    #VERIFY: test_policy.py::test_pl29_rejects_a_topology_the_band_forbids and
+    ::test_pl29_accepts_every_committed_skeleton.
+
+    Args:
+        story: The validated Storybook.
+        report: The report to add findings to.
+    """
+    allowed = BAND_TOPOLOGIES.get(story.metadata.age_band.value)
+    if allowed is None or story.metadata.topology in allowed:
+        return
+    report.add(
+        ValidationFinding(
+            rule_id="PL-29",
+            severity=Severity.ERROR,
+            story_id=story.id,
+            message=(
+                f"PL-29 topology: band '{story.metadata.age_band.value}' may not "
+                f"declare '{story.metadata.topology.value}' (allowed: "
+                f"{sorted(t.value for t in allowed)}) in story '{story.id}'"
+            ),
+        )
+    )
 
 
 def node_word_count(body: str) -> int:

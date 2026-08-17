@@ -10,11 +10,14 @@ Rule application order (per ``docs/planning/validator-rules.md``
 1. Layer 1 (L1-1..L1-8): graph structure, schema conformance, logic.
 2. **Early return on any L1 ERROR**: the graph must be sound before a
    state-space walk is meaningful, and the document may not even parse.
-3. PL-27: retained ``<<FILL`` directive check, but only when the caller
-   passes ``context="fill_result"``. Runs ahead of the rest of the policy
-   layer so an unwritten book's first finding names that cause. Under the
-   default ``"skeleton"`` posture it does not run at all, because a
-   catalog skeleton's bodies are directives by construction (AL-325).
+3. PL-27 and PL-28: the two rules that fire only when the caller passes
+   ``context="fill_result"``. PL-27 rejects a retained ``<<FILL`` directive
+   (the node was never written); PL-28 rejects an ADR-011 MVP/Test seed
+   (a prototyping shell may not become a child-facing book). Both run ahead
+   of the rest of the policy layer so an unwritten or non-production book's
+   first finding names that cause. Under the default ``"skeleton"`` posture
+   neither runs, because a catalog skeleton's bodies are directives by
+   construction (AL-325) and a seed is a legitimate catalog object.
 4. Policy (PL-15..PL-18): age-safety and shape invariants on the parsed
    model (forbidden ending kinds, content ceilings, floors, topology).
 5. Layer 2 (L2-9..L2-13): state-space walk, Tier-2 only (Tier-1 skips). L2-13
@@ -55,7 +58,11 @@ from cyo_adventure.validator.character import validate_character
 from cyo_adventure.validator.choice_grammar import check_choice_grammar
 from cyo_adventure.validator.layer1 import Scale, validate_layer1
 from cyo_adventure.validator.layer2 import validate_layer2
-from cyo_adventure.validator.policy import check_fill_residue, validate_policy
+from cyo_adventure.validator.policy import (
+    check_fill_residue,
+    check_mvp_firewall,
+    validate_policy,
+)
 from cyo_adventure.validator.reading_level import check_reading_level
 from cyo_adventure.validator.report import (
     Severity,
@@ -172,6 +179,11 @@ def run_gate(
     # rule happens to trip over a directive-shaped body first. ---
     if context == "fill_result":
         merged.extend(check_fill_residue(story))
+        # --- PL-28: an ADR-011 MVP/Test seed is a prototyping shell and must
+        # never become a child-facing book. The generation selection layer
+        # already drops seeds (skeleton_match._candidates); this is the same
+        # exclusion on the manual import path, which had none. ---
+        merged.extend(check_mvp_firewall(story))
 
     # --- Policy layer: age-safety and shape invariants (PL-15..PL-18) ---
     merged.extend(validate_policy(story))

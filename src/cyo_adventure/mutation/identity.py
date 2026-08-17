@@ -40,7 +40,10 @@ from cyo_adventure.mutation._raw import (
 from cyo_adventure.mutation.subtree import adjacency, node_ids
 from cyo_adventure.storybook.models import Topology
 from cyo_adventure.validator.band_profile import reading_pace_wpm
-from cyo_adventure.validator.topology import admissible_topologies
+from cyo_adventure.validator.topology import (
+    BAND_TOPOLOGIES,
+    admissible_topologies,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Mapping
@@ -81,41 +84,10 @@ _FILL_WORDS_RE = re.compile(r"words\s*=\s*(\d+)")
 # skeleton's own declared topology is preserved by redeclare_topology, and that
 # redeclare output is always in both the band row and
 # admissible_topologies(graph).
-_BAND_TOPOLOGIES: dict[str, frozenset[Topology]] = {
-    "3-5": frozenset({Topology.LOOP_AND_GROW, Topology.TIME_CAVE}),
-    "5-8": frozenset({Topology.TIME_CAVE, Topology.LOOP_AND_GROW, Topology.OPEN_MAP}),
-    "8-11": frozenset(
-        {
-            Topology.BRANCH_AND_BOTTLENECK,
-            Topology.TIME_CAVE,
-            Topology.OPEN_MAP,
-            Topology.SORTING_HAT,
-        }
-    ),
-    "10-13": frozenset(
-        {
-            Topology.BRANCH_AND_BOTTLENECK,
-            Topology.OPEN_MAP,
-            Topology.SORTING_HAT,
-        }
-    ),
-    "13-16": frozenset(
-        {
-            Topology.BRANCH_AND_BOTTLENECK,
-            Topology.GAUNTLET,
-            Topology.SORTING_HAT,
-            Topology.OPEN_MAP,
-        }
-    ),
-    "16+": frozenset(
-        {
-            Topology.BRANCH_AND_BOTTLENECK,
-            Topology.GAUNTLET,
-            Topology.SORTING_HAT,
-            Topology.OPEN_MAP,
-        }
-    ),
-}
+# ADR-011 section 7 band rows. Defined in `validator/topology.py` so the gate
+# and this offline core enforce one table: the two had drifted apart, with the
+# gate not checking the row at all (PL-29).
+_BAND_TOPOLOGIES = BAND_TOPOLOGIES
 
 # A fixed, deterministic preference order for choosing a replacement topology
 # when the parent's declared value is no longer admissible. Follows the

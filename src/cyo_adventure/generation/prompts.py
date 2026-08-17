@@ -47,11 +47,13 @@ if TYPE_CHECKING:
     from cyo_adventure.validator.slots import SlotViolation
 
 __all__ = [
+    "FillBatchPayload",
     "StagePrompt",
     "build_bind_prompt",
     "build_bound_fill_prompt",
     "build_fidelity_repair_prompt",
     "build_fill_prompt",
+    "build_fill_subset_prompt",
     "build_interpret_bind_prompt",
     "build_prose_prompt",
     "build_reading_level_repair_prompt",
@@ -69,6 +71,9 @@ _TEMPLATES = files("cyo_adventure.generation.templates")
 # the volatile (per-job) user region. Everything before the marker is the system
 # block; everything after is the user block.
 _USER_MARKER = "<!-- @user -->"
+# Inert stand-in for a forged stage marker inside an untrusted payload; see
+# `_neutralize_fence`.
+_USER_MARKER_DEFANGED = "<!-- @user_NEUTRALIZED -->"
 
 # Placeholder tokens shared by every stage template (structure/prose/fill). Named
 # once so the substitution sites cannot drift from the template text.
@@ -187,7 +192,19 @@ def _neutralize_fence(text: str) -> str:
     Returns:
         The payload with any fence terminator rendered inert.
     """
-    return text.replace(_FENCE_TERMINATOR, _FENCE_TERMINATOR_DEFANGED)
+    # The stage-split marker is the second delimiter an untrusted payload can
+    # forge, and forging it is worse than forging the fence: `_split_stage_prompt`
+    # requires EXACTLY one marker, so a second one raises BusinessLogicError,
+    # which is not a ValidationError and therefore escapes `_fill_in_batches` and
+    # `fill_skeleton` entirely. An RQ job then retries a deterministic failure
+    # forever. Reachable from model-written prose the moment a chunked fill runs:
+    # `json.dumps` escapes quotes and newlines but leaves this literal intact.
+    # Confirmed by construction, not inferred (`AL-434`).
+    # #VERIFY: test_chunked_fill.py::
+    # test_the_subset_prompt_neutralizes_a_literal_stage_marker.
+    return text.replace(_FENCE_TERMINATOR, _FENCE_TERMINATOR_DEFANGED).replace(
+        _USER_MARKER, _USER_MARKER_DEFANGED
+    )
 
 
 def _drafting_guide() -> str:
@@ -542,6 +559,93 @@ def build_fill_prompt(
         _load_template("fill.md")
         .replace(_DRAFTING_GUIDE_PLACEHOLDER, _drafting_guide())
         .replace(_SCHEMA_RULES_PLACEHOLDER, _schema_rules())
+        .replace("{skeleton_with_fill_directives}", skeleton_json)
+        .replace(_THEME_BRIEF_PLACEHOLDER, theme_brief)
+        .replace(
+            "{differentiation_directive}",
+            differentiation_directive
+            or build_differentiation_directive(level=None, axis_instruction=None),
+        )
+    )
+    return _split_stage_prompt(text)
+
+
+@dataclass(frozen=True, slots=True)
+class FillBatchPayload:
+    """The two batch-specific JSON blocks a chunked fill prompt carries.
+
+    Bundled rather than passed as two more arguments so the builder keeps the
+    same four-parameter shape as every other prompt builder in this module.
+
+    Attributes:
+        nodes_to_fill_json: JSON for this batch's work order, as produced by
+            :func:`~cyo_adventure.generation.chunking.batch_request`.
+        prose_so_far_json: JSON mapping node id to already-written body, as
+            produced by
+            :func:`~cyo_adventure.generation.chunking.written_prose`. ``"{}"``
+            for the first batch.
+    """
+
+    nodes_to_fill_json: str
+    prose_so_far_json: str
+
+
+def build_fill_subset_prompt(
+    skeleton_json: str,
+    batch: FillBatchPayload,
+    theme_brief: str,
+    differentiation_directive: str = "",
+) -> StagePrompt:
+    """Build the prompt for ONE batch of a chunked skeleton fill.
+
+    The one-shot ``fill.md`` asks for the whole document back, which is exactly
+    what a backend with a small output ceiling cannot emit. This variant asks
+    for a mapping of ``node_id`` to prose covering only the batch, so the
+    response size is bounded by the batch rather than by the book (see
+    :mod:`cyo_adventure.generation.chunking`).
+
+    The system block is identical for every batch of every job, so it stays
+    cacheable: the batch-specific content lives entirely in the user block.
+    That block carries four things, and each earns its input tokens:
+
+    * the batch's work order (directives and choice labels to write now),
+    * the prose earlier batches wrote, so names, world, and voice hold across
+      batches rather than restarting at each one,
+    * the full skeleton, so a passage is written knowing where it sits in the
+      graph, and
+    * the theme brief and differentiation directive, identical to one-shot.
+
+    Args:
+        skeleton_json: The full JSON string of the skeleton, for structural
+            context. The model is told not to return it.
+        batch: This batch's work order and the prose already written.
+        theme_brief: JSON-serialised concept brief (the child's request).
+        differentiation_directive: The trusted differentiation block from
+            :func:`build_differentiation_directive`. Defaults to the no-context
+            block rather than to an empty string, so the template never ships
+            an unfilled token.
+
+    Returns:
+        The batch :class:`StagePrompt` (no unfilled tokens).
+
+    Raises:
+        BusinessLogicError: If the template lacks its ``<!-- @user -->`` marker.
+    """
+    # #CRITICAL: security: ``prose_so_far_json`` is model-written prose
+    # descended from an untrusted guardian/child brief, and it is placed inside
+    # the untrusted fence. JSON serialisation escapes quotes and newlines but
+    # NOT the fence terminator, so a body carrying the literal terminator would
+    # close the fence early and everything after it would read as trusted
+    # instruction. This is the same hole ``build_reading_level_repair_prompt``
+    # closes at the one other site that feeds prose back to a model.
+    # #VERIFY: tests/unit/test_chunked_fill.py::
+    # test_the_subset_prompt_neutralizes_a_literal_fence_terminator.
+    text = (
+        _load_template("fill_subset.md")
+        .replace(_DRAFTING_GUIDE_PLACEHOLDER, _drafting_guide())
+        .replace(_SCHEMA_RULES_PLACEHOLDER, _schema_rules())
+        .replace("{nodes_to_fill}", batch.nodes_to_fill_json)
+        .replace("{prose_so_far}", _neutralize_fence(batch.prose_so_far_json))
         .replace("{skeleton_with_fill_directives}", skeleton_json)
         .replace(_THEME_BRIEF_PLACEHOLDER, theme_brief)
         .replace(

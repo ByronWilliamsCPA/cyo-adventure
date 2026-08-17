@@ -398,6 +398,11 @@
         "content_flags": {
           "$ref": "#/$defs/ContentFlags"
         },
+        "deprecated": {
+          "default": false,
+          "title": "Deprecated",
+          "type": "boolean"
+        },
         "ending_count": {
           "minimum": 1,
           "title": "Ending Count",

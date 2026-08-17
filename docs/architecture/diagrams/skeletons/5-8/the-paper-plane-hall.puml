@@ -1,0 +1,205 @@
+@startuml the-paper-plane-hall
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_rain
+state n_rain #BBDEFB
+n_rain : setup · 72w
+state n_hall #BBDEFB
+n_hall : setup · 70w
+state n_table #FFF9C4
+n_table : choice · 80w
+state n_dart_1 #D1C4E9
+n_dart_1 : rising · 66w
+state n_dart_shape #FFF9C4
+n_dart_shape : choice · 76w
+state n_dart_thumb #D1C4E9
+n_dart_thumb : rising · 62w
+state n_dart_clip #D1C4E9
+n_dart_clip : rising · 62w
+state n_dart_line #FFF9C4
+n_dart_line : choice · 76w
+state n_dart_flat #D1C4E9
+n_dart_flat : rising · 64w
+state n_dart_steps #D1C4E9
+n_dart_steps : rising · 64w
+state n_dart_far #FFF9C4
+n_dart_far : choice · 74w
+state n_end_dart_record #C8E6C9
+n_end_dart_record : completion (positive)
+n_end_dart_record : "Past the Fire Door"
+state n_end_dart_skid #E0E0E0
+n_end_dart_skid : setback (neutral)
+n_end_dart_skid : "The Dusty Retirement"
+state n_dart_high #D1C4E9
+n_dart_high : rising · 64w
+state n_dart_stall #FFF9C4
+n_dart_stall : choice · 74w
+state n_end_dart_hat #E0E0E0
+n_end_dart_hat : discovery (neutral)
+n_end_dart_hat : "The Feather in the Cap"
+state n_end_dart_ceiling #E0E0E0
+n_end_dart_ceiling : discovery (neutral)
+n_end_dart_ceiling : "The Arrow in the Ceiling"
+state n_glider_1 #D1C4E9
+n_glider_1 : rising · 66w
+state n_glider_shape #FFF9C4
+n_glider_shape : choice · 78w
+state n_glider_wide #D1C4E9
+n_glider_wide : rising · 62w
+state n_glider_tail #D1C4E9
+n_glider_tail : rising · 62w
+state n_glider_blunt #D1C4E9
+n_glider_blunt : rising · 62w
+state n_glider_line #FFF9C4
+n_glider_line : choice · 78w
+state n_glider_gentle #D1C4E9
+n_glider_gentle : rising · 64w
+state n_glider_radiator #D1C4E9
+n_glider_radiator : rising · 64w
+state n_glider_float #FFF9C4
+n_glider_float : choice · 74w
+state n_end_glider_hover #C8E6C9
+n_end_glider_hover : discovery (positive)
+n_end_glider_hover : "The Long Count"
+state n_end_glider_bell #E0E0E0
+n_end_glider_bell : setback (neutral)
+n_end_glider_bell : "A Trayful of Forks"
+state n_glider_balcony #D1C4E9
+n_glider_balcony : rising · 66w
+state n_glider_rail #FFF9C4
+n_glider_rail : choice · 72w
+state n_glider_drop #D1C4E9
+n_glider_drop : rising · 64w
+state n_glider_launch #D1C4E9
+n_glider_launch : rising · 64w
+state n_glider_watch #FFF9C4
+n_glider_watch : choice · 76w
+state n_end_glider_stage #C8E6C9
+n_end_glider_stage : completion (positive)
+n_end_glider_stage : "Into the Spotlight"
+state n_end_glider_curtain #E0E0E0
+n_end_glider_curtain : discovery (neutral)
+n_end_glider_curtain : "Friday Assembly"
+state n_end_glider_piano #E0E0E0
+n_end_glider_piano : discovery (neutral)
+n_end_glider_piano : "One Soft Note"
+state n_loop_1 #D1C4E9
+n_loop_1 : rising · 66w
+state n_loop_shape #FFF9C4
+n_loop_shape : choice · 76w
+state n_loop_curl #D1C4E9
+n_loop_curl : rising · 62w
+state n_loop_slit #D1C4E9
+n_loop_slit : rising · 62w
+state n_loop_line #FFF9C4
+n_loop_line : choice · 76w
+state n_loop_soft #D1C4E9
+n_loop_soft : rising · 64w
+state n_loop_spin #D1C4E9
+n_loop_spin : rising · 64w
+state n_loop_circle #FFF9C4
+n_loop_circle : choice · 74w
+state n_end_loop_loop #C8E6C9
+n_end_loop_loop : discovery (positive)
+n_end_loop_loop : "Caught With Both Hands"
+state n_end_loop_boomerang #E0E0E0
+n_end_loop_boomerang : discovery (neutral)
+n_end_loop_boomerang : "Between Two Shoes"
+state n_loop_up #D1C4E9
+n_loop_up : rising · 64w
+state n_loop_high #FFF9C4
+n_loop_high : choice · 72w
+state n_end_loop_rafter #E0E0E0
+n_end_loop_rafter : setback (neutral)
+n_end_loop_rafter : "Up on the Beam"
+state n_end_loop_window #E0E0E0
+n_end_loop_window : setback (neutral)
+n_end_loop_window : "Out Into the Rain"
+n_rain --> n_hall : Go into the hall.
+n_hall --> n_table : Join Priya at the paper table.
+n_table --> n_dart_1 : Fold a sharp-nosed dart.
+n_table --> n_glider_1 : Fold a wide-winged glider.
+n_table --> n_loop_1 : Fold a curled loop wing.
+n_dart_1 --> n_dart_shape : Finish the dart.
+n_dart_shape --> n_dart_thumb : Press the creases sharp.
+n_dart_shape --> n_dart_clip : Clip the nose.
+n_dart_thumb --> n_dart_line : Carry it to the chalk line.
+n_dart_clip --> n_dart_line : Carry it to the chalk line.
+n_dart_line --> n_dart_flat : Throw it hard and flat.
+n_dart_line --> n_dart_high : Throw it steeply upward.
+n_dart_line --> n_dart_steps : Throw it from the stage steps.
+n_dart_flat --> n_dart_far : Watch where it lands.
+n_dart_steps --> n_dart_far : Watch where it lands.
+n_dart_far --> n_end_dart_record : Follow it to the fire door.
+n_dart_far --> n_end_dart_skid : Check under the radiator.
+n_dart_far --> n_table : Go back and fold a different plane.
+n_dart_high --> n_dart_stall : Wait to see what it does.
+n_dart_stall --> n_end_dart_hat : Watch it drop towards the cap.
+n_dart_stall --> n_end_dart_ceiling : Watch it rise towards the tiles.
+n_glider_1 --> n_glider_shape : Finish the glider.
+n_glider_shape --> n_glider_wide : Turn the wingtips up.
+n_glider_shape --> n_glider_tail : Fold a tail fin.
+n_glider_shape --> n_glider_blunt : Blunt the nose.
+n_glider_wide --> n_glider_line : Carry it to the chalk line.
+n_glider_tail --> n_glider_line : Carry it to the chalk line.
+n_glider_blunt --> n_glider_line : Carry it to the chalk line.
+n_glider_line --> n_glider_gentle : Push it gently down the hall.
+n_glider_line --> n_glider_radiator : Let it go over a radiator.
+n_glider_line --> n_glider_balcony : Climb to the balcony rail.
+n_glider_gentle --> n_glider_float : Walk along underneath it.
+n_glider_radiator --> n_glider_float : Watch it rise.
+n_glider_float --> n_end_glider_hover : Leave it completely alone.
+n_glider_float --> n_end_glider_bell : Follow it towards the trolleys.
+n_glider_float --> n_table : Go back and fold a different plane.
+n_glider_balcony --> n_glider_rail : Lean out over the rail.
+n_glider_rail --> n_glider_drop : Drop it with no push at all.
+n_glider_rail --> n_glider_launch : Launch it out over the stage.
+n_glider_drop --> n_glider_watch : Lean over and watch it go.
+n_glider_launch --> n_glider_watch : Lean over and watch it go.
+n_glider_watch --> n_end_glider_stage : Watch the bright circle.
+n_glider_watch --> n_end_glider_curtain : Watch the folds of the curtain.
+n_glider_watch --> n_end_glider_piano : Watch the open piano.
+n_loop_1 --> n_loop_shape : Finish the loop wing.
+n_loop_shape --> n_loop_curl : Curl the back of the wings.
+n_loop_shape --> n_loop_slit : Cut and bend the tail.
+n_loop_curl --> n_loop_line : Carry it to the chalk line.
+n_loop_slit --> n_loop_line : Carry it to the chalk line.
+n_loop_line --> n_loop_soft : Lob it gently underarm.
+n_loop_line --> n_loop_spin : Throw it hard and flat.
+n_loop_line --> n_loop_up : Throw it at the ceiling.
+n_loop_soft --> n_loop_circle : Follow it with your eyes.
+n_loop_spin --> n_loop_circle : Follow it with your eyes.
+n_loop_circle --> n_end_loop_loop : Try to catch it out of the air.
+n_loop_circle --> n_end_loop_boomerang : Stand still and let it land.
+n_loop_circle --> n_table : Go back and fold a different plane.
+n_loop_up --> n_loop_high : Watch it spiral upward.
+n_loop_high --> n_end_loop_rafter : Watch it drift towards the beams.
+n_loop_high --> n_end_loop_window : Watch it drift towards the open pane.
+n_end_dart_record --> [*]
+n_end_dart_skid --> [*]
+n_end_dart_hat --> [*]
+n_end_dart_ceiling --> [*]
+n_end_glider_hover --> [*]
+n_end_glider_bell --> [*]
+n_end_glider_stage --> [*]
+n_end_glider_curtain --> [*]
+n_end_glider_piano --> [*]
+n_end_loop_loop --> [*]
+n_end_loop_boomerang --> [*]
+n_end_loop_rafter --> [*]
+n_end_loop_window --> [*]
+
+legend right
+  The Paper Plane Hall
+  Band 5-8 · Tier 1 · ~8 min
+  Topology: loop_and_grow
+  50 nodes · 13 endings (4+ / 9n / 0-)
+  Production-eligible
+  Scale: short · prose
+endlegend
+@enduml

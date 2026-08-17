@@ -38,6 +38,11 @@ from cyo_adventure.generation.orchestrator import (
 )
 from cyo_adventure.generation.pii import PiiContext
 from cyo_adventure.generation.provider import MockProvider
+from cyo_adventure.generation.skeleton import (
+    MAX_FILL_OUTPUT_TOKENS,
+    MODEL_OUTPUT_CAPS,
+)
+from cyo_adventure.generation.usage import Completion, TokenUsage
 from cyo_adventure.storybook.models import AgeBand
 
 # ---------------------------------------------------------------------------
@@ -1115,3 +1120,67 @@ async def test_required_posture_without_settings_raises_rather_than_downgrading(
         )
 
     assert provider.calls == []
+
+
+class _CapRecordingProvider:
+    """Provider double that declares a model and records every max_tokens asked.
+
+    Neither real provider clamps: ``providers/openrouter.py`` and
+    ``providers/anthropic.py`` both put ``max_tokens`` straight into the request
+    payload, so what the orchestrator asks for is what the API is asked for.
+    """
+
+    def __init__(self, model: str, responses: list[str]) -> None:
+        self.model = model
+        self._responses = list(responses)
+        self.max_tokens_asked: list[int] = []
+
+    async def complete(
+        self, *, system: str, prompt: str, max_tokens: int
+    ) -> Completion:
+        """Record the requested ceiling and return the next queued response."""
+        del system, prompt
+        self.max_tokens_asked.append(max_tokens)
+        return Completion(
+            text=self._responses.pop(0),
+            usage=TokenUsage(
+                provider="recording",
+                model=self.model,
+                input_tokens=None,
+                output_tokens=None,
+                duration_ms=0,
+            ),
+        )
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_generate_story_stage_b_asks_no_more_than_the_model_can_emit() -> None:
+    """Stage B is the one stage whose ask can exceed a model's output ceiling.
+
+    Stage A (16,384) and the repair loop (32,000) sit under every ceiling in the
+    table, but Stage B asked for the raised default (131,072) unconditionally.
+    Against the shipped Anthropic default (ceiling 64,000) that is rejected by
+    the API rather than quietly lowered, so EVERY Stage B call failed, not just
+    the oversized ones, and `worker.py` reaches this function on the
+    provider-override path. `generate_story` takes no Settings but builds the
+    guarded provider itself, so the provider's declared model is available and
+    authoritative (`AL-436`).
+    """
+    small = "deepseek/deepseek-chat-v3.1"
+    provider = _CapRecordingProvider(small, [_valid_json(), _valid_json_2()])
+
+    outcome = await generate_story(
+        _make_brief(),
+        cast("object", provider),  # pyright: ignore[reportArgumentType]
+        _empty_pii(),
+    )
+
+    assert outcome.status == "passed"
+    ceiling = MODEL_OUTPUT_CAPS[small]
+    assert provider.max_tokens_asked, "no completion was requested"
+    assert max(provider.max_tokens_asked) <= ceiling, (
+        f"asked for more than {small} can emit: {provider.max_tokens_asked}"
+    )
+    # And the clamp is load-bearing here, not incidentally satisfied.
+    assert ceiling < MAX_FILL_OUTPUT_TOKENS

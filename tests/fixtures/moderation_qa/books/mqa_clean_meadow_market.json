@@ -22,7 +22,7 @@
       "scariness": "none",
       "peril": "none"
     },
-    "topology": "sorting_hat"
+    "topology": "time_cave"
   },
   "variables": [],
   "start_node": "n_open",

@@ -1,13 +1,17 @@
 """Batch-import the pre-authored draft story catalog into the review pipeline.
 
-Loads every filled story listed in ``docs/planning/draft-stories-manifest.md``
-(23 distinct stories plus 2 "Cave of Echoes" pilot re-theme variants, 25
+Loads the production stories listed in ``docs/planning/draft-stories-manifest.md``
+(20 distinct stories plus 2 "Cave of Echoes" pilot re-theme variants, 22
 total) and imports each through :func:`cyo_adventure.generation.import_story.import_filled_story`,
 owned by ``CATALOG_FAMILY_ID`` (the sentinel catalog family seeded by
-migration ``20260718020000_seed_catalog_family.sql``). Three of the 25 files
-carry an older Storybook schema shape (missing ``topology``, stale
-``ending.type`` fields, ``schema_version: "1.0"``) and are normalized against
-their source skeleton before import; see :func:`_normalize_legacy_fill`.
+migration ``20260718020000_seed_catalog_family.sql``).
+
+The manifest also documents three MVP/Test-tier files (ADR-011,
+``production_eligible: false``) that are deliberately NOT enumerated here; see
+the note on ``CATALOG_ENTRIES``. They are the only files carrying the older
+Storybook schema shape (missing ``topology``, stale ``ending.type`` fields,
+``schema_version: "1.0"``), which :func:`_normalize_legacy_fill` still handles
+for any caller importing one directly.
 
 This module only IMPORTS: it runs the validator gate, persists a draft, and
 runs moderation, leaving each story at ``in_review`` or ``needs_revision``.
@@ -98,18 +102,29 @@ class CatalogEntry:
 # self-documents against docs/planning/draft-stories-manifest.md and will not
 # silently pick up a future stray file dropped into out/. The 8 files under
 # tests/data/diversity_panel/ are eval-only and are deliberately absent here.
+#
+# #CRITICAL: security: every row here becomes a child-facing book in the catalog
+# family, so a row is a claim that the story is production content. Three rows
+# were removed on 2026-08-17 because they were not: The Lost Mitten, The
+# Clocktower Cipher and The Sunken Signal are filled from the repo's only three
+# `production_eligible: false` skeletons (the ADR-011 MVP/Test tier) and they
+# inherited that flag. They are not defective stories and nothing about their
+# prose needs fixing: they are prototype and pipeline-test output that was never
+# meant for a reader, and listing them here predated any rule that could say so.
+# PL-28 now refuses them at the gate, which is what surfaced the mistake rather
+# than what caused it. The three files stay on disk and stay in the manifest as
+# the legacy-shape normalization fixtures. Do NOT re-add a row without checking
+# `metadata.production_eligible` on the filled file (`AL-441`).
+# #VERIFY: tests/integration/test_import_catalog.py::
+# test_the_mvp_seed_files_normalize_but_are_refused_as_child_facing_books, and
+# tests/unit/test_import_catalog.py::
+# test_no_catalog_entry_declares_itself_non_production.
 CATALOG_ENTRIES: tuple[CatalogEntry, ...] = (
     CatalogEntry(
         "Clover and the Butterfly",
         "out/the-clover-and-the-butterfly.filled.json",
         "3-5",
         "the-clover-and-the-butterfly",
-    ),
-    CatalogEntry(
-        "The Lost Mitten",
-        "out/the-lost-mitten.filled.json",
-        "3-5",
-        "the-lost-mitten",
     ),
     CatalogEntry(
         "The Teddy Bears' Picnic",
@@ -146,12 +161,6 @@ CATALOG_ENTRIES: tuple[CatalogEntry, ...] = (
         "out/the-sky-ship-stowaway.filled.json",
         "8-11",
         "the-sky-ship-stowaway",
-    ),
-    CatalogEntry(
-        "The Clocktower Cipher",
-        "out/the-clocktower-cipher.filled.json",
-        "10-13",
-        "the-clocktower-cipher",
     ),
     CatalogEntry(
         "The Hollow Lighthouse",
@@ -230,12 +239,6 @@ CATALOG_ENTRIES: tuple[CatalogEntry, ...] = (
         "out/the-salt-archive.filled.json",
         "16+",
         "the-salt-archive",
-    ),
-    CatalogEntry(
-        "The Sunken Signal",
-        "out/the-sunken-signal.filled.json",
-        "16+",
-        "the-sunken-signal",
     ),
     CatalogEntry(
         "The Cave of Echoes (dino-dig)",

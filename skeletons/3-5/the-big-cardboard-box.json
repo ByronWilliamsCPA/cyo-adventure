@@ -1,0 +1,634 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_big_cardboard_box",
+  "version": 1,
+  "title": "The Big Cardboard Box",
+  "metadata": {
+    "age_band": "3-5",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 1.0,
+      "tolerance": 1.0
+    },
+    "tier": 1,
+    "themes": [
+      "play",
+      "imagination",
+      "home",
+      "making things",
+      "sharing"
+    ],
+    "estimated_minutes": 3,
+    "ending_count": 18,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "none",
+      "peril": "none"
+    },
+    "topology": "time_cave",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_doorstep",
+  "nodes": [
+    {
+      "id": "n_doorstep",
+      "body": "<<FILL role=setup words=42 beats='the new fridge arrives and the empty box is left on the front step; it is brown and taller than the child and smells of tape and clean dust; a corner is dented in a friendly way; the child walks all the way around it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_peek_inside",
+          "label": "Peek inside the box.",
+          "target": "n_tip_out"
+        }
+      ]
+    },
+    {
+      "id": "n_tip_out",
+      "body": "<<FILL role=setup words=40 beats='the grown up helps tip out the crinkly white paper until the box is empty; a knuckle on the side makes a deep boom like a drum; inside it smells warm and papery and every sound goes big'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_decide",
+          "label": "Decide what the box will be.",
+          "target": "n_two_ways"
+        }
+      ]
+    },
+    {
+      "id": "n_two_ways",
+      "body": "<<FILL role=choice words=46 beats='the box can be two things and the child gets to pick; tipped on its side it makes a low dark den with a doorway at the end; stood up tall it is a tower that wobbles like a giant on tiptoe; both look wonderful'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_on_side",
+          "label": "Tip the box on its side.",
+          "target": "n_on_side"
+        },
+        {
+          "id": "c_stand_up",
+          "label": "Stand the box up tall.",
+          "target": "n_stand_up"
+        }
+      ]
+    },
+
+    {
+      "id": "n_on_side",
+      "body": "<<FILL role=rising words=40 beats='the box rolls onto its side with a soft whump and now it is a long low tunnel; the carpet shows through the open end; kneeling down and looking in, the far end glows a little where the light gets through the tape'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_how_to_enter",
+          "label": "Look for a way in.",
+          "target": "n_door_or_in"
+        }
+      ]
+    },
+    {
+      "id": "n_door_or_in",
+      "body": "<<FILL role=choice words=44 beats='the grown up holds up the safety scissors and offers to cut a proper doorway flap in the side; but the open end is already right there and warm and waiting; the child can have a door or can simply crawl in'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cut_door",
+          "label": "Cut a doorway flap.",
+          "target": "n_flap_cut"
+        },
+        {
+          "id": "c_crawl_in",
+          "label": "Crawl straight in.",
+          "target": "n_crawl_in"
+        }
+      ]
+    },
+    {
+      "id": "n_flap_cut",
+      "body": "<<FILL role=choice words=44 beats='snip snip and the flap swings open and shut like a real door with a real creak; it needs one more thing to be finished; a knocker drawn on the front, or a letter slot cut just above it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_knocker",
+          "label": "Draw a big knocker.",
+          "target": "n_knocker"
+        },
+        {
+          "id": "c_letter_slot",
+          "label": "Cut a letter slot.",
+          "target": "n_letter_slot"
+        }
+      ]
+    },
+    {
+      "id": "n_knocker",
+      "body": "<<FILL role=choice words=42 beats='a fat brown knocker is drawn on with felt tip and it looks almost real; now somebody has to knock; the grown up is waiting outside with a knuckle ready, and the cat is watching the door with very round eyes'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_grown_up_knocks",
+          "label": "Let the grown up knock.",
+          "target": "n_end_knock_knock"
+        },
+        {
+          "id": "c_cat_knocks",
+          "label": "See what the cat does.",
+          "target": "n_end_cat_den"
+        }
+      ]
+    },
+    {
+      "id": "n_end_knock_knock",
+      "body": "<<FILL role=ending words=46 beats='knock knock says the grown up on the cardboard door and the whole den booms; the child answers who is there in a big deep voice; they play the knocking game over and over and the box turns out to be the best door in the house'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_knock_knock",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Knock Knock"
+      }
+    },
+    {
+      "id": "n_end_cat_den",
+      "body": "<<FILL role=ending words=46 beats='the cat pushes the flap with her nose, walks in, turns around twice and sits down like she paid for it; there is no room left for anybody else; the child lies on the carpet and looks in through the doorway at one very pleased cat'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_cat_den",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Cat Moves In"
+      }
+    },
+    {
+      "id": "n_letter_slot",
+      "body": "<<FILL role=rising words=38 beats='the slot is cut long and thin above the door and a hand can just fit through it; from inside the den the slot is a bright stripe of kitchen light; something ought to come through it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_post_something",
+          "label": "Wait for the post.",
+          "target": "n_post"
+        }
+      ]
+    },
+    {
+      "id": "n_post",
+      "body": "<<FILL role=choice words=42 beats='the grown up asks what kind of post this house would like; a drawing folded very small would fit, and so would the flat red leaves from the doormat that blew in this morning'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_post_drawing",
+          "label": "Post a folded drawing.",
+          "target": "n_end_secret_post"
+        },
+        {
+          "id": "c_post_leaves",
+          "label": "Post the red leaves.",
+          "target": "n_end_leaf_letters"
+        }
+      ]
+    },
+    {
+      "id": "n_end_secret_post",
+      "body": "<<FILL role=ending words=46 beats='a folded drawing slides through the slot and lands on the child in the dark; it is a picture of the box with a child inside it; the child posts one back out and the slot becomes a proper post office all afternoon'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_secret_post",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Post Office"
+      }
+    },
+    {
+      "id": "n_end_leaf_letters",
+      "body": "<<FILL role=ending words=44 beats='red leaves come through the slot one at a time and spin down in the dark like slow flat birds; soon the floor of the den is a crackly red carpet; the child lies in the leaves and listens to them whisper'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_leaf_letters",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Leaf Letters"
+      }
+    },
+    {
+      "id": "n_crawl_in",
+      "body": "<<FILL role=choice words=44 beats='inside it is dim and warm and the child breathes cardboard; two things would make it better; the torch from the hall drawer, or a window cut in the side to let the room back in'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_get_torch",
+          "label": "Fetch the torch.",
+          "target": "n_torch"
+        },
+        {
+          "id": "c_cut_window",
+          "label": "Cut a little window.",
+          "target": "n_window"
+        }
+      ]
+    },
+    {
+      "id": "n_torch",
+      "body": "<<FILL role=choice words=44 beats='the torch clicks on and the den turns gold; a hand held up makes a shadow bird on the end wall; the grown up says a fork poked through the roof would let real stars in, and there is also a blanket by the sofa'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_poke_stars",
+          "label": "Poke stars in the roof.",
+          "target": "n_end_star_roof"
+        },
+        {
+          "id": "c_fetch_blanket",
+          "label": "Fetch the blanket.",
+          "target": "n_blanket"
+        }
+      ]
+    },
+    {
+      "id": "n_end_star_roof",
+      "body": "<<FILL role=completion words=48 beats='tiny holes go through the cardboard roof and the torch shines up through them; the whole den fills with little white dots that move when the torch moves; the child lies flat on the carpet under a sky made this afternoon out of a box'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_star_roof",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "A Sky of Little Holes"
+      }
+    },
+    {
+      "id": "n_blanket",
+      "body": "<<FILL role=rising words=38 beats='the big grey blanket goes over the box and hangs down past the doorway; now no light gets in except the torch; it is the quietest place in the whole house and it smells of wool'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_settle_in",
+          "label": "Settle down inside.",
+          "target": "n_snug"
+        }
+      ]
+    },
+    {
+      "id": "n_snug",
+      "body": "<<FILL role=choice words=42 beats='the cushion is in, the torch is on its side making a warm puddle, and the child is very comfortable; there is time for a story read out loud through the doorway, or for a proper lie down'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_have_story",
+          "label": "Ask for a story.",
+          "target": "n_end_story_den"
+        },
+        {
+          "id": "c_lie_down",
+          "label": "Have a little lie down.",
+          "target": "n_end_box_nap"
+        }
+      ]
+    },
+    {
+      "id": "n_end_story_den",
+      "body": "<<FILL role=ending words=46 beats='the grown up sits outside the doorway and reads, and the words come into the box sounding round and close; the child holds the torch under the blanket and turns the pages from the inside; every story is better in a box'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_story_den",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Story Through the Doorway"
+      }
+    },
+    {
+      "id": "n_end_box_nap",
+      "body": "<<FILL role=completion words=46 beats='the torch goes off and the dark is soft and grey; outside the kettle clicks and a bird goes past the window; the child falls asleep in the box with both socks off and is carried up to bed later without waking once'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_box_nap",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Asleep in the Box"
+      }
+    },
+    {
+      "id": "n_window",
+      "body": "<<FILL role=rising words=38 beats='a small square window is cut in the side and the room comes back in a bright neat block; from in here the sofa looks far away and the light lies on the child in a warm stripe'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_look_out",
+          "label": "Look out of the window.",
+          "target": "n_window_view"
+        }
+      ]
+    },
+    {
+      "id": "n_window_view",
+      "body": "<<FILL role=choice words=42 beats='the window frames whatever the child points it at; turned one way it holds the front garden and the bus stop; turned the other way it holds the kitchen doorway where the grown up keeps walking past'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_watch_street",
+          "label": "Watch the bus stop.",
+          "target": "n_end_bus_window"
+        },
+        {
+          "id": "c_watch_kitchen",
+          "label": "Watch the kitchen door.",
+          "target": "n_end_wave_home"
+        }
+      ]
+    },
+    {
+      "id": "n_end_bus_window",
+      "body": "<<FILL role=ending words=44 beats='the window holds one bus stop and two waiting people and a pigeon; the bus comes and fills the whole square with red and then goes and leaves an empty pavement; the child watches three buses and does not get bored once'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_bus_window",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Three Red Buses"
+      }
+    },
+    {
+      "id": "n_end_wave_home",
+      "body": "<<FILL role=ending words=44 beats='every time the grown up crosses the kitchen doorway a hand comes out of the little window and waves; every time, the grown up waves back without stopping; it becomes a rule of the house for the rest of the day'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_wave_home",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Waving Rule"
+      }
+    },
+
+    {
+      "id": "n_stand_up",
+      "body": "<<FILL role=choice words=46 beats='the box goes up on its end and it is taller than the child by a whole head; it sways when it is touched; the child can climb straight in and see what happens, or draw on it first while it stands still'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_climb_in_now",
+          "label": "Climb straight in.",
+          "target": "n_end_flat_puddle"
+        },
+        {
+          "id": "c_draw_first",
+          "label": "Draw on it first.",
+          "target": "n_draw_first"
+        }
+      ]
+    },
+    {
+      "id": "n_end_flat_puddle",
+      "body": "<<FILL role=ending words=44 beats='the child climbs in and the tall box leans, and leans, and folds down slowly like a tired animal; it ends up flat on the carpet with the child sitting in the middle of it laughing; the grown up laughs too and nobody is hurt'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_flat_puddle",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "A Cardboard Puddle"
+      }
+    },
+    {
+      "id": "n_draw_first",
+      "body": "<<FILL role=rising words=40 beats='felt tips come out and the tall box gets covered in circles and arrows and stripes; the child stands back to look; from here the drawings could belong to two completely different machines'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_what_machine",
+          "label": "Decide what machine it is.",
+          "target": "n_what_tower"
+        }
+      ]
+    },
+    {
+      "id": "n_what_tower",
+      "body": "<<FILL role=choice words=44 beats='the circles could be dials on a rocket that is pointed at the ceiling; or they could be the buttons of a lift with a floor for every one of them; the box waits to find out which'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_be_rocket",
+          "label": "Make it a rocket.",
+          "target": "n_rocket"
+        },
+        {
+          "id": "c_be_lift",
+          "label": "Make it a lift.",
+          "target": "n_lift"
+        }
+      ]
+    },
+    {
+      "id": "n_rocket",
+      "body": "<<FILL role=choice words=44 beats='the dials are coloured in and a red one is chosen for the launch; the grown up is ready to count backwards from ten; or the scissors are ready to cut a round porthole so the child can see out first'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_countdown",
+          "label": "Count down from ten.",
+          "target": "n_end_countdown"
+        },
+        {
+          "id": "c_cut_porthole",
+          "label": "Cut a round porthole.",
+          "target": "n_porthole"
+        }
+      ]
+    },
+    {
+      "id": "n_end_countdown",
+      "body": "<<FILL role=completion words=48 beats='ten nine eight, and the whole family joins in from the kitchen; on zero the child jumps and the box hops off the carpet and lands again with a boom; they do it four more times because it works perfectly every single time'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_countdown",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Liftoff on the Carpet"
+      }
+    },
+    {
+      "id": "n_porthole",
+      "body": "<<FILL role=rising words=38 beats='a round hole is cut high up where the child has to go on tiptoe to reach it; one eye at a time fits; through it the living room looks small and far below, the way the ground looks from a plane'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_look_through",
+          "label": "Look through the porthole.",
+          "target": "n_out_the_window"
+        }
+      ]
+    },
+    {
+      "id": "n_out_the_window",
+      "body": "<<FILL role=choice words=42 beats='the porthole can point at anything; swung round to the garden it holds the moon already up over the shed in the afternoon sky; swung the other way it holds the hall mirror and a face looking back'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_see_moon",
+          "label": "Point it at the moon.",
+          "target": "n_end_moon_garden"
+        },
+        {
+          "id": "c_see_mirror",
+          "label": "Point it at the mirror.",
+          "target": "n_end_helmet"
+        }
+      ]
+    },
+    {
+      "id": "n_end_moon_garden",
+      "body": "<<FILL role=ending words=44 beats='the moon is out early and pale over the shed and the porthole holds it exactly; the child keeps one eye there for a long time while the sky goes slowly orange; the moon does not move and neither does the child'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_moon_garden",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Afternoon Moon"
+      }
+    },
+    {
+      "id": "n_end_helmet",
+      "body": "<<FILL role=ending words=46 beats='in the hall mirror the porthole makes a perfect round window with a face in it, and the face is wearing a cardboard box; the child waves at the astronaut and the astronaut waves back at exactly the same moment, every time'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_helmet",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Astronaut in the Mirror"
+      }
+    },
+    {
+      "id": "n_lift",
+      "body": "<<FILL role=choice words=44 beats='the buttons get numbers and the child presses them with a serious face; the top button goes to the roof where the pretend garden is; the bottom button goes down to the basement where it is cold and echoey'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_press_top",
+          "label": "Press the top button.",
+          "target": "n_top_floor"
+        },
+        {
+          "id": "c_press_bottom",
+          "label": "Press the bottom button.",
+          "target": "n_basement"
+        }
+      ]
+    },
+    {
+      "id": "n_top_floor",
+      "body": "<<FILL role=rising words=38 beats='the child hums a rising hum for going up and up and up; the grown up plays the part of the lift and says the floor numbers out loud; the humming gets very high and then stops'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_doors_open",
+          "label": "Open the doors.",
+          "target": "n_ping"
+        }
+      ]
+    },
+    {
+      "id": "n_ping",
+      "body": "<<FILL role=choice words=42 beats='ping says the grown up and the cardboard doors slide open; outside there could be a roof garden full of pretend tomatoes, or there could be more lift music and a very long ride'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_roof_garden",
+          "label": "Step out on the roof.",
+          "target": "n_end_roof_garden"
+        },
+        {
+          "id": "c_more_music",
+          "label": "Ride a bit longer.",
+          "target": "n_end_lift_music"
+        }
+      ]
+    },
+    {
+      "id": "n_end_roof_garden",
+      "body": "<<FILL role=completion words=46 beats='the doors open on the roof and the roof turns out to be the sofa, which is allowed today; there are cushion hedges and a lamp for a sun; the child grows a whole garden up there and invites the cat, who accepts'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_roof_garden",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Garden on the Roof"
+      }
+    },
+    {
+      "id": "n_end_lift_music",
+      "body": "<<FILL role=ending words=44 beats='the doors shut again and the grown up hums lift music with no tune at all; floor after floor goes past and none of them is the right one; it is the silliest song in the house and it goes on for ages'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_lift_music",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Lift Music Forever"
+      }
+    },
+    {
+      "id": "n_basement",
+      "body": "<<FILL role=choice words=44 beats='the humming goes down instead and gets low and rumbly; the box sounds different when the child hums low inside it, buzzy against the ears; the button below the basement has no number on it at all'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_stop_basement",
+          "label": "Stop at the basement.",
+          "target": "n_end_cellar_giggle"
+        },
+        {
+          "id": "c_go_deeper",
+          "label": "Press the button with no number.",
+          "target": "n_deeper"
+        }
+      ]
+    },
+    {
+      "id": "n_end_cellar_giggle",
+      "body": "<<FILL role=ending words=44 beats='the doors open on the basement and the basement is dark and cold and full of nothing; the child says hello in a low voice and the box says hello back all buzzy; then the giggling starts and the lift has to close its doors'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_cellar_giggle",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Floor With Nothing On It"
+      }
+    },
+    {
+      "id": "n_deeper",
+      "body": "<<FILL role=choice words=42 beats='below the basement the numbers run out and the humming goes as low as a child can hum; something is down here; the grown up asks whether it has feet or fins'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_feet",
+          "label": "Say it has feet.",
+          "target": "n_end_dinosaur_floor"
+        },
+        {
+          "id": "c_fins",
+          "label": "Say it has fins.",
+          "target": "n_end_paper_sea"
+        }
+      ]
+    },
+    {
+      "id": "n_end_dinosaur_floor",
+      "body": "<<FILL role=ending words=44 beats='the doors open on a floor of warm mud and enormous slow footsteps going past; the child does not step out; the doors close again and the lift takes a long time coming back up, and that is exactly right'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_dinosaur_floor",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Floor With Footsteps"
+      }
+    },
+    {
+      "id": "n_end_paper_sea",
+      "body": "<<FILL role=ending words=44 beats='the doors open under water and the whole floor is a slow green sea with something long swimming past; then the crinkly packing paper is pushed in around the child, which is nearly the same thing, and the lift fills up with sea'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_paper_sea",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Paper Sea"
+      }
+    }
+  ]
+}

@@ -103,7 +103,7 @@
       "content_token_count": 2895,
       "distinct_1": 0.34715,
       "distinct_2": 0.879505,
-      "fingerprint": "df88494b052f6462962daf704f646afc8a3749d36e9b8cf84fc7e418eb05ac52",
+      "fingerprint": "afca8ac3ec5fa68a12bb0169d6380864bf8564703d883c78fd0ebb3896e84c04",
       "self_bleu_lite": 0.392027
     },
     "cave-sea": {
@@ -111,7 +111,7 @@
       "content_token_count": 2988,
       "distinct_1": 0.335341,
       "distinct_2": 0.883681,
-      "fingerprint": "df88494b052f6462962daf704f646afc8a3749d36e9b8cf84fc7e418eb05ac52",
+      "fingerprint": "afca8ac3ec5fa68a12bb0169d6380864bf8564703d883c78fd0ebb3896e84c04",
       "self_bleu_lite": 0.379113
     },
     "cave-space": {
@@ -119,7 +119,7 @@
       "content_token_count": 3678,
       "distinct_1": 0.327352,
       "distinct_2": 0.887628,
-      "fingerprint": "df88494b052f6462962daf704f646afc8a3749d36e9b8cf84fc7e418eb05ac52",
+      "fingerprint": "afca8ac3ec5fa68a12bb0169d6380864bf8564703d883c78fd0ebb3896e84c04",
       "self_bleu_lite": 0.381389
     },
     "clockwork": {
@@ -127,7 +127,7 @@
       "content_token_count": 9330,
       "distinct_1": 0.18746,
       "distinct_2": 0.819164,
-      "fingerprint": "6997d7547dcbae50444151ae7934f08cff2f78ab515d099a9ef1d56e43fd8b1e",
+      "fingerprint": "101d828e418aea1b76a9d6e622c30c53f598fb094f2ad32603700f84a81d88a6",
       "self_bleu_lite": 0.495722
     },
     "clover": {
@@ -135,7 +135,7 @@
       "content_token_count": 358,
       "distinct_1": 0.399441,
       "distinct_2": 0.825444,
-      "fingerprint": "be19fdbb5428abf7a5affcc7013e5b50f25e2540527eb94415f35d468b095c55",
+      "fingerprint": "65e9ca910a2863b3a800dca75234bfb9cb30a29a602efaa2e76c065788dcb413",
       "self_bleu_lite": 0.405449
     },
     "lantern": {
@@ -143,7 +143,7 @@
       "content_token_count": 1095,
       "distinct_1": 0.398174,
       "distinct_2": 0.924386,
-      "fingerprint": "0fe43cda4c780a38211bb4b87edbc4dfe03da33437c4d55decae2fcecc4e6450",
+      "fingerprint": "aecee4e1178d030e325741a6ccb456ceed6e6aa5b0711e95413d69c36243c006",
       "self_bleu_lite": 0.31354
     },
     "skyship": {
@@ -151,7 +151,7 @@
       "content_token_count": 4780,
       "distinct_1": 0.286611,
       "distinct_2": 0.889032,
-      "fingerprint": "a74c778ae4e843a3b0f857ce5623948c744edd9741b57fb1e7f3f7da49c7ff08",
+      "fingerprint": "1348ffc051ab47230722e3845bd4def60bcbd52da626c0a4d059636c14f75025",
       "self_bleu_lite": 0.389259
     },
     "skyship-submarine": {
@@ -159,7 +159,7 @@
       "content_token_count": 4007,
       "distinct_1": 0.366858,
       "distinct_2": 0.932734,
-      "fingerprint": "a74c778ae4e843a3b0f857ce5623948c744edd9741b57fb1e7f3f7da49c7ff08",
+      "fingerprint": "1348ffc051ab47230722e3845bd4def60bcbd52da626c0a4d059636c14f75025",
       "self_bleu_lite": 0.294548
     }
   },

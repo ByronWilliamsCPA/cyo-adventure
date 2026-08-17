@@ -117,6 +117,7 @@ from cyo_adventure.generation.metered import MeteredProvider
 from cyo_adventure.generation.orchestrator import _MAX_TOKENS_PROSE, fill_skeleton
 from cyo_adventure.generation.pii import PiiContext
 from cyo_adventure.generation.provider import build_openrouter_leg, build_provider
+from cyo_adventure.generation.skeleton import resolve_output_cap
 from cyo_adventure.generation.usage import UsageLedger
 from cyo_adventure.validator.reading_level import measure_book
 
@@ -724,7 +725,14 @@ async def run_comparison(
                 _build_provider(vendor, resolved, mock=mock, max_tokens=max_tokens),
                 ledger=ledger,
             )
-            effective_cap = max_tokens if max_tokens is not None else _PROSE_CAP
+            # The cap the fill will really run under: `fill_skeleton` resolves it
+            # from the provider's own model, so reporting `_PROSE_CAP` here made
+            # the near-cap heuristic below compare against a ceiling no leg used.
+            effective_cap = (
+                max_tokens
+                if max_tokens is not None
+                else resolve_output_cap(getattr(provider, "model", None))
+            )
             started = time.monotonic()
             try:
                 outcome = await fill_skeleton(

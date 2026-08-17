@@ -17,7 +17,7 @@
       "kindness",
       "celebration"
     ],
-    "estimated_minutes": 5,
+    "estimated_minutes": 3,
     "ending_count": 11,
     "content_flags": {
       "violence": "none",
@@ -27,7 +27,8 @@
     "topology": "loop_and_grow",
     "length": "medium",
     "narrative_style": "prose",
-    "production_eligible": true
+    "production_eligible": true,
+    "deprecated": true
   },
   "variables": [],
   "start_node": "n_start",

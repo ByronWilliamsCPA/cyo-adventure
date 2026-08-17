@@ -1,10 +1,11 @@
 """DB-backed integration tests for the catalog batch importer.
 
-Uses a small, deliberately-chosen subset of the real 25-entry manifest (the
-3 legacy-shape files, one plain current-shape file, and the 2 id_suffix
-pilot variants) rather than the full batch, to keep the suite fast: several
-manifest entries (Harrowstone Keep, Sunken Temple, Ashfall Expedition) are
-500+ node gamebooks not needed to exercise this module's own logic.
+Uses a small, deliberately-chosen subset of the real 22-entry manifest (two
+plain current-shape files and the 2 id_suffix pilot variants) rather than the
+full batch, to keep the suite fast: several manifest entries (Harrowstone Keep,
+Sunken Temple, Ashfall Expedition) are 500+ node gamebooks not needed to
+exercise this module's own logic. The 3 legacy-shape files are exercised too but
+are no longer manifest rows; see ``_MVP_SEED_ENTRIES``.
 
 ``settings.generation_provider`` defaults to "mock" (core/config.py) and
 nothing in this test suite overrides it, so ``import_filled_story``'s
@@ -49,11 +50,38 @@ def _entry(title: str) -> CatalogEntry:
 
 
 _CLOVER = _entry("Clover and the Butterfly")
-_LOST_MITTEN = _entry("The Lost Mitten")
-_CLOCKTOWER_CIPHER = _entry("The Clocktower Cipher")
-_SUNKEN_SIGNAL = _entry("The Sunken Signal")
+_TEDDY_BEARS = _entry("The Teddy Bears' Picnic")
 _PILOT_DINO_DIG = _entry("The Cave of Echoes (dino-dig)")
 _PILOT_SPACE_STATION = _entry("The Cave of Echoes (space-station)")
+
+# The three legacy-shape files are deliberately NOT manifest rows: they are
+# filled from the repo's only `production_eligible: false` skeletons (ADR-011
+# MVP/Test tier), so importing one as a child-facing book is what PL-28 exists
+# to refuse. They stay on disk as the normalization fixtures, so they are named
+# here as ad-hoc entries rather than looked up in CATALOG_ENTRIES (`AL-441`).
+_MVP_SEED_ENTRIES: tuple[CatalogEntry, ...] = (
+    CatalogEntry(
+        "The Lost Mitten", "out/the-lost-mitten.filled.json", "3-5", "the-lost-mitten"
+    ),
+    CatalogEntry(
+        "The Clocktower Cipher",
+        "out/the-clocktower-cipher.filled.json",
+        "10-13",
+        "the-clocktower-cipher",
+    ),
+    CatalogEntry(
+        "The Sunken Signal",
+        "out/the-sunken-signal.filled.json",
+        "16+",
+        "the-sunken-signal",
+    ),
+)
+
+# Rule ids the legacy shape trips BEFORE normalization: a stale `schema_version`,
+# a missing `metadata.topology`, and the old `{id, type, title}` ending dicts all
+# fail structural layers. Their absence from a blocked reason is the proof that
+# `_normalize_legacy_fill` ran and did its job.
+_PRE_NORMALIZATION_RULE_PREFIXES = ("L1-", "L2-")
 
 
 async def test_import_catalog_imports_a_small_entry_and_is_idempotent(
@@ -78,30 +106,45 @@ async def test_import_catalog_imports_a_small_entry_and_is_idempotent(
     assert second[0].story_id == first[0].story_id
 
 
-async def test_import_catalog_imports_all_three_legacy_entries_end_to_end(
+async def test_the_mvp_seed_files_normalize_but_are_refused_as_child_facing_books(
     sessions: async_sessionmaker[AsyncSession],
 ) -> None:
-    """The 3 documented legacy-shape files import cleanly through the full path.
+    """The 3 legacy-shape files still normalize, and PL-28 still refuses them.
 
-    Regression for the normalization recipe (_normalize_legacy_fill): proves
-    it survives not just run_gate() in isolation (see the unit-test
-    parametrized coverage) but the entire import_filled_story path, including
-    persistence and moderation, against the real files.
+    Carries the normalization recipe's end-to-end leg (`_normalize_legacy_fill`
+    survives the whole ``import_filled_story`` path, not just ``run_gate`` in
+    isolation) and the MVP firewall in one assertion set, because the two prove
+    each other. Blocking on PL-28 ALONE is only reachable AFTER normalization has
+    run: un-normalized, these documents fail structural layers first on a stale
+    ``schema_version``, an absent ``metadata.topology`` and the old
+    ``{id, type, title}`` ending dicts. So a structural finding here means
+    normalization regressed, and a clean import here means the firewall regressed.
+
+    These three were manifest rows until 2026-08-17, asserted to import cleanly.
+    They are filled from the repo's only ``production_eligible: false`` skeletons,
+    so that assertion was always wrong about intent; PL-28 only made it fail
+    (`AL-441`).
     """
-    entries = (_LOST_MITTEN, _CLOCKTOWER_CIPHER, _SUNKEN_SIGNAL)
     config = ImportConfig(repo_root=_REPO_ROOT)
 
-    outcomes = await import_catalog(sessions, config, entries=entries)
+    outcomes = await import_catalog(sessions, config, entries=_MVP_SEED_ENTRIES)
 
     assert len(outcomes) == 3
-    for entry, outcome in zip(entries, outcomes, strict=True):
-        assert outcome.outcome == "imported", (entry.title, outcome.detail)
+    for entry, outcome in zip(_MVP_SEED_ENTRIES, outcomes, strict=True):
+        assert outcome.outcome == "gate_blocked", (entry.title, outcome.detail)
+        assert "PL-28" in outcome.detail, (entry.title, outcome.detail)
+        # Normalization ran: no pre-normalization structural layer fired.
+        for prefix in _PRE_NORMALIZATION_RULE_PREFIXES:
+            assert prefix not in outcome.detail, (
+                f"{entry.title} blocked on {prefix}, so _normalize_legacy_fill "
+                f"did not run or regressed: {outcome.detail}"
+            )
 
     async with sessions() as session:
-        for entry, outcome in zip(entries, outcomes, strict=True):
-            book = await session.get(Storybook, outcome.story_id)
-            assert book is not None, entry.title
-            assert book.family_id == CATALOG_FAMILY_ID
+        for entry, outcome in zip(_MVP_SEED_ENTRIES, outcomes, strict=True):
+            # A refused book must leave nothing behind in the catalog family.
+            assert outcome.story_id is not None, entry.title
+            assert await session.get(Storybook, outcome.story_id) is None, entry.title
 
 
 async def test_import_catalog_isolates_a_bad_entry_from_the_rest(
@@ -163,7 +206,7 @@ async def test_import_catalog_survives_an_integrity_error_and_continues(
     monkeypatch.setattr(import_catalog_module, "import_filled_story", _flaky_import)
 
     config = ImportConfig(repo_root=_REPO_ROOT)
-    outcomes = await import_catalog(sessions, config, entries=(_CLOVER, _LOST_MITTEN))
+    outcomes = await import_catalog(sessions, config, entries=(_CLOVER, _TEDDY_BEARS))
 
     assert len(outcomes) == 2
     assert outcomes[0].outcome == "error"

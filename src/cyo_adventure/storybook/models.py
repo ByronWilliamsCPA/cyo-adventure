@@ -372,6 +372,23 @@ class StoryMetadata(BaseModel):
     # still applies. Defaults to ``True`` so an omitted field means production.
     # See ADR-011 (story-scale framework), the MVP/Test tier.
     production_eligible: bool = True
+    # ADR-011 decision D11: a retired skeleton. Distinct from
+    # ``production_eligible``, which marks the MVP/Test prototyping tier and
+    # also loosens the L1-7 budget. A deprecated skeleton was a legitimate
+    # production skeleton; it is simply superseded, so it keeps its band budget
+    # and every other policy, and only stops being SELECTABLE for new stories.
+    #
+    # #CRITICAL: data-integrity: retirement must not be expressed by flipping
+    # `production_eligible`, which would silently rebudget the story against
+    # the band-independent MVP envelope and make a retired book easier to
+    # validate than a live one. The two flags answer different questions and
+    # are deliberately separate.
+    # #VERIFY: test_skeleton_match.py::test_a_deprecated_skeleton_is_not_a_candidate
+    # and test_policy.py::test_deprecation_does_not_change_the_node_budget.
+    #
+    # Books already published from a now-deprecated skeleton are unaffected:
+    # this gates selection, not anything already in a child's library.
+    deprecated: bool = False
     # Optional campaign-continuity placement. When set, this story is one book of
     # a linear multi-book series; the cross-book meta-validator (validator.series)
     # checks the ADR-011 section-8 continuity invariant across the chain. A story

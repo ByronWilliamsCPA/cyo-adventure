@@ -27,7 +27,8 @@
     "topology": "loop_and_grow",
     "length": "short",
     "narrative_style": "prose",
-    "production_eligible": true
+    "production_eligible": true,
+    "deprecated": true
   },
   "variables": [],
   "start_node": "n_start",
@@ -269,7 +270,7 @@
       "ending": {
         "id": "end_friends",
         "valence": "positive",
-        "kind": "success",
+        "kind": "discovery",
         "title": "{FRIENDS_PRIZE}"
       }
     }

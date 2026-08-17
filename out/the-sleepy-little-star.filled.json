@@ -269,7 +269,7 @@
       "ending": {
         "id": "end_friends",
         "valence": "positive",
-        "kind": "success",
+        "kind": "discovery",
         "title": "A Sky Full of Friends"
       }
     }

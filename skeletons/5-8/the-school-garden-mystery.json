@@ -17,7 +17,7 @@
       "nature",
       "problem-solving"
     ],
-    "estimated_minutes": 5,
+    "estimated_minutes": 8,
     "ending_count": 7,
     "content_flags": {
       "violence": "none",
@@ -27,7 +27,8 @@
     "topology": "open_map",
     "length": "short",
     "narrative_style": "prose",
-    "production_eligible": true
+    "production_eligible": true,
+    "deprecated": true
   },
   "variables": [],
   "start_node": "n_start",

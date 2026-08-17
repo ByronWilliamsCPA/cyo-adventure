@@ -88,6 +88,14 @@ Same *Cave of Echoes* skeleton, filled for two alternate themes (WS-2 pilot).
 
 - Tier-2 (stateful, items/flags/counters) stories: The Harrowstone Keep, The
   Sunken Temple, The Sunken Signal.
+- **Not catalog rows (MVP/Test tier).** The Lost Mitten, The Clocktower Cipher and The Sunken Signal
+  are filled from the repo's only three `production_eligible: false` skeletons (the ADR-011 MVP/Test
+  tier) and inherit that flag, so they are prototype and pipeline-test output rather than child-facing
+  content. They were listed in `generation/import_catalog.py::CATALOG_ENTRIES` until 2026-08-17, which
+  predated any rule that could say otherwise; PL-28 now refuses them at the gate and they were removed
+  from that enumeration. Nothing is wrong with their prose. They remain here, and on disk, as the
+  legacy-shape normalization fixtures described in the next note (`AL-441`).
+
 - Three stories carry an older metadata shape (`schema_version: "1.0"`, no
   `metadata.topology`, stale `{id, type, title}` endings): The Lost Mitten,
   The Clocktower Cipher, The Sunken Signal. Empirically verified (by running
