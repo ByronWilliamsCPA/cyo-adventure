@@ -384,7 +384,7 @@ class StoryMetadata(BaseModel):
     # validate than a live one. The two flags answer different questions and
     # are deliberately separate.
     # #VERIFY: test_skeleton_match.py::test_a_deprecated_skeleton_is_not_a_candidate
-    # and ::test_deprecation_does_not_change_the_node_budget.
+    # and test_policy.py::test_deprecation_does_not_change_the_node_budget.
     #
     # Books already published from a now-deprecated skeleton are unaffected:
     # this gates selection, not anything already in a child's library.

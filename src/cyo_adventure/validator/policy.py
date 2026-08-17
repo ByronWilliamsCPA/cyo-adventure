@@ -161,9 +161,9 @@ def check_mvp_firewall(story: Storybook) -> ValidationReport:
     Measured 2026-08-16: all three seeds ADR-011 names by slug (Lost Mitten,
     Clocktower Cipher, Sunken Signal) already had filled books sitting in the
     corpus.
-    #VERIFY: see test_gate.py::test_fill_result_context_blocks_an_mvp_seed and
-    ::test_skeleton_context_tolerates_an_mvp_seed, plus
-    test_policy.py::test_mvp_firewall_passes_a_production_story.
+    #VERIFY: see test_gate.py::test_fill_result_context_blocks_an_mvp_seed,
+    ::test_skeleton_context_tolerates_an_mvp_seed, and
+    ::test_a_production_story_is_untouched_by_the_mvp_firewall.
 
     Context-gated for the same reason PL-27 is: at catalog time a seed is a
     legitimate object that ``check_skeleton.py --allow-mvp`` is built to

@@ -177,7 +177,8 @@ MAX_FILL_OUTPUT_TOKENS = 131_072
 # because a completion stopped on `length` is leg-fatal rather than retried
 # (AL-329), so an unknown small-output model fails fast and loudly rather than
 # burning the repair budget.
-# #VERIFY: test_skeleton_feasibility covers the clamp and the passthrough.
+# #VERIFY: test_fill_output_cap.py::test_a_small_output_model_clamps_the_cap_down
+# covers the clamp and ::test_an_unknown_model_gets_the_default the passthrough.
 MODEL_OUTPUT_CAPS: dict[str, int] = {
     "deepseek/deepseek-v4-pro": 393_216,
     "deepseek/deepseek-v4-flash": 384_000,
@@ -282,8 +283,10 @@ def is_fill_feasible(story: dict[str, object], *, max_tokens: int) -> bool:
     Measured 2026-08-16: 26 of the 62 production skeletons exceed the current
     32,000-token cap, the largest needing about 76,000. This is `UW-C07` and
     `AL-046`.
-    #VERIFY: test_skeleton_feasibility.py asserts an over-cap skeleton is
-    refused and that `skeleton_match` drops it from the candidate set.
+    #VERIFY: test_fill_output_cap.py::
+    test_feasibility_is_measured_against_the_declared_fill_targets asserts the
+    predicate itself, and test_skeleton_match.py::
+    test_an_over_cap_skeleton_is_not_a_candidate that `skeleton_match` drops it.
 
     Note this bounds the *document*, not the call: reasoning tokens share the
     same budget and are not visible here, so a model that reasons heavily can

@@ -79,8 +79,8 @@ def admissible_topologies(graph: nx.DiGraph[str]) -> set[Topology]:
 # `validator/topology.py` is already the shared import for both PL-18 and
 # `mutation/identity.py`, so one definition serves both without the offline
 # core becoming a dependency of the gate.
-# #VERIFY: test_topology.py::test_band_topologies_match_the_committed_catalog
-# asserts every committed skeleton satisfies its row, and
+# #VERIFY: test_policy.py::test_pl29_accepts_every_committed_skeleton asserts
+# every committed skeleton satisfies its row, and
 # test_policy.py::test_pl29_rejects_a_topology_the_band_forbids covers the rule.
 BAND_TOPOLOGIES: dict[str, frozenset[Topology]] = {
     "3-5": frozenset({Topology.LOOP_AND_GROW, Topology.TIME_CAVE}),
