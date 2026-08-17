@@ -36,9 +36,21 @@ if TYPE_CHECKING:
 
     from sqlalchemy.ext.asyncio import AsyncSession
 
-# The output cap `fill_skeleton` runs under. Imported from the orchestrator
-# rather than restated, so the feasibility screen and the call it screens for
-# can never disagree about the budget.
+# The cap this screen runs against: the model-independent DEFAULT, imported
+# from generation/skeleton.py rather than restated so the default cannot drift
+# between the two files.
+#
+# It is deliberately NOT the cap `fill_skeleton` resolves. That call clamps to
+# the configured model's own ceiling (`resolve_output_cap(active_fill_model())`,
+# 32,768 on `deepseek/deepseek-chat-v3.1`), so screening against it would make
+# the catalog a child can be offered depend on which backend happens to be
+# configured, and swapping models would silently change the library rather than
+# the plumbing. Selection is therefore a claim about the skeleton, not about the
+# backend; the per-model shortfall is absorbed downstream by the chunked fill
+# (`generation/chunking.py`), which fills a batch at a time under whatever cap
+# the backend actually offers. An earlier version of this comment claimed the
+# sharing meant the two sites "can never disagree about the budget", which
+# stopped being true the moment the clamp landed (`AL-425`).
 _FILL_MAX_TOKENS: Final[int] = MAX_FILL_OUTPUT_TOKENS
 
 logger = get_logger(__name__)
