@@ -4386,9 +4386,9 @@ substantially the same work under different headings. Do not triple-book.</p>
 </tr>
 <tr>
 <td>UW-C07</td>
-<td><code>AL-046</code> fill orchestrator is one-shot against a 32k output cap and the matcher has no feasibility predicate; 13 books are unfillable today</td>
+<td><code>AL-046</code> fill orchestrator is one-shot against a 32k output cap and the matcher has no feasibility predicate; 13 books are unfillable today <strong>Predicate built and measured 2026-08-16 (<code>AL-420</code>), enforcement deliberately NOT enabled.</strong> <code>generation/skeleton.py::is_fill_feasible</code> computes expected output from the declared <code>words=</code> targets; <code>skeleton_match</code> logs <code>skeleton.fill_infeasible</code> and still offers the candidate. Measured at the 32,000-token cap with an 80 percent margin: 36 of 59 production skeletons are infeasible and 13-16 and 16+ are infeasible in their entirety, so excluding would leave two bands with nothing selectable. The largest skeleton needs about 87,000 output tokens, implying a cap near 109,000, beyond a single response on most backends, so chunking rather than a larger cap is the real fix. <strong>Decided and done 2026-08-17: all three, in the order the owner directed.</strong> The cap was raised 32,000 to 131,072 after the real ceilings were queried rather than assumed (<code>AL-421</code>: <code>deepseek/deepseek-v4-pro</code> reports 393,216 max completion tokens, roughly four times the largest skeleton's need), which takes all 59 production skeletons from 36 infeasible to 0 and makes the screen an exclusion rather than a log. Chunked fill landed as <code>generation/chunking.py</code> plus <code>templates/fill_subset.md</code>, so a backend whose own ceiling clamps below the skeleton is filled a batch at a time instead of dying with no prose (<code>AL-425</code>); the catalog is no longer coupled to one vendor's output ceiling. Retirement ran per cell under ADR-011 D11 wherever two strict-authored skeletons existed to replace the legacy pair (<code>AL-422</code>, <code>UW-C270</code>). The one thing NOT closed here is the screen/call cap divergence, deliberately kept and documented rather than papered over, and tracked as <code>UW-C269</code></td>
 <td>content</td>
-<td>unscheduled</td>
+<td>done</td>
 </tr>
 <tr>
 <td>UW-C08</td>
@@ -5940,7 +5940,7 @@ substantially the same work under different headings. Do not triple-book.</p>
 </tr>
 <tr>
 <td>UW-C266</td>
-<td><code>AL-413</code> Two branches appending to one sequentially-numbered ledger allocate the same ids to different rows, and the resolution that drops one side's rows passes every existing check: <code>check_lessons_log.py</code> catches a duplicate id but reports <code>ok: well formed</code> over a file that has just lost 11 lessons, because what remains is contiguous and unique. Measured directly against <code>184e9d3</code>'s log. The 2026-08-15 merge hit this on both ledgers at once and resolved it by renumbering, but nothing prevents the next concurrent pair from hitting it again, and the failure is silent. Add a merge-aware assertion that a ledger's id set is a superset of both merge parents' id sets, which is the invariant an append-only file actually has and the one no per-file checker can see.</td>
+<td><code>AL-413</code> Two branches appending to one sequentially-numbered ledger allocate the same ids to different rows, and the resolution that drops one side's rows passes every existing check: <code>check_lessons_log.py</code> catches a duplicate id but reports <code>ok: well formed</code> over a file that has just lost 11 lessons, because what remains is contiguous and unique. Measured directly against <code>184e9d3</code>'s log. The 2026-08-15 merge hit this on both ledgers at once and resolved it by renumbering, but nothing prevents the next concurrent pair from hitting it again, and the failure is silent. Add a merge-aware assertion that a ledger's id set is a superset of both merge parents' id sets, which is the invariant an append-only file actually has and the one no per-file checker can see. <strong>Widened 2026-08-17 (<code>AL-426</code>)</strong>: merging is not the only trigger. Two worktree subagents launched from the same commit in one session both allocated <code>AL-423</code>/<code>UW-C268</code> for unrelated findings, and the superset assertion proposed above would not have caught it, because each agent's tree is individually well formed and contiguous. Pair the assertion with id allocation at dispatch: a parallel agent is given an explicit id range in its brief rather than picking the next free one.</td>
 <td>now</td>
 <td>unscheduled</td>
 </tr>
@@ -5948,6 +5948,30 @@ substantially the same work under different headings. Do not triple-book.</p>
 <td>UW-C267</td>
 <td><code>AL-416</code> W7 reduces a continuous effect size to a categorical verdict and prints only the side of the threshold, so a criterion that passes by equality is reported in the same word as one that passes by 8x. Measured 2026-08-16: <code>engagement</code> KEEPs with an effect of -0.50 against a 0.5 detection margin on 5 of 6 books, surviving only because its control-arm run-to-run movement happens to be 0.000, while <code>imagery</code> KEEPs at -2.00 on 6 of 6. One book moving one scale point would take <code>engagement</code> below the margin, and nothing in the report would have warned a reader that it was that close. Print each verdict with its effect size and the noise it cleared, so the distance to the threshold survives into the output that gets quoted.</td>
 <td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C268</td>
+<td><code>AL-424</code> At 3-5, five of <code>structural_distance</code>'s eleven features are pinned to a constant for any conforming skeleton (mean branching by CG-2's exact-2 rule, reconvergence ratio by PL-18 plus the band's topology row, and the three state features by Tier 1 forbidding variables), and <code>n_choices</code> is <code>n_nodes - 1</code> in any tree. So most of the achievable in-cell distance has to come from the ending-kind and valence histograms rather than from graph shape, which is why <code>the-market-morning</code> landed at 0.060 against a <code>TAU_CELL</code> floor of 0.05 and why switching topology to buy distance was rejected by the band row. Report a per-cell achievable distance alongside <code>TAU_CELL</code>, so a tight pair in a narrow cell reads as a property of the cell rather than as a defect in whichever skeleton landed last.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C269</td>
+<td><code>AL-425</code> the fill-feasibility screen in <code>skeleton_match</code> resolves the 131,072 default cap while <code>fill_skeleton</code> resolves the per-model clamp, so a skeleton certified feasible at selection can be infeasible for the backend that runs it (32,768 on <code>deepseek/deepseek-chat-v3.1</code>). The divergence is now deliberate and documented, and chunked fill absorbs it rather than failing with no prose, so this is not blocking. What is unmeasured is the chunked path's cost and quality against the one-shot path on the same book: batches re-send the skeleton and the prose written so far, so input tokens grow roughly quadratically in batch count, and nothing yet measures whether a book assembled from batches reads as coherently as one written in a single call. A second, reader-visible divergence to check in the same comparison: one-shot fill returns the whole document and <code>fill.md</code> does not forbid changing an ending's <code>title</code>, so a one-shot book gets themed ending titles, while the batch merge reads only <code>body</code> and choice <code>label</code> and a chunked book keeps the skeleton's authored titles under every theme. Fill one mid-sized skeleton both ways on the same brief and compare token spend, ending-title text, and the seven W7 criteria before the chunked path is used for anything a child reads.</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C270</td>
+<td>Post-retirement catalog census, measured 2026-08-17 by running <code>scripts/check_skeleton.py --strict</code> over all 64 committed non-sidecar skeletons: <strong>6 pass, 58 fail</strong> (the catalog is 55 live, 6 retired, and 3 non-production MVP seeds), and every one of the 6 is in the 3-5 or 5-8 band. Retirement under ADR-011 D11 has now taken the three cells that had two strict members each down to exactly those two (<code>3-5/short</code>: <code>puddle-jumping-day</code>, <code>the-market-morning</code>; <code>3-5/medium</code>: <code>the-big-cardboard-box</code>, <code>the-big-red-balloon</code>; <code>5-8/short</code>: <code>the-paper-plane-hall</code>, <code>the-snow-day-expedition</code>), retiring 6 legacy skeletons in total. Two consequences the schedule has to absorb. First, <code>5-8/medium</code> and all four older bands (8-11, 10-13, 13-16, 16+) have <strong>zero</strong> strict cover, 49 live legacy skeletons across 15 cells, so no further cell can be retired without emptying it and the remaining program is authoring, not retiring. Second, a cell with exactly two selectable skeletons gives a family only two structures before a request must reuse one, which is a thinner rotation than the anti-duplication machinery was designed against; <code>UW-C268</code>'s narrow-cell distance finding compounds it, because at 3-5 most of the achievable in-cell distance is pinned by the band's own rules. Decide per band whether the strict bar is authored up to (roughly 2 new skeletons per cell) or whether a legacy cell ships as-is with its grandfathering stated, before either is settled by whichever books happen to exist at beta.</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C271</td>
+<td><code>FallbackProvider</code> has no single answer to 'which model serves this call', so a cascade's fallback legs can run under an output cap resolved for its primary. Surfaced while closing <code>AL-432</code>: <code>fill_skeleton</code> now resolves its cap from the provider rather than from <code>Settings</code>, which fixes the per-job model override wherever a provider declares a <code>model</code>, but <code>openrouter</code>, <code>ollama</code>, and <code>modal</code> declare none and the cascade genuinely has three defensible answers. Decide which: the primary (matches today's implicit behaviour, and is wrong for every leg after the first), the minimum ceiling across the legs (the only choice that is safe for a CAP, since a cap must hold for whichever leg answers), or <code>None</code> (falls back to the model-independent default and keeps the over-ask this work removed). Then give the three adapters a <code>model</code> property consistent with that decision. Cheap to implement once decided, roughly four small files, and it cannot be inferred from the code because it is a semantics call about what a cascade IS.</td>
+<td>3</td>
 <td>unscheduled</td>
 </tr>
 </tbody>
@@ -7620,7 +7644,7 @@ have to re-derive them.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 17, 2026 03:16:16 UTC">August 17, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 17, 2026 17:31:22 UTC">August 17, 2026</span>
   </span>
 
     

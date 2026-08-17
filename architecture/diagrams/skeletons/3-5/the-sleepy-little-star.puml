@@ -42,7 +42,7 @@ state e_lullaby #C8E6C9
 e_lullaby : success (positive)
 e_lullaby : "The {HERO} {LULLABY_PRIZE}"
 state e_friends #C8E6C9
-e_friends : success (positive)
+e_friends : discovery (positive)
 e_friends : "{FRIENDS_PRIZE}"
 n_start --> n_moon : Peek out at {THRESHOLD}.
 n_moon --> n_ready : Take a big, brave breath.
