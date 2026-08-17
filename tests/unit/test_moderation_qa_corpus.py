@@ -133,7 +133,7 @@ def test_every_book_parses_as_a_valid_storybook() -> None:
 
 @pytest.mark.unit
 def test_gate_blocked_books_are_exactly_the_declared_exceptions() -> None:
-    """Only the allowlisted book may fail run_gate, and only on PL-16.
+    """Only the allowlisted book may fail run_gate, and on a per-book allowlist (PL-16, plus PL-29 for the one 5-8 fixture whose reconverging graph ADR-011 s7 gives no legal label).
 
     A gate-blocked fixture can be moderated but can never have a repair
     adopted, because moderation/pipeline.py re-runs run_gate over the repaired

@@ -778,3 +778,32 @@ def test_gate_result_records_the_context_it_ran_under() -> None:
     """
     assert run_gate(_unfilled_story()).context == "skeleton"
     assert run_gate(_unfilled_story(), context="fill_result").context == "fill_result"
+
+
+@pytest.mark.unit
+def test_fill_result_context_blocks_a_directive_in_a_choice_label() -> None:
+    """PL-27's floor covers labels, not just bodies.
+
+    A choice label is fillable prose and reader-visible button text, but it was
+    the one piece of it no deterministic rule checked, so a document with written
+    bodies and an unwritten label cleared this gate unblocked (`AL-430`). Guarded
+    at the merge as well; this is the check that holds regardless of which fill
+    path wrote the document.
+    """
+    story = _load(_VALID / "01_hello_world.json")
+    nodes = story["nodes"]
+    assert isinstance(nodes, list)
+    node = next(n for n in nodes if isinstance(n, dict) and n.get("choices"))
+    choices = node["choices"]
+    assert isinstance(choices, list)
+    first = choices[0]
+    assert isinstance(first, dict)
+    first["label"] = "<<FILL role=choice words=8>>"
+
+    result = run_gate(story, context="fill_result")
+
+    assert result.blocked
+    assert any(
+        f.rule_id == "PL-27" and "label still holds" in f.message
+        for f in result.report.errors
+    )

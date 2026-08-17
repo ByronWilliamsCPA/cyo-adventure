@@ -16,6 +16,7 @@ import json
 import sys
 from pathlib import Path
 
+from cyo_adventure.generation.skeleton import has_unfilled_directives
 from cyo_adventure.validator.gate import run_gate
 
 _REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -85,7 +86,15 @@ def main(argv: list[str] | None = None) -> int:
     if not isinstance(data, dict):
         sys.stderr.write(f"error: expected a JSON object in {path}\n")
         return 1
-    result = run_gate(data, scale="compact" if scale == "compact" else "standard")
+    # A filled book is validated under the fill-result posture, the same as the
+    # import path uses. Without it PL-27 and PL-28 stay silent here, so an author
+    # checking their own work locally saw an unwritten book, or an MVP seed, pass
+    # clean while CI and the importer blocked it (`AL-433`).
+    result = run_gate(
+        data,
+        scale="compact" if scale == "compact" else "standard",
+        context="skeleton" if has_unfilled_directives(data) else "fill_result",
+    )
     for finding in result.report.findings:
         where = f" node={finding.node_id}" if finding.node_id else ""
         sys.stdout.write(

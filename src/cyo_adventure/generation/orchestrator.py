@@ -122,6 +122,9 @@ _MAX_TOKENS_STRUCTURE = 16384
 # this value when it does not. See the note on `skeleton_match._FILL_MAX_TOKENS`
 # for why the screen deliberately stays on the unclamped default (`AL-425`).
 _MAX_TOKENS_PROSE = MAX_FILL_OUTPUT_TOKENS
+# The FLOOR for a repair completion, not the value every repair uses. A repair
+# prompt asks for the whole corrected document, so the effective cap is
+# max(this, the cap the fill ran under); see `_RepairContext.max_tokens`.
 _MAX_TOKENS_REPAIR = 32000
 
 # Reading-level repair passes (Stage D). On by default rather than opt-in, which
@@ -251,6 +254,16 @@ class _RepairContext:
         stage1: The Stage 1 fidelity-gate config for the authoring skeleton-fill
             path, or ``None`` (the default) for callers that do no Stage 1 and
             must retain the pre-fold structural-only loop behavior.
+        max_tokens: Output cap for each repair completion. Defaults to
+            ``_MAX_TOKENS_REPAIR``, which is only right for a document that fits
+            it. Every repair prompt asks for the WHOLE corrected Storybook back,
+            so the repair cap has to be at least the cap the fill itself ran
+            under; a fill at 131,072 followed by a repair at 32,000 asks the
+            model to re-emit a document larger than the ceiling it is given, the
+            completion stops on ``length``, nothing parses, and the loop burns
+            its whole budget re-requesting a document that can never arrive.
+            That was invisible while the fill cap was also 32,000, because the
+            books that exceed it could not be filled at all (`AL-431`).
     """
 
     provider: PiiGuardedProvider
@@ -259,6 +272,7 @@ class _RepairContext:
     scale: Scale = "standard"
     context: GateContext = "skeleton"
     stage1: _Stage1Config | None = None
+    max_tokens: int = _MAX_TOKENS_REPAIR
 
 
 # ---------------------------------------------------------------------------
@@ -849,7 +863,7 @@ async def _run_repair_loop(
         new_doc, new_gate = await _run_one_stage(
             repair_prompt,
             provider=ctx.provider,
-            max_tokens=_MAX_TOKENS_REPAIR,
+            max_tokens=ctx.max_tokens,
             scale=ctx.scale,
             context=ctx.context,
         )
@@ -1349,17 +1363,38 @@ async def fill_skeleton(
         else None
     )
 
+    # Resolve the cap against the model that will actually serve the call. The
+    # PROVIDER is asked first, because it is the only object built with a per-job
+    # model override (`worker.py` passes `model_override=` when constructing it,
+    # while handing this function the module-level `_default_settings`), so
+    # reading `Settings` alone silently resolves the cap for the process default
+    # instead of for the job's model (`AL-432`).
+    #
+    # #ASSUME: external-resources: a provider that declares no `model` (a mock,
+    # or `FallbackProvider`'s cascade, which has no single answer) falls back to
+    # the configured default. The cascade case is a KNOWN residual gap: its
+    # fallback legs can run under a cap resolved for the primary. Deciding what a
+    # cascade should report is an owner call, not something to infer here, so it
+    # is registered as `UW-C271` rather than guessed at.
+    # #VERIFY: test_fill_output_cap.py::
+    # test_the_provider_model_outranks_the_configured_default.
+    provider_model: object = getattr(provider, "model", None)
+    resolved_model = (
+        provider_model
+        if isinstance(provider_model, str)
+        else (active_fill_model(settings) if settings is not None else None)
+    )
     cap = (
-        resolve_output_cap(active_fill_model(settings))
-        if settings is not None
+        resolve_output_cap(resolved_model)
+        if (resolved_model is not None or settings is not None)
         else _MAX_TOKENS_PROSE
     )
-    # Chunking is the exception, not the rule. Every production skeleton fits
-    # the default cap, so `chunked` is False for every current caller and the
-    # one-shot call below is reached with exactly the arguments it had before
-    # chunking existed. It becomes True only when the backend's own output
-    # ceiling clamps the cap under what this skeleton needs, which is the
-    # portability case this whole path exists for.
+    # Chunking is the exception, not the rule: a skeleton takes the byte-identical
+    # one-shot path whenever it fits the resolved cap. It becomes True only when
+    # the backend's own output ceiling clamps the cap under what this skeleton
+    # needs, which is the portability case this whole path exists for. On the
+    # shipped default (`anthropic/claude-haiku-4.5`, ceiling 64,000) that is 15 of
+    # the 55 production skeletons, so this path IS live rather than theoretical.
     chunked = slot_bindings is None and not is_fill_feasible(skeleton, max_tokens=cap)
     if chunked:
         try:
@@ -1437,6 +1472,11 @@ async def fill_skeleton(
             stage_log=stage_log,
             stage1=stage1_config,
             context="fill_result",
+            # A repair asks for the whole corrected book, so it needs at least
+            # the room the fill itself had. `max` rather than plain `cap` so a
+            # backend whose clamped ceiling is BELOW the 32,000 floor does not
+            # also shrink the repair budget for a document that fits it.
+            max_tokens=max(_MAX_TOKENS_REPAIR, cap),
         )
         repair_seed = current_doc if current_doc is not None else last_valid_doc
         current_doc, gate_result, attempts, stage1_violations = await _run_repair_loop(

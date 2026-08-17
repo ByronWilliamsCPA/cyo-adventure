@@ -169,6 +169,39 @@ def _narrative_order(document: dict[str, object]) -> list[dict[str, object]]:
     return ordered
 
 
+def _batch_ids(open_batch: list[dict[str, object]]) -> tuple[str, ...]:
+    """Return the ids of every node in *open_batch*, refusing to drop any.
+
+    The earlier inline form was ``tuple(_id for n in b if (_id := _node_id(n)))``,
+    a TRUTHINESS test rather than an identity one. A node carrying ``id: ""`` is a
+    string, so it survived ``_narrative_order`` and counted toward the batch's
+    feasibility arithmetic, then vanished from the emitted tuple: the batch asked
+    for fewer nodes than it was measured against, and a batch of only such nodes
+    emitted ``()``, which made ``merge_fill_batch`` reject every reply with a
+    message naming no node at all.
+
+    Args:
+        open_batch: The nodes packed into the batch being closed.
+
+    Returns:
+        tuple[str, ...]: One id per node, in order.
+
+    Raises:
+        ValidationError: If any node has no usable string id. Failing here is
+            deliberate: the alternative is a batch that silently under-requests.
+    """
+    ids = tuple(
+        node_id for node in open_batch if (node_id := _node_id(node)) is not None
+    )
+    if len(ids) != len(open_batch):
+        msg = (
+            f"{len(open_batch) - len(ids)} of {len(open_batch)} nodes in a fill batch "
+            f"have no string 'id'; a batch cannot request a node it cannot name"
+        )
+        raise ValidationError(msg, field="id", value=len(open_batch))
+    return ids
+
+
 def plan_fill_batches(
     document: dict[str, object], *, max_tokens: int
 ) -> list[tuple[str, ...]]:
@@ -216,11 +249,11 @@ def plan_fill_batches(
         if open_batch and not is_fill_feasible(
             {"nodes": [*open_batch, node]}, max_tokens=max_tokens
         ):
-            batches.append(tuple(_id for n in open_batch if (_id := _node_id(n))))
+            batches.append(_batch_ids(open_batch))
             open_batch = []
         open_batch.append(node)
     if open_batch:
-        batches.append(tuple(_id for n in open_batch if (_id := _node_id(n))))
+        batches.append(_batch_ids(open_batch))
     return batches
 
 
@@ -313,7 +346,7 @@ def _require_str(value: object, *, what: str, node_id: str) -> str:
 
 def _merged_labels(
     node: dict[str, object], reply: dict[str, object], node_id: str
-) -> list[object]:
+) -> object:
     """Return this node's choices with only their label text replaced.
 
     Every other key on a choice (``id``, ``target``, ``condition``,
@@ -326,17 +359,24 @@ def _merged_labels(
         node_id: The node id, for error messages.
 
     Returns:
-        list[object]: The rebuilt choices list.
+        object: The rebuilt choices list, or the skeleton's own ``choices``
+        value unchanged when it is not a list.
 
     Raises:
-        ValidationError: If ``choices`` is present but not a mapping, or names
-            a choice id this node does not have. An invented choice id means
-            the reply is not about this node's choices, and guessing which one
-            it meant would write the wrong text under the wrong branch.
+        ValidationError: If ``choices`` is present but not a mapping, names a
+            choice id this node does not have, or supplies a label that is still
+            a ``<<FILL ...>>`` directive. An invented choice id means the reply
+            is not about this node's choices, and guessing which one it meant
+            would write the wrong text under the wrong branch.
     """
     raw = node.get("choices")
     if not isinstance(raw, list):
-        return []
+        # Carry a malformed `choices` through untouched rather than replacing it
+        # with []. Returning [] here was the one place this merge mutated the
+        # graph, which contradicts the whitelist promise in `merge_fill_batch`'s
+        # docstring, and it silently discarded a node's branches instead of
+        # letting the gate fail on the reason the document was really malformed.
+        return raw
     choices = cast("list[object]", raw)
     labels = reply.get("choices")
     if labels is None:
@@ -369,6 +409,25 @@ def _merged_labels(
             label = _require_str(
                 proposed[choice_id], what="choice label", node_id=node_id
             )
+            # #CRITICAL: data-integrity: a label is reader-visible button text, and
+            # nothing downstream catches a directive left in one. PL-27 iterates
+            # `story.nodes` and tests `node.body` only, `has_unfilled_directives`
+            # likewise, and `Choice.label` carries only `min_length=1`, so a reply
+            # echoing its own directive back as a label produced a book that
+            # cleared the fill-result gate unblocked and showed `<<FILL role=choice
+            # words=8>>` to a child. Verified end-to-end before the guard existed:
+            # the merge accepted it and `run_gate(..., context="fill_result")`
+            # returned blocked=False with no finding mentioning the marker.
+            # #VERIFY: test_chunked_fill.py::
+            # test_a_batch_whose_choice_label_is_a_directive_is_rejected, and
+            # test_gate.py::test_fill_result_context_blocks_a_directive_in_a_choice_label
+            # covers the same class at the gate as defence in depth.
+            if FILL_MARKER in label:
+                msg = (
+                    f"batch reply for node {node_id!r} returned the fill directive "
+                    f"instead of prose for choice {choice_id!r}"
+                )
+                raise ValidationError(msg, field="choice label", value=node_id)
             rebuilt.append({**choice, "label": label})
         else:
             rebuilt.append(choice)

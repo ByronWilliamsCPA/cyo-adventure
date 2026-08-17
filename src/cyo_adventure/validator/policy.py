@@ -85,7 +85,10 @@ _SATISFYING_KINDS = frozenset({EndingKind.SUCCESS, EndingKind.COMPLETION})
 
 
 def check_fill_residue(story: Storybook) -> ValidationReport:
-    """Run PL-27: no node body of a *fill result* may still be a directive.
+    """Run PL-27: no prose of a *fill result* may still be a directive.
+
+    Covers node bodies and choice labels: both are fillable, both are
+    reader-visible, and only the body was checked until `AL-430`.
 
     Deliberately not part of :func:`validate_policy`, because it is the one
     policy rule whose correctness depends on what the caller is validating.
@@ -113,25 +116,51 @@ def check_fill_residue(story: Storybook) -> ValidationReport:
 
     Returns:
         ValidationReport: One ERROR finding per node whose body retains a
-        directive; empty when every body holds prose.
+        directive, plus one per choice whose label retains one; empty when every
+        body and every label holds prose.
     """
     report = ValidationReport()
     for node in story.nodes:
-        if _FILL_MARKER not in node.body:
-            continue
-        report.add(
-            ValidationFinding(
-                rule_id="PL-27",
-                severity=Severity.ERROR,
-                story_id=story.id,
-                node_id=node.id,
-                message=(
-                    f"PL-27 policy: node '{node.id}' of story '{story.id}' was "
-                    f"validated as a fill result but its body still holds a "
-                    f"'{_FILL_MARKER}' directive, so the node was never written"
-                ),
+        if _FILL_MARKER in node.body:
+            report.add(
+                ValidationFinding(
+                    rule_id="PL-27",
+                    severity=Severity.ERROR,
+                    story_id=story.id,
+                    node_id=node.id,
+                    message=(
+                        f"PL-27 policy: node '{node.id}' of story '{story.id}' was "
+                        f"validated as a fill result but its body still holds a "
+                        f"'{_FILL_MARKER}' directive, so the node was never written"
+                    ),
+                )
             )
-        )
+        # A choice label is reader-visible button text, and it was the one piece
+        # of fillable prose no deterministic rule covered: this checker tested
+        # `node.body` only, `has_unfilled_directives` likewise, and `Choice.label`
+        # carries only `min_length=1`. The chunked fill writes labels as well as
+        # bodies, so a reply echoing its directive back under `choices` produced a
+        # book that cleared this gate unblocked with a raw directive on a button.
+        # Guarded at the merge too (`generation/chunking.py::_merged_labels`);
+        # this is the deterministic floor that does not depend on which fill path
+        # wrote the document (`AL-430`).
+        for choice in node.choices:
+            if _FILL_MARKER not in choice.label:
+                continue
+            report.add(
+                ValidationFinding(
+                    rule_id="PL-27",
+                    severity=Severity.ERROR,
+                    story_id=story.id,
+                    node_id=node.id,
+                    message=(
+                        f"PL-27 policy: choice '{choice.id}' of node '{node.id}' in "
+                        f"story '{story.id}' was validated as a fill result but its "
+                        f"label still holds a '{_FILL_MARKER}' directive, so the "
+                        f"choice text was never written"
+                    ),
+                )
+            )
     return report
 
 
@@ -145,7 +174,7 @@ def check_mvp_firewall(story: Storybook) -> ValidationReport:
     validator, has to enforce the exclusion."
 
     The selection layer does enforce it:
-    ``generation/skeleton_match.py::_candidates`` drops any skeleton whose
+    ``generation/skeleton_match.py::_production_candidates`` drops any skeleton whose
     ``production_eligible`` is ``False``, so the automated request path cannot
     pick a seed to fill. That covers generation and nothing else.
 

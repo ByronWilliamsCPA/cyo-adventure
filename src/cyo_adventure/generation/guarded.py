@@ -54,6 +54,25 @@ class PiiGuardedProvider:
         self._inner = inner
         self._forbidden = forbidden
 
+    @property
+    def model(self) -> str | None:
+        """The inner provider's model id, or ``None`` when it declares none.
+
+        Forwarded for the same reason :class:`MeteredProvider` forwards it: a
+        caller holding the wrapper must be able to ask which model will actually
+        serve the call. ``fill_skeleton`` uses this to resolve its output cap
+        against the model the provider was BUILT with, which is the only place a
+        per-job override is visible; reading the model off `Settings` instead
+        returns the process default and misses that override entirely
+        (`AL-432`).
+
+        Returns:
+            str | None: The wrapped provider's ``model``, or ``None`` when it
+            declares none (a mock, or a cascade with no single answer).
+        """
+        inner_model: object = getattr(self._inner, "model", None)
+        return inner_model if isinstance(inner_model, str) else None
+
     async def complete(
         self, *, system: str, prompt: str, max_tokens: int
     ) -> Completion:

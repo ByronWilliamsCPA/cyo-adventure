@@ -177,6 +177,16 @@ MAX_FILL_OUTPUT_TOKENS = 131_072
 # because a completion stopped on `length` is leg-fatal rather than retried
 # (AL-329), so an unknown small-output model fails fast and loudly rather than
 # burning the repair budget.
+#
+# This table is PARTIAL by construction: it lists only the models whose ceiling
+# is known, and every entry must be looked up rather than inferred. The set that
+# matters most is whatever `core/config.py` actually defaults to, because the
+# permissive fallback above is only survivable for a model nobody is configured
+# to use. Every model this app ships pointing at MUST have a row here; a missing
+# row on a configured model means the clamp silently does nothing (`AL-428`).
+# #VERIFY: test_fill_output_cap.py::
+# test_every_configured_default_model_has_a_cap asserts exactly that, so adding a
+# new default to `core/config.py` without a row here fails the suite.
 # #VERIFY: test_fill_output_cap.py::test_a_small_output_model_clamps_the_cap_down
 # covers the clamp and ::test_an_unknown_model_gets_the_default the passthrough.
 MODEL_OUTPUT_CAPS: dict[str, int] = {
@@ -185,6 +195,19 @@ MODEL_OUTPUT_CAPS: dict[str, int] = {
     "deepseek/deepseek-v3.2": 65_536,
     "deepseek/deepseek-chat-v3.1": 32_768,
     "deepseek/deepseek-r1-0528": 32_768,
+    # The Anthropic models `core/config.py` defaults to. Both ceilings sit BELOW
+    # the 131,072 default, so omitting them made the clamp a no-op on the
+    # shipped configuration: `fill_skeleton` asked claude-haiku-4.5 for 131,072
+    # against a real ceiling of 64,000, and because the resolved cap stayed at
+    # the default `is_fill_feasible` returned True for every skeleton, so the
+    # chunked path could never engage on the one backend that needs it.
+    "anthropic/claude-haiku-4.5": 64_000,
+    "anthropic/claude-sonnet-4.6": 128_000,
+    # The `generation_provider="anthropic"` spelling of the same model, which
+    # `active_fill_model` reads from `anthropic_model` rather than
+    # `openrouter_model`.
+    "claude-sonnet-4-6": 128_000,
+    "claude-haiku-4-5": 64_000,
 }
 
 
@@ -242,7 +265,19 @@ _TOKENS_PER_FILL_WORD = 2.0
 # of 32,000 thinking and returned nothing).
 _FEASIBILITY_MARGIN = 0.8
 
-_FILL_WORDS_RE = re.compile(r"\bwords=(\d+)")
+# Whitespace-tolerant on purpose, and deliberately identical to
+# `mutation/identity.py`'s pattern. The strict `\bwords=(\d+)` spelling scored a
+# directive written `words = 30` as ZERO expected tokens, which made
+# `is_fill_feasible` return True under any cap at all: a fail-open in the guard
+# whose whole job is refusing a skeleton the backend cannot emit. No committed
+# skeleton uses the spaced form today, so this was latent rather than live, but
+# the two modules parse the same directive and must not disagree about it
+# (`AL-429`).
+# #VERIFY: test_fill_output_cap.py::
+# test_a_spaced_words_directive_is_counted_like_the_strict_form pins the
+# tolerance, and ::test_the_fill_word_pattern_matches_the_mutation_core pins the
+# two patterns together so a future edit to one fails the suite.
+_FILL_WORDS_RE = re.compile(r"words\s*=\s*(\d+)")
 
 
 def expected_output_tokens(story: dict[str, object]) -> int:

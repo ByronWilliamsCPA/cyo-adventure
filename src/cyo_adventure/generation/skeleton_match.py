@@ -161,7 +161,13 @@ def _expected_tokens(path: Path) -> int:
 
 
 def _is_feasible(path: Path) -> bool:
-    """Return whether a skeleton's fill fits the configured output cap.
+    """Return whether a skeleton's fill fits the model-independent DEFAULT cap.
+
+    Deliberately not the cap `fill_skeleton` resolves. That call clamps to the
+    serving model's own ceiling, so screening against it would make the catalog a
+    child can be offered depend on which backend happens to be configured. See
+    `_FILL_MAX_TOKENS` for the full rationale; the per-model shortfall is absorbed
+    downstream by the chunked fill, not by narrowing selection.
 
     An unreadable file is treated as feasible so this predicate cannot become a
     second, silent reason a skeleton disappears; `_load_metadata` already logs
@@ -217,13 +223,19 @@ def _production_candidates(band: str) -> list[tuple[str, StoryMetadata]]:
         # test_a_deprecated_skeleton_is_not_a_candidate.
         if metadata.deprecated:
             continue
-        # #CRITICAL: payment: a skeleton the one-shot fill provably cannot emit
-        # must not be selectable. `fill_skeleton` has no chunking, so an
-        # over-cap skeleton does not degrade, it truncates, parses as nothing,
-        # and burns the whole repair budget (roughly four rounds of ~100k input
-        # tokens) before failing deterministically on every retry, forever.
-        # Screening here costs one file read and no provider call. UW-C07 /
-        # AL-046.
+        # #CRITICAL: payment: a skeleton that fits NO backend must not be
+        # selectable. This screens against the model-independent default, so it
+        # refuses only what is unfillable in principle; a skeleton that merely
+        # exceeds the serving model's ceiling is chunked instead of excluded.
+        # Without the screen an over-cap skeleton does not degrade, it
+        # truncates, parses as nothing, and burns the whole repair budget
+        # (roughly four rounds of ~100k input tokens) before failing
+        # deterministically on every retry, forever.
+        # Screening here costs a file read and no provider call, which is the
+        # trade: `_load_metadata` has already read this path, and the
+        # infeasible branch reads it again to report the size, so an excluded
+        # skeleton costs three reads rather than one. Cheap against a provider
+        # call, but do not describe it as free. UW-C07 / AL-046.
         # #VERIFY: test_skeleton_match.py::
         # test_an_over_cap_skeleton_is_not_a_candidate.
         if not _is_feasible(path):

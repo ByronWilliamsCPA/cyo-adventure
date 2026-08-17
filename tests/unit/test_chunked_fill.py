@@ -489,6 +489,7 @@ def tiny_cap_settings(
     return _SmallOutputSettings("tiny/one-node")
 
 
+@pytest.mark.unit
 @pytest.mark.asyncio
 async def test_a_feasible_skeleton_still_takes_the_untouched_one_shot_path() -> None:
     """Chunking must not touch the path every production skeleton takes.
@@ -509,6 +510,7 @@ async def test_a_feasible_skeleton_still_takes_the_untouched_one_shot_path() -> 
     assert "Passages To Write Now" not in provider.calls[0]
 
 
+@pytest.mark.unit
 @pytest.mark.asyncio
 async def test_a_skeleton_over_the_cap_is_filled_batch_by_batch_and_merged(
     tiny_cap_settings: _SmallOutputSettings,
@@ -540,6 +542,7 @@ async def test_a_skeleton_over_the_cap_is_filled_batch_by_batch_and_merged(
     assert "<<FILL" not in json.dumps(outcome.storybook)
 
 
+@pytest.mark.unit
 @pytest.mark.asyncio
 async def test_a_batch_that_returns_nothing_fails_the_whole_fill(
     tiny_cap_settings: _SmallOutputSettings,
@@ -582,6 +585,7 @@ async def test_a_batch_that_returns_nothing_fails_the_whole_fill(
     assert "unfilled_skeleton_returned" not in outcome.report
 
 
+@pytest.mark.unit
 @pytest.mark.asyncio
 async def test_a_chunked_fill_is_never_sent_a_whole_document_repair(
     tiny_cap_settings: _SmallOutputSettings,
@@ -627,6 +631,7 @@ async def test_a_chunked_fill_is_never_sent_a_whole_document_repair(
     assert all("Story to Repair" not in call for call in provider.calls)
 
 
+@pytest.mark.unit
 @pytest.mark.asyncio
 async def test_a_chunked_fill_still_runs_the_stage_1_fidelity_check(
     monkeypatch: pytest.MonkeyPatch,
@@ -672,6 +677,7 @@ async def test_a_chunked_fill_still_runs_the_stage_1_fidelity_check(
     assert len(provider.calls) == len(batches)
 
 
+@pytest.mark.unit
 @pytest.mark.asyncio
 async def test_a_bound_fill_is_never_chunked(
     tiny_cap_settings: _SmallOutputSettings,
@@ -700,6 +706,7 @@ async def test_a_bound_fill_is_never_chunked(
     assert outcome.status == "passed"
 
 
+@pytest.mark.unit
 @pytest.mark.asyncio
 async def test_a_skeleton_no_partition_can_fill_fails_without_spending(
     tiny_cap_settings: _SmallOutputSettings,
@@ -726,3 +733,59 @@ async def test_a_skeleton_no_partition_can_fill_fails_without_spending(
     assert outcome.storybook is None
     assert provider.calls == []
     assert "stage_fill:unfillable_under_cap" in outcome.stage_log
+
+
+@pytest.mark.unit
+def test_a_batch_whose_choice_label_is_a_directive_is_rejected() -> None:
+    """A directive echoed back as a choice label is button text a child reads.
+
+    The body guard alone was not enough. `merge_fill_batch` checked FILL_MARKER on
+    `body` but not on a label, PL-27 tested `node.body` only, and `Choice.label`
+    carries just `min_length=1`, so a reply returning its own directive under
+    `choices` produced a book that cleared the fill-result gate unblocked with
+    `<<FILL role=choice words=8>>` rendered on a button (`AL-430`).
+    """
+    skeleton = _all_fill_skeleton()
+    node = next(n for n in _nodes_of(skeleton) if n.get("choices"))
+    node_id = node["id"]
+    assert isinstance(node_id, str)
+    choices = node["choices"]
+    assert isinstance(choices, list)
+    first = choices[0]
+    assert isinstance(first, dict)
+    choice_id = first["id"]
+    assert isinstance(choice_id, str)
+
+    with pytest.raises(ValidationError, match="choice"):
+        merge_fill_batch(
+            skeleton,
+            [node_id],
+            {
+                node_id: {
+                    "body": "Prose that was genuinely written for this passage.",
+                    "choices": {choice_id: "<<FILL role=choice words=8>>"},
+                }
+            },
+        )
+
+
+@pytest.mark.unit
+def test_a_malformed_choices_value_is_carried_through_not_emptied() -> None:
+    """The whitelist merge must not be the thing that drops a node's branches.
+
+    `_merged_labels` previously returned `[]` for any non-list `choices`, which
+    made the merge itself mutate the graph it promises to leave alone and hid the
+    real reason the document was malformed.
+    """
+    skeleton = _all_fill_skeleton()
+    node = next(n for n in _nodes_of(skeleton) if n.get("choices"))
+    node_id = node["id"]
+    assert isinstance(node_id, str)
+    node["choices"] = {"not": "a list"}
+
+    merged = merge_fill_batch(
+        skeleton, [node_id], {node_id: {"body": "Prose for this passage."}}
+    )
+    rebuilt = next(n for n in _nodes_of(merged) if n["id"] == node_id)
+
+    assert rebuilt["choices"] == {"not": "a list"}
