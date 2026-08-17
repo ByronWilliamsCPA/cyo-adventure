@@ -813,3 +813,41 @@ def test_a_within_cap_skeleton_is_still_a_candidate(
     slugs = [slug for slug, _ in skeleton_match._production_candidates("5-8")]  # pyright: ignore[reportPrivateUsage]
 
     assert slugs == ["fits"]
+
+
+@pytest.mark.unit
+def test_a_deprecated_skeleton_is_not_a_candidate(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """ADR-011 D11: a retired skeleton stops being drawn for new stories.
+
+    Retirement is not deletion. The file stays in the catalog as a mutation
+    parent, as provenance for the books already filled from it, and as history;
+    it simply leaves the selection pool.
+    """
+    _write_skeleton(tmp_path / "3-5", "retired", age_band="3-5")
+    path = tmp_path / "3-5" / "retired.json"
+    payload = json.loads(path.read_text())
+    payload["metadata"]["deprecated"] = True
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    monkeypatch.setattr(skeleton_match, "_SKELETON_ROOT", tmp_path)
+
+    assert skeleton_match._production_candidates("3-5") == []  # pyright: ignore[reportPrivateUsage]
+
+
+@pytest.mark.unit
+def test_a_live_skeleton_in_the_same_band_still_selects(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Retiring one skeleton must not empty its band."""
+    _write_skeleton(tmp_path / "3-5", "live", age_band="3-5")
+    _write_skeleton(tmp_path / "3-5", "retired", age_band="3-5")
+    path = tmp_path / "3-5" / "retired.json"
+    payload = json.loads(path.read_text())
+    payload["metadata"]["deprecated"] = True
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    monkeypatch.setattr(skeleton_match, "_SKELETON_ROOT", tmp_path)
+
+    slugs = [slug for slug, _ in skeleton_match._production_candidates("3-5")]  # pyright: ignore[reportPrivateUsage]
+
+    assert slugs == ["live"]

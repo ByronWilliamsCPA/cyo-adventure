@@ -197,6 +197,14 @@ def _production_candidates(band: str) -> list[tuple[str, StoryMetadata]]:
         metadata = _load_metadata(path)
         if metadata is None or not metadata.production_eligible:
             continue
+        # ADR-011 D11: a retired skeleton is superseded, not defective. It stays
+        # in the catalog (as a mutation parent, as provenance for the books
+        # already filled from it, and as history) and simply stops being drawn
+        # for new stories. Books already published from it are untouched.
+        # #VERIFY: test_skeleton_match.py::
+        # test_a_deprecated_skeleton_is_not_a_candidate.
+        if metadata.deprecated:
+            continue
         # #CRITICAL: payment: a skeleton the one-shot fill provably cannot emit
         # must not be selectable. `fill_skeleton` has no chunking, so an
         # over-cap skeleton does not degrade, it truncates, parses as nothing,

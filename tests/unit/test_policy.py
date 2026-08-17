@@ -1763,3 +1763,21 @@ def test_pl29_accepts_every_committed_skeleton() -> None:
             offenders.append(f"{path}: {metadata.get('age_band')} declares {topology}")
 
     assert offenders == []
+
+
+@pytest.mark.unit
+def test_deprecation_does_not_change_the_node_budget() -> None:
+    """Retirement and the MVP tier are different claims and must stay separate.
+
+    `production_eligible=False` rebudgets a story against the band-independent
+    MVP envelope, which is looser. Expressing retirement by flipping that flag
+    would make a retired book EASIER to validate than a live one, so
+    `deprecated` must not touch budgeting at all.
+    """
+    live = _two_ending_story("5-8", Topology.TIME_CAVE)
+    retired = _two_ending_story("5-8", Topology.TIME_CAVE)
+    retired.metadata.deprecated = True
+
+    assert [f.rule_id for f in validate_policy(live).findings] == [
+        f.rule_id for f in validate_policy(retired).findings
+    ]
