@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.81.1] - 2026-08-17
+
+### Bug Fixes
+
+- **ci**: Relight the scheduled test ladder and fix the reader defect it was hiding
+  ([#724](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/724),
+  [`1dc58c4`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/1dc58c481973d84cd7d4d103471b71cdc7e27eb3))
+
+
 ## [0.81.0] - 2026-08-16
 
 ### Features
@@ -3478,6 +3487,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.81.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.81.0...v0.81.1
 [0.81.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.80.1...v0.81.0
 [0.80.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.80.0...v0.80.1
 [0.80.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.79.1...v0.80.0
