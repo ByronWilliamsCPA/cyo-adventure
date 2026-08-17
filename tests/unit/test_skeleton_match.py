@@ -63,6 +63,7 @@ def test_candidates_for_cell_ignores_style_below_teen_band() -> None:
     skeletons in the cell."""
     assert candidates_for_cell("8-11", "short", "gamebook") == [
         "the-cave-of-echoes",
+        "the-half-hour-call",
         "the-locked-carousel",
         "the-robot-fair-sabotage",
     ]

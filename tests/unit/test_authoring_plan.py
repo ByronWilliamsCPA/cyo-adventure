@@ -30,12 +30,13 @@ from cyo_adventure.story_requests.authoring_plan import (
 )
 
 # In-cell candidate lists (sorted, as candidates_for_cell returns them) for the
-# two cells these tests exercise. Each cell now holds three production
-# skeletons, and the pick within a cell is a weighted-random draw over an
-# unseedable SystemRandom, so tests assert membership in the cell rather than a
-# single fixed slug.
+# two cells these tests exercise: 8-11/short/prose holds four production
+# skeletons and 13-16/medium/prose holds three. The pick within a cell is a
+# weighted-random draw over an unseedable SystemRandom, so tests assert
+# membership in the cell rather than a single fixed slug.
 _CELL_8_11_SHORT_PROSE = [
     "the-cave-of-echoes",
+    "the-half-hour-call",
     "the-locked-carousel",
     "the-robot-fair-sabotage",
 ]
@@ -710,11 +711,25 @@ async def test_skeleton_fill_auto_pick_passes_similar_usage_to_selection() -> No
     )
     assert result.skeleton_slug == expected.slug
     # The blended weighting must pick differently from the legacy (no
-    # similar_usage) pick under the identical seed, proving the counts were
-    # actually threaded through rather than ignored: uniform weights consume
-    # the RNG's draw differently than [0.0625, 1, 1].
-    legacy = select_skeleton_for_cell(_CELL_8_11_SHORT_PROSE, {}, random.Random(42))
-    assert legacy.slug != result.skeleton_slug
+    # similar_usage) weighting, proving the counts were actually threaded
+    # through rather than ignored: uniform weights consume the RNG's draw
+    # differently than the de-weighted [0.0625, 1, 1, ...].
+    #
+    # Swept over seeds rather than asserted on one. Whether a single seed
+    # happens to separate the two weightings depends on how many skeletons the
+    # cell holds, so a fixed seed silently stops testing anything the next time
+    # the cell grows: seed 42 separated them at three skeletons and stopped
+    # doing so at four, with the threading itself unchanged.
+    assert any(
+        select_skeleton_for_cell(_CELL_8_11_SHORT_PROSE, {}, random.Random(seed)).slug
+        != select_skeleton_for_cell(
+            _CELL_8_11_SHORT_PROSE,
+            {},
+            random.Random(seed),
+            similar_usage=similar_counts,
+        ).slug
+        for seed in range(50)
+    )
 
 
 @pytest.mark.asyncio
